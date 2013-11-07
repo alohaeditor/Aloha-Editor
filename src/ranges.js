@@ -670,6 +670,22 @@ define([
 	}
 
 	/**
+	 * Return a range based on the given event object.
+	 *
+	 * @param  {Object} event An Aloha Editor event
+	 * @return {?Range}
+	 */
+	function fromEvent(event, caret) {
+		var isKeyboardEvent = 'keypress' === event.type
+		                   || 'keydown' === event.type
+		                   || 'keyup' === event.type;
+		var range = isKeyboardEvent
+		          ? event.range
+		          : createFromPoint(event.native.clientX, event.native.clientY);
+		return range || Ranges.get();
+	}
+
+	/**
 	 * Because user agents have problems determining the bounding client rect
 	 * for collapsed ranges.
 	 */
@@ -756,7 +772,8 @@ define([
 		expandBackwardToVisiblePosition: expandBackwardToVisiblePosition,
 		expandForwardToVisiblePosition: expandForwardToVisiblePosition,
 		contractBackwardToVisiblePosition: contractBackwardToVisiblePosition,
-		createFromPoint: createFromPoint
+		createFromPoint: createFromPoint,
+		fromEvent: fromEvent
 	};
 
 	exports['box'] = exports.box;

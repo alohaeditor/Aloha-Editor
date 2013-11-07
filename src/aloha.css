@@ -35,9 +35,6 @@ p:last-child { margin-bottom: 0; }
 	margin: 0;
 	padding: 0;
 	background: #4285f4;
-}
-
-.blink {
 	-webkit-animation: blink .5s ease-out infinite alternate;
 	   -moz-animation: blink .5s ease-out infinite alternate;
 	    -ms-animation: blink .5s ease-out infinite alternate;

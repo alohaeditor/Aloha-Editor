@@ -30,106 +30,107 @@ define([
 	'use strict';
 
 	/**
-	 * Creates a DOM element to be used to represent a caret.
+	 * Creates a DOM element to be used to represent the caret position.
 	 *
-	 * @param {Element}
+	 * @return {Element}
 	 */
 	function create() {
 		var caret = document.createElement('div');
+		caret.style.display = 'none';
 		Dom.addClass(caret, 'aloha-caret');
 		Dom.insert(caret, document.body, true);
 		return caret;
 	}
 
 	/**
-	 * Renders the given caret according to the dimension of `rect` and styles
-	 * it to reflect the given map of overrides.
+	 * Renders the given element at the specified boundary to represent the
+	 * caret position. Will also style caret if `opt_style` is provided.
 	 *
-	 * @param {Elemen} caret
-	 * @param {Object} rect
-	 * @param {Object} overrides
-	 */
-	function render(caret, rect, overrides) {
-		var color;
-		var width;
-		var rotation;
-		if (overrides) {
-			color = overrides['color'] || '';
-			width = rect.width * (overrides['bold'] ? 2 : 1);
-			rotation = overrides['italic'] ? 'rotate(8deg)' : '';
-		} else {
-			color = '';
-			width = rect.width;
-			rotation = '';
-		}
-		caret.style.top = rect.top + 'px';
-		caret.style.left = rect.left + 'px';
-		caret.style.height = rect.height + 'px';
-		caret.style.width = width + 'px';
-		caret.style.display = 'block';
-		caret.style.background = color;
-		caret.style[Browsers.VENDOR_PREFIX + 'transform'] = rotation;
-		Dom.addClass(caret, 'blink');
-	}
-
-	/**
-	 * Renders the given caret according to the boundary and styles it to
-	 * reflect the given map of overrides.
-	 *
+	 * @param {Element}  caret
 	 * @param {Boundary} boundary
-	 * @param {Elemen} caret
-	 * @param {Object} overrides
+	 * @param {Object}   opt_style
 	 */
-	function show(boundary, caret, overrides) {
+	function show(caret, boundary, opt_style) {
 		var box = Ranges.box(Ranges.create(boundary[0], boundary[1]));
 		var doc = caret.ownerDocument;
 		box.top += window.pageYOffset - doc.body.clientTop;
 		box.left += window.pageXOffset - doc.body.clientLeft;
-		box.width = 2;
-		render(caret, box, overrides);
+		var style = opt_style || {};
+		style['top'] = box.top + 'px';
+		style['left'] = box.left + 'px';
+		style['height'] = box.height + 'px';
+		style['width'] = '2px';
+		style['display'] = 'block';
+		var prop;
+		for (prop in style) {
+			if (style.hasOwnProperty(prop)) {
+				caret.style[prop] = style[prop];
+			}
+		}
 	}
 
 	/**
-	 * Hides the given caret element.
+	 * Hides the given given element.
 	 *
-	 * @param {Element} caret
+	 * @param {Element} elem
 	 */
-	function hide(caret) {
-		caret.style.display = 'none';
-	}
-
-	function unhide(caret) {
-		caret.style.display = 'block';
+	function hide(elem) {
+		elem.style.display = 'none';
 	}
 
 	/**
-	 * Calculates the override values at the given start and end boundaries.
+	 * Un-hides the given element.
 	 *
-	 * @param {Object} event
-	 * @param {Element} node
-	 * @return {Array<Object>}
-	 *         An ordered list of the overrides at the start and end boundary.
+	 * @param {Element} elem
 	 */
-	function computeOverrides(event, node) {
-		var overrides = Overrides.map(Overrides.harvest(node));
-		if (event.editables) {
-			overrides = Maps.merge(
-				overrides,
+	function unhide(elem) {
+		elem.style.display = 'block';
+	}
+
+	/**
+	 * Calculates the override values at the given node.
+	 *
+	 * @param  {Object}  event
+	 * @param  {Element} node
+	 * @return {Object}
+	 *         An object with overrides mapped against their names.
+	 */
+	function overrides(event, node) {
+		if (event.editable) {
+			return Maps.merge(
+				Overrides.map(Overrides.harvest(node)),
 				Overrides.map(event.editable.overrides)
 			);
 		}
-		return overrides;
+		return Overrides.map(Overrides.harvest(node));
 	}
 
 	/**
-	 * Checks whether the end boundary preceeds the start boundary in the
-	 * document order.
+	 * Determines how to style the caret based on the given overrides.
 	 *
-	 * @param {Element} sc Start container
-	 * @param {String}  so Start offset
-	 * @param {Element} ec End container
-	 * @param {String}  eo End offset
-	 * @return {Boolean}
+	 * @param  {Object} overrides
+	 * @return {Object}
+	 *         A map of style properties and their values
+	 */
+	function stylesFromOverrides(overrides) {
+		var style = {};
+		style['padding'] = overrides['bold'] ? '1px' : '0px';
+		style[Browsers.VENDOR_PREFIX + 'transform'] = overrides['italic'] ? 'rotate(8deg)' : '';
+		style['background'] = overrides['color'] || '';
+		return style;
+	}
+
+	/**
+	 * Given the containers and offsets representing a start and end boundary,
+	 * checks whether the end boundary preceeds the start boundary in document
+	 * order.
+	 *
+	 * @param  {Element} sc Start container
+	 * @param  {string}  so Start offset
+	 * @param  {Element} ec End container
+	 * @param  {string}  eo End offset
+	 * @return {boolean}
+	 *         True if the boundary positions are reversed.
 	 */
 	function isReversed(sc, so, ec, eo) {
 		return (sc === ec && so > eo) || Dom.follows(ec, sc);
@@ -194,35 +195,27 @@ define([
 	}
 
 	/**
-	 * Determines the next visual caret position above or below `range`.
+	 * Determines the closest visual caret position above or below the given
+	 * range.
 	 *
-	 * @param {Event} event
-	 * @param {Range} range
-	 * @param {String} focus
-	 * @param {String} direction
+	 * @param  {Event}  event
+	 * @param  {Range}  range
+	 * @param  {string} focus
+	 * @param  {string} direction "up" or "down"
 	 * @return {Object}
 	 */
 	function climb(event, range, focus, direction) {
-		var get;
-		var set;
+		var clone = ('start' === focus)
+		          ? Ranges.collapseToStart(range.cloneRange())
+		          : Ranges.collapseToEnd(range.cloneRange());
 
-		if ('start' === focus) {
-			get = Ranges.collapseToStart;
-			set = Ranges.setStartFromBoundary;
-		} else {
-			get = Ranges.collapseToEnd;
-			set = Ranges.setEndFromBoundary;
-		}
-
-		var clone = get(range.cloneRange());
 		var box = Ranges.box(clone);
 		var half = box.height / 2;
 		var offset = half;
-		var expanding = isShiftDown(event);
 		var move = 'up' === direction ? up : down;
-
 		var next = move(box, offset);
-		// fix me also check if next and clone are *visually* adjacent
+
+		// TODO: also check if `next` and `clone` are *visually* adjacent
 		while (next && Ranges.equal(next, clone)) {
 			offset += half;
 			next = move(box, offset);
@@ -232,7 +225,7 @@ define([
 			return;
 		}
 
-		if (!expanding) {
+		if (!isShiftDown(event)) {
 			return {
 				range: next,
 				focus: focus
@@ -243,25 +236,24 @@ define([
 	}
 
 	/**
-	 * Determines the next visual caret position before or after `range`. 
+	 * Determines the next visual caret position before or after the given
+	 * range.
 	 *
-	 * @param {Event} event
-	 * @param {Range} range
-	 * @param {String} focus
-	 * @param {String} direction
+	 * @param  {Event}  event
+	 * @param  {Range}  range
+	 * @param  {string} focus
+	 * @param  {string} direction "left" or "right"
 	 * @return {Object}
 	 */
 	function step(event, range, focus, direction) {
+		var get, set, collapse;
 		var shift = isShiftDown(event);
 		var move = 'left' === direction ? left : right;
+		var clone = range.cloneRange();
 
 		if (range.collapsed || !shift) {
 			focus = 'left' === direction ? 'start' : 'end';
 		}
-
-		var get;
-		var set;
-		var collapse;
 
 		if ('start' === focus) {
 			get = Boundaries.start;
@@ -272,8 +264,6 @@ define([
 			set = Ranges.setEndFromBoundary;
 			collapse = Ranges.collapseToEnd;
 		}
-
-		var clone = range.cloneRange();
 
 		if (range.collapsed || shift) {
 			set(clone, move(get(range), isCtrlDown(event) ? 'word' : 'char'));
@@ -290,53 +280,77 @@ define([
 	}
 
 	var arrows = {};
+
 	arrows[Keys.CODES.up] = function climbUp(event, range, focus) {
 		return climb(event, range, focus, 'up');
 	};
+
 	arrows[Keys.CODES.down] = function climbDown(event, range, focus) {
 		return climb(event, range, focus, 'down');
 	};
+
 	arrows[Keys.CODES.left] = function stepLeft(event, range, focus) {
 		return step(event, range, focus, 'left');
 	};
+
 	arrows[Keys.CODES.right] = function stepRight(event, range, focus) {
 		return step(event, range, focus, 'right');
 	};
 
-	function keydown(event, previous, focus) {
-		var range = calculateRange(event);
-		if (arrows[event.which]) {
-			return arrows[event.which](event, range, focus);
+	/**
+	 * State of the user selection.
+	 * A necessary "evil."
+	 */
+	var state = {
+		caret       : create(),
+		range       : null,
+		focus       : 'end',
+		isDragging  : false,
+		isMouseDown : false
+	};
+
+	var stateHandlers = {
+		'mousedown': function mousedown() {
+			state.isDragging = false;
+			state.isMouseDown = true;
+		},
+		'mouseup': function mouseup() {
+			state.isDragging = state.isMouseDown = false;
+		},
+		'mousemove': function mousemove() {
+			state.isDragging = state.isMouseDown;
 		}
+	};
+
+	function keypress(event, range, focus) {
 		return {
 			range: range,
 			focus: focus
 		};
 	}
 
-	function keypress(event) {
+	function keydown(event, range, focus) {
+		return (arrows[event.which] || keypress)(event, range, focus);
+	}
+
+	function dblclick(event, range) {
 		return {
-			range: calculateRange(event),
+			range: Ranges.expandToWord(range),
 			focus: 'end'
 		};
 	}
 
-	function mouseup(event, previous, focus, expanding) {
-		var range = calculateRange(event);
-
+	function mouseup(event, range, focus, previous, expanding) {
 		if (!expanding) {
 			return {
 				range: range,
 				focus: focus
 			};
 		}
-
 		return calculateExpandedRange(range, previous, focus);
 	}
 
-	function mousedown(event, previous, focus, expanding) {
-		var range = calculateRange(event);
-
+	function mousedown(event, range, focus, previous, expanding) {
 		if (!expanding) {
 			return {
 				range: range,
@@ -344,7 +358,7 @@ define([
 			};
 		}
 
-		var sc, so, ec, eo;
+		var sc, so, ec, eo, current;
 
 		sc = range.startContainer;
 		so = range.startOffset;
@@ -356,8 +370,6 @@ define([
 			ec = previous.startContainer;
 			eo = previous.startOffset;
 		}
-
-		var current;
 
 		if (isReversed(sc, so, ec, eo)) {
 			focus = 'end';
@@ -373,13 +385,6 @@ define([
 		};
 	}
 
-	function dblclick(event) {
-		return {
-			range: Ranges.expandToWord(calculateRange(event)),
-			focus: 'end'
-		};
-	}
-
 	var handlers = {
 		'keydown'   : keydown,
 		'keypress'  : keypress,
@@ -389,47 +394,10 @@ define([
 		'mousemove' : Fn.returnFalse
 	};
 
-	// State of the user selection
-	var state = {
-		caret         : create(),
-		range         : null,
-		focus         : 'end',
-		isDragging    : false,
-		isMouseDown   : false
-	};
-
-	var stateHandlers = {
-		'mousedown': function mousedown(event) {
-			state.isDragging = false;
-			state.isMouseDown = true;
-		},
-		'mouseup': function mouseup(event) {
-			state.isDragging = state.isMouseDown = false;
-		},
-		'mousemove': function mousemove(event) {
-			state.isDragging = state.isMouseDown;
-		}
-	};
-
-	function calculateRange(event) {
-		var range;
-		if ('mousedown' === event.type || 'mouseup' === event.type) {
-			hide(state.caret);
-			range = Ranges.createFromPoint(
-				event.native.clientX,
-				event.native.clientY
-			);
-			unhide(state.caret);
-		} else {
-			range = event.range || Ranges.get();
-		}
-		return range;
-	}
-
 	/**
 	 * Renders caret element to show the user selection.
 	 *
-	 * @param {Event} event
+	 * @param  {Event} event
 	 * @return {Event}
 	 */
 	function handle(event) {
@@ -437,17 +405,35 @@ define([
 			return event;
 		}
 
+		var range;
+
+		// Because we will never show the caret on mousemove, we avoid
+		// unncessary computation.
+		if ('mousemove' === event.type) {
+			range = null;
+		} else {
+			// Because otherwise, if, in the process of a click, the user's
+			// cursor is over the caret, Ranges.fromEvent() will compute the
+			// range to be inside the absolutely positioned caret element.
+			hide(state.caret);
+			range = Ranges.fromEvent(event);
+			unhide(state.caret);
+		}
+
 		var data = handlers[event.type](
 			event,
-			state.range,
+			range,
 			state.focus,
+			state.range,
 			state.isDragging || isShiftDown(event)
 		);
 
 		var wasDragging = state.isDragging;
 
 		if (stateHandlers[event.type]) {
-			stateHandlers[event.type](event);
+			stateHandlers[event.type]();
+			// Because we want to move the caret out of the way when the user
+			// starts to create an expanded selection by dragging.
 			if (!wasDragging && state.isDragging) {
 				hide(state.caret);
 			}
@@ -460,13 +446,21 @@ define([
 		state.focus = data.focus;
 		state.range = event.range = data.range;
 
-		var get = 'start' === state.focus ? Boundaries.start : Boundaries.end;
+		var boundary;
+		var container;
+		var caretStyle;
 
-		var container = 'start' === state.focus
-		              ? state.range.startContainer
-		              : state.range.endContainer;
+		if ('start' === state.focus) {
+			boundary = Boundaries.start(state.range);
+			container = state.range.startContainer;
+		} else {
+			boundary = Boundaries.end(state.range);
+			container = state.range.endContainer;
+		}
 
-		show(get(state.range), state.caret, computeOverrides(event, container));
+		caretStyle = stylesFromOverrides(overrides(event, container));
+
+		show(state.caret, boundary, caretStyle);
 
 		if ('keydown' === event.type && arrows[event.which]) {
 			event.native.preventDefault();
