@@ -297,31 +297,6 @@ define([
 		return step(event, range, focus, 'right');
 	};
 
-	/**
-	 * State of the user selection.
-	 * A necessary "evil."
-	 */
-	var state = {
-		caret       : create(),
-		range       : null,
-		focus       : 'end',
-		isDragging  : false,
-		isMouseDown : false
-	};
-
-	var stateHandlers = {
-		'mousedown': function mousedown() {
-			state.isDragging = false;
-			state.isMouseDown = true;
-		},
-		'mouseup': function mouseup() {
-			state.isDragging = state.isMouseDown = false;
-		},
-		'mousemove': function mousemove() {
-			state.isDragging = state.isMouseDown;
-		}
-	};
-
 	function keypress(event, range, focus) {
 		return {
 			range: range,
@@ -395,7 +370,50 @@ define([
 	};
 
 	/**
-	 * Renders caret element to show the user selection.
+	 * State of the user selection.
+	 * A necessary "evil."
+	 */
+	var state = {
+		caret            : create(),
+		range            : null,
+		focus            : 'end',
+		isDragging       : false,
+		isMouseDown      : false,
+		isDoubleClicking : false
+	};
+
+	var stateHandlers = {
+		'mousedown': function mousedown(state) {
+			state.time = new Date();
+			state.isDragging = false;
+			state.isMouseDown = true;
+		},
+		'mouseup': function mouseup(state) {
+			state.isDoubleClicking = state.isDragging = state.isMouseDown = false;
+		},
+		'mousemove': function mousemove(state) {
+			state.isDragging = state.isMouseDown;
+		}
+	};
+
+	/**
+	 * Given a previous and current range, an event name, and the time since the
+	 * last mousedown event, determines whether or not the user is in the
+	 * process of a double click.
+	 *
+	 * @param  {string} name     Name of the event type
+	 * @param  {Range}  range    Current range
+	 * @param  {Range}  previous Previous range
+	 * @param  {Date}   then     Time of last mousedown event
+	 * @return {boolean}
+	 */
+	function isDoubleClicking(name, range, previous, then) {
+		return ('mousedown' === name)
+		    && ((new Date() - then) < 500) && Ranges.equal(range, previous);
+	}
+
+	/**
+	 * Renders a caret element to show the user selection.
 	 *
 	 * @param  {Event} event
 	 * @return {Event}
@@ -406,10 +424,11 @@ define([
 		}
 
 		var range;
+		var type = event.type;
 
 		// Because we will never show the caret on mousemove, we avoid
 		// unncessary computation.
-		if ('mousemove' === event.type) {
+		if ('mousemove' === type) {
 			range = null;
 		} else {
 			// Because otherwise, if, in the process of a click, the user's
@@ -418,9 +437,16 @@ define([
 			hide(state.caret);
 			range = Ranges.fromEvent(event);
 			unhide(state.caret);
+
+			state.isDoubleClicking = state.isDoubleClicking
+				|| isDoubleClicking(type, range, state.range, state.time);
+
+			if (state.isDoubleClicking) {
+				type = 'dblclick';
+			}
 		}
 
-		var data = handlers[event.type](
+		var data = handlers[type](
 			event,
 			range,
 			state.focus,
@@ -431,7 +457,7 @@ define([
 		var wasDragging = state.isDragging;
 
 		if (stateHandlers[event.type]) {
-			stateHandlers[event.type]();
+			stateHandlers[event.type](state);
 			// Because we want to move the caret out of the way when the user
 			// starts to create an expanded selection by dragging.
 			if (!wasDragging && state.isDragging) {
