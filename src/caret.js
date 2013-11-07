@@ -115,7 +115,8 @@ define([
 	function stylesFromOverrides(overrides) {
 		var style = {};
 		style['padding'] = overrides['bold'] ? '1px' : '0px';
-		style[Browsers.VENDOR_PREFIX + 'transform'] = overrides['italic'] ? 'rotate(8deg)' : '';
+		style[Browsers.VENDOR_PREFIX + 'transform']
+			= overrides['italic'] ? 'rotate(8deg)' : '';
 		style['background'] = overrides['color'] || '';
 		return style;
 	}
@@ -246,10 +247,10 @@ define([
 	 * @return {Object}
 	 */
 	function step(event, range, focus, direction) {
-		var get, set, collapse;
 		var shift = isShiftDown(event);
-		var move = 'left' === direction ? left : right;
 		var clone = range.cloneRange();
+		var move = 'left' === direction ? left : right;
+		var get, set, collapse;
 
 		if (range.collapsed || !shift) {
 			focus = 'left' === direction ? 'start' : 'end';
@@ -370,8 +371,7 @@ define([
 	};
 
 	/**
-	 * State of the user selection.
-	 * A necessary "evil."
+	 * State of the user selection. A necessary "evil."
 	 */
 	var state = {
 		caret            : create(),
@@ -470,7 +470,8 @@ define([
 		}
 
 		state.focus = data.focus;
-		state.range = event.range = data.range;
+		state.range = data.range;
+		event.range = data.range;
 
 		var boundary;
 		var container;
@@ -488,7 +489,8 @@ define([
 
 		show(state.caret, boundary, caretStyle);
 
-		if ('keydown' === event.type && arrows[event.which]) {
+		if (('keydown' === event.type && arrows[event.which])
+		    || ('mousedown' === event.type && !event.range.collapsed)) {
 			event.native.preventDefault();
 		}
 
