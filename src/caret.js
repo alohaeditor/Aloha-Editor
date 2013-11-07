@@ -133,7 +133,7 @@ define([
 	 *         True if the boundary positions are reversed.
 	 */
 	function isReversed(sc, so, ec, eo) {
-		return (sc === ec && so > eo) || Dom.follows(ec, sc);
+		return (sc === ec && so > eo) || Dom.followedBy(ec, sc);
 	}
 
 	function isCtrlDown(event) {

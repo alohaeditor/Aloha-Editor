@@ -1661,7 +1661,7 @@ define([
 	exports['joinTextNode'] = exports.joinTextNode;
 	exports['splitBoundary'] = exports.splitBoundary;
 	exports['contains'] = exports.contains;
-	exports['follows'] = exports.follows;
+	exports['followedBy'] = exports.followedBy;
 	exports['setStyle'] = exports.setStyle;
 	exports['getStyle'] = exports.getStyle;
 	exports['getComputedStyle'] = exports.getComputedStyle;
