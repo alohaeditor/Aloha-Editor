@@ -69,45 +69,24 @@ define([
 		caret.style.display = 'block';
 		caret.style.background = color;
 		caret.style[Browsers.VENDOR_PREFIX + 'transform'] = rotation;
+		Dom.addClass(caret, 'blink');
 	}
 
 	/**
-	 * Renders the given caret according to the boundary and styles
-	 * it to reflect the given map of overrides.
+	 * Renders the given caret according to the boundary and styles it to
+	 * reflect the given map of overrides.
 	 *
+	 * @param {Boundary} boundary
 	 * @param {Elemen} caret
-	 * @param {Object} rect
 	 * @param {Object} overrides
 	 */
-	function renderBoundary(caret, boundary, overrides) {
+	function show(boundary, caret, overrides) {
 		var box = Ranges.box(Ranges.create(boundary[0], boundary[1]));
 		var doc = caret.ownerDocument;
 		box.top += window.pageYOffset - doc.body.clientTop;
 		box.left += window.pageXOffset - doc.body.clientLeft;
 		box.width = 2;
 		render(caret, box, overrides);
-	}
-
-	/**
-	 * Shows the given range by rendering cursors at the start and end boundary
-	 * of the range.
-	 *
-	 * @param {Range} range
-	 * @param {Element} start
-	 * @param {Element} end
-	 * @param {Object} startOverrides
-	 * @param {Object} endOverrides
-	 */
-	function show(range, start, end, startOverrides, endOverrides) {
-		renderBoundary(start, Boundaries.start(range), startOverrides);
-		renderBoundary(end, Boundaries.end(range), endOverrides);
-		if (range.collapsed) {
-			Dom.addClass(start, 'blink');
-			Dom.addClass(end, 'blink');
-		} else {
-			Dom.removeClass(start, 'blink');
-			Dom.removeClass(end, 'blink');
-		}
 	}
 
 	/**
@@ -127,24 +106,19 @@ define([
 	 * Calculates the override values at the given start and end boundaries.
 	 *
 	 * @param {Object} event
-	 * @param {String} focus
-	 *        Which of the carets is the blinking caret. May be "start" or
-	 *        "end".
+	 * @param {Element} node
 	 * @return {Array<Object>}
 	 *         An ordered list of the overrides at the start and end boundary.
 	 */
-	function computeOverrides(event, focus) {
-		var start = Overrides.map(Overrides.harvest(event.range.startContainer));
-		var end = Overrides.map(Overrides.harvest(event.range.endContainer));
+	function computeOverrides(event, node) {
+		var overrides = Overrides.map(Overrides.harvest(node));
 		if (event.editables) {
-			var overrides  = Overrides.map(event.editable.overrides);
-			if ('start' === focus) {
-				start = Maps.merge(start, overrides);
-			} else {
-				end = Maps.merge(end, overrides);
-			}
+			overrides = Maps.merge(
+				overrides,
+				Overrides.map(event.editable.overrides)
+			);
 		}
-		return [start, end];
+		return overrides;
 	}
 
 	/**
@@ -417,8 +391,7 @@ define([
 
 	// State of the user selection
 	var state = {
-		start         : create(),
-		end           : create(),
+		caret         : create(),
 		range         : null,
 		focus         : 'end',
 		isDragging    : false,
@@ -441,14 +414,12 @@ define([
 	function calculateRange(event) {
 		var range;
 		if ('mousedown' === event.type || 'mouseup' === event.type) {
-			hide(state.start);
-			hide(state.end);
+			hide(state.caret);
 			range = Ranges.createFromPoint(
 				event.native.clientX,
 				event.native.clientY
 			);
-			unhide(state.start);
-			unhide(state.end);
+			unhide(state.caret);
 		} else {
 			range = event.range || Ranges.get();
 		}
@@ -456,7 +427,7 @@ define([
 	}
 
 	/**
-	 * Renders caret elements to show the user selection.
+	 * Renders caret element to show the user selection.
 	 *
 	 * @param {Event} event
 	 * @return {Event}
@@ -478,8 +449,7 @@ define([
 		if (stateHandlers[event.type]) {
 			stateHandlers[event.type](event);
 			if (!wasDragging && state.isDragging) {
-				hide(state.start);
-				hide(state.end);
+				hide(state.caret);
 			}
 		}
 
@@ -490,8 +460,13 @@ define([
 		state.focus = data.focus;
 		state.range = event.range = data.range;
 
-		var overrides = computeOverrides(event, state.focus);
-		show(state.range, state.start, state.end, overrides[0], overrides[1]);
+		var get = 'start' === state.focus ? Boundaries.start : Boundaries.end;
+
+		var container = 'start' === state.focus
+		              ? state.range.startContainer
+		              : state.range.endContainer;
+
+		show(get(state.range), state.caret, computeOverrides(event, container));
 
 		if ('keydown' === event.type && arrows[event.which]) {
 			event.native.preventDefault();
