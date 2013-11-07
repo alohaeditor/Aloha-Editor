@@ -468,7 +468,11 @@ define([
 			return true;
 		}
 
-		if (0 === Dom.nodeLength(node)) {
+		if (LIST_CONTAINERS[node.nodeName]) {
+			return true;
+		}
+
+		if (!Predicates.isVoidNode(node) && 0 === Dom.nodeLength(node)) {
 			return true;
 		}
 
@@ -1188,9 +1192,9 @@ define([
 
 			if (!crossedVisualBreak) {
 				//
-				//   .------- node ------.
-				//   |         |         |
-				//   v         v         v
+				//   .------- node -------.
+				//   |         |          |
+				//   v         v          v
 				// |<br>  or |<p>  or |</h1>
 				//  <br>| or  <p>| or  </h1>|
 				crossedVisualBreak = hasLinebreakingStyle(node);
@@ -1206,7 +1210,7 @@ define([
 
 			// Because traversing over start and end tags has no visual
 			// significance
-			return !Dom.isTextNode(node) && isRendered(node);
+			return (!Dom.isTextNode(node) && !Predicates.isVoidNode(node)) || isUnrendered(node);
 		});
 
 		//  <host>| or |</host>

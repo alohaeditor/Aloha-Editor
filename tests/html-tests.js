@@ -160,6 +160,7 @@
 		t('<b> foo  [bar]</b>', '<b> foo [ bar]</b>');
 
 		t('<p>foo{}<br></p>', '<p>fo[o}<br></p>');
+
 		t('<p>foo<br>{}</p>', '<p>foo{<br>}</p>');
 
 		t('<div><p>foo</p>[bar]</div>', '<div><p>foo{</p>bar]</div>');
@@ -177,6 +178,8 @@
 
 		t('<div>foo<ul><li>bar</li></ul>{}baz</div>',
 		  '<div>foo<ul><li>bar{</li></ul>}baz</div>');
+
+		t('<div>a<ul><li>{}</li></ul></div>', '<div>a{<ul><li>}</li></ul></div>');
 
 		t('<p><br>[]foo</p>', '<p>{<br>]foo</p>');
 		t('<p>foo<br>[]bar</p>', '<p>foo{<br>]bar</p>');
