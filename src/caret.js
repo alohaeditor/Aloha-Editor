@@ -438,8 +438,8 @@ define([
 			range = Ranges.fromEvent(event);
 			unhide(state.caret);
 
-			state.isDoubleClicking = state.isDoubleClicking
-				|| isDoubleClicking(type, range, state.range, state.time);
+			state.isDoubleClicking = (range && state.isDoubleClicking)
+					|| isDoubleClicking(type, range, state.range, state.time);
 
 			if (state.isDoubleClicking) {
 				type = 'dblclick';
@@ -471,7 +471,6 @@ define([
 
 		state.focus = selection.focus;
 		state.range = selection.range;
-		event.range = selection.range;
 
 		var boundary;
 		var container;
@@ -489,8 +488,11 @@ define([
 
 		show(state.caret, boundary, caretStyle);
 
-		if (('keydown' === event.type && movements[event.which])
-		    || ('mousedown' === event.type && !event.range.collapsed)) {
+		if ('mousedown' !== event.type || state.range.collapsed) {
+			event.range = selection.range;
+		}
+
+		if ('keydown' === event.type && movements[event.which]) {
 			event.native.preventDefault();
 		}
 
