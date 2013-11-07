@@ -110,13 +110,13 @@ define([
 	 *
 	 * @param  {Object} overrides
 	 * @return {Object}
-	 *         A map of style properties and their values
+	 *         A map of style properties and their values.
 	 */
 	function stylesFromOverrides(overrides) {
 		var style = {};
 		style['padding'] = overrides['bold'] ? '1px' : '0px';
 		style[Browsers.VENDOR_PREFIX + 'transform']
-			= overrides['italic'] ? 'rotate(8deg)' : '';
+				= overrides['italic'] ? 'rotate(8deg)' : '';
 		style['background'] = overrides['color'] || '';
 		return style;
 	}
@@ -280,21 +280,21 @@ define([
 		};
 	}
 
-	var arrows = {};
+	var movements = {};
 
-	arrows[Keys.CODES.up] = function climbUp(event, range, focus) {
+	movements[Keys.CODES.up] = function climbUp(event, range, focus) {
 		return climb(event, range, focus, 'up');
 	};
 
-	arrows[Keys.CODES.down] = function climbDown(event, range, focus) {
+	movements[Keys.CODES.down] = function climbDown(event, range, focus) {
 		return climb(event, range, focus, 'down');
 	};
 
-	arrows[Keys.CODES.left] = function stepLeft(event, range, focus) {
+	movements[Keys.CODES.left] = function stepLeft(event, range, focus) {
 		return step(event, range, focus, 'left');
 	};
 
-	arrows[Keys.CODES.right] = function stepRight(event, range, focus) {
+	movements[Keys.CODES.right] = function stepRight(event, range, focus) {
 		return step(event, range, focus, 'right');
 	};
 
@@ -306,7 +306,7 @@ define([
 	}
 
 	function keydown(event, range, focus) {
-		return (arrows[event.which] || keypress)(event, range, focus);
+		return (movements[event.which] || keypress)(event, range, focus);
 	}
 
 	function dblclick(event, range) {
@@ -397,8 +397,8 @@ define([
 	};
 
 	/**
-	 * Given a previous and current range, an event name, and the time since the
-	 * last mousedown event, determines whether or not the user is in the
+	 * Given a previous and current range, an event name, and the time since
+	 * the last mousedown event, determines whether or not the user is in the
 	 * process of a double click.
 	 *
 	 * @param  {string} name     Name of the event type
@@ -446,7 +446,7 @@ define([
 			}
 		}
 
-		var data = handlers[type](
+		var selection = handlers[type](
 			event,
 			range,
 			state.focus,
@@ -465,13 +465,13 @@ define([
 			}
 		}
 
-		if (!data || !data.range) {
+		if (!selection || !selection.range) {
 			return event;
 		}
 
-		state.focus = data.focus;
-		state.range = data.range;
-		event.range = data.range;
+		state.focus = selection.focus;
+		state.range = selection.range;
+		event.range = selection.range;
 
 		var boundary;
 		var container;
@@ -489,7 +489,7 @@ define([
 
 		show(state.caret, boundary, caretStyle);
 
-		if (('keydown' === event.type && arrows[event.which])
+		if (('keydown' === event.type && movements[event.which])
 		    || ('mousedown' === event.type && !event.range.collapsed)) {
 			event.native.preventDefault();
 		}
