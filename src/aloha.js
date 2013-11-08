@@ -164,6 +164,7 @@ define([
 	aloha['traversing'] = Traversing;
 	aloha['xhtml'] = Xhtml;
 	aloha['undo'] = Undo;
+	aloha['editables'] = Editables;
 
 	window['aloha'] = aloha;
 

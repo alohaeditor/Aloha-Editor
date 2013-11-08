@@ -6,6 +6,8 @@
 	var Dom = aloha.dom;
 	var Editing = aloha.editing;
 	var Ranges = aloha.ranges;
+	var Typing = aloha.typing;
+	var Editables = aloha.editables;
 
 	module('undo');
 
@@ -322,6 +324,27 @@
 			dolor.replaceData(0, dolor.data.length, posseLorem.data + dolor.data);
 			// 38
 			b4.removeChild(posseLorem);
+		});
+		var changeSet = Undo.changeSetFromFrame(context, capturedFrame);
+		var undoChangeSet = Undo.inverseChangeSet(changeSet);
+		Undo.applyChangeSet(editable, undoChangeSet);
+		equal(editable.innerHTML, controlEditable.innerHTML);
+	});
+
+	test('element is deleted from observed editable,'
+	     + 'appended to a non-observed element,'
+	     + 'and re-inserted with the non-observed element and removed again.', function () {
+		var editable = $('#test-editable')[0];
+		$(editable).html('<i></i>');
+		var controlEditable = Dom.clone(editable);
+		var context = Undo.Context(editable);
+		var capturedFrame = Undo.capture(context, {meta: true}, function () {
+			var i = editable.firstChild;
+			var b = document.createElement('B');
+			editable.removeChild(i);
+			b.appendChild(i);
+			editable.appendChild(b);
+			b.removeChild(i);
 		});
 		var changeSet = Undo.changeSetFromFrame(context, capturedFrame);
 		var undoChangeSet = Undo.inverseChangeSet(changeSet);

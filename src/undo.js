@@ -644,18 +644,20 @@ define([
 					return;
 				}
 				var id = Dom.ensureExpandoId(record.node);
-				var recordsByType = index[id] || {};
-				Assert.assertFalse(!!recordsByType[type]);
-				recordsByType[type] = record;
-				index[id] = recordsByType;
+				// NB The same node may have one insert and one or more
+				// deletes. It may have more than one delete because it
+				// may have been inserted in a not-observed element, and
+				// then removed again from it after the not-observed
+				// element was inserted itself.
+				var containerRecords = index[id] || [];
+				containerRecords.push(record);
+				index[id] = containerRecords;
 			});
 		});
 		var containerId = Dom.ensureExpandoId(container);
 		Assert.assertFalse(!!index[containerId]);
 		var containerInsert = makeInsert(container);
-		var recordsByType = {};
-		recordsByType[INSERT] = containerInsert
-		index[containerId] = recordsByType;
+		index[containerId] = [containerInsert];
 		recs.forEach(function (record) {
 			var target = ((DELETE & record.type)
 			              ? record.target
@@ -666,8 +668,8 @@ define([
 			if (!ancestor) {
 				return;
 			}
-			var recordsByType = index[Dom.ensureExpandoId(ancestor)];
-			Maps.forEach(recordsByType, function (containerRecord) {
+			var containerRecords = index[Dom.ensureExpandoId(ancestor)];
+			containerRecords.forEach(function (containerRecord) {
 				containerRecord.contained.push(record);
 			});
 		});
