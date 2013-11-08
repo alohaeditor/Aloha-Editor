@@ -3,6 +3,12 @@
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
+ *
+ * @TODO: triple click
+ *        better climbing
+ *        edge cases
+ *        <br>|<br> in chrome
+ *        ie support
  */
 define([
 	'functions',
@@ -145,7 +151,7 @@ define([
 	 * @param  {Object} event
 	 * @return {boolean}
 	 */
-	function isCtrlDown(event) {
+	function isHoldingCtrl(event) {
 		return event.meta.indexOf('ctrl') > -1;
 	}
 
@@ -155,7 +161,7 @@ define([
 	 * @param  {Object} event
 	 * @return {boolean}
 	 */
-	function isShiftDown(event) {
+	function isHoldingShift(event) {
 		return event.meta.indexOf('shift') > -1;
 	}
 
@@ -270,7 +276,7 @@ define([
 			return;
 		}
 
-		if (!isShiftDown(event)) {
+		if (!isHoldingShift(event)) {
 			return {
 				range: next,
 				focus: focus
@@ -291,7 +297,7 @@ define([
 	 * @return {Object}
 	 */
 	function step(event, range, focus, direction) {
-		var shift = isShiftDown(event);
+		var shift = isHoldingShift(event);
 		var clone = range.cloneRange();
 		var move = 'left' === direction ? left : right;
 		var get, set, collapse;
@@ -311,7 +317,7 @@ define([
 		}
 
 		if (range.collapsed || shift) {
-			set(clone, move(get(range), isCtrlDown(event) ? 'word' : 'char'));
+			set(clone, move(get(range), isHoldingCtrl(event) ? 'word' : 'char'));
 		}
 
 		if (!shift) {
@@ -408,7 +414,7 @@ define([
 	/**
 	 * Event handlers.
 	 *
-	 * @type {Object<string, Function>}
+	 * @type {Object.<string, Function>}
 	 */
 	var handlers = {
 		'keydown'   : keydown,
@@ -538,12 +544,10 @@ define([
 			event,
 			old.focus,
 			old.range,
-			old.dragging || isShiftDown(event),
+			old.dragging || isHoldingShift(event),
 			old.doubleclicking,
 			old.time
 		));
-
-		unhide(state.caret);
 
 		var boundary, container;
 		var range = state.range;
@@ -562,9 +566,19 @@ define([
 			stylesFromOverrides(overrides(event, container))
 		);
 
-		if ('mousedown' !== event.type || range.collapsed) {
-			event.range = range;
+		// Because browsers have a non-intuitive way of handling expanding of
+		// selections when holding down the shift key.  We therefore "trick" the
+		// browser by setting the selection to a range which will cause the the
+		// expansion to be done in the way that the user expects.
+		if ('mousedown' === event.type && isHoldingShift(event)) {
+			if ('start' === state.focus) {
+				range = Ranges.collapseToEnd(range);
+			} else {
+				range = Ranges.collapseToStart(range);
+			}
 		}
+
+		event.range = range;
 
 		if ('keydown' === event.type && movements[event.which]) {
 			event.native.preventDefault();
