@@ -8,13 +8,7 @@
  * http://www.whatwg.org/specs/web-apps/current-work/#dnd
  * https://developer.mozilla.org/en-US/docs/Drag_and_drop_events
  */
-define([
-	'ranges',
-	'caret'
-], function DragDrop(
-	Ranges,
-	Carets
-) {
+define(['ranges'], function DragDrop(Ranges) {
 	'use strict';
 
 	var DATA_TYPES = {
@@ -43,7 +37,7 @@ define([
 	function mousemove(event) {
 		var range = rangeFromEvent(event.native);
 		if (range) {
-			var box = Carets.getBox(range);
+			var box = Ranges.box(range);
 			console.clear();
 			console.warn(aloha.boundarymarkers.hint(range));
 		}

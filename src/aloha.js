@@ -14,7 +14,7 @@ define([
 	'boundaries',
 	'boundary-markers',
 	'browser',
-	'caret',
+	'selections',
 	'content',
 	'colors',
 	'cursors',
@@ -45,7 +45,7 @@ define([
 	Boundaries,
 	Boundarymarkers,
 	Browser,
-	Carets,
+	Selections,
 	Content,
 	Colors,
 	Cursors,
@@ -89,7 +89,7 @@ define([
 			DragDrop.handle,
 			Blocks.handle,
 			Typing.handle,
-			Carets.handle,
+			Selections.handle,
 			setSelection
 		);
 	}
@@ -140,7 +140,7 @@ define([
 	aloha['boundaries'] = Boundaries;
 	aloha['boundarymarkers'] = Boundarymarkers;
 	aloha['browser'] = Browser;
-	aloha['carets'] = Carets;
+	aloha['selections'] = Selections;
 	aloha['content'] = Content;
 	aloha['colors'] = Colors;
 	aloha['cursors'] = Cursors;
