@@ -30,7 +30,6 @@ define([
 	'maps',
 	'mouse',
 	'overrides',
-	'pubsub',
 	'keys',
 	'ranges',
 	'stable-range',
@@ -61,7 +60,6 @@ define([
 	Maps,
 	Mouse,
 	Overrides,
-	Pubsub,
 	Keys,
 	Ranges,
 	StableRange,
@@ -157,7 +155,6 @@ define([
 	aloha['mouse'] = Mouse;
 	aloha['maps'] = Maps;
 	aloha['overrides'] = Overrides;
-	aloha['pubsub'] = Pubsub;
 	aloha['ranges'] = Ranges;
 	aloha['stablerange'] = StableRange;
 	aloha['strings'] = Strings;

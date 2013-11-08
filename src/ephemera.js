@@ -21,15 +21,13 @@ define([
 	'dom',
 	'misc',
 	'browser'
-	//'pubsub'
 ], function Ephemera(
 	strings,
 	arrays,
 	maps,
 	dom,
 	misc,
-	browser,
-	pubsub
+	browser
 ) {
 	'use strict';
 
@@ -100,7 +98,7 @@ define([
 		maps.fillKeys(ephemeraMap.classMap, clss, true);
 		checkCommonSubstr(clss);
 		/*
-		pubSub.pub('aloha.ephemera.classes', {
+		Pubsub.pub('aloha.ephemera.classes', {
 			ephemera: ephemeraMap,
 			newClasses: clss
 		});
@@ -117,7 +115,7 @@ define([
 		var attrs = Array.prototype.slice.call(arguments);
 		maps.fillKeys(ephemeraMap.attrMap, attrs, true);
 		/*
-		pubSub.pub('aloha.ephemera.attributes', {
+		Pubsub.pub('aloha.ephemera.attributes', {
 			ephemera: ephemeraMap,
 			newAttributes: attrs
 		});
@@ -175,7 +173,7 @@ define([
 		if (emap) {
 			ephemeraMap = emap;
 			/*
-			pubSub.pub('aloha.ephemera', {
+			Pubsub.pub('aloha.ephemera', {
 				ephemera: ephemeraMap
 			});
 			*/
