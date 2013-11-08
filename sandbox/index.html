@@ -115,7 +115,8 @@
 						h1.innerHTML = h1.innerHTML + ': <span style="color:#df215a">' + version + '</span>';
 					}
 				}
-				function main(Editing, Ranges, Arrays, StableRange) {
+				function main(Editing, Ranges, Arrays, StableRange,
+				              BoundaryMarkers) {
 					Arrays.coerce(document.querySelectorAll('.aloha-editable')).forEach(aloha);
 					var range = Ranges.expandToWord(Ranges.create(
 						document.querySelector('b'), 1,
@@ -126,13 +127,15 @@
 					Ranges.insertTextBehind(StableRange(range), '"');
 					Ranges.collapseToEnd(range)
 					Ranges.insertTextBehind(range, '"');
+					window.bx = BoundaryMarkers.hint;
 				}
 				function load(aloha) {
 					main(
 						aloha.editing,
 						aloha.ranges,
 						aloha.arrays,
-						aloha.stablerange
+						aloha.stablerange,
+						aloha.boundarymarkers
 					);
 				}
 				if ('undefined' === typeof aloha) {

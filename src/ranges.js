@@ -9,6 +9,7 @@
  */
 define([
 	'dom',
+	'arrays',
 	'stable-range',
 	'html',
 	'traversing',
@@ -17,6 +18,7 @@ define([
 	'boundaries'
 ], function Ranges(
 	Dom,
+	Arrays,
 	StableRange,
 	Html,
 	Traversing,
@@ -345,6 +347,17 @@ define([
 		var ahead = Traversing.findWordBoundaryAhead(Boundaries.end(range));
 		setFromBoundaries(range, behind, ahead);
 		return range;
+	}
+
+	function expandToBlock(range) {
+		var start = range.commonAncestorContainer;
+		var ancestors = Traversing.childAndParentsUntilIncl(start , function (node) {
+			return Html.hasLinebreakingStyle(node) || Dom.isEditingHost(node);
+		});
+		var node = Arrays.last(ancestors);
+		var len = Dom.nodeLength(node);
+		var end = Html.nextVisualBoundary([node, len]);
+		return create(node, 0, end[0], end[1]);
 	}
 
 	/**
@@ -757,6 +770,7 @@ define([
 		contract: contract,
 		expandBoundaries: expandBoundaries,
 		expandToWord: expandToWord,
+		expandToBlock: expandToBlock,
 		expandToVisibleCharacter: expandToVisibleCharacter,
 		get: get,
 		insertTextBehind: insertTextBehind,

@@ -6,7 +6,6 @@
  *
  * @TODO: triple click
  *        better climbing
- *        edge cases
  *        <br>|<br> in chrome
  *        ie support
  */
@@ -22,7 +21,7 @@ define([
 	'overrides',
 	'boundaries',
 	'traversing'
-], function Carets(
+], function Selection(
 	Fn,
 	Dom,
 	Misc,
@@ -217,28 +216,25 @@ define([
 		return Traversing.findWordBoundaryAhead(boundary);
 	}
 
-	function calculateExpandedRange(current, previous, focus) {
+	function mergeRanges(a, b, focus) {
 		var sc, so, ec, eo;
-
 		if ('start' === focus) {
-			sc = current.startContainer;
-			so = current.startOffset;
-			ec = previous.endContainer;
-			eo = previous.endOffset;
+			sc = a.startContainer;
+			so = a.startOffset;
+			ec = b.endContainer;
+			eo = b.endOffset;
 		} else {
-			sc = previous.startContainer;
-			so = previous.startOffset;
-			ec = current.endContainer;
-			eo = current.endOffset;
+			sc = b.startContainer;
+			so = b.startOffset;
+			ec = a.endContainer;
+			eo = a.endOffset;
 		}
-
 		if (isReversed(sc, so, ec, eo)) {
 			return {
 				range: Ranges.create(ec, eo, sc, so),
 				focus: 'start' === focus ? 'end' : 'start'
 			};
 		}
-
 		return {
 			range: Ranges.create(sc, so, ec, eo),
 			focus: focus
@@ -283,7 +279,7 @@ define([
 			};
 		}
 
-		return calculateExpandedRange(next, range, focus);
+		return mergeRanges(next, range, focus);
 	}
 
 	/**
@@ -359,7 +355,7 @@ define([
 		return (movements[event.which] || keypress)(event, range, focus);
 	}
 
-	function dblclick(event, range) {
+	function dblclick(event, range, focus, previous, expanding) {
 		return {
 			range: Ranges.expandToWord(range),
 			focus: 'end'
@@ -373,7 +369,7 @@ define([
 				focus: focus
 			};
 		}
-		return calculateExpandedRange(range, previous, focus);
+		return mergeRanges(range, previous, focus);
 	}
 
 	function mousedown(event, range, focus, previous, expanding) {
@@ -436,35 +432,47 @@ define([
 		focus          : 'end',
 		dragging       : false,
 		mousedown      : false,
-		doubleclicking : false
+		doubleclicking : false,
+		tripleclicking : false
 	};
+
+	function normalizeEventType(event, range, focus, previous, then,
+	                            doubleclicking, tripleclicking) {
+		if (doubleclicking) {
+			// check for triple
+		} else {
+			var multiclicking = range
+			                 && previous
+			                 && ((new Date() - then) < 500)
+			                 && 'mousedown' === event.type;
+
+			if (multiclicking) {
+				var ref = 'start' === focus
+				        ? Ranges.collapseToStart(previous.cloneRange())
+				        : Ranges.collapseToEnd(previous.cloneRange());
+				doubleclicking = Ranges.equal(range, ref);
+			}
+		}
+		return tripleclicking ? 'tplclick' : doubleclicking ? 'dblclick' : event.type;
+	}
 
 	/**
 	 * Processes an event in relation to how it affects the selection.
 	 *
 	 * @param  {Object}  event
+	 * @param  {string}  type      Normalized event type
+	 * @param  {Range}   range
 	 * @param  {string}  focus
 	 * @param  {Range}   previous
-	 * @param  {boolean} extending
-	 * @param  {boolean} doubleclicking
-	 * @param  {number}  then
+	 * @param  {boolean} expanding
 	 * @retrun {Object}
 	 */
-	function process(event, focus, previous, extending, doubleclicking, then) {
-		var range = Ranges.fromEvent(event);
-
-		doubleclicking = (doubleclicking && !extending)
-		              || ((range && previous && 'mousedown' === event.type)
-		                   && ((new Date() - then) < 500)
-		                   && Ranges.equal(range, previous));
-
-		var type = doubleclicking ? 'dblclick' : event.type;
-		var change = handlers[type](event, range, focus, previous, extending);
-
+	function process(event, type, range, focus, previous, expanding) {
+		var change = handlers[type](event, range, focus, previous, expanding);
 		if (change) {
-			change.doubleclicking = doubleclicking;
+			change.doubleclicking = 'dblclick' === type;
+			change.tripleclicking = 'tplclick' === type;
 		}
-
 		return change;
 	}
 
@@ -494,7 +502,6 @@ define([
 			state.dragging = state.mousedown;
 			break;
 		}
-
 		if (change && change.range) {
 			state.focus = change.focus;
 			state.range = change.range;
@@ -535,18 +542,34 @@ define([
 		// inside the absolutely positioned caret element.
 		hide(old.caret);
 
-		state = newState(event, old, process(
+		var range = Ranges.fromEvent(event);
+
+		var type = normalizeEventType(
 			event,
+			range,
 			old.focus,
 			old.range,
-			old.dragging || isHoldingShift(event),
+			old.time,
 			old.doubleclicking,
-			old.time
-		));
+			old.tripleclicking
+		);
+
+		state = newState(
+			event,
+			old,
+			process(
+				event,
+				type,
+				range,
+				old.focus,
+				old.range,
+				old.dragging || isHoldingShift(event)
+			)
+		);
+
+		range = state.range;
 
 		var boundary, container;
-		var range = state.range;
-
 		if ('start' === state.focus) {
 			boundary = Boundaries.start(range);
 			container = range.startContainer;
@@ -561,11 +584,18 @@ define([
 			stylesFromOverrides(overrides(event, container))
 		);
 
+		var preventDefault = ('keydown' === type && movements[event.which])
+		                  || ('aloha-caret' === event.native.target.className);
+
+		if (preventDefault) {
+			event.native.preventDefault();
+		}
+
 		// Because browsers have a non-intuitive way of handling expanding of
-		// selections when holding down the shift key.  We therefore "trick" the
-		// browser by setting the selection to a range which will cause the the
-		// expansion to be done in the way that the user expects.
-		if ('mousedown' === event.type && isHoldingShift(event)) {
+		// selections when holding down the shift key.  We therefore "trick"
+		// the browser by setting the selection to a range which will cause the
+		// the expansion to be done in the way that the user expects.
+		if (!preventDefault && 'mousedown' === type && isHoldingShift(event)) {
 			if ('start' === state.focus) {
 				range = Ranges.collapseToEnd(range);
 			} else {
@@ -574,10 +604,6 @@ define([
 		}
 
 		event.range = range;
-
-		if ('keydown' === event.type && movements[event.which]) {
-			event.native.preventDefault();
-		}
 
 		return event;
 	}
