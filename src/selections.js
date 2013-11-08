@@ -453,18 +453,13 @@ define([
 	function process(event, focus, previous, extending, doubleclicking, then) {
 		var range = Ranges.fromEvent(event);
 
-		doubleclicking = doubleclicking
+		doubleclicking = (doubleclicking && !extending)
 		              || ((range && previous && 'mousedown' === event.type)
 		                   && ((new Date() - then) < 500)
 		                   && Ranges.equal(range, previous));
 
-		var change = handlers[doubleclicking ? 'dblclick' : event.type](
-			event,
-			range,
-			focus,
-			previous,
-			extending
-		);
+		var type = doubleclicking ? 'dblclick' : event.type;
+		var change = handlers[type](event, range, focus, previous, extending);
 
 		if (change) {
 			change.doubleclicking = doubleclicking;
