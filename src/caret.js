@@ -7,6 +7,7 @@
 define([
 	'functions',
 	'dom',
+	'misc',
 	'html',
 	'keys',
 	'maps',
@@ -18,6 +19,7 @@ define([
 ], function Carets(
 	Fn,
 	Dom,
+	Misc,
 	Html,
 	Keys,
 	Maps,
@@ -44,7 +46,7 @@ define([
 
 	/**
 	 * Renders the given element at the specified boundary to represent the
-	 * caret position. Will also style caret if `opt_style` is provided.
+	 * caret position. Will also style the caret if `opt_style` is provided.
 	 *
 	 * @param {Element}  caret
 	 * @param {Boundary} boundary
@@ -70,7 +72,7 @@ define([
 	}
 
 	/**
-	 * Hides the given given element.
+	 * Hides the given element.
 	 *
 	 * @param {Element} elem
 	 */
@@ -137,22 +139,56 @@ define([
 		return (sc === ec && so > eo) || Dom.followedBy(ec, sc);
 	}
 
+	/**
+	 * Given an event object, checks whether the ctrl key is depressed.
+	 *
+	 * @param  {Object} event
+	 * @return {boolean}
+	 */
 	function isCtrlDown(event) {
 		return event.meta.indexOf('ctrl') > -1;
 	}
 
+	/**
+	 * Given an event object, checks whether the shift key is depressed.
+	 *
+	 * @param  {Object} event
+	 * @return {boolean}
+	 */
 	function isShiftDown(event) {
 		return event.meta.indexOf('shift') > -1;
 	}
 
+	/**
+	 * Creates a range that is `stride` pixels above the given offset bounds.
+	 *
+	 * @param  {Object} box
+	 * @param  {number} stride
+	 * @return {Range}
+	 */
 	function up(box, stride) {
 		return Ranges.createFromPoint(box.left, box.top - stride);
 	}
 
+	/**
+	 * Creates a range that is `stride` pixels below the given offset bounds.
+	 *
+	 * @param  {Object} box
+	 * @param  {number} stride
+	 * @return {Range}
+	 */
 	function down(box, stride) {
 		return Ranges.createFromPoint(box.left, box.top + box.height + stride);
 	}
 
+	/**
+	 * Returns the next visual character or word boundary to the left of
+	 * `boundary`.
+	 *
+	 * @param  {Boundary} boundary
+	 * @param  {string}   stride   "char" or "word"
+	 * @return {Boundary}
+	 */
 	function left(boundary, stride) {
 		if ('char' === stride) {
 			return Html.previousVisualBoundary(boundary);
@@ -160,6 +196,14 @@ define([
 		return Traversing.findWordBoundaryBehind(boundary);
 	}
 
+	/**
+	 * Returns the next visual character or word boundary to the right of
+	 * `boundary`.
+	 *
+	 * @param  {Boundary} boundary
+	 * @param  {string}   stride   "char" or "word"
+	 * @return {Boundary}
+	 */
 	function right(boundary, stride) {
 		if ('char' === stride) {
 			return Html.nextVisualBoundary(boundary);
@@ -199,7 +243,7 @@ define([
 	 * Determines the closest visual caret position above or below the given
 	 * range.
 	 *
-	 * @param  {Event}  event
+	 * @param  {Object} event
 	 * @param  {Range}  range
 	 * @param  {string} focus
 	 * @param  {string} direction "up" or "down"
@@ -240,7 +284,7 @@ define([
 	 * Determines the next visual caret position before or after the given
 	 * range.
 	 *
-	 * @param  {Event}  event
+	 * @param  {Object} event
 	 * @param  {Range}  range
 	 * @param  {string} focus
 	 * @param  {string} direction "left" or "right"
@@ -361,6 +405,11 @@ define([
 		};
 	}
 
+	/**
+	 * Event handlers.
+	 *
+	 * @type {Object<string, Function>}
+	 */
 	var handlers = {
 		'keydown'   : keydown,
 		'keypress'  : keypress,
@@ -371,125 +420,150 @@ define([
 	};
 
 	/**
-	 * State of the user selection. A necessary "evil."
+	 * State of the user selection.
+	 *
+	 * @type {Object}
 	 */
 	var state = {
-		caret            : create(),
-		range            : null,
-		focus            : 'end',
-		isDragging       : false,
-		isMouseDown      : false,
-		isDoubleClicking : false
-	};
-
-	var stateHandlers = {
-		'mousedown': function mousedown(state) {
-			state.time = new Date();
-			state.isDragging = false;
-			state.isMouseDown = true;
-		},
-		'mouseup': function mouseup(state) {
-			state.isDoubleClicking = state.isDragging = state.isMouseDown = false;
-		},
-		'mousemove': function mousemove(state) {
-			state.isDragging = state.isMouseDown;
-		}
+		caret          : create(),
+		range          : null,
+		focus          : 'end',
+		dragging       : false,
+		mousedown      : false,
+		doubleclicking : false
 	};
 
 	/**
-	 * Given a previous and current range, an event name, and the time since
-	 * the last mousedown event, determines whether or not the user is in the
-	 * process of a double click.
+	 * Processes an event in relation to how it affects the selection.
 	 *
-	 * @param  {string} name     Name of the event type
-	 * @param  {Range}  range    Current range
-	 * @param  {Range}  previous Previous range
-	 * @param  {Date}   then     Time of last mousedown event
-	 * @return {boolean}
+	 * @param  {Object}  event
+	 * @param  {string}  focus
+	 * @param  {Range}   previous
+	 * @param  {boolean} extending
+	 * @param  {boolean} doubleclicking
+	 * @param  {number}  then
+	 * @retrun {Object}
 	 */
-	function isDoubleClicking(name, range, previous, then) {
-		return ('mousedown' === name && range && previous)
-		    && ((new Date() - then) < 500) && Ranges.equal(range, previous);
+	function process(event, focus, previous, extending, doubleclicking, then) {
+		var range = Ranges.fromEvent(event);
+
+		doubleclicking = doubleclicking
+		              || ((range && previous && 'mousedown' === event.type)
+		                   && ((new Date() - then) < 500)
+		                   && Ranges.equal(range, previous));
+
+		var change = handlers[doubleclicking ? 'dblclick' : event.type](
+			event,
+			range,
+			focus,
+			previous,
+			extending
+		);
+
+		if (change) {
+			change.doubleclicking = doubleclicking;
+		}
+
+		return change;
+	}
+
+	/**
+	 * Returns a new state as a function of the given event, the previous, state
+	 * and the changes.
+	 *
+	 * @param  {Object} event
+	 * @param  {Object} old
+	 * @param  {Object} change
+	 * @return {Object}
+	 */
+	function newState(event, old, change) {
+		var state = Misc.copy(old);
+
+		switch (event.type) {
+		case 'mousedown':
+			state.time = new Date();
+			state.dragging = false;
+			state.mousedown = true;
+			state.doubleclicking = change.doubleclicking;
+			break;
+		case 'mouseup':
+			state.doubleclicking = state.dragging = state.mousedown = false;
+			break;
+		case 'mousemove':
+			state.dragging = state.mousedown;
+			break;
+		}
+
+		if (change && change.range) {
+			state.focus = change.focus;
+			state.range = change.range;
+		}
+
+		return state;
 	}
 
 	/**
 	 * Renders a caret element to show the user selection.
 	 *
-	 * @param  {Event} event
-	 * @return {Event}
+	 * @param  {Object} event
+	 * @return {Object}
 	 */
 	function handle(event) {
 		if (!handlers[event.type]) {
 			return event;
 		}
 
-		var range;
-		var type = event.type;
+		var old = state;
 
-		// Because we will never show the caret on mousemove, we avoid
-		// unncessary computation.
-		if ('mousemove' === type) {
-			range = null;
-		} else {
-			// Because otherwise, if, in the process of a click, the user's
-			// cursor is over the caret, Ranges.fromEvent() will compute the
-			// range to be inside the absolutely positioned caret element.
-			hide(state.caret);
-			range = Ranges.fromEvent(event);
-			unhide(state.caret);
+		// Because we will never update the caret position on mousemove, we
+		// avoid unncessary computation.
+		if ('mousemove' === event.type) {
+			state = newState(event, old);
 
-			state.isDoubleClicking = state.isDoubleClicking
-					|| isDoubleClicking(type, range, state.range, state.time);
-
-			if (state.isDoubleClicking) {
-				type = 'dblclick';
-			}
-		}
-
-		var selection = handlers[type](
-			event,
-			range,
-			state.focus,
-			state.range,
-			state.isDragging || isShiftDown(event)
-		);
-
-		var wasDragging = state.isDragging;
-
-		if (stateHandlers[event.type]) {
-			stateHandlers[event.type](state);
 			// Because we want to move the caret out of the way when the user
 			// starts to create an expanded selection by dragging.
-			if (!wasDragging && state.isDragging) {
+			if (!old.dragging && state.dragging) {
 				hide(state.caret);
 			}
-		}
 
-		if (!selection || !selection.range) {
 			return event;
 		}
 
-		state.focus = selection.focus;
-		state.range = selection.range;
+		// Because otherwise, if, in the process of a click, the user's cursor
+		// is over the caret, Ranges.fromEvent() will compute the range to be
+		// inside the absolutely positioned caret element.
+		hide(old.caret);
 
-		var boundary;
-		var container;
-		var caretStyle;
+		state = newState(event, old, process(
+			event,
+			old.focus,
+			old.range,
+			old.dragging || isShiftDown(event),
+			old.doubleclicking,
+			old.time
+		));
+
+		unhide(state.caret);
+
+		var boundary, container;
+		var range = state.range;
 
 		if ('start' === state.focus) {
-			boundary = Boundaries.start(state.range);
-			container = state.range.startContainer;
+			boundary = Boundaries.start(range);
+			container = range.startContainer;
 		} else {
-			boundary = Boundaries.end(state.range);
-			container = state.range.endContainer;
+			boundary = Boundaries.end(range);
+			container = range.endContainer;
 		}
 
-		caretStyle = stylesFromOverrides(overrides(event, container));
+		show(
+			state.caret,
+			boundary,
+			stylesFromOverrides(overrides(event, container))
+		);
 
-		show(state.caret, boundary, caretStyle);
-
-		if ('mousedown' !== event.type || state.range.collapsed) {
-			event.range = selection.range;
+		if ('mousedown' !== event.type || range.collapsed) {
+			event.range = range;
 		}
 
 		if ('keydown' === event.type && movements[event.which]) {

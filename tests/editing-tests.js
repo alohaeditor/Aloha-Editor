@@ -236,6 +236,10 @@
 			});
 		};
 
+		t('<ul><li>{</li><li>}a<ul><li>b</li></ul></li></ul>', '');
+
+return;
+
 		t('<p>x[y]z</p>', '<p>x[]z</p>');
 		t('<p>x[]y</p>', '<p>x[]y</p>');
 		t('<p><b>x</b>{}<i>y</i></p>', '<p><b>x</b>{}<i>y</i></p>');
