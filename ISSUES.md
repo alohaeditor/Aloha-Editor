@@ -1,8 +1,14 @@
 								  KNOWN ISSUES
 								  ~~~~~~~~~~~~
 
-https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#toggling-lists
+is we don't use content editable, it is possible to select content across and
+beyond the editing host. EG: CTRL+A
 
+---
+
+TODO: https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#toggling-lists
+
+---
 
 the following should capture the unrendered spaces up to the front
 <p>
@@ -17,7 +23,8 @@ propped to <p><br/></p>
 
 ---
 
-double clicking on a first paragraphs leads to this wierd selection:
+double clicking on a first paragraphs leads to this selection, which while
+correct, is nevertheless a little wierd:
 <p>
 	[Lorem ipsum dolor sit amet, <b>consec<i>tet</i>ur</b> adipiscing
 	elit. Donec a diam lectus. Sed sit amet ipsum mauris.  Maecenas
