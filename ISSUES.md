@@ -1,8 +1,6 @@
 								  KNOWN ISSUES
 								  ~~~~~~~~~~~~
 
-selection: double clicking does not work with caret.js
-
 https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#toggling-lists
 
 

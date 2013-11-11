@@ -4,15 +4,13 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  *
- * @TODO: triple click
- *        better climbing
+ * @TODO: better climbing
  *        <br>|<br> in chrome
  *        ie support
  */
 define([
 	'functions',
 	'dom',
-	'misc',
 	'html',
 	'keys',
 	'maps',
@@ -24,7 +22,6 @@ define([
 ], function Selection(
 	Fn,
 	Dom,
-	Misc,
 	Html,
 	Keys,
 	Maps,
@@ -158,6 +155,24 @@ define([
 	 */
 	function isHoldingShift(event) {
 		return event.meta.indexOf('shift') > -1;
+	}
+
+	/**
+	 * Checks whether or not the given event is a mouse event.
+	 *
+	 * @param  {Object}  event
+	 * @return {boolean}
+	 */
+	function isMouseEvent(event) {
+		switch (event.type) {
+		case 'mouseup':
+		case 'mousedown':
+		case 'mousemove':
+		case 'dblclick':
+			return true;
+		default:
+			return false;
+		}
 	}
 
 	/**
@@ -358,6 +373,13 @@ define([
 		};
 	}
 
+	function tplclick(event, range, focus, previous, expanding) {
+		return {
+			range: Ranges.expandToBlock(range),
+			focus: 'end'
+		};
+	}
+
 	function mouseup(event, range, focus, previous, expanding) {
 		if (!expanding) {
 			return {
@@ -412,6 +434,7 @@ define([
 		'keydown'   : keydown,
 		'keypress'  : keypress,
 		'dblclick'  : dblclick,
+		'tplclick'  : tplclick,
 		'mouseup'   : mouseup,
 		'mousedown' : mousedown,
 		'mousemove' : Fn.returnFalse
@@ -432,24 +455,58 @@ define([
 		tripleclicking : false
 	};
 
+	/**
+	 * Normalizes the event type based.
+	 *
+	 * This function is necessary for us to properly determine how to treat a
+	 * given mouse event because we will sometime end up missing a dblclick
+	 * event when the user's cursor is hover a caret element.
+	 *
+	 * Further more, browsers do not send triple click events to JavaScript;
+	 * this function will be able to detect them when they happen.
+	 *
+	 * @param  {Object}  event
+	 * @param  {Range}   range
+	 * @param  {string}  focus
+	 * @param  {Range}   previous
+	 * @param  {number}  then
+	 * @param  {boolean} doubleclicking
+	 * @param  {boolean} tripleclicking
+	 * @return {string}
+	 */
 	function normalizeEventType(event, range, focus, previous, then,
 	                            doubleclicking, tripleclicking) {
-		if (doubleclicking) {
-			// check for triple
-		} else {
-			var multiclicking = range
-			                 && previous
-			                 && ((new Date() - then) < 500)
-			                 && 'mousedown' === event.type;
-
-			if (multiclicking) {
-				var ref = 'start' === focus
-				        ? Ranges.collapseToStart(previous.cloneRange())
-				        : Ranges.collapseToEnd(previous.cloneRange());
-				doubleclicking = Ranges.equal(range, ref);
-			}
+		if (!isMouseEvent(event)) {
+			return event.type;
 		}
-		return tripleclicking ? 'tplclick' : doubleclicking ? 'dblclick' : event.type;
+
+		var isMouseDown = 'mousedown' === event.type;
+		var multiclicking = range
+		                 && previous
+		                 && isMouseDown
+		                 && ((new Date() - then) < 500);
+
+		if (!multiclicking && isMouseDown) {
+			return event.type;
+		}
+
+		if (doubleclicking) {
+			return isMouseDown ? 'tplclick' : 'dblclick';
+		}
+
+		if (tripleclicking) {
+			return 'tplclick';
+		}
+
+		if (!isMouseDown) {
+			return event.type;
+		}
+
+		var ref = 'start' === focus
+		        ? Ranges.collapseToStart(previous.cloneRange())
+		        : Ranges.collapseToEnd(previous.cloneRange());
+
+		return Ranges.equal(range, ref) ? 'dblclick' : event.type;
 	}
 
 	/**
@@ -482,25 +539,20 @@ define([
 	 * @return {Object}
 	 */
 	function newState(event, old, change) {
-		var state = Misc.copy(old);
+		var state = Maps.extend({}, old, change);
 
 		switch (event.type) {
 		case 'mousedown':
 			state.time = new Date();
 			state.dragging = false;
 			state.mousedown = true;
-			state.doubleclicking = change.doubleclicking;
 			break;
 		case 'mouseup':
-			state.doubleclicking = state.dragging = state.mousedown = false;
+			state.mousedown = false;
 			break;
 		case 'mousemove':
-			state.dragging = state.mousedown;
+			state.dragging = old.mousedown;
 			break;
-		}
-		if (change && change.range) {
-			state.focus = change.focus;
-			state.range = change.range;
 		}
 
 		return state;
