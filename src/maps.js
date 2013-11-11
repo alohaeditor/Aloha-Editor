@@ -4,7 +4,7 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define([], function Maps() {
+define(['arrays'], function Maps(Arrays) {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
@@ -119,6 +119,19 @@ define([], function Maps() {
 		return vs;
 	}
 
+	function extend(dest) {
+		var i;
+		for (i = 0; i < arguments.length; i++) {
+			var src = arguments[i];
+			if (src) {
+				forEach(src, function (value, key) {
+					dest[key] = value;
+				});
+			}
+		}
+		return dest;
+	}
+
 	/**
 	 * Merges one or more maps.
 	 * Merging happens from left to right, which is useful for example
@@ -131,20 +144,7 @@ define([], function Maps() {
 	 *         A merge of all given maps in a single object.
 	 */
 	function merge() {
-		var dest = {};
-		var i;
-		for (i = 0; i < arguments.length; i++) {
-			var src = arguments[i];
-			if (src) {
-				var key;
-				for (key in src) {
-					if (src.hasOwnProperty(key)) {
-						dest[key] = src[key];
-					}
-				}
-			}
-		}
-		return dest;
+		return extend.apply(null, [{}].concat(Arrays.coerce(arguments)));
 	}
 
 	/**
@@ -164,6 +164,7 @@ define([], function Maps() {
 		keys: keys,
 		vals: vals,
 		forEach: forEach,
+		extend: extend,
 		merge: merge
 	};
 
@@ -173,6 +174,7 @@ define([], function Maps() {
 	exports['keys'] = exports.keys;
 	exports['vals'] = exports.vals;
 	exports['forEach'] = exports.forEach;
+	exports['extend'] = exports.extend;
 	exports['merge'] = exports.merge;
 
 	return exports;
