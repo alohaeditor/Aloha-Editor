@@ -124,12 +124,9 @@ define(['arrays'], function Maps(Arrays) {
 		for (i = 0; i < arguments.length; i++) {
 			var src = arguments[i];
 			if (src) {
-				var key;
-				for (key in src) {
-					if (src.hasOwnProperty(key)) {
-						dest[key] = src[key];
-					}
-				}
+				forEach(src, function (value, key) {
+					dest[key] = value;
+				});
 			}
 		}
 		return dest;
