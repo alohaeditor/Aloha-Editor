@@ -109,6 +109,16 @@ define([
 		return event.range;
 	}
 
+	function selectEditable(event) {
+		var editable = Dom.getEditingHost(event.range.commonAncestorContainer);
+		if (editable) {
+			event.range = Ranges.create(
+				editable, 0,
+				editable, Dom.nodeLength(editable)
+			);
+		}
+	}
+
 	var deleteBackwards = {
 		clearOverrides : true,
 		preventDefault : true,
@@ -164,6 +174,12 @@ define([
 		mutate         : insertText
 	};
 
+	var selectAll = {
+		preventDefault : true,
+		clearOverrides : true,
+		mutate         : selectEditable
+	};
+
 	var undo = {
 		clearOverrides : true,
 		preventDefault : true,
@@ -213,6 +229,8 @@ define([
 
 	handlers.keyup['ctrl+' + Keys.CODES.undo] = undo;
 	handlers.keyup['ctrl+shift+' + Keys.CODES.undo] = redo;
+
+	handlers.keydown['ctrl+' + Keys.CODES.selectAll] = selectAll;
 
 	function handler(event) {
 		var modifier = event.meta ? event.meta + '+' : '';

@@ -1414,6 +1414,9 @@ define([
 		if ('true' === node.getAttribute('contentEditable')) {
 			return true;
 		}
+		if (hasClass(node, 'aloha-editable')) {
+			return true;
+		}
 		var parent = node.parentNode;
 		return parent
 		    && (parent.nodeType === Nodes.DOCUMENT
@@ -1427,8 +1430,20 @@ define([
 	 * @return {boolean}
 	 */
 	function isEditable(node) {
-		return node.nodeType === Nodes.ELEMENT
-		    && 'true' === node.contentEditable;
+		 if (!node.nodeType === Nodes.ELEMENT) {
+			 return false;
+		 }
+		 if ('true' === node.contentEditable) {
+			return true;
+		 }
+		 var parent = node.parentNode;
+		 while (parent) {
+			 if (hasClass(parent, 'aloha-editable')) {
+				return true;
+			 }
+			 parent = parent.parentNode;
+		 }
+		 return false;
 	}
 
 	/**

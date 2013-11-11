@@ -52,7 +52,7 @@ define([
 	 *
 	 * @param {Element}  caret
 	 * @param {Boundary} boundary
-	 * @param {Object}   opt_style
+	 * @param {Object=}   opt_style
 	 */
 	function show(caret, boundary, opt_style) {
 		var box = Ranges.box(Ranges.create(boundary[0], boundary[1]));
@@ -591,6 +591,10 @@ define([
 		hide(old.caret);
 
 		var range = Ranges.fromEvent(event);
+
+		if (!range) {
+			return event;
+		}
 
 		var type = normalizeEventType(
 			event,

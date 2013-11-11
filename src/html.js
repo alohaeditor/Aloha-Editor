@@ -1246,11 +1246,14 @@ define([
 		if (crossedVisualBreak) {
 			// <#text>|<br>
 			if (Dom.isTextNode(after)) {
-				// Because `next` may be at a insignificant white space
-				var offset = after.data.search(WSP_FROM_END);
+				// Because `next` may be at a insignificant white space (when going backwards)
+				/*
+				 var offset = after.data.search(WSP_FROM_END);
 				if (offset > -1) {
 					return [after, offset];
 				}
+				*/
+				return [after, 0];
 			}
 			return next;
 		}
