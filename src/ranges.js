@@ -54,13 +54,11 @@ define([
 	 * @return {Range}
 	 */
 	function create(startContainer, startOffset, endContainer, endOffset) {
-		var range = document.createRange();
-		if (startContainer) {
-			range.setStart(startContainer, startOffset || 0);
-		}
+		var range = startContainer.ownerDocument.createRange();
+		range.setStart(startContainer, startOffset || 0);
 		if (endContainer) {
 			range.setEnd(endContainer, endOffset || 0);
-		} else if (startContainer) {
+		} else {
 			range.setEnd(startContainer, startOffset || 0);
 		}
 		return range;
