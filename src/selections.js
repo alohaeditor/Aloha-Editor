@@ -441,21 +441,6 @@ define([
 	};
 
 	/**
-	 * State of the user selection.
-	 *
-	 * @type {Object}
-	 */
-	var state = {
-		caret          : create(),
-		range          : null,
-		focus          : 'end',
-		dragging       : false,
-		mousedown      : false,
-		doubleclicking : false,
-		tripleclicking : false
-	};
-
-	/**
 	 * Normalizes the event type based.
 	 *
 	 * This function is necessary for us to properly determine how to treat a
@@ -528,6 +513,21 @@ define([
 		}
 		return change;
 	}
+
+	/**
+	 * State of the user selection.
+	 *
+	 * @type {Object}
+	 */
+	var state = {
+		caret          : create(),
+		range          : null,
+		focus          : 'end',
+		dragging       : false,
+		mousedown      : false,
+		doubleclicking : false,
+		tripleclicking : false
+	};
 
 	/**
 	 * Returns a new state as a function of the given event, the previous, state
