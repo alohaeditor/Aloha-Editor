@@ -699,8 +699,15 @@ define([
 	}
 
 	/**
-	 * Because user agents have problems determining the bounding client rect
-	 * for collapsed ranges.
+	 * Gets the bounding rectangle offsets for the given range from is start or
+	 * end container.
+	 *
+	 * This function is a hack to work around the problems that user agenst
+	 * have in determining the bounding client rect for collapsed ranges.
+	 *
+	 * @param  {Range}   range
+	 * @param  {boolean} isStart
+	 * @return {Object.<string, number>}
 	 */
 	function bounds(range, isStart) {
 		var clone = range.cloneRange();
@@ -725,6 +732,12 @@ define([
 		};
 	}
 
+	/**
+	 * Gets the bounding box of offets for the given range.
+	 *
+	 * @param  {Range} range
+	 * @return {Object.<string, number>}
+	 */
 	function box(range) {
 		var rect = bounds(range, false);
 		if (rect.width > 0) {
@@ -735,7 +748,6 @@ define([
 			rect.left += rect.width;
 			return rect;
 		}
-		// return boundingBox(range.commonAncestorContainer);
 		return rect;
 	}
 
@@ -743,22 +755,6 @@ define([
 	 * Library functions for working with DOM ranges.
 	 * It assums native support for document.getSelection() and
 	 * document.createRange().
-	 *
-	 * ranges.collapseToEnd()
-	 * ranges.collapseToStart()
-	 * ranges.create()
-	 * ranges.equal()
-	 * ranges.expandBoundaries()
-	 * ranges.expandToWord()
-	 * ranges.get()
-	 * ranges.insertText()
-	 * ranges.insertTextBehind()
-	 * ranges.select()
-	 * ranges.setFromReference()
-	 * ranges.trim()
-	 * ranges.trimBoundaries()
-	 * ranges.trimClosingOpening()
-	 * ranges.getNearestEditingHost()
 	 */
 	var exports = {
 		box: box,

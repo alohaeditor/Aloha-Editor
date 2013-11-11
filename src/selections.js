@@ -602,18 +602,14 @@ define([
 			old.tripleclicking
 		);
 
-		state = newState(
+		state = newState(event, old, process(
 			event,
-			old,
-			process(
-				event,
-				type,
-				range,
-				old.focus,
-				old.range,
-				old.dragging || isHoldingShift(event)
-			)
-		);
+			type,
+			range,
+			old.focus,
+			old.range,
+			old.dragging || isHoldingShift(event)
+		));
 
 		range = state.range;
 
