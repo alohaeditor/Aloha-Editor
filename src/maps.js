@@ -4,7 +4,7 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define([], function Maps() {
+define(['arrays'], function Maps(Arrays) {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
@@ -119,19 +119,7 @@ define([], function Maps() {
 		return vs;
 	}
 
-	/**
-	 * Merges one or more maps.
-	 * Merging happens from left to right, which is useful for example
-	 * when merging a number of given options with default options:
-	 * var effectiveOptions = Maps.merge(defaults, options);
-	 *
-	 * @param {...Object}
-	 *        A variable number of map objects.
-	 * @return {Object}
-	 *         A merge of all given maps in a single object.
-	 */
-	function merge() {
-		var dest = {};
+	function extend(dest) {
 		var i;
 		for (i = 0; i < arguments.length; i++) {
 			var src = arguments[i];
@@ -145,6 +133,21 @@ define([], function Maps() {
 			}
 		}
 		return dest;
+	}
+
+	/**
+	 * Merges one or more maps.
+	 * Merging happens from left to right, which is useful for example
+	 * when merging a number of given options with default options:
+	 * var effectiveOptions = Maps.merge(defaults, options);
+	 *
+	 * @param {...Object}
+	 *        A variable number of map objects.
+	 * @return {Object}
+	 *         A merge of all given maps in a single object.
+	 */
+	function merge() {
+		return extend.apply(null, [{}].concat(Arrays.coerce(arguments)));
 	}
 
 	/**
@@ -164,6 +167,7 @@ define([], function Maps() {
 		keys: keys,
 		vals: vals,
 		forEach: forEach,
+		extend: extend,
 		merge: merge
 	};
 
@@ -173,6 +177,7 @@ define([], function Maps() {
 	exports['keys'] = exports.keys;
 	exports['vals'] = exports.vals;
 	exports['forEach'] = exports.forEach;
+	exports['extend'] = exports.extend;
 	exports['merge'] = exports.merge;
 
 	return exports;

@@ -55,20 +55,16 @@ define([
 	function show(caret, boundary, opt_style) {
 		var box = Ranges.box(Ranges.create(boundary[0], boundary[1]));
 		var doc = caret.ownerDocument;
-		box.top += window.pageYOffset - doc.body.clientTop;
-		box.left += window.pageXOffset - doc.body.clientLeft;
-		var style = opt_style || {};
-		style['top'] = box.top + 'px';
-		style['left'] = box.left + 'px';
-		style['height'] = box.height + 'px';
-		style['width'] = '2px';
-		style['display'] = 'block';
-		var prop;
-		for (prop in style) {
-			if (style.hasOwnProperty(prop)) {
-				caret.style[prop] = style[prop];
-			}
-		}
+		var topDelta = window.pageYOffset - doc.body.clientTop;
+		var leftDelta = window.pageXOffset - doc.body.clientLeft;
+		var style = {
+			'top': box.top + topDelta + 'px',
+			'left': box.left + leftDelta + 'px',
+			'height': box.height + 'px',
+			'width': '2px',
+			'display': 'block'
+		};
+		Maps.extend(caret.style, style, opt_style);
 	}
 
 	/**
