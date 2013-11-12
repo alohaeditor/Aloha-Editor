@@ -143,6 +143,25 @@ define([
 	};
 
 	/**
+	 * Update the WAI image
+	 *
+	 * @param {TablePlugin} tablePlugin tablePlugin
+	 */
+	function updateWaiImage(tablePlugin) {
+		var $element = $(tablePlugin.summary.getInputElem()),
+			waiRed = tablePlugin.activeTable.get('waiRed'),
+			waiGreen = tablePlugin.activeTable.get('waiGreen');
+
+		$element.removeClass(waiRed + ' ' + waiGreen);
+		if (tablePlugin.activeTable.checkWai()) {
+			$element.addClass(waiGreen);
+		}
+		else {
+			$element.addClass(waiRed);
+		}
+	}
+
+	/**
 	 * Checks whether the given DOM element is nested within a table.
 	 *
 	 * @param {jQuery.<HTMLElement>} $element
@@ -787,7 +806,7 @@ define([
 				if (that.activeTable) {
 					that.activeTable.refresh();
 
-					toggleHeaderStatus(that.activeTable, 'column');
+					toggleHeaderStatus(that.activeTable, 'col');
 
 					that.activeTable.selection.unselectCells();
 					that.activeTable.selection.selectRows(that.activeTable.selection.selectedRowIdxs);
@@ -1116,16 +1135,24 @@ define([
 			click: function() {
 				if (that.activeTable) {
 					// look if table object has a child caption
-					if ( that.activeTable.obj.children("caption").is('caption') ) {
-						that.activeTable.obj.children("caption").remove();
+					var $caption = that.activeTable.obj.children("caption");
+
+					if ( $caption.is('caption') && $caption.is(':visible') ) {
+						$caption.hide();
 					} else {
-						var captionText = i18n.t('empty.caption');
-						var c = jQuery('<caption></caption>');
-						that.activeTable.obj.prepend(c);
-						that.makeCaptionEditable(c, captionText);
+						if (!$caption.is('caption')) {
+							$caption = jQuery('<caption></caption>');
+							that.activeTable.obj.prepend($caption);
+						}
+						$caption.show();
+						if (jQuery.trim($caption.text()).length === 0) {
+							$caption.text(i18n.t('empty.caption'));
+						}
+
+						that.makeCaptionEditable($caption, $caption.text());
 
 						// get the editable span within the caption and select it
-						var cDiv = c.find('div').eq(0);
+						var cDiv = $caption.find('div').eq(0);
 						var captionContent = cDiv.contents().eq(0);
 						if (captionContent.length > 0) {
 							var newRange = new GENTICS.Utils.RangeObject();
@@ -1149,14 +1176,15 @@ define([
 			width : 275,
 			name  : 'tableSummary',
 			noTargetHighlight: true,
-			scope: this.name + '.cell'
+			scope: this.name + '.cell',
+			element: jQuery('<input id="aloha-attribute-field-tableSummary" class="aloha-wai-red" style="color: black; padding-left: 32px; background-color: white"/>')
 		} );
 
-		this.summary.addListener( 'keyup', function( event ) {
+		this.summary.addListener('keyup', function() {
 			if (that.activeTable) {
-				that.activeTable.checkWai();
+				updateWaiImage(that);
 			}
-		} );
+		});
 	};
 
 	/**
@@ -1170,8 +1198,7 @@ define([
 		if (cSpan.length === 0) {
 			// generate a new div
 			cSpan = jQuery('<div></div>');
-			jQuery(cSpan).addClass('aloha-ui');
-			jQuery(cSpan).addClass('aloha-editable-caption');
+			cSpan.addClass('aloha-ui aloha-editable-caption aloha-block');
 
 			// mark the editable wrapper as ephemeral
 			Ephemera.markWrapper(cSpan);
@@ -1297,7 +1324,7 @@ define([
 		var that = this;
 
 		// clicking outside the table unselects the cells of the table
-		if ( null == focusTable && null != this.activeTable ) {
+		if (null != this.activeTable ) {
 			this.activeTable.selection.unselectCells();
 		}
 
@@ -1315,6 +1342,9 @@ define([
 			focusTable.hasFocus = true;
 		}
 		TablePlugin.activeTable = focusTable;
+		if (TablePlugin.activeTable) {
+			updateWaiImage(TablePlugin);
+		}
 
 		// show configured formatting classes
 		for (var i = 0; i < this.tableMSItems.length; i++) {

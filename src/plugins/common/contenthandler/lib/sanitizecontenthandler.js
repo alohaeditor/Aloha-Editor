@@ -95,8 +95,9 @@ function( Aloha, jQuery, ContentHandlerManager, Plugin, console ) {
 			'p': ['class', 'style', 'id'],
 			'q': ['cite'],
 			'table': ['summary', 'width'],
-			'td': ['abbr', 'axis', 'colspan', 'rowspan', 'width'],
-			'th': ['abbr', 'axis', 'colspan', 'rowspan', 'scope', 'width'],
+									// For IE7 it matters the uppercase 'S' in rowSpan, colSpan
+			'td': ['abbr', 'axis', 'colSpan', 'rowSpan', 'colspan', 'rowspan', 'width'],
+			'th': ['abbr', 'axis', 'colSpan', 'rowSpan', 'colspan', 'rowspan', 'scope', 'width'],
 			'ul': ['type'],
 			'span': ['class','style','lang','xml:lang','role']
 		},

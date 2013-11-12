@@ -10,3 +10,4 @@ doc/guides/staging
 doc/guides/output
 dist
 node_modules
+.classpath

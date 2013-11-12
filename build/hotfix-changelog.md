@@ -8,27 +8,18 @@ All changes are categorized into one of the following keywords:
 
 ----
 
-- **BUGFIX**:      core: Fixed selection bug in FF where it was possible to move the selection
-                   into a HR (by clicking on it)
-- **BUGFIX**:      textcolor: The button for changing the textcolor can no longer be accidentally
-overwritten by custom background images.
-- **BUGFIX**:      table: The table plugin will now handle pressing down in the last cell as well
-				   as pressing up in the first cell by positioning the cursor directly before or after the table.
-- **FEATURE**:     autoparagraph-plugin: The Autoparagraph Plugin checks the contents of editables
-                   and wraps content that is not contained in block level elements into paragraphs.
-- **BUGFIX**:      table-plugin: The table plugin will now not lose the drag handles any more, when getContents()
-                   is called for the editable (which is done on smart content change)
-- **BUGFIX**:      cite-plugin: Several issues with the citation plugin have been fixed: Pressing backspace in a 
-                   blockquote will no longer wrap the blockquote into div's (which would break the behaviour).
-                   The behaviour of pressing enter at the end of a blockquote multiple times has been changed to land
-                   in a new empty paragraph after the blockquote (similar to lists).
-                   When blockquote and quotes are nested, the controls of blockquote and quote will both show the
-                   correct status now.
-- **BUGFIX**:      repositorybrowser: Fix i18n of repository browser to use the language configured in Aloha.settings.locale
-- **BUGFIX**: table plugin: The selection of table cells has been made more
-              coherent.  A browser selection will be set on the entire content
-              of the anchor cell of the virtual cell selection.
-- **BUGFIX**: table plugin: Merging cell is now fixed to work correctly, after a
-              previous fix introduced a bug through circular dependency.
+
+- **BUGFIX**:      Change table cell size by drag & drop
+                   The line which is shown when you drag & drop the size of cell,
+                   is not showed for the last row or last column. RT#55437
+
+- **BUGFIX**:      Tooltip covers color palette
+                   The colors tooltip does not disappear when the color palette is shown.
+                   RT#57078
+
+- **BUGFIX**: Formatless Copy/Paste not working.
+              When paste action was made the formatlesshandler was never called.
+              We manually call this handler before pasting the content into the DOM element.
+              RT#56692
 - **BUGFIX**:      repositorybrowser: Fix i18n of repository browser again to use the language configured in Aloha.settings.locale
                    This fix should now also work in the built version of alohaeditor

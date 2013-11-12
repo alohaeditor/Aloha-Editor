@@ -37,7 +37,9 @@ define([
 	'aloha/observable',
 	'ui/scopes',
 	'util/class',
-	'PubSub'
+	'PubSub',
+	'block/block-utils',
+	'util/html'
 ], function(
 	Aloha,
 	jQuery,
@@ -45,7 +47,9 @@ define([
 	Observable,
 	Scopes,
 	Class,
-	PubSub
+	PubSub,
+	BlockUtils,
+    Html
 ){
 	'use strict';
 
@@ -148,7 +152,20 @@ define([
 			if (this.isDraggable()) {
 				// Remove default drag/drop behavior of the browser
 				$element.find('img').attr('draggable', 'false');
-				$element.find('a').attr('draggable', 'false');
+
+				try {
+					$element.find('a').attr('draggable', 'false');
+				} catch(e) {
+					// If we get in here, it is most likely an issue with IE 10 in documentmode 7
+					// and IE10 compatibility mode. It maybe happens in older versions too.
+					// Error: Member not found
+					// https://connect.microsoft.com/IE/feedback/details/774078
+					// http://bugs.jquery.com/ticket/12577
+					// Our fallback solution:
+					$element.find('a').each(function() {
+						this.setAttribute('draggable', 'false');
+					});
+				}
 			}
 
 			// set the attributes
@@ -179,6 +196,33 @@ define([
 			//		that.activate();
 			//	}
 			//});
+
+			// Only for inline element.
+			// It is not possible to insert text after or before a Block span
+			// when after or before the Block there is not elements
+			if (Html.isInlineFormattable($element[0])) {
+				if ($element.closest('.aloha-editable-active').length > 0) {
+					BlockUtils.pad(that.$element);
+				}
+
+				Aloha.bind('aloha-editable-activated', function ($event, data) {
+					if (data.editable) {
+						var $block = data.editable.obj.find('#' + that.id);
+						if ($block.length !== 0) {
+							BlockUtils.pad(that.$element);
+						}
+					}
+				});
+
+				Aloha.bind('aloha-editable-deactivated', function ($event, data) {
+					if (data.editable) {
+						var $block = data.editable.obj.find('#' + that.id);
+						if ($block.length !== 0) {
+							BlockUtils.unpad(that.$element);
+						}
+					}
+				});
+			}
 
 			this._initialized = true;
 		},
@@ -651,7 +695,7 @@ define([
 			if ( !this._dd_isDragdropEnabled() ){
 				this.$element.find('.aloha-block-draghandle').each(function () {
 					var $draghandle = jQuery(this);
-					if (!isDragdropEnabledForElement($draghandle)) {
+					if (!BlockUtils.isDragdropEnabledForElement($draghandle)) {
 						$draghandle.removeClass('aloha-block-draghandle');
 					}
 				});
@@ -1057,7 +1101,7 @@ define([
          * for the editable, which this block belongs to.
          */
         _dd_isDragdropEnabled: function () {
-			return isDragdropEnabledForElement(this.$element.parent());
+			return BlockUtils.isDragdropEnabledForElement(this.$element.parent());
         },
 
 		/**************************
@@ -1248,26 +1292,6 @@ define([
 		renderBlockHandlesIfNeeded: function () {},
 		_preventSelectionChangedEventHandler: function () {}
 	});
-
-	/**
-	 * Tests whether the given element is contained in an editable for
-	 * which the block dragdrop feature is enabled.
-	 * 
-	 * @param {!jQuery} $element
-	 *        The element that may or may not be contained in an editable.
-	 * @return {boolean}
-	 *        True, unless the given $element is contained in an
-	 *        editable for which the dragdrop feature has been disabled.
-	 */
-	function isDragdropEnabledForElement($element) {
-		var editable = $element.closest(".aloha-editable");
-		if (editable.length) {
-			return !!editable.data("block-dragdrop");
-		} else {
-			// no editable specified, let's make drag & drop enabled by default.    
-			return true;
-		}
-	}
 
 	return {
 		AbstractBlock: AbstractBlock,

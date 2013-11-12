@@ -33,7 +33,9 @@ define([
 	'aloha/registry',
 	'util/class',
 	'util/strings',
-	'util/maps'
+	'util/maps',
+    'block/block-utils',
+    'table/table-plugin'
 ], function (
 	Aloha,
 	$,
@@ -42,7 +44,9 @@ define([
 	Registry,
 	Class,
 	Strings,
-	Maps
+	Maps,
+    BlockUitls,
+    Table
 ) {
 	'use strict';
 
@@ -203,9 +207,15 @@ define([
 				var commandId = data.commandId;
 
 				// Internet Explorer *magically* sets the range to the "Body" object after deselecting everything. yeah :-D
-				var onlyBlockSelected = (Aloha.getSelection().getRangeCount() === 0) || // Firefox / Chrome
-					(Aloha.getSelection().getRangeCount() === 1 && Aloha.getSelection().getRangeAt(0).endContainer === Aloha.getSelection().getRangeAt(0).startContainer && Aloha.getSelection().getRangeAt(0).endContainer === jQuery('body')[0]) || // Internet explorer: Inline Elements
-					(Aloha.getSelection().getRangeCount() === 1 && Aloha.getSelection().getRangeAt(0).endContainer === Aloha.getSelection().getRangeAt(0).startContainer && Aloha.getSelection().getRangeAt(0).startOffset + 1 === Aloha.getSelection().getRangeAt(0).endOffset); // Internet explorer: Block level elements
+				var selection = Aloha.getSelection(),
+				    rangeCount = selection.getRangeCount(),
+				    range = selection.getRangeAt(0),
+				    rangeEndContainer = range.endContainer,
+				    rangeStartContainer = range.startContainer,
+
+				    onlyBlockSelected = (rangeCount === 0) || // Firefox / Chrome
+					       (rangeCount === 1 && rangeEndContainer === rangeStartContainer && rangeEndContainer === jQuery('body')[0]) || // Internet explorer: Inline Elements
+					       (rangeCount === 1 && rangeEndContainer === rangeStartContainer && range.startOffset + 1 === range.endOffset); // Internet explorer: Block level elements
 
 				if (that._activeBlock && (commandId === 'delete' || commandId === 'forwarddelete') && onlyBlockSelected) {
 					// Deletion when a block is currently selected
@@ -213,7 +223,7 @@ define([
 					// In this case, the default command shall not be executed.
 					data.preventDefault = true;
 					that._activeBlock.destroy();
-				} else if (!that._activeBlock && (commandId === 'delete' || commandId === 'forwarddelete') && Aloha.getSelection().getRangeCount() === 1 && Aloha.getSelection().getRangeAt(0).collapsed === false) {
+				} else if (!that._activeBlock && (commandId === 'delete' || commandId === 'forwarddelete') && rangeCount === 1 && range.collapsed === false) {
 					// Deletion when a block is inside a bigger selection currently
 					// In this case, we check if we find an aloha-block. If yes, we delete it right away as the browser does not delete it correctly by default
 					var traverseSelectionTree;
@@ -385,11 +395,21 @@ define([
 					change: function (event, ui) {
 						ui.item.data("block-sort-allowed", (ui.placeholder.parents(".aloha-block-dropzone").length > 0));
 					},
-					stop: function (event, ui) { 
-						if (!ui.item.data("block-sort-allowed")) {
+					stop: function (event, ui) {
+						var $blockItem = ui.item;
+						if (!$blockItem.data("block-sort-allowed")) {
 							jQuery(this).sortable("cancel");
-						} 
-						ui.item.removeData("block-sort-allowed");
+						}
+						$blockItem.removeData("block-sort-allowed");
+
+						var $table = BlockUitls.getTableByBlock($blockItem);
+						if ($table !== null) {
+							var actualParentEditable = Aloha.getEditableById(
+								BlockUitls.getEditableByBlock($blockItem)
+								          .attr('id'));
+							Table.getTableFromRegistry($table.get(0))
+							     .parentEditable = actualParentEditable;
+						}
 					}
 				});
 
@@ -501,26 +521,41 @@ define([
 		/**
 		 * Merges the config from different places, and return the merged config.
 		 *
+		 * @param {Object} jQuery Object
+		 * @param {Object} default configuration
+		 *
 		 * @private
 		 */
 		getConfig: function (blockElement, instanceDefaults) {
-			// Clone the element before getting the data to fix an IE7 crash.
-			// We use jQuery.clone(true) because the sortableItem attribute isn't returned
-			// if we do a normal cloneNode(...).
-			var clone = blockElement.clone(true);
-			var dataCamelCase = clone.data();
-			var data = {};
-			clone.removeData();
-			// jQuery.data() returns data attributes with names like
-			// data-some-attr as dataSomeAttr which has to be reversed
-			// so that they can be merged with this.defaults and
-			// instanceDefaults which are expected to be in
-			// data-some-attr form.
-			for (var key in dataCamelCase) {
-				if (dataCamelCase.hasOwnProperty(key)) {
-					data[Strings.camelCaseToDashes(key)] = dataCamelCase[key];
+			var
+				data          = {},
+				dataCamelCase = null,
+				$clone        = null;
+
+			if (blockElement.length > 0) {
+				// Clone the element before getting the data to fix an IE7 crash.
+				// We use the native cloneNode function, because jQuerys clone()
+				// executes scripts also, what we don't want.
+				// But since that one doesn't copy the the abritary jQuery data, we
+				// manually merge both datas together into a new object.
+				$clone = $(blockElement[0].cloneNode(false));
+				// Merge the "data-" attributes from the clone and take the
+				// arbitrary data from the original jQuery object
+				dataCamelCase = $.extend({}, $.data(blockElement[0]), $clone.data());
+				$clone.removeData();
+
+				// jQuery.data() returns data attributes with names like
+				// data-some-attr as dataSomeAttr which has to be reversed
+				// so that they can be merged with this.defaults and
+				// instanceDefaults which are expected to be in
+				// data-some-attr form.
+				for (var key in dataCamelCase) {
+					if (dataCamelCase.hasOwnProperty(key)) {
+						data[Strings.camelCaseToDashes(key)] = dataCamelCase[key];
+					}
 				}
 			}
+
 			return jQuery.extend(
 				{},
 				this.defaults,

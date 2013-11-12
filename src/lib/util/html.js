@@ -85,6 +85,71 @@ define([
 		'video'      // HTML5
 	];
 
+	/**
+	 * Void elements are elements which are not permitted to contain content.
+	 * https://developer.mozilla.org/en-US/docs/Web/HTML/Element
+	 *
+	 * @type {Object}
+	 */
+	var VOID_ELEMENTS = [
+		'area',
+		'base',
+		'br',
+		'col',
+		'command',
+		'embed',
+		'hr',
+		'img',
+		'input',
+		'keygen',
+		'link',
+		'meta',
+		'param',
+		'source',
+		'track',
+		'wbr'
+	];
+
+	/**
+	 * Text-level semantic and edit elements to be remove during
+	 * copying or pasting.
+	 *
+	 * See:
+	 * http://dev.w3.org/html5/spec/text-level-semantics.html#usage-summary
+	 *
+	 * Configurable.
+	 *
+	 * @type {Array.<string>}
+	 */
+	var TEXT_LEVEL_SEMANTIC_ELEMENTS = [
+		'a',
+		'abbr',
+		'b',
+		'bdi',
+		'bdo',
+		'cite',
+		'code',
+		'del',
+		'dfn',
+		'em',
+		'i',
+		'ins',
+		'kbd',
+		'mark',
+		'q',
+		'rp',
+		'rt',
+		'ruby',
+		's',
+		'samp',
+		'small',
+		'strong',
+		'sub',
+		'sup',
+		'time',
+		'u',
+		'var'
+	];
 
 	/**
 	 * Unicode zero width space characters:
@@ -141,12 +206,12 @@ define([
 	var wspChars = WHITE_SPACE_CHARACTERS_UNICODES.join('');
 
 	/**
-	 * Regular expression that matches one or more sequences of white space
-	 * characters.
+	 * Regular expression that checks whether a string consists only of one or
+	 * more white space characters.
 	 *
 	 * @type {RegExp}
 	 */
-	var WSP_CHARACTERS = new RegExp('[' + wspChars + ']+');
+	var WSP_CHARACTERS = new RegExp('^[' + wspChars + ']+$');
 	var WSP_CHARACTERS_LEFT = new RegExp('^[' + wspChars + ']+');
 	var WSP_CHARACTERS_RIGHT = new RegExp('[' + wspChars + ']+$');
 
@@ -295,6 +360,8 @@ define([
 
 	return {
 		BLOCKLEVEL_ELEMENTS: BLOCKLEVEL_ELEMENTS,
+		VOID_ELEMENTS: VOID_ELEMENTS,
+		TEXT_LEVEL_SEMANTIC_ELEMENTS: TEXT_LEVEL_SEMANTIC_ELEMENTS,
 		isBlock: isBlock,
 		isIgnorableWhitespace: isIgnorableWhitespace,
 		isInlineFormattable: isInlineFormattable,

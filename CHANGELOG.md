@@ -12,6 +12,143 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+## 0.23.24 - 2013/10/24
+
+- **BUGFIX**: WAI input text is mistaken by the Caption Table
+              Putting the image of WAI inside the input text we make clear that this
+              input text is for WAI text and not for Table Caption. RT#56649
+- **BUGFIX**: Creation of several links or abbreviation is not fill with the same value.
+              When create several links in different paragraphs or item list
+              the value is not set the same for all the links but only for the first
+              in the range selection.
+              Changes were made so several links or abbreviation in the same selection
+              have the same value. RT#55298
+- **BUGFIX**: Table caption is removed every time is deactivated.
+              Table caption is now hidden or shown but not removed,
+              so the original text remains. RT#56649
+- **BUGFIX**: Inputs containing image height/width don't display when image is loaded (ie9)
+              When selecting an image the width and height inputs were not displayed.
+              The problem was that when assigning the value to the input, the jQuery.val function was not
+              working, because the element wasn't associated to the DOM yet.
+- **BUGFIX**: Outline on icons is too big resulting in too little visual difference between enabled or disabled state.
+              The outline when the icon is focused is too big and the user can't distinguish when a button
+              icon is enabled or disabled. By adding box-shadow (same behavior for different browsers)
+              the problem was solved.
+- **BUGFIX**: core: Some performance improvements were made, so the Aloha-editor smartContenthandler is faster
+              in large contents. Improvements of loop-for, jQuery selector and Dom iteration. RT#56619
+- **BUGFIX**: rangy: Change rangy-core configuration property "preferTextRange"
+              to false in order to allow for more performant ways to work with
+              ranges in IE.  Accomodations were taken to ensure that IE 9 would
+              not crash with this flag.
+- **BUGFIX**  commands: Further cleanup will no longer be done after inserting
+              paragraphs since this extra processing was not necessary and very
+              expensive on large content.
+- **BUGFIX**: tables: Remove "width" attribute from copied tables. RT#55759
+
+
+## 0.23.23 - 2013/10/17
+
+- **BUGFIX**: block plugin: Fix the error "Member not found" occuring when initializing a block
+              with links in it. This error occurs on IE 10 compatbility mode with document mode 7.
+- **BUGFIX**: paste plugin: Pasting will no longer always break the line.
+              A wrapping element will no longer be created to contain the copy
+              content. RT#56692
+- **BUGFIX**: header ids plugin: A header ID will now automatically be added as
+              soon as the heading is created if the header id plugins is
+              activated. RT#56670
+- **BUGFIX**: table plugin: The "scope" attribute in TH elements will now be
+              correctly set to "col" instead of "column".  This attribute only
+              accepts "col" or "row" as values. RT#56088
+
+
+## 0.23.22 - 2013/10/09
+
+- **BUGFIX**: tables: When selection is placed into table, all other tables will
+              now have their visual selection removed.
+- **BUGFIX**: tables: The Row and Column floating toolbar tabs will now be shown
+              at the first click of a row or column.
+- **BUGFIX**: tables: Selecting inside of tables will no longer results in
+              sometimes having the selection deselected on mouseup in IE.
+- **BUGFIX**: blocks: Blocks will immediately be given padding landing areas (if
+              needed) as soon as they are inserted into active editables.
+- **BUGFIX**: tables: It is now possible to click once and start editing table
+              summaries.
+- **BUGFIX**: tables: It is now possible to delete entire rows or columns using
+              the delete key.
+
+## 0.23.21 - 2013/10/04
+
+- **BUGFIX**: Fix display of values after image-reset and improve the
+              size-check of image-resizing
+- **BUGFIX**: image plugin: Various fixes and improvements for resizing, cropping 
+              and resetting images have been added, to improve the cohesion between displayed values and actual sizes.
+- **BUGFIX**: blockmanager: Fixed scripts in a block being executed, when
+              getting its configuration.
+- **BUGFIX**: editables: Initializing empty editables in Firefox will no longer
+              result in them aquiring an extra <br/>. This was previously done
+        to work around a Firefox bug that seems not no longer be an issue.
+- **BUGFIX**: tables: Tables with col- and rowspans will now be correctly
+              initialialized in IE9.
+- **BUGFIX**: tables: The cell merge and cell split buttons are now correctly
+              disable when not applicable in IE7 and IE8.
+- **BUGFIX**: tables: Table functionality will no longer stop working when a
+              table is moved from one editable into another.
+- **BUGFIX**: tables: It is now possible to resize table headers (TH cells).
+
+
+## 0.23.20 - 2013/09/25
+
+- **BUGFIX**: blockmanager: Fixed scripts in a block being executed, when
+              getting its configuration.
+- **BUGFIX**: editables: Initializing empty editables in Firefox will no longer
+              result in them aquiring an extra <br/>. This was previously done
+                          to work around a Firefox bug that seems not no longer be an issue.
+
+## 0.23.19 - 2013/08/30
+
+- **BUGFIX**: table plugin: Pressing the tab key when the selection is in the
+                          last cell of a table will correctly place the cursor in the first
+                          cell of the newly created row.
+
+## 0.23.18 - 2013/08/28
+
+- **BUGFIX**: table plugin: Merging table cells in IE8 will no longer result in
+                            the contents of merged cells from being lost.
+- **BUGFIX**: utilities: Pressing backspace in a text node in a paragraph
+                         adjacent to a table will now correctly delete the character to the
+                         left of the cursor rather than jumping into the table.
+
+## 0.23.17 - 2013/08/14
+
+- **BUGFIX**:	   table plugin: Merging cell is now fixed to work correctly, after a
+                 previous fix introduced a bug through circular dependency.
+
+## 0.23.16 - 2013/08/14
+
+- **BUGFIX**:      table-plugin: The table plugin will now not lose the drag handles any more, when getContents()
+                   is called for the editable (which is done on smart content change)
+- **BUGFIX**:      cite-plugin: Several issues with the citation plugin have been fixed: Pressing backspace in a 
+                   blockquote will no longer wrap the blockquote into div's (which would break the behaviour).
+                   The behaviour of pressing enter at the end of a blockquote multiple times has been changed to land
+                   in a new empty paragraph after the blockquote (similar to lists).
+                   When blockquote and quotes are nested, the controls of blockquote and quote will both show the
+                   correct status now.
+- **BUGFIX**:      repositorybrowser: Fix i18n of repository browser to use the language configured in Aloha.settings.locale
+- **BUGFIX**:      table plugin: The selection of table cells has been made more coherent.  
+                   A browser selection will be set on the entire content of the anchor cell of the virtual cell selection.
+
+## 0.23.15 - 2013/08/09
+
+- **BUGFIX**:      core: Fixed selection bug in FF where it was possible to move the selection
+                   into a HR (by clicking on it)
+- **BUGFIX**:      textcolor: The button for changing the textcolor can no longer be accidentally
+                   overwritten by custom background images.
+- **BUGFIX**:      table: The table plugin will now handle pressing down in the last cell as well
+                   as pressing up in the first cell by positioning the cursor directly before or 
+                   after the table.
+- **FEATURE**:     autoparagraph-plugin: The Autoparagraph Plugin checks the contents of editables
+                   and wraps content that is not contained in block level elements into paragraphs.
+
 ## 0.23.14 - 2013/07/31
 
 - **BUGFIX**: abbr: The abbreviation plugin will now use non-exclusive scopes
@@ -78,7 +215,7 @@ All changes are categorized into one of the following keywords:
               after content was pasted.
 
 - **BUGFIX**: paste-plugin: There are no more discrepancies between browsers
-			  when pasting plain text.
+              when pasting plain text.
 
 - **BUGFIX**: Adding blocks and tables will no longer results in empty paragraphs
               being littered before the inserted element.
@@ -181,7 +318,6 @@ All changes are categorized into one of the following keywords:
 
 ## 0.23.3 - 2013/03/22
 
->>>>>>> 9bfaafe32921dd447fb08da973a1b92054f9a927
 - **BUGFIX**: No longer automatically append &lt;br&gt; elements to block-level
 	elements unless they are empty.
 - **BUGFIX**: DOM-to-XHTML plugin: Fixed handling of closing angle brackets,
