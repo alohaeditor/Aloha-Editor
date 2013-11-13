@@ -686,14 +686,10 @@ define([
 	 * @param  {Object} event An Aloha Editor event
 	 * @return {?Range}
 	 */
-	function fromEvent(event, caret) {
-		var isKeyboardEvent = 'keypress' === event.type
-		                   || 'keydown' === event.type
-		                   || 'keyup' === event.type;
-		var range = isKeyboardEvent
-		          ? event.range
-		          : createFromPoint(event.native.clientX, event.native.clientY);
-		return range || get();
+	function fromEvent(event) {
+		return event.range
+		    || createFromPoint(event.native.clientX, event.native.clientY)
+		    || get();
 	}
 
 	/**

@@ -3,25 +3,22 @@
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
+ *
+ * @reference
+ * http://www.html5rocks.com/en/tutorials/dnd/basics/
  */
 define([
 	'dom',
 	'arrays',
-	'ranges',
-	'editing',
+	'events',
 	'dragdrop'
 ], function Blocks(
 	Dom,
 	Arrays,
-	Ranges,
-	Editing,
+	Events,
 	DragDrop
 ) {
 	'use strict';
-
-	if ('undefined' !== typeof mandox) {
-		eval(uate)('blocks');
-	}
 
 	/**
 	 * Find aloha blocks in the given element.
@@ -47,23 +44,49 @@ define([
 	function initialize(event) {
 		findBlocks(event.editable, event.editor).forEach(function (block) {
 			block.setAttribute('contentEditable', 'false');
+			Dom.disableSelection(block);
 		});
 	}
 
+	function isBlockEvent(event) {
+		return Dom.hasClass(event.native.target, event.editor.BLOCK_CLASS);
+	}
+
+	function startdrag(event) {
+		Dom.addClass(event.editor.dndContext.element, 'aloha-block-dragging');
+	}
+
+	function enddrag(event) {
+		Dom.removeClass(event.editor.dndContext.element, 'aloha-block-dragging');
+	}
+
+	function move(event) {
+		event.range = DragDrop.move(event);
+	}
+
+	function copy(event) {
+		event.range = DragDrop.copy(event);
+	}
+
 	function mousedown(event) {
-		var isBlockTarget = Dom.hasClass(event.target, event.editor.BLOCK_CLASS);
-		if (!isBlockTarget) {
-			return;
+		if (isBlockEvent(event) && DragDrop.isDraggable(event.native.target)) {
+			var drop, effect;
+			if (Events.isWithCtrl(event)) {
+				drop = copy;
+				effect = 'copy';
+			} else {
+				drop = move;
+				effect = 'move';
+			}
+			event.editor.dndContext = DragDrop.Context({
+				effectAllowed : effect,
+				element       : event.target,
+				data          : ['text/html', event.target.outerHTML],
+				start         : startdrag,
+				drop          : drop,
+				end           : enddrag
+			});
 		}
-		var block = event.target;
-		var index = Dom.nodeIndex(block);
-		event.range = Ranges.create(
-			block.parentNode,
-			index,
-			block.parentNode,
-			index + 1
-		);
-		console.log(read(block));
 	}
 
 	var handlers = {

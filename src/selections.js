@@ -104,7 +104,7 @@ define([
 	function stylesFromOverrides(overrides) {
 		var style = {};
 		style['padding'] = overrides['bold'] ? '1px' : '0px';
-		style[Browsers.VENDOR_PREFIX + 'transform']
+		style[Browsers.VENDOR_PREFIX + '-transform']
 				= overrides['italic'] ? 'rotate(8deg)' : '';
 		style['background'] = overrides['color'] || '';
 		return style;
@@ -302,7 +302,7 @@ define([
 
 		if (range.collapsed || shift) {
 			var stride = Events.isWithShift(event) ? 'word' : 'char';
-			set(clone, move(get(range), strid));
+			set(clone, move(get(range), stride));
 		}
 
 		if (!shift) {
@@ -456,6 +456,13 @@ define([
 		};
 	}
 
+	function dragndrop(event, range) {
+		return {
+			range: range,
+			focus: 'end'
+		};
+	}
+
 	/**
 	 * Event handlers.
 	 *
@@ -468,7 +475,9 @@ define([
 		'tplclick'  : tplclick,
 		'mouseup'   : mouseup,
 		'mousedown' : mousedown,
-		'mousemove' : Fn.returnFalse
+		'mousemove' : Fn.returnFalse,
+		'drag'      : dragndrop,
+		'drop'      : dragndrop
 	};
 
 	/**
@@ -621,9 +630,14 @@ define([
 			// starts to create an expanded selection by dragging.
 			if (!old.dragging && context.dragging) {
 				hide(context.caret);
+				Dom.removeClass(context.caret, 'aloha-caret-blink');
 			}
 
 			return event;
+		}
+
+		if ('mousedown' === event.type) {
+			Dom.addClass(old.caret, 'aloha-caret-blink');
 		}
 
 		// Because otherwise, if, in the process of a click, the user's cursor
@@ -659,6 +673,10 @@ define([
 		event.editor.selectionContext = context;
 
 		range = context.range;
+
+		if (!Dom.isEditable(range.commonAncestorContainer)) {
+			return event;
+		}
 
 		var boundary, container;
 		if ('start' === context.focus) {

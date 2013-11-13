@@ -22,12 +22,26 @@ body {
 	color: #fff;
 }
 
-.aloha-editable {
-	outline: 0;
-}
 p { margin: 0 0 1em; }
 p:last-child { margin-bottom: 0; }
 
+.aloha-editable {
+	outline: 0;
+}
+
+.aloha-block {
+	-webkit-transition: -webkit-transform 0.2s ease-out;
+	   -moz-transition:    -moz-transform 0.2s ease-out;
+	    -ms-transition:     -ms-transform 0.2s ease-out;
+	     -o-transition:      -o-transform 0.2s ease-out;
+}
+.aloha-block-dragging {
+	opacity: 0.2;
+	-webkit-transform: scale(0.8);
+	   -moz-transform: scale(0.8);
+	    -ms-transform: scale(0.8);
+	     -o-transform: scale(0.8);
+}
 
 .aloha-caret {
 	position: absolute;
@@ -35,6 +49,9 @@ p:last-child { margin-bottom: 0; }
 	margin: 0;
 	padding: 0;
 	background: #333;
+}
+
+.aloha-caret-blink {
 	-webkit-animation: blink .5s ease-out infinite alternate;
 	   -moz-animation: blink .5s ease-out infinite alternate;
 	    -ms-animation: blink .5s ease-out infinite alternate;

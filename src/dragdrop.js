@@ -6,10 +6,41 @@
  *
  * @reference
  * http://www.whatwg.org/specs/web-apps/current-work/#dnd
+ * http://www.html5rocks.com/en/tutorials/dnd/basics/
  * https://developer.mozilla.org/en-US/docs/Drag_and_drop_events
+ * https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer
  */
-define(['ranges'], function DragDrop(Ranges) {
+define([
+	'functions',
+	'dom',
+	'maps',
+	'ranges',
+	'editing',
+	'boundaries',
+	'selections'
+], function DragDrop(
+	Fn,
+	Dom,
+	Maps,
+	Ranges,
+	Editing,
+	Boundaries,
+	Selections
+) {
 	'use strict';
+
+	var defaults = {
+		effectAllowed : 'none',
+		element       : null,
+		data          : ['text/plain', ''],
+		start         : Fn.noop,
+		drop          : Fn.noop,
+		end           : Fn.noop
+	};
+
+	function Context(props) {
+		return Maps.merge({}, defaults, props);
+	}
 
 	var DATA_TYPES = {
 		'html'  : 'text/html',
@@ -20,43 +51,83 @@ define(['ranges'], function DragDrop(Ranges) {
 		return event.dataTransfer.getData(DATA_TYPES[type || 'plain'] || type);
 	}
 
-	function rangeFromEvent(event) {
-		return Ranges.createFromPoint(event.clientX, event.clientY);
+	function isDraggable(node) {
+		return (Dom.Nodes.ELEMENT === node.nodeType)
+		    && 'true' === node.getAttribute('draggable');
 	}
 
-	// https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer
+	function mousedown(event) {
+		event.editor.dndContext = null;
+	}
+
+	function start(event) {
+		var context = event.editor.dndContext;
+
+		// Because only dropEffect="copy" will be droppable
+		event.native.dataTransfer.effectAllowed = context.effectAllowed;
+
+		// Because this is required for FF
+		event.native.dataTransfer.setData(context.data[0], context.data[1]);
+
+		context.start(event);
+	}
+
+	function drag(event) {
+		event.range = Ranges.createFromPoint(event.native.clientX - 10, event.native.clientY - 10);
+	}
+
+	function over(event) {
+		// Because this is necessary to enable dropping
+		event.native.preventDefault();
+	}
+
 	function drop(event) {
-		var native = event.native;
-		native.preventDefault();
-		var srcRange = Ranges.get();
-		var dstRange = DragDrop.range(native);
-		var data = DragDrop.data(native, 'html');
-		Editing.delete(srcRange);
+		event.editor.dndContext.drop(event);
 	}
 
-	function mousemove(event) {
-		var range = rangeFromEvent(event.native);
-		if (range) {
-			var box = Ranges.box(range);
-			console.clear();
-			console.warn(aloha.boundarymarkers.hint(range));
+	function end(event) {
+		event.editor.dndContext.end(event);
+	}
+
+	function copy(event) {
+		console.log('copy');
+	}
+
+	function move(event) {
+		var range = Ranges.fromEvent(event);
+		if (range && Dom.isEditable(range.commonAncestorContainer)) {
+			var elem = event.editor.dndContext.element;
+			var prev = elem.previousSibling;
+			Editing.insert(range, elem);
+			if (prev && prev.nextSibling) {
+				Dom.merge(prev, prev.nextSibling);
+			}
 		}
+		return range;
 	}
 
 	var handlers = {
-		//'mousemove' : mousemove
+		'mousedown' : mousedown,
+		'dragstart' : start,
+		'dragover'  : over,
+		'drop'      : drop,
+		'drag'      : drag,
+		'dragend'   : end
 	};
 
 	function handle(event) {
-		if (handlers[event.type]) {
+		if (event.editor.dndContext && handlers[event.type]) {
 			handlers[event.type](event);
 		}
+		return event;
 	}
 
 	var exports = {
-		data   : data,
-		range  : rangeFromEvent,
-		handle : handle
+		handle      : handle,
+		isDraggable : isDraggable,
+		Context     : Context,
+		copy        : copy,
+		move        : move
 	};
 
 	exports['handle'] = exports.handle;

@@ -895,10 +895,10 @@ define([
 		return Arrays.mapcat(ranges, boundariesFromRange);
 	}
 
-	function adjustBoundaries(Fn, boundaries) {
+	function adjustBoundaries(fn, boundaries) {
 		var args = Array.prototype.slice.call(arguments, 2);
 		return boundaries.map(function (boundary) {
-			return Fn.apply(null, [boundary].concat(args));
+			return fn.apply(null, [boundary].concat(args));
 		});
 	}
 

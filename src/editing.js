@@ -1299,17 +1299,22 @@ define([
 			Boundaries.normalize(Boundaries.start(range)),
 			context
 		);
-		liveRange.setStart(boundary[0], boundary[1]);
-		liveRange.setEnd(boundary[0], boundary[1]);
+		Ranges.setFromBoundaries(liveRange, boundary, boundary);
+	}
+
+	function insert(liveRange, insertion) {
+		var range = Ranges.collapseToEnd(StableRange(liveRange));
+		split(range, {
+			below: function (node) {
+				return Content.allowsNesting(node.nodeName, insertion.nodeName);
+			}
+		});
+		var boundary = Dom.insertNodeAtBoundary(insertion, Boundaries.start(range));
+		Ranges.setFromBoundaries(liveRange, boundary, [boundary[0], boundary[1] + 1]);
 	}
 
 	/**
 	 * High level editing functions.
-	 *
-	 * editing.wrap()
-	 * editing.format()
-	 * editing.split()
-	 * editing.delete()
 	 */
 	var exports = {
 		wrap   : wrapElem,
@@ -1317,6 +1322,7 @@ define([
 		split  : split,
 		delete : delete_,
 		break  : break_,
+		insert : insert
 	};
 
 	exports['wrap'] = exports.wrap;
