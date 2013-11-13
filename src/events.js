@@ -10,10 +10,6 @@
 define(['misc'], function Events(Misc) {
 	'use strict';
 
-	if ('undefined' !== typeof mandox) {
-		eval(uate)('events');
-	}
-
 	/**
 	 * Registers an event listener to fire the given callback when a specified
 	 * event is triggered on the given object.
@@ -76,9 +72,35 @@ define(['misc'], function Events(Misc) {
 	}
 
 	/**
+	 * Given an event object, checks whether the ctrl key is depressed.
+	 *
+	 * @param  {Object}  event
+	 * @return {boolean}
+	 */
+	function isWithCtrl(event) {
+		return event.meta.indexOf('ctrl') > -1;
+	}
+
+	/**
+	 * Given an event object, checks whether the shift key is depressed.
+	 *
+	 * @param  {Object}  event
+	 * @return {boolean}
+	 */
+	function isWithShift(event) {
+		return event.meta.indexOf('shift') > -1;
+	}
+
+	/**
+	 * Sets up all editing browser events to call `editor` on the given
+	 * document.
+	 *
 	 * @reference
 	 * https://en.wikipedia.org/wiki/DOM_Events
 	 * http://www.w3.org/TR/DOM-Level-3-Events
+	 *
+	 * @param {Function(Object)} editor
+	 * @param {Element}          document
 	 */
 	function setup(editor, doc) {
 		add(doc, 'keyup',     editor);
@@ -102,16 +124,20 @@ define(['misc'], function Events(Misc) {
 	}
 
 	var exports = {
-		add     : add,
-		remove  : remove,
-		compose : compose,
-		setup   : setup
+		add         : add,
+		remove      : remove,
+		compose     : compose,
+		setup       : setup,
+		isWithCtrl  : isWithCtrl,
+		isWithShift : isWithShift
 	};
 
-	exports['add']     = exports.add;
-	exports['remove']  = exports.remove;
-	exports['compose'] = exports.compose;
-	exports['setup']   = exports.setup;
+	exports['add']       = exports.add;
+	exports['remove']    = exports.remove;
+	exports['compose']   = exports.compose;
+	exports['setup']     = exports.setup;
+	exports['isWithCtrl']  = exports.isWithCtrl;
+	exports['isWithShift'] = exports.isWithShift;
 
 	return exports;
 });

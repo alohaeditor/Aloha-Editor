@@ -14,6 +14,7 @@ define([
 	'html',
 	'keys',
 	'maps',
+	'events',
 	'ranges',
 	'browser',
 	'overrides',
@@ -25,6 +26,7 @@ define([
 	Html,
 	Keys,
 	Maps,
+	Events,
 	Ranges,
 	Browsers,
 	Overrides,
@@ -122,26 +124,6 @@ define([
 	 */
 	function isReversed(sc, so, ec, eo) {
 		return (sc === ec && so > eo) || Dom.followedBy(ec, sc);
-	}
-
-	/**
-	 * Given an event object, checks whether the ctrl key is depressed.
-	 *
-	 * @param  {Object}  event
-	 * @return {boolean}
-	 */
-	function isHoldingCtrl(event) {
-		return event.meta.indexOf('ctrl') > -1;
-	}
-
-	/**
-	 * Given an event object, checks whether the shift key is depressed.
-	 *
-	 * @param  {Object}  event
-	 * @return {boolean}
-	 */
-	function isHoldingShift(event) {
-		return event.meta.indexOf('shift') > -1;
 	}
 
 	/**
@@ -270,7 +252,7 @@ define([
 			return;
 		}
 
-		if (!isHoldingShift(event)) {
+		if (!Events.isWithShift(event)) {
 			return {
 				range: next,
 				focus: focus
@@ -291,7 +273,7 @@ define([
 	 * @return {Object}
 	 */
 	function step(event, range, focus, direction) {
-		var shift = isHoldingShift(event);
+		var shift = Events.isWithShift(event);
 		var clone = range.cloneRange();
 		var move = ('left' === direction) ? left : right;
 		var get, set, collapse;
@@ -311,7 +293,8 @@ define([
 		}
 
 		if (range.collapsed || shift) {
-			set(clone, move(get(range), isHoldingCtrl(event) ? 'word' : 'char'));
+			var stride = Events.isWithShift(event) ? 'word' : 'char';
+			set(clone, move(get(range), strid));
 		}
 
 		if (!shift) {
@@ -607,7 +590,7 @@ define([
 			range,
 			old.focus,
 			old.range,
-			old.dragging || isHoldingShift(event)
+			old.dragging || Events.isWithShift(event)
 		));
 
 		event.editor.selectionContext = context;
@@ -641,7 +624,7 @@ define([
 		// selections when holding down the shift key.  We therefore "trick"
 		// the browser by setting the selection to a range which will cause the
 		// the expansion to be done in the way that the user expects.
-		if (!preventDefault && 'mousedown' === type && isHoldingShift(event)) {
+		if (!preventDefault && 'mousedown' === type && Events.isWithShift(event)) {
 			if ('start' === context.focus) {
 				range = Ranges.collapseToEnd(range);
 			} else {
