@@ -37,7 +37,7 @@ define([
 
 	/**
 	 * Renders the given element at the specified boundary to represent the
-	 * caret position. Will also style the caret if `opt_style` is provided.
+	 * caret position.  Will also style the caret if `opt_style` is provided.
 	 *
 	 * @param {Element}  caret
 	 * @param {Boundary} boundary
@@ -196,6 +196,14 @@ define([
 		return Traversing.findWordBoundaryAhead(boundary);
 	}
 
+	/**
+	 * Given two ranges, creates a range that is between the two.
+	 *
+	 * @param  {Range} a
+	 * @param  {Range} b
+	 * @param  {string} focus
+	 * @return {Object}
+	 */
 	function mergeRanges(a, b, focus) {
 		var sc, so, ec, eo;
 		if ('start' === focus) {
@@ -307,6 +315,11 @@ define([
 		};
 	}
 
+	/**
+	 * Caret movement operations mapped against cursor key keycodes.
+	 *
+	 * @type {Object.<String, Function(Event, Range, string):Object>}
+	 */
 	var movements = {};
 
 	movements[Keys.CODES.up] = function climbUp(event, range, focus) {
@@ -325,6 +338,14 @@ define([
 		return step(event, range, focus, 'right');
 	};
 
+	/**
+	 * Processes a keypress event.
+	 *
+	 * @param  {Event}  event
+	 * @param  {Range}  range
+	 * @param  {string} focus
+	 * @return {Object}
+	 */
 	function keypress(event, range, focus) {
 		return {
 			range: range,
@@ -332,10 +353,26 @@ define([
 		};
 	}
 
+	/**
+	 * Processes a keydown event.
+	 *
+	 * @param  {Event}  event
+	 * @param  {Range}  range
+	 * @param  {string} focus
+	 * @return {Object}
+	 */
 	function keydown(event, range, focus) {
 		return (movements[event.which] || keypress)(event, range, focus);
 	}
 
+	/**
+	 * Processes a double-click event.
+	 *
+	 * @param  {Event}  event
+	 * @param  {Range}  range
+	 * @param  {string} focus
+	 * @return {Object}
+	 */
 	function dblclick(event, range, focus, previous, expanding) {
 		return {
 			range: Ranges.expandToWord(range),
@@ -343,6 +380,14 @@ define([
 		};
 	}
 
+	/**
+	 * Processes a triple click event.
+	 *
+	 * @param  {Event}  event
+	 * @param  {Range}  range
+	 * @param  {string} focus
+	 * @return {Object}
+	 */
 	function tplclick(event, range, focus, previous, expanding) {
 		return {
 			range: Ranges.expandToBlock(range),
@@ -350,6 +395,14 @@ define([
 		};
 	}
 
+	/**
+	 * Processes a mouseup event.
+	 *
+	 * @param  {Event}  event
+	 * @param  {Range}  range
+	 * @param  {string} focus
+	 * @return {Object}
+	 */
 	function mouseup(event, range, focus, previous, expanding) {
 		if (!expanding) {
 			return {
@@ -360,6 +413,14 @@ define([
 		return mergeRanges(range, previous, focus);
 	}
 
+	/**
+	 * Processes a mousedown event.
+	 *
+	 * @param  {Event}  event
+	 * @param  {Range}  range
+	 * @param  {string} focus
+	 * @return {Object}
+	 */
 	function mousedown(event, range, focus, previous, expanding) {
 		if (!expanding) {
 			return {
@@ -485,8 +546,10 @@ define([
 	}
 
 	/**
-	 * Generates the state of the user selection.
-	 * Will create a DOM element to be used to represent the caret position.
+	 * Creates a new selection context.
+	 *
+	 * Will create a DOM element at the end of the document body to be used to
+	 * represent the caret position.
 	 *
 	 * @return {Object}
 	 */
@@ -645,6 +708,7 @@ define([
 
 	exports['show'] = exports.show;
 	exports['handle'] = exports.handle;
+	exports['context'] = exports.context;
 
 	return exports;
 });
