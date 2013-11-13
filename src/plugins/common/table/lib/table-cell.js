@@ -457,9 +457,10 @@ define([
 		// deselect all highlighted cells registered in the this.tableObj.selection object
 		this.tableObj.selection.unselectCells();
 
-		if (this.tableObj.hasFocus) {
-			if (!Browser.ie)
-				jqEvent.stopPropagation();
+		if (typeof jqEvent.stopPropagation === 'function') {
+			jqEvent.stopPropagation();
+		} else if (typeof jqEvent.cancelBubble !== 'undefined') {
+			jqEvent.cancelBubble = true;
 		}
 	};
 

@@ -166,13 +166,16 @@ define([
 	TableSelection.prototype.notifyCellsSelected = function () {
 		Aloha.trigger( 'aloha-table-selection-changed' );
 		
-		// the UI feels more consisten when we remove the non-table
+		// the UI feels more consistent when we remove the non-table
 		// selection when cells are selected
 		// TODO this code doesn't work right in IE as it causes the table
 		//  scope of the floating menu to be lost. Maybe this can be
 		//  handled by testing for an empty selection in the
 		//  aloha-selection-changed event.
-		//Aloha.getSelection().removeAllRanges();
+		var selection = Aloha.getSelection();
+		if (selection.getRangeCount() > 0) {
+			selection.removeAllRanges();
+		}
 	};
 
 	/**
