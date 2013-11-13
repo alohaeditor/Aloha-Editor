@@ -94,6 +94,8 @@ define([
 
 	editor.editables = {};
 	editor.BLOCK_CLASS = 'aloha-block';
+	editor.CARET_CLASS = 'aloha-caret';
+	editor.selectionContext = Selections.Context();
 
 	Events.setup(editor, document);
 

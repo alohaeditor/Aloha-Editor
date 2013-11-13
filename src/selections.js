@@ -34,25 +34,12 @@ define([
 	'use strict';
 
 	/**
-	 * Creates a DOM element to be used to represent the caret position.
-	 *
-	 * @return {Element}
-	 */
-	function create() {
-		var caret = document.createElement('div');
-		caret.style.display = 'none';
-		Dom.addClass(caret, 'aloha-caret');
-		Dom.insert(caret, document.body, true);
-		return caret;
-	}
-
-	/**
 	 * Renders the given element at the specified boundary to represent the
 	 * caret position. Will also style the caret if `opt_style` is provided.
 	 *
 	 * @param {Element}  caret
 	 * @param {Boundary} boundary
-	 * @param {Object=}   opt_style
+	 * @param {Object=}  opt_style
 	 */
 	function show(caret, boundary, opt_style) {
 		var box = Ranges.box(Ranges.create(boundary[0], boundary[1]));
@@ -140,7 +127,7 @@ define([
 	/**
 	 * Given an event object, checks whether the ctrl key is depressed.
 	 *
-	 * @param  {Object} event
+	 * @param  {Object}  event
 	 * @return {boolean}
 	 */
 	function isHoldingCtrl(event) {
@@ -150,7 +137,7 @@ define([
 	/**
 	 * Given an event object, checks whether the shift key is depressed.
 	 *
-	 * @param  {Object} event
+	 * @param  {Object}  event
 	 * @return {boolean}
 	 */
 	function isHoldingShift(event) {
@@ -243,7 +230,7 @@ define([
 		if (isReversed(sc, so, ec, eo)) {
 			return {
 				range: Ranges.create(ec, eo, sc, so),
-				focus: 'start' === focus ? 'end' : 'start'
+				focus: ('start' === focus) ? 'end' : 'start'
 			};
 		}
 		return {
@@ -270,7 +257,7 @@ define([
 		var box = Ranges.box(clone);
 		var half = box.height / 2;
 		var offset = half;
-		var move = 'up' === direction ? up : down;
+		var move = ('up' === direction) ? up : down;
 		var next = move(box, offset);
 
 		// TODO: also check if `next` and `clone` are *visually* adjacent
@@ -306,11 +293,11 @@ define([
 	function step(event, range, focus, direction) {
 		var shift = isHoldingShift(event);
 		var clone = range.cloneRange();
-		var move = 'left' === direction ? left : right;
+		var move = ('left' === direction) ? left : right;
 		var get, set, collapse;
 
 		if (range.collapsed || !shift) {
-			focus = 'left' === direction ? 'start' : 'end';
+			focus = ('left' === direction) ? 'start' : 'end';
 		}
 
 		if ('start' === focus) {
@@ -487,7 +474,7 @@ define([
 			return event.type;
 		}
 
-		var ref = 'start' === focus
+		var ref = ('start' === focus)
 		        ? Ranges.collapseToStart(previous.cloneRange())
 		        : Ranges.collapseToEnd(previous.cloneRange());
 
@@ -515,47 +502,54 @@ define([
 	}
 
 	/**
-	 * State of the user selection.
+	 * Generates the state of the user selection.
+	 * Will create a DOM element to be used to represent the caret position.
 	 *
-	 * @type {Object}
-	 */
-	var state = {
-		caret          : create(),
-		range          : null,
-		focus          : 'end',
-		dragging       : false,
-		mousedown      : false,
-		doubleclicking : false,
-		tripleclicking : false
-	};
-
-	/**
-	 * Returns a new state as a function of the given event, the previous, state
-	 * and the changes.
-	 *
-	 * @param  {Object} event
-	 * @param  {Object} old
-	 * @param  {Object} change
 	 * @return {Object}
 	 */
-	function newState(event, old, change) {
-		var state = Maps.extend({}, old, change);
+	function Context() {
+		var caret = document.createElement('div');
+		caret.style.display = 'none';
+		Dom.addClass(caret, 'aloha-caret');
+		Dom.insert(caret, caret.ownerDocument.body, true);
+		return {
+			caret          : caret,
+			range          : null,
+			focus          : 'end',
+			dragging       : false,
+			mousedown      : false,
+			doubleclicking : false,
+			tripleclicking : false
+		};
+	}
+
+	/**
+	 * Returns a new context as a function of the given event, the previous
+	 * state, and changes to the state.
+	 *
+	 * @param  {Object} event
+	 * @param  {Object} old    context
+	 * @param  {Object} change context
+	 * @return {Object}
+	 */
+	function newContext(event, old, change) {
+		var context = Maps.extend({}, old, change);
 
 		switch (event.type) {
 		case 'mousedown':
-			state.time = new Date();
-			state.dragging = false;
-			state.mousedown = true;
+			context.time = new Date();
+			context.dragging = false;
+			context.mousedown = true;
 			break;
 		case 'mouseup':
-			state.mousedown = false;
+			context.mousedown = false;
 			break;
 		case 'mousemove':
-			state.dragging = old.mousedown;
+			context.dragging = old.mousedown;
 			break;
 		}
 
-		return state;
+		return context;
 	}
 
 	/**
@@ -569,17 +563,18 @@ define([
 			return event;
 		}
 
-		var old = state;
+		var context;
+		var old = event.editor.selectionContext;
 
 		// Because we will never update the caret position on mousemove, we
 		// avoid unncessary computation.
 		if ('mousemove' === event.type) {
-			state = newState(event, old);
+			context = event.editor.selectionContext = newContext(event, old);
 
 			// Because we want to move the caret out of the way when the user
 			// starts to create an expanded selection by dragging.
-			if (!old.dragging && state.dragging) {
-				hide(state.caret);
+			if (!old.dragging && context.dragging) {
+				hide(context.caret);
 			}
 
 			return event;
@@ -606,7 +601,7 @@ define([
 			old.tripleclicking
 		);
 
-		state = newState(event, old, process(
+		context = newContext(event, old, process(
 			event,
 			type,
 			range,
@@ -615,10 +610,12 @@ define([
 			old.dragging || isHoldingShift(event)
 		));
 
-		range = state.range;
+		event.editor.selectionContext = context;
+
+		range = context.range;
 
 		var boundary, container;
-		if ('start' === state.focus) {
+		if ('start' === context.focus) {
 			boundary = Boundaries.start(range);
 			container = range.startContainer;
 		} else {
@@ -627,13 +624,14 @@ define([
 		}
 
 		show(
-			state.caret,
+			context.caret,
 			boundary,
 			stylesFromOverrides(overrides(event, container))
 		);
 
 		var preventDefault = ('keydown' === type && movements[event.which])
-		                  || ('aloha-caret' === event.native.target.className);
+		                  || (event.editor.CARET_CLASS
+		                         === event.native.target.className);
 
 		if (preventDefault) {
 			event.native.preventDefault();
@@ -644,7 +642,7 @@ define([
 		// the browser by setting the selection to a range which will cause the
 		// the expansion to be done in the way that the user expects.
 		if (!preventDefault && 'mousedown' === type && isHoldingShift(event)) {
-			if ('start' === state.focus) {
+			if ('start' === context.focus) {
 				range = Ranges.collapseToEnd(range);
 			} else {
 				range = Ranges.collapseToStart(range);
@@ -657,8 +655,9 @@ define([
 	}
 
 	var exports = {
-		show   : show,
-		handle : handle
+		show    : show,
+		handle  : handle,
+		Context : Context
 	};
 
 	exports['show'] = exports.show;
