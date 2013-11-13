@@ -21,3 +21,7 @@ All changes are categorized into one of the following keywords:
               When paste action was made the formatlesshandler was never called.
               We manually call this handler before pasting the content into the DOM element.
               RT#56692
+
+- **BUGFIX**:      Table Plugin: Clicking Text inside Table Cell doesn't make the whole cell Content
+                   to be Selected (only IE) RT#57176
+
