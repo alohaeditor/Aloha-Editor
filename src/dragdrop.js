@@ -72,12 +72,9 @@ define([
 		context.start(event);
 	}
 
-	function drag(event) {
-		event.range = Ranges.createFromPoint(event.native.clientX - 10, event.native.clientY - 10);
-	}
-
 	function over(event) {
 		// Because this is necessary to enable dropping
+		event.range = Ranges.createFromPoint(event.native.clientX - 10, event.native.clientY - 10);
 		event.native.preventDefault();
 	}
 
@@ -111,7 +108,6 @@ define([
 		'dragstart' : start,
 		'dragover'  : over,
 		'drop'      : drop,
-		'drag'      : drag,
 		'dragend'   : end
 	};
 

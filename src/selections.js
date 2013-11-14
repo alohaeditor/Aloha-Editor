@@ -476,7 +476,7 @@ define([
 		'mouseup'   : mouseup,
 		'mousedown' : mousedown,
 		'mousemove' : Fn.returnFalse,
-		'drag'      : dragndrop,
+		'dragover'  : dragndrop,
 		'drop'      : dragndrop
 	};
 
