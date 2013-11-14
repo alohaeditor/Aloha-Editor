@@ -15,153 +15,173 @@ define([
 	'dom',
 	'maps',
 	'ranges',
-	'editing',
-	'boundaries',
-	'selections'
+	'editing'
 ], function DragDrop(
 	Fn,
 	Dom,
 	Maps,
 	Ranges,
-	Editing,
-	Boundaries,
-	Selections
+	Editing
 ) {
 	'use strict';
 
 	/**
-	 * Default drag and drop options.
+	 * Default drag and drop context properites.
+	 *
+	 * These are the default attributes from which drag and drop contexts will
+	 * be created.
 	 *
 	 * @type {Object.<string, *>}
 	 */
-	var defaults = {
-		'effectAllowed' : 'none',
-		'element'       : null,
-		'data'          : ['text/plain', ''],
-		'start'         : Fn.noop,
-		'drop'          : Fn.noop,
-		'end'           : Fn.noop
+	var DEFAULTS = {
+		'dropEffect' : 'none',
+		'element'    : null,
+		'target '    : null,
+		'data'       : ['text/plain', '']
 	};
 
 	/**
-	 * Creates a new context.
+	 * Creates a new drag and drop context.
 	 *
-	 * @param  {Object}
+	 * The following attributes are supported in the options object that is
+	 * passed to this function:
+	 *
+	 *	`dropEffect`
+	 *		The dropEffect attribute controls the drag-and-drop feedback that
+	 *		the user is given during a drag-and-drop operation.  If the
+	 *		`dropEffect` value is set to "copy", for example, the user agent
+	 *		may rendered the drag icon with a "+" (plus) sign.
+	 *		The supported values are "none", "copy", "link", or "move".  All
+	 *		other values will be ignored.
+	 *
+	 *	`element`
+	 *		The element on which dragging was initiated on.  If the drag and
+	 *		drop operation is a moving operation, this element will be
+	 *		relocated into the range boundary at the point at which the drop
+	 *		event is fired.
+	 *		If the drag and drop operation is a copying operation, then this
+	 *		attribute should a reference to a deep clone of the element on
+	 *		which dragging was initiated.
+	 *
+	 *	`data`
+	 *		A tuple describing the data that will be set to the drag data
+	 *		store.  See:
+	 *		http://www.whatwg.org/specs/web-apps/current-work/multipage/dnd.html#drag-data-store
+	 *
+	 * @param  {Object} options
 	 * @return {Object}
 	 */
-	function Context(props) {
-		return Maps.merge({}, defaults, props);
+	function Context(options) {
+		return Maps.merge({}, DEFAULTS, options);
 	}
 
 	/**
 	 * Whether or not the given node is draggable.
 	 *
+	 * In an attempt to follow the implementation on most browsers, text
+	 * selections, IMG elements, and anchor elements with an href attribute are
+	 * draggable by default.
+	 *
 	 * @param  {Element} node
 	 * @return {boolean}
+	 *         True if the given node is draggable.
 	 */
 	function isDraggable(node) {
-		return (Dom.Nodes.ELEMENT === node.nodeType)
-		    && ('true' === node.getAttribute('draggable')
-		        || 'IMG' === node.nodeName || 'A' === node.nodeName);
-	}
-
-	function mousedown(event) {
-		event.editor.dndContext = null;
-	}
-
-	function start(event) {
-		var context = event.editor.dndContext;
-
-		// Because only dropEffect="copy" will be droppable
-		event.native.dataTransfer.effectAllowed = context.effectAllowed;
-
-		// Because this is required for FF
-		event.native.dataTransfer.setData(context.data[0], context.data[1]);
-
-		context.start(event);
-	}
-
-	function over(event) {
-		event.range = Ranges.createFromPoint(
-			event.native.clientX - 10,
-			event.native.clientY - 10
-		);
-
-		// Because this is necessary to enable dropping
-		event.native.preventDefault();
-	}
-
-	function drop(event) {
-		event.range = Ranges.createFromPoint(
-			event.native.clientX - 10,
-			event.native.clientY - 10
-		);
-
-		event.editor.dndContext.drop(event);
-
-		// Because some browsers will redirect otherwise
-		event.native.preventDefault();
-		if (event.native.stopPropagation) {
-			event.native.stopPropagation();
+		if (Dom.Nodes.ELEMENT !== node.nodeType) {
+			return false;
 		}
-	}
 
-	function end(event) {
-		event.editor.dndContext.end(event);
-	}
+		var attr = node.getAttribute('draggable');
 
-	function copy(event) {
-		var range = Ranges.fromEvent(event);
-		if (range && Dom.isEditable(range.commonAncestorContainer)) {
-			Editing.insert(range, event.editor.dndContext.ghost);
+		if ('false' === attr) {
+			return false;
 		}
-		return range;
+
+		if ('true' === attr) {
+			return true;
+		}
+
+		if ('IMG' === node.nodeName) {
+			return true;
+		}
+
+		return 'A' === node.nodeName && node.getAttribute('href');
 	}
 
 	/**
-	 * Moves the dragged element into the current range.
+	 * Drops `element` into the range at the current position as determined
+	 * from the given event.
 	 *
-	 * @param  {Event} event
+	 * @param  {Event}   event
+	 * @param  {Element} element
 	 * @return {Range}
 	 */
-	function move(event) {
-		var range = Ranges.fromEvent(event);
+	function drop(event, element) {
+		var range = Ranges.createFromPoint(
+			event.clientX - 10,
+			event.clientY - 10
+		);
 		if (range && Dom.isEditable(range.commonAncestorContainer)) {
-			var elem = event.editor.dndContext.element;
-			var prev = elem.previousSibling;
-			Editing.insert(range, elem);
+			var prev = element.previousSibling;
+			Editing.insert(range, element);
 			if (prev && prev.nextSibling) {
 				Dom.merge(prev, prev.nextSibling);
 			}
 		}
+		Ranges.collapseToEnd(range);
 		return range;
 	}
 
-	var handlers = {
-		'mousedown' : mousedown,
-		'dragstart' : start,
-		'dragover'  : over,
-		'drop'      : drop,
-		'dragend'   : end
-	};
-
+	/**
+	 * Processes drag and drop events operations.
+	 *
+	 * @param  {Event}
+	 * @return {Event}
+	 */
 	function handle(event) {
-		if (event.editor.dndContext && handlers[event.type]) {
-			handlers[event.type](event);
+		var context = event.editor.dndContext;
+
+		if (!context) {
+			return event;
 		}
-		return event;
+
+		switch (event.type) {
+		case 'dragstart':
+
+			// Because this is required for FF for dragging to start on
+			// elements other than IMG elements or anchor elements with href
+			// values.
+			event.native.dataTransfer.setData(context.data[0], context.data[1]);
+			break;
+		case 'dragover':
+
+			// Because this is necessary to enable dropping to work
+			event.native.preventDefault();
+
+			event.range = Ranges.createFromPoint(
+				event.native.clientX - 10,
+				event.native.clientY - 10
+			);
+			break;
+		case 'drop':
+
+			event.range = drop(event.native, event.editor.dndContext.element);
+
+			// Because some browsers will redirect otherwise
+			event.native.preventDefault();
+			if (event.native.stopPropagation) {
+				event.native.stopPropagation();
+			}
+			break;
+		}
 	}
 
 	var exports = {
-		copy        : copy,
-		move        : move,
-		handle      : handle,
-		Context     : Context,
-		isDraggable : isDraggable
+		handle: handle,
+		Context: Context,
+		isDraggable: isDraggable
 	};
 
-	exports['copy'] = exports.copy;
-	exports['move'] = exports.move;
 	exports['handle'] = exports.handle;
 	exports['Context'] = exports.Context;
 	exports['isDraggable'] = exports.isDraggable;

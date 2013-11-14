@@ -9,100 +9,108 @@
  */
 define([
 	'dom',
-	'arrays',
 	'events',
 	'dragdrop'
 ], function Blocks(
 	Dom,
-	Arrays,
 	Events,
 	DragDrop
 ) {
 	'use strict';
 
 	/**
-	 * Find aloha blocks in the given element.
+	 * Reads the given block's data.
 	 *
-	 * @reference
-	 * http://ejohn.org/blog/thoughts-on-queryselectorall
-	 * https://developer.mozilla.org/en-US/docs/Web/API/Document.querySelector
+	 * @param  {Element} block
+	 * @return {Object}
 	 */
-	function findBlocks(editable, editor) {
-		return Arrays.coerce(
-			editable.elem.querySelectorAll('.' + editor.BLOCK_CLASS)
-		);
-	}
-
 	function read(block) {
 		return JSON.parse(block.getAttribute('data-aloha'));
 	}
 
+	/**
+	 * Writes the given block's data.
+	 *
+	 * @param  {Element} block
+	 * @param  {Object}  data
+	 * @return {Object}
+	 */
 	function write(block, data) {
 		block.setAttribute('data-aloha', JSON.stringify(data));
 	}
 
-	function initialize(event) {
-		findBlocks(event.editable, event.editor).forEach(function (block) {
-			block.setAttribute('contentEditable', 'false');
-			Dom.disableSelection(block);
+	/**
+	 * Creates a drag and drop context for copying.
+	 *
+	 * @param  {Element} block
+	 * @return {Context}
+	 */
+	function copyContext(block) {
+		return DragDrop.Context({
+			'dropEffect' : 'copy',
+			'element'    : block.cloneNode(true),
+			'target'     : block,
+			'data'       : ['text/html', block.outerHTML]
 		});
 	}
 
+	/**
+	 * Creates a drag and drop context for moving.
+	 *
+	 * @param  {Element} block
+	 * @return {Context}
+	 */
+	function moveContext(block) {
+		return DragDrop.Context({
+			'dropEffect' : 'move',
+			'element'    : block,
+			'target'     : block,
+			'data'       : ['text/html', block.outerHTML]
+		});
+	}
+
+	/**
+	 * Whether or not the given event is an event targeting an Aloha Block
+	 * element.
+	 *
+	 * @param  {Event}   event
+	 * @return {boolean}
+	 */
 	function isBlockEvent(event) {
 		return Dom.hasClass(event.native.target, event.editor.BLOCK_CLASS);
 	}
 
-	function startdrag(event) {
-		Dom.addClass(event.editor.dndContext.element, 'aloha-block-dragging');
-		Dom.addClass(event.editor.dndContext.ghost, 'aloha-block-dragging');
-	}
-
-	function enddrag(event) {
-		Dom.removeClass(event.editor.dndContext.element, 'aloha-block-dragging');
-		Dom.removeClass(event.editor.dndContext.ghost, 'aloha-block-dragging');
-	}
-
-	function move(event) {
-		event.range = DragDrop.move(event);
-	}
-
-	function copy(event) {
-		event.range = DragDrop.copy(event);
-	}
-
-	function mousedown(event) {
-		var target = event.native.target;
-		if (isBlockEvent(event) && DragDrop.isDraggable(target)) {
-			var drop, effect, ghost;
-			if (Events.isWithCtrl(event)) {
-				drop = copy;
-				effect = 'copy';
-				ghost = target.cloneNode(true);
-			} else {
-				drop = move;
-				effect = 'move';
-				ghost = target;
-			}
-			event.editor.dndContext = DragDrop.Context({
-				'effectAllowed' : effect,
-				'element'       : target,
-				'ghost'         : ghost,
-				'data'          : ['text/html', target.outerHTML],
-				'start'         : startdrag,
-				'drop'          : drop,
-				'end'           : enddrag
-			});
-		}
-	}
-
-	var handlers = {
-		'aloha'     : initialize,
-		'mousedown' : mousedown
-	};
-
+	/**
+	 * Process events on Aloha Blocks.
+	 *
+	 * @param  {Event} event
+	 * @return {Event}
+	 */
 	function handle(event) {
-		if (handlers[event.type]) {
-			handlers[event.type](event);
+		var context;
+		switch (event.type) {
+		case 'mousedown':
+			var block = event.native.target;
+			if (isBlockEvent(event) && DragDrop.isDraggable(block)) {
+				event.editor.dndContext = Events.isWithCtrl(event)
+				                        ? copyContext(block)
+				                        : moveContext(block);
+			}
+			break;
+		case 'dragstart':
+			if (isBlockEvent(event)) {
+				context = event.editor.dndContext;
+				Dom.addClass(context.element, 'aloha-block-dragging');
+				Dom.addClass(context.target, 'aloha-block-dragging');
+			}
+			break;
+		case 'dragend':
+			if (isBlockEvent(event)) {
+				context = event.editor.dndContext;
+				Dom.removeClass(context.element, 'aloha-block-dragging');
+				Dom.removeClass(context.target, 'aloha-block-dragging');
+			}
+			break;
 		}
 	}
 

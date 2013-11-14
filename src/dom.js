@@ -1436,6 +1436,9 @@ define([
 		 if ('true' === node.contentEditable) {
 			return true;
 		 }
+		 if (hasClass(node, 'aloha-block')) {
+			return false;
+		 }
 		 var parent = node.parentNode;
 		 while (parent) {
 			 if (hasClass(parent, 'aloha-editable')) {
