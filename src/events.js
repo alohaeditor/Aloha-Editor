@@ -7,7 +7,7 @@
  * @reference
  * http://www.w3.org/TR/DOM-Level-3-Events/#idl-interface-MouseEvent-initializers
  */
-define(['misc'], function Events(Misc) {
+define(['misc', 'assert'], function Events(Misc, Assert) {
 	'use strict';
 
 	/**
@@ -20,26 +20,22 @@ define(['misc'], function Events(Misc) {
 	 *        example.
 	 * @param {String} event
 	 *        Name of the event for which to register the given callback
-	 * @param {Function} callback
+	 * @param {Function} handler
 	 *        Function to be invoked when event is triggered on the given
 	 *        object.
+	 * @param {?boolean} useCapture
+	 *        Optional. Whether to add the handler in the capturing phase.
 	 */
-	var add = (function () {
-		var elem = document.createElement('div');
-		if (elem.addEventListener) {
-			return function add(obj, event, callback) {
-				obj.addEventListener(event, callback);
-			};
+	function add(obj, event, handler, useCapture) {
+		useCapture = !!useCapture;
+		if (obj.addEventListener) {
+			obj.addEventListener(event, handler, useCapture);
+		} else if (obj.attachEvent) {
+			obj.attachEvent('on' + event, handler);
+		} else {
+			Assert.assertError();
 		}
-		if (elem.attachEvent) {
-			return function add(obj, event, callback) {
-				obj.attachEvent('on' + event, callback);
-			};
-		}
-		return function add(obj, event, callback) {
-			obj['on' + event] = callback;
-		};
-	}());
+	}
 
 	/**
 	 * Detaches the specified event callback from the given event.
@@ -52,14 +48,40 @@ define(['misc'], function Events(Misc) {
 	 *        example.
 	 * @param {String} event
 	 *        Name of the event to detach.
-	 * @param {Function} callback
+	 * @param {Function} handler
 	 *        Function to be de-registered.
+	 * @param {?boolean} useCapture
+	 *        Optional. Must be true if the handler was registered with
+	 *        a true useCapture argument.
 	 */
-	var remove = (function remove() {
-		return function remove(elem, event, callback) {
-			throw 'Not implemented';
-		};
-	}());
+	function remove(obj, event, handler, useCapture) {
+		useCapture = !!useCapture;
+		if (obj.removeEventListener) {
+			obj.removeEventListener(event, handler, useCapture);
+		} else if (obj.detachEvent) {
+			obj.detachEvent('on' + event, handler);
+		} else {
+			Assert.assertError();
+		}
+	}
+
+	function dispatch(doc, obj, event){
+		if (obj.dispatchEvent) {
+			// NB This method is to create events is deprecated:
+			// https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Events/Creating_and_triggering_events
+			// But the new way doesn't work on IE9.
+			// var eventObj = new window['Event'](event);
+			var eventObj = doc.createEvent('Event');
+			eventObj.initEvent(event, true, true);
+			obj.dispatchEvent(eventObj);
+		} else if(obj.fireEvent) {
+			var eventObj = doc.createEventObject();
+			eventObj['type'] = event;
+			obj.fireEvent('on' + event, eventObj) ;
+		} else {
+			Assert.assertError();
+		}
+	}
 
 	function compose() {
 		var value = arguments[0];
@@ -129,7 +151,8 @@ define(['misc'], function Events(Misc) {
 		compose     : compose,
 		setup       : setup,
 		isWithCtrl  : isWithCtrl,
-		isWithShift : isWithShift
+		isWithShift : isWithShift,
+		dispatch: dispatch
 	};
 
 	exports['add']       = exports.add;
@@ -138,6 +161,7 @@ define(['misc'], function Events(Misc) {
 	exports['setup']     = exports.setup;
 	exports['isWithCtrl']  = exports.isWithCtrl;
 	exports['isWithShift'] = exports.isWithShift;
+	exports['dispatch'] = exports.dispatch;
 
 	return exports;
 });
