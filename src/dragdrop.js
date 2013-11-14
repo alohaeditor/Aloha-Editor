@@ -29,31 +29,40 @@ define([
 ) {
 	'use strict';
 
+	/**
+	 * Default drag and drop options.
+	 *
+	 * @type {Object.<string, *>}
+	 */
 	var defaults = {
-		effectAllowed : 'none',
-		element       : null,
-		data          : ['text/plain', ''],
-		start         : Fn.noop,
-		drop          : Fn.noop,
-		end           : Fn.noop
+		'effectAllowed' : 'none',
+		'element'       : null,
+		'data'          : ['text/plain', ''],
+		'start'         : Fn.noop,
+		'drop'          : Fn.noop,
+		'end'           : Fn.noop
 	};
 
+	/**
+	 * Creates a new context.
+	 *
+	 * @param  {Object}
+	 * @return {Object}
+	 */
 	function Context(props) {
 		return Maps.merge({}, defaults, props);
 	}
 
-	var DATA_TYPES = {
-		'html'  : 'text/html',
-		'plain' : 'text/plain'
-	};
-
-	function data(event, type) {
-		return event.dataTransfer.getData(DATA_TYPES[type || 'plain'] || type);
-	}
-
+	/**
+	 * Whether or not the given node is draggable.
+	 *
+	 * @param  {Element} node
+	 * @return {boolean}
+	 */
 	function isDraggable(node) {
 		return (Dom.Nodes.ELEMENT === node.nodeType)
-		    && 'true' === node.getAttribute('draggable');
+		    && ('true' === node.getAttribute('draggable')
+		        || 'IMG' === node.nodeName || 'A' === node.nodeName);
 	}
 
 	function mousedown(event) {
@@ -73,13 +82,28 @@ define([
 	}
 
 	function over(event) {
+		event.range = Ranges.createFromPoint(
+			event.native.clientX - 10,
+			event.native.clientY - 10
+		);
+
 		// Because this is necessary to enable dropping
-		event.range = Ranges.createFromPoint(event.native.clientX - 10, event.native.clientY - 10);
 		event.native.preventDefault();
 	}
 
 	function drop(event) {
+		event.range = Ranges.createFromPoint(
+			event.native.clientX - 10,
+			event.native.clientY - 10
+		);
+
 		event.editor.dndContext.drop(event);
+
+		// Because some browsers will redirect otherwise
+		event.native.preventDefault();
+		if (event.native.stopPropagation) {
+			event.native.stopPropagation();
+		}
 	}
 
 	function end(event) {
@@ -87,9 +111,19 @@ define([
 	}
 
 	function copy(event) {
-		console.log('copy');
+		var range = Ranges.fromEvent(event);
+		if (range && Dom.isEditable(range.commonAncestorContainer)) {
+			Editing.insert(range, event.editor.dndContext.ghost);
+		}
+		return range;
 	}
 
+	/**
+	 * Moves the dragged element into the current range.
+	 *
+	 * @param  {Event} event
+	 * @return {Range}
+	 */
 	function move(event) {
 		var range = Ranges.fromEvent(event);
 		if (range && Dom.isEditable(range.commonAncestorContainer)) {
@@ -119,14 +153,18 @@ define([
 	}
 
 	var exports = {
-		handle      : handle,
-		isDraggable : isDraggable,
-		Context     : Context,
 		copy        : copy,
-		move        : move
+		move        : move,
+		handle      : handle,
+		Context     : Context,
+		isDraggable : isDraggable
 	};
 
+	exports['copy'] = exports.copy;
+	exports['move'] = exports.move;
 	exports['handle'] = exports.handle;
+	exports['Context'] = exports.Context;
+	exports['isDraggable'] = exports.isDraggable;
 
 	return exports;
 });

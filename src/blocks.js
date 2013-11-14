@@ -54,10 +54,12 @@ define([
 
 	function startdrag(event) {
 		Dom.addClass(event.editor.dndContext.element, 'aloha-block-dragging');
+		Dom.addClass(event.editor.dndContext.ghost, 'aloha-block-dragging');
 	}
 
 	function enddrag(event) {
 		Dom.removeClass(event.editor.dndContext.element, 'aloha-block-dragging');
+		Dom.removeClass(event.editor.dndContext.ghost, 'aloha-block-dragging');
 	}
 
 	function move(event) {
@@ -69,22 +71,26 @@ define([
 	}
 
 	function mousedown(event) {
-		if (isBlockEvent(event) && DragDrop.isDraggable(event.native.target)) {
-			var drop, effect;
+		var target = event.native.target;
+		if (isBlockEvent(event) && DragDrop.isDraggable(target)) {
+			var drop, effect, ghost;
 			if (Events.isWithCtrl(event)) {
 				drop = copy;
 				effect = 'copy';
+				ghost = target.cloneNode(true);
 			} else {
 				drop = move;
 				effect = 'move';
+				ghost = target;
 			}
 			event.editor.dndContext = DragDrop.Context({
-				effectAllowed : effect,
-				element       : event.target,
-				data          : ['text/html', event.target.outerHTML],
-				start         : startdrag,
-				drop          : drop,
-				end           : enddrag
+				'effectAllowed' : effect,
+				'element'       : target,
+				'ghost'         : ghost,
+				'data'          : ['text/html', target.outerHTML],
+				'start'         : startdrag,
+				'drop'          : drop,
+				'end'           : enddrag
 			});
 		}
 	}

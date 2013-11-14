@@ -207,8 +207,8 @@ define([
 	}
 
 	/**
-	 * Checks whether the corresponding container node and offset boundaries are
-	 * equal.
+	 * Checks whether the corresponding container node and offset boundaries
+	 * are equal.
 	 *
 	 * @private
 	 * @param {DOMObject} container
@@ -268,8 +268,8 @@ define([
 	 * apart as possible in the document order whithout altering how the range
 	 * would be visually represented when selected.
 	 *
-	 * The start and end boundary positions will not be expanded across elements
-	 * which affect visual line breaks.
+	 * The start and end boundary positions will not be expanded across
+	 * elements which affect visual line breaks.
 	 *
 	 * Note that an element's styling can only be determined if that element is
 	 * attached to the document.  If working with a range in a detached DOM,
@@ -348,7 +348,7 @@ define([
 
 	/**
 	 * Expands the ranges start and end positions to the nearest word
-	 * Boundaries.
+	 * boundaries.
 	 *
 	 * @param {Range} range
 	 * @return {Range}
@@ -484,8 +484,8 @@ define([
 		if (range.collapsed) {
 			return range;
 		}
-		// Because range may be mutated, we must store its properties
-		// before doing anything else.
+		// Because range may be mutated, we must store its properties before
+		// doing anything else.
 		var sc = range.startContainer;
 		var so = range.startOffset;
 		var ec = range.endContainer;
@@ -516,8 +516,8 @@ define([
 	}
 
 	/**
-	 * Like trim() but ignores closing (to the left) and opening positions
-	 * (to the right).
+	 * Like trim() but ignores closing (to the left) and opening positions (to
+	 * the right).
 	 *
 	 * @param {Range} range
 	 * @param {Function=} ignoreLeft
@@ -652,8 +652,8 @@ define([
 	/**
 	 * Gets the nearest editing host to the given range.
 	 *
-	 * Because Firefox, the range may not be inside the editable even though the
-	 * selection may be inside the editable.
+	 * Because Firefox, the range may not be inside the editable even though
+	 * the selection may be inside the editable.
 	 *
 	 * @param {Range} liveRange
 	 * @param {DOMObject} Editing host, or null if none is found.
