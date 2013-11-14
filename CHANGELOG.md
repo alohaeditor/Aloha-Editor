@@ -12,6 +12,12 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+
+## 0.24.7 - 2013/11/14
+
+- **BUGFIX**: Table Plugin: Clicking text inside a table cell doesn't make the whole cell content
+              to be selected (only IE) RT#57176
+
 ## 0.24.6 - 2013/11/06
 
 - **BUGFIX**: Change table cell size by drag & drop
@@ -126,6 +132,11 @@ All changes are categorized into one of the following keywords:
                suitable to be a container the highlighter element show the edges 
                of the selected element to show that the block will be added 
                before or after this one.
+
+## 0.23.26 - 2013/11/14
+
+- **BUGFIX**: Table Plugin: Clicking text inside a table cell doesn't make the whole cell content
+              to be selected (only IE) RT#57176
 
 ## 0.23.25 - 2013/11/06
 
