@@ -10,7 +10,7 @@
 
 	function runTest(before, after, op) {
 		var dom = $(before)[0];
-		var range = ranges.create();
+		var range = ranges.create(dom, 0);
 		boundarymarkers.extract(dom, range);
 		var boundary = op([range.startContainer, range.startOffset]);
 		range.setStart(boundary[0], boundary[1]);
@@ -52,7 +52,7 @@
 	test('prevWhile', function () {
 		tested.push('prevWhile');
 		var dom = $('<div>foo<p>bar<b><u><i>baz</i></u>buzz</b></p></div>')[0];
-		var range = ranges.create();
+		var range = ranges.create(dom, 0);
 		Boundaries.prevWhile(
 			[dom, aloha.dom.nodeIndex(dom.lastChild) + 1],
 			function (pos, container, offset) {
@@ -103,7 +103,7 @@
 	test('nextWhile', function () {
 		tested.push('nextWhile');
 		var dom = $('<div>foo<p>bar<b><br><u><i>baz</i></u>buzz</b></p></div>')[0];
-		var range = ranges.create();
+		var range = ranges.create(dom, 0);
 		Boundaries.nextWhile([dom, 0], function (pos, container, offset) {
 			if (container && container.parentNode) {
 				range.setStart(container, offset);
@@ -123,7 +123,8 @@
 		tested.push('nodeBefore');
 		tested.push('nodeAfter');
 		var t = function (markup, expected) {
-			var range = ranges.create();
+			debugger;
+			var range = ranges.create(document.documentElement, 0);
 			boundarymarkers.extract($(markup)[0], range);
 			var left = Boundaries.nodeBefore(Boundaries.start(range));
 			var right = Boundaries.nodeAfter(Boundaries.end(range));

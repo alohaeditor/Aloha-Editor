@@ -9,7 +9,7 @@
 
 	function runTest(before, after, op) {
 		var dom = $(before)[0];
-		var range = ranges.create();
+		var range = ranges.create(dom, 0);
 		boundarymarkers.extract(dom, range);
 		op(range);
 		boundarymarkers.insert(range);

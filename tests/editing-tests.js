@@ -17,7 +17,7 @@
 	function runTest(before, after, op, context) {
 		var dom = $(before)[0];
 		$editable.html('').append(dom);
-		var range = ranges.create();
+		var range = ranges.create(dom, 0);
 		boundarymarkers.extract(dom, range);
 		op(range, context);
 		boundarymarkers.insert(range);
@@ -334,7 +334,7 @@ return;
 			var titleForDebugginDontRemove = title;
 			$('#test-editable').empty().html(before);
 			var dom = $('#test-editable')[0].firstChild;
-			var range = ranges.create();
+			var range = ranges.create(dom, 0);
 			boundarymarkers.extract(dom, range);
 			dom = mutate(dom, range) || dom;
 			boundarymarkers.insert(range);
@@ -393,7 +393,7 @@ return;
 	function testInsertExtractBoundaryMarkers(title, htmlWithBoundaryMarkers) {
 		test(title, function () {
 			var dom = $(htmlWithBoundaryMarkers)[0];
-			var range = ranges.create();
+			var range = ranges.create(dom, 0);
 			boundarymarkers.extract(dom, range);
 			equal(
 				xhtml.nodeToXhtml(dom),

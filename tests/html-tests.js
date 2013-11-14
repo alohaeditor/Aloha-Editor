@@ -12,7 +12,7 @@
 	function runTest(before, after, op) {
 		var dom = $(before)[0];
 		$('#editable').html('').append(dom);
-		var range = ranges.create();
+		var range = ranges.create(dom, 0);
 		boundarymarkers.extract(dom, range);
 		op(range);
 		boundarymarkers.insert(range);
@@ -190,7 +190,7 @@
 	test('isVisuallyAdjacent()', function () {
 		tested.push('isVisuallyAdjacent');
 		var t = function (markup, expected) {
-			var range = ranges.create();
+			var range = ranges.create(dom, 0);
 			boundarymarkers.extract($(markup)[0], range);
 			equal(
 				html.isVisuallyAdjacent(
@@ -297,7 +297,7 @@
 		tested.push('nextLineBreak');
 		var t = function (before, after) {
 			var dom = $(before)[0];
-			var range = ranges.create();
+			var range = ranges.create(dom, 0);
 			boundarymarkers.extract(dom, range);
 			var linebreak = html.nextLineBreak(
 				Boundaries.start(range),

@@ -94,7 +94,7 @@
 		var controlEditable = Dom.clone(editable);
 		var context = Undo.Context(editable);
 		var capturedFrame = Undo.capture(context, {meta: true}, function () {
-			var range = Ranges.create();
+			var range = Ranges.create(document.documentElement, 0);
 			Dom.setRangeFromBoundaries(range, [editable.firstChild, 2], [editable.firstChild, 3]);
 			var haveToPassEmptyOverridesOtherwiseError = {overrides: []};
 			Editing.delete(range, haveToPassEmptyOverridesOtherwiseError);

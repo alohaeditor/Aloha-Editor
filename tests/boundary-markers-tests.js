@@ -25,7 +25,7 @@
 
 	test('extract()', function () {
 		tested.push('extract')
-		var range = ranges.create();
+		var range = ranges.create(document.documentElement, 0);
 		boundarymarkers.extract($('<p><b>a[bc</b><i>}xyz</i></p>')[0], range);
 		equal(range.commonAncestorContainer.nodeName, 'P');
 		equal(range.startContainer.nodeType, aloha.dom.Nodes.TEXT);
@@ -35,7 +35,7 @@
 	test('hint()', function () {
 		tested.push('hint');
 		var t = function (before, after) {
-			var range = ranges.create();
+			var range = ranges.create(document.documentElement, 0);
 			boundarymarkers.extract($(before)[0], range);
 			equal(
 				aloha.boundarymarkers.hint(range).replace(/ xmlns=['"][^'"]*['"]/, ''),
