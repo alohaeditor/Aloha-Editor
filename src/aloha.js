@@ -15,6 +15,7 @@ define([
 	'boundary-markers',
 	'browser',
 	'selections',
+	'selection-change',
 	'content',
 	'colors',
 	'cursors',
@@ -45,6 +46,7 @@ define([
 	Boundarymarkers,
 	Browser,
 	Selections,
+	SelectionChange,
 	Content,
 	Colors,
 	Cursors,
@@ -164,6 +166,7 @@ define([
 	aloha['xhtml'] = Xhtml;
 	aloha['undo'] = Undo;
 	aloha['editables'] = Editables;
+	aloha['selection_change'] = SelectionChange;
 
 	window['aloha'] = aloha;
 

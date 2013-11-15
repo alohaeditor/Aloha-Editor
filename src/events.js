@@ -114,6 +114,21 @@ define(['misc', 'assert'], function Events(Misc, Assert) {
 	}
 
 	/**
+	 * Runs the given function after the current event handler returns
+	 * to the browser.
+	 *
+	 * Currently implemented just with setTimeout() which is specced to
+	 * have a minimum timeout value of 4 milliseconds. Alternate
+	 * implementations are possible that are faster, for example:
+	 * https://github.com/NobleJS/setImmediate
+	 *
+	 * @param fn {function} a function to call
+	 */
+	function nextTick(fn) {
+		setTimeout(fn, 4);
+	}
+
+	/**
 	 * Sets up all editing browser events to call `editor` on the given
 	 * document.
 	 *
@@ -152,7 +167,8 @@ define(['misc', 'assert'], function Events(Misc, Assert) {
 		setup       : setup,
 		isWithCtrl  : isWithCtrl,
 		isWithShift : isWithShift,
-		dispatch: dispatch
+		dispatch: dispatch,
+		nextTick: nextTick
 	};
 
 	exports['add']       = exports.add;
@@ -162,6 +178,7 @@ define(['misc', 'assert'], function Events(Misc, Assert) {
 	exports['isWithCtrl']  = exports.isWithCtrl;
 	exports['isWithShift'] = exports.isWithShift;
 	exports['dispatch'] = exports.dispatch;
+	exports['nextTick'] = exports.nextTick;
 
 	return exports;
 });

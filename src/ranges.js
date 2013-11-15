@@ -65,6 +65,19 @@ define([
 	}
 
 	/**
+	 * Whether two ranges are equal.
+	 *
+	 * @param a {!Range} one of the two ranges to compare
+	 * @param b {!Range} one of the two ranges to compare
+	 */
+	function isEqual(a, b) {
+		return (a.startContainer === b.startContainer
+		        && a.endContainer === b.endContainer
+		        && a.startOffset === b.startOffset
+		        && a.endOffset === b.endOffset);
+	}
+
+	/**
 	 * Sets the given range to the browser selection.  This will cause the
 	 * selection to be visually highlit by the browser.
 	 *
@@ -755,6 +768,7 @@ define([
 		collapseToEnd: collapseToEnd,
 		collapseToStart: collapseToStart,
 		create: create,
+		isEqual: isEqual,
 		equal: equal,
 		expand: expand,
 		contract: contract,
@@ -784,6 +798,7 @@ define([
 	exports['collapseToEnd'] = exports.collapseToEnd;
 	exports['collapseToStart'] = exports.collapseToStart;
 	exports['create'] = exports.create;
+	exports['isEqual'] = exports.isEqual;
 	exports['equal'] = exports.equal;
 	exports['expand'] = exports.expand;
 	exports['contract'] = exports.contract;
