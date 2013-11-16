@@ -69,7 +69,7 @@ define([
 	 */
 	function maybeNextTick(event, maybeSelectionChange) {
 		var type = event.type;
-		if (Browsers.browser.mozilla && 'mouseup' === type) {
+		if (Browsers.mozilla && 'mouseup' === type) {
 			Events.nextTick(Fn.partial(maybeSelectionChange, event));
 		}
 	}
@@ -180,7 +180,7 @@ define([
 		Events.add(doc, 'keypress', maybeSelectionChange, true);
 		// Because we know Chrome and IE behave acceptably we only do it
 		// for Firefox and others.
-		if (!Browsers.browser.webkit && !Browsers.browser.msie && mousemove) {
+		if (!Browsers.webkit && !Browsers.msie && mousemove) {
 			Events.add(doc, 'mousemove', maybeSelectionChange, true);
 		}
 		return function () {
@@ -189,7 +189,7 @@ define([
 			Events.remove(doc, 'mouseup', maybeSelectionChange, true);
 			Events.remove(doc, 'touchend', maybeSelectionChange, true);
 			Events.remove(doc, 'keypress', maybeSelectionChange, true);
-			if (!Browsers.browser.webkit && !Browsers.browser.msie && mousemove) {
+			if (!Browsers.webkit && !Browsers.msie && mousemove) {
 				Events.remove(doc, 'mousemove', maybeSelectionChange, true);
 			}
 		};

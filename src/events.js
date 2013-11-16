@@ -14,20 +14,19 @@ define(['misc', 'assert'], function Events(Misc, Assert) {
 	 * Registers an event listener to fire the given callback when a specified
 	 * event is triggered on the given object.
 	 *
-	 * @param {DOMObject|Document|Window} obj
-	 *        Object which supports events.  This includes DOM
-	 *        elements, the Document itself, and the Window object for
-	 *        example.
-	 * @param {String} event
-	 *        Name of the event for which to register the given callback
-	 * @param {Function} handler
+	 * @param {Element|Document|Window} obj
+	 *        Object which supports events.  This includes DOM elements, the
+	 *        Document itself, and the Window object for example.
+	 * @param {string} event
+	 *        Name of the event for which to register the given callback.
+	 * @param {function} handler
 	 *        Function to be invoked when event is triggered on the given
 	 *        object.
-	 * @param {?boolean} useCapture
-	 *        Optional. Whether to add the handler in the capturing phase.
+	 * @param {boolean=} opt_useCapture
+	 *        Optional.  Whether to add the handler in the capturing phase.
 	 */
-	function add(obj, event, handler, useCapture) {
-		useCapture = !!useCapture;
+	function add(obj, event, handler, opt_useCapture) {
+		var useCapture = !!opt_useCapture;
 		if (obj.addEventListener) {
 			obj.addEventListener(event, handler, useCapture);
 		} else if (obj.attachEvent) {
@@ -40,22 +39,19 @@ define(['misc', 'assert'], function Events(Misc, Assert) {
 	/**
 	 * Detaches the specified event callback from the given event.
 	 *
-	 * @todo: Implement
-	 *
-	 * @param {DOMObject|Document|Window} obj
-	 *        Object which supports events.  This includes DOM
-	 *        elements, the Document itself, and the Window object for
-	 *        example.
-	 * @param {String} event
+	 * @param {Element|Document|Window} obj
+	 *        Object which supports events.  This includes DOM elements, the
+	 *        Document itself, and the Window object for example.
+	 * @param {string} event
 	 *        Name of the event to detach.
-	 * @param {Function} handler
+	 * @param {function} handler
 	 *        Function to be de-registered.
-	 * @param {?boolean} useCapture
-	 *        Optional. Must be true if the handler was registered with
-	 *        a true useCapture argument.
+	 * @param {boolean=} opt_useCapture
+	 *        Optional.  Must be true if the handler was registered with a true
+	 *        useCapture argument.
 	 */
-	function remove(obj, event, handler, useCapture) {
-		useCapture = !!useCapture;
+	function remove(obj, event, handler, opt_useCapture) {
+		var useCapture = !!opt_useCapture;
 		if (obj.removeEventListener) {
 			obj.removeEventListener(event, handler, useCapture);
 		} else if (obj.detachEvent) {
@@ -74,7 +70,7 @@ define(['misc', 'assert'], function Events(Misc, Assert) {
 			var eventObj = doc.createEvent('Event');
 			eventObj.initEvent(event, true, true);
 			obj.dispatchEvent(eventObj);
-		} else if(obj.fireEvent) {
+		} else if (obj.fireEvent) {
 			var eventObj = doc.createEventObject();
 			eventObj['type'] = event;
 			obj.fireEvent('on' + event, eventObj) ;
@@ -83,6 +79,16 @@ define(['misc', 'assert'], function Events(Misc, Assert) {
 		}
 	}
 
+	/**
+	 * Recursively calls the list of arguments in order, passing the product of
+	 * each call as the argument for the next function.
+	 *
+	 * @param  {Object}
+	 *         The seed value which will be passed as the only argument to the
+	 *         first function in the argument list.
+	 * @param  {function(Object):Object=...}
+	 * @return {Object}
+	 */
 	function compose() {
 		var value = arguments[0];
 		var i;
@@ -136,7 +142,7 @@ define(['misc', 'assert'], function Events(Misc, Assert) {
 	 * https://en.wikipedia.org/wiki/DOM_Events
 	 * http://www.w3.org/TR/DOM-Level-3-Events
 	 *
-	 * @param {Function(Object)} editor
+	 * @param {function(Object)} editor
 	 * @param {Element}          document
 	 */
 	function setup(editor, doc) {
@@ -158,6 +164,8 @@ define(['misc', 'assert'], function Events(Misc, Assert) {
 		add(doc, 'dragover',  editor);
 		add(doc, 'drop',      editor);
 		add(doc, 'dragend',   editor);
+
+		add(doc, 'selection-changed',   editor);
 	}
 
 	var exports = {

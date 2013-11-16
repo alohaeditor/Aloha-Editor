@@ -578,7 +578,7 @@ define([
 	 * @param {DOMObject} elem
 	 */
 	function prop(elem) {
-		if (Browsers.browser.msie || !Predicates.isBlockNode(elem)) {
+		if (Browsers.msie || !Predicates.isBlockNode(elem)) {
 			return;
 		}
 		if (!elem.firstChild
