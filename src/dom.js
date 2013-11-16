@@ -453,8 +453,8 @@ define([
 	 */
 	function indexByClass(root, classMap) {
 		return indexByClassHaveList(
-			Browser.ie7 ? root.getElementsByTagName('*')
-			            : getElementsByClassNames(Maps.keys(classMap), root),
+			Browsers.ie7 ? root.getElementsByTagName('*')
+			             : getElementsByClassNames(Maps.keys(classMap), root),
 			classMap
 		);
 	}
@@ -1225,7 +1225,7 @@ define([
 	 * @param {string} styleName
 	 */
 	function removeStyle(elem, styleName) {
-		if (Browser.hasRemoveProperty) {
+		if (Browsers.hasRemoveProperty) {
 			elem.style.removeProperty(styleName);
 			if (Strings.empty(elem.getAttribute('style'))) {
 				elem.removeAttribute('style');
