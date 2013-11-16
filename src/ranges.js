@@ -662,13 +662,13 @@ define([
 	 */
 	function getNearestEditingHost(liveRange) {
 		var range = StableRange(liveRange);
-		var editable = Dom.getEditingHost(range.startContainer);
+		var editable = Dom.editingHost(range.startContainer);
 		if (editable) {
 			return editable;
 		}
 		var isNotEditingHost = Fn.complement(Dom.isEditingHost);
 		trim(range, isNotEditingHost, isNotEditingHost);
-		return Dom.getEditingHost(
+		return Dom.editingHost(
 			Dom.nodeAtOffset(range.startContainer, range.startOffset)
 		);
 	}
@@ -680,7 +680,21 @@ define([
 		select(range);
 	}
 
+	/**
+	 * Given the position offsets `left` and `top` (relative to the document),
+	 * returns a collapsed range for the position where the text insertion
+	 * point indicator would be inserted.
+	 *
+	 * @reference:
+	 * http://dev.w3.org/csswg/cssom-view/#dom-document-caretpositionfrompoint
+	 * http://stackoverflow.com/questions/3189812/creating-a-collapsed-range-from-a-pixel-position-in-ff-webkit
+	 * http://jsfiddle.net/timdown/ABjQP/8/
+	 * http://lists.w3.org/Archives/Public/public-webapps/2009OctDec/0113.html
+	 */
 	function createFromPoint(x, y) {
+		if (x < 0 || y < 0) {
+			return null;
+		}
 		if (document.caretRangeFromPoint) {
 			return document.caretRangeFromPoint(x, y);
 		}
@@ -689,9 +703,7 @@ define([
 			return create(pos.offsetNode, pos.offset);
 		}
 		if (document.elementFromPoint) {
-			// @see
-			// http://stackoverflow.com/questions/3189812/creating-a-collapsed-range-from-a-pixel-position-in-ff-webkit
-			// http://jsfiddle.net/timdown/ABjQP/8/
+			throw 'createFromPoint() unimplemented for this browser';
 		}
 	}
 

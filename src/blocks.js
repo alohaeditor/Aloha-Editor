@@ -89,6 +89,12 @@ define([
 	function handle(event) {
 		var context;
 		switch (event.type) {
+		case 'aloha':
+			var blocks = event.editable.elem.querySelectorAll('.aloha-block');
+			[].forEach.call(blocks, function (block) {
+				block.setAttribute('contentEditable', 'false');
+			});
+			break;
 		case 'mousedown':
 			var block = event.native.target;
 			if (isBlockEvent(event) && DragDrop.isDraggable(block)) {
@@ -115,9 +121,9 @@ define([
 	}
 
 	var exports = {
-		read   : read,
-		write  : write,
-		handle : handle
+		read: read,
+		write: write,
+		handle: handle
 	};
 
 	exports['read'] = exports.read;

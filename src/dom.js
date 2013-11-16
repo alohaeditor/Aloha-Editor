@@ -10,14 +10,16 @@ define([
 	'strings',
 	'browsers',
 	'functions',
-	'misc'
+	'misc',
+	'assert'
 ], function Dom(
 	Maps,
 	Arrays,
 	Strings,
 	Browsers,
 	Fn,
-	Misc
+	Misc,
+	Asserts
 ) {
 	'use strict';
 
@@ -972,6 +974,9 @@ define([
 	 * the true state, or the Element child of a Document whose designMode is
 	 * enabled.
 	 *
+	 * An element with the class "aloha-editable" is considered an editing
+	 * host.
+	 *
 	 * @param {!Node} node
 	 * @return {boolean} True if `node` is content editable.
 	 */
@@ -985,36 +990,55 @@ define([
 		if (hasClass(node, 'aloha-editable')) {
 			return true;
 		}
-		var parent = node.parentNode;
-		return parent
-		    && (parent.nodeType === Nodes.DOCUMENT
-		        && 'true' === parent.designMode);
+		var parent = node.paretNode;
+		if (!parent) {
+			return false;
+		}
+		if (parent.nodeType === Nodes.DOCUMENT && 'on' === parent.designMode) {
+			return true;
+		}
 	}
 
 	/**
 	 * Checks whether the given element is editable.
 	 *
+	 * An element with the class "aloha-editable" is considered editable.
+	 *
+	 * @reference:
+	 * http://www.whatwg.org/specs/web-apps/current-work/multipage/editing.html#contenteditable
+	 * http://www.whatwg.org/specs/web-apps/current-work/multipage/editing.html#designMode
+	 *
 	 * @param {!Node} node
 	 * @return {boolean}
 	 */
 	function isEditable(node) {
-		 if (!node.nodeType === Nodes.ELEMENT) {
-			 return false;
-		 }
-		 if ('true' === node.contentEditable) {
-			return true;
-		 }
-		 if (hasClass(node, 'aloha-block')) {
+		if (node.nodeType !== Nodes.ELEMENT) {
 			return false;
-		 }
-		 var parent = node.parentNode;
-		 while (parent) {
-			 if (hasClass(parent, 'aloha-editable')) {
-				return true;
-			 }
-			 parent = parent.parentNode;
-		 }
-		 return false;
+		}
+		var contentEditable = node.getAttribute('contentEditable');
+		if ('true' === contentEditable || '' === contentEditable) {
+			return true;
+		}
+		if ('false' === contentEditable) {
+			return false;
+		}
+		// Because the value of `contentEditable` can be "inherited" according
+		// to specification, and null according to browser implementation.
+		if (hasClass(node, 'aloha-editable')) {
+			return true;
+		}
+		var parent = node.parentNode;
+		if (!parent) {
+			return false;
+		}
+		if (parent.nodeType === Nodes.DOCUMENT && 'on' === parent.designMode) {
+			return true;
+		}
+		return isEditable(parent);
+	}
+
+	function isEditableNode(node) {
+		return isEditable(node.nodeType === Nodes.TEXT ? node.parentNode: node);
 	}
 
 	/**
@@ -1023,7 +1047,7 @@ define([
 	 * @param {!Node} node
 	 * @return {boolean}
 	 */
-	function getEditingHost(node) {
+	function editingHost(node) {
 		if (isEditingHost(node)) {
 			return node;
 		}
@@ -1032,6 +1056,14 @@ define([
 		}
 		var ancestor = node.parentNode;
 		while (ancestor && !isEditingHost(ancestor)) {
+			ancestor = ancestor.parentNode;
+		}
+		return ancestor;
+	}
+
+	function editableParent(node) {
+		var ancestor = node.parentNode;
+		while (ancestor && !isEditable(ancestor)) {
 			ancestor = ancestor.parentNode;
 		}
 		return ancestor;
@@ -1170,8 +1202,10 @@ define([
 		removeStyle: removeStyle,
 
 		isEditable: isEditable,
+		isEditableNode: isEditableNode,
 		isEditingHost: isEditingHost,
-		getEditingHost: getEditingHost,
+		editingHost: editingHost,
+		editableParent: editableParent,
 
 		stringify: stringify,
 		stringifyReplacer: stringifyReplacer,
@@ -1225,8 +1259,9 @@ define([
 	exports['getComputedStyle'] = exports.getComputedStyle;
 	exports['removeStyle'] = exports.removeStyle;
 	exports['isEditable'] = exports.isEditable;
+	exports['isEditableNode'] = exports.isEditableNode;
 	exports['isEditingHost'] = exports.isEditingHost;
-	exports['getEditingHost'] = exports.getEditingHost;
+	exports['editingHost'] = exports.editingHost;
 	exports['stringify'] = exports.stringify;
 	exports['stringifyReplacer'] = exports.stringifyReplacer;
 	exports['parseReviver'] = exports.parseReviver;

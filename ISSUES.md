@@ -1,6 +1,13 @@
 								  KNOWN ISSUES
 								  ~~~~~~~~~~~~
 
+Figure out how to behave if editing host is an inline element (2011)
+
+http://lists.w3.org/Archives/Public/public-webapps/2011OctDec/0553.html
+
+----
+
+
 is we don't use content editable, it is possible to select content across and
 beyond the editing host. EG: CTRL+A
 

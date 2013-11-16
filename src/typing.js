@@ -110,7 +110,7 @@ define([
 	}
 
 	function selectEditable(event) {
-		var editable = Dom.getEditingHost(event.range.commonAncestorContainer);
+		var editable = Dom.editingHost(event.range.commonAncestorContainer);
 		if (editable) {
 			event.range = Ranges.create(
 				editable, 0,

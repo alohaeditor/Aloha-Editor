@@ -36,6 +36,36 @@ define([
 	'use strict';
 
 	/**
+	 * Hides all visible carets elements and returns all carets that were
+	 * hidden in this operation.
+	 *
+	 * @param  {Document} doc
+	 * @return {Array.<Element>}
+	 */
+	function hideCarets(doc) {
+		var carets = doc.querySelectorAll('div.aloha-caret');
+		var visible = [];
+		[].forEach.call(carets, function (caret) {
+			if ('block' === Dom.getStyle(caret, 'display')) {
+				visible.push(caret);
+				Dom.setStyle(caret, 'display', 'none');
+			}
+		});
+		return visible;
+	}
+
+	/**
+	 * Unhides the given list of caret elements.
+	 *
+	 * @param  {Array.<Element>} carets
+	 */
+	function unhideCarets(carets) {
+		carets.forEach(function (caret) {
+			Dom.setStyle(caret, 'display', 'block');
+		});
+	}
+
+	/**
 	 * Renders the given element at the specified boundary to represent the
 	 * caret position.  Will also style the caret if `opt_style` is provided.
 	 *
@@ -65,15 +95,6 @@ define([
 	 */
 	function hide(elem) {
 		elem.style.display = 'none';
-	}
-
-	/**
-	 * Un-hides the given element.
-	 *
-	 * @param {Element} elem
-	 */
-	function unhide(elem) {
-		elem.style.display = 'block';
 	}
 
 	/**
@@ -629,7 +650,7 @@ define([
 			// Because we want to move the caret out of the way when the user
 			// starts to create an expanded selection by dragging.
 			if (!old.dragging && context.dragging) {
-				hide(context.caret);
+				Dom.setStyle(context.caret, 'display', 'none');
 				Dom.removeClass(context.caret, 'aloha-caret-blink');
 			}
 
@@ -643,7 +664,7 @@ define([
 		// Because otherwise, if, in the process of a click, the user's cursor
 		// is over the caret, Ranges.fromEvent() will compute the range to be
 		// inside the absolutely positioned caret element.
-		hide(old.caret);
+		Dom.setStyle(old.caret, 'display', 'none');
 
 		var range = Ranges.fromEvent(event);
 
@@ -674,7 +695,7 @@ define([
 
 		range = context.range;
 
-		if (!Dom.isEditable(range.commonAncestorContainer)) {
+		if (!Dom.isEditableNode(range.commonAncestorContainer)) {
 			return event;
 		}
 
@@ -719,14 +740,18 @@ define([
 	}
 
 	var exports = {
-		show    : show,
-		handle  : handle,
-		Context : Context
+		show: show,
+		handle: handle,
+		Context: Context,
+		hideCarets: hideCarets,
+		unhideCarets: unhideCarets
 	};
 
 	exports['show'] = exports.show;
 	exports['handle'] = exports.handle;
 	exports['context'] = exports.context;
+	exports['hideCarets'] = exports.hideCarets;
+	exports['unhideCarets'] = exports.unhideCarets;
 
 	return exports;
 });

@@ -11,17 +11,21 @@
  * https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer
  */
 define([
-	'functions',
 	'dom',
 	'maps',
+	'arrays',
 	'ranges',
-	'editing'
+	'editing',
+	'selections',
+	'traversing'
 ], function DragDrop(
-	Fn,
 	Dom,
 	Maps,
+	Arrays,
 	Ranges,
-	Editing
+	Editing,
+	Selections,
+	Traversing
 ) {
 	'use strict';
 
@@ -105,7 +109,7 @@ define([
 			return true;
 		}
 
-		return 'A' === node.nodeName && node.getAttribute('href');
+		return ('A' === node.nodeName) && node.getAttribute('href');
 	}
 
 	/**
@@ -121,57 +125,119 @@ define([
 			event.clientX - 10,
 			event.clientY - 10
 		);
-		if (range && Dom.isEditable(range.commonAncestorContainer)) {
+
+		if (!range) {
+			return null;
+		}
+
+		if (Dom.isEditableNode(range.commonAncestorContainer)) {
 			var prev = element.previousSibling;
 			Editing.insert(range, element);
 			if (prev && prev.nextSibling) {
 				Dom.merge(prev, prev.nextSibling);
 			}
 		}
+
 		Ranges.collapseToEnd(range);
+
 		return range;
+	}
+
+	/**
+	 * Calculates the range according to the given range.
+	 *
+	 * Will take ensure that the range is contained in a content editable node.
+	 *
+	 * @param  {Event}      event
+	 * @return {Range|null}
+	 *         null if no suitable range can be determined.
+	 */
+	function calculateRange(event) {
+		var range = Ranges.createFromPoint(
+			event.clientX - 10,
+			event.clientY - 10
+		);
+
+		if (!range) {
+			return null;
+		}
+
+		var cac = range.commonAncestorContainer;
+
+		if (Dom.isEditableNode(cac)) {
+			return range;
+		}
+
+		var ancestors = Traversing.parentsUntil(cac, Dom.isEditable);
+		var block = Arrays.last(ancestors);
+		var editable = block.parentNode;
+
+		if (!editable) {
+			return null;
+		}
+
+		var body = block.ownerDocument.body;
+		var offsets = Dom.offset(block);
+		var offset = Dom.nodeIndex(block);
+		var pointX = event.clientX + body.scrollLeft;
+		var blockX = offsets.left + body.scrollLeft + block.offsetWidth;
+
+		if (pointX > blockX) {
+			offset += 1;
+		}
+
+		return Ranges.create(editable, offset);
 	}
 
 	/**
 	 * Processes drag and drop events operations.
 	 *
-	 * @param  {Event}
-	 * @return {Event}
+	 * @param  {Object} alohaEvent
+	 * @return {Object}
 	 */
-	function handle(event) {
-		var context = event.editor.dndContext;
+	function handle(alohaEvent) {
+		var context = alohaEvent.editor.dndContext;
+		var event = alohaEvent.native;
 
 		if (!context) {
-			return event;
+			return alohaEvent;
 		}
 
-		switch (event.type) {
+		switch (alohaEvent.type) {
+
 		case 'dragstart':
 
 			// Because this is required for FF for dragging to start on
 			// elements other than IMG elements or anchor elements with href
 			// values.
-			event.native.dataTransfer.setData(context.data[0], context.data[1]);
+			event.dataTransfer.setData(context.data[0], context.data[1]);
+
 			break;
+
 		case 'dragover':
 
-			// Because this is necessary to enable dropping to work
-			event.native.preventDefault();
+			var carets = Selections.hideCarets(event.target.ownerDocument);
+			alohaEvent.range = calculateRange(event);
+			Selections.unhideCarets(carets);
 
-			event.range = Ranges.createFromPoint(
-				event.native.clientX - 10,
-				event.native.clientY - 10
-			);
+			// Because this is necessary to enable dropping to work
+			event.preventDefault();
+
 			break;
+
 		case 'drop':
 
-			event.range = drop(event.native, event.editor.dndContext.element);
+			var carets = Selections.hideCarets(event.target.ownerDocument);
+			alohaEvent.range = drop(event, alohaEvent.editor.dndContext.element);
+			Selections.unhideCarets(carets);
+
+			if (event.stopPropagation) {
+				event.stopPropagation();
+			}
 
 			// Because some browsers will redirect otherwise
-			event.native.preventDefault();
-			if (event.native.stopPropagation) {
-				event.native.stopPropagation();
-			}
+			event.preventDefault();
+
 			break;
 		}
 	}

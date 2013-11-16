@@ -1084,6 +1084,7 @@ define([
 	 *      http://www.w3.org/TR/REC-xml/#sec-white-space
 	 *      http://www.w3.org/TR/xhtml1/overview.html#C_15
 	 *      http://lists.w3.org/Archives/Public/www-dom/1999AprJun/0007.html
+	 *      http://www.whatwg.org/specs/web-apps/current-work/multipage/editing.html#best-practices-for-in-page-editors
 	 *
 	 * @param {DOMObject} node
 	 * @param {Number} offset
