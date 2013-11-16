@@ -13,7 +13,7 @@ define([
 	'blocks',
 	'boundaries',
 	'boundary-markers',
-	'browser',
+	'browsers',
 	'selections',
 	'selection-change',
 	'content',
@@ -44,7 +44,7 @@ define([
 	Blocks,
 	Boundaries,
 	Boundarymarkers,
-	Browser,
+	Browsers,
 	Selections,
 	SelectionChange,
 	Content,
@@ -141,7 +141,7 @@ define([
 	aloha['blocks'] = Blocks;
 	aloha['boundaries'] = Boundaries;
 	aloha['boundarymarkers'] = Boundarymarkers;
-	aloha['browser'] = Browser;
+	aloha['browsers'] = Browsers;
 	aloha['selections'] = Selections;
 	aloha['content'] = Content;
 	aloha['colors'] = Colors;

@@ -8,14 +8,14 @@ define([
 	'maps',
 	'arrays',
 	'strings',
-	'browser',
+	'browsers',
 	'functions',
 	'misc'
 ], function Dom(
 	Maps,
 	Arrays,
 	Strings,
-	Browser,
+	Browsers,
 	Fn,
 	Misc
 ) {
@@ -1521,13 +1521,13 @@ define([
 
 	function enableSelection(elem) {
 		elem.removeAttribute('unselectable', 'on');
-		setStyle(elem, Browser.VENDOR_PREFIX + '-user-select', 'all');
+		setStyle(elem, Browsers.VENDOR_PREFIX + '-user-select', 'all');
 		elem.onselectstart = null;
 	}
 
 	function disableSelection(elem) {
 		elem.removeAttribute('unselectable', 'on');
-		setStyle(elem, Browser.VENDOR_PREFIX + '-user-select', 'none');
+		setStyle(elem, Browsers.VENDOR_PREFIX + '-user-select', 'none');
 		elem.onselectstart = Fn.returnFalse;
 	}
 

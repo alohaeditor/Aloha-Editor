@@ -16,7 +16,7 @@ define([
 	'maps',
 	'events',
 	'ranges',
-	'browser',
+	'browsers',
 	'overrides',
 	'boundaries',
 	'traversing'

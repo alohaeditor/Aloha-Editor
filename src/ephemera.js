@@ -20,14 +20,14 @@ define([
 	'maps',
 	'dom',
 	'misc',
-	'browser'
+	'browsers'
 ], function Ephemera(
 	strings,
 	arrays,
 	maps,
 	dom,
 	misc,
-	browser
+	Browsers
 ) {
 	'use strict';
 
@@ -275,7 +275,7 @@ define([
 		// Because IE7 crashes if we remove this attribute. If the dom-to-xhtml
 		// plugin is turned on, it will handle the removal of this attribute
 		// during serialization.
-		if (!browser.ie7) {
+		if (!Browsers.ie7) {
 			elem.removeAttribute('data-aloha-ephemera-attr');
 		}
 		if (typeof data === 'string') {

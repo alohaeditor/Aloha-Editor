@@ -5,13 +5,13 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'browser',
+	'browsers',
 	'events',
 	'functions',
 	'ranges',
 	'stable-range'
 ], function SelectionChange(
-	Browser,
+	Browsers,
 	Events,
 	Fn,
 	Ranges,
@@ -31,7 +31,7 @@ define([
 
 	/**
 	 * Sometimes Firefox (tested with version 25.0) changes the selection
-	 * only immediatly after a mouseup (both when the listener was
+	 * only immediately after a mouseup (both when the listener was
 	 * registered with useCapture true and false). This seems to happen only
 	 * in rare cases. One way to reproduce it is to have an editable like
 	 * this (just a plain editable without Aloha):
@@ -69,7 +69,7 @@ define([
 	 */
 	function maybeNextTick(event, maybeSelectionChange) {
 		var type = event.type;
-		if (Browser.browser.mozilla && 'mouseup' === type) {
+		if (Browsers.browser.mozilla && 'mouseup' === type) {
 			Events.nextTick(Fn.partial(maybeSelectionChange, event));
 		}
 	}
@@ -180,7 +180,7 @@ define([
 		Events.add(doc, 'keypress', maybeSelectionChange, true);
 		// Because we know Chrome and IE behave acceptably we only do it
 		// for Firefox and others.
-		if (!Browser.browser.webkit && !Browser.browser.msie && mousemove) {
+		if (!Browsers.browser.webkit && !Browsers.browser.msie && mousemove) {
 			Events.add(doc, 'mousemove', maybeSelectionChange, true);
 		}
 		return function () {
@@ -189,7 +189,7 @@ define([
 			Events.remove(doc, 'mouseup', maybeSelectionChange, true);
 			Events.remove(doc, 'touchend', maybeSelectionChange, true);
 			Events.remove(doc, 'keypress', maybeSelectionChange, true);
-			if (!Browser.browser.webkit && !Browser.browser.msie && mousemove) {
+			if (!Browsers.browser.webkit && !Browsers.browser.msie && mousemove) {
 				Events.remove(doc, 'mousemove', maybeSelectionChange, true);
 			}
 		};

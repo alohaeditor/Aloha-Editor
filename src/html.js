@@ -18,7 +18,7 @@ define([
 	'arrays',
 	'cursors',
 	'content',
-	'browser',
+	'browsers',
 	'boundaries',
 	'traversing',
 	'overrides',
