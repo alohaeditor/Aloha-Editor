@@ -47,10 +47,15 @@ define([
 	 * character. I think it has to do with the last character being an
 	 * individual text node.
 	 *
-	 * The same goes for the keypress event, except with the keypress event
-	 * the selection seems to be never up to date, so we always have to do
-	 * it. The keypress event doesn't have an up-to-date selection on both
-	 * IE and Firefox.
+	 * The same goes for the keypress event (in both IE and Firefox and
+	 * possibly others), except with the keypress event the selection
+	 * seems to be never up to date, so we would always have to do
+	 * it. Handling keypresses is useful to get a selection update when
+	 * the user auto-repeats text-input by holding down a key. It's not
+	 * a big deal however if on each keypress event the user gets the
+	 * selection change caused by a previous keypress event, because the
+	 * keyup event when the user releases the key will ensure a correct
+	 * notification at the end of an auto-repeat sequence.
 	 *
 	 * Because both IE and Firefox sets the new range immediately after the
 	 * event handler returns we can use nextTick() instead of a
@@ -58,14 +63,13 @@ define([
 	 * being called even after calling the freeing function returned by
 	 * watchSelection().
 	 *
-	 * Because keeping around events in a timeout in IE9 causes strange
-	 * behaviour, we only do it in Firefox where we know it's necessary. The
-	 * strange behavour in IE9 is that the mouseup events are somehow played
-	 * back again after they happened.
+	 * NB: keeping around events in a timeout in IE9 causes strange
+	 * behaviour: the mouseup events are somehow played back again after
+	 * they happened.
 	 */
 	function maybeNextTick(event, maybeSelectionChange) {
 		var type = event.type;
-		if (Browser.browser.mozilla && ('mouseup' === type || 'keypress' === type)) {
+		if (Browser.browser.mozilla && 'mouseup' === type) {
 			Events.nextTick(Fn.partial(maybeSelectionChange, event));
 		}
 	}
@@ -107,13 +111,18 @@ define([
 	 *
 	 * Our strategy
 	 *
-	 * Use the selectionchange (see below) when available (Chrome, IE) and
-	 * additionally hook into keyup, mouseup, touchend events (other
-	 * browsers). We need keyup events even in IE to detect selection
-	 * changes caused by text input. Hooking into all events on all browsers
-	 * does no harm. Touchend is probably necessary for mobile support other
-	 * than webkit, although I only tested it on webkit, where it is not
-	 * necessary due to selectionchange support.
+	 * Use the selectionchange (see below) when available (Chrome, IE)
+	 * and additionally hook into keyup, keypress, mouseup, touchend
+	 * events (other browsers). We need keyup events even in IE to
+	 * detect selection changes caused by text input. Keypress events
+	 * are necessary to capture selection changes when the user is
+	 * auto-repeating text-input by holding down a key, except in Chrome
+	 * it's not necessary because there the selectionchange event fires
+	 * on text-input (See maybeNextTick() for more information regarding
+	 * auto-repeating text-input). Hooking into all events on all
+	 * browsers does no harm. Touchend is probably necessary for mobile
+	 * support other than webkit, although I only tested it on webkit,
+	 * where it is not necessary due to selectionchange support.
 	 *
 	 * For programmatic selection changes we recommend programmatically
 	 * firing the selectionchange event on the document element (IE7 needs
@@ -146,30 +155,20 @@ define([
 	 *        A handler function that will be called with the changed range,
 	 *        or null if there is no selection (but there was previously),
 	 *        and the event that caused the selection change.
-	 * @param keypressMousemove
-	 *        Even with all the events above hooked, there are two cases
-	 *        where no selectionchange is reported: in Firefox when pressing
-	 *        the mouse and dragging the selection, and in Firefox and IE
-	 *        when auto-repeating text-input by holding down a key. These
-	 *        cases can be covered by handling the keypress (with
-	 *        setImmediate/timeout since keypress is fired before the
-	 *        selection changes in both IE and Firefox) and mousemove
-	 *        events.
-	 *
-	 *        Although selection changes are reported when auto-repeating
-	 *        text-input in IE, it will hang back one selection change
-	 *        because in maybeNextTick() we don't run the keypress event in
-	 *        the nextTick() like we do in Firefox (see maybeNextTick() for
-	 *        an explanation). That's OK though since, when the user
-	 *        releases the key, the keyup event will report the correct
-	 *        final selection.
-	 *
+	 * @param mousemove
+	 *        Even with all the events above hooked, we only get
+	 *        up-to-date selection change updates when the user presses
+	 *        the mouse and draggs the selection in Chrome and IE, but
+	 *        not in Firefox (and probably others). This case can be
+	 *        covered by handling the mousemove event. We don't do it by
+	 *        default because handling the mousemove event could have
+	 *        different implications from handling up/down/press events.
 	 * @return {function(void):void}
 	 *        A function that can be used to free any memory associated with
 	 *        the watcher. Expect the handler to be called even after being
 	 *        unregistered.
 	 */
-	function watchSelection(doc, getRange, range, fn, keypressMousemove) {
+	function watchSelection(doc, getRange, range, fn, mousemove) {
 		var maybeSelectionChange = watchSelectionHandler(doc, getRange, range, fn);
 		// Chrome, IE (except IE text input)
 		Events.add(doc, 'selectionchange', maybeSelectionChange, true);
@@ -178,24 +177,20 @@ define([
 		// Others
 		Events.add(doc, 'mouseup', maybeSelectionChange, true);
 		Events.add(doc, 'touchend', maybeSelectionChange, true);
-		// Because we know Chrome and IE behave acceptably (IE less so) we
-		// only do it for Firefox and others.
-		if (!Browser.browser.webkit && keypressMousemove) {
-			Events.add(doc, 'keypress', maybeSelectionChange, true);
-			if (!Browser.browser.msie) {
-				Events.add(doc, 'mousemove', maybeSelectionChange, true);
-			}
+		Events.add(doc, 'keypress', maybeSelectionChange, true);
+		// Because we know Chrome and IE behave acceptably we only do it
+		// for Firefox and others.
+		if (!Browser.browser.webkit && !Browser.browser.msie && mousemove) {
+			Events.add(doc, 'mousemove', maybeSelectionChange, true);
 		}
 		return function () {
 			Events.remove(doc, 'selectionchange', maybeSelectionChange, true);
 			Events.remove(doc, 'keyup', maybeSelectionChange, true);
 			Events.remove(doc, 'mouseup', maybeSelectionChange, true);
 			Events.remove(doc, 'touchend', maybeSelectionChange, true);
-			if (!Browser.browser.webkit && keypressMousemove) {
-				Events.remove(doc, 'keypress', maybeSelectionChange, true);
-				if (!Browser.browser.msie) {
-					Events.remove(doc, 'mousemove', maybeSelectionChange, true);
-				}
+			Events.remove(doc, 'keypress', maybeSelectionChange, true);
+			if (!Browser.browser.webkit && !Browser.browser.msie && mousemove) {
+				Events.remove(doc, 'mousemove', maybeSelectionChange, true);
 			}
 		};
 	}
