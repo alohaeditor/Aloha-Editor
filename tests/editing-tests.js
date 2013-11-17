@@ -5,7 +5,7 @@
 	var ranges = aloha.ranges;
 	var editing = aloha.editing;
 	var fn = aloha.fn;
-	var browser = aloha.browser;
+	var Browsers = aloha.browsers;
 	var boundarymarkers = aloha.boundarymarkers;
 	var xhtml = aloha.xhtml;
 	var tested = [];
@@ -699,7 +699,7 @@ return;
 	// TODO This test doesn't work on IE because IE automatically strips some
 	// spaces and not others. Could be made to work by stripping exactly
 	// those whitespace from the expected result.
-	if (!browser.ie) {
+	if (!Browsers.ie) {
 		t('split ignores unrendered nodes 1',
 		  '<div>  <span> {  </span> <span>text} </span><b> </b> </div>',
 		  '<div>{  <span>   </span> <span>text </span><b> </b> }</div>');
