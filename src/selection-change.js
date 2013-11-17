@@ -5,33 +5,21 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'browsers',
-	'events',
 	'functions',
-	'ranges',
-	'stable-range'
+	'trees',
+	'browsers',
+	'events'
 ], function SelectionChange(
-	Browsers,
-	Events,
 	Fn,
-	Ranges,
-	StableRange
+	Trees,
+	Browsers,
+	Events
 ) {
 	'use strict';
 
 	/**
-	 * Whether either the given ranges are not equal or, if one is null, the
-	 * other isn't.
-	 */
-	function isSelectionChange(oldRange, newRange) {
-		return (newRange
-		        ? (!oldRange || !Ranges.isEqual(oldRange, newRange))
-		        : !!oldRange);
-	}
-
-	/**
 	 * Sometimes Firefox (tested with version 25.0) changes the selection
-	 * only immediately after a mouseup (both when the listener was
+	 * only immediatly after a mouseup (both when the listener was
 	 * registered with useCapture true and false). This seems to happen only
 	 * in rare cases. One way to reproduce it is to have an editable like
 	 * this (just a plain editable without Aloha):
@@ -57,20 +45,22 @@ define([
 	 * keyup event when the user releases the key will ensure a correct
 	 * notification at the end of an auto-repeat sequence.
 	 *
-	 * Because both IE and Firefox sets the new range immediately after the
+	 * Because Firefox sets the new selection immediately after the
 	 * event handler returns we can use nextTick() instead of a
-	 * timeout. This could lead to the handler passed to watchSelection()
-	 * being called even after calling the freeing function returned by
-	 * watchSelection().
+	 * timeout. This could lead to the handler passed to
+	 * watchSelection() being called even after calling the freeing
+	 * function returned by watchSelection().
 	 *
 	 * NB: keeping around events in a timeout in IE9 causes strange
 	 * behaviour: the mouseup events are somehow played back again after
 	 * they happened.
 	 */
-	function maybeNextTick(event, maybeSelectionChange) {
+	function maybeNextTick(event, watchSelection) {
 		var type = event.type;
-		if (Browsers.mozilla && 'mouseup' === type) {
-			Events.nextTick(Fn.partial(maybeSelectionChange, event));
+		// Because the only browser where can confirm the problem is
+		// Firefox, and doing it anyway may cause problems on IE.
+		if (Browser.mozilla && 'mouseup' === type) {
+			Events.nextTick(Fn.partial(watchSelection, event));
 		}
 	}
 
@@ -80,39 +70,36 @@ define([
 	 * selection changes.
 	 *
 	 * See watchSelection().
+	 *
+	 * @param getBoundaries {function(void):Array.<Boundary>}
+	 *        A function that returns the current selection.
+	 * @param boundaries {Array.<Boundary>}
+	 *        The current selection.
+	 * @param fn {function(Array.<Boundary>, Event):void}
+	 *        A handler function that will be called with the changed
+	 *        selection, and the event that caused the selection change.
 	 */
-	function watchSelectionHandler(doc, getRange, range, fn) {
-		if (range) {
-			range = StableRange(range);
-		}
-
-		function maybeSelectionChange(event) {
-			var newRange = getRange();
-			if (isSelectionChange(range, newRange)) {
-				range = newRange;
-				if (range) {
-					range = StableRange(range);
-				}
-				fn(newRange, event);
+	function watchSelectionChangeHandler(getBoundaries, boundaries, fn) {
+		function watchSelection(event) {
+			var newBoundaries = getBoundaries();
+			if (Trees.deepEqual(boundaries, newBoundaries)) {
+				boundaries = newBoundaries;
+				fn(newBoundaries, event);
 			} else {
-				maybeNextTick(event, maybeSelectionChange);
+				maybeNextTick(event, watchSelection);
 			}
 		}
-
-		return maybeSelectionChange;
+		return watchSelection;
 	}
 
 	/**
-	 * Watches the selection and calls the given handler function when it
-	 * changes.
-	 *
-	 * The given handler function will not be called immediately even if the
-	 * given range is not null. Only on the next change.
+	 * Adds a handler function to events that may cause a
+	 * selection-change.
 	 *
 	 * Our strategy
 	 *
-	 * Use the selectionchange (see below) when available (Chrome, IE)
-	 * and additionally hook into keyup, keypress, mouseup, touchend
+	 * Use the selectionchange event (see below) when available (Chrome,
+	 * IE) and additionally hook into keyup, keypress, mouseup, touchend
 	 * events (other browsers). We need keyup events even in IE to
 	 * detect selection changes caused by text input. Keypress events
 	 * are necessary to capture selection changes when the user is
@@ -146,15 +133,9 @@ define([
 	 *
 	 * @param doc {!Document}
 	 *        The document object.
-	 * @param getRange {function(void):Range}
-	 *        A function that returns the current range, if there is one, or
-	 *        null otherwise.
-	 * @param range {Range}
-	 *        The current range, if there is one, or null otherwise.
-	 * @param fn {function(Range, Event):void}
-	 *        A handler function that will be called with the changed range,
-	 *        or null if there is no selection (but there was previously),
-	 *        and the event that caused the selection change.
+	 * @param watchSelection {function(!Event):void}
+	 *        A handler function like the one returned from
+	 *        watchSelectionHandler().
 	 * @param mousemove
 	 *        Even with all the events above hooked, we only get
 	 *        up-to-date selection change updates when the user presses
@@ -168,40 +149,36 @@ define([
 	 *        the watcher. Expect the handler to be called even after being
 	 *        unregistered.
 	 */
-	function watchSelection(doc, getRange, range, fn, mousemove) {
-		var maybeSelectionChange = watchSelectionHandler(doc, getRange, range, fn);
+	function addSelectionChangeHandler(doc, watchSelection, mousemove) {
 		// Chrome, IE (except IE text input)
-		Events.add(doc, 'selectionchange', maybeSelectionChange, true);
+		Events.add(doc, 'selectionchange', watchSelection, true);
 		// IE and others
-		Events.add(doc, 'keyup', maybeSelectionChange, true);
+		Events.add(doc, 'keyup', watchSelection, true);
 		// Others
-		Events.add(doc, 'mouseup', maybeSelectionChange, true);
-		Events.add(doc, 'touchend', maybeSelectionChange, true);
-		Events.add(doc, 'keypress', maybeSelectionChange, true);
+		Events.add(doc, 'mouseup', watchSelection, true);
+		Events.add(doc, 'touchend', watchSelection, true);
+		Events.add(doc, 'keypress', watchSelection, true);
 		// Because we know Chrome and IE behave acceptably we only do it
 		// for Firefox and others.
-		if (!Browsers.webkit && !Browsers.msie && mousemove) {
-			Events.add(doc, 'mousemove', maybeSelectionChange, true);
+		if (!Browser.webkit && !Browser.msie && mousemove) {
+			Events.add(doc, 'mousemove', watchSelection, true);
 		}
 		return function () {
-			Events.remove(doc, 'selectionchange', maybeSelectionChange, true);
-			Events.remove(doc, 'keyup', maybeSelectionChange, true);
-			Events.remove(doc, 'mouseup', maybeSelectionChange, true);
-			Events.remove(doc, 'touchend', maybeSelectionChange, true);
-			Events.remove(doc, 'keypress', maybeSelectionChange, true);
-			if (!Browsers.webkit && !Browsers.msie && mousemove) {
-				Events.remove(doc, 'mousemove', maybeSelectionChange, true);
+			Events.remove(doc, 'selectionchange', watchSelection, true);
+			Events.remove(doc, 'keyup', watchSelection, true);
+			Events.remove(doc, 'mouseup', watchSelection, true);
+			Events.remove(doc, 'touchend', watchSelection, true);
+			Events.remove(doc, 'keypress', watchSelection, true);
+			if (!Browser.webkit && !Browser.msie && mousemove) {
+				Events.remove(doc, 'mousemove', watchSelection, true);
 			}
 		};
 	}
 
 	var exports = {
-		watchSelectionHandler: watchSelectionHandler,
-		watchSelection: watchSelection
+		watchSelectionChangeHandler: watchSelectionChangeHandler,
+		addSelectionChangeHandler: addSelectionChangeHandler
 	};
-
-	exports['watchSelectionHandler'] = exports.watchSelectionHandler;
-	exports['watchSelection'] = exports.watchSelection;
 
 	return exports;
 });
