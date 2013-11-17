@@ -154,41 +154,26 @@ define(['functions'], function Arrays(Fn) {
 	}
 
 	/**
-	 * Logically true is everything except null, undefined and false.
-	 *
-	 * The empty string and the numeric value of zero are both
-	 * considered true.
-	 *
-	 * @param value {*}
-	 * @return {boolean}
-	 */
-	function logicallyTrue(value) {
-		return null != value && false !== value;
-	}
-
-	/**
-	 * Returns the first logically true return value of pred which is
-	 * invoked on every item in xs. If pred doesn't return a logically
-	 * true value for any in xs, returns the last value returned by
-	 * pred. If xs is empty, returns null or undefined.
-	 *
-	 * Uses logicallyTrue() to determine whether something is logically
-	 * true.
+	 * Returns the first non-null|undefined return value of pred which
+	 * is invoked on every item in xs. If pred doesn't return a
+	 * non-null|undefined value for any item in xs, returns the last
+	 * value returned by pred. If xs is empty, returns null or
+	 * undefined.
 	 *
 	 * @param {Array.<*>} xs
 	 *        An array of items.
 	 * @param {function(*):*} pred
 	 *        A predicate function that takes an item from xs and
 	 *        returns a result that will be returned immediatly if it is
-	 *        logically true.
+	 *        not null|undefined.
 	 * @return {*}
-	 *        The last value returned by pred.
+	 *        The last value returned by pred or null if xs is empty.
 	 */
 	function some(xs, pred) {
 		var result = null;
 		xs.some(function (x) {
 			result = pred(x);
-			return logicallyTrue(result);
+			return null != result;
 		});
 		return result;
 	}
