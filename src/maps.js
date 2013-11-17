@@ -148,6 +148,20 @@ define(['arrays'], function Maps(Arrays) {
 	}
 
 	/**
+	 * Whether the given object is a map that can be operated on by
+	 * other functions in this module.
+	 *
+	 * We exclude things like new String("..."), new Number(...),
+	 * document.createElement(...), but include new MyType("...").
+	 */
+	function isMap(obj) {
+		return !!(obj
+		          // On IE7 DOM Nodes are [object Object] but don't have a constructor
+		          && obj.constructor
+		          && Object.prototype.toString.call(obj) === '[object Object]');
+	}
+
+	/**
 	 * Functions to work with maps (plain old objects).
 	 *
 	 * maps.isEmpty()
@@ -165,7 +179,8 @@ define(['arrays'], function Maps(Arrays) {
 		vals: vals,
 		forEach: forEach,
 		extend: extend,
-		merge: merge
+		merge: merge,
+		isMap: isMap
 	};
 
 	exports['isEmpty'] = exports.isEmpty;
@@ -176,6 +191,7 @@ define(['arrays'], function Maps(Arrays) {
 	exports['forEach'] = exports.forEach;
 	exports['extend'] = exports.extend;
 	exports['merge'] = exports.merge;
+	exports['isMap'] = exports.isMap;
 
 	return exports;
 });
