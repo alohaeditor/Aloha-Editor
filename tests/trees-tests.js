@@ -60,4 +60,13 @@
 		var result = Trees.postwalk(tree, incTree);
 		deepEqual(result, treeInc);
 	});
+
+	test('deepEqual', function () {
+		equal(Trees.deepEqual(tree, tree), true);
+		equal(Trees.deepEqual(incTree, incTree), true);
+		equal(Trees.deepEqual(1, 1), true);
+		equal(Trees.deepEqual(tree, incTree), false);
+		equal(Trees.deepEqual(incTree, tree), false);
+		equal(Trees.deepEqual(0, 1), false);
+	});
 }(aloha));

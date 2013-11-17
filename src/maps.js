@@ -75,31 +75,44 @@ define(['arrays'], function Maps(Arrays) {
 
 
 	/**
-	 * For each mapping, calls `cb(value, key, map)`.
+	 * For each mapping, calls `cb(value, key, m)`.
 	 *
 	 * Emulates ECMAScript edition 5 Array.forEach.
 	 *
-	 * Contrary to "for (key in map)" iterates only over the "hasOwnProperty"
-	 * properties of the map, which is usually what you want.
+	 * Contrary to "for (key in m)" iterates only over the "hasOwnProperty"
+	 * properties of the m, which is usually what you want.
 	 */
-	function forEach(map, cb) {
+	function forEach(m, cb) {
 		var key;
-		for (key in map) {
-			if (map.hasOwnProperty(key)) {
-				cb(map[key], key, map);
+		for (key in m) {
+			if (m.hasOwnProperty(key)) {
+				cb(m[key], key, m);
 			}
 		}
 	}
 
 	/**
+	 * Selects the values for the given keys in the given map.
+	 *
+	 * @param {!Object} m
+	 * @param {!Array} ks
+	 * @return {!Array}
+	 */
+	function selectVals(m, ks) {
+		return ks.map(function (k) {
+			return m[k];
+		});
+	}
+
+	/**
 	 * Returns an array of the map's keys.
 	 *
-	 * @param {!Object} map
-	 * @return {!Array} The set of keys in `map`.
+	 * @param {!Object} m
+	 * @return {!Array} The set of keys in `m`.
 	 */
-	function keys(map) {
+	function keys(m) {
 		var ks = [];
-		forEach(map, function (value, key) {
+		forEach(m, function (value, key) {
 			ks.push(key);
 		});
 		return ks;
@@ -108,15 +121,11 @@ define(['arrays'], function Maps(Arrays) {
 	/**
 	 * Returns an array of the map's values.
 	 *
-	 * @param {!Object} map
-	 * @return {!Array} The values in `map`.
+	 * @param {!Object} m
+	 * @return {!Array} The values in `m`.
 	 */
-	function vals(map) {
-		var vs = [];
-		forEach(map, function (value) {
-			vs.push(value);
-		});
-		return vs;
+	function vals(m) {
+		return selectVals(m, keys(m));
 	}
 
 	function extend(dest) {
@@ -177,6 +186,7 @@ define(['arrays'], function Maps(Arrays) {
 		fillKeys: fillKeys,
 		keys: keys,
 		vals: vals,
+		selectVals: selectVals,
 		forEach: forEach,
 		extend: extend,
 		merge: merge,

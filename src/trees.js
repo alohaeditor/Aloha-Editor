@@ -4,13 +4,17 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define(['maps', 'functions'], function Trees(Maps, Fn) {
+define(['arrays', 'maps', 'functions'], function Trees(Arrays, Maps, Fn) {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
 		eval(uate)('trees');
 	}
 
+	/**
+	 * An empty container object of the same type as the argument, or
+	 * undefined if the argument is not a container object.
+	 */
 	function empty(obj) {
 		if (Array.isArray(obj)) {
 			return [];
@@ -20,6 +24,15 @@ define(['maps', 'functions'], function Trees(Maps, Fn) {
 		}
 	}
 
+	/**
+	 * Walks over arrays or objects/maps and invokes the given function
+	 * on each item, passing in the item, the key of the item, and the
+	 * result argument.
+	 *
+	 * @param obj {Array.<*>|Object.<string,*>}
+	 * @param step {function(*, {integer|string}, {Array.<*>|Object.<string,*>})}
+	 * @return the given result argument.
+	 */
 	function walkContainerWithResult(obj, step, result) {
 		function each(value, key) {
 			step(value, key, result);
@@ -32,14 +45,28 @@ define(['maps', 'functions'], function Trees(Maps, Fn) {
 		return result;
 	}
 
+	/**
+	 * Similar to walkContainerWithResult() except will call the step
+	 * function with an empty result object (which will get filled up by
+	 * the step function).
+	 */
 	function walkContainer(obj, step) {
 		return walkContainerWithResult(obj, step, empty(obj));
 	}
 
+	/**
+	 * Similar to walkContainer() except will call the step function
+	 * with the given obj as the result. This is useful to mutate trees
+	 * in-place.
+	 */
 	function walkContainerInplace(obj, step) {
 		return walkContainerWithResult(obj, step, obj);
 	}
 
+	/**
+	 * Similar to walkContainer() except will work with leaf objects as
+	 * well and call the given leaf function on them.
+	 */
 	function walk(walkContainer, stepContainer, stepLeaf, obj) {
 		if (empty(obj)) {
 			return walkContainer(obj, stepContainer);
@@ -79,24 +106,49 @@ define(['maps', 'functions'], function Trees(Maps, Fn) {
 		return result[0];
 	}
 
+	/**
+	 * A step function that can be passed to walkContainer().
+	 *
+	 * @param value {*}
+	 * @param key {integer|string}
+	 * @param result {Array.<*>|Object.<string,*>}
+	 * @param rec {function(*):*}
+	 */
 	function identityStep(value, key, result, rec) {
 		result[key] = rec(value);
 	}
 
+	/**
+	 * Similar to identityStep, except it takes an additional function
+	 * as the first argument that will get the value applied to it
+	 * before recursion.
+	 */
 	function prewalkStep(fn, value, key, result, rec) {
 		result[key] = rec(fn(value));
 	}
 
+	/**
+	 * Similar to prewalkStep, except the given function will get the
+	 * value applied to it after recursion.
+	 */
 	function postwalkStep(fn, value, key, result, rec) {
 		result[key] = fn(rec(value));
 	}
 
+	/**
+	 * Similar to prewalkStep() except the value will be pruned when the
+	 * given function returns false.
+	 */
 	function prepruneStep(fn, value, key, result, rec) {
 		if (fn(value)) {
 			result[key] = rec(value);
 		}
 	}
 
+	/**
+	 * Similar to prepruneStep() except the the decision whether the
+	 * value will be pruned is done after recursion.
+	 */
 	function postpruneStep(fn, value, key, result, rec) {
 		var keep = rec(value);
 		if (keep) {
@@ -104,6 +156,9 @@ define(['maps', 'functions'], function Trees(Maps, Fn) {
 		}
 	}
 
+	/**
+	 * Shortcut for pre* / post* functions.
+	 */
 	function prepost(value, fn, optWalkContainer, step)  {
 		return walkRec(optWalkContainer || walkContainer, Fn.partial(step, fn), Fn.identity, value);
 	}
@@ -188,6 +243,42 @@ define(['maps', 'functions'], function Trees(Maps, Fn) {
 		return result;
 	}
 
+	/**
+	 * Whether two trees are equal.
+	 *
+	 * @param a {*}
+	 * @param b {*}
+	 * @param isLeafEqual {function(*,*):boolean}
+	 */
+	function deepEqual(nodeA, nodeB, isLeafEqual) {
+		isLeafEqual = isLeafEqual || Fn.strictEquals;
+		var isArrayA = Array.isArray(nodeA);
+		var isArrayB = Array.isArray(nodeB);
+		var isMapA = Maps.isMap(nodeA);
+		var isMapB = Maps.isMap(nodeB);
+		if (isArrayA && isArrayB) {
+			if (nodeA.length !== nodeB.length) {
+				return false;
+			}
+		} else if (isMapA && isMapB) {
+			var ksA = Maps.keys(nodeA).sort();
+			var ksB = Maps.keys(nodeB).sort();
+			if (!Arrays.equal(ksA, ksB)) {
+				return false;
+			}
+			nodeA = Maps.selectVals(nodeA, ksA);
+			nodeB = Maps.selectVals(nodeB, ksB);
+		} else {
+			return (!isArrayA && !isArrayB
+			        && !isMapA && !isMapB
+			        && isLeafEqual(nodeA, nodeB));
+		}
+		return !nodeA.some(function (nA, i) {
+			var nB = nodeB[i];
+			return !deepEqual(nA, nB, isLeafEqual);
+		});
+	}
+
 	var exports = {
 		prewalk: prewalk,
 		postwalk: postwalk,
@@ -196,6 +287,7 @@ define(['maps', 'functions'], function Trees(Maps, Fn) {
 		leaves: leaves,
 		clone: clone,
 		flatten: flatten,
+		deepEqual: deepEqual,
 		walkContainer: walkContainer,
 		walkContainerInplace: walkContainerInplace,
 		walk: walk,
@@ -210,6 +302,7 @@ define(['maps', 'functions'], function Trees(Maps, Fn) {
 	exports['leaves'] = exports.leaves;
 	exports['clone'] = exports.clone;
 	exports['flatten'] = exports.flatten;
+	exports['deepEqual'] = exports.deepEqual;
 	exports['walkContainer'] = exports.walk;
 	exports['walkContainerInplace'] = exports.walkInplace;
 	exports['walk'] = exports.walk;
