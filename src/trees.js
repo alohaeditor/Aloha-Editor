@@ -3,217 +3,188 @@
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
- *
- * Tree walking functions.
- *
- * prewalk(form, fn, inplace)
- *
- *     Descend into the given form, which is a tree of arrays andmaps
- *     (javascript Object), and build a new tree with the result of
- *     applying the given fn to each branch and leaf. Only arrays and
- *     maps are descended into, everything else is considered a leaf.
- *
- *     The given fn is applied as the tree is descended into - the
- *     function application (pre)cedes descending into the tree.
- *
- *     By default, an entirely new structure is returned. If the
- *     optional inplace argument is true, the algorithm will not
- *     allocate any new structures, but modify the given form in-place.
- *     The benefit of this is more performance due to less allocation,
- *     and reduced memory overhead, but see the "Note" below.
- *
- * postwalk(form, fn, inplace)
- *
- *     the same as prewalk, except the given fn is applied as the tree
- *     is ascended.
- *
- * preprune(form, pred, inplace)
- *
- *     the same as prewalk, except pred is a predicate function and any
- *     branch or leaf that is encountered and for which pred returns
- *     true is removed from the tree.
- *
- * postprune(form, pred, inplace)
- *
- *     the same as preprune, except the predicate function is applied as
- *     the tree is ascended.
- *
- *     Postpruning is potentially slower than prepruning since it always
- *     descendes into the whole tree, even into pruned nodes, while
- *     prepruning skips any pruned nodes.
- *
- * leaves(form, leaf, inplace)
- *
- *     Like postwalk, except the leaf function is applied only to
- *     leaves, and not to the arrays or maps that make up the tree
- *     structure of form.
- *
- *     Useful when one is only interested in tranforming leaves.
- *
- * flatten(form)
- *
- *     Makes an array of all of the given form's leaves.
- *
- * clone(form)
- *
- *     Constructs a deep clone of the given form.
- *
- * walk(form, recurse, inplace)
- *
- *     If form is an array or map, calls recurse on each of its items.
- *     If inplace is true, modifies the form and sets each item to the
- *     result of the call to recurse. If inplace is false, creates a new
- *     array/map containing the results of calling recurse. Returns
- *     either form if inplace is true, or the newly created array/map.
- *
- *     If form is not an array or map, it is simply returned.
- *
- *     An example using walk() in a custom recursive traversal function:
- *
- *     function doSomething(root) {
- *         function step(form) {
- *             form = Trees.walk(form, step);
- *             // do something with form
- *             return form ? [form] : [];
- *         }
- *         return step(root)[0] || null;
- *     }
- *
- * walk(form, recurse)
- *
- *     Short for walk(form, recurse, true)
- *
- * Note: When walking arrays and maps, if the fn and leaf functions
- *       modify the parent or any ancestor of the passed form, the
- *       resulting behaviour is undefined. Only modification of the
- *       passed form and descendants of the passed form is valid.
- *
- * Note: the algorithms are recursive and the maximum nesting level of
- *       the input set is therefore bound to the maximum stack depth.
- *       IE7 and IE8 for example have a maximum stack depth of greater
- *       than 1000, so the maximum input nesting level should not exceed
- *       about 300 (3 stack frames are needed per nesting level).
  */
-define([], function Trees() {
+define(['maps', 'functions'], function Trees(Maps, Fn) {
 	'use strict';
 
 	if ('undefined' !== typeof mandox) {
 		eval(uate)('trees');
 	}
 
-	function walk(form, step, inplace) {
-		var subResult,
-			result,
-			resultOff,
-			len,
-			i,
-			key;
-		if (Array.isArray(form)) {
-			result = (inplace ? form : []);
-			resultOff = 0;
-			for (i = 0, len = form.length; i < len; i++) {
-				subResult = step(form[i]);
-				if (subResult.length) {
-					result[resultOff++] = subResult[0];
-				}
-			}
-			result.length = resultOff;
-		} else if ('object' === typeof form) {
-			result = (inplace ? form : {});
-			for (key in form) {
-				if (form.hasOwnProperty(key)) {
-					subResult = step(form[key]);
-					if (subResult.length) {
-						result[key] = subResult[0];
-					} else {
-						delete result[key];
-					}
-				}
-			}
+	function empty(obj) {
+		if (Array.isArray(obj)) {
+			return [];
+		}
+		if (Maps.isMap(obj)) {
+			return {};
+		}
+	}
+
+	function walkContainerWithResult(obj, step, result) {
+		function each(value, key) {
+			step(value, key, result);
+		}
+		if (Array.isArray(obj)) {
+			obj.forEach(each);
 		} else {
-			result = form;
+			Maps.forEach(obj, each);
 		}
 		return result;
 	}
 
-	function walkInplace(form, step) {
-		return walk(form, step, true);
+	function walkContainer(obj, step) {
+		return walkContainerWithResult(obj, step, empty(obj));
 	}
 
-	function prewalkStep(step, fn, walk, form) {
-		return [walk(fn(form), step)];
+	function walkContainerInplace(obj, step) {
+		return walkContainerWithResult(obj, step, obj);
 	}
 
-	function postwalkStep(step, fn, walk, form) {
-		return [fn(walk(form, step))];
-	}
-
-	function prepruneStep(step, fn, walk, form) {
-		return fn(form) ? [] : [walk(form, step)];
-	}
-
-	function postpruneStep(step, fn, walk, form) {
-		var subForm = walk(form, step);
-		return fn(subForm) ? [] : [subForm];
-	}
-
-	function prepost(step, fnOrPred, walk, form) {
-		function prepostStep(form) {
-			return step(prepostStep, fnOrPred, walk, form);
+	function walk(walkContainer, stepContainer, stepLeaf, obj) {
+		if (empty(obj)) {
+			return walkContainer(obj, stepContainer);
 		}
-		return prepostStep(form)[0];
+		return stepLeaf(obj);
 	}
 
-	function prewalk(form, fn, inplace) {
-		return prepost(prewalkStep, fn, inplace ? walkInplace : walk, form);
-	}
-
-	function postwalk(form, fn, inplace) {
-		return prepost(postwalkStep, fn, inplace ? walkInplace : walk, form);
-	}
-
-	function preprune(form, pred, inplace) {
-		return prepost(prepruneStep, pred, inplace ? walkInplace : walk, form);
-	}
-
-	function postprune(form, pred, inplace) {
-		return prepost(postpruneStep, pred, inplace ? walkInplace : walk, form);
-	}
-
-	function isLeaf(form) {
-		return 'object' !== typeof form && !Array.isArray(form);
-	}
-
-	function identityStep(step, walk, form) {
-		return [walk(form, step)];
-	}
-
-	function leaves(form, leaf, inplace) {
-		var leafWalk = inplace ? walkInplace : walk;
-
-		function leafStep(form) {
-			if (isLeaf(form)) {
-				return [leaf(form)];
-			}
-			return identityStep(leafStep, leafWalk, form);
+	/**
+	 * Walks the given value recursively, applying all values to the given functions.
+	 *
+	 * stepContainer will encounter all values.
+	 * stepLeaf will only encounter non-container values.
+	 *
+	 * @param optWalkContainer {?function (Array.<*>|Object.<string,*>,
+	 *                                    function(*,
+	 *                                              string|integer,
+	 *                                              Array.<*>|Object.<string,*>)
+	 *                                    :void)
+	 *                          :void}
+	 *        A function to use to walk container values (for example
+	 *        walkContainer() or walkContainerInplace()).
+	 * @param stepContainer {function(*,
+	 *                                string|integer,Array.<*>|Object.<string,*>,
+	 *                                function(*))
+	 *                       :void}
+	 * @param stepLeaf {function(*):void}
+	 * @param value {*}
+	 */
+	function walkRec(walkContainer, stepContainer, stepLeaf, value) {
+		var rec;
+		function recStep(value, key, result) {
+			stepContainer(value, key, result, rec);
 		}
-		return leafStep(form)[0];
-	}
-
-	function clone(form) {
-		function cloneStep(form) {
-			return identityStep(cloneStep, walk, form);
-		}
-		return cloneStep(form)[0];
-	}
-
-	function flatten(form) {
-		var inplace = true;
+		rec = Fn.partial(walk, walkContainer, recStep, stepLeaf);
 		var result = [];
-		leaves(form, function (leaf) {
+		recStep(value, 0, result);
+		return result[0];
+	}
+
+	function identityStep(value, key, result, rec) {
+		result[key] = rec(value);
+	}
+
+	function prewalkStep(fn, value, key, result, rec) {
+		result[key] = rec(fn(value));
+	}
+
+	function postwalkStep(fn, value, key, result, rec) {
+		result[key] = fn(rec(value));
+	}
+
+	function prepruneStep(fn, value, key, result, rec) {
+		if (fn(value)) {
+			result[key] = rec(value);
+		}
+	}
+
+	function postpruneStep(fn, value, key, result, rec) {
+		var keep = rec(value);
+		if (keep) {
+			result[key] = value;
+		}
+	}
+
+	function prepost(value, fn, optWalkContainer, step)  {
+		return walkRec(optWalkContainer || walkContainer, Fn.partial(step, fn), Fn.identity, value);
+	}
+
+	/**
+	 * Descend into the given form, which may be a tree of arrays and
+	 * maps or any other value (integer, boolean etc.), and build a new
+	 * tree with the result of applying the given fn to each node.
+	 *
+	 * The given fn is applied as the tree is descended into - the
+	 * function application (pre)cedes descending into the tree.
+	 *
+	 * @param value {*}
+	 *        The tree to descend into
+	 * @param fn {function(*):*}
+	 *        A function to apply each value in the given tree to (or
+	 *        only to the given value itself if it isn't a tree).
+	 *        The return value will replace the corresponding value in
+	 *        the result tree.
+	 * @param optWalkContainer {?function (Array.<*>|Object.<string,*>,
+	 *                                    function(*,
+	 *                                              string|integer,
+	 *                                              Array.<*>|Object.<string,*>)
+	 *                                    :void)
+	 *                          :void}
+	 *        A function to use to walk container values (for example
+	 *        walkContainer() or walkContainerInplace()).
+	 */
+	function prewalk(value, fn, optWalkContainer) {
+		return prepost(value, fn, optWalkContainer, prewalkStep);
+	}
+
+	/**
+	 * Similar to prewalk(), except the given fn is applied as the tree
+	 * is descended out of.
+	 */
+	function postwalk(value, fn, optWalkContainer) {
+		return prepost(value, fn, optWalkContainer, postwalkStep);
+	}
+
+	/**
+	 * Similar to prewalk(), except it will remove values from the tree
+	 * if the given function returns a true/false value.
+	 */
+	function preprune(value, fn, optWalkContainer) {
+		return prepost(value, fn, optWalkContainer, prepruneStep);
+	}
+
+	/**
+	 * Similar to preprune(), except will apply the function as the tree
+	 * is descended out of.
+	 */
+	function postprune(value, fn, optWalkContainer) {
+		return prepost(value, fn, optWalkContainer, postpruneStep);
+	}
+	
+	/**
+	 * Apply all leaf nodes of the given tree to the given function.
+	 */
+	function leaves(value, fn, optWalkContainer) {
+		return walkRec(optWalkContainer || walkContainer, identityStep, fn, value);
+	}
+
+	/**
+	 * Clone the given tree.
+	 *
+	 * Only container objects will be cloned. See Map.isMap() for what
+	 * is not considered a container object.
+	 */
+	function clone(value) {
+		return walkRec(walkContainer, identityStep, Fn.identity, value);
+	}
+
+	/**
+	 * Get all the leaf (not container) nodes of the given tree.
+	 */
+	function flatten(value) {
+		var result = [];
+		leaves(value, function (leaf) {
 			result.push(leaf);
-			return leaf;
-		}, inplace);
+		}, walkContainerInplace);
 		return result;
 	}
 
@@ -222,24 +193,28 @@ define([], function Trees() {
 		postwalk: postwalk,
 		preprune: preprune,
 		postprune: postprune,
-		isLeaf: isLeaf,
 		leaves: leaves,
 		clone: clone,
 		flatten: flatten,
+		walkContainer: walkContainer,
+		walkContainerInplace: walkContainerInplace,
 		walk: walk,
-		walkInplace: walkInplace
+		walkRec: walkRec,
+		identityStep: identityStep
 	};
 
 	exports['prewalk'] = exports.prewalk;
 	exports['postwalk'] = exports.postwalk;
 	exports['preprune'] = exports.preprune;
 	exports['postprune'] = exports.postprune;
-	exports['isLeaf'] = exports.isLeaf;
 	exports['leaves'] = exports.leaves;
 	exports['clone'] = exports.clone;
 	exports['flatten'] = exports.flatten;
+	exports['walkContainer'] = exports.walk;
+	exports['walkContainerInplace'] = exports.walkInplace;
 	exports['walk'] = exports.walk;
-	exports['walkInplace'] = exports.walkInplace;
+	exports['walkRec'] = exports.walkRec;
+	exports['identityStep'] = exports.identityStep;
 
 	return exports;
 });

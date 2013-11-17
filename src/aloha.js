@@ -29,6 +29,7 @@ define([
 	'functions',
 	'html',
 	'maps',
+	'trees',
 	'mouse',
 	'overrides',
 	'keys',
@@ -60,6 +61,7 @@ define([
 	Fn,
 	Html,
 	Maps,
+	Trees,
 	Mouse,
 	Overrides,
 	Keys,
@@ -158,6 +160,7 @@ define([
 	aloha['keys'] = Keys;
 	aloha['mouse'] = Mouse;
 	aloha['maps'] = Maps;
+	aloha['trees'] = Trees,
 	aloha['overrides'] = Overrides;
 	aloha['ranges'] = Ranges;
 	aloha['stablerange'] = StableRange;
