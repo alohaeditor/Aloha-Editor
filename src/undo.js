@@ -954,7 +954,7 @@ define([
 			if (range && newRange) {
 				var startBoundary = boundaryFromPath(container, newRange.start);
 				var endBoundary = boundaryFromPath(container, newRange.end);
-				Dom.setRangeFromBoundaries(range, startBoundary, endBoundary);
+				Boundaries.setRangeFromBoundaries(range, startBoundary, endBoundary);
 			}
 		} else if ('insert' === type) {
 			var boundary = boundaryFromPath(container, change.path);
