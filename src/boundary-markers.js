@@ -1,5 +1,6 @@
 define([
 	'dom',
+	'mutation',
 	'traversing',
 	'cursors',
 	'arrays',
@@ -7,6 +8,7 @@ define([
 	'ranges'
 ], function BoundaryMarkers(
 	dom,
+	Mutation,
 	traversing,
 	cursors,
 	arrays,
@@ -27,7 +29,7 @@ define([
 	function insert(range) {
 		var leftMarkerChar  = (3 === range.startContainer.nodeType ? '[' : '{');
 		var rightMarkerChar = (3 === range.endContainer.nodeType   ? ']' : '}');
-		dom.splitTextContainers(range);
+		Mutation.splitTextContainers(range);
 		var leftMarker = document.createTextNode(leftMarkerChar);
 		var rightMarker = document.createTextNode(rightMarkerChar);
 		var start = cursors.cursorFromBoundaryPoint(

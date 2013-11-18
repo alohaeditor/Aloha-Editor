@@ -8,6 +8,7 @@
 	var Ranges = aloha.ranges;
 	var Typing = aloha.typing;
 	var Editables = aloha.editables;
+	var Boundaries = aloha.boundaries;
 
 	module('undo');
 
@@ -95,7 +96,7 @@
 		var context = Undo.Context(editable);
 		var capturedFrame = Undo.capture(context, {meta: true}, function () {
 			var range = Ranges.create(document.documentElement, 0);
-			Dom.setRangeFromBoundaries(range, [editable.firstChild, 2], [editable.firstChild, 3]);
+			Boundaries.setRangeFromBoundaries(range, [editable.firstChild, 2], [editable.firstChild, 3]);
 			var haveToPassEmptyOverridesOtherwiseError = {overrides: []};
 			Editing.delete(range, haveToPassEmptyOverridesOtherwiseError);
 		});

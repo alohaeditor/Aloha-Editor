@@ -9,6 +9,7 @@
  */
 define([
 	'dom',
+	'mutation',
 	'arrays',
 	'stable-range',
 	'html',
@@ -18,6 +19,7 @@ define([
 	'boundaries'
 ], function Ranges(
 	Dom,
+	Mutation,
 	Arrays,
 	StableRange,
 	Html,
@@ -673,7 +675,7 @@ define([
 
 	function insertTextBehind(range, text) {
 		var boundary = [range.startContainer, range.startOffset];
-		boundary = Dom.insertTextAtBoundary(text, boundary, true, [range]);
+		boundary = Mutation.insertTextAtBoundary(text, boundary, true, [range]);
 		collapseToStart(range);
 		select(range);
 	}

@@ -14,6 +14,7 @@
  */
 define([
 	'dom',
+	'mutation',
 	'predicates',
 	'arrays',
 	'cursors',
@@ -25,6 +26,7 @@ define([
 	'functions'
 ], function Html(
 	Dom,
+	Mutation,
 	Predicates,
 	Arrays,
 	Cursors,
@@ -785,7 +787,7 @@ define([
 			return insertLineBreak(boundary, context);
 		}
 		var node = document.createElement(name);
-		Dom.insertNodeAtBoundary(node, boundary);
+		Mutation.insertNodeAtBoundary(node, boundary);
 		return [node, 0];
 	}
 
@@ -846,7 +848,7 @@ define([
 			if (ref) {
 				wrapWithBreakingNode(ref, anchor, context);
 			} else {
-				Dom.insertNodeAtBoundary(anchor, boundary, true);
+				Mutation.insertNodeAtBoundary(anchor, boundary, true);
 			}
 		}
 
@@ -955,10 +957,10 @@ define([
 	 */
 	function insertLineBreak(boundary, context) {
 		var br = document.createElement('br');
-		Dom.insertNodeAtBoundary(br, boundary);
+		Mutation.insertNodeAtBoundary(br, boundary);
 		boundary = Boundaries.next(boundary);
 		if (!isSignificantBr(br)) {
-			Dom.insertNodeAtBoundary(document.createElement('br'), boundary);
+			Mutation.insertNodeAtBoundary(document.createElement('br'), boundary);
 		}
 		return boundary;
 	}

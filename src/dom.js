@@ -566,32 +566,6 @@ define([
 	}
 
 	/**
-	 * Normalizes the boundary point represented by container and offset
-	 * such that it will not point to the start or end of a text node
-	 * which reduces the number of different states the boundary can be
-	 * in, and thereby increases the the robusteness of the code written
-	 * against it slightly.
-	 *
-	 * It should be noted that native ranges controlled by the browser's
-	 * DOM implementation have the habit to change by themselves, so
-	 * even if normalized this way the range could revert to an
-	 * unnormalized state. See StableRange().
-	 */
-	function normalizeBoundary(boundary) {
-		var container = boundary[0];
-		if (isTextNode(container)) {
-			var parent = container.parentNode;
-			var offset = boundary[1];
-			if (!offset && parent) {
-				boundary = [parent, nodeIndex(container)];
-			} else if (offset >= nodeLength(container) && parent) {
-				boundary = [parent, nodeIndex(container) + 1];
-			}
-		}
-		return boundary;
-	}
-
-	/**
 	 * Wraps node `node` in given node `wrapper`.
 	 *
 	 * @param {!Node} node
@@ -629,6 +603,17 @@ define([
 	 */
 	function remove(node) {
 		node.parentNode.removeChild(node);
+	}
+
+	/**
+	 * Removes the given node while keeping it's content intact.
+	 *
+	 * @param {!Node} node
+	 */
+	function removeShallow(node) {
+		var parent = node.parentNode;
+		moveNextAll(parent, node.firstChild, node);
+		parent.removeChild(node);
 	}
 
 	/**
@@ -707,423 +692,6 @@ define([
 
 	function followedBy(a, b) {
 		return !!(a.compareDocumentPosition(b) & 4);
-	}
-
-	/**
-	 * Checks whether a node can be split at the given offset to yeild two
-	 * nodes.
-	 *
-	 * @private
-	 * @param {!Node} node
-	 * @param {number} offset
-	 * @return {boolean}
-	 */
-	function wouldSplitTextNode(node, offset) {
-		return 0 < offset && offset < node.nodeValue.length;
-	}
-
-	/**
-	 * Splits the given text node at the given offset.
-	 *
-	 * @TODO: could be optimized with insertData() so only a single text node is
-	 *        inserted instead of two.
-	 *
-	 * @param {!Node} node
-	 *        DOM text node.
-	 * @param {number} offset
-	 *        Number between 0 and the length of text of `node`.
-	 * @return {!Node}
-	 */
-	function splitTextNode(node, offset) {
-		// Because node.splitText() is buggy on IE, split it manually.
-		// http://www.quirksmode.org/dom/w3c_core.html
-		if (!wouldSplitTextNode(node, offset)) {
-			return node;
-		}
-		var parent = node.parentNode;
-		var text = node.nodeValue;
-		var before = document.createTextNode(text.substring(0, offset));
-		var after = document.createTextNode(
-			text.substring(offset, text.length)
-		);
-		parent.insertBefore(before, node);
-		parent.insertBefore(after, node);
-		parent.removeChild(node);
-		return before;
-	}
-
-	function adjustBoundaryAfterSplit(boundary, splitNode, splitOffset,
-	                                  newNodeBeforeSplit) {
-		var container = boundary[0];
-		var offset = boundary[1];
-		if (container === splitNode) {
-			if (offset <= splitOffset || !splitOffset) {
-				container = newNodeBeforeSplit;
-			} else {
-				container = newNodeBeforeSplit.nextSibling;
-				offset -= splitOffset;
-			}
-		} else if (container === newNodeBeforeSplit.parentNode) {
-			var nidx = nodeIndex(newNodeBeforeSplit);
-			if (offset > nidx) {
-				offset += 1;
-			}
-		}
-		return [container, offset];
-	}
-
-	function adjustBoundaryAfterJoin(boundary, node, nodeLen, sibling,
-	                                 siblingLen, parentNode, nidx, prev) {
-		var container = boundary[0];
-		var offset = boundary[1];
-		if (container === node) {
-			container = sibling;
-			offset += prev ? siblingLen : 0;
-		} else if (container === sibling) {
-			offset += prev ? 0 : nodeLen;
-		} else if (container === parentNode) {
-			if (offset === nidx) {
-				container = sibling;
-				offset = prev ? siblingLen : 0;
-			} else if (!prev && offset === nidx + 1) {
-				container = sibling;
-				offset = nodeLen;
-			} else if (offset > nidx) {
-				offset -= 1;
-			}
-		}
-		return [container, offset];
-	}
-
-	function adjustBoundaryAfterRemove(boundary, node, parentNode, nidx) {
-		var container = boundary[0];
-		var offset = boundary[1];
-		if (container === node || contains(node, container)) {
-			container = parentNode;
-			offset = nidx;
-		} else if (container === parentNode) {
-			if (offset > nidx) {
-				offset -= 1;
-			}
-		}
-		return [container, offset];
-	}
-
-	function adjustBoundaryAfterInsert(boundary, insertContainer, insertOff, len, insertBefore) {
-		var container = boundary[0];
-		var offset = boundary[1];
-		if (insertContainer === container && (insertBefore ? offset >= insertOff : offset > insertOff)) {
-			boundary = [container, offset + len];
-		}
-		return boundary;
-	}
-
-	function adjustBoundaryAfterTextInsert(boundary, node, off, len, insertBefore) {
-		boundary = normalizeBoundary(boundary);
-		var container = boundary[0];
-		var offset = boundary[1];
-		// Because we must adjust boundaries adjacent to the insert
-		// correctly, even if they are not inside the text node but
-		// between nodes, we must move them in temporarily and normalize
-		// again afterwards.
-		if (!isTextNode(container)) {
-			var next = offset < numChildren(container) ? nthChild(container, offset) : null;
-			var prev = offset > 0 ? nthChild(container, offset - 1) : null;
-			if (next === node) {
-				boundary = [next, 0];
-			} else if (prev === node) {
-				boundary = [prev, nodeLength(prev)];
-			}
-		}
-		return normalizeBoundary(adjustBoundaryAfterInsert(boundary, node, off, len, insertBefore));
-	}
-
-	function adjustBoundaryAfterNodeInsert(boundary, node, insertBefore) {
-		boundary = normalizeBoundary(boundary);
-		return adjustBoundaryAfterInsert(boundary, node.parentNode, nodeIndex(node), 1, insertBefore);
-	}
-
-	function nodeAtBoundary(boundary) {
-		return nodeAtOffset(boundary[0], boundary[1]);
-	}
-
-	function isBoundaryAtEnd(boundary) {
-		return isAtEnd(boundary[0], boundary[1]);
-	}
-
-	function startBoundary(range) {
-		return [range.startContainer, range.startOffset];
-	}
-
-	function endBoundary(range) {
-		return [range.endContainer, range.endOffset];
-	}
-
-	/**
-	 * Sets the given range's start boundary.
-	 *
-	 * @param {!Range} range Range objec to modify.
-	 */
-	function setRangeStartFromBoundary(range, boundary) {
-		boundary = normalizeBoundary(boundary);
-		range.setStart(boundary[0], boundary[1]);
-	}
-
-	/**
-	 * Sets the given range's end boundary.
-	 *
-	 * @param {!Range} range Range objec to modify.
-	 */
-	function setRangeEndFromBoundary(range, boundary) {
-		boundary = normalizeBoundary(boundary);
-		range.setEnd(boundary[0], boundary[1]);
-	}
-
-	function setRangeFromBoundaries(range, startBoundary, endBoundary) {
-		setRangeStartFromBoundary(range, startBoundary);
-		setRangeEndFromBoundary(range, endBoundary);
-	}
-
-	function boundariesFromRange(range) {
-		return [startBoundary(range), endBoundary(range)];
-	}
-
-	function boundariesFromRanges(ranges) {
-		// Because we don't want to check it every time we need to
-		// preserve some ranges, we accept null values here.
-		ranges = ranges || [];
-		return Arrays.mapcat(ranges, boundariesFromRange);
-	}
-
-	function adjustBoundaries(fn, boundaries) {
-		var args = Array.prototype.slice.call(arguments, 2);
-		return boundaries.map(function (boundary) {
-			return fn.apply(null, [boundary].concat(args));
-		});
-	}
-
-	function setRangesFromBoundaries(ranges, boundaries) {
-		Arrays.partition(boundaries, 2).forEach(function (boundaries, i) {
-			setRangeFromBoundaries(ranges[i], boundaries[0], boundaries[1]);
-		});
-	}
-
-	/**
-	 * Splits the given text node at the given offset and, if the given
-	 * range happens to have start or end containers equal to the given
-	 * text node, adjusts it such that start and end position will point
-	 * at the same position in the new text nodes.
-	 */
-	function splitBoundary(boundary, ranges) {
-		var splitNode = boundary[0];
-		var splitOffset = boundary[1];
-		if (isTextNode(splitNode) && wouldSplitTextNode(splitNode, splitOffset)) {
-			var boundaries = boundariesFromRanges(ranges);
-			boundaries.push(boundary);
-			var nodeBeforeSplit = splitTextNode(splitNode, splitOffset);
-			var adjusted = adjustBoundaries(
-				adjustBoundaryAfterSplit,
-				boundaries,
-				splitNode,
-				splitOffset,
-				nodeBeforeSplit
-			);
-			boundary = adjusted.pop();
-			setRangesFromBoundaries(ranges, adjusted);
-		}
-		return boundary;
-	}
-
-	/**
-	 * Splits text containers in the given range.
-	 *
-	 * @param {!Range} range
-	 * @return {!Range}
-	 *         The given range, potentially adjusted.
-	 */
-	function splitTextContainers(range) {
-		splitBoundary(startBoundary(range), [range]);
-		splitBoundary(endBoundary(range), [range]);
-	}
-
-	function joinTextNodeOneWay(node, sibling, ranges, prev) {
-		if (!sibling || Nodes.TEXT !== sibling.nodeType) {
-			return node;
-		}
-		var boundaries = boundariesFromRanges(ranges);
-		var parentNode = node.parentNode;
-		var nidx = nodeIndex(node);
-		var nodeLen = node.length;
-		var siblingLen = sibling.length;
-		sibling.insertData(prev ? siblingLen : 0, node.data);
-		parentNode.removeChild(node);
-		boundaries = adjustBoundaries(
-			adjustBoundaryAfterJoin,
-			boundaries,
-			node,
-			nodeLen,
-			sibling,
-			siblingLen,
-			parentNode,
-			nidx,
-			prev
-		);
-		setRangesFromBoundaries(ranges, boundaries);
-		return sibling;
-	}
-
-	function joinTextNode(node, ranges) {
-		if (Nodes.TEXT !== node.nodeType) {
-			return;
-		}
-		node = joinTextNodeOneWay(node, node.previousSibling, ranges, true);
-		joinTextNodeOneWay(node, node.nextSibling, ranges, false);
-	}
-
-	/**
-	 * Joins the given node with its adjacent sibling.
-	 *
-	 * @param {!Node} A text node
-	 * @param {!Range} range
-	 * @return {!Range} The given range, modified if necessary.
-	 */
-	function joinTextNodeAdjustRange(node, range) {
-		joinTextNode(node, [range]);
-	}
-
-	function adjustRangesAfterTextInsert(node, off, len, insertBefore, boundaries, ranges) {
-		boundaries.push([node, off]);
-		boundaries = adjustBoundaries(adjustBoundaryAfterTextInsert, boundaries, node, off, len, insertBefore);
-		var boundary = boundaries.pop();
-		setRangesFromBoundaries(ranges, boundaries);
-		return boundary;
-	}
-
-	function adjustRangesAfterNodeInsert(node, insertBefore, boundaries, ranges) {
-		boundaries.push([node.parentNode, nodeIndex(node)]);
-		boundaries = adjustBoundaries(adjustBoundaryAfterNodeInsert, boundaries, node, insertBefore);
-		var boundary = boundaries.pop();
-		setRangesFromBoundaries(ranges, boundaries);
-		return boundary;
-	}
-
-	function insertTextAtBoundary(text, boundary, insertBefore, ranges) {
-		var boundaries = boundariesFromRanges(ranges);
-		// Because empty text nodes are generally not nice and even cause
-		// problems with IE8 (elem.childNodes).
-		if (!text.length) {
-			return boundary;
-		}
-		var container = boundary[0];
-		var offset = boundary[1];
-		if (isTextNode(container) && offset < nodeLength(container)) {
-			container.insertData(offset, text);
-			return adjustRangesAfterTextInsert(container, offset, text.length, insertBefore, boundaries, ranges);
-		}
-		var node = nodeAtOffset(container, offset);
-		var atEnd = isAtEnd(container, offset);
-		// Because if the node following the insert position is already a text
-		// node we can just reuse it.
-		if (isTextNode(node)) {
-			node.insertData(0, text);
-			return adjustRangesAfterTextInsert(node, 0, text.length, insertBefore, boundaries, ranges);
-		}
-		// Because if the node preceding the insert position is already a text
-		// node we can just reuse it.
-		var prev = atEnd ? node.lastChild : node.previousSibling;
-		if (prev && isTextNode(prev)) {
-			var off = nodeLength(prev);
-			prev.insertData(off, text);
-			return adjustRangesAfterTextInsert(prev, off, text.length, insertBefore, boundaries, ranges);
-		}
-		// Because if we can't reuse any text nodes, we have to insert a new
-		// one.
-		var textNode = document.createTextNode(text);
-		insert(textNode, node, atEnd);
-		return adjustRangesAfterNodeInsert(textNode, insertBefore, boundaries, ranges)
-	}
-
-	function insertNodeAtBoundary(node, boundary, insertBefore, ranges) {
-		var boundaries = boundariesFromRanges(ranges);
-		boundary = splitBoundary(boundary, ranges);
-		var ref = nodeAtBoundary(boundary);
-		var atEnd = isBoundaryAtEnd(boundary);
-		insert(node, ref, atEnd);
-		return adjustRangesAfterNodeInsert(node, insertBefore, boundaries, ranges);
-	}
-
-	/**
-	 * Removes the given node while keeping it's content intact.
-	 *
-	 * @param {!Node} node
-	 */
-	function removeShallow(node) {
-		var parent = node.parentNode;
-		moveNextAll(parent, node.firstChild, node);
-		parent.removeChild(node);
-	}
-
-	/**
-	 * Removes the given node while maintaing the given Ranges.
-	 *
-	 * @param {!Node} node
-	 * @param {!Array.<!Range>} ranges
-	 */
-	function removePreservingRanges(node, ranges) {
-		var range;
-		// Because the range may change due to the DOM modification
-		// (automatically by the browser).
-		var boundaries = boundariesFromRanges(ranges);
-		var parentNode = node.parentNode;
-		var nidx = nodeIndex(node);
-		parentNode.removeChild(node);
-		var adjusted = adjustBoundaries(
-			adjustBoundaryAfterRemove,
-			boundaries,
-			node,
-			parentNode,
-			nidx
-		);
-		setRangesFromBoundaries(ranges, adjusted);
-	}
-
-	/**
-	 * Removes the given node while maintaing the given range.
-	 *
-	 * @param {!Node} node
-	 * @param {!Range} range
-	 */
-	function removePreservingRange(node, range) {
-		removePreservingRanges(node, [range]);
-	}
-
-	function preservePointForShallowRemove(node, point) {
-		if (point.node === node) {
-			if (point.node.firstChild) {
-				point.next();
-			} else {
-				point.skipNext();
-			}
-		}
-	}
-
-	function preserveBoundaries(node, points, preserveFn) {
-		var i;
-		for (i = 0; i < points.length; i++) {
-			preserveFn(node, points[i]);
-		}
-	}
-
-	/**
-	 * Does a shallow removal of the given node (see removeShallow()), while
-	 * preserving the range boundary points.
-	 *
-	 * @param {!Node} node
-	 * @param {!Array.<!Cursor>} points
-	 */
-	function removeShallowPreservingBoundaries(node, points) {
-		preserveBoundaries(node, points, preservePointForShallowRemove);
-		removeShallow(node);
 	}
 
 	/**
@@ -1565,10 +1133,6 @@ define([
 		moveSiblingsInto: moveSiblingsInto,
 		moveSiblingsAfter: moveSiblingsAfter,
 
-		removeShallow: removeShallow,
-		removeShallowPreservingBoundaries: removeShallowPreservingBoundaries,
-		removePreservingRange: removePreservingRange,
-		removePreservingRanges: removePreservingRanges,
 		cloneShallow: cloneShallow,
 		clone: clone,
 
@@ -1576,21 +1140,16 @@ define([
 		insert: insert,
 		insertAfter: insertAfter,
 		replaceShallow: replaceShallow,
+		removeShallow: removeShallow,
 
 		isAtEnd: isAtEnd,
 		isAtStart: isAtStart,
 		children: children,
 		nthChild: nthChild,
+		numChildren: numChildren,
 		nodeIndex: nodeIndex,
 		nodeLength: nodeLength,
 		nodeAtOffset: nodeAtOffset,
-		nodeAtBoundary: nodeAtBoundary,
-		normalizeBoundary: normalizeBoundary,
-		isBoundaryAtEnd: isBoundaryAtEnd,
-		startBoundary: startBoundary,
-		endBoundary: endBoundary,
-		insertTextAtBoundary: insertTextAtBoundary,
-		insertNodeAtBoundary: insertNodeAtBoundary,
 
 		normalizedNthChild: normalizedNthChild,
 		normalizedNodeIndex: normalizedNodeIndex,
@@ -1600,11 +1159,6 @@ define([
 		isTextNode: isTextNode,
 		isEmptyTextNode: isEmptyTextNode,
 		isEqualNode: isEqualNode,
-		splitTextNode: splitTextNode,
-		splitTextContainers: splitTextContainers,
-		joinTextNodeAdjustRange: joinTextNodeAdjustRange,
-		joinTextNode: joinTextNode,
-		splitBoundary: splitBoundary,
 
 		contains: contains,
 		followedBy: followedBy,
@@ -1625,7 +1179,6 @@ define([
 		Nodes: Nodes,
 
 		ensureExpandoId: ensureExpandoId,
-		setRangeFromBoundaries: setRangeFromBoundaries,
 
 		enableSelection: enableSelection,
 		disableSelection : disableSelection
@@ -1650,14 +1203,11 @@ define([
 	exports['indexByClassHaveList'] = exports.indexByClassHaveList;
 	exports['outerHtml'] = exports.outerHtml;
 	exports['moveNextAll'] = exports.moveNextAll;
-	exports['removeShallow'] = exports.removeShallow;
-	exports['removeShallowPreservingBoundaries'] = exports.removeShallowPreservingBoundaries;
-	exports['removePreservingRange'] = exports.removePreservingRange;
-	exports['removePreservingRanges'] = exports.removePreservingRanges;
 	exports['cloneShallow'] = exports.cloneShallow;
 	exports['clone'] = exports.clone;
 	exports['wrap'] = exports.wrap;
 	exports['insert'] = exports.insert;
+	exports['removeShallow'] = exports.removeShallow;
 	exports['replaceShallow'] = exports.replaceShallow;
 	exports['isAtEnd'] = exports.isAtEnd;
 	exports['isAtStart'] = exports.isAtStart;
@@ -1666,18 +1216,8 @@ define([
 	exports['nodeIndex'] = exports.nodeIndex;
 	exports['nodeLength'] = exports.nodeLength;
 	exports['nodeAtOffset'] = exports.nodeAtOffset;
-	exports['nodeAtBoundary'] = exports.nodeAtBoundary;
-	exports['startBoundary'] = exports.startBoundary;
-	exports['endBoundary'] = exports.endBoundary;
-	exports['insertTextAtBoundary'] = exports.insertTextAtBoundary;
-	exports['insertNodeAtBoundary'] = exports.insertNodeAtBoundary;
 	exports['isTextNode'] = exports.isTextNode;
 	exports['isEmptyTextNode'] = exports.isEmptyTextNode;
-	exports['splitTextNode'] = exports.splitTextNode;
-	exports['splitTextContainers'] = exports.splitTextContainers;
-	exports['joinTextNodeAdjustRange'] = exports.joinTextNodeAdjustRange;
-	exports['joinTextNode'] = exports.joinTextNode;
-	exports['splitBoundary'] = exports.splitBoundary;
 	exports['contains'] = exports.contains;
 	exports['followedBy'] = exports.followedBy;
 	exports['setStyle'] = exports.setStyle;

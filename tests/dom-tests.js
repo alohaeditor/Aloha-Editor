@@ -1,7 +1,8 @@
 (function (aloha) {
 	'use strict';
 
-	var dom = aloha.dom;
+	var Dom = aloha.dom;
+	var Mutation = aloha.mutation;
 	var Predicates = aloha.predicates;
 	var tested = [];
 
@@ -14,18 +15,18 @@
 
 	test('getElementsByClassNames', function () {
 		tested.push('getElementsByClassNames');
-		var matches = dom.getElementsByClassNames(['some-class'], input);
+		var matches = Dom.getElementsByClassNames(['some-class'], input);
 		equal(
 			matches.length,
 			input.getElementsByClassName('some-class').length
 		);
 		equal(
-			dom.getElementsByClassNames(['some-class-4'], input)[0].innerHTML,
+			Dom.getElementsByClassNames(['some-class-4'], input)[0].innerHTML,
 			'some other text'
 		);
 		equal(matches[1].className, 'some-class-2 some-class');
 		equal(
-			dom.getElementsByClassNames(['some-class-4', 'some-class-3'], input).length,
+			Dom.getElementsByClassNames(['some-class-4', 'some-class-3'], input).length,
 			2
 		);
 	});
@@ -33,26 +34,26 @@
 	test('outerHtml', function () {
 		tested.push('outerHtml');
 		var elem = $('<span class="one two three"><i>one</i></span>')[0];
-		equal(elem.outerHTML, dom.outerHtml(elem));
+		equal(elem.outerHTML, Dom.outerHtml(elem));
 	});
 
 	test('moveNextAll', function () {
 		tested.push('moveNextAll');
 		var elem = $('<div><a></a><b></b><span></span></div>')[0];
 		var nodes = $('<div><sup></sup><sub></sub></div>')[0];
-		dom.moveNextAll(elem, nodes.firstChild, elem.lastChild);
+		Dom.moveNextAll(elem, nodes.firstChild, elem.lastChild);
 		equal(
-			dom.outerHtml(elem),
+			Dom.outerHtml(elem),
 			'<div><a></a><b></b><sup></sup><sub></sub><span></span></div>'
 		);
-		equal(dom.outerHtml(nodes), '<div></div>');
+		equal(Dom.outerHtml(nodes), '<div></div>');
 	});
 
 	test('contains', function () {
 		tested.push('contains');
 		var span = $('<div><b></b><span><a></a></span></div>')[0].lastChild;
-		equal(dom.contains(span, span.firstChild), true);
-		equal(dom.contains(span, span.previousSibling), false);
+		equal(Dom.contains(span, span.firstChild), true);
+		equal(Dom.contains(span, span.previousSibling), false);
 	});
 
 	module('dom: remove');
@@ -60,21 +61,21 @@
 	test('removeShallow', function () {
 		tested.push('removeShallow');
 		var node = $('<div><span><b></b></span></div>')[0];
-		dom.removeShallow(node.firstChild);
+		Dom.removeShallow(node.firstChild);
 		equal(node.firstChild.nodeName, 'B');
-		dom.removeShallow(node.firstChild);
-		equal(dom.outerHtml(node), '<div></div>');
+		Dom.removeShallow(node.firstChild);
+		equal(Dom.outerHtml(node), '<div></div>');
 	});
 
-	test('removeShallowPreservingBoundaries', function () {
+	test('removeShallowPreservingBoundariesCursors', function () {
 		tested.push('removeShallowPreservingBoundaries');
 		var node = $('<div><span><b>foo</b></span></div>')[0];
 		var points = [
 			aloha.cursors.cursorFromBoundaryPoint(node, 0),
 			aloha.cursors.cursorFromBoundaryPoint(node.firstChild, 1)
 		];
-		dom.removeShallowPreservingBoundaries(node.firstChild, points);
-		equal(dom.outerHtml(node), '<div><b>foo</b></div>');
+		Mutation.removeShallowPreservingCursors(node.firstChild, points);
+		equal(Dom.outerHtml(node), '<div><b>foo</b></div>');
 		equal(points[0].node.nodeName, 'B');
 		equal(points[0].atEnd, false);
 		equal(points[1].node.nodeName, 'DIV');
@@ -88,15 +89,15 @@
 		var node = $('<div><span>foo<b>bar</b></span></div>')[0];
 		var range = aloha.ranges.create(node, 0, node.firstChild.lastChild, 1);
 
-		dom.removePreservingRange(node.firstChild.lastChild, range);
-		equal(dom.outerHtml(node), '<div><span>foo</span></div>');
+		Mutation.removePreservingRange(node.firstChild.lastChild, range);
+		equal(Dom.outerHtml(node), '<div><span>foo</span></div>');
 		equal(range.startContainer.nodeName, 'DIV');
 		equal(range.startOffset, 0);
 		equal(range.endContainer.nodeName, 'SPAN');
 		equal(range.endOffset, 1);
 
-		dom.removePreservingRanges(node.firstChild.firstChild, [range]);
-		equal(dom.outerHtml(node), '<div><span></span></div>');
+		Mutation.removePreservingRanges(node.firstChild.firstChild, [range]);
+		equal(Dom.outerHtml(node), '<div><span></span></div>');
 		equal(range.startContainer.nodeName, 'DIV');
 		equal(range.startOffset, 0);
 		equal(range.endContainer.nodeName, 'SPAN');
@@ -106,29 +107,29 @@
 	test('replaceShallow', function () {
 		tested.push('replaceShallow');
 		var node = $('<div><span><b>foo</b></span></div>')[0];
-		dom.replaceShallow(node.firstChild, document.createElement('u'));
-		equal(dom.outerHtml(node), '<div><u><b>foo</b></u></div>');
+		Dom.replaceShallow(node.firstChild, document.createElement('u'));
+		equal(Dom.outerHtml(node), '<div><u><b>foo</b></u></div>');
 	});
 
 	test('cloneShallow', function () {
 		tested.push('cloneShallow');
 		var node = $('<div><span><b>foo</b></span></div>')[0];
-		equal(dom.outerHtml(dom.cloneShallow(node.firstChild)), '<span></span>');
+		equal(Dom.outerHtml(Dom.cloneShallow(node.firstChild)), '<span></span>');
 	});
 
 	test('wrap', function () {
 		tested.push('wrap');
 		var span = $('<span>foo</span>')[0];
-		dom.wrap(span, document.createElement('div'));
-		equal(dom.outerHtml(span.parentNode), '<div><span>foo</span></div>');
+		Dom.wrap(span, document.createElement('div'));
+		equal(Dom.outerHtml(span.parentNode), '<div><span>foo</span></div>');
 	});
 
 	test('insert', function () {
 		tested.push('insert');
 		var node = $('<span>foo</span>')[0];
-		dom.insert(document.createElement('u'), node.firstChild);
-		dom.insert(document.createElement('b'), node, true);
-		equal(dom.outerHtml(node), '<span><u></u>foo<b></b></span>');
+		Dom.insert(document.createElement('u'), node.firstChild);
+		Dom.insert(document.createElement('b'), node, true);
+		equal(Dom.outerHtml(node), '<span><u></u>foo<b></b></span>');
 	});
 
 	module('dom: nodes');
@@ -136,51 +137,51 @@
 	test('isAtStart', function () {
 		tested.push('isAtStart');
 		var node = $('<div>one</div>')[0];
-		equal(dom.isAtStart(node.firstChild, 0), true);
-		equal(dom.isAtStart(node, 1), false);
+		equal(Dom.isAtStart(node.firstChild, 0), true);
+		equal(Dom.isAtStart(node, 1), false);
 	});
 
 	test('isAtEnd', function () {
 		tested.push('isAtEnd');
 		var node = $('<div>one</div>')[0];
-		equal(dom.isAtEnd(node.firstChild, 3), true);
-		equal(dom.isAtEnd(node, 0), false);
+		equal(Dom.isAtEnd(node.firstChild, 3), true);
+		equal(Dom.isAtEnd(node, 0), false);
 	});
 
 	test('nodeIndex', function () {
 		tested.push('nodeIndex');
 		var node = $('<div>foo<b>bar</b></div>')[0];
-		equal(dom.nodeIndex(node.lastChild), 1);
-		equal(dom.nodeIndex(node.firstChild), 0);
-		equal(dom.nodeIndex(node), 0);
+		equal(Dom.nodeIndex(node.lastChild), 1);
+		equal(Dom.nodeIndex(node.firstChild), 0);
+		equal(Dom.nodeIndex(node), 0);
 	});
 
 	test('nodeLength', function () {
 		tested.push('nodeLength');
 		var node = $('<div>foo<b>bar</b></div>')[0];
-		equal(dom.nodeLength(node.lastChild), 1);
-		equal(dom.nodeLength(node.firstChild), 3);
-		equal(dom.nodeLength(node), 2);
+		equal(Dom.nodeLength(node.lastChild), 1);
+		equal(Dom.nodeLength(node.firstChild), 3);
+		equal(Dom.nodeLength(node), 2);
 	});
 
 	test('nodeAtOffset', function () {
 		tested.push('nodeAtOffset');
 		var node = $('<div>foo<b>bar</b></div>')[0];
-		equal(dom.nodeAtOffset(node, 0).data, 'foo');
-		equal(dom.nodeAtOffset(node, 1), node.lastChild);
+		equal(Dom.nodeAtOffset(node, 0).data, 'foo');
+		equal(Dom.nodeAtOffset(node, 1), node.lastChild);
 	});
 
 	test('isTextNode', function () {
 		tested.push('isTextNode');
 		var node = $('<div>foo<b>bar</b></div>')[0];
-		equal(dom.isTextNode(node.firstChild), true);
-		equal(dom.isTextNode(node), false);
+		equal(Dom.isTextNode(node.firstChild), true);
+		equal(Dom.isTextNode(node), false);
 	});
 
 	test('splitTextNode', function () {
 		tested.push('splitTextNode');
 		var node = $('<div>foo</div>')[0];
-		equal(dom.splitTextNode(node.firstChild, 2).data, 'fo');
+		equal(Mutation.splitTextNode(node.firstChild, 2).data, 'fo');
 		equal(node.lastChild.data, 'o');
 	});
 
@@ -193,7 +194,7 @@
 			node.lastChild.lastChild,
 			2
 		);
-		dom.splitTextContainers(range);
+		Mutation.splitTextContainers(range);
 		equal(node.childNodes[0].data, 'f');
 		equal(node.childNodes[1].data, 'oo');
 		equal(node.lastChild.childNodes[0].data, 'ba');
@@ -209,9 +210,9 @@
 			node.lastChild.lastChild,
 			2
 		);
-		dom.splitBoundary([node.firstChild, 1], [range]);
+		Mutation.splitBoundary([node.firstChild, 1], [range]);
 		equal(
-			dom.nodeAtOffset(range.startContainer, range.startOffset).data,
+			Dom.nodeAtOffset(range.startContainer, range.startOffset).data,
 			'oo'
 		);
 	});
@@ -219,16 +220,16 @@
 	test('joinTextNodeAdjustRange', function () {
 		tested.push('joinTextNodeAdjustRange');
 		var node = $('<div>foo<b>bar</b></div>')[0];
-		dom.splitTextNode(node.firstChild, 2);
+		Mutation.splitTextNode(node.firstChild, 2);
 		var range = aloha.ranges.create(
 			node.childNodes[1],
 			0,
 			node.lastChild.lastChild,
 			2
 		);
-		dom.joinTextNodeAdjustRange(node.firstChild, range);
+		Mutation.joinTextNodeAdjustRange(node.firstChild, range);
 		equal(
-			dom.nodeAtOffset(range.startContainer, range.startOffset).data,
+			Dom.nodeAtOffset(range.startContainer, range.startOffset).data,
 			'foo'
 		);
 	});
@@ -238,7 +239,7 @@
 	test('setStyle', function () {
 		tested.push('setStyle');
 		var elem = $('<div></div>')[0];
-		dom.setStyle(elem, 'width', '100px')
+		Dom.setStyle(elem, 'width', '100px')
 		equal(elem.style.width, '100px');
 	});
 
@@ -246,23 +247,23 @@
 		tested.push('getStyle');
 		var elem = $('<div></div>')[0];
 		elem.style.width = '100px';
-		equal(dom.getStyle(elem, 'width'), '100px');
+		equal(Dom.getStyle(elem, 'width'), '100px');
 	});
 
 	test('removeStyle', function () {
 		tested.push('removeStyle');
 		var elem = $('<div></div>')[0];
 		elem.style.width = '100px';
-		equal(dom.getStyle(elem, 'width'), '100px');
-		dom.removeStyle(elem, 'width');
-		equal(dom.getStyle(elem, 'width'), '');
+		equal(Dom.getStyle(elem, 'width'), '100px');
+		Dom.removeStyle(elem, 'width');
+		equal(Dom.getStyle(elem, 'width'), '');
 	});
 
 	test('getComputedStyle', function () {
 		tested.push('getComputedStyle');
 		var elem = $('<div class="color: red"></div>');
-		equal(dom.getComputedStyle(elem, 'color'));
-		equal(dom.getComputedStyle(elem, 'background'), null);
+		equal(Dom.getComputedStyle(elem, 'color'));
+		equal(Dom.getComputedStyle(elem, 'background'), null);
 	});
 
 	module('dom: editables');
@@ -270,25 +271,25 @@
 	test('isEditable', function () {
 		tested.push('isEditable');
 		var elem = $('<div><span contentEditable="true"><b></b></span></div>')[0];
-		equal(dom.isEditable(elem.firstChild.firstChild), true);
-		equal(dom.isEditable(elem.firstChild), false);
-		equal(dom.isEditable(elem), false);
+		equal(Dom.isEditable(elem.firstChild.firstChild), true);
+		equal(Dom.isEditable(elem.firstChild), false);
+		equal(Dom.isEditable(elem), false);
 	});
 
 	test('isEditingHost', function () {
 		tested.push('isEditingHost');
 		var elem = $('<div><span contentEditable="true"><b></b></span></div>')[0];
-		equal(dom.isEditingHost(elem.firstChild.firstChild), false);
-		equal(dom.isEditingHost(elem.firstChild), true);
-		equal(dom.isEditingHost(elem), false);
+		equal(Dom.isEditingHost(elem.firstChild.firstChild), false);
+		equal(Dom.isEditingHost(elem.firstChild), true);
+		equal(Dom.isEditingHost(elem), false);
 	});
 
 	test('getEditingHost', function () {
 		tested.push('getEditingHost');
 		var elem = $('<div><span contentEditable="true"><b></b></span></div>')[0];
-		equal(dom.getEditingHost(elem.firstChild.firstChild), elem.firstChild);
-		equal(dom.getEditingHost(elem.firstChild), elem.firstChild);
-		equal(dom.getEditingHost(elem), null);
+		equal(Dom.getEditingHost(elem.firstChild.firstChild), elem.firstChild);
+		equal(Dom.getEditingHost(elem.firstChild), elem.firstChild);
+		equal(Dom.getEditingHost(elem), null);
 	});
 
 	module('dom: attributes');
@@ -296,7 +297,7 @@
 	test('attrs', function () {
 		tested.push('attrs');
 		var elem = $('<div data-one="1" data-two></div>')[0];
-		var attrs = dom.attrs(elem);
+		var attrs = Dom.attrs(elem);
 		equal(2, attrs.length);
 		equal(attrs[0][0], 'data-one');
 		equal(attrs[0][1], '1');
@@ -307,22 +308,22 @@
 	test('attrNames', function () {
 		tested.push('attrNames');
 		var elem = $('<div data-one="1" data-two></div>')[0];
-		var attrs = dom.attrNames(elem);
+		var attrs = Dom.attrNames(elem);
 		equal(attrs[0], 'data-one');
 		equal(attrs[1], 'data-two');
 	});
 
 	test('hasAttrs', function () {
 		tested.push('hasAttrs');
-		equal(dom.hasAttrs($('<div data-one="1" data-two></div>')[0]), true);
-		equal(dom.hasAttrs($('<input/>')[0]), false);
+		equal(Dom.hasAttrs($('<div data-one="1" data-two></div>')[0]), true);
+		equal(Dom.hasAttrs($('<input/>')[0]), false);
 	});
 
 	test('attrNames', function () {
 		tested.push('attrNames');
-		var result = dom.attrNames($('<hr>')[0]);
+		var result = Dom.attrNames($('<hr>')[0]);
 		deepEqual(result, []);
-		var result = dom.attrNames($('<li data-attr="some value">')[0]);
+		var result = Dom.attrNames($('<li data-attr="some value">')[0]);
 		deepEqual(result, ['data-attr']);
 	});
 
@@ -331,40 +332,40 @@
 	test('addClass', function () {
 		tested.push('addClass');
 		var elem = $('<span></span>')[0];
-		dom.addClass(elem, 'one');
-		equal(dom.outerHtml(elem), '<span class="one"></span>');
-		dom.addClass(elem, 'two three');
-		equal(dom.outerHtml(elem), '<span class="one two three"></span>');
+		Dom.addClass(elem, 'one');
+		equal(Dom.outerHtml(elem), '<span class="one"></span>');
+		Dom.addClass(elem, 'two three');
+		equal(Dom.outerHtml(elem), '<span class="one two three"></span>');
 	});
 
 	test('removeClass', function () {
 		tested.push('removeClass');
 		var elem = $('<span class="one two three"></span>')[0];
-		dom.removeClass(elem, 'two');
-		equal(dom.outerHtml(elem), '<span class="one three"></span>');
-		dom.removeClass(elem, 'one three');
-		equal(dom.outerHtml(elem), '<span class=""></span>');
-		dom.removeClass(elem, 'one');
-		equal(dom.outerHtml(elem), '<span class=""></span>');
+		Dom.removeClass(elem, 'two');
+		equal(Dom.outerHtml(elem), '<span class="one three"></span>');
+		Dom.removeClass(elem, 'one three');
+		equal(Dom.outerHtml(elem), '<span class=""></span>');
+		Dom.removeClass(elem, 'one');
+		equal(Dom.outerHtml(elem), '<span class=""></span>');
 	});
 
 	test('hasClass', function () {
 		tested.push('hasClass');
 		var elem = $('<span class="one two three"></span>')[0];
-		equal(true, dom.hasClass(elem, 'one'));
-		equal(false, dom.hasClass(elem, 'four'));
+		equal(true, Dom.hasClass(elem, 'one'));
+		equal(false, Dom.hasClass(elem, 'four'));
 	});
 
 	test('indexByClass', function () {
 		tested.push('indexByClass');
-		var result = dom.indexByClass(input, {'some-class': true, 'some-class-4': true});
+		var result = Dom.indexByClass(input, {'some-class': true, 'some-class-4': true});
 		deepEqual(result, {'some-class': $(input).find('.some-class').get(),
 						   'some-class-4': $(input).find('.some-class-4').get()});
 	});
 
 	test('indexByName', function () {
 		tested.push('indexByName');
-		var result = dom.indexByName(input, ['P', 'B']);
+		var result = Dom.indexByName(input, ['P', 'B']);
 		deepEqual(result, {'P': $(input).find('p').get(),
 						   'B': $(input).find('b').get()});
 	});
@@ -407,5 +408,5 @@
 
 	module('dom');
 
-	testCoverage(test, tested, dom);
+	testCoverage(test, tested, Dom);
 }(window.aloha));

@@ -26,7 +26,7 @@
 		};
 
 		// ie will automatically convert <b>[foo]</b> to <b>{foo]</b>
-		if (!aloha.browser.browser.msie) {
+		if (!aloha.browsers.msie) {
 			t('<p><b>[foo]</b></p>', '<p><b>{foo]</b></p>');
 		}
 
@@ -35,12 +35,12 @@
 		t('<p><b>[]</b></p>', '<p><b>{]</b></p>');
 
 		// ie will automatically convery <b>{]</b> to <b>[]</b>
-		if (!aloha.browser.browser.msie) {
+		if (!aloha.browsers.msie) {
 			t('<p><b>{]</b></p>', '<p>{<b>]</b></p>');
 		}
 
 		// ie will automatically convery <b></b>{] to <b></b>[]
-		if (!aloha.browser.browser.msie) {
+		if (!aloha.browsers.msie) {
 			t('<p><b></b>{}</p>', '<p><b>{</b>}</p>');
 		}
 
@@ -123,7 +123,6 @@
 		tested.push('nodeBefore');
 		tested.push('nodeAfter');
 		var t = function (markup, expected) {
-			debugger;
 			var range = ranges.create(document.documentElement, 0);
 			boundarymarkers.extract($(markup)[0], range);
 			var left = Boundaries.nodeBefore(Boundaries.start(range));

@@ -8,6 +8,7 @@ define([
 	'arrays',
 	'maps',
 	'dom',
+	'mutation',
 	'boundaries',
 	'functions',
 	'traversing',
@@ -17,6 +18,7 @@ define([
 	Arrays,
 	Maps,
 	Dom,
+	Mutation,
 	Boundaries,
 	Fn,
 	Traversing,
@@ -154,7 +156,7 @@ define([
 		} else {
 			off = Dom.realFromNormalizedIndex(container, off);
 		}
-		return Dom.normalizeBoundary([container, off]);
+		return Boundaries.normalize([container, off]);
 	}
 
 	function endOfNodePath(container, node) {
@@ -207,7 +209,7 @@ define([
 	 *        The path from the given container to the given boundary.
 	 */
 	function pathFromBoundary(container, boundary) {
-		boundary = Dom.normalizeBoundary(boundary);
+		boundary = Boundaries.normalize(boundary);
 		var path;
 		var textOff = Boundaries.precedingTextLength(boundary);
 		if (textOff) {
@@ -234,7 +236,7 @@ define([
 	 * the last step of a path and can't therefore be composed).
 	 */
 	function incompletePathFromBoundary(container, boundary) {
-		boundary = Dom.normalizeBoundary(boundary);
+		boundary = Boundaries.normalize(boundary);
 		var node = Boundaries.nodeAfter(boundary);
 		// Because if the boundary is between two text nodes, index
 		// normalization performed by nodePath() will use the offset of
@@ -961,12 +963,12 @@ define([
 				if (Dom.isTextNode(insertNode)) {
 					textNodes.push(insertNode);
 				}
-				boundary = Dom.insertNodeAtBoundary(insertNode, boundary, true, ranges);
+				boundary = Mutation.insertNodeAtBoundary(insertNode, boundary, true, ranges);
 			});
 		} else if ('delete' === type) {
 			var boundary = boundaryFromPath(container, change.path);
-			boundary = Dom.splitBoundary(boundary, ranges);
-			var node = Dom.nodeAtBoundary(boundary);
+			boundary = Mutation.splitBoundary(boundary, ranges);
+			var node = Boundaries.nodeAtBoundary(boundary);
 			var parent = node.parentNode;
 			change.content.forEach(function (removedNode) {
 				var next;
@@ -977,14 +979,14 @@ define([
 						var len = Dom.nodeLength(node);
 						if (removedLen >= len) {
 							next = node.nextSibling;
-							Dom.removePreservingRanges(node, ranges);
+							Mutation.removePreservingRanges(node, ranges);
 							removedLen -= len;
 							node = next;
 						} else {
-							boundary = Dom.splitBoundary([node, removedLen], ranges);
+							boundary = Mutation.splitBoundary([node, removedLen], ranges);
 							var nodeBeforeSplit = Boundaries.nodeBefore(boundary);
 							var nodeAfterSplit = Boundaries.nodeAfter(boundary);
-							Dom.removePreservingRanges(nodeBeforeSplit, ranges);
+							Mutation.removePreservingRanges(nodeBeforeSplit, ranges);
 							removedLen = 0;
 							textNodes.push(nodeAfterSplit);
 							node = nodeAfterSplit;
@@ -993,7 +995,7 @@ define([
 				} else {
 					next = node.nextSibling;
 					Assert.assertEqual(node.nodeName, removedNode.nodeName);
-					Dom.removePreservingRanges(node, ranges);
+					Mutation.removePreservingRanges(node, ranges);
 					node = next;
 				}
 			});
@@ -1008,7 +1010,7 @@ define([
 			applyChange(container, change, null, ranges, textNodes);
 		});
 		textNodes.forEach(function (node) {
-			Dom.joinTextNode(node, ranges);
+			Mutation.joinTextNode(node, ranges);
 		});
 	}
 

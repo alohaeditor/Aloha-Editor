@@ -20,6 +20,7 @@ define([
 	'colors',
 	'cursors',
 	'dom',
+	'mutation',
 	'dragdrop',
 	'predicates',
 	'dom-to-xhtml',
@@ -52,6 +53,7 @@ define([
 	Colors,
 	Cursors,
 	Dom,
+	Mutation,
 	DragDrop,
 	Predicates,
 	Xhtml,
@@ -149,6 +151,7 @@ define([
 	aloha['colors'] = Colors;
 	aloha['cursors'] = Cursors;
 	aloha['dom'] = Dom;
+	aloha['mutation'] = Mutation;
 	aloha['dragdrop'] = DragDrop;
 	aloha['predicates'] = Predicates;
 	aloha['editing'] = Editing;

@@ -200,14 +200,14 @@ define([
 				if (node) {
 					Dom.wrap(node, wrapper);
 				} else {
-					Dom.insertNodeAtBoundary(wrapper, boundary);
+					Mutation.insertNodeAtBoundary(wrapper, boundary);
 					boundary = [wrapper, 0];
 				}
 				node = wrapper;
 			} else {
 				if (!node) {
 					node = document.createElement('span');
-					Dom.insertNodeAtBoundary(node, boundary);
+					Mutation.insertNodeAtBoundary(node, boundary);
 					boundary = [node, 0];
 				}
 				Dom.setStyle(node, override[0], override[1]);

@@ -21,6 +21,7 @@
  */
 define([
 	'dom',
+	'mutation',
 	'traversing',
 	'boundaries',
 	'arrays',
@@ -34,6 +35,7 @@ define([
 	'content'
 ], function Editing(
 	Dom,
+	Mutation,
 	Traversing,
 	Boundaries,
 	Arrays,
@@ -134,7 +136,7 @@ define([
 	 * endContainer/endOffset.
 	 *
 	 * Requires range's boundary points to be between nodes
-	 * (Dom.splitTextContainers).
+	 * (Mutation.splitTextContainers).
 	 */
 	function walkBoundaryLeftRightInbetween(liveRange, carryDown, stepLeftStart, stepRightStart, stepLeftEnd, stepRightEnd, stepPartial, stepInbetween, arg) {
 		// Because range may be mutated during traversal, we must only
@@ -186,7 +188,7 @@ define([
 	 * Simplifies walkBoundaryLeftRightInbetween from left/right/inbetween to just inside/outside.
 	 *
 	 * Requires range's boundary points to be between nodes
-	 * (Dom.splitTextContainers).
+	 * (Mutation.splitTextContainers).
 	 */
 	function walkBoundaryInsideOutside(liveRange, carryDown, stepOutside, stepPartial, stepInside, arg) {
 		walkBoundaryLeftRightInbetween(liveRange, carryDown, stepOutside, stepInside, stepInside, stepOutside, stepPartial, stepInside, arg);
@@ -201,7 +203,7 @@ define([
 	 * siblings of the range boundary that are not contained in it.
 	 *
 	 * Requires range's boundary points to be between nodes
-	 * (Dom.splitTextContainers).
+	 * (Mutation.splitTextContainers).
 	 */
 	function pushDownContext(liveRange, pushDownFrom, cacOverride, getOverride, clearOverride, clearOverrideRec, pushDownOverride) {
 		// Because range may be mutated during traversal, we must only
@@ -293,7 +295,7 @@ define([
 	 * style="font-weight: normal">. See hasOverrideAncestor below.
 	 *
 	 * @param liveRange range's boundary points should be between nodes
-	 * (Dom.splitTextContainers).
+	 * (Mutation.splitTextContainers).
 	 *
 	 * @param formatter a map with the following properties
 	 *   isUpperBoundary(node) - identifies exclusive upper
@@ -419,7 +421,7 @@ define([
 			return false;
 		}
 		if (wrapper.parentNode) {
-			Dom.removeShallowPreservingBoundaries(wrapper, [leftPoint, rightPoint]);
+			Mutation.removeShallowPreservingCursors(wrapper, [leftPoint, rightPoint]);
 		}
 		adjustPointWrap(leftPoint, node, wrapper);
 		adjustPointWrap(rightPoint, node, wrapper);
@@ -445,7 +447,7 @@ define([
 
 		// Because making the assumption that boundary points are between nodes
 		// makes the algorithms generally a bit simpler.
-		Dom.splitTextContainers(range);
+		Mutation.splitTextContainers(range);
 
 		var splitStart = Cursors.cursorFromBoundaryPoint(
 			range.startContainer,
@@ -496,8 +498,8 @@ define([
 
 		// Because we want to ensure that this algorithm doesn't
 		// introduce any additional splits between text nodes.
-		Dom.joinTextNodeAdjustRange(splitStart.node, range);
-		Dom.joinTextNodeAdjustRange(splitEnd.node, range);
+		Mutation.joinTextNodeAdjustRange(splitStart.node, range);
+		Mutation.joinTextNodeAdjustRange(splitEnd.node, range);
 
 		if (formatter) {
 			formatter.postprocessTextNodes(range);
@@ -601,7 +603,7 @@ define([
 			if (node.nextSibling) {
 				removedNodeSiblings.push(node.nextSibling);
 			}
-			Dom.removeShallowPreservingBoundaries(node, [leftPoint, rightPoint]);
+			Mutation.removeShallowPreservingCursors(node, [leftPoint, rightPoint]);
 		}
 
 		function createContextWrapper(value) {
@@ -722,7 +724,7 @@ define([
 
 		function postprocessTextNodes(range) {
 			removedNodeSiblings.forEach(function (node) {
-				Dom.joinTextNodeAdjustRange(node, range);
+				Mutation.joinTextNodeAdjustRange(node, range);
 			});
 		}
 
@@ -1141,7 +1143,7 @@ define([
 			// Because we may end up cloning the same node twice (by
 			// splitting both start and end points).
 			if (!elem.firstChild && elem.parentNode) {
-				Dom.removeShallowPreservingBoundaries(elem, [left, right]);
+				Mutation.removeShallowPreservingCursors(elem, [left, right]);
 			}
 		});
 
@@ -1237,7 +1239,7 @@ define([
 	function delete_(liveRange, context) {
 		fixupRange(liveRange, function delete_(range, left, right) {
 			var remove = function (node) {
-				Dom.removePreservingRange(node, range);
+				Mutation.removePreservingRange(node, range);
 			};
 			walkBoundaryLeftRightInbetween(
 				range,
@@ -1293,7 +1295,7 @@ define([
 	 */
 	function break_(liveRange, context, linebreak) {
 		var range = Ranges.collapseToEnd(StableRange(liveRange));
-		Dom.splitTextContainers(range);
+		Mutation.splitTextContainers(range);
 		var op = linebreak ? Html.insertLineBreak : Html.insertVisualBreak;
 		var boundary = op(
 			Boundaries.normalize(Boundaries.start(range)),
@@ -1309,7 +1311,7 @@ define([
 				return Content.allowsNesting(node.nodeName, insertion.nodeName);
 			}
 		});
-		var boundary = Dom.insertNodeAtBoundary(insertion, Boundaries.start(range));
+		var boundary = Mutation.insertNodeAtBoundary(insertion, Boundaries.start(range));
 		Ranges.setFromBoundaries(liveRange, boundary, [boundary[0], boundary[1] + 1]);
 	}
 

@@ -190,8 +190,9 @@
 	test('isVisuallyAdjacent()', function () {
 		tested.push('isVisuallyAdjacent');
 		var t = function (markup, expected) {
+			var dom = $(markup)[0];
 			var range = ranges.create(dom, 0);
-			boundarymarkers.extract($(markup)[0], range);
+			boundarymarkers.extract(dom, range);
 			equal(
 				html.isVisuallyAdjacent(
 					Boundaries.start(range),
