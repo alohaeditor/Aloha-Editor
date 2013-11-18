@@ -154,18 +154,16 @@ define(['functions'], function Arrays(Fn) {
 	}
 
 	/**
-	 * Returns the first non-null|undefined return value of pred which
-	 * is invoked on every item in xs. If pred doesn't return a
-	 * non-null|undefined value for any item in xs, returns the last
-	 * value returned by pred. If xs is empty, returns null or
-	 * undefined.
+	 * Returns the first truthy value of pred which is invoked on every
+	 * item in xs. If pred doesn't return a truthy value for any item in
+	 * xs, returns the last value returned by pred.
 	 *
 	 * @param {Array.<*>} xs
 	 *        An array of items.
 	 * @param {function(*):*} pred
 	 *        A predicate function that takes an item from xs and
 	 *        returns a result that will be returned immediatly if it is
-	 *        not null|undefined.
+	 *        truthy.
 	 * @return {*}
 	 *        The last value returned by pred or null if xs is empty.
 	 */
@@ -173,7 +171,7 @@ define(['functions'], function Arrays(Fn) {
 		var result = null;
 		xs.some(function (x) {
 			result = pred(x);
-			return null != result;
+			return !!result;
 		});
 		return result;
 	}
