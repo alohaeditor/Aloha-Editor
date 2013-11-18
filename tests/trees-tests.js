@@ -31,8 +31,10 @@
 			return 9;
 		}
 		if (Array.isArray(node)) {
+			node = Trees.clone(node);
 			node.push('twelvethousand');
 		} else {
+			node = Trees.clone(node);
 			Maps.forEach(node, function (value, key) {
 				if ('one' === key) {
 					node['two'] = Trees.clone(value);
