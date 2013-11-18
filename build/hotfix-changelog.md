@@ -8,3 +8,4 @@ All changes are categorized into one of the following keywords:
 
 ----
 
+- **BUGFIX**:	image-plugin: The image plugin icons were fixed for IE7+
