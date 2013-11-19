@@ -240,6 +240,8 @@ define([
 
 			break;
 		}
+
+		return alohaEvent;
 	}
 
 	var exports = {

@@ -80,26 +80,6 @@ define(['misc', 'assert'], function Events(Misc, Assert) {
 	}
 
 	/**
-	 * Recursively calls the list of arguments in order, passing the product of
-	 * each call as the argument for the next function.
-	 *
-	 * @param  {Object}
-	 *         The seed value which will be passed as the only argument to the
-	 *         first function in the argument list.
-	 * @param  {function(Object):Object=...}
-	 * @return {Object}
-	 */
-	function compose() {
-		var value = arguments[0];
-		var i;
-		var len = arguments.length;
-		for (i = 1; i < len; i++) {
-			value = Misc.copy(arguments[i](value)) || value;
-		}
-		return value;
-	}
-
-	/**
 	 * Given an event object, checks whether the ctrl key is depressed.
 	 *
 	 * @param  {Object}  event
@@ -171,7 +151,6 @@ define(['misc', 'assert'], function Events(Misc, Assert) {
 	var exports = {
 		add         : add,
 		remove      : remove,
-		compose     : compose,
 		setup       : setup,
 		isWithCtrl  : isWithCtrl,
 		isWithShift : isWithShift,
@@ -181,7 +160,6 @@ define(['misc', 'assert'], function Events(Misc, Assert) {
 
 	exports['add']       = exports.add;
 	exports['remove']    = exports.remove;
-	exports['compose']   = exports.compose;
 	exports['setup']     = exports.setup;
 	exports['isWithCtrl']  = exports.isWithCtrl;
 	exports['isWithShift'] = exports.isWithShift;

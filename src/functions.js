@@ -122,6 +122,30 @@ define([], function Functions() {
 	}
 
 	/**
+	 * Composes the functions given as arguments.
+	 *
+	 * comp(a, b, c)(value) === a(b(c(value)))
+	 *
+	 * @param  {function(*):*...}
+	 * @return {*}
+	 */
+	function comp() {
+		var fns = arguments;
+		var len = fns.length;
+		return function () {
+			var result;
+			var i = len;
+			if (i-- > 0) {
+				result = fns[i].apply(this, arguments);
+			}
+			while (i-- > 0) {
+				result = fns[i].call(this, result);
+			}
+			return result;
+		};
+	}
+
+	/**
 	 * Functions for working with functions.
 	 *
 	 * functions.identity()
@@ -140,7 +164,8 @@ define([], function Functions() {
 		complement: complement,
 		partial: partial,
 		outparameter: outparameter,
-		strictEquals: strictEquals
+		strictEquals: strictEquals,
+		comp: comp
 	};
 
 	exports['identity'] = exports.identity;
@@ -150,6 +175,7 @@ define([], function Functions() {
 	exports['complement'] = exports.complement;
 	exports['partial'] = exports.partial;
 	exports['outparameter'] = exports.outparameter;
+	exports['comp'] = exports.comp;
 
 	return exports;
 });

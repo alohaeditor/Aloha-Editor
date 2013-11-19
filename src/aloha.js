@@ -81,21 +81,21 @@ define([
 		if (event.range) {
 			Ranges.select(event.range);
 		}
+		return event;
 	}
 
 	function editor(native, custom) {
 		var event = custom || {'native' : native};
 		event.editor = editor;
-		Events.compose(
-			event,
-			Keys.handle,
-			Mouse.handle,
-			DragDrop.handle,
-			Blocks.handle,
-			Typing.handle,
+		Fn.comp(
+			setSelection,
 			Selections.handle,
-			setSelection
-		);
+			Typing.handle,
+			Blocks.handle,
+			DragDrop.handle,
+			Mouse.handle,
+			Keys.handle
+		)(event);
 	}
 
 	editor.editables = {};

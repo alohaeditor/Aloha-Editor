@@ -118,6 +118,7 @@ define([
 			}
 			break;
 		}
+		return event;
 	}
 
 	var exports = {
