@@ -6,6 +6,7 @@
  */
 define([
 	'dom',
+	'mutation',
 	'keys',
 	'maps',
 	'html',
@@ -18,6 +19,7 @@ define([
 	'overrides'
 ], function Typing(
 	Dom,
+	Mutation,
 	Keys,
 	Maps,
 	Html,
@@ -89,14 +91,14 @@ define([
 		}
 
 		boundary = Overrides.consume(boundary, editable.overrides);
-		Dom.setRangeFromBoundaries(range, boundary, boundary);
+		Boundaries.setRangeFromBoundaries(range, boundary, boundary);
 
 		var insertPath = Undo.pathFromBoundary(editable.elem, boundary);
 		var insertContent = [editable.elem.ownerDocument.createTextNode(text)];
 		var change = Undo.makeInsertChange(insertPath, insertContent);
 
 		Undo.capture(editable.undoContext, {noObserve: true}, function () {
-			Dom.insertTextAtBoundary(text, boundary, true, [range]);
+			Mutation.insertTextAtBoundary(text, boundary, true, [range]);
 			return {changes: [change]};
 		});
 
@@ -241,11 +243,11 @@ define([
 
 	function handle(event) {
 		if (!event.editable) {
-			return;
+			return event;
 		}
 		var handle = handler(event);
 		if (!handle) {
-			return;
+			return event;
 		}
 		var range = event.range;
 		if (handle.preventDefault) {
