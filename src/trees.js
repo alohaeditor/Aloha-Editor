@@ -256,19 +256,18 @@ define(['arrays', 'maps', 'functions'], function Trees(Arrays, Maps, Fn) {
 		var isArrayB = Array.isArray(nodeB);
 		var isMapA = Maps.isMap(nodeA);
 		var isMapB = Maps.isMap(nodeB);
+		function rec(nodeA, nodeB) {
+			return deepEqual(nodeA, nodeB, isLeafEqual);
+		}
 		if (isArrayA && isArrayB) {
-			return Arrays.equal(nodeA, nodeB, function (nodeA, nodeB) {
-				return deepEqual(nodeA, nodeB, isLeafEqual);
-			});
+			return Arrays.equal(nodeA, nodeB, rec);
 		} else if (isMapA && isMapB) {
 			var ksA = Maps.keys(nodeA).sort();
 			var ksB = Maps.keys(nodeB).sort();
 			return (Arrays.equal(ksA, ksB)
 			        && Arrays.equal(Maps.selectVals(nodeA, ksA),
 			                        Maps.selectVals(nodeB, ksB),
-			                        function (nodeA, nodeB) {
-				                        return deepEqual(nodeA, nodeB, isLeafEqual);
-			                        }));
+			                        rec));
 		} else {
 			return (!isArrayA && !isArrayB
 			        && !isMapA && !isMapB
