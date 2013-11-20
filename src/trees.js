@@ -257,26 +257,23 @@ define(['arrays', 'maps', 'functions'], function Trees(Arrays, Maps, Fn) {
 		var isMapA = Maps.isMap(nodeA);
 		var isMapB = Maps.isMap(nodeB);
 		if (isArrayA && isArrayB) {
-			if (nodeA.length !== nodeB.length) {
-				return false;
-			}
+			return Arrays.equal(nodeA, nodeB, function (nodeA, nodeB) {
+				return deepEqual(nodeA, nodeB, isLeafEqual);
+			});
 		} else if (isMapA && isMapB) {
 			var ksA = Maps.keys(nodeA).sort();
 			var ksB = Maps.keys(nodeB).sort();
-			if (!Arrays.equal(ksA, ksB)) {
-				return false;
-			}
-			nodeA = Maps.selectVals(nodeA, ksA);
-			nodeB = Maps.selectVals(nodeB, ksB);
+			return (Arrays.equal(ksA, ksB)
+			        && Arrays.equal(Maps.selectVals(nodeA, ksA),
+			                        Maps.selectVals(nodeB, ksB),
+			                        function (nodeA, nodeB) {
+				                        return deepEqual(nodeA, nodeB, isLeafEqual);
+			                        }));
 		} else {
 			return (!isArrayA && !isArrayB
 			        && !isMapA && !isMapB
 			        && isLeafEqual(nodeA, nodeB));
 		}
-		return !nodeA.some(function (nA, i) {
-			var nB = nodeB[i];
-			return !deepEqual(nA, nB, isLeafEqual);
-		});
 	}
 
 	var exports = {
