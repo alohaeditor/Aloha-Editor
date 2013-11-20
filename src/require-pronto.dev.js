@@ -40,9 +40,9 @@ var require = (function (wrappedRequire) {
 				url = path + '/' + module + '.js';
 			} else {
 				url = module + '.js';
-			}
-			if (require.urlPrefix) {
-				url = require.urlPrefix + url;
+				if (require.urlPrefix) {
+					url = require.urlPrefix + url;
+				}
 			}
 			document.write('<script src="' + url + '" data-pronto-name="' + module + '"></script>');
 		}

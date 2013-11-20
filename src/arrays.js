@@ -66,6 +66,7 @@ define(['functions'], function Arrays(Fn) {
 			return contains(zs, x);
 		});
 	}
+
 	/**
 	 * Returns the relative difference of array `zs` in `xs`:
 	 * All items in the array `xs` that are not contained in array `zs`.
