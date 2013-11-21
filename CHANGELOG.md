@@ -12,6 +12,14 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+## 0.24.8 - 2013/11/21
+
+- **BUGFIX**: blocks: The dragging and dropping of Aloha Blocks has been fixed
+              to no longer use jQueryUi's sortable().  Aloha Editor's own
+              functionality is to be used instead.  This allows implementers to
+              use sortable() to enable drag and drop for blocks which are
+              inside of blocks that have been made draggable by Aloha Editor.
+              RT#56973
 
 ## 0.24.7 - 2013/11/14
 

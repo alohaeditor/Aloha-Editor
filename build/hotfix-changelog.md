@@ -8,9 +8,3 @@ All changes are categorized into one of the following keywords:
 
 ----
 
-- **BUGFIX**: blocks: The dragging and dropping of Aloha Blocks has been fixed
-              to no longer use jQueryUi's sortable().  Aloha Editor's own
-              functionality is to be used instead.  This allows implementers to
-              use sortable() to enable drag and drop for blocks which are
-              inside of blocks that have been made draggable by Aloha Editor.
-              RT#56973
