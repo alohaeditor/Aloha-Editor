@@ -155,24 +155,25 @@ define(['functions'], function Arrays(Fn) {
 	}
 
 	/**
-	 * Returns the first truthy value of pred which is invoked on every
-	 * item in xs. If pred doesn't return a truthy value for any item in
-	 * xs, returns the last value returned by pred.
+	 * Similar to 
+	 * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some
+	 * Except, instead of returning true, returns the value for which the predicate returned true.
 	 *
 	 * @param {Array.<*>} xs
 	 *        An array of items.
 	 * @param {function(*):*} pred
-	 *        A predicate function that takes an item from xs and
-	 *        returns a result that will be returned immediatly if it is
-	 *        truthy.
+	 *        A predicate function that takes an item from xs.
 	 * @return {*}
-	 *        The last value returned by pred or null if xs is empty.
+	 *        The first value for which pred returned true or null if
+	 *        pred doesn't return true for any alue in xs.
 	 */
 	function some(xs, pred) {
 		var result = null;
 		xs.some(function (x) {
-			result = pred(x);
-			return !!result;
+			if (pred(x)) {
+				result = x;
+				return true;
+			}
 		});
 		return result;
 	}
