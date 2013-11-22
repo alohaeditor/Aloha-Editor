@@ -77,7 +77,7 @@ define([
 	 * @return {boolean}
 	 */
 	function isBlockEvent(event) {
-		return Dom.hasClass(event.native.target, event.editor.BLOCK_CLASS);
+		return Dom.hasClass(event.nativeEvent.target, event.editor.BLOCK_CLASS);
 	}
 
 	/**
@@ -96,7 +96,7 @@ define([
 			});
 			break;
 		case 'mousedown':
-			var block = event.native.target;
+			var block = event.nativeEvent.target;
 			if (isBlockEvent(event) && DragDrop.isDraggable(block)) {
 				event.editor.dndContext = Events.isWithCtrl(event)
 				                        ? copyContext(block)

@@ -713,9 +713,9 @@ define([
 	 * @param  {Object} event An Aloha Editor event
 	 * @return {?Range}
 	 */
-	function fromEvent(event) {
-		return event.range
-		    || createFromPoint(event.native.clientX, event.native.clientY)
+	function fromEvent(alohaEvent) {
+		return alohaEvent.range
+		    || createFromPoint(alohaEvent.nativeEvent.clientX, alohaEvent.nativeEvent.clientY)
 		    || get();
 	}
 

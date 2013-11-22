@@ -84,9 +84,9 @@ define([
 		return event;
 	}
 
-	function editor(native, custom) {
-		var event = custom || {'native' : native};
-		event.editor = editor;
+	function editor(nativeEvent, custom) {
+		var alohaEvent = custom || {'nativeEvent' : nativeEvent};
+		alohaEvent.editor = editor;
 		Fn.comp(
 			setSelection,
 			Selections.handle,
@@ -95,7 +95,7 @@ define([
 			DragDrop.handle,
 			Mouse.handle,
 			Keys.handle
-		)(event);
+		)(alohaEvent);
 	}
 
 	editor.editables = {};

@@ -78,12 +78,18 @@ define([
 		    && !Strings.isControlCharacter(String.fromCharCode(event.which));
 	}
 
+	/**
+	 * Returns a string of all meta keys for the given event.
+	 *
+	 * @param  {Event} event
+	 * @return {string}
+	 */
 	function metaKeys(event) {
 		var meta = [];
-		if (event.ctrlKey && (CODES.ctrl  !== event.which)) {
+		if (event.ctrlKey && (CODES.ctrl !== event.which)) {
 			meta.push('ctrl');
 		}
-		if (event.altKey && (CODES.alt   !== event.which)) {
+		if (event.altKey && (CODES.alt !== event.which)) {
 			meta.push('alt');
 		}
 		if (event.shiftKey && (CODES.shift !== event.which)) {
@@ -92,28 +98,28 @@ define([
 		return meta.join('+');
 	}
 
-	function handle(event) {
-		var native = event.native;
-		if (!native) {
-			return event;
+	function handle(alohaEvent) {
+		var event = alohaEvent.nativeEvent;
+		if (!event) {
+			return alohaEvent;
 		}
-		var range = (native instanceof KeyboardEvent) ? Ranges.get() : null;
+		var range = (event instanceof KeyboardEvent) ? Ranges.get() : null;
 		if (range) {
-			event.range = range;
+			alohaEvent.range = range;
 			var editable = Editables.fromBoundary(
-				event.editor,
+				alohaEvent.editor,
 				Boundaries.start(range)
 			);
 			if (editable) {
-				event.editable = editable;
+				alohaEvent.editable = editable;
 			}
 		}
-		event['type'] = native.type;
-		event['which'] = native.which;
-		event['meta'] = metaKeys(native);
-		event['isTextInput'] = isTextInput(native);
-		event['chr'] = String.fromCharCode(native.which);
-		return event;
+		alohaEvent['type'] = event.type;
+		alohaEvent['which'] = event.which;
+		alohaEvent['meta'] = metaKeys(event);
+		alohaEvent['isTextInput'] = isTextInput(event);
+		alohaEvent['chr'] = String.fromCharCode(event.which);
+		return alohaEvent;
 	}
 
 	var exports = {

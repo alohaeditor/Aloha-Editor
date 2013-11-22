@@ -33,9 +33,9 @@ define([
 ) {
 	'use strict';
 
-	function undoable(type, event, fn) {
-		var range = event.range;
-		var undoContext = event.editable.undoContext;
+	function undoable(type, alohaEvent, fn) {
+		var range = alohaEvent.range;
+		var undoContext = alohaEvent.editable.undoContext;
 		Undo.capture(undoContext, {
 			meta: {type: type},
 			oldRange: range
@@ -46,8 +46,8 @@ define([
 		return range;
 	}
 
-	function delete_(direction, event) {
-		var range = event.range;
+	function delete_(direction, alohaEvent) {
+		var range = alohaEvent.range;
 		if (range.collapsed) {
 			range = (
 				direction
@@ -57,26 +57,26 @@ define([
 		}
 		Editing.delete(
 			Ranges.expandToVisibleCharacter(range),
-			event.editable
+			alohaEvent.editable
 		);
 		Html.prop(range.commonAncestorContainer);
 		return range;
 	}
 
-	function format(style, event) {
-		Editing.format(event.range, style, true, event.editable);
-		return event.range;
+	function format(style, alohaEvent) {
+		Editing.format(alohaEvent.range, style, true, alohaEvent.editable);
+		return alohaEvent.range;
 	}
 
-	function break_(isLinebreak, event) {
-		Editing.break(event.range, event.editable, isLinebreak);
-		return event.range;
+	function break_(isLinebreak, alohaEvent) {
+		Editing.break(alohaEvent.range, alohaEvent.editable, isLinebreak);
+		return alohaEvent.range;
 	}
 
-	function insertText(event) {
-		var editable = event.editable;
-		var range = event.range;
-		var text = event.chr;
+	function insertText(alohaEvent) {
+		var editable = alohaEvent.editable;
+		var range = alohaEvent.range;
+		var text = alohaEvent.chr;
 		var boundary = Boundaries.start(range);
 
 		if (' ' === text) {
@@ -105,18 +105,22 @@ define([
 		return range;
 	}
 
-	function toggleUndo(op, event) {
-		var undoContext = event.editable.undoContext;
-		op(undoContext, event.range, [event.range]);
-		return event.range;
+	function toggleUndo(op, alohaEvent) {
+		var undoContext = alohaEvent.editable.undoContext;
+		op(undoContext, alohaEvent.range, [alohaEvent.range]);
+		return alohaEvent.range;
 	}
 
-	function selectEditable(event) {
-		var editable = Dom.editingHost(event.range.commonAncestorContainer);
+	function selectEditable(alohaEvent) {
+		var editable = Dom.editingHost(
+			alohaEvent.range.commonAncestorContainer
+		);
 		if (editable) {
-			event.range = Ranges.create(
-				editable, 0,
-				editable, Dom.nodeLength(editable)
+			alohaEvent.range = Ranges.create(
+				editable,
+				0,
+				editable,
+				Dom.nodeLength(editable)
 			);
 		}
 	}
@@ -234,42 +238,42 @@ define([
 
 	handlers.keydown['ctrl+' + Keys.CODES.selectAll] = selectAll;
 
-	function handler(event) {
-		var modifier = event.meta ? event.meta + '+' : '';
-		return (handlers[event.type]
-		    && handlers[event.type][modifier + event.which])
-		    || (event.isTextInput && handlers.keypress.input);
+	function handler(alohaEvent) {
+		var modifier = alohaEvent.meta ? alohaEvent.meta + '+' : '';
+		return (handlers[alohaEvent.type]
+		    && handlers[alohaEvent.type][modifier + alohaEvent.which])
+		    || (alohaEvent.isTextInput && handlers.keypress.input);
 	}
 
-	function handle(event) {
-		if (!event.editable) {
-			return event;
+	function handle(alohaEvent) {
+		if (!alohaEvent.editable) {
+			return alohaEvent;
 		}
-		var handle = handler(event);
+		var handle = handler(alohaEvent);
 		if (!handle) {
-			return event;
+			return alohaEvent;
 		}
-		var range = event.range;
-		if (handle.preventDefault) {
-			event.native.preventDefault();
+		var range = alohaEvent.range;
+		if (handle.pralohaEventDefault) {
+			alohaEvent.nativeEvent.preventDefault();
 		}
 		if (handle.clearOverrides) {
-			event.editable.overrides = [];
+			alohaEvent.editable.overrides = [];
 		}
 		if (range && handle.mutate) {
 			if (handle.undo) {
-				undoable(handle.undo, event, function () {
+				undoable(handle.undo, alohaEvent, function () {
 					if (handle.deleteRange && !range.collapsed) {
-						delete_(false, event);
+						delete_(false, alohaEvent);
 					}
-					handle.mutate(event);
+					handle.mutate(alohaEvent);
 					Html.prop(range.commonAncestorContainer);
 				});
 			} else {
-				handle.mutate(event);
+				handle.mutate(alohaEvent);
 			}
 		}
-		return event;
+		return alohaEvent;
 	}
 
 	var exports = {

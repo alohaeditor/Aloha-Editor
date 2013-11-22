@@ -7,15 +7,15 @@
 define(['maps'], function Mouse(Maps) {
 	'use strict';
 
-	function handle(event) {
-		var native = event['native'];
-		if (native && 'mousedown' === native.type) {
-			Maps.forEach(event.editor.editables, function (editable) {
+	function handle(alohaEvent) {
+		var event = alohaEvent.nativeEvent;
+		if (event && 'mousedown' === event.type) {
+			Maps.forEach(alohaEvent.editor.editables, function (editable) {
 				editable.overrides = [];
 			});
-			event.target = event.native.target;
+			alohaEvent.target = event.target;
 		}
-		return event;
+		return alohaEvent;
 	}
 
 	var exports = {

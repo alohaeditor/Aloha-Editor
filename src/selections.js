@@ -716,10 +716,10 @@ define([
 
 		var preventDefault = ('keydown' === type && movements[event.which])
 		                  || (event.editor.CARET_CLASS
-		                         === event.native.target.className);
+		                         === event.nativeEvent.target.className);
 
 		if (preventDefault) {
-			event.native.preventDefault();
+			event.nativeEvent.preventDefault();
 		}
 
 		// Because browsers have a non-intuitive way of handling expanding of

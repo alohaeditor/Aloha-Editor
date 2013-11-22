@@ -197,7 +197,7 @@ define([
 	 */
 	function handle(alohaEvent) {
 		var context = alohaEvent.editor.dndContext;
-		var event = alohaEvent.native;
+		var event = alohaEvent.nativeEvent;
 
 		if (!context) {
 			return alohaEvent;
