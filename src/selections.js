@@ -173,7 +173,7 @@ define([
 	 * @return {Range}
 	 */
 	function up(box, stride) {
-		return Ranges.createFromPoint(box.left, box.top - stride);
+		return Ranges.createFromPosition(box.left, box.top - stride);
 	}
 
 	/**
@@ -184,7 +184,7 @@ define([
 	 * @return {Range}
 	 */
 	function down(box, stride) {
-		return Ranges.createFromPoint(box.left, box.top + box.height + stride);
+		return Ranges.createFromPosition(box.left, box.top + box.height + stride);
 	}
 
 	/**

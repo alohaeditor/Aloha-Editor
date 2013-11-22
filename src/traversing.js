@@ -775,29 +775,19 @@ define([
 	}
 
 	/**
-	 * DOM traversal functions.
+	 * Gets the given node's nearest non-editable parent.
 	 *
-	 * traversing.backward()
-	 * traversing.forward()
-	 * traversing.nextWhile()
-	 * traversing.prevWhile()
-	 * traversing.walk()
-	 * traversing.walkRec()
-	 * traversing.walkUntil()
-	 * traversing.walkUntilNode()
-	 * traversing.findBackward()
-	 * traversing.findForward()
-	 * traversing.findWordBoundaryAhead()
-	 * traversing.findWordBoundaryBehind()
-	 * traversing.parentsUntil()
-	 * traversing.parentsUntilIncl()
-	 * traversing.childAndParentsUntil()
-	 * traversing.childAndParentsUntilIncl()
-	 * traversing.childAndParentsUntilNode()
-	 * traversing.childAndParentsUntilInclNode()
-	 * traversing.climbUntil()
-	 * traversing.getNonAncestor()
+	 * @param  {Element} node
+	 * @return {Element|null}
 	 */
+	function parentBlock(node) {
+		var block = Dom.isEditable(node) ? Dom.editingHost(node) : node;
+		var parent = upWhile(block, function (node) {
+			return node.parentNode && !Dom.isEditable(node.parentNode);
+		});
+		return (Dom.Nodes.DOCUMENT === parent.nodeType) ? null : parent;
+	}
+
 	var exports = {
 		backward: backward,
 		forward: forward,
@@ -824,7 +814,8 @@ define([
 		getNonAncestor: getNonAncestor,
 		previousNonAncestor: previousNonAncestor,
 		nextNonAncestor: nextNonAncestor,
-		findAncestor: findAncestor
+		findAncestor: findAncestor,
+		parentBlock: parentBlock
 	};
 
 	exports['backward'] = exports.backward;

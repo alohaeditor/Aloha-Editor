@@ -30,6 +30,12 @@ define([
 	'use strict';
 
 	/**
+	 * The pixel distance from the pointer of where the caret should be
+	 * rendered when dragging.
+	 */
+	var DRAGGING_CARET_OFFSET = -10;
+
+	/**
 	 * Default drag and drop context properites.
 	 *
 	 * These are the default attributes from which drag and drop contexts will
@@ -113,80 +119,18 @@ define([
 	}
 
 	/**
-	 * Drops `element` into the range at the current position as determined
-	 * from the given event.
+	 * Moves the given node, into the given range.
 	 *
-	 * @param  {Event}   event
-	 * @param  {Element} element
-	 * @return {Range}
+	 * @param {Range}   range
+	 * @param {Element} node
 	 */
-	function drop(event, element) {
-		var range = Ranges.createFromPoint(
-			event.clientX - 10,
-			event.clientY - 10
-		);
-
-		if (!range) {
-			return null;
+	function moveNode(range, node) {
+		var prev = node.previousSibling;
+		Editing.insert(range, node);
+		if (prev && prev.nextSibling) {
+			Dom.merge(prev, prev.nextSibling);
 		}
-
-		if (Dom.isEditableNode(range.commonAncestorContainer)) {
-			var prev = element.previousSibling;
-			Editing.insert(range, element);
-			if (prev && prev.nextSibling) {
-				Dom.merge(prev, prev.nextSibling);
-			}
-		}
-
 		Ranges.collapseToEnd(range);
-
-		return range;
-	}
-
-	/**
-	 * Calculates the range according to the given range.
-	 *
-	 * Will take ensure that the range is contained in a content editable node.
-	 *
-	 * @param  {Event}      event
-	 * @return {Range|null}
-	 *         null if no suitable range can be determined.
-	 */
-	function calculateRange(event) {
-		var range = Ranges.createFromPoint(
-			event.clientX - 10,
-			event.clientY - 10
-		);
-
-		if (!range) {
-			return null;
-		}
-
-		var cac = range.commonAncestorContainer;
-
-		if (Dom.isEditableNode(cac)) {
-			return range;
-		}
-
-		var ancestors = Traversing.parentsUntil(cac, Dom.isEditable);
-		var block = Arrays.last(ancestors);
-		var editable = block.parentNode;
-
-		if (!editable) {
-			return null;
-		}
-
-		var body = block.ownerDocument.body;
-		var offsets = Dom.offset(block);
-		var offset = Dom.nodeIndex(block);
-		var pointX = event.clientX + body.scrollLeft;
-		var blockX = offsets.left + body.scrollLeft + block.offsetWidth;
-
-		if (pointX > blockX) {
-			offset += 1;
-		}
-
-		return Ranges.create(editable, offset);
 	}
 
 	/**
@@ -216,8 +160,10 @@ define([
 
 		case 'dragover':
 
+			var x = event.clientX + DRAGGING_CARET_OFFSET;
+			var y = event.clientY + DRAGGING_CARET_OFFSET;
 			var carets = Selections.hideCarets(event.target.ownerDocument);
-			alohaEvent.range = calculateRange(event);
+			alohaEvent.range = Ranges.createFromPosition(x, y);
 			Selections.unhideCarets(carets);
 
 			// Because this is necessary to enable dropping to work
@@ -227,9 +173,18 @@ define([
 
 		case 'drop':
 
+			var x = event.clientX + DRAGGING_CARET_OFFSET;
+			var y = event.clientY + DRAGGING_CARET_OFFSET;
 			var carets = Selections.hideCarets(event.target.ownerDocument);
-			alohaEvent.range = drop(event, alohaEvent.editor.dndContext.element);
+			alohaEvent.range = Ranges.createFromPosition(x, y);
 			Selections.unhideCarets(carets);
+
+			if (alohaEvent.range) {
+				moveNode(
+					alohaEvent.range,
+					alohaEvent.editor.dndContext.element
+				);
+			}
 
 			if (event.stopPropagation) {
 				event.stopPropagation();

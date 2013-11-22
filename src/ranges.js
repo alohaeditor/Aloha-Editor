@@ -680,6 +680,7 @@ define([
 		select(range);
 	}
 
+
 	/**
 	 * Given the position offsets `left` and `top` (relative to the document),
 	 * returns a collapsed range for the position where the text insertion
@@ -715,7 +716,7 @@ define([
 	 */
 	function fromEvent(alohaEvent) {
 		return alohaEvent.range
-		    || createFromPoint(alohaEvent.nativeEvent.clientX, alohaEvent.nativeEvent.clientY)
+		    || createFromPosition(alohaEvent.nativeEvent.clientX, alohaEvent.nativeEvent.clientY)
 		    || get();
 	}
 
@@ -773,8 +774,41 @@ define([
 	}
 
 	/**
+	 * Calculates the range according to the given range.
+	 *
+	 * Will ensure that the range is contained in a content editable node.
+	 *
+	 * @param  {Event}      event
+	 * @return {Range|null}
+	 *         null if no suitable range can be determined.
+	 */
+	function createFromPosition(x, y) {
+		var range = createFromPoint(x, y);
+		if (!range) {
+			return null;
+		}
+		if (Dom.isEditableNode(range.commonAncestorContainer)) {
+			return range;
+		}
+		var block = Traversing.parentBlock(range.commonAncestorContainer);
+		var editable = block.parentNode;
+		if (!editable) {
+			return null;
+		}
+		var body = block.ownerDocument.body;
+		var offsets = Dom.offset(block);
+		var offset = Dom.nodeIndex(block);
+		var pointX = x + body.scrollLeft;
+		var blockX = offsets.left + body.scrollLeft + block.offsetWidth;
+		if (pointX > blockX) {
+			offset += 1;
+		}
+		return create(editable, offset);
+	}
+
+	/**
 	 * Library functions for working with DOM ranges.
-	 * It assums native support for document.getSelection() and
+	 * It assumes native support for document.getSelection() and
 	 * document.createRange().
 	 */
 	var exports = {
@@ -805,6 +839,7 @@ define([
 		expandForwardToVisiblePosition: expandForwardToVisiblePosition,
 		contractBackwardToVisiblePosition: contractBackwardToVisiblePosition,
 		createFromPoint: createFromPoint,
+		createFromPosition: createFromPosition,
 		fromEvent: fromEvent
 	};
 
