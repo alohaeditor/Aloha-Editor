@@ -6,12 +6,14 @@
  */
 define([
 	'functions',
-	'trees',
+	'arrays',
+	'boundaries',
 	'browsers',
 	'events'
 ], function SelectionChange(
 	Fn,
-	Trees,
+	Arrays,
+	Boundaries,
 	Browsers,
 	Events
 ) {
@@ -59,7 +61,7 @@ define([
 		var type = event.type;
 		// Because the only browser where can confirm the problem is
 		// Firefox, and doing it anyway may cause problems on IE.
-		if (Browser.mozilla && 'mouseup' === type) {
+		if (Browsers.mozilla && 'mouseup' === type) {
 			Events.nextTick(Fn.partial(watchSelection, event));
 		}
 	}
@@ -79,10 +81,10 @@ define([
 	 *        A handler function that will be called with the changed
 	 *        selection, and the event that caused the selection change.
 	 */
-	function watchSelectionChangeHandler(getBoundaries, boundaries, fn) {
+	function handler(getBoundaries, boundaries, fn) {
 		function watchSelection(event) {
 			var newBoundaries = getBoundaries();
-			if (Trees.deepEqual(boundaries, newBoundaries)) {
+			if (!Arrays.equal(boundaries, newBoundaries, Boundaries.equal)) {
 				boundaries = newBoundaries;
 				fn(newBoundaries, event);
 			} else {
@@ -136,7 +138,7 @@ define([
 	 * @param watchSelection {function(!Event):void}
 	 *        A handler function like the one returned from
 	 *        watchSelectionHandler().
-	 * @param mousemove
+	 * @param mousemove {boolean}
 	 *        Even with all the events above hooked, we only get
 	 *        up-to-date selection change updates when the user presses
 	 *        the mouse and draggs the selection in Chrome and IE, but
@@ -144,12 +146,9 @@ define([
 	 *        covered by handling the mousemove event. We don't do it by
 	 *        default because handling the mousemove event could have
 	 *        different implications from handling up/down/press events.
-	 * @return {function(void):void}
-	 *        A function that can be used to free any memory associated with
-	 *        the watcher. Expect the handler to be called even after being
-	 *        unregistered.
+	 * @return {void}
 	 */
-	function addSelectionChangeHandler(doc, watchSelection, mousemove) {
+	function addHandler(doc, watchSelection, mousemove) {
 		// Chrome, IE (except IE text input)
 		Events.add(doc, 'selectionchange', watchSelection, true);
 		// IE and others
@@ -160,24 +159,34 @@ define([
 		Events.add(doc, 'keypress', watchSelection, true);
 		// Because we know Chrome and IE behave acceptably we only do it
 		// for Firefox and others.
-		if (!Browser.webkit && !Browser.msie && mousemove) {
+		if (!Browsers.webkit && !Browsers.msie && mousemove) {
 			Events.add(doc, 'mousemove', watchSelection, true);
 		}
-		return function () {
-			Events.remove(doc, 'selectionchange', watchSelection, true);
-			Events.remove(doc, 'keyup', watchSelection, true);
-			Events.remove(doc, 'mouseup', watchSelection, true);
-			Events.remove(doc, 'touchend', watchSelection, true);
-			Events.remove(doc, 'keypress', watchSelection, true);
-			if (!Browser.webkit && !Browser.msie && mousemove) {
-				Events.remove(doc, 'mousemove', watchSelection, true);
-			}
-		};
+	}
+
+	/**
+	 * Removes a handler add with addHandler().
+	 *
+	 * All arguments including mousemove must be the same as when the
+	 * handler was added.
+	 *
+	 * Expect the handler to be called even after it was removed.
+	 */
+	function removeHandler(doc, watchSelection, mousemove) {
+		Events.remove(doc, 'selectionchange', watchSelection, true);
+		Events.remove(doc, 'keyup', watchSelection, true);
+		Events.remove(doc, 'mouseup', watchSelection, true);
+		Events.remove(doc, 'touchend', watchSelection, true);
+		Events.remove(doc, 'keypress', watchSelection, true);
+		if (!Browsers.webkit && !Browsers.msie && mousemove) {
+			Events.remove(doc, 'mousemove', watchSelection, true);
+		}
 	}
 
 	var exports = {
-		watchSelectionChangeHandler: watchSelectionChangeHandler,
-		addSelectionChangeHandler: addSelectionChangeHandler
+		handler: handler,
+		addHandler: addHandler,
+		removeHandler: removeHandler
 	};
 
 	return exports;

@@ -227,10 +227,12 @@ define([
 	}
 
 	function nextNode(boundary) {
+		boundary = normalize(boundary);
 		return nodeAfter(boundary) || container(boundary);
 	}
 
 	function prevNode(boundary) {
+		boundary = normalize(boundary);
 		return nodeBefore(boundary) || container(boundary);
 	}
 
