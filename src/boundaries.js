@@ -88,7 +88,7 @@ define([
 	 * @param {Boundary} start Boundary to set the start position to.
 	 * @param {Boundary} end   Boundary to set the end position to.
 	 */
-	function setRangeFromBoundaries(range, start, end) {
+	function setRange(range, start, end) {
 		setRangeStart(range, start);
 		setRangeEnd(range, end);
 	}
@@ -109,9 +109,9 @@ define([
 	 * @param {Array.<Boundary>} boundaries Even list of boundaries.  Must be
 	 *        no greater than twice the size of `ranges`.
 	 */
-	function setRangesFromBoundaries(ranges, boundaries) {
+	function setRanges(ranges, boundaries) {
 		Arrays.partition(boundaries, 2).forEach(function (boundaries, i) {
-			setRangeFromBoundaries(ranges[i], boundaries[0], boundaries[1]);
+			setRange(ranges[i], boundaries[0], boundaries[1]);
 		});
 	}
 
@@ -436,8 +436,8 @@ define([
 		isNodeBoundary: isNodeBoundary,
 		precedingTextLength: precedingTextLength,
 		nodeAtBoundary: nodeAtBoundary,
-		setRangeFromBoundaries: setRangeFromBoundaries,
-		setRangesFromBoundaries: setRangesFromBoundaries,
+		setRange: setRange,
+		setRanges: setRanges,
 		fromRange: fromRange,
 		fromRanges: fromRanges
 	};

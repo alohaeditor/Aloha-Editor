@@ -91,7 +91,7 @@ define([
 		}
 
 		boundary = Overrides.consume(boundary, editable.overrides);
-		Boundaries.setRangeFromBoundaries(range, boundary, boundary);
+		Boundaries.setRange(range, boundary, boundary);
 
 		var insertPath = Undo.pathFromBoundary(editable.elem, boundary);
 		var insertContent = [editable.elem.ownerDocument.createTextNode(text)];

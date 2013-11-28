@@ -178,7 +178,7 @@ define([
 				nodeBeforeSplit
 			);
 			boundary = adjusted.pop();
-			Boundaries.setRangesFromBoundaries(ranges, adjusted);
+			Boundaries.setRanges(ranges, adjusted);
 		}
 		return boundary;
 	}
@@ -217,7 +217,7 @@ define([
 			nidx,
 			prev
 		);
-		Boundaries.setRangesFromBoundaries(ranges, boundaries);
+		Boundaries.setRanges(ranges, boundaries);
 		return sibling;
 	}
 
@@ -244,7 +244,7 @@ define([
 		boundaries.push([node, off]);
 		boundaries = adjustBoundaries(adjustBoundaryAfterTextInsert, boundaries, node, off, len, insertBefore);
 		var boundary = boundaries.pop();
-		Boundaries.setRangesFromBoundaries(ranges, boundaries);
+		Boundaries.setRanges(ranges, boundaries);
 		return boundary;
 	}
 
@@ -252,7 +252,7 @@ define([
 		boundaries.push([node.parentNode, Dom.nodeIndex(node)]);
 		boundaries = adjustBoundaries(adjustBoundaryAfterNodeInsert, boundaries, node, insertBefore);
 		var boundary = boundaries.pop();
-		Boundaries.setRangesFromBoundaries(ranges, boundaries);
+		Boundaries.setRanges(ranges, boundaries);
 		return boundary;
 	}
 
@@ -322,7 +322,7 @@ define([
 			parentNode,
 			nidx
 		);
-		Boundaries.setRangesFromBoundaries(ranges, adjusted);
+		Boundaries.setRanges(ranges, adjusted);
 	}
 
 	/**
