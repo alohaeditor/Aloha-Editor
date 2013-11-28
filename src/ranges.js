@@ -791,8 +791,7 @@ define([
 			return range;
 		}
 		var block = Traversing.parentBlock(range.commonAncestorContainer);
-		var editable = block.parentNode;
-		if (!editable) {
+		if (!block || !block.parentNode) {
 			return null;
 		}
 		var body = block.ownerDocument.body;
@@ -803,7 +802,7 @@ define([
 		if (pointX > blockX) {
 			offset += 1;
 		}
-		return create(editable, offset);
+		return create(block.parentNode, offset);
 	}
 
 	/**
