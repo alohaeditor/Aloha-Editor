@@ -81,8 +81,8 @@ define([
 	}
 
 	/**
-	 * Sets the given range's start and end position from two boundaries
-	 * representing the start and end positions.
+	 * Sets the given range's start and end position from two respective
+	 * boundaries.
 	 *
 	 * @param {Range}    range Range to modify.
 	 * @param {Boundary} start Boundary to set the start position to.
@@ -95,10 +95,10 @@ define([
 
 	/**
 	 * Sets the start and end position of a list of ranges from the given list
-	 * boundaries.
+	 * of boundaries.
 	 *
-	 * Because the range at index i of `ranges` will be modified using the
-	 * boundaries at index i and i + 1 in `boundaries`, the size of `ranges`
+	 * Because the range at index i in `ranges` will be modified using the
+	 * boundaries at index 2i and 2i + 1 in `boundaries`, the size of `ranges`
 	 * must be no less than half the size of `boundaries`.
 	 *
 	 * Because the list of boundaries will need to be partitioned into pairs of
@@ -137,7 +137,7 @@ define([
 
 	/**
 	 * Returns a start/end boundary tuple representing the start and end
-	 * boundaries of the given range.
+	 * positions of the given range.
 	 *
 	 * @param  {Range} range
 	 * @return {Array.<Boundary>}
@@ -163,7 +163,7 @@ define([
 	/**
 	 * Returns a boundary that is at the previous position to the given.
 	 *
-	 * If the given boundary represents a position inside of a next node, the
+	 * If the given boundary represents a position inside of a text node, the
 	 * returned boundary will be moved behind that text node.
 	 *
 	 * Given the markup below:
@@ -179,17 +179,17 @@ define([
 	 *		</p>
 	 *	</div>
 	 *
-	 *	the boundary positions which can be traversed with this function will
-	 *	be are those marked with the pipe (|):
+	 * the boundary positions which can be traversed with this function will be
+	 * are those marked with the pipe ("|") below:
 	 *
-	 *	|foo|<p>|bar|<b>|<u>|</u>|baz|<b>|</p>|
+	 * |foo|<p>|bar|<b>|<u>|</u>|baz|<b>|</p>|
 	 *
-	 *	This function complements Boundaries.next()
+	 * This function complements Boundaries.next()
 	 *
-	 *	@todo do not be partial to void elements
-	 *	@param  {Boundary} boundary Reference from which to determine the
-	 *	        preceeding boundary position.
-	 *	@return {Boundary} Preceding boundary position.
+	 * @todo do not be partial to void elements
+	 * @param  {Boundary} boundary Reference from which to determine the
+	 *         preceeding boundary position.
+	 * @return {Boundary} Preceding boundary position.
 	 */
 	function prev(boundary) {
 		var node = boundary[0];
@@ -207,10 +207,10 @@ define([
 	 * Like Boundaries.prev(), but returns the boundary position that follows
 	 * from the given.
 	 *
-	 *	@todo do not be partial to void elements
-	 *	@param  {Boundary} boundary Reference from which to determine the
-	 *	        next boundary position.
-	 *	@return {Boundary} Next boundary position.
+	 * @todo do not be partial to void elements
+	 * @param  {Boundary} boundary Reference from which to determine the
+	 *         next boundary position.
+	 * @return {Boundary} Next boundary position.
 	 */
 	function next(boundary) {
 		var node = boundary[0];
@@ -225,7 +225,7 @@ define([
 	}
 
 	/**
-	 * Steps through boundaries while the given condition exists.
+	 * Steps through boundaries while the given condition is true.
 	 *
 	 * @param  {Boundary} boundary Boundary from which to start stepping.
 	 * @param  {function(Boundary, Element, offset):boolean} cond Predicate
@@ -265,7 +265,7 @@ define([
 	}
 
 	/**
-	 * Checks if a boundary represents a position at the end of its contain's
+	 * Checks if a boundary represents a position at the end of its container's
 	 * content.
 	 *
 	 * The end boundary of the given ranges is at the end position:
@@ -282,8 +282,8 @@ define([
 	}
 
 	/**
-	 * Checks if a boundary represents a position at the start of its contain's
-	 * content.
+	 * Checks if a boundary represents a position at the start of its
+	 * container's content.
 	 *
 	 * The start boundary of the given ranges is at the start position:
 	 * <b><i>f</i>[oo]</b> and <b><i>{f</i>oo}</b>
@@ -299,7 +299,8 @@ define([
 	}
 
 	/**
-	 * Checks whether the given boundary is a position between nodes.
+	 * Checks whether the given boundary is a position between nodes (as
+	 * opposed to a position inside of a text node).
 	 *
 	 * @param  {Boundary} boundary
 	 * @return {boolean}
@@ -363,8 +364,8 @@ define([
 	}
 
 	/**
-	 * Returns the node after the given boundary or the boundary container if
-	 * the boundary is at the end position.
+	 * Returns the node after the given boundary, or the boundary's container
+	 * if the boundary is at the end position.
 	 *
 	 * @param  {Boundary} boundary
 	 * @return {Node}
@@ -375,15 +376,7 @@ define([
 	}
 
 	/**
-	 * @deprecated Use Boundaries.nextNode() instead
-	 */
-	function nodeAtBoundary(boundary) {
-		console.error('Boundaries.nodeAtBoundary() is deprecated. Use Boundaries.nextNode() instead');
-		return Dom.nodeAtOffset(boundary[0], boundary[1]);
-	}
-
-	/**
-	 * Returns the node before the given boundary or the boundary container if
+	 * Returns the node before the given boundary, or the boundary container if
 	 * the boundary is at the end position.
 	 *
 	 * @param  {Boundary} boundary
@@ -395,8 +388,16 @@ define([
 	}
 
 	/**
-	 * Calculates the cumulative length of consecutive text nodes preceding the
-	 * given node boundary.
+	 * @deprecated Use Boundaries.nextNode() instead
+	 */
+	function nodeAtBoundary(boundary) {
+		console.error('Boundaries.nodeAtBoundary() is deprecated. Use Boundaries.nextNode() instead');
+		return Dom.nodeAtOffset(boundary[0], boundary[1]);
+	}
+
+	/**
+	 * Calculates the cumulative length of consecutive text nodes immediately
+	 * preceding the given boundary.
 	 *
 	 * @param  {Boundary} boundary
 	 * @return {number}
