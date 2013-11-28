@@ -528,7 +528,7 @@ define([
 	function isVisuallyAdjacent(left, right) {
 		var adjacent = false;
 		Boundaries.prevWhile(right, function (pos) {
-			if (Boundaries.equal(left, pos)) {
+			if (Boundaries.equals(left, pos)) {
 				adjacent = true;
 				return false;
 			}
@@ -702,7 +702,7 @@ define([
 	 */
 	function nextLineBreak(above, below) {
 		return Boundaries.nextWhile(above, function (pos, node, offset) {
-			if (Boundaries.equal(pos, below)) {
+			if (Boundaries.equals(pos, below)) {
 				return false;
 			}
 			var end = Boundaries.isAtEnd(pos);
@@ -734,7 +734,7 @@ define([
 			return above[0] === node || hasRenderedContent(node);
 		};
 
-		if (Boundaries.equal(linebreak, below)) {
+		if (Boundaries.equals(linebreak, below)) {
 			context.overrides = context.overrides.concat(Overrides.harvest(below[0]));
 			Traversing.climbUntil(below[0], Dom.remove, isVisible);
 			return;

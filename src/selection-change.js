@@ -84,7 +84,7 @@ define([
 	function handler(getBoundaries, boundaries, fn) {
 		function watchSelection(event) {
 			var newBoundaries = getBoundaries();
-			if (!Arrays.equal(boundaries, newBoundaries, Boundaries.equal)) {
+			if (!Arrays.equal(boundaries, newBoundaries, Boundaries.equals)) {
 				boundaries = newBoundaries;
 				fn(newBoundaries, event);
 			} else {

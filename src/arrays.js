@@ -118,8 +118,9 @@ define(['functions'], function Arrays(Fn) {
 	}
 
 	/**
-	 * Like Array.prototype.map() except expects the given function to return
-	 * arrays which will be concatenated together into the resulting array.
+	 * Like Array.prototype.map() except that it expects the given function to
+	 * return arrays which will be concatenated together into the resulting
+	 * array.
 	 *
 	 * Related to partition() in the sense that
 	 * mapcat(partition(xs, n), identity) == xs.
@@ -134,7 +135,7 @@ define(['functions'], function Arrays(Fn) {
 
 	/**
 	 * Partitions the given array xs into an array of arrays where each
-	 * nested array is a subsequence of xs of lenght n.
+	 * nested array is a subsequence of xs of length n.
 	 *
 	 * See mapcat().
 	 *
