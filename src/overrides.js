@@ -23,13 +23,13 @@ define([
 	'dom',
 	'misc',
 	'maps',
-	'boundaries',
+	'mutation',
 	'traversing'
 ], function Overrides(
 	Dom,
 	Misc,
 	Maps,
-	Boundaries,
+	Mutation,
 	Traversing
 ) {
 	'use strict';
