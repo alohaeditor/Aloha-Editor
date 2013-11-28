@@ -419,41 +419,67 @@ define([
 
 	var exports = {
 		equals     : equals,
-		start     : start,
-		end       : end,
-		next      : next,
-		prev      : prev,
-		nextWhile : nextWhile,
-		prevWhile : prevWhile,
-		nextNode  : nextNode,
-		prevNode  : prevNode,
-		container : container,
-		isAtStart : isAtStart,
-		isAtEnd   : isAtEnd,
-		normalize : normalize,
-		nodeAfter : nodeAfter,
-		nodeBefore: nodeBefore,
-		beforeNode: beforeNode,
-		isNodeBoundary: isNodeBoundary,
-		precedingTextLength: precedingTextLength,
-		nodeAtBoundary: nodeAtBoundary,
-		setRange: setRange,
-		setRanges: setRanges,
-		fromRange: fromRange,
-		fromRanges: fromRanges
+
+		normalize  : normalize,
+
+		start      : start,
+		end        : end,
+		fromRange  : fromRange,
+		fromRanges : fromRanges,
+		beforeNode : beforeNode,
+
+		next       : next,
+		prev       : prev,
+		nextWhile  : nextWhile,
+		prevWhile  : prevWhile,
+
+		nextNode       : nextNode,
+		prevNode       : prevNode,
+		container      : container,
+		nodeAfter      : nodeAfter,
+		nodeBefore     : nodeBefore,
+		nodeAtBoundary : nodeAtBoundary,
+
+		isAtStart      : isAtStart,
+		isAtEnd        : isAtEnd,
+		isNodeBoundary : isNodeBoundary,
+
+		setRange  : setRange,
+		setRanges : setRanges,
+
+		precedingTextLength : precedingTextLength
 	};
 
-	exports['equals']    = exports.equals;
-	exports['start']     = exports.start;
-	exports['end']       = exports.end;
-	exports['next']      = exports.next;
-	exports['prev']      = exports.prev;
+	exports['equals'] = exports.equals;
+
+	exports['normalize'] = exports.normalize;
+
+	exports['start'] = exports.start;
+	exports['end'] = exports.end;
+	exports['fromRange'] = exports.fromRange;
+	exports['fromRanges'] = exports.fromRanges;
+	exports['beforeNode'] = exports.beforeNode;
+
+	exports['next'] = exports.next;
+	exports['prev'] = exports.prev;
 	exports['nextWhile'] = exports.nextWhile;
 	exports['prevWhile'] = exports.prevWhile;
-	exports['isAtStart'] = exports.isAtStart;
-	exports['isAtEnd']   = exports.isAtEnd;
-	exports['normalize'] = exports.normalize;
+
+	exports['nextNode'] = exports.nextNode;
+	exports['prevNode'] = exports.prevNode;
+	exports['container'] = exports.container;
+	exports['nodeAfter'] = exports.nodeAfter;
+	exports['nodeBefore'] = exports.nodeBefore;
 	exports['nodeAtBoundary'] = exports.nodeAtBoundary;
+
+	exports['isAtStart'] = exports.isAtStart;
+	exports['isAtEnd'] = exports.isAtEnd;
+	exports['isNodeBoundary'] = exports.isNodeBoundary;
+
+	exports['setRange'] = exports.setRange;
+	exports['setRanges'] = exports.setRanges;
+
+	exports['precedingTextLength'] = exports.precedingTextLength;
 
 	return exports;
 });
