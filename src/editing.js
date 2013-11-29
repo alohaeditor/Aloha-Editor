@@ -1271,8 +1271,8 @@ define([
 			return {
 				postprocessTextNodes: Fn.noop,
 				postprocess: function () {
-					var above = Boundaries.start(range);
-					var below = Boundaries.end(range);
+					var above = Boundaries.fromRangeStart(range);
+					var below = Boundaries.fromRangeEnd(range);
 					Html.removeVisualBreak(above, below, context);
 					var pos = Cursors.createFromBoundary(above[0], above[1]);
 					left.setFrom(pos);
@@ -1298,7 +1298,7 @@ define([
 		Mutation.splitTextContainers(range);
 		var op = linebreak ? Html.insertLineBreak : Html.insertVisualBreak;
 		var boundary = op(
-			Boundaries.normalize(Boundaries.start(range)),
+			Boundaries.normalize(Boundaries.fromRangeStart(range)),
 			context
 		);
 		Ranges.setFromBoundaries(liveRange, boundary, boundary);
@@ -1311,7 +1311,7 @@ define([
 				return Content.allowsNesting(node.nodeName, insertion.nodeName);
 			}
 		});
-		var boundary = Mutation.insertNodeAtBoundary(insertion, Boundaries.start(range));
+		var boundary = Mutation.insertNodeAtBoundary(insertion, Boundaries.fromRangeStart(range));
 		Ranges.setFromBoundaries(liveRange, boundary, [boundary[0], boundary[1] + 1]);
 	}
 

@@ -259,15 +259,15 @@ define([
 	 * given node.
 	 */
 	function pathBeforeNode(container, node) {
-		return pathFromBoundary(container, Boundaries.beforeNode(node));
+		return pathFromBoundary(container, Boundaries.fromNode(node));
 	}
 
 	function recordRange(container, range) {
 		if (!range) {
 			return null;
 		}
-		var start = pathFromBoundary(container, Boundaries.start(range));
-		var end = pathFromBoundary(container, Boundaries.end(range));
+		var start = pathFromBoundary(container, Boundaries.fromRangeStart(range));
+		var end = pathFromBoundary(container, Boundaries.fromRangeEnd(range));
 		return start && end ? {start: start, end: end} : null;
 	}
 

@@ -77,7 +77,7 @@ define([
 		var editable = alohaEvent.editable;
 		var range = alohaEvent.range;
 		var text = alohaEvent.chr;
-		var boundary = Boundaries.start(range);
+		var boundary = Boundaries.fromRangeStart(range);
 
 		if (' ' === text) {
 			var elem = Traversing.upWhile(

@@ -532,8 +532,13 @@ define([
 				adjacent = true;
 				return false;
 			}
-			if (pos[1] > 0) {
-				var node = Dom.nodeAtOffset(pos[0], pos[1] - 1);
+			if (Boundaries.offset(pos) > 0) {
+				// TODO:
+				// var node = Boundaries.nodeBefore(pos);
+				var node = Dom.nodeAtOffset(
+					Boundaries.container(pos),
+					Boundaries.offset(pos) - 1
+				);
 				if ((Dom.isTextNode(node) || Predicates.isVoidNode(node))
 					&& isRendered(node)) {
 					adjacent = false;
@@ -701,16 +706,17 @@ define([
 	 * @return {Array.<Element, number>}
 	 */
 	function nextLineBreak(above, below) {
-		return Boundaries.nextWhile(above, function (pos, node, offset) {
+		return Boundaries.nextWhile(above, function (pos) {
 			if (Boundaries.equals(pos, below)) {
 				return false;
 			}
-			var end = Boundaries.isAtEnd(pos);
-			var next = end ? node : Dom.nodeAtOffset(node, offset);
-			if (hasLinebreakingStyle(next)) {
+			if (hasLinebreakingStyle(Boundaries.nextNode(pos))) {
 				return false;
 			}
-			return !(end && Dom.isEditingHost(pos[0]));
+			if (!Boundaries.isAtEnd(pos)) {
+				return true;
+			}
+			return !Dom.isEditingHost(Boundaries.container(pos));
 		});
 	}
 
@@ -755,8 +761,10 @@ define([
 			);
 		}
 
-		context.overrides = context.overrides.concat(Overrides.harvest(parent, isVisible));
-		Traversing.climbUntil(parent, Dom.remove, isVisible);
+		if (parent) {
+			context.overrides = context.overrides.concat(Overrides.harvest(parent, isVisible));
+			Traversing.climbUntil(parent, Dom.remove, isVisible);
+		}
 	}
 
 	function determineBreakingNode(context, container) {
@@ -1190,7 +1198,7 @@ define([
 
 		var crossedVisualBreak = false;
 
-		var next = steps.stepWhile(start, function (pos, container) {
+		var next = steps.stepWhile(start, function (pos) {
 			var node = steps.nodeAt(pos);
 
 			if (!crossedVisualBreak) {

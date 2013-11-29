@@ -701,10 +701,10 @@ define([
 
 		var boundary, container;
 		if ('start' === context.focus) {
-			boundary = Boundaries.start(range);
+			boundary = Boundaries.fromRangeStart(range);
 			container = range.startContainer;
 		} else {
-			boundary = Boundaries.end(range);
+			boundary = Boundaries.fromRangeEnd(range);
 			container = range.endContainer;
 		}
 

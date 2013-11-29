@@ -286,11 +286,11 @@ define([
 	 */
 	function expand(range) {
 		var start = Boundaries.prevWhile(
-			Boundaries.start(range),
+			Boundaries.fromRangeStart(range),
 			canExpandBackward
 		);
 		var end = Boundaries.nextWhile(
-			Boundaries.end(range),
+			Boundaries.fromRangeEnd(range),
 			canExpandForward
 		);
 		range.setStart(start[0], start[1]);
@@ -322,7 +322,7 @@ define([
 	 */
 	function contract(range) {
 		var end = Boundaries.prevWhile(
-			Boundaries.end(range),
+			Boundaries.fromRangeEnd(range),
 			function (boundary, container, offset) {
 				return canContractBackward(
 					container,
@@ -333,7 +333,7 @@ define([
 			}
 		);
 		var start = Boundaries.nextWhile(
-			Boundaries.start(range),
+			Boundaries.fromRangeStart(range),
 			function (boundary, container, offset) {
 				return canContractForward(
 					container,
@@ -356,8 +356,8 @@ define([
 	 * @return {Range}
 	 */
 	function expandToWord(range) {
-		var behind = Traversing.findWordBoundaryBehind(Boundaries.start(range));
-		var ahead = Traversing.findWordBoundaryAhead(Boundaries.end(range));
+		var behind = Traversing.findWordBoundaryBehind(Boundaries.fromRangeStart(range));
+		var ahead = Traversing.findWordBoundaryAhead(Boundaries.fromRangeEnd(range));
 		setFromBoundaries(range, behind, ahead);
 		return range;
 	}
@@ -391,7 +391,7 @@ define([
 		if (!Dom.isTextNode(range.endContainer)) {
 			return range;
 		}
-		var boundary = Html.nextCharacter(Boundaries.end(range));
+		var boundary = Html.nextCharacter(Boundaries.fromRangeEnd(range));
 		if (boundary) {
 			if (boundary[1] > 0) {
 				boundary[1]--;
@@ -414,7 +414,7 @@ define([
 	 * @return {Range}
 	 */
 	function expandBackwardToVisiblePosition(range) {
-		var boundary = Html.previousVisualBoundary(Boundaries.start(range));
+		var boundary = Html.previousVisualBoundary(Boundaries.fromRangeStart(range));
 		if (boundary) {
 			setStartFromBoundary(range, boundary);
 		}
@@ -429,7 +429,7 @@ define([
 	 * @return {Range}
 	 */
 	function expandForwardToVisiblePosition(range) {
-		var pos = Html.nextVisualBoundary(Boundaries.end(range));
+		var pos = Html.nextVisualBoundary(Boundaries.fromRangeEnd(range));
 		if (pos[0]
 			&& Dom.isTextNode(pos[0])
 			&& !Html.areNextWhiteSpacesSignificant(pos[0], pos[1])) {
@@ -445,7 +445,7 @@ define([
 	}
 
 	function contractBackwardToVisiblePosition(range) {
-		var pos = Html.previousVisualBoundary(Boundaries.end(range));
+		var pos = Html.previousVisualBoundary(Boundaries.fromRangeEnd(range));
 		if (pos[0]
 			&& Dom.isTextNode(pos[0])
 			&& !Html.areNextWhiteSpacesSignificant(pos[0], pos[1])) {

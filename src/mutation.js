@@ -191,8 +191,8 @@ define([
 	 *         The given range, potentially adjusted.
 	 */
 	function splitTextContainers(range) {
-		splitBoundary(Boundaries.start(range), [range]);
-		splitBoundary(Boundaries.end(range), [range]);
+		splitBoundary(Boundaries.fromRangeStart(range), [range]);
+		splitBoundary(Boundaries.fromRangeEnd(range), [range]);
 	}
 
 	function joinTextNodeOneWay(node, sibling, ranges, prev) {

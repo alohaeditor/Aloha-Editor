@@ -8,23 +8,44 @@ define([
 	'dom',
 	'arrays',
 	'predicates'
+	// 'errors'
 ], function Boundaries(
 	Dom,
 	Arrays,
-	Predicates
+	Predicates,
+	Errors
 ) {
 	'use strict';
 
 	/**
-	 * Compares two boundaries for equality.  Boundaries are equal if their
-	 * corresponding containers and offsets are strictly equal.
+	 * Creates a "raw" (un-normalized) boundary from the given node and offset.
 	 *
-	 * @param  {Boundary} a
-	 * @param  {Boundary} b
-	 * @retufn {boolean}
+	 * @private
+	 * @param  {Node} node
+	 * @return {number} offset
 	 */
-	function equals(a, b) {
-		return a[0] === b[0] && a[1] === b[1];
+	function raw(node, offset) {
+		return [node, offset];
+	}
+
+	/**
+	 * Returns a boundary's container node.
+	 *
+	 * @param  {Boundary} boundary
+	 * @return {Node}
+	 */
+	function container(boundary) {
+		return boundary[0];
+	}
+
+	/**
+	 * Returns a boundary's offset.
+	 *
+	 * @param  {Boundary} boundary
+	 * @return {number}
+	 */
+	function offset(boundary) {
+		return boundary[1];
 	}
 
 	/**
@@ -38,24 +59,53 @@ define([
 	 * It should be noted that native ranges controlled by the browser's DOM
 	 * implementation have the habit of changing by themselves, so even if a
 	 * range is set using a boundary that has been normalized this way, the
-	 * range could revert to an unnormalized state.  See StableRange().
+	 * range could revert to an un-normalized state.  See StableRange().
 	 *
-	 * @param  {Boundary} boundary Boundary to be normalized.
-	 * @return {Boundary} Normalized copy of the given boundary, or the given
-	 *         boundary itself if no normalization was done.
+	 * The returned value will either be a normalized copy of the given
+	 * boundary, or the given boundary itself if no normalization was done.
+	 *
+	 * @param  {Boundary} boundary
+	 * @return {Boundary}
 	 */
 	function normalize(boundary) {
-		var container = boundary[0];
-		if (Dom.isTextNode(container)) {
-			var parent = container.parentNode;
-			var offset = boundary[1];
-			if (!offset && parent) {
-				boundary = [parent, Dom.nodeIndex(container)];
-			} else if (offset >= Dom.nodeLength(container) && parent) {
-				boundary = [parent, Dom.nodeIndex(container) + 1];
+		var node = container(boundary);
+		if (Dom.isTextNode(node) && node.parentNode) {
+			var boundaryOffset = offset(boundary);
+			if (0 === boundaryOffset) {
+				return raw(node.parentNode, Dom.nodeIndex(node));
+			}
+			if (boundaryOffset >= Dom.nodeLength(node)) {
+				return raw(node.parentNode, Dom.nodeIndex(node) + 1);
 			}
 		}
 		return boundary;
+	}
+
+	/**
+	 * Creates a node boundary representing an offset position inside of a
+	 * container node.
+	 *
+	 * The resulting boundary will be a normalized boundary, such that the
+	 * boundary will never describe a terminal position in a text node.
+	 *
+	 * @param  {Node} node
+	 * @param  {number} offset Positive integer
+	 * @return {Boundary}
+	 */
+	function create(node, offset) {
+		return normalize(raw(node, offset));
+	}
+
+	/**
+	 * Compares two boundaries for equality.  Boundaries are equal if their
+	 * corresponding containers and offsets are strictly equal.
+	 *
+	 * @param  {Boundary} a
+	 * @param  {Boundary} b
+	 * @retufn {boolean}
+	 */
+	function equals(a, b) {
+		return (container(a) === container(b)) && (offset(a) === offset(b));
 	}
 
 	/**
@@ -66,18 +116,18 @@ define([
 	 */
 	function setRangeStart(range, boundary) {
 		boundary = normalize(boundary);
-		range.setStart(boundary[0], boundary[1]);
+		range.setStart(container(boundary), offset(boundary));
 	}
 
 	/**
 	 * Sets the given range's end boundary.
 	 *
-	 * @param {Range} range Range to modify.
+	 * @param {Range} range Range to modify
 	 * @param {Boundary}
 	 */
 	function setRangeEnd(range, boundary) {
 		boundary = normalize(boundary);
-		range.setEnd(boundary[0], boundary[1]);
+		range.setEnd(container(boundary), offset(boundary));
 	}
 
 	/**
@@ -85,8 +135,8 @@ define([
 	 * boundaries.
 	 *
 	 * @param {Range}    range Range to modify.
-	 * @param {Boundary} start Boundary to set the start position to.
-	 * @param {Boundary} end   Boundary to set the end position to.
+	 * @param {Boundary} start Boundary to set the start position to
+	 * @param {Boundary} end   Boundary to set the end position to
 	 */
 	function setRange(range, start, end) {
 		setRangeStart(range, start);
@@ -105,9 +155,8 @@ define([
 	 * start/end tuples, it is required that the length of `boundaries` be
 	 * even.  See Arrays.partition().
 	 *
-	 * @param {Array.<Range>}    ranges     List of ranges to modify.
-	 * @param {Array.<Boundary>} boundaries Even list of boundaries.  Must be
-	 *        no greater than twice the size of `ranges`.
+	 * @param {Array.<Range>}    ranges     List of ranges to modify
+	 * @param {Array.<Boundary>} boundaries Even list of boundaries
 	 */
 	function setRanges(ranges, boundaries) {
 		Arrays.partition(boundaries, 2).forEach(function (boundaries, i) {
@@ -121,7 +170,7 @@ define([
 	 * @param  {Range} range
 	 * @return {Boundary}
 	 */
-	function start(range) {
+	function fromRangeStart(range) {
 		return [range.startContainer, range.startOffset];
 	}
 
@@ -131,7 +180,7 @@ define([
 	 * @param  {Range} range
 	 * @return {Boundary}
 	 */
-	function end(range) {
+	function fromRangeEnd(range) {
 		return [range.endContainer, range.endOffset];
 	}
 
@@ -143,14 +192,14 @@ define([
 	 * @return {Array.<Boundary>}
 	 */
 	function fromRange(range) {
-		return [start(range), end(range)];
+		return [fromRangeStart(range), fromRangeEnd(range)];
 	}
 
 	/**
 	 * Returns an even-sized contiguous sequence of start/end boundaries
 	 * aligned in their pairs.
 	 *
-	 * @param  {Array.<Range>}    ranges
+	 * @param  {Array.<Range>} ranges
 	 * @return {Array.<Boundary>}
 	 */
 	function fromRanges(ranges) {
@@ -158,6 +207,50 @@ define([
 		// boundaries we can remove this.
 		ranges = ranges || [];
 		return Arrays.mapcat(ranges, fromRange);
+	}
+
+	/**
+	 * Checks if a boundary (when normalized) represents a position at the
+	 * start of its container's content.
+	 *
+	 * The start boundary of the given ranges is at the start position:
+	 * <b><i>f</i>[oo]</b> and <b><i>{f</i>oo}</b>
+	 * The first is at the start of the text node "oo" and the other at start
+	 * of the <i> element.
+	 *
+	 * @param  {Boundary} boundary
+	 * @return {boolean}
+	 */
+	function isAtStart(boundary) {
+		return 0 === offset(normalize(boundary));
+	}
+
+	/**
+	 * Checks if a boundary represents a position at the end of its container's
+	 * content.
+	 *
+	 * The end boundary of the given ranges is at the end position:
+	 * <b><i>f</i>{oo]</b> and <b><i>f</i>{oo}</b>
+	 * The first is at end of the text node "oo"and the other at end of the <b>
+	 * element.
+	 *
+	 * @param  {Boundary} boundary
+	 * @return {boolean}
+	 */
+	function isAtEnd(boundary) {
+		boundary = normalize(boundary);
+		return offset(boundary) === Dom.nodeLength(container(boundary));
+	}
+
+	/**
+	 * Checks whether the given boundary is a position between nodes (as
+	 * opposed to a position inside of a text node).
+	 *
+	 * @param  {Boundary} boundary
+	 * @return {boolean}
+	 */
+	function isNodeBoundary(boundary) {
+		return !Dom.isTextNode(container(boundary));
 	}
 
 	/**
@@ -187,20 +280,18 @@ define([
 	 * This function complements Boundaries.next()
 	 *
 	 * @todo do not be partial to void elements
-	 * @param  {Boundary} boundary Reference from which to determine the
-	 *         preceeding boundary position.
-	 * @return {Boundary} Preceding boundary position.
+	 * @param  {Boundary} boundary Reference boundary
+	 * @return {Boundary} Preceding boundary position
 	 */
 	function prev(boundary) {
-		var node = boundary[0];
-		var offset = boundary[1];
-		if (Dom.isTextNode(node) || 0 === offset) {
-			return [node.parentNode, Dom.nodeIndex(node)];
+		var node = container(boundary);
+		if (Dom.isTextNode(node) || 0 === offset(boundary)) {
+			return raw(node.parentNode, Dom.nodeIndex(node));
 		}
-		node = node.childNodes[offset - 1];
+		node = node.childNodes[offset(boundary) - 1];
 		return (Dom.isTextNode(node) || Predicates.isVoidNode(node))
-		     ? [node.parentNode, Dom.nodeIndex(node)]
-		     : [node, Dom.nodeLength(node)];
+		     ? raw(node.parentNode, Dom.nodeIndex(node))
+		     : raw(node, Dom.nodeLength(node));
 	}
 
 	/**
@@ -208,35 +299,32 @@ define([
 	 * from the given.
 	 *
 	 * @todo do not be partial to void elements
-	 * @param  {Boundary} boundary Reference from which to determine the
-	 *         next boundary position.
-	 * @return {Boundary} Next boundary position.
+	 * @param  {Boundary} boundary Reference boundary
+	 * @return {Boundary} Next boundary position
 	 */
 	function next(boundary) {
-		var node = boundary[0];
-		var offset = boundary[1];
-		if (Dom.isTextNode(node) || Dom.nodeLength(node) === offset) {
-			return [node.parentNode, Dom.nodeIndex(node) + 1];
+		var node = container(boundary);
+		var boundaryOffset = offset(boundary);
+		if (Dom.isTextNode(node) || Dom.nodeLength(node) === boundaryOffset) {
+			return raw(node.parentNode, Dom.nodeIndex(node) + 1);
 		}
-		node = node.childNodes[offset];
+		node = node.childNodes[boundaryOffset];
 		return (Dom.isTextNode(node) || Predicates.isVoidNode(node))
-		     ? [node.parentNode, offset + 1]
-		     : [node, 0];
+		     ? raw(node.parentNode, boundaryOffset + 1)
+		     : raw(node, 0);
 	}
 
 	/**
 	 * Steps through boundaries while the given condition is true.
 	 *
-	 * @param  {Boundary} boundary Boundary from which to start stepping.
+	 * @param  {Boundary} boundary Boundary from which to start stepping
 	 * @param  {function(Boundary, Element, offset):boolean} cond Predicate
-	 *         which will cause stepping to terminate when it returns false.
-	 * @param  {function(Boundary):Boundary} step Returns the next boundary to
-	 *         step through.
-	 * @return {Boundary} Boundary at which stepping was terminated.
+	 * @param  {function(Boundary):Boundary} step Returns the next boundary
+	 * @return {Boundary} Boundary at which stepping was terminated
 	 */
 	function stepWhile(boundary, cond, step) {
 		var pos = boundary;
-		while (cond(pos, pos[0], pos[1])) {
+		while (cond(pos)) {
 			pos = step(pos);
 		}
 		return pos;
@@ -265,65 +353,25 @@ define([
 	}
 
 	/**
-	 * Checks if a boundary represents a position at the end of its container's
-	 * content.
+	 * Returns the node that is after the given boundary position.
 	 *
-	 * The end boundary of the given ranges is at the end position:
-	 * <b><i>f</i>{oo]</b> and <b><i>f</i>{oo}</b>
-	 * The first is at end of the text node "oo"and the other at end of the <b>
-	 * element.
-	 *
-	 * @param  {Boundary} boundary
-	 * @return {boolean}
-	 */
-	function isAtEnd(boundary) {
-		boundary = normalize(boundary);
-		return boundary[1] === Dom.nodeLength(boundary[0]);
-	}
-
-	/**
-	 * Checks if a boundary represents a position at the start of its
-	 * container's content.
-	 *
-	 * The start boundary of the given ranges is at the start position:
-	 * <b><i>f</i>[oo]</b> and <b><i>{f</i>oo}</b>
-	 * The first is at the start of the text node "oo" and the other at start
-	 * of the <i> element.
-	 *
-	 * @param  {Boundary} boundary
-	 * @return {boolean}
-	 */
-	function isAtStart(boundary) {
-		boundary = normalize(boundary);
-		return 0 === boundary[1];
-	}
-
-	/**
-	 * Checks whether the given boundary is a position between nodes (as
-	 * opposed to a position inside of a text node).
-	 *
-	 * @param  {Boundary} boundary
-	 * @return {boolean}
-	 */
-	function isNodeBoundary(boundary) {
-		return !Dom.isTextNode(boundary[0]);
-	}
-
-	/**
-	 * The node that is after the given boundary position.
+	 * Will return null if the given boundary is at the end position, otherwise
+	 * returns the node that is after the given boundary position.
 	 *
 	 * Note that the given boundary will be normalized.
 	 *
 	 * @param  {Boundary} boundary
-	 * @return {Node} Returns null if the given boundary is at the end
-	 *         position, otherwise returns the node before `boundary`.
+	 * @return {Node}.
 	 */
 	function nodeAfter(boundary) {
 		boundary = normalize(boundary);
 		if (!isNodeBoundary(boundary)) {
-			return boundary[0].nextSibling;
+			throw Errors.message(
+				'Cannot call Boundaries.nodeAfter() with a Text Boundary',
+				'Boundaries.nodeAfter'
+			);
 		}
-		return isAtEnd(boundary) ? null : Dom.nthChild(boundary[0], boundary[1]);
+		return isAtEnd(boundary) ? null : Dom.nthChild(container(boundary), offset(boundary));
 	}
 
 	/**
@@ -331,16 +379,21 @@ define([
 	 *
 	 * Note that the given boundary will be normalized.
 	 *
+	 * Will returns null if the given boundary is at the start position,
+	 * otherwise returns the node after `boundary`.
+	 *
 	 * @param  {Boundary} boundary
-	 * @return {Node} Returns null if the given boundary is at the start
-	 *         position, otherwise returns the node after `boundary`.
+	 * @return {Node}
 	 */
 	function nodeBefore(boundary) {
 		boundary = normalize(boundary);
 		if (!isNodeBoundary(boundary)) {
-			return boundary[0];
+			throw Errors.message(
+				'Cannot call Boundaries.nodeBefore() with a Text Boundary',
+				'Boundaries.nodeBefore'
+			);
 		}
-		return isAtStart(boundary) ? null : Dom.nthChild(boundary[0], boundary[1] - 1);
+		return isAtStart(boundary) ? null : Dom.nthChild(container(boundary), offset(boundary) - 1);
 	}
 
 	/**
@@ -349,18 +402,8 @@ define([
 	 * @param  {Node} node
 	 * @return {Boundary}
 	 */
-	function beforeNode(node) {
-		return [node.parentNode, Dom.nodeIndex(node)];
-	}
-
-	/**
-	 * Returns a boundary's container node.
-	 *
-	 * @param  {Boundary} boundary
-	 * @return {Node}
-	 */
-	function container(boundary) {
-		return boundary[0];
+	function fromNode(node) {
+		return raw(node.parentNode, Dom.nodeIndex(node));
 	}
 
 	/**
@@ -392,11 +435,11 @@ define([
 	 */
 	function nodeAtBoundary(boundary) {
 		console.error('Boundaries.nodeAtBoundary() is deprecated. Use Boundaries.nextNode() instead');
-		return Dom.nodeAtOffset(boundary[0], boundary[1]);
+		return Dom.nodeAtOffset(container(boundary), offset(boundary));
 	}
 
 	/**
-	 * Calculates the cumulative length of consecutive text nodes immediately
+	 * Calculates the cumulative length of contiguous text nodes immediately
 	 * preceding the given boundary.
 	 *
 	 * @param  {Boundary} boundary
@@ -407,7 +450,7 @@ define([
 		var node = nodeBefore(boundary);
 		var len = 0;
 		if (!isNodeBoundary(boundary)) {
-			len += boundary[1];
+			len += offset(boundary);
 			node = node.previousSibling;
 		}
 		while (node && Dom.isTextNode(node)) {
@@ -417,69 +460,37 @@ define([
 		return len;
 	}
 
-	var exports = {
-		equals     : equals,
-
-		normalize  : normalize,
-
-		start      : start,
-		end        : end,
-		fromRange  : fromRange,
-		fromRanges : fromRanges,
-		beforeNode : beforeNode,
-
-		next       : next,
-		prev       : prev,
-		nextWhile  : nextWhile,
-		prevWhile  : prevWhile,
-
-		nextNode       : nextNode,
-		prevNode       : prevNode,
+	return {
+		create         : create,
+		equals         : equals,
+		normalize      : normalize,
 		container      : container,
-		nodeAfter      : nodeAfter,
-		nodeBefore     : nodeBefore,
-		nodeAtBoundary : nodeAtBoundary,
+		offset         : offset,
+
+		fromRange      : fromRange,
+		fromRanges     : fromRanges,
+		fromRangeStart : fromRangeStart,
+		fromRangeEnd   : fromRangeEnd,
+		fromNode       : fromNode,
 
 		isAtStart      : isAtStart,
 		isAtEnd        : isAtEnd,
 		isNodeBoundary : isNodeBoundary,
 
-		setRange  : setRange,
-		setRanges : setRanges,
+		next           : next,
+		prev           : prev,
+		nextWhile      : nextWhile,
+		prevWhile      : prevWhile,
+
+		nextNode       : nextNode,
+		prevNode       : prevNode,
+		nodeAfter      : nodeAfter,
+		nodeBefore     : nodeBefore,
+		nodeAtBoundary : nodeAtBoundary,
+
+		setRange       : setRange,
+		setRanges      : setRanges,
 
 		precedingTextLength : precedingTextLength
 	};
-
-	exports['equals'] = exports.equals;
-
-	exports['normalize'] = exports.normalize;
-
-	exports['start'] = exports.start;
-	exports['end'] = exports.end;
-	exports['fromRange'] = exports.fromRange;
-	exports['fromRanges'] = exports.fromRanges;
-	exports['beforeNode'] = exports.beforeNode;
-
-	exports['next'] = exports.next;
-	exports['prev'] = exports.prev;
-	exports['nextWhile'] = exports.nextWhile;
-	exports['prevWhile'] = exports.prevWhile;
-
-	exports['nextNode'] = exports.nextNode;
-	exports['prevNode'] = exports.prevNode;
-	exports['container'] = exports.container;
-	exports['nodeAfter'] = exports.nodeAfter;
-	exports['nodeBefore'] = exports.nodeBefore;
-	exports['nodeAtBoundary'] = exports.nodeAtBoundary;
-
-	exports['isAtStart'] = exports.isAtStart;
-	exports['isAtEnd'] = exports.isAtEnd;
-	exports['isNodeBoundary'] = exports.isNodeBoundary;
-
-	exports['setRange'] = exports.setRange;
-	exports['setRanges'] = exports.setRanges;
-
-	exports['precedingTextLength'] = exports.precedingTextLength;
-
-	return exports;
 });
