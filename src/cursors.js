@@ -7,10 +7,6 @@
 define(['dom'], function Position(dom) {
 	'use strict';
 
-	if ('undefined' !== typeof mandox) {
-		eval(uate)('cursors');
-	}
-
 	/**
 	 * Cursor abstraction of the startContainer/startOffset and
 	 * endContainer/endOffset range boundary points.

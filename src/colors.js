@@ -9,10 +9,6 @@ define([
 ) {
 	'use strict';
 
-	if ('undefined' !== typeof mandox) {
-		eval(uate)('colors');
-	}
-
 	var COLOR_PREFIX = /^(#|rgba?|hsl)\(?([^\(\)]+)/i;
 	var COMMA = /\s*,\s*/;
 

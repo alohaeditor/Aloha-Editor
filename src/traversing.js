@@ -17,10 +17,6 @@ define([
 ) {
 	'use strict';
 
-	if ('undefined' !== typeof mandox) {
-		eval(uate)('traversing');
-	}
-
 	/**
 	 * Map of tag names which represent element that do not imply a word
 	 * boundary.

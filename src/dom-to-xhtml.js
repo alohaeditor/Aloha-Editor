@@ -15,10 +15,6 @@ define([
 ) {
 	'use strict';
 
-	if ('undefined' !== typeof mandox) {
-		eval(uate)('xhtml');
-	}
-
 	/**
 	 * Elements that are to be serialized like <img /> and not like <img></img>.
 	 */

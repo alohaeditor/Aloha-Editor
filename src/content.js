@@ -7,10 +7,6 @@
 define([], function Content() {
 	'use strict';
 
-	if ('undefined' !== typeof mandox) {
-		eval(uate)('content');
-	}
-
 	var TABLE_CHILDREN = {
 		'CAPTION'  : true,
 		'COLGROUP' : true,

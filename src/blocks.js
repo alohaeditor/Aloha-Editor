@@ -3,9 +3,6 @@
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
- *
- * @reference
- * http://www.html5rocks.com/en/tutorials/dnd/basics/
  */
 define([
 	'dom',

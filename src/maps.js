@@ -7,10 +7,6 @@
 define(['arrays'], function Maps(Arrays) {
 	'use strict';
 
-	if ('undefined' !== typeof mandox) {
-		eval(uate)('maps');
-	}
-
 	/**
 	 * Checks whether the given object has no own or inherited properties.
 	 *

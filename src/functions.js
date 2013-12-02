@@ -7,10 +7,6 @@
 define([], function Functions() {
 	'use strict';
 
-	if ('undefined' !== typeof mandox) {
-		eval(uate)('functions');
-	}
-
 	/**
 	 * Returns its single argument.
 	 * Useful for composition when some default behaviour is needed.

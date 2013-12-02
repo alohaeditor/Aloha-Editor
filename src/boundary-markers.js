@@ -17,10 +17,6 @@ define([
 ) {
 	'use strict';
 
-	if ('undefined' !== typeof mandox) {
-		eval(uate)('boundarymarkers');
-	}
-
 	/**
 	 * Insert selection markers at the given range.
 	 *

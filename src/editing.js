@@ -50,10 +50,6 @@ define([
 ) {
 	'use strict';
 
-	if ('undefined' !== typeof mandox) {
-		eval(uate)('editing');
-	}
-
 	/**
 	 * Walks the siblings of the given child, calling before for
 	 * siblings before the given child, after for siblings after the

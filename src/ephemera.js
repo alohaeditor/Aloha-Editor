@@ -31,10 +31,6 @@ define([
 ) {
 	'use strict';
 
-	if ('undefined' !== typeof mandox) {
-		eval(uate)('ephemera');
-	}
-
 	var ephemeraMap = {
 		classMap: {
 			'aloha-ephemera-wrapper': true,

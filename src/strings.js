@@ -7,10 +7,6 @@
 define([], function Strings() {
 	'use strict';
 
-	if ('undefined' !== typeof mandox) {
-		eval(uate)('strings');
-	}
-
 	/**
 	 * Splits a string into individual words.
 	 *

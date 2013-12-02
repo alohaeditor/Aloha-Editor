@@ -39,10 +39,6 @@ define([
 ) {
 	'use strict';
 
-	if ('undefined' !== typeof mandox) {
-		eval(uate)('html');
-	}
-
 	/**
 	 * White space characters as defined by HTML 4
 	 * (http://www.w3.org/TR/html401/struct/text.html)

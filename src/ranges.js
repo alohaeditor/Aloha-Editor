@@ -30,10 +30,6 @@ define([
 ) {
 	'use strict';
 
-	if ('undefined' !== typeof mandox) {
-		eval(uate)('ranges');
-	}
-
 	/**
 	 * Gets the currently selected range.
 	 *

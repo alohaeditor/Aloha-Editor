@@ -4,12 +4,16 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define(['arrays', 'maps', 'functions'], function Trees(Arrays, Maps, Fn) {
+define([
+	'arrays',
+	'maps',
+	'functions'
+], function Trees(
+	Arrays,
+	Maps,
+	Fn
+) {
 	'use strict';
-
-	if ('undefined' !== typeof mandox) {
-		eval(uate)('trees');
-	}
 
 	/**
 	 * An empty container object of the same type as the argument, or
