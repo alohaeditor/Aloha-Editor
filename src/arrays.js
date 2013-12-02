@@ -179,37 +179,16 @@ define(['functions'], function Arrays(Fn) {
 		return result;
 	}
 
-	/**
-	 * Functions for operating on arrays.
-	 *
-	 * arrays.contains()
-	 * arrays.equal()
-	 * arrays.intersect()
-	 * arrays.second()
-	 * arrays.last()
-	 */
-	var exports = {
-		contains: contains,
-		difference: difference,
-		equal: equal,
-		intersect: intersect,
-		second: second,
-		last: last,
-		coerce: coerce,
-		mapcat: mapcat,
-		partition: partition,
-		some: some
+	return {
+		contains   : contains,
+		difference : difference,
+		equal      : equal,
+		intersect  : intersect,
+		second     : second,
+		last       : last,
+		coerce     : coerce,
+		mapcat     : mapcat,
+		partition  : partition,
+		some       : some
 	};
-
-	exports['contains'] = exports.contains;
-	exports['difference'] = exports.difference;
-	exports['equal'] = exports.equal;
-	exports['intersect'] = exports.intersect;
-	exports['second'] = exports.second;
-	exports['last'] = exports.last;
-	exports['coerce'] = exports.coerce;
-	exports['mapcat'] = exports.mapcat;
-	exports['partition'] = exports.partition;
-
-	return exports;
 });

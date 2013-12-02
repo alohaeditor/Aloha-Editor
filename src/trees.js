@@ -275,35 +275,19 @@ define(['arrays', 'maps', 'functions'], function Trees(Arrays, Maps, Fn) {
 		}
 	}
 
-	var exports = {
-		prewalk: prewalk,
-		postwalk: postwalk,
-		preprune: preprune,
-		postprune: postprune,
-		leaves: leaves,
-		clone: clone,
-		flatten: flatten,
-		deepEqual: deepEqual,
-		walkContainer: walkContainer,
-		walkContainerInplace: walkContainerInplace,
-		walk: walk,
-		walkRec: walkRec,
-		identityStep: identityStep
+	return {
+		prewalk              : prewalk,
+		postwalk             : postwalk,
+		preprune             : preprune,
+		postprune            : postprune,
+		leaves               : leaves,
+		clone                : clone,
+		flatten              : flatten,
+		deepEqual            : deepEqual,
+		walkContainer        : walkContainer,
+		walkContainerInplace : walkContainerInplace,
+		walk                 : walk,
+		walkRec              : walkRec,
+		identityStep         : identityStep
 	};
-
-	exports['prewalk'] = exports.prewalk;
-	exports['postwalk'] = exports.postwalk;
-	exports['preprune'] = exports.preprune;
-	exports['postprune'] = exports.postprune;
-	exports['leaves'] = exports.leaves;
-	exports['clone'] = exports.clone;
-	exports['flatten'] = exports.flatten;
-	exports['deepEqual'] = exports.deepEqual;
-	exports['walkContainer'] = exports.walk;
-	exports['walkContainerInplace'] = exports.walkInplace;
-	exports['walk'] = exports.walk;
-	exports['walkRec'] = exports.walkRec;
-	exports['identityStep'] = exports.identityStep;
-
-	return exports;
 });

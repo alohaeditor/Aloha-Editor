@@ -788,61 +788,33 @@ define([
 		return (Dom.Nodes.DOCUMENT === parent.nodeType) ? null : parent;
 	}
 
-	var exports = {
-		backward: backward,
-		forward: forward,
-		findThrough: findThrough,
-		nextWhile: nextWhile,
-		prevWhile: prevWhile,
-		upWhile: upWhile,
-		walk: walk,
-		walkRec: walkRec,
-		walkUntil: walkUntil,
-		walkUntilNode: walkUntilNode,
-		find: find,
-		findBackward: findBackward,
-		findForward: findForward,
-		findWordBoundaryAhead: findWordBoundaryAhead,
-		findWordBoundaryBehind: findWordBoundaryBehind,
-		parentsUntil: parentsUntil,
-		parentsUntilIncl: parentsUntilIncl,
-		childAndParentsUntil: childAndParentsUntil,
-		childAndParentsUntilIncl: childAndParentsUntilIncl,
-		childAndParentsUntilNode: childAndParentsUntilNode,
-		childAndParentsUntilInclNode: childAndParentsUntilInclNode,
-		climbUntil: climbUntil,
-		getNonAncestor: getNonAncestor,
-		previousNonAncestor: previousNonAncestor,
-		nextNonAncestor: nextNonAncestor,
-		findAncestor: findAncestor,
-		parentBlock: parentBlock
+	return {
+		backward                     : backward,
+		forward                      : forward,
+		findThrough                  : findThrough,
+		nextWhile                    : nextWhile,
+		prevWhile                    : prevWhile,
+		upWhile                      : upWhile,
+		walk                         : walk,
+		walkRec                      : walkRec,
+		walkUntil                    : walkUntil,
+		walkUntilNode                : walkUntilNode,
+		find                         : find,
+		findBackward                 : findBackward,
+		findForward                  : findForward,
+		findWordBoundaryAhead        : findWordBoundaryAhead,
+		findWordBoundaryBehind       : findWordBoundaryBehind,
+		parentsUntil                 : parentsUntil,
+		parentsUntilIncl             : parentsUntilIncl,
+		childAndParentsUntil         : childAndParentsUntil,
+		childAndParentsUntilIncl     : childAndParentsUntilIncl,
+		childAndParentsUntilNode     : childAndParentsUntilNode,
+		childAndParentsUntilInclNode : childAndParentsUntilInclNode,
+		climbUntil                   : climbUntil,
+		getNonAncestor               : getNonAncestor,
+		previousNonAncestor          : previousNonAncestor,
+		nextNonAncestor              : nextNonAncestor,
+		findAncestor                 : findAncestor,
+		parentBlock                  : parentBlock
 	};
-
-	exports['backward'] = exports.backward;
-	exports['forward'] = exports.forward;
-	exports['nextWhile'] = exports.nextWhile;
-	exports['prevWhile'] = exports.prevWhile;
-	exports['upWhile'] = exports.upWhile;
-	exports['walk'] = exports.walk;
-	exports['walkRec'] = exports.walkRec;
-	exports['walkUntil'] = exports.walkUntil;
-	exports['walkUntilNode'] = exports.walkUntilNode;
-	exports['find'] = exports.find;
-	exports['findBackward'] = exports.findBackward;
-	exports['findForward'] = exports.findForward;
-	exports['findWordBoundaryAhead'] = exports.findWordBoundaryAhead;
-	exports['findWordBoundaryBehind'] = exports.findWordBoundaryBehind;
-	exports['parentsUntil'] = exports.parentsUntil;
-	exports['parentsUntilIncl'] = exports.parentsUntilIncl;
-	exports['childAndParentsUntil'] = exports.childAndParentsUntil;
-	exports['childAndParentsUntilIncl'] = exports.childAndParentsUntilIncl;
-	exports['childAndParentsUntilNode'] = exports.childAndParentsUntilNode;
-	exports['childAndParentsUntilInclNode'] = exports.childAndParentsUntilInclNode;
-	exports['climbUntil'] = exports.climbUntil;
-	exports['getNonAncestor'] = exports.getNonAncestor;
-	exports['previousNonAncestor'] = exports.previousNonAncestor;
-	exports['nextNonAncestor'] = exports.nextNonAncestor;
-	exports['findAncestor'] = exports.findAncestor;
-
-	return exports;
 });

@@ -18,11 +18,7 @@ define(['maps'], function Mouse(Maps) {
 		return alohaEvent;
 	}
 
-	var exports = {
+	return {
 		handle : handle
 	};
-
-	exports['handle'] = exports.handle;
-
-	return exports;
 });

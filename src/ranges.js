@@ -810,58 +810,35 @@ define([
 	 * It assumes native support for document.getSelection() and
 	 * document.createRange().
 	 */
-	var exports = {
-		box: box,
-		collapseToEnd: collapseToEnd,
-		collapseToStart: collapseToStart,
-		create: create,
-		isEqual: isEqual,
-		equal: equal,
-		expand: expand,
-		contract: contract,
-		expandBoundaries: expandBoundaries,
-		expandToWord: expandToWord,
-		expandToBlock: expandToBlock,
-		expandToVisibleCharacter: expandToVisibleCharacter,
-		get: get,
-		insertTextBehind: insertTextBehind,
-		select: select,
-		setFromReference: setFromReference,
-		setStartFromBoundary: setStartFromBoundary,
-		setEndFromBoundary: setEndFromBoundary,
-		setFromBoundaries: setFromBoundaries,
-		trim: trim,
-		trimBoundaries: trimBoundaries,
-		trimClosingOpening: trimClosingOpening,
-		getNearestEditingHost: getNearestEditingHost,
-		expandBackwardToVisiblePosition: expandBackwardToVisiblePosition,
-		expandForwardToVisiblePosition: expandForwardToVisiblePosition,
-		contractBackwardToVisiblePosition: contractBackwardToVisiblePosition,
-		createFromPoint: createFromPoint,
-		createFromPosition: createFromPosition,
-		fromEvent: fromEvent
+	return {
+		box                               : box,
+		collapseToEnd                     : collapseToEnd,
+		collapseToStart                   : collapseToStart,
+		create                            : create,
+		isEqual                           : isEqual,
+		equal                             : equal,
+		expand                            : expand,
+		contract                          : contract,
+		expandBoundaries                  : expandBoundaries,
+		expandToWord                      : expandToWord,
+		expandToBlock                     : expandToBlock,
+		expandToVisibleCharacter          : expandToVisibleCharacter,
+		get                               : get,
+		insertTextBehind                  : insertTextBehind,
+		select                            : select,
+		setFromReference                  : setFromReference,
+		setStartFromBoundary              : setStartFromBoundary,
+		setEndFromBoundary                : setEndFromBoundary,
+		setFromBoundaries                 : setFromBoundaries,
+		trim                              : trim,
+		trimBoundaries                    : trimBoundaries,
+		trimClosingOpening                : trimClosingOpening,
+		getNearestEditingHost             : getNearestEditingHost,
+		expandBackwardToVisiblePosition   : expandBackwardToVisiblePosition,
+		expandForwardToVisiblePosition    : expandForwardToVisiblePosition,
+		contractBackwardToVisiblePosition : contractBackwardToVisiblePosition,
+		createFromPoint                   : createFromPoint,
+		createFromPosition                : createFromPosition,
+		fromEvent                         : fromEvent
 	};
-
-	exports['box'] = exports.box;
-	exports['collapseToEnd'] = exports.collapseToEnd;
-	exports['collapseToStart'] = exports.collapseToStart;
-	exports['create'] = exports.create;
-	exports['isEqual'] = exports.isEqual;
-	exports['equal'] = exports.equal;
-	exports['expand'] = exports.expand;
-	exports['contract'] = exports.contract;
-	exports['expandBoundaries'] = exports.expandBoundaries;
-	exports['expandToWord'] = exports.expandToWord;
-	exports['expandToVisibleText'] = exports.expandToVisibleText;
-	exports['get'] = exports.get;
-	exports['insertTextBehind'] = exports.insertTextBehind;
-	exports['select'] = exports.select;
-	exports['setFromReference'] = exports.setFromReference;
-	exports['trim'] = exports.trim;
-	exports['trimBoundaries'] = exports.trimBoundaries;
-	exports['trimClosingOpening'] = exports.trimClosingOpening;
-	exports['getNearestEditingHost'] = exports.getNearestEditingHost;
-	exports['expandBackwardToVisiblePosition'] = exports.expandBackwardToVisiblePosition;
-
-	return exports;
 });

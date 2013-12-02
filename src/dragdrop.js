@@ -199,15 +199,9 @@ define([
 		return alohaEvent;
 	}
 
-	var exports = {
-		handle: handle,
-		Context: Context,
-		isDraggable: isDraggable
+	return {
+		handle      : handle,
+		Context     : Context,
+		isDraggable : isDraggable
 	};
-
-	exports['handle'] = exports.handle;
-	exports['Context'] = exports.Context;
-	exports['isDraggable'] = exports.isDraggable;
-
-	return exports;
 });

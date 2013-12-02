@@ -237,17 +237,10 @@ define([
 		return ret;
 	}
 
-	var exports = {
+	return {
 		map     : map,
 		lookup  : lookup,
 		harvest : harvest,
 		consume : consume
 	};
-
-	exports['map']     = exports.map;
-	exports['lookup']  = exports.lookup;
-	exports['harvest'] = exports.harvest;
-	exports['consume'] = exports.consume;
-
-	return exports;
 });

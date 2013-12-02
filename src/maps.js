@@ -170,38 +170,16 @@ define(['arrays'], function Maps(Arrays) {
 		          && Object.prototype.toString.call(obj) === '[object Object]');
 	}
 
-	/**
-	 * Functions to work with maps (plain old objects).
-	 *
-	 * maps.isEmpty()
-	 * maps.fillTuples()
-	 * maps.fillKeys()
-	 * maps.keys()
-	 * maps.forEach()
-	 * maps.merge()
-	 */
-	var exports = {
-		isEmpty: isEmpty,
-		fillTuples: fillTuples,
-		fillKeys: fillKeys,
-		keys: keys,
-		vals: vals,
-		selectVals: selectVals,
-		forEach: forEach,
-		extend: extend,
-		merge: merge,
-		isMap: isMap
+	return {
+		isEmpty    : isEmpty,
+		fillTuples : fillTuples,
+		fillKeys   : fillKeys,
+		keys       : keys,
+		vals       : vals,
+		selectVals : selectVals,
+		forEach    : forEach,
+		extend     : extend,
+		merge      : merge,
+		isMap      : isMap
 	};
-
-	exports['isEmpty'] = exports.isEmpty;
-	exports['fillTuples'] = exports.fillTuples;
-	exports['fillKeys'] = exports.fillKeys;
-	exports['keys'] = exports.keys;
-	exports['vals'] = exports.vals;
-	exports['forEach'] = exports.forEach;
-	exports['extend'] = exports.extend;
-	exports['merge'] = exports.merge;
-	exports['isMap'] = exports.isMap;
-
-	return exports;
 });

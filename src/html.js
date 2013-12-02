@@ -1311,49 +1311,29 @@ define([
 		return stepVisualBoundary(boundary, backwardSteps);
 	}
 
-	/**
-	 * Functions for working with HTML Content.
-	 */
-	var exports = {
-		isUnrendered: isUnrendered,
-		isRendered: isRendered,
-		isStyleInherited: isStyleInherited,
-		hasBlockStyle: hasBlockStyle,
-		hasInlineStyle: hasInlineStyle,
-		isUnrenderedWhitespace: isUnrenderedWhitespace,
-		skipUnrenderedToStartOfLine: skipUnrenderedToStartOfLine,
-		skipUnrenderedToEndOfLine: skipUnrenderedToEndOfLine,
-		normalizeBoundary: normalizeBoundary,
-		isEmpty: isEmpty,
-		hasLinebreakingStyle: hasLinebreakingStyle,
-		isVisuallyAdjacent: isVisuallyAdjacent,
-		isWhiteSpacePreserveStyle: isWhiteSpacePreserveStyle,
-		insertVisualBreak: insertVisualBreak,
-		insertLineBreak: insertLineBreak,
-		removeVisualBreak: removeVisualBreak,
-		nextLineBreak: nextLineBreak,
-		prop: prop,
-		previousCharacter: previousCharacter,
-		nextCharacter: nextCharacter,
-		previousVisualBoundary: previousVisualBoundary,
-		nextVisualBoundary: nextVisualBoundary,
-		areNextWhiteSpacesSignificant: areNextWhiteSpacesSignificant
+	return {
+		isUnrendered                  : isUnrendered,
+		isRendered                    : isRendered,
+		isStyleInherited              : isStyleInherited,
+		hasBlockStyle                 : hasBlockStyle,
+		hasInlineStyle                : hasInlineStyle,
+		isUnrenderedWhitespace        : isUnrenderedWhitespace,
+		skipUnrenderedToStartOfLine   : skipUnrenderedToStartOfLine,
+		skipUnrenderedToEndOfLine     : skipUnrenderedToEndOfLine,
+		normalizeBoundary             : normalizeBoundary,
+		isEmpty                       : isEmpty,
+		hasLinebreakingStyle          : hasLinebreakingStyle,
+		isVisuallyAdjacent            : isVisuallyAdjacent,
+		isWhiteSpacePreserveStyle     : isWhiteSpacePreserveStyle,
+		insertVisualBreak             : insertVisualBreak,
+		insertLineBreak               : insertLineBreak,
+		removeVisualBreak             : removeVisualBreak,
+		nextLineBreak                 : nextLineBreak,
+		prop                          : prop,
+		previousCharacter             : previousCharacter,
+		nextCharacter                 : nextCharacter,
+		previousVisualBoundary        : previousVisualBoundary,
+		nextVisualBoundary            : nextVisualBoundary,
+		areNextWhiteSpacesSignificant : areNextWhiteSpacesSignificant
 	};
-
-	exports['isUnrendered'] = exports.isUnrendered;
-	exports['isRendered'] = exports.isRendered;
-	exports['isStyleInherited'] = exports.isStyleInherited;
-	exports['hasBlockStyle'] = exports.hasBlockStyle;
-	exports['hasInlineStyle'] = exports.hasInlineStyle;
-	exports['isUnrenderedWhitespace'] = exports.isUnrenderedWhitespace;
-	exports['isWhiteSpacePreserveStyle'] = exports.isWhiteSpacePreserveStyle;
-	exports['skipUnrenderedToStartOfLine'] = exports.skipUnrenderedToStartOfLine;
-	exports['skipUnrenderedToEndOfLine'] = exports.skipUnrenderedToEndOfLine;
-	exports['normalizeBoundary'] = exports.normalizeBoundary;
-	exports['isEmpty'] = exports.isEmpty;
-	exports['hasLinebreakingStyle'] = exports.hasLinebreakingStyle;
-	exports['isVisuallyAdjacent'] = exports.isVisuallyAdjacent;
-	exports['removeVisualBreak'] = exports.removeVisualBreak;
-
-	return exports;
 });

@@ -203,23 +203,9 @@ define([
 		);
 	}
 
-	/**
-	 * Functions for inserting and extracting range boundary markers into the
-	 * DOM.
-	 *
-	 * boundarymarkers.hint()
-	 * boundarymarkers.insert()
-	 * boundarymarkers.extract()
-	 */
-	var exports = {
-		hint: hint,
-		insert: insert,
-		extract: extract
+	return {
+		hint    : hint,
+		insert  : insert,
+		extract : extract
 	};
-
-	exports['hint'] = exports.hint;
-	exports['insert'] = exports.insert;
-	exports['extract'] = exports.extract;
-
-	return exports;
 });

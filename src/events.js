@@ -148,23 +148,13 @@ define(['misc', 'assert'], function Events(Misc, Assert) {
 		add(doc, 'selection-changed',   editor);
 	}
 
-	var exports = {
+	return {
 		add         : add,
 		remove      : remove,
 		setup       : setup,
 		isWithCtrl  : isWithCtrl,
 		isWithShift : isWithShift,
-		dispatch: dispatch,
-		nextTick: nextTick
+		dispatch    : dispatch,
+		nextTick    : nextTick
 	};
-
-	exports['add']       = exports.add;
-	exports['remove']    = exports.remove;
-	exports['setup']     = exports.setup;
-	exports['isWithCtrl']  = exports.isWithCtrl;
-	exports['isWithShift'] = exports.isWithShift;
-	exports['dispatch'] = exports.dispatch;
-	exports['nextTick'] = exports.nextTick;
-
-	return exports;
 });

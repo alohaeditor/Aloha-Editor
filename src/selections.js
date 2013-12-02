@@ -739,19 +739,11 @@ define([
 		return event;
 	}
 
-	var exports = {
-		show: show,
-		handle: handle,
-		Context: Context,
-		hideCarets: hideCarets,
-		unhideCarets: unhideCarets
+	return {
+		show         : show,
+		handle       : handle,
+		Context      : Context,
+		hideCarets   : hideCarets,
+		unhideCarets : unhideCarets
 	};
-
-	exports['show'] = exports.show;
-	exports['handle'] = exports.handle;
-	exports['context'] = exports.context;
-	exports['hideCarets'] = exports.hideCarets;
-	exports['unhideCarets'] = exports.unhideCarets;
-
-	return exports;
 });

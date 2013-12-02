@@ -247,32 +247,13 @@ define(['dom'], function Position(dom) {
 		return range;
 	}
 
-	/**
-	 * Functions for creating Cursors.  A Cursor is an abstraction of the
-	 * startContainer/startOffset and endContainer/endOffset range boundary
-	 * points.
-	 *
-	 * position.create()
-	 * position.createFromBoundary()
-	 * position.setToRange()
-	 */
-	var exports = {
-		cursor: create,
-		cursorFromBoundaryPoint: createFromBoundary,
-
-		create             : create,
-		createFromBoundary : createFromBoundary,
-		setToRange         : setToRange,
-		setRangeStart      : setRangeStart,
-		setRangeEnd        : setRangeEnd
+	return {
+		cursor                  : create,
+		cursorFromBoundaryPoint : createFromBoundary,
+		create                  : create,
+		createFromBoundary      : createFromBoundary,
+		setToRange              : setToRange,
+		setRangeStart           : setRangeStart,
+		setRangeEnd             : setRangeEnd
 	};
-
-	exports['cursor'] = exports.cursor;
-	exports['cursorFromBoundaryPoint'] = exports.cursorFromBoundaryPoint;
-
-	exports['create'] = exports.create;
-	exports['createFromBoundary'] = exports.createFromBoundary;
-	exports['setToRange'] = exports.setToRange;
-
-	return exports;
 });

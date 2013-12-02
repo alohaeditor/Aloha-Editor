@@ -423,19 +423,8 @@ define([
 		return xhtml.join('');
 	}
 
-	/**
-	 * Dom to XHtml functions.
-	 *
-	 * xhtml.contentsToXhtml()
-	 * xhtml.nodeToXhtml()
-	 */
-	var exports = {
-		contentsToXhtml: contentsToXhtml,
-		nodeToXhtml: nodeToXhtml
+	return {
+		contentsToXhtml : contentsToXhtml,
+		nodeToXhtml     : nodeToXhtml
 	};
-
-	exports['contentsToXhtml'] = exports.contentsToXhtml,
-	exports['nodeToXhtml'] = exports.nodeToXhtml;
-
-	return exports;
 });

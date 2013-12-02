@@ -1258,37 +1258,19 @@ define([
 		context.historyIndex = historyIndex;
 	}
 
-	/**
-	 * Functions for undo support.
-	 */
-	var exports = {
-		Context: Context,
-		enter: enter,
-		close: close,
-		leave: leave,
-		capture: capture,
-		pathFromBoundary: pathFromBoundary,
-		changeSetFromFrame: changeSetFromFrame,
-		inverseChangeSet: inverseChangeSet,
-		applyChangeSet: applyChangeSet,
-		advanceHistory: advanceHistory,
-		makeInsertChange: makeInsertChange,
-		undo: undo,
-		redo: redo
+	return {
+		Context            : Context,
+		enter              : enter,
+		close              : close,
+		leave              : leave,
+		capture            : capture,
+		pathFromBoundary   : pathFromBoundary,
+		changeSetFromFrame : changeSetFromFrame,
+		inverseChangeSet   : inverseChangeSet,
+		applyChangeSet     : applyChangeSet,
+		advanceHistory     : advanceHistory,
+		makeInsertChange   : makeInsertChange,
+		undo               : undo,
+		redo               : redo
 	};
-
-	exports['Context'] = exports.Context;
-	exports['enter'] = exports.enter;
-	exports['leave'] = exports.leave;
-	exports['capture'] = exports.capture;
-	exports['pathFromBoundary'] = exports.pathFromBoundary,
-	exports['changeSetFromFrame'] = exports.changeSetFromFrame;
-	exports['inverseChangeSet'] = exports.inverseChangeSet;
-	exports['applyChangeSet'] = exports.applyChangeSet;
-	exports['advanceHistory'] = exports.advanceHistory;
-	exports['makeInsertChange'] = exports.makeInsertChange;
-	exports['undo'] = exports.undo;
-	exports['redo'] = exports.redo;
-
-	return exports;
 });

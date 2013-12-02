@@ -58,14 +58,12 @@ define([
 		Undo.close(editable.undoContext);
 	}
 
-	var exports = {
-		Editable: Editable,
-		fromElem: fromElem,
-		fromBoundary: fromBoundary,
-		assocIntoEditor: assocIntoEditor,
-		dissocFromEditor: dissocFromEditor,
-		close: close
+	return {
+		Editable         : Editable,
+		fromElem         : fromElem,
+		fromBoundary     : fromBoundary,
+		assocIntoEditor  : assocIntoEditor,
+		dissocFromEditor : dissocFromEditor,
+		close            : close
 	};
-
-	return exports;
 });

@@ -1131,155 +1131,87 @@ define([
 		elem.onselectstart = Fn.returnFalse;
 	}
 
-	/**
-	 * Functions for working with the DOM.
-	 */
-	var exports = {
-		offset: offset,
-		remove: remove,
-		merge: merge,
+	return {
+		offset : offset,
+		remove : remove,
+		merge  : merge,
 
-		addClass: addClass,
-		removeClass: removeClass,
-		hasClass: hasClass,
+		addClass    : addClass,
+		removeClass : removeClass,
+		hasClass    : hasClass,
 
 		getElementsByClassNames: getElementsByClassNames,
 
-		attrNames: attrNames,
-		hasAttrs: hasAttrs,
-		attrs: attrs,
-		setAttr: setAttr,
-		setAttrNS: setAttrNS,
-		getAttr: getAttr,
-		getAttrNS: getAttrNS,
-		removeAttr: removeAttr,
-		removeAttrNS: removeAttrNS,
+		attrNames    : attrNames,
+		hasAttrs     : hasAttrs,
+		attrs        : attrs,
+		setAttr      : setAttr,
+		setAttrNS    : setAttrNS,
+		getAttr      : getAttr,
+		getAttrNS    : getAttrNS,
+		removeAttr   : removeAttr,
+		removeAttrNS : removeAttrNS,
 
-		indexByClass: indexByClass,
-		indexByName: indexByName,
-		indexByClassHaveList: indexByClassHaveList,
+		indexByClass         : indexByClass,
+		indexByName          : indexByName,
+		indexByClassHaveList : indexByClassHaveList,
 
 		outerHtml: outerHtml,
 
-		moveNextAll: moveNextAll,
-		moveSiblingsInto: moveSiblingsInto,
-		moveSiblingsAfter: moveSiblingsAfter,
+		moveNextAll       : moveNextAll,
+		moveSiblingsInto  : moveSiblingsInto,
+		moveSiblingsAfter : moveSiblingsAfter,
 
-		cloneShallow: cloneShallow,
-		clone: clone,
+		cloneShallow : cloneShallow,
+		clone        : clone,
 
-		wrap: wrap,
-		insert: insert,
-		insertAfter: insertAfter,
-		replaceShallow: replaceShallow,
-		removeShallow: removeShallow,
+		wrap           : wrap,
+		insert         : insert,
+		insertAfter    : insertAfter,
+		replaceShallow : replaceShallow,
+		removeShallow  : removeShallow,
 
-		isAtEnd: isAtEnd,
-		isAtStart: isAtStart,
-		children: children,
-		nthChild: nthChild,
-		numChildren: numChildren,
-		nodeIndex: nodeIndex,
-		nodeLength: nodeLength,
-		nodeAtOffset: nodeAtOffset,
+		isAtEnd      : isAtEnd,
+		isAtStart    : isAtStart,
+		children     : children,
+		nthChild     : nthChild,
+		numChildren  : numChildren,
+		nodeIndex    : nodeIndex,
+		nodeLength   : nodeLength,
+		nodeAtOffset : nodeAtOffset,
 
-		normalizedNthChild: normalizedNthChild,
-		normalizedNodeIndex: normalizedNodeIndex,
-		realFromNormalizedIndex: realFromNormalizedIndex,
-		normalizedNumChildren: normalizedNumChildren,
+		normalizedNthChild      : normalizedNthChild,
+		normalizedNodeIndex     : normalizedNodeIndex,
+		realFromNormalizedIndex : realFromNormalizedIndex,
+		normalizedNumChildren   : normalizedNumChildren,
 
-		isTextNode: isTextNode,
-		isEmptyTextNode: isEmptyTextNode,
-		isEqualNode: isEqualNode,
+		isTextNode      : isTextNode,
+		isEmptyTextNode : isEmptyTextNode,
+		isEqualNode     : isEqualNode,
 
-		contains: contains,
-		followedBy: followedBy,
+		contains   : contains,
+		followedBy : followedBy,
 
-		setStyle: setStyle,
-		getStyle: getStyle,
-		getComputedStyle: getComputedStyle,
-		getComputedStyles: getComputedStyles,
-		removeStyle: removeStyle,
+		setStyle          : setStyle,
+		getStyle          : getStyle,
+		getComputedStyle  : getComputedStyle,
+		getComputedStyles : getComputedStyles,
+		removeStyle       : removeStyle,
 
-		isEditable: isEditable,
-		isEditableNode: isEditableNode,
-		isEditingHost: isEditingHost,
-		editingHost: editingHost,
-		editableParent: editableParent,
+		isEditable     : isEditable,
+		isEditableNode : isEditableNode,
+		isEditingHost  : isEditingHost,
+		editingHost    : editingHost,
+		editableParent : editableParent,
 
-		stringify: stringify,
-		stringifyReplacer: stringifyReplacer,
-		parseReviver: parseReviver,
-		Nodes: Nodes,
+		stringify         : stringify,
+		stringifyReplacer : stringifyReplacer,
+		parseReviver      : parseReviver,
+		Nodes             : Nodes,
 
 		ensureExpandoId: ensureExpandoId,
 
-		enableSelection: enableSelection,
+		enableSelection  : enableSelection,
 		disableSelection : disableSelection
 	};
-
-	exports['offset'] = exports.offset;
-	exports['remove'] = exports.remove;
-	exports['merge'] = exports.merge;
-	exports['addClass'] = exports.addClass;
-	exports['removeClass'] = exports.removeClass;
-	exports['hasClass'] = exports.hasClass;
-	exports['getElementsByClassNames'] = exports.getElementsByClassNames;
-	exports['attrNames'] = exports.attrNames;
-	exports['hasAttrs'] = exports.hasAttrs;
-	exports['setAttr'] = exports.setAttr;
-	exports['removeAttr'] = exports.removeAttr;
-	exports['setAttrNS'] = exports.setAttrNS;
-	exports['removeAttrNS'] = exports.removeAttrNS;
-	exports['attrs'] = exports.attrs;
-	exports['indexByClass'] = exports.indexByClass;
-	exports['indexByName'] = exports.indexByName;
-	exports['indexByClassHaveList'] = exports.indexByClassHaveList;
-	exports['outerHtml'] = exports.outerHtml;
-	exports['moveNextAll'] = exports.moveNextAll;
-	exports['cloneShallow'] = exports.cloneShallow;
-	exports['clone'] = exports.clone;
-	exports['wrap'] = exports.wrap;
-	exports['insert'] = exports.insert;
-	exports['removeShallow'] = exports.removeShallow;
-	exports['replaceShallow'] = exports.replaceShallow;
-	exports['isAtEnd'] = exports.isAtEnd;
-	exports['isAtStart'] = exports.isAtStart;
-	exports['nthChild'] = exports.nthChild;
-	exports['children'] = exports.children;
-	exports['nodeIndex'] = exports.nodeIndex;
-	exports['nodeLength'] = exports.nodeLength;
-	exports['nodeAtOffset'] = exports.nodeAtOffset;
-	exports['isTextNode'] = exports.isTextNode;
-	exports['isEmptyTextNode'] = exports.isEmptyTextNode;
-	exports['contains'] = exports.contains;
-	exports['followedBy'] = exports.followedBy;
-	exports['setStyle'] = exports.setStyle;
-	exports['getStyle'] = exports.getStyle;
-	exports['getComputedStyle'] = exports.getComputedStyle;
-	exports['removeStyle'] = exports.removeStyle;
-	exports['isEditable'] = exports.isEditable;
-	exports['isEditableNode'] = exports.isEditableNode;
-	exports['isEditingHost'] = exports.isEditingHost;
-	exports['editingHost'] = exports.editingHost;
-	exports['stringify'] = exports.stringify;
-	exports['stringifyReplacer'] = exports.stringifyReplacer;
-	exports['parseReviver'] = exports.parseReviver;
-	exports['Nodes'] = exports.Nodes;
-	exports['ensureExpandoId'] = exports.ensureExpandoId;
-
-	exports['Nodes']['ELEMENT'] = exports.Nodes.ELEMENT;
-	exports['Nodes']['ATTR'] = exports.Nodes.ATTR;
-	exports['Nodes']['TEXT'] = exports.Nodes.TEXT;
-	exports['Nodes']['CDATA_SECTION'] = exports.Nodes.CDATA_SECTION;
-	exports['Nodes']['ENTITY_REFERENCE'] = exports.Nodes.ENTITY_REFERENCE;
-	exports['Nodes']['ENTITY'] = exports.Nodes.ENTITY;
-	exports['Nodes']['PROCESSING_INSTRUCTION'] = exports.Nodes.PROCESSING_INSTRUCTION;
-	exports['Nodes']['COMMENT'] = exports.Nodes.COMMENT;
-	exports['Nodes']['DOCUMENT'] = exports.Nodes.DOCUMENT;
-	exports['Nodes']['DOCUMENTTYPE'] = exports.Nodes.DOCUMENTTYPE;
-	exports['Nodes']['DOCUMENT_FRAGMENT'] = exports.Nodes.DOCUMENT_FRAGMENT;
-	exports['Nodes']['NOTATION'] = exports.Nodes.NOTATION;
-
-	return exports;
 });

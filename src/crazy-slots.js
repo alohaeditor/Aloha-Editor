@@ -154,10 +154,8 @@ define([
 		};
 	}
 
-	var exports = {
-		run: run,
-		randomInt: randomInt
+	return {
+		run       : run,
+		randomInt : randomInt
 	};
-
-	return exports;
 });

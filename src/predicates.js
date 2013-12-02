@@ -154,18 +154,10 @@ define([], function Predicates() {
 		return !!TEXT_LEVEL_SEMANTIC_ELEMENTS[node.nodeName];
 	}
 
-
-	var exports = {
-		isVoidNode: isVoidNode,
-		isBlockNode: isBlockNode,
-		isInlineNode: isInlineNode,
-		isTextLevelSemanticNode: isTextLevelSemanticNode
+	return {
+		isVoidNode               : isVoidNode,
+		isBlockNode              : isBlockNode,
+		isInlineNode             : isInlineNode,
+		isTextLevelSemanticNode  : isTextLevelSemanticNode
 	};
-
-	exports['isVoidNode'] = exports.isVoidNode;
-	exports['isBlockNode'] = exports.isBlockNode;
-	exports['isInlineNode'] = exports.isInlineNode;
-	exports['isTextLevelSemanticNode'] = exports.isTextLevelSemanticNode;
-
-	return exports;
 });

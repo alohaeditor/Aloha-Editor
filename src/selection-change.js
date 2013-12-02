@@ -183,11 +183,9 @@ define([
 		}
 	}
 
-	var exports = {
-		handler: handler,
-		addHandler: addHandler,
-		removeHandler: removeHandler
+	return {
+		handler       : handler,
+		addHandler    : addHandler,
+		removeHandler : removeHandler
 	};
-
-	return exports;
 });

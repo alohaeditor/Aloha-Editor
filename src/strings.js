@@ -138,30 +138,12 @@ define([], function Strings() {
 		return (/[\x00-\x1f\x7f-\x9f]/).test(chr);
 	}
 
-	/**
-	 * High level string utility functions.
-	 *
-	 * strings.words()
-	 * strings.dashesToCamelCase()
-	 * strings.camelCaseToDashes()
-	 * strings.splitIncl()
-	 * strings.empty()
-	 */
-	var exports = {
-		words: words,
-		dashesToCamelCase: dashesToCamelCase,
-		camelCaseToDashes: camelCaseToDashes,
-		splitIncl: splitIncl,
-		empty: empty,
-		isControlCharacter: isControlCharacter
+	return {
+		words              : words,
+		dashesToCamelCase  : dashesToCamelCase,
+		camelCaseToDashes  : camelCaseToDashes,
+		splitIncl          : splitIncl,
+		empty              : empty,
+		isControlCharacter : isControlCharacter
 	};
-
-	exports['words'] = words;
-	exports['dashesToCamelCase'] = dashesToCamelCase;
-	exports['camelCaseToDashes'] = camelCaseToDashes;
-	exports['splitIncl'] = splitIncl;
-	exports['empty'] = empty;
-	exports['isControlCharacter'] = exports.isControlCharacter;
-
-	return exports;
 });

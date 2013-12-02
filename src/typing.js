@@ -276,13 +276,8 @@ define([
 		return alohaEvent;
 	}
 
-	var exports = {
-		handle : handle,
-		actions: actions
+	return {
+		handle  : handle,
+		actions : actions
 	};
-
-	exports['handle'] = handle;
-	exports['actions'] = actions;
-
-	return exports;
 });

@@ -64,14 +64,5 @@ define([], function Browsers() {
 		exports[vendor] = true;
 	}
 
-	exports['ie7'] = exports.ie7;
-	exports['chrome'] = exports.chrome;
-	exports['webkit'] = exports.webkit;
-	exports['safari'] = exports.safari;
-	exports['vendor'] = exports.vendor;
-	exports['version'] = exports.version;
-	exports['hasRemoveProperty'] = exports.hasRemoveProperty;
-	exports['VENDOR_PREFIX'] = exports.VENDOR_PREFIX;
-
 	return exports;
 });

@@ -392,40 +392,15 @@ define([
 		// TODO
 	}
 
-	/**
-	 * Ephemera functions.
-	 *
-	 * ephemera.ephemera()
-	 * ephemera.classes()
-	 * ephemera.attributes()
-	 * ephemera.markElement()
-	 * ephemera.markAttr()
-	 * ephemera.markWrapper()
-	 * ephemera.markFiller()
-	 * ephemera.prune()
-	 * ephemera.isAttrEphemeral()
-	 */
-	var exports = {
-		ephemera: ephemera,
-		classes: classes,
-		attributes: attributes,
-		markElement: markElement,
-		markAttr: markAttr,
-		markWrapper: markWrapper,
-		markFiller: markFiller,
-		prune: prune,
-		isAttrEphemeral: isAttrEphemeral
+	return {
+		ephemera        : ephemera,
+		classes         : classes,
+		attributes      : attributes,
+		markElement     : markElement,
+		markAttr        : markAttr,
+		markWrapper     : markWrapper,
+		markFiller      : markFiller,
+		prune           : prune,
+		isAttrEphemeral : isAttrEphemeral
 	};
-
-	exports['ephemera'] = exports.ephemera;
-	exports['classes'] = exports.classes;
-	exports['attributes'] = exports.attributes;
-	exports['markElement'] = exports.markElement;
-	exports['markAttr'] = exports.markAttr;
-	exports['markWrapper'] = exports.markWrapper;
-	exports['markFiller'] = exports.markFiller;
-	exports['prune'] = exports.prune;
-	exports['isAttrEphemeral'] = exports.isAttrEphemeral;
-
-	return exports;
 });

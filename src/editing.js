@@ -1315,10 +1315,7 @@ define([
 		Ranges.setFromBoundaries(liveRange, boundary, [boundary[0], boundary[1] + 1]);
 	}
 
-	/**
-	 * High level editing functions.
-	 */
-	var exports = {
+	return {
 		wrap   : wrapElem,
 		format : format,
 		split  : split,
@@ -1326,11 +1323,4 @@ define([
 		break  : break_,
 		insert : insert
 	};
-
-	exports['wrap'] = exports.wrap;
-	exports['format'] = exports.format;
-	exports['split'] = exports.split;
-	exports['delete'] = exports.delete;
-
-	return exports;
 });

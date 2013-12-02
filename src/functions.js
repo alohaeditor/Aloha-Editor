@@ -145,37 +145,15 @@ define([], function Functions() {
 		};
 	}
 
-	/**
-	 * Functions for working with functions.
-	 *
-	 * functions.identity()
-	 * functions.noop()
-	 * functions.returnTrue()
-	 * functions.returnFalse()
-	 * functions.complement()
-	 * functions.partial()
-	 * functions.outparameter()
-	 */
-	var exports =  {
-		identity: identity,
-		noop: noop,
-		returnTrue: returnTrue,
-		returnFalse: returnFalse,
-		complement: complement,
-		partial: partial,
-		outparameter: outparameter,
-		strictEquals: strictEquals,
-		comp: comp
+	return {
+		identity     : identity,
+		noop         : noop,
+		returnTrue   : returnTrue,
+		returnFalse  : returnFalse,
+		complement   : complement,
+		partial      : partial,
+		outparameter : outparameter,
+		strictEquals : strictEquals,
+		comp         : comp
 	};
-
-	exports['identity'] = exports.identity;
-	exports['noop'] = exports.noop;
-	exports['returnTrue'] = exports.returnTrue;
-	exports['returnFalse'] = exports.returnFalse;
-	exports['complement'] = exports.complement;
-	exports['partial'] = exports.partial;
-	exports['outparameter'] = exports.outparameter;
-	exports['comp'] = exports.comp;
-
-	return exports;
 });

@@ -542,14 +542,7 @@ define([], function Content() {
 		return false;
 	}
 
-	/**
-	 * Functions for operation on contents of HTML DOM nodes.
-	 */
-	var exports = {
+	return {
 		allowsNesting: allowsNesting
 	};
-
-	exports['allowsNesting'] = exports.allowsNesting;
-
-	return exports;
 });

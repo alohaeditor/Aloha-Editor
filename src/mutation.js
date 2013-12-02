@@ -359,29 +359,16 @@ define([
 		Dom.removeShallow(node);
 	}
 
-	var exports = {
-		removeShallowPreservingCursors: removeShallowPreservingCursors,
-		removePreservingRange: removePreservingRange,
-		removePreservingRanges: removePreservingRanges,
-		insertTextAtBoundary: insertTextAtBoundary,
-		insertNodeAtBoundary: insertNodeAtBoundary,
-		splitTextNode: splitTextNode,
-		splitTextContainers: splitTextContainers,
-		joinTextNodeAdjustRange: joinTextNodeAdjustRange,
-		joinTextNode: joinTextNode,
-		splitBoundary: splitBoundary
+	return {
+		removeShallowPreservingCursors : removeShallowPreservingCursors,
+		removePreservingRange          : removePreservingRange,
+		removePreservingRanges         : removePreservingRanges,
+		insertTextAtBoundary           : insertTextAtBoundary,
+		insertNodeAtBoundary           : insertNodeAtBoundary,
+		splitTextNode                  : splitTextNode,
+		splitTextContainers            : splitTextContainers,
+		joinTextNodeAdjustRange        : joinTextNodeAdjustRange,
+		joinTextNode                   : joinTextNode,
+		splitBoundary                  : splitBoundary
 	};
-
-	exports['removeShallowPreservingCursors'] = exports.removeShallowPreservingCursors;
-	exports['removePreservingRange'] = exports.removePreservingRange;
-	exports['removePreservingRanges'] = exports.removePreservingRanges;
-	exports['insertTextAtBoundary'] = exports.insertTextAtBoundary;
-	exports['insertNodeAtBoundary'] = exports.insertNodeAtBoundary;
-	exports['splitTextNode'] = exports.splitTextNode;
-	exports['splitTextContainers'] = exports.splitTextContainers;
-	exports['joinTextNodeAdjustRange'] = exports.joinTextNodeAdjustRange;
-	exports['joinTextNode'] = exports.joinTextNode;
-	exports['splitBoundary'] = exports.splitBoundary;
-
-	return exports;
 });

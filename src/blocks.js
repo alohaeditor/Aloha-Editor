@@ -121,15 +121,9 @@ define([
 		return event;
 	}
 
-	var exports = {
-		read: read,
-		write: write,
-		handle: handle
+	return {
+		read   : read,
+		write  : write,
+		handle : handle
 	};
-
-	exports['read'] = exports.read;
-	exports['write'] = exports.write;
-	exports['handle'] = exports.handle;
-
-	return exports;
 });

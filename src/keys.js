@@ -122,15 +122,9 @@ define([
 		return alohaEvent;
 	}
 
-	var exports = {
+	return {
 		handle : handle,
 		ARROWS : ARROWS,
 		CODES  : CODES
 	};
-
-	exports['handle'] = exports.handle;
-	exports['ARROWS'] = exports.ARROWS;
-	exports['CODES']  = exports.CODES;
-
-	return exports;
 });
