@@ -16,6 +16,7 @@ define([
 	'events',
 	'functions',
 	'keys',
+	'maps',
 	'mouse',
 	'ranges',
 	'selections',
@@ -29,6 +30,7 @@ define([
 	Events,
 	Fn,
 	Keys,
+	Maps,
 	Mouse,
 	Ranges,
 	Selections,
@@ -76,12 +78,14 @@ define([
 		editable.settings = {
 			defaultBlockNodeName: 'div'
 		};
+		/*
 		Editables.assocIntoEditor(editor, editable);
 		//elem.setAttribute('contentEditable', 'true');
 		Undo.enter(editable.undoContext, {
 			meta: {type: 'external'},
 			partitionRecords: true
 		});
+		*/
 		editor(null, {
 			'type'     : 'aloha',
 			'editable' : editable
@@ -101,7 +105,10 @@ define([
 
 	Api['aloha'] = aloha;
 	Api['mahalo'] = mahalo;
-	window['aloha'] = Api;
 
-	return Api;
+	aloha = Maps.extend(aloha, Api);
+
+	window['aloha'] = aloha;
+
+	return aloha;
 });

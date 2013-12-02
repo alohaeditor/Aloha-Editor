@@ -67,7 +67,8 @@
 		</style>
 	</head>
 	<body>
-		<div class="aloha-editable">
+		<div class="aloha-editable">She stopped.  She said, "Hello there," and then went on.</div>
+		<!-- div class="aloha-editable">
 			<h1>Aloha Editor</h1>
 			<p>
 				<img draggable="true"
@@ -105,7 +106,7 @@
 				Nam tincidunt congue enim, u porta lorem lacinia consectetur.
 				Donec ut libero sed arc vehicula ultricies a non tortor
 			</p>
-		</div>
+		</div -->
 		<script src="../src/require-pronto.js"></script>
 		<script src="../src/require-pronto.dev.js"></script>
 		<script src="../build/aloha.js"></script>
@@ -118,8 +119,8 @@
 						h1.innerHTML = h1.innerHTML + ': <span style="color:#df215a">' + version + '</span>';
 					}
 				}
-				function main(Editing, Ranges, Arrays, StableRange,
-				              BoundaryMarkers) {
+				function main(Editing, Ranges, Arrays, StableRange, BoundaryMarkers) {
+					return;
 					Arrays.coerce(document.querySelectorAll('.aloha-editable')).forEach(aloha);
 					var range = Ranges.expandToWord(Ranges.create(
 						document.querySelector('b'), 1,

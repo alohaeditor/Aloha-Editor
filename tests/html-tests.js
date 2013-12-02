@@ -1,10 +1,12 @@
 (function (aloha) {
 	'use strict';
 
-	var html = aloha.html;
-	var ranges = aloha.ranges;
+	var Dom = aloha.dom;
+	var Html = aloha.html;
+	var Ranges = aloha.ranges;
 	var Boundaries = aloha.boundaries;
-	var boundarymarkers = aloha.boundarymarkers;
+	var Traversing = aloha.traversing;
+	var BoundaryMarkers = aloha.boundarymarkers;
 	var tested = [];
 
     module('html');
@@ -12,10 +14,10 @@
 	function runTest(before, after, op) {
 		var dom = $(before)[0];
 		$('#editable').html('').append(dom);
-		var range = ranges.create(dom, 0);
-		boundarymarkers.extract(dom, range);
+		var range = Ranges.create(dom, 0);
+		BoundaryMarkers.extract(dom, range);
 		op(range);
-		boundarymarkers.insert(range);
+		BoundaryMarkers.insert(range);
 		equal(dom.outerHTML, after, before + ' ⇒ ' + after);
 	}
 
@@ -23,7 +25,7 @@
 		tested.push('nextVisualBoundary');
 		var t = function (before, after) {
 			return runTest(before, after, function (range) {
-				var pos = html.nextVisualBoundary(Boundaries.end(range));
+				var pos = Html.nextVisualBoundary(Boundaries.fromRangeEnd(range));
 				if (pos[0]) {
 					range.setEnd(pos[0], pos[1]);
 				}
@@ -128,7 +130,7 @@
 		tested.push('previousVisualBoundary');
 		var t = function (before, after) {
 			return runTest(before, after, function (range) {
-				var boundary = html.previousVisualBoundary(Boundaries.start(range));
+				var boundary = Html.previousVisualBoundary(Boundaries.fromRangeStart(range));
 				if (boundary) {
 					range.setStart(boundary[0], boundary[1]);
 				}
@@ -187,16 +189,75 @@
 		t('<div><p>foo<br></p>[]one</div>', '<div><p>foo{<br></p>]one</div>');
 	});
 
+	test('nextWordBoundary', function () {
+		tested.push('nextWordBoundary');
+		var dom = $('<div>foo<b>bar</b>s baz</div>')[0];
+		var boundary = Html.nextWordBoundary(Boundaries.fromNode(dom.firstChild));
+		equal(Boundaries.container(boundary), dom.lastChild);
+		equal(Boundaries.offset(boundary), 1);
+
+		var control = 'She stopped.  She said, "Hello there," and then went on.';
+		var expected = 'She| |stopped|.| | |She| |said|,| |"|Hello| |there|,|"| |and| |then| |went| |on|.';
+		var index = 0;
+
+		var dom = document.createElement('div');
+		dom.innerHTML = control;
+
+		Boundaries.walkWhile(
+			Boundaries.fromNode(dom.firstChild),
+			function (boundary) {
+				return !Dom.isEditingHost(Boundaries.nextNode(boundary));
+			},
+			Html.nextWordBoundary,
+			function (boundary) {
+				if (!Boundaries.isNodeBoundary(boundary)) {
+					var offset = Boundaries.offset(boundary) + (index++);
+					control = control.substr(0, offset) + '|' + control.substr(offset);
+				}
+			}
+		);
+		equal(control, expected, dom.innerHTML + ' => ' + expected);
+	});
+
+	test('prevWordBoundary', function () {
+		tested.push('prevWordBoundary');
+		var dom = $('<div>foo <b>bar</b>s baz</div>')[0];
+		var boundary = Html.prevWordBoundary(Boundaries.create(dom.firstChild.nextSibling, 1));
+		equal(Boundaries.container(boundary), dom.firstChild);
+		equal(Boundaries.offset(boundary), 4);
+
+		var control = 'She stopped.  She said, "Hello there," and then went on.';
+		var expected = 'She| |stopped|.| | |She| |said|,| |"|Hello| |there|,|"| |and| |then| |went| |on|.';
+
+		var dom = document.createElement('div');
+		dom.innerHTML = control;
+
+		Boundaries.walkWhile(
+			Boundaries.create(dom, 1),
+			function (boundary) {
+				return !Dom.isEditingHost(Boundaries.nextNode(boundary));
+			},
+			Html.prevWordBoundary,
+			function (boundary) {
+				if (!Boundaries.isNodeBoundary(boundary)) {
+					var offset = Boundaries.offset(boundary);
+					control = control.substr(0, offset) + '|' + control.substr(offset);
+				}
+			}
+		);
+		equal(control, expected, dom.innerHTML + ' => ' + expected);
+	});
+
 	test('isVisuallyAdjacent()', function () {
 		tested.push('isVisuallyAdjacent');
 		var t = function (markup, expected) {
 			var dom = $(markup)[0];
-			var range = ranges.create(dom, 0);
-			boundarymarkers.extract(dom, range);
+			var range = Ranges.create(dom, 0);
+			BoundaryMarkers.extract(dom, range);
 			equal(
-				html.isVisuallyAdjacent(
-					Boundaries.start(range),
-					Boundaries.end(range)
+				Html.isVisuallyAdjacent(
+					Boundaries.fromRangeStart(range),
+					Boundaries.fromRangeEnd(range)
 				),
 				expected,
 				markup
@@ -224,8 +285,8 @@
 
 	test('isStyleInherited', function () {
 		tested.push('isStyleInherited');
-		equal(html.isStyleInherited('color'), true);
-		equal(html.isStyleInherited('background'), true);
+		equal(Html.isStyleInherited('color'), true);
+		equal(Html.isStyleInherited('background'), true);
 	});
 
 	test('hasBlockStyle', function () {
@@ -236,11 +297,11 @@
 		var p = $('<p style="display: inline"></p>')[0];
 		var a = $('<a></a>')[0];
 		$('body').append([span, div, b, p, a]);
-		equal(html.hasBlockStyle(span), true);
-		equal(html.hasBlockStyle(div), true);
-		equal(html.hasBlockStyle(b), false);
-		equal(html.hasBlockStyle(p), false);
-		equal(html.hasBlockStyle(a), false);
+		equal(Html.hasBlockStyle(span), true);
+		equal(Html.hasBlockStyle(div), true);
+		equal(Html.hasBlockStyle(b), false);
+		equal(Html.hasBlockStyle(p), false);
+		equal(Html.hasBlockStyle(a), false);
 	});
 
 	test('hasInlineStyle', function () {
@@ -251,30 +312,30 @@
 		var p = $('<p style="display: inline"></p>')[0];
 		var a = $('<a></a>')[0];
 		$('body').append([span, div, b, p, a]);
-		equal(html.hasInlineStyle(span), false);
-		equal(html.hasInlineStyle(div), false);
-		equal(html.hasInlineStyle(b), true);
-		equal(html.hasInlineStyle(p), true);
-		equal(html.hasInlineStyle(a), true);
+		equal(Html.hasInlineStyle(span), false);
+		equal(Html.hasInlineStyle(div), false);
+		equal(Html.hasInlineStyle(b), true);
+		equal(Html.hasInlineStyle(p), true);
+		equal(Html.hasInlineStyle(a), true);
 	});
 
 	test('isUnrenderedWhitespace', function () {
 		tested.push('isUnrenderedWhitespace');
-		equal(html.isUnrenderedWhitespace(document.createTextNode('\t\r')), false);
-		equal(html.isUnrenderedWhitespace($('<div>\t\r</div>')[0].firstChild), true);
-		equal(html.isUnrenderedWhitespace($('<div>\t\rt</div>')[0].firstChild), false);
+		equal(Html.isUnrenderedWhitespace(document.createTextNode('\t\r')), false);
+		equal(Html.isUnrenderedWhitespace($('<div>\t\r</div>')[0].firstChild), true);
+		equal(Html.isUnrenderedWhitespace($('<div>\t\rt</div>')[0].firstChild), false);
 	});
 
 	test('skipUnrenderedToStartOfLine', function () {
 		tested.push('skipUnrenderedToStartOfLine');
 		var node = $('<div>foo<b>bar </b>\t\r</div>')[0]
-		equal(html.skipUnrenderedToStartOfLine(
+		equal(Html.skipUnrenderedToStartOfLine(
 			aloha.cursors.cursor(node.lastChild, false)
 		), true);
-		equal(html.skipUnrenderedToStartOfLine(
+		equal(Html.skipUnrenderedToStartOfLine(
 			aloha.cursors.cursor(node.firstChild.nextSibling.firstChild, false)
 		), false);
-		equal(html.skipUnrenderedToStartOfLine(
+		equal(Html.skipUnrenderedToStartOfLine(
 			aloha.cursors.cursor(node.firstChild, false)
 		), false);
 	});
@@ -283,7 +344,7 @@
 		tested.push('skipUnrenderedToEndOfLine');
 		var node = $('<div>\t\r</div>')[0].firstChild;
 		var point = aloha.cursors.cursor(node, false);
-		equal(html.skipUnrenderedToEndOfLine(point), true);
+		equal(Html.skipUnrenderedToEndOfLine(point), true);
 	});
 
 	test('normalizeBoundary', function () {
@@ -298,15 +359,15 @@
 		tested.push('nextLineBreak');
 		var t = function (before, after) {
 			var dom = $(before)[0];
-			var range = ranges.create(dom, 0);
-			boundarymarkers.extract(dom, range);
-			var linebreak = html.nextLineBreak(
-				Boundaries.start(range),
-				Boundaries.end(range)
+			var range = Ranges.create(dom, 0);
+			BoundaryMarkers.extract(dom, range);
+			var linebreak = Html.nextLineBreak(
+				Boundaries.fromRangeStart(range),
+				Boundaries.fromRangeEnd(range)
 			);
 			if (linebreak) {
 				range.setStart(linebreak[0], linebreak[1]);
-				boundarymarkers.insert(range);
+				BoundaryMarkers.insert(range);
 			}
 			equal(dom.outerHTML, after, before + ' ⇒ ' + after);
 		};
@@ -319,5 +380,5 @@
 		  '<div><p>foo<i>bar<b>baz</b></i>{</p>foo}</div>');
 	});
 
-	testCoverage(test, tested, html);
+	testCoverage(test, tested, Html);
 }(window.aloha));

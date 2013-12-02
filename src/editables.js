@@ -28,8 +28,8 @@ define([
 	}
 
 	function fromBoundary(editor, boundary) {
-		var node = Boundaries.nodeAtBoundary(boundary);
-		var elem = Traversing.upWhile(node, function (node) {
+		var container = Boundaries.container(boundary);
+		var elem = Traversing.upWhile(container, function (node) {
 			return !editor.editables[Dom.ensureExpandoId(node)];
 		});
 		return elem ? fromElem(editor, elem) : null;

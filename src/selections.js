@@ -173,7 +173,7 @@ define([
 	 * @return {Range}
 	 */
 	function up(box, stride) {
-		return Ranges.createFromPosition(box.left, box.top - stride);
+		return Ranges.fromPosition(box.left, box.top - stride);
 	}
 
 	/**
@@ -184,7 +184,7 @@ define([
 	 * @return {Range}
 	 */
 	function down(box, stride) {
-		return Ranges.createFromPosition(box.left, box.top + box.height + stride);
+		return Ranges.fromPosition(box.left, box.top + box.height + stride);
 	}
 
 	/**
@@ -196,10 +196,8 @@ define([
 	 * @return {Boundary}
 	 */
 	function left(boundary, stride) {
-		if ('char' === stride) {
-			return Html.previousVisualBoundary(boundary);
-		}
-		return Traversing.findWordBoundaryBehind(boundary);
+		return ('char' === stride) ? Html.prevVisualBoundary(boundary)
+		                           : Html.prevWordBoundary(boundary);
 	}
 
 	/**
@@ -211,10 +209,8 @@ define([
 	 * @return {Boundary}
 	 */
 	function right(boundary, stride) {
-		if ('char' === stride) {
-			return Html.nextVisualBoundary(boundary);
-		}
-		return Traversing.findWordBoundaryAhead(boundary);
+		return ('char' === stride) ? Html.nextVisualBoundary(boundary)
+		                           : Html.nextWordBoundary(boundary);
 	}
 
 	/**
@@ -304,26 +300,31 @@ define([
 	function step(event, range, focus, direction) {
 		var shift = Events.isWithShift(event);
 		var clone = range.cloneRange();
-		var move = ('left' === direction) ? left : right;
-		var get, set, collapse;
+		var get, set, move, focus, collapse;
 
-		if (range.collapsed || !shift) {
-			focus = ('left' === direction) ? 'start' : 'end';
+		if ('left' === direction) {
+			move = left;
+			focus = 'start';
+		} else {
+			move = right;
+			focus = 'end';
 		}
 
 		if ('start' === focus) {
-			get = Boundaries.start;
-			set = Ranges.setStartFromBoundary;
+			get = Boundaries.fromRangeStart;
+			set = Boundaries.setRangeStart;
 			collapse = Ranges.collapseToStart;
 		} else {
-			get = Boundaries.end;
-			set = Ranges.setEndFromBoundary;
+			get = Boundaries.fromRangeEnd;
+			set = Boundaries.setRangeEnd;
 			collapse = Ranges.collapseToEnd;
 		}
 
 		if (range.collapsed || shift) {
+			Ranges.envelopeInvisibleCharacters(range);
 			var stride = Events.isWithShift(event) ? 'word' : 'char';
-			set(clone, move(get(range), stride));
+			var boundary = get(range);
+			set(clone, move(boundary, stride) || boundary);
 		}
 
 		if (!shift) {

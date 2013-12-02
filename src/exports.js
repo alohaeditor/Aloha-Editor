@@ -307,6 +307,8 @@ define([
 	exports['html']['hasLinebreakingStyle'] = Html.hasLinebreakingStyle;
 	exports['html']['isVisuallyAdjacent'] = Html.isVisuallyAdjacent;
 	exports['html']['removeVisualBreak'] = Html.removeVisualBreak;
+	exports['html']['nextWordBoundary'] = Html.nextWordBoundary;
+	exports['html']['prevWordBoundary'] = Html.prevWordBoundary;
 
 	exports['typing'] = Typing;
 	exports['typing']['handle'] = Typing.handle;
@@ -397,8 +399,6 @@ define([
 	exports['traversing']['find'] = Traversing.find;
 	exports['traversing']['findBackward'] = Traversing.findBackward;
 	exports['traversing']['findForward'] = Traversing.findForward;
-	exports['traversing']['findWordBoundaryAhead'] = Traversing.findWordBoundaryAhead;
-	exports['traversing']['findWordBoundaryBehind'] = Traversing.findWordBoundaryBehind;
 	exports['traversing']['parentsUntil'] = Traversing.parentsUntil;
 	exports['traversing']['parentsUntilIncl'] = Traversing.parentsUntilIncl;
 	exports['traversing']['childAndParentsUntil'] = Traversing.childAndParentsUntil;

@@ -125,14 +125,14 @@ define([
 		}
 	}
 
-	var deleteBackwards = {
+	var deleteBackward = {
 		clearOverrides : true,
 		preventDefault : true,
 		undo           : 'delete',
 		mutate         : Fn.partial(delete_, false)
 	};
 
-	var deleteForwards = {
+	var deleteForward = {
 		clearOverrides : true,
 		preventDefault : true,
 		undo           : 'delete',
@@ -205,8 +205,8 @@ define([
 	};
 
 	var actions = {
-		deleteBackwards: deleteBackwards,
-		deleteForwards: deleteForwards,
+		deleteBackward: deleteBackward,
+		deleteForward: deleteForward,
 		breakBlock: breakBlock,
 		breakLine: breakLine,
 		formatBold: formatBold,
@@ -221,8 +221,8 @@ define([
 	handlers.keydown[Keys.CODES.left] =
 	handlers.keydown[Keys.CODES.right] = {clearOverrides: true};
 
-	handlers.keydown[Keys.CODES.delete] = deleteForwards;
-	handlers.keydown[Keys.CODES.backspace] = deleteBackwards;
+	handlers.keydown[Keys.CODES.delete] = deleteForward;
+	handlers.keydown[Keys.CODES.backspace] = deleteBackward;
 
 	handlers.keydown[Keys.CODES.enter] = breakBlock;
 	handlers.keydown['shift+' + Keys.CODES.enter] = breakLine;

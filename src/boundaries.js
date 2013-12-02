@@ -177,7 +177,7 @@ define([
 	 * @return {Boundary}
 	 */
 	function fromRangeStart(range) {
-		return [range.startContainer, range.startOffset];
+		return create(range.startContainer, range.startOffset);
 	}
 
 	/**
@@ -187,7 +187,7 @@ define([
 	 * @return {Boundary}
 	 */
 	function fromRangeEnd(range) {
-		return [range.endContainer, range.endOffset];
+		return create(range.endContainer, range.endOffset);
 	}
 
 	/**
@@ -359,6 +359,23 @@ define([
 	}
 
 	/**
+	 * Walks along boundaries according to step(), applying callback() to each
+	 * boundary along the traversal until cond() returns false.
+	 *
+	 * @param  {Boundary}                    boundary Where we start walking
+	 * @param  {function(Boundary):boolean}  cond     Predicate
+	 * @param  {function(Boundary):Boundary} step     Next boundary
+	 * @param  {function(Boundary)}          callback Applied to each boundary
+	 */
+	function walkWhile(boundary, cond, step, callback) {
+		var pos = boundary;
+		while (pos && cond(pos)) {
+			callback(pos);
+			pos = step(pos);
+		}
+	}
+
+	/**
 	 * Returns the node that is after the given boundary position.
 	 *
 	 * Will return null if the given boundary is at the end position, otherwise
@@ -371,10 +388,6 @@ define([
 	 */
 	function nodeAfter(boundary) {
 		boundary = normalize(boundary);
-		Asserts.assertTrue(
-			isNodeBoundary(boundary),
-			Asserts.errorLink('boundaries.nodeAfter#isNodeBoundary')
-		);
 		return isAtEnd(boundary) ? null : Dom.nthChild(container(boundary), offset(boundary));
 	}
 
@@ -391,10 +404,6 @@ define([
 	 */
 	function nodeBefore(boundary) {
 		boundary = normalize(boundary);
-		Asserts.assertTrue(
-			isNodeBoundary(boundary),
-			Asserts.errorLink('boundaries.nodeBefore#isNodeBoundary')
-		);
 		return isAtStart(boundary) ? null : Dom.nthChild(container(boundary), offset(boundary) - 1);
 	}
 
@@ -437,7 +446,7 @@ define([
 	 */
 	function nodeAtBoundary(boundary) {
 		console.error(Asserts.errorLink('boundaries.nodeAtBoundary#deprecated'));
-		return Dom.nodeAtOffset(container(boundary), offset(boundary));
+		return nextNode(boundary);
 	}
 
 	/**
@@ -448,12 +457,14 @@ define([
 	 * @return {number}
 	 */
 	function precedingTextLength(boundary) {
+		var node, len;
 		boundary = normalize(boundary);
-		var node = nodeBefore(boundary);
-		var len = 0;
-		if (!isNodeBoundary(boundary)) {
+		if (isNodeBoundary(boundary)) {
+			len = 0;
+			node = nodeBefore(boundary);
+		} else {
 			len += offset(boundary);
-			node = node.previousSibling;
+			node = container(boundary).previousSibling;
 		}
 		while (node && Dom.isTextNode(node)) {
 			len += Dom.nodeLength(node);
@@ -475,6 +486,11 @@ define([
 		fromRangeEnd   : fromRangeEnd,
 		fromNode       : fromNode,
 
+		setRange       : setRange,
+		setRanges      : setRanges,
+		setRangeStart  : setRangeStart,
+		setRangeEnd    : setRangeEnd,
+
 		isAtStart      : isAtStart,
 		isAtEnd        : isAtEnd,
 		isNodeBoundary : isNodeBoundary,
@@ -483,15 +499,13 @@ define([
 		prev           : prev,
 		nextWhile      : nextWhile,
 		prevWhile      : prevWhile,
+		walkWhile      : walkWhile,
 
 		nextNode       : nextNode,
 		prevNode       : prevNode,
 		nodeAfter      : nodeAfter,
 		nodeBefore     : nodeBefore,
 		nodeAtBoundary : nodeAtBoundary,
-
-		setRange       : setRange,
-		setRanges      : setRanges,
 
 		precedingTextLength : precedingTextLength
 	};

@@ -289,8 +289,7 @@ define([
 			Boundaries.fromRangeEnd(range),
 			canExpandForward
 		);
-		range.setStart(start[0], start[1]);
-		range.setEnd(end[0], end[1]);
+		Boundaries.setRange(range, start, end);
 		return range;
 	}
 
@@ -319,10 +318,10 @@ define([
 	function contract(range) {
 		var end = Boundaries.prevWhile(
 			Boundaries.fromRangeEnd(range),
-			function (boundary, container, offset) {
+			function (boundary) {
 				return canContractBackward(
-					container,
-					offset,
+					Boundaries.container(boundary),
+					Boundaries.offset(boundary),
 					range.startContainer,
 					range.startOffset
 				);
@@ -330,10 +329,10 @@ define([
 		);
 		var start = Boundaries.nextWhile(
 			Boundaries.fromRangeStart(range),
-			function (boundary, container, offset) {
+			function (boundary) {
 				return canContractForward(
-					container,
-					offset,
+					Boundaries.container(boundary),
+					Boundaries.offset(boundary),
 					range.endContainer,
 					range.endOffset
 				);
@@ -352,9 +351,11 @@ define([
 	 * @return {Range}
 	 */
 	function expandToWord(range) {
-		var behind = Traversing.findWordBoundaryBehind(Boundaries.fromRangeStart(range));
-		var ahead = Traversing.findWordBoundaryAhead(Boundaries.fromRangeEnd(range));
-		setFromBoundaries(range, behind, ahead);
+		Boundaries.setRange(
+			range,
+			Html.prevWordBoundary(Boundaries.fromRangeStart(range)),
+			Html.nextWordBoundary(Boundaries.fromRangeEnd(range))
+		);
 		return range;
 	}
 
@@ -380,25 +381,31 @@ define([
 	 * character, this function will only ever need to expand the range's end
 	 * position.
 	 *
-	 * @param {Range}
+	 * @param  {Range} range
 	 * @return {Range}
 	 */
-	function expandToVisibleCharacter(range) {
-		if (!Dom.isTextNode(range.endContainer)) {
-			return range;
-		}
-		var boundary = Html.nextCharacter(Boundaries.fromRangeEnd(range));
-		if (boundary) {
-			if (boundary[1] > 0) {
-				boundary[1]--;
-				setEndFromBoundary(range, boundary);
+	function envelopeInvisibleCharacters(range) {
+		var start = Boundaries.fromRangeStart(range);
+		var end = Boundaries.fromRangeEnd(range);
+
+		if (!Boundaries.isNodeBoundary(start)) {
+			var offset = Html.prevSignificantOffset(start);
+			if (-1 === offset) {
+				range.setStart(range.startContainer, 0);
+			} else {
+				range.setStart(Boundaries.container(start), offset);
 			}
-		} else {
-			range.setEnd(
-				range.endContainer,
-				Dom.nodeLength(range.endContainer)
-			);
 		}
+
+		if (!Boundaries.isNodeBoundary(end)) {
+			var offset = Html.nextSignificantOffset(end);
+			if (-1 === offset) {
+				range.setEnd(range.endContainer, Dom.nodeLength(range.endContainer));
+			} else {
+				range.setEnd(Boundaries.container(end), offset);
+			}
+		}
+
 		return range;
 	}
 
@@ -410,7 +417,7 @@ define([
 	 * @return {Range}
 	 */
 	function expandBackwardToVisiblePosition(range) {
-		var boundary = Html.previousVisualBoundary(Boundaries.fromRangeStart(range));
+		var boundary = Html.prevVisualBoundary(Boundaries.fromRangeStart(range));
 		if (boundary) {
 			setStartFromBoundary(range, boundary);
 		}
@@ -425,29 +432,30 @@ define([
 	 * @return {Range}
 	 */
 	function expandForwardToVisiblePosition(range) {
-		var pos = Html.nextVisualBoundary(Boundaries.fromRangeEnd(range));
-		if (pos[0]
-			&& Dom.isTextNode(pos[0])
-			&& !Html.areNextWhiteSpacesSignificant(pos[0], pos[1])) {
-			pos = Html.nextVisualBoundary(pos);
-			if (pos[0]) {
-				pos = Html.previousVisualBoundary(pos);
+		var boundary = Html.nextVisualBoundary(Boundaries.fromRangeEnd(range));
+		if (!boundary) {
+			return range;
+		}
+		if (!Boundaries.isNodeBoundary(boundary) && !Html.areNextWhiteSpacesSignificant(boundary)) {
+			var next = Html.nextVisualBoundary(boundary);
+			if (next) {
+				boundary = Html.prevVisualBoundary(next);
 			}
 		}
-		if (pos) {
-			setEndFromBoundary(range, pos);
+		if (boundary) {
+			setEndFromBoundary(range, boundary);
 		}
 		return range;
 	}
 
 	function contractBackwardToVisiblePosition(range) {
-		var pos = Html.previousVisualBoundary(Boundaries.fromRangeEnd(range));
+		var pos = Html.prevVisualBoundary(Boundaries.fromRangeEnd(range));
 		if (pos[0]
 			&& Dom.isTextNode(pos[0])
 			&& !Html.areNextWhiteSpacesSignificant(pos[0], pos[1])) {
 			pos = Html.nextVisualBoundary(pos);
 			if (pos[0]) {
-				pos = Html.previousVisualBoundary(pos);
+				pos = Html.prevVisualBoundary(pos);
 			}
 		}
 		if (pos) {
@@ -688,7 +696,7 @@ define([
 	 * http://jsfiddle.net/timdown/ABjQP/8/
 	 * http://lists.w3.org/Archives/Public/public-webapps/2009OctDec/0113.html
 	 */
-	function createFromPoint(x, y) {
+	function fromPoint(x, y) {
 		if (x < 0 || y < 0) {
 			return null;
 		}
@@ -712,8 +720,49 @@ define([
 	 */
 	function fromEvent(alohaEvent) {
 		return alohaEvent.range
-		    || createFromPosition(alohaEvent.nativeEvent.clientX, alohaEvent.nativeEvent.clientY)
+		    || fromPosition(alohaEvent.nativeEvent.clientX, alohaEvent.nativeEvent.clientY)
 		    || get();
+	}
+
+	/**
+	 * Calculates the range according to the given range.
+	 *
+	 * Will ensure that the range is contained in a content editable node.
+	 *
+	 * @param  {Event}      event
+	 * @return {Range|null}
+	 *         null if no suitable range can be determined.
+	 */
+	function fromPosition(x, y) {
+		var range = fromPoint(x, y);
+		if (!range) {
+			return null;
+		}
+		if (Dom.isEditableNode(range.commonAncestorContainer)) {
+			return range;
+		}
+		var block = Traversing.parentBlock(range.commonAncestorContainer);
+		if (!block || !block.parentNode) {
+			return null;
+		}
+		var body = block.ownerDocument.body;
+		var offsets = Dom.offset(block);
+		var offset = Dom.nodeIndex(block);
+		var pointX = x + body.scrollLeft;
+		var blockX = offsets.left + body.scrollLeft + block.offsetWidth;
+		if (pointX > blockX) {
+			offset += 1;
+		}
+		return create(block.parentNode, offset);
+	}
+
+	function fromBoundaries(start, end) {
+		return create(
+			Boundaries.container(start),
+			Boundaries.offset(start),
+			Boundaries.container(end),
+			Boundaries.offset(end)
+		);
 	}
 
 	/**
@@ -770,38 +819,6 @@ define([
 	}
 
 	/**
-	 * Calculates the range according to the given range.
-	 *
-	 * Will ensure that the range is contained in a content editable node.
-	 *
-	 * @param  {Event}      event
-	 * @return {Range|null}
-	 *         null if no suitable range can be determined.
-	 */
-	function createFromPosition(x, y) {
-		var range = createFromPoint(x, y);
-		if (!range) {
-			return null;
-		}
-		if (Dom.isEditableNode(range.commonAncestorContainer)) {
-			return range;
-		}
-		var block = Traversing.parentBlock(range.commonAncestorContainer);
-		if (!block || !block.parentNode) {
-			return null;
-		}
-		var body = block.ownerDocument.body;
-		var offsets = Dom.offset(block);
-		var offset = Dom.nodeIndex(block);
-		var pointX = x + body.scrollLeft;
-		var blockX = offsets.left + body.scrollLeft + block.offsetWidth;
-		if (pointX > blockX) {
-			offset += 1;
-		}
-		return create(block.parentNode, offset);
-	}
-
-	/**
 	 * Library functions for working with DOM ranges.
 	 * It assumes native support for document.getSelection() and
 	 * document.createRange().
@@ -818,7 +835,9 @@ define([
 		expandBoundaries                  : expandBoundaries,
 		expandToWord                      : expandToWord,
 		expandToBlock                     : expandToBlock,
-		expandToVisibleCharacter          : expandToVisibleCharacter,
+
+		envelopeInvisibleCharacters       : envelopeInvisibleCharacters,
+
 		get                               : get,
 		insertTextBehind                  : insertTextBehind,
 		select                            : select,
@@ -833,8 +852,10 @@ define([
 		expandBackwardToVisiblePosition   : expandBackwardToVisiblePosition,
 		expandForwardToVisiblePosition    : expandForwardToVisiblePosition,
 		contractBackwardToVisiblePosition : contractBackwardToVisiblePosition,
-		createFromPoint                   : createFromPoint,
-		createFromPosition                : createFromPosition,
-		fromEvent                         : fromEvent
+
+		fromBoundaries                    : fromBoundaries,
+		fromEvent                         : fromEvent,
+		fromPoint                         : fromPoint,
+		fromPosition                      : fromPosition
 	};
 });

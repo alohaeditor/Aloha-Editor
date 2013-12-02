@@ -199,9 +199,14 @@ define([
 		);
 	}
 
+	function boundary(pos) {
+		return hint(ranges.fromBoundaries(pos, pos));
+	}
+
 	return {
-		hint    : hint,
-		insert  : insert,
-		extract : extract
+		hint     : hint,
+		insert   : insert,
+		extract  : extract,
+		boundary : boundary
 	};
 });

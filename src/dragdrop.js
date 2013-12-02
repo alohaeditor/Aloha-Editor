@@ -163,7 +163,7 @@ define([
 			var x = event.clientX + DRAGGING_CARET_OFFSET;
 			var y = event.clientY + DRAGGING_CARET_OFFSET;
 			var carets = Selections.hideCarets(event.target.ownerDocument);
-			alohaEvent.range = Ranges.createFromPosition(x, y);
+			alohaEvent.range = Ranges.fromPosition(x, y);
 			Selections.unhideCarets(carets);
 
 			// Because this is necessary to enable dropping to work
@@ -176,7 +176,7 @@ define([
 			var x = event.clientX + DRAGGING_CARET_OFFSET;
 			var y = event.clientY + DRAGGING_CARET_OFFSET;
 			var carets = Selections.hideCarets(event.target.ownerDocument);
-			alohaEvent.range = Ranges.createFromPosition(x, y);
+			alohaEvent.range = Ranges.fromPosition(x, y);
 			Selections.unhideCarets(carets);
 
 			if (alohaEvent.range) {
