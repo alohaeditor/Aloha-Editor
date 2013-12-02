@@ -6,14 +6,16 @@
  */
 define([
 	'dom',
+	'misc',
 	'arrays',
+	'assert',
 	'predicates'
-	// 'errors'
 ], function Boundaries(
 	Dom,
+	Misc,
 	Arrays,
-	Predicates,
-	Errors
+	Asserts,
+	Predicates
 ) {
 	'use strict';
 
@@ -69,7 +71,11 @@ define([
 	 */
 	function normalize(boundary) {
 		var node = container(boundary);
-		if (Dom.isTextNode(node) && node.parentNode) {
+		if (Dom.isTextNode(node)) {
+			Asserts.assertTrue(
+				Misc.defined(node.parentNode),
+				Asserts.errorLink('boundaries.normalize#parentNode')
+			);
 			var boundaryOffset = offset(boundary);
 			if (0 === boundaryOffset) {
 				return raw(node.parentNode, Dom.nodeIndex(node));
@@ -365,12 +371,10 @@ define([
 	 */
 	function nodeAfter(boundary) {
 		boundary = normalize(boundary);
-		if (!isNodeBoundary(boundary)) {
-			throw Errors.message(
-				'Cannot call Boundaries.nodeAfter() with a Text Boundary',
-				'Boundaries.nodeAfter'
-			);
-		}
+		Asserts.assertTrue(
+			isNodeBoundary(boundary),
+			Asserts.errorLink('boundaries.nodeAfter#isNodeBoundary')
+		);
 		return isAtEnd(boundary) ? null : Dom.nthChild(container(boundary), offset(boundary));
 	}
 
@@ -387,12 +391,10 @@ define([
 	 */
 	function nodeBefore(boundary) {
 		boundary = normalize(boundary);
-		if (!isNodeBoundary(boundary)) {
-			throw Errors.message(
-				'Cannot call Boundaries.nodeBefore() with a Text Boundary',
-				'Boundaries.nodeBefore'
-			);
-		}
+		Asserts.assertTrue(
+			isNodeBoundary(boundary),
+			Asserts.errorLink('boundaries.nodeBefore#isNodeBoundary')
+		);
 		return isAtStart(boundary) ? null : Dom.nthChild(container(boundary), offset(boundary) - 1);
 	}
 
@@ -434,7 +436,7 @@ define([
 	 * @deprecated Use Boundaries.nextNode() instead
 	 */
 	function nodeAtBoundary(boundary) {
-		console.error('Boundaries.nodeAtBoundary() is deprecated. Use Boundaries.nextNode() instead');
+		console.error(Asserts.errorLink('boundaries.nodeAtBoundary#deprecated'));
 		return Dom.nodeAtOffset(container(boundary), offset(boundary));
 	}
 

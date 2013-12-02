@@ -108,7 +108,7 @@ define([
 			alohaEvent.range = range;
 			var editable = Editables.fromBoundary(
 				alohaEvent.editor,
-				Boundaries.startFromRange(range)
+				Boundaries.fromRangeStart(range)
 			);
 			if (editable) {
 				alohaEvent.editable = editable;
