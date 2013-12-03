@@ -469,11 +469,12 @@ define([
 		 * @return Boolean
 		 */
 		isDraggable: function() {
-			if (this.$element[0].tagName.toLowerCase() === 'div' && this.$element.parents('.aloha-editable,.aloha-block,.aloha-block-collection').first().hasClass('aloha-block-collection')) {
+			if (this.$element[0].nodeName === 'DIV' &&
+				this.$element.parents('.aloha-editable,.aloha-block:not(.aloha-table-wrapper),.aloha-block-collection').first().hasClass('aloha-block-collection')) {
 				// Here, we are inside an aloha-block-collection, and thus also need to be draggable.
 				return true;
 			}
-			return this.$element.parents('.aloha-editable,.aloha-block').first().hasClass('aloha-editable');
+			return this.$element.parents('.aloha-block:not(.aloha-table-wrapper),.aloha-editable').first().hasClass('aloha-editable');
 		},
 
 		/**************************
@@ -628,12 +629,15 @@ define([
 			this._makeNestedBlockCollectionsSortable();
 
 			this.renderBlockHandlesIfNeeded();
-			if (this.isDraggable() && this.$element[0].tagName.toLowerCase() === 'span') {
-				this._setupDragDropForInlineElements();
-				this._disableUglyInternetExplorerDragHandles();
-			} else if (this.isDraggable() && this.$element[0].tagName.toLowerCase() === 'div') {
-				this._setupDragDropForBlockElements();
-				this._disableUglyInternetExplorerDragHandles();
+			if (this.isDraggable()) {
+				var nodeName = this.$element[0].nodeName;
+				if (nodeName === 'SPAN') {
+					this._setupDragDropForInlineElements();
+					this._disableUglyInternetExplorerDragHandles();
+				} else if (nodeName === 'DIV') {
+					this._setupDragDropForBlockElements();
+					this._disableUglyInternetExplorerDragHandles();
+				}
 			}
 			this._hideDragHandlesIfDragDropDisabled();
 			this._attachDropzoneHighlightEvents();
