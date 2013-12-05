@@ -188,32 +188,6 @@ define([
 	}
 
 	/**
-	 * Returns the next visual character or word boundary to the left of
-	 * `boundary`.
-	 *
-	 * @param  {Boundary} boundary
-	 * @param  {string}   stride   "char" or "word"
-	 * @return {Boundary}
-	 */
-	function left(boundary, stride) {
-		return ('char' === stride) ? Html.prevVisualBoundary(boundary)
-		                           : Html.prevWordBoundary(boundary);
-	}
-
-	/**
-	 * Returns the next visual character or word boundary to the right of
-	 * `boundary`.
-	 *
-	 * @param  {Boundary} boundary
-	 * @param  {string}   stride   "char" or "word"
-	 * @return {Boundary}
-	 */
-	function right(boundary, stride) {
-		return ('char' === stride) ? Html.nextVisualBoundary(boundary)
-		                           : Html.nextWordBoundary(boundary);
-	}
-
-	/**
 	 * Given two ranges, creates a range that is between the two.
 	 *
 	 * @param  {Range} a
@@ -298,16 +272,13 @@ define([
 	 * @return {Object}
 	 */
 	function step(event, range, focus, direction) {
+		var get, set, collapse;
 		var shift = Events.isWithShift(event);
 		var clone = range.cloneRange();
-		var get, set, move, focus, collapse;
+		var move = ('left' === direction) ? Html.prev : Html.next;
 
-		if ('left' === direction) {
-			move = left;
-			focus = 'start';
-		} else {
-			move = right;
-			focus = 'end';
+		if (range.collapsed || !shift) {
+			focus = ('left' === direction) ? 'start' : 'end';
 		}
 
 		if ('start' === focus) {
@@ -322,7 +293,7 @@ define([
 
 		if (range.collapsed || shift) {
 			Ranges.envelopeInvisibleCharacters(range);
-			var stride = Events.isWithShift(event) ? 'word' : 'char';
+			var stride = Events.isWithCtrl(event) ? 'word' : 'visual';
 			var boundary = get(range);
 			set(clone, move(boundary, stride) || boundary);
 		}

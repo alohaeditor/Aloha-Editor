@@ -134,6 +134,10 @@ define([
 		    || hasBlockStyle(node);
 	}
 
+	function isVoidType(node) {
+		return Predicates.isVoidNode(node) || !Dom.isEditableNode(node);
+	}
+
 	/**
 	 * Checks whether the given string represents a whitespace preservation
 	 * style property.
@@ -318,7 +322,7 @@ define([
 		var child = elem.firstChild;
 		while (child) {
 			if (!isUnrenderedWhitespace(child)
-			    && (1 === child.nodeType || 3 === child.nodeType)) {
+					&& (1 === child.nodeType || 3 === child.nodeType)) {
 				return false;
 			}
 			child = child.nextSibling;
@@ -438,7 +442,7 @@ define([
 	 * @return {boolean} True if node is wither the first or last child of its
 	 *                   parent.
 	 */
-	function isTerminalSibling(node) {
+	function isTerminalNode(node) {
 		var parent = node.parentNode;
 		return parent && (
 			node === parent.firstChild || node === parent.lastChild
@@ -468,16 +472,11 @@ define([
 			return true;
 		}
 
-		if (LIST_CONTAINERS[node.nodeName]) {
-			return true;
-		}
-
 		if (!Predicates.isVoidNode(node) && 0 === Dom.nodeLength(node)) {
 			return true;
 		}
 
-		if (node.firstChild
-		    && !Traversing.nextWhile(node.firstChild, isUnrendered)) {
+		if (node.firstChild && !Traversing.nextWhile(node.firstChild, isUnrendered)) {
 			return true;
 		}
 
@@ -489,19 +488,18 @@ define([
 		// Because a <br> element that is a child node adjacent to its parent's
 		// end tag (terminal sibling) must not be rendered.
 		if (!maybeUnrenderedNode
-		    && (node === node.parentNode.lastChild)
-		    && Predicates.isBlockNode(node.parentNode)
-		    && 'BR' === node.nodeName
-		) {
+				&& (node === node.parentNode.lastChild)
+				&& Predicates.isBlockNode(node.parentNode)
+				&& 'BR' === node.nodeName) {
 			return true;
 		}
 
 		if (maybeUnrenderedNode && (
-		    isTerminalSibling(node)
-		    || isAdjacentToBlock(node)
-		    || skipUnrenderedToEndOfLine(Cursors.create(node, false))
-		    || skipUnrenderedToStartOfLine(Cursors.create(node, false))
-		)) {
+				isTerminalNode(node)
+				|| isAdjacentToBlock(node)
+				|| skipUnrenderedToEndOfLine(Cursors.create(node, false))
+				|| skipUnrenderedToStartOfLine(Cursors.create(node, false))
+			)) {
 			return true;
 		}
 
@@ -537,8 +535,7 @@ define([
 					Boundaries.container(pos),
 					Boundaries.offset(pos) - 1
 				);
-				if ((Dom.isTextNode(node) || Predicates.isVoidNode(node))
-					&& isRendered(node)) {
+				if ((Dom.isTextNode(node) || Predicates.isVoidNode(node)) && isRendered(node)) {
 					adjacent = false;
 					return false;
 				}
@@ -586,8 +583,7 @@ define([
 		if (Browsers.msie || !Predicates.isBlockNode(elem)) {
 			return;
 		}
-		if (!elem.firstChild
-		    || !Traversing.nextWhile(elem.firstChild, isUnrenderedWhitespace)) {
+		if (!elem.firstChild || !Traversing.nextWhile(elem.firstChild, isUnrenderedWhitespace)) {
 			Dom.insert(document.createElement('br'), elem, true);
 		}
 	}
@@ -767,9 +763,7 @@ define([
 
 	function determineBreakingNode(context, container) {
 		var name;
-		if (context
-		    && context.settings
-		    && context.settings.defaultBlockNodeName) {
+		if (context && context.settings && context.settings.defaultBlockNodeName) {
 		    name = context.settings.defaultBlockNodeName;
 		} else {
 			name = 'div';
@@ -786,17 +780,6 @@ define([
 		return Dom.isTextNode(node) && isUnrendered(node);
 	}
 
-	function insertBreakingNodeBeforeBoundary(boundary, context) {
-		var next = Boundaries.nextNode(boundary);
-		var name = determineBreakingNode(context, next.parentNode);
-		if (!name) {
-			return insertLineBreak(boundary, context);
-		}
-		var node = document.createElement(name);
-		Mutation.insertNodeAtBoundary(node, boundary);
-		return Boundaries.create(node, 0);
-	}
-
 	function wrapWithBreakingNode(ref, wrapper, context) {
 		var first = Traversing.prevWhile(ref, function (node) {
 			return node.previousSibling && hasInlineStyle(node.previousSibling);
@@ -810,6 +793,73 @@ define([
 		} else {
 			Dom.wrap(ref, wrapper);
 		}
+	}
+
+	/**
+	 * Checks whether or not the given BR element is significant or not.
+	 *
+	 * @param {Element} br
+	 * @return {boolean}
+	 */
+	function isSignificantBr(br) {
+		var ignorable = function (node) {
+			return 'BR' !== node.nodeName && isUnrendered(node);
+		};
+
+		var prev = br.previousSibling
+		        && Traversing.prevWhile(br.previousSibling, ignorable);
+
+		var next = br.nextSibling
+		        && Traversing.nextWhile(br.nextSibling, ignorable);
+
+		var significant = !prev
+		               || ((prev && next) && Predicates.isInlineNode(br.parentNode));
+
+		significant = significant || (
+			(
+				prev && ('BR' === prev.nodeName || !hasLinebreakingStyle(prev))
+			) && (
+				next && ('BR' === next.nodeName || !hasLinebreakingStyle(next))
+			)
+		);
+
+		significant = significant || (
+			(
+				prev && ('BR' === prev.nodeName)
+			) || (
+				next && ('BR' === next.nodeName)
+			)
+		);
+
+		return significant || (!prev && !next);
+	}
+
+	/**
+	 * Inserts a <br> element at behind the given boundary position.
+	 *
+	 * @param {Arrays.<Element, number>} boundary
+	 * @param {object}
+	 * @return {Arrays.<Element, number>}
+	 */
+	function insertLineBreak(boundary, context) {
+		var br = document.createElement('br');
+		Mutation.insertNodeAtBoundary(br, boundary);
+		boundary = Boundaries.next(boundary);
+		if (!isSignificantBr(br)) {
+			Mutation.insertNodeAtBoundary(document.createElement('br'), boundary);
+		}
+		return boundary;
+	}
+
+	function insertBreakingNodeBeforeBoundary(boundary, context) {
+		var next = Boundaries.nextNode(boundary);
+		var name = determineBreakingNode(context, next.parentNode);
+		if (!name) {
+			return insertLineBreak(boundary, context);
+		}
+		var node = document.createElement(name);
+		Mutation.insertNodeAtBoundary(node, boundary);
+		return Boundaries.create(node, 0);
 	}
 
 	/**
@@ -915,78 +965,15 @@ define([
 		     : Boundaries.create(heirarchy, 0);
 	}
 
-	/**
-	 * Checks whether or not the given BR element is significant or not.
-	 *
-	 * @param {Element} br
-	 * @return {boolean}
-	 */
-	function isSignificantBr(br) {
-		var ignorable = function (node) {
-			return 'BR' !== node.nodeName && isUnrendered(node);
-		};
-
-		var prev = br.previousSibling
-		        && Traversing.prevWhile(br.previousSibling, ignorable);
-
-		var next = br.nextSibling
-		        && Traversing.nextWhile(br.nextSibling, ignorable);
-
-		var significant = !prev
-		               || ((prev && next) && Predicates.isInlineNode(br.parentNode));
-
-		significant = significant || (
-			(
-				prev && ('BR' === prev.nodeName || !hasLinebreakingStyle(prev))
-			) && (
-				next && ('BR' === next.nodeName || !hasLinebreakingStyle(next))
-			)
-		);
-
-		significant = significant || (
-			(
-				prev && ('BR' === prev.nodeName)
-			) || (
-				next && ('BR' === next.nodeName)
-			)
-		);
-
-		return significant || (!prev && !next);
-	}
-
-	/**
-	 * Inserts a <br> element at behind the given boundary position.
-	 *
-	 * @param {Arrays.<Element, number>} boundary
-	 * @param {object}
-	 * @return {Arrays.<Element, number>}
-	 */
-	function insertLineBreak(boundary, context) {
-		var br = document.createElement('br');
-		Mutation.insertNodeAtBoundary(br, boundary);
-		boundary = Boundaries.next(boundary);
-		if (!isSignificantBr(br)) {
-			Mutation.insertNodeAtBoundary(document.createElement('br'), boundary);
-		}
-		return boundary;
-	}
-
 	var zwChars = ZERO_WIDTH_CHARACTERS.join('');
-
 	var breakingWhiteSpaces = Arrays.difference(
 		WHITE_SPACE_CHARACTERS,
 		NON_BREAKING_SPACE_CHARACTERS
 	).join('');
 
-	var WSP_FROM_END = new RegExp(
-		'[' + breakingWhiteSpaces + ']+[' + zwChars + ']*$'
-	);
-
-	var NOT_WSP_FROM_END = new RegExp(
-		  '[^' + breakingWhiteSpaces + ']'
-		+ '[' + breakingWhiteSpaces + zwChars + ']*$'
-	);
-
+	var WSP_FROM_END = new RegExp('[' + breakingWhiteSpaces + ']+[' + zwChars + ']*$');
+	var NOT_WSP_FROM_END = new RegExp('[^' + breakingWhiteSpaces + ']'
+		+ '[' + breakingWhiteSpaces + zwChars + ']*$');
 	var NOT_WSP = new RegExp('[^' + breakingWhiteSpaces + zwChars + ']');
 	var NOT_ZWSP = new RegExp('[^' + zwChars + ']');
 
@@ -1119,45 +1106,58 @@ define([
 	}
 
 	/**
-	 * Given a text boundary, returns the next significant character inside
-	 * that boundary's container.
+	 * Returns the visible character offset immediately behind the given text
+	 * boundary.
 	 *
 	 * @param  {Boundary} boundary Text boundary
 	 * @return {number}
 	 */
 	function prevSignificantOffset(boundary) {
-		Asserts.assertFalse(
-			Boundaries.isNodeBoundary(boundary),
-			'Html.prevSignificantOffset#requires-text-boundary'
-		);
-
 		var textnode = Boundaries.container(boundary);
 		var offset = Boundaries.offset(boundary);
 		var text = textnode.data.substr(0, offset);
 
-		// Because `text` may be a sequence of white spaces so we need to check
-		// if any of them are significant.
+		//
+		// ""    ==> return -1
+		//
+		// " "   ==> return 1
+		//  .
+		//
+		// "  "  ==> return 1
+		//  ..
+		//
+		// "   " ==> return 1
+		//  ...
 		if (!NOT_WSP.test(text)) {
-			return areNextWhiteSpacesSignificant(Boundaries.create(node, 0)) ? 0 : -1;
+			// Because `text` may be a sequence of white spaces so we need to
+			// check if any of them are significant.
+			return areNextWhiteSpacesSignificant(Boundaries.raw(textnode, 0))
+			     ?  1
+			     : -1;
 		}
 
-		var index = text.match(NOT_WSP_FROM_END)[0].length - 1;
-		return (index > 1) ? offset - index + 1 : offset - index;
+		// "a"    ==> spaces=0 ==> return offset - 0
+		//
+		// "a "   ==> spaces=1 ==> return offset - 0
+		//   .
+		//
+		// "a  "  ==> spaces=2 ==> return offset - 1
+		//   ..
+		//
+		// "a   " ==> spaces=3 ==> return offset - 2
+		//   ...
+		var spaces = text.match(NOT_WSP_FROM_END)[0].length - 1;
+		return (spaces < 2) ? offset : offset - spaces + 1;
 	}
 
 	/**
-	 * Given a text boundary, returns the next significant character inside
-	 * that boundary's container.
+	 * Returns the visible character offset immediately after the given
+	 * text boundary.
 	 *
 	 * @param  {Boundary} boundary Text boundary
 	 * @return {number}
 	 */
 	function nextSignificantOffset(boundary) {
-		Asserts.assertFalse(
-			Boundaries.isNodeBoundary(boundary),
-			'Html.nextSignificantOffset#requires-text-boundary'
-		);
-
 		var textnode = Boundaries.container(boundary);
 		var offset = Boundaries.offset(boundary);
 		var index = textnode.data.substr(offset).search(
@@ -1173,12 +1173,18 @@ define([
 	 * All all insignificant characters (including "zero-width" characters are
 	 * ignored).
 	 *
-	 * @param {TextBoundary} boundary
-	 * @return {TextBoundary}
+	 * @param  {Boundary} boundary Text boundary
+	 * @return {Boundary}
 	 */
 	function nextCharacterBoundary(boundary) {
+		Asserts.assertFalse(
+			Boundaries.isNodeBoundary(boundary),
+			'Html.nextSignificantOffset#requires-text-boundary'
+		);
 		var offset = nextSignificantOffset(boundary);
-		return (-1 === offset) ? null : Boundaries.create(node, offset + 1);
+		return (-1 === offset)
+		     ? null
+		     : Boundaries.create(Boundaries.container(boundary), offset + 1);
 	}
 
 	/**
@@ -1188,150 +1194,233 @@ define([
 	 * All all insignificant characters (including "zero-width" characters are
 	 * ignored).
 	 *
-	 * @param {TextBoundary} boundary
-	 * @return {TextBoundary}
+	 * @param  {Boundary} boundary Text boundary
+	 * @return {Boundary}
 	 */
 	function prevCharacterBoundary(boundary) {
+		Asserts.assertFalse(
+			Boundaries.isNodeBoundary(boundary),
+			'Html.prevSignificantOffset#requires-text-boundary'
+		);
 		var offset = prevSignificantOffset(boundary);
-		return (-1 === offset) ? null : Boundaries.create(node, offset - 1);
+		return (-1 === offset)
+		     ? null
+		     : Boundaries.create(Boundaries.container(boundary), offset - 1);
 	}
 
 	/**
-	 * Returns the an node/offset namedtuple of the next visible position in the
-	 * document.
+	 * Checks whether a boundary can pass in or out of the given node without
+	 * the visual position of the boundary being changed.
+	 *
+	 * Calling this function with a <b> node will return true, for example
+	 * because the boundary position right infront of a B element's start tag
+	 * and the boundary position right after the start tag are renderd at the
+	 * same visual position.
+	 *
+	 * "|<b>foo..." is visually at the same position as "<b>|foo.."
+	 *
+	 * Likewise "..bar|</div>" is visually the same as "..bar</div>|" therefore
+	 * it is deemed possible for a boundary to pass through (into or out of)
+	 * the DIV element without the boundary being moved visually.
+	 *
+	 * The same is not true with single-tag elements like textnode and IMG
+	 * elements:
+	 *
+	 * "|foo" is not visually the same as "f|oo".
+	 *
+	 * Nor is "|<img>" visually the same as "<img>|"
+	 *
+	 * Visible text nodes and void-type (blocks) nodes are therefore deemed as
+	 * nodes that we cannot pass through.
+	 *
+	 * @param  {Node} node
+	 * @return {boolean}
+	 */
+	function canPassThrough(node) {
+		return !(Dom.isTextNode(node) || isVoidType(node)) || isUnrendered(node);
+	}
+
+	/**
+	 * Steps from one node boundary to the next until we reach a node that we
+	 * cannot step into or out of without causing the visual position of
+	 * `boundary` to change.
+	 *
+	 * @param  {Boundary} boundary
+	 * @param  {function(Boundary):Node} nextNode
+	 * @param  {function(Boundary):Boundary} nextBoundary
+	 * @return {Object}
+	 */
+	function nextVisiblePosition(boundary, nextNode, nextBoundary) {
+		var crossedVisualBreak = false;
+		while (boundary) {
+			var node = nextNode(boundary);
+
+			//   .------- node -------.
+			//   |         |          |
+			//   v         v          v
+			// |<br>  or |<p>  or |</h1>
+			//  <br>| or  <p>| or  </h1>|
+			crossedVisualBreak = crossedVisualBreak
+					|| (hasLinebreakingStyle(node) && isRendered(node));
+
+			if (!canPassThrough(node) || Dom.isEditingHost(node)) {
+				break;
+			}
+
+			boundary = nextBoundary(boundary);
+		}
+		return {
+			boundary           : boundary,
+			crossedVisualBreak : crossedVisualBreak
+		};
+	}
+
+	/**
+	 * Returns the an node/offset namedtuple of the next visible position in
+	 * the document.
 	 *
 	 * The next visible position is always the next visible character, or the
 	 * next visible line break or space.
 	 *
-	 * @param {DOMObject} node
-	 * @param {Number} offset
+	 * @param  {Boundary} boundary
 	 * @return {Object}
 	 */
 	function stepVisualBoundary(boundary, steps) {
-		var start;
-
-		if (!Boundaries.isNodeBoundary(boundary)) {
-			// <#te|xt>
-			var pos = steps.nextCharacter(boundary);
-			if (pos) {
-				return Boundaries.normalize(pos);
-			}
-			start = steps.stepBoundary(boundary);
-		} else {
-			start = Boundaries.normalize(boundary);
+		// Inside of text node
+		//
+		// <#te|xt>
+		if (Boundaries.isTextBoundary(boundary)) {
+			return steps.nextCharacter(boundary)
+			    || stepVisualBoundary(steps.stepBoundary(boundary), steps);
 		}
 
-		var crossedVisualBreak = false;
+		var move = nextVisiblePosition(
+			boundary,
+			steps.nodeAt,
+			steps.stepBoundary
+		);
 
-		var next = steps.stepWhile(start, function (pos) {
-			var node = steps.nodeAt(pos);
+		var next = move.boundary;
+		var crossedVisualBreak = move.crossedVisualBreak;
+		var node = steps.adjacentNode(next);
 
-			if (!crossedVisualBreak) {
-				//
-				//   .------- node -------.
-				//   |         |          |
-				//   v         v          v
-				// |<br>  or |<p>  or |</h1>
-				//  <br>| or  <p>| or  </h1>|
-				crossedVisualBreak = hasLinebreakingStyle(node);
-			}
-
-			//    editing-host
-			//    /          \
-			//   v            v
-			// <host>| or |</host>
-			if (Dom.isEditingHost(node)) {
-				return false;
-			}
-
-			// Because traversing over start and end tags has no visual
-			// significance
-			return (!Dom.isTextNode(node) && !Predicates.isVoidNode(node)) || isUnrendered(node);
-		});
-
-		//  <host>| or |</host>
-		if (Dom.isEditingHost(steps.nodeAt(next))) {
-			return start;
-		}
-
-		var after = steps.adjacentNode(next);
-
-		// |</p>  or |</b>
-		//   <p>| or   <b>|
-		if (!after) {
+		// At start or end of block
+		//
+		//       <    >
+		// <host>| or |</host>
+		//    <p>| or |</p>
+		if (!node) {
 			return next;
 		}
 
-		// |<p> or <p>|
-		if (hasLinebreakingStyle(after)) {
-			var afterNext = steps.stepBoundary(next);
-			// <p>|<br> or <br>|</p>
-			var sibling = steps.followingSibling(after);
-			if ((sibling && hasInlineStyle(sibling)) || hasInlineStyle(after.parentNode)) {
-				return afterNext;
-			}
-			var secondAfterNext = steps.stepBoundary(afterNext);
-			if (steps.isLimit(secondAfterNext) && Dom.isEditingHost(secondAfterNext[0])) {
-				return afterNext;
-			}
-			return secondAfterNext;
+		// Before void element
+		//
+		//   .------- node -------.
+		//   |                    |
+		//   v  <              >  v
+		//  <br>|<b>   or   <b>|<br>
+		//
+		//   .------- node -------.
+		//   |                    |
+		//   v  <              >  v
+		// <img>|<div> or <div>|<img>
+		if (isVoidType(node)) {
+			return Boundaries.stepWhile(steps.stepBoundary(next), function (pos) {
+				var node = steps.nodeAt(pos);
+				return canPassThrough(node) && !Dom.isEditingHost(node);
+			}, steps.stepBoundary);
 		}
 
-		//  <p>| or  <br>|
-		// |<p>  or |<br>
-		if (crossedVisualBreak) {
-			// <#text>|<br>
-			if (Dom.isTextNode(after)) {
-				// Because `next` may be at a insignificant white space (when going backwards)
-				/*
-				 var offset = after.data.search(WSP_FROM_END);
-				if (offset > -1) {
-					return [after, offset];
-				}
-				*/
-				return [after, 0];
-			}
-			return next;
-		}
+		// If crossedVisualBreak
+		//
+		//    .-------- node --------.
+		//    |                      |
+		//    v   <              >   v
+		// <#text>|<div> or <div>|<#text>
+		//
+		// else
+		//
+		//    .-------- node --------.
+		//    |                      |
+		//    v   <              >   v
+		// <#text>|<b>   or   <b>|<#text>
+		return crossedVisualBreak ? next : steps.stepVisualBoundary(node);
+	}
 
-		// <#text>|<b> or </b>|<#text>
-		return steps.stepVisualBoundary(after);
+	/**
+	 * Like Boundaries.next() except that is accomodates void-type nodes.
+	 *
+	 * @param  {Boundary} boundary
+	 * @return {Boundary}
+	 */
+	function stepForward(boundary) {
+		if (Boundaries.isNodeBoundary(boundary)) {
+			var node = Boundaries.nodeAfter(boundary);
+			if (node && isVoidType(node)) {
+				return Boundaries.create(node.parentNode, Dom.nodeIndex(node) + 1);
+			}
+		}
+		return Boundaries.next(boundary);
+	}
+
+	/**
+	 * Like Boundaries.prev() except that is accomodates void-type nodes.
+	 *
+	 * @param  {Boundary} boundary
+	 * @return {Boundary}
+	 */
+	function stepBackward(boundary) {
+		if (Boundaries.isNodeBoundary(boundary)) {
+			var node = Boundaries.nodeBefore(boundary);
+			if (node && isVoidType(node)) {
+				return Boundaries.fromNode(node);
+			}
+		}
+		return Boundaries.prev(boundary);
 	}
 
 	var forwardSteps = {
 		nextCharacter : nextCharacterBoundary,
-		stepBoundary  : Boundaries.next,
+		stepBoundary  : stepForward,
 		adjacentNode  : Boundaries.nodeAfter,
-		stepWhile     : Boundaries.nextWhile,
 		nodeAt        : Boundaries.nextNode,
-		isLimit       : Boundaries.isAtEnd,
 		followingSibling: function followingSibling(node) {
 			return node.nextSibling;
 		},
 		stepVisualBoundary: function stepVisualBoundary(node) {
-			return nextVisualBoundary(Boundaires.create(node, 0));
+			return nextVisualBoundary(Boundaries.raw(node, 0));
 		}
 	};
 
 	var backwardSteps = {
 		nextCharacter : prevCharacterBoundary,
-		stepBoundary  : Boundaries.prev,
+		stepBoundary  : stepBackward,
 		adjacentNode  : Boundaries.nodeBefore,
-		stepWhile     : Boundaries.prevWhile,
 		nodeAt        : Boundaries.prevNode,
-		isLimit       : Boundaries.isAtStart,
 		followingSibling: function followingSibling(node) {
 			return node.previousSibling;
 		},
 		stepVisualBoundary: function stepVisualBoundary(node) {
-			return prevVisualBoundary(Boundaries.create(node, Dom.nodeLength(node)));
+			return prevVisualBoundary(Boundaries.raw(node, Dom.nodeLength(node)));
 		}
 	};
 
+	/**
+	 * Steps to the next visual boundary ahead of the given boundary.
+	 *
+	 * @param  {Boundary} boundary
+	 * @return {Boundary}
+	 */
 	function nextVisualBoundary(boundary) {
 		return stepVisualBoundary(boundary, forwardSteps);
 	}
 
+	/**
+	 * Steps to the next visual boundary behind of the given boundary.
+	 *
+	 * @param  {Boundary} boundary
+	 * @return {Boundary}
+	 */
 	function prevVisualBoundary(boundary) {
 		return stepVisualBoundary(boundary, backwardSteps);
 	}
@@ -1366,10 +1455,6 @@ define([
 		'U'       : true,
 		'#text'   : true
 	};
-
-	function isWordbreakingNode(node) {
-		return !IN_WORD_TAGS[node.nodeName];
-	}
 
 	/**
 	 * Characters that delimit boundaries of words.
@@ -1505,18 +1590,21 @@ define([
 		'[^' + wordChars + '][' + wordChars + ']*$'
 	);
 
+	function isWordbreakingNode(node) {
+		return !IN_WORD_TAGS[node.nodeName];
+	}
+
 	/**
 	 * Looks backwards in the node tree for the nearest word boundary position.
 	 *
-	 * @param {Boundary} boundary
+	 * @param  {Boundary} boundary
 	 * @return {Boundary}
 	 */
 	function prevWordBoundary(boundary) {
 		if (Boundaries.isAtStart(boundary)) {
-			if (isWordbreakingNode(Boundaries.container(boundary))) {
-				return null;
-			}
-			return prevWordBoundary(Boundaries.prev(boundary));
+			return isWordbreakingNode(Boundaries.container(boundary))
+			     ? null
+			     : prevWordBoundary(Boundaries.prev(boundary));
 		}
 		var node, offset;
 		if (Boundaries.isNodeBoundary(boundary)) {
@@ -1530,7 +1618,7 @@ define([
 			offset = Dom.nodeLength(node);
 		} else {
 			node = Boundaries.container(boundary);
-			offset = Boundaries.offset(boundary);
+			offset = prevSignificantOffset(boundary);
 		}
 		var text = node.data.substr(0, offset);
 		var index = text.search(WORD_BOUNDARY_FROM_END);
@@ -1538,25 +1626,23 @@ define([
 			var prev = Boundaries.prev(boundary);
 			return prevWordBoundary(prev) || prev;
 		}
-		// Because `text` may end with punctuation or trailing space
-		if (offset === index + 1) {
-			return Boundaries.create(node, index);
-		}
-		return Boundaries.create(node, index + 1);
+		return (offset === index + 1)
+			 // Because `text` may end with punctuation or trailing space
+		     ? Boundaries.create(node, index)
+		     : Boundaries.create(node, index + 1);
 	}
 
 	/**
 	 * Looks forwards in the node tree for the nearest word boundary position.
 	 *
-	 * @param {Boundary} boundary
+	 * @param  {Boundary} boundary
 	 * @return {Boundary}
 	 */
 	function nextWordBoundary(boundary) {
 		if (Boundaries.isAtEnd(boundary)) {
-			if (isWordbreakingNode(Boundaries.container(boundary))) {
-				return null;
-			}
-			return nextWordBoundary(Boundaries.next(boundary));
+			return isWordbreakingNode(Boundaries.container(boundary))
+			     ? null
+			     : nextWordBoundary(Boundaries.next(boundary));
 		}
 		var node, offset;
 		if (Boundaries.isNodeBoundary(boundary)) {
@@ -1570,7 +1656,7 @@ define([
 			offset = 0;
 		} else {
 			node = Boundaries.container(boundary);
-			offset = Boundaries.offset(boundary);
+			offset = nextSignificantOffset(boundary);
 		}
 		var text = node.data.substr(offset);
 		var index = text.search(WORD_BOUNDARY);
@@ -1578,32 +1664,80 @@ define([
 			var next = Boundaries.next(boundary);
 			return nextWordBoundary(next) || next;
 		}
-		// Because `text` may start with punctuation or trailing space
-		if (0 === index) {
-			return Boundaries.create(node, offset + index + 1);
+		return (0 === index)
+		     // Because `text` may start with punctuation or trailing space
+		     ? Boundaries.create(node, offset + index + 1)
+		     : Boundaries.create(node, offset + index);
+	}
+
+	/**
+	 * Returns the next boundary position that is visually behind the given
+	 * boundary.
+	 *
+	 * @param  {Boundary} boundary
+	 * @param  {string=}  stride   One of "char", "word", or "visual" (default)
+	 * @return {Boundary}
+	 */
+	function prev(boundary, stride) {
+		switch (stride) {
+		case 'char':
+			return prevCharacterBoundary(boundary);
+		case 'word':
+			return prevWordBoundary(boundary);
+		default:
+			return prevVisualBoundary(boundary);
 		}
-		return Boundaries.create(node, offset + index);
+	}
+
+	/**
+	 * Returns the next boundary position that is visually ahead the given
+	 * boundary.
+	 *
+	 * @param  {Boundary} boundary
+	 * @param  {string=}  stride   One of "char", "word", or "visual" (default)
+	 * @return {Boundary}
+	 */
+	function next(boundary, stride) {
+		switch (stride) {
+		case 'char':
+			return nextCharacterBoundary(boundary);
+		case 'word':
+			return nextWordBoundary(boundary);
+		default:
+			return nextVisualBoundary(boundary);
+		}
 	}
 
 	return {
-		isUnrendered                  : isUnrendered,
 		isRendered                    : isRendered,
+		isUnrendered                  : isUnrendered,
+		isUnrenderedWhitespace        : isUnrenderedWhitespace,
+
 		isStyleInherited              : isStyleInherited,
 		hasBlockStyle                 : hasBlockStyle,
 		hasInlineStyle                : hasInlineStyle,
-		isUnrenderedWhitespace        : isUnrenderedWhitespace,
+		hasLinebreakingStyle          : hasLinebreakingStyle,
+		isWhiteSpacePreserveStyle     : isWhiteSpacePreserveStyle,
+
 		skipUnrenderedToStartOfLine   : skipUnrenderedToStartOfLine,
 		skipUnrenderedToEndOfLine     : skipUnrenderedToEndOfLine,
+
 		normalizeBoundary             : normalizeBoundary,
+
 		isEmpty                       : isEmpty,
-		hasLinebreakingStyle          : hasLinebreakingStyle,
+
 		isVisuallyAdjacent            : isVisuallyAdjacent,
-		isWhiteSpacePreserveStyle     : isWhiteSpacePreserveStyle,
+
 		insertVisualBreak             : insertVisualBreak,
 		insertLineBreak               : insertLineBreak,
 		removeVisualBreak             : removeVisualBreak,
+
 		nextLineBreak                 : nextLineBreak,
+
 		prop                          : prop,
+
+		prev                          : prev,
+		next                          : next,
 
 		prevVisualBoundary            : prevVisualBoundary,
 		nextVisualBoundary            : nextVisualBoundary,

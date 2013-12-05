@@ -249,6 +249,16 @@ define([
 	}
 
 	/**
+	 * Checks whether the given boundary is a position inside of a text nodes.
+	 *
+	 * @param  {Boundary} boundary
+	 * @return {boolean}
+	 */
+	function isTextBoundary(boundary) {
+		return Dom.isTextNode(container(boundary));
+	}
+
+	/**
 	 * Checks whether the given boundary is a position between nodes (as
 	 * opposed to a position inside of a text node).
 	 *
@@ -256,7 +266,7 @@ define([
 	 * @return {boolean}
 	 */
 	function isNodeBoundary(boundary) {
-		return !Dom.isTextNode(container(boundary));
+		return !isTextBoundary(boundary);
 	}
 
 	/**
@@ -295,8 +305,8 @@ define([
 			return raw(node.parentNode, Dom.nodeIndex(node));
 		}
 		node = node.childNodes[offset(boundary) - 1];
-		return (Dom.isTextNode(node) || Predicates.isVoidNode(node))
-		     ? raw(node.parentNode, Dom.nodeIndex(node))
+		return Dom.isTextNode(node)
+		     ? fromNode(node)
 		     : raw(node, Dom.nodeLength(node));
 	}
 
@@ -315,7 +325,7 @@ define([
 			return raw(node.parentNode, Dom.nodeIndex(node) + 1);
 		}
 		node = node.childNodes[boundaryOffset];
-		return (Dom.isTextNode(node) || Predicates.isVoidNode(node))
+		return Dom.isTextNode(node)
 		     ? raw(node.parentNode, boundaryOffset + 1)
 		     : raw(node, 0);
 	}
@@ -474,9 +484,12 @@ define([
 	}
 
 	return {
+		raw            : raw,
 		create         : create,
-		equals         : equals,
 		normalize      : normalize,
+
+		equals         : equals,
+
 		container      : container,
 		offset         : offset,
 
@@ -493,18 +506,21 @@ define([
 
 		isAtStart      : isAtStart,
 		isAtEnd        : isAtEnd,
+		isTextBoundary : isTextBoundary,
 		isNodeBoundary : isNodeBoundary,
 
 		next           : next,
 		prev           : prev,
 		nextWhile      : nextWhile,
 		prevWhile      : prevWhile,
+		stepWhile      : stepWhile,
 		walkWhile      : walkWhile,
 
 		nextNode       : nextNode,
 		prevNode       : prevNode,
 		nodeAfter      : nodeAfter,
 		nodeBefore     : nodeBefore,
+
 		nodeAtBoundary : nodeAtBoundary,
 
 		precedingTextLength : precedingTextLength

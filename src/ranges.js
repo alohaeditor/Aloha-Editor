@@ -385,18 +385,7 @@ define([
 	 * @return {Range}
 	 */
 	function envelopeInvisibleCharacters(range) {
-		var start = Boundaries.fromRangeStart(range);
 		var end = Boundaries.fromRangeEnd(range);
-
-		if (!Boundaries.isNodeBoundary(start)) {
-			var offset = Html.prevSignificantOffset(start);
-			if (-1 === offset) {
-				range.setStart(range.startContainer, 0);
-			} else {
-				range.setStart(Boundaries.container(start), offset);
-			}
-		}
-
 		if (!Boundaries.isNodeBoundary(end)) {
 			var offset = Html.nextSignificantOffset(end);
 			if (-1 === offset) {
@@ -405,7 +394,6 @@ define([
 				range.setEnd(Boundaries.container(end), offset);
 			}
 		}
-
 		return range;
 	}
 
@@ -452,7 +440,7 @@ define([
 		var pos = Html.prevVisualBoundary(Boundaries.fromRangeEnd(range));
 		if (pos[0]
 			&& Dom.isTextNode(pos[0])
-			&& !Html.areNextWhiteSpacesSignificant(pos[0], pos[1])) {
+			&& !Html.areNextWhiteSpacesSignificant(pos)) {
 			pos = Html.nextVisualBoundary(pos);
 			if (pos[0]) {
 				pos = Html.prevVisualBoundary(pos);

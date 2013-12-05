@@ -67,8 +67,9 @@
 		</style>
 	</head>
 	<body>
-		<div class="aloha-editable">She stopped.  She said, "Hello there," and then went on.</div>
-		<!-- div class="aloha-editable">
+		<!-- div class="aloha-editable">She stopped.  She said, "Hello there,"
+		and then went on.</div -->
+		<div class="aloha-editable">
 			<h1>Aloha Editor</h1>
 			<p>
 				<img draggable="true"
@@ -106,7 +107,7 @@
 				Nam tincidunt congue enim, u porta lorem lacinia consectetur.
 				Donec ut libero sed arc vehicula ultricies a non tortor
 			</p>
-		</div -->
+		</div>
 		<script src="../src/require-pronto.js"></script>
 		<script src="../src/require-pronto.dev.js"></script>
 		<script src="../build/aloha.js"></script>
@@ -119,9 +120,9 @@
 						h1.innerHTML = h1.innerHTML + ': <span style="color:#df215a">' + version + '</span>';
 					}
 				}
-				function main(Editing, Ranges, Arrays, StableRange, BoundaryMarkers) {
+				function main(Editing, Ranges, StableRange) {
+					[].forEach.call(document.querySelectorAll('.aloha-editable'), aloha);
 					return;
-					Arrays.coerce(document.querySelectorAll('.aloha-editable')).forEach(aloha);
 					var range = Ranges.expandToWord(Ranges.create(
 						document.querySelector('b'), 1,
 						document.querySelector('b'), 2
@@ -131,16 +132,9 @@
 					Ranges.insertTextBehind(StableRange(range), '"');
 					Ranges.collapseToEnd(range)
 					Ranges.insertTextBehind(range, '"');
-					window.bx = BoundaryMarkers.hint;
 				}
 				function load(aloha) {
-					main(
-						aloha.editing,
-						aloha.ranges,
-						aloha.arrays,
-						aloha.stablerange,
-						aloha.boundarymarkers
-					);
+					main(aloha.editing, aloha.ranges, aloha.stablerange);
 				}
 				if ('undefined' === typeof aloha) {
 					setVersion('src');
