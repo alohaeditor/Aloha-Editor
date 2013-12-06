@@ -56,7 +56,7 @@ define([
 			)(range);
 		}
 		Editing.delete(
-			Ranges.expandToVisibleCharacter(range),
+			Ranges.envelopeInvisibleCharacters(range),
 			alohaEvent.editable
 		);
 		Html.prop(range.commonAncestorContainer);
