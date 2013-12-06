@@ -85,7 +85,7 @@ define([
 		}
 		return false;
 	}
-	
+
 	function empty(elem) {
 		Dom.children(elem).forEach(function (child) {
 			elem.removeChild(child);

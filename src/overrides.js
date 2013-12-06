@@ -196,7 +196,7 @@ define([
 		while (override) {
 			if (overrideToNode[override[0]]) {
 				// TODO: implement handling for false overrides states
-				var wrapper = document.createElement(overrideToNode[override[0]]);
+				wrapper = document.createElement(overrideToNode[override[0]]);
 				if (node) {
 					Dom.wrap(node, wrapper);
 				} else {

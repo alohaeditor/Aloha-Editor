@@ -25,7 +25,7 @@ define([
 	Ranges,
 	Assert
 ) {
-	'use strict'
+	'use strict';
 
 	/**
 	 * Creates a new undo context.

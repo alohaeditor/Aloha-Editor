@@ -35,17 +35,6 @@ define([], function Misc() {
 		return 'undefined' !== typeof value;
 	}
 
-	/**
-	 * Computes the avarage of two numbers.
-	 *
-	 * @param {Number} a
-	 * @param {Number} b
-	 * @return {Number}
-	 */
-	function mean(a, b) {
-		return a + ((b - a) / 2);
-	}
-
 	function copy(obj) {
 		if (!obj) {
 			return obj;
@@ -60,17 +49,9 @@ define([], function Misc() {
 		return copied;
 	}
 
-	var exports = {
+	return {
 		anyRx   : anyRx,
 		defined : defined,
-		mean    : mean,
 		copy    : copy
 	};
-
-	exports['anyRx'] = exports.anyRx;
-	exports['defined'] = exports.defined;
-	exports['mean'] = exports.mean;
-	exports['copy'] = exports.copy;
-
-	return exports;
 });

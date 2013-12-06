@@ -217,9 +217,9 @@ define([
 	};
 
 	handlers.keydown[Keys.CODES.up] =
-	handlers.keydown[Keys.CODES.down] =
-	handlers.keydown[Keys.CODES.left] =
-	handlers.keydown[Keys.CODES.right] = {clearOverrides: true};
+		handlers.keydown[Keys.CODES.down] =
+		handlers.keydown[Keys.CODES.left] =
+		handlers.keydown[Keys.CODES.right] = {clearOverrides: true};
 
 	handlers.keydown[Keys.CODES.delete] = deleteForward;
 	handlers.keydown[Keys.CODES.backspace] = deleteBackward;

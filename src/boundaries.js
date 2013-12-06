@@ -216,6 +216,16 @@ define([
 	}
 
 	/**
+	 * Returns a boundary that is right in front of the given node.
+	 *
+	 * @param  {Node} node
+	 * @return {Boundary}
+	 */
+	function fromNode(node) {
+		return raw(node.parentNode, Dom.nodeIndex(node));
+	}
+
+	/**
 	 * Checks if a boundary (when normalized) represents a position at the
 	 * start of its container's content.
 	 *
@@ -415,16 +425,6 @@ define([
 	function nodeBefore(boundary) {
 		boundary = normalize(boundary);
 		return isAtStart(boundary) ? null : Dom.nthChild(container(boundary), offset(boundary) - 1);
-	}
-
-	/**
-	 * Returns a boundary that is right in front of the given node.
-	 *
-	 * @param  {Node} node
-	 * @return {Boundary}
-	 */
-	function fromNode(node) {
-		return raw(node.parentNode, Dom.nodeIndex(node));
 	}
 
 	/**

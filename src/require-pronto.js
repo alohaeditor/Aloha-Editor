@@ -54,7 +54,7 @@ var require = (function () {
 		instance = def.apply(null, depInstances);
 		instances[module] = instance;
 		return instance;
-	};
+	}
 	// Make it available to the world.
 	require.instances = instances;
 	return require;

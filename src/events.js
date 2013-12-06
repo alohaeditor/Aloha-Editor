@@ -61,17 +61,18 @@ define(['misc', 'assert'], function Events(Misc, Assert) {
 		}
 	}
 
-	function dispatch(doc, obj, event){
+	function dispatch(doc, obj, event) {
+		var eventObj;
 		if (obj.dispatchEvent) {
 			// NB This method is to create events is deprecated:
 			// https://developer.mozilla.org/en-US/docs/Web/Guide/API/DOM/Events/Creating_and_triggering_events
 			// But the new way doesn't work on IE9.
 			// var eventObj = new window['Event'](event);
-			var eventObj = doc.createEvent('Event');
+			eventObj = doc.createEvent('Event');
 			eventObj.initEvent(event, true, true);
 			obj.dispatchEvent(eventObj);
 		} else if (obj.fireEvent) {
-			var eventObj = doc.createEventObject();
+			eventObj = doc.createEventObject();
 			eventObj['type'] = event;
 			obj.fireEvent('on' + event, eventObj) ;
 		} else {

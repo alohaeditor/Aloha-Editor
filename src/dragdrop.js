@@ -142,6 +142,8 @@ define([
 	function handle(alohaEvent) {
 		var context = alohaEvent.editor.dndContext;
 		var event = alohaEvent.nativeEvent;
+		var x, y;
+		var carets;
 
 		if (!context) {
 			return alohaEvent;
@@ -160,9 +162,9 @@ define([
 
 		case 'dragover':
 
-			var x = event.clientX + DRAGGING_CARET_OFFSET;
-			var y = event.clientY + DRAGGING_CARET_OFFSET;
-			var carets = Selections.hideCarets(event.target.ownerDocument);
+			x = event.clientX + DRAGGING_CARET_OFFSET;
+			y = event.clientY + DRAGGING_CARET_OFFSET;
+			carets = Selections.hideCarets(event.target.ownerDocument);
 			alohaEvent.range = Ranges.fromPosition(x, y);
 			Selections.unhideCarets(carets);
 
@@ -173,9 +175,9 @@ define([
 
 		case 'drop':
 
-			var x = event.clientX + DRAGGING_CARET_OFFSET;
-			var y = event.clientY + DRAGGING_CARET_OFFSET;
-			var carets = Selections.hideCarets(event.target.ownerDocument);
+			x = event.clientX + DRAGGING_CARET_OFFSET;
+			y = event.clientY + DRAGGING_CARET_OFFSET;
+			carets = Selections.hideCarets(event.target.ownerDocument);
 			alohaEvent.range = Ranges.fromPosition(x, y);
 			Selections.unhideCarets(carets);
 

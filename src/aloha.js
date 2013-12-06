@@ -78,8 +78,8 @@ define([
 		editable.settings = {
 			defaultBlockNodeName: 'div'
 		};
-		/*
 		Editables.assocIntoEditor(editor, editable);
+		/*
 		//elem.setAttribute('contentEditable', 'true');
 		Undo.enter(editable.undoContext, {
 			meta: {type: 'external'},

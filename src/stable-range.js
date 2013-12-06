@@ -36,7 +36,8 @@ define(['traversing', 'arrays', 'functions'], function (Traversing, Arrays, Fn) 
 		// editable if start and end are relatively close together in
 		// the DOM (which I assume to be the common case).
 		var startAncestor = start;
-		for (var i = 0; i < 4; i++) {
+		var i;
+		for (i = 0; i < 4; i++) {
 			startAncestor = startAncestor.parentNode || startAncestor;
 		}
 		var startAncestors = Traversing.childAndParentsUntilInclNode(

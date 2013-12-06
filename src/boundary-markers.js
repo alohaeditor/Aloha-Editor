@@ -75,11 +75,10 @@ define([
 				range[setFn].call(range, previousSibling, previousSibling.length);
 				// Because we have set a text offset.
 				return false;
-			} else { // marker === '{' || marker === '}'
-				range[setFn].call(range, node.parentNode, dom.nodeIndex(node));
-				// Because we have set a non-text offset.
-				return true;
 			}
+			range[setFn].call(range, node.parentNode, dom.nodeIndex(node));
+			// Because we have set a non-text offset.
+			return true;
 		}
 		function extractMarkers(node) {
 			if (3 !== node.nodeType) {
@@ -177,7 +176,7 @@ define([
 					container.parentNode
 				)
 			).container
-			: node = document.createElement('div').appendChild(
+			: document.createElement('div').appendChild(
 				container.cloneNode(true)
 			);
 

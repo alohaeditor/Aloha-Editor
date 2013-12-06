@@ -22,7 +22,7 @@ define([
 	Undo
 ) {
 	'use strict';
-	
+
 	function fromElem(editor, elem) {
 		return editor.editables[Dom.ensureExpandoId(elem)];
 	}
@@ -32,7 +32,7 @@ define([
 		var elem = Traversing.upWhile(container, function (node) {
 			return !editor.editables[Dom.ensureExpandoId(node)];
 		});
-		return elem ? fromElem(editor, elem) : null;
+		return elem && fromElem(editor, elem);
 	}
 
 	function Editable(elem) {

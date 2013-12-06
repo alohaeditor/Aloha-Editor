@@ -701,18 +701,6 @@ define([
 	}
 
 	/**
-	 * Return a range based on the given event object.
-	 *
-	 * @param  {Object} event An Aloha Editor event
-	 * @return {?Range}
-	 */
-	function fromEvent(alohaEvent) {
-		return alohaEvent.range
-		    || fromPosition(alohaEvent.nativeEvent.clientX, alohaEvent.nativeEvent.clientY)
-		    || get();
-	}
-
-	/**
 	 * Calculates the range according to the given range.
 	 *
 	 * Will ensure that the range is contained in a content editable node.
@@ -742,6 +730,18 @@ define([
 			offset += 1;
 		}
 		return create(block.parentNode, offset);
+	}
+
+	/**
+	 * Return a range based on the given event object.
+	 *
+	 * @param  {Object} event An Aloha Editor event
+	 * @return {?Range}
+	 */
+	function fromEvent(alohaEvent) {
+		return alohaEvent.range
+		    || fromPosition(alohaEvent.nativeEvent.clientX, alohaEvent.nativeEvent.clientY)
+		    || get();
 	}
 
 	function fromBoundaries(start, end) {

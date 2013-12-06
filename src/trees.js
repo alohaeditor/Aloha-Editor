@@ -163,7 +163,7 @@ define([
 	/**
 	 * Shortcut for pre* / post* functions.
 	 */
-	function prepost(value, fn, optWalkContainer, step)  {
+	function prepost(value, fn, optWalkContainer, step) {
 		return walkRec(optWalkContainer || walkContainer, Fn.partial(step, fn), Fn.identity, value);
 	}
 
@@ -218,7 +218,7 @@ define([
 	function postprune(value, fn, optWalkContainer) {
 		return prepost(value, fn, optWalkContainer, postpruneStep);
 	}
-	
+
 	/**
 	 * Apply all leaf nodes of the given tree to the given function.
 	 */
@@ -265,18 +265,18 @@ define([
 		}
 		if (isArrayA && isArrayB) {
 			return Arrays.equal(nodeA, nodeB, rec);
-		} else if (isMapA && isMapB) {
+		}
+		if (isMapA && isMapB) {
 			var ksA = Maps.keys(nodeA).sort();
 			var ksB = Maps.keys(nodeB).sort();
 			return (Arrays.equal(ksA, ksB)
 			        && Arrays.equal(Maps.selectVals(nodeA, ksA),
 			                        Maps.selectVals(nodeB, ksB),
 			                        rec));
-		} else {
-			return (!isArrayA && !isArrayB
-			        && !isMapA && !isMapB
-			        && isLeafEqual(nodeA, nodeB));
 		}
+		return (!isArrayA && !isArrayB
+				&& !isMapA && !isMapB
+				&& isLeafEqual(nodeA, nodeB));
 	}
 
 	return {
