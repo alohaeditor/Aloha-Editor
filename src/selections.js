@@ -687,8 +687,7 @@ define([
 		);
 
 		var preventDefault = ('keydown' === type && movements[event.which])
-		                  || (event.editor.CARET_CLASS
-		                         === event.nativeEvent.target.className);
+				|| (event.editor.CARET_CLASS === event.nativeEvent.target.className);
 
 		if (preventDefault) {
 			event.nativeEvent.preventDefault();

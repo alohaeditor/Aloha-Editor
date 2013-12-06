@@ -79,13 +79,11 @@ define([
 			defaultBlockNodeName: 'div'
 		};
 		Editables.assocIntoEditor(editor, editable);
-		/*
 		//elem.setAttribute('contentEditable', 'true');
 		Undo.enter(editable.undoContext, {
 			meta: {type: 'external'},
 			partitionRecords: true
 		});
-		*/
 		editor(null, {
 			'type'     : 'aloha',
 			'editable' : editable

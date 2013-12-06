@@ -223,20 +223,17 @@ define([
 
 	handlers.keydown[Keys.CODES.delete] = deleteForward;
 	handlers.keydown[Keys.CODES.backspace] = deleteBackward;
-
 	handlers.keydown[Keys.CODES.enter] = breakBlock;
 	handlers.keydown['shift+' + Keys.CODES.enter] = breakLine;
-
 	handlers.keydown['ctrl+' + Keys.CODES.bold] = formatBold;
 	handlers.keydown['ctrl+' + Keys.CODES.italic] = formatItalic;
 	handlers.keydown['ctrl+' + Keys.CODES.underline] = formatUnderline;
+	handlers.keydown['ctrl+' + Keys.CODES.selectAll] = selectAll;
 
 	handlers.keypress.input = inputText;
 
 	handlers.keyup['ctrl+' + Keys.CODES.undo] = undo;
 	handlers.keyup['ctrl+shift+' + Keys.CODES.undo] = redo;
-
-	handlers.keydown['ctrl+' + Keys.CODES.selectAll] = selectAll;
 
 	function handler(alohaEvent) {
 		var modifier = alohaEvent.meta ? alohaEvent.meta + '+' : '';
@@ -254,7 +251,7 @@ define([
 			return alohaEvent;
 		}
 		var range = alohaEvent.range;
-		if (handle.pralohaEventDefault) {
+		if (handle.preventDefault) {
 			alohaEvent.nativeEvent.preventDefault();
 		}
 		if (handle.clearOverrides) {
