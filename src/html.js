@@ -517,8 +517,8 @@ define([
 	/**
 	 * Determine whether the boundary `left` is visually adjacent to `right`.
 	 *
-	 * @param {Array.<Element, Number>} left
-	 * @param {Array.<Element, Number>} right
+	 * @param  {Boundary} left
+	 * @param  {Boundary} right
 	 * @return {Boolean}
 	 */
 	function isVisuallyAdjacent(left, right) {
@@ -615,8 +615,8 @@ define([
 	 * function returns true.
 	 *
 	 * @private
-	 * @param {Array<Element, number>} boundary
-	 * @return {Function(DOMObject, OutParameter):Boolean}
+	 * @param  {Boundary} boundary
+	 * @return {Function(Node, OutParameter):boolean}
 	 */
 	function createTransferFunction(boundary) {
 		var ref = Boundaries.nextNode(boundary);
@@ -695,9 +695,9 @@ define([
 	 * Finds the closest line-breaking node between `above` and `below` in
 	 * document order.
 	 *
-	 * @param {Array.<Element, number>} above
-	 * @param {Array.<Element, number>} below
-	 * @return {Array.<Element, number>}
+	 * @param  {Boundary} above
+	 * @param  {Boundary} below
+	 * @return {Boundary}
 	 */
 	function nextLineBreak(above, below) {
 		return Boundaries.nextWhile(above, function (pos) {
@@ -718,8 +718,8 @@ define([
 	 * Removes the visual line break between the adjacent boundaries `above`
 	 * and `below` by moving the nodes after `below` over to before `above`.
 	 *
-	 * @param {Arrays.<Element, number>} above
-	 * @param {Arrays.<Element, number>} below
+	 * @param {Boundary} above
+	 * @param {Boundary} below
 	 */
 	function removeVisualBreak(above, below, context) {
 		above = Boundaries.normalize(above);
@@ -835,11 +835,11 @@ define([
 	}
 
 	/**
-	 * Inserts a <br> element at behind the given boundary position.
+	 * Inserts a <br> element behind the given boundary position.
 	 *
-	 * @param {Arrays.<Element, number>} boundary
-	 * @param {object}
-	 * @return {Arrays.<Element, number>}
+	 * @param  {Boundary} boundary
+	 * @param  {object}
+	 * @return {Boundary}
 	 */
 	function insertLineBreak(boundary, context) {
 		var br = document.createElement('br');
@@ -865,11 +865,11 @@ define([
 	/**
 	 * Inserts a visual line break after the given boundary position.
 	 *
-	 * @param {Array.<Element, offset>} boundary
-	 * @param {Object} context
-	 * @param {Array.<Element, offset>}
-	 *        The "forward position".  This is the deepest node that is
-	 *        visually adjacent to the newly created line.
+	 * @param  {Boundary} boundary
+	 * @param  {Object} context
+	 * @return {Boundary}
+	 *         The "forward position".  This is the deepest node that is
+	 *         visually adjacent to the newly created line.
 	 */
 	function insertVisualBreak(boundary, context) {
 		var start = Boundaries.nextNode(boundary);
