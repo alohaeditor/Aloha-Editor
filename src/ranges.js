@@ -757,7 +757,7 @@ define([
 	 * Gets the bounding rectangle offsets for the given range from is start or
 	 * end container.
 	 *
-	 * This function is a hack to work around the problems that user agenst
+	 * This function is a hack to work around the problems that user agents
 	 * have in determining the bounding client rect for collapsed ranges.
 	 *
 	 * @param  {Range}   range
@@ -768,13 +768,21 @@ define([
 		var clone = range.cloneRange();
 
 		if (isStart && clone.startOffset > 0) {
-			clone.setStart(clone.startContainer, clone.startOffset - 1);
+			var boundary = Boundaries.fromRangeStart(clone);
+			if (Html.hasLinebreakingStyle(Html.prevNode(boundary))) {
+				return {};
+			}
+			Boundaries.setRangeStart(clone, Html.prev(boundary));
 		}
 
 		var len = Dom.nodeLength(clone.endContainer);
 
 		if (!isStart && clone.endOffset < len) {
-			clone.setEnd(clone.endContainer, clone.endOffset + 1);
+			var boundary = Boundaries.fromRangeEnd(clone);
+			if (Html.hasLinebreakingStyle(Html.nextNode(boundary))) {
+				return {};
+			}
+			Boundaries.setRangeEnd(clone, Html.next(boundary));
 		}
 
 		var rect = clone.getBoundingClientRect();
@@ -785,6 +793,41 @@ define([
 			width  : rect.width,
 			height : rect.height
 		};
+	}
+
+	function isVisibleTextBoundary(boundary) {
+		return Html.prevSignificantOffset(boundary) === Boundaries.offset(boundary);
+	}
+
+	function isVisibleNodeBoundary(boundary) {
+		var next = Boundaries.nextNode(boundary);
+		if (Html.hasLinebreakingStyle(next)) {
+			return false;
+		}
+		var prev = Boundaries.prevNode(boundary);
+		if (Html.hasLinebreakingStyle(prev)) {
+			return false;
+		}
+		return true;
+	}
+
+	function isVisibleBoundary(boundary) {
+		return Boundaries.isTextBoundary(boundary)
+		     ? isVisibleTextBoundary(boundary)
+		     : isVisibleNodeBoundary(boundary);
+	}
+
+	function moveToVisiblePosition(boundary) {
+		var move = Html.nextVisiblePosition(
+			boundary,
+			Boundaries.prevNode,
+			Boundaries.prev
+		);
+		boundary = move.boundary;
+		while (!isVisibleBoundary(boundary)) {
+			boundary = Html.prev(boundary);
+		}
+		return boundary;
 	}
 
 	/**
@@ -803,14 +846,24 @@ define([
 			rect.left += rect.width;
 			return rect;
 		}
-		return rect;
+
+		var len = Dom.nodeLength(range.startContainer);
+		if (range.startOffset === len) {
+			var boundary = moveToVisiblePosition(Boundaries.fromRangeStart(range));
+			return box(fromBoundaries(boundary, boundary));
+		}
+
+		var node = Dom.nthChild(range.startContainer, range.startOffset);
+		var body = node.ownerDocument.body;
+
+		return {
+			top    : node.parentNode.offsetTop - body.scrollTop,
+			left   : node.parentNode.offsetLeft - body.scrollLeft,
+			width  : node.offsetWidth,
+			height : parseInt(Dom.getComputedStyle(node, 'line-height'), 10)
+		};
 	}
 
-	/**
-	 * Library functions for working with DOM ranges.
-	 * It assumes native support for document.getSelection() and
-	 * document.createRange().
-	 */
 	return {
 		box                               : box,
 		collapseToEnd                     : collapseToEnd,

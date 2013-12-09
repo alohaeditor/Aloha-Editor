@@ -430,9 +430,7 @@ define([
 	 *
 	 * @type {RegExp}
 	 */
-	var NBSP_CHARACTER = new RegExp(
-		'[' + NON_BREAKING_SPACE_CHARACTERS.join('') + ']'
-	);
+	var NBSP_CHARACTER = new RegExp('[' + NON_BREAKING_SPACE_CHARACTERS.join('') + ']');
 
 	/**
 	 * Checks whether the given node positioned at either extremity of it's
@@ -444,9 +442,8 @@ define([
 	 */
 	function isTerminalNode(node) {
 		var parent = node.parentNode;
-		return parent && (
-			node === parent.firstChild || node === parent.lastChild
-		);
+		return parent
+		    && (node === parent.firstChild || node === parent.lastChild);
 	}
 
 	/**
@@ -973,7 +970,7 @@ define([
 
 	var WSP_FROM_END = new RegExp('[' + breakingWhiteSpaces + ']+[' + zwChars + ']*$');
 	var NOT_WSP_FROM_END = new RegExp('[^' + breakingWhiteSpaces + ']'
-		+ '[' + breakingWhiteSpaces + zwChars + ']*$');
+	                     + '[' + breakingWhiteSpaces + zwChars + ']*$');
 	var NOT_WSP = new RegExp('[^' + breakingWhiteSpaces + zwChars + ']');
 	var NOT_ZWSP = new RegExp('[^' + zwChars + ']');
 
@@ -1255,11 +1252,11 @@ define([
 		while (boundary) {
 			var node = nextNode(boundary);
 
-			//   .------- node -------.
-			//   |         |          |
-			//   v         v          v
-			// |<br>  or |<p>  or |</h1>
-			//  <br>| or  <p>| or  </h1>|
+			//   .-- node --.
+			//   |          |
+			//   v          v
+			// |<p>   or |</h1>
+			//  <p>|  or  </h1>|
 			crossedVisualBreak = crossedVisualBreak
 					|| (hasLinebreakingStyle(node) && isRendered(node));
 
@@ -1586,9 +1583,7 @@ define([
 
 	var WORD_BOUNDARY = new RegExp('[^' + wordChars + ']');
 
-	var WORD_BOUNDARY_FROM_END = new RegExp(
-		'[^' + wordChars + '][' + wordChars + ']*$'
-	);
+	var WORD_BOUNDARY_FROM_END = new RegExp('[^' + wordChars + '][' + wordChars + ']*$');
 
 	function isWordbreakingNode(node) {
 		return !IN_WORD_TAGS[node.nodeName];
@@ -1708,6 +1703,47 @@ define([
 		}
 	}
 
+	function isAtEnd(boundary) {
+		if (Boundaries.isAtEnd(boundary)) {
+			return true;
+		}
+		if (Boundaries.isNodeBoundary(boundary)) {
+			return false;
+		}
+		var textnode = Boundaries.nextNode(boundary);
+		var next = Traversing.nextWhile(textnode, isUnrendered);
+		if (next && next !== textnode) {
+			return false;
+		}
+		return !NOT_WSP.test(textnode.data.substr(Boundaries.offset(boundary)));
+	}
+
+	function isAtStart(boundary) {
+		if (Boundaries.isAtStart(boundary)) {
+			return true;
+		}
+		if (Boundaries.isNodeBoundary(boundary)) {
+			return false;
+		}
+		var textnode = Boundaries.nextNode(boundary);
+		var next = Traversing.prevWhile(textnode, isUnrendered);
+		if (next && next !== textnode) {
+			return false;
+		}
+		return !NOT_WSP.test(textnode.data.substr(0, Boundaries.offset(boundary)));
+
+	}
+
+	function nextNode(boundary) {
+		var node = Boundaries.nextNode(boundary);
+		return isAtEnd(boundary) ? node.parentNode : node;
+	}
+
+	function prevNode(boundary) {
+		var node = Boundaries.prevNode(boundary);
+		return isAtStart(boundary) ? node.parentNode : node;
+	}
+
 	return {
 		isRendered                    : isRendered,
 		isUnrendered                  : isUnrendered,
@@ -1724,8 +1760,9 @@ define([
 
 		normalizeBoundary             : normalizeBoundary,
 
+		isAtEnd                       : isAtEnd,
+		isAtStart                     : isAtStart,
 		isEmpty                       : isEmpty,
-
 		isVisuallyAdjacent            : isVisuallyAdjacent,
 
 		insertVisualBreak             : insertVisualBreak,
@@ -1745,11 +1782,16 @@ define([
 		prevCharacterBoundary         : prevCharacterBoundary,
 		nextCharacterBoundary         : nextCharacterBoundary,
 
-		nextWordBoundary              : nextWordBoundary,
 		prevWordBoundary              : prevWordBoundary,
+		nextWordBoundary              : nextWordBoundary,
 
 		prevSignificantOffset         : prevSignificantOffset,
 		nextSignificantOffset         : nextSignificantOffset,
+
+		prevNode                      : prevNode,
+		nextNode                      : nextNode,
+
+		nextVisiblePosition           : nextVisiblePosition,
 
 		areNextWhiteSpacesSignificant : areNextWhiteSpacesSignificant
 	};

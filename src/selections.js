@@ -74,7 +74,7 @@ define([
 	 * @param {Object=}  opt_style
 	 */
 	function show(caret, boundary, opt_style) {
-		var box = Ranges.box(Ranges.create(boundary[0], boundary[1]));
+		var box = Ranges.box(Ranges.fromBoundaries(boundary, boundary));
 		var doc = caret.ownerDocument;
 		var topDelta = window.pageYOffset - doc.body.clientTop;
 		var leftDelta = window.pageXOffset - doc.body.clientLeft;
