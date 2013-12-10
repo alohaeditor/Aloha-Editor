@@ -17,6 +17,7 @@ define([
 	'maps',
 	'events',
 	'ranges',
+	'strings',
 	'browsers',
 	'overrides',
 	'boundaries',
@@ -29,6 +30,7 @@ define([
 	Maps,
 	Events,
 	Ranges,
+	Strings,
 	Browsers,
 	Overrides,
 	Boundaries,
@@ -187,6 +189,12 @@ define([
 	function down(box, stride) {
 		return Ranges.fromPosition(box.left, box.top + box.height + stride);
 	}
+	function left(boundary, stride) {
+		return Html.prev(boundary, stride);
+	}
+	function right(boundary, stride) {
+		return Html.next(boundary, stride);
+	}
 
 	/**
 	 * Given two ranges, creates a range that is between the two.
@@ -276,7 +284,7 @@ define([
 		var get, set, collapse;
 		var shift = Events.isWithShift(event);
 		var clone = range.cloneRange();
-		var move = ('left' === direction) ? Html.prev : Html.next;
+		var move = ('left' === direction) ? left : right;
 
 		if (range.collapsed || !shift) {
 			focus = ('left' === direction) ? 'start' : 'end';

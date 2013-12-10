@@ -816,14 +816,14 @@ define([
 				return wrapperProps.value;
 			}
 			var override = Dom.getStyle(node, styleName);
-			return !Strings.empty(override) ? override : null;
+			return !Strings.isEmpty(override) ? override : null;
 		}
 		function getInheritableOverride(node) {
 			if (Arrays.contains(nodeNames, node.nodeName)) {
 				return wrapperProps.value;
 			}
 			var override = Dom.getComputedStyle(node, styleName);
-			return !Strings.empty(override) ? override : null;
+			return !Strings.isEmpty(override) ? override : null;
 		}
 		function isContextStyle(value) {
 			return isStyleEqual(normalizeStyleValue(value), styleValue);
@@ -835,7 +835,7 @@ define([
 			if (Arrays.contains(nodeNames, node.nodeName)) {
 				return true;
 			}
-			return !Strings.empty(Dom.getStyle(node, styleName));
+			return !Strings.isEmpty(Dom.getStyle(node, styleName));
 		}
 		function hasContextValue(node, value) {
 			value = normalizeStyleValue(value);
