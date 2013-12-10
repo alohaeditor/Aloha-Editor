@@ -109,6 +109,7 @@ define([
 	 * http://jsfiddle.net/timdown/ABjQP/8/
 	 * http://lists.w3.org/Archives/Public/public-webapps/2009OctDec/0113.html
 	 *
+	 * @private
 	 * @param  {number} x
 	 * @param  {number} y
 	 * @param  {Document=} doc
@@ -281,6 +282,8 @@ define([
 	 * Expands the range's start and end positions to the nearest word
 	 * boundaries.
 	 *
+	 * foo b[a]r baz ==> foo [bar] baz
+	 *
 	 * @param  {Range} range
 	 * @return {Range}
 	 */
@@ -295,6 +298,14 @@ define([
 	/**
 	 * Expands the ranges's start and end positions to the nearest block
 	 * boundaries.
+	 *
+	 * [,] = start,end boundary
+	 *
+	 *  +-------+     [ +-------+
+	 *  | block |       | block |
+	 *  |       |  ==>  |       |
+	 *  | []    |       |       |
+	 *  +-------+       +-------+ ]
 	 *
 	 * @param  {Range} range
 	 * @return {Range}
@@ -341,7 +352,7 @@ define([
 	 * Expands the range's start position backward to the previous visible
 	 * position.
 	 *
-	 * @param  {Range}
+	 * @param  {Range} range
 	 * @return {Range}
 	 */
 	function expandBackwardToVisiblePosition(range) {
@@ -356,7 +367,7 @@ define([
 	 * Expands the range's end position forward to the next furthest visible
 	 * position.
 	 *
-	 * @param  {Range}
+	 * @param  {Range} range
 	 * @return {Range}
 	 */
 	function expandForwardToVisiblePosition(range) {
@@ -549,10 +560,24 @@ define([
 		};
 	}
 
+	/**
+	 * Checks whether the text boundary is at a visible position.
+	 *
+	 * @private
+	 * @param  {Boundary} boundary
+	 * @return {boolean}
+	 */
 	function isVisibleTextBoundary(boundary) {
 		return Html.prevSignificantOffset(boundary) === Boundaries.offset(boundary);
 	}
 
+	/**
+	 * Checks whether the node boundary is at a visible position.
+	 *
+	 * @private
+	 * @param  {Boundary} boundary
+	 * @return {boolean}
+	 */
 	function isVisibleNodeBoundary(boundary) {
 		var next = Boundaries.nextNode(boundary);
 		if (Html.hasLinebreakingStyle(next)) {
@@ -565,12 +590,26 @@ define([
 		return true;
 	}
 
+	/**
+	 * Checks whether the given boundary is at a visible position.
+	 *
+	 * @private
+	 * @param  {Boundary} boundary
+	 * @return {boolean}
+	 */
 	function isVisibleBoundary(boundary) {
 		return Boundaries.isTextBoundary(boundary)
 		     ? isVisibleTextBoundary(boundary)
 		     : isVisibleNodeBoundary(boundary);
 	}
 
+	/**
+	 * Returns the previous visible boundary from the given.
+	 *
+	 * @private
+	 * @param  {Boundary} boundary
+	 * @return {Boundary}
+	 */
 	function prevVisibleBoundary(boundary) {
 		var move = Html.nextVisiblePosition(
 			boundary,
