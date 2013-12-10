@@ -1,4 +1,5 @@
-/* dom.js is part of Aloha Editor project http://aloha-editor.org
+/**
+ * mutation.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
