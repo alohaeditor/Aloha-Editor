@@ -117,7 +117,6 @@ define([
 	exports['prevNode'] = Boundaries.prevNode;
 	exports['nodeAfter'] = Boundaries.nodeAfter;
 	exports['nodeBefore'] = Boundaries.nodeBefore;
-	exports['nodeAtBoundary'] = Boundaries.nodeAtBoundary;
 	exports['setRange'] = Boundaries.setRange;
 	exports['setRanges'] = Boundaries.setRanges;
 	exports['precedingTextLength'] = Boundaries.precedingTextLength;
@@ -356,25 +355,19 @@ define([
 
 	exports['ranges'] = Ranges;
 	exports['ranges']['box'] = Ranges.box;
+	exports['ranges']['get'] = Ranges.get;
+	exports['ranges']['select'] = Ranges.select;
+	exports['ranges']['create'] = Ranges.create;
+	exports['ranges']['equals'] = Ranges.equals;
 	exports['ranges']['collapseToEnd'] = Ranges.collapseToEnd;
 	exports['ranges']['collapseToStart'] = Ranges.collapseToStart;
-	exports['ranges']['create'] = Ranges.create;
-	exports['ranges']['isEqual'] = Ranges.isEqual;
-	exports['ranges']['equal'] = Ranges.equal;
-	exports['ranges']['expand'] = Ranges.expand;
-	exports['ranges']['contract'] = Ranges.contract;
 	exports['ranges']['expandBoundaries'] = Ranges.expandBoundaries;
 	exports['ranges']['expandToWord'] = Ranges.expandToWord;
-	exports['ranges']['expandToVisibleText'] = Ranges.expandToVisibleText;
-	exports['ranges']['get'] = Ranges.get;
-	exports['ranges']['insertTextBehind'] = Ranges.insertTextBehind;
-	exports['ranges']['select'] = Ranges.select;
-	exports['ranges']['setFromReference'] = Ranges.setFromReference;
-	exports['ranges']['trim'] = Ranges.trim;
-	exports['ranges']['trimBoundaries'] = Ranges.trimBoundaries;
-	exports['ranges']['trimClosingOpening'] = Ranges.trimClosingOpening;
-	exports['ranges']['getNearestEditingHost'] = Ranges.getNearestEditingHost;
+	exports['ranges']['expandForwardToVisiblePosition'] = Ranges.expandForwardToVisiblePosition;
 	exports['ranges']['expandBackwardToVisiblePosition'] = Ranges.expandBackwardToVisiblePosition;
+	exports['ranges']['insertTextBehind'] = Ranges.insertTextBehind;
+	exports['ranges']['trim'] = Ranges.trim;
+	exports['ranges']['nearestEditingHost'] = Ranges.getNearestEditingHost;
 
 	exports['stablerange'] = StableRange;
 

@@ -295,7 +295,7 @@ define([
 	function insertNodeAtBoundary(node, boundary, insertBefore, ranges) {
 		var boundaries = Boundaries.fromRanges(ranges);
 		boundary = splitBoundary(boundary, ranges);
-		var ref = Boundaries.nodeAtBoundary(boundary);
+		var ref = Boundaries.nextNode(boundary);
 		var atEnd = Boundaries.isAtEnd(boundary);
 		Dom.insert(node, ref, atEnd);
 		return adjustRangesAfterNodeInsert(node, insertBefore, boundaries, ranges);

@@ -129,7 +129,7 @@ define([
 	 * @param {Range} range
 	 */
 	function unsetTextColor(range) {
-		var editable = Ranges.getNearestEditingHost(range);
+		var editable = Ranges.nearestEditingHost(range);
 		if (editable) {
 			setTextColor(range, Dom.getComputedStyle(editable, 'color'));
 		}
@@ -161,7 +161,7 @@ define([
 	 * @param {Range} range
 	 */
 	function unsetBackgroundColor(range) {
-		var editable = Ranges.getNearestEditingHost(range);
+		var editable = Ranges.nearestEditingHost(range);
 		if (editable) {
 			setBackgroundColor(range, Dom.getComputedStyle(editable, 'background-color'));
 		}

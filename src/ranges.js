@@ -33,11 +33,11 @@ define([
 	/**
 	 * Gets the currently selected range.
 	 *
-	 * @return {?Range}
-	 *         Browser's selected range object or null if not selection exists.
+	 * @param  {Document} doc Document element from which to get the selection
+	 * @return {?Range} Browser's selected range or null if not selection exists
 	 */
-	function get() {
-		var selection = document.getSelection();
+	function get(doc) {
+		var selection = (doc || document).getSelection();
 		return selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
 	}
 
@@ -45,10 +45,10 @@ define([
 	 * Creates a range object with boundaries defined by containers and offsets
 	 * in those containers.
 	 *
-	 * @param {DOMElement} startContainer
-	 * @param {Number} startOffset
-	 * @param {DOMElement} endContainer
-	 * @param {Number} endOffset
+	 * @param  {Element} startContainer
+	 * @param  {number}  startOffset
+	 * @param  {Element} endContainer
+	 * @param  {number}  endOffset
 	 * @return {Range}
 	 */
 	function create(startContainer, startOffset, endContainer, endOffset) {
@@ -63,25 +63,25 @@ define([
 	}
 
 	/**
-	 * Whether two ranges are equal.
+	 * Checks whether the two given range object are equal.
 	 *
-	 * @param a {!Range} one of the two ranges to compare
-	 * @param b {!Range} one of the two ranges to compare
+	 * @param  {Range} a
+	 * @param  {Range} b
+	 * @return {boolean} true if ranges `a` and `b` have the same boundary points
 	 */
-	function isEqual(a, b) {
-		return (a.startContainer === b.startContainer
-		        && a.endContainer === b.endContainer
-		        && a.startOffset === b.startOffset
-		        && a.endOffset === b.endOffset);
+	function equals(a, b) {
+		return a.startContainer === b.startContainer
+		    && a.startOffset    === b.startOffset
+		    && a.endContainer   === b.endContainer
+		    && a.endOffset      === b.endOffset;
 	}
 
 	/**
 	 * Sets the given range to the browser selection.  This will cause the
 	 * selection to be visually highlit by the browser.
 	 *
-	 * @param {Range} range
-	 * @return {Selection}
-	 *         The browser selection to which the range was set.
+	 * @param  {Range} range
+	 * @return {Selection} Browser selection to which the range was set
 	 */
 	function select(range) {
 		var selection = document.getSelection();
@@ -91,30 +91,93 @@ define([
 	}
 
 	/**
-	 * Sets the start and end boundaries of `range` from `reference`.
+	 * Given the position offsets `left` and `top` (relative to the document),
+	 * returns a collapsed range for the position where the text insertion
+	 * point indicator would be inserted.
 	 *
-	 * @param {Range} range
-	 * @param {Range} reference
-	 * @return {Range}
-	 *         The modified range.
+	 * @reference:
+	 * http://dev.w3.org/csswg/cssom-view/#dom-document-caretpositionfrompoint
+	 * http://stackoverflow.com/questions/3189812/creating-a-collapsed-range-from-a-pixel-position-in-ff-webkit
+	 * http://jsfiddle.net/timdown/ABjQP/8/
+	 * http://lists.w3.org/Archives/Public/public-webapps/2009OctDec/0113.html
+	 *
+	 * @param  {number} x
+	 * @param  {number} y
+	 * @return {?Range}
 	 */
-	function setFromReference(range, reference) {
-		range.setStart(reference.startContainer, reference.startOffset);
-		range.setEnd(reference.endContainer, reference.endOffset);
-		return range;
+	function fromPoint(x, y) {
+		if (x < 0 || y < 0) {
+			return null;
+		}
+		if (document.caretRangeFromPoint) {
+			return document.caretRangeFromPoint(x, y);
+		}
+		if (document.caretPositionFromPoint) {
+			var pos = document.caretPositionFromPoint(x, y);
+			return create(pos.offsetNode, pos.offset);
+		}
+		if (document.elementFromPoint) {
+			throw 'createFromPoint() unimplemented for this browser';
+		}
 	}
 
-	function setStartFromBoundary(range, boundary) {
-		range.setStart(boundary[0], boundary[1]);
+	/**
+	 * Calculates a range according to the given range.
+	 *
+	 * Will ensure that the range is contained in a content editable node.
+	 *
+	 * @param  {Event} event
+	 * @return {?Range} Null if no suitable range can be determined
+	 */
+	function fromPosition(x, y) {
+		var range = fromPoint(x, y);
+		if (!range) {
+			return null;
+		}
+		if (Dom.isEditableNode(range.commonAncestorContainer)) {
+			return range;
+		}
+		var block = Traversing.parentBlock(range.commonAncestorContainer);
+		if (!block || !block.parentNode) {
+			return null;
+		}
+		var body = block.ownerDocument.body;
+		var offsets = Dom.offset(block);
+		var offset = Dom.nodeIndex(block);
+		var pointX = x + body.scrollLeft;
+		var blockX = offsets.left + body.scrollLeft + block.offsetWidth;
+		if (pointX > blockX) {
+			offset += 1;
+		}
+		return create(block.parentNode, offset);
 	}
 
-	function setEndFromBoundary(range, boundary) {
-		range.setEnd(boundary[0], boundary[1]);
+	/**
+	 * Returns a range based on the given event object.
+	 *
+	 * @param  {Object} event An Aloha Editor event
+	 * @return {?Range}
+	 */
+	function fromEvent(alohaEvent) {
+		return alohaEvent.range
+		    || fromPosition(alohaEvent.nativeEvent.clientX, alohaEvent.nativeEvent.clientY)
+		    || get();
 	}
 
-	function setFromBoundaries(range, start, end) {
-		range.setStart(start[0], start[1]);
-		range.setEnd(end[0], end[1]);
+	/**
+	 * Creates a range based on the given start and end boundaries.
+	 *
+	 * @param  {Boundary} start
+	 * @param  {Boundary} end
+	 * @return {Range}
+	 */
+	function fromBoundaries(start, end) {
+		return create(
+			Boundaries.container(start),
+			Boundaries.offset(start),
+			Boundaries.container(end),
+			Boundaries.offset(end)
+		);
 	}
 
 	/**
@@ -158,301 +221,6 @@ define([
 	}
 
 	/**
-	 * Checks whether or not the position is at a text node.
-	 *
-	 * @private
-	 * @param {DOMObject} container
-	 * @param {Number} offset
-	 * @return {Boolean}
-	 */
-	function isAtTextNode(container, offset) {
-		return Dom.isTextNode(container) || (
-			container.childNodes[offset]
-			&& Dom.isTextNode(container.childNodes[offset])
-		);
-	}
-
-	/**
-	 * Ensures that the given position is nested in at least 2 levels of
-	 * ancestors, and at the start.
-	 *
-	 * @private
-	 * @param {Cursor} pos
-	 * @param {Boolean}
-	 */
-	function canExpandBackward(boundary, container, offset) {
-		return container
-		    && container.parentNode
-		    && container.parentNode.parentNode
-		    && Boundaries.isAtStart(boundary)
-		    && !Html.hasLinebreakingStyle(container);
-	}
-
-	/**
-	 * Ensures that the given position is nested in at least 2 levels of
-	 * ancestors, and at the end.
-	 *
-	 * @private
-	 * @param {Cursor} pos
-	 * @param {Boolean}
-	 */
-	function canExpandForward(boundary, container, offset) {
-		return container
-		    && container.parentNode
-		    && container.parentNode.parentNode
-		    && Boundaries.isAtEnd(boundary)
-		    && !Html.hasLinebreakingStyle(container);
-	}
-
-	/**
-	 * Checks whether the corresponding container node and offset boundaries
-	 * are equal.
-	 *
-	 * @private
-	 * @param {DOMObject} container
-	 * @param {Number} offset
-	 * @param {DOMObject} oppositeContainer
-	 * @param {Number} oppositeOffset
-	 * @return {Boolean}
-	 */
-	function boundariesEqual(container1, offset1, container2, offset2) {
-		return container1 === container2 && offset1 === offset2;
-	}
-
-	/**
-	 * Checks whether or not a given position can be moved forward without
-	 * colliding with the other boundary position.
-	 *
-	 * @private
-	 * @param {DOMObject} container
-	 * @param {Number} offset
-	 * @param {DOMObject} oppositeContainer
-	 * @param {Number} oppositeOffset
-	 * @return {Boolean}
-	 */
-	function canContractForward(container, offset,
-	                            oppositeContainer, oppositeOffset) {
-		return !boundariesEqual(container, offset, oppositeContainer, oppositeOffset)
-		    && !isAtTextNode(container, offset)
-		    && !Html.hasLinebreakingStyle(container.childNodes[offset] || container);
-	}
-
-	/**
-	 * Checks whether or not a given position can be moved backward without
-	 * colliding with the other boundary position.
-	 *
-	 * @private
-	 * @param {DOMObject} container
-	 * @param {Number} offset
-	 * @param {DOMObject} oppositeContainer
-	 * @param {Number} oppositeOffset
-	 * @return {Boolean}
-	 */
-	function canContractBackward(container, offset,
-	                             oppositeContainer, oppositeOffset) {
-		return !boundariesEqual(container, offset, oppositeContainer, oppositeOffset)
-		    && !isAtTextNode(container, offset - 1)
-		    && (
-				Dom.isAtStart(container, offset)
-					? !Html.hasLinebreakingStyle(container)
-					: !Html.hasLinebreakingStyle(container.childNodes[offset - 1])
-		    );
-	}
-
-	/**
-	 * Expands the given range.
-	 *
-	 * expand() will move the range's start and end boundary positions as far
-	 * apart as possible in the document order whithout altering how the range
-	 * would be visually represented when selected.
-	 *
-	 * The start and end boundary positions will not be expanded across
-	 * elements which affect visual line breaks.
-	 *
-	 * Note that an element's styling can only be determined if that element is
-	 * attached to the document.  If working with a range in a detached DOM,
-	 * then line-breaking nodes are guessed simply by their tag name.
-	 *
-	 * Also note that expand() will never move the start or end boundary
-	 * position inside of a text node.
-	 *
-	 * @param {Range} range
-	 * @return {Range}
-	 *         The modified range.
-	 */
-	function expand(range) {
-		var start = Boundaries.prevWhile(
-			Boundaries.fromRangeStart(range),
-			canExpandBackward
-		);
-		var end = Boundaries.nextWhile(
-			Boundaries.fromRangeEnd(range),
-			canExpandForward
-		);
-		Boundaries.setRange(range, start, end);
-		return range;
-	}
-
-	/**
-	 * Contracts the given range.
-	 *
-	 * contract() will move the range's start and end boundary positions as
-	 * close together as possible in the document order whithout altering how
-	 * the range would be visually represented when selected.
-	 *
-	 * The start and end boundary positions will not contract across elements
-	 * which affect visual line breaks.  These include all elements with
-	 * block-level display styling, img tags, and br tags ofcourse.
-	 *
-	 * Note that an element's styling can only be determined if that element is
-	 * attached to the document.  If working with a range in a detached DOM,
-	 * then line-breaking nodes are determined simply by their tag name.
-	 *
-	 * Also note that contract() will never move the start or end boundary
-	 * position inside of a text node.
-	 *
-	 * @param {Range} range
-	 * @return {Range}
-	 *         The modified range.
-	 */
-	function contract(range) {
-		var end = Boundaries.prevWhile(
-			Boundaries.fromRangeEnd(range),
-			function (boundary) {
-				return canContractBackward(
-					Boundaries.container(boundary),
-					Boundaries.offset(boundary),
-					range.startContainer,
-					range.startOffset
-				);
-			}
-		);
-		var start = Boundaries.nextWhile(
-			Boundaries.fromRangeStart(range),
-			function (boundary) {
-				return canContractForward(
-					Boundaries.container(boundary),
-					Boundaries.offset(boundary),
-					range.endContainer,
-					range.endOffset
-				);
-			}
-		);
-		range.setStart(start[0], start[1]);
-		range.setEnd(end[0], end[1]);
-		return range;
-	}
-
-	/**
-	 * Expands the ranges start and end positions to the nearest word
-	 * boundaries.
-	 *
-	 * @param {Range} range
-	 * @return {Range}
-	 */
-	function expandToWord(range) {
-		Boundaries.setRange(
-			range,
-			Html.prevWordBoundary(Boundaries.fromRangeStart(range)),
-			Html.nextWordBoundary(Boundaries.fromRangeEnd(range))
-		);
-		return range;
-	}
-
-	function expandToBlock(range) {
-		var start = range.commonAncestorContainer;
-		var ancestors = Traversing.childAndParentsUntilIncl(start , function (node) {
-			return Html.hasLinebreakingStyle(node) || Dom.isEditingHost(node);
-		});
-		var node = Arrays.last(ancestors);
-		var len = Dom.nodeLength(node);
-		var end = Html.nextVisualBoundary([node, len]);
-		return create(node, 0, end[0], end[1]);
-	}
-
-	/**
-	 * Expands the given range to encapsulate all adjacent unrendered
-	 * characters.
-	 *
-	 * This operation should therefore never cause the visual representation of
-	 * the range to change.
-	 *
-	 * Since it is impossible to place a range immediately behind an invisible
-	 * character, this function will only ever need to expand the range's end
-	 * position.
-	 *
-	 * @param  {Range} range
-	 * @return {Range}
-	 */
-	function envelopeInvisibleCharacters(range) {
-		var end = Boundaries.fromRangeEnd(range);
-		if (!Boundaries.isNodeBoundary(end)) {
-			var offset = Html.nextSignificantOffset(end);
-			if (-1 === offset) {
-				range.setEnd(range.endContainer, Dom.nodeLength(range.endContainer));
-			} else {
-				range.setEnd(Boundaries.container(end), offset);
-			}
-		}
-		return range;
-	}
-
-	/**
-	 * Expands the range's start position backward to the previous visible
-	 * position.
-	 *
-	 * @param {Range}
-	 * @return {Range}
-	 */
-	function expandBackwardToVisiblePosition(range) {
-		var boundary = Html.prevVisualBoundary(Boundaries.fromRangeStart(range));
-		if (boundary) {
-			setStartFromBoundary(range, boundary);
-		}
-		return range;
-	}
-
-	/**
-	 * Expands the range's end position forward to the next furthest visible
-	 * position.
-	 *
-	 * @param {Range}
-	 * @return {Range}
-	 */
-	function expandForwardToVisiblePosition(range) {
-		var boundary = Html.nextVisualBoundary(Boundaries.fromRangeEnd(range));
-		if (!boundary) {
-			return range;
-		}
-		if (!Boundaries.isNodeBoundary(boundary) && !Html.areNextWhiteSpacesSignificant(boundary)) {
-			var next = Html.nextVisualBoundary(boundary);
-			if (next) {
-				boundary = Html.prevVisualBoundary(next);
-			}
-		}
-		if (boundary) {
-			setEndFromBoundary(range, boundary);
-		}
-		return range;
-	}
-
-	function contractBackwardToVisiblePosition(range) {
-		var pos = Html.prevVisualBoundary(Boundaries.fromRangeEnd(range));
-		if (pos[0]
-			&& Dom.isTextNode(pos[0])
-			&& !Html.areNextWhiteSpacesSignificant(pos)) {
-			pos = Html.nextVisualBoundary(pos);
-			if (pos[0]) {
-				pos = Html.prevVisualBoundary(pos);
-			}
-		}
-		if (pos) {
-			setEndFromBoundary(range, pos);
-		}
-		return range;
-	}
-
-	/**
 	 * Starting with the given range's start and end boundary points, seek
 	 * inward using a cursor, passing the cursor to ignoreLeft and ignoreRight,
 	 * stopping when either of these returns true, adjusting the given range to
@@ -466,11 +234,10 @@ define([
 	 * ignoreLeft/ignoreRight() are invoked with the cursor before/after the
 	 * text node that contains the boundary point.
 	 *
-	 * @param {Range} range
-	 * @param {Function=} ignoreLeft
-	 * @param {Function=} ignoreRight
+	 * @param  {Range} range
+	 * @param  {Function=} ignoreLeft
+	 * @param  {Function=} ignoreRight
 	 * @return {Range}
-	 *         The given range, modified.
 	 */
 	function trim(range, ignoreLeft, ignoreRight) {
 		ignoreLeft = ignoreLeft || Fn.returnFalse;
@@ -510,6 +277,114 @@ define([
 	}
 
 	/**
+	 * Expands the range's start and end positions to the nearest word
+	 * boundaries.
+	 *
+	 * @param  {Range} range
+	 * @return {Range}
+	 */
+	function expandToWord(range) {
+		var start = Boundaries.fromRangeStart(range);
+		var end = Boundaries.fromRangeEnd(range);
+		var prev = Html.prevWordBoundary(start);
+		var next = Html.nextWordBoundary(end);
+		return fromBoundaries(prev || start, next || end);
+	}
+
+	/**
+	 * Expands the ranges's start and end positions to the nearest block
+	 * boundaries.
+	 *
+	 * @param  {Range} range
+	 * @return {Range}
+	 */
+	function expandToBlock(range) {
+		var start = range.commonAncestorContainer;
+		var ancestors = Traversing.childAndParentsUntilIncl(start, function (node) {
+			return Html.hasLinebreakingStyle(node) || Dom.isEditingHost(node);
+		});
+		var node = Arrays.last(ancestors);
+		var len = Dom.nodeLength(node);
+		var end = Html.nextVisualBoundary(Boundaries.create(node, len));
+		return fromBoundaries(Boundaries.create(node, 0), end);
+	}
+
+	/**
+	 * Expands the given range to encapsulate all adjacent unrendered
+	 * characters.
+	 *
+	 * This operation should therefore never cause the visual representation of
+	 * the range to change.
+	 *
+	 * Since it is impossible to place a range immediately behind an invisible
+	 * character, this function will only ever need to expand the range's end
+	 * position.
+	 *
+	 * @param  {Range} range
+	 * @return {Range}
+	 */
+	function envelopeInvisibleCharacters(range) {
+		var end = Boundaries.fromRangeEnd(range);
+		if (!Boundaries.isNodeBoundary(end)) {
+			var offset = Html.nextSignificantOffset(end);
+			if (-1 === offset) {
+				range.setEnd(range.endContainer, Dom.nodeLength(range.endContainer));
+			} else {
+				range.setEnd(Boundaries.container(end), offset);
+			}
+		}
+		return range;
+	}
+
+	/**
+	 * Expands the range's start position backward to the previous visible
+	 * position.
+	 *
+	 * @param  {Range}
+	 * @return {Range}
+	 */
+	function expandBackwardToVisiblePosition(range) {
+		var boundary = Html.prevVisualBoundary(Boundaries.fromRangeStart(range));
+		if (boundary) {
+			Boundaries.setRangeStart(range, boundary);
+		}
+		return range;
+	}
+
+	/**
+	 * Expands the range's end position forward to the next furthest visible
+	 * position.
+	 *
+	 * @param  {Range}
+	 * @return {Range}
+	 */
+	function expandForwardToVisiblePosition(range) {
+		var boundary = Html.nextVisualBoundary(Boundaries.fromRangeEnd(range));
+		if (!boundary) {
+			return range;
+		}
+		if (!Boundaries.isNodeBoundary(boundary) && !Html.areNextWhiteSpacesSignificant(boundary)) {
+			var next = Html.nextVisualBoundary(boundary);
+			if (next) {
+				boundary = Html.prevVisualBoundary(next);
+			}
+		}
+		if (boundary) {
+			Boundaries.setRangeEnd(range, boundary);
+		}
+		return range;
+	}
+
+	function contractBackwardToVisiblePosition(range) {
+		var pos = Html.prevVisualBoundary(Boundaries.fromRangeEnd(range));
+		if (Boundaries.isTextBoundary(pos) && !Html.areNextWhiteSpacesSignificant(pos)) {
+			pos = Html.prevVisualBoundary(Html.nextVisualBoundary(pos));
+		}
+		Boundaries.setRangeEnd(range, pos);
+		return range;
+	}
+
+	/**
 	 * Like trim() but ignores closing (to the left) and opening positions (to
 	 * the right).
 	 *
@@ -531,21 +406,6 @@ define([
 	}
 
 	/**
-	 * Checks whether the two given range object are equal.
-	 *
-	 * @param {Range} a
-	 * @param {Range} b
-	 * @return {Boolean}
-	 *         True if ranges `a` and `b` have the same boundary points.
-	 */
-	function equal(a, b) {
-		return a.startContainer === b.startContainer
-			&& a.startOffset    === b.startOffset
-			&& a.endContainer   === b.endContainer
-			&& a.endOffset      === b.endOffset;
-	}
-
-	/**
 	 * Ensures that the given start point Cursor is not at a "start position"
 	 * and the given end point Cursor is not at an "end position" by moving the
 	 * points to the left and right respectively.  This is effectively the
@@ -553,10 +413,10 @@ define([
 	 *
 	 * @param {Cusor} start
 	 * @param {Cusor} end
-	 * @param {Function:Boolean} until
+	 * @param {Function:boolean} until
 	 *        Optional predicate.  May be used to stop the trimming process from
 	 *        moving the Cursor from within an element outside of it.
-	 * @param {Function:Boolean} ignore
+	 * @param {Function:boolean} ignore
 	 *        Optional predicate.  May be used to ignore (skip)
 	 *        following/preceding siblings which otherwise would stop the
 	 *        trimming process, like for example underendered whitespace.
@@ -585,10 +445,10 @@ define([
 	 *
 	 * @param {Cusor} start
 	 * @param {Cusor} end
-	 * @param {Function:Boolean} until
+	 * @param {Function:boolean} until
 	 *        Optional predicate.  May be used to stop the trimming process from
 	 *        moving the Cursor from within an element outside of it.
-	 * @param {Function:Boolean} ignore
+	 * @param {Function:boolean} ignore
 	 *        Optional predicate.  May be used to ignore (skip)
 	 *        following/preceding siblings which otherwise would stop the
 	 *        trimming process, like for example underendered whitespace.
@@ -620,11 +480,10 @@ define([
 	}
 
 	/**
-	 * Collapses the given range start boundary towards the end boundary.
+	 * Collapses the given range's end boundary to the start.
 	 *
-	 * @param {Range} range
+	 * @param  {Range} range
 	 * @return {Range}
-	 *         The given range, modified.
 	 */
 	function collapseToStart(range) {
 		range.setEnd(range.startContainer, range.startOffset);
@@ -632,11 +491,10 @@ define([
 	}
 
 	/**
-	 * Collapses the given range start boundary towards the end boundary.
+	 * Collapses the given range's start boundary to the end.
 	 *
-	 * @param {Range} range
+	 * @param  {Range} range
 	 * @return {Range}
-	 *         The given range, modified.
 	 */
 	function collapseToEnd(range) {
 		range.setStart(range.endContainer, range.endOffset);
@@ -644,113 +502,16 @@ define([
 	}
 
 	/**
-	 * Gets the nearest editing host to the given range.
+	 * Inserts `text` behind the start boundary of the given range.
 	 *
-	 * Because Firefox, the range may not be inside the editable even though
-	 * the selection may be inside the editable.
-	 *
-	 * @param {Range} liveRange
-	 * @param {DOMObject} Editing host, or null if none is found.
+	 * @param {Ranges} range
+	 * @param {string} text
 	 */
-	function getNearestEditingHost(liveRange) {
-		var range = StableRange(liveRange);
-		var editable = Dom.editingHost(range.startContainer);
-		if (editable) {
-			return editable;
-		}
-		var isNotEditingHost = Fn.complement(Dom.isEditingHost);
-		trim(range, isNotEditingHost, isNotEditingHost);
-		return Dom.editingHost(
-			Dom.nodeAtOffset(range.startContainer, range.startOffset)
-		);
-	}
-
 	function insertTextBehind(range, text) {
-		var boundary = [range.startContainer, range.startOffset];
+		var boundary = Boundaries.create(range.startContainer, range.startOffset);
 		boundary = Mutation.insertTextAtBoundary(text, boundary, true, [range]);
 		collapseToStart(range);
 		select(range);
-	}
-
-
-	/**
-	 * Given the position offsets `left` and `top` (relative to the document),
-	 * returns a collapsed range for the position where the text insertion
-	 * point indicator would be inserted.
-	 *
-	 * @reference:
-	 * http://dev.w3.org/csswg/cssom-view/#dom-document-caretpositionfrompoint
-	 * http://stackoverflow.com/questions/3189812/creating-a-collapsed-range-from-a-pixel-position-in-ff-webkit
-	 * http://jsfiddle.net/timdown/ABjQP/8/
-	 * http://lists.w3.org/Archives/Public/public-webapps/2009OctDec/0113.html
-	 */
-	function fromPoint(x, y) {
-		if (x < 0 || y < 0) {
-			return null;
-		}
-		if (document.caretRangeFromPoint) {
-			return document.caretRangeFromPoint(x, y);
-		}
-		if (document.caretPositionFromPoint) {
-			var pos = document.caretPositionFromPoint(x, y);
-			return create(pos.offsetNode, pos.offset);
-		}
-		if (document.elementFromPoint) {
-			throw 'createFromPoint() unimplemented for this browser';
-		}
-	}
-
-	/**
-	 * Calculates the range according to the given range.
-	 *
-	 * Will ensure that the range is contained in a content editable node.
-	 *
-	 * @param  {Event}      event
-	 * @return {Range|null}
-	 *         null if no suitable range can be determined.
-	 */
-	function fromPosition(x, y) {
-		var range = fromPoint(x, y);
-		if (!range) {
-			return null;
-		}
-		if (Dom.isEditableNode(range.commonAncestorContainer)) {
-			return range;
-		}
-		var block = Traversing.parentBlock(range.commonAncestorContainer);
-		if (!block || !block.parentNode) {
-			return null;
-		}
-		var body = block.ownerDocument.body;
-		var offsets = Dom.offset(block);
-		var offset = Dom.nodeIndex(block);
-		var pointX = x + body.scrollLeft;
-		var blockX = offsets.left + body.scrollLeft + block.offsetWidth;
-		if (pointX > blockX) {
-			offset += 1;
-		}
-		return create(block.parentNode, offset);
-	}
-
-	/**
-	 * Return a range based on the given event object.
-	 *
-	 * @param  {Object} event An Aloha Editor event
-	 * @return {?Range}
-	 */
-	function fromEvent(alohaEvent) {
-		return alohaEvent.range
-		    || fromPosition(alohaEvent.nativeEvent.clientX, alohaEvent.nativeEvent.clientY)
-		    || get();
-	}
-
-	function fromBoundaries(start, end) {
-		return create(
-			Boundaries.container(start),
-			Boundaries.offset(start),
-			Boundaries.container(end),
-			Boundaries.offset(end)
-		);
 	}
 
 	/**
@@ -766,9 +527,10 @@ define([
 	 */
 	function bounds(range, isStart) {
 		var clone = range.cloneRange();
+		var boundary;
 
 		if (isStart && clone.startOffset > 0) {
-			var boundary = Boundaries.fromRangeStart(clone);
+			boundary = Boundaries.fromRangeStart(clone);
 			if (Html.hasLinebreakingStyle(Html.prevNode(boundary))) {
 				return {};
 			}
@@ -778,7 +540,7 @@ define([
 		var len = Dom.nodeLength(clone.endContainer);
 
 		if (!isStart && clone.endOffset < len) {
-			var boundary = Boundaries.fromRangeEnd(clone);
+			boundary = Boundaries.fromRangeEnd(clone);
 			if (Html.hasLinebreakingStyle(Html.nextNode(boundary))) {
 				return {};
 			}
@@ -817,7 +579,7 @@ define([
 		     : isVisibleNodeBoundary(boundary);
 	}
 
-	function moveToVisiblePosition(boundary) {
+	function prevVisibleBoundary(boundary) {
 		var move = Html.nextVisiblePosition(
 			boundary,
 			Boundaries.prevNode,
@@ -849,7 +611,7 @@ define([
 
 		var len = Dom.nodeLength(range.startContainer);
 		if (range.startOffset === len) {
-			var boundary = moveToVisiblePosition(Boundaries.fromRangeStart(range));
+			var boundary = prevVisibleBoundary(Boundaries.fromRangeStart(range));
 			return box(fromBoundaries(boundary, boundary));
 		}
 
@@ -864,35 +626,54 @@ define([
 		};
 	}
 
+	/**
+	 * Contracts the given range until it enters an editing host.
+	 *
+	 * Because in Firefox, the range may not be inside the editable even though
+	 * the selection may be inside the editable.
+	 *
+	 * @param {Range} range
+	 * @param {Element} Editing host, or null if none is found.
+	 */
+	function nearestEditingHost(range) {
+		var editable = Dom.editingHost(range.startContainer);
+		if (editable) {
+			return editable;
+		}
+		var isNotEditingHost = Fn.complement(Dom.isEditingHost);
+		var stable = StableRange(range);
+		trim(stable, isNotEditingHost, isNotEditingHost);
+		return Dom.editingHost(stable.startContainer);
+	}
+
 	return {
 		box                               : box,
-		collapseToEnd                     : collapseToEnd,
-		collapseToStart                   : collapseToStart,
-		create                            : create,
-		isEqual                           : isEqual,
-		equal                             : equal,
-		expand                            : expand,
-		contract                          : contract,
-		expandBoundaries                  : expandBoundaries,
-		expandToWord                      : expandToWord,
-		expandToBlock                     : expandToBlock,
-
-		envelopeInvisibleCharacters       : envelopeInvisibleCharacters,
 
 		get                               : get,
-		insertTextBehind                  : insertTextBehind,
 		select                            : select,
-		setFromReference                  : setFromReference,
-		setStartFromBoundary              : setStartFromBoundary,
-		setEndFromBoundary                : setEndFromBoundary,
-		setFromBoundaries                 : setFromBoundaries,
+		create                            : create,
+		equals                            : equals,
+
+		collapseToEnd                     : collapseToEnd,
+		collapseToStart                   : collapseToStart,
+
+		insertTextBehind                  : insertTextBehind,
+
 		trim                              : trim,
 		trimBoundaries                    : trimBoundaries,
 		trimClosingOpening                : trimClosingOpening,
-		getNearestEditingHost             : getNearestEditingHost,
+
+		nearestEditingHost                : nearestEditingHost,
+
+		expandBoundaries                  : expandBoundaries,
+		expandToWord                      : expandToWord,
+		expandToBlock                     : expandToBlock,
 		expandBackwardToVisiblePosition   : expandBackwardToVisiblePosition,
 		expandForwardToVisiblePosition    : expandForwardToVisiblePosition,
+
 		contractBackwardToVisiblePosition : contractBackwardToVisiblePosition,
+
+		envelopeInvisibleCharacters       : envelopeInvisibleCharacters,
 
 		fromBoundaries                    : fromBoundaries,
 		fromEvent                         : fromEvent,

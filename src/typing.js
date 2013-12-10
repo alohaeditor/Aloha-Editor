@@ -112,9 +112,7 @@ define([
 	}
 
 	function selectEditable(alohaEvent) {
-		var editable = Dom.editingHost(
-			alohaEvent.range.commonAncestorContainer
-		);
+		var editable = Dom.editingHost(alohaEvent.range.commonAncestorContainer);
 		if (editable) {
 			alohaEvent.range = Ranges.create(
 				editable,

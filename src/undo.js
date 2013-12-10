@@ -968,7 +968,7 @@ define([
 		} else if ('delete' === type) {
 			var boundary = boundaryFromPath(container, change.path);
 			boundary = Mutation.splitBoundary(boundary, ranges);
-			var node = Boundaries.nodeAtBoundary(boundary);
+			var node = Boundaries.nextNode(boundary);
 			var parent = node.parentNode;
 			change.content.forEach(function (removedNode) {
 				var next;

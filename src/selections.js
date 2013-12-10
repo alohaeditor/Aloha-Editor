@@ -242,7 +242,7 @@ define([
 		var next = move(box, offset);
 
 		// TODO: also check if `next` and `clone` are *visually* adjacent
-		while (next && Ranges.equal(next, clone)) {
+		while (next && Ranges.equals(next, clone)) {
 			offset += half;
 			next = move(box, offset);
 		}
@@ -524,7 +524,7 @@ define([
 		        ? Ranges.collapseToStart(previous.cloneRange())
 		        : Ranges.collapseToEnd(previous.cloneRange());
 
-		return Ranges.equal(range, ref) ? 'dblclick' : event.type;
+		return Ranges.equals(range, ref) ? 'dblclick' : event.type;
 	}
 
 	/**

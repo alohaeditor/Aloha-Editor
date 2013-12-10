@@ -501,7 +501,8 @@ define([
 			formatter.postprocessTextNodes(range);
 		}
 
-		Ranges.setFromReference(liveRange, range);
+		var boundaries = Boundaries.fromRange(range);
+		Boundaries.setRange(liveRange, boundaries[0], boundaries[1]);
 	}
 
 	function restackRec(node, hasContext, ignoreHorizontal, ignoreVertical) {
@@ -1297,7 +1298,7 @@ define([
 			Boundaries.normalize(Boundaries.fromRangeStart(range)),
 			context
 		);
-		Ranges.setFromBoundaries(liveRange, boundary, boundary);
+		Boundaries.setRange(liveRange, boundary, boundary);
 	}
 
 	function insert(liveRange, insertion) {
@@ -1308,7 +1309,14 @@ define([
 			}
 		});
 		var boundary = Mutation.insertNodeAtBoundary(insertion, Boundaries.fromRangeStart(range));
-		Ranges.setFromBoundaries(liveRange, boundary, [boundary[0], boundary[1] + 1]);
+		Boundaries.setRange(
+			liveRange,
+			boundary,
+			Boundaries.create(
+				Boundaries.container(boundary),
+				Boundaries.offset(boundary) + 1
+			)
+		);
 	}
 
 	return {

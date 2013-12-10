@@ -22,7 +22,6 @@ define([
 	/**
 	 * Creates a "raw" (un-normalized) boundary from the given node and offset.
 	 *
-	 * @private
 	 * @param  {Node} node
 	 * @return {number} offset
 	 */
@@ -344,7 +343,7 @@ define([
 	 * Steps through boundaries while the given condition is true.
 	 *
 	 * @param  {Boundary} boundary Boundary from which to start stepping
-	 * @param  {function(Boundary, Element, offset):boolean} cond Predicate
+	 * @param  {function(Boundary):boolean} cond Predicate
 	 * @param  {function(Boundary):Boundary} step Returns the next boundary
 	 * @return {Boundary} Boundary at which stepping was terminated
 	 */
@@ -371,7 +370,7 @@ define([
 	 * Step backwards while the given condition is true.
 	 *
 	 * @param  {Boundary} boundary
-	 * @param  {function(Boundary, Element, offset):boolean} cond
+	 * @param  {function(Boundary):boolean} cond
 	 * @return {Boundary}
 	 */
 	function prevWhile(boundary, cond) {
@@ -452,14 +451,6 @@ define([
 	}
 
 	/**
-	 * @deprecated Use Boundaries.nextNode() instead
-	 */
-	function nodeAtBoundary(boundary) {
-		console.error(Asserts.errorLink('boundaries.nodeAtBoundary#deprecated'));
-		return nextNode(boundary);
-	}
-
-	/**
 	 * Calculates the cumulative length of contiguous text nodes immediately
 	 * preceding the given boundary.
 	 *
@@ -520,8 +511,6 @@ define([
 		prevNode       : prevNode,
 		nodeAfter      : nodeAfter,
 		nodeBefore     : nodeBefore,
-
-		nodeAtBoundary : nodeAtBoundary,
 
 		precedingTextLength : precedingTextLength
 	};
