@@ -601,6 +601,18 @@ define([
 	}
 
 	/**
+	 * Returns a range based on the given event object.
+	 *
+	 * @param  {Object} event An Aloha Editor event
+	 * @return {?Range}
+	 */
+	function fromEvent(alohaEvent) {
+		return alohaEvent.range
+		    || Ranges.fromPosition(alohaEvent.nativeEvent.clientX, alohaEvent.nativeEvent.clientY)
+		    || Ranges.get();
+	}
+
+	/**
 	 * Renders a caret element to show the user selection.
 	 *
 	 * @param  {Object} event
@@ -634,11 +646,11 @@ define([
 		}
 
 		// Because otherwise, if, in the process of a click, the user's cursor
-		// is over the caret, Ranges.fromEvent() will compute the range to be
+		// is over the caret, fromEvent() will compute the range to be
 		// inside the absolutely positioned caret element.
 		Dom.setStyle(old.caret, 'display', 'none');
 
-		var range = Ranges.fromEvent(event);
+		var range = fromEvent(event);
 
 		if (!range) {
 			return event;

@@ -31,9 +31,12 @@ define([
 	'use strict';
 
 	/**
-	 * Gets the currently selected range.
+	 * Gets the currently selected range from the given document element.
 	 *
-	 * @param  {Document} doc Document element from which to get the selection
+	 * If no document element is given, the document element of the calling
+	 * frame's window will be used.
+	 *
+	 * @param  {Document} doc
 	 * @return {?Range} Browser's selected range or null if not selection exists
 	 */
 	function get(doc) {
@@ -42,8 +45,8 @@ define([
 	}
 
 	/**
-	 * Creates a range object with boundaries defined by containers and offsets
-	 * in those containers.
+	 * Creates a range object with boundaries defined by containers, and
+	 * offsets in those containers.
 	 *
 	 * @param  {Element} startContainer
 	 * @param  {number}  startOffset
@@ -63,11 +66,13 @@ define([
 	}
 
 	/**
-	 * Checks whether the two given range object are equal.
+	 * Checks whether two ranges are equal.  Ranges are equal if their
+	 * corresponding boundary containers and boundary offsets are strictly
+	 * equal.
 	 *
 	 * @param  {Range} a
 	 * @param  {Range} b
-	 * @return {boolean} true if ranges `a` and `b` have the same boundary points
+	 * @return {boolean}
 	 */
 	function equals(a, b) {
 		return a.startContainer === b.startContainer
@@ -78,7 +83,7 @@ define([
 
 	/**
 	 * Sets the given range to the browser selection.  This will cause the
-	 * selection to be visually highlit by the browser.
+	 * selection to be visually rendered by the user agent.
 	 *
 	 * @param  {Range} range
 	 * @return {Selection} Browser selection to which the range was set
@@ -122,11 +127,12 @@ define([
 	}
 
 	/**
-	 * Calculates a range according to the given range.
+	 * Calculates a range according to the given document offset positions.
 	 *
 	 * Will ensure that the range is contained in a content editable node.
 	 *
-	 * @param  {Event} event
+	 * @param  {number} x
+	 * @param  {number} y
 	 * @return {?Range} Null if no suitable range can be determined
 	 */
 	function fromPosition(x, y) {
@@ -150,18 +156,6 @@ define([
 			offset += 1;
 		}
 		return create(block.parentNode, offset);
-	}
-
-	/**
-	 * Returns a range based on the given event object.
-	 *
-	 * @param  {Object} event An Aloha Editor event
-	 * @return {?Range}
-	 */
-	function fromEvent(alohaEvent) {
-		return alohaEvent.range
-		    || fromPosition(alohaEvent.nativeEvent.clientX, alohaEvent.nativeEvent.clientY)
-		    || get();
 	}
 
 	/**
@@ -676,8 +670,6 @@ define([
 		envelopeInvisibleCharacters       : envelopeInvisibleCharacters,
 
 		fromBoundaries                    : fromBoundaries,
-		fromEvent                         : fromEvent,
-		fromPoint                         : fromPoint,
 		fromPosition                      : fromPosition
 	};
 });
