@@ -228,6 +228,8 @@ define([
 	 * ignoreLeft/ignoreRight() are invoked with the cursor before/after the
 	 * text node that contains the boundary point.
 	 *
+	 * @todo: Implement in terms of boundaries
+	 *
 	 * @param  {Range} range
 	 * @param  {Function=} ignoreLeft
 	 * @param  {Function=} ignoreRight
@@ -366,15 +368,6 @@ define([
 		if (boundary) {
 			Boundaries.setRangeEnd(range, boundary);
 		}
-		return range;
-	}
-
-	function contractBackwardToVisiblePosition(range) {
-		var pos = Html.prevVisualBoundary(Boundaries.fromRangeEnd(range));
-		if (Boundaries.isTextBoundary(pos) && !Html.areNextWhiteSpacesSignificant(pos)) {
-			pos = Html.prevVisualBoundary(Html.nextVisualBoundary(pos));
-		}
-		Boundaries.setRangeEnd(range, pos);
 		return range;
 	}
 
@@ -641,35 +634,32 @@ define([
 	}
 
 	return {
-		box                               : box,
+		box                             : box,
 
-		get                               : get,
-		select                            : select,
-		create                            : create,
-		equals                            : equals,
+		get                             : get,
+		select                          : select,
+		create                          : create,
+		equals                          : equals,
 
-		collapseToEnd                     : collapseToEnd,
-		collapseToStart                   : collapseToStart,
+		collapseToEnd                   : collapseToEnd,
+		collapseToStart                 : collapseToStart,
 
-		insertTextBehind                  : insertTextBehind,
+		insertTextBehind                : insertTextBehind,
 
-		trim                              : trim,
-		trimBoundaries                    : trimBoundaries,
-		trimClosingOpening                : trimClosingOpening,
+		trim                            : trim,
+		trimBoundaries                  : trimBoundaries,
+		trimClosingOpening              : trimClosingOpening,
 
-		nearestEditingHost                : nearestEditingHost,
+		nearestEditingHost              : nearestEditingHost,
 
-		expandBoundaries                  : expandBoundaries,
-		expandToWord                      : expandToWord,
-		expandToBlock                     : expandToBlock,
-		expandBackwardToVisiblePosition   : expandBackwardToVisiblePosition,
-		expandForwardToVisiblePosition    : expandForwardToVisiblePosition,
+		expandBoundaries                : expandBoundaries,
+		expandToWord                    : expandToWord,
+		expandToBlock                   : expandToBlock,
+		expandBackwardToVisiblePosition : expandBackwardToVisiblePosition,
+		expandForwardToVisiblePosition  : expandForwardToVisiblePosition,
+		envelopeInvisibleCharacters     : envelopeInvisibleCharacters,
 
-		contractBackwardToVisiblePosition : contractBackwardToVisiblePosition,
-
-		envelopeInvisibleCharacters       : envelopeInvisibleCharacters,
-
-		fromBoundaries                    : fromBoundaries,
-		fromPosition                      : fromPosition
+		fromBoundaries                  : fromBoundaries,
+		fromPosition                    : fromPosition
 	};
 });
