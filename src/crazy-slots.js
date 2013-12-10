@@ -57,7 +57,7 @@ define([
 		}
 		var end = boundaries[Math.min(index + distance(boundaries.length - 1),
 		                              boundaries.length - 1)];
-		var range = Range.fromBoundaries(start, end);
+		var range = Ranges.fromBoundaries(start, end);
 		Boundaries.setRange(range, start, end);
 		return range;
 	}

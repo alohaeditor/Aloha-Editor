@@ -85,11 +85,11 @@ require([
 		var simpleMutations = [
 			{
 				deletesRange: true,
-				mutate: mutationFromAction(Typing.actions.deleteBackwards)
+				mutate: mutationFromAction(Typing.actions.deleteBackward)
 			},
 			{
 				deletesRange: true,
-				mutate: mutationFromAction(Typing.actions.deleteForwards)
+				mutate: mutationFromAction(Typing.actions.deleteForward)
 			},
 			{
 				deletesRange: true,
