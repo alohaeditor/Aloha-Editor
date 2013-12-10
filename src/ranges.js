@@ -37,12 +37,28 @@ define([
 	 * If no document element is given, the document element of the calling
 	 * frame's window will be used.
 	 *
-	 * @param  {Document} doc
+	 * @param  {Document=} doc
 	 * @return {?Range} Browser's selected range or null if not selection exists
 	 */
 	function get(doc) {
 		var selection = (doc || document).getSelection();
 		return selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
+	}
+
+	/**
+	 * Sets the given range to the browser selection.  This will cause the
+	 * selection to be visually rendered by the user agent.
+	 *
+	 * @param  {Range} range
+	 * @param  {Document=} doc
+	 * @return {Selection} Browser selection to which the range was set
+	 */
+	function select(range, doc) {
+		doc = doc || range.startContainer.ownerDocument;
+		var selection = doc.getSelection();
+		selection.removeAllRanges();
+		selection.addRange(range);
+		return selection;
 	}
 
 	/**
@@ -83,20 +99,6 @@ define([
 	}
 
 	/**
-	 * Sets the given range to the browser selection.  This will cause the
-	 * selection to be visually rendered by the user agent.
-	 *
-	 * @param  {Range} range
-	 * @return {Selection} Browser selection to which the range was set
-	 */
-	function select(range) {
-		var selection = document.getSelection();
-		selection.removeAllRanges();
-		selection.addRange(range);
-		return selection;
-	}
-
-	/**
 	 * Given the position offsets `left` and `top` (relative to the document),
 	 * returns a collapsed range for the position where the text insertion
 	 * point indicator would be inserted.
@@ -109,20 +111,22 @@ define([
 	 *
 	 * @param  {number} x
 	 * @param  {number} y
+	 * @param  {Document=} doc
 	 * @return {?Range}
 	 */
-	function fromPoint(x, y) {
+	function fromPoint(x, y, doc) {
 		if (x < 0 || y < 0) {
 			return null;
 		}
-		if (document.caretRangeFromPoint) {
-			return document.caretRangeFromPoint(x, y);
+		doc = doc || document;
+		if (doc.caretRangeFromPoint) {
+			return doc.caretRangeFromPoint(x, y);
 		}
-		if (document.caretPositionFromPoint) {
-			var pos = document.caretPositionFromPoint(x, y);
+		if (doc.caretPositionFromPoint) {
+			var pos = doc.caretPositionFromPoint(x, y);
 			return create(pos.offsetNode, pos.offset);
 		}
-		if (document.elementFromPoint) {
+		if (doc.elementFromPoint) {
 			throw 'createFromPoint() unimplemented for this browser';
 		}
 	}
