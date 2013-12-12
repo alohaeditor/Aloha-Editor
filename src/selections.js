@@ -377,7 +377,7 @@ define([
 	 */
 	function dblclick(event, range, focus, previous, expanding) {
 		return {
-			range: Ranges.expandToWord(range),
+			range: Ranges.expand(range, 'word'),
 			focus: 'end'
 		};
 	}
@@ -392,7 +392,7 @@ define([
 	 */
 	function tplclick(event, range, focus, previous, expanding) {
 		return {
-			range: Ranges.expandToBlock(range),
+			range: Ranges.expand(range, 'block'),
 			focus: 'end'
 		};
 	}

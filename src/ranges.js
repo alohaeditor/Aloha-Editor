@@ -84,8 +84,7 @@ define([
 
 	/**
 	 * Checks whether two ranges are equal.  Ranges are equal if their
-	 * corresponding boundary containers and boundary offsets are strictly
-	 * equal.
+	 * corresponding boundary containers and offsets are strictly equal.
 	 *
 	 * @param  {Range} a
 	 * @param  {Range} b
@@ -99,9 +98,11 @@ define([
 	}
 
 	/**
-	 * Given the position offsets `left` and `top` (relative to the document),
-	 * returns a collapsed range for the position where the text insertion
-	 * point indicator would be inserted.
+	 * Creates a range from the horizontal and vertical offset pixel positions
+	 * relative to upper-left corner the document body.
+	 *
+	 * Returns a collapsed range for the position where the text insertion
+	 * indicator would be rendered.
 	 *
 	 * @reference:
 	 * http://dev.w3.org/csswg/cssom-view/#dom-document-caretpositionfrompoint
@@ -128,21 +129,23 @@ define([
 			return create(pos.offsetNode, pos.offset);
 		}
 		if (doc.elementFromPoint) {
-			throw 'createFromPoint() unimplemented for this browser';
+			throw 'fromPoint() unimplemented for this browser';
 		}
 	}
 
 	/**
-	 * Calculates a range according to the given document offset positions.
+	 * Creates a range from the horizontal and vertical offset pixel positions
+	 * relative to upper-left corner the document body.
 	 *
 	 * Will ensure that the range is contained in a content editable node.
 	 *
 	 * @param  {number} x
 	 * @param  {number} y
+	 * @param  {Document=} doc
 	 * @return {?Range} Null if no suitable range can be determined
 	 */
-	function fromPosition(x, y) {
-		var range = fromPoint(x, y);
+	function fromPosition(x, y, doc) {
+		var range = fromPoint(x, y, doc);
 		if (!range) {
 			return null;
 		}
@@ -279,19 +282,23 @@ define([
 	}
 
 	/**
-	 * Expands the range's start and end positions to the nearest word
-	 * boundaries.
+	 * Expands the range's start and end boundaries to contain a word.
+	 *
+	 * A word is a collection of characters terminated by a space or
+	 * punctuation character or a word-breaker (in languages that do not use
+	 * space to delimit word boundaries).
 	 *
 	 * foo b[a]r baz ==> foo [bar] baz
 	 *
+	 * @private
 	 * @param  {Range} range
 	 * @return {Range}
 	 */
 	function expandToWord(range) {
 		var start = Boundaries.fromRangeStart(range);
 		var end = Boundaries.fromRangeEnd(range);
-		var prev = Html.prevWordBoundary(start);
-		var next = Html.nextWordBoundary(end);
+		var prev = Html.prev(start, 'word');
+		var next = Html.next(end, 'word');
 		return fromBoundaries(prev || start, next || end);
 	}
 
@@ -307,6 +314,7 @@ define([
 	 *  | []    |       |       |
 	 *  +-------+       +-------+ ]
 	 *
+	 * @private
 	 * @param  {Range} range
 	 * @return {Range}
 	 */
@@ -319,6 +327,35 @@ define([
 		var len = Dom.nodeLength(node);
 		var end = Html.nextVisualBoundary(Boundaries.create(node, len));
 		return fromBoundaries(Boundaries.create(node, 0), end);
+	}
+
+	/**
+	 * Expands the range to contain the given unit.
+	 *
+	 * The second parameter `unit` specifies the unit with which to expand.
+	 * This value may be one of the following strings:
+	 *
+	 * "word"  -- Expand to completely contain a word.
+	 *
+	 *  It is the smallest semantic unit.  A word is a contigious sequence of
+	 *  characters terminated by a space or puncuation character or a
+	 *  word-breaker (in languages that do not use space to delimit word
+	 *  boundaries).
+	 *
+	 * "block" -- Expand to completely contain the a block.
+	 *
+	 * @param  {Range} range
+	 * @param  {unit}  unit
+	 * @return {Range}
+	 */
+	function expand(range, unit) {
+		if ('word' === unit) {
+			return expandToWord(range);
+		}
+		if ('block' === unit) {
+			return expandToBlock(range);
+		}
+		throw '"' + unit + '"? what\'s that?'
 	}
 
 	/**
@@ -344,42 +381,6 @@ define([
 			} else {
 				range.setEnd(Boundaries.container(end), offset);
 			}
-		}
-		return range;
-	}
-
-	/**
-	 * Expands the range's start position backward to the previous visible
-	 * position.
-	 *
-	 * @param  {Range} range
-	 * @return {Range}
-	 */
-	function expandBackwardToVisiblePosition(range) {
-		var boundary = Html.prevVisualBoundary(Boundaries.fromRangeStart(range));
-		if (boundary) {
-			Boundaries.setRangeStart(range, boundary);
-		}
-		return range;
-	}
-
-	/**
-	 * Expands the range's end position forward to the next furthest visible
-	 * position.
-	 *
-	 * @param  {Range} range
-	 * @return {Range}
-	 */
-	function expandForwardToVisiblePosition(range) {
-		var boundary = Html.nextVisualBoundary(Boundaries.fromRangeEnd(range));
-		if (!boundary) {
-			return range;
-		}
-		if (Boundaries.isTextBoundary(boundary) && !Html.areNextWhiteSpacesSignificant(boundary)) {
-			boundary = Html.prevVisualBoundary(Html.nextVisualBoundary(boundary));
-		}
-		if (boundary) {
-			Boundaries.setRangeEnd(range, boundary);
 		}
 		return range;
 	}
@@ -688,19 +689,16 @@ define([
 		insertTextBehind                : insertTextBehind,
 
 		trim                            : trim,
-		trimBoundaries                  : trimBoundaries,
 		trimClosingOpening              : trimClosingOpening,
+		trimBoundaries                  : trimBoundaries,
+		expandBoundaries                : expandBoundaries,
 
 		nearestEditingHost              : nearestEditingHost,
 
-		expandBoundaries                : expandBoundaries,
-		expandToWord                    : expandToWord,
-		expandToBlock                   : expandToBlock,
-		expandBackwardToVisiblePosition : expandBackwardToVisiblePosition,
-		expandForwardToVisiblePosition  : expandForwardToVisiblePosition,
+		expand                          : expand,
 		envelopeInvisibleCharacters     : envelopeInvisibleCharacters,
 
-		fromBoundaries                  : fromBoundaries,
-		fromPosition                    : fromPosition
+		fromPosition                    : fromPosition,
+		fromBoundaries                  : fromBoundaries
 	};
 });

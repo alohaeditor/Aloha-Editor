@@ -1462,10 +1462,64 @@ define([
 		     : Boundaries.create(node, index + 1);
 	}
 
-	function isBoundaryAtWhiteSpace(boundary) {
-		var text = Boundaries.container(boundary).data;
-		var offset = Boundaries.offset(boundary);
-		return Strings.WHITE_SPACE.test(text.charAt(offset));
+	/**
+	 * Checks whether the given boundary is immediately followed by a
+	 * Strings.WHITE_SPACE character.
+	 *
+	 * Example:
+	 *
+	 * "foo] bar"        (true)
+	 * "foo ]bar"        (false)
+	 * "<i>foo</i>} bar" (true)
+	 * "<i>foo}</i> bar  (false)
+	 *
+	 * @private
+	 * @param  {Boundary} boundary
+	 * @return {boolean}
+	 */
+	function isBeforeWhiteSpace(boundary) {
+		boundary = Boundaries.normalize(boundary);
+		var node, offset;
+		if (Boundaries.isTextBoundary(boundary)) {
+			node = Boundaries.container(boundary);
+			offset = Boundaries.offset(boundary);
+			return Strings.WHITE_SPACE.test(node.data.charAt(offset));
+		}
+		node = Boundaries.nodeAfter(boundary);
+		if (!node || !Dom.isTextNode(node)) {
+			return false;
+		}
+		return Strings.WHITE_SPACE.test(node.data.charAt(0));
+	}
+
+	/**
+	 * Checks whether the given text boundary is immediately preceeded by
+	 * a Strings.WHITE_SPACE character.
+	 *
+	 * Example:
+	 *
+	 * "foo [bar"        (true)
+	 * "foo[ bar"        (false)
+	 * "foo {<i>bar</i>" (true)
+	 * "foo <i>{bar</i>" (false)
+	 *
+	 * @private
+	 * @param  {Boundary} boundary
+	 * @return {boolean}
+	 */
+	function isAfterWhiteSpace(boundary) {
+		boundary = Boundaries.normalize(boundary);
+		var node, offset;
+		if (Boundaries.isTextBoundary(boundary)) {
+			node = Boundaries.container(boundary);
+			offset = Boundaries.offset(boundary) - 1;
+			return Strings.WHITE_SPACE.test(node.data.charAt(offset));
+		}
+		node = Boundaries.nodeBefore(boundary);
+		if (!node || !Dom.isTextNode(node)) {
+			return false;
+		}
+		return Strings.WHITE_SPACE.test(node.data.substr(-1));
 	}
 
 	function isVisibleNodeBoundary(boundary) {
@@ -1503,32 +1557,61 @@ define([
 		return Boundaries.raw(Boundaries.container(boundary), offset);
 	}
 
-	function wordBoundaryOffset(boundary, rgxp) {
-		var text = Boundaries.container(boundary).data;
+	/**
+	 * Returns the next word boundary offset ahead of the given text boundary.
+	 *
+	 * Returns -1 if no word boundary is found.
+	 *
+	 * @private
+	 * @param  {Boundary} boundary
+	 * @return {number}
+	 */
+	function nextWordBoundaryOffset(boundary) {
+		var node   = Boundaries.container(boundary);
 		var offset = Boundaries.offset(boundary);
-		var index = text.substr(offset).search(rgxp);
-		// Because there may be no word boundaries in the boundary container
+		var text   = node.data.substr(offset);
+		var index  = text.search(Strings.WORD_BOUNDARY);
 		if (-1 === index) {
 			return -1
 		}
 		// Because text right after the boundary may have started with a word
 		// boundary
 		if (0 === index) {
-			index++;
+			return offset + index + 1;
 		}
 		return offset + index;
 	}
 
-	function nextWordBoundaryOffset(boundary) {
-		return wordBoundaryOffset(boundary, Strings.WORD_BOUNDARY);
-	}
-
+	/**
+	 * Returns the next word boundary offset behind the given text boundary.
+	 *
+	 * Returns -1 if no word boundary is found.
+	 *
+	 * @private
+	 * @param  {Boundary} boundary
+	 * @return {number}
+	 */
 	function prevWordBoundaryOffset(boundary) {
-		return wordBoundaryOffset(boundary, Strings.WORD_BOUNDARY_FROM_END);
+		var node   = Boundaries.container(boundary);
+		var offset = Boundaries.offset(boundary);
+		var text   = node.data.substr(0, offset);
+		var index  = text.search(Strings.WORD_BOUNDARY_FROM_END);
+		if (-1 === index) {
+			return -1
+		}
+		// Because text right before the boundary may have ended with a word
+		// boundary
+		if (offset === index + 1) {
+			return index;
+		}
+		return index + 1;
 	}
 
 	/**
-	 * Looks forwards in the node tree for the nearest word boundary position.
+	 * Returns the next word boundary position.
+	 *
+	 * This will always be a position in front of a word or punctuation, but
+	 * never in front of a space.
 	 *
 	 * @param  {Boundary} boundary
 	 * @return {Boundary}
@@ -1556,11 +1639,19 @@ define([
 		}
 		next = Boundaries.raw(Boundaries.container(boundary), offset);
 		next = normalizeBoundary(next);
-		return isBoundaryAtWhiteSpace(next) ? nextWordBoundary(next) : next;
+		return isBeforeWhiteSpace(next) ? nextWordBoundary(next) : next;
 	}
 
+	/**
+	 * Returns the previous word boundary position.
+	 *
+	 * This will always be a position in front of a word or punctuation, but
+	 * never in front of a space.
+	 *
+	 * @param  {Boundary} boundary
+	 * @return {Boundary}
+	 */
 	function prevWordBoundary(boundary) {
-		boundary = normalizeBoundary(boundary);
 		if (Boundaries.isNodeBoundary(boundary)) {
 			var node = Boundaries.prevNode(boundary);
 			if (isVoidType(node)) {
@@ -1569,9 +1660,10 @@ define([
 			if (hasLinebreakingStyle(node)) {
 				return normalizeBoundary(Boundaries.prev(boundary));
 			}
-			return prevWordBoundary(Boundaries.prevRawBoundary(boundary));
+			var next = Boundaries.prevRawBoundary(boundary);
+			return isAfterWhiteSpace(next) ? normalizeBoundary(next) : prevWordBoundary(next);
 		}
-		if (Boundaries.isAtRawEnd(boundary)) {
+		if (Boundaries.isAtRawStart(boundary)) {
 			return prevWordBoundary(Boundaries.prevRawBoundary(boundary));
 		}
 		var next;
@@ -1581,21 +1673,35 @@ define([
 			return isWordbreakingNode(Boundaries.prevNode(next)) ? next : prevWordBoundary(next);
 		}
 		next = Boundaries.raw(Boundaries.container(boundary), offset);
-		next = normalizeBoundary(next);
-		return isBoundaryAtWhiteSpace(next) ? prevWordBoundary(next) : next;
+		return isBeforeWhiteSpace(next) ? prevWordBoundary(next) : normalizeBoundary(next);
 	}
 
-
 	/**
-	 * Returns the next boundary position that is visually behind the given
-	 * boundary.
+	 * Moves the boundary backwards by a unit measure.
+	 *
+	 * The second parameter `unit` specifies the unit with which to move the
+	 * boundary.  This value may be one of the following strings:
+	 *
+	 * "char" -- Move behind the next visible character.
+	 *
+	 * "word" -- Move behind the next word.
+	 *
+	 * It is the smallest semantic unit.  A word is a contigious sequence of
+	 * characters terminated by a space or puncuation character or a
+	 * word-breaker (in languages that do not use space to delimit word
+	 * boundaries).
+	 *
+	 * "offset" -- Move behind the next visual offset.
+	 *
+	 * A visual offset is the smallest unit of consumed space.  This can be a
+	 * line break, or a visible character.
 	 *
 	 * @param  {Boundary} boundary
-	 * @param  {string=}  stride   One of "char", "word", or "visual" (default)
+	 * @param  {string=} unit Defaults to "offset"
 	 * @return {Boundary}
 	 */
-	function prev(boundary, stride) {
-		switch (stride) {
+	function prev(boundary, unit) {
+		switch (unit) {
 		case 'char':
 			return prevCharacterBoundary(boundary);
 		case 'word':
@@ -1606,15 +1712,31 @@ define([
 	}
 
 	/**
-	 * Returns the next boundary position that is visually ahead the given
-	 * boundary.
+	 * Moves the boundary forward by a unit measure.
+	 *
+	 * The second parameter `unit` specifies the unit with which to move the
+	 * boundary.  This value may be one of the following strings:
+	 *
+	 * "char"   -- Move infront of the next visible character.
+	 *
+	 * "word"   -- Move infront of the next word.
+	 *
+	 * It is the smallest semantic unit.  A word is a contigious sequence of
+	 * characters terminated by a space or puncuation character or a
+	 * word-breaker (in languages that do not use space to delimit word
+	 * boundaries).
+	 *
+	 * "offset" -- Move infront of the next visual offset.
+	 *
+	 * A visual offset is the smallest unit of consumed space.  This can be a
+	 * line break, or a visible character.
 	 *
 	 * @param  {Boundary} boundary
-	 * @param  {string=}  stride   One of "char", "word", or "visual" (default)
+	 * @param  {unit=}    unit Defaults to "offset"
 	 * @return {Boundary}
 	 */
-	function next(boundary, stride) {
-		switch (stride) {
+	function next(boundary, unit) {
+		switch (unit) {
 		case 'char':
 			return nextCharacterBoundary(boundary);
 		case 'word':
@@ -1624,6 +1746,17 @@ define([
 		}
 	}
 
+	/**
+	 * Checks whether a boundary represents a position that at the apparent end
+	 * of its container's content.
+	 *
+	 * Unlike Boundaries.isAtEnd(), this considers the boundary position with
+	 * respect to how it is visually represented, rather than simply where it
+	 * is in the DOM tree.
+	 *
+	 * @param  {Boundary} boundary
+	 * @return {boolean}
+	 */
 	function isAtEnd(boundary) {
 		if (Boundaries.isAtEnd(boundary)) {
 			return true;
@@ -1639,6 +1772,17 @@ define([
 		return !NOT_WSP.test(textnode.data.substr(Boundaries.offset(boundary)));
 	}
 
+	/**
+	 * Checks whether a boundary represents a position that at the apparent
+	 * start of its container's content.
+	 *
+	 * Unlike Boundaries.isAtStart(), this considers the boundary position with
+	 * respect to how it is visually represented, rather than simply where it
+	 * is in the DOM tree.
+	 *
+	 * @param  {Boundary} boundary
+	 * @return {boolean}
+	 */
 	function isAtStart(boundary) {
 		if (Boundaries.isAtStart(boundary)) {
 			return true;
@@ -1655,11 +1799,27 @@ define([
 
 	}
 
+	/**
+	 * Like Boundaries.nextNode(), but that it considers whether a boundary is
+	 * at the end position with respect to how the boundary is visual
+	 * represented, rather than simply where it is in the DOM structure.
+	 *
+	 * @param  {Boundary} boundary
+	 * @return {Node}
+	 */
 	function nextNode(boundary) {
 		var node = Boundaries.nextNode(boundary);
 		return isAtEnd(boundary) ? node.parentNode : node;
 	}
 
+	/**
+	 * Like Boundaries.prevNode(), but that it considers whether a boundary is
+	 * at the start position with respect to how the boundary is visual
+	 * represented, rather than simply where it is in the DOM structure.
+	 *
+	 * @param  {Boundary} boundary
+	 * @return {Node}
+	 */
 	function prevNode(boundary) {
 		var node = Boundaries.prevNode(boundary);
 		return isAtStart(boundary) ? node.parentNode : node;

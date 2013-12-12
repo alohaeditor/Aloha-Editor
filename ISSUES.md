@@ -51,3 +51,8 @@ you don't want those: <em contentEditable="true" exclude="a em strong span">
 ---
 
 http://mxr.mozilla.org/mozilla-central/source/editor/libeditor/base/nsEditor.cpp#2698
+
+
+
+http://www.mail-archive.com/public-webapps@w3.org/msg04784.html
+http://msdn.microsoft.com/en-us/library/ms536421%28VS.85%29.aspx

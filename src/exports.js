@@ -363,9 +363,7 @@ define([
 	exports['ranges']['collapseToEnd'] = Ranges.collapseToEnd;
 	exports['ranges']['collapseToStart'] = Ranges.collapseToStart;
 	exports['ranges']['expandBoundaries'] = Ranges.expandBoundaries;
-	exports['ranges']['expandToWord'] = Ranges.expandToWord;
-	exports['ranges']['expandForwardToVisiblePosition'] = Ranges.expandForwardToVisiblePosition;
-	exports['ranges']['expandBackwardToVisiblePosition'] = Ranges.expandBackwardToVisiblePosition;
+	exports['ranges']['expand'] = Ranges.expand;
 	exports['ranges']['insertTextBehind'] = Ranges.insertTextBehind;
 	exports['ranges']['trim'] = Ranges.trim;
 	exports['ranges']['nearestEditingHost'] = Ranges.getNearestEditingHost;
@@ -377,7 +375,7 @@ define([
 	exports['strings']['dashesToCamelCase'] = Strings.dashesToCamelCase;
 	exports['strings']['camelCaseToDashes'] = Strings.camelCaseToDashes;
 	exports['strings']['splitIncl'] = Strings.splitIncl;
-	exports['strings']['empty'] = Strings.empty;
+	exports['strings']['isEmpty'] = Strings.isEmpty;
 	exports['strings']['isControlCharacter'] = Strings.isControlCharacter;
 
 	exports['traversing'] = Traversing;

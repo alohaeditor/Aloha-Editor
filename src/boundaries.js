@@ -10,12 +10,14 @@ define([
 	'misc',
 	'arrays',
 	'assert',
+	'strings',
 	'predicates'
 ], function Boundaries(
 	Dom,
 	Misc,
 	Arrays,
 	Asserts,
+	Strings,
 	Predicates
 ) {
 	'use strict';
@@ -60,14 +62,13 @@ define([
 		return raw(node.parentNode, Dom.nodeIndex(node));
 	}
 
+	function fromEndOfNode(node) {
+		return raw(node, Dom.nodeLength(node));
+	}
+
 	function jumpOver(boundary) {
 		var node = nextNode(boundary);
 		return raw(node.parentNode, Dom.nodeIndex(node) + 1);
-	}
-
-	function jumpToEnd(boundary) {
-		var node = container(boundary);
-		return raw(node, Dom.nodeLength(node));
 	}
 
 	/**
@@ -367,7 +368,7 @@ define([
 			return raw(container(boundary), 0);
 		}
 		node = Dom.nthChild(node, offset(boundary) - 1);
-		return jumpToEnd(boundary);
+		return fromEndOfNode(node);
 	}
 
 	function nextRawBoundary(boundary) {
@@ -376,7 +377,7 @@ define([
 			return jumpOver(boundary);
 		}
 		if (isTextBoundary(boundary)) {
-			return jumpToEnd(boundary);
+			return fromEndOfNode(node);
 		}
 		return raw(Dom.nthChild(node, offset(boundary)), 0);
 	}
@@ -531,6 +532,7 @@ define([
 		fromRangeStart  : fromRangeStart,
 		fromRangeEnd    : fromRangeEnd,
 		fromNode        : fromNode,
+		fromEndOfNode   : fromEndOfNode,
 
 		setRange        : setRange,
 		setRanges       : setRanges,
@@ -549,7 +551,6 @@ define([
 		nextRawBoundary : nextRawBoundary,
 		prevRawBoundary : prevRawBoundary,
 
-		jumpToEnd       : jumpToEnd,
 		jumpOver        : jumpOver,
 
 		nextWhile       : nextWhile,

@@ -49,12 +49,15 @@ define([
 
 	function delete_(direction, alohaEvent) {
 		var range = alohaEvent.range;
+		var boundary;
 		if (range.collapsed) {
-			range = (
-				direction
-					? Ranges.expandForwardToVisiblePosition
-					: Ranges.expandBackwardToVisiblePosition
-			)(range);
+			if (direction) {
+				boundary = Boundaries.fromRangeEnd(range);
+				Boundaries.setRangeEnd(range, Html.next(boundary) || boundary);
+			} else {
+				boundary = Boundaries.fromRangeStart(range);
+				Boundaries.setRangeStart(range, Html.prev(boundary) || boundary);
+			}
 		}
 		Editing.delete(
 			Ranges.envelopeInvisibleCharacters(range),
