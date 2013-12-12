@@ -794,7 +794,7 @@ define([
 	function removeStyle(elem, styleName) {
 		if (Browsers.hasRemoveProperty) {
 			elem.style.removeProperty(styleName);
-			if (Strings.empty(elem.getAttribute('style'))) {
+			if (Strings.isEmpty(elem.getAttribute('style'))) {
 				elem.removeAttribute('style');
 			}
 		} else {
@@ -816,7 +816,7 @@ define([
 				'i'
 			);
 			style = style.replace(stripRegex, '');
-			if (!Strings.empty(style)) {
+			if (!Strings.isEmpty(style)) {
 				setAttr(elem, 'style', style);
 			} else {
 				removeAttr(elem, 'style');
@@ -873,7 +873,7 @@ define([
 	 * @param {boolean}
 	 */
 	function hasAttrs(node) {
-		return !attrs(node).map(Arrays.second).every(Strings.empty);
+		return !attrs(node).map(Arrays.second).every(Strings.isEmpty);
 	}
 
 	/**
