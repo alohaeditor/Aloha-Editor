@@ -355,7 +355,7 @@ define([
 		if ('block' === unit) {
 			return expandToBlock(range);
 		}
-		throw '"' + unit + '"? what\'s that?'
+		throw '"' + unit + '"? what\'s that?';
 	}
 
 	/**
@@ -393,7 +393,6 @@ define([
 	 * @param {Function=} ignoreLeft
 	 * @param {Function=} ignoreRight
 	 * @return {Range}
-	 *         The given range, modified.
 	 */
 	function trimClosingOpening(range, ignoreLeft, ignoreRight) {
 		ignoreLeft = ignoreLeft || Fn.returnFalse;
@@ -522,6 +521,7 @@ define([
 	 * This function is a hack to work around the problems that user agents
 	 * have in determining the bounding client rect for collapsed ranges.
 	 *
+	 * @private
 	 * @param  {Range}   range
 	 * @param  {boolean} isStart
 	 * @return {Object.<string, number>}
@@ -662,7 +662,7 @@ define([
 	 * the selection may be inside the editable.
 	 *
 	 * @param {Range} range
-	 * @param {Element} Editing host, or null if none is found.
+	 * @param {?Element} Editing host, or null if none is found
 	 */
 	function nearestEditingHost(range) {
 		var editable = Dom.editingHost(range.startContainer);

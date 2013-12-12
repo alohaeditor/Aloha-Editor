@@ -44,17 +44,12 @@ define([
 ) {
 	'use strict';
 
-	var nonBlockDisplayValuesMap = {
-		'inline'       : true,
-		'inline-block' : true,
-		'inline-table' : true,
-		'none'         : true
-	};
-
 	/**
-	 * Non-block-level elements which are nevertheless line breaking.
+	 * Tags representing non-block-level elements which are nevertheless line
+	 * breaking.
 	 *
-	 * @type {Object}
+	 * @private
+	 * @type {Object.<string, boolean}
 	 */
 	var LINE_BREAKING_VOID_ELEMENTS = {
 		'BR'  : true,
@@ -62,6 +57,12 @@ define([
 		'IMG' : true
 	};
 
+	/**
+	 * Tags representing list container elements.
+	 *
+	 * @private
+	 * @type {Object.<string, boolean}
+	 */
 	var LIST_CONTAINERS = {
 		'OL'   : true,
 		'UL'   : true,
@@ -69,6 +70,12 @@ define([
 		'MENU' : true
 	};
 
+	/**
+	 * Tags representing list item elements.
+	 *
+	 * @private
+	 * @type {Object.<string, boolean}
+	 */
 	var LIST_ITEMS = {
 		'LI' : true,
 		'DT' : true,
@@ -76,15 +83,16 @@ define([
 	};
 
 	/**
-	 * Elements which cannot be used a range containers.
+	 * Tags representing elements which cannot be used as range containers.
 	 *
-	 * It would be impossible to cause the browser to maintain a selection
-	 * inside any of these elements.
+	 * It is impossible to have the browser to maintain a selection inside any
+	 * of these elements.
 	 *
-	 * For example, if a range is to be set inside of a list element (eg UL),
-	 * the range would have to use one of UL's children (LI) elements as its
+	 * If a range is to be set inside of a list element, for example, the range
+	 * would have to use one of UL's or OL's children (LI) elements as its
 	 * start or end container.
 	 *
+	 * @pravate
 	 * @type {Object.<string, boolean>}
 	 */
 	var INVALID_RANGE_CONTAINERS = {
@@ -132,6 +140,44 @@ define([
 	};
 
 	/**
+	 * Tags which represent elements that do not imply a word boundary.
+	 *
+	 * eg: <b>bar</b>camp where there is no word boundary in "barcamp".
+	 *
+	 * In HTML5 parlance, these would be many of those elements that fall in
+	 * the category of "Text Level Semantics":
+	 * http://www.w3.org/TR/html5/text-level-semantics.html
+	 *
+	 * @type {Object.<string, boolean>}
+	 */
+	var IN_WORD_TAGS = {
+		'A'       : true,
+		'ABBR'    : true,
+		'B'       : true,
+		'CITE'    : true,
+		'CODE'    : true,
+		'DEL'     : true,
+		'EM'      : true,
+		'I'       : true,
+		'INS'     : true,
+		'S'       : true,
+		'SMALL'   : true,
+		'SPAN'    : true,
+		'STRONG'  : true,
+		'SUB'     : true,
+		'SUP'     : true,
+		'U'       : true,
+		'#text'   : true
+	};
+
+	var nonBlockDisplayValuesMap = {
+		'inline'       : true,
+		'inline-block' : true,
+		'inline-table' : true,
+		'none'         : true
+	};
+
+	/**
 	 * Checks whether the given node is rendered with block style.
 	 *
 	 * A block node is either an Element whose "display" property does not have
@@ -141,9 +187,8 @@ define([
 	 * Note that this function depends on style inheritance which only works if
 	 * the given node is attached to the document.
 	 *
-	 * @param {DOMObject} node
+	 * @param  {Node} node
 	 * @return {Boolean}
-	 *         True if the given node is rendered with block style.
 	 */
 	function hasBlockStyle(node) {
 		if (!node) {
@@ -169,9 +214,8 @@ define([
 	 * Note that this function depends on style inheritance which only works if
 	 * the given node is attached to the document.
 	 *
-	 * @param {DOMObject} node
+	 * @param  {Node} node
 	 * @return {Boolean}
-	 *         True if the given node is rendered with inline style.
 	 */
 	function hasInlineStyle(node) {
 		return !hasBlockStyle(node);
@@ -179,6 +223,9 @@ define([
 
 	/**
 	 * Returns true for nodes that introduce linebreaks.
+	 *
+	 * @param  {Node} node
+	 * @return {boolean}
 	 */
 	function hasLinebreakingStyle(node) {
 		return LINE_BREAKING_VOID_ELEMENTS[node.nodeName]
@@ -186,6 +233,16 @@ define([
 		    || hasBlockStyle(node);
 	}
 
+	/**
+	 * Checks whether the given node should be treated like a void element.
+	 *
+	 * Void elements like IMG and INPUT are considered as void type, but so are
+	 * "block" (elements inside of editale regions that are not themselves
+	 * editable).
+	 *
+	 * @param  {Node} node
+	 * @return {boolean}
+	 */
 	function isVoidType(node) {
 		return Predicates.isVoidNode(node) || !Dom.isEditableNode(node);
 	}
@@ -194,8 +251,8 @@ define([
 	 * Checks whether the given string represents a whitespace preservation
 	 * style property.
 	 *
-	 * @param {String} string
-	 * @return {Boolean}
+	 * @param  {string} string
+	 * @return {boolean}
 	 */
 	function isWhiteSpacePreserveStyle(cssWhiteSpaceValue) {
 		return cssWhiteSpaceValue === 'pre'
@@ -213,8 +270,9 @@ define([
 	 * http://code.google.com/p/rangy/source/browse/trunk/src/js/modules/rangy-cssclassapplier.js
 	 * under the MIT license.
 	 *
-	 * @param {DOMObject} node
-	 * @return {Boolean}
+	 * @private
+	 * @param  {Node} node
+	 * @return {boolean}
 	 */
 	function isUnrenderedWhitespaceNoBlockCheck(node) {
 		if (3 !== node.nodeType) {
@@ -309,44 +367,6 @@ define([
 			}
 		}
 		point.setFrom(cursor);
-		return true;
-	}
-
-	/**
-	 * Tries to move the given boundary to the start of line, skipping over any
-	 * unrendered nodes, or if that fails to the end of line (after a br element
-	 * if present), and for the last line in a block, to the very end of the
-	 * block.
-	 *
-	 * If the selection is inside a block with only a single empty line (empty
-	 * except for unrendered nodes), and both boundary points are normalized,
-	 * the selection will be collapsed to the start of the block.
-	 *
-	 * For some operations it's useful to think of a block as a number of lines,
-	 * each including its respective br and any preceding unrendered whitespace
-	 * and in case of the last line, also any following unrendered whitespace.
-	 *
-	 * @param {Cursor} point
-	 * @return {Boolean}
-	 *         True if the cursor is moved.
-	 */
-	function normalizeBoundary(point) {
-		if (skipUnrenderedToStartOfLine(point)) {
-			return true;
-		}
-		if (!skipUnrenderedToEndOfLine(point)) {
-			return false;
-		}
-		if ('BR' === point.node.nodeName) {
-			point.skipNext();
-			// Because, if this is the last line in a block, any unrendered
-			// whitespace after the last br will not constitute an independent
-			// line, and as such we must include it in the last line.
-			var endOfBlock = point.clone();
-			if (skipUnrenderedToEndOfLine(endOfBlock) && endOfBlock.atEnd) {
-				point.setFrom(endOfBlock);
-			}
-		}
 		return true;
 	}
 
@@ -512,8 +532,8 @@ define([
 	/**
 	 * Checks whether the given node has any rendered children inside of it.
 	 *
-	 * @param {DOMObject} node
-	 * @retur {DOMObject}
+	 * @param {Node} node
+	 * @retur {boolean}
 	 */
 	function hasRenderedContent(node) {
 		return Dom.isTextNode(node)
@@ -541,7 +561,7 @@ define([
 	 * conformant Trident engines which render empty editable block level
 	 * elements with one line height.
 	 *
-	 * @param {DOMObject} elem
+	 * @param {Element} elem
 	 */
 	function prop(elem) {
 		if (Browsers.msie || !Predicates.isBlockNode(elem)) {
@@ -573,14 +593,14 @@ define([
 	}
 
 	/**
-	 * Creates a function that will insert the DOM Object that is passed to it
-	 * into the given node, only if it is valid to do so. If insertion is not
-	 * done because it is deemed invalid, then false is returned, other wise the
-	 * function returns true.
+	 * Creates a function that will insert the nodes that are passed to it at
+	 * the given boundary, if it is valid to do so.
+	 *
+	 * Returns true unless insertion fails because it is deemed invalid.
 	 *
 	 * @private
 	 * @param  {Boundary} boundary
-	 * @return {Function(Node, OutParameter):boolean}
+	 * @return {function(Node, OutParameter):boolean}
 	 */
 	function createTransferFunction(boundary) {
 		var ref = Boundaries.nextNode(boundary);
@@ -613,8 +633,8 @@ define([
 	 * @reference http://www.htmlhelp.com/reference/html40/block.html
 	 *
 	 * @private
-	 * @param {DOMObject} node
-	 * @return {Boolean}
+	 * @param  {Node} node
+	 * @return {boolean}
 	 */
 	function isTransferable(node) {
 		return !hasLinebreakingStyle(node);
@@ -624,8 +644,9 @@ define([
 	 * Finds a suitable container in which to move nodes that are to the right of
 	 * `breaker` when removing a visual line break.
 	 *
-	 * @param {DOMObject} linebreak
-	 * @return {DOMObject}
+	 * @private
+	 * @param  {Node} linebreak
+	 * @return {Node}
 	 */
 	function findTransferTarget(node, limit) {
 		if (!isRendered(node)) {
@@ -647,9 +668,9 @@ define([
 	 * Whether the given node can be removed.
 	 *
 	 * @private
-	 * @param {DOMObject} node
-	 * @param {OutParameter(Boolean):Boolean} out_continueMoving
-	 * @return {Boolean}
+	 * @param  {Node} node
+	 * @param  {OutParameter(boolean):boolean} out_continueMoving
+	 * @return {boolean}
 	 */
 	function cannotMove(node, out_continueMoving) {
 		return !out_continueMoving() || !isTransferable(node);
@@ -762,7 +783,7 @@ define([
 	/**
 	 * Checks whether or not the given BR element is significant or not.
 	 *
-	 * @param {Element} br
+	 * @param  {Element} br
 	 * @return {boolean}
 	 */
 	function isSignificantBr(br) {
@@ -780,19 +801,15 @@ define([
 		               || ((prev && next) && Predicates.isInlineNode(br.parentNode));
 
 		significant = significant || (
-			(
-				prev && ('BR' === prev.nodeName || !hasLinebreakingStyle(prev))
-			) && (
-				next && ('BR' === next.nodeName || !hasLinebreakingStyle(next))
-			)
+			(prev && ('BR' === prev.nodeName || !hasLinebreakingStyle(prev)))
+			&&
+			(next && ('BR' === next.nodeName || !hasLinebreakingStyle(next)))
 		);
 
 		significant = significant || (
-			(
-				prev && ('BR' === prev.nodeName)
-			) || (
-				next && ('BR' === next.nodeName)
-			)
+			(prev && ('BR' === prev.nodeName))
+			||
+			(next && ('BR' === next.nodeName))
 		);
 
 		return significant || (!prev && !next);
@@ -831,7 +848,7 @@ define([
 	 *
 	 * @param  {Boundary} boundary
 	 * @param  {Object} context
-	 * @return {Boundary}
+	 * @return {?Boundary}
 	 *         The "forward position".  This is the deepest node that is
 	 *         visually adjacent to the newly created line.
 	 */
@@ -1138,7 +1155,7 @@ define([
 	 * ignored).
 	 *
 	 * @param  {Boundary} boundary Text boundary
-	 * @return {Boundary}
+	 * @return {?Boundary}
 	 */
 	function nextCharacterBoundary(boundary) {
 		Asserts.assertFalse(
@@ -1159,7 +1176,7 @@ define([
 	 * ignored).
 	 *
 	 * @param  {Boundary} boundary Text boundary
-	 * @return {Boundary}
+	 * @return {?Boundary}
 	 */
 	function prevCharacterBoundary(boundary) {
 		Asserts.assertFalse(
@@ -1389,37 +1406,6 @@ define([
 		return stepVisualBoundary(boundary, backwardSteps);
 	}
 
-	/**
-	 * Tag names which represent elements that do not imply a word boundary.
-	 *
-	 * eg: <b>bar</b>camp where there is no word boundary in "barcamp".
-	 *
-	 * In HTML5 parlance, these would be many of those elements that fall in
-	 * the category of "Text Level Semantics":
-	 * http://www.w3.org/TR/html5/text-level-semantics.html
-	 *
-	 * @type {Object.<string, boolean>}
-	 */
-	var IN_WORD_TAGS = {
-		'A'       : true,
-		'ABBR'    : true,
-		'B'       : true,
-		'CITE'    : true,
-		'CODE'    : true,
-		'DEL'     : true,
-		'EM'      : true,
-		'I'       : true,
-		'INS'     : true,
-		'S'       : true,
-		'SMALL'   : true,
-		'SPAN'    : true,
-		'STRONG'  : true,
-		'SUB'     : true,
-		'SUP'     : true,
-		'U'       : true,
-		'#text'   : true
-	};
-
 	function isWordbreakingNode(node) {
 		return !IN_WORD_TAGS[node.nodeName];
 	}
@@ -1428,7 +1414,7 @@ define([
 	 * Looks backwards in the node tree for the nearest word boundary position.
 	 *
 	 * @param  {Boundary} boundary
-	 * @return {Boundary}
+	 * @return {?Boundary}
 	 */
 	function prevWordBoundary(boundary) {
 		if (Boundaries.isAtStart(boundary)) {
@@ -1572,7 +1558,7 @@ define([
 		var text   = node.data.substr(offset);
 		var index  = text.search(Strings.WORD_BOUNDARY);
 		if (-1 === index) {
-			return -1
+			return -1;
 		}
 		// Because text right after the boundary may have started with a word
 		// boundary
@@ -1597,7 +1583,7 @@ define([
 		var text   = node.data.substr(0, offset);
 		var index  = text.search(Strings.WORD_BOUNDARY_FROM_END);
 		if (-1 === index) {
-			return -1
+			return -1;
 		}
 		// Because text right before the boundary may have ended with a word
 		// boundary
@@ -1652,6 +1638,7 @@ define([
 	 * @return {Boundary}
 	 */
 	function prevWordBoundary(boundary) {
+		var next;
 		if (Boundaries.isNodeBoundary(boundary)) {
 			var node = Boundaries.prevNode(boundary);
 			if (isVoidType(node)) {
@@ -1660,13 +1647,12 @@ define([
 			if (hasLinebreakingStyle(node)) {
 				return normalizeBoundary(Boundaries.prev(boundary));
 			}
-			var next = Boundaries.prevRawBoundary(boundary);
+			next = Boundaries.prevRawBoundary(boundary);
 			return isAfterWhiteSpace(next) ? normalizeBoundary(next) : prevWordBoundary(next);
 		}
 		if (Boundaries.isAtRawStart(boundary)) {
 			return prevWordBoundary(Boundaries.prevRawBoundary(boundary));
 		}
-		var next;
 		var offset = prevWordBoundaryOffset(boundary);
 		if (-1 === offset) {
 			next = Boundaries.prevRawBoundary(boundary);

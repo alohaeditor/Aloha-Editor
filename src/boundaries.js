@@ -66,11 +66,6 @@ define([
 		return raw(node, Dom.nodeLength(node));
 	}
 
-	function jumpOver(boundary) {
-		var node = nextNode(boundary);
-		return raw(node.parentNode, Dom.nodeIndex(node) + 1);
-	}
-
 	/**
 	 * Normalizes the boundary point (represented by a container and an offset
 	 * tuple) such that it will not point to the start or end of a text node.
@@ -299,6 +294,67 @@ define([
 	}
 
 	/**
+	 * Returns the node that is after the given boundary position.
+	 *
+	 * Will return null if the given boundary is at the end position, otherwise
+	 * returns the node that is after the given boundary position.
+	 *
+	 * Note that the given boundary will be normalized.
+	 *
+	 * @param  {Boundary} boundary
+	 * @return {Node}.
+	 */
+	function nodeAfter(boundary) {
+		boundary = normalize(boundary);
+		return isAtEnd(boundary) ? null : Dom.nthChild(container(boundary), offset(boundary));
+	}
+
+	/**
+	 * The node that is before the given boundary position.
+	 *
+	 * Note that the given boundary will be normalized.
+	 *
+	 * Will returns null if the given boundary is at the start position,
+	 * otherwise returns the node after `boundary`.
+	 *
+	 * @param  {Boundary} boundary
+	 * @return {Node}
+	 */
+	function nodeBefore(boundary) {
+		boundary = normalize(boundary);
+		return isAtStart(boundary) ? null : Dom.nthChild(container(boundary), offset(boundary) - 1);
+	}
+
+	/**
+	 * Returns the node after the given boundary, or the boundary's container
+	 * if the boundary is at the end position.
+	 *
+	 * @param  {Boundary} boundary
+	 * @return {Node}
+	 */
+	function nextNode(boundary) {
+		boundary = normalize(boundary);
+		return nodeAfter(boundary) || container(boundary);
+	}
+
+	/**
+	 * Returns the node before the given boundary, or the boundary container if
+	 * the boundary is at the end position.
+	 *
+	 * @param  {Boundary} boundary
+	 * @return {Node}
+	 */
+	function prevNode(boundary) {
+		boundary = normalize(boundary);
+		return nodeBefore(boundary) || container(boundary);
+	}
+
+	function jumpOver(boundary) {
+		var node = nextNode(boundary);
+		return raw(node.parentNode, Dom.nodeIndex(node) + 1);
+	}
+
+	/**
 	 * Returns a boundary that is at the previous position to the given.
 	 *
 	 * If the given boundary represents a position inside of a text node, the
@@ -435,62 +491,6 @@ define([
 			callback(pos);
 			pos = step(pos);
 		}
-	}
-
-	/**
-	 * Returns the node that is after the given boundary position.
-	 *
-	 * Will return null if the given boundary is at the end position, otherwise
-	 * returns the node that is after the given boundary position.
-	 *
-	 * Note that the given boundary will be normalized.
-	 *
-	 * @param  {Boundary} boundary
-	 * @return {Node}.
-	 */
-	function nodeAfter(boundary) {
-		boundary = normalize(boundary);
-		return isAtEnd(boundary) ? null : Dom.nthChild(container(boundary), offset(boundary));
-	}
-
-	/**
-	 * The node that is before the given boundary position.
-	 *
-	 * Note that the given boundary will be normalized.
-	 *
-	 * Will returns null if the given boundary is at the start position,
-	 * otherwise returns the node after `boundary`.
-	 *
-	 * @param  {Boundary} boundary
-	 * @return {Node}
-	 */
-	function nodeBefore(boundary) {
-		boundary = normalize(boundary);
-		return isAtStart(boundary) ? null : Dom.nthChild(container(boundary), offset(boundary) - 1);
-	}
-
-	/**
-	 * Returns the node after the given boundary, or the boundary's container
-	 * if the boundary is at the end position.
-	 *
-	 * @param  {Boundary} boundary
-	 * @return {Node}
-	 */
-	function nextNode(boundary) {
-		boundary = normalize(boundary);
-		return nodeAfter(boundary) || container(boundary);
-	}
-
-	/**
-	 * Returns the node before the given boundary, or the boundary container if
-	 * the boundary is at the end position.
-	 *
-	 * @param  {Boundary} boundary
-	 * @return {Node}
-	 */
-	function prevNode(boundary) {
-		boundary = normalize(boundary);
-		return nodeBefore(boundary) || container(boundary);
 	}
 
 	/**
