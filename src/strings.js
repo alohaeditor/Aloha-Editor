@@ -249,6 +249,8 @@ define([], function Strings() {
 
 	var wbc = WORD_BREAKING_CHARACTERS.join('');
 
+	var WORD_BREAKING_CHARACTER = new RegExp('[' + wbc + ']');
+
 	/**
 	 * Matches a word boundary.
 	 *
@@ -415,6 +417,7 @@ define([], function Strings() {
 		NON_BREAKING_SPACE            : NON_BREAKING_SPACE,
 		WORD_BOUNDARY                 : WORD_BOUNDARY,
 		WORD_BOUNDARY_FROM_END        : WORD_BOUNDARY_FROM_END,
+		WORD_BREAKING_CHARACTER       : WORD_BREAKING_CHARACTER,
 
 		ZERO_WIDTH_CHARACTERS         : ZERO_WIDTH_CHARACTERS,
 		WHITE_SPACE_CHARACTERS        : WHITE_SPACE_CHARACTERS,

@@ -282,7 +282,9 @@ define([
 	}
 
 	/**
-	 * Expands the range's start and end boundaries to contain a word.
+	 * Expands two boundaries to contain a word.
+	 *
+	 * The boundaries represent the start and end containers of a range.
 	 *
 	 * A word is a collection of characters terminated by a space or
 	 * punctuation character or a word-breaker (in languages that do not use
@@ -291,20 +293,28 @@ define([
 	 * foo b[a]r baz ==> foo [bar] baz
 	 *
 	 * @private
-	 * @param  {Range} range
-	 * @return {Range}
+	 * @param  {Boundary} start
+	 * @param  {Boundary} end
+	 * @return {Array.<Boundary>}
 	 */
-	function expandToWord(range) {
-		var start = Boundaries.fromRangeStart(range);
-		var end = Boundaries.fromRangeEnd(range);
+	function expandToWord(start, end) {
 		var prev = Html.prev(start, 'word');
 		var next = Html.next(end, 'word');
-		return fromBoundaries(prev || start, next || end);
+		return [prev || start, next || end];
 	}
 
 	/**
-	 * Expands the ranges's start and end positions to the nearest block
-	 * boundaries.
+	 * TODO: Do this by climing the boundary containers' ancestors instead.
+	 */
+	function commonContainer(a, b) {
+		return fromBoundaries(a, b).commonAncestorContainer;
+	}
+
+	/**
+	 * Expands two boundaries to contain a block.
+	 *
+	 * The boundaries represent the start and end containers of a range.
+	 *
 	 *
 	 * [,] = start,end boundary
 	 *
@@ -315,18 +325,20 @@ define([
 	 *  +-------+       +-------+ ]
 	 *
 	 * @private
-	 * @param  {Range} range
-	 * @return {Range}
+	 * @param  {Boundary} start
+	 * @param  {Boundary} end
+	 * @return {Array.<Boundary>}
 	 */
-	function expandToBlock(range) {
-		var start = range.commonAncestorContainer;
-		var ancestors = Traversing.childAndParentsUntilIncl(start, function (node) {
+	function expandToBlock(start, end) {
+		var cac = commonContainer(start, end);
+		var ancestors = Traversing.childAndParentsUntilIncl(cac, function (node) {
 			return Html.hasLinebreakingStyle(node) || Dom.isEditingHost(node);
 		});
 		var node = Arrays.last(ancestors);
 		var len = Dom.nodeLength(node);
-		var end = Html.nextVisualBoundary(Boundaries.create(node, len));
-		return fromBoundaries(Boundaries.create(node, 0), end);
+		var prev = Boundaries.create(node, 0);
+		var next = Html.nextVisualBoundary(Boundaries.create(node, len));
+		return [prev, next];
 	}
 
 	/**
@@ -335,12 +347,12 @@ define([
 	 * The second parameter `unit` specifies the unit with which to expand.
 	 * This value may be one of the following strings:
 	 *
-	 * "word"  -- Expand to completely contain a word.
+	 * "word" -- Expand to completely contain a word.
 	 *
-	 *  It is the smallest semantic unit.  A word is a contigious sequence of
-	 *  characters terminated by a space or puncuation character or a
-	 *  word-breaker (in languages that do not use space to delimit word
-	 *  boundaries).
+	 *		A word is the smallest semantic unit.  It is a contigious sequence
+	 *		of characters terminated by a space or puncuation character or a
+	 *		word-breaker (in languages that do not use space to delimit word
+	 *		boundaries).
 	 *
 	 * "block" -- Expand to completely contain the a block.
 	 *
@@ -349,13 +361,19 @@ define([
 	 * @return {Range}
 	 */
 	function expand(range, unit) {
-		if ('word' === unit) {
-			return expandToWord(range);
+		var boundaries = Boundaries.fromRange(range);
+		var expanded;
+		switch (unit) {
+		case 'word':
+			expanded = expandToWord(boundaries[0], boundaries[1]);
+			break;
+		case 'block':
+			expanded = expandToBlock(boundaries[0], boundaries[1]);
+			break;
+		default:
+			throw '"' + unit + '"? what\'s that?';
 		}
-		if ('block' === unit) {
-			return expandToBlock(range);
-		}
-		throw '"' + unit + '"? what\'s that?';
+		return fromBoundaries(expanded[0], expanded[1]);
 	}
 
 	/**
@@ -559,49 +577,6 @@ define([
 	}
 
 	/**
-	 * Checks whether the text boundary is at a visible position.
-	 *
-	 * @private
-	 * @param  {Boundary} boundary
-	 * @return {boolean}
-	 */
-	function isVisibleTextBoundary(boundary) {
-		return Html.prevSignificantOffset(boundary) === Boundaries.offset(boundary);
-	}
-
-	/**
-	 * Checks whether the node boundary is at a visible position.
-	 *
-	 * @private
-	 * @param  {Boundary} boundary
-	 * @return {boolean}
-	 */
-	function isVisibleNodeBoundary(boundary) {
-		var next = Boundaries.nextNode(boundary);
-		if (Html.hasLinebreakingStyle(next)) {
-			return false;
-		}
-		var prev = Boundaries.prevNode(boundary);
-		if (Html.hasLinebreakingStyle(prev)) {
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * Checks whether the given boundary is at a visible position.
-	 *
-	 * @private
-	 * @param  {Boundary} boundary
-	 * @return {boolean}
-	 */
-	function isVisibleBoundary(boundary) {
-		return Boundaries.isTextBoundary(boundary)
-		     ? isVisibleTextBoundary(boundary)
-		     : isVisibleNodeBoundary(boundary);
-	}
-
-	/**
 	 * Returns the previous visible boundary from the given.
 	 *
 	 * @private
@@ -615,7 +590,7 @@ define([
 			Boundaries.prev
 		);
 		boundary = move.boundary;
-		while (!isVisibleBoundary(boundary)) {
+		while (!Html.isVisibleBoundary(boundary)) {
 			boundary = Html.prev(boundary);
 		}
 		return boundary;
@@ -640,7 +615,7 @@ define([
 
 		var len = Dom.nodeLength(range.startContainer);
 		if (range.startOffset === len) {
-			var boundary = prevVisibleBoundary(Boundaries.fromRangeStart(range));
+			var boundary = Html.prev(Boundaries.fromRangeStart(range));
 			return box(fromBoundaries(boundary, boundary));
 		}
 

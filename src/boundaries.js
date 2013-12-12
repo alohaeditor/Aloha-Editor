@@ -26,7 +26,8 @@ define([
 	 * Creates a "raw" (un-normalized) boundary from the given node and offset.
 	 *
 	 * @param  {Node} node
-	 * @return {number} offset
+	 * @param  {number} offset
+	 * @return {Boundary}
 	 */
 	function raw(node, offset) {
 		return [node, offset];

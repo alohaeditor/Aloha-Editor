@@ -701,11 +701,13 @@ define([
 			container = range.endContainer;
 		}
 
+		/*
 		show(
 			context.caret,
 			boundary,
 			stylesFromOverrides(overrides(event, container))
 		);
+		*/
 
 		var preventDefault = ('keydown' === type && movements[event.which])
 				|| (event.editor.CARET_CLASS === event.nativeEvent.target.className);

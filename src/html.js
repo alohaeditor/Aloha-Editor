@@ -224,6 +224,8 @@ define([
 	/**
 	 * Returns true for nodes that introduce linebreaks.
 	 *
+	 * Unlike hasBlockStyle...
+	 *
 	 * @param  {Node} node
 	 * @return {boolean}
 	 */
@@ -275,7 +277,7 @@ define([
 	 * @return {boolean}
 	 */
 	function isUnrenderedWhitespaceNoBlockCheck(node) {
-		if (3 !== node.nodeType) {
+		if (Dom.isTextNode(node.nodeType)) {
 			return false;
 		}
 		if (!node.length) {
@@ -472,22 +474,33 @@ define([
 		// Because a <br> element that is a child node adjacent to its parent's
 		// end tag (terminal sibling) must not be rendered.
 		if (!maybeUnrenderedNode
-				&& (node === node.parentNode.lastChild)
-				&& Predicates.isBlockNode(node.parentNode)
-				&& 'BR' === node.nodeName) {
-			return true;
+				&& 'BR' === node.nodeName
+				&& isTerminalNode(node)
+				&& hasLinebreakingStyle(node.parentNode)) {
+			if ('BR' === node.previousSibling.nodeName || 'BR' === node.nextSibling.nodeName) {
+				return true;
+			}
+			if (node.previousSibling && Traversing.prevWhile(node.previousSibling, isUnrendered)) {
+				return true;
+			}
+			if (node.nextSibling && Traversing.nextWhile(node.nextSibling, isUnrendered)) {
+				return true;
+			}
+			return false;
 		}
 
-		if (maybeUnrenderedNode && (
-				isTerminalNode(node)
-				|| isAdjacentToBlock(node)
-				|| skipUnrenderedToEndOfLine(Cursors.create(node, false))
-				|| skipUnrenderedToStartOfLine(Cursors.create(node, false))
-			)) {
-			return true;
+		if (!maybeUnrenderedNode) {
+			return false;
 		}
 
-		return false;
+		if (isTerminalNode(node)) {
+			return Dom.isTextNode(node)
+			    && hasLinebreakingStyle(node.parentNode);
+		}
+
+		return isAdjacentToBlock(node)
+		    || skipUnrenderedToEndOfLine(Cursors.create(node, false))
+		    || skipUnrenderedToStartOfLine(Cursors.create(node, false));
 	}
 
 	/**
@@ -1075,10 +1088,15 @@ define([
 	function areNextWhiteSpacesSignificant(boundary) {
 		var textnode = Boundaries.container(boundary);
 		var offset = Boundaries.offset(boundary);
+
 		if (textnode.data.substr(0, offset).search(WSP_FROM_END) > -1) {
+			// Because we have preceeding whitespaces behind the given boundary
+			// see rule #6
 			return false;
 		}
+
 		if (0 === offset) {
+			//var prevVisibleSibling = textnode.previousTraversing.prevWhile(textnode, isUnrendered);
 			return !!Traversing.previousNonAncestor(textnode, function (node) {
 				return Predicates.isInlineNode(node) && isRendered(node);
 			}, function (node) {
@@ -1107,17 +1125,10 @@ define([
 		var offset = Boundaries.offset(boundary);
 		var text = textnode.data.substr(0, offset);
 
+		// "" ==> return -1
 		//
-		// ""    ==> return -1
-		//
-		// " "   ==> return 1
-		//  .
-		//
-		// "  "  ==> return 1
-		//  ..
-		//
-		// "   " ==> return 1
-		//  ...
+		// " "  or "  " or "   " ==> return 1
+		//  .       ..      ...
 		if (!NOT_WSP.test(text)) {
 			// Because `text` may be a sequence of white spaces so we need to
 			// check if any of them are significant.
@@ -1157,41 +1168,39 @@ define([
 	}
 
 	/**
-	 * Returns the boundary of the next visible character from the given
-	 * position in the document.
+	 * Returns the boundary of the next visible character.
 	 *
-	 * All all insignificant characters (including "zero-width" characters are
+	 * All insignificant characters (including "zero-width" characters are
 	 * ignored).
 	 *
-	 * @param  {Boundary} boundary Text boundary
+	 * @param  {Boundary} boundary
 	 * @return {?Boundary}
 	 */
 	function nextCharacterBoundary(boundary) {
-		Asserts.assertFalse(
-			Boundaries.isNodeBoundary(boundary),
-			'Html.nextSignificantOffset#requires-text-boundary'
-		);
+		if (Boundaries.isNodeBoundary(boundary)) {
+			return null;
+		}
 		var offset = nextSignificantOffset(boundary);
-		return (-1 === offset)
-		     ? null
-		     : Boundaries.create(Boundaries.container(boundary), offset + 1);
+		if (-1 === offset) {
+			return null;
+		}
+		return Boundaries.create(Boundaries.container(boundary), offset + 1);
 	}
 
 	/**
 	 * Returns the boundary of the previous visible character from the given
 	 * position in the document.
 	 *
-	 * All all insignificant characters (including "zero-width" characters are
+	 * All insignificant characters (including "zero-width" characters are
 	 * ignored).
 	 *
-	 * @param  {Boundary} boundary Text boundary
+	 * @param  {Boundary} boundary
 	 * @return {?Boundary}
 	 */
 	function prevCharacterBoundary(boundary) {
-		Asserts.assertFalse(
-			Boundaries.isNodeBoundary(boundary),
-			'Html.prevSignificantOffset#requires-text-boundary'
-		);
+		if (Boundaries.isNodeBoundary(boundary)) {
+			return null;
+		}
 		var offset = prevSignificantOffset(boundary);
 		return (-1 === offset)
 		     ? null
@@ -1203,7 +1212,7 @@ define([
 	 * the visual position of the boundary being changed.
 	 *
 	 * Calling this function with a <b> node will return true, for example
-	 * because the boundary position right infront of a B element's start tag
+	 * because the boundary position right in front of a B element's start tag
 	 * and the boundary position right after the start tag are renderd at the
 	 * same visual position.
 	 *
@@ -1420,44 +1429,6 @@ define([
 	}
 
 	/**
-	 * Looks backwards in the node tree for the nearest word boundary position.
-	 *
-	 * @param  {Boundary} boundary
-	 * @return {?Boundary}
-	 */
-	function prevWordBoundary(boundary) {
-		if (Boundaries.isAtStart(boundary)) {
-			return isWordbreakingNode(Boundaries.container(boundary))
-			     ? null
-			     : prevWordBoundary(Boundaries.prev(boundary));
-		}
-		var node, offset;
-		if (Boundaries.isNodeBoundary(boundary)) {
-			node = Boundaries.nodeBefore(boundary);
-			if (isWordbreakingNode(node)) {
-				return null;
-			}
-			if (!Dom.isTextNode(node)) {
-				return prevWordBoundary(Boundaries.prev(boundary));
-			}
-			offset = Dom.nodeLength(node);
-		} else {
-			node = Boundaries.container(boundary);
-			offset = prevSignificantOffset(boundary);
-		}
-		var text = node.data.substr(0, offset);
-		var index = text.search(Strings.WORD_BOUNDARY_FROM_END);
-		if (-1 === index) {
-			var prev = Boundaries.prev(boundary);
-			return prevWordBoundary(prev) || prev;
-		}
-		return (offset === index + 1)
-		     // Because `text` may end with punctuation or trailing space
-		     ? Boundaries.create(node, index)
-		     : Boundaries.create(node, index + 1);
-	}
-
-	/**
 	 * Checks whether the given boundary is immediately followed by a
 	 * Strings.WHITE_SPACE character.
 	 *
@@ -1517,7 +1488,8 @@ define([
 		return Strings.WHITE_SPACE.test(node.data.substr(-1));
 	}
 
-	function isVisibleNodeBoundary(boundary) {
+	function isVisibleBoundary(boundary) {
+		boundary = Boundaries.normalize(boundary);
 		var node = Boundaries.container(boundary);
 		if (INVALID_RANGE_CONTAINERS[node.nodeName]) {
 			return false;
@@ -1534,7 +1506,7 @@ define([
 
 	function normalizeBoundary(boundary) {
 		if (Boundaries.isNodeBoundary(boundary)) {
-			while (!isVisibleNodeBoundary(boundary) || isUnrendered(Boundaries.nextNode(boundary))) {
+			while (!isVisibleBoundary(boundary) || isUnrendered(Boundaries.nextNode(boundary))) {
 				boundary = Boundaries.next(boundary);
 			}
 			return boundary;
@@ -1553,6 +1525,85 @@ define([
 	}
 
 	/**
+	 * Moves a boundary over any insignificant positions.
+	 *
+	 * Insignificant boundary positions are those where the boundary is
+	 * immediately before unrenderd content.  Since such content is unrendered,
+	 * the boundary is rendered as though it is after the insignificant
+	 * content.  This function simply moves the boundary forward so that the
+	 * given boundary is infact where it seems to be visually.
+	 *
+	 * @param  {Boundary} boundary
+	 * @return {Boundary}
+	 */
+	function skipInsignificantPositions(boundary) {
+		var next = boundary;
+
+		if (Boundaries.isTextBoundary(next)) {
+			var offset = nextSignificantOffset(next);
+
+			// "|foo"
+			if (Boundaries.offset(next) === offset) {
+				return next;
+			}
+
+			// Because there may be no visible characters following the node
+			// boundary in its container.
+			//
+			// "foo| "</p> or "foo| "" bar"
+			//      .              .  .
+			if (-1 === offset) {
+				return skipInsignificantPositions(Boundaries.next(next));
+			}
+
+			// "foo | bar"
+			//       .
+			next = Boundaries.create(Boundaries.container(next), offset);
+			return skipInsignificantPositions(next);
+		}
+
+		// |"foo" or <p>|" foo"
+		//                .
+		if (Dom.isTextNode(Boundaries.nextNode(next))) {
+			return skipInsignificantPositions(Boundaries.nextRawBoundary(next));
+		}
+
+		while (isUnrendered(Boundaries.nextNode(next))) {
+			next = Boundaries.next(next);
+		}
+
+		return next;
+	}
+
+	/**
+	 * Checks whether the left boundary is at the same visual position as the
+	 * right boundary.
+	 *
+	 * @param  {Boundary} left
+	 * @param  {Boundary} right
+	 * @retufn {boolean}
+	 */
+	function equals(left, right) {
+		var node, consumesOffset;
+
+		left = skipInsignificantPositions(Boundaries.normalize(left));
+		right = skipInsignificantPositions(Boundaries.normalize(right));
+
+		while (left && !Boundaries.equals(left, right)) {
+			node = Boundaries.nextNode(left);
+			consumesOffset = isVoidType(node) || hasLinebreakingStyle(node) || Dom.isTextNode(node);
+
+			if (consumesOffset && isRendered(node)) {
+				return false;
+			}
+
+			left = skipInsignificantPositions(Boundaries.next(left));
+		}
+
+		return true;
+	}
+
+	/**
 	 * Returns the next word boundary offset ahead of the given text boundary.
 	 *
 	 * Returns -1 if no word boundary is found.
@@ -1568,11 +1619,6 @@ define([
 		var index  = text.search(Strings.WORD_BOUNDARY);
 		if (-1 === index) {
 			return -1;
-		}
-		// Because text right after the boundary may have started with a word
-		// boundary
-		if (0 === index) {
-			return offset + index + 1;
 		}
 		return offset + index;
 	}
@@ -1594,11 +1640,6 @@ define([
 		if (-1 === index) {
 			return -1;
 		}
-		// Because text right before the boundary may have ended with a word
-		// boundary
-		if (offset === index + 1) {
-			return index;
-		}
 		return index + 1;
 	}
 
@@ -1612,29 +1653,50 @@ define([
 	 * @return {Boundary}
 	 */
 	function nextWordBoundary(boundary) {
-		boundary = normalizeBoundary(boundary);
+		var node, next;
+
 		if (Boundaries.isNodeBoundary(boundary)) {
-			var node = Boundaries.nextNode(boundary);
-			if (isVoidType(node)) {
-				return normalizeBoundary(Boundaries.jumpOver(boundary));
-			}
-			if (hasLinebreakingStyle(node)) {
-				return normalizeBoundary(Boundaries.next(boundary));
-			}
-			return nextWordBoundary(Boundaries.nextRawBoundary(boundary));
-		}
-		if (Boundaries.isAtRawEnd(boundary)) {
-			return nextWordBoundary(Boundaries.nextRawBoundary(boundary));
-		}
-		var next;
-		var offset = nextWordBoundaryOffset(boundary);
-		if (-1 === offset) {
+			node = Boundaries.nextNode(boundary);
 			next = Boundaries.nextRawBoundary(boundary);
-			return isWordbreakingNode(Boundaries.nextNode(next)) ? next : nextWordBoundary(next);
+
+			//         .---- node ----.
+			//         |              |
+			//         v              v
+			// "foo"|</p> or "foo"|<input>
+			if (isWordbreakingNode(node)) {
+				return boundary;
+			}
+
+			return nextWordBoundary(next);
 		}
-		next = Boundaries.raw(Boundaries.container(boundary), offset);
-		next = normalizeBoundary(next);
-		return isBeforeWhiteSpace(next) ? nextWordBoundary(next) : next;
+
+		var offset = nextWordBoundaryOffset(boundary);
+
+		// Because there may be no word boundary ahead of `offset` in the
+		// boundary's container, we need to step out of the text node to
+		// continue looking forward.
+		//
+		// "fo|o" or "foo|"
+		if (-1 === offset) {
+			next = Boundaries.next(boundary);
+			node = Boundaries.nextNode(next);
+
+			//         .---- node ----.
+			//         |              |
+			//         v              v
+			// "foo"|</p> or "foo"|<input>
+			if (isWordbreakingNode(node)) {
+				return next;
+			}
+
+			return nextWordBoundary(next);
+		}
+
+		if (offset === Boundaries.offset(boundary)) {
+			return boundary;
+		}
+
+		return Boundaries.raw(Boundaries.container(boundary), offset);
 	}
 
 	/**
@@ -1647,63 +1709,50 @@ define([
 	 * @return {Boundary}
 	 */
 	function prevWordBoundary(boundary) {
-		var next;
-		if (Boundaries.isNodeBoundary(boundary)) {
-			var node = Boundaries.prevNode(boundary);
-			if (isVoidType(node)) {
-				return normalizeBoundary(Boundaries.fromNode(node));
-			}
-			if (hasLinebreakingStyle(node)) {
-				return normalizeBoundary(Boundaries.prev(boundary));
-			}
-			next = Boundaries.prevRawBoundary(boundary);
-			return isAfterWhiteSpace(next) ? normalizeBoundary(next) : prevWordBoundary(next);
-		}
-		if (Boundaries.isAtRawStart(boundary)) {
-			return prevWordBoundary(Boundaries.prevRawBoundary(boundary));
-		}
-		var offset = prevWordBoundaryOffset(boundary);
-		if (-1 === offset) {
-			next = Boundaries.prevRawBoundary(boundary);
-			return isWordbreakingNode(Boundaries.prevNode(next)) ? next : prevWordBoundary(next);
-		}
-		next = Boundaries.raw(Boundaries.container(boundary), offset);
-		return isBeforeWhiteSpace(next) ? prevWordBoundary(next) : normalizeBoundary(next);
-	}
+		var node, prev;
 
-	/**
-	 * Moves the boundary backwards by a unit measure.
-	 *
-	 * The second parameter `unit` specifies the unit with which to move the
-	 * boundary.  This value may be one of the following strings:
-	 *
-	 * "char" -- Move behind the next visible character.
-	 *
-	 * "word" -- Move behind the next word.
-	 *
-	 * It is the smallest semantic unit.  A word is a contigious sequence of
-	 * characters terminated by a space or puncuation character or a
-	 * word-breaker (in languages that do not use space to delimit word
-	 * boundaries).
-	 *
-	 * "offset" -- Move behind the next visual offset.
-	 *
-	 * A visual offset is the smallest unit of consumed space.  This can be a
-	 * line break, or a visible character.
-	 *
-	 * @param  {Boundary} boundary
-	 * @param  {string=} unit Defaults to "offset"
-	 * @return {Boundary}
-	 */
-	function prev(boundary, unit) {
-		switch (unit) {
-		case 'char':
-			return prevCharacterBoundary(boundary);
-		case 'word':
-			return prevWordBoundary(boundary);
-		default:
-			return prevVisualBoundary(boundary);
+		if (Boundaries.isNodeBoundary(boundary)) {
+			node = Boundaries.prevNode(boundary);
+			prev = Boundaries.prevRawBoundary(boundary);
+
+			//         .---- node ----.
+			//         |              |
+			//         v              v
+			// "foo"|</p> or "foo"|<input>
+			if (isWordbreakingNode(node)) {
+				return boundary;
+			}
+
+			return prevWordBoundary(prev);
 		}
+
+		var offset = prevWordBoundaryOffset(boundary);
+
+		// Because there may be no word boundary behind of `offset` in the
+		// boundary's container, we need to step out of the text node to
+		// continue looking backward.
+		//
+		// "fo|o" or "foo|"
+		if (-1 === offset) {
+			prev = Boundaries.prev(boundary);
+			node = Boundaries.prevNode(prev);
+
+			//         .---- node ----.
+			//         |              |
+			//         v              v
+			// "foo"|</p> or "foo"|<input>
+			if (isWordbreakingNode(node)) {
+				return prev;
+			}
+
+			return prevWordBoundary(prev);
+		}
+
+		if (offset === Boundaries.offset(boundary)) {
+			return boundary;
+		}
+
+		return Boundaries.raw(Boundaries.container(boundary), offset);
 	}
 
 	/**
@@ -1712,40 +1761,95 @@ define([
 	 * The second parameter `unit` specifies the unit with which to move the
 	 * boundary.  This value may be one of the following strings:
 	 *
-	 * "char"   -- Move infront of the next visible character.
+	 * "char" -- Move in front of the next visible character.
 	 *
-	 * "word"   -- Move infront of the next word.
+	 * "word" -- Move in front of the next word.
 	 *
-	 * It is the smallest semantic unit.  A word is a contigious sequence of
-	 * characters terminated by a space or puncuation character or a
-	 * word-breaker (in languages that do not use space to delimit word
-	 * boundaries).
+	 *		A word is the smallest semantic unit.  It is a contigious sequence
+	 *		of visible characters terminated by a space or puncuation character
+	 *		or a word-breaker (in languages that do not use space to delimit
+	 *		word boundaries).
 	 *
-	 * "offset" -- Move infront of the next visual offset.
+	 * "offset" -- Move in front of the next visual offset.
 	 *
-	 * A visual offset is the smallest unit of consumed space.  This can be a
-	 * line break, or a visible character.
+	 *		A visual offset is the smallest unit of consumed space.  This can
+	 *		be a line break, or a visible character.
+	 *
+	 * "node" -- Move in front of the next visible node.
 	 *
 	 * @param  {Boundary} boundary
 	 * @param  {unit=}    unit Defaults to "offset"
 	 * @return {Boundary}
 	 */
 	function next(boundary, unit) {
+		var unitBoundary;
 		switch (unit) {
 		case 'char':
-			return nextCharacterBoundary(boundary);
+			unitBoundary = nextCharacterBoundary(boundary);
+			break;
 		case 'word':
-			return nextWordBoundary(boundary);
+			unitBoundary = nextWordBoundary(boundary);
+			// "| foo" or |</p>
+			if (equals(boundary, unitBoundary)) {
+				unitBoundary = nextVisualBoundary(boundary);
+			}
+			break;
 		default:
-			return nextVisualBoundary(boundary);
+			unitBoundary = nextVisualBoundary(boundary);
+			break;
 		}
+		return skipInsignificantPositions(unitBoundary);
+	}
+
+	/**
+	 * Moves the boundary backwards by a unit measure.
+	 *
+	 * The second parameter `unit` specifies the unit with which to move the
+	 * boundary.  This value may be one of the following strings:
+	 *
+	 * "char" -- Move behind the previous visible character.
+	 *
+	 * "word" -- Move behind the previous word.
+	 *
+	 *		A word is the smallest semantic unit.  It is a contigious sequence
+	 *		of visible characters terminated by a space or puncuation character
+	 *		or a word-breaker (in languages that do not use space to delimit
+	 *		word boundaries).
+	 *
+	 * "offset" -- Move behind the previous visual offset.
+	 *
+	 *		A visual offset is the smallest unit of consumed space.  This can
+	 *		be a line break, or a visible character.
+	 *
+	 * @param  {Boundary} boundary
+	 * @param  {string=}  unit Defaults to "offset"
+	 * @return {Boundary}
+	 */
+	function prev(boundary, unit) {
+		var unitBoundary;
+		switch (unit) {
+		case 'char':
+			unitBoundary = prevCharacterBoundary(boundary);
+			break;
+		case 'word':
+			unitBoundary = prevWordBoundary(boundary);
+			// "foo |" or <p>|
+			if (equals(unitBoundary, boundary)) {
+				unitBoundary = prevVisualBoundary(boundary);
+			}
+			break;
+		default:
+			unitBoundary = prevVisualBoundary(boundary);
+			break;
+		}
+		return unitBoundary;
 	}
 
 	/**
 	 * Checks whether a boundary represents a position that at the apparent end
 	 * of its container's content.
 	 *
-	 * Unlike Boundaries.isAtEnd(), this considers the boundary position with
+	 * Unlike Boundaries.isAtEnd(), it considers the boundary position with
 	 * respect to how it is visually represented, rather than simply where it
 	 * is in the DOM tree.
 	 *
@@ -1754,24 +1858,24 @@ define([
 	 */
 	function isAtEnd(boundary) {
 		if (Boundaries.isAtEnd(boundary)) {
+			// |</p>
 			return true;
 		}
-		if (Boundaries.isNodeBoundary(boundary)) {
-			return false;
+		if (Boundaries.isTextBoundary(boundary)) {
+			// "fo|o" or "foo| "
+			return !NOT_WSP.test(Boundaries.container(boundary).data.substr(Boundaries.offset(boundary)));
 		}
-		var textnode = Boundaries.nextNode(boundary);
-		var next = Traversing.nextWhile(textnode, isUnrendered);
-		if (next && next !== textnode) {
-			return false;
-		}
-		return !NOT_WSP.test(textnode.data.substr(Boundaries.offset(boundary)));
+		var node = Boundaries.nodeAfter(boundary);
+		var next = Traversing.nextWhile(node, isUnrendered);
+		// foo|<br></p> or foo|<i>bar</i>
+		return !next || next === node;
 	}
 
 	/**
 	 * Checks whether a boundary represents a position that at the apparent
 	 * start of its container's content.
 	 *
-	 * Unlike Boundaries.isAtStart(), this considers the boundary position with
+	 * Unlike Boundaries.isAtStart(), it considers the boundary position with
 	 * respect to how it is visually represented, rather than simply where it
 	 * is in the DOM tree.
 	 *
@@ -1782,21 +1886,17 @@ define([
 		if (Boundaries.isAtStart(boundary)) {
 			return true;
 		}
-		if (Boundaries.isNodeBoundary(boundary)) {
-			return false;
+		if (Boundaries.isTextBoundary(boundary)) {
+			return !NOT_WSP.test(Boundaries.container(boundary).data.substr(0, Boundaries.offset(boundary)));
 		}
-		var textnode = Boundaries.nextNode(boundary);
-		var next = Traversing.prevWhile(textnode, isUnrendered);
-		if (next && next !== textnode) {
-			return false;
-		}
-		return !NOT_WSP.test(textnode.data.substr(0, Boundaries.offset(boundary)));
-
+		var node = Boundaries.nodeBefore(boundary);
+		var next = Traversing.prevWhile(node, isUnrendered);
+		return !next || next === node;
 	}
 
 	/**
-	 * Like Boundaries.nextNode(), but that it considers whether a boundary is
-	 * at the end position with respect to how the boundary is visual
+	 * Like Boundaries.nextNode(), except that it considers whether a boundary
+	 * is at the end position with respect to how the boundary is visual
 	 * represented, rather than simply where it is in the DOM structure.
 	 *
 	 * @param  {Boundary} boundary
@@ -1808,8 +1908,8 @@ define([
 	}
 
 	/**
-	 * Like Boundaries.prevNode(), but that it considers whether a boundary is
-	 * at the start position with respect to how the boundary is visual
+	 * Like Boundaries.prevNode(), except that it considers whether a boundary
+	 * is at the start position with respect to how the boundary is visual
 	 * represented, rather than simply where it is in the DOM structure.
 	 *
 	 * @param  {Boundary} boundary
@@ -1858,6 +1958,7 @@ define([
 		isAtStart                     : isAtStart,
 		isEmpty                       : isEmpty,
 		isVisuallyAdjacent            : isVisuallyAdjacent,
+		isVisibleBoundary             : isVisibleBoundary,
 
 		insertVisualBreak             : insertVisualBreak,
 		insertLineBreak               : insertLineBreak,
