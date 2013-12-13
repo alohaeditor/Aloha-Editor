@@ -42,6 +42,8 @@ define([
 	'trees',
 	'typing',
 	'undo',
+	'ms-word-transform',
+	'ms-word-transform-utils'
 ], function Exports(
 	Arrays,
 	Blocks,
@@ -74,7 +76,9 @@ define([
 	Traversing,
 	Trees,
 	Typing,
-	Undo
+	Undo,
+	WordTransform,
+	WordTransformUtils
 ) {
 	'use strict';
 
@@ -425,6 +429,9 @@ define([
 	exports['selection_change']['handler'] = SelectionChange.handler;
 	exports['selection_change']['addHandler'] = SelectionChange.addHandler;
 	exports['selection_change']['removeHandler'] = SelectionChange.removeHandler;
+
+	exports['WordTransform'] = WordTransform;
+	exports['WordTransformUtils'] = WordTransformUtils;
 
 	return exports;
 });
