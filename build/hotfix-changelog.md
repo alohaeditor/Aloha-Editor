@@ -9,3 +9,4 @@ All changes are categorized into one of the following keywords:
 ----
 
 - **BUGFIX**:	image-plugin: The image plugin icons were fixed for IE7+
+- **BUGFIX**:	abbr-plugin: A missing i18n translation was added to the remove abbreviation button. RT#57076
