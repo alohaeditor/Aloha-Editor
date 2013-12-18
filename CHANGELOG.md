@@ -13,6 +13,38 @@ All changes are categorized into one of the following keywords:
 - **BUGFIX**: The change fixes a bug.
 
 
+## 0.24.9 - 2013/12/18
+
+- **BUGFIX**: image-plugin: The image plugin icons were fixed for IE7+
+- **BUGFIX**: abbr-plugin: A missing i18n translation was added to the remove abbreviation button. RT#57076
+
+## 0.24.8 - 2013/11/21
+
+- **BUGFIX**: blocks: The dragging and dropping of Aloha Blocks has been fixed
+              to no longer use jQueryUi's sortable().  Aloha Editor's own
+              functionality is to be used instead.  This allows implementers to
+              use sortable() to enable drag and drop for blocks which are
+              inside of blocks that have been made draggable by Aloha Editor.
+              RT#56973
+
+## 0.24.7 - 2013/11/14
+
+- **BUGFIX**: Table Plugin: Clicking text inside a table cell doesn't make the whole cell content
+              to be selected (only IE) RT#57176
+
+## 0.24.6 - 2013/11/06
+
+- **BUGFIX**: Change table cell size by drag & drop
+              The line which is shown when you drag & drop the size of cell,
+              is not showed for the last row or last column. RT#55437
+- **BUGFIX**: Tooltip covers color palette
+              The colors tooltip does not disappear when the color palette is shown.
+              RT#57078
+- **BUGFIX**: Formatless Copy/Paste not working.
+              When paste action was made the formatlesshandler was never called.
+              We manually call this handler before pasting the content into the DOM element.
+              RT#56692
+
 ## 0.24.5 - 2013/10/24
 
 - **BUGFIX**: WAI input text is mistaken by the Caption Table
@@ -115,6 +147,23 @@ All changes are categorized into one of the following keywords:
                of the selected element to show that the block will be added 
                before or after this one.
 
+## 0.23.26 - 2013/11/14
+
+- **BUGFIX**: Table Plugin: Clicking text inside a table cell doesn't make the whole cell content
+              to be selected (only IE) RT#57176
+
+## 0.23.25 - 2013/11/06
+
+- **BUGFIX**: Change table cell size by drag & drop
+              The line which is shown when you drag & drop the size of cell,
+              is not showed for the last row or last column. RT#55437
+- **BUGFIX**: Tooltip covers color palette
+              The colors tooltip does not disappear when the color palette is shown.
+              RT#57078
+- **BUGFIX**: Formatless Copy/Paste not working.
+              When paste action was made the formatlesshandler was never called.
+              We manually call this handler before pasting the content into the DOM element.
+              RT#56692
 
 ## 0.23.24 - 2013/10/24
 

@@ -111,6 +111,47 @@ define([
 	];
 
 	/**
+	 * Text-level semantic and edit elements to be remove during
+	 * copying or pasting.
+	 *
+	 * See:
+	 * http://dev.w3.org/html5/spec/text-level-semantics.html#usage-summary
+	 *
+	 * Configurable.
+	 *
+	 * @type {Array.<string>}
+	 */
+	var TEXT_LEVEL_SEMANTIC_ELEMENTS = [
+		'a',
+		'abbr',
+		'b',
+		'bdi',
+		'bdo',
+		'cite',
+		'code',
+		'del',
+		'dfn',
+		'em',
+		'i',
+		'ins',
+		'kbd',
+		'mark',
+		'q',
+		'rp',
+		'rt',
+		'ruby',
+		's',
+		'samp',
+		'small',
+		'strong',
+		'sub',
+		'sup',
+		'time',
+		'u',
+		'var'
+	];
+
+	/**
 	 * Unicode zero width space characters:
 	 * http://www.unicode.org/Public/UNIDATA/Scripts.txt
 	 *
@@ -320,6 +361,7 @@ define([
 	return {
 		BLOCKLEVEL_ELEMENTS: BLOCKLEVEL_ELEMENTS,
 		VOID_ELEMENTS: VOID_ELEMENTS,
+		TEXT_LEVEL_SEMANTIC_ELEMENTS: TEXT_LEVEL_SEMANTIC_ELEMENTS,
 		isBlock: isBlock,
 		isIgnorableWhitespace: isIgnorableWhitespace,
 		isInlineFormattable: isInlineFormattable,

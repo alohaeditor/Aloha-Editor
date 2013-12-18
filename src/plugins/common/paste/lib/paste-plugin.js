@@ -37,7 +37,8 @@ define([
 	'aloha/command',
 	'contenthandler/contenthandler-utils',
 	'aloha/console',
-	'aloha/copypaste'
+	'aloha/copypaste',
+	'aloha/contenthandlermanager'
 ], function (
 	$,
 	Aloha,
@@ -45,7 +46,8 @@ define([
 	Commands,
 	ContentHandlerUtils,
 	Console,
-	CopyPaste
+	CopyPaste,
+	ContentHandlerManager
 ) {
 	'use strict';
 
@@ -244,7 +246,7 @@ define([
 	 * @param {String} match Match string must be replaced
 	 * @returns {string} Original string with the first match replaced.
 	 */
-	function deleteFirstMatch (string, match) {
+	function deleteFirstMatch(string, match) {
 		return string.replace(match, '');
 	}
 
@@ -267,8 +269,9 @@ define([
 		endHeaderTag = '</' + startHeaderTag.substr(1);
 
 		return deleteFirstMatch(
-		             deleteFirstMatch(htmlString, startHeaderTag),
-			         endHeaderTag);
+			deleteFirstMatch(htmlString, startHeaderTag),
+			endHeaderTag
+		);
 	}
 
 	/**
@@ -286,27 +289,33 @@ define([
 	 *                             pasting is completed.
 	 */
 	function paste($clipboard, range, callback) {
-		if (range) {
-			var content = deleteFirstHeaderTag($clipboard.html());
+		if (!range) {
+			return;
+		}
 
-			// Because IE inserts an insidious nbsp into the content during
-			// pasting that needs to be removed.  Leaving it would otherwise
-			// result in an empty paragraph being created right before the
-			// pasted content when the pasted content is a paragraph.
-			if (IS_IE && /^&nbsp;/.test(content)) {
-				content = content.substring(6);
-			}
+		var content = deleteFirstHeaderTag($clipboard.html());
+		var handler = ContentHandlerManager.get('formatless');
 
-			restoreSelection(range);
-			prepRangeForPaste(range);
+		content = handler ? handler.handleContent(content) : content;
 
-			if (Aloha.queryCommandSupported('insertHTML')) {
-				Aloha.execCommand('insertHTML', false, content);
-			} else {
-				Console.error('Common.Paste', 'Command "insertHTML" not ' +
-				                              'available. Enable the plugin ' +
-				                              '"common/commands".');
-			}
+		// Because IE inserts an insidious nbsp into the content during pasting
+		// that needs to be removed.  Leaving it would otherwise result in an
+		// empty paragraph being created right before the pasted content when
+		// the pasted content is a paragraph.
+		if (IS_IE && /^&nbsp;/.test(content)) {
+			content = content.substring(6);
+		}
+
+		restoreSelection(range);
+		prepRangeForPaste(range);
+
+		if (Aloha.queryCommandSupported('insertHTML')) {
+			Aloha.execCommand('insertHTML', false, content);
+		} else {
+			Console.error(
+				'Common.Paste',
+				'Command "insertHTML" not available. Enable the plugin "common/commands".'
+			);
 		}
 
 		$clipboard.contents().remove();

@@ -1808,10 +1808,10 @@ define([
 
 		var rows = cell.closest( 'tbody' ).children( 'tr' );
 		var cellRow = cell.closest( 'tr' );
-		var gridId = Utils.cellIndexToGridColumn( rows,
-																							rows.index( cellRow ),
-																							cellRow.children().index( cell )
-																						);
+		var gridId = Utils.cellIndexToGridColumn(rows,
+			rows.index(cellRow),
+			cellRow.children().index(cell)
+		);
 
 		var resizeColumns = function(pixelsMoved) {
 			var expandToWidth, reduceToWidth;
@@ -1844,19 +1844,22 @@ define([
 			});
 		};
 
-		cell.bind( 'mousedown.resize', function() {
+		cell.bind('mousedown.resize', function() {
 
 			// create a guide
 			var guide = jQuery( '<div></div>' );
+			var $cell = jQuery(cell);
+			var width = $cell.outerWidth() - $cell.innerWidth();
+			var height = $cell.closest( 'tbody' ).innerHeight();
 			guide.css({
-				'height': jQuery( cell ).closest( 'tbody' ).innerHeight(),
-				'width': jQuery( cell ).outerWidth() - jQuery( cell ).innerWidth(),
-				'top': jQuery( cell ).closest( 'tbody' ).offset().top,
-				'left': jQuery( cell ).offset().left,
+				'height': (height < 1) ? 1 : height,
+				'width': (width < 1) ? 1 : width,
+				'top': $cell.closest( 'tbody' ).offset().top,
+				'left': $cell.offset().left,
 				'position': 'absolute',
 				'background-color': '#80B5F2'
 			});
-			jQuery( 'body' ).append( guide );
+			jQuery('body').append(guide);
 
 			Utils.getCellResizeBoundaries(gridId, rows, function(maxPageX, minPageX) {
 
@@ -1948,9 +1951,12 @@ define([
 				}
 			};
 
+			var width = cell.closest( 'tbody' ).innerWidth();
+			var height = cell.outerHeight() - cell.innerHeight();
+
 			guide.css({
-				'width': cell.closest( 'tbody' ).innerWidth(),
-				'height': cell.outerHeight() - cell.innerHeight(),
+				'width': (width < 1) ? 1 : width,
+				'height': (height < 1) ? 1: height,
 				'top': guideTop(),
 				'left': cell.closest( 'tbody' ).offset().left,
 				'position': 'absolute',
@@ -2061,15 +2067,19 @@ define([
 
 			// create a guide
 			var guide = jQuery( '<div></div>' );
+
+			var height = table.children( 'tbody' ).innerHeight();
+			var width = lastCell.outerWidth() - lastCell.innerWidth();
+
 			guide.css({
-				'height': table.children( 'tbody' ).innerHeight(),
-				'width': lastCell.outerWidth() - lastCell.innerWidth(),
+				'height': (height < 1) ? 1 : height,
+				'width': (width < 1) ? 1 : width,
 				'top': table.find('tbody').offset().top,
 				'left': table.offset().left + table.outerWidth(),
 				'position': 'absolute',
 				'background-color': '#80B5F2'
 			});
-			jQuery( 'body' ).append( guide );
+			jQuery('body').append( guide );
 
 			// set the maximum and minimum resize
 			var maxPageX = tableContainer.offset().left + tableContainer.width();

@@ -46,7 +46,6 @@ define([
 			i18nCore) {
 	'use strict';
 
-	var GENTICS = window.GENTICS;
 	var overlayByConfig = {};
 	var _savedRange;
 
@@ -66,19 +65,15 @@ define([
 		that._initEvents();
 	}
 
-	function calculateOffset(widget, $element) {
+	function calculateOffset($element) {
 		var offset = $element.offset();
-		var calculatedOffset = { top: 0, left: 0 };
 
 		if ('fixed' === Floating.POSITION_STYLE) {
 			offset.top -= jQuery(window).scrollTop();
 			offset.left -= jQuery(window).scrollLeft();
 		}
 
-		calculatedOffset.top = widget.offset.top + (offset.top - widget.offset.top);
-		calculatedOffset.left = widget.offset.left + (offset.left - widget.offset.left);
-
-		return calculatedOffset;
+		return offset;
 	}
 
 	SwatchOverlay.prototype = {
@@ -93,7 +88,7 @@ define([
 			var that = this;
 
 			// position the overlay relative to the insert-button
-			that.$node.css(calculateOffset(that, $formatButton));
+			that.$node.css(calculateOffset($formatButton));
 			that.$node.css('position', Floating.POSITION_STYLE);
 
 			that.$node.show();
@@ -116,6 +111,8 @@ define([
 			}
 
 			that._overlayActive = true;
+			// Lose focus for the format button, otherwise it overlays the color palette.
+			$formatButton.blur();
 		},
 
 		hide: function () {
@@ -385,7 +382,7 @@ define([
 			PubSub.sub('aloha.floating.changed', function (message) {
 				if (that.swatchOverlay) {
 					that.swatchOverlay.offset = message.position.offset;
-					that.swatchOverlay.$node.css(calculateOffset(that.swatchOverlay, that._colorPickerButton.element));
+					that.swatchOverlay.$node.css(calculateOffset(that._colorPickerButton.element));
 				}
 			});
 

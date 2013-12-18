@@ -1,13 +1,13 @@
 define([
+	'aloha',
 	'aloha/jquery',
 	'aloha/ephemera',
-	'table/table-plugin-utils',
-	'util/browser'
+	'table/table-plugin-utils'
 ], function (
+	Aloha,
 	jQuery,
 	Ephemera,
-	Utils,
-	Browser
+	Utils
 ) {
 	/**
 	 * Constructs a TableCell.
@@ -458,8 +458,11 @@ define([
 		this.tableObj.selection.unselectCells();
 
 		if (this.tableObj.hasFocus) {
-			if (!Browser.ie)
+			if (typeof jqEvent.stopPropagation === 'function') {
 				jqEvent.stopPropagation();
+			} else if (typeof jqEvent.cancelBubble !== 'undefined') {
+				jqEvent.cancelBubble = true;
+			}
 		}
 	};
 
