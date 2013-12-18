@@ -12,6 +12,12 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+
+## 0.24.9 - 2013/12/18
+
+- **BUGFIX**: image-plugin: The image plugin icons were fixed for IE7+
+- **BUGFIX**: abbr-plugin: A missing i18n translation was added to the remove abbreviation button. RT#57076
+
 ## 0.24.8 - 2013/11/21
 
 - **BUGFIX**: blocks: The dragging and dropping of Aloha Blocks has been fixed
