@@ -3,6 +3,7 @@
 	"smarttabs": true,
 	"laxbreak": true,
 	"evil": true,
+	"strict": true,
 	"globals": {
 		"console": true,
 		"module": true,

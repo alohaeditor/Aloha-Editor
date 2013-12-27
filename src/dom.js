@@ -30,6 +30,7 @@ define([
 	 * Numeric codes that represent the type of DOM interface node types.
 	 *
 	 * @type {!Object.<string, number>}
+	 * @enum {number}
 	 */
 	var Nodes = {
 		ELEMENT: 1,
@@ -177,23 +178,34 @@ define([
 		return Nodes.TEXT === node.nodeType;
 	}
 
+	/**
+	 * Check if `node` is an Element.
+	 *
+	 * @param {Node} node
+	 * @returns {boolean}
+	 */
+	function isElementNode(node) {
+		return Nodes.ELEMENT === node.nodeType;
+	}
+
 	function isEmptyTextNode(node) {
 		return isTextNode(node) && !nodeLength(node);
 	}
 
 	/**
-	 * Like insertBefore, inserts firstChild into parent before refChild, except
-	 * also inserts all the following siblings of firstChild.
+	 * Like insertBefore, inserts `first` into `parent` before `reference`, except
+	 * also inserts all the following siblings of `first`.
 	 *
 	 * @param {!Element} parent
-	 * @param {!Node} firstChild
-	 * @param {!Node} refChild
+	 * @param {!Node} first
+	 * @param {!Node} reference
 	 */
-	function moveNextAll(parent, firstChild, refChild) {
-		while (firstChild) {
-			var nextChild = firstChild.nextSibling;
-			parent.insertBefore(firstChild, refChild);
-			firstChild = nextChild;
+	function moveNextAll(parent, first, reference) {
+		var next;
+		while (first) {
+			next = first.nextSibling;
+			parent.insertBefore(first, reference);
+			first = next;
 		}
 	}
 
@@ -573,6 +585,16 @@ define([
 	function wrap(node, wrapper) {
 		node.parentNode.replaceChild(wrapper, node);
 		wrapper.appendChild(node);
+	}
+
+	/**
+	 * Wrap the node with a `nodeName` element.
+	 *
+	 * @param {!Element} node
+	 * @param {!string} nodeName
+	 */
+	function wrapWithNodeName(node, nodeName) {
+		wrap(node, node.ownerDocument.createElement(nodeName));
 	}
 
 	/**
@@ -997,6 +1019,15 @@ define([
 	}
 
 	/**
+	 * Check if `node` has contentEditable attribute.
+	 * @param {Element} node
+	 * @return {boolean}
+	 */
+	function isContentEditable(node) {
+		return 1 === node.nodeType && "true" === node.contentEditable;
+	}
+
+	/**
 	 * Checks whether the given element is editable.
 	 *
 	 * An element with the class "aloha-editable" is considered editable.
@@ -1036,6 +1067,16 @@ define([
 
 	function isEditableNode(node) {
 		return isEditable(node.nodeType === Nodes.TEXT ? node.parentNode: node);
+	}
+
+	/**
+	 * Get the textContent from a node.
+	 *
+	 * @param {Node} node
+	 * @return {string}
+	 */
+	function getTextContent(node) {
+		return node.textContent;
 	}
 
 	/**
@@ -1139,15 +1180,16 @@ define([
 
 		getElementsByClassNames: getElementsByClassNames,
 
-		attrNames    : attrNames,
-		hasAttrs     : hasAttrs,
-		attrs        : attrs,
-		setAttr      : setAttr,
-		setAttrNS    : setAttrNS,
-		getAttr      : getAttr,
-		getAttrNS    : getAttrNS,
-		removeAttr   : removeAttr,
-		removeAttrNS : removeAttrNS,
+		attrNames      : attrNames,
+		hasAttrs       : hasAttrs,
+		attrs          : attrs,
+		setAttr        : setAttr,
+		setAttrNS      : setAttrNS,
+		getAttr        : getAttr,
+		getAttrNS      : getAttrNS,
+		removeAttr     : removeAttr,
+		removeAttrNS   : removeAttrNS,
+		getTextContent : getTextContent,
 
 		indexByClass         : indexByClass,
 		indexByName          : indexByName,
@@ -1162,11 +1204,12 @@ define([
 		cloneShallow : cloneShallow,
 		clone        : clone,
 
-		wrap           : wrap,
-		insert         : insert,
-		insertAfter    : insertAfter,
-		replaceShallow : replaceShallow,
-		removeShallow  : removeShallow,
+		wrap               : wrap,
+		wrapWithNodeName   : wrapWithNodeName,
+		insert             : insert,
+		insertAfter        : insertAfter,
+		replaceShallow     : replaceShallow,
+		removeShallow      : removeShallow,
 
 		isAtEnd      : isAtEnd,
 		isAtStart    : isAtStart,
@@ -1183,6 +1226,7 @@ define([
 		normalizedNumChildren   : normalizedNumChildren,
 
 		isTextNode      : isTextNode,
+		isElementNode   : isElementNode,
 		isEmptyTextNode : isEmptyTextNode,
 		isEqualNode     : isEqualNode,
 
@@ -1195,11 +1239,13 @@ define([
 		getComputedStyles : getComputedStyles,
 		removeStyle       : removeStyle,
 
-		isEditable     : isEditable,
-		isEditableNode : isEditableNode,
-		isEditingHost  : isEditingHost,
-		editingHost    : editingHost,
-		editableParent : editableParent,
+		// FIXME: move to html.js
+		isEditable        : isEditable,
+		isEditableNode    : isEditableNode,
+		isEditingHost     : isEditingHost,
+		editingHost       : editingHost,
+		editableParent    : editableParent,
+		isContentEditable : isContentEditable,
 
 		stringify         : stringify,
 		stringifyReplacer : stringifyReplacer,

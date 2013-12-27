@@ -533,12 +533,21 @@ define([
 	 * Checks whether the given node has any rendered children inside of it.
 	 *
 	 * @param {Node} node
-	 * @retur {boolean}
+	 * @return {boolean}
 	 */
 	function hasRenderedContent(node) {
 		return Dom.isTextNode(node)
 		     ? !isUnrenderedWhitespaceNoBlockCheck(node)
 		     : isRendered(Traversing.nextWhile(node.firstChild, isUnrendered));
+	}
+
+	/**
+	 * Check if `elem` belongs to an editable context.
+	 * @param {Element} elem
+	 * @return {boolean}
+	 */
+	function getContentEditableElement(elem) {
+		return Traversing.upWhile (elem, Dom.isContentEditable);
 	}
 
 	/**
@@ -564,7 +573,7 @@ define([
 	 * @param {Element} elem
 	 */
 	function prop(elem) {
-		if (Browsers.msie || !Predicates.isBlockNode(elem)) {
+		if (!Predicates.isBlockNode(elem) || (Browsers.msie && getContentEditableElement(elem))) {
 			return;
 		}
 		if (!elem.firstChild || !Traversing.nextWhile(elem.firstChild, isUnrenderedWhitespace)) {
