@@ -17,8 +17,11 @@
 		tested.push('words');
 		deepEqual(Strings.words(''), []);
 		deepEqual(Strings.words(' '), []);
+		deepEqual(Strings.words('\u0009\u000A\u000B\u000C\u000D\u0020' +
+			'\u0085\u00A0\u1680\u180E\u2000\u2001\u2002\u2003\u2004' +
+			'\u2005\u2006\u2007\u2008\u2009\u200A\u2028\u2029\u202F\u205F\u3000'), []);
 		deepEqual(Strings.words('abc'), ['abc']);
-		deepEqual(Strings.words('  abc  def  '), ['abc', 'def']);
+		deepEqual(Strings.words('  \u000Aabc  def  '), ['abc', 'def']);
 		deepEqual(Strings.words('\nabc\ndef\rghi\r\n'), ['abc', 'def', 'ghi']);
 	});
 
@@ -41,11 +44,11 @@
 		equal('foo', Strings.splitIncl('foo', /\-/g));
 	});
 
-	test('empty()', function () {
-		tested.push('empty');
-		equal(true, Strings.empty(''));
-		equal(true, Strings.empty(null));
-		equal(true, Strings.empty(void 0));
+	test('isEmpty()', function () {
+		tested.push('isEmpty');
+		equal(true, Strings.isEmpty(''));
+		equal(true, Strings.isEmpty(null));
+		equal(true, Strings.isEmpty(void 0));
 	});
 
 	test('isControlCharacter', function () {

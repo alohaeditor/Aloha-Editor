@@ -229,7 +229,7 @@
 		var control = 'She stopped.  She said, "Hello there," and then went on.';
 		var expected = 'She| |stopped|.| | |She| |said|,| |"|Hello| |there|,|"| |and| |then| |went| |on|.';
 
-		var dom = document.createElement('div');
+		dom = document.createElement('div');
 		dom.innerHTML = control;
 
 		Boundaries.walkWhile(
@@ -328,7 +328,8 @@
 
 	test('skipUnrenderedToStartOfLine', function () {
 		tested.push('skipUnrenderedToStartOfLine');
-		var node = $('<div>foo<b>bar </b>\t\r</div>')[0]
+		var node = $('<div>foo<b>bar </b>\t\r</div>')[0];
+
 		equal(Html.skipUnrenderedToStartOfLine(
 			aloha.cursors.cursor(node.lastChild, false)
 		), true);
@@ -353,6 +354,16 @@
 
 	test('isEmpty', function () {
 		tested.push('isEmpty');
+
+		function emptyTest(string, expectedResult) {
+			var node = $(string)[0];
+
+			equal(Html.isEmpty(node), expectedResult);
+		}
+
+		emptyTest('<p></p>', true);
+		emptyTest('<p>One word</p>', false);
+
 	});
 
 	test('nextLineBreak', function () {
@@ -381,4 +392,5 @@
 	});
 
 	testCoverage(test, tested, Html);
+
 }(window.aloha));

@@ -4,7 +4,7 @@
 
 	var WordTransform = aloha.WordTransform;
 
-	module('MS Word Parser - Heading');
+	module('MS Word Parser');
 
 	test('heading and titles wrong text', function () {
 		var htmlRes = WordTransform.transform(

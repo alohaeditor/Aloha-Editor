@@ -4,7 +4,7 @@
 
 	var WordTransform = aloha.WordTransform;
 
-	module('MS Word Parser - Global');
+	module('MS Word Parser');
 
 	test('is not ms-word content', function () {
 		var htmlRes = 'NO MS CONTENT';

@@ -4,7 +4,7 @@
 
 	var WordTransform = aloha.WordTransform;
 
-	module('MS Word Parser - Table of Contents');
+	module('MS Word Parser');
 
 	test('table of contents with title heading', function () {
 		var htmlRes = WordTransform.transform(
