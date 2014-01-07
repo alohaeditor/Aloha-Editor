@@ -4,7 +4,7 @@
 
 	var WordTransform = aloha.WordTransform;
 
-	module('MS Word Parser - Paragraph');
+	module('MS Word Parser');
 
 	/**
 	 * Check if the two nodes are equal

@@ -3,7 +3,6 @@
 
 	var Dom = aloha.dom;
 	var Mutation = aloha.mutation;
-	var Predicates = aloha.predicates;
 	var tested = [];
 
 	var input = $('<div><p class="some-class">'
@@ -11,7 +10,7 @@
 				  + '<b class="some-class-4">some other text</b>'
 				  + '</p></div>')[0];
 
-	module('dom: general');
+	module('dom');
 
 	test('getElementsByClassNames', function () {
 		tested.push('getElementsByClassNames');
@@ -55,8 +54,6 @@
 		equal(Dom.contains(span, span.firstChild), true);
 		equal(Dom.contains(span, span.previousSibling), false);
 	});
-
-	module('dom: remove');
 
 	test('removeShallow', function () {
 		tested.push('removeShallow');
@@ -131,8 +128,6 @@
 		Dom.insert(document.createElement('b'), node, true);
 		equal(Dom.outerHtml(node), '<span><u></u>foo<b></b></span>');
 	});
-
-	module('dom: nodes');
 
 	test('isAtStart', function () {
 		tested.push('isAtStart');
@@ -234,8 +229,6 @@
 		);
 	});
 
-	module('dom: style');
-
 	test('setStyle', function () {
 		tested.push('setStyle');
 		var elem = $('<div></div>')[0];
@@ -266,13 +259,11 @@
 		equal(Dom.getComputedStyle(elem, 'background'), null);
 	});
 
-	module('dom: editables');
-
 	test('isEditable', function () {
 		tested.push('isEditable');
 		var elem = $('<div><span contentEditable="true"><b></b></span></div>')[0];
 		equal(Dom.isEditable(elem.firstChild.firstChild), true);
-		equal(Dom.isEditable(elem.firstChild), false);
+		equal(Dom.isEditable(elem.firstChild), true);
 		equal(Dom.isEditable(elem), false);
 	});
 
@@ -287,12 +278,10 @@
 	test('getEditingHost', function () {
 		tested.push('getEditingHost');
 		var elem = $('<div><span contentEditable="true"><b></b></span></div>')[0];
-		equal(Dom.getEditingHost(elem.firstChild.firstChild), elem.firstChild);
-		equal(Dom.getEditingHost(elem.firstChild), elem.firstChild);
-		equal(Dom.getEditingHost(elem), null);
+		equal(Dom.editingHost(elem.firstChild.firstChild), elem.firstChild);
+		equal(Dom.editingHost(elem.firstChild), elem.firstChild);
+		equal(Dom.editingHost(elem), null);
 	});
-
-	module('dom: attributes');
 
 	test('attrs', function () {
 		tested.push('attrs');
@@ -326,8 +315,6 @@
 		var result = Dom.attrNames($('<li data-attr="some value">')[0]);
 		deepEqual(result, ['data-attr']);
 	});
-
-	module('dom: classes');
 
 	test('addClass', function () {
 		tested.push('addClass');
@@ -374,36 +361,6 @@
 	test('indexByClassHaveList', function () {
 		tested.push('indexByClassHaveList');
 		ok(1);
-	});
-
-	test('isBlockNode', function () {
-		tested.push('isBlockNode');
-		var span = $('<span style="display: block"></span>')[0];
-		var div = $('<div></div>')[0];
-		var b = $('<b>foo</b>')[0];
-		var p = $('<p style="display: inline"></p>')[0];
-		var a = $('<a></a>')[0];
-		$('body').append([span, div, b, p, a]);
-		equal(Predicates.isBlockNode(span), false);
-		equal(Predicates.isBlockNode(div), true);
-		equal(Predicates.isBlockNode(b), false);
-		equal(Predicates.isBlockNode(p), true);
-		equal(Predicates.isBlockNode(a), false);
-	});
-
-	test('isInlineNode', function () {
-		tested.push('isInlineNode');
-		var span = $('<span style="display: block"></span>')[0];
-		var div = $('<div></div>')[0];
-		var b = $('<b>foo</b>')[0];
-		var p = $('<p style="display: inline"></p>')[0];
-		var a = $('<a></a>')[0];
-		$('body').append([span, div, b, p, a]);
-		equal(Predicates.isInlineNode(span), true);
-		equal(Predicates.isInlineNode(div), false);
-		equal(Predicates.isInlineNode(b), true);
-		equal(Predicates.isInlineNode(p), false);
-		equal(Predicates.isInlineNode(a), true);
 	});
 
 	module('dom');

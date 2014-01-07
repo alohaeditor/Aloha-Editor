@@ -40,11 +40,41 @@
 	});
 
 	test('partial', function () {
-		tested.push('bind');
+		tested.push('partial');
 		equal(fn.partial(function (arg) {
 			return arg.foo;
 		}, {foo: 'foo'})(), 'foo');
 	});
 
+	test('outparameter', function() {
+		tested.push('outparameter');
+		equal(fn.outparameter(true)(), true);
+		equal(fn.outparameter('hello')(), 'hello');
+	});
+
+	test('strictEquals', function() {
+		tested.push('strictEquals');
+
+		equal(fn.strictEquals('thing', 'thing'), true);
+		equal(fn.strictEquals(false, 0), false);
+	});
+
+	test('comp', function() {
+		tested.push('comp');
+
+		function multiplyBy2(number) {
+			return number * 2;
+		}
+
+		function add4(number) {
+			return number + 4;
+		}
+
+		equal(fn.comp(multiplyBy2, add4)(2), 12);
+		equal(fn.comp(multiplyBy2, add4)(5), 18);
+		equal(fn.comp(multiplyBy2, add4, multiplyBy2)(5), 28);
+	});
+
 	testCoverage(test, tested, fn);
+
 }(window.aloha));

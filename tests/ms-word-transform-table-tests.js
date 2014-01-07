@@ -4,7 +4,7 @@
 
 	var WordTransform = aloha.WordTransform;
 
-	module('MS Word Parser - Tables');
+	module('MS Word Parser');
 
 
 	test('Simple Table', function () {

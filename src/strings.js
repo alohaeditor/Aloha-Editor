@@ -286,17 +286,11 @@ define([], function Strings() {
 	 * @return {Array.<string>}
 	 */
 	function words(str) {
-		var list = str.split(WHITE_SPACE);
-		// Because:
-		// "  x  ".split(/\s+/) => ["", "x", ""] (Chrome)
-		// "".split(/\s+/) => [""] (Chrome)
-		if (list.length && '' === list[0]) {
-			list.shift();
+		str = str.trim();
+		if (isEmpty(str)) {
+			return [];
 		}
-		if (list.length && '' === list[list.length - 1]) {
-			list.pop();
-		}
-		return list;
+		return str.split(/\s+/g);
 	}
 
 	/**
