@@ -8,7 +8,3 @@ All changes are categorized into one of the following keywords:
 
 ----
 
-- **BUGFIX**: image-plugin: The image plugin icons were fixed for IE7+
-- **BUGFIX**: table-plugin: Table selection for rows or columns in IE8 did not
-                            show Table Row/Column panel options. This error is
-                            fixed.
