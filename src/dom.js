@@ -1041,12 +1041,13 @@ define([
 	}
 
 	/**
-	 * Check if `node` has contentEditable attribute.
-	 * @param {Element} node
+	 * Check if the given node's contentEditable attribute is `true`.
+	 *
+	 * @param  {Element} node
 	 * @return {boolean}
 	 */
 	function isContentEditable(node) {
-		return isElementNode(node) && "true" === node.contentEditable;
+		return isElementNode(node) && 'true' === node.contentEditable;
 	}
 
 	/**

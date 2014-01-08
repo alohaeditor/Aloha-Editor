@@ -75,11 +75,7 @@
 		</div -->
 
 		<div class="aloha-editable">
-			<b>she| |stop</b><del>ped|.|</del><del>  s|he</del><b>| |</b><span>s</span>
-		</div>
-		-------------------------------
-		<div class="aloha-editable">
-			<b>she stop</b><del>ped.</del><del>  she</del><b> </b><span>s</span>
+			<p>foo </p> bar
 		</div>
 
 		<!-- div class="aloha-editable">She stopped.  She said, "Hello there,"
@@ -135,28 +131,15 @@
 						h1.innerHTML = h1.innerHTML + ': <span style="color:#df215a">' + version + '</span>';
 					}
 				}
-				function main(Editing, Ranges, StableRange) {
+				function main(aloha) {
 					[].forEach.call(document.querySelectorAll('.aloha-editable'), aloha);
-					return;
-					var range = Ranges.expandToWord(Ranges.create(
-						document.querySelector('b'), 1,
-						document.querySelector('b'), 2
-					));
-					Editing.wrap(range, 'u');
-					Ranges.contract(range);
-					Ranges.insertTextBehind(StableRange(range), '"');
-					Ranges.collapseToEnd(range)
-					Ranges.insertTextBehind(range, '"');
-				}
-				function load(aloha) {
-					main(aloha.editing, aloha.ranges, aloha.stablerange);
 				}
 				if ('undefined' === typeof aloha) {
 					setVersion('src');
-					require(['../src/aloha'], load);
+					require(['../src/aloha'], main);
 				} else {
 					setVersion('build');
-					load(aloha)
+					main(aloha)
 				}
 			}());
 		</script>

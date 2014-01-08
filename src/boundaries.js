@@ -381,7 +381,6 @@ define([
 	 *
 	 * This function complements Boundaries.next()
 	 *
-	 * @todo do not be partial to void elements
 	 * @param  {Boundary} boundary Reference boundary
 	 * @return {Boundary} Preceding boundary position
 	 */
@@ -400,7 +399,6 @@ define([
 	 * Like Boundaries.prev(), but returns the boundary position that follows
 	 * from the given.
 	 *
-	 * @todo do not be partial to void elements
 	 * @param  {Boundary} boundary Reference boundary
 	 * @return {Boundary} Next boundary position
 	 */
@@ -518,7 +516,25 @@ define([
 		return len;
 	}
 
+	/**
+	 * Gets the boundaries of the currently selected range from the given
+	 * document element.
+	 *
+	 * If no document element is given, the document element of the calling
+	 * frame's window will be used.
+	 *
+	 * @param  {Document=} doc
+	 * @return {?Array<Boundary>}
+	 */
+	function get(doc) {
+		var selection = (doc || document).getSelection();
+		var range = selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
+		return range && fromRange(range);
+	}
+
 	return {
+		get             : get,
+
 		raw             : raw,
 		create          : create,
 		normalize       : normalize,

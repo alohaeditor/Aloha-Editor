@@ -209,12 +209,12 @@ define([
 	 */
 	function serializeChildren(element, child, unrecognized, ephemera, xhtml) {
 		while (null != child) {
-			if (1 === child.nodeType
+			if (Dom.Nodes.ELEMENT === child.nodeType
 					&& unrecognized
 						&& '/' + element.nodeName === child.nodeName) {
 				child = child.nextSibling;
 				break;
-			} else if (1 === child.nodeType && isUnrecognized(child)) {
+			} else if (Dom.Nodes.ELEMENT === child.nodeType && isUnrecognized(child)) {
 				child = serializeElement(
 					child,
 					child.nextSibling,
@@ -301,7 +301,7 @@ define([
 	 */
 	function serialize(node, ephemera, xhtml) {
 		var nodeType = node.nodeType;
-		if (1 === nodeType) {
+		if (Dom.Nodes.ELEMENT === nodeType) {
 			serializeElement(
 				node,
 				node.firstChild,
@@ -309,9 +309,9 @@ define([
 				ephemera,
 				xhtml
 			);
-		} else if (3 === node.nodeType) {
+		} else if (Dom.Nodes.TEXT === node.nodeType) {
 			xhtml.push(encodePcdata(node.nodeValue));
-		} else if (8 === node.nodeType) {
+		} else if (Dom.Nodes.COMMENT === node.nodeType) {
 			xhtml.push('<' + '!--' + node.nodeValue + '-->');
 		} else {
 			console.warn(

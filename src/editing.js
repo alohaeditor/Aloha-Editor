@@ -1,7 +1,7 @@
 /* editing.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  *
  * TODO formatStyle: in the following case the outer "font-family:
@@ -1120,6 +1120,101 @@ define([
 		return unsplitParent;
 	}
 
+	/**
+	 * Tags representing elements which cannot be used as range containers.
+	 *
+	 * It is impossible to have the browser to maintain a selection inside any
+	 * of these elements.
+	 *
+	 * If a range is to be set inside of a list element, for example, the range
+	 * would have to use one of UL's or OL's children (LI) elements as its
+	 * start or end container.
+	 *
+	 * @private
+	 * @type {Object.<string, boolean>}
+	 */
+	var INVALID_RANGE_CONTAINERS = {
+		// List containers
+		'OL'       : true,
+		'UL'       : true,
+		'DL'       : true,
+		'MENU'     : true,
+
+		// Table layout containers
+		'TABLE'    : true,
+		'COLGROUP' : true,
+		'THEAD'    : true,
+		'TBODY'    : true,
+		'TFOOT'    : true,
+		'TR'       : true,
+
+		// Dropdown menu containers
+		'DATALIST' : true,
+		'SELECT'   : true,
+		'OPTION'   : true,
+		'OPTGROUP' : true,
+
+		// Code container
+		'SCRIPT'   : true,
+		'STYLE'    : true,
+
+		// Void Elements
+		'AREA'     : true,
+		'BASE'     : true,
+		'BR'       : true,
+		'COL'      : true,
+		'COMMAND'  : true,
+		'EMBED'    : true,
+		'HR'       : true,
+		'IMG'      : true,
+		'INPUT'    : true,
+		'KEYGEN'   : true,
+		'LINK'     : true,
+		'META'     : true,
+		'PARAM'    : true,
+		'SOURCE'   : true,
+		'TRACK'    : true,
+		'WBR'      : true
+	};
+
+	function isVisibleBoundary(boundary) {
+		boundary = Boundaries.normalize(boundary);
+		var node = Boundaries.container(boundary);
+		if (INVALID_RANGE_CONTAINERS[node.nodeName]) {
+			return false;
+		}
+		if (Html.isUnrendered(node)) {
+			return false;
+		}
+		if (Boundaries.isAtEnd(boundary)) {
+			var before = Boundaries.nodeBefore(boundary);
+			return !before || !Html.hasLinebreakingStyle(
+				Traversing.prevWhile(before, Html.isUnrendered)
+			);
+		}
+		return true;
+	}
+
+	function normalizeBoundary(boundary) {
+		if (Boundaries.isNodeBoundary(boundary)) {
+			while (!isVisibleBoundary(boundary) || Html.isUnrendered(Boundaries.nextNode(boundary))) {
+				boundary = Boundaries.next(boundary);
+			}
+			return boundary;
+		}
+		if (Boundaries.isAtRawEnd(boundary)) {
+			return boundary;
+		}
+		var offset = nextSignificantOffset(boundary);
+		if (-1 === offset) {
+			return Boundaries.nextRawBoundary(boundary);
+		}
+		if (offset === Boundaries.offset(boundary)) {
+			return boundary;
+		}
+		return Boundaries.raw(Boundaries.container(boundary), offset);
+	}
+
 	function splitRangeAtBoundaries(range, left, right, opts) {
 		var normalizeLeft = opts.normalizeRange ? left : left.clone();
 		var normalizeRight = opts.normalizeRange ? right : right.clone();
@@ -1272,7 +1367,7 @@ define([
 				postprocess: function () {
 					var above = Boundaries.fromRangeStart(range);
 					var below = Boundaries.fromRangeEnd(range);
-					Html.removeVisualBreak(above, below, context);
+					Html.removeBreak(above, below, context);
 					var pos = Cursors.createFromBoundary(above[0], above[1]);
 					left.setFrom(pos);
 					right.setFrom(pos);
@@ -1295,7 +1390,7 @@ define([
 	function break_(liveRange, context, linebreak) {
 		var range = Ranges.collapseToEnd(StableRange(liveRange));
 		Mutation.splitTextContainers(range);
-		var op = linebreak ? Html.insertLineBreak : Html.insertVisualBreak;
+		var op = linebreak ? Html.insertLineBreak : Html.insertBreak;
 		var boundary = op(
 			Boundaries.normalize(Boundaries.fromRangeStart(range)),
 			context

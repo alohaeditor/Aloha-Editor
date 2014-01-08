@@ -14,7 +14,7 @@ define([
 	'strings',
 	'ranges'
 ], function BoundaryMarkers(
-	dom,
+	Dom,
 	Mutation,
 	traversing,
 	cursors,
@@ -30,8 +30,8 @@ define([
 	 * @param {Range} range
 	 */
 	function insert(range) {
-		var leftMarkerChar  = (3 === range.startContainer.nodeType ? '[' : '{');
-		var rightMarkerChar = (3 === range.endContainer.nodeType   ? ']' : '}');
+		var leftMarkerChar  = (Dom.Nodes.TEXT === range.startContainer.nodeType ? '[' : '{');
+		var rightMarkerChar = (Dom.Nodes.TEXT === range.endContainer.nodeType   ? ']' : '}');
 		Mutation.splitTextContainers(range);
 		var leftMarker = document.createTextNode(leftMarkerChar);
 		var rightMarker = document.createTextNode(rightMarkerChar);
@@ -51,7 +51,7 @@ define([
 	 * Set the selection based on selection markers found in the content inside
 	 * of `rootElem`.
 	 *
-	 * @param {DOMObject} rootElem
+	 * @param {Element} rootElem
 	 * @param {Range} range
 	 */
 	function extract(rootElem, range) {
@@ -75,7 +75,7 @@ define([
 			markersFound += 1;
 			if (marker === '[' || marker === ']') {
 				var previousSibling = node.previousSibling;
-				if (!previousSibling || 3 !== previousSibling.nodeType) {
+				if (!previousSibling || Dom.Nodes.TEXT !== previousSibling.nodeType) {
 					previousSibling = document.createTextNode('');
 					node.parentNode.insertBefore(previousSibling, node);
 				}
@@ -83,12 +83,12 @@ define([
 				// Because we have set a text offset.
 				return false;
 			}
-			range[setFn].call(range, node.parentNode, dom.nodeIndex(node));
+			range[setFn].call(range, node.parentNode, Dom.nodeIndex(node));
 			// Because we have set a non-text offset.
 			return true;
 		}
 		function extractMarkers(node) {
-			if (3 !== node.nodeType) {
+			if (Dom.Nodes.TEXT !== node.nodeType) {
 				return;
 			}
 			var text = node.nodeValue;
@@ -107,7 +107,7 @@ define([
 					forceNextSplit = setBoundaryPoint(part, node);
 				} else if (!forceNextSplit
 						&& node.previousSibling
-							&& 3 === node.previousSibling.nodeType) {
+							&& Dom.Nodes.TEXT === node.previousSibling.nodeType) {
 					node.previousSibling.insertData(
 						node.previousSibling.length,
 						part
@@ -136,7 +136,7 @@ define([
 			if (node === limit) {
 				return true;
 			}
-			path.push(dom.nodeIndex(node));
+			path.push(Dom.nodeIndex(node));
 			return false;
 		});
 		return path;
@@ -160,7 +160,7 @@ define([
 	 * @param {Range} range
 	 * @return {string}
 	 */
-	function hint(range) {
+	function show(range) {
 		var container = range.commonAncestorContainer;
 
 		var startPath = getPathToPosition(
@@ -180,7 +180,7 @@ define([
 				container.parentNode.cloneNode(true),
 				getPathToPosition(
 					container,
-					dom.nodeIndex(container),
+					Dom.nodeIndex(container),
 					container.parentNode
 				)
 			).container
@@ -200,20 +200,33 @@ define([
 
 		insert(range);
 
-		return dom.outerHtml(
+		return Dom.outerHtml(
 			//range.commonAncestorContainer.parentNode ||
 			range.commonAncestorContainer
 		);
 	}
 
-	function boundary(pos) {
-		return hint(ranges.fromBoundaries(pos, pos));
+	function boundary(boundary) {
+		return show(ranges.fromBoundaries(boundary, boundary));
+	}
+
+	function boundaries(boundaries) {
+		return show(ranges.fromBoundaries(boundaries[0], boundaries[1]));
+	}
+
+	function hint() {
+		var arg = arguments[0];
+		if (arg.length) {
+			return ('string' === typeof arg[0].nodeName)
+			     ? boundary(arg)
+			     : boundaries(arg);
+		}
+		return show(arg);
 	}
 
 	return {
-		hint     : hint,
-		insert   : insert,
-		extract  : extract,
-		boundary : boundary
+		hint    : hint,
+		insert  : insert,
+		extract : extract,
 	};
 });

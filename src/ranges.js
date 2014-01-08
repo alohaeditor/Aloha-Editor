@@ -286,7 +286,7 @@ define([
 	 *
 	 * The boundaries represent the start and end containers of a range.
 	 *
-	 * A word is a collection of characters terminated by a space or
+	 * A word is a collection of visible characters terminated by a space or
 	 * punctuation character or a word-breaker (in languages that do not use
 	 * space to delimit word boundaries).
 	 *
@@ -298,9 +298,10 @@ define([
 	 * @return {Array.<Boundary>}
 	 */
 	function expandToWord(start, end) {
-		var prev = Html.prev(start, 'word');
-		var next = Html.next(end, 'word');
-		return [prev || start, next || end];
+		return [
+			Html.prev(start, 'word') || start,
+			Html.next(end,   'word') || end
+		];
 	}
 
 	/**
@@ -337,7 +338,7 @@ define([
 		var node = Arrays.last(ancestors);
 		var len = Dom.nodeLength(node);
 		var prev = Boundaries.create(node, 0);
-		var next = Html.nextVisualBoundary(Boundaries.create(node, len));
+		var next = Html.next(Boundaries.create(node, len));
 		return [prev, next];
 	}
 
@@ -577,26 +578,6 @@ define([
 	}
 
 	/**
-	 * Returns the previous visible boundary from the given.
-	 *
-	 * @private
-	 * @param  {Boundary} boundary
-	 * @return {Boundary}
-	 */
-	function prevVisibleBoundary(boundary) {
-		var move = Html.nextVisiblePosition(
-			boundary,
-			Boundaries.prevNode,
-			Boundaries.prev
-		);
-		boundary = move.boundary;
-		while (!Html.isVisibleBoundary(boundary)) {
-			boundary = Html.prev(boundary);
-		}
-		return boundary;
-	}
-
-	/**
 	 * Gets the bounding box of offets for the given range.
 	 *
 	 * @param  {Range} range
@@ -619,7 +600,10 @@ define([
 			return box(fromBoundaries(boundary, boundary));
 		}
 
-		var node = Dom.nthChild(range.startContainer, range.startOffset);
+		var node = Dom.isTextNode(range.startContainer)
+		         ? range.startContainer
+		         : Dom.nthChild(range.startContainer, range.startOffset);
+
 		var body = node.ownerDocument.body;
 
 		return {

@@ -303,22 +303,24 @@ define([
 	exports['fn']['comp'] = Fn.comp;
 
 	exports['html'] = Html;
-	exports['html']['isUnrendered'] = Html.isUnrendered;
 	exports['html']['isRendered'] = Html.isRendered;
+	exports['html']['isUnrendered'] = Html.isUnrendered;
+	exports['html']['isUnrenderedWhitespace'] = Html.isUnrenderedWhitespace;
 	exports['html']['isStyleInherited'] = Html.isStyleInherited;
+	exports['html']['isWhiteSpacePreserveStyle'] = Html.isWhiteSpacePreserveStyle;
 	exports['html']['hasBlockStyle'] = Html.hasBlockStyle;
 	exports['html']['hasInlineStyle'] = Html.hasInlineStyle;
-	exports['html']['isUnrenderedWhitespace'] = Html.isUnrenderedWhitespace;
-	exports['html']['isWhiteSpacePreserveStyle'] = Html.isWhiteSpacePreserveStyle;
-	exports['html']['skipUnrenderedToStartOfLine'] = Html.skipUnrenderedToStartOfLine;
-	exports['html']['skipUnrenderedToEndOfLine'] = Html.skipUnrenderedToEndOfLine;
-	exports['html']['normalizeBoundary'] = Html.normalizeBoundary;
-	exports['html']['isEmpty'] = Html.isEmpty;
 	exports['html']['hasLinebreakingStyle'] = Html.hasLinebreakingStyle;
-	exports['html']['isVisuallyAdjacent'] = Html.isVisuallyAdjacent;
-	exports['html']['removeVisualBreak'] = Html.removeVisualBreak;
-	exports['html']['nextWordBoundary'] = Html.nextWordBoundary;
-	exports['html']['prevWordBoundary'] = Html.prevWordBoundary;
+	exports['html']['insertLineBreak'] = Html.insertLineBreak;
+	exports['html']['insertBreak'] = Html.insertBreak;
+	exports['html']['removeBreak'] = Html.removeBreak;
+	exports['html']['prop'] = Html.prop;
+	exports['html']['prev'] = Html.prev;
+	exports['html']['next'] = Html.next;
+	exports['html']['prevNode'] = Html.prevNode;
+	exports['html']['nextNode'] = Html.nextNode;
+	exports['html']['prevSignificantOffset'] = Html.prevSignificantOffset;
+	exports['html']['nextSignificantOffset'] = Html.nextSignificantOffset;
 
 	exports['typing'] = Typing;
 	exports['typing']['handle'] = Typing.handle;

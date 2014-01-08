@@ -94,8 +94,8 @@
 		} else {
 			var result = '\n"' + expected + '"\n!==\n"' + stripped + '"';
 			console.error(result, elem, clone);
-			//debugger;
-			//markFn(clone);
+			debugger;
+			markFn(clone);
 			//throw '!';
 		}
 	}
@@ -107,6 +107,6 @@
 		mark(editable, markBackward);
 	}
 
-	setInterval(run, 10);
+	setInterval(run, 500);
 
 }(window.aloha));
