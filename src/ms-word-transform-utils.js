@@ -6,10 +6,12 @@
  */
 define([
 	'dom',
-	'predicates'
+	'predicates',
+	'traversing'
 ], function(
 	Dom,
-	Predicates
+	Predicates,
+	Traversing
 ) {
 	'use strict';
 
@@ -105,37 +107,7 @@ define([
 	 *                   the child should be removed
 	 */
 	function removeDescendants(node, conditionFn) {
-		walkDescendants(node, conditionFn, function(child) {
-			child.parentNode.removeChild(child);
-		});
-	}
-
-	/**
-	 * Executes function 'callBackFn' when the function condition 'conditionFn' is true.
-	 *
-	 * @param {Element} element
-	 * @param {function(Element):boolean} conditionFn
-	 * @param {function(Element)} callBackFn
-	 */
-	function walkDescendants(element, conditionFn, callBackFn) {
-		var childNodes = element.childNodes,
-		    child;
-
-		for (var i = childNodes.length - 1; i >= 0; i--) {
-			child = childNodes[i];
-			if (child) {
-				if (conditionFn(child)){
-					callBackFn(child);
-					// check if the child has changed
-					if (child !== childNodes[i]) {
-						i++;
-					}
-				}
-				if (Dom.isElementNode(child)) {
-					walkDescendants(child, conditionFn,  callBackFn);
-				}
-			}
-		}
+		Traversing.walkDescendants(node, conditionFn, Dom.remove);
 	}
 
 	/**
@@ -145,7 +117,7 @@ define([
 	 * @param {function(Element):boolean} conditionFn
 	 */
 	function unwrapDescendants(node, conditionFn) {
-		walkDescendants(node, conditionFn, function(child) {
+		Traversing.walkDescendants(node, conditionFn, function(child) {
 			Dom.removeShallow(child);
 		});
 	}
@@ -205,7 +177,7 @@ define([
 			return node.nodeName === 'SPAN' || node.nodeName === 'FONT';
 		});
 
-		walkDescendants(element, function(node) {
+		Traversing.walkDescendants(element, function(node) {
 			return node.nodeName !== 'IMG' && node.nodeName !== 'A';
 		}, removeAllAttributes);
 
@@ -226,9 +198,16 @@ define([
 		}
 	}
 
+	/**
+	 * Creates a nested list.
+	 * @param {integer} actualLevel
+	 * @param {integer} lastLevel
+	 * @param {Element} listHTML
+	 * @param {function():Element} createListFn
+	 * @return {Element}
+	 */
 	function createNestedList(actualLevel, lastLevel, listHTML, createListFn) {
-		var doc = listHTML.ownerDocument,
-			newList;
+		var newList;
 
 		while (actualLevel > lastLevel) {
 			newList = createListFn();

@@ -2,7 +2,7 @@
 
 	'use strict';
 
-	var WordTransform = aloha.WordTransform;
+	var WordTransform = aloha.wordTransform;
 
 	module('MS Word Parser');
 
@@ -27,7 +27,7 @@
 				'<p style="margin: 0in 0in 0pt; line-height: normal;" class="MsoNormal"><font face="Calibri">Cell 2 2<o:p></o:p></font></p>' +
 				'</td>' +
 				'</tr>' +
-				'</tbody></table>'
+				'</tbody></table>', document
 		);
 
 		equal(htmlRes,
@@ -62,7 +62,7 @@
 				'<p style="margin: 0in 0in 0pt; line-height: normal;" class="MsoNormal"><font face="Calibri">Cell 2 2<o:p></o:p></font></p>' +
 				'</td>' +
 				'</tr>' +
-				'</tbody></table>'
+				'</tbody></table>', document
 		);
 
 		equal(htmlRes,
@@ -191,7 +191,7 @@
 				' style=\'font-family:"Segoe UI","sans-serif"\'>3 years<o:p></o:p></span></p>' +
 				'</td>' +
 				'</tr>' +
-				'</table></div>');
+				'</table></div>', document);
 
 		equal(htmlRest, '<table><tbody>' +
 			'<tr><td>Competences</td><td>Level</td><td>Experience</td></tr><tr><td>java</td><td>Advanced</td><td>4 years</td></tr>' +

@@ -148,6 +148,41 @@ define(['misc', 'assert'], function Events(Misc, Assert) {
 		add(doc, 'dragend',   editor);
 
 		add(doc, 'selection-changed',   editor);
+
+		add(doc, 'paste', editor);
+	}
+
+	/**
+	 * Prevents default behaviour.
+	 * @param event
+	 */
+	function preventDefault(event) {
+		if (event.preventDefault) {
+			event.preventDefault();
+		} else {
+			event['returnValue'] = false;
+		}
+	}
+
+	/**
+	 * Stops propagation.
+	 * @param event
+	 */
+	function stopPropagation(event) {
+		if (event.stopPropagation) {
+			event.stopPropagation();
+		} else {
+			event['cancelBubble'] = true;
+		}
+	}
+
+	/**
+	 * Stops propagation and prevent default behavior.
+	 * @param {Event} event
+	 */
+	function stopPropagationAndPreventDefault (event) {
+		stopPropagation(event);
+		preventDefault(event);
 	}
 
 	return {
@@ -157,6 +192,10 @@ define(['misc', 'assert'], function Events(Misc, Assert) {
 		isWithCtrl  : isWithCtrl,
 		isWithShift : isWithShift,
 		dispatch    : dispatch,
-		nextTick    : nextTick
+		nextTick    : nextTick,
+
+		preventDefault                    : preventDefault,
+		stopPropagation                   : stopPropagation,
+		stopPropagationAndPreventDefault  : stopPropagationAndPreventDefault
 	};
 });

@@ -1123,8 +1123,10 @@ define([
 	function splitRangeAtBoundaries(range, left, right, opts) {
 		var normalizeLeft = opts.normalizeRange ? left : left.clone();
 		var normalizeRight = opts.normalizeRange ? right : right.clone();
-		Html.normalizeBoundary(normalizeLeft);
-		Html.normalizeBoundary(normalizeRight);
+
+		Html.normalizeBoundary(Cursors.toBoundary(normalizeLeft));
+		Html.normalizeBoundary(Cursors.toBoundary(normalizeRight));
+
 		Cursors.setToRange(range, normalizeLeft, normalizeRight);
 
 		var removeEmpty = [];

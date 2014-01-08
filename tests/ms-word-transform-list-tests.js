@@ -2,7 +2,7 @@
 
 	'use strict';
 
-	var WordTransform = aloha.WordTransform;
+	var WordTransform = aloha.wordTransform;
 
 	module('MS Word Parser');
 
@@ -43,7 +43,7 @@
 			'<p style="margin: 0in 0in 0pt 0.5in; text-indent: -0.25in; mso-list: l0 level1 lfo1;" class="MsoListParagraphCxSpMiddle"><span style="mso-ansi-language: ES; mso-bidi-font-family: Calibri;" lang="ES"><span style="mso-list: Ignore;"><font face="Calibri">3.</font><span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
 			'</span></span></span><span style="mso-ansi-language: ES;" lang="ES"><font face="Calibri">Third<o:p></o:p></font></span></p>' +
 			'<p style="margin: 0in 0in 0pt 0.5in; text-indent: -0.25in; mso-list: l0 level1 lfo1;" class="MsoListParagraphCxSpLast"><span style="mso-ansi-language: ES; mso-bidi-font-family: Calibri;" lang="ES"><span style="mso-list: Ignore;"><font face="Calibri">4.</font><span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-			'</span></span></span><span style="mso-ansi-language: ES;" lang="ES"><font face="Calibri">Fourth<o:p></o:p></font></span></p>');
+			'</span></span></span><span style="mso-ansi-language: ES;" lang="ES"><font face="Calibri">Fourth<o:p></o:p></font></span></p>', document);
 
 		isNotNodeEqual(htmlRes, '<ol start="1" type="2"><li>First</li><li>Second</li><li>Third</li><li>Fourth</li></ol>');
 	});
@@ -59,7 +59,7 @@
 			'<p style="margin: 0in 0in 0pt 0.5in; text-indent: -0.25in; mso-list: l0 level1 lfo1;" class="MsoListParagraphCxSpMiddle"><span style="mso-ansi-language: ES; mso-bidi-font-family: Calibri;" lang="ES"><span style="mso-list: Ignore;"><font face="Calibri">3.</font><span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
 			'</span></span></span><span style="mso-ansi-language: ES;" lang="ES"><font face="Calibri">Third<o:p></o:p></font></span></p>' +
 			'<p style="margin: 0in 0in 0pt 0.5in; text-indent: -0.25in; mso-list: l0 level1 lfo1;" class="MsoListParagraphCxSpLast"><span style="mso-ansi-language: ES; mso-bidi-font-family: Calibri;" lang="ES"><span style="mso-list: Ignore;"><font face="Calibri">4.</font><span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-			'</span></span></span><span style="mso-ansi-language: ES;" lang="ES"><font face="Calibri">Fourth<o:p></o:p></font></span></p>');
+			'</span></span></span><span style="mso-ansi-language: ES;" lang="ES"><font face="Calibri">Fourth<o:p></o:p></font></span></p>', document);
 
 		isNotNodeEqual(htmlRes, '<ol start="1" type="1"><li>First</li><li>Third</li><li>Fourth</li></ol>');
 	});
@@ -76,7 +76,7 @@
 			'<p style="margin: 0in 0in 0pt 0.5in; text-indent: -0.25in; mso-list: l0 level1 lfo1;" class="MsoListParagraphCxSpMiddle"><span style="mso-ansi-language: ES; mso-bidi-font-family: Calibri;" lang="ES"><span style="mso-list: Ignore;"><font face="Calibri">3.</font><span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
 			'</span></span></span><span style="mso-ansi-language: ES;" lang="ES"><font face="Calibri">Third<o:p></o:p></font></span></p>' +
 			'<p style="margin: 0in 0in 0pt 0.5in; text-indent: -0.25in; mso-list: l0 level1 lfo1;" class="MsoListParagraphCxSpLast"><span style="mso-ansi-language: ES; mso-bidi-font-family: Calibri;" lang="ES"><span style="mso-list: Ignore;"><font face="Calibri">4.</font><span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-			'</span></span></span><span style="mso-ansi-language: ES;" lang="ES"><font face="Calibri">Fourth<o:p></o:p></font></span></p>');
+			'</span></span></span><span style="mso-ansi-language: ES;" lang="ES"><font face="Calibri">Fourth<o:p></o:p></font></span></p>', document);
 
 		isNodeEqual(htmlRes, '<ol start="1" type="1"><li>First</li><li>Second</li><li>Third</li><li>Fourth</li></ol>');
 	});
@@ -96,7 +96,7 @@
 				'<p style="margin: 0in 0in 0pt 0.5in; text-indent: -0.25in; mso-list: l0 level1 lfo1;" class="MsoListParagraphCxSpMiddle"><span style="mso-ansi-language: ES; mso-bidi-font-family: Calibri;" lang="ES"><span style="mso-list: Ignore;"><font face="Calibri">3.</font><span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
 				'</span></span></span><span style="mso-ansi-language: ES;" lang="ES"><font face="Calibri">333<o:p></o:p></font></span></p>' +
 				'<p style="margin: 0in 0in 8pt 0.5in; text-indent: -0.25in; mso-list: l0 level1 lfo1;" class="MsoListParagraphCxSpLast"><span style="mso-ansi-language: ES; mso-bidi-font-family: Calibri;" lang="ES"><span style="mso-list: Ignore;"><font face="Calibri">4.</font><span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-				'</span></span></span><span style="mso-ansi-language: ES;" lang="ES"><font face="Calibri">4444<o:p></o:p></font></span></p>');
+				'</span></span></span><span style="mso-ansi-language: ES;" lang="ES"><font face="Calibri">4444<o:p></o:p></font></span></p>', document);
 
 		isNodeEqual(htmlRes, '<ol start="1" type="1"><li>1111</li><li>2222</li><ol><ol type="i"><li>aaaaa</li></ol></ol><li>333</li><li>4444</li></ol>');
 	});
@@ -114,7 +114,7 @@
 			'</span></span></span><span style="mso-ansi-language: ES;" lang="ES"><font face="Calibri">Third<o:p></o:p></font></span></p>' +
 			'<p style="margin: 0in 0in 0pt 0.5in; text-indent: -0.25in; mso-list: l0 level1 lfo1" class="MsoListParagraphCxSpMiddle">\n<!--This is a commment--><span style="mso-ansi-language: ES; mso-bidi-font-family: Calibri;" lang="ES"><span style="mso-list: Ignore;"><font face="Calibri">4.</font><span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
 			'</span></span></span><span style="mso-ansi-language: ES;" lang="ES"><font face="Calibri">Fourth<o:p></o:p></font></span></p>' +
-			'<p style="margin: 0in 0in 8pt 0.5in; text-indent: -0.25in; mso-list: l0 level1 lfo1;" class="MsoListParagraphCxSpLast"><span style="mso-ansi-language: ES; mso-bidi-font-family: Calibri;" lang="ES"><span style="mso-list: Ignore;"><font face="Calibri">5.</font><span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;');
+			'<p style="margin: 0in 0in 8pt 0.5in; text-indent: -0.25in; mso-list: l0 level1 lfo1;" class="MsoListParagraphCxSpLast"><span style="mso-ansi-language: ES; mso-bidi-font-family: Calibri;" lang="ES"><span style="mso-list: Ignore;"><font face="Calibri">5.</font><span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;', document);
 
 		isNodeEqual(htmlRes, '<ol start="1" type="1"><li>First</li><li>Second</li><li>Third</li><li>Fourth</li><li></li></ol>');
 	});
@@ -132,7 +132,7 @@
 				'<p style="margin: 0in 0in 0pt 0.5in; text-indent: -0.25in; mso-list: l0 level1 lfo1;" class="MsoListParagraphCxSpMiddle"><span style="font-family: Symbol; mso-ansi-language: ES; mso-fareast-font-family: Symbol; mso-bidi-font-family: Symbol;" lang="ES"><span style="mso-list: Ignore;">·<span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
 				'</span></span></span><span style="mso-ansi-language: ES;" lang="ES"><font face="Calibri">&nbsp;<o:p></o:p></font></span></p>' +
 				'<p style="margin: 0in 0in 8pt 0.5in; text-indent: -0.25in; mso-list: l0 level1 lfo1;" class="MsoListParagraphCxSpLast"><span style="font-family: Symbol; mso-ansi-language: ES; mso-fareast-font-family: Symbol; mso-bidi-font-family: Symbol;" lang="ES"><span style="mso-list: Ignore;">·<span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-				'</span></span></span><span style="mso-ansi-language: ES;" lang="ES"><o:p><font face="Calibri">Ccccc</font></o:p></span></p>');
+				'</span></span></span><span style="mso-ansi-language: ES;" lang="ES"><o:p><font face="Calibri">Ccccc</font></o:p></span></p>', document);
 
 		isNodeEqual(htmlRes, '<ul><li>Aaaaa</li><li>Bbbbb</li><li></li><li>Ccccc</li></ul>');
 	});
@@ -150,8 +150,8 @@
 				'</span></span></span><span style="mso-ansi-language: ES;" lang="ES"><font face="Calibri">Bullet<o:p></o:p></font></span></p>' +
 
 				'<p style="margin: 0in 0in 8pt 1.5in; text-indent: -0.25in; mso-list: l0 level3 lfo1; mso-add-space: auto;" class="MsoListParagraphCxSpLast"><span style="mso-ansi-language: ES; mso-bidi-font-family: Calibri; mso-bidi-theme-font: minor-latin;" lang="ES"><span style="mso-list: Ignore;"><font face="Calibri">1.</font><span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-				'</span></span></span><span style="mso-ansi-language: ES;" lang="ES"><font face="Calibri">Numeric<o:p></o:p></font></span></p>'
-		);
+				'</span></span></span><span style="mso-ansi-language: ES;" lang="ES"><font face="Calibri">Numeric<o:p></o:p></font></span></p>', document
+			);
 
 		isNodeEqual(htmlRes, '<ul><li>Bullet</li><ol><ol start="1" type="1"><li>Numeric</li></ol></ol><li>Bullet</li><ol><ol start="1" type="1"><li>Numeric</li></ol></ol></ul>');
 	});
@@ -171,7 +171,7 @@
 
 				'<p style="margin: 0in 0in 8pt 1.5in; text-indent: -0.25in; mso-list: l0 level3 lfo1; mso-add-space: auto;" class="MsoListParagraphCxSpLast"><span style="mso-ansi-language: ES; mso-bidi-font-family: Calibri; mso-bidi-theme-font: minor-latin;" lang="ES"><span style="mso-list: Ignore;"><font face="Calibri">1.</font><span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
 				'</span></span></span><span style="mso-ansi-language: ES;" lang="ES"><font face="Calibri">Numeric<o:p></o:p></font></span></p>' +
-				'</div>'
+				'</div>', document
 		);
 
 		isNodeEqual(htmlRes, '<ul><li>Bullet</li><ol><ol start="1" type="1"><li>Numeric</li></ol></ol><li>Bullet</li>' +
@@ -196,8 +196,7 @@
 				'</span></span></span><span style="mso-ansi-language: ES;" lang="ES"><font face="Calibri">Two<o:p></o:p></font></span></p>' +
 
 				'<p style="margin: 0in 0in 8pt 0.5in; text-indent: -0.25in; mso-list: l0 level1 lfo2;" class="MsoListParagraphCxSpLast"><span style="mso-ansi-language: ES; mso-bidi-font-family: Calibri; mso-bidi-theme-font: minor-latin;" lang="ES"><span style="mso-list: Ignore;"><font face="Calibri">3.</font><span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-				'</span></span></span><span style="mso-ansi-language: ES;" lang="ES"><font face="Calibri">Three<o:p></o:p></font></span></p>'
-		);
+				'</span></span></span><span style="mso-ansi-language: ES;" lang="ES"><font face="Calibri">Three<o:p></o:p></font></span></p>', document);
 
 		isNodeEqual(htmlRes, '<ul><li>Bullet</li><li>Bullet</li></ul><p>Some text between\t   list</p><ol start="1" type="1"><li>One</li><li>Two</li><li>Three</li></ol>');
 	});
@@ -220,7 +219,7 @@
 				'<p style="margin: 0in 0in 0pt 0.5in; text-indent: -0.25in; mso-list: l0 level1 lfo1;" class="MsoListParagraphCxSpMiddle"><span style="font-family: Symbol; mso-ansi-language: ES; mso-fareast-font-family: Symbol; mso-bidi-font-family: Symbol;" lang="ES"><span style="mso-list: Ignore;">·<span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
 				'</span></span></span><span style="mso-ansi-language: ES;" lang="ES"><font face="Calibri">Ccccc<o:p></o:p></font></span></p>' +
 				'<p style="margin: 0in 0in 8pt 0.5in; text-indent: -0.25in; mso-list: l0 level1 lfo1;" class="MsoListParagraphCxSpLast"><span style="font-family: Symbol; mso-ansi-language: ES; mso-fareast-font-family: Symbol; mso-bidi-font-family: Symbol;" lang="ES"><span style="mso-list: Ignore;">·<span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-				'</span></span></span><span style="mso-ansi-language: ES;" lang="ES"><o:p><font face="Calibri">&nbsp;</font></o:p></span></p>');
+				'</span></span></span><span style="mso-ansi-language: ES;" lang="ES"><o:p><font face="Calibri">&nbsp;</font></o:p></span></p>', document);
 
 		isNodeEqual(htmlRes, '<ul><li>Aaaaa</li><li>Bbbbb</li><ul><li>B.aaa</li><li>B.bbb</li><ul><li>B.bbb.aaa</li></ul></ul><li>Ccccc</li><li></li></ul>');
 	});
@@ -237,8 +236,7 @@
 				'</span></span></span></b><b style="mso-bidi-font-weight: normal;"><font face="Calibri">Three One<o:p></o:p></font></b></p>' +
 				'<p style="margin: 0in 0in 0pt 81pt; text-indent: -0.25in; mso-add-space: auto; mso-list: l0 level2 lfo1;" class="MsoListParagraphCxSpMiddle"><span style="font-family: Symbol; mso-fareast-font-family: Symbol; mso-bidi-font-family: Symbol;"><span style="mso-list: Ignore;">·<span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
 				'</span></span></span><b style="mso-bidi-font-weight: normal;"><font face="Calibri">Unordered<o:p></o:p></font></b></p>' +
-				'<p style="margin: 0in 0in 8pt 45pt; text-indent: -0.25in; mso-add-space: auto; mso-list: l0 level1 lfo1;" class="MsoListParagraphCxSpLast"><b style="mso-bidi-font-weight: normal;"><span style="mso-bidi-font-family: Calibri; mso-bidi-theme-font: minor-latin;"><span style="mso-list: Ignore;"><font face="Calibri">3.</font><span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></span></b><b style="mso-bidi-font-weight: normal;"><font face="Calibri">Four<o:p></o:p></font></b></p>'
-		);
+				'<p style="margin: 0in 0in 8pt 45pt; text-indent: -0.25in; mso-add-space: auto; mso-list: l0 level1 lfo1;" class="MsoListParagraphCxSpLast"><b style="mso-bidi-font-weight: normal;"><span style="mso-bidi-font-family: Calibri; mso-bidi-theme-font: minor-latin;"><span style="mso-list: Ignore;"><font face="Calibri">3.</font><span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></span></b><b style="mso-bidi-font-weight: normal;"><font face="Calibri">Four<o:p></o:p></font></b></p>', document);
 
 		isNodeEqual(htmlRes,
 			'<ol start="1" type="1">' +
@@ -265,8 +263,8 @@
 				'<p style="margin: 0in 0in 0pt 1in; text-indent: -0.25in; mso-add-space: auto; mso-list: l0 level2 lfo1;" class="MsoListParagraphCxSpMiddle"><span style="mso-bidi-font-family: Calibri; mso-bidi-theme-font: minor-latin;"><span style="mso-list: Ignore;"><font face="Calibri">e.</font><span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
 				'</span></span></span><font face="Calibri">Four<o:p></o:p></font></p>' +
 				'<p style="margin: 0in 0in 8pt 1in; text-indent: -0.25in; mso-add-space: auto; mso-list: l0 level2 lfo1;" class="MsoListParagraphCxSpLast"><span style="mso-bidi-font-family: Calibri; mso-bidi-theme-font: minor-latin;"><span style="mso-list: Ignore;"><font face="Calibri">f.</font><span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-				'</span></span></span><font face="Calibri">Five<o:p></o:p></font></p>'
-		);
+				'</span></span></span><font face="Calibri">Five<o:p></o:p></font></p>', document
+			);
 
 		isNodeEqual(htmlRes, '<ol type="a"><ol type="a"><li>Cero</li><li>One</li><li>Two</li><li>Three</li><li>Four</li><li>Five</li></ol></ol>');
 	});
@@ -285,7 +283,8 @@
 				'<p style="margin: 0in 0in 0pt 1in; text-indent: -0.25in; mso-add-space: auto; mso-list: l0 level6 lfo1;" class="MsoListParagraphCxSpMiddle"><span style="mso-bidi-font-family: Calibri; mso-bidi-theme-font: minor-latin;"><span style="mso-list: Ignore;"><font face="Calibri">e.</font><span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
 				'</span></span></span><font face="Calibri">Four<o:p></o:p></font></p>' +
 				'<p style="margin: 0in 0in 8pt 1in; text-indent: -0.25in; mso-add-space: auto; mso-list: l0 level6 lfo1;" class="MsoListParagraphCxSpLast"><span style="mso-bidi-font-family: Calibri; mso-bidi-theme-font: minor-latin;"><span style="mso-list: Ignore;"><font face="Calibri">f.</font><span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-				'</span></span></span><font face="Calibri">Five<o:p></o:p></font></p>'
+				'</span></span></span><font face="Calibri">Five<o:p></o:p></font></p>', document
+
 		);
 
 		isNodeEqual(htmlRes, '<ol type="a"><ol><ol><ol><ol><ol type="a"><li>Cero</li><ol type="a"><li>One</li><li>Two</li></ol><li>Three</li><li>Four</li><li>Five</li></ol></ol></ol></ol></ol></ol>');
@@ -304,8 +303,7 @@
 				'<p style="margin: 0in 0in 0pt 1in; text-indent: -0.25in; mso-add-space: auto; mso-list: l0 level6 lfo1;" class="MsoListParagraphCxSpMiddle"><span style="mso-bidi-font-family: Calibri; mso-bidi-theme-font: minor-latin;"><span style="mso-list: Ignore;"><font face="Calibri">e.</font><span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
 				'</span></span></span><font face="Calibri">Four<o:p></o:p></font></p>' +
 				'<p style="margin: 0in 0in 8pt 1in; text-indent: -0.25in; mso-add-space: auto; mso-list: l0 level6 lfo1;" class="MsoListParagraphCxSpLast"><span style="mso-bidi-font-family: Calibri; mso-bidi-theme-font: minor-latin;"><span style="mso-list: Ignore;"><font face="Calibri">f.</font><span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-				'</span></span></span><font face="Calibri">Five<o:p></o:p></font></p>'
-		);
+				'</span></span></span><font face="Calibri">Five<o:p></o:p></font></p>', document);
 
 		isNodeEqual(htmlRes, '<ol type="a"><ol><ol><ol><ol type="a"><ol type="a"><li>Cero</li></ol><li>One</li><li>Two</li><ol type="a"><li>Three</li><li>Four</li><li>Five</li></ol></ol></ol></ol></ol></ol>');
 	});
@@ -340,8 +338,7 @@
 				'<p style="margin: 0in 0in 0pt 1in; text-indent: -0.25in; mso-add-space: auto; mso-list: l0 level2 lfo1;" class="MsoListParagraphCxSpMiddle"><span style="mso-bidi-font-family: Calibri; mso-bidi-theme-font: minor-latin;"><span style="mso-list: Ignore;"><font face="Calibri">b.</font><span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
 				'</span></span></span><font face="Calibri">B<o:p></o:p></font></p>' +
 				'<p style="margin: 0in 0in 8pt 0.5in; text-indent: -0.25in; mso-list: l0 level1 lfo1;" class="MsoListParagraphCxSpLast"><span style="mso-bidi-font-family: Calibri; mso-bidi-theme-font: minor-latin;"><span style="mso-list: Ignore;"><font face="Calibri">2.</font><span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-				'</span></span></span><font face="Calibri">Two<o:p></o:p></font></p>'
-		);
+				'</span></span></span><font face="Calibri">Two<o:p></o:p></font></p>', document);
 
 		isNodeEqual(htmlRes,
 			'<ol start="7" type="1">' +
@@ -384,8 +381,7 @@
 				'6.</font><span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
 				'</span></span></span><font face="Calibri">Five<o:p></o:p></font></p>' +
 				'<p style="margin: 0in 0in 8pt 3.5in; text-indent: -0.25in; mso-add-space: auto; mso-list: l0 level7 lfo1;" class="MsoListParagraphCxSpLast"><span style="font-family: Symbol; mso-fareast-font-family: Symbol; mso-bidi-font-family: Symbol;"><span style="mso-list: Ignore;">·<span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-				'</span></span></span><font face="Calibri">Things<o:p></o:p></font></p>'
-		);
+				'</span></span></span><font face="Calibri">Things<o:p></o:p></font></p>', document);
 
 		isNodeEqual(htmlRes, '<ol start="6" type="1"><ul><ul><li>Unordered</li><ol><ol><ol type="i"><li>sdfs</li></ol></ol></ol></ul></ul><li>Five</li><ul><ul><ul><ul><ul><ul><li>Things</li></ul></ul></ul></ul></ul></ul></ol>');
 	});
@@ -395,8 +391,7 @@
 			'<p style="margin: 0in 0in 0pt 0.5in; text-indent: -0.25in; mso-list: l0 level1 lfo1;" class="MsoListParagraphCxSpFirst"><span style="mso-bidi-font-family: Calibri; mso-bidi-theme-font: minor-latin;"><span style="mso-list: Ignore;"><font face="Calibri">1.</font><span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
 				'</span></span></span><font face="Calibri">Two<?xml:namespace prefix = o ns = "urn:schemas-microsoft-com:office:office" /><o:p></o:p></font></p>' +
 				'<p style="margin: 0in 0in 8pt 0.5in; text-indent: -0.25in; mso-list: l0 level1 lfo1;" class="MsoListParagraphCxSpLast"><span style="mso-bidi-font-family: Calibri; mso-bidi-theme-font: minor-latin;"><span style="mso-list: Ignore;"><font face="Calibri">2.</font><span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-				'</span></span></span><font face="Calibri">Asdfasdf<font size="2"><sub>222</sub><sup>33333</sup><o:p></o:p></font></font></p>'
-		);
+				'</span></span></span><font face="Calibri">Asdfasdf<font size="2"><sub>222</sub><sup>33333</sup><o:p></o:p></font></font></p>', document);
 
 		isNodeEqual(htmlRes, '<ol start="1" type="1"><li>Two</li><li>Asdfasdf<sub>222</sub><sup>33333</sup></li></ol>');
 	});
@@ -404,8 +399,7 @@
 	test('just one li element list', function () {
 		var htmlRes = WordTransform.transform(
 			'<p style="margin: 0in 0in 8pt 0.5in; text-indent: -0.25in; mso-list: l0 level1 lfo1;" class="MsoListParagraph"><span style="mso-bidi-font-family: Calibri; mso-bidi-theme-font: minor-latin; mso-ansi-language: ES;" lang="ES"><span style="mso-list: Ignore;"><font face="Calibri">1.</font><span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-				'</span></span></span><span style="mso-ansi-language: ES;" lang="ES"><font face="Calibri">Things<?xml:namespace prefix = o ns = "urn:schemas-microsoft-com:office:office" /><o:p></o:p></font></span></p>'
-		);
+				'</span></span></span><span style="mso-ansi-language: ES;" lang="ES"><font face="Calibri">Things<?xml:namespace prefix = o ns = "urn:schemas-microsoft-com:office:office" /><o:p></o:p></font></span></p>', document);
 
 		isNodeEqual(htmlRes, '<ol start="1" type="1"><li>Things</li></ol>');
 	});
@@ -434,8 +428,8 @@
 				'<p class=MsoListParagraphCxSpLast style=\'text-indent:-.25in;mso-list:l1 level1 lfo2\'><![if !supportLists]><span' +
 				' style=\'font-family:Wingdings;mso-fareast-font-family:Wingdings;mso-bidi-font-family:' +
 				'Wingdings\'><span style=\'mso-list:Ignore\'>§<span style=\'font:7.0pt "Times New Roman"\'>&nbsp;' +
-				'</span></span></span><![endif]>One<o:p></o:p></p>'
-		);
+				'</span></span></span><![endif]>One<o:p></o:p></p>', document
+			);
 
 		isNodeEqual(htmlRes,
 			'<ol start="2" type="1"><ul><ul><li>working correctly.</li><li>Five</li></ul></ul>' +

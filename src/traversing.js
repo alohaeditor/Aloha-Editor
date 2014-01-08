@@ -541,6 +541,36 @@ define([
 		return (Dom.Nodes.DOCUMENT === parent.nodeType) ? null : parent;
 	}
 
+	/**
+	 * Executes function 'callBackFn' when the function condition 'conditionFn' is true.
+	 *
+	 * @param {Element} element
+	 * @param {function(Element):boolean} conditionFn
+	 * @param {function(Element)} callBackFn
+	 */
+	function walkDescendants(element, conditionFn, callBackFn) {
+		var childNodes = element.childNodes,
+			child;
+
+		for (var i = 0, len = childNodes.length; i < len; i++) {
+			child = childNodes[i];
+			if (child) {
+				if (conditionFn(child)){
+					callBackFn(child);
+					// check if the child has changed
+					// the size of the children nodes can change
+					if (child !== childNodes[i]) {
+						i--;
+						len = element.childNodes.length;
+					}
+				}
+				if (Dom.isElementNode(child)) {
+					walkDescendants(child, conditionFn,  callBackFn);
+				}
+			}
+		}
+	}
+
 	return {
 		backward                     : backward,
 		forward                      : forward,
@@ -566,6 +596,7 @@ define([
 		previousNonAncestor          : previousNonAncestor,
 		nextNonAncestor              : nextNonAncestor,
 		findAncestor                 : findAncestor,
-		parentBlock                  : parentBlock
+		parentBlock                  : parentBlock,
+		walkDescendants              : walkDescendants
 	};
 });

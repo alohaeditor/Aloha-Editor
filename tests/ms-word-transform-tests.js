@@ -2,13 +2,13 @@
 
 	'use strict';
 
-	var WordTransform = aloha.WordTransform;
+	var WordTransform = aloha.wordTransform;
 
 	module('MS Word Parser');
 
 	test('is not ms-word content', function () {
 		var htmlRes = 'NO MS CONTENT';
-		ok(!WordTransform.isMSWordContent(htmlRes));
+		ok(!WordTransform.isMSWordContent(htmlRes, document));
 	});
 
 
@@ -20,7 +20,7 @@
 				'<p style="margin: 0in 0in 0pt;" class="MsoTitle"><span style="mso-ansi-language: ES;" lang="ES"><font size="7"><font face="Calibri Light">Title<o:p></o:p></font></font></span></p>' +
 				'<p style="margin: 0in 0in 8pt;" class="MsoSubtitle"><span style="mso-ansi-language: ES;" lang="ES"><font color="#5a5a5a"><font face="Calibri">Subtitle<o:p></o:p></font></font></span></p>';
 
-		ok(WordTransform.isMSWordContent(htmlRes));
+		ok(WordTransform.isMSWordContent(htmlRes, document));
 	});
 
 
@@ -29,7 +29,7 @@
 			'<p class=MsoNormal>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed' +
 				'diam nonumy eirmod tempor invidunt ut labore et dol';
 
-		ok(WordTransform.isMSWordContent(htmlRes));
+		ok(WordTransform.isMSWordContent(htmlRes, document));
 	});
 
 
@@ -52,10 +52,10 @@
 				'<p style="margin: 0in 0in 0pt; line-height: normal;" class="MsoNormal"><font face="Calibri">Cell 2 2<o:p></o:p></font></p>' +
 				'</td>' +
 				'</tr>' +
-				'</tbody></table>'
+				'</tbody></table>', document
 		);
 
-		ok(!WordTransform.isMSWordContent(htmlRes));
+		ok(!WordTransform.isMSWordContent(htmlRes, document));
 	});
 
 	test('clean html, meta, head, body tags', function () {
@@ -71,7 +71,7 @@
 				'<meta name=Originator content="Microsoft Word 14">' +
 				'<link rel=File-List' +
 				'href="file:///C:Users\\IEUser\\AppData\\Local\\Temp\\msohtmlclip1\\01\\clip_filelist.xml">' +
-				'<style>td{}</style><body></body>');
+				'<style>td{}</style><body></body>', document);
 
 		equal(htmlRes, '');
 	});
@@ -92,14 +92,14 @@
 					'<p style="margin: 0in 0in 8pt 0.5in; text-indent: -0.25in; mso-list: l0 level1 lfo2;" class="MsoListParagraphCxSpLast"><span style="mso-ansi-language: ES; mso-bidi-font-family: Calibri; mso-bidi-theme-font: minor-latin;" lang="ES"><span style="mso-list: Ignore;"><font face="Calibri">3.</font><span style=\'font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;\'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
 					'</span></span></span><span style="mso-ansi-language: ES;" lang="ES"><font face="Calibri">Three<o:p></o:p></font></span></p>'
 			;
-		ok(WordTransform.isMSWordContent(htmlRes));
+		ok(WordTransform.isMSWordContent(htmlRes, document));
 	});
 
 	test('content with <br> and <hr>', function () {
 		var htmlRes = WordTransform.transform(
 			'<br class="" things=""><p><span>things</span> happens</p>' +
 				'<hr class="" width="33%" align="" style><p>between</p>' +
-				'<hr/>'
+				'<hr/>', document
 		);
 
 		equal(htmlRes, '<p><br></p><p>things happens</p><p><hr></p><p>between</p><p><hr></p>');

@@ -158,6 +158,7 @@ define([
 	 * of the DOM to indicate the span of the given range.
 	 *
 	 * @param {Range} range
+	 * @return {string}
 	 */
 	function hint(range) {
 		var container = range.commonAncestorContainer;

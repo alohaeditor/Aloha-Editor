@@ -547,7 +547,7 @@ define([
 	 * @return {boolean}
 	 */
 	function getContentEditableElement(elem) {
-		return Traversing.upWhile (elem, Dom.isContentEditable);
+		return Traversing.upWhile(elem, Fn.complement(Dom.isContentEditable));
 	}
 
 	/**
@@ -1820,6 +1820,24 @@ define([
 		return isAtStart(boundary) ? node.parentNode : node;
 	}
 
+	/**
+	 * Checks if `node` is a list.
+	 * @param {Node} node
+	 * @return {boolean}
+	 */
+	function isListNode(node) {
+		return node.nodeName === 'UL' || node.nodeName === 'OL' || node.nodeName === 'DD';
+	}
+
+	/**
+	 * Checks if `node` is a Table.
+	 * @param {Node} node
+	 * @return {boolean}
+	 */
+	function isTableNode(node) {
+		return node.nodeName === 'TABLE';
+	}
+
 	return {
 		isRendered                    : isRendered,
 		isUnrendered                  : isUnrendered,
@@ -1869,6 +1887,9 @@ define([
 
 		nextVisiblePosition           : nextVisiblePosition,
 
-		areNextWhiteSpacesSignificant : areNextWhiteSpacesSignificant
+		areNextWhiteSpacesSignificant : areNextWhiteSpacesSignificant,
+
+		isListNode      : isListNode,
+		isTableNode     : isTableNode
 	};
 });
