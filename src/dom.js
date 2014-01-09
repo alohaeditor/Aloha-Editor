@@ -854,12 +854,12 @@ define([
 	}
 
 	/**
-	 * Removes all attributes from `node`.
+	 * Removes all attributes from `element`.
 	 *
-	 * @param {Node} node
+	 * @param {Element} element
 	 */
-	function removeAttrs(node) {
-		attrNames(node).forEach(Fn.partial(removeAttr, node));
+	function removeAttrs(element) {
+		attrNames(element).forEach(Fn.partial(removeAttr, element));
 	}
 
 	/**

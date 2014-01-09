@@ -117,6 +117,18 @@ define([
 	}
 
 	/**
+	 * Cleans list element.
+	 * @param {!Element} list
+	 */
+	function cleanListElement(list) {
+		Dom.children(list).forEach(function (item) {
+			if (item.nodeName !== 'LI' && !Html.isListNode(item)) {
+				Dom.wrapWithNodeName(item, 'li');
+			}
+		});
+	}
+
+	/**
 	 * Cleans image element.
 	 * @param {!Element} imgElement
 	 */
@@ -132,14 +144,46 @@ define([
 		imgElement.width = width;
 	}
 
+	/**
+	 * Executes function 'callBackFn' when the function condition 'conditionFn' is true.
+	 *
+	 * @param {Element} element
+	 * @param {function(Element):boolean} conditionFn
+	 * @param {function(Element)} callBackFn
+	 */
+	function walkDescendants(element, conditionFn, callBackFn) {
+		var childNodes = element.childNodes,
+			child;
+
+		for (var i = 0, len = childNodes.length; i < len; i++) {
+			child = childNodes[i];
+			if (child) {
+				if (conditionFn(child)){
+					callBackFn(child);
+					// check if the child has changed
+					// the size of the children nodes can change
+					if (child !== childNodes[i]) {
+						i--;
+						len = element.childNodes.length;
+					}
+				}
+				if (Dom.isElementNode(child)) {
+					walkDescendants(child, conditionFn,  callBackFn);
+				}
+			}
+		}
+	}
+
 
 
 	return {
-		getFirstChildBlockElement: getFirstChildBlockElement,
-		hasText: hasText,
-		extractBodyContent: extractBodyContent,
-		cleanImageElement: cleanImageElement,
-		isHtmlPasteEvent: isHtmlPasteEvent,
-		isPlainTextPasteEvent: isPlainTextPasteEvent
+		getFirstChildBlockElement : getFirstChildBlockElement,
+		hasText                   : hasText,
+		extractBodyContent        : extractBodyContent,
+		cleanImageElement         : cleanImageElement,
+		cleanListElement          : cleanListElement,
+		isHtmlPasteEvent          : isHtmlPasteEvent,
+		isPlainTextPasteEvent     : isPlainTextPasteEvent,
+		walkDescendants           : walkDescendants
 	};
 });

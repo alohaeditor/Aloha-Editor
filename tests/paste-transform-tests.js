@@ -111,6 +111,35 @@
 		);
 	});
 
+	test('list: elements inside ul', function() {
+		nodeEqual(
+			PasteTransform.transform(
+				'<ul>' +
+					'<li><div>One</div><div><div>item</div></div></li>' +
+					'<li><div>Two item</div></li>' +
+					'<p>Paragraph</p>' +
+					'<div>div</div>' +
+					'</ul>', document),
+
+			'<ul><li><p>One</p><p>item</p></li><li><p>Two item</p></li>' +
+				'<li><p>Paragraph</p></li><li><p>div</p></li></ul>'
+		);
+	});
+
+	test('list: lists inside ul', function() {
+		nodeEqual(
+			PasteTransform.transform(
+				'<ul>' +
+					'<li><div>One</div><div><div>item</div></div></li>' +
+					'<li><div>Two item</div></li>' +
+					'<ol>Paragraph</ol>' +
+					'</ul>', document),
+
+			'<ul><li><p>One</p><p>item</p></li><li><p>Two item</p></li>' +
+				'<ol><li>Paragraph</li></ol></li></ul>'
+		);
+	});
+
 	test('whole html: textEdit', function(){
 		nodeEqual(
 			PasteTransform.transform(
@@ -155,8 +184,7 @@
 					'<p class="sw" style="margin: 0.55em 0px 1.8em; padding: 0px; border: 0px; font-weight: normal; font-style: normal; font-size: 12px; font-family: \'Droid Sans\', Helvetica, Arial, sans-serif; vertical-align: baseline; line-height: 1.65em; color: rgb(60, 60, 60); font-variant: normal; letter-spacing: normal; orphans: inherit; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; widows: inherit; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(255, 255, 255);">' +
 						'<img src="http://media02.hongkiat.com/9-things-about-firefox-os/2-Dialer-and-Messaging.jpg" width="600" height="300" style="margin: 0px; padding: 0px; border: 0px; font-weight: inherit; font-style: inherit; font-size: 12px; font-family: inherit; vertical-align: baseline; max-width: 640px;">' +
 					'</p>' +
-					'<p style="margin: 0.55em 0px 1.8em; padding: 0px; border: 0px; font-weight: normal; font-style: normal; font-size: 1.15em; font-family: \'Droid Sans\', Helvetica, Arial, sans-serif; vertical-align: baseline; line-height: 1.65em; color: rgb(60, 60, 60); font-variant: normal; letter-spacing: normal; orphans: inherit; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; widows: inherit; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(255, 255, 255);">Mozilla Foundation has always worked to make the Web more accessible to everyone, and apart from Firefox OS, there are other tools such as the Firefox Browser, Firefox Marketplace, etc. However,<a href="http://www.engadget.com/2013/03/01/firefox-os-is-repeating-the-mistakes-of-others/" style="margin: 0px; padding: 0px; border: 0px; font-weight: inherit; font-style: inherit; font-size: 14px; font-family: inherit; vertical-align: baseline; color: rgb(19, 60, 154); text-decoration: underline;">some critics</a><span class="Apple-converted-space"> </span>report that it a Mozilla tactic<span class="Apple-converted-space"> </span><strong style="font-weight: bold;">to reach a bigger mobile audience</strong><span class="Apple-converted-space"> </span>in order to level up to its primary competitor, Chrome.</p>'
-				, document),
+					'<p style="margin: 0.55em 0px 1.8em; padding: 0px; border: 0px; font-weight: normal; font-style: normal; font-size: 1.15em; font-family: \'Droid Sans\', Helvetica, Arial, sans-serif; vertical-align: baseline; line-height: 1.65em; color: rgb(60, 60, 60); font-variant: normal; letter-spacing: normal; orphans: inherit; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; widows: inherit; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(255, 255, 255);">Mozilla Foundation has always worked to make the Web more accessible to everyone, and apart from Firefox OS, there are other tools such as the Firefox Browser, Firefox Marketplace, etc. However,<a href="http://www.engadget.com/2013/03/01/firefox-os-is-repeating-the-mistakes-of-others/" style="margin: 0px; padding: 0px; border: 0px; font-weight: inherit; font-style: inherit; font-size: 14px; font-family: inherit; vertical-align: baseline; color: rgb(19, 60, 154); text-decoration: underline;">some critics</a><span class="Apple-converted-space"> </span>report that it a Mozilla tactic<span class="Apple-converted-space"> </span><strong style="font-weight: bold;">to reach a bigger mobile audience</strong><span class="Apple-converted-space"> </span>in order to level up to its primary competitor, Chrome.</p>', document),
 
 			'<p>Mozilla has developed Web APIs so that HTML5 apps can communicate with the device’s hardware, which was only possible for native apps until now, e.g. Bluetooth, Wi-Fi, Camera, etc.</p>' +
 			'<p><img src="http://media02.hongkiat.com/9-things-about-firefox-os/2-Dialer-and-Messaging.jpg" height="300" width="600"/></p>' +

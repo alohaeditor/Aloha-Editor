@@ -10,25 +10,31 @@ define([
 	'events',
 	'boundaries',
 	'dom',
+	'functions',
 	'html',
 	'mutation',
 	'paste-transform-html',
 	'ms-word-transform',
 	'paste-transform-plaintext',
 	'paste-utils',
-	'ranges'
+	'ranges',
+	'traversing',
+	'undo'
 ], function(
 	Editing,
 	Events,
 	Boundaries,
 	Dom,
+	Fn,
 	Html,
 	Mutation,
 	PasteTransform,
     WordTransform,
     PasteTransformPlainText,
     PasteUtils,
-    Ranges
+    Ranges,
+    Traversing,
+    Undo
 ) {
 	'use strict';
 
@@ -86,16 +92,12 @@ define([
 
 	/**
 	 * Sets the selection after `node`.
+	 * @param {Range} range
 	 * @param {Node} node
-	 * @return {Range}
 	 */
-	function setSelectionAfter(node) {
-		var range = Ranges.get();
-
+	function setSelectionAfter(range, node) {
 		range.setStartAfter(node);
 		range.setEndAfter(node);
-
-		return range;
 	}
 
 	/**
@@ -124,58 +126,73 @@ define([
 	 * @return {Element}
 	 */
 	function getFirstParentBlockElement(element) {
-		var parentNode = element;
-		while (!Html.hasBlockStyle(parentNode)) {
-			parentNode = parentNode.parentNode;
-		}
-		return parentNode;
+		return Traversing.upWhile(element, Fn.complement(Html.hasBlockStyle));
 	}
 
 
 	/**
 	 * Inserts document fragment into the DOM, updating the range selection.
 	 * @param {DocumentFragment} fragment
+	 * @param {Editable} editable
+	 * @param {Document} doc
 	 */
-	function insertIntoDom(fragment, context) {
+	function insertIntoDom(fragment, editable, doc) {
 		var firstChild = fragment.firstChild;
 		var lastChild = fragment.lastChild;
 		var needSplitText = fragment.childNodes.length >= 2;
-
 		var range = Ranges.get();
-		Editing.delete(range, context);
+		var referenceElement;
+
+		Editing.delete(range, editable);
 
 		if (Html.isListNode(firstChild) || Html.isTableNode(firstChild)) {
 			needSplitText = true;
 		} else {
 			range.insertNode(firstChild);
-			range = setSelectionAfter(firstChild);
+			setSelectionAfter(range, firstChild);
 
 			if (!Html.isListNode(firstChild) && !Html.isTableNode(firstChild)) {
 				Dom.removeShallow(firstChild);
 			}
 		}
 
-		var reference = getReferenceNode(range);
 		if (needSplitText) {
 			Editing.split(range);
-			reference = getFirstParentBlockElement(Ranges.get().startContainer);
+			referenceElement = Dom.nthChild(range.startContainer, range.startOffset);
+		} else {
+			referenceElement = getReferenceNode(range);
 		}
 
 		if (fragment.childNodes.length) {
-			reference.parentNode.insertBefore(fragment, reference);
-			setSelectionAfter(lastChild);
+			referenceElement.parentNode.insertBefore(fragment, referenceElement);
+			 setSelectionAfter(range, lastChild);
 		}
+
+		scrollToRange(doc, range);
+		Ranges.select(range);
 	}
 
 	/**
 	 * Scrolls to the range.
 	 */
-	function scrollToRange(doc) {
-		var position = Dom.offset(getFirstParentBlockElement(Ranges.get().startContainer));
+	function scrollToRange(doc, range) {
+		var position = Dom.offset(getFirstParentBlockElement(range.startContainer));
 		var win = Dom.windowFromDocument(doc);
 
 		var adjust = (win.innerHeight - (win.innerHeight / 5));
 		win.scrollTo(position.left, position.top - adjust);
+	}
+
+	/**
+	 * Registers Undo to the changes.
+	 * @param {!Context} context
+	 * @param {!function} callBack
+	 */
+	function registerUndoChanges(context, callBack) {
+		Undo.capture(
+			context,
+			{meta: {type: 'paste'}},
+			callBack);
 	}
 
 	/**
@@ -187,7 +204,7 @@ define([
 		var nativeEvent = alohaEvent.nativeEvent;
 
 		if (isPasteEvent(nativeEvent)) {
-			var doc = alohaEvent.document;
+			var doc = alohaEvent.editable.elem.ownerDocument;
 			var content;
 
 			Events.stopPropagationAndPreventDefault(nativeEvent);
@@ -205,12 +222,15 @@ define([
 				content = PasteTransformPlainText.transform(content, doc);
 			}
 
-			insertIntoDom(
-				createDocumentFragment(content, doc),
-				alohaEvent.editable
-			);
-
-			scrollToRange(doc);
+			registerUndoChanges(
+				alohaEvent.editable.undoContext,
+				function() {
+					insertIntoDom(
+						createDocumentFragment(content, doc),
+						alohaEvent.editable,
+						doc
+					);
+			});
 		}
 
 		return alohaEvent;

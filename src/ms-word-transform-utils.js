@@ -7,11 +7,11 @@
 define([
 	'dom',
 	'predicates',
-	'traversing'
+	'paste-utils'
 ], function(
 	Dom,
 	Predicates,
-	Traversing
+	PasteUtils
 ) {
 	'use strict';
 
@@ -107,7 +107,7 @@ define([
 	 *                   the child should be removed
 	 */
 	function removeDescendants(node, conditionFn) {
-		Traversing.walkDescendants(node, conditionFn, Dom.remove);
+		PasteUtils.walkDescendants(node, conditionFn, Dom.remove);
 	}
 
 	/**
@@ -117,7 +117,7 @@ define([
 	 * @param {function(Element):boolean} conditionFn
 	 */
 	function unwrapDescendants(node, conditionFn) {
-		Traversing.walkDescendants(node, conditionFn, function(child) {
+		PasteUtils.walkDescendants(node, conditionFn, function(child) {
 			Dom.removeShallow(child);
 		});
 	}
@@ -177,7 +177,7 @@ define([
 			return node.nodeName === 'SPAN' || node.nodeName === 'FONT';
 		});
 
-		Traversing.walkDescendants(element, function(node) {
+		PasteUtils.walkDescendants(element, function(node) {
 			return node.nodeName !== 'IMG' && node.nodeName !== 'A';
 		}, removeAllAttributes);
 

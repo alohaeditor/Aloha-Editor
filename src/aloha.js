@@ -51,7 +51,6 @@ define([
 	function editor(nativeEvent, custom) {
 		var alohaEvent = custom || {'nativeEvent' : nativeEvent};
 		alohaEvent.editor = editor;
-		alohaEvent.document = document;
 		Fn.comp(
 			setSelection,
 			Selections.handle,

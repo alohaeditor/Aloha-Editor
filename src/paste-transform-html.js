@@ -62,24 +62,27 @@ define([
 	 * @param {!Node} element
 	 */
 	function cleanElement(element) {
-		var anchorElements = element.querySelectorAll('a');
-		var imgElements = element.querySelectorAll('img');
-		var href;
-		var i, len;
+		var anchorElements = Arrays.coerce(element.querySelectorAll('a'));
+		var imgElements = Arrays.coerce(element.querySelectorAll('img'));
+		var lists = Arrays.coerce(element.querySelectorAll('ol,ul'));
 
-		for (i = 0, len = anchorElements.length; i < len; i++) {
-			href = anchorElements[i].href;
-			Dom.removeAttrs(anchorElements[i]);
-			anchorElements[i].href = href;
+		if (Html.isListNode(element)) {
+			lists.push(element);
 		}
 
-		for (i = 0, len = imgElements.length; i < len; i++) {
-			PasteUtils.cleanImageElement(imgElements[i]);
-		}
+		anchorElements.forEach(function (anchor) {
+			var href = anchor.href;
+			Dom.removeAttrs(anchor);
+			anchor.href = href;
+		});
+
+		imgElements.forEach(PasteUtils.cleanImageElement);
+
+		lists.forEach(PasteUtils.cleanListElement);
 
 		Dom.removeAttrs(element);
 
-		Traversing.walkDescendants(element, Dom.isElementNode, function(node) {
+		PasteUtils.walkDescendants(element, Dom.isElementNode, function(node) {
 			var nodeName = node.nodeName;
 			if (nodeName !== 'A' && nodeName !== 'IMG' && node.attributes != null) {
 				Dom.removeAttrs(node);
@@ -153,19 +156,10 @@ define([
 	}
 
 	/**
-	 * Transforms `content` to a valid HTML string.
-	 * @param {string} content
-	 * @param {!Document} doc
-	 * @return {Element}
+	 * Transforms `contentElement`.
+	 * @param {Element} contentElement
 	 */
-	function transform(content, doc) {
-		var contentElement;
-
-
-
-		content = PasteUtils.extractBodyContent(content);
-		contentElement = transformToDOMElement(content, doc);
-
+	function transformFromDOM(contentElement) {
 		propLineBreaks(contentElement);
 		replaceDivsWithParagraph(contentElement);
 
@@ -193,11 +187,26 @@ define([
 				nextElement = lastElement || contentElement.firstChild;
 			}
 		}
+	}
 
+	/**
+	 * Transforms `content` to a valid HTML string.
+	 * @param {string} content
+	 * @param {!Document} doc
+	 * @return {string}
+	 */
+	function transform(content, doc) {
+		var contentElement;
+
+		content = PasteUtils.extractBodyContent(content);
+		contentElement = transformToDOMElement(content, doc);
+
+		transfromFromDOM(contentElement);
 		return contentElement.innerHTML;
 	}
 
 	return {
-		transform: transform
+		transform: transform,
+		transformFromDOM : transformFromDOM
 	};
 });
