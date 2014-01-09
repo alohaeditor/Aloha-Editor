@@ -178,10 +178,12 @@ define([
 		$editable.mousedown(function (event) {
 			if (!Aloha.eventHandled) {
 				Aloha.eventHandled = true;
+				if (Aloha.activeEditable == null || typeof Aloha.activeEditable === 'undefined' || $editable[0] !== Aloha.activeEditable.obj[0]) {
+					Aloha.mouseEventChangedEditable = true;
+				}
 				return editable.activate(event);
 			}
 		});
-
 		$editable.mouseup(function (event) {
 			Aloha.eventHandled = false;
 		});
@@ -216,7 +218,10 @@ define([
 		});
 
 		$editable.contentEditableSelectionChange(function (event) {
-			Selection.onChange($editable, event);
+			Selection.onChange($editable, event, 0, Aloha.mouseEventChangedEditable);
+			if (Aloha.mouseEventChangedEditable) {
+				Aloha.mouseEventChangedEditable = false;
+			}
 			return $editable;
 		});
 	}
