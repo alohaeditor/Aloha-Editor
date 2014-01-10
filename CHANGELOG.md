@@ -12,6 +12,11 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+## 0.24.10 - 2014/01/08
+
+- **BUGFIX**: table-plugin: Table selection for rows or columns in IE8 did not
+                            show Table Row/Column panel options. This error is
+                            fixed.
 
 ## 0.24.9 - 2013/12/18
 
