@@ -21,7 +21,6 @@
 		equal(dom.outerHTML, after, before + ' ⇒ ' + after);
 	}
 
-/*
 	test('Html.next', function () {
 		tested.push('Html.next');
 		var t = function (before, after) {
@@ -33,6 +32,7 @@
 			});
 		};
 
+		/*
 		t('<div><p contenteditable="true">{}<br></p>foo</div>',
 		  '<div><p contenteditable="true">{<br>}</p>foo</div>');
 
@@ -59,7 +59,11 @@
 		t('<p>[] foo</p>', '<p>[ f]oo</p>');
 		t('<div><p>foo[] </p>bar</div>', '<div><p>foo[ </p>]bar</div>');
 
-		//t('<p><i>[] <b> foo</b></i></p>', '<p><i>[ <b> f]oo</b></i></p>');
+		*/
+
+		t('<p><i>[] <b> foo</b></i></p>', '<p><i>[ <b> f]oo</b></i></p>');
+
+		return;
 
 		t('<div><p><b>foo </b></p><p><i><b>[bar]  </b> </i> </p>baz</div>',
 		  '<div><p><b>foo </b></p><p><i><b>[bar  </b> </i> </p>]baz</div>');
@@ -140,7 +144,8 @@
 		t('<div>foo[]<br><p>bar</p></div>', '<div>foo[<br><p>]bar</p></div>');
 		t('<div>foo{}<br><p>bar</p></div>', '<div>foo{<br><p>]bar</p></div>');
 	});
-*/
+
+	return;
 
 	test('Html.prev', function () {
 		tested.push('Html.prev');

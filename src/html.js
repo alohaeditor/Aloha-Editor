@@ -434,8 +434,17 @@ define([
 		}
 
 		if (isTerminalNode(node)) {
-			return Dom.isTextNode(node)
-			    && hasLinebreakingStyle(node.parentNode);
+			if (!Dom.isTextNode(node)) {
+				return false;
+			}
+
+			var inlineNode = Traversing.nextNonAncestor(node, function (node) {
+				return Predicates.isInlineNode(node) && isRendered(node);
+			}, function (node) {
+				return hasLinebreakingStyle(node) || Dom.isEditingHost(node);
+			});
+
+			return !inlineNode;
 		}
 
 		return isAdjacentToBlock(node)
@@ -1133,7 +1142,7 @@ define([
 		}
 
 		var raw = Boundaries.raw(textnode, offset - 1);
-		var isAtWhiteSpace = !NOT_WSP.test(text.substr(Boundaries.offset(raw), 1));
+		var isAtWhiteSpace = !NOT_WSP.test(text.charAt(offset - 1));
 		var isAtVisibleChar = !isAtWhiteSpace || areNextWhiteSpacesSignificant(raw);
 
 		return isAtVisibleChar ? offset : prevSignificantOffset(raw);
@@ -1428,66 +1437,6 @@ define([
 	}
 
 	/**
-	 * Checks whether the given boundary is immediately followed by a
-	 * Strings.WHITE_SPACE character.
-	 *
-	 * Example:
-	 *
-	 * "foo] bar"        (true)
-	 * "foo ]bar"        (false)
-	 * "<i>foo</i>} bar" (true)
-	 * "<i>foo}</i> bar  (false)
-	 *
-	 * @deprecated?
-	 * @param  {Boundary} boundary
-	 * @return {boolean}
-	 */
-	function isBeforeWhiteSpace(boundary) {
-		boundary = Boundaries.normalize(boundary);
-		var node, offset;
-		if (Boundaries.isTextBoundary(boundary)) {
-			node = Boundaries.container(boundary);
-			offset = Boundaries.offset(boundary);
-			return Strings.WHITE_SPACE.test(node.data.charAt(offset));
-		}
-		node = Boundaries.nodeAfter(boundary);
-		if (!node || !Dom.isTextNode(node)) {
-			return false;
-		}
-		return Strings.WHITE_SPACE.test(node.data.charAt(0));
-	}
-
-	/**
-	 * Checks whether the given text boundary is immediately preceeded by
-	 * a Strings.WHITE_SPACE character.
-	 *
-	 * Example:
-	 *
-	 * "foo [bar"        (true)
-	 * "foo[ bar"        (false)
-	 * "foo {<i>bar</i>" (true)
-	 * "foo <i>{bar</i>" (false)
-	 *
-	 * @deprecated?
-	 * @param  {Boundary} boundary
-	 * @return {boolean}
-	 */
-	function isAfterWhiteSpace(boundary) {
-		boundary = Boundaries.normalize(boundary);
-		var node, offset;
-		if (Boundaries.isTextBoundary(boundary)) {
-			node = Boundaries.container(boundary);
-			offset = Boundaries.offset(boundary) - 1;
-			return Strings.WHITE_SPACE.test(node.data.charAt(offset));
-		}
-		node = Boundaries.nodeBefore(boundary);
-		if (!node || !Dom.isTextNode(node)) {
-			return false;
-		}
-		return Strings.WHITE_SPACE.test(node.data.substr(-1));
-	}
-
-	/**
 	 * Moves a boundary over any insignificant positions.
 	 *
 	 * Insignificant boundary positions are those where the boundary is
@@ -1538,6 +1487,12 @@ define([
 			next = Boundaries.next(next);
 			node = Boundaries.nextNode(next);
 		}
+
+		if (hasLinebreakingStyle(node)) {
+			return next;
+		}
+
+		debugger;
 
 		return next;
 	}
