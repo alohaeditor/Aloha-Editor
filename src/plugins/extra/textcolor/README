@@ -1,0 +1,14 @@
+Aloha Editor Text Color Plugin
+------------------------------
+
+The text color plugin provides means to color text inside of editables.
+
+To override the palette of allowed colors, simply specify a new array of
+hexidecimal or rgb color codes in Aloha.settings.plugins.textcolor:
+
+Aloha.settings.plugins.textcolor: [
+	'#548',
+	'#f34',
+	'#09f',
+	'rgb(255,90,20)'
+]
