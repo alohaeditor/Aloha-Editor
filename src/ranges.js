@@ -37,7 +37,7 @@ define([
 	 * If no document element is given, the document element of the calling
 	 * frame's window will be used.
 	 *
-	 * @param  {Document=} doc
+	 * @param  {!Document} doc
 	 * @return {?Range} Browser's selected range or null if not selection exists
 	 */
 	function get(doc) {
@@ -50,7 +50,7 @@ define([
 	 * selection to be visually rendered by the user agent.
 	 *
 	 * @param  {Range} range
-	 * @param  {Document=} doc
+	 * @param  {!Document} doc
 	 * @return {Selection} Browser selection to which the range was set
 	 */
 	function select(range, doc) {
@@ -113,14 +113,14 @@ define([
 	 * @private
 	 * @param  {number} x
 	 * @param  {number} y
-	 * @param  {Document=} doc
+	 * @param  {!Document} doc
 	 * @return {?Range}
 	 */
 	function fromPoint(x, y, doc) {
 		if (x < 0 || y < 0) {
 			return null;
 		}
-		doc = doc || document;
+
 		if (doc.caretRangeFromPoint) {
 			return doc.caretRangeFromPoint(x, y);
 		}
@@ -141,7 +141,7 @@ define([
 	 *
 	 * @param  {number} x
 	 * @param  {number} y
-	 * @param  {Document=} doc
+	 * @param  {!Document} doc
 	 * @return {?Range} Null if no suitable range can be determined
 	 */
 	function fromPosition(x, y, doc) {

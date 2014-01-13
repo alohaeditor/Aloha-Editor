@@ -179,15 +179,20 @@ define([
 	}
 
 	/**
-	 * Check if `node` is an Element.
+	 * Checks if `node` is an Element.
 	 *
 	 * @param {Node} node
-	 * @returns {boolean}
+	 * @return {boolean}
 	 */
 	function isElementNode(node) {
 		return Nodes.ELEMENT === node.nodeType;
 	}
 
+	/**
+	 * Checks is a `node` is a Text Node and if it is empty.
+	 * @param {Node} node
+	 * @return {boolean}
+	 */
 	function isEmptyTextNode(node) {
 		return isTextNode(node) && !nodeLength(node);
 	}
@@ -592,9 +597,12 @@ define([
 	 *
 	 * @param {!Element} node
 	 * @param {!string} nodeName
+	 * @return {Element} Wrapper
 	 */
 	function wrapWithNodeName(node, nodeName) {
-		wrap(node, node.ownerDocument.createElement(nodeName));
+		var wrapper = node.ownerDocument.createElement(nodeName);
+		wrap(node, wrapper);
+		return wrapper;
 	}
 
 	/**
@@ -686,9 +694,8 @@ define([
 	 * Returns `true` if node `b` is a descendant of node `a`, `false`
 	 * otherwise.
 	 *
-	 * @see
-	 * http://ejohn.org/blog/comparing-document-position/
-	 * http://www.quirksmode.org/blog/archives/2006/01/contains_for_mo.html
+	 * @see	http://ejohn.org/blog/comparing-document-position/
+	 * @see http://www.quirksmode.org/blog/archives/2006/01/contains_for_mo.html
 	 *
 	 * TODO: Contains seems to be problematic on Safari, is this an issue for us?
 	 *       Should we just use compareDocumentPosition() since we only need IE > 9 anyway?
@@ -846,6 +853,21 @@ define([
 		}
 	}
 
+	/**
+	 * Removes all attributes from `element`.
+	 *
+	 * @param {Element} element
+	 */
+	function removeAttrs(element) {
+		attrNames(element).forEach(Fn.partial(removeAttr, element));
+	}
+
+	/**
+	 * Removes attribute which name is `name` from `elem`.
+	 *
+	 * @param elem
+	 * @param name
+	 */
 	function removeAttr(elem, name) {
 		elem.removeAttribute(name);
 	}
@@ -1024,7 +1046,7 @@ define([
 	 * @return {boolean}
 	 */
 	function isContentEditable(node) {
-		return 1 === node.nodeType && "true" === node.contentEditable;
+		return isElementNode(node) && "true" === node.contentEditable;
 	}
 
 	/**
@@ -1040,7 +1062,7 @@ define([
 	 * @return {boolean}
 	 */
 	function isEditable(node) {
-		if (node.nodeType !== Nodes.ELEMENT) {
+		if (!isElementNode(node)) {
 			return false;
 		}
 		var contentEditable = node.getAttribute('contentEditable');
@@ -1169,6 +1191,15 @@ define([
 		elem.onselectstart = Fn.returnFalse;
 	}
 
+	/**
+	 * Gets the window from document.
+	 * @param {!Document} doc
+	 * @returns {Window}
+	 */
+	function windowFromDocument(doc) {
+		return doc['defaultView'] || doc['parentWindow'];
+	}
+
 	return {
 		offset : offset,
 		remove : remove,
@@ -1190,6 +1221,7 @@ define([
 		removeAttr     : removeAttr,
 		removeAttrNS   : removeAttrNS,
 		getTextContent : getTextContent,
+		removeAttrs    : removeAttrs,
 
 		indexByClass         : indexByClass,
 		indexByName          : indexByName,
@@ -1255,6 +1287,8 @@ define([
 		ensureExpandoId: ensureExpandoId,
 
 		enableSelection  : enableSelection,
-		disableSelection : disableSelection
+		disableSelection : disableSelection,
+
+		windowFromDocument: windowFromDocument
 	};
 });

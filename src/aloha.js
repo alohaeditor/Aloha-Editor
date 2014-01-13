@@ -18,6 +18,7 @@ define([
 	'keys',
 	'maps',
 	'mouse',
+	'paste',
 	'ranges',
 	'selections',
 	'typing',
@@ -32,6 +33,7 @@ define([
 	Keys,
 	Maps,
 	Mouse,
+	Paste,
 	Ranges,
 	Selections,
 	Typing,
@@ -55,6 +57,11 @@ define([
 			Typing.handle,
 			Blocks.handle,
 			DragDrop.handle,
+			Paste.handle,
+			function (alohaEvent) {
+				alohaEvent.editable = alohaEvent.editor.editables[1];
+				return alohaEvent;
+			},
 			Mouse.handle,
 			Keys.handle
 		)(alohaEvent);

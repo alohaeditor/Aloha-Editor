@@ -2,7 +2,7 @@
 
 	'use strict';
 
-	var WordTransform = aloha.WordTransform;
+	var WordTransform = aloha.wordTransform;
 
 	module('MS Word Parser');
 
@@ -21,7 +21,7 @@
 				'<h2><a name="_Toc374416890"><span lang=ES style=\'mso-ansi-language:ES\'>Heading2</span></a><span' +
 				' lang=ES style=\'mso-ansi-language:ES\'><o:p></o:p></span></h2>' +
 				'<h3><a name="_Toc374416891"><span lang=ES style=\'mso-ansi-language:ES\'>Heading3</span></a><span' +
-				' lang=ES style=\'mso-ansi-language:ES\'><o:p></o:p></span></h3>');
+				' lang=ES style=\'mso-ansi-language:ES\'><o:p></o:p></span></h3>', document);
 
 		equal(htmlRes,
 			'<h1>Inhalt</h1>' +
@@ -52,7 +52,7 @@
 				'<h2><a name="_Toc374416890"><span lang=ES style=\'mso-ansi-language:ES\'>Heading2</span></a><span' +
 				' lang=ES style=\'mso-ansi-language:ES\'><o:p></o:p></span></h2>' +
 				'<h3><a name="_Toc374416891"><span lang=ES style=\'mso-ansi-language:ES\'>Heading3</span></a><span' +
-				' lang=ES style=\'mso-ansi-language:ES\'><o:p></o:p></span></h3>');
+				' lang=ES style=\'mso-ansi-language:ES\'><o:p></o:p></span></h3>', document);
 
 		equal(htmlRes,
 			'<ul style="list-style: none;">' +
@@ -80,7 +80,7 @@
 				'<h2><a name="_Toc374416890"><span lang=ES style=\'mso-ansi-language:ES\'>Heading2</span></a><span' +
 				' lang=ES style=\'mso-ansi-language:ES\'><o:p></o:p></span></h2>' +
 				'<h3><a name="_Toc374416891"><span lang=ES style=\'mso-ansi-language:ES\'>Heading3</span></a><span' +
-				' lang=ES style=\'mso-ansi-language:ES\'><o:p></o:p></span></h3>');
+				' lang=ES style=\'mso-ansi-language:ES\'><o:p></o:p></span></h3>', document);
 
 		equal(htmlRes,
 			'<ul style="list-style: none;">' +

@@ -15,7 +15,8 @@ define([
 	'ms-word-transform-table-of-contents',
 	'ms-word-transform-paragraph',
 	'ms-word-transform-image',
-	'ms-word-transform-utils'
+	'ms-word-transform-utils',
+	'paste-utils'
 ], function (
 	Dom,
 	Html,
@@ -26,7 +27,8 @@ define([
 	WordContentTableOfContents,
 	WordContentParagraph,
     WordContentImage,
-    WordContentUtils
+    WordContentUtils,
+    PasteUtils
 ) {
 	'use strict';
 
@@ -79,33 +81,6 @@ define([
 	}
 
 	/**
-	 * Extract body content if the content is an HTML page. Otherwise
-	 * it returns the content itself.
-	 *
-	 * @param {string} content
-	 * @return {string} body
-	 */
-	function extractBodyContent(content) {
-		var match,
-		    matchEnd,
-		    index,
-		    lastIndex;
-
-		content = content.replace(/\n/g, ' ');
-
-		match = /<body.*?>/i.exec(content);
-		matchEnd = /<\/body.*?>/i.exec(content);
-
-		if (match && matchEnd) {
-			index = content.indexOf(match[0]) + match[0].length;
-			lastIndex = content.indexOf(matchEnd[0]);
-			content = content.slice(index, lastIndex);
-		}
-
-		return content;
-	}
-
-	/**
 	 * Fills empty blocks elements with a <br> tag.
 	 *
 	 * @param {Element} element
@@ -118,15 +93,15 @@ define([
 	 * Transforms the MS Office content to a string html.
 	 *
 	 * @param {!string} content
-	 * @param {Document=} doc
+	 * @param {!Document} doc
 	 *
 	 * @return {string}
 	 */
 	function transform(content, doc) {
 		var element;
 
-		doc = doc || document;
-		content = extractBodyContent(content);
+
+		content = PasteUtils.extractBodyContent(content);
 		element = htmlToDOM(content, doc);
 
 		removeUselessElements(element);
@@ -148,12 +123,12 @@ define([
 	 * Checks if the 'content' contains MS Office syntax.
 	 *
 	 * @param {!string} content
-	 * @param {Document=} doc
+	 * @param {!Document} doc
 	 *
 	 * @return {boolean}
 	 */
 	function isMSWordContent(content, doc) {
-		doc = doc || document;
+
 		return null !== htmlToDOM(content, doc).querySelector('[style*="mso-"], [class^="Mso"]');
 	}
 

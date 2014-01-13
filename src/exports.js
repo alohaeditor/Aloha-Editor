@@ -32,6 +32,9 @@ define([
 	'mouse',
 	'mutation',
 	'overrides',
+	'paste',
+	'paste-transform-html',
+	'paste-transform-plaintext',
 	'predicates',
 	'ranges',
 	'selection-change',
@@ -67,6 +70,9 @@ define([
 	Mouse,
 	Mutation,
 	Overrides,
+	Paste,
+	PasteTransform,
+	PasteTransformPlainText,
 	Predicates,
 	Ranges,
 	SelectionChange,
@@ -337,6 +343,10 @@ define([
 	exports['merge'] = Maps.merge;
 	exports['isMap'] = Maps.isMap;
 
+	exports['paste'] = Paste;
+	exports['pasteTransform'] = PasteTransform;
+	exports['pasteTransformPlainText'] = PasteTransformPlainText;
+
 	exports['trees'] = Trees;
 	exports['trees']['prewalk'] = Trees.prewalk;
 	exports['trees']['postwalk'] = Trees.postwalk;
@@ -430,8 +440,8 @@ define([
 	exports['selection_change']['addHandler'] = SelectionChange.addHandler;
 	exports['selection_change']['removeHandler'] = SelectionChange.removeHandler;
 
-	exports['WordTransform'] = WordTransform;
-	exports['WordTransformUtils'] = WordTransformUtils;
+	exports['wordTransform'] = WordTransform;
+	exports['wordTransformUtils'] = WordTransformUtils;
 
 	return exports;
 });

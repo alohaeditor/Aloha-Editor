@@ -5,7 +5,13 @@
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define(['dom'], function Cursors(dom) {
+define([
+	'dom',
+	'boundaries'
+], function Cursors(
+	dom,
+	Boundaries
+) {
 	'use strict';
 
 	/**
@@ -225,6 +231,18 @@ define(['dom'], function Cursors(dom) {
 	}
 
 	/**
+	 * Transforms a cursor to a boundary.
+	 * @param {Cursor} cursor
+	 * @return {Boundary}
+	 */
+	function toBoundary(cursor) {
+		if (cursor.atEnd) {
+			return Boundaries.create(cursor.node, dom.nodeLength(cursor.node));
+		}
+		return Boundaries.create(cursor.node.parentNode, dom.nodeIndex(cursor.node));
+	}
+
+	/**
 	 * Sets the startContainer/startOffset and endContainer/endOffset boundary
 	 * points of the given range, based on the given start and end Cursors.
 	 *
@@ -251,6 +269,7 @@ define(['dom'], function Cursors(dom) {
 		createFromBoundary      : createFromBoundary,
 		setToRange              : setToRange,
 		setRangeStart           : setRangeStart,
-		setRangeEnd             : setRangeEnd
+		setRangeEnd             : setRangeEnd,
+		toBoundary              : toBoundary
 	};
 });

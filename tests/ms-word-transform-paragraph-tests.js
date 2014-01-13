@@ -2,7 +2,7 @@
 
 	'use strict';
 
-	var WordTransform = aloha.WordTransform;
+	var WordTransform = aloha.wordTransform;
 
 	module('MS Word Parser');
 
@@ -41,7 +41,7 @@
 				'<p style="margin: 0in 0in 8pt;" class="MsoNormal"><o:p><font face="Calibri">&nbsp;</font></o:p></p>' +
 				'<p style="margin: 0in 0in 0pt;" class="MsoTitle"><font size="7"><font face="Calibri Light">Other title<o:p></o:p></font></font></p>' +
 				'<p style="margin: 0in 0in 8pt;" class="MsoNormal"><font face="Calibri">This is some text<o:p></o:p></font></p>' +
-				'<p style="margin: 0in 0in 8pt;" class="MsoNormal"><font face="Calibri">This is some text<o:p></o:p></font></p>'
+				'<p style="margin: 0in 0in 8pt;" class="MsoNormal"><font face="Calibri">This is some text<o:p></o:p></font></p>', document
 		);
 
 		isNodeEqual(htmlRes,
@@ -59,7 +59,7 @@
 				'<p style="margin: 0in 0in 8pt;" class="MsoNormal"><o:p><font face="Calibri">&nbsp;</font></o:p></p>' +
 				'<p style="margin: 0in 0in 0pt;" class="MsoTitle"><font size="7"><font face="Calibri Light">Other title<o:p></o:p></font></font></p>' +
 				'<p style="margin: 0in 0in 8pt;" class="MsoNormal"><font face="Calibri">This is some text<o:p></o:p></font></p>' +
-				'<span style="margin: 0in 0in 8pt;" class="MsoNormal"><font face="Calibri">This is some text<o:p></o:p></font></span>'
+				'<span style="margin: 0in 0in 8pt;" class="MsoNormal"><font face="Calibri">This is some text<o:p></o:p></font></span>', document
 		);
 
 		isNodeEqual(htmlRes, '<h1>Title</h1><p>This is some text</p><p><br></p><p>This is more text</p>' +
@@ -76,7 +76,7 @@
 				'<p style="margin: 0in 0in 8pt;" class="MsoNormal"><o:p><font face="Calibri">&nbsp;</font></o:p></p>' +
 				'<p style="margin: 0in 0in 0pt;" class="MsoTitle"><font size="7"><font face="Calibri Light">Other title<o:p></o:p></font></font></p>' +
 				'<p style="margin: 0in 0in 8pt;" class="MsoNormal"><font face="Calibri"><span>This is some text</span><o:p></o:p></font></p>' +
-				'<span style="margin: 0in 0in 8pt;" class="MsoNormal"><font face="Calibri">This is some text<o:p></o:p></font></span>'
+				'<span style="margin: 0in 0in 8pt;" class="MsoNormal"><font face="Calibri">This is some text<o:p></o:p></font></span>', document
 		);
 
 		isNodeEqual(htmlRes, '<h1>Title</h1><p>This is some text</p><p><br></p><p>This is more text</p>' +
@@ -91,7 +91,7 @@
 				'<sup>dolor</sup> <u>sit</u> ' +
 				'<b style="mso-bidi-font-weight: normal;"><i style="mso-bidi-font-style: normal;">amet</i></b>' +
 				', <s>consetetur</s> <u>sadipscing</u>' +
-				'</span>'
+				'</span>', document
 		);
 
 		isNodeEqual(htmlRes, '<p><strong>Lorem</strong> <sub>ipsum</sub> <sup>dolor</sup> <u>sit</u> ' +
@@ -102,7 +102,7 @@
 		var htmlRes = WordTransform.transform(
 			'<p>Paragraph before</p>' +
 				'<b>Bold</b><span> This is some text <i>italic</i>.</span>' +
-				'<p>Paragraph after</p>'
+				'<p>Paragraph after</p>', document
 		);
 
 		isNodeEqual(htmlRes,
@@ -114,7 +114,7 @@
 	test('parse non-breaking-space (nbsp)', function () {
 
 		var htmlRes = WordTransform.transform(
-			'<p><b>&nbsp;</b></p><p>&nbsp</p><p><span><i>&nbsp;</i></span></p>'
+			'<p><b>&nbsp;</b></p><p>&nbsp</p><p><span><i>&nbsp;</i></span></p>', document
 		);
 
 		isNodeEqual(htmlRes, '<p><br></p><p><br></p><p><br></p>');
@@ -148,7 +148,7 @@
 				' src="file:///C:img.jpg"' +
 				' v:shapes="Grafik_x0020_2"><![endif]></span><span style="mso-ansi-language: ES;" lang="ES"><o:p></o:p></span></font></p>' +
 				'<p style="margin: 0in 0in 0pt;" class="MsoTitle"><font size="7"><font face="Calibri Light">Title<o:p></o:p></font></font></p>' +
-				'<p style="margin: 0in 0in 8pt;" class="MsoNormal"><o:p><font face="Calibri">&nbsp;</font></o:p></p>');
+				'<p style="margin: 0in 0in 8pt;" class="MsoNormal"><o:p><font face="Calibri">&nbsp;</font></o:p></p>', document);
 
 		isNodeEqual(htmlRes, '<p><br></p><p><img width="624" height="434">file:///C:img.jpg</p><h1>Title</h1><p><br></p>');
 	});
@@ -201,7 +201,7 @@
 				'<p class=Ralisation><i style=\'mso-bidi-font-style:normal\'><span' +
 				' style=\'mso-ansi-language:EN-US\'>Technical environment: WebStorm, Javascript, ECMASCRIPT,' +
 				'HTML5, CSS, Kanban<o:p></o:p></span></i></p>' +
-				'<!--EndFragment-->');
+				'<!--EndFragment-->', document);
 
 		isNodeEqual(htmlRes,
 			'<p>Gentics, Vienna Austria                              \t\t\t09/2013 – Onwards</p>' +
@@ -237,7 +237,7 @@
 				'minor-latin;mso-bidi-font-family:"Times New Roman";mso-bidi-theme-font:minor-bidi;\n' +
 				'mso-ansi-language:EN-US;mso-fareast-language:EN-US;mso-bidi-language:AR-SA\'>For\n' +
 				'the lovers of </span><!--EndFragment-->\n' +
-				'</body>'
+				'</body>', document
 		);
 
 		isNodeEqual(htmlRes,
