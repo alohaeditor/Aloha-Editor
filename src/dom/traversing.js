@@ -1,19 +1,17 @@
-/* traversing.js is part of Aloha Editor project http://aloha-editor.org
+/* dom/traversing.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  *
  * @refernce: http://www.w3.org/TR/DOM-Level-3-Core/glossary.html#dt-document-order
  */
 define([
-	'dom',
-	'functions',
-	'boundaries'
-], function Traversing(
-	Dom,
-	Fn,
-	Boundaries
+	'dom/nodes',
+	'functions'
+], function DomTraversing(
+	Nodes,
+	Fn
 ) {
 	'use strict';
 
@@ -308,7 +306,7 @@ define([
 	 * Depth-first postwalk of the given DOM node.
 	 */
 	function walkRec(node, func, arg) {
-		if (Dom.Nodes.ELEMENT === node.nodeType) {
+		if (Nodes.isElementNode(node)) {
 			walk(node.firstChild, function (node) {
 				walkRec(node, func, arg);
 			});
@@ -450,23 +448,6 @@ define([
 		});
 	}
 
-	function findAncestor(node, match, until) {
-		until = until || Fn.returnFalse;
-		if (until(node)) {
-			return null;
-		}
-		do {
-			node = node.parentNode;
-			if (!node || until(node)) {
-				return null;
-			}
-			if (match(node)) {
-				return node;
-			}
-		} while (node);
-		return null;
-	}
-
 	/**
 	 * Returns the nearest node (in the document order) to the given node that
 	 * is not an ancestor.
@@ -482,7 +463,7 @@ define([
 	 *        terminal and will return null.
 	 * @return {DOMObject}
 	 */
-	function getNonAncestor(start, previous, match, until) {
+	function nextNonAncestor(start, previous, match, until) {
 		match = match || Fn.returnTrue;
 		until = until || Fn.returnFalse;
 		var next;
@@ -506,45 +487,7 @@ define([
 		}
 	}
 
-	/**
-	 * Returns the previous node to the given node that is not one of it's
-	 * ancestors.
-	 *
-	 * @param {DOMObject} node
-	 * @param {DOMObject}
-	 */
-	function previousNonAncestor(node, match, until) {
-		return getNonAncestor(node, true, match, until || Dom.isEditingHost);
-	}
-
-	/**
-	 * Returns the next node to the given node that is not one of it's ancestors.
-	 *
-	 * @param {DOMObject} node
-	 * @param {DOMObject}
-	 */
-	function nextNonAncestor(node, match, until) {
-		return getNonAncestor(node, false, match, until || Dom.isEditingHost);
-	}
-
-	/**
-	 * Gets the given node's nearest non-editable parent.
-	 *
-	 * @param  {Element} node
-	 * @return {Element|null}
-	 */
-	function parentBlock(node) {
-		var block = Dom.isEditable(node) ? Dom.editingHost(node) : node;
-		var parent = upWhile(block, function (node) {
-			return node.parentNode && !Dom.isEditable(node.parentNode);
-		});
-		return (Dom.Nodes.DOCUMENT === parent.nodeType) ? null : parent;
-	}
-
 	return {
-		backward                     : backward,
-		forward                      : forward,
-		findThrough                  : findThrough,
 		nextWhile                    : nextWhile,
 		prevWhile                    : prevWhile,
 		upWhile                      : upWhile,
@@ -552,20 +495,13 @@ define([
 		walkRec                      : walkRec,
 		walkUntil                    : walkUntil,
 		walkUntilNode                : walkUntilNode,
-		find                         : find,
 		findBackward                 : findBackward,
 		findForward                  : findForward,
-		parentsUntil                 : parentsUntil,
-		parentsUntilIncl             : parentsUntilIncl,
+		climbUntil                   : climbUntil,
 		childAndParentsUntil         : childAndParentsUntil,
 		childAndParentsUntilIncl     : childAndParentsUntilIncl,
 		childAndParentsUntilNode     : childAndParentsUntilNode,
 		childAndParentsUntilInclNode : childAndParentsUntilInclNode,
-		climbUntil                   : climbUntil,
-		getNonAncestor               : getNonAncestor,
-		previousNonAncestor          : previousNonAncestor,
-		nextNonAncestor              : nextNonAncestor,
-		findAncestor                 : findAncestor,
-		parentBlock                  : parentBlock
+		nextNonAncestor              : nextNonAncestor
 	};
 });

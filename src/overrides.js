@@ -21,12 +21,18 @@
  * http://www.w3.org/TR/CSS2/propidx.html
  */
 define([
+	'dom/nodes',
+	'dom/style',
+	'dom/mutation',
 	'dom',
 	'misc',
 	'maps',
 	'mutation',
-	'traversing'
+	'dom/traversing'
 ], function Overrides(
+	Nodes,
+	Style,
+	DomMutation,
 	Dom,
 	Misc,
 	Maps,
@@ -117,7 +123,7 @@ define([
 	function statesFromStyles(elem) {
 		var states = [];
 		Maps.forEach(stateToStyle, function (style, state) {
-			var value = Dom.getStyle(elem, style[0]);
+			var value = Style.get(elem, style[0]);
 			if (value) {
 				if (style[2]) {
 					if (value === style[2]) {
@@ -134,7 +140,7 @@ define([
 	}
 
 	function getStates(elem) {
-		if (Dom.isTextNode(elem)) {
+		if (Nodes.isTextNode(elem)) {
 			return [];
 		}
 		var state = nodeToState[elem.nodeName];
@@ -144,7 +150,7 @@ define([
 	function valuesFromStyles(elem) {
 		var values = [];
 		styles.forEach(function (style) {
-			var value = Dom.getStyle(elem, style);
+			var value = Style.get(elem, style);
 			if (value) {
 				values.push([style, value]);
 			}
@@ -153,7 +159,7 @@ define([
 	}
 
 	function getValues(elem) {
-		return Dom.isTextNode(elem) ? [] : valuesFromStyles(elem);
+		return Nodes.isTextNode(elem) ? [] : valuesFromStyles(elem);
 	}
 
 	function harvest(node, until) {
@@ -199,7 +205,7 @@ define([
 				// TODO: implement handling for false overrides states
 				wrapper = document.createElement(overrideToNode[override[0]]);
 				if (node) {
-					Dom.wrap(node, wrapper);
+					DomMutation.wrap(node, wrapper);
 				} else {
 					Mutation.insertNodeAtBoundary(wrapper, boundary);
 					boundary = [wrapper, 0];
@@ -211,7 +217,7 @@ define([
 					Mutation.insertNodeAtBoundary(node, boundary);
 					boundary = [node, 0];
 				}
-				Dom.setStyle(node, override[0], override[1]);
+				Style.set(node, override[0], override[1]);
 			}
 			override = overrides.pop();
 		}

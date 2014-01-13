@@ -6,14 +6,14 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'dom',
+	'dom/nodes',
 	'misc',
 	'arrays',
 	'assert',
 	'strings',
 	'predicates'
 ], function Boundaries(
-	Dom,
+	Nodes,
 	Misc,
 	Arrays,
 	Asserts,
@@ -60,11 +60,11 @@ define([
 	 * @return {Boundary}
 	 */
 	function fromNode(node) {
-		return raw(node.parentNode, Dom.nodeIndex(node));
+		return raw(node.parentNode, Nodes.nodeIndex(node));
 	}
 
 	function fromEndOfNode(node) {
-		return raw(node, Dom.nodeLength(node));
+		return raw(node, Nodes.nodeLength(node));
 	}
 
 	/**
@@ -88,7 +88,7 @@ define([
 	 */
 	function normalize(boundary) {
 		var node = container(boundary);
-		if (Dom.isTextNode(node)) {
+		if (Nodes.isTextNode(node)) {
 			Asserts.assertTrue(
 				Misc.defined(node.parentNode),
 				Asserts.errorLink('boundaries.normalize#parentNode')
@@ -97,8 +97,8 @@ define([
 			if (0 === boundaryOffset) {
 				return fromNode(node);
 			}
-			if (boundaryOffset >= Dom.nodeLength(node)) {
-				return raw(node.parentNode, Dom.nodeIndex(node) + 1);
+			if (boundaryOffset >= Nodes.nodeLength(node)) {
+				return raw(node.parentNode, Nodes.nodeIndex(node) + 1);
 			}
 		}
 		return boundary;
@@ -262,7 +262,7 @@ define([
 	 */
 	function isAtEnd(boundary) {
 		boundary = normalize(boundary);
-		return offset(boundary) === Dom.nodeLength(container(boundary));
+		return offset(boundary) === Nodes.nodeLength(container(boundary));
 	}
 
 	function isAtRawStart(boundary) {
@@ -270,7 +270,7 @@ define([
 	}
 
 	function isAtRawEnd(boundary) {
-		return offset(boundary) === Dom.nodeLength(container(boundary));
+		return offset(boundary) === Nodes.nodeLength(container(boundary));
 	}
 
 	/**
@@ -280,7 +280,7 @@ define([
 	 * @return {boolean}
 	 */
 	function isTextBoundary(boundary) {
-		return Dom.isTextNode(container(boundary));
+		return Nodes.isTextNode(container(boundary));
 	}
 
 	/**
@@ -307,7 +307,7 @@ define([
 	 */
 	function nodeAfter(boundary) {
 		boundary = normalize(boundary);
-		return isAtEnd(boundary) ? null : Dom.nthChild(container(boundary), offset(boundary));
+		return isAtEnd(boundary) ? null : Nodes.nthChild(container(boundary), offset(boundary));
 	}
 
 	/**
@@ -323,7 +323,7 @@ define([
 	 */
 	function nodeBefore(boundary) {
 		boundary = normalize(boundary);
-		return isAtStart(boundary) ? null : Dom.nthChild(container(boundary), offset(boundary) - 1);
+		return isAtStart(boundary) ? null : Nodes.nthChild(container(boundary), offset(boundary) - 1);
 	}
 
 	/**
@@ -352,7 +352,7 @@ define([
 
 	function jumpOver(boundary) {
 		var node = nextNode(boundary);
-		return raw(node.parentNode, Dom.nodeIndex(node) + 1);
+		return raw(node.parentNode, Nodes.nodeIndex(node) + 1);
 	}
 
 	/**
@@ -386,13 +386,13 @@ define([
 	 */
 	function prev(boundary) {
 		var node = container(boundary);
-		if (Dom.isTextNode(node) || isAtStart(boundary)) {
+		if (Nodes.isTextNode(node) || isAtStart(boundary)) {
 			return fromNode(node);
 		}
-		node = Dom.nthChild(node, offset(boundary) - 1);
-		return Dom.isTextNode(node)
+		node = Nodes.nthChild(node, offset(boundary) - 1);
+		return Nodes.isTextNode(node)
 		     ? fromNode(node)
-		     : raw(node, Dom.nodeLength(node));
+		     : raw(node, Nodes.nodeLength(node));
 	}
 
 	/**
@@ -405,11 +405,11 @@ define([
 	function next(boundary) {
 		var node = container(boundary);
 		var boundaryOffset = offset(boundary);
-		if (Dom.isTextNode(node) || isAtEnd(boundary)) {
+		if (Nodes.isTextNode(node) || isAtEnd(boundary)) {
 			return jumpOver(boundary);
 		}
-		node = Dom.nthChild(node, boundaryOffset);
-		return Dom.isTextNode(node)
+		node = Nodes.nthChild(node, boundaryOffset);
+		return Nodes.isTextNode(node)
 		     ? raw(node.parentNode, boundaryOffset + 1)
 		     : raw(node, 0);
 	}
@@ -422,7 +422,7 @@ define([
 		if (isTextBoundary(boundary)) {
 			return raw(container(boundary), 0);
 		}
-		node = Dom.nthChild(node, offset(boundary) - 1);
+		node = Nodes.nthChild(node, offset(boundary) - 1);
 		return fromEndOfNode(node);
 	}
 
@@ -434,7 +434,7 @@ define([
 		if (isTextBoundary(boundary)) {
 			return fromEndOfNode(node);
 		}
-		return raw(Dom.nthChild(node, offset(boundary)), 0);
+		return raw(Nodes.nthChild(node, offset(boundary)), 0);
 	}
 
 	/**
@@ -509,8 +509,8 @@ define([
 			len += offset(boundary);
 			node = container(boundary).previousSibling;
 		}
-		while (node && Dom.isTextNode(node)) {
-			len += Dom.nodeLength(node);
+		while (node && Nodes.isTextNode(node)) {
+			len += Nodes.nodeLength(node);
 			node = node.previousSibling;
 		}
 		return len;
@@ -528,57 +528,84 @@ define([
 	 */
 	function get(doc) {
 		var selection = (doc || document).getSelection();
-		var range = selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
-		return range && fromRange(range);
+		return (selection.rangeCount > 0)
+		     ? fromRange(selection.getRangeAt(0))
+		     : null;
+	}
+
+	/**
+	 * Sets the a range to the browser selection according to the given start
+	 * and end boundaries.  This operation will cause the selection to be
+	 * visually rendered by the user agent.
+	 *
+	 * @param {Boundary}  start
+	 * @param {Boundary=} end
+	 */
+	function select(start, end) {
+		if (!end) {
+			end = start;
+		}
+		var sc = container(start);
+		var so = offset(start);
+		var ec = container(end);
+		var eo = offset(end);
+		var doc = sc.ownerDocument;
+		var selection = doc.getSelection();
+		var range = doc.createRange();
+		range.setStart(sc, so);
+		range.setEnd(ec, eo);
+		selection.removeAllRanges();
+		selection.addRange(range);
 	}
 
 	return {
-		get             : get,
+		get                 : get,
+		select              : select,
 
-		raw             : raw,
-		create          : create,
-		normalize       : normalize,
+		raw                 : raw,
+		create              : create,
+		normalize           : normalize,
 
-		equals          : equals,
+		equals              : equals,
 
-		container       : container,
-		offset          : offset,
+		container           : container,
+		offset              : offset,
 
-		fromRange       : fromRange,
-		fromRanges      : fromRanges,
-		fromRangeStart  : fromRangeStart,
-		fromRangeEnd    : fromRangeEnd,
-		fromNode        : fromNode,
-		fromEndOfNode   : fromEndOfNode,
+		fromRange           : fromRange,
+		fromRanges          : fromRanges,
+		fromRangeStart      : fromRangeStart,
+		fromRangeEnd        : fromRangeEnd,
+		fromNode            : fromNode,
+		fromEndOfNode       : fromEndOfNode,
 
-		setRange        : setRange,
-		setRanges       : setRanges,
-		setRangeStart   : setRangeStart,
-		setRangeEnd     : setRangeEnd,
+		setRange            : setRange,
+		setRanges           : setRanges,
+		setRangeStart       : setRangeStart,
+		setRangeEnd         : setRangeEnd,
 
-		isAtStart       : isAtStart,
-		isAtEnd         : isAtEnd,
-		isAtRawStart    : isAtRawStart,
-		isAtRawEnd      : isAtRawEnd,
-		isTextBoundary  : isTextBoundary,
-		isNodeBoundary  : isNodeBoundary,
+		isAtStart           : isAtStart,
+		isAtEnd             : isAtEnd,
+		isAtRawStart        : isAtRawStart,
+		isAtRawEnd          : isAtRawEnd,
+		isTextBoundary      : isTextBoundary,
+		isNodeBoundary      : isNodeBoundary,
 
-		next            : next,
-		prev            : prev,
-		nextRawBoundary : nextRawBoundary,
-		prevRawBoundary : prevRawBoundary,
+		next                : next,
+		prev                : prev,
+		nextRawBoundary     : nextRawBoundary,
+		prevRawBoundary     : prevRawBoundary,
 
-		jumpOver        : jumpOver,
+		jumpOver            : jumpOver,
 
-		nextWhile       : nextWhile,
-		prevWhile       : prevWhile,
-		stepWhile       : stepWhile,
-		walkWhile       : walkWhile,
+		nextWhile           : nextWhile,
+		prevWhile           : prevWhile,
+		stepWhile           : stepWhile,
+		walkWhile           : walkWhile,
 
-		nextNode        : nextNode,
-		prevNode        : prevNode,
-		nodeAfter       : nodeAfter,
-		nodeBefore      : nodeBefore,
+		nextNode            : nextNode,
+		prevNode            : prevNode,
+		nodeAfter           : nodeAfter,
+		nodeBefore          : nodeBefore,
 
 		precedingTextLength : precedingTextLength
 	};

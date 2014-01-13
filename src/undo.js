@@ -2,22 +2,26 @@
  * undo.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
 	'arrays',
 	'maps',
+	'dom/nodes',
+	'dom/attrs',
 	'dom',
 	'mutation',
 	'boundaries',
 	'functions',
-	'traversing',
+	'dom/traversing',
 	'ranges',
 	'assert'
 ], function Undo(
 	Arrays,
 	Maps,
+	Nodes,
+	Attrs,
 	Dom,
 	Mutation,
 	Boundaries,
@@ -115,7 +119,7 @@ define([
 			if (!parent) {
 				return null;
 			}
-			stepDownPath(path, parent.nodeName, Dom.normalizedNodeIndex(node));
+			stepDownPath(path, parent.nodeName, Nodes.normalizedNodeIndex(node));
 			node = parent;
 		}
 		path.reverse();
@@ -133,36 +137,36 @@ define([
 		for (var i = 0; i < path.length - 1; i++) {
 			var step = path[i];
 			Assert.assertEqual(step[1], container.nodeName);
-			container = Dom.normalizedNthChild(container, step[0]);
+			container = Nodes.normalizedNthChild(container, step[0]);
 		}
 		var lastStep = Arrays.last(path);
 		var off = lastStep[0];
-		container = Traversing.nextWhile(container, Dom.isEmptyTextNode);
+		container = Traversing.nextWhile(container, Nodes.isEmptyTextNode);
 		// NB: container must be non-null at this point.
 		Assert.assertEqual(lastStep[1], container.nodeName);
-		if (Dom.isTextNode(container)) {
+		if (Nodes.isTextNode(container)) {
 			// Because text offset paths with value 0 are invalid.
 			Assert.assertNotEqual(off, 0);
-			while (off > Dom.nodeLength(container)) {
-				Assert.assertTrue(Dom.isTextNode(container));
-				off -= Dom.nodeLength(container);
+			while (off > Nodes.nodeLength(container)) {
+				Assert.assertTrue(Nodes.isTextNode(container));
+				off -= Nodes.nodeLength(container);
 				container = container.nextSibling;
 			}
 			// Because we may have stepped out of a text node.
-			if (!Dom.isTextNode(container)) {
+			if (!Nodes.isTextNode(container)) {
 				Assert.assertEqual(off, 0);
 				container = container.parentNode;
-				off = Dom.nodeIndex(container);
+				off = Nodes.nodeIndex(container);
 			}
 		} else {
-			off = Dom.realFromNormalizedIndex(container, off);
+			off = Nodes.realFromNormalizedIndex(container, off);
 		}
 		return Boundaries.normalize([container, off]);
 	}
 
 	function endOfNodePath(container, node) {
 		var path = nodePath(container, node);
-		var numChildren = Dom.normalizedNumChildren(node);
+		var numChildren = Nodes.normalizedNumChildren(node);
 		stepDownPath(path, node.nodeName, numChildren);
 		return path;
 	}
@@ -219,7 +223,7 @@ define([
 			// which would translate an empty text node after a
 			// non-empty text node to the normalized offset after the
 			// non-empty text node.
-			node = Traversing.prevWhile(node, Dom.isEmptyTextNode);
+			node = Traversing.prevWhile(node, Nodes.isEmptyTextNode);
 			path = nodePath(container, node);
 			stepDownPath(path, '#text', textOff);
 		} else if (Boundaries.isAtEnd(boundary)) {
@@ -244,7 +248,7 @@ define([
 		// the previous text node, while an incomplete path must point
 		// to the normalized index of the next element node.
 		if (Boundaries.precedingTextLength(boundary)) {
-			node = Traversing.nextWhile(node, Dom.isTextNode);
+			node = Traversing.nextWhile(node, Nodes.isTextNode);
 		}
 		var path;
 		if (node) {
@@ -428,7 +432,7 @@ define([
 				name: name,
 				ns: ns,
 				oldValue: attr.oldValue,
-				newValue: Dom.getAttrNS(node, ns, name)
+				newValue: Attrs.getNS(node, ns, name)
 			});
 		});
 		return {
@@ -557,43 +561,43 @@ define([
 		var targetB = recordB.target;
 		var node = recordA.node;
 		if (prevB) {
-			if (prevB === node || Dom.contains(prevB, node)) {
+			if (prevB === node || Nodes.contains(prevB, node)) {
 				return true;
 			}
-			// TODO Dom.contains(node, prevB) probably not needed
-			return !Dom.followedBy(prevB, node) && !Dom.contains(node, prevB);
+			// TODO Nodes.contains(node, prevB) probably not needed
+			return !Nodes.followedBy(prevB, node) && !Nodes.contains(node, prevB);
 		} else {
-			if (targetB === node || Dom.contains(targetB, node)) {
+			if (targetB === node || Nodes.contains(targetB, node)) {
 				return false;
 			}
-			// TODO Dom.contains(node, prevB) probably not needed
-			return !Dom.followedBy(targetB, node) && !Dom.contains(node, targetB);
+			// TODO Nodes.contains(node, prevB) probably not needed
+			return !Nodes.followedBy(targetB, node) && !Nodes.contains(node, targetB);
 		}
 	}
 
 	function insertFollowedByInsert(recordA, recordB) {
-		return Dom.followedBy(recordA.node, recordB.node);
+		return Nodes.followedBy(recordA.node, recordB.node);
 	}
 	
 	function prevSiblingFollowedByDelete(prevA, recordB) {
 		var prevB = recordB.prevSibling;
 		var targetB = recordB.target;
 		if (prevB) {
-			if (Dom.contains(prevB, prevA)) {
+			if (Nodes.contains(prevB, prevA)) {
 				return true;
 			}
-			if (Dom.contains(prevA, prevB)) {
+			if (Nodes.contains(prevA, prevB)) {
 				return false;
 			}
-			return Dom.followedBy(prevA, prevB);
+			return Nodes.followedBy(prevA, prevB);
 		} else {
 			if (prevA === targetB) {
 				return false;
 			}
-			if (Dom.contains(targetB, prevA) || Dom.contains(prevA, targetB)) {
+			if (Nodes.contains(targetB, prevA) || Nodes.contains(prevA, targetB)) {
 				return false;
 			}
-			return Dom.followedBy(prevA, targetB);
+			return Nodes.followedBy(prevA, targetB);
 		}
 	}
 
@@ -607,7 +611,7 @@ define([
 		} else if (prevB) {
 			return !prevSiblingFollowedByDelete(prevB, recordA);
 		} else {
-			return Dom.followedBy(targetA, targetB);
+			return Nodes.followedBy(targetA, targetB);
 		}
 	}
 
@@ -720,7 +724,7 @@ define([
 		var prevSibling = delRecord.prevSibling;
 		var path;
 		if (prevSibling) {
-			var off = Dom.nodeIndex(prevSibling) + 1;
+			var off = Nodes.nodeIndex(prevSibling) + 1;
 			var boundary = [prevSibling.parentNode, off];
 			path = (incomplete
 			        ? incompletePathFromBoundary(container, boundary)
@@ -738,19 +742,19 @@ define([
 	function reconstructNodeFromDelRecord(delRecord) {
 		var node = delRecord.node;
 		var reconstructedNode;
-		if (Dom.isTextNode(node)) {
+		if (Nodes.isTextNode(node)) {
 			var updateText = delRecord.updateText;
 			if (updateText) {
 				reconstructedNode = node.ownerDocument.createTextNode(updateText.oldValue);
 			} else {
-				reconstructedNode = Dom.clone(node);
+				reconstructedNode = Nodes.clone(node);
 			}
 		} else {
-			reconstructedNode = Dom.clone(node);
+			reconstructedNode = Nodes.clone(node);
 			var updateAttr = delRecord.updateAttr;
 			if (updateAttr) {
 				Maps.forEach(updateAttr.attrs, function (attr) {
-					Dom.setAttrNS(reconstructedNode, attr.ns, attr.name, attr.oldValue);
+					Attrs.setNS(reconstructedNode, attr.ns, attr.name, attr.oldValue);
 				});
 			}
 		}
@@ -785,9 +789,9 @@ define([
 				var node = record.node;
 				var path = containerPath.concat(pathBeforeNode(container, node));
 				if (lastInsertNode && lastInsertNode === node.previousSibling) {
-					lastInsertContent.push(Dom.clone(node));
+					lastInsertContent.push(Nodes.clone(node));
 				} else {
-					lastInsertContent = [Dom.clone(node)];
+					lastInsertContent = [Nodes.clone(node)];
 					changes.push(makeInsertChange(path, lastInsertContent));
 				}
 				lastInsertNode = node;
@@ -801,7 +805,7 @@ define([
 				var node = record.node;
 				var path = containerPath.concat(pathBeforeNode(container, node));
 				changes.push(makeDeleteChange(path, [document.createTextNode(record.oldValue)]));
-				changes.push(makeInsertChange(path, [Dom.clone(node)]));
+				changes.push(makeInsertChange(path, [Nodes.clone(node)]));
 			} else {
 				// NB: only COMPOUND_DELETEs should occur in a recordTree,
 				// DELETEs should not except as part of a COMPOUND_DELETE.
@@ -856,8 +860,8 @@ define([
 		// NB: We don't clone the children because a snapshot is
 		// already a copy of the actual content and is supposed to
 		// be immutable.
-		changes.push(makeDeleteChange(path, Dom.children(before)));
-		changes.push(makeInsertChange(path, Dom.children(after)));
+		changes.push(makeDeleteChange(path, Nodes.children(before)));
+		changes.push(makeInsertChange(path, Nodes.children(after)));
 		return changes;
 	}
 
@@ -908,15 +912,15 @@ define([
 
 		function observeAll(elem) {
 			observedElem = elem;
-			beforeSnapshot = Dom.clone(elem);
+			beforeSnapshot = Nodes.clone(elem);
 		}
 
 		function takeChanges() {
-			if (Dom.isEqualNode(beforeSnapshot, observedElem)) {
+			if (Nodes.equals(beforeSnapshot, observedElem)) {
 				return [];
 			}
 			var before = beforeSnapshot;
-			var after = Dom.clone(observedElem);
+			var after = Nodes.clone(observedElem);
 			beforeSnapshot = after;
 			return changesFromSnapshots(before, after);
 		}
@@ -926,7 +930,7 @@ define([
 		// apply them to the snapshot, which would be faster for big
 		// documents.
 		function discardChanges() {
-			beforeSnapshot = Dom.clone(observedElem);
+			beforeSnapshot = Nodes.clone(observedElem);
 		}
 
 		function disconnect() {
@@ -948,7 +952,7 @@ define([
 			var boundary = boundaryFromPath(container, change.path);
 			var node = Boundaries.nodeAfter(boundary);
 			change.attrs.forEach(function (attr) {
-				Dom.setAttrNS(node, attr.ns, attr.name, attr.newValue);
+				Attrs.setNS(node, attr.ns, attr.name, attr.newValue);
 			});
 		} else if ('update-range' === type) {
 			var newRange = change.newRange;
@@ -960,8 +964,8 @@ define([
 		} else if ('insert' === type) {
 			var boundary = boundaryFromPath(container, change.path);
 			change.content.forEach(function (node) {
-				var insertNode = Dom.clone(node);
-				if (Dom.isTextNode(insertNode)) {
+				var insertNode = Nodes.clone(node);
+				if (Nodes.isTextNode(insertNode)) {
 					textNodes.push(insertNode);
 				}
 				boundary = Mutation.insertNodeAtBoundary(insertNode, boundary, true, ranges);
@@ -973,11 +977,11 @@ define([
 			var parent = node.parentNode;
 			change.content.forEach(function (removedNode) {
 				var next;
-				if (Dom.isTextNode(removedNode)) {
-					var removedLen = Dom.nodeLength(removedNode);
+				if (Nodes.isTextNode(removedNode)) {
+					var removedLen = Nodes.nodeLength(removedNode);
 					while (removedLen) {
 						Assert.assertEqual(node.nodeName, removedNode.nodeName);
-						var len = Dom.nodeLength(node);
+						var len = Nodes.nodeLength(node);
 						if (removedLen >= len) {
 							next = node.nextSibling;
 							Mutation.removePreservingRanges(node, ranges);
@@ -1133,16 +1137,16 @@ define([
 		    || oldStep[1] !== newStep[1]
 		    || 1 !== oldChange.content.length
 		    || 1 !== newChange.content.length
-		    || !Dom.isTextNode(oldChange.content[0])
-		    || !Dom.isTextNode(newChange.content[0])
-		    || opts.maxCombineChars <= Dom.nodeLength(oldChange.content[0])
-		    || oldStep[0] + Dom.nodeLength(oldChange.content[0]) !== newStep[0]
+		    || !Nodes.isTextNode(oldChange.content[0])
+		    || !Nodes.isTextNode(newChange.content[0])
+		    || opts.maxCombineChars <= Nodes.nodeLength(oldChange.content[0])
+		    || oldStep[0] + Nodes.nodeLength(oldChange.content[0]) !== newStep[0]
 		    || !pathEquals(oldPath.slice(0, oldPath.length - 1),
 		                   newPath.slice(0, newPath.length - 1))) {
 			return null;
 		}
-		var combinedNode = Dom.clone(oldChange.content[0]);
-		combinedNode.insertData(Dom.nodeLength(combinedNode), newChange.content[0].data);
+		var combinedNode = Nodes.clone(oldChange.content[0]);
+		combinedNode.insertData(Nodes.nodeLength(combinedNode), newChange.content[0].data);
 		var insertChange = makeInsertChange(oldPath, [combinedNode])
 		var oldRange = oldChangeSet.selection.oldRange;
 		var newRange = newChangeSet.selection.newRange

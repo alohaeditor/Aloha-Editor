@@ -11,6 +11,10 @@
  */
 define([
 	'functions',
+	'dom/nodes',
+	'dom/style',
+	'dom/classes',
+	'dom/mutation',
 	'dom',
 	'html',
 	'keys',
@@ -21,9 +25,13 @@ define([
 	'browsers',
 	'overrides',
 	'boundaries',
-	'traversing'
+	'dom/traversing'
 ], function Selection(
 	Fn,
+	Nodes,
+	Style,
+	Classes,
+	DomMutation,
 	Dom,
 	Html,
 	Keys,
@@ -49,9 +57,9 @@ define([
 		var carets = doc.querySelectorAll('div.aloha-caret');
 		var visible = [];
 		[].forEach.call(carets, function (caret) {
-			if ('block' === Dom.getStyle(caret, 'display')) {
+			if ('block' === Style.get(caret, 'display')) {
 				visible.push(caret);
-				Dom.setStyle(caret, 'display', 'none');
+				Style.set(caret, 'display', 'none');
 			}
 		});
 		return visible;
@@ -64,7 +72,7 @@ define([
 	 */
 	function unhideCarets(carets) {
 		carets.forEach(function (caret) {
-			Dom.setStyle(caret, 'display', 'block');
+			Style.set(caret, 'display', 'block');
 		});
 	}
 
@@ -147,7 +155,7 @@ define([
 	 *         True if the boundary positions are reversed.
 	 */
 	function isReversed(sc, so, ec, eo) {
-		return (sc === ec && so > eo) || Dom.followedBy(ec, sc);
+		return (sc === ec && so > eo) || Nodes.followedBy(ec, sc);
 	}
 
 	/**
@@ -567,8 +575,8 @@ define([
 	function Context() {
 		var caret = document.createElement('div');
 		caret.style.display = 'none';
-		Dom.addClass(caret, 'aloha-caret');
-		Dom.insert(caret, caret.ownerDocument.body, true);
+		Classes.add(caret, 'aloha-caret');
+		DomMutation.insert(caret, caret.ownerDocument.body, true);
 		return {
 			caret          : caret,
 			range          : null,
@@ -643,21 +651,21 @@ define([
 			// Because we want to move the caret out of the way when the user
 			// starts to create an expanded selection by dragging.
 			if (!old.dragging && context.dragging) {
-				Dom.setStyle(context.caret, 'display', 'none');
-				Dom.removeClass(context.caret, 'aloha-caret-blink');
+				Style.set(context.caret, 'display', 'none');
+				Classes.remove(context.caret, 'aloha-caret-blink');
 			}
 
 			return event;
 		}
 
 		if ('mousedown' === event.type) {
-			Dom.addClass(old.caret, 'aloha-caret-blink');
+			Classes.add(old.caret, 'aloha-caret-blink');
 		}
 
 		// Because otherwise, if, in the process of a click, the user's cursor
 		// is over the caret, fromEvent() will compute the range to be
 		// inside the absolutely positioned caret element.
-		Dom.setStyle(old.caret, 'display', 'none');
+		Style.set(old.caret, 'display', 'none');
 
 		var range = fromEvent(event);
 
@@ -701,13 +709,11 @@ define([
 			container = range.endContainer;
 		}
 
-		/*
 		show(
 			context.caret,
 			boundary,
 			stylesFromOverrides(overrides(event, container))
 		);
-		*/
 
 		var preventDefault = ('keydown' === type && movements[event.which])
 				|| (event.editor.CARET_CLASS === event.nativeEvent.target.className);

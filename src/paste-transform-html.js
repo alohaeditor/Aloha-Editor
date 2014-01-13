@@ -10,15 +10,13 @@ define([
 	'predicates',
 	'arrays',
 	'html',
-	'paste-utils',
-	'traversing'
+	'paste-utils'
 ], function(
 	Dom,
 	Predicates,
 	Arrays,
 	Html,
-	PasteUtils,
-	Traversing
+	PasteUtils
 ) {
 	'use strict';
 

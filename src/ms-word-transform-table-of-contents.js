@@ -40,7 +40,7 @@ define([
 	 */
 	function createItemList(element) {
 		var liElement = element.ownerDocument.createElement('li');
-		liElement.innerHTML = Dom.getTextContent(element);
+		liElement.innerHTML = Dom.textContent(element);
 		return liElement;
 	}
 

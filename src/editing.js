@@ -20,9 +20,13 @@
  *      <p>{<b>some</br>text</b>}<br/></p>
  */
 define([
+	'dom/nodes',
+	'dom/mutation',
+	'dom/attrs',
+	'dom/style',
 	'dom',
 	'mutation',
-	'traversing',
+	'dom/traversing',
 	'boundaries',
 	'arrays',
 	'maps',
@@ -34,6 +38,10 @@ define([
 	'cursors',
 	'content'
 ], function Editing(
+	Nodes,
+	DomMutation,
+	Attrs,
+	Style,
 	Dom,
 	Mutation,
 	Traversing,
@@ -138,18 +146,19 @@ define([
 		// Because range may be mutated during traversal, we must only
 		// refer to it before traversal.
 		var cac = liveRange.commonAncestorContainer;
-		if (Dom.isTextNode(cac)) {
+		if (Nodes.isTextNode(cac)) {
 			cac = cac.parentNode;
 		}
-		var sc        = liveRange.startContainer;
-		var ec        = liveRange.endContainer;
-		var so        = liveRange.startOffset;
-		var eo        = liveRange.endOffset;
-		var collapsed = liveRange.collapsed;
-		var start       = Dom.nodeAtOffset(sc, so);
-		var end         = Dom.nodeAtOffset(ec, eo);
-		var startAtEnd  = Dom.isAtEnd(sc, so);
-		var endAtEnd    = Dom.isAtEnd(ec, eo);
+		var sc         = liveRange.startContainer;
+		var ec         = liveRange.endContainer;
+		var so         = liveRange.startOffset;
+		var eo         = liveRange.endOffset;
+		var collapsed  = liveRange.collapsed;
+		var start      = Nodes.nodeAtOffset(sc, so);
+		var end        = Nodes.nodeAtOffset(ec, eo);
+		var startAtEnd = Boundaries.isAtEnd(Boundaries.raw(sc, so));
+		var endAtEnd   = Boundaries.isAtEnd(Boundaries.raw(ec, eo));
+
 		var ascStart    = Traversing.childAndParentsUntilNode(start, cac);
 		var ascEnd      = Traversing.childAndParentsUntilNode(end,   cac);
 		var stepAtStart = makePointNodeStep(start, startAtEnd, stepRightStart, stepPartial);
@@ -226,7 +235,7 @@ define([
 			return null;
 		}
 		var cac = range.commonAncestorContainer;
-		if (Dom.Nodes.TEXT === cac.nodeType) {
+		if (Nodes.Nodes.TEXT === cac.nodeType) {
 			cac = cac.parentNode;
 		}
 		function untilIncl(node) {
@@ -361,7 +370,7 @@ define([
 				// element (which has nodeType 9).
 				return (
 					!node.parentNode
-						|| Dom.Nodes.DOCUMENT === node.parentNode.nodeType
+						|| Nodes.Nodes.DOCUMENT === node.parentNode.nodeType
 							|| hasInheritableContext(node)
 				);
 			}
@@ -421,7 +430,7 @@ define([
 		}
 		adjustPointWrap(leftPoint, node, wrapper);
 		adjustPointWrap(rightPoint, node, wrapper);
-		Dom.wrap(node, wrapper);
+		DomMutation.wrap(node, wrapper);
 		return true;
 	}
 
@@ -431,7 +440,7 @@ define([
 	function moveBackIntoWrapper(node, ref, atEnd, leftPoint, rightPoint) {
 		// Because the points will just be moved with the node, we don't need to
 		// do any special preservation.
-		Dom.insert(node, ref, atEnd);
+		DomMutation.insert(node, ref, atEnd);
 	}
 
 	function fixupRange(liveRange, mutate, trim) {
@@ -506,7 +515,7 @@ define([
 	}
 
 	function restackRec(node, hasContext, ignoreHorizontal, ignoreVertical) {
-		if (Dom.Nodes.ELEMENT !== node.nodeType || !ignoreVertical(node)) {
+		if (Nodes.Nodes.ELEMENT !== node.nodeType || !ignoreVertical(node)) {
 			return null;
 		}
 		var maybeContext = Traversing.nextWhile(node.firstChild, ignoreHorizontal);
@@ -815,14 +824,14 @@ define([
 			if (Arrays.contains(nodeNames, node.nodeName)) {
 				return wrapperProps.value;
 			}
-			var override = Dom.getStyle(node, styleName);
+			var override = Style.get(node, styleName);
 			return !Strings.isEmpty(override) ? override : null;
 		}
 		function getInheritableOverride(node) {
 			if (Arrays.contains(nodeNames, node.nodeName)) {
 				return wrapperProps.value;
 			}
-			var override = Dom.getComputedStyle(node, styleName);
+			var override = Style.getComputedStyle(node, styleName);
 			return !Strings.isEmpty(override) ? override : null;
 		}
 		function isContextStyle(value) {
@@ -835,20 +844,20 @@ define([
 			if (Arrays.contains(nodeNames, node.nodeName)) {
 				return true;
 			}
-			return !Strings.isEmpty(Dom.getStyle(node, styleName));
+			return !Strings.isEmpty(Style.get(node, styleName));
 		}
 		function hasContextValue(node, value) {
 			value = normalizeStyleValue(value);
 			if (Arrays.contains(nodeNames, node.nodeName) && isStyleEqual(wrapperProps.value, value)) {
 				return true;
 			}
-			return isStyleEqual(Dom.getStyle(node, styleName), value);
+			return isStyleEqual(Style.get(node, styleName), value);
 		}
 		function hasContext(node) {
 			if (!unformat && Arrays.contains(nodeNames, node.nodeName)) {
 				return true;
 			}
-			return isContextStyle(Dom.getStyle(node, styleName));
+			return isContextStyle(Style.get(node, styleName));
 		}
 		function hasInheritableContext(node) {
 			if (!unformat && Arrays.contains(nodeNames, node.nodeName)) {
@@ -863,9 +872,9 @@ define([
 			// style to the default value, for example
 			// "text-decoration: none" to be ignored.
 			if (unformat && Html.isStyleInherited(styleName)) {
-				return isContextStyle(Dom.getStyle(node, styleName));
+				return isContextStyle(Style.get(node, styleName));
 			}
-			return isContextStyle(Dom.getComputedStyle(node, styleName));
+			return isContextStyle(Style.getComputedStyle(node, styleName));
 		}
 		function addContextValue(value, node) {
 			value = normalizeStyleValue(value);
@@ -875,13 +884,13 @@ define([
 			// Because we don't want to add an explicit style if for
 			// example the element already has a class set on it. For
 			// example: <span class="bold"></span>.
-			if (isStyleEqual(normalizeStyleValue(Dom.getComputedStyle(node, styleName)), value)) {
+			if (isStyleEqual(normalizeStyleValue(Style.getComputedStyle(node, styleName)), value)) {
 				return;
 			}
-			Dom.setStyle(node, styleName, value);
+			Style.set(node, styleName, value);
 		}
 		function removeContext(node) {
-			Dom.removeStyle(node, styleName);
+			Style.remove(node, styleName);
 		}
 		function isReusable(node) {
 			if (Arrays.contains(nodeNames, node.nodeName)) {
@@ -890,7 +899,7 @@ define([
 			return 'SPAN' === node.nodeName;
 		}
 		function isPrunable(node) {
-			return isReusable(node) && !Dom.hasAttrs(node);
+			return isReusable(node) && !Attrs.has(node);
 		}
 		function createWrapper(value) {
 			value = normalizeStyleValue(value);
@@ -898,7 +907,7 @@ define([
 				return document.createElement(wrapperProps.name);
 			}
 			var wrapper = document.createElement('SPAN');
-			Dom.setStyle(wrapper, styleName, value);
+			Style.set(wrapper, styleName, value);
 			return wrapper;
 		}
 		var impl = Maps.merge({
@@ -958,7 +967,7 @@ define([
 			// does more than just provide a context (for example a <b>
 			// node may have a class which shouldn't also being wrapped
 			// around the merged-with node).
-			return node.nodeName === nodeName && !Dom.hasAttrs(node);
+			return node.nodeName === nodeName && !Attrs.has(node);
 		}
 		function isPrunable(node) {
 			return isReusable(node);
@@ -1100,7 +1109,7 @@ define([
 			if (!wrapper || parent.previousSibling !== wrapper) {
 				wrapper = opts.clone(parent);
 				removeEmpty.push(parent);
-				Dom.insert(wrapper, parent, false);
+				DomMutation.insert(wrapper, parent, false);
 				if (leftPoint.node === parent && !leftPoint.atEnd) {
 					leftPoint.node = wrapper;
 				}
@@ -1226,10 +1235,12 @@ define([
 
 		var removeEmpty = [];
 
-		var start = Dom.nodeAtOffset(range.startContainer, range.startOffset);
-		var startAtEnd = Dom.isAtEnd(range.startContainer, range.startOffset);
-		var end = Dom.nodeAtOffset(range.endContainer, range.endOffset);
-		var endAtEnd = Dom.isAtEnd(range.endContainer, range.endOffset);
+		var start = Nodes.nodeAtOffset(range.startContainer, range.startOffset);
+		var end = Nodes.nodeAtOffset(range.endContainer, range.endOffset);
+
+		var startAtEnd = Boundaries.isAtEnd(Boundaries.raw(range.startContainer, range.startOffset));
+		var endAtEnd = Boundaries.isAtEnd(Boundaries.raw(range.endContainer, range.endOffset));
+
 		var unsplitParentStart = splitBoundaryPoint(start, startAtEnd, left, right, removeEmpty, opts);
 		var unsplitParentEnd = splitBoundaryPoint(end, endAtEnd, left, right, removeEmpty, opts);
 
@@ -1293,9 +1304,9 @@ define([
 		opts = opts || {};
 
 		opts = Maps.merge({
-			clone: Dom.cloneShallow,
+			clone: Nodes.cloneShallow,
 			until: Fn.returnFalse,
-			below: Dom.isEditingHost,
+			below: Nodes.isEditingHost,
 			normalizeRange: true
 		}, opts);
 

@@ -2,20 +2,22 @@
  * mutation.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
+	'dom/nodes',
+	'dom/mutation',
 	'arrays',
-	'dom',
 	'boundaries',
 ], function Mutation(
+	Nodes,
+	DomMutation,
 	Arrays,
-	Dom,
 	Boundaries
 ) {
 	'use strict';
-	
+
 	/**
 	 * Checks whether a node can be split at the given offset to yeild two
 	 * nodes.
@@ -72,7 +74,7 @@ define([
 				offset -= splitOffset;
 			}
 		} else if (container === newNodeBeforeSplit.parentNode) {
-			var nidx = Dom.nodeIndex(newNodeBeforeSplit);
+			var nidx = Nodes.nodeIndex(newNodeBeforeSplit);
 			if (offset > nidx) {
 				offset += 1;
 			}
@@ -106,7 +108,7 @@ define([
 	function adjustBoundaryAfterRemove(boundary, node, parentNode, nidx) {
 		var container = boundary[0];
 		var offset = boundary[1];
-		if (container === node || Dom.contains(node, container)) {
+		if (container === node || Nodes.contains(node, container)) {
 			container = parentNode;
 			offset = nidx;
 		} else if (container === parentNode) {
@@ -134,13 +136,13 @@ define([
 		// correctly, even if they are not inside the text node but
 		// between nodes, we must move them in temporarily and normalize
 		// again afterwards.
-		if (!Dom.isTextNode(container)) {
-			var next = offset < Dom.numChildren(container) ? Dom.nthChild(container, offset) : null;
-			var prev = offset > 0 ? Dom.nthChild(container, offset - 1) : null;
+		if (!Nodes.isTextNode(container)) {
+			var next = offset < Nodes.numChildren(container) ? Nodes.nthChild(container, offset) : null;
+			var prev = offset > 0 ? Nodes.nthChild(container, offset - 1) : null;
 			if (next === node) {
 				boundary = [next, 0];
 			} else if (prev === node) {
-				boundary = [prev, Dom.nodeLength(prev)];
+				boundary = [prev, Nodes.nodeLength(prev)];
 			}
 		}
 		return Boundaries.normalize(adjustBoundaryAfterInsert(boundary, node, off, len, insertBefore));
@@ -148,7 +150,7 @@ define([
 
 	function adjustBoundaryAfterNodeInsert(boundary, node, insertBefore) {
 		boundary = Boundaries.normalize(boundary);
-		return adjustBoundaryAfterInsert(boundary, node.parentNode, Dom.nodeIndex(node), 1, insertBefore);
+		return adjustBoundaryAfterInsert(boundary, node.parentNode, Nodes.nodeIndex(node), 1, insertBefore);
 	}
 
 	function adjustBoundaries(fn, boundaries) {
@@ -167,7 +169,7 @@ define([
 	function splitBoundary(boundary, ranges) {
 		var splitNode = boundary[0];
 		var splitOffset = boundary[1];
-		if (Dom.isTextNode(splitNode) && wouldSplitTextNode(splitNode, splitOffset)) {
+		if (Nodes.isTextNode(splitNode) && wouldSplitTextNode(splitNode, splitOffset)) {
 			var boundaries = Boundaries.fromRanges(ranges);
 			boundaries.push(boundary);
 			var nodeBeforeSplit = splitTextNode(splitNode, splitOffset);
@@ -197,12 +199,12 @@ define([
 	}
 
 	function joinTextNodeOneWay(node, sibling, ranges, prev) {
-		if (!sibling || !Dom.isTextNode(sibling)) {
+		if (!sibling || !Nodes.isTextNode(sibling)) {
 			return node;
 		}
 		var boundaries = Boundaries.fromRanges(ranges);
- 		var parentNode = node.parentNode;
-		var nidx = Dom.nodeIndex(node);
+		var parentNode = node.parentNode;
+		var nidx = Nodes.nodeIndex(node);
 		var nodeLen = node.length;
 		var siblingLen = sibling.length;
 		sibling.insertData(prev ? siblingLen : 0, node.data);
@@ -223,7 +225,7 @@ define([
 	}
 
 	function joinTextNode(node, ranges) {
-		if (!Dom.isTextNode(node)) {
+		if (!Nodes.isTextNode(node)) {
 			return;
 		}
 		node = joinTextNodeOneWay(node, node.previousSibling, ranges, true);
@@ -250,7 +252,7 @@ define([
 	}
 
 	function adjustRangesAfterNodeInsert(node, insertBefore, boundaries, ranges) {
-		boundaries.push([node.parentNode, Dom.nodeIndex(node)]);
+		boundaries.push([node.parentNode, Nodes.nodeIndex(node)]);
 		boundaries = adjustBoundaries(adjustBoundaryAfterNodeInsert, boundaries, node, insertBefore);
 		var boundary = boundaries.pop();
 		Boundaries.setRanges(ranges, boundaries);
@@ -266,31 +268,31 @@ define([
 		}
 		var container = boundary[0];
 		var offset = boundary[1];
-		if (Dom.isTextNode(container) && offset < Dom.nodeLength(container)) {
+		if (Nodes.isTextNode(container) && offset < Nodes.nodeLength(container)) {
 			container.insertData(offset, text);
 			return adjustRangesAfterTextInsert(container, offset, text.length, insertBefore, boundaries, ranges);
 		}
-		var node = Dom.nodeAtOffset(container, offset);
-		var atEnd = Dom.isAtEnd(container, offset);
+		var node = Nodes.nodeAtOffset(container, offset);
+		var atEnd = Boundaries.isAtEnd(Boundaries.raw(container, offset));
 		// Because if the node following the insert position is already a text
 		// node we can just reuse it.
-		if (Dom.isTextNode(node)) {
+		if (Nodes.isTextNode(node)) {
 			node.insertData(0, text);
 			return adjustRangesAfterTextInsert(node, 0, text.length, insertBefore, boundaries, ranges);
 		}
 		// Because if the node preceding the insert position is already a text
 		// node we can just reuse it.
 		var prev = atEnd ? node.lastChild : node.previousSibling;
-		if (prev && Dom.isTextNode(prev)) {
-			var off = Dom.nodeLength(prev);
+		if (prev && Nodes.isTextNode(prev)) {
+			var off = Nodes.nodeLength(prev);
 			prev.insertData(off, text);
 			return adjustRangesAfterTextInsert(prev, off, text.length, insertBefore, boundaries, ranges);
 		}
 		// Because if we can't reuse any text nodes, we have to insert a new
 		// one.
 		var textNode = node.ownerDocument.createTextNode(text);
-		Dom.insert(textNode, node, atEnd);
-		return adjustRangesAfterNodeInsert(textNode, insertBefore, boundaries, ranges)
+		DomMutation.insert(textNode, node, atEnd);
+		return adjustRangesAfterNodeInsert(textNode, insertBefore, boundaries, ranges);
 	}
 
 	function insertNodeAtBoundary(node, boundary, insertBefore, ranges) {
@@ -298,7 +300,7 @@ define([
 		boundary = splitBoundary(boundary, ranges);
 		var ref = Boundaries.nextNode(boundary);
 		var atEnd = Boundaries.isAtEnd(boundary);
-		Dom.insert(node, ref, atEnd);
+		DomMutation.insert(node, ref, atEnd);
 		return adjustRangesAfterNodeInsert(node, insertBefore, boundaries, ranges);
 	}
 
@@ -314,7 +316,7 @@ define([
 		// (automatically by the browser).
 		var boundaries = Boundaries.fromRanges(ranges);
 		var parentNode = node.parentNode;
-		var nidx = Dom.nodeIndex(node);
+		var nidx = Nodes.nodeIndex(node);
 		parentNode.removeChild(node);
 		var adjusted = adjustBoundaries(
 			adjustBoundaryAfterRemove,
@@ -357,7 +359,7 @@ define([
 		cursors.forEach(function (cursor) {
 			preserveCursorForShallowRemove(node, cursor);
 		});
-		Dom.removeShallow(node);
+		DomMutation.removeShallow(node);
 	}
 
 	return {

@@ -11,7 +11,7 @@ define([
 	'dom',
 	'boundaries',
 	'functions',
-	'traversing',
+	'dom/traversing',
 	'undo'
 ], function Editables(
 	Arrays,

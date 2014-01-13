@@ -2,25 +2,25 @@
  * boundary-markers.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'dom',
+	'dom/nodes',
+	'dom/traversing',
 	'mutation',
-	'traversing',
 	'cursors',
 	'arrays',
 	'strings',
 	'ranges'
 ], function BoundaryMarkers(
-	Dom,
+	Nodes,
+	Traversing,
 	Mutation,
-	traversing,
-	cursors,
-	arrays,
-	strings,
-	ranges
+	Cursors,
+	Arrays,
+	Strings,
+	Ranges
 ) {
 	'use strict';
 
@@ -30,16 +30,16 @@ define([
 	 * @param {Range} range
 	 */
 	function insert(range) {
-		var leftMarkerChar  = (Dom.Nodes.TEXT === range.startContainer.nodeType ? '[' : '{');
-		var rightMarkerChar = (Dom.Nodes.TEXT === range.endContainer.nodeType   ? ']' : '}');
+		var leftMarkerChar  = (Nodes.isTextNode(range.startContainer) ? '[' : '{');
+		var rightMarkerChar = (Nodes.isTextNode(range.endContainer)   ? ']' : '}');
 		Mutation.splitTextContainers(range);
 		var leftMarker = document.createTextNode(leftMarkerChar);
 		var rightMarker = document.createTextNode(rightMarkerChar);
-		var start = cursors.cursorFromBoundaryPoint(
+		var start = Cursors.cursorFromBoundaryPoint(
 			range.startContainer,
 			range.startOffset
 		);
-		var end = cursors.cursorFromBoundaryPoint(
+		var end = Cursors.cursorFromBoundaryPoint(
 			range.endContainer,
 			range.endOffset
 		);
@@ -75,7 +75,7 @@ define([
 			markersFound += 1;
 			if (marker === '[' || marker === ']') {
 				var previousSibling = node.previousSibling;
-				if (!previousSibling || Dom.Nodes.TEXT !== previousSibling.nodeType) {
+				if (!previousSibling || !Nodes.isTextNode(previousSibling)) {
 					previousSibling = document.createTextNode('');
 					node.parentNode.insertBefore(previousSibling, node);
 				}
@@ -83,19 +83,19 @@ define([
 				// Because we have set a text offset.
 				return false;
 			}
-			range[setFn].call(range, node.parentNode, Dom.nodeIndex(node));
+			range[setFn].call(range, node.parentNode, Nodes.nodeIndex(node));
 			// Because we have set a non-text offset.
 			return true;
 		}
 		function extractMarkers(node) {
-			if (Dom.Nodes.TEXT !== node.nodeType) {
+			if (!Nodes.isTextNode(node)) {
 				return;
 			}
 			var text = node.nodeValue;
-			var parts = strings.splitIncl(text, /[\[\{\}\]]/g);
+			var parts = Strings.splitIncl(text, /[\[\{\}\]]/g);
 			// Because modifying every text node when there can be only two
 			// markers seems like too much overhead.
-			if (!arrays.contains(markers, parts[0]) && parts.length < 2) {
+			if (!Arrays.contains(markers, parts[0]) && parts.length < 2) {
 				return;
 			}
 			// Because non-text boundary positions must not be joined again.
@@ -103,11 +103,11 @@ define([
 			parts.forEach(function (part, i) {
 				// Because we don't want to join text nodes we haven't split.
 				forceNextSplit = forceNextSplit || (i === 0);
-				if (arrays.contains(markers, part)) {
+				if (Arrays.contains(markers, part)) {
 					forceNextSplit = setBoundaryPoint(part, node);
 				} else if (!forceNextSplit
 						&& node.previousSibling
-							&& Dom.Nodes.TEXT === node.previousSibling.nodeType) {
+							&& Nodes.isTextNode(node.previousSibling)) {
 					node.previousSibling.insertData(
 						node.previousSibling.length,
 						part
@@ -121,7 +121,7 @@ define([
 			});
 			node.parentNode.removeChild(node);
 		}
-		traversing.walkRec(rootElem, extractMarkers);
+		Traversing.walkRec(rootElem, extractMarkers);
 		if (2 !== markersFound) {
 			throw 'Missing one or both markers';
 		}
@@ -132,11 +132,11 @@ define([
 		if (container === limit) {
 			return path;
 		}
-		traversing.childAndParentsUntilIncl(container, function (node) {
+		Traversing.childAndParentsUntilIncl(container, function (node) {
 			if (node === limit) {
 				return true;
 			}
-			path.push(Dom.nodeIndex(node));
+			path.push(Nodes.nodeIndex(node));
 			return false;
 		});
 		return path;
@@ -180,7 +180,7 @@ define([
 				container.parentNode.cloneNode(true),
 				getPathToPosition(
 					container,
-					Dom.nodeIndex(container),
+					Nodes.nodeIndex(container),
 					container.parentNode
 				)
 			).container
@@ -191,7 +191,7 @@ define([
 		var start = getPositionFromPath(node, startPath);
 		var end = getPositionFromPath(node, endPath);
 
-		range = ranges.create(
+		range = Ranges.create(
 			start.container,
 			start.offset,
 			end.container,
@@ -200,18 +200,16 @@ define([
 
 		insert(range);
 
-		return Dom.outerHtml(
-			//range.commonAncestorContainer.parentNode ||
-			range.commonAncestorContainer
-		);
+		//(range.commonAncestorContainer.parentNode || range.commonAncestorContainer).outerHTML;
+		return range.commonAncestorContainer.outerHTML;
 	}
 
 	function boundary(boundary) {
-		return show(ranges.fromBoundaries(boundary, boundary));
+		return show(Ranges.fromBoundaries(boundary, boundary));
 	}
 
 	function boundaries(boundaries) {
-		return show(ranges.fromBoundaries(boundaries[0], boundaries[1]));
+		return show(Ranges.fromBoundaries(boundaries[0], boundaries[1]));
 	}
 
 	function hint() {

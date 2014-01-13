@@ -6,6 +6,8 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
+	'dom/nodes',
+	'dom/style',
 	'dom',
 	'mutation',
 	'keys',
@@ -13,12 +15,14 @@ define([
 	'html',
 	'ranges',
 	'editing',
-	'traversing',
+	'dom/traversing',
 	'boundaries',
 	'functions',
 	'undo',
 	'overrides'
 ], function Typing(
+	Nodes,
+	Style,
 	Dom,
 	Mutation,
 	Keys,
@@ -86,9 +90,9 @@ define([
 		if (' ' === text) {
 			var elem = Traversing.upWhile(
 				Boundaries.container(boundary),
-				Dom.isTextNode
+				Nodes.isTextNode
 			);
-			var whiteSpaceStyle = Dom.getComputedStyle(elem, 'white-space');
+			var whiteSpaceStyle = Style.getComputedStyle(elem, 'white-space');
 			if (!Html.isWhiteSpacePreserveStyle(whiteSpaceStyle)) {
 				text = '\xa0';
 			}
@@ -122,7 +126,7 @@ define([
 				editable,
 				0,
 				editable,
-				Dom.nodeLength(editable)
+				Nodes.nodeLength(editable)
 			);
 		}
 	}

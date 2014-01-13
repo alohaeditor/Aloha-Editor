@@ -2,15 +2,17 @@
  * colors.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'dom',
+	'dom/nodes',
+	'dom/style',
 	'ranges',
 	'editing'
 ], function Colors(
-	Dom,
+	Nodes,
+	Style,
 	Ranges,
 	Editing
 ) {
@@ -103,9 +105,9 @@ define([
 	 * @return {String} Style value
 	 */
 	function getStyle(range, property) {
-		var node = Dom.nodeAtOffset(range.startContainer, range.startOffset);
-		return Dom.getComputedStyle(
-			Dom.Nodes.TEXT === node.nodeType ? node.parentNode : node,
+		var node = Nodes.nodeAtOffset(range.startContainer, range.startOffset);
+		return Style.getComputedStyle(
+			Nodes.isTextNode(node) ? node.parentNode : node,
 			property
 		);
 	}
@@ -138,7 +140,7 @@ define([
 	function unsetTextColor(range) {
 		var editable = Ranges.nearestEditingHost(range);
 		if (editable) {
-			setTextColor(range, Dom.getComputedStyle(editable, 'color'));
+			setTextColor(range, Style.getComputedStyle(editable, 'color'));
 		}
 	}
 
@@ -170,7 +172,7 @@ define([
 	function unsetBackgroundColor(range) {
 		var editable = Ranges.nearestEditingHost(range);
 		if (editable) {
-			setBackgroundColor(range, Dom.getComputedStyle(editable, 'background-color'));
+			setBackgroundColor(range, Style.getComputedStyle(editable, 'background-color'));
 		}
 	}
 

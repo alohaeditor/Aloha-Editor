@@ -2,14 +2,16 @@
  * cursors.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'dom',
+	'dom/nodes',
+	'dom/mutation',
 	'boundaries'
 ], function Cursors(
-	dom,
+	Nodes,
+	Mutation,
 	Boundaries
 ) {
 	'use strict';
@@ -56,15 +58,15 @@ define([
 	 */
 	function createFromBoundary(container, offset) {
 		return create(
-			dom.nodeAtOffset(container, offset),
-			dom.isAtEnd(container, offset)
+			Nodes.nodeAtOffset(container, offset),
+			Boundaries.isAtEnd(Boundaries.raw(container, offset))
 		);
 	}
 
 	Cursor.prototype.next = function () {
 		var node = this.node;
 		var next;
-		if (this.atEnd || dom.Nodes.ELEMENT !== node.nodeType) {
+		if (this.atEnd || !Nodes.isElementNode(node)) {
 			next = node.nextSibling;
 			if (next) {
 				this.atEnd = false;
@@ -94,7 +96,7 @@ define([
 			prev = node.lastChild;
 			if (prev) {
 				this.node = prev;
-				if (dom.Nodes.ELEMENT !== prev.nodeType) {
+				if (!Nodes.isElementNode(prev)) {
 					this.atEnd = false;
 				}
 			} else {
@@ -103,7 +105,7 @@ define([
 		} else {
 			prev = node.previousSibling;
 			if (prev) {
-				if (dom.Nodes.ELEMENT === prev.nodeType) {
+				if (Nodes.isElementNode(prev)) {
 					this.atEnd = true;
 				}
 			} else {
@@ -179,7 +181,7 @@ define([
 	};
 
 	Cursor.prototype.insert = function (node) {
-		return dom.insert(node, this.node, this.atEnd);
+		return Mutation.insert(node, this.node, this.atEnd);
 	};
 
 	Cursor.prototype['next'] = Cursor.prototype.next;
@@ -206,9 +208,9 @@ define([
 	 */
 	function setRangeStart(range, pos) {
 		if (pos.atEnd) {
-			range.setStart(pos.node, dom.nodeLength(pos.node));
+			range.setStart(pos.node, Nodes.nodeLength(pos.node));
 		} else {
-			range.setStart(pos.node.parentNode, dom.nodeIndex(pos.node));
+			range.setStart(pos.node.parentNode, Nodes.nodeIndex(pos.node));
 		}
 		return range;
 	}
@@ -223,9 +225,9 @@ define([
 	 */
 	function setRangeEnd(range, pos) {
 		if (pos.atEnd) {
-			range.setEnd(pos.node, dom.nodeLength(pos.node));
+			range.setEnd(pos.node, Nodes.nodeLength(pos.node));
 		} else {
-			range.setEnd(pos.node.parentNode, dom.nodeIndex(pos.node));
+			range.setEnd(pos.node.parentNode, Nodes.nodeIndex(pos.node));
 		}
 		return range;
 	}

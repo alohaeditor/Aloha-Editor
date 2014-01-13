@@ -14,6 +14,9 @@
  * http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
  */
 define([
+	'dom/nodes',
+	'dom/style',
+	'dom/mutation',
 	'dom',
 	'mutation',
 	'predicates',
@@ -22,12 +25,15 @@ define([
 	'content',
 	'browsers',
 	'boundaries',
-	'traversing',
+	'dom/traversing',
 	'overrides',
 	'functions',
 	'strings',
 	'assert'
 ], function Html(
+	Nodes,
+	Style,
+	DomMutation,
 	Dom,
 	Mutation,
 	Predicates,
@@ -146,11 +152,11 @@ define([
 			return false;
 		}
 		switch (node.nodeType) {
-		case Dom.Nodes.DOCUMENT:
-		case Dom.Nodes.DOCUMENT_FRAGMENT:
+		case Nodes.Nodes.DOCUMENT:
+		case Nodes.Nodes.DOCUMENT_FRAGMENT:
 			return true;
-		case Dom.Nodes.ELEMENT:
-			var style = Dom.getComputedStyle(node, 'display');
+		case Nodes.Nodes.ELEMENT:
+			var style = Style.getComputedStyle(node, 'display');
 			return style ? !nonBlockDisplayValuesMap[style] : Predicates.isBlockNode(node);
 		default:
 			return false;
@@ -214,6 +220,28 @@ define([
 	}
 
 	/**
+	 * Returns the previous node to the given node that is not one of it's
+	 * ancestors.
+	 *
+	 * @param  {Node} node
+	 * @return {Node}
+	 */
+	function prevNonAncestor(node, match, until) {
+		return Traversing.nextNonAncestor(node, true, match, until || Dom.isEditingHost);
+	}
+
+	/**
+	 * Returns the next node to the given node that is not one of it's
+	 * ancestors.
+	 *
+	 * @param  {Node} node
+	 * @return {Node}
+	 */
+	function nextNonAncestor(node, match, until) {
+		return Traversing.nextNonAncestor(node, false, match, until || Dom.isEditingHost);
+	}
+
+	/**
 	 * Returns true if the given node is unrendered whitespace, with the caveat
 	 * that it only examines the given node and not any siblings.  An additional
 	 * check is necessary to determine whether the node occurs after/before a
@@ -228,7 +256,7 @@ define([
 	 * @return {boolean}
 	 */
 	function isUnrenderedWhitespaceNoBlockCheck(node) {
-		if (!Dom.isTextNode(node)) {
+		if (!Nodes.isTextNode(node)) {
 			return false;
 		}
 		if (!node.length) {
@@ -239,7 +267,7 @@ define([
 		}
 		var cssWhiteSpace;
 		if (node.parentNode) {
-			cssWhiteSpace = Dom.getComputedStyle(node.parentNode, 'white-space');
+			cssWhiteSpace = Style.getComputedStyle(node.parentNode, 'white-space');
 			if (isWhiteSpacePreserveStyle(cssWhiteSpace)) {
 				return false;
 			}
@@ -262,7 +290,7 @@ define([
 	 */
 	function isUnrenderedAtPoint(point) {
 		return (isUnrenderedWhitespaceNoBlockCheck(point.node)
-				|| (Dom.Nodes.ELEMENT === point.node.nodeType
+				|| (Nodes.isElementNode(point.node)
 					&& hasInlineStyle(point.node)
 					&& !LINE_BREAKING_VOID_ELEMENTS[point.node]));
 	}
@@ -395,7 +423,7 @@ define([
 			return true;
 		}
 
-		if (!Predicates.isVoidNode(node) && 0 === Dom.nodeLength(node)) {
+		if (!Predicates.isVoidNode(node) && 0 === Nodes.nodeLength(node)) {
 			return true;
 		}
 
@@ -434,11 +462,11 @@ define([
 		}
 
 		if (isTerminalNode(node)) {
-			if (!Dom.isTextNode(node)) {
+			if (!Nodes.isTextNode(node)) {
 				return false;
 			}
 
-			var inlineNode = Traversing.nextNonAncestor(node, function (node) {
+			var inlineNode = nextNonAncestor(node, function (node) {
 				return Predicates.isInlineNode(node) && isRendered(node);
 			}, function (node) {
 				return hasLinebreakingStyle(node) || Dom.isEditingHost(node);
@@ -480,11 +508,11 @@ define([
 			if (Boundaries.offset(pos) > 0) {
 				// TODO:
 				// var node = Boundaries.nodeBefore(pos);
-				var node = Dom.nodeAtOffset(
+				var node = Nodes.nodeAtOffset(
 					Boundaries.container(pos),
 					Boundaries.offset(pos) - 1
 				);
-				if ((Dom.isTextNode(node) || Predicates.isVoidNode(node)) && isRendered(node)) {
+				if ((Nodes.isTextNode(node) || Predicates.isVoidNode(node)) && isRendered(node)) {
 					adjacent = false;
 					return false;
 				}
@@ -501,7 +529,7 @@ define([
 	 * @return {boolean}
 	 */
 	function hasRenderedContent(node) {
-		return Dom.isTextNode(node)
+		return Nodes.isTextNode(node)
 		     ? !isUnrenderedWhitespaceNoBlockCheck(node)
 		     : isRendered(Traversing.nextWhile(node.firstChild, isUnrendered));
 	}
@@ -545,7 +573,7 @@ define([
 			return;
 		}
 		if (!elem.firstChild || !Traversing.nextWhile(elem.firstChild, isUnrenderedWhitespace)) {
-			Dom.insert(document.createElement('br'), elem, true);
+			DomMutation.insert(document.createElement('br'), elem, true);
 		}
 	}
 
@@ -564,7 +592,7 @@ define([
 	 */
 	function suitableTransferTarget(node) {
 		return !Predicates.isVoidNode(node)
-		    && !Dom.isTextNode(node)
+		    && !Nodes.isTextNode(node)
 		    && !Predicates.isTextLevelSemanticNode(node)
 		    && !LIST_CONTAINERS[node.nodeName];
 	}
@@ -582,7 +610,7 @@ define([
 	function createTransferFunction(boundary) {
 		var ref = Boundaries.nextNode(boundary);
 		var atEnd = Boundaries.isAtEnd(boundary);
-		if (Dom.isTextNode(ref)) {
+		if (Nodes.isTextNode(ref)) {
 			ref = ref.parentNode;
 		}
 		return function insert(node, out_inserted) {
@@ -590,13 +618,13 @@ define([
 				return out_inserted(true);
 			}
 			if (ref.nodeName === node.nodeName) {
-				Dom.merge(ref, node);
+				DomMutation.merge(ref, node);
 				return out_inserted(true);
 			}
 			var parent = atEnd ? ref : ref.parentNode;
 			if (Content.allowsNesting(parent.nodeName, node.nodeName)) {
-				Dom.insert(node, ref, atEnd);
-				Dom.merge(node.previousSibling, node);
+				DomMutation.insert(node, ref, atEnd);
+				DomMutation.merge(node.previousSibling, node);
 				return out_inserted(true);
 			}
 			return out_inserted(false);
@@ -615,6 +643,24 @@ define([
 	 */
 	function isTransferable(node) {
 		return !hasLinebreakingStyle(node);
+	}
+
+	/* @obsolete */
+	function findAncestor(node, match, until) {
+		until = until || Fn.returnFalse;
+		if (until(node)) {
+			return null;
+		}
+		do {
+			node = node.parentNode;
+			if (!node || until(node)) {
+				return null;
+			}
+			if (match(node)) {
+				return node;
+			}
+		} while (node);
+		return null;
 	}
 
 	/**
@@ -699,16 +745,16 @@ define([
 
 		if (Boundaries.equals(linebreak, below)) {
 			context.overrides = context.overrides.concat(Overrides.harvest(below[0]));
-			Traversing.climbUntil(below[0], Dom.remove, isVisible);
+			Traversing.climbUntil(below[0], DomMutation.remove, isVisible);
 			return;
 		}
 
 		var right = Boundaries.nextNode(below);
 		var parent = right.parentNode;
 
-		if (0 === Dom.nodeLength(right)) {
+		if (0 === Nodes.nodeLength(right)) {
 			context.overrides = context.overrides.concat(Overrides.harvest(right));
-			Dom.remove(right);
+			DomMutation.remove(right);
 		} else {
 			Traversing.walkUntil(
 				right,
@@ -720,7 +766,7 @@ define([
 
 		if (parent) {
 			context.overrides = context.overrides.concat(Overrides.harvest(parent, isVisible));
-			Traversing.climbUntil(parent, Dom.remove, isVisible);
+			Traversing.climbUntil(parent, DomMutation.remove, isVisible);
 		}
 	}
 
@@ -754,7 +800,7 @@ define([
 	 * @return {boolean}
 	 */
 	function isUnrenderedTextNode(node) {
-		return Dom.isTextNode(node) && isUnrendered(node);
+		return Nodes.isTextNode(node) && isUnrendered(node);
 	}
 
 	/**
@@ -769,13 +815,13 @@ define([
 			return node.previousSibling && hasInlineStyle(node.previousSibling);
 		});
 		if (first) {
-			Dom.wrap(first, wrapper);
-			Dom.moveSiblingsAfter(first.nextSibling, first, function (node) {
+			DomMutation.wrap(first, wrapper);
+			DomMutation.moveSiblingsAfter(first.nextSibling, first, function (node) {
 				return node === ref;
 			});
-			Dom.insert(ref, wrapper, true);
+			DomMutation.insert(ref, wrapper, true);
 		} else {
-			Dom.wrap(ref, wrapper);
+			DomMutation.wrap(ref, wrapper);
 		}
 	}
 
@@ -910,9 +956,9 @@ define([
 			parent = node.parentNode.cloneNode(false);
 			copy = (node === movable) ? node : node.cloneNode(false);
 			next = node.nextSibling;
-			Dom.insert(heirarchy || copy, parent, true);
+			DomMutation.insert(heirarchy || copy, parent, true);
 			if (next) {
-				Dom.moveSiblingsInto(next, parent);
+				DomMutation.moveSiblingsInto(next, parent);
 			}
 			heirarchy = parent;
 		}
@@ -921,7 +967,7 @@ define([
 			heirarchy = anchor.cloneNode(false);
 		}
 
-		Dom.insertAfter(heirarchy, anchor);
+		DomMutation.insertAfter(heirarchy, anchor);
 		prop(anchor);
 
 		while (heirarchy && heirarchy.firstChild) {
@@ -946,7 +992,7 @@ define([
 
 		if (nodesToRemove.length) {
 			heirarchy = Arrays.last(nodesToRemove).parentNode;
-			nodesToRemove.forEach(Dom.remove);
+			nodesToRemove.forEach(DomMutation.remove);
 		}
 
 		return Predicates.isVoidNode(heirarchy)
@@ -1083,7 +1129,7 @@ define([
 		}
 
 		if (0 === offset) {
-			return !!Traversing.previousNonAncestor(textnode, function (node) {
+			return !!prevNonAncestor(textnode, function (node) {
 				return Predicates.isInlineNode(node) && isRendered(node);
 			}, function (node) {
 				return hasLinebreakingStyle(node) || Dom.isEditingHost(node);
@@ -1092,7 +1138,7 @@ define([
 		if (0 !== textnode.data.substr(offset).search(WSP_FROM_END)) {
 			return true;
 		}
-		return !!Traversing.nextNonAncestor(textnode, function (node) {
+		return !!nextNonAncestor(textnode, function (node) {
 			return Predicates.isInlineNode(node) && isRendered(node);
 		}, function (node) {
 			return hasLinebreakingStyle(node) || Dom.isEditingHost(node);
@@ -1235,7 +1281,7 @@ define([
 	 * @return {boolean}
 	 */
 	function canPassThrough(node) {
-		return !(Dom.isTextNode(node) || isVoidType(node)) || isUnrendered(node);
+		return !(Nodes.isTextNode(node) || isVoidType(node)) || isUnrendered(node);
 	}
 
 	/**
@@ -1406,7 +1452,7 @@ define([
 			return node.previousSibling;
 		},
 		stepVisualBoundary: function stepVisualBoundary(node) {
-			return prevVisualBoundary(Boundaries.raw(node, Dom.nodeLength(node)));
+			return prevVisualBoundary(Boundaries.raw(node, Nodes.nodeLength(node)));
 		}
 	};
 
@@ -1479,7 +1525,7 @@ define([
 
 		// |"foo" or <p>|" foo"
 		//                .
-		if (Dom.isTextNode(node)) {
+		if (Nodes.isTextNode(node)) {
 			return skipInsignificantPositions(Boundaries.nextRawBoundary(next));
 		}
 
@@ -1491,8 +1537,6 @@ define([
 		if (hasLinebreakingStyle(node)) {
 			return next;
 		}
-
-		debugger;
 
 		return next;
 	}
@@ -1539,7 +1583,7 @@ define([
 		var node = Boundaries.prevNode(next);
 
 		// <b>"foo"|</b>
-		if (Dom.isTextNode(node)) {
+		if (Nodes.isTextNode(node)) {
 			return skipPrevInsignificantPositions(Boundaries.prevRawBoundary(next));
 		}
 
@@ -1568,7 +1612,7 @@ define([
 
 		while (left && !Boundaries.equals(left, right)) {
 			node = Boundaries.nextNode(left);
-			consumesOffset = isVoidType(node) || hasLinebreakingStyle(node) || Dom.isTextNode(node);
+			consumesOffset = isVoidType(node) || hasLinebreakingStyle(node) || Nodes.isTextNode(node);
 
 			if (consumesOffset && isRendered(node)) {
 				return false;

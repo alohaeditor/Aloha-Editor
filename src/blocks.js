@@ -2,15 +2,15 @@
  * blocks.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'dom',
+	'dom/classes',
 	'events',
 	'dragdrop'
 ], function Blocks(
-	Dom,
+	Classes,
 	Events,
 	DragDrop
 ) {
@@ -75,7 +75,7 @@ define([
 	 * @return {boolean}
 	 */
 	function isBlockEvent(event) {
-		return Dom.hasClass(event.nativeEvent.target, event.editor.BLOCK_CLASS);
+		return Classes.has(event.nativeEvent.target, event.editor.BLOCK_CLASS);
 	}
 
 	/**
@@ -104,15 +104,15 @@ define([
 		case 'dragstart':
 			if (isBlockEvent(event)) {
 				context = event.editor.dndContext;
-				Dom.addClass(context.element, 'aloha-block-dragging');
-				Dom.addClass(context.target, 'aloha-block-dragging');
+				Classes.add(context.element, 'aloha-block-dragging');
+				Classes.add(context.target, 'aloha-block-dragging');
 			}
 			break;
 		case 'dragend':
 			if (isBlockEvent(event)) {
 				context = event.editor.dndContext;
-				Dom.removeClass(context.element, 'aloha-block-dragging');
-				Dom.removeClass(context.target, 'aloha-block-dragging');
+				Classes.remove(context.element, 'aloha-block-dragging');
+				Classes.remove(context.target, 'aloha-block-dragging');
 			}
 			break;
 		}

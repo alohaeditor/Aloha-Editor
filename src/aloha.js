@@ -10,6 +10,7 @@
 
 define([
 	'exports',
+	'boundaries',
 	'blocks',
 	'dragdrop',
 	'editables',
@@ -21,10 +22,12 @@ define([
 	'paste',
 	'ranges',
 	'selections',
+	'selection-change',
 	'typing',
 	'undo'
 ], function Aloha(
 	Api,
+	Boundaries,
 	Blocks,
 	DragDrop,
 	Editables,
@@ -36,6 +39,7 @@ define([
 	Paste,
 	Ranges,
 	Selections,
+	SelectionChange,
 	Typing,
 	Undo
 ) {
@@ -73,6 +77,14 @@ define([
 	editor.selectionContext = Selections.Context();
 
 	Events.setup(editor, document);
+
+	SelectionChange.addHandler(document, SelectionChange.handler(
+		Fn.partial(Boundaries.get, document),
+		Boundaries.fromEndOfNode(document),
+		function (boundaries, event) {
+			editor(event);
+		}
+	));
 
 	/**
 	 * The Aloha Editor namespace root.

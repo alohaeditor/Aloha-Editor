@@ -51,7 +51,7 @@ define([
 			return null;
 		}
 		// otherwise check for a number, letter or '(' as first character
-		var match = /^\s*([0-9]{1,3}|[a-zA-Z]{1,5})(\.|\))\s*$/.exec(Dom.getTextContent(firstChild));
+		var match = /^\s*([0-9]{1,3}|[a-zA-Z]{1,5})(\.|\))\s*$/.exec(Dom.textContent(firstChild));
 		if (match) {
 			match = /(\w+)/i.exec(match[0]);
 			return match ? match[1] : null;

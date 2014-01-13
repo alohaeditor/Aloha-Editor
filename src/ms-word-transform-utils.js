@@ -23,7 +23,7 @@ define([
 	 * @return {boolean}
 	 */
 	function hasText(element) {
-		return Dom.getTextContent(element).trim().length;
+		return Dom.textContent(element).trim().length;
 	}
 
 	/**

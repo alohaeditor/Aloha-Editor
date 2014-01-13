@@ -2,16 +2,16 @@
  * dom-to-xhtml.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  *
  * Provides public utility methods to convert DOM nodes to XHTML.
  */
 define([
-	'dom',
+	'dom/nodes',
 	'ephemera'
 ], function Xhtml(
-	dom,
+	Nodes,
 	ephemera
 ) {
 	'use strict';
@@ -209,12 +209,12 @@ define([
 	 */
 	function serializeChildren(element, child, unrecognized, ephemera, xhtml) {
 		while (null != child) {
-			if (Dom.Nodes.ELEMENT === child.nodeType
+			if (Nodes.Nodes.ELEMENT === child.nodeType
 					&& unrecognized
 						&& '/' + element.nodeName === child.nodeName) {
 				child = child.nextSibling;
 				break;
-			} else if (Dom.Nodes.ELEMENT === child.nodeType && isUnrecognized(child)) {
+			} else if (Nodes.Nodes.ELEMENT === child.nodeType && isUnrecognized(child)) {
 				child = serializeElement(
 					child,
 					child.nextSibling,
@@ -301,7 +301,7 @@ define([
 	 */
 	function serialize(node, ephemera, xhtml) {
 		var nodeType = node.nodeType;
-		if (Dom.Nodes.ELEMENT === nodeType) {
+		if (Nodes.Nodes.ELEMENT === nodeType) {
 			serializeElement(
 				node,
 				node.firstChild,
@@ -309,9 +309,9 @@ define([
 				ephemera,
 				xhtml
 			);
-		} else if (Dom.Nodes.TEXT === node.nodeType) {
+		} else if (Nodes.Nodes.TEXT === node.nodeType) {
 			xhtml.push(encodePcdata(node.nodeValue));
-		} else if (Dom.Nodes.COMMENT === node.nodeType) {
+		} else if (Nodes.Nodes.COMMENT === node.nodeType) {
 			xhtml.push('<' + '!--' + node.nodeValue + '-->');
 		} else {
 			console.warn(

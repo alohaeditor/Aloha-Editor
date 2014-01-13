@@ -2,20 +2,20 @@
  * crazy-slots.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
 	'arrays',
 	'ranges',
-	'dom',
+	'dom/nodes',
 	'boundaries',
 	'undo',
 	'functions'
 ], function CrazySlots(
 	Arrays,
 	Ranges,
-	Dom,
+	Nodes,
 	Boundaries,
 	Undo,
 	Fn
@@ -40,7 +40,7 @@ define([
 	}
 
 	function boundariesInElem(elem) {
-		var children = Dom.children(elem);
+		var children = Nodes.children(elem);
 		return children.map(function (node, i) {
 			return [elem, i];
 		}).concat([[elem, children.length]]);
@@ -88,14 +88,14 @@ define([
 	}
 
 	function empty(elem) {
-		Dom.children(elem).forEach(function (child) {
+		Nodes.children(elem).forEach(function (child) {
 			elem.removeChild(child);
 		});
 	}
 
 	function replaceChildren(target, source) {
 		empty(target);
-		Dom.children(source).forEach(function (child) {
+		Nodes.children(source).forEach(function (child) {
 			target.appendChild(child);
 		});
 	}
@@ -103,7 +103,7 @@ define([
 	function run(editable, mutations, opts) {
 		opts = opts || {};
 		var wait = opts.wait || 0;
-		var initialElem = Dom.clone(editable.elem);
+		var initialElem = Nodes.clone(editable.elem);
 		var maxRuns = (null != opts.runs ? opts.run : Number.POSITIVE_INFINITY);
 		var runs = 0;
 		var timeout;
@@ -132,7 +132,7 @@ define([
 					mutation.mutate(editable.elem, range);
 				});
 				if (error) {
-					replaceChildren(editable.elem, Dom.clone(initialElem));
+					replaceChildren(editable.elem, Nodes.clone(initialElem));
 					editable.undoContext.stack.length = 0;
 					editable.undoContext.frame = null;
 					Undo.enter(editable.undoContext, {

@@ -6,7 +6,7 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'traversing',
+	'dom/traversing',
 	'arrays',
 	'functions'
 ], function StableRange(

@@ -2,7 +2,7 @@
  * dragdrop.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  *
  * @reference
@@ -12,15 +12,17 @@
  * https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer
  */
 define([
-	'dom',
+	'dom/nodes',
+	'dom/mutation',
 	'maps',
 	'arrays',
 	'ranges',
 	'editing',
 	'selections',
-	'traversing'
+	'dom/traversing'
 ], function DragDrop(
-	Dom,
+	Nodes,
+	Mutation,
 	Maps,
 	Arrays,
 	Ranges,
@@ -98,7 +100,7 @@ define([
 	 *         True if the given node is draggable.
 	 */
 	function isDraggable(node) {
-		if (Dom.Nodes.ELEMENT !== node.nodeType) {
+		if (!Nodes.isElementNode(node)) {
 			return false;
 		}
 
@@ -129,7 +131,7 @@ define([
 		var prev = node.previousSibling;
 		Editing.insert(range, node);
 		if (prev && prev.nextSibling) {
-			Dom.merge(prev, prev.nextSibling);
+			Mutation.merge(prev, prev.nextSibling);
 		}
 		Ranges.collapseToEnd(range);
 	}

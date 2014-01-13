@@ -75,7 +75,7 @@ define(['misc', 'assert'], function Events(Misc, Assert) {
 		} else if (obj.fireEvent) {
 			eventObj = doc.createEventObject();
 			eventObj['type'] = event;
-			obj.fireEvent('on' + event, eventObj) ;
+			obj.fireEvent('on' + event, eventObj);
 		} else {
 			Assert.assertError();
 		}
@@ -146,10 +146,7 @@ define(['misc', 'assert'], function Events(Misc, Assert) {
 		add(doc, 'dragover',  editor);
 		add(doc, 'drop',      editor);
 		add(doc, 'dragend',   editor);
-
-		add(doc, 'selection-changed',   editor);
-
-		add(doc, 'paste', editor);
+		add(doc, 'paste',     editor);
 	}
 
 	/**
@@ -166,7 +163,8 @@ define(['misc', 'assert'], function Events(Misc, Assert) {
 
 	/**
 	 * Stops propagation.
-	 * @param event
+	 *
+	 * @param {Event} event
 	 */
 	function stopPropagation(event) {
 		if (event.stopPropagation) {
@@ -178,6 +176,7 @@ define(['misc', 'assert'], function Events(Misc, Assert) {
 
 	/**
 	 * Stops propagation and prevent default behavior.
+	 *
 	 * @param {Event} event
 	 */
 	function stopPropagationAndPreventDefault (event) {

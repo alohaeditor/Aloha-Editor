@@ -85,7 +85,7 @@ define([
 	function handler(getBoundaries, boundaries, fn) {
 		function watchSelection(event) {
 			var newBoundaries = getBoundaries();
-			if (!Arrays.equal(boundaries, newBoundaries, Boundaries.equals)) {
+			if (newBoundaries && !Arrays.equal(boundaries, newBoundaries, Boundaries.equals)) {
 				boundaries = newBoundaries;
 				fn(newBoundaries, event);
 			} else {
@@ -137,12 +137,11 @@ define([
 	 * @param doc {!Document}
 	 *        The document object.
 	 * @param watchSelection {function(!Event):void}
-	 *        A handler function like the one returned from
-	 *        watchSelectionHandler().
+	 *        A handler function like the one returned from handler().
 	 * @param mousemove {boolean}
 	 *        Even with all the events above hooked, we only get
 	 *        up-to-date selection change updates when the user presses
-	 *        the mouse and draggs the selection in Chrome and IE, but
+	 *        the mouse and drags the selection in Chrome and IE, but
 	 *        not in Firefox (and probably others). This case can be
 	 *        covered by handling the mousemove event. We don't do it by
 	 *        default because handling the mousemove event could have

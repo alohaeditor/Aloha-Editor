@@ -9,16 +9,20 @@
  * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#deleting-the-selection
  */
 define([
+	'dom/nodes',
+	'dom/style',
 	'dom',
 	'mutation',
 	'arrays',
 	'stable-range',
 	'html',
-	'traversing',
+	'dom/traversing',
 	'functions',
 	'cursors',
 	'boundaries'
 ], function Ranges(
+	Nodes,
+	Style,
 	Dom,
 	Mutation,
 	Arrays,
@@ -134,6 +138,20 @@ define([
 	}
 
 	/**
+	 * Gets the given node's nearest non-editable parent.
+	 *
+	 * @param  {Element} node
+	 * @return {Element|null}
+	 */
+	function parentBlock(node) {
+		var block = Dom.isEditable(node) ? Dom.editingHost(node) : node;
+		var parent = Traversing.upWhile(block, function (node) {
+			return node.parentNode && !Dom.isEditable(node.parentNode);
+		});
+		return (Nodes.Nodes.DOCUMENT === parent.nodeType) ? null : parent;
+	}
+
+	/**
 	 * Creates a range from the horizontal and vertical offset pixel positions
 	 * relative to upper-left corner the document body.
 	 *
@@ -152,13 +170,13 @@ define([
 		if (Dom.isEditableNode(range.commonAncestorContainer)) {
 			return range;
 		}
-		var block = Traversing.parentBlock(range.commonAncestorContainer);
+		var block = parentBlock(range.commonAncestorContainer);
 		if (!block || !block.parentNode) {
 			return null;
 		}
 		var body = block.ownerDocument.body;
-		var offsets = Dom.offset(block);
-		var offset = Dom.nodeIndex(block);
+		var offsets = Nodes.offset(block);
+		var offset = Nodes.nodeIndex(block);
 		var pointX = x + body.scrollLeft;
 		var blockX = offsets.left + body.scrollLeft + block.offsetWidth;
 		if (pointX > blockX) {
@@ -195,7 +213,7 @@ define([
 		// cursor starts before the node, which is what
 		// cursorFromBoundaryPoint() does automatically.
 		if (backwards
-				&& Dom.Nodes.TEXT === container.nodeType
+				&& Nodes.isTextNode(container)
 					&& offset > 0
 						&& offset < container.length) {
 			if (cursor.next()) {
@@ -336,7 +354,7 @@ define([
 			return Html.hasLinebreakingStyle(node) || Dom.isEditingHost(node);
 		});
 		var node = Arrays.last(ancestors);
-		var len = Dom.nodeLength(node);
+		var len = Nodes.nodeLength(node);
 		var prev = Boundaries.create(node, 0);
 		var next = Html.next(Boundaries.create(node, len));
 		return [prev, next];
@@ -396,7 +414,7 @@ define([
 		if (Boundaries.isTextBoundary(end)) {
 			var offset = Html.nextSignificantOffset(end);
 			if (-1 === offset) {
-				range.setEnd(range.endContainer, Dom.nodeLength(range.endContainer));
+				range.setEnd(range.endContainer, Nodes.nodeLength(range.endContainer));
 			} else {
 				range.setEnd(Boundaries.container(end), offset);
 			}
@@ -557,7 +575,7 @@ define([
 			Boundaries.setRangeStart(clone, Html.prev(boundary));
 		}
 
-		var len = Dom.nodeLength(clone.endContainer);
+		var len = Nodes.nodeLength(clone.endContainer);
 
 		if (!isStart && clone.endOffset < len) {
 			boundary = Boundaries.fromRangeEnd(clone);
@@ -594,15 +612,15 @@ define([
 			return rect;
 		}
 
-		var len = Dom.nodeLength(range.startContainer);
+		var len = Nodes.nodeLength(range.startContainer);
 		if (range.startOffset === len) {
 			var boundary = Html.prev(Boundaries.fromRangeStart(range));
 			return box(fromBoundaries(boundary, boundary));
 		}
 
-		var node = Dom.isTextNode(range.startContainer)
+		var node = Nodes.isTextNode(range.startContainer)
 		         ? range.startContainer
-		         : Dom.nthChild(range.startContainer, range.startOffset);
+		         : Nodes.nthChild(range.startContainer, range.startOffset);
 
 		var body = node.ownerDocument.body;
 
@@ -610,7 +628,7 @@ define([
 			top    : node.parentNode.offsetTop - body.scrollTop,
 			left   : node.parentNode.offsetLeft - body.scrollLeft,
 			width  : node.offsetWidth,
-			height : parseInt(Dom.getComputedStyle(node, 'line-height'), 10)
+			height : parseInt(Style.getComputedStyle(node, 'line-height'), 10)
 		};
 	}
 

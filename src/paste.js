@@ -18,7 +18,7 @@ define([
 	'paste-transform-plaintext',
 	'paste-utils',
 	'ranges',
-	'traversing',
+	'dom/traversing',
 	'undo'
 ], function(
 	Editing,
