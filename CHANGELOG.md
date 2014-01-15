@@ -15,6 +15,7 @@ All changes are categorized into one of the following keywords:
 
 ## 0.24.11 - 2014/01/15
 
+- **ENHANCEMENT**: textcolor-plugin: The Textcolor plugin has had a complete overhaul to improve usability, and  to fix bugs when changing color around complex markup.
 - **BUGFIX**: core: An IE bug that caused editables to not be activated correctly upon the first mouseclick was resolved. 
                     Previously the cursor position inside the editable was not set. The user had to click twice to place the cursor correctly. RT#57224
 
