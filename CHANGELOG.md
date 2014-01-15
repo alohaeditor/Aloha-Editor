@@ -12,6 +12,12 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+
+## 0.24.11 - 2014/01/15
+
+- **BUGFIX**: core: An IE bug that caused editables to not be activated correctly upon the first mouseclick was resolved. 
+                    Previously the cursor position inside the editable was not set. The user had to click twice to place the cursor correctly. RT#57224
+
 ## 0.24.10 - 2014/01/08
 
 - **BUGFIX**: table-plugin: Table selection for rows or columns in IE8 did not
