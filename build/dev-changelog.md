@@ -5,3 +5,6 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 - **ENHANCEMENT**: The change improves the software, but otherwise makes no
                    functional change to any feature.
+----
+
+- **FEATURE**: Replaces headerids names characters with a set of predefined characters replacements.
