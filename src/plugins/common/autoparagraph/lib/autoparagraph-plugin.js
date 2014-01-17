@@ -35,15 +35,13 @@ define([
 	'aloha/plugin',
 	'aloha/core',
 	'util/html',
-	'util/dom',
-	'util/browser'
+	'util/dom'
 ], function (
 	$,
 	Plugin,
 	Aloha,
 	Html,
-	Dom,
-	Browser
+	Dom
 ) {
 	'use strict';
 
@@ -75,27 +73,12 @@ define([
 			return;
 		}
 
-		var contentsList = $obj.contents();
-
-		// if the editable is empty, we only need to insert the paragraph and return
-		if (contentsList.length === 0) {
-			if (Browser.ie7) {
-				$obj.append($('<p></p>'));
-			} else {
-				$obj.append($('<p></br></p>'));
-			}
-			if (selectionRange.startContainer === obj && selectionRange.endContainer === obj && selectionRange.startOffset === 0 && selectionRange.endOffset === 0) {
-				selectionRange.startContainer = selectionRange.endContainer = $obj.contents()[0];
-			}
-			contentChanged = true;
-		}
-
 		// collect lists of subsequent child elements of the editable,
 		// that are no block level elements (and thus need to be wrapped
 		// into a paragraph)
 		var nonBlockRanges = [];
 		var current;
-		contentsList.each(function () {
+		$obj.contents().each(function () {
 			if (!Html.isBlock(this)) {
 				if (!current) {
 					// start a new list
