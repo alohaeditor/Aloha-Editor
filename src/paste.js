@@ -145,13 +145,13 @@ define([
 
 		Editing.delete(range, editable);
 
-		if (Html.isListNode(firstChild) || Html.isTableNode(firstChild)) {
+		if (Html.isListContainer(firstChild) || Html.isTableContainer(firstChild)) {
 			needSplitText = true;
 		} else {
 			range.insertNode(firstChild);
 			setSelectionAfter(range, firstChild);
 
-			if (!Html.isListNode(firstChild) && !Html.isTableNode(firstChild)) {
+			if (!Html.isListContainer(firstChild) && !Html.isTableContainer(firstChild)) {
 				Dom.removeShallow(firstChild);
 			}
 		}

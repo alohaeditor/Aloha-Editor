@@ -122,7 +122,7 @@ define([
 	 */
 	function cleanListElement(list) {
 		Dom.children(list).forEach(function (item) {
-			if (item.nodeName !== 'LI' && !Html.isListNode(item)) {
+			if (item.nodeName !== 'LI' && !Html.isListContainer(item)) {
 				Dom.wrapWithNodeName(item, 'li');
 			}
 		});

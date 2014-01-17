@@ -1186,44 +1186,6 @@ define([
 		'WBR'      : true
 	};
 
-	function isVisibleBoundary(boundary) {
-		boundary = Boundaries.normalize(boundary);
-		var node = Boundaries.container(boundary);
-		if (INVALID_RANGE_CONTAINERS[node.nodeName]) {
-			return false;
-		}
-		if (Html.isUnrendered(node)) {
-			return false;
-		}
-		if (Boundaries.isAtEnd(boundary)) {
-			var before = Boundaries.nodeBefore(boundary);
-			return !before || !Html.hasLinebreakingStyle(
-				Traversing.prevWhile(before, Html.isUnrendered)
-			);
-		}
-		return true;
-	}
-
-	function normalizeBoundary(boundary) {
-		if (Boundaries.isNodeBoundary(boundary)) {
-			while (!isVisibleBoundary(boundary) || Html.isUnrendered(Boundaries.nextNode(boundary))) {
-				boundary = Boundaries.next(boundary);
-			}
-			return boundary;
-		}
-		if (Boundaries.isAtRawEnd(boundary)) {
-			return boundary;
-		}
-		var offset = nextSignificantOffset(boundary);
-		if (-1 === offset) {
-			return Boundaries.nextRawBoundary(boundary);
-		}
-		if (offset === Boundaries.offset(boundary)) {
-			return boundary;
-		}
-		return Boundaries.raw(Boundaries.container(boundary), offset);
-	}
-
 	function splitRangeAtBoundaries(range, left, right, opts) {
 		var normalizeLeft = opts.normalizeRange ? left : left.clone();
 		var normalizeRight = opts.normalizeRange ? right : right.clone();
@@ -1402,10 +1364,7 @@ define([
 		var range = Ranges.collapseToEnd(StableRange(liveRange));
 		Mutation.splitTextContainers(range);
 		var op = linebreak ? Html.insertLineBreak : Html.insertBreak;
-		var boundary = op(
-			Boundaries.normalize(Boundaries.fromRangeStart(range)),
-			context
-		);
+		var boundary = op(Boundaries.fromRangeStart(range), context);
 		Boundaries.setRange(liveRange, boundary, boundary);
 	}
 
@@ -1417,14 +1376,10 @@ define([
 			}
 		});
 		var boundary = Mutation.insertNodeAtBoundary(insertion, Boundaries.fromRangeStart(range));
-		Boundaries.setRange(
-			liveRange,
-			boundary,
-			Boundaries.create(
-				Boundaries.container(boundary),
-				Boundaries.offset(boundary) + 1
-			)
-		);
+		Boundaries.setRange(liveRange, boundary, Boundaries.create(
+			Boundaries.container(boundary),
+			Boundaries.offset(boundary) + 1
+		));
 	}
 
 	return {

@@ -148,7 +148,8 @@ define([
 	 * Merges all contents of `right` into `left` by appending them to the end
 	 * of `left`, and then removing `right`.
 	 *
-	 * Will not merge text nodes since this requires ranges to be synchronized.
+	 * Will not merge text nodes since this would require that ranges be
+	 * preserved.
 	 *
 	 * @param {Node} left
 	 * @param {Node} right

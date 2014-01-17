@@ -41,7 +41,7 @@ define([
 	 * @param {!Element} contentElement
 	 */
 	function extractBlockElements(elem, contentElement) {
-		if (Html.isListNode(elem) || Html.isTableNode(elem)) {
+		if (Html.isListContainer(elem) || Html.isTableContainer(elem)) {
 			return;
 		}
 		var insertRef = elem.nextSibling;
@@ -64,7 +64,7 @@ define([
 		var imgElements = Arrays.coerce(element.querySelectorAll('img'));
 		var lists = Arrays.coerce(element.querySelectorAll('ol,ul'));
 
-		if (Html.isListNode(element)) {
+		if (Html.isListContainer(element)) {
 			lists.push(element);
 		}
 
