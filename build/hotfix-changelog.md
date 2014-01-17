@@ -16,4 +16,4 @@ All changes are categorized into one of the following keywords:
 - **BUGFIX**: core: Performances fixes introduced a regression which resulted
               in pressing ENTER to break paragraphs incorrectly.  This has been
               fix so that pressing enter in an empty editable will result in a
-              new paragraph being inserted after rather than before.
+              new paragraph being inserted after rather than before. RT#57660
