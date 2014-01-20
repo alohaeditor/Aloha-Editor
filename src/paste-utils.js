@@ -64,7 +64,7 @@ define([
 	 * @return {boolean}
 	 */
 	function hasText(node) {
-		return !Dom.getTextContent(node).trim().length;
+		return !Dom.textContent(node).trim().length;
 	}
 
 	/**
@@ -123,7 +123,7 @@ define([
 	function cleanListElement(list) {
 		Dom.children(list).forEach(function (item) {
 			if (item.nodeName !== 'LI' && !Html.isListContainer(item)) {
-				Dom.wrapWithNodeName(item, 'li');
+				Dom.wrapWith(item, 'li');
 			}
 		});
 	}

@@ -1,4 +1,5 @@
-/* ms-word-transform-table-of-contents.js is part of Aloha Editor project http://aloha-editor.org
+/**
+ * transform/ms-word/toc.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
@@ -6,10 +7,10 @@
  */
 define([
 	'dom',
-	'ms-word-transform-utils'
+	'transform/ms-word/utils'
 ], function (
 	Dom,
-    WordTransformUtils
+    Utils
 ) {
 	'use strict';
 
@@ -18,7 +19,6 @@ define([
 	 * @type {RegExp}
 	 * */
 	var MS_TOC_CLASS_NAME_REG_EXPR = /MsoToc(\d+)/;
-
 
 	/**
 	 * Gets the TOC element level number.
@@ -74,7 +74,7 @@ define([
 		        return list;
 		    };
 
-		return WordTransformUtils.createNestedList(actualTocNumber, lastTocNumber, listElement, createListFn);
+		return Utils.createNestedList(actualTocNumber, lastTocNumber, listElement, createListFn);
 
 	}
 
@@ -98,7 +98,7 @@ define([
 				lastTocNumber = actualTocNumber;
 			}
 			listElement.appendChild(createItemList(nextSibling));
-			nextSibling = WordTransformUtils.nextSiblingAndRemoves(nextSibling, parentNode);
+			nextSibling = Utils.nextSiblingAndRemoves(nextSibling, parentNode);
 		}
 
 		// Get the first list

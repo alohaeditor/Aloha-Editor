@@ -1,15 +1,16 @@
-/* ms-word-transform-table.js is part of Aloha Editor project http://aloha-editor.org
+/**
+ * transform/ms-word/tables.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'ms-word-transform-utils',
-	'dom'
+	'transform/ms-word/utils',
+	'dom/mutation'
 ], function (
-	WordContentParserUtils,
-    Dom
+	Utils,
+    Mutation
 ) {
 	'use strict';
 
@@ -32,7 +33,7 @@ define([
 	 */
 	function cleanParagraphs(paragraphs) {
 		for (var i = 0, len = paragraphs.length; i < len; i++) {
-			WordContentParserUtils.cleanElement(paragraphs[i]);
+			Utils.cleanElement(paragraphs[i]);
 		}
 	}
 
@@ -49,7 +50,7 @@ define([
 			cleanParagraphs(tds[i].querySelectorAll('p'));
 			childNodes = tds[i].childNodes;
 			if (childNodes.length == 1 && childNodes[0].nodeName === 'P') {
-				Dom.removeShallow(childNodes[0]);
+				Mutation.removeShallow(childNodes[0]);
 			}
 		}
 	}
@@ -66,7 +67,7 @@ define([
 			len;
 
 		for (i = 0, len = tableElements.length; i < len; i++) {
-			WordContentParserUtils.removeAllAttributes(tableElements[i]);
+			Utils.removeAllAttributes(tableElements[i]);
 		}
 
 		for (i = 0, len = tables.length; i < len; i++) {

@@ -120,8 +120,10 @@ define([
 	 * @param {Element} node
 	 * @param {string}  nodeName
 	 */
-	function wrapWithNodeName(node, nodeName) {
-		wrap(node, node.ownerDocument.createElement(nodeName));
+	function wrapWith(node, nodeName) {
+		var wrapper = node.ownerDocument.createElement(nodeName);
+		wrap(node, wrapper);
+		return wrapper;
 	}
 
 	/**
@@ -174,16 +176,12 @@ define([
 	/**
 	 * Replaces one node with another in the DOM.
 	 *
-	 * @param {Node} node
-	 * @param {Node} replacement
+	 * @param  {Node} node
+	 * @param  {Node} replacement
+	 * @return {Node} Replaced node
 	 */
 	function replace(node, replacement) {
-		if (node.nextSibling) {
-			insert(replacement, node.nextSibling);
-		} else {
-			insert(replacement, node.parentNode, true);
-		}
-		remove(node);
+		return node.parentNode.replaceChild(replacement, node);
 	}
 
 	/**
@@ -210,7 +208,7 @@ define([
 		moveSiblingsInto  : moveSiblingsInto,
 		moveSiblingsAfter : moveSiblingsAfter,
 		wrap              : wrap,
-		wrapWithNodeName  : wrapWithNodeName,
+		wrapWith          : wrapWith,
 		insert            : insert,
 		insertAfter       : insertAfter,
 		replace           : replace,

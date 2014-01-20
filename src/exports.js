@@ -45,8 +45,8 @@ define([
 	'trees',
 	'typing',
 	'undo',
-	'ms-word-transform',
-	'ms-word-transform-utils'
+	'transform/ms-word',
+	'transform/ms-word/utils'
 ], function Exports(
 	Arrays,
 	Blocks,

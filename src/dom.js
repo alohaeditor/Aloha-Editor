@@ -246,7 +246,7 @@ define([
 		moveSiblingsInto  : Mutation.moveSiblingsInto,
 		moveSiblingsAfter : Mutation.moveSiblingsAfter,
 		wrap              : Mutation.wrap,
-		wrapWithNodeName  : Mutation.wrapWithNodeName,
+		wrapWith          : Mutation.wrapWith,
 		insert            : Mutation.insert,
 		insertAfter       : Mutation.insertAfter,
 		replace           : Mutation.replace,
@@ -267,6 +267,7 @@ define([
 		getAttrNS    : Attrs.getNS,
 		removeAttr   : Attrs.remove,
 		removeAttrNS : Attrs.removeNS,
+		removeAttrs  : Attrs.removeAll,
 
 		removeStyle       : Style.remove,
 		setStyle          : Style.set,

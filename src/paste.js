@@ -14,7 +14,7 @@ define([
 	'html',
 	'mutation',
 	'paste-transform-html',
-	'ms-word-transform',
+	'transform/ms-word',
 	'paste-transform-plaintext',
 	'paste-utils',
 	'ranges',

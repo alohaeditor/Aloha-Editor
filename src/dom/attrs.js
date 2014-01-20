@@ -7,10 +7,12 @@
  */
 define([
 	'arrays',
-	'strings'
+	'strings',
+	'functions'
 ], function DomAttributes(
 	Arrays,
-	Strings
+	Strings,
+	Fn
 ) {
 	'use strict';
 
@@ -80,6 +82,15 @@ define([
 		elem.removeAttribute(name);
 	}
 
+	/**
+	 * Removes all attributes from `element`.
+	 *
+	 * @param {Element} element
+	 */
+	function removeAll(element) {
+		attrNames(element).forEach(Fn.partial(remove, element));
+	}
+
 	function set(elem, name, value) {
 		if (null == value) {
 			remove(elem, name);
@@ -143,5 +154,6 @@ define([
 		getNS     : getNS,
 		remove    : remove,
 		removeNS  : removeNS,
+		removeAll : removeAll,
 	};
 });

@@ -106,8 +106,7 @@ define([
 			return element;
 		}
 
-		var wrapper = Dom.wrapWithNodeName(element, 'p');
-
+		var wrapper = Dom.wrapWith(element, 'p');
 		var nextSibling = wrapper.nextSibling;
 		var aux;
 
@@ -136,7 +135,7 @@ define([
 		var brs = contentElement.querySelectorAll('br');
 
 		Arrays.coerce(brs).forEach(function(elem) {
-			Dom.wrapWithNodeName(elem, 'p');
+			Dom.wrapWith(elem, 'p');
 		});
 	}
 
@@ -148,7 +147,7 @@ define([
 		var divs = contentElement.querySelectorAll('div');
 
 		Arrays.coerce(divs).forEach(function(elem) {
-			Dom.wrapWithNodeName(elem, 'p');
+			Dom.wrapWith(elem, 'p');
 			Dom.removeShallow(elem);
 		});
 	}
@@ -177,7 +176,7 @@ define([
 					nextElement = nextElement.nextSibling;
 				}
 			} else if (Dom.isTextNode(nextElement) && !PasteUtils.hasText(nextElement)) {
-				nextElement = Dom.wrapWithNodeName(nextElement, 'p');
+				nextElement = Dom.wrapWith(nextElement, 'p');
 				lastElement = nextElement;
 				nextElement = nextElement.nextSibling;
 			} else {
@@ -199,7 +198,7 @@ define([
 		content = PasteUtils.extractBodyContent(content);
 		contentElement = transformToDOMElement(content, doc);
 
-		transfromFromDOM(contentElement);
+		transformFromDOM(contentElement);
 		return contentElement.innerHTML;
 	}
 

@@ -1,4 +1,5 @@
-/** ms-word-transform-list.js is part of Aloha Editor project http://aloha-editor.org
+/**
+ * transform/ms-word-transform-list.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
@@ -6,10 +7,10 @@
  */
 define([
 	'dom',
-	'ms-word-transform-utils'
+	'transform/ms-word/utils'
 ], function (
 	Dom,
-	WordTransformUtils
+	Utils
 ) {
 	'use strict';
 
@@ -17,32 +18,18 @@ define([
 	 * @const
 	 * @type {string}
 	 */
-	var ORDERED_LIST_NODE_NAME = 'OL',
-		/**
-		 * @const
-		 * @type {string}
-		 */
-	    UNORDERED_LIST_NODE_NAME = 'UL',
-		/**
-		 * @const
-		 * @type {number}
-		 */
-	    DEFAULT_LIST_LEVEL = 1;
+	var ORDERED_LIST_NODE_NAME = 'OL';
 
 	/**
-	 * Get list HTML NodeName, ordered or unordered list.
-	 *
-	 * @param {!Element} element Contains nodes in MS-WORD
-	 * @return {string} Node name
+	 * @const
+	 * @type {string}
 	 */
-	function getListNodeName(element) {
-		return (isOrderedList(element)) ? ORDERED_LIST_NODE_NAME : UNORDERED_LIST_NODE_NAME;
-	}
+	var UNORDERED_LIST_NODE_NAME = 'UL';
 
 	/**
 	 * Gets the numbering type for an ordered list.
 	 *
-	 * @param {!Element} element
+	 * @param  {Element} element
 	 * @return {?string}
 	 */
 	function getNumberFromOrderedList(element) {
@@ -60,103 +47,106 @@ define([
 	}
 
 	/**
-	 * Check whether the given list span (first span in a paragraph which shall be a list item)
-	 * belongs to an ordered list.
+	 * Checks whether the given list span (first span in a paragraph which
+	 * shall be a list item) belongs to an ordered list.
 	 *
-	 * @param {!Element} listSpan
+	 * @param  {Element} span
 	 * @return {boolean} true for ordered lists, false for unordered
 	 */
-	function isOrderedList(element) {
-		var firstChild = element.firstChild,
-		    fontFamily = Dom.getStyle(firstChild, 'fontFamily');
-
-		if (fontFamily === 'Wingdings' || fontFamily === 'Symbol') {
+	function isOrderedList(span) {
+		var font = Dom.getStyle(span.firstChild, 'fontFamily');
+		if (font === 'Wingdings' || font === 'Symbol') {
 			return false;
 		}
-
-		return null !== getNumberFromOrderedList(element);
+		return null !== getNumberFromOrderedList(span);
 	}
 
+	/**
+	 * Gets the node name of the given list element.
+	 *
+	 * @param  {Element} element Contains nodes in MS-WORD
+	 * @return {string}
+	 */
+	function getListNodeName(element) {
+		return isOrderedList(element)
+		     ? ORDERED_LIST_NODE_NAME
+		     : UNORDERED_LIST_NODE_NAME;
+	}
 
 	/**
-	 * Checks if the element is a paragraph list.
+	 * Checks whether the given element is a paragraph that represents a list.
 	 *
-	 * @param {!Element} paragraphElement
+	 * @param  {Element} paragraph
 	 * @return {boolean}
 	 */
-	function isParagraphList(paragraphElement) {
-		return    Dom.hasClass(paragraphElement, 'MsoListParagraphCxSpMiddle')
-		       || Dom.hasClass(paragraphElement, 'MsoListParagraphCxSpLast');
+	function isParagraphList(paragraph) {
+		return Dom.hasClass(paragraph, 'MsoListParagraphCxSpMiddle')
+		    || Dom.hasClass(paragraph, 'MsoListParagraphCxSpLast');
 	}
 
 	/**
-	 * Sets the numbering if the list is an ordered list.
+	 * Sets the numbering if the list an an ordered list.
 	 *
-	 * @param {!Element} listHTML
-	 * @param {!Element} paragraphElement
+	 * @param {Element} list
+	 * @param {Element} paragraphElement
 	 */
-	function setListNumbering(listHTML, paragraphElement) {
-		var numbering = getNumberFromOrderedList(paragraphElement),
-		    startValue,
-		    typeValue;
+	function setListNumbering(list, paragraphElement) {
+		var numbering = getNumberFromOrderedList(paragraphElement);
 
-		if (listHTML.nodeName !== ORDERED_LIST_NODE_NAME || listHTML.type !== ''
-			|| !numbering) {
+		if (list.nodeName !== ORDERED_LIST_NODE_NAME || list.type !== '' || !numbering) {
 			return;
 		}
 
-		if (numbering) {
-			if (/\d+/.test(numbering)) {
-				startValue = numbering;
-				typeValue = '1';
-			} else if (/i/i.test(numbering)) {
-				typeValue = (/I/.test(numbering)) ? 'I' : 'i';
-			} else {
-				typeValue = (/[A-Z]/.test(numbering)) ? 'A' : 'a';
-			}
+		var startValue;
+		var typeValue;
+
+		if (/\d+/.test(numbering)) {
+			startValue = numbering;
+			typeValue = '1';
+		} else if (/i/i.test(numbering)) {
+			typeValue = (/I/.test(numbering)) ? 'I' : 'i';
+		} else {
+			typeValue = (/[A-Z]/.test(numbering)) ? 'A' : 'a';
 		}
 
 		if (startValue) {
-			Dom.setAttr(listHTML, 'start', startValue);
+			Dom.setAttr(list, 'start', startValue);
 		}
 
 		if (typeValue) {
-			Dom.setAttr(listHTML, 'type', typeValue);
+			Dom.setAttr(list, 'type', typeValue);
 		}
 	}
 
 	/**
-	 * Extract the depth level of the list
+	 * Extracts the depth level of the list.
 	 *
-	 * @param {!Element} paragraphElement
-	 * @return {number} number of depth
+	 * @param  {Element} paragraph
+	 * @return {number}
 	 */
-	function extractLevel(paragraphElement) {
-		var match = /mso-list:.*?level(\d+)/i.exec(Dom.getAttr(paragraphElement, 'style'));
-		return (match && match[1]) ? parseInt(match[1], 10) : DEFAULT_LIST_LEVEL;
+	function extractLevel(paragraph) {
+		var match = /mso-list:.*?level(\d+)/i.exec(Dom.getAttr(paragraph, 'style'));
+		return (match && match[1]) ? parseInt(match[1], 10) : 1;
 	}
 
-
 	/**
-	 * Create item list Element (<li>) with the content 'element'.
+	 * Creates item list Element (<li>) with the content 'element'.
 	 *
-	 * @param {!Element} element Contains the text to be inserted in the item list
-	 *
+	 * @param  {Element} element Contains the text to be inserted in the item list
 	 * @return {Element} Item list element (<li>)
 	 */
 	function createItemList(element) {
-		var liElem = element.ownerDocument.createElement('li'),
-		    childNodes;
+		Utils.removeEmptyChildren(element);
 
-		WordTransformUtils.removeEmptyChildren(element);
-		childNodes = element.childNodes;
+		var li = element.ownerDocument.createElement('li');
+		var children = Dom.children(element);
 
 		// There are 2 span. First contains the numbering or bullet, and the second the content
-		for (var i = childNodes.length - 1; i > 0; i--) {
-			liElem.insertBefore(childNodes[i], liElem.firstChild);
+		for (var i = children.length - 1; i > 0; i--) {
+			li.insertBefore(children[i], li.firstChild);
 		}
-		WordTransformUtils.cleanElement(liElem);
-		return liElem;
+		Utils.cleanElement(li);
+		return li;
 	}
 
 	/**
@@ -177,11 +167,11 @@ define([
 		        return doc.createElement(nodeName);
 		    };
 
-		listHTML = WordTransformUtils.createNestedList(actualLevel, lastLevel, listHTML, createListFn);
+		listHTML = Utils.createNestedList(actualLevel, lastLevel, listHTML, createListFn);
 
 		if (listHTML.nodeName !== nodeName) {
 			newList = doc.createElement(nodeName);
-			WordTransformUtils.replaceNode(listHTML, newList);
+			Utils.replaceNode(listHTML, newList);
 			listHTML = newList;
 		}
 
@@ -214,7 +204,7 @@ define([
 				lastLevel = actualLevel;
 			}
 			listHTML.appendChild(createItemList(nextParagraph));
-			nextParagraph = WordTransformUtils.nextSiblingAndRemoves(nextParagraph, parentNode);
+			nextParagraph = Utils.nextSiblingAndRemoves(nextParagraph, parentNode);
 		} while ((nextParagraph && isParagraphList(nextParagraph)));
 
 		// Get the first list
@@ -238,7 +228,7 @@ define([
 		for (var i = 0, len = itemLists.length; i < len; i++) {
 			if (!itemLists[i].querySelector('span[style*="mso-list:"]')) {
 				itemLists[i].removeAttribute('class');
-				nextSibling = WordTransformUtils.nextNotEmptyElementSibling(itemLists[i]);
+				nextSibling = Utils.nextNotEmptyElementSibling(itemLists[i]);
 				if (nextSibling && /MsoListParagraphCxSp/i.test(Dom.getAttr(nextSibling, 'class'))) {
 					Dom.setAttr(nextSibling, 'class', 'MsoListParagraphCxSpFirst');
 				}

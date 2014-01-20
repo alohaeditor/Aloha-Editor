@@ -1,17 +1,17 @@
-/* ms-word-transform-paragraph.js is part of Aloha Editor project http://aloha-editor.org
+/* transform/ms-word/paragraphs.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'ms-word-transform-utils',
+	'transform/ms-word/utils',
 	'predicates',
-	'dom'
+	'dom/mutation'
 ], function (
-	WordContentParserUtils,
+	Utils,
     Predicates,
-    Dom
+    Mutation
 ) {
 	'use strict';
 
@@ -27,7 +27,7 @@ define([
 			element = element.nextSibling;
 		} while (element && element.nodeName === 'SPAN');
 
-		WordContentParserUtils.wrapChildNodes(spansSameParagraph, 'p');
+		Utils.wrapChildNodes(spansSameParagraph, 'p');
 	}
 
 	/**
@@ -42,21 +42,21 @@ define([
 		child = element.firstChild;
 		while (child) {
 			if (child.nodeName === 'DIV') {
-				Dom.removeShallow(child);
+				Mutation.removeShallow(child);
 
 				child = prev ||  element.firstChild;
-			} else if (Predicates.isInlineNode(child) && WordContentParserUtils.hasText(child)) {
+			} else if (Predicates.isInlineNode(child) && Utils.hasText(child)) {
 				wrapSequentialSpans(child);
 
 				child = prev ||  element.firstChild;
 			} else if (child.nodeName === 'BR' || child.nodeName === 'HR') {
-				WordContentParserUtils.removeAllAttributes(child);
-				Dom.wrapWithNodeName(child, 'p');
+				Utils.removeAllAttributes(child);
+				Mutation.wrapWith(child, 'p');
 
 				child = prev ||  element.firstChild;
-			} else  {
+			} else {
 				if (child.nodeName === 'P') {
-					WordContentParserUtils.cleanElement(child);
+					Utils.cleanElement(child);
 				}
 				prev = child;
 				child = child.nextSibling;

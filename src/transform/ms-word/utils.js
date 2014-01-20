@@ -1,4 +1,5 @@
-/* ms-word-transform-utils.js is part of Aloha Editor project http://aloha-editor.org
+/**
+ * transform/ms-word/utils.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
@@ -16,20 +17,19 @@ define([
 	'use strict';
 
 	/**
-	 * Check if the textContent of the 'element' is empty
+	 * Checks the givne element has any textContent.
 	 *
-	 *
-	 * @param {Element} element
+	 * @param  {Element} element
 	 * @return {boolean}
 	 */
 	function hasText(element) {
-		return Dom.textContent(element).trim().length;
+		return Dom.textContent(element).trim().length > 0;
 	}
 
 	/**
 	 * Get next sibling ignoring empty Text Nodes
 	 *
-	 * @param {Element} node
+	 * @param  {Element} node
 	 * @return {Element} Next sibling
 	 */
 	function nextNotEmptyElementSibling(node) {
@@ -41,32 +41,31 @@ define([
 	}
 
 	/**
-	 * Create a header HTML destination with the children of 'node'
+	 * Create a heading HTML destination with the children of 'node'
 	 *
 	 * @param {Element} source
 	 * @param {Element} destination
 	 */
-	function copyChildNodes(source, destination) {
-		if (source.nodeType === Dom.Nodes.TEXT) {
+	function moveChildren(source, destination) {
+		if (Dom.isTextNode(source)) {
 			destination.appendChild(source.cloneNode(true));
-			return;
-		}
-
-		while (source.firstChild) {
-			destination.appendChild(source.firstChild);
+		} else {
+			while (source.firstChild) {
+				destination.appendChild(source.firstChild);
+			}
 		}
 	}
 
 	/**
 	 * Replaces the node by other.
 	 *
-	 * @param {Element} nodeSrc
-	 * @param {Element} nodeDst
+	 * @param {Element} source
+	 * @param {Element} destination
 	 */
-	function replaceNode(nodeSrc, nodeDst) {
-		copyChildNodes(nodeSrc, nodeDst);
-		if (nodeSrc.parentNode) {
-			nodeSrc.parentNode.replaceChild(nodeDst, nodeSrc);
+	function replaceNode(source, destination) {
+		moveChildren(source, destination);
+		if (source.parentNode) {
+			source.parentNode.replaceChild(destination, source);
 		}
 	}
 
@@ -229,7 +228,7 @@ define([
 
 	return {
 		wrapChildNodes: wrapChildNodes,
-		copyChildNodes: copyChildNodes,
+		moveChildren: moveChildren,
 		hasText: hasText,
 		removeEmptyChildren: removeEmptyChildren,
 		removeDescendants: removeDescendants,
