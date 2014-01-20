@@ -282,6 +282,16 @@ define([
 		return node.cloneNode(false);
 	}
 
+	/**
+	 * Checks the givne element has any textContent.
+	 *
+	 * @param  {Element} element
+	 * @return {boolean}
+	 */
+	function hasText(element) {
+		return textContent(element).trim().length > 0;
+	}
+
 	return {
 		Nodes : Nodes,
 
@@ -304,6 +314,7 @@ define([
 		isTextNode      : isTextNode,
 		isElementNode   : isElementNode,
 		isEmptyTextNode : isEmptyTextNode,
+		hasText         : hasText,
 
 		equals     : equals,
 		contains   : contains,

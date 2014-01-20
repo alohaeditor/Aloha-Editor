@@ -13,13 +13,11 @@ define([
 	'functions',
 	'html',
 	'mutation',
-	'paste-transform-html',
-	'transform/ms-word',
-	'paste-transform-plaintext',
-	'paste-utils',
 	'ranges',
-	'dom/traversing',
-	'undo'
+	'undo',
+	'transform/ms-word',
+	'transform',
+	'paste/utils'
 ], function(
 	Editing,
 	Events,
@@ -28,13 +26,11 @@ define([
 	Fn,
 	Html,
 	Mutation,
-	PasteTransform,
-    WordTransform,
-    PasteTransformPlainText,
-    PasteUtils,
     Ranges,
-    Traversing,
-    Undo
+    Undo,
+    WordTransform,
+    Transform,
+    PasteUtils
 ) {
 	'use strict';
 
@@ -126,7 +122,7 @@ define([
 	 * @return {Element}
 	 */
 	function getFirstParentBlockElement(element) {
-		return Traversing.upWhile(element, Fn.complement(Html.hasBlockStyle));
+		return Dom.upWhile(element, Fn.complement(Html.hasBlockStyle));
 	}
 
 
@@ -213,13 +209,13 @@ define([
 				content = getHtmlPasteContent(nativeEvent);
 
 				if (WordTransform.isMSWordContent(content, doc)) {
-					content = WordTransform.transform(content, doc);
+					content = Transform.msword(content, doc);
 				} else {
-					content = PasteTransform.transform(content, doc);
+					content = Transform.html(content, doc);
 				}
 			} else if (PasteUtils.isPlainTextPasteEvent(nativeEvent)) {
 				content = getPlainTextPasteContent(nativeEvent);
-				content = PasteTransformPlainText.transform(content, doc);
+				content = Transform.plain(content, doc);
 			}
 
 			registerUndoChanges(

@@ -1,5 +1,5 @@
 /**
- * paste-transform.js is part of Aloha Editor project http://aloha-editor.org
+ * transform/html.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
@@ -10,44 +10,49 @@ define([
 	'predicates',
 	'arrays',
 	'html',
-	'paste-utils'
+	'paste/utils'
 ], function(
 	Dom,
 	Predicates,
 	Arrays,
 	Html,
-	PasteUtils
+	Utils
 ) {
 	'use strict';
 
-
 	/**
-	 * Transform `content` to Element
-	 * @param {string} content
-	 * @param {Document} doc
-	 * @return {Element}
+	 * These element's cannot be simply and still maintain a valid DOM
+	 * structure.
+	 *
+	 * @param {<string, boolean>}
 	 */
-	function transformToDOMElement(content, doc) {
-		var element = doc.createElement('div');
-		element.innerHTML = content;
-		return element;
+	var HAS_DEPENDENT_CHILDREN = {
+		'TABLE' : true,
+		'TBODY' : true,
+		'TR'    : true,
+		'OL'    : true,
+		'UL'    : true,
+		'DL'    : true,
+		'MENU'  : true
+	};
+
+	function hasDependentChildren(node) {
+		return HAS_DEPENDENT_CHILDREN[node.nodeName];
 	}
 
 	/**
-	 * Extracts block elements from `elem` and
-	 * inserts into `contentElement`.
+	 * Extracts block elements from `elem` and inserts into them into `contentElement`.
 	 *
-	 * @param {!Node} elem
-	 * @param {!Element} contentElement
+	 * @param {Node}    elem
+	 * @param {Element} contentElement
 	 */
 	function extractBlockElements(elem, contentElement) {
-		if (Html.isListContainer(elem) || Html.isTableContainer(elem)) {
+		if (hasDependentChildren(elem)) {
 			return;
 		}
 		var insertRef = elem.nextSibling;
-		var block = PasteUtils.getFirstChildBlockElement(elem);
+		var block = Utils.getFirstChildBlockElement(elem);
 		var nextSibling = block;
-
 		while (nextSibling) {
 			block = nextSibling;
 			nextSibling = block.nextSibling;
@@ -57,30 +62,34 @@ define([
 
 	/**
 	 * Cleans `element`.
-	 * @param {!Node} element
+	 *
+	 * @param {Element} element
 	 */
 	function cleanElement(element) {
-		var anchorElements = Arrays.coerce(element.querySelectorAll('a'));
-		var imgElements = Arrays.coerce(element.querySelectorAll('img'));
+		var anchors = Arrays.coerce(element.querySelectorAll('a'));
+		var images = Arrays.coerce(element.querySelectorAll('img'));
 		var lists = Arrays.coerce(element.querySelectorAll('ol,ul'));
 
 		if (Html.isListContainer(element)) {
 			lists.push(element);
 		}
 
-		anchorElements.forEach(function (anchor) {
+		if ('A' === element.nodeName) {
+			anchors.push(element);
+		}
+
+		anchors.forEach(function (anchor) {
 			var href = anchor.href;
 			Dom.removeAttrs(anchor);
 			anchor.href = href;
 		});
 
-		imgElements.forEach(PasteUtils.cleanImageElement);
-
-		lists.forEach(PasteUtils.cleanListElement);
+		images.forEach(Utils.cleanImageElement);
+		lists.forEach(Utils.cleanListElement);
 
 		Dom.removeAttrs(element);
 
-		PasteUtils.walkDescendants(element, Dom.isElementNode, function(node) {
+		Utils.walkDescendants(element, Dom.isElementNode, function(node) {
 			var nodeName = node.nodeName;
 			if (nodeName !== 'A' && nodeName !== 'IMG' && node.attributes != null) {
 				Dom.removeAttrs(node);
@@ -129,11 +138,13 @@ define([
 
 	/**
 	 * Finds all <br> tags and wrap them inside a paragraph.
+	 *
+	 * This is not good! What about if we had "<span>foo<br>bar</span>"
+	 *
 	 * @param {!Element} contentElement
 	 */
 	function propLineBreaks(contentElement) {
 		var brs = contentElement.querySelectorAll('br');
-
 		Arrays.coerce(brs).forEach(function(elem) {
 			Dom.wrapWith(elem, 'p');
 		});
@@ -145,7 +156,6 @@ define([
 	 */
 	function replaceDivsWithParagraph(contentElement) {
 		var divs = contentElement.querySelectorAll('div');
-
 		Arrays.coerce(divs).forEach(function(elem) {
 			Dom.wrapWith(elem, 'p');
 			Dom.removeShallow(elem);
@@ -156,7 +166,7 @@ define([
 	 * Transforms `contentElement`.
 	 * @param {Element} contentElement
 	 */
-	function transformFromDOM(contentElement) {
+	function normalize(contentElement) {
 		propLineBreaks(contentElement);
 		replaceDivsWithParagraph(contentElement);
 
@@ -175,7 +185,7 @@ define([
 					lastElement = nextElement;
 					nextElement = nextElement.nextSibling;
 				}
-			} else if (Dom.isTextNode(nextElement) && !PasteUtils.hasText(nextElement)) {
+			} else if (Dom.isTextNode(nextElement) && !Dom.hasText(nextElement)) {
 				nextElement = Dom.wrapWith(nextElement, 'p');
 				lastElement = nextElement;
 				nextElement = nextElement.nextSibling;
@@ -187,23 +197,20 @@ define([
 	}
 
 	/**
-	 * Transforms `content` to a valid HTML string.
-	 * @param {string} content
-	 * @param {!Document} doc
+	 * Transforms markup to normalized HTML.
+	 *
+	 * @param  {string}   markup
+	 * @param  {Document} doc
 	 * @return {string}
 	 */
-	function transform(content, doc) {
-		var contentElement;
-
-		content = PasteUtils.extractBodyContent(content);
-		contentElement = transformToDOMElement(content, doc);
-
-		transformFromDOM(contentElement);
-		return contentElement.innerHTML;
+	function transform(markup, doc) {
+		var element = Html.parse(Utils.extractContent(markup), doc);
+		normalize(element);
+		return element.innerHTML;
 	}
 
 	return {
-		transform: transform,
-		transformFromDOM : transformFromDOM
+		transform        : transform,
+		transformFromDOM : normalize
 	};
 });

@@ -240,6 +240,7 @@ define([
 		equals                  : Nodes.equals,
 		contains                : Nodes.contains,
 		followedBy              : Nodes.followedBy,
+		hasText                 : Nodes.hasText,
 
 		merge             : Mutation.merge,
 		moveNextAll       : Mutation.moveNextAll,

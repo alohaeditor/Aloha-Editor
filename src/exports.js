@@ -33,8 +33,6 @@ define([
 	'mutation',
 	'overrides',
 	'paste',
-	'paste-transform-html',
-	'paste-transform-plaintext',
 	'predicates',
 	'ranges',
 	'selection-change',
@@ -45,8 +43,8 @@ define([
 	'trees',
 	'typing',
 	'undo',
-	'transform/ms-word',
-	'transform/ms-word/utils'
+	'transform/ms-word/utils',
+	'transform'
 ], function Exports(
 	Arrays,
 	Blocks,
@@ -71,8 +69,6 @@ define([
 	Mutation,
 	Overrides,
 	Paste,
-	PasteTransform,
-	PasteTransformPlainText,
 	Predicates,
 	Ranges,
 	SelectionChange,
@@ -83,8 +79,8 @@ define([
 	Trees,
 	Typing,
 	Undo,
-	WordTransform,
-	WordTransformUtils
+	WordTransformUtils,
+	Transform
 ) {
 	'use strict';
 
@@ -112,18 +108,16 @@ define([
 	exports['mutation'] = Mutation;
 	exports['overrides'] = Overrides;
 	exports['paste'] = Paste;
-	exports['pasteTransform'] = PasteTransform;
-	exports['pasteTransformPlainText'] = PasteTransformPlainText;
 	exports['predicates'] = Predicates;
 	exports['ranges'] = Ranges;
 	exports['selectionchange'] = SelectionChange;
 	exports['selections'] = Selections;
 	exports['strings'] = Strings;
+	exports['transform'] = Transform
 	exports['traversing'] = Traversing;
 	exports['trees'] = Trees;
 	exports['typing'] = Typing;
 	exports['undo'] = Undo;
-	exports['wordTransform'] = WordTransform;
 	exports['wordTransformUtils'] = WordTransformUtils;
 	exports['xhtml'] = Xhtml;
 

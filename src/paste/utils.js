@@ -1,5 +1,5 @@
 /**
- * paste-utils.js is part of Aloha Editor project http://aloha-editor.org
+ * paste/utils.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
@@ -19,20 +19,10 @@ define([
 	'use strict';
 
 	/**
-	 * @const
-	 * @type {string}
-	 */
-	var WHITE_SPACE = ' ';
-	/**
-	 * @const
-	 * @type {string}
-	 */
-	var EMPTY_SPACE = '';
-
-	/**
 	 * Checks the content type of `event`.
-	 * @param {!Event} event
-	 * @param {string} type
+	 *
+	 * @param  {Event}  event
+	 * @param  {string} type
 	 * @return {boolean}
 	 */
 	function checkTypePasteEvent(event, type) {
@@ -41,7 +31,8 @@ define([
 
 	/**
 	 * Checks if paste content is HTML.
-	 * @param {!Event} event
+	 *
+	 * @param  {Event} event
 	 * @return {boolean}
 	 */
 	function isHtmlPasteEvent(event) {
@@ -50,60 +41,53 @@ define([
 
 	/**
 	 * Checks if paste content is plain text.
-	 * @param {!Event} event
+	 *
+	 * @param  {Event} event
 	 * @return {boolean}
 	 */
 	function isPlainTextPasteEvent(event) {
 		return checkTypePasteEvent(event, 'text/plain');
 	}
 
-
 	/**
-	 * Checks if `node` has text.
-	 * @param {Element} node
-	 * @return {boolean}
-	 */
-	function hasText(node) {
-		return !Dom.textContent(node).trim().length;
-	}
-
-	/**
-	 * Extracts body content if the content is an HTML page. Otherwise
-	 * it returns the content itself.
-	 * @param {string} content
+	 * Extracts body content if the content is an HTML page. Otherwise it
+	 * returns the content itself.
+	 *
+	 * FixMe
+	 * What if `content` contains a comment like this:
+	 * <html><!-- <body>gotcha!</body> --><title>woops</title><body>hello, world!</body></html>
+	 *
+	 * @param  {string} content
 	 * @return {string}
 	 */
-	function extractBodyContent(content) {
-		var match,
-			matchEnd,
-			index,
-			lastIndex;
+	function extractContent(markup) {
+		markup = markup.replace(/\n/g, ' ');
+		markup = markup.replace(/<iframe.*?<\/iframe>/g, '');
 
-		content = content.replace(/\n/g, WHITE_SPACE);
-		content = content.replace(/<iframe.*?<\/iframe>/g, EMPTY_SPACE);
+		var matchStart = /<body.*?>/i.exec(markup);
+		var matchEnd = /<\/body.*?>/i.exec(markup);
 
-		match = /<body.*?>/i.exec(content);
-		matchEnd = /<\/body.*?>/i.exec(content);
-
-		if (match && matchEnd) {
-			index = content.indexOf(match[0]) + match[0].length;
-			lastIndex = content.indexOf(matchEnd[0]);
-			content = content.slice(index, lastIndex);
+		if (matchStart && matchEnd) {
+			var index = markup.indexOf(matchStart[0]) + matchStart[0].length;
+			var lastIndex = markup.indexOf(matchEnd[0]);
+			return markup.slice(index, lastIndex);
 		}
 
-		return content;
+		return markup;
 	}
 
 	/**
 	 * Gets the first block child
-	 * @param {!Element} element
 	 *
-	 * @return {Node|null}
+	 * @param  {Element} element
+	 * @return {?Node}
 	 */
 	function getFirstChildBlockElement(element) {
+		return Dom.findForward(element, Html.hasBlockStyle, Dom.isEditingHost);
+
+		/*
 		var nextSibling = element.firstChild;
 		var block;
-
 		while (nextSibling) {
 			if (Html.hasBlockStyle(nextSibling)) {
 				return nextSibling;
@@ -114,11 +98,13 @@ define([
 			nextSibling = nextSibling.nextSibling;
 		}
 		return null;
+		*/
 	}
 
 	/**
 	 * Cleans list element.
-	 * @param {!Element} list
+	 *
+	 * @param {Element} list
 	 */
 	function cleanListElement(list) {
 		Dom.children(list).forEach(function (item) {
@@ -145,21 +131,22 @@ define([
 	}
 
 	/**
-	 * Executes function 'callBackFn' when the function condition 'conditionFn' is true.
+	 * Walks the decendents of the given element, calling the callback function
+	 * when `pred` return true.
 	 *
 	 * @param {Element} element
-	 * @param {function(Element):boolean} conditionFn
-	 * @param {function(Element)} callBackFn
+	 * @param {function(Element):boolean} pred
+	 * @param {function(Element)} callback
 	 */
-	function walkDescendants(element, conditionFn, callBackFn) {
-		var childNodes = element.childNodes,
-			child;
+	function walkDescendants(element, pred, callback) {
+		var childNodes = Dom.children(element);
+		var child;
 
 		for (var i = 0, len = childNodes.length; i < len; i++) {
 			child = childNodes[i];
 			if (child) {
-				if (conditionFn(child)){
-					callBackFn(child);
+				if (pred(child)){
+					callback(child);
 					// check if the child has changed
 					// the size of the children nodes can change
 					if (child !== childNodes[i]) {
@@ -168,18 +155,15 @@ define([
 					}
 				}
 				if (Dom.isElementNode(child)) {
-					walkDescendants(child, conditionFn,  callBackFn);
+					walkDescendants(child, pred,  callback);
 				}
 			}
 		}
 	}
 
-
-
 	return {
 		getFirstChildBlockElement : getFirstChildBlockElement,
-		hasText                   : hasText,
-		extractBodyContent        : extractBodyContent,
+		extractContent            : extractContent,
 		cleanImageElement         : cleanImageElement,
 		cleanListElement          : cleanListElement,
 		isHtmlPasteEvent          : isHtmlPasteEvent,

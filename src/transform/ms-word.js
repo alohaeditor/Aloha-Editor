@@ -15,7 +15,7 @@ define([
 	'ms-word/paragraphs',
 	'ms-word/images',
 	'ms-word/utils',
-	'paste-utils'
+	'paste/utils'
 ], function (
 	Dom,
 	Html,
@@ -64,19 +64,6 @@ define([
 	}
 
 	/**
-	 * Transforms the given markup string into into a detached DOM tree inside
-	 * fo a div.
-	 *
-	 * @param  {string} html
-	 * @return {Element}
-	 */
-	function htmlToDOM(html, doc) {
-		var div = doc.createElement('div');
-		div.innerHTML = html;
-		return div;
-	}
-
-	/**
 	 * Fills empty blocks elements with a <br> tag.
 	 *
 	 * @param {Element} element
@@ -94,7 +81,7 @@ define([
 	 * @return {string}
 	 */
 	function transform(markup, doc) {
-		var element = htmlToDOM(PasteUtils.extractBodyContent(markup), doc);
+		var element = Html.parse(PasteUtils.extractBodyContent(markup), doc);
 
 		removeSuperfluousElements(element);
 

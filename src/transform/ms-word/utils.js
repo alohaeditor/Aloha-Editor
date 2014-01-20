@@ -8,23 +8,13 @@
 define([
 	'dom',
 	'predicates',
-	'paste-utils'
+	'paste/utils'
 ], function(
 	Dom,
 	Predicates,
 	PasteUtils
 ) {
 	'use strict';
-
-	/**
-	 * Checks the givne element has any textContent.
-	 *
-	 * @param  {Element} element
-	 * @return {boolean}
-	 */
-	function hasText(element) {
-		return Dom.textContent(element).trim().length > 0;
-	}
 
 	/**
 	 * Get next sibling ignoring empty Text Nodes
@@ -34,7 +24,7 @@ define([
 	 */
 	function nextNotEmptyElementSibling(node) {
 		node = node.nextElementSibling;
-		while (node && !hasText(node)) {
+		while (node && !Dom.hasText(node)) {
 			node = node.nextElementSibling;
 		}
 		return node;
@@ -92,7 +82,7 @@ define([
 		var childNodes = node.childNodes;
 
 		for (var i = 0, len = childNodes.length; i < len; i++) {
-			if (childNodes[i] && !hasText(childNodes[i])) {
+			if (childNodes[i] && !Dom.hasText(childNodes[i])) {
 				node.removeChild(childNodes[i]);
 			}
 		}
@@ -187,7 +177,7 @@ define([
 			                   && !Predicates.isVoidNode(child);
 
 			if (child.nodeName === 'SPAN' || child.nodeName === 'FONT'
-			    || (!hasText(child) && textLevelElement)) {
+			    || (!Dom.hasText(child) && textLevelElement)) {
 				Dom.removeShallow(child);
 				child = prev || element.firstChild;
 			} else {
@@ -229,7 +219,6 @@ define([
 	return {
 		wrapChildNodes: wrapChildNodes,
 		moveChildren: moveChildren,
-		hasText: hasText,
 		removeEmptyChildren: removeEmptyChildren,
 		removeDescendants: removeDescendants,
 		unwrapDescendants: unwrapDescendants,

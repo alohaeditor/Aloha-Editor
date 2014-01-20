@@ -328,6 +328,20 @@ define([
 		return !isUnrendered(node);
 	}
 
+	/**
+	 * Parses the given markup string into a DOM tree inside of a detached div
+	 * element.
+	 *
+	 * @param  {string}   html
+	 * @param  {Document} doc
+	 * @return {Element}
+	 */
+	function parse(html, doc) {
+		var div = doc.createElement('div');
+		div.innerHTML = html;
+		return div;
+	}
+
 	return {
 		isVoidType             : isVoidType,
 		isRendered             : isRendered,
@@ -336,6 +350,7 @@ define([
 		isListContainer        : isListContainer,
 		isTableContainer       : isTableContainer,
 		isUnrenderedWhitespaceNoBlockCheck
-		                       : isUnrenderedWhitespaceNoBlockCheck
+		                       : isUnrenderedWhitespaceNoBlockCheck,
+		parse                  : parse
 	};
 });
