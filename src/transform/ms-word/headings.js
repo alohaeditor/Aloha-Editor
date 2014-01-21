@@ -20,9 +20,7 @@ define([
 	 * @param {Array.<Element>} headings
 	 */
 	function cleanHeadings(headings) {
-		for (var i = 0, len = headings.length; i < len ; i++) {
-			Utils.cleanElement(headings[i]);
-		}
+		headings.forEach(Utils.cleanElement);
 	}
 
 	/**
@@ -33,15 +31,10 @@ define([
 	 * @param {string} nodeName
 	 */
 	function transformHeadings(doc, headings, nodeName) {
-		var element;
-		var heading;
 		cleanHeadings(headings);
-		for (var i = 0, len = headings.length; i < len ; i++) {
-			heading = headings[i];
-			element = doc.createElement(nodeName);
-			Utils.moveChildren(heading, element);
-			Dom.replace(heading, element);
-		}
+		headings.forEach(function (heading) {
+			Dom.replaceShallow(heading, doc.createElement(nodeName));
+		});
 	}
 
 	/**

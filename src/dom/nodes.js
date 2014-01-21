@@ -68,6 +68,12 @@ define([
 		return elem.childNodes.length;
 	}
 
+	/**
+	 * Returns a non-live array of all child nodes belonging to `elem`.
+	 *
+	 * @param  {Element} elem
+	 * @return {Array.<Node>}
+	 */
 	function children(elem) {
 		return Arrays.coerce(elem.childNodes);
 	}

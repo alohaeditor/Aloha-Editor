@@ -210,11 +210,12 @@ define([
 	}
 
 	/**
-	 * Gets the window from document.
-	 * @param {!Document} doc
+	 * Gets the window to which the given document belongs.
+	 *
+	 * @param   {Document} doc
 	 * @returns {Window}
 	 */
-	function windowFromDocument(doc) {
+	function documentWindow(doc) {
 		return doc['defaultView'] || doc['parentWindow'];
 	}
 
@@ -242,10 +243,11 @@ define([
 		followedBy              : Nodes.followedBy,
 		hasText                 : Nodes.hasText,
 
+		append            : Mutation.append,
 		merge             : Mutation.merge,
 		moveNextAll       : Mutation.moveNextAll,
-		moveSiblingsInto  : Mutation.moveSiblingsInto,
-		moveSiblingsAfter : Mutation.moveSiblingsAfter,
+		move              : Mutation.move,
+		moveBefore        : Mutation.moveBefore,
 		wrap              : Mutation.wrap,
 		wrapWith          : Mutation.wrapWith,
 		insert            : Mutation.insert,
@@ -276,6 +278,8 @@ define([
 		getComputedStyle  : Style.getComputedStyle,
 		getComputedStyles : Style.getComputedStyles,
 
+		query                        : Traversing.query,
+		nextSiblings                 : Traversing.nextSiblings,
 		nextWhile                    : Traversing.nextWhile,
 		prevWhile                    : Traversing.prevWhile,
 		upWhile                      : Traversing.upWhile,
@@ -306,7 +310,7 @@ define([
 		isEditingHost     : isEditingHost,
 		isContentEditable : isContentEditable,
 
-		windowFromDocument : windowFromDocument,
+		documentWindow     : documentWindow,
 		editingHost        : editingHost,
 		editableParent     : editableParent
 	};

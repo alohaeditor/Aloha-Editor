@@ -291,13 +291,16 @@ define([
 			return node.previousSibling && Styles.hasInlineStyle(node.previousSibling);
 		});
 		if (first) {
-			DomMutation.wrap(first, wrapper);
-			DomMutation.moveSiblingsAfter(first.nextSibling, first, function (node) {
-				return node === ref;
-			});
-			DomMutation.insert(ref, wrapper, true);
+			/*
+			Dom.wrap(first, wrapper);
+			//Dom.moveSiblingsAfter(first.nextSibling, first, function (node) {
+			//	return node === ref;
+			//});
+			Dom.move(Dom.children(first), wrapper);
+			Dom.append(wrapper, ref);
+			*/
 		} else {
-			DomMutation.wrap(ref, wrapper);
+			Dom.wrap(ref, wrapper);
 		}
 	}
 
@@ -434,9 +437,9 @@ define([
 			parent = node.parentNode.cloneNode(false);
 			copy = (node === movable) ? node : node.cloneNode(false);
 			next = node.nextSibling;
-			DomMutation.insert(heirarchy || copy, parent, true);
+			Dom.insert(heirarchy || copy, parent, true);
 			if (next) {
-				DomMutation.moveSiblingsInto(next, parent);
+				Dom.moveSiblings(next, parent);
 			}
 			heirarchy = parent;
 		}

@@ -8,10 +8,12 @@
  */
 define([
 	'dom/nodes',
-	'functions'
+	'functions',
+	'arrays'
 ], function DomTraversing(
 	Nodes,
-	Fn
+	Fn,
+	Arrays
 ) {
 	'use strict';
 
@@ -487,7 +489,37 @@ define([
 		}
 	}
 
+	/**
+	 * Executes a query selection (-all) in the given context and returns a
+	 * non-live list of results.
+	 *
+	 * @param  {string} selector
+	 * @param  {Element} context
+	 * @return {Array.<Node>}
+	 */
+	function query(selector, context) {
+		return Arrays.coerce(context.querySelectorAll(selector));
+	}
+
+	/**
+	 * Returns a non-live list of the given node and all it's subsequent
+	 * siblings until the predicate returns true.
+	 *
+	 * @param  {Node} node
+	 * @param  {function(Node):boolean}
+	 * @return {Array.<Node>}
+	 */
+	function nextSiblings(node, until) {
+		var nodes = [];
+		walkUntil(node, function (next) {
+			nodes.push(next);
+		}, until);
+		return nodes;
+	}
+
 	return {
+		query                        : query,
+		nextSiblings                 : nextSiblings,
 		nextWhile                    : nextWhile,
 		prevWhile                    : prevWhile,
 		upWhile                      : upWhile,

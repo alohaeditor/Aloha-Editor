@@ -7,9 +7,11 @@
  */
 define([
 	'editing',
+	'arrays',
 	'events',
 	'boundaries',
 	'dom',
+	'content',
 	'functions',
 	'html',
 	'mutation',
@@ -17,12 +19,14 @@ define([
 	'undo',
 	'transform/ms-word',
 	'transform',
-	'paste/utils'
-], function(
+	'selections'
+], function (
 	Editing,
+	Arrays,
 	Events,
 	Boundaries,
 	Dom,
+	Content,
 	Fn,
 	Html,
 	Mutation,
@@ -30,205 +34,166 @@ define([
     Undo,
     WordTransform,
     Transform,
-    PasteUtils
+	Selections
 ) {
 	'use strict';
 
+	var Mime = {
+		plaintext : 'text/plain',
+		html      : 'text/html'
+	};
+
 	/**
-	 * Check if `event` is a Paste Event.
-	 * @param {Event} event
+	 * Checks if the given event is a Paste Event.
+	 *
+	 * @param  {Event} event
 	 * @return {boolean}
 	 */
 	function isPasteEvent(event) {
-		return (event && (event.type === 'paste' || event.clipboardData !== undefined)) ? true : false;
+		return event.type === 'paste' || event.clipboardData !== undefined;
 	}
 
 	/**
-	 * Gets paste content depending on type content.
-	 * @param {!Event} event
-	 * @param {string} type
+	 * Checks the content type of `event`.
+	 *
+	 * @param  {Event}  event
+	 * @param  {string} type
+	 * @return {boolean}
+	 */
+	function holds(event, type) {
+		return Arrays.contains(event.clipboardData.types, type);
+	}
+
+	/**
+	 * Gets content of the paste data that matches the given mime type.
+	 *
+	 * @param  {Event}  event
+	 * @param  {string} type
 	 * @return {string}
 	 */
-	function getPasteContent(event, type) {
+	function getData(event, type) {
 		return event.clipboardData.getData(type);
 	}
 
-	/**
-	 * Gets html paste content.
-	 * @param {!Event} event
-	 * @return {string}
-	 */
-	function getHtmlPasteContent(event) {
-		return getPasteContent(event, 'text/html');
+	function split(boundary, until) {
+		var range = Ranges.fromBoundaries(boundary, boundary);
+		Editing.split(range);
+		return Boundaries.fromRangeStart(range);
+	}
+
+	function delete_(boundaries) {
+		var range = Ranges.fromBoundaries(boundaries[0], boundaries[1]);
+		Editing.delete(range, {overrides:[]});
+		return Boundaries.fromRangeStart(range);
+	}
+
+	function allowsNesting(outer, inner) {
+		return Content.allowsNesting(outer.nodeName, inner.nodeName);
+	}
+
+	function moveBeforeBoundary(boundary, node) {
+		return Mutation.insertNodeAtBoundary(node, boundary, true);
 	}
 
 	/**
-	 * Gets plain text paste content.
-	 * @param {!Event} event
-	 * @return {string}
+	 * Pastes the markup at the given boundary range.
+	 *
+	 * @param  {Array.<Boundary>} boundaries
+	 * @param  {string}
+	 * @return {Boundary}
 	 */
-	function getPlainTextPasteContent(event) {
-		return getPasteContent(event, 'text/plain');
-	}
+	function insert(boundaries, markup) {
+		var doc = Boundaries.container(boundaries[0]).ownerDocument;
+		var boundary = delete_(boundaries);
+		var element = Html.parse(markup, doc);
+		var children = Dom.children(element);
 
-
-	/**
-	 * Gets the reference node where paste should be inserted.
-	 * @return {Node}
-	 */
-	function getReferenceNode(range) {
-		var startElement = range.startContainer;
-
-		while (!Html.hasBlockStyle(startElement)) {
-			startElement = startElement.parentNode;
+		if (0 === children.length) {
+			return boundary;
 		}
 
-		return startElement.nextSibling;
-	}
+		// Because we want to treat the paste content as though it were already
+		// editable
+		Dom.setAttr(element, 'contentEditable', true);
 
-	/**
-	 * Sets the selection after `node`.
-	 * @param {Range} range
-	 * @param {Node} node
-	 */
-	function setSelectionAfter(range, node) {
-		range.setStartAfter(node);
-		range.setEndAfter(node);
-	}
+		var first = children[0];
 
-	/**
-	 * Creates document fragment from a string `content`.
-	 * @param {string} content
-	 * @param {!Document} doc
-	 * @return {DocumentFragment}
-	 */
-	function createDocumentFragment(content, doc) {
-
-		var contentElement = doc.createElement('div');
-		contentElement.innerHTML = content;
-
-		var fragment = doc.createDocumentFragment();
-
-		while (contentElement.firstChild) {
-			fragment.appendChild(contentElement.firstChild);
+		// Because (unlike plaintext), pasted html will contain an unintended
+		// linebreak caused by the wrapper in which the pasted content is
+		// contained (P in most cases). We therefore unfold this wrapper
+		// whenever is is valid to do so
+		if (!Dom.isTextNode(first) && !Html.isVoidType(first) && !Html.isGroupContainer(first)) {
+			children = Dom.children(first).concat(children.slice(1));
 		}
 
-		return fragment;
-	}
+		if (0 === children.length) {
+			return boundary;
+		}
 
-	/**
-	 * Gets first parent which has block style.
-	 * @param {Element} element
-	 * @return {Element}
-	 */
-	function getFirstParentBlockElement(element) {
-		return Dom.upWhile(element, Fn.complement(Html.hasBlockStyle));
-	}
+		children.forEach(function (node) {
+			if (Html.hasLinebreakingStyle(node)) {
+				boundary = split(boundary, Fn.partial(allowsNesting, node));
+			}
+			boundary = Mutation.insertNodeAtBoundary(node, boundary, true);
+		});
 
+		var last = Arrays.last(children);
 
-	/**
-	 * Inserts document fragment into the DOM, updating the range selection.
-	 * @param {DocumentFragment} fragment
-	 * @param {Editable} editable
-	 * @param {Document} doc
-	 */
-	function insertIntoDom(fragment, editable, doc) {
-		var firstChild = fragment.firstChild;
-		var lastChild = fragment.lastChild;
-		var needSplitText = fragment.childNodes.length >= 2;
-		var range = Ranges.get();
-		var referenceElement;
-
-		Editing.delete(range, editable);
-
-		if (Html.isListContainer(firstChild) || Html.isTableContainer(firstChild)) {
-			needSplitText = true;
-		} else {
-			range.insertNode(firstChild);
-			setSelectionAfter(range, firstChild);
-
-			if (!Html.isListContainer(firstChild) && !Html.isTableContainer(firstChild)) {
-				Dom.removeShallow(firstChild);
+		if ('P' === last.nodeName || 'DIV' === last.nodeName) {
+			var next = Boundaries.nextNode(boundary);
+			if (Html.hasInlineStyle(next)) {
+				Dom.move(Dom.nextSiblings(next, Html.hasLinebreakingStyle), last);
+			} else if (!Html.isVoidType(next) && !Html.isGroupContainer(next)) {
+				boundary = Dom.children(last).reduce(moveBeforeBoundary, Boundaries.create(next, 0));
+				Dom.remove(last);
 			}
 		}
 
-		if (needSplitText) {
-			Editing.split(range);
-			referenceElement = Dom.nthChild(range.startContainer, range.startOffset);
-		} else {
-			referenceElement = getReferenceNode(range);
-		}
-
-		if (fragment.childNodes.length) {
-			referenceElement.parentNode.insertBefore(fragment, referenceElement);
-			 setSelectionAfter(range, lastChild);
-		}
-
-		scrollToRange(doc, range);
-		Ranges.select(range);
+		return boundary;
 	}
 
 	/**
-	 * Scrolls to the range.
+	 * Extracts the paste data from the event object.
+	 *
+	 * @param  {Event}    event
+	 * @param  {Document} doc
+	 * @return {string}
 	 */
-	function scrollToRange(doc, range) {
-		var position = Dom.offset(getFirstParentBlockElement(range.startContainer));
-		var win = Dom.windowFromDocument(doc);
-
-		var adjust = (win.innerHeight - (win.innerHeight / 5));
-		win.scrollTo(position.left, position.top - adjust);
-	}
-
-	/**
-	 * Registers Undo to the changes.
-	 * @param {!Context} context
-	 * @param {!function} callBack
-	 */
-	function registerUndoChanges(context, callBack) {
-		Undo.capture(
-			context,
-			{meta: {type: 'paste'}},
-			callBack);
+	function extractContent(event, doc) {
+		if (holds(event, Mime.html)) {
+			var content = getData(event, Mime.html);
+			return WordTransform.isMSWordContent(content, doc)
+			     ? Transform.msword(content, doc)
+			     : Transform.html(content, doc);
+		}
+		if (holds(event, Mime.plaintext)) {
+			return Transform.plain(getData(event, Mime.plaintext), doc);
+		}
+		return content;
 	}
 
 	/**
 	 * Handles and processes paste events.
-	 * @param {AlohaEvent} alohaEvent
+	 *
+	 * @param  {AlohaEvent} alohaEvent
 	 * @return {AlohaEvent}
 	 */
 	function handle(alohaEvent) {
-		var nativeEvent = alohaEvent.nativeEvent;
-
-		if (isPasteEvent(nativeEvent)) {
-			var doc = alohaEvent.editable.elem.ownerDocument;
-			var content;
-
-			Events.stopPropagationAndPreventDefault(nativeEvent);
-
-			if (PasteUtils.isHtmlPasteEvent(nativeEvent)) {
-				content = getHtmlPasteContent(nativeEvent);
-
-				if (WordTransform.isMSWordContent(content, doc)) {
-					content = Transform.msword(content, doc);
-				} else {
-					content = Transform.html(content, doc);
-				}
-			} else if (PasteUtils.isPlainTextPasteEvent(nativeEvent)) {
-				content = getPlainTextPasteContent(nativeEvent);
-				content = Transform.plain(content, doc);
-			}
-
-			registerUndoChanges(
-				alohaEvent.editable.undoContext,
-				function() {
-					insertIntoDom(
-						createDocumentFragment(content, doc),
-						alohaEvent.editable,
-						doc
-					);
+		var event = alohaEvent.nativeEvent;
+		if (event && isPasteEvent(event)) {
+			Events.suppress(event);
+			var content = extractContent(
+				event,
+				alohaEvent.editable.elem.ownerDocument
+			);
+			Undo.capture(alohaEvent.editable.undoContext, {
+				meta: {type: 'paste'}
+			}, function () {
+				var boundary = insert(Boundaries.get(), content);
+				Selections.scrollTo(boundary);
+				alohaEvent.range = Ranges.fromBoundaries(boundary, boundary);
 			});
 		}
-
 		return alohaEvent;
 	}
 

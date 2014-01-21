@@ -65,6 +65,33 @@ define([
 	};
 
 	/**
+	 * These element's cannot be simply unwrapped because they have dependent
+	 * children.
+	 *
+	 * @param {<string, boolean>}
+	 */
+	var GROUP_CONTAINERS = {
+		'FIELDSET' : true,
+		'OBJECT'   : true,
+		'FIGURE'   : true,
+		'AUDIO'    : true,
+		'SELECT'   : true,
+		'COLGROUP' : true,
+		'HGROUP'   : true,
+		'TABLE'    : true,
+		'TBODY'    : true,
+		'TR'       : true,
+		'OL'       : true,
+		'UL'       : true,
+		'DL'       : true,
+		'MENU'     : true
+	};
+
+	function isGroupContainer(node) {
+		return GROUP_CONTAINERS[node.nodeName];
+	}
+
+	/**
 	 * Checks if the given node is one of the 4 list grouping containers.
 	 *
 	 * @param  {Node} node
@@ -349,6 +376,7 @@ define([
 		isUnrenderedWhitespace : isUnrenderedWhitespace,
 		isListContainer        : isListContainer,
 		isTableContainer       : isTableContainer,
+		isGroupContainer       : isGroupContainer,
 		isUnrenderedWhitespaceNoBlockCheck
 		                       : isUnrenderedWhitespaceNoBlockCheck,
 		parse                  : parse

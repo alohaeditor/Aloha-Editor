@@ -490,6 +490,47 @@ define([], function Content() {
 		'#TEXT'      : FLOW_PHRASING_CATEGORY
 	};
 
+	var ATTRIBUTES_WHITELIST = {
+		'IMG' : ['alt', 'src'],
+		'A'   : ['href', '_target'],
+		'TD'  : ['colspan', 'rowspan'],
+		'TH'  : ['colspan', 'rowspan'],
+		'*'   : ['xstyle']
+	};
+
+	var STYLES_WHITELIST = {
+		'IMG' : ['width', 'height'],
+		'*'   : [
+			'color',
+			'font-family', 'font-size', 'font-weight', 'font-stlye', 'font-decoration',
+			'background', 'background-image', 'background-color'
+		]
+	};
+
+	var NODES_BLACKLIST = [
+		'AUDIO',
+		'COMMAND',
+		'IFRAME',
+		'INPUT',
+		'INS',
+		'KBD',
+		'KEYGEN',
+		'LINK',
+		'META',
+		'NOSCRIPT',
+		'OUTPUT',
+		'Q',
+		'RUBY',
+		'SAMP',
+		'SCRIPT',
+		'SELECT',
+		'STYLE',
+		'TEMPLATE',
+		'TEXTAREA',
+		'TITLE',
+		'WBR'
+	];
+
 	/**
 	 * Checks whether the node name `outer` is allowed to contain in a node with
 	 * the node name `inner` as a direct descendant based on the HTML5
@@ -540,6 +581,10 @@ define([], function Content() {
 	}
 
 	return {
-		allowsNesting: allowsNesting
+		allowsNesting        : allowsNesting,
+		NODES_BLACKLIST      : NODES_BLACKLIST,
+		STYLES_WHITELIST     : STYLES_WHITELIST,
+		ATTRIBUTES_WHITELIST : ATTRIBUTES_WHITELIST
+
 	};
 });

@@ -6,16 +6,14 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'dom/nodes',
-	'dom/traversing',
+	'dom',
 	'mutation',
 	'cursors',
 	'arrays',
 	'strings',
 	'ranges'
 ], function BoundaryMarkers(
-	Nodes,
-	Traversing,
+	Dom,
 	Mutation,
 	Cursors,
 	Arrays,
@@ -30,8 +28,8 @@ define([
 	 * @param {Range} range
 	 */
 	function insert(range) {
-		var leftMarkerChar  = (Nodes.isTextNode(range.startContainer) ? '[' : '{');
-		var rightMarkerChar = (Nodes.isTextNode(range.endContainer)   ? ']' : '}');
+		var leftMarkerChar  = (Dom.Nodes.TEXT === range.startContainer.nodeType ? '[' : '{');
+		var rightMarkerChar = (Dom.Nodes.TEXT === range.endContainer.nodeType   ? ']' : '}');
 		Mutation.splitTextContainers(range);
 		var leftMarker = document.createTextNode(leftMarkerChar);
 		var rightMarker = document.createTextNode(rightMarkerChar);
@@ -75,7 +73,7 @@ define([
 			markersFound += 1;
 			if (marker === '[' || marker === ']') {
 				var previousSibling = node.previousSibling;
-				if (!previousSibling || !Nodes.isTextNode(previousSibling)) {
+				if (!previousSibling || Dom.Nodes.TEXT !== previousSibling.nodeType) {
 					previousSibling = document.createTextNode('');
 					node.parentNode.insertBefore(previousSibling, node);
 				}
@@ -83,12 +81,12 @@ define([
 				// Because we have set a text offset.
 				return false;
 			}
-			range[setFn].call(range, node.parentNode, Nodes.nodeIndex(node));
+			range[setFn].call(range, node.parentNode, Dom.nodeIndex(node));
 			// Because we have set a non-text offset.
 			return true;
 		}
 		function extractMarkers(node) {
-			if (!Nodes.isTextNode(node)) {
+			if (Dom.Nodes.TEXT !== node.nodeType) {
 				return;
 			}
 			var text = node.nodeValue;
@@ -107,7 +105,7 @@ define([
 					forceNextSplit = setBoundaryPoint(part, node);
 				} else if (!forceNextSplit
 						&& node.previousSibling
-							&& Nodes.isTextNode(node.previousSibling)) {
+							&& Dom.Nodes.TEXT === node.previousSibling.nodeType) {
 					node.previousSibling.insertData(
 						node.previousSibling.length,
 						part
@@ -121,7 +119,7 @@ define([
 			});
 			node.parentNode.removeChild(node);
 		}
-		Traversing.walkRec(rootElem, extractMarkers);
+		Dom.walkRec(rootElem, extractMarkers);
 		if (2 !== markersFound) {
 			throw 'Missing one or both markers';
 		}
@@ -132,11 +130,11 @@ define([
 		if (container === limit) {
 			return path;
 		}
-		Traversing.childAndParentsUntilIncl(container, function (node) {
+		Dom.childAndParentsUntilIncl(container, function (node) {
 			if (node === limit) {
 				return true;
 			}
-			path.push(Nodes.nodeIndex(node));
+			path.push(Dom.nodeIndex(node));
 			return false;
 		});
 		return path;
@@ -180,7 +178,7 @@ define([
 				container.parentNode.cloneNode(true),
 				getPathToPosition(
 					container,
-					Nodes.nodeIndex(container),
+					Dom.nodeIndex(container),
 					container.parentNode
 				)
 			).container
@@ -200,7 +198,6 @@ define([
 
 		insert(range);
 
-		//(range.commonAncestorContainer.parentNode || range.commonAncestorContainer).outerHTML;
 		return range.commonAncestorContainer.outerHTML;
 	}
 

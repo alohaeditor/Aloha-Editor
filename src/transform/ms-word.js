@@ -15,7 +15,7 @@ define([
 	'ms-word/paragraphs',
 	'ms-word/images',
 	'ms-word/utils',
-	'paste/utils'
+	'utils'
 ], function (
 	Dom,
 	Html,
@@ -27,7 +27,7 @@ define([
 	Paragraphs,
 	Images,
 	Utils,
-	PasteUtils
+	TransformUtils
 ) {
 	'use strict';
 
@@ -81,7 +81,7 @@ define([
 	 * @return {string}
 	 */
 	function transform(markup, doc) {
-		var element = Html.parse(PasteUtils.extractBodyContent(markup), doc);
+		var element = Html.parse(TransformUtils.extractBodyContent(markup), doc);
 
 		removeSuperfluousElements(element);
 
@@ -101,13 +101,13 @@ define([
 	/**
 	 * Checks if the given markup originates from MS Office.
 	 *
-	 * @param {string}   markup
-	 * @param {Document} doc
-	 *
+	 * @param  {string}   markup
+	 * @param  {Document} doc
 	 * @return {boolean}
 	 */
 	function isMSWordContent(markup, doc) {
-		return null !== htmlToDOM(markup, doc).querySelector('[style*="mso-"], [class^="Mso"]');
+		var element = Html.parse(markup, doc);
+		return null !== element.querySelector('[style*="mso-"], [class^="Mso"]');
 	}
 
 	return {

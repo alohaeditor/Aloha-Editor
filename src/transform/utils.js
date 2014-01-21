@@ -1,5 +1,5 @@
 /**
- * paste/utils.js is part of Aloha Editor project http://aloha-editor.org
+ * transform/utils.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
@@ -17,37 +17,6 @@ define([
     Html
 ) {
 	'use strict';
-
-	/**
-	 * Checks the content type of `event`.
-	 *
-	 * @param  {Event}  event
-	 * @param  {string} type
-	 * @return {boolean}
-	 */
-	function checkTypePasteEvent(event, type) {
-		return event.clipboardData.types.indexOf(type) !== -1;
-	}
-
-	/**
-	 * Checks if paste content is HTML.
-	 *
-	 * @param  {Event} event
-	 * @return {boolean}
-	 */
-	function isHtmlPasteEvent(event) {
-		return checkTypePasteEvent(event, 'text/html');
-	}
-
-	/**
-	 * Checks if paste content is plain text.
-	 *
-	 * @param  {Event} event
-	 * @return {boolean}
-	 */
-	function isPlainTextPasteEvent(event) {
-		return checkTypePasteEvent(event, 'text/plain');
-	}
 
 	/**
 	 * Extracts body content if the content is an HTML page. Otherwise it
@@ -166,8 +135,6 @@ define([
 		extractContent            : extractContent,
 		cleanImageElement         : cleanImageElement,
 		cleanListElement          : cleanListElement,
-		isHtmlPasteEvent          : isHtmlPasteEvent,
-		isPlainTextPasteEvent     : isPlainTextPasteEvent,
 		walkDescendants           : walkDescendants
 	};
 });
