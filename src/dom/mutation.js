@@ -7,10 +7,12 @@
  */
 define([
 	'dom/nodes',
-	'functions'
+	'functions',
+	'arrays'
 ], function DomMutation(
 	Nodes,
-	Fn
+	Fn,
+	Arrays
 ) {
 	'use strict';
 
@@ -59,71 +61,79 @@ define([
 	}
 
 	/**
-	 * Moves the given node, and all subsequent nextSiblings until `until` for
-	 * any of these sibling, into the end of `container`.
+	 * Insert node at end of destination.
 	 *
-	 * @param  {Element}                   node
-	 * @param  {Element}                   container
-	 * @param  {Function(Element):boolean} until
-	 * @return {!Element}
-	 */
-	function moveSiblingsInto(node, container, until) {
-		var next;
-		until = until || Fn.returnFalse;
-		while (node && node !== container && !until(node)) {
-			next = node.nextSibling;
-			insert(node, container, true);
-			node = next;
-		}
-		return node;
-	}
-
-	/**
-	 * Moves the given node, and all subsequent nextSiblings until `until` for
-	 * any of these sibling, after `ref`.
-	 *
-	 * @param  {Element}                   node
-	 * @param  {Element}                   ref
-	 * @param  {Function(Element):boolean} until
-	 * @return {Element}
-	 */
-	function moveSiblingsAfter(node, ref, until) {
-		var next;
-		until = until || Fn.returnFalse;
-		while (node && node !== ref && !until(node)) {
-			next = node.nextSibling;
-			insertAfter(node, ref);
-			// Because endless loop detected.
-			if (next === ref) {
-				return null;
-			}
-			ref = node;
-			node = next;
-		}
-		return node;
-	}
-
-	/**
-	 * Wraps node `node` in given node `wrapper`.
-	 *
+	 * @param {Element} destination
 	 * @param {Node}    node
-	 * @param {Element} wrapper
 	 */
-	function wrap(node, wrapper) {
-		node.parentNode.replaceChild(wrapper, node);
-		wrapper.appendChild(node);
+	function append(node, destination) {
+		insert(node, destination, true);
 	}
 
 	/**
-	 * Wrap the node with a `nodeName` element.
+	 * Moves the list of nodes into a destination element, until `until`
+	 * returns true.
 	 *
-	 * @param {Element} node
-	 * @param {string}  nodeName
+	 *
+	 * @param  {Element}                destination
+	 * @param  {Array.<Nodes>}          nodes
+	 * @param  {function(Node):boolean} until
+	 * @return {Array.<Nodes>}          The nodes that were not moved
 	 */
-	function wrapWith(node, nodeName) {
-		var wrapper = node.ownerDocument.createElement(nodeName);
-		wrap(node, wrapper);
-		return wrapper;
+	function move(nodes, destination, until) {
+		var end = Arrays.someIndex(nodes, until || Fn.returnFalse);
+		end = -1 === end ? nodes.length : end + 1;
+		nodes.slice(0, end).forEach(function (node) {
+			append(node, destination);
+		});
+		return nodes.slice(end);
+	}
+
+	/**
+	 * Moves the list of nodes before the reference element, until `until`
+	 * returns true.
+	 *
+	 *
+	 * @param  {Element}                reference
+	 * @param  {Array.<Nodes>}          nodes
+	 * @param  {function(Node):boolean} until
+	 * @return {Array.<Nodes>}          The nodes that were not moved
+	 */
+	function moveBefore(reference, nodes, until) {
+		var end = Arrays.someIndex(nodes, until || Fn.returnFalse);
+		end = -1 === end ? nodes.length : end + 1;
+		nodes.slice(0, end).forEach(function (node) {
+			insert(node, reference, false);
+		});
+		return nodes.slice(end);
+	}
+
+	/**
+	 * Replaces the given node with `replacement`.
+	 *
+	 * @param  {Node} node
+	 * @param  {Node} replacement
+	 * @return {Node} Replaced node
+	 */
+	function replace(node, replacement) {
+		return node.parentNode.replaceChild(replacement, node);
+	}
+
+	/**
+	 * Replaces the given element while preserving its contents.
+	 *
+	 * This function facilitates re-wrapping of contents from one element to
+	 * another.
+	 *
+	 * The element that replaces `element` will receive all of the given
+	 * element's content.
+	 *
+	 * @param  {Element} element
+	 * @param  {Element} replacement
+	 */
+	function replaceShallow(element, replacement) {
+		move(Nodes.children(element), replacement);
+		replace(element, replacement);
 	}
 
 	/**
@@ -141,9 +151,30 @@ define([
 	 * @param {Node} node
 	 */
 	function removeShallow(node) {
-		var parent = node.parentNode;
-		moveNextAll(parent, node.firstChild, node);
-		parent.removeChild(node);
+		moveBefore(node, Nodes.children(node));
+		remove(node);
+	}
+
+	/**
+	 * Wraps `node` in given `wrapper` element.
+	 *
+	 * @param {Node}    node
+	 * @param {Element} wrapper
+	 */
+	function wrap(node, wrapper) {
+		append(replace(node, wrapper), wrapper);
+	}
+
+	/**
+	 * Wrap the node with a `nodeName` element.
+	 *
+	 * @param {Element} node
+	 * @param {string}  nodeName
+	 */
+	function wrapWith(node, nodeName) {
+		var wrapper = node.ownerDocument.createElement(nodeName);
+		wrap(node, wrapper);
+		return wrapper;
 	}
 
 	/**
@@ -173,40 +204,12 @@ define([
 		}
 	}
 
-	/**
-	 * Replaces one node with another in the DOM.
-	 *
-	 * @param  {Node} node
-	 * @param  {Node} replacement
-	 * @return {Node} Replaced node
-	 */
-	function replace(node, replacement) {
-		return node.parentNode.replaceChild(replacement, node);
-	}
-
-	/**
-	 * Replaces the given element while preserving its contents.
-	 *
-	 * This function facilitates re-wrapping of contents from one element to
-	 * another.
-	 *
-	 * The element that replaces `elem` will receive all of the given element's
-	 * Content.
-	 *
-	 * @param {Element} elem 
-	 * @param {Element} replacement
-	 */
-	function replaceShallow(elem, replacement) {
-		moveNextAll(replacement, elem.firstChild, null);
-		insert(replacement, elem);
-		remove(elem);
-	}
-
 	return {
+		append            : append,
 		merge             : merge,
 		moveNextAll       : moveNextAll,
-		moveSiblingsInto  : moveSiblingsInto,
-		moveSiblingsAfter : moveSiblingsAfter,
+		move              : move,
+		moveBefore        : moveBefore,
 		wrap              : wrap,
 		wrapWith          : wrapWith,
 		insert            : insert,

@@ -55,6 +55,10 @@ define([
 		return Nodes.ELEMENT === node.nodeType;
 	}
 
+	function isFragmentNode(node) {
+		return Nodes.DOCUMENT_FRAGMENT === node.nodeType;
+	}
+
 	/**
 	 * Calculates the number of child nodes contained in the given DOM element.
 	 *
@@ -68,6 +72,12 @@ define([
 		return elem.childNodes.length;
 	}
 
+	/**
+	 * Returns a non-live array of all child nodes belonging to `elem`.
+	 *
+	 * @param  {Element} elem
+	 * @return {Array.<Node>}
+	 */
 	function children(elem) {
 		return Arrays.coerce(elem.childNodes);
 	}
@@ -95,7 +105,7 @@ define([
 	 * @return {number} Length of the given node.
 	 */
 	function nodeLength(node) {
-		if (isElementNode(node)) {
+		if (isElementNode(node) || isFragmentNode(node)) {
 			return numChildren(node);
 		}
 		if (isTextNode(node)) {
@@ -313,6 +323,7 @@ define([
 
 		isTextNode      : isTextNode,
 		isElementNode   : isElementNode,
+		isFragmentNode  : isFragmentNode,
 		isEmptyTextNode : isEmptyTextNode,
 		hasText         : hasText,
 

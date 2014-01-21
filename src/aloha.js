@@ -127,5 +127,20 @@ define([
 
 	window['aloha'] = aloha;
 
+	var teaser = "       _       _                      _ _ _              \n"
+	           + "  __ _| | ___ | |__   __ _    ___  __| (_) |_ ___  _ __  \n"
+	           + " / _` | |/ _ \\| '_ \\ / _` |  / _ \\/ _` | | __/ _ \\| '__| \n"
+	           + "| (_| | | (_) | | | | (_| | |  __/ (_| | | || (_) | |    \n"
+	           + " \\__,_|_|\\___/|_| |_|\\__,_|  \\___|\\__,_|_|\\__\\___/|_|.org\n"
+	           + "\n"
+	           + "Aloha, there!\n"
+	           + "\n"
+	           + "Would you like to contribute to shaping the future of "
+	           + "content editing on the web?\n"
+	           + "\n"
+	           + "Join the team at http://github.com/alohaeditor!";
+
+	console.log(teaser);
+
 	return aloha;
 });

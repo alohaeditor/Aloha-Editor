@@ -7,193 +7,183 @@
  */
 define([
 	'dom',
-	'predicates',
 	'arrays',
+	'maps',
+	'functions',
 	'html',
-	'paste/utils'
-], function(
+	'content',
+	'utils'
+], function (
 	Dom,
-	Predicates,
 	Arrays,
+	Maps,
+	Fn,
 	Html,
+	Content,
 	Utils
 ) {
 	'use strict';
 
 	/**
-	 * These element's cannot be simply and still maintain a valid DOM
-	 * structure.
+	 * Strategy:
+	 * 1) Harvest from each, their color, face, and size attribute.
+	 * 2) Determine if the font node is wrapping a single element as it's only
+	 *    child.
+	 *		- If it does, then apply these styles into that element, giving the
+	 *		  child's styles preference. Then unwrap the font node.
+	 *		- If the font node is not wrapping a single element, but several,
+	 *		  then convert the font node into a span.
 	 *
-	 * @param {<string, boolean>}
-	 */
-	var HAS_DEPENDENT_CHILDREN = {
-		'TABLE' : true,
-		'TBODY' : true,
-		'TR'    : true,
-		'OL'    : true,
-		'UL'    : true,
-		'DL'    : true,
-		'MENU'  : true
-	};
-
-	function hasDependentChildren(node) {
-		return HAS_DEPENDENT_CHILDREN[node.nodeName];
-	}
-
-	/**
-	 * Extracts block elements from `elem` and inserts into them into `contentElement`.
-	 *
-	 * @param {Node}    elem
-	 * @param {Element} contentElement
-	 */
-	function extractBlockElements(elem, contentElement) {
-		if (hasDependentChildren(elem)) {
-			return;
-		}
-		var insertRef = elem.nextSibling;
-		var block = Utils.getFirstChildBlockElement(elem);
-		var nextSibling = block;
-		while (nextSibling) {
-			block = nextSibling;
-			nextSibling = block.nextSibling;
-			contentElement.insertBefore(block, insertRef);
-		}
-	}
-
-	/**
-	 * Cleans `element`.
-	 *
-	 * @param {Element} element
-	 */
-	function cleanElement(element) {
-		var anchors = Arrays.coerce(element.querySelectorAll('a'));
-		var images = Arrays.coerce(element.querySelectorAll('img'));
-		var lists = Arrays.coerce(element.querySelectorAll('ol,ul'));
-
-		if (Html.isListContainer(element)) {
-			lists.push(element);
-		}
-
-		if ('A' === element.nodeName) {
-			anchors.push(element);
-		}
-
-		anchors.forEach(function (anchor) {
-			var href = anchor.href;
-			Dom.removeAttrs(anchor);
-			anchor.href = href;
-		});
-
-		images.forEach(Utils.cleanImageElement);
-		lists.forEach(Utils.cleanListElement);
-
-		Dom.removeAttrs(element);
-
-		Utils.walkDescendants(element, Dom.isElementNode, function(node) {
-			var nodeName = node.nodeName;
-			if (nodeName !== 'A' && nodeName !== 'IMG' && node.attributes != null) {
-				Dom.removeAttrs(node);
-			}
-			if (nodeName === 'SPAN' || nodeName === 'FONT' || (nodeName !== 'IMG' && nodeName !== 'BR' && Predicates.isVoidNode(node))) {
-				Dom.removeShallow(node);
-			} else if (nodeName === 'P') {
-				if (Dom.nodeLength(node) === 1 && node.firstChild.nodeName === 'P') {
-					Dom.removeShallow(node);
-				}
-			}
-		});
-	}
-
-	/**
-	 * If `element` is not a block node, creates a <p> element and
-	 * insert all sequential inline nodes. Otherwise returns the `element`.
-	 * @param {!Node} element
+	 * @param  {Element}  element
+	 * @param  {Document} doc
 	 * @return {Element}
 	 */
-	function createCorrectElement(element) {
-		if (Predicates.isBlockNode(element)) {
-			return element;
+	function normalizeFont(element, doc) {
+		var children = Dom.children(element);
+		var color = Dom.getStyle(element, 'color')      || Dom.getAttr(element, 'color');
+		var size = Dom.getStyle(element, 'font-size')   || Dom.getAttr(element, 'font-size');
+		var face = Dom.getStyle(element, 'font-family') || Dom.getAttr(element, 'font-family');
+		var child;
+		if (1 === children.length && Dom.isElementNode(children[0])) {
+			child = children[0];
+		} else {
+			child = doc.createElement('span');
+			Dom.move(children, child);
 		}
-
-		var wrapper = Dom.wrapWith(element, 'p');
-		var nextSibling = wrapper.nextSibling;
-		var aux;
-
-		while (nextSibling && (Predicates.isInlineNode(nextSibling) || Dom.isTextNode(nextSibling))) {
-			aux = nextSibling.nextSibling;
-			wrapper.appendChild(nextSibling);
-			nextSibling = aux;
+		if (color) {
+			Dom.setStyle(child, 'color', color);
 		}
-		return wrapper;
+		if (size) {
+			Dom.setStyle(child, 'font-size', size);
+		}
+		if (face) {
+			Dom.setStyle(child, 'font-family', face);
+		}
+		return child;
 	}
 
 	/**
-	 * Checks if `element` is a line break.
-	 * @param {!Node} element
-	 * @return {boolean}
+	 * Strategy:
+	 * 1) Check if the parent of the center allows for paragraph children.
+	 *    - If it doesn't, split the element down to the first ancestor that
+	 *      does allow for a paragraph, then insert the center at the split.
+	 * 2) replace the center node with a paragraph
+	 * 3) add alignment styling to new paragraph
+	 *
+	 * @param  {Element}  element
+	 * @param  {Document} doc
+	 * @return {Element}
 	 */
-	function isLineBreak(element) {
-		return element.firstElementChild && element.firstElementChild.nodeName === 'BR';
+	function normalizeCenter(element, doc) {
+		return element;
 	}
 
 	/**
-	 * Finds all <br> tags and wrap them inside a paragraph.
+	 * Extracts width and height attributes from the given element, and applies
+	 * them as styles instead.
 	 *
-	 * This is not good! What about if we had "<span>foo<br>bar</span>"
-	 *
-	 * @param {!Element} contentElement
+	 * @param  {Element} element
+	 * @return {Element}
 	 */
-	function propLineBreaks(contentElement) {
-		var brs = contentElement.querySelectorAll('br');
-		Arrays.coerce(brs).forEach(function(elem) {
-			Dom.wrapWith(elem, 'p');
+	function normalizeImage(element) {
+		var width = Dom.getAttr(element, 'width');
+		var height = Dom.getAttr(element, 'height');
+		if (width) {
+			Dom.setStyle(element, 'width', width);
+		}
+		if (height) {
+			Dom.setStyle(element, 'height', height);
+		}
+		return element;
+	}
+
+	/**
+	 * Remove all disallowed attributes from the given node.
+	 *
+	 * @param  {Node} node
+	 * @return {Node}
+	 */
+	function normalizeAttributes(node) {
+		var permitted = Content.ATTRIBUTES_WHITELIST['*'].concat(
+			Content.ATTRIBUTES_WHITELIST[node.nodeName] || []
+		);
+		var attrs = Dom.attrNames(node);
+		var allowed = Arrays.intersect(permitted, attrs);
+		var disallowed = Arrays.difference(attrs, allowed);
+		disallowed.forEach(Fn.partial(Dom.removeAttr, node));
+	}
+
+	/**
+	 * Remove all disallowed styles from the given node.
+	 *
+	 * @param {Node} node
+	 */
+	function normalizeStyles(node) {
+		var permitted = Content.STYLES_WHITELIST['*'].concat(
+			Content.STYLES_WHITELIST[node.nodeName] || []
+		);
+		var styles = permitted.reduce(function (map, name) {
+			map[name] = Dom.getStyle(node, name);
+			return map;
+		}, {});
+		Dom.removeAttr(node, 'style');
+		Maps.forEach(styles, function (value, key) {
+			if (value) {
+				Dom.setStyle(node, key, value);
+			}
 		});
 	}
 
 	/**
-	 * Replaces all divs by paragraphs.
-	 * @param {Element} contentElement
+	 * Runs the appropriate cleaning processes on the given node based on its
+	 * type.  The returned node will not necessarily be of the same type as
+	 * that of the given (eg: <font> => <span>).
+	 *
+	 * @param  {Node}     node
+	 * @param  {Document} doc
+	 * @return {Node}     May be a document fragment
 	 */
-	function replaceDivsWithParagraph(contentElement) {
-		var divs = contentElement.querySelectorAll('div');
-		Arrays.coerce(divs).forEach(function(elem) {
-			Dom.wrapWith(elem, 'p');
-			Dom.removeShallow(elem);
-		});
-	}
+	function clean(node, doc) {
+		node = Dom.clone(node);
 
-	/**
-	 * Transforms `contentElement`.
-	 * @param {Element} contentElement
-	 */
-	function normalize(contentElement) {
-		propLineBreaks(contentElement);
-		replaceDivsWithParagraph(contentElement);
+		if (Dom.isTextNode(node)) {
+			return node;
+		}
 
-		var nextElement = contentElement.firstChild;
-		var lastElement = null;
+		var cleaned;
 
-		while (nextElement) {
-			if (Dom.isElementNode(nextElement)) {
-				nextElement = createCorrectElement(nextElement);
-				cleanElement(nextElement);
-				extractBlockElements(nextElement, contentElement);
-				if (Html.isUnrendered(nextElement) && !isLineBreak(nextElement)) {
-					Dom.remove(nextElement);
-					nextElement = lastElement || contentElement.firstChild;
-				} else {
-					lastElement = nextElement;
-					nextElement = nextElement.nextSibling;
-				}
-			} else if (Dom.isTextNode(nextElement) && !Dom.hasText(nextElement)) {
-				nextElement = Dom.wrapWith(nextElement, 'p');
-				lastElement = nextElement;
-				nextElement = nextElement.nextSibling;
-			} else {
-				Dom.remove(nextElement);
-				nextElement = lastElement || contentElement.firstChild;
+		switch (node.nodeName) {
+		case 'IMG':
+			cleaned = normalizeImage(node, doc);
+			break;
+		case 'FONT':
+			cleaned = node;
+			// Because <font> elements may be nested
+			do {
+				cleaned = normalizeFont(cleaned, doc);
+			} while ('FONT' === cleaned.nodeName);
+			break;
+		case 'CENTER':
+			cleaned = normalizeCenter(node, doc);
+			break;
+		default:
+			cleaned = node;
+		}
+
+		normalizeAttributes(cleaned);
+		normalizeStyles(cleaned);
+
+		// Because span elements without any attributeshave no visible effect
+		if ('SPAN' === cleaned.nodeName || 'A' === cleaned.nodeName) {
+			var attrs = Dom.attrNames(cleaned);
+			if (0 === attrs.length) {
+				var fragment = document.createDocumentFragment();
+				Dom.move(Dom.children(cleaned), fragment);
+				cleaned = fragment;
 			}
 		}
+
+		return cleaned;
 	}
 
 	/**
@@ -204,13 +194,12 @@ define([
 	 * @return {string}
 	 */
 	function transform(markup, doc) {
-		var element = Html.parse(Utils.extractContent(markup), doc);
-		normalize(element);
-		return element.innerHTML;
+		var raw = Html.parse(Utils.extract(markup), doc);
+		return (Utils.normalize(raw, doc, clean) || raw).innerHTML;
 	}
 
 	return {
-		transform        : transform,
-		transformFromDOM : normalize
+		clean     : clean,
+		transform : transform
 	};
 });

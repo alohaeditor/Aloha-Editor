@@ -32,7 +32,9 @@ define([
 		isUnrenderedWhitespace    : Elements.isUnrenderedWhitespace,
 		isListContainer           : Elements.isListContainer,
 		isTableContainer          : Elements.isTableContainer,
+		isGroupContainer          : Elements.isGroupContainer,
 		parse                     : Elements.parse,
+		isVoidType                : Elements.isVoidType,
 
 		isStyleInherited          : Styles.isStyleInherited,
 		isWhiteSpacePreserveStyle : Styles.isWhiteSpacePreserveStyle,

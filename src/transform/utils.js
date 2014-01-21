@@ -1,5 +1,5 @@
 /**
- * paste/utils.js is part of Aloha Editor project http://aloha-editor.org
+ * transform/utils.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
@@ -9,44 +9,61 @@ define([
 	'dom',
 	'predicates',
 	'arrays',
-	'html'
-], function(
+	'html',
+	'functions',
+	'content'
+], function (
 	Dom,
     Predicates,
     Arrays,
-    Html
+    Html,
+	Fn,
+	Content
 ) {
 	'use strict';
 
 	/**
-	 * Checks the content type of `event`.
-	 *
-	 * @param  {Event}  event
-	 * @param  {string} type
-	 * @return {boolean}
+	 * @private
 	 */
-	function checkTypePasteEvent(event, type) {
-		return event.clipboardData.types.indexOf(type) !== -1;
+	var blacklist = Content.NODES_BLACKLIST.reduce(function (map, item) {
+		map[item] = true;
+		return map;
+	}, {});
+
+	/**
+	 * @private
+	 */
+	function isBlacklisted(node) {
+		return blacklist[node.nodeName];
 	}
 
 	/**
-	 * Checks if paste content is HTML.
+	 * Returns a normalized copy of the `element` DOM structure.
+	 * If the result of processing `element` results in there being no visible
+	 * nodes in the resulting DOM structure, then null is returned.
 	 *
-	 * @param  {Event} event
-	 * @return {boolean}
+	 * @param  {Element}  element
+	 * @param  {Document} doc
+	 * @return {?Element} May be a document fragment. May be null.
 	 */
-	function isHtmlPasteEvent(event) {
-		return checkTypePasteEvent(event, 'text/html');
-	}
-
-	/**
-	 * Checks if paste content is plain text.
-	 *
-	 * @param  {Event} event
-	 * @return {boolean}
-	 */
-	function isPlainTextPasteEvent(event) {
-		return checkTypePasteEvent(event, 'text/plain');
+	function normalize(element, doc, clean) {
+		var cleaned = clean(element, doc);
+		if (Html.isUnrendered(cleaned)) {
+			return null;
+		}
+		var children = Dom.children(cleaned);
+		var allowed = children.filter(Fn.complement(isBlacklisted));
+		var rendered = allowed.filter(Html.isRendered);
+		var processed = rendered.reduce(function (nodes, node) {
+			var copy = normalize(node, doc, clean);
+			return copy ? nodes.concat(copy) : nodes;
+		}, []);
+		var copy = cleaned.cloneNode(false);
+		if (Dom.isTextNode(copy)) {
+			return copy;
+		}
+		Dom.move(processed, copy);
+		return copy;
 	}
 
 	/**
@@ -57,10 +74,10 @@ define([
 	 * What if `content` contains a comment like this:
 	 * <html><!-- <body>gotcha!</body> --><title>woops</title><body>hello, world!</body></html>
 	 *
-	 * @param  {string} content
-	 * @return {string}
+	 * @param  {String} content
+	 * @return {String}
 	 */
-	function extractContent(markup) {
+	function extract(markup) {
 		markup = markup.replace(/\n/g, ' ');
 		markup = markup.replace(/<iframe.*?<\/iframe>/g, '');
 
@@ -161,13 +178,31 @@ define([
 		}
 	}
 
+	/**
+	 * Creates a rewrapped copy of `element`.
+	 *
+	 * An element based on `nodeName`, and copies the content of the
+	 * given element into it.
+	 *
+	 * @param  {Element}  element
+	 * @param  {String}   nodeName
+	 * @param  {Document} doc
+	 * @return {Element}
+	 */
+	function rewrap(element, nodeName, doc) {
+		var node = doc.createElement(nodeName);
+		Dom.move(Dom.children(Dom.clone(element)), node);
+		return node;
+	}
+
 	return {
+		normalize : normalize,
+		extract   : extract,
+		rewrap    : rewrap,
+
 		getFirstChildBlockElement : getFirstChildBlockElement,
-		extractContent            : extractContent,
 		cleanImageElement         : cleanImageElement,
 		cleanListElement          : cleanListElement,
-		isHtmlPasteEvent          : isHtmlPasteEvent,
-		isPlainTextPasteEvent     : isPlainTextPasteEvent,
 		walkDescendants           : walkDescendants
 	};
 });

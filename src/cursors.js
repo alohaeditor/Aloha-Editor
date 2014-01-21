@@ -6,12 +6,10 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'dom/nodes',
-	'dom/mutation',
+	'dom',
 	'boundaries'
 ], function Cursors(
-	Nodes,
-	Mutation,
+	Dom,
 	Boundaries
 ) {
 	'use strict';
@@ -58,7 +56,7 @@ define([
 	 */
 	function createFromBoundary(container, offset) {
 		return create(
-			Nodes.nodeAtOffset(container, offset),
+			Dom.nodeAtOffset(container, offset),
 			Boundaries.isAtEnd(Boundaries.raw(container, offset))
 		);
 	}
@@ -66,7 +64,7 @@ define([
 	Cursor.prototype.next = function () {
 		var node = this.node;
 		var next;
-		if (this.atEnd || !Nodes.isElementNode(node)) {
+		if (this.atEnd || !Dom.isElementNode(node)) {
 			next = node.nextSibling;
 			if (next) {
 				this.atEnd = false;
@@ -96,7 +94,7 @@ define([
 			prev = node.lastChild;
 			if (prev) {
 				this.node = prev;
-				if (!Nodes.isElementNode(prev)) {
+				if (!Dom.isElementNode(prev)) {
 					this.atEnd = false;
 				}
 			} else {
@@ -105,7 +103,7 @@ define([
 		} else {
 			prev = node.previousSibling;
 			if (prev) {
-				if (Nodes.isElementNode(prev)) {
+				if (Dom.isElementNode(prev)) {
 					this.atEnd = true;
 				}
 			} else {
@@ -181,7 +179,7 @@ define([
 	};
 
 	Cursor.prototype.insert = function (node) {
-		return Mutation.insert(node, this.node, this.atEnd);
+		return Dom.insert(node, this.node, this.atEnd);
 	};
 
 	Cursor.prototype['next'] = Cursor.prototype.next;
@@ -208,9 +206,9 @@ define([
 	 */
 	function setRangeStart(range, pos) {
 		if (pos.atEnd) {
-			range.setStart(pos.node, Nodes.nodeLength(pos.node));
+			range.setStart(pos.node, Dom.nodeLength(pos.node));
 		} else {
-			range.setStart(pos.node.parentNode, Nodes.nodeIndex(pos.node));
+			range.setStart(pos.node.parentNode, Dom.nodeIndex(pos.node));
 		}
 		return range;
 	}
@@ -225,9 +223,9 @@ define([
 	 */
 	function setRangeEnd(range, pos) {
 		if (pos.atEnd) {
-			range.setEnd(pos.node, Nodes.nodeLength(pos.node));
+			range.setEnd(pos.node, Dom.nodeLength(pos.node));
 		} else {
-			range.setEnd(pos.node.parentNode, Nodes.nodeIndex(pos.node));
+			range.setEnd(pos.node.parentNode, Dom.nodeIndex(pos.node));
 		}
 		return range;
 	}
@@ -239,9 +237,9 @@ define([
 	 */
 	function toBoundary(cursor) {
 		if (cursor.atEnd) {
-			return Boundaries.create(cursor.node, dom.nodeLength(cursor.node));
+			return Boundaries.create(cursor.node, Dom.nodeLength(cursor.node));
 		}
-		return Boundaries.create(cursor.node.parentNode, dom.nodeIndex(cursor.node));
+		return Boundaries.create(cursor.node.parentNode, Dom.nodeIndex(cursor.node));
 	}
 
 	/**

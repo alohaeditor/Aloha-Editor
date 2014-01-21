@@ -87,8 +87,9 @@ define([
 	function show(caret, boundary, opt_style) {
 		var box = Ranges.box(Ranges.fromBoundaries(boundary, boundary));
 		var doc = caret.ownerDocument;
-		var topDelta = window.pageYOffset - doc.body.clientTop;
-		var leftDelta = window.pageXOffset - doc.body.clientLeft;
+		var win = Dom.documentWindow(doc);
+		var topDelta = win.pageYOffset - doc.body.clientTop;
+		var leftDelta = win.pageXOffset - doc.body.clientLeft;
 		var style = {
 			'top': box.top + topDelta + 'px',
 			'left': box.left + leftDelta + 'px',
@@ -630,6 +631,20 @@ define([
 	}
 
 	/**
+	 * Scrolls the viewport to the position of the given boundary.
+	 *
+	 * @param {Boundary}
+	 */
+	function scrollTo(boundary) {
+		var box = Ranges.box(Ranges.fromBoundaries(boundary, boundary));
+		var doc = Boundaries.container(boundary).ownerDocument;
+		var win = Dom.documentWindow(doc);
+		var topDelta = win.pageYOffset - doc.body.clientTop;
+		var leftDelta = win.pageXOffset - doc.body.clientLeft;
+		win.scrollTo(box.left + leftDelta, box.top + topDelta);
+	}
+
+	/**
 	 * Renders a caret element to show the user selection.
 	 *
 	 * @param  {Object} event
@@ -744,6 +759,7 @@ define([
 		handle       : handle,
 		Context      : Context,
 		hideCarets   : hideCarets,
-		unhideCarets : unhideCarets
+		unhideCarets : unhideCarets,
+		scrollTo     : scrollTo
 	};
 });

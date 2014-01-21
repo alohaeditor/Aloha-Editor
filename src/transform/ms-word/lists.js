@@ -171,7 +171,7 @@ define([
 
 		if (listHTML.nodeName !== nodeName) {
 			newList = doc.createElement(nodeName);
-			Utils.replaceNode(listHTML, newList);
+			Dom.replaceShallow(listHTML, newList);
 			listHTML = newList;
 		}
 
@@ -259,7 +259,7 @@ define([
 
 			list = createListElement(paragraphFirstLists[i]);
 
-			parentNode.replaceChild(list, spanAnchor);
+			Dom.replace(list, spanAnchor);
 		}
 	}
 

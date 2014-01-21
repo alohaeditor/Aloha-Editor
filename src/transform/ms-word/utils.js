@@ -8,11 +8,11 @@
 define([
 	'dom',
 	'predicates',
-	'paste/utils'
+	'../utils'
 ], function(
 	Dom,
 	Predicates,
-	PasteUtils
+	TransformUtils
 ) {
 	'use strict';
 
@@ -28,35 +28,6 @@ define([
 			node = node.nextElementSibling;
 		}
 		return node;
-	}
-
-	/**
-	 * Create a heading HTML destination with the children of 'node'
-	 *
-	 * @param {Element} source
-	 * @param {Element} destination
-	 */
-	function moveChildren(source, destination) {
-		if (Dom.isTextNode(source)) {
-			destination.appendChild(source.cloneNode(true));
-		} else {
-			while (source.firstChild) {
-				destination.appendChild(source.firstChild);
-			}
-		}
-	}
-
-	/**
-	 * Replaces the node by other.
-	 *
-	 * @param {Element} source
-	 * @param {Element} destination
-	 */
-	function replaceNode(source, destination) {
-		moveChildren(source, destination);
-		if (source.parentNode) {
-			source.parentNode.replaceChild(destination, source);
-		}
 	}
 
 	/**
@@ -96,7 +67,7 @@ define([
 	 *                   the child should be removed
 	 */
 	function removeDescendants(node, conditionFn) {
-		PasteUtils.walkDescendants(node, conditionFn, Dom.remove);
+		TransformUtils.walkDescendants(node, conditionFn, Dom.remove);
 	}
 
 	/**
@@ -106,7 +77,7 @@ define([
 	 * @param {function(Element):boolean} conditionFn
 	 */
 	function unwrapDescendants(node, conditionFn) {
-		PasteUtils.walkDescendants(node, conditionFn, function(child) {
+		TransformUtils.walkDescendants(node, conditionFn, function(child) {
 			Dom.removeShallow(child);
 		});
 	}
@@ -166,7 +137,7 @@ define([
 			return node.nodeName === 'SPAN' || node.nodeName === 'FONT';
 		});
 
-		PasteUtils.walkDescendants(element, function(node) {
+		TransformUtils.walkDescendants(element, function(node) {
 			return node.nodeName !== 'IMG' && node.nodeName !== 'A';
 		}, removeAllAttributes);
 
@@ -218,13 +189,11 @@ define([
 
 	return {
 		wrapChildNodes: wrapChildNodes,
-		moveChildren: moveChildren,
 		removeEmptyChildren: removeEmptyChildren,
 		removeDescendants: removeDescendants,
 		unwrapDescendants: unwrapDescendants,
 		nextNotEmptyElementSibling: nextNotEmptyElementSibling,
 		nextSiblingAndRemoves: nextNotEmptyElementSiblingAndRemoves,
-		replaceNode: replaceNode,
 		removeAllAttributes: removeAllAttributes,
 		cleanElement: cleanElement,
 		createNestedList: createNestedList

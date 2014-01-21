@@ -10,7 +10,7 @@ define([
 	'transform/ms-word/utils'
 ], function (
 	Dom,
-    Utils
+    WordUtils
 ) {
 	'use strict';
 
@@ -18,63 +18,61 @@ define([
 	 * @const
 	 * @type {RegExp}
 	 * */
-	var MS_TOC_CLASS_NAME_REG_EXPR = /MsoToc(\d+)/;
+	var TOC_CLASS_NAME = /MsoToc(\d+)/;
 
 	/**
 	 * Gets the TOC element level number.
 	 *
-	 * @param {!Element} element
+	 * @param  {Element} element
 	 * @return {?number} TOC number or null if not exists
 	 */
 	function getTocLevel(element) {
-		var match = MS_TOC_CLASS_NAME_REG_EXPR.exec(Dom.getAttr(element, 'class'));
-
+		var match = TOC_CLASS_NAME.exec(Dom.getAttr(element, 'class'));
 		return (match && match[1]) ? parseInt(match[1], 10) : null;
 	}
 
 	/**
-	 * Creates item list from TOC element.
+	 * Creates list item containing the contents of the given element.
 	 *
-	 * @param {Element} element
-	 * @return {Element}
+	 * @param  {Element} element
+	 * @return {Element} An LI element
 	 */
-	function createItemList(element) {
-		var liElement = element.ownerDocument.createElement('li');
-		liElement.innerHTML = Dom.textContent(element);
-		return liElement;
+	function createListItem(element) {
+		var li = element.ownerDocument.createElement('li');
+		//li.innerHTML = Dom.textContent(element);
+		Dom.move(Dom.children(Dom.clone(element)), li);
+		return li;
 	}
 
 	/**
-	 * Creates an unordered list with some style.
+	 * Creates an unordered list.
 	 *
-	 * @param {Element} doc Reference to the 'document' Element.
+	 * @param  {Element} doc
 	 * @return {Element}
 	 */
-	function createStyledUnorderedList(doc) {
-		var list = doc.createElement('ul');
-		Dom.setAttr(list, 'style', 'list-style: none;');
-		return list;
+	function createUnorderedList(doc) {
+		var ul = doc.createElement('ul');
+		Dom.setAttr(ul, 'style', 'list-style: none;');
+		return ul;
 	}
 
 	/**
 	 * Creates a nested list.
 	 *
-	 * @param {!number} actualTocNumber Number of TOC level
-	 * @param {!number} lastTocNumber Number of the last TOC level
-	 * @param {!Element} listElement
-	 *
+	 * @param  {number}  actualTocNumber Number of TOC level
+	 * @param  {number}  lastTocNumber   Number of the last TOC level
+	 * @param  {Element} listElement
 	 * @return {Element} List element
 	 */
 	function createNestedList(actualTocNumber, lastTocNumber, listElement) {
-		var list,
-		    doc = listElement.ownerDocument,
+		var list;
+		var doc = listElement.ownerDocument;
 		    createListFn = function() {
 		        var list = doc.createElement('ul');
 		        Dom.setAttr(list, 'style', 'list-style: none;');
 		        return list;
 		    };
-
-		return Utils.createNestedList(actualTocNumber, lastTocNumber, listElement, createListFn);
+		return WordUtils.createNestedList(actualTocNumber, lastTocNumber, listElement, createListFn);
 
 	}
 
@@ -88,7 +86,7 @@ define([
 	function transformTocHeading(tocElement, parentNode) {
 		var doc = tocElement.ownerDocument,
 		    nextSibling = tocElement,
-		    listElement = createStyledUnorderedList(doc),
+		    listElement = createUnorderedList(doc),
 		    lastTocNumber = 1,
 		    actualTocNumber;
 
@@ -97,8 +95,8 @@ define([
 				listElement = createNestedList(actualTocNumber, lastTocNumber, listElement);
 				lastTocNumber = actualTocNumber;
 			}
-			listElement.appendChild(createItemList(nextSibling));
-			nextSibling = Utils.nextSiblingAndRemoves(nextSibling, parentNode);
+			listElement.appendChild(createListItem(nextSibling));
+			nextSibling = WordUtils.nextSiblingAndRemoves(nextSibling, parentNode);
 		}
 
 		// Get the first list
@@ -152,9 +150,9 @@ define([
 	 * @param {Element} element
 	 */
 	function transform(element) {
-		var msoToc,
-			anchorSpan,
-			listElement;
+		var msoToc;
+		var anchorSpan;
+		var listElement;
 
 		removeUselessElements(element);
 		replaceTocHeadings(element);

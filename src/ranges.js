@@ -622,11 +622,11 @@ define([
 		         ? range.startContainer
 		         : Nodes.nthChild(range.startContainer, range.startOffset);
 
-		var body = node.ownerDocument.body;
+		var element = node.ownerDocument.documentElement;
 
 		return {
-			top    : node.parentNode.offsetTop - body.scrollTop,
-			left   : node.parentNode.offsetLeft - body.scrollLeft,
+			top    : node.parentNode.offsetTop - element.scrollTop,
+			left   : node.parentNode.offsetLeft - element.scrollLeft,
 			width  : node.offsetWidth,
 			height : parseInt(Style.getComputedStyle(node, 'line-height'), 10)
 		};

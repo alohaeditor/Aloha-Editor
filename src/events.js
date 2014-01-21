@@ -150,8 +150,10 @@ define(['misc', 'assert'], function Events(Misc, Assert) {
 	}
 
 	/**
-	 * Prevents default behaviour.
-	 * @param event
+	 * Flags the given event to prevent native handlers from performing default
+	 * behavior for it.
+	 *
+	 * @param {Event} event
 	 */
 	function preventDefault(event) {
 		if (event.preventDefault) {
@@ -162,7 +164,7 @@ define(['misc', 'assert'], function Events(Misc, Assert) {
 	}
 
 	/**
-	 * Stops propagation.
+	 * Stops this event from bubbling any further up the DOM tree.
 	 *
 	 * @param {Event} event
 	 */
@@ -175,26 +177,27 @@ define(['misc', 'assert'], function Events(Misc, Assert) {
 	}
 
 	/**
-	 * Stops propagation and prevent default behavior.
+	 * "Suppresses" the given event such that it will not trigger default
+	 * behavior and nor propagate.  This will prevent any parent handlers up of
+	 * the DOM tree from being notified of this event.
 	 *
 	 * @param {Event} event
 	 */
-	function stopPropagationAndPreventDefault (event) {
+	function suppress(event) {
 		stopPropagation(event);
 		preventDefault(event);
 	}
 
 	return {
-		add         : add,
-		remove      : remove,
-		setup       : setup,
-		isWithCtrl  : isWithCtrl,
-		isWithShift : isWithShift,
-		dispatch    : dispatch,
-		nextTick    : nextTick,
-
-		preventDefault                    : preventDefault,
-		stopPropagation                   : stopPropagation,
-		stopPropagationAndPreventDefault  : stopPropagationAndPreventDefault
+		add             : add,
+		remove          : remove,
+		setup           : setup,
+		isWithCtrl      : isWithCtrl,
+		isWithShift     : isWithShift,
+		dispatch        : dispatch,
+		nextTick        : nextTick,
+		preventDefault  : preventDefault,
+		stopPropagation : stopPropagation,
+		suppress        : suppress
 	};
 });
