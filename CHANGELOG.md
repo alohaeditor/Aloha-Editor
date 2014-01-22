@@ -13,6 +13,13 @@ All changes are categorized into one of the following keywords:
 - **BUGFIX**: The change fixes a bug.
 
 
+## 0.24.12 - 2014/01/22
+
+- **BUGFIX**: core: Performances fixes introduced a regression which resulted
+              in pressing ENTER to break paragraphs incorrectly.  This has been
+              fix so that pressing enter in an empty editable will result in a
+              new paragraph being inserted after rather than before. RT#57660
+
 ## 0.24.11 - 2014/01/15
 
 - **ENHANCEMENT**: textcolor-plugin: The Textcolor plugin has had a complete overhaul to improve usability, and  to fix bugs when changing color around complex markup.
