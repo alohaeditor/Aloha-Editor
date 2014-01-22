@@ -1,63 +1,37 @@
-.aloha-color-picker-overlay {
-	position: absolute;
+.aloha-ui-textcolor-picker-overlay {
 	display: none;
-	float: left;
-	padding: 0;
-	top: 0;
-	left: 0;
-	border: 1px solid #afafaf !important;
-	border-collapse: collapse !important;
-	background: #ffffff;
+	position: fixed;
+	background: #fff;
+	border-collapse: collapse;
 	z-index: 999999;
+	box-shadow: 1px 1px 10px 0px rgba(0,0,0,0.2);
 }
-
-.aloha-color-picker-overlay {
-	border-collapse:collapse;
+.aloha-ui-textcolor-picker-overlay td {
+	padding: 0;
+	font-size: 1em;
 }
-
-.aloha-color-picker-overlay td {
-	font-size: 1em !important;
-	padding: 0.25em !important;
-	background-color: #ffffff;
-	border: 0;
-	width: 1em !important; /* IE FIX */
-	min-width: 1em !important; /* IE FIX */
-	max-width: 1em !important; /* IE FIX */
-}
-
-.aloha-color-picker-overlay td div {
-	width: 1em !important;
-	height: 1em !important;
-	border: 1px solid #afafaf !important;
-	padding: 0.05em !important;
-}
-
-.aloha-color-picker-overlay td.mouseover div {
-	border: 1px solid #000000 !important;
+.aloha-ui-textcolor-picker-overlay td>div {
+	width: 1em;
+	height: 1em;
+	border: 2px solid transparent;
 	cursor: pointer;
+	text-align: center;
 }
-
-.aloha-color-picker-overlay td.focused div {
-	border: 1px solid #000000 !important;
+/** --- Because ie7 does not support rgba --- */
+.aloha-ui-textcolor-picker-overlay td.focused>div {
+	border-color: #000;
 }
-
-.aloha-color-picker-overlay div.removecolor {
-	line-height: 17px;
-	border: none !important;
-	text-align: right;
+.aloha-ui-textcolor-picker-overlay td.selected>div,
+.aloha-ui-textcolor-picker-overlay td.selected.focused>div {
+	border-color: #fff;
 }
-
-.aloha-color-picker-overlay td.mouseover div.removecolor,
-.aloha-color-picker-overlay td.focused div.removecolor {
-	border: none !important;
+/** --- ie7 --- */
+.aloha-ui-textcolor-picker-overlay td.focused>div {
+	border-color: rgba(0,0,0,0.5);
 }
-
-.aloha .ui-icon.aloha-icon-colorpicker {
-	background-color: #ffffff;
-}
-
-.greenborder {
-	background-color: #99CCFF;
+.aloha-ui-textcolor-picker-overlay td.selected>div,
+.aloha-ui-textcolor-picker-overlay td.selected.focused>div {
+	border-color: rgba(255,255,255,0.5);
 }
 
 .aloha .ui-icon.aloha-icon-textcolor{

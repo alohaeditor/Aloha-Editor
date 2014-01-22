@@ -431,7 +431,7 @@ define([
 		 * @return true when rangeObject was modified, false otherwise
 		 * @hide
 		 */
-		onChange: function (objectClicked, event, timeout) {
+		onChange: function (objectClicked, event, timeout, editableChanged) {
 			if (this.updateSelectionTimeout) {
 				window.clearTimeout(this.updateSelectionTimeout);
 			}
@@ -453,6 +453,24 @@ define([
 						selection.onChange(objectClicked, event, 10 + (timeout || 5) * 2);
 					}
 					return;
+				} else {
+					// And yet another IE workaround. Somehow the caret is not
+					// positioned inside the clicked editable. This occures only
+					// when switching editables in IE. In those cases the caret is
+					// invisible. I tried to trace the origin of the issue but i
+					// could not find the place where the caret is mispositioned.
+					// I noticed that IE is sometimes adding drag handles to
+					// editables. Aloha is removing those handles.
+					// If those handles are visible it apears that two clicks are needed
+					// to activate the editable. The first click is to select the
+					// editable and the second to enable it and activeate it. I added a
+					// range select call that will cirumvent this issue by resetting
+					// the selection. I also checked the range object. In all cases
+					// i found the range object contained correct properties. The
+					// workaround will only be applied for IE.
+					if (jQuery.browser.msie && editableChanged) {
+						range.select();
+					}
 				}
 				Aloha.Selection._updateSelection(event, range);
 			}, timeout || 5);
