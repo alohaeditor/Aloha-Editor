@@ -8,12 +8,8 @@ All changes are categorized into one of the following keywords:
 
 ----
 
-- **BUGFIX**: core: An IE bug that caused editables to not be activated
-              correctly upon the first mouseclick was resolved.  Previously the
-              cursor position inside the editable was not set. The user had to
-              click twice to place the cursor correctly. RT#57224
-
 - **BUGFIX**: core: Performances fixes introduced a regression which resulted
               in pressing ENTER to break paragraphs incorrectly.  This has been
               fix so that pressing enter in an empty editable will result in a
               new paragraph being inserted after rather than before. RT#57660
+
