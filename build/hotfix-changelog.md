@@ -18,3 +18,8 @@ All changes are categorized into one of the following keywords:
               aligned, but only the content that is selected (up to the nearest
               block-level element).
 
+- **BUGFIX**: drag-n-drop: Dragging a block element into an non-editable region
+              resulted in a JavaScript error. This error caused HTML artifacts
+              to be left in the region. Fixing the  JavaScript error corrects
+              this behavior. RT#57629
+
