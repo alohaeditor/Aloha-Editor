@@ -1,9 +1,9 @@
 /* format-plugin.js is part of Aloha Editor project http://aloha-editor.org
  *
- * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://aloha-editor.org/contribution.php 
- * 
+ * Contributors http://aloha-editor.org/contribution.php
+ *
  * Aloha Editor is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- * 
+ *
  * As an additional permission to the GNU GPL version 2, you may distribute
  * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
  * source code without the copy of the GNU GPL normally required,
@@ -30,7 +30,8 @@ define('format/format-plugin', [
 	'aloha/state-override',
 	'jquery',
 	'util/arrays',
-	'util/maps',
+	'util/html',
+	'util/dom',
 	'ui/ui',
 	'ui/toggleButton',
 	'ui/port-helper-multi-split',
@@ -44,17 +45,16 @@ define('format/format-plugin', [
 	StateOverride,
 	jQuery,
 	Arrays,
-	Maps,
+	Html,
+	Dom,
 	Ui,
 	ToggleButton,
 	MultiSplitButton,
 	PubSub,
-	i18n,
-	i18nCore
+	i18n
 ) {
 	'use strict';
 
-	var GENTICS = window.GENTICS;
 	var pluginNamespace = 'aloha-format';
 	var commandsByElement = {
 		'b': 'bold',
@@ -104,6 +104,147 @@ define('format/format-plugin', [
 		"EM": ["EM", "I"]
 	};
 
+	/**
+	 * Checks if the selection spans a whole node (HTML element)
+	 * @param {Object} Aloha.Selection.rangeObject
+	 * @return boolean
+	 */
+	function isEntireNodeInRange(range) {
+		var sc = range.startContainer;
+		var	so = range.startOffset;
+		var	ec = range.endContainer;
+		var	eo = range.endOffset;
+		return (sc === ec && so === 0 && eo === ec.length);
+	}
+
+	/**
+	 * Alias for isInlineFormatable function from Html lib
+	 */
+	var isInlineNode = Html.isInlineFormattable;
+
+	/**
+	 * Expands the (invisible) range to encompass the whole node
+	 * that was selected by the user
+	 * @param {Object} Aloha.Selection.rangeObject
+	 * @return void
+	 */
+	function expandRange(range) {
+		var cac = range.commonAncestorContainer;
+
+		if (isInlineNode(cac)) {
+			var parent = cac.parentNode;
+			range.startContainer = parent;
+			range.endContainer = parent;
+			range.commonAncestorContainer = parent;
+			range.startOffset = 0;
+			range.endOffset = 1;
+			expandRange(range);
+			return;
+		}
+
+		// Because at this point there will be no further recursion, we should
+		// finally update the state of `range`
+		range.update();
+	}
+
+	/**
+	 * Collision map to determine if we are
+	 * working on a list related node.
+	 */
+	var LIST_ELEMENT = {
+		'OL': true,
+		'UL': true,
+		'LI': true,
+		'DL': true,
+		'DT': true,
+		'DD': true
+	};
+
+	/**
+	 * Determine if we are working on a list element
+	 * using the previous LIST_ELEMENT hash map.
+	 * @param {Object} DOM node
+	 * @return boolean
+	 */
+	function isListElement(node){
+		return LIST_ELEMENT[node.nodeName];
+	}
+
+	/**
+	 * Checks wheter range spans multiple lists
+	 * @param {Object} Aloha.Selection.rangeObject
+	 * @return boolean
+	 */
+	function spansMultipleLists(range){
+		return range.startContainer !== range.endContainer;
+	}
+
+	/**
+	 * Take list items out of their encompassing list element.
+	 * Wrap items in <p> and delete any remaining empty lists.
+	 * @param {Object} Aloha.Selection.rangeObject
+	 * @return void
+	 */
+	function treatListItems(range){
+		expandRange(range);
+
+		var cac = range.commonAncestorContainer;
+
+		if (!isListElement(cac)){
+			return;
+		}
+
+		if (!isEntireNodeInRange(range) && !spansMultipleLists(range)) {
+			return;
+		}
+
+		var selectedNodes = jQuery(range.startContainer.parentNode).nextUntil(jQuery(range.endContainer.parentNode).next()).andSelf();
+		var prevNodes = jQuery(range.startContainer.parentNode).prevAll();
+		var nextNodes = jQuery(range.endContainer.parentNode).nextAll();
+		var listName = range.startContainer.parentNode.parentNode.nodeName;
+
+		// first list item
+		if (selectedNodes.length === 1 && prevNodes.length === 0) { 
+			selectedNodes.each(function(){
+				jQuery(this).addClass('_moved');
+			}).remove().insertBefore(nextNodes.parent());
+		}
+		// last list item
+		else if (selectedNodes.length === 1 && nextNodes.length === 0) {
+			selectedNodes.each(function(){
+				jQuery(this).addClass('_moved');
+			}).remove().insertAfter(prevNodes.parent());
+		} 
+		// one list item in middle
+		else if (selectedNodes.length === 1 && nextNodes.length > 1) {
+			selectedNodes.each(function(){
+				jQuery(this).addClass('_moved');
+			}).remove().insertAfter(prevNodes.parent());
+			jQuery('<' + listName.toLowerCase() + '>').append(nextNodes).insertAfter(jQuery(range.endContainer));
+		}
+		// multiple list items up to whole list
+		else {
+			selectedNodes.each(function(){
+				jQuery(this).addClass('_moved');
+			}).remove().insertAfter(cac);
+			if (nextNodes.length > 0) {
+				jQuery('<' + listName.toLowerCase() + '>').append(nextNodes).insertAfter(jQuery(range.endContainer));
+			}
+		}
+
+
+		// unwrap moved list elements
+		jQuery('._moved').each(function() {
+			jQuery(this).contents().unwrap().wrap('<p>');
+		});
+
+
+		// If we are at the first list element, get rid of original (now empty) list
+		if (prevNodes.length === 0) {
+			cac.remove();
+		}
+	}
+
 	function formatInsideTableWorkaround(button) {
 		var selectedCells = jQuery('.aloha-cell-selected');
 		if (selectedCells.length > 0) {
@@ -135,7 +276,7 @@ define('format/format-plugin', [
 		if (formatInsideTableWorkaround(button)) {
 			return false;
 		}
-		formatPlugin.addMarkup( button ); 
+		formatPlugin.addMarkup( button );
 		return false;
 	}
 
@@ -150,7 +291,7 @@ define('format/format-plugin', [
 		if (Aloha.activeEditable && jQuery.browser.mozilla) {
 			Aloha.activeEditable.obj.focus();
 		}
-		
+
 		// triggered for numerated-headers plugin
 		if (Aloha.activeEditable) {
 			Aloha.trigger( 'aloha-format-block' );
@@ -208,7 +349,7 @@ define('format/format-plugin', [
 	}
 
 	function format(formatPlugin, rangeObject, markup) {
-		GENTICS.Utils.Dom.addMarkup(rangeObject, markup);
+		Dom.addMarkup(rangeObject, markup);
 		updateUiAfterMutation(formatPlugin, rangeObject);
 	}
 
@@ -221,7 +362,7 @@ define('format/format-plugin', [
 		var formatPlugin = this;
 		var markup = jQuery('<'+button+'>');
 		var rangeObject = Aloha.Selection.rangeObject;
-		
+
 		if ( typeof button === "undefined" || button == "" ) {
 			return;
 		}
@@ -236,16 +377,16 @@ define('format/format-plugin', [
 			// remove the markup
 			if (rangeObject.isCollapsed()) {
 				// when the range is collapsed, we remove exactly the one DOM element
-				GENTICS.Utils.Dom.removeFromDOM(foundMarkup, rangeObject, true);
+				Dom.removeFromDOM(foundMarkup, rangeObject, true);
 			} else {
 				// the range is not collapsed, so we remove the markup from the range
-				GENTICS.Utils.Dom.removeMarkup(rangeObject, jQuery(foundMarkup), Aloha.activeEditable.obj);
+				Dom.removeMarkup(rangeObject, jQuery(foundMarkup), Aloha.activeEditable.obj);
 			}
 			updateUiAfterMutation(formatPlugin, rangeObject);
 		} else {
 			// when the range is collapsed, extend it to a word
 			if (rangeObject.isCollapsed()) {
-				GENTICS.Utils.Dom.extendToWord(rangeObject);
+				Dom.extendToWord(rangeObject);
 				if (rangeObject.isCollapsed()) {
 					if (StateOverride.enabled()) {
 						StateOverride.setWithRangeObject(
@@ -323,7 +464,7 @@ define('format/format-plugin', [
 
 		/**
 		 * available options / buttons
-		 * 
+		 *
 		 * @todo new buttons needed for 'code'
 		 */
 		availableButtons: [ 'u', 'strong', 'del', 'em', 'b', 'i', 's', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],
@@ -331,7 +472,7 @@ define('format/format-plugin', [
 		/**
 		 * HotKeys used for special actions
 		 */
-		hotKey: { 
+		hotKey: {
 			formatBold: 'ctrl+b',
 			formatItalic: 'ctrl+i',
 			formatParagraph: 'alt+ctrl+0',
@@ -405,6 +546,7 @@ define('format/format-plugin', [
 			Aloha.bind('aloha-editable-deactivated',function (e, params) {
 				params.editable.obj.unbind('keydown.aloha.format');
 			});
+
 		},
 
 		/**
@@ -424,7 +566,7 @@ define('format/format-plugin', [
 						config_old.push(j);
 					}
 				});
-				
+
 				if ( config_old.length > 0 ) {
 					config = config_old;
 				}
@@ -515,7 +657,7 @@ define('format/format-plugin', [
 				onActivate: function ( effective ) {
 					var that = this;
 					that.effective = effective;
-					
+
 					if ( !effective[0] ) {
 						return;
 					}
@@ -524,11 +666,11 @@ define('format/format-plugin', [
 					var dom = jQuery('<div>').attr('class', pl.nsClass( 'target-container' ));
 					var fieldset = jQuery('<fieldset>');
 					fieldset.append(jQuery('<legend>' + that.format + ' ' + i18n.t( 'format.class.legend' )).append(jQuery('<select>')));
-					
+
 					dom.append(fieldset);
-					
-					var html = 
-						'<div class="' + pl.nsClass( 'target-container' ) + '"><fieldset><legend>' + i18n.t( 'format.class.legend' ) + '</legend><select name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '">' + 
+
+					var html =
+						'<div class="' + pl.nsClass( 'target-container' ) + '"><fieldset><legend>' + i18n.t( 'format.class.legend' ) + '</legend><select name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '">' +
 						'<option value="">' + i18n.t( 'format.class.none' ) + '</option>';
 
 					if ( pl.config[that.format] && pl.config[that.format]['class'] ) {
@@ -540,12 +682,12 @@ define('format/format-plugin', [
 					html += '</select></fieldset></div>';
 
 					var that = this,
-					content = this.setContent(html).content; 
+					content = this.setContent(html).content;
 
 					jQuery( pl.nsSel( 'framename' ) ).live( 'keyup', function () {
 						jQuery( that.effective ).attr( 'target', jQuery( this ).val().replace( '\"', '&quot;' ).replace( "'", "&#39;" ) );
 					} );
-					
+
 
 					var that = this;
 					that.effective = effective;
@@ -558,7 +700,7 @@ define('format/format-plugin', [
 		},
 
 		// duplicated code from link-plugin
-		//Creates string with this component's namepsace prefixed the each classname
+		// Creates string with this component's namepsace prefixed the each classname
 		nsClass: function () {
 			var stringBuilder = [], prefix = pluginNamespace;
 			jQuery.each( arguments, function () {
@@ -581,13 +723,19 @@ define('format/format-plugin', [
 
 		/**
 		 * Removes all formatting from the current selection.
+		 * And deconstructs lists via treatListItems() method.
 		 */
 		removeFormat: function() {
-			var formats = [ 'u', 'strong', 'em', 'b', 'i', 'q', 'del', 's', 'code', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'quote', 'blockquote' ],
+			var formats = [
+				'u', 'strong', 'em', 'b', 'i', 'q', 'del', 's', 'code', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'quote', 'blockquote',
+				'section', 'article', 'aside', 'header', 'footer', 'address', 'main', 'hr', 'figure', 'figcaption', 'div', 'small', 'cite', 'dfn',
+				'abbr', 'data', 'time', 'var', 'samp', 'kbd', 'mark', 'span', 'wbr', 'ins'
+				],
 			    rangeObject = Aloha.Selection.rangeObject,
 			    i;
 
 			// formats to be removed by the removeFormat button may now be configured using Aloha.settings.plugins.format.removeFormats = ['b', 'strong', ...]
+
 			if (this.settings.removeFormats) {
 				formats = this.settings.removeFormats;
 			}
@@ -597,8 +745,10 @@ define('format/format-plugin', [
 			}
 
 			for (i = 0; i < formats.length; i++) {
-				GENTICS.Utils.Dom.removeMarkup(rangeObject, jQuery('<' + formats[i] + '>'), Aloha.activeEditable.obj);
+				Dom.removeMarkup(rangeObject, jQuery('<' + formats[i] + '>'), Aloha.activeEditable.obj);
 			}
+
+			treatListItems(rangeObject);
 
 			// select the modified range
 			rangeObject.select();

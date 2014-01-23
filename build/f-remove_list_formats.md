@@ -1,0 +1,1 @@
+- **ENHANCEMENT**: format-plugin: Possibility to remove list items from ordered lists, unordered lists and definition lists added.
