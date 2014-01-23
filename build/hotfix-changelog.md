@@ -13,3 +13,8 @@ All changes are categorized into one of the following keywords:
               fix so that pressing enter in an empty editable will result in a
               new paragraph being inserted after rather than before. RT#57660
 
+- **BUGFIX**: align plugin: Setting alignment to content inside of a table cell
+              will no longer result in all of the content in the cell being
+              aligned, but only the content that is selected (up to the nearest
+              block-level element).
+

@@ -1,7 +1,5 @@
 h2. Align Plugin
 
-WARNING: The Align Plugin is not working correctly right now.
-
 The Align Plugin allows you to align contents left, right, center, or justify the flow of text. You can also define vertical align options (top, middle and bottom) for table cells. 
 
 endprologue.
