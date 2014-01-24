@@ -32,6 +32,7 @@ define([
 	'mouse',
 	'mutation',
 	'overrides',
+	'paths',
 	'paste',
 	'predicates',
 	'ranges',
@@ -68,6 +69,7 @@ define([
 	Mouse,
 	Mutation,
 	Overrides,
+	Paths,
 	Paste,
 	Predicates,
 	Ranges,
@@ -107,6 +109,7 @@ define([
 	exports['mouse'] = Mouse;
 	exports['mutation'] = Mutation;
 	exports['overrides'] = Overrides;
+	exports['paths'] = Paths;
 	exports['paste'] = Paste;
 	exports['predicates'] = Predicates;
 	exports['ranges'] = Ranges;

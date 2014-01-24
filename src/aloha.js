@@ -140,7 +140,7 @@ define([
 	           + "\n"
 	           + "Join the team at http://github.com/alohaeditor!";
 
-	console.log(teaser);
+	//console.log(teaser);
 
 	return aloha;
 });

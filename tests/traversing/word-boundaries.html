@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Aloha Editor Test Suite</title>
+	<link href="../qunit/qunit-1.12.0.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+	<pre id="test-console"></pre>
+	<script src="../qunit/qunit-1.12.0.js"></script>
+	<script src="../qunit/jquery-1.10.2.js"></script>
+	<script src="../../src/require-pronto.js"></script>
+	<script src="../../src/require-pronto.dev.js"></script>
+	<script>
+		window.define.amd = {jQuery: true};
+	</script>
+	<script src="../../build/aloha.js"></script>
+	<script>
+		function run() {
+			'use strict';
+			require(['word-boundaries'], function () {});
+		}
+		if ('undefined' !== typeof window.aloha) {
+			run();
+		} else {
+			require(['../../src/aloha'], run);
+		}
+	</script>
+</body>
+</html>

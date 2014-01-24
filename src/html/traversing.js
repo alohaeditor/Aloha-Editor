@@ -8,9 +8,8 @@
 define([
 	'html/elements',
 	'html/styles',
-	'dom/nodes',
-	'dom/traversing',
 	'dom',
+	'dom/traversing',
 	'predicates',
 	'arrays',
 	'boundaries',
@@ -18,9 +17,8 @@ define([
 ], function HtmlTraversing(
 	Elements,
 	Styles,
-	Nodes,
-	Traversing,
 	Dom,
+	DomTraversing,
 	Predicates,
 	Arrays,
 	Boundaries,
@@ -80,7 +78,7 @@ define([
 	 * @return {Node}
 	 */
 	function prevNonAncestor(node, match, until) {
-		return Traversing.nextNonAncestor(node, true, match, until || Dom.isEditingHost);
+		return DomTraversing.nextNonAncestor(node, true, match, until || Dom.isEditingHost);
 	}
 
 	/**
@@ -91,7 +89,7 @@ define([
 	 * @return {Node}
 	 */
 	function nextNonAncestor(node, match, until) {
-		return Traversing.nextNonAncestor(node, false, match, until || Dom.isEditingHost);
+		return DomTraversing.nextNonAncestor(node, false, match, until || Dom.isEditingHost);
 	}
 
 	/**
@@ -201,26 +199,27 @@ define([
 	 * @return {boolean}
 	 */
 	function areNextWhiteSpacesSignificant(boundary) {
-		var textnode = Boundaries.container(boundary);
+		var node = Boundaries.container(boundary);
 		var offset = Boundaries.offset(boundary);
+		var isTextNode = Dom.isTextNode(node);
 
-		if (textnode.data.substr(0, offset).search(WSP_FROM_END) > -1) {
+		if (isTextNode && node.data.substr(0, offset).search(WSP_FROM_END) > -1) {
 			// Because we have preceeding whitespaces behind the given boundary
 			// see rule #6
 			return false;
 		}
 
 		if (0 === offset) {
-			return !!prevNonAncestor(textnode, function (node) {
+			return !!prevNonAncestor(node, function (node) {
 				return Predicates.isInlineNode(node) && Elements.isRendered(node);
 			}, function (node) {
 				return Styles.hasLinebreakingStyle(node) || Dom.isEditingHost(node);
 			});
 		}
-		if (0 !== textnode.data.substr(offset).search(WSP_FROM_END)) {
+		if (isTextNode && 0 !== node.data.substr(offset).search(WSP_FROM_END)) {
 			return true;
 		}
-		return !!nextNonAncestor(textnode, function (node) {
+		return !!nextNonAncestor(node, function (node) {
 			return Predicates.isInlineNode(node) && Elements.isRendered(node);
 		}, function (node) {
 			return Styles.hasLinebreakingStyle(node) || Dom.isEditingHost(node);
@@ -307,10 +306,9 @@ define([
 			return null;
 		}
 		var offset = nextSignificantOffset(boundary);
-		if (-1 === offset) {
-			return null;
-		}
-		return Boundaries.create(Boundaries.container(boundary), offset + 1);
+		return (-1 === offset)
+		     ? null
+		     : Boundaries.create(Boundaries.container(boundary), offset + 1);
 	}
 
 	/**
@@ -340,7 +338,7 @@ define([
 	 *
 	 * Calling this function with a <b> node will return true, for example
 	 * because the boundary position right in front of a B element's start tag
-	 * and the boundary position right after the start tag are renderd at the
+	 * and the boundary position right after the start tag are rendered at the
 	 * same visual position.
 	 *
 	 * "|<b>foo..." is visually at the same position as "<b>|foo.."
@@ -364,7 +362,7 @@ define([
 	 * @return {boolean}
 	 */
 	function canPassThrough(node) {
-		return !(Nodes.isTextNode(node) || Elements.isVoidType(node))
+		return !(Dom.isTextNode(node) || Elements.isVoidType(node))
 		    || Elements.isUnrendered(node);
 	}
 
@@ -374,8 +372,8 @@ define([
 	 * `boundary` to change.
 	 *
 	 * @private
-	 * @param  {Boundary} boundary
-	 * @param  {function(Boundary):Node} nextNode
+	 * @param  {Boundary}                    boundary
+	 * @param  {function(Boundary):Node}     nextNode
 	 * @param  {function(Boundary):Boundary} nextBoundary
 	 * @return {Object}
 	 */
@@ -408,11 +406,11 @@ define([
 	}
 
 	/**
-	 * Returns the an node/offset namedtuple of the next visible position in
-	 * the document.
+	 * Returns an node/offset namedtuple of the next visible position in the
+	 * document.
 	 *
-	 * The next visible position is always the next visible character, or the
-	 * next visible line break or space.
+	 * The next visible position is always the next visible character, space,
+	 * or line break or space.
 	 *
 	 * @private
 	 * @param  {Boundary} boundary
@@ -481,7 +479,7 @@ define([
 	}
 
 	/**
-	 * Like Boundaries.next() except that is accomodates void-type nodes.
+	 * Like Boundaries.next() except that it will skip over void-type nodes.
 	 *
 	 * @private
 	 * @param  {Boundary} boundary
@@ -498,7 +496,7 @@ define([
 	}
 
 	/**
-	 * Like Boundaries.prev() except that is accomodates void-type nodes.
+	 * Like Boundaries.prev() except that it will skip over void-type nodes.
 	 *
 	 * @private
 	 * @param  {Boundary} boundary
@@ -536,7 +534,7 @@ define([
 			return node.previousSibling;
 		},
 		stepVisualBoundary: function stepVisualBoundary(node) {
-			return prevVisualBoundary(Boundaries.raw(node, Nodes.nodeLength(node)));
+			return prevVisualBoundary(Boundaries.raw(node, Dom.nodeLength(node)));
 		}
 	};
 
@@ -574,10 +572,10 @@ define([
 	}
 
 	/**
-	 * Moves a boundary over any insignificant positions.
+	 * Moves the boundary over any insignificant positions.
 	 *
 	 * Insignificant boundary positions are those where the boundary is
-	 * immediately before unrenderd content.  Since such content is unrendered,
+	 * immediately before unrendered content.  Since such content is invisible,
 	 * the boundary is rendered as though it is after the insignificant
 	 * content.  This function simply moves the boundary forward so that the
 	 * given boundary is infact where it seems to be visually.
@@ -616,7 +614,7 @@ define([
 
 		// |"foo" or <p>|" foo"
 		//                .
-		if (Nodes.isTextNode(node)) {
+		if (Dom.isTextNode(node)) {
 			return skipInsignificantPositions(Boundaries.nextRawBoundary(next));
 		}
 
@@ -636,10 +634,13 @@ define([
 	 * Checks whether the left boundary is at the same visual position as the
 	 * right boundary.
 	 *
+	 * Take note that the order of the boundary is important.
+	 * equals(left, right) is not necessarily the same as equals(right, left)
+	 *
 	 * @private
 	 * @param  {Boundary} left
 	 * @param  {Boundary} right
-	 * @retufn {boolean}
+	 * @return {boolean}
 	 */
 	function equals(left, right) {
 		var node, consumesOffset;
@@ -650,8 +651,12 @@ define([
 		while (left && !Boundaries.equals(left, right)) {
 			node = Boundaries.nextNode(left);
 
-			consumesOffset = Elements.isVoidType(node)
-			              || Nodes.isTextNode(node)
+			if (Dom.isEditingHost(node)) {
+				return false;
+			}
+
+			consumesOffset = Dom.isTextNode(node)
+			              || Elements.isVoidType(node)
 			              || Styles.hasLinebreakingStyle(node);
 
 			if (consumesOffset && Elements.isRendered(node)) {
@@ -664,6 +669,14 @@ define([
 		return true;
 	}
 
+	/**
+	 * Moves the given boundary backwards over any positions that are (visually
+	 * insignificant)invisible.
+	 *
+	 * @private
+	 * @param  {Boundary} boundary
+	 * @return {Boundary}
+	 */
 	function skipPrevInsignificantPositions(boundary) {
 		var next = boundary;
 
@@ -706,7 +719,7 @@ define([
 		var node = Boundaries.prevNode(next);
 
 		// <b>"foo"|</b>
-		if (Nodes.isTextNode(node)) {
+		if (Dom.isTextNode(node)) {
 			return skipPrevInsignificantPositions(Boundaries.prevRawBoundary(next));
 		}
 
@@ -732,10 +745,7 @@ define([
 		var offset = Boundaries.offset(boundary);
 		var text   = node.data.substr(offset);
 		var index  = text.search(Strings.WORD_BOUNDARY);
-		if (-1 === index) {
-			return -1;
-		}
-		return offset + index;
+		return (-1 === index) ? -1 : offset + index;
 	}
 
 	/**
@@ -752,10 +762,7 @@ define([
 		var offset = Boundaries.offset(boundary);
 		var text   = node.data.substr(0, offset);
 		var index  = text.search(Strings.WORD_BOUNDARY_FROM_END);
-		if (-1 === index) {
-			return -1;
-		}
-		return index + 1;
+		return (-1 === index) ? -1 : index + 1;
 	}
 
 	/**
@@ -900,23 +907,24 @@ define([
 	 */
 	function next(boundary, unit) {
 		boundary = skipInsignificantPositions(boundary);
-		var unitBoundary = boundary;
+		var nextBoundary = boundary;
 		switch (unit) {
 		case 'char':
-			unitBoundary = nextCharacterBoundary(boundary);
+			nextBoundary = nextCharacterBoundary(boundary);
 			break;
 		case 'word':
-			unitBoundary = nextWordBoundary(boundary);
+			nextBoundary = nextWordBoundary(boundary);
 			// "| foo" or |</p>
-			if (equals(boundary, unitBoundary)) {
-				unitBoundary = nextVisualBoundary(boundary);
+			if (equals(boundary, nextBoundary)) {
+				nextBoundary = nextVisualBoundary(boundary);
 			}
 			break;
 		default:
-			unitBoundary = nextVisualBoundary(boundary);
+			nextBoundary = nextVisualBoundary(boundary);
 			break;
 		}
-		return skipInsignificantPositions(unitBoundary);
+		return nextBoundary;
+		//return skipInsignificantPositions(nextBoundary);
 	}
 
 	/**
@@ -945,23 +953,23 @@ define([
 	 */
 	function prev(boundary, unit) {
 		boundary = skipPrevInsignificantPositions(boundary);
-		var unitBoundary;
+		var prevBoundary;
 		switch (unit) {
 		case 'char':
-			unitBoundary = prevCharacterBoundary(boundary);
+			prevBoundary = prevCharacterBoundary(boundary);
 			break;
 		case 'word':
-			unitBoundary = prevWordBoundary(boundary);
+			prevBoundary = prevWordBoundary(boundary);
 			// "foo |" or <p>|
-			if (equals(boundary, unitBoundary)) {
-				unitBoundary = prevVisualBoundary(boundary);
+			if (equals(prevBoundary, boundary)) {
+				prevBoundary = prevVisualBoundary(boundary);
 			}
 			break;
 		default:
-			unitBoundary = prevVisualBoundary(boundary);
+			prevBoundary = prevVisualBoundary(boundary);
 			break;
 		}
-		return skipPrevInsignificantPositions(unitBoundary);
+		return skipPrevInsignificantPositions(prevBoundary);
 	}
 
 	/**
@@ -986,7 +994,7 @@ define([
 			return !NOT_WSP.test(Boundaries.container(boundary).data.substr(Boundaries.offset(boundary)));
 		}
 		var node = Boundaries.nodeAfter(boundary);
-		var next = Traversing.nextWhile(node, Elements.isUnrendered);
+		var next = Dom.nextWhile(node, Elements.isUnrendered);
 		// foo|<br></p> or foo|<i>bar</i>
 		return !next || next === node;
 	}
@@ -1011,7 +1019,7 @@ define([
 			return !NOT_WSP.test(Boundaries.container(boundary).data.substr(0, Boundaries.offset(boundary)));
 		}
 		var node = Boundaries.nodeBefore(boundary);
-		var next = Traversing.prevWhile(node, Elements.isUnrendered);
+		var next = Dom.prevWhile(node, Elements.isUnrendered);
 		return !next || next === node;
 	}
 
@@ -1047,6 +1055,6 @@ define([
 		prevNode              : prevNode,
 		nextNode              : nextNode,
 		prevSignificantOffset : prevSignificantOffset,
-		nextSignificantOffset : nextSignificantOffset,
+		nextSignificantOffset : nextSignificantOffset
 	};
 });
