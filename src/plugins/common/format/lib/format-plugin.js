@@ -106,8 +106,8 @@ define('format/format-plugin', [
 
 	/**
 	 * Checks if the selection spans a whole node (HTML element)
-	 * @param {Object} Aloha.Selection.rangeObject
-	 * @return boolean
+	 * @param Range range
+	 * @return {boolean}
 	 */
 	function isEntireNodeInRange(range) {
 		var sc = range.startContainer;
@@ -125,7 +125,7 @@ define('format/format-plugin', [
 	/**
 	 * Expands the (invisible) range to encompass the whole node
 	 * that was selected by the user
-	 * @param {Object} Aloha.Selection.rangeObject
+	 * @param Range range
 	 * @return void
 	 */
 	function expandRange(range) {
@@ -163,17 +163,17 @@ define('format/format-plugin', [
 	/**
 	 * Determine if we are working on a list element
 	 * using the previous LIST_ELEMENT hash map.
-	 * @param {Object} DOM node
-	 * @return boolean
+	 * @param DOM node
+	 * @return {boolean}
 	 */
 	function isListElement(node){
 		return LIST_ELEMENT[node.nodeName];
 	}
 
 	/**
-	 * Checks wheter range spans multiple lists
-	 * @param {Object} Aloha.Selection.rangeObject
-	 * @return boolean
+	 * Checks whether range spans multiple lists
+	 * @param Range range
+	 * @return {boolean}
 	 */
 	function spansMultipleLists(range){
 		return range.startContainer !== range.endContainer;
@@ -182,10 +182,10 @@ define('format/format-plugin', [
 	/**
 	 * Take list items out of their encompassing list element.
 	 * Wrap items in <p> and delete any remaining empty lists.
-	 * @param {Object} Aloha.Selection.rangeObject
+	 * @param Range range
 	 * @return void
 	 */
-	function treatListItems(range){
+	function unformatList(range){
 		expandRange(range);
 
 		var cac = range.commonAncestorContainer;
@@ -723,7 +723,7 @@ define('format/format-plugin', [
 
 		/**
 		 * Removes all formatting from the current selection.
-		 * And deconstructs lists via treatListItems() method.
+		 * And deconstructs lists via unformatList method.
 		 */
 		removeFormat: function() {
 			var formats = [
@@ -748,7 +748,7 @@ define('format/format-plugin', [
 				Dom.removeMarkup(rangeObject, jQuery('<' + formats[i] + '>'), Aloha.activeEditable.obj);
 			}
 
-			treatListItems(rangeObject);
+			unformatList(rangeObject);
 
 			// select the modified range
 			rangeObject.select();
