@@ -142,6 +142,20 @@ define([], function Functions() {
 		};
 	}
 
+	function and() {
+		var fns = arguments;
+		var len = fns.length;
+
+		return function () {
+			for (var i = 0; i < len; i++) {
+				if (!(fns[i].apply(this, arguments))) {
+					return false;
+				}
+			}
+			return true;
+		};
+	}
+
 	return {
 		identity     : identity,
 		noop         : noop,
@@ -151,6 +165,7 @@ define([], function Functions() {
 		partial      : partial,
 		outparameter : outparameter,
 		strictEquals : strictEquals,
-		comp         : comp
+		comp         : comp,
+		and          : and
 	};
 });

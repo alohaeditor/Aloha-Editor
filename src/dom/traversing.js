@@ -417,7 +417,7 @@ define([
 	 *
 	 * @param {DOMObject} start
 	 * @param {Boolean} previous
-	 *        If true, will look for the nearest preceeding node, otherwise the
+	 *        If true, will look for the nearest preceding node, otherwise the
 	 *        nearest subsequent node.
 	 * @param {Function(DOMObject):Boolean} match
 	 * @param {Function(DOMObject):Boolean} until
@@ -495,6 +495,7 @@ define([
 		childAndParentsUntilIncl     : childAndParentsUntilIncl,
 		childAndParentsUntilNode     : childAndParentsUntilNode,
 		childAndParentsUntilInclNode : childAndParentsUntilInclNode,
-		nextNonAncestor              : nextNonAncestor
+		nextNonAncestor              : nextNonAncestor,
+		nextSibling                  : nextSibling
 	};
 });
