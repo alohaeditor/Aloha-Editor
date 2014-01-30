@@ -23,3 +23,11 @@ All changes are categorized into one of the following keywords:
               to be left in the region. Fixing the  JavaScript error corrects
               this behavior. RT#57629
 
+- **BUGFIX**: copy-pate: Copy and paste text content from MS-Word to Aloha content
+              in IE9 Browser, added line break between paragraphs. When
+              copying from MS-Word unrendered whitespaces are added between
+              paragraphs and are rendered as lines break for Aloha Editor.
+              Removing these unrendered whitespaces solves the line break problem.
+              RT#57725
+
+
