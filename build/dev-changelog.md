@@ -7,7 +7,4 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 ----
 
-- **FEATURE**: It is now possible to use a configured table of characters
-               to replaces characters in headerids names.  This provides a
-               means for translating special characters in headerid strings
-               into those that are safe for files systems, for example.
+- **FEATURE**: Replaces headerids names characters with a set of predefined characters replacements.
