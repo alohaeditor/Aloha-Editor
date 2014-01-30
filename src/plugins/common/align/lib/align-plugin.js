@@ -27,6 +27,8 @@
 define([
 	'aloha',
 	'aloha/plugin',
+	'util/html',
+	'util/dom',
 	'ui/ui',
 	'ui/toggleButton',
 	'i18n!align/nls/i18n',
@@ -34,14 +36,16 @@ define([
 	'jquery',
 	'PubSub'
 ], function(
-		Aloha,
-    Plugin,
-    Ui,
-    ToggleButton,
-    i18n,
-    i18nCore,
-    jQuery,
-    PubSub
+	Aloha,
+	Plugin,
+	Html,
+	DomLegacy,
+	Ui,
+	ToggleButton,
+	i18n,
+	i18nCore,
+	jQuery,
+	PubSub
 ) {
 	'use strict';
 
@@ -345,63 +349,52 @@ define([
 		},
 
 		/**
-		 * Align the selection or remove it
+		 * Sets or removes the alignment on the selected range.
+		 *
+		 * @param {string} alignment
 		 */
-		align: function ( tempAlignment ) {
-
-			var that = this;
-			var range = Aloha.Selection.getRangeObject();
-
+		align: function (alignment) {
 			this.lastAlignment = this.alignment;
-			this.alignment = tempAlignment;
+			this.alignment = alignment;
 
-			var rangeParent = range.getCommonAncestorContainer();
+			var range = Aloha.Selection.getRangeObject();
+			var cac = range.getCommonAncestorContainer();
 
-			// check if the selection range is inside a table
-			var selectedCells = this.getSelectedCells( range );
+			// Because the align-text property needs to be set on a block-level
+			// element in order for it to have visual effect
+			while (cac && !Html.isBlock(cac) && !DomLegacy.isEditingHost(cac)) {
+				cac = cac.parentNode;
+			}
 
-			if ( selectedCells ) {
-				that.toggleAlign( selectedCells );
-			} else if (!GENTICS.Utils.Dom.isEditingHost(rangeParent)) {
-
-				// if the parent node is not the main editable node and align
-				// OR iterates the whole selectionTree and align
-					that.toggleAlign( rangeParent );
-			}	else {
-				var alignableElements = [];
-				jQuery.each(Aloha.Selection.getRangeObject().getSelectionTree(), function () {
+			if (DomLegacy.isEditingHost(cac)) {
+				var elements = [];
+				jQuery.each(range.getSelectionTree(), function () {
 					if (this.selection !== 'none' && this.domobj.nodeType !== 3) {
-						alignableElements.push( this.domobj );
+						elements.push(this.domobj);
 					}
 				});
-
-				that.toggleAlign( alignableElements );
+				this.toggleAlign(elements);
+			} else {
+				this.toggleAlign(cac);
 			}
 
 			// reset previous button states
-			if ( this.alignment != this.lastAlignment ) {
-				switch ( this.lastAlignment ) {
-					case 'right':
-						this._alignRightButton.setState(false);
-						break;
-
-					case 'left':
-						this._alignLeftButton.setState(false);
-						break;
-
-					case 'center':
-						this._alignCenterButton.setState(false);
-						break;
-
-					case 'justify':
-						this._alignJustifyButton.setState(false);
-						break;
+			if (this.alignment !== this.lastAlignment) {
+				switch (this.lastAlignment) {
+				case 'right':
+					this._alignRightButton.setState(false);
+					break;
+				case 'left':
+					this._alignLeftButton.setState(false);
+					break;
+				case 'center':
+					this._alignCenterButton.setState(false);
+					break;
+				case 'justify':
+					this._alignJustifyButton.setState(false);
+					break;
 				}
 			}
-
-			// select the (possibly modified) range
-			range.select();
-
 		},
 
 		getSelectedCells: function( range ) {
