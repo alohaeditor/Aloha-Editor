@@ -30,4 +30,8 @@ All changes are categorized into one of the following keywords:
               Removing these unrendered whitespaces solves the line break problem.
               RT#57725
 
+- **BUGFIX**: button tooltip: 'Insert Table' button tooltip did not disappear when selecting
+              the rows and the columns of the table. This has been fixed so the tooltip does
+              disappear. RT#57677
+
 
