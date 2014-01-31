@@ -303,9 +303,11 @@ define( [
 							'<div class="' + pl.nsClass( 'title-container' ) + '" ><fieldset><legend>' + i18n.t( 'link.title.legend' ) + '</legend><input type="text" class="' + pl.nsClass( 'linkTitle' ) + '" /></fieldset></div>'
 						).content; 
 					 
-					 jQuery( pl.nsSel( 'framename' ) ).live( 'keyup', function () {
+					 jQuery(pl.nsSel( 'framename' ) ).live( 'keyup', function () {
 						jQuery( that.effective ).attr( 'target', jQuery( this ).val().replace( '\"', '&quot;' ).replace( "'", "&#39;" ) );
 					 } );
+					 
+					 jQuery(content).find(pl.nsSel( 'framename' ) ).hide();
 					 
 					 jQuery( pl.nsSel( 'radioTarget' ) ).live( 'change', function () {
 						if ( jQuery( this ).val() == 'framename' ) {
@@ -324,7 +326,8 @@ define( [
 				onActivate: function ( effective ) {
 					var that = this;
 					that.effective = effective;
-					if ( jQuery( that.effective ).attr( 'target' ) != null ) {
+					if ( jQuery( that.effective ).attr( 'target' ) != null &&
+							jQuery( that.effective ).attr( 'target' ).trim().length > 0) {
 						var isFramename = true;
 						jQuery( pl.nsSel( 'framename' ) ).hide().val( '' );
 						jQuery( pl.nsSel( 'radioTarget' ) ).each( function () {
@@ -613,12 +616,7 @@ define( [
 				if (Keys.getToken(event.keyCode) === 'enter') {
 					// Update the selection and place the cursor at the end of the link.
 					var	range = Aloha.Selection.getRangeObject();
-					
-					// workaround to keep the found markup otherwise removelink won't work
-//					var foundMarkup = that.findLinkMarkup( range );
-//					console.dir(foundMarkup);
-//					that.hrefField.setTargetObject(foundMarkup, 'href');
-					
+
 					// We have to ignore the next 2 onselectionchange events.
 					// The first one we need to ignore is the one trigger when
 					// we reposition the selection to right at the end of the
@@ -626,12 +624,12 @@ define( [
 					// Not sure what the next event is yet but we need to
 					// ignore it as well, ignoring it prevents the value of
 					// hrefField from being set to the old value.
+
 					that.ignoreNextSelectionChangedEvent = true;
 					range.startContainer = range.endContainer;
 					range.startOffset = range.endOffset;
 					range.select();
-					that.ignoreNextSelectionChangedEvent = true;
-					
+
 					var hrefValue = jQuery( that.hrefField.getInputElem() ).attr( 'value' );
 					
 					if ( hrefValue == that.hrefValue || hrefValue == '' ) {
@@ -789,7 +787,6 @@ define( [
 			apiRange.setEnd(range.endContainer, range.endOffset);
 
 			PubSub.pub('aloha.link.insert', {range: apiRange});
-			this.hrefChange();
 		},
 
 		/**
