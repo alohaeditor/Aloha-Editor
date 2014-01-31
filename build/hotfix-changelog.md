@@ -34,4 +34,10 @@ All changes are categorized into one of the following keywords:
               the rows and the columns of the table. This has been fixed so the tooltip does
               disappear. RT#57677
 
+- **BUGFIX**: link plugin: When typing the URL for a link and then pressing Enter,
+              it creates the link but you must click tow times to open the link
+              properties. The fix allows the user to click just once. RT#57711
 
+- **BUGFIX**: link plugin: creating a link and then linking to a page of Content.Node,
+              set the target of the link to 'framename' instead of 'self'. This fix 
+              sets it to 'self'.  RT#57711
