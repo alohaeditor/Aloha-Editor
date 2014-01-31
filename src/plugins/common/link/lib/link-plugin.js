@@ -613,12 +613,7 @@ define( [
 				if (Keys.getToken(event.keyCode) === 'enter') {
 					// Update the selection and place the cursor at the end of the link.
 					var	range = Aloha.Selection.getRangeObject();
-					
-					// workaround to keep the found markup otherwise removelink won't work
-//					var foundMarkup = that.findLinkMarkup( range );
-//					console.dir(foundMarkup);
-//					that.hrefField.setTargetObject(foundMarkup, 'href');
-					
+
 					// We have to ignore the next 2 onselectionchange events.
 					// The first one we need to ignore is the one trigger when
 					// we reposition the selection to right at the end of the
@@ -626,12 +621,12 @@ define( [
 					// Not sure what the next event is yet but we need to
 					// ignore it as well, ignoring it prevents the value of
 					// hrefField from being set to the old value.
+
 					that.ignoreNextSelectionChangedEvent = true;
 					range.startContainer = range.endContainer;
 					range.startOffset = range.endOffset;
 					range.select();
-					that.ignoreNextSelectionChangedEvent = true;
-					
+
 					var hrefValue = jQuery( that.hrefField.getInputElem() ).attr( 'value' );
 					
 					if ( hrefValue == that.hrefValue || hrefValue == '' ) {
