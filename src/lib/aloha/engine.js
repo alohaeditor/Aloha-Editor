@@ -1931,8 +1931,7 @@ define([
 		}
 
 		// "If new parent's parent is null:"
-		var newParentParentNode = newParent.parentNode;
-		if (!newParentParentNode) {
+		if (!newParent.parentNode) {
 			// "Insert new parent into the parent of the first member of node list
 			// immediately before the first member of node list."
 			nodeList[0].parentNode.insertBefore(newParent, nodeList[0]);
@@ -1948,10 +1947,10 @@ define([
 				endOffset = range.endOffset,
 			    newParentIndex = Dom.getIndexInParent(newParent);
 
-			if (startOffset >= newParentIndex && startContainer == newParentParentNode) {
+			if (startOffset >= newParentIndex && startContainer == newParent.parentNode) {
 				range.setStart(startContainer, startOffset + 1);
 			}
-			if (endOffset >= newParentIndex && endContainer == newParentParentNode) {
+			if (endOffset >= newParentIndex && endContainer == newParent.parentNode) {
 				range.setEnd(endContainer, endOffset + 1);
 			}
 
@@ -1961,10 +1960,10 @@ define([
 				startOffset = globalRange.startOffset;
 				endContainer = globalRange.endContainer;
 				endOffset = globalRange.endOffset;
-				if (startContainer == newParentParentNode && startOffset >= newParentIndex) {
+				if (startContainer == newParent.parentNode && startOffset >= newParentIndex) {
 					globalRange.setStart(startContainer, startOffset + 1);
 				}
-				if (endContainer == newParentParentNode && endOffset >= newParentIndex) {
+				if (endContainer == newParent.parentNode && endOffset >= newParentIndex) {
 					globalRange.setEnd(endContainer, endOffset + 1);
 				}
 			}
@@ -2033,7 +2032,7 @@ define([
 			}
 
 			// "Remove new parent's nextSibling from its parent."
-			newParentParentNode.removeChild(newParent.nextSibling);
+			newParent.parentNode.removeChild(newParent.nextSibling);
 		}
 
 		// "Remove extraneous line breaks from new parent."
