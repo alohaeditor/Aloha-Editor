@@ -4,7 +4,7 @@
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  *
- * Refernces: 
+ * Refernces:
  * CF_HTML:
  * http://msdn.microsoft.com/en-us/library/windows/desktop/ms649015(v=vs.85).aspx
  */
@@ -12,8 +12,8 @@ define([
 	'dom',
 	'html',
 	'arrays',
-	/*
 	'ms-word/lists',
+	/*
 	'ms-word/tables',
 	'ms-word/toc',
 	*/
@@ -22,8 +22,8 @@ define([
 	Dom,
 	Html,
 	Arrays,
-	/*
 	Lists,
+	/*
 	Tables,
 	TOC,
 	*/
@@ -32,25 +32,54 @@ define([
 	'use strict';
 
 	/**
-	 * Matches tag in the markup that are deemed superfluous: having no effect
+	 * Matches tags in the markup that are deemed superfluous: having no effect
 	 * in the representation of the content.
 	 *
+	 * This will be used to strip tags like "<w:data>08D0C9EA7...</w:data>" and
+	 * "<o:p></o:p>"
+	 *
+	 * @private
 	 * @const
 	 * @type {RegExp}
 	 */
 	var SUPERFLUOUS_TAG = /(xml|o:\w+|v:\w+)/i;
 
 	/**
-	 * Removes superfluous MS office child nodes in the given node.
+	 * Checks whether the given node is considered superfluous (has not affect
+	 * to the visual presentation of the content).
 	 *
+	 * @private
 	 * @param  {Node} node
-	 * @return {Boolean}
+	 * @return {boolean}
 	 */
 	function isSuperfluous(node) {
 		return node.nodeType === Dom.Nodes.COMMENT
 		    && SUPERFLUOUS_TAG.test(node.nodeName);
 	}
 
+	/**
+	 * Creates a rewrapped copy of `element`.  Will create a an element based
+	 * on `nodeName`, and copies the content of the given element into it.
+	 *
+	 * @private
+	 * @param  {Element}  element
+	 * @param  {String}   nodeName
+	 * @param  {Document} doc
+	 * @return {Element}
+	 */
+	function rewrap(element, nodeName, doc) {
+		var node = doc.createElement(nodeName);
+		Dom.copy(Dom.children(element), node);
+		return node;
+	}
+
+	/**
+	 * Cleans the given node.
+	 *
+	 * @param  {Node}     node
+	 * @param  {Document} doc
+	 * @return {Node} A copy of `node`
+	 */
 	function clean(node, doc) {
 		if (isSuperfluous(node)) {
 			return null;
@@ -59,10 +88,10 @@ define([
 			return Dom.clone(node);
 		}
 		if (Dom.hasClass(node, 'MsoTitle')) {
-			return Utils.rewrap(node, 'h1', doc);
+			return rewrap(node, 'h1', doc);
 		}
 		if (Dom.hasClass(node, 'MsoSubtitle')) {
-			return Utils.rewrap(node, 'h2', doc);
+			return rewrap(node, 'h2', doc);
 		}
 		return Dom.clone(node);
 	}
@@ -91,7 +120,9 @@ define([
 	 */
 	function transform(markup, doc) {
 		var raw = Html.parse(Utils.extract(markup), doc);
-		return (Utils.normalize(raw, doc, clean) || raw).innerHTML;
+		var cleaned = Utils.normalize(raw, doc, clean) || raw;
+		cleaned = Lists.transform(cleaned, doc);
+		return cleaned.innerHTML;
 	}
 
 	return {

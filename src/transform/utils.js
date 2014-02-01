@@ -23,7 +23,10 @@ define([
 	'use strict';
 
 	/**
+	 * A map of default black listed node names.
+	 *
 	 * @private
+	 * @type {Object.<String, Boolean>}
 	 */
 	var blacklist = Content.NODES_BLACKLIST.reduce(function (map, item) {
 		map[item] = true;
@@ -31,7 +34,11 @@ define([
 	}, {});
 
 	/**
+	 * Checks whether the given node is black listed.
+	 *
 	 * @private
+	 * @param  {Node} node
+	 * @return {Boolean}
 	 */
 	function isBlacklisted(node) {
 		return blacklist[node.nodeName];
@@ -44,7 +51,7 @@ define([
 	 *
 	 * @param  {Element}  element
 	 * @param  {Document} doc
-	 * @return {?Element} May be a document fragment. May be null.
+	 * @return {?Element} May be a document fragment or null
 	 */
 	function normalize(element, doc, clean) {
 		var cleaned = clean(element, doc);
@@ -58,7 +65,7 @@ define([
 			var copy = normalize(node, doc, clean);
 			return copy ? nodes.concat(copy) : nodes;
 		}, []);
-		var copy = cleaned.cloneNode(false);
+		var copy = Dom.clone(cleaned, false);
 		if (Dom.isTextNode(copy)) {
 			return copy;
 		}
@@ -67,10 +74,10 @@ define([
 	}
 
 	/**
-	 * Extracts body content if the content is an HTML page. Otherwise it
+	 * Extracts body content if the content is an HTML page.  Otherwise it
 	 * returns the content itself.
 	 *
-	 * FixMe
+	 * @fixme
 	 * What if `content` contains a comment like this:
 	 * <html><!-- <body>gotcha!</body> --><title>woops</title><body>hello, world!</body></html>
 	 *
@@ -93,116 +100,8 @@ define([
 		return markup;
 	}
 
-	/**
-	 * Gets the first block child
-	 *
-	 * @param  {Element} element
-	 * @return {?Node}
-	 */
-	function getFirstChildBlockElement(element) {
-		return Dom.findForward(element, Html.hasBlockStyle, Dom.isEditingHost);
-
-		/*
-		var nextSibling = element.firstChild;
-		var block;
-		while (nextSibling) {
-			if (Html.hasBlockStyle(nextSibling)) {
-				return nextSibling;
-			}
-			if ((block = getFirstChildBlockElement(nextSibling)) != null) {
-				return block;
-			}
-			nextSibling = nextSibling.nextSibling;
-		}
-		return null;
-		*/
-	}
-
-	/**
-	 * Cleans list element.
-	 *
-	 * @param {Element} list
-	 */
-	function cleanListElement(list) {
-		Dom.children(list).forEach(function (item) {
-			if (item.nodeName !== 'LI' && !Html.isListContainer(item)) {
-				Dom.wrapWith(item, 'li');
-			}
-		});
-	}
-
-	/**
-	 * Cleans image element.
-	 * @param {!Element} imgElement
-	 */
-	function cleanImageElement(imgElement) {
-		var src = imgElement.src;
-		var height = imgElement.height;
-		var width = imgElement.width;
-
-		Dom.removeAttrs(imgElement);
-
-		imgElement.src = src;
-		imgElement.height = height;
-		imgElement.width = width;
-	}
-
-	/**
-	 * Walks the decendents of the given element, calling the callback function
-	 * when `pred` return true.
-	 *
-	 * @param {Element} element
-	 * @param {function(Element):boolean} pred
-	 * @param {function(Element)} callback
-	 */
-	function walkDescendants(element, pred, callback) {
-		var childNodes = Dom.children(element);
-		var child;
-
-		for (var i = 0, len = childNodes.length; i < len; i++) {
-			child = childNodes[i];
-			if (child) {
-				if (pred(child)){
-					callback(child);
-					// check if the child has changed
-					// the size of the children nodes can change
-					if (child !== childNodes[i]) {
-						i--;
-						len = element.childNodes.length;
-					}
-				}
-				if (Dom.isElementNode(child)) {
-					walkDescendants(child, pred,  callback);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Creates a rewrapped copy of `element`.
-	 *
-	 * An element based on `nodeName`, and copies the content of the
-	 * given element into it.
-	 *
-	 * @param  {Element}  element
-	 * @param  {String}   nodeName
-	 * @param  {Document} doc
-	 * @return {Element}
-	 */
-	function rewrap(element, nodeName, doc) {
-		var node = doc.createElement(nodeName);
-		Dom.move(Dom.children(Dom.clone(element)), node);
-		return node;
-	}
-
 	return {
 		normalize : normalize,
-		extract   : extract,
-		rewrap    : rewrap,
-
-		getFirstChildBlockElement : getFirstChildBlockElement,
-		cleanImageElement         : cleanImageElement,
-		cleanListElement          : cleanListElement,
-		walkDescendants           : walkDescendants
+		extract   : extract
 	};
 });
