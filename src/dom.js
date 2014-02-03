@@ -240,6 +240,7 @@ define([
 		equals                  : Nodes.equals,
 		contains                : Nodes.contains,
 		followedBy              : Nodes.followedBy,
+		outerHtml               : Nodes.outerHtml,
 
 		merge             : Mutation.merge,
 		moveNextAll       : Mutation.moveNextAll,
@@ -254,9 +255,10 @@ define([
 		remove            : Mutation.remove,
 		removeShallow     : Mutation.removeShallow,
 
-		addClass     : Classes.add,
-		removeClass  : Classes.remove,
-		hasClass     : Classes.has,
+		addClass                : Classes.add,
+		removeClass             : Classes.remove,
+		hasClass                : Classes.has,
+		getElementsByClassNames : Classes.getElementsByClassNames,
 
 		attrNames    : Attrs.attrNames,
 		hasAttrs     : Attrs.has,

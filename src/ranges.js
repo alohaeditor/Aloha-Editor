@@ -546,7 +546,7 @@ define([
 	 */
 	function insertTextBehind(range, text) {
 		var boundary = Boundaries.create(range.startContainer, range.startOffset);
-		boundary = Mutation.insertTextAtBoundary(text, boundary, true, [range]);
+		Mutation.insertTextAtBoundary(text, boundary, true, [range]);
 		collapseToStart(range);
 		select(range);
 	}

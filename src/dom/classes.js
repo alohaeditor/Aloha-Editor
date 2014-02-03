@@ -262,6 +262,7 @@ define([
 	return {
 		has    : has,
 		add    : add,
-		remove : remove
+		remove : remove,
+		getElementsByClassNames: getElementsByClassNames
 	};
 });

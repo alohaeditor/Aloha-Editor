@@ -8,11 +8,9 @@
  * Provides public utility methods to convert DOM nodes to XHTML.
  */
 define([
-	'dom/nodes',
-	'ephemera'
+	'dom'
 ], function Xhtml(
-	Nodes,
-	ephemera
+	Dom
 ) {
 	'use strict';
 
@@ -129,7 +127,7 @@ define([
 	 *        element, separated by space. The string will have a leading space.
 	 */
 	function makeAttrString(element, ephemera) {
-		var attrs = dom.attrs(element);
+		var attrs = Dom.attrs(element);
 		var str = '';
 		var i, len;
 		for (i = 0, len = attrs.length; i < len; i++) {
@@ -209,12 +207,12 @@ define([
 	 */
 	function serializeChildren(element, child, unrecognized, ephemera, xhtml) {
 		while (null != child) {
-			if (Nodes.Nodes.ELEMENT === child.nodeType
+			if (Dom.Nodes.ELEMENT === child.nodeType
 					&& unrecognized
 						&& '/' + element.nodeName === child.nodeName) {
 				child = child.nextSibling;
 				break;
-			} else if (Nodes.Nodes.ELEMENT === child.nodeType && isUnrecognized(child)) {
+			} else if (Dom.Nodes.ELEMENT === child.nodeType && isUnrecognized(child)) {
 				child = serializeElement(
 					child,
 					child.nextSibling,
@@ -301,7 +299,7 @@ define([
 	 */
 	function serialize(node, ephemera, xhtml) {
 		var nodeType = node.nodeType;
-		if (Nodes.Nodes.ELEMENT === nodeType) {
+		if (Dom.Nodes.ELEMENT === nodeType) {
 			serializeElement(
 				node,
 				node.firstChild,
@@ -309,9 +307,9 @@ define([
 				ephemera,
 				xhtml
 			);
-		} else if (Nodes.Nodes.TEXT === node.nodeType) {
+		} else if (Dom.Nodes.TEXT === node.nodeType) {
 			xhtml.push(encodePcdata(node.nodeValue));
-		} else if (Nodes.Nodes.COMMENT === node.nodeType) {
+		} else if (Dom.Nodes.COMMENT === node.nodeType) {
 			xhtml.push('<' + '!--' + node.nodeValue + '-->');
 		} else {
 			console.warn(

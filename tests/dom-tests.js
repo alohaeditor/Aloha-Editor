@@ -129,20 +129,6 @@
 		equal(Dom.outerHtml(node), '<span><u></u>foo<b></b></span>');
 	});
 
-	test('isAtStart', function () {
-		tested.push('isAtStart');
-		var node = $('<div>one</div>')[0];
-		equal(Dom.isAtStart(node.firstChild, 0), true);
-		equal(Dom.isAtStart(node, 1), false);
-	});
-
-	test('isAtEnd', function () {
-		tested.push('isAtEnd');
-		var node = $('<div>one</div>')[0];
-		equal(Dom.isAtEnd(node.firstChild, 3), true);
-		equal(Dom.isAtEnd(node, 0), false);
-	});
-
 	test('nodeIndex', function () {
 		tested.push('nodeIndex');
 		var node = $('<div>foo<b>bar</b></div>')[0];
@@ -341,20 +327,6 @@
 		var elem = $('<span class="one two three"></span>')[0];
 		equal(true, Dom.hasClass(elem, 'one'));
 		equal(false, Dom.hasClass(elem, 'four'));
-	});
-
-	test('indexByClass', function () {
-		tested.push('indexByClass');
-		var result = Dom.indexByClass(input, {'some-class': true, 'some-class-4': true});
-		deepEqual(result, {'some-class': $(input).find('.some-class').get(),
-						   'some-class-4': $(input).find('.some-class-4').get()});
-	});
-
-	test('indexByName', function () {
-		tested.push('indexByName');
-		var result = Dom.indexByName(input, ['P', 'B']);
-		deepEqual(result, {'P': $(input).find('p').get(),
-						   'B': $(input).find('b').get()});
 	});
 
 	/* fixme */

@@ -6,11 +6,13 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
+	'dom/attrs',
 	'dom',
 	'predicates',
 	'arrays',
 	'html'
 ], function(
+	Attrs,
 	Dom,
     Predicates,
     Arrays,
@@ -64,7 +66,7 @@ define([
 	 * @return {boolean}
 	 */
 	function hasText(node) {
-		return !Dom.getTextContent(node).trim().length;
+		return !Dom.textContent(node).trim().length;
 	}
 
 	/**
@@ -137,7 +139,7 @@ define([
 		var height = imgElement.height;
 		var width = imgElement.width;
 
-		Dom.removeAttrs(imgElement);
+		Attrs.removeAll(imgElement);
 
 		imgElement.src = src;
 		imgElement.height = height;

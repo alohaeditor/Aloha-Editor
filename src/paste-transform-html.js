@@ -6,12 +6,14 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
+	'dom/attrs',
 	'dom',
 	'predicates',
 	'arrays',
 	'html',
 	'paste-utils'
 ], function(
+	Attrs,
 	Dom,
 	Predicates,
 	Arrays,
@@ -70,7 +72,7 @@ define([
 
 		anchorElements.forEach(function (anchor) {
 			var href = anchor.href;
-			Dom.removeAttrs(anchor);
+			Attrs.removeAll(anchor);
 			anchor.href = href;
 		});
 
@@ -78,12 +80,12 @@ define([
 
 		lists.forEach(PasteUtils.cleanListElement);
 
-		Dom.removeAttrs(element);
+		Attrs.removeAll(element);
 
 		PasteUtils.walkDescendants(element, Dom.isElementNode, function(node) {
 			var nodeName = node.nodeName;
 			if (nodeName !== 'A' && nodeName !== 'IMG' && node.attributes != null) {
-				Dom.removeAttrs(node);
+				Attrs.removeAll(node);
 			}
 			if (nodeName === 'SPAN' || nodeName === 'FONT' || (nodeName !== 'IMG' && nodeName !== 'BR' && Predicates.isVoidNode(node))) {
 				Dom.removeShallow(node);
@@ -199,7 +201,7 @@ define([
 		content = PasteUtils.extractBodyContent(content);
 		contentElement = transformToDOMElement(content, doc);
 
-		transfromFromDOM(contentElement);
+		transformFromDOM(contentElement);
 		return contentElement.innerHTML;
 	}
 

@@ -115,13 +115,16 @@ define([
 	}
 
 	/**
-	 * Wrap the node with a `nodeName` element.
+	 * Wraps the node with a `nodeName` element.
 	 *
 	 * @param {Element} node
 	 * @param {string}  nodeName
+	 * @return {Element} the wrapper element
 	 */
 	function wrapWithNodeName(node, nodeName) {
-		wrap(node, node.ownerDocument.createElement(nodeName));
+		var wrapper = node.ownerDocument.createElement(nodeName);
+		wrap(node, wrapper);
+		return wrapper;
 	}
 
 	/**
