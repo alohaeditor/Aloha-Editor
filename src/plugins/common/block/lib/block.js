@@ -39,7 +39,8 @@ define([
 	'util/class',
 	'PubSub',
 	'block/block-utils',
-	'util/html'
+	'util/html',
+	'util/functions'
 ], function(
 	Aloha,
 	jQuery,
@@ -49,7 +50,8 @@ define([
 	Class,
 	PubSub,
 	BlockUtils,
-    Html
+	Html,
+	Fn
 ){
 	'use strict';
 
@@ -674,7 +676,7 @@ define([
 					// for nested ones.
 					BlockManager.createBlockLevelSortableForEditableOrBlockCollection($blockCollection);
 				}
-			})
+			});
 		},
 
 		/**
@@ -683,10 +685,11 @@ define([
 		 */
 		_disableUglyInternetExplorerDragHandles: function() {
 			if (jQuery.browser.msie) {
-				this.$element.get( 0 ).onresizestart = function ( e ) { return false; };
-				this.$element.get( 0 ).oncontrolselect = function ( e ) { return false; };
+				var $elem = this.$element.get(0);
+				$elem.onresizestart = Fn.returnFalse;
+				$elem.oncontrolselect = Fn.returnFalse;
 				// We do NOT abort the "ondragstart" event as it is required for drag/drop.
-				this.$element.get( 0 ).onmovestart = function ( e ) { return false; };
+				$elem.onmovestart = Fn.returnFalse;
 				// We do NOT abort the "onselectstart" event because this would disable selection in nested editables
 			}
 		},
@@ -726,7 +729,7 @@ define([
 
                 // Remove the dropzones as soon as the mouse is released,
                 // irrespective of where the drop took place.
-                jQuery( document ).one( "mouseup.aloha-block-dropzone", function(e) {
+                jQuery( document ).one( "mouseup.aloha-block-dropzone", function() {
                     var dropzones = that.$element.parents( ".aloha-editable" ).first().data( "block-dropzones" ) || [];
                     jQuery.each( dropzones, function(i, editable_selector) {
                         jQuery( editable_selector ).removeClass( "aloha-block-dropzone" );      

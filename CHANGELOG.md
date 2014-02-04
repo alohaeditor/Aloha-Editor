@@ -12,6 +12,55 @@ All changes are categorized into one of the following keywords:
                    functional change to any feature.
 - **BUGFIX**: The change fixes a bug.
 
+
+## 0.24.13 - 2014/01/30
+
+- **BUGFIX**: align plugin: Setting alignment to content inside of a table cell
+              will no longer result in all of the content in the cell being
+              aligned, but only the content that is selected (up to the nearest
+              block-level element).
+
+- **BUGFIX**: drag-n-drop: Dragging a block element into an non-editable region
+              resulted in a JavaScript error. This error caused HTML artifacts
+              to be left in the region. Fixing the  JavaScript error corrects
+              this behavior. RT#57629
+
+- **BUGFIX**: copy-paste: Copy and paste text content from MS-Word to Aloha content
+              in IE9 Browser, added line break between paragraphs. When
+              copying from MS-Word unrendered whitespaces are added between
+              paragraphs and are rendered as lines break for Aloha Editor.
+              Removing these unrendered whitespaces solves the line break problem.
+              RT#57725
+
+- **BUGFIX**: button tooltip: 'Insert Table' button tooltip did not disappear when selecting
+              the rows and the columns of the table. This has been fixed so the tooltip does
+              disappear. RT#57677
+
+
+## 0.24.12 - 2014/01/22
+
+- **BUGFIX**: core: Performances fixes introduced a regression which resulted
+              in pressing ENTER to break paragraphs incorrectly.  This has been
+              fix so that pressing enter in an empty editable will result in a
+              new paragraph being inserted after rather than before. RT#57660
+
+## 0.24.11 - 2014/01/15
+
+- **ENHANCEMENT**: textcolor-plugin: The Textcolor plugin has had a complete overhaul to improve usability, and  to fix bugs when changing color around complex markup.
+- **BUGFIX**: core: An IE bug that caused editables to not be activated correctly upon the first mouseclick was resolved. 
+                    Previously the cursor position inside the editable was not set. The user had to click twice to place the cursor correctly. RT#57224
+
+## 0.24.10 - 2014/01/08
+
+- **BUGFIX**: table-plugin: Table selection for rows or columns in IE8 did not
+                            show Table Row/Column panel options. This error is
+                            fixed.
+
+## 0.24.9 - 2013/12/18
+
+- **BUGFIX**: image-plugin: The image plugin icons were fixed for IE7+
+- **BUGFIX**: abbr-plugin: A missing i18n translation was added to the remove abbreviation button. RT#57076
+
 ## 0.24.8 - 2013/11/21
 
 - **BUGFIX**: blocks: The dragging and dropping of Aloha Blocks has been fixed

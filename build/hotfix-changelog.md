@@ -3,23 +3,13 @@ All changes are categorized into one of the following keywords:
 - **BUGFIX**:      core: The change fixes a bug.
 - **ENHANCEMENT**: ui: The change improves the software, but otherwise makes no
                    functional change to any feature.
-- **FEATURE**:     xyz-plugin: The change introduces a new feature, or modifies the function,
-                   usage, or intent of an existing one.
+- **FEATURE**: xyz-plugin: The change introduces a new feature, or modifies the
+               function, usage, or intent of an existing one.
 
 ----
 
+- **BUGFIX**: table-plugin: (Firefox) Pressing tab in the last cell of last
+              row creates a row, but the cursor was placed outside the
+              table. With this fix the cursor is placed in the first cell of
+              the created row. #RT57686
 
-- **BUGFIX**:      Change table cell size by drag & drop
-                   The line which is shown when you drag & drop the size of cell,
-                   is not showed for the last row or last column. RT#55437
-
-- **BUGFIX**:      Tooltip covers color palette
-                   The colors tooltip does not disappear when the color palette is shown.
-                   RT#57078
-
-- **BUGFIX**: Formatless Copy/Paste not working.
-              When paste action was made the formatlesshandler was never called.
-              We manually call this handler before pasting the content into the DOM element.
-              RT#56692
-- **BUGFIX**:      repositorybrowser: Fix i18n of repository browser again to use the language configured in Aloha.settings.locale
-                   This fix should now also work in the built version of alohaeditor
