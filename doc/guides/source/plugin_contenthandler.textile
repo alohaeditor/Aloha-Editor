@@ -19,6 +19,7 @@ There are some Content Handler available:
 * Word
 * oEmbed
 * Sanitize
+* Style Attribute
 
 Plugins also provide Content Handler:
 * Block +common/block+ plugin
@@ -123,6 +124,7 @@ The Contenthandler Plugin has no user interface and is used in conjunction with 
 * word
 * generic
 * sanitize
+* style attribute
 
 h4. Word Content Handler
 
