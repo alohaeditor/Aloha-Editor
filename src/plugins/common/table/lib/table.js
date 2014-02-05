@@ -1425,36 +1425,37 @@ define([
 	 *
 	 * @param {int} rowIndex
 	 *        the index at which the new row shall be inserted
+	 * @return <HTMLElemenet> last row inserted
 	 */
 	Table.prototype.addRow = function(newRowIndex) {
-
-		var that = this;
 		var rowsToInsert = 1;
+		var $insertionRow;
+		var classSelectionColumn = this.get('classSelectionColumn');
 
-		var numCols = this.countVirtualCols();
 		var $rows = this.obj.children().children('tr');
 		for (var j = 0; j < rowsToInsert; j++) {
-			var insertionRow = jQuery('<tr>');
+			$insertionRow = jQuery('<tr>');
 
 			// create the first column, the "select row" column
-			var selectionColumn = jQuery('<td>');
-			selectionColumn.addClass(this.get('classSelectionColumn'));
-			this.attachRowSelectionEventsToCell(selectionColumn);
-			insertionRow.append(selectionColumn);
+			var $selectionColumn = jQuery('<td>');
+			$selectionColumn.addClass(classSelectionColumn);
+			this.attachRowSelectionEventsToCell($selectionColumn);
+			$insertionRow.append($selectionColumn);
 
 			var grid = Utils.makeGrid($rows);
 			var selectColOffset = 1;
 			if ( newRowIndex >= grid.length ) {
 				for (var i = selectColOffset; i < grid[0].length; i++) {
-					insertionRow.append(this.newActiveCell().obj);
+					$insertionRow.append(this.newActiveCell().obj);
 				}
 			} else {
-				for (var i = selectColOffset; i < grid[newRowIndex].length; ) {
-					var cellInfo = grid[newRowIndex][i];
+				var newRow = grid[newRowIndex];
+				for (var i = selectColOffset, len = newRow.length; i < len; ) {
+					var cellInfo = newRow[i];
 					if (Utils.containsDomCell(cellInfo)) {
 						var colspan = cellInfo.colspan;
 						while (colspan--) {
-							insertionRow.append(this.newActiveCell().obj);
+							$insertionRow.append(this.newActiveCell().obj);
 						}
 					} else {
 						jQuery( cellInfo.cell ).attr('rowspan', cellInfo.rowspan + 1);
@@ -1464,13 +1465,15 @@ define([
 			}
 
 			if ( newRowIndex >= $rows.length ) {
-				$rows.eq( $rows.length - 1 ).after( insertionRow );
+				$rows.eq( $rows.length - 1 ).after( $insertionRow );
 			} else {
-				$rows.eq( newRowIndex ).before( insertionRow );
+				$rows.eq( newRowIndex ).before( $insertionRow );
 			}
 		}
 
 		this.numRows += rowsToInsert;
+
+		return $insertionRow[0];
 	};
 
 	/**
