@@ -41,7 +41,7 @@ define([
 	 * @return {boolean} True if Aloha supports the current browser.
 	 */
 	function isBrowserSupported() {
-		var browser = $.browser;
+		var browser = Aloha.browser;
 		var version = browser.version;
 		return !(
 			// Chrome/Safari 4
@@ -109,13 +109,13 @@ define([
 
 		// Because different css is to be applied based on what the user-agent
 		// supports.  For example: outlines do not render in IE7.
-		if ($.browser.webkit) {
+		if (Aloha.browser.webkit) {
 			$('html').addClass('aloha-webkit');
-		} else if ($.browser.opera) {
+		} else if (Aloha.browser.opera) {
 			$('html').addClass('aloha-opera');
-		} else if ($.browser.msie) {
-			$('html').addClass('aloha-ie' + parseInt($.browser.version, 10));
-		} else if ($.browser.mozilla) {
+		} else if (Aloha.browser.msie) {
+			$('html').addClass('aloha-ie' + parseInt(Aloha.browser.version, 10));
+		} else if (Aloha.browser.mozilla) {
 			$('html').addClass('aloha-mozilla');
 		}
 
@@ -296,7 +296,7 @@ define([
 		 * It should be set by us and updated for the particular branch
 		 * @property
 		 */
-		version: '${version}',
+		version: 'v24.12-a',
 
 		/**
 		 * Array of editables that are managed by Aloha
@@ -616,6 +616,47 @@ define([
 		 */
 		toString: function () {
 			return 'Aloha';
+		},
+
+		/**
+		 * Shim to replace $.browser
+		 *
+		 * @hide
+		 */
+		browser: function() {
+			function uaMatch( ua ) {
+				ua = ua.toLowerCase();
+
+				var match = /(chrome)[ \/]([\w.]+)/.exec( ua ) ||
+					/(webkit)[ \/]([\w.]+)/.exec( ua ) ||
+					/(opera)(?:.*version|)[ \/]([\w.]+)/.exec( ua ) ||
+					/(msie) ([\w.]+)/.exec( ua ) ||
+					ua.indexOf("compatible") < 0 && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec( ua ) ||
+					[];
+
+				return {
+					browser: match[ 1 ] || "",
+					version: match[ 2 ] || "0"
+				};
+			};
+
+			matched = uaMatch( navigator.userAgent );
+			browser = {};
+
+			if ( matched.browser ) {
+				browser[ matched.browser ] = true;
+				browser.version = matched.version;
+			}
+
+			// Chrome is Webkit, but Webkit is also Safari.
+			if ( browser.chrome ) {
+				browser.webkit = true;
+			} else if ( browser.webkit ) {
+				browser.safari = true;
+			}
+
+			Aloha.browser = browser;
+
 		}
 	});
 

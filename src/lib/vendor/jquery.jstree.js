@@ -270,7 +270,7 @@ var $ = jQuery;
 
 	// load the css when DOM is ready
 	$(function() {
-		// code is copied from jQuery ($.browser is deprecated + there is a bug in IE)
+		// code is copied from jQuery (Aloha.browser is deprecated + there is a bug in IE)
 		var u = navigator.userAgent.toLowerCase(),
 			v = (u.match( /.+?(?:rv|it|ra|ie)[\/: ]([\d.]+)/ ) || [0,'0'])[1],
 			css_string = '' + 
