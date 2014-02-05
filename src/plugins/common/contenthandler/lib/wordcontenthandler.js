@@ -137,6 +137,14 @@ define([
 				// Because footnotes for example are wrapped in divs and should
 				// be unwrap.
 				$node.contents().unwrap();
+			} else if ('o:p' === nodeName) { // Word specific character
+				// Remove the <o:p> tags.  It seems to stand for a new line
+				$node.replaceWith('<br>');
+			} else if ('p' === nodeName) {
+
+				// Unwrap the paragraph tags so that the visual double space
+				// does not appear
+				$node.contents().unwrap();
 			} else if ('td' !== nodeName && isEmpty($node)) {
 
 				// Because any empty element (like spaces wrapped in spans) are
@@ -237,7 +245,7 @@ define([
 			spans = content.find(detectionFilter);
 			spans.each(function() {
 				var jqElem = jQuery(this),
-				    innerText = jQuery.trim(jqElem.text()).replace(/&nbsp;/g, ''),
+						innerText = jQuery.trim(jqElem.text()).replace(/&nbsp;/g, ''),
 					outerText;
 				
 				if (innerText.length === 0) {
