@@ -43,7 +43,7 @@ define([
 
     var init = function() {
         if (!config) {
-            config = $.extend(true, {}, defaults, Aloha.settings.contentHandler.handler.styleattribute.allowable);
+            config = $.extend(true, {}, defaults, Aloha.settings.contentHandler.handler.styleattribute.supportedStyles);
         }
     };
 
