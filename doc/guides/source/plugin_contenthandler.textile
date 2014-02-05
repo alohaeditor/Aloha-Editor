@@ -88,12 +88,12 @@ h4. Writing your own Content Handler
 	['aloha', 'jquery', 'aloha/contenthandlermanager'],
 	function(Aloha, jQuery, ContentHandlerManager) {
 		"use strict";
-	
+
 		var MyContentHandler = ContentHandlerManager.createHandler({
 			handleContent: function( content ) {
-				
+
 				// do something with the content
-				
+
 				return content; // return as HTML text not jQuery/DOM object
 			}
 		});
@@ -156,6 +156,21 @@ The Generic Content Handler is a bit less generic than his name might suggest as
 ** +<em>+ to +<i>+
 ** +<s>+ and +<strike>+ to +<del>+
 ** and by removing +<u>+ tags (as underline text decoration should solely be used for links)
+
+You may specify which of the above cleaning actions will e run bgy supplying your own configuration based on these default settings:
+
+<javascript>
+Aloha.settings.contentHandler.generic = {
+  prepareTableContents: true,
+  cleanLists: true,
+  removeComments: true,
+  unwrapTags: true,
+  removeStyles: true,
+  removeNamespacedElements: true,
+  transformFormattings: true,
+  transformLinks: false
+}
+</javascript>
 
 h4. Sanitize Content Handler
 
