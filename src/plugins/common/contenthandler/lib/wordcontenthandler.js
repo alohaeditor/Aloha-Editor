@@ -29,13 +29,15 @@ define([
 	'aloha',
 	'aloha/contenthandlermanager',
 	'contenthandler/contenthandler-utils',
-	'util/dom'
+	'util/dom2',
+	'util/html'
 ], function (
 	$,
 	Aloha,
 	Manager,
 	Utils,
-	Dom
+	Dom2,
+    Html
 ) {
 	'use strict';
 
@@ -110,6 +112,22 @@ define([
 	}
 
 	/**
+	 * Removes unrendered child nodes from `$content`.
+	 * @param {jQuery.<HTMLElement> $content
+	 */
+	function removeUnrenderedChildNodes($content) {
+		var childNodes = $content[0].childNodes;
+		var i;
+		var len;
+
+		for (i = 0, len = childNodes.length; i < len; i++) {
+			if (childNodes[i] && Html.isUnrenderedNode(childNodes[i])) {
+				$content[0].removeChild(childNodes[i]);
+			}
+		}
+	}
+
+	/**
 	 * Cleanup MS Word HTML.
 	 *
 	 * @param {jQuery.<HTMLElement>} $content
@@ -120,7 +138,9 @@ define([
 		var $node;
 		var href;
 		var i;
-		for (i = 0; i < $nodes.length; i++) {
+		var len;
+
+		for (i = 0, len = $nodes.length; i < len; i++) {
 			$node = $nodes.eq(i);
 			nodeName = $node[0].nodeName.toLowerCase();
 
@@ -144,6 +164,8 @@ define([
 				$node.contents().unwrap();
 			}
 		}
+
+		removeUnrenderedChildNodes($content);
 	}
 
 	/**
@@ -399,7 +421,7 @@ define([
 						if ( jQuery.trim(jQuery(this).text()).match(/^([\.\(]?[\d\D][\.\(]?){1,4}$/) ) {
 							jQuery(this).remove();
 						}
-					})
+					});
 				
 					// remove TOC anchor links
 					links.each(function() {

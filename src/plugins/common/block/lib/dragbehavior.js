@@ -271,7 +271,7 @@ define([
 	};
 
 	/**
-	 * Check the element that is below of the draggable element in a drag
+	 * Checks the element that is below of the draggable element in a drag
 	 * operation, if is a valid element, this method call to highlight methods
 	 *
 	 * @param {HTMLElement} elm
@@ -280,14 +280,12 @@ define([
 	 * @return {Boolean}
 	 */
 	DragBehavior.prototype.onMouseover = function (elm, event) {
-		if (this.$overElement) {
-			this.disableInsertBeforeOrAfter(this.$overElement);
-		}
+		this.disableInsertBeforeOrAfter(this.$overElement);
 		this.$overElement = $(elm);
 		if (!this._isAllowedOverElement(elm)) {
 			this.enableInsertBeforeOrAfter(elm);
 
-			return true; // to continue bubbleing to find a element where can insert the block
+			return true; // to continue bubbling to find a element where can insert the block
 		} else {
 			this.highlightElement(elm);
 			event.stopImmediatePropagation();
@@ -359,7 +357,9 @@ define([
 	 */
 	DragBehavior.prototype.disableInsertBeforeOrAfter = function ($elm) {
 		this.insertBeforeOrAfterMode = false;
-		$elm.unbind('.brIBOA');
+		if ($elm) {
+			$elm.unbind('.brIBOA');
+		}
 	};
 
 	/**
@@ -444,7 +444,6 @@ define([
 		}
 
 		this.disableInsertBeforeOrAfter(this.$overElement);
-
 	};
 
 	/**

@@ -60,10 +60,14 @@ function (jQuery, Component, Utils) {
 					// cells are merged or split.
 					// IE needs the force argument to be true, Chrome doesn't.
 					// The event argument can be ignored.
-					this.buttonElement.tooltip('close', null/*event*/, true/*force*/);
+					this.closeTooltip();
 
 					this._onClick();
 				}, this));
+		},
+
+		closeTooltip: function() {
+			this.buttonElement.tooltip('close', null/*event*/, true/*force*/);
 		},
 
 		/**
@@ -89,10 +93,17 @@ function (jQuery, Component, Utils) {
 		 */
 		createButtonElement: function () {
 			var button = Utils.makeButtonElement();
+
 			if (this['class']) {
 				button.addClass(this['class']);
 			}
 			this.element = this.buttonElement = button;
+
+			var that = this;
+			button.bind('mouseleave', function() {
+				that.closeTooltip();
+			});
+
 			return button;
 		},
 
