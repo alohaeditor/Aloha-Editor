@@ -358,10 +358,6 @@
 			baseUrl: Aloha.settings.baseUrl,
 			map: moduleMap
 		};
-		
-		var DependencyManagement = global.__DEPS__ || (global.__DEPS__ = {});
-		
-		DependencyManagement.lang = defaultConfig.config.i18n.locale;
 
 		var defaultPaths = {
 			jquery: 'vendor/jquery-1.7.2',
@@ -568,6 +564,10 @@
 	} // end load()
 
 	global.Aloha = global.Aloha || {};
+	// set the locale in the global __DEPS__ here to enable i18n of dependencies
+	// like repository browser
+	global.__DEPS__ = global.__DEPS__ || {};
+	global.__DEPS__.lang = global.Aloha.settings.locale || 'en';
 	if (global.Aloha.deferInit || isDeferInit()) {
 		global.Aloha.deferInit = load;
 	} else {
