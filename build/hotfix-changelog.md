@@ -8,8 +8,4 @@ All changes are categorized into one of the following keywords:
 
 ----
 
-- **BUGFIX**: table-plugin: (Firefox) Pressing tab in the last cell of last
-              row creates a row, but the cursor was placed outside the
-              table. With this fix the cursor is placed in the first cell of
-              the created row. #RT57686
 
