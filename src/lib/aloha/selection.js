@@ -684,7 +684,7 @@ define([
 						offset: Dom.getIndexInParent(current)
 					};
 				}
-				}
+			}
 		},
 
 		/**
