@@ -655,37 +655,36 @@ define([
 				current = parent;
 				parent = parent.parentNode;
 			}
-			if (current !== null) {
-				if (forward) {
-					// check whether the element after the non editable element is editable and a blocklevel element
-					if (Dom.isBlockLevelElement(current.nextSibling) && jQuery(current.nextSibling).contentEditable()) {
-						return {
-							container: current.nextSibling,
-							offset: 0
-						};
-					} else {
-						return {
-							container: parent,
-							offset: Dom.getIndexInParent(current)
-						};
-					}
-				} else {
-					// check whether the element before the non editable element is editable and a blocklevel element
-					if (Dom.isBlockLevelElement(current.previousSibling) && jQuery(current.previousSibling).contentEditable()) {
-						return {
-							container: current.previousSibling,
-							offset: current.previousSibling.childNodes.length
-						};
-					} else {
-						return {
-							container: parent,
-							offset: Dom.getIndexInParent(current)
-						};
-					}
-				}
-			} else {
+			if (current === null) {
 				return false;
 			}
+			if (forward) {
+				// check whether the element after the non editable element is editable and a blocklevel element
+				if (Dom.isBlockLevelElement(current.nextSibling) && jQuery(current.nextSibling).contentEditable()) {
+					return {
+						container: current.nextSibling,
+						offset: 0
+					};
+				} else {
+					return {
+						container: parent,
+						offset: Dom.getIndexInParent(current) + 1
+					};
+				}
+			} else {
+				// check whether the element before the non editable element is editable and a blocklevel element
+				if (Dom.isBlockLevelElement(current.previousSibling) && jQuery(current.previousSibling).contentEditable()) {
+					return {
+						container: current.previousSibling,
+						offset: current.previousSibling.childNodes.length
+					};
+				} else {
+					return {
+						container: parent,
+						offset: Dom.getIndexInParent(current)
+					};
+				}
+				}
 		},
 
 		/**
