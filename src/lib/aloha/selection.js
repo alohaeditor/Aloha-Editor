@@ -31,6 +31,8 @@ define([
 	'util/range',
 	'util/arrays',
 	'util/strings',
+	'util/dom',
+	'util/dom2',
 	'aloha/console',
 	'PubSub',
 	'aloha/engine',
@@ -43,6 +45,8 @@ define([
 	Range,
 	Arrays,
 	Strings,
+	Dom,
+	Dom2,
 	console,
 	PubSub,
 	Engine,
@@ -571,15 +575,31 @@ define([
 							.closest('.aloha-editable').length > 0;
 
 				if (inEditable) {
-					var validStartPosition = !(3 === range.startContainer.nodeType &&
-							!jQuery(range.startContainer.parentNode).contentEditable());
+					var validStartPosition = this._validEditablePosition(range.startContainer);
+					var validEndPosition = this._validEditablePosition(range.endContainer);
+					var newPos;
+					// when we are moving down (with the cursor down key), we want to position the
+					// cursor AFTER the non-editable area
+					// otherwise BEFORE the non-editable area
+					var movingDown = event && (event.keyCode === 40);
 
-					var validEndPosition = !(3 === range.endContainer.nodeType &&
-							!jQuery(range.endContainer.parentNode).contentEditable());
-
+					if (!validStartPosition) {
+						newPos = this._getNearestEditablePosition(range.startContainer, movingDown);
+						if (newPos) {
+							range.startContainer = newPos.container;
+							range.startOffset = newPos.offset;
+						}
+					}
+					if (!validEndPosition) {
+						newPos = this._getNearestEditablePosition(range.endContainer, movingDown);
+						if (newPos) {
+							range.endContainer = newPos.container;
+							range.endOffset = newPos.offset;
+						}
+					}
 					if (!validStartPosition || !validEndPosition) {
-						Aloha.getSelection().removeAllRanges();
-						return true;
+						range.correctRange();
+						range.select();
 					}
 				}
 			}
@@ -600,6 +620,71 @@ define([
 			Aloha.trigger('aloha-selection-changed-after', [this.rangeObject, event]);
 
 			return true;
+		},
+
+		/**
+		 * Check whether a position with the given node as container is a valid editable position
+		 * @param {DOMObject} node DOM node
+		 * @return true if the position is editable, false if not
+		 */
+		_validEditablePosition: function (node) {
+			if (!node) {
+				return false;
+			}
+			switch (node.nodeType) {
+			case 1:
+				return jQuery(node).contentEditable();
+			case 3:
+				return jQuery(node.parentNode).contentEditable();
+			default:
+				return false;
+			}
+		},
+
+		/**
+		 * Starting with the given node (which is supposed to be not editable)
+		 * find the nearest editable position
+		 * 
+		 * @param {DOMObject} node DOM node
+		 * @param {Boolean} forward true for searching forward, false for searching backward
+		 */
+		_getNearestEditablePosition: function (node, forward) {
+			var current = node;
+			var parent = current.parentNode;
+			while (parent !== null && !jQuery(parent).contentEditable()) {
+				current = parent;
+				parent = parent.parentNode;
+			}
+			if (current === null) {
+				return false;
+			}
+			if (forward) {
+				// check whether the element after the non editable element is editable and a blocklevel element
+				if (Dom.isBlockLevelElement(current.nextSibling) && jQuery(current.nextSibling).contentEditable()) {
+					return {
+						container: current.nextSibling,
+						offset: 0
+					};
+				} else {
+					return {
+						container: parent,
+						offset: Dom.getIndexInParent(current) + 1
+					};
+				}
+			} else {
+				// check whether the element before the non editable element is editable and a blocklevel element
+				if (Dom.isBlockLevelElement(current.previousSibling) && jQuery(current.previousSibling).contentEditable()) {
+					return {
+						container: current.previousSibling,
+						offset: current.previousSibling.childNodes.length
+					};
+				} else {
+					return {
+						container: parent,
+						offset: Dom.getIndexInParent(current)
+					};
+				}
+			}
 		},
 
 		/**
