@@ -623,15 +623,12 @@ define( [
 					// The first one we need to ignore is the one trigger when
 					// we reposition the selection to right at the end of the
 					// link.
-					// Not sure what the next event is yet but we need to
-					// ignore it as well, ignoring it prevents the value of
-					// hrefField from being set to the old value.
+
 					that.ignoreNextSelectionChangedEvent = true;
 					range.startContainer = range.endContainer;
 					range.startOffset = range.endOffset;
 					range.select();
-					that.ignoreNextSelectionChangedEvent = true;
-					
+
 					var hrefValue = jQuery( that.hrefField.getInputElem() ).attr( 'value' );
 					
 					if ( hrefValue == that.hrefValue || hrefValue == '' ) {
