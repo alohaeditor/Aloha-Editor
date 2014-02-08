@@ -37,3 +37,11 @@
 .aloha .ui-icon.aloha-icon-textcolor{
 	background-image: none;
 }
+
+.aloha .ui-icon.aloha-icon-textcolor-color{
+	background-image: url("../img/textcolor.png");
+}
+
+.aloha .ui-icon.aloha-icon-textcolor-background-color{
+	background-image: url("../img/textbackground.png");
+}
