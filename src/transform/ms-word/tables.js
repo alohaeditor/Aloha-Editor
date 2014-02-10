@@ -5,75 +5,69 @@
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define([
-	'transform/ms-word/utils',
-	'dom/mutation'
-], function (
-	Utils,
-    Mutation
-) {
+define(['dom'], function (Dom) {
 	'use strict';
 
 	/**
-	 * Removes colgroup element from `table`.
+	 * Converts all TD elements into TH elements in the given list of nodes.
 	 *
-	 * @param {Element} table
+	 * @private
+	 * @param  {Array.<Node>} nodes
+	 * @pram   {Document}     doc
+	 * @return {Array.<Node>}
 	 */
-	function removeColgroup(table) {
-		var colgroups = table.querySelectorAll('colgroup');
-		for (var i = 0, len = colgroups.length; i < len; i++) {
-			table.removeChild(colgroups[i]);
-		}
-	}
-
-	/**
-	 * Cleans a list of paragraphs.
-	 *
-	 * @param {Array.<Element>} paragraphs
-	 */
-	function cleanParagraphs(paragraphs) {
-		for (var i = 0, len = paragraphs.length; i < len; i++) {
-			Utils.cleanElement(paragraphs[i]);
-		}
-	}
-
-	/**
-	 * Transforms `table`.
-	 *
-	 * @param {Element} table Table to transform
-	 */
-	function transformTable(table) {
-		var tds = table.querySelectorAll('td'),
-		    childNodes;
-
-		for (var i = 0, len = tds.length; i < len; i++) {
-			cleanParagraphs(tds[i].querySelectorAll('p'));
-			childNodes = tds[i].childNodes;
-			if (childNodes.length == 1 && childNodes[0].nodeName === 'P') {
-				Mutation.removeShallow(childNodes[0]);
+	function createTableHeadings(nodes, doc) {
+		var list = [];
+		nodes.forEach(function (node) {
+			if ('TD' === node.nodeName) {
+				var children = Dom.children(node);
+				node = doc.createElement('th');
+				Dom.copy(children, node);
 			}
-		}
+			return list.push(node);
+		});
+		return list;
 	}
 
 	/**
-	 * Transforms tables.
+	 * Matches MS-WORD styling that demarks table header rows.
 	 *
-	 * @param {Element} element
+	 * @private
+	 * @type {RegExp}
 	 */
-	function transform(element) {
-		var tables = element.querySelectorAll('table'),
-		    tableElements = element.querySelectorAll('table,td,th,tr'),
-			i,
-			len;
+	var HEADER_ROW_INDEX = /mso-yfti-irow:\-1;/;
 
-		for (i = 0, len = tableElements.length; i < len; i++) {
-			Utils.removeAllAttributes(tableElements[i]);
-		}
+	function isTableHeading(node) {
+		return 'TR' === node.nodeName
+		    && HEADER_ROW_INDEX.test(Dom.getAttr(node, 'style'));
+	}
 
-		for (i = 0, len = tables.length; i < len; i++) {
-			removeColgroup(tables[i]);
-			transformTable(tables[i]);
+	/**
+	 * Normalizes tables in the given DOM structure.
+	 *
+	 * @param  {node}     element
+	 * @param  {Document} doc
+	 * @return {Element} A normalized copy of `element`
+	 */
+	function transform(element, doc) {
+		var children = Dom.children(element);
+		var processed = [];
+		var node;
+		var tds;
+		var i;
+		for (i = 0; i < children.length; i++) {
+			node = transform(children[i], doc);
+			if (isTableHeading(node)) {
+				node = Dom.clone(node);
+				tds = Dom.children(node);
+				tds.forEach(Dom.remove);
+				Dom.move(createTableHeadings(tds, doc), node);
+			}
+			processed.push(node);
 		}
+		var clone = Dom.clone(element, false);
+		Dom.move(processed, clone);
+		return clone;
 	}
 
 	return {

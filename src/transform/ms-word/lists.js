@@ -351,9 +351,11 @@ define([
 		var children = Dom.children(element);
 		var processed = [];
 		var i;
+		var l = children.length;
 		var list;
-		for (i = 0; i < children.length; i++) {
-			var node = children[i];
+		var node;
+		for (i = 0; i < l; i++) {
+			node = transform(children[i], doc);
 			if (!isFirstListParagraph(node)) {
 				processed.push(node);
 			} else {

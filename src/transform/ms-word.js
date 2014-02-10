@@ -13,20 +13,16 @@ define([
 	'html',
 	'arrays',
 	'ms-word/lists',
-	/*
 	'ms-word/tables',
-	'ms-word/toc',
-	*/
+	//'ms-word/toc',
 	'utils'
 ], function (
 	Dom,
 	Html,
 	Arrays,
 	Lists,
-	/*
 	Tables,
-	TOC,
-	*/
+	//TOC,
 	Utils
 ) {
 	'use strict';
@@ -122,6 +118,7 @@ define([
 		var raw = Html.parse(Utils.extract(markup), doc);
 		var cleaned = Utils.normalize(raw, doc, clean) || raw;
 		cleaned = Lists.transform(cleaned, doc);
+		cleaned = Tables.transform(cleaned, doc);
 		return cleaned.innerHTML;
 	}
 
