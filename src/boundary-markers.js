@@ -8,7 +8,6 @@
 define([
 	'dom',
 	'mutation',
-	'cursors',
 	'arrays',
 	'strings',
 	'ranges',
@@ -17,7 +16,6 @@ define([
 ], function BoundaryMarkers(
 	Dom,
 	Mutation,
-	Cursors,
 	Arrays,
 	Strings,
 	Ranges,
@@ -27,26 +25,21 @@ define([
 	'use strict';
 
 	/**
-	 * Insert selection markers at the given range.
+	 * Insert boundary markers at the given range.
 	 *
 	 * @param {Range} range
 	 */
 	function insert(range) {
-		var leftMarkerChar  = (Dom.Nodes.TEXT === range.startContainer.nodeType ? '[' : '{');
-		var rightMarkerChar = (Dom.Nodes.TEXT === range.endContainer.nodeType   ? ']' : '}');
-		Mutation.splitTextContainers(range);
-		var leftMarker = document.createTextNode(leftMarkerChar);
-		var rightMarker = document.createTextNode(rightMarkerChar);
-		var start = Cursors.cursorFromBoundaryPoint(
-			range.startContainer,
-			range.startOffset
+		Mutation.insertTextAtBoundary(
+			Dom.isTextNode(range.endContainer) ? ']' : '}',
+			Boundaries.fromRangeEnd(range),
+			true
 		);
-		var end = Cursors.cursorFromBoundaryPoint(
-			range.endContainer,
-			range.endOffset
+		Mutation.insertTextAtBoundary(
+			Dom.isTextNode(range.startContainer) ? '[' : '{',
+			Boundaries.fromRangeStart(range),
+			true
 		);
-		start.insert(leftMarker);
-		end.insert(rightMarker);
 	}
 
 	/**

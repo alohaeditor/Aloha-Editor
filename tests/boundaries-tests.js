@@ -125,8 +125,8 @@
 		var t = function (markup, expected) {
 			var range = ranges.create(document.documentElement, 0);
 			boundarymarkers.extract($(markup)[0], range);
-			var left = Boundaries.nodeBefore(Boundaries.start(range));
-			var right = Boundaries.nodeAfter(Boundaries.end(range));
+			var left = Boundaries.nodeBefore(Boundaries.fromRangeStart(range));
+			var right = Boundaries.nodeAfter(Boundaries.fromRangeEnd(range));
 			equal(left.data || left.nodeName, expected[0], markup + ' => ' + expected.join());
 			equal(right.data || right.nodeName, expected[1], markup + ' => ' + expected.join());
 		};
