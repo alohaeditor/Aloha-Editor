@@ -57,5 +57,6 @@
 		t('<div><p>{</p>x}</div>',             '<div><p>{</p>x}</div>');
 	});
 
-	testCoverage(test, tested, ranges);
+	//testCoverage(test, tested, ranges);
+
 }(window.aloha));

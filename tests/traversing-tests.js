@@ -286,5 +286,6 @@
 		}
 	});
 
-	testCoverage(test, tested, Traversing);
+	//testCoverage(test, tested, Traversing);
+
 }(window.aloha));

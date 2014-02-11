@@ -75,6 +75,6 @@
 		equal(fn.comp(multiplyBy2, add4, multiplyBy2)(5), 28);
 	});
 
-	testCoverage(test, tested, fn);
+	//testCoverage(test, tested, fn);
 
 }(window.aloha));

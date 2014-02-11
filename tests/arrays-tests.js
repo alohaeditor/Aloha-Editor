@@ -81,6 +81,6 @@
 		equal(Arrays.some([1,2,10,8], biggerThan9), 10);
 	});
 
-	testCoverage(test, tested, Arrays);
+	//testCoverage(test, tested, Arrays);
 
 }(window.aloha));

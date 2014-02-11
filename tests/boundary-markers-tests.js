@@ -52,5 +52,6 @@
 		t('<p>x<b>{y}</b>z</p>', '<p>x<b>{y}</b>z</p>');
 	});
 
-	testCoverage(test, tested, boundarymarkers);
+	//testCoverage(test, tested, boundarymarkers);
+
 }(window.aloha));

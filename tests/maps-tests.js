@@ -98,5 +98,6 @@
 		equal(maps.isMap(document.createTextNode("xx")), false);
 	});
 
-	testCoverage(test, tested, maps);
+	//testCoverage(test, tested, maps);
+
 }(window.aloha));

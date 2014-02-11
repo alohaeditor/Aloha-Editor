@@ -363,7 +363,6 @@
 		ok(1);
 	});
 
-	module('dom');
+	//testCoverage(test, tested, Dom);
 
-	testCoverage(test, tested, Dom);
 }(window.aloha));

@@ -66,5 +66,6 @@
 		equal(Strings.isControlCharacter('a'), false);
 	});
 
-	testCoverage(test, tested, Strings);
+	//testCoverage(test, tested, Strings);
+
 }(window.aloha));

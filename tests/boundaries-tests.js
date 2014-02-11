@@ -145,5 +145,6 @@
 		t('<p><i>{foo</i>b<u>a}<u>r</p>', ['I', 'U']);
 	});
 
-	testCoverage(test, tested, Boundaries);
+	//testCoverage(test, tested, Boundaries);
+
 }(window.aloha));

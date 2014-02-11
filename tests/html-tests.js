@@ -417,6 +417,6 @@
 		  '<div><p>foo<i>bar<b>baz</b></i>{</p>foo}</div>');
 	});
 
-	testCoverage(test, tested, Html);
+	//testCoverage(test, tested, Html);
 
 }(window.aloha));

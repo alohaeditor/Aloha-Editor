@@ -996,5 +996,6 @@ return;
 	  '<ul>{<li><b><ins>Some</ins> <del>text</del></b></li>}</ul>',
 	  true);
 
-	testCoverage(test, tested, editing);
+	//testCoverage(test, tested, editing);
+
 }(window.aloha));

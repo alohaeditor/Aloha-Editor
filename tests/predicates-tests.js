@@ -53,6 +53,6 @@
 		equal(Predicates.isTextLevelSemanticNode(span), true);
 	});
 
-	testCoverage(test, tested, Predicates);
+	//testCoverage(test, tested, Predicates);
 
 }(window.aloha));
