@@ -1,9 +1,9 @@
 /* list-plugin.js is part of Aloha Editor project http://aloha-editor.org
  *
- * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://aloha-editor.org/contribution.php 
- * 
+ * Contributors http://aloha-editor.org/contribution.php
+ *
  * Aloha Editor is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- * 
+ *
  * As an additional permission to the GNU GPL version 2, you may distribute
  * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
  * source code without the copy of the GNU GPL normally required,
@@ -32,6 +32,7 @@ define([
 	'ui/scopes',
 	'ui/button',
 	'ui/toggleButton',
+    'ui/menuButton',
 	'i18n!list/nls/i18n',
 	'i18n!aloha/nls/i18n',
 	'aloha/engine',
@@ -44,6 +45,7 @@ define([
 	Scopes,
 	Button,
 	ToggleButton,
+	MenuButton,
 	i18n,
 	i18nCore,
 	Engine,
@@ -52,12 +54,12 @@ define([
 	'use strict';
 
 	var GENTICS = window.GENTICS;
-	
+
 	/**
 	 * Transforms the given list element and its sub elements (if they are in the selection) into
 	 * the given transformTo target.
 	 * @param domToTransform - The list object that should be transformed
-	 * @param transformTo - Transformationtarget e.g. 'ul' / 'ol'
+	 * @param transformTo - Transformationtarget e.g. 'ul' / 'ol' 
 	 */
 	function transformExistingListAndSubLists (domToTransform, transformTo) {
 		// find and transform sublists if they are in the selection
@@ -103,12 +105,104 @@ define([
 		/**
 		 * default button configuration
 		 */
-		config: [ 'ul', 'ol' ],
+		config: [ 'ul', 'ol', 'dl' ],
 
 		/**
 		 * List of transformable elements
 		 */
-		transformableElements: {'p' : true, 'h1' : true, 'h2' : true, 'h3' : true, 'h4' : true, 'h5' : true, 'h6' : true, 'ul' : true, 'ol' : true},
+		transformableElements: {'p' : true, 'h1' : true, 'h2' : true, 'h3' : true, 'h4' : true, 'h5' : true, 'h6' : true, 'ul' : true, 'ol' : true, 'dl': true},
+
+		/**
+		* Default list styles
+		*/
+        classes : {
+            ul: [
+                {name: i18n.t('button.liststyle.disc'), cssClass: 'aloha-list-disc', iconUrl: 'src/plugins/common/list/img/list_disc.png'},
+                {name: i18n.t('button.liststyle.circle'), cssClass: 'aloha-list-circle', iconUrl: 'src/plugins/common/list/img/list_circle.png'},
+                {name: i18n.t('button.liststyle.square'), cssClass: 'aloha-list-square', iconUrl: 'src/plugins/common/list/img/list_square.png'}
+            ],
+            ol: [
+                {name: i18n.t('button.liststyle.decimal'), cssClass: 'aloha-list-decimal'},
+                {name: i18n.t('button.liststyle.decimal-leading-zero'), cssClass: 'aloha-list-decimal-leading-zero'},
+                {name: i18n.t('button.liststyle.lower-roman'), cssClass: 'aloha-list-lower-roman'},
+                {name: i18n.t('button.liststyle.upper-roman'), cssClass: 'aloha-list-upper-roman'},
+                {name: i18n.t('button.liststyle.lower-greek'), cssClass: 'aloha-list-lower-greek'},
+                {name: i18n.t('button.liststyle.lower-latin'), cssClass: 'aloha-list-lower-latin'},
+                {name: i18n.t('button.liststyle.upper-latin'), cssClass: 'aloha-list-upper-latin'}
+            ],
+			dl: [
+				{name: i18n.t('button.liststyle.blue'), cssClass: 'aloha-list-blue'},
+				{name: i18n.t('button.liststyle.green'), cssClass: 'aloha-list-green'},
+				{name: i18n.t('button.liststyle.red'), cssClass: 'aloha-list-red'}
+			]
+        },
+
+		/**
+		 * Toggle selected CSS class on current list elemnet
+		 * @param String listtype: ol, ul or dl
+		 * @param String style: selected CSS class
+		 * @return void
+		 */
+		toggleListStyle: function(listtype, style) {
+			var domObject = this.getStartingDomObjectToTransform();
+			var nodeName = domObject.nodeName.toLowerCase();
+			var listToStyle =  jQuery(domObject);
+			var remove = false;
+			
+			if (nodeName !== 'ul' && nodeName !== 'ol' && nodeName !== 'dl') {
+				// we don't have a list yet, so transform selection to list
+				this.transformList(listtype);
+				domObject = this.getStartingDomObjectToTransform();
+				nodeName = domObject.nodeName.toLowerCase();
+				listToStyle = jQuery(this.getStartingDomObjectToTransform());
+			}
+
+			if(listtype === nodeName){
+				// remove all classes
+				jQuery.each(this.classes[nodeName], function(){
+					if(listToStyle.hasClass(this.cssClass) && this.cssClass === style){
+						remove = true;
+					}
+					listToStyle.removeClass(this.cssClass);
+				});
+
+				if(!remove){
+					listToStyle.addClass(style);
+				}
+			}
+		},
+
+		/**
+		* Array for ordered list style buttons
+		*/
+		orderedListStyleButtons: [],
+
+		/**
+		* Array for unordered list style buttons
+		*/
+		unorderedListStyleButtons: [],
+
+		/**
+		* Array for unordered definition style buttons
+		*/
+		definitionListStyleButtons: [],
+
+		/**
+		* Construct button for list styles (CSS classes)
+		 * @param Boolean listtype: ol, ul or dl
+		 * @param Object button: settings parameters for menu buttons
+	 	* @return Object for MenuButton menu property
+		*/
+		makeListStyleButton: function (listtype, button) {
+			var that = this;
+			return {
+				text: button.name,
+				click: function () {
+					that.toggleListStyle(listtype, button.cssClass);
+				},
+				iconUrl: button.iconUrl
+			};
+		},
 
 		/**
 		 * Initialize the plugin, register the buttons
@@ -117,22 +211,45 @@ define([
 
 			var that = this;
 
-			this._orderedListButton = Ui.adopt("orderedList", ToggleButton, {
-				tooltip: i18n.t("button.createolist.tooltip"),
-				icon: "aloha-icon aloha-icon-orderedlist",
-				scope: 'Aloha.continuoustext',
-				click: function(){
-					that.transformList(true);
-				}
+			// List format classes can be overwritten via Aloha.settings.plugins.list.classes
+			if (typeof Aloha.settings.plugins.list !== 'undefined') {
+				that.classes = Aloha.settings.plugins.list.classes;
+			}
+
+			jQuery.each(that.classes.dl, function(i, button) {
+				that.definitionListStyleButtons.push(that.makeListStyleButton('dl', button));
 			});
 
-			this._unorderedListButton = Ui.adopt("unorderedList", ToggleButton, {
-				tooltip: i18n.t("button.createulist.tooltip"),
-				icon: "aloha-icon aloha-icon-unorderedlist",
-				scope: 'Aloha.continuoustext',
+			this._definitionListFormatSelectorButton = Ui.adopt("definitionListFormatSelector", MenuButton, {
 				click: function(){
-					that.transformList(false);
-				}
+					that.transformList('dl');
+				},
+				html: '<span class="ui-button-icon-primary ui-icon aloha-icon aloha-icon-definitionlist"></span>',
+				menu: (that.definitionListStyleButtons.length) ? that.definitionListStyleButtons : null
+			});
+			
+			jQuery.each(that.classes.ol, function(i, button) {
+				that.orderedListStyleButtons.push(that.makeListStyleButton('ol', button));
+			});
+
+			this._orderedListFormatSelectorButton = Ui.adopt("orderedListFormatSelector", MenuButton, {
+				click: function(){
+					that.transformList('ol');
+				},
+				html: '<span class="ui-button-icon-primary ui-icon aloha-icon aloha-icon-orderedlist"></span>',
+				menu: (that.orderedListStyleButtons.length) ? that.orderedListStyleButtons : null
+			});
+
+			jQuery.each(that.classes.ul, function(i, button) {
+				that.unorderedListStyleButtons.push(that.makeListStyleButton('ul', button));
+			});
+
+			this._unorderedListFormatSelectorButton = Ui.adopt("unorderedListFormatSelector", MenuButton, {
+				click: function(){
+					that.transformList('ul');
+				},
+				html: '<span class="ui-button-icon-primary ui-icon aloha-icon aloha-icon-unorderedlist"></span>',
+				menu: (that.unorderedListStyleButtons.length) ? that.unorderedListStyleButtons : null
 			});
 
 			this._indentListButton = Ui.adopt("indentList", Button, {
@@ -160,27 +277,33 @@ define([
 				var i,
 					effectiveMarkup,
 					rangeObject = message.range;
-				
+
 				// Hide all buttons in the list tab will make the list tab disappear
 				that._outdentListButton.show(false);
 				that._indentListButton.show(false);
-				that._unorderedListButton.setState(false);
-				that._orderedListButton.setState(false);
-				
+				that._unorderedListFormatSelectorButton.show(false);
+				that._orderedListFormatSelectorButton.show(false);
+				that._definitionListFormatSelectorButton.show(false);
+
 				for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 					effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
+					
 					if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ul></ul>'))) {
-						that._unorderedListButton.setState(true);
+						that._unorderedListFormatSelectorButton.show(true);
 						// Show all buttons in the list tab
 						that._outdentListButton.show(true);
 						that._indentListButton.show(true);
 						break;
 					}
 					if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ol></ol>'))) {
-						that._orderedListButton.setState(true);
+						that._orderedListFormatSelectorButton.show(true);
 						// Show all buttons in the list tab
 						that._outdentListButton.show(true);
 						that._indentListButton.show(true);
+						break;
+					}
+					if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<dl></dl>'))) {
+						that._definitionListFormatSelectorButton.show(true);
 						break;
 					}
 				}
@@ -207,17 +330,22 @@ define([
 			if (Aloha.Selection.rangeObject.unmodifiableMarkupAtStart[0]) {
 				// show/hide them according to the config
 				if (jQuery.inArray('ul', config) != -1 && Aloha.Selection.canTag1WrapTag2(Aloha.Selection.rangeObject.unmodifiableMarkupAtStart[0].nodeName, "ul") != -1) {
-					this._unorderedListButton.show(true);
+					this._unorderedListFormatSelectorButton.show(true);
 				} else {
-					this._unorderedListButton.show(false);
+					this._unorderedListFormatSelectorButton.show(false);
 				}
 
 				if (jQuery.inArray('ol', config) != -1 && Aloha.Selection.canTag1WrapTag2(Aloha.Selection.rangeObject.unmodifiableMarkupAtStart[0].nodeName, "ol") != -1) {
-					this._orderedListButton.show(true);
+					this._orderedListFormatSelectorButton.show(true);
 				} else {
-					this._orderedListButton.show(false);
+					this._orderedListFormatSelectorButton.show(false);
 				}
 
+				if (jQuery.inArray('dl', config) != -1 && Aloha.Selection.canTag1WrapTag2(Aloha.Selection.rangeObject.unmodifiableMarkupAtStart[0].nodeName, "dl") != -1) {
+					this._definitionListFormatSelectorButton.show(true);
+				} else {
+					this._definitionListFormatSelectorButton.show(false);
+				}
 			}
 		},
 
@@ -270,219 +398,263 @@ define([
 
 			return false;
 		},
+		
+		/**
+		* Transforms a list into paragraphs
+		* @param Dom domToTransform element to transform
+		* @param String listElement the list element to transform (li, dt, dd)
+		*/
+		transformListToParagraph: function (domToTransform, listElement) {
+			var newPara;
+			var jqToTransform = jQuery(domToTransform);
+			jQuery.each(jqToTransform.children(listElement), function(index, el) {
+				newPara = Aloha.Markup.transformDomObject(el, 'p', Aloha.Selection.rangeObject);
+				// if any lists are in the paragraph, move the to after the paragraph
+				newPara.after(newPara.children('ol,ul,dl'));
+				Engine.ensureContainerEditable(newPara.get(0));
+			});
+
+			// unwrap the elements (remove the enclosing list)
+			jqToTransform.children().unwrap();
+		},
+		
+		checkIfNestedList: function (jqParentList) {
+				// when the list is nested into another, our list items will be
+				// added to the list items of the outer list
+
+				// find the place where to put the children of the inner list
+				if (jqParentList.get(0).nodeName.toLowerCase() === 'li') {
+					// inner list is nested in a li (this conforms to the html5 spec)
+					jqParentList.after(jqList.children());
+					jqList.remove();
+				} else {
+					// inner list is nested in the outer list directly (this violates the html5 spec)
+					jqList.children().unwrap();
+				}
+		},
+		
+		/**
+		* Creates a list out of allowed elements
+		* @param String listtype type of list we want to create (ul, ol, dl)
+		* @param Dom domToTransform DOM object to transform
+		*/
+		createList: function (listtype, domToTransform) {
+			var selectedSiblings = Aloha.Selection.rangeObject.getSelectedSiblings(domToTransform);
+			var jqList;
+			var jqNewEl;
+			var lastAppendedEl;
+			var el;
+			var listElement;
+
+			// create a new list
+			switch (listtype) {
+				case 'ol':
+					jqList = jQuery('<ol></ol>');
+					jqNewEl = jQuery('<li></li>');
+					break;
+				case 'ul':
+					jqList = jQuery('<ul></ul>');
+					jqNewEl = jQuery('<li></li>');
+					break;
+				case 'dl':
+					jqList = jQuery('<dl></dl>');
+					jqNewEl = jQuery('<dt></dt>');
+					break;
+			}
+			
+			// add the li into the list
+			jqList.append(jqNewEl);
+			// append the contents of the old dom element to the li
+			jQuery(domToTransform).contents().appendTo(jqNewEl);
+			// replace the old dom element with the new list
+			jQuery(domToTransform).replaceWith(jqList);
+
+			// update the selection range
+			if (Aloha.Selection.rangeObject.startContainer == domToTransform) {
+				Aloha.Selection.rangeObject.startContainer = jqNewEl.get(0);
+			}
+			if (Aloha.Selection.rangeObject.endContainer == domToTransform) {
+				Aloha.Selection.rangeObject.endContainer = jqNewEl.get(0);
+			}
+
+			lastAppendedEl = jqNewEl;
+
+			// now also transform all siblings
+			if (selectedSiblings) {
+				var o = true;
+				var lastEl = false;
+				for (var i = 0; i < selectedSiblings.length; ++i) {
+					if (GENTICS.Utils.Dom.isBlockLevelElement(selectedSiblings[i])) {
+						if (lastEl) {
+							lastEl = false;
+						}
+						// transform the block level element
+						if(listtype === 'dl'){
+							if(!o){
+								jqNewEl = Aloha.Markup.transformDomObject(selectedSiblings[i], 'dt', Aloha.Selection.rangeObject);
+							} else {
+								jqNewEl = Aloha.Markup.transformDomObject(selectedSiblings[i], 'dd', Aloha.Selection.rangeObject);
+							}
+							o = !o;
+						} else {
+							jqNewEl = Aloha.Markup.transformDomObject(selectedSiblings[i], 'li', Aloha.Selection.rangeObject);
+						}
+						jqList.append(jqNewEl);
+						lastAppendedEl = jqNewEl;
+					} else {
+						if (selectedSiblings[i].nodeType == 3 && jQuery.trim(selectedSiblings[i].data).length === 0) {
+							continue;
+						}
+						if (!lastEl) {
+							lastEl = jqNewEl;
+							jqList.append(lastEl);
+							lastAppendedEl = lastEl;
+						}
+						lastEl.append(selectedSiblings[i]);
+					}
+				}
+			}
+
+			// merge adjacent lists
+			this.mergeAdjacentLists(jqList);
+
+			//use rangy to change the selection to the contents of
+			//the last li that was appended to the list
+			el = lastAppendedEl.get(0);
+			if (GENTICS.Utils.Dom.isEmpty(el)) {
+				var range = Aloha.createRange();
+				var selection = Aloha.getSelection();
+				//IE7 requires an (empty or non-empty) text node
+				//inside the li for the selection to work.
+				el.appendChild(document.createTextNode(""));
+				range.selectNodeContents( el.lastChild );
+				selection.removeAllRanges();
+				selection.addRange( range );
+				Aloha.Selection.updateSelection();
+			}
+		},
+		
+		/**
+		* Set up a new empty list
+		* @param String listtype type of list we want to create (ul, ol, dl)
+		* @return Dom domToTransform DOM object to transform
+		*/
+		prepareNewList: function (listtype) {
+			var jqList;
+			var jqNewEl;
+			var el;
+			var editable;
+			var range;
+			var selection;
+			// wrap a paragraph around the selection
+			Aloha.Selection.changeMarkupOnSelection(jQuery('<p></p>'));
+			var domToTransform = this.getStartingDomObjectToTransform();
+
+			if (!domToTransform) {
+				if ( Aloha.Selection.rangeObject.startContainer.contentEditable ) {
+					// create a new list with an empty item
+					switch (listtype){
+						case 'ol':
+							jqList = jQuery('<ol></ol>');
+							jqNewEl = jQuery('<li></li>');
+							break;
+						case 'ul':
+							jqList = jQuery('<ul></ul>');
+							jqNewEl = jQuery('<li></li>');
+							break;
+						case 'dl':
+							jqList = jQuery('<dl></dl>');
+							jqNewEl = jQuery('<dt></dt>');
+							break;
+					}
+				
+					jqList.append(jqNewEl);
+
+					el = jqNewEl.get(0);
+					editable = Aloha.getActiveEditable().obj;
+					//IE7 requires an (empty or non-empty) text node
+					//inside the li for the selection to work.
+					el.appendChild(document.createTextNode(""));
+
+					editable.append(jqList);
+					editable.focus();
+
+					range = Aloha.createRange();
+					selection = Aloha.getSelection();
+					range.setStart( el.firstChild, 0 );
+					range.setEnd( el.firstChild, 0 );
+					selection.removeAllRanges();
+					selection.addRange( range );
+					Aloha.Selection.updateSelection();
+				} else {
+					Aloha.Log.error(this, 'Could not transform selection into a list');
+				}
+			}
+			return domToTransform;
+		},
 
 		/**
 		 * Transform the current selection to/from a list
-		 * @param ordered true when transforming to/from an ordered list, false for unordered lists
+		 * @param String listtype type of list we want to transform to (ul, ol, dl)
 		 */
-		transformList: function (ordered) {
-			var domToTransform = this.getStartingDomObjectToTransform(),
-				lastLi, i, jqNewLi, jqList, selectedSiblings, jqParentList,
-				newPara, jqToTransform, nodeName;
+		transformList: function (listtype) {
+			var domToTransform = this.getStartingDomObjectToTransform();
+			var jqList;
+			var jqParentList;
+			var	nodeName;
 
 			// visible is set to true, but the button is not visible
 			this._outdentListButton.show(true);
 			this._indentListButton.show(true);
 
 			if (!domToTransform) {
-				// wrap a paragraph around the selection
-				Aloha.Selection.changeMarkupOnSelection(jQuery('<p></p>'));
-				domToTransform = this.getStartingDomObjectToTransform();
-
-				if (!domToTransform) {
-					if ( Aloha.Selection.rangeObject.startContainer.contentEditable ) {
-						// create a new list with an empty item
-						jqList = ordered ? jQuery('<ol></ol>') : jQuery('<ul></ul>');
-						jqNewLi = jQuery('<li></li>');
-						jqList.append(jqNewLi);
-						
-						var li = jqNewLi.get(0);
-						var editable = Aloha.getActiveEditable().obj;
-						//IE7 requires an (empty or non-empty) text node
-						//inside the li for the selection to work.
-						li.appendChild(document.createTextNode(""));
-
-						editable.append(jqList);
-						editable.focus();
-
-						var range = Aloha.createRange();
-						var selection = Aloha.getSelection();
-						range.setStart( li.firstChild, 0 );
-						range.setEnd( li.firstChild, 0 );
-						selection.removeAllRanges();
-						selection.addRange( range );
-						Aloha.Selection.updateSelection();
-						
-						return;
-					} else {
-					Aloha.Log.error(this, 'Could not transform selection into a list');
-					return;
-				}
-			}
+				domToTransform = this.prepareNewList(listtype);
 			}
 
 			// check the dom object
 			nodeName = domToTransform.nodeName.toLowerCase();
 
-			if (nodeName == 'ul' && !ordered) {
-				// first check whether the list is nested into another list
+			if (nodeName === listtype) {
 				jqList = jQuery(domToTransform);
-
 				jqParentList = jqList.parent();
-				if (jqParentList.length > 0
-						&& GENTICS.Utils.Dom.isListElement(jqParentList.get(0))) {
-					// when the list is nested into another, our list items will be
-					// added to the list items of the outer list
-
-					// find the place where to put the children of the inner list
-					if (jqParentList.get(0).nodeName.toLowerCase() === 'li') {
-						// inner table is nested in a li (this conforms to the html5 spec)
-						jqParentList.after(jqList.children());
-						jqList.remove();
-					} else {
-						// inner table is nested in the outer list directly (this violates the html5 spec)
-						jqList.children().unwrap();
-					}
+				if (jqParentList.length > 0 && GENTICS.Utils.Dom.isListElement(jqParentList.get(0))) {
+					// we are in a nested list
+					this.checkIfNestedList(jqParentList);
 				} else {
-					// we are in an unordered list and shall transform it to paragraphs
-
-					// transform all li into p
-					jqToTransform = jQuery(domToTransform);
-					jQuery.each(jqToTransform.children('li'), function(index, li) {
-						newPara = Aloha.Markup.transformDomObject(li, 'p', Aloha.Selection.rangeObject);
-						// if any lists are in the paragraph, move the to after the paragraph
-						newPara.after(newPara.children('ol,ul'));
-						Engine.ensureContainerEditable(newPara.get(0));
-					});
-
-					// unwrap the li (remove the enclosing ul)
-					jqToTransform.children().unwrap();
+					// we are in an list and shall transform it to paragraphs
+					if (listtype === 'dl') {
+						this.transformListToParagraph(domToTransform, 'dd, dt');
+					} else {
+						this.transformListToParagraph(domToTransform, 'li');
+					}
 				}
-			} else if (nodeName == 'ul' && ordered) {
-				// we are in an unordered list and shall transform it to an ordered list
-
-				// transform the ul into an ol
-				transformExistingListAndSubLists(domToTransform, 'ol');
 				
-				// merge adjacent lists
+			} else if (nodeName == 'ul' && listtype === 'ol') {
+				transformExistingListAndSubLists(domToTransform, 'ol');
 				this.mergeAdjacentLists(jQuery(domToTransform));
-			} else if (nodeName == 'ol' && !ordered) {
-				// we are in an ordered list and shall transform it to an unordered list
-
-				// transform the ol into an ul
+			} else if (nodeName == 'ol' && listtype === 'ul') {
 				transformExistingListAndSubLists(domToTransform, 'ul');
-
-				// merge adjacent lists
 				this.mergeAdjacentLists(jQuery(domToTransform));
-			} else if (nodeName == 'ol' && ordered) {
-				// first check whether the list is nested into another list
-				jqList = jQuery(domToTransform);
-
-				jqParentList = jqList.parent();
-				if (jqParentList.length > 0
-						&& GENTICS.Utils.Dom.isListElement(jqParentList.get(0))) {
-					// when the list is nested into another, our list items will be
-					// added to the list items of the outer list
-
-					// find the place where to put the children of the inner list
-					if (jqParentList.get(0).nodeName.toLowerCase() === 'li') {
-						// inner table is nested in a li (this conforms to the html5 spec)
-						jqParentList.after(jqList.children());
-						jqList.remove();
-					} else {
-						// inner table is nested in the outer list directly (this violates the html5 spec)
-						jqList.children().unwrap();
-					}
-				} else {
-					// we are in an unordered list and shall transform it to paragraphs
-
-					// transform all li into p
-					jqToTransform = jQuery(domToTransform);
-					jQuery.each(jqToTransform.children('li'), function(index, li) {
-						newPara = Aloha.Markup.transformDomObject(li, 'p', Aloha.Selection.rangeObject);
-						// if any lists are in the paragraph, move the to after the paragraph
-						newPara.after(newPara.children('ol,ul'));
-						Engine.ensureContainerEditable(newPara.get(0));
-					});
-
-					// unwrap the li (remove the enclosing ul)
-					jqToTransform.children().unwrap();
-				}
+			} else if (nodeName === 'ul' && listtype === 'dl') {
+				this.transformListToParagraph(domToTransform, 'li');
+				domToTransform = this.prepareNewList(listtype);
+				this.createList(listtype, domToTransform);
+			} else if (nodeName === 'ol' && listtype === 'dl') {
+				this.transformListToParagraph(domToTransform, 'li');
+				domToTransform = this.prepareNewList(listtype);
+				this.createList(listtype, domToTransform);
+			} else if (nodeName === 'dl' && listtype === 'ol' ) {
+				this.transformListToParagraph(domToTransform, 'dd, dt');
+				domToTransform = this.prepareNewList(listtype);
+				this.createList(listtype, domToTransform);
+			} else if (nodeName === 'dl' && listtype === 'ul' ) {
+				this.transformListToParagraph(domToTransform, 'dd, dt');
+				domToTransform = this.prepareNewList(listtype);
+				this.createList(listtype, domToTransform);
 			} else {
-				// we are in something different from a list and shall transform it into a list
-
-				// get the also selected siblings of the dom object
-				selectedSiblings = Aloha.Selection.rangeObject.getSelectedSiblings(domToTransform);
-
-				// create a new list
-				jqList = ordered ? jQuery('<ol></ol>') : jQuery('<ul></ul>');
-				// add a new list item
-				jqNewLi = jQuery('<li></li>');
-				// add the li into the list
-				jqList.append(jqNewLi);
-				// append the contents of the old dom element to the li
-				jQuery(domToTransform).contents().appendTo(jqNewLi);
-				// replace the old dom element with the new list
-				jQuery(domToTransform).replaceWith(jqList);
-
-				// update the selection range
-				if (Aloha.Selection.rangeObject.startContainer == domToTransform) {
-					Aloha.Selection.rangeObject.startContainer = jqNewLi.get(0);
-				}
-				if (Aloha.Selection.rangeObject.endContainer == domToTransform) {
-					Aloha.Selection.rangeObject.endContainer = jqNewLi.get(0);
-				}
-
-				var lastAppendedLi = jqNewLi;
-
-				// now also transform all siblings
-				if (selectedSiblings) {
-					lastLi = false;
-					for ( i = 0; i < selectedSiblings.length; ++i) {
-						if (GENTICS.Utils.Dom.isBlockLevelElement(selectedSiblings[i])) {
-							if (lastLi) {
-								lastLi = false;
-							}
-
-							// transform the block level element
-							jqNewLi = Aloha.Markup.transformDomObject(selectedSiblings[i], 'li', Aloha.Selection.rangeObject);
-							jqList.append(jqNewLi);
-							lastAppendedLi = jqNewLi;
-						} else {
-							if (selectedSiblings[i].nodeType == 3
-									&& jQuery.trim(selectedSiblings[i].data).length === 0) {
-								continue;
-							}
-							if (!lastLi) {
-								lastLi = jQuery('<li></li>');
-								jqList.append(lastLi);
-								lastAppendedLi = lastLi;
-							}
-							lastLi.append(selectedSiblings[i]);
-						}
-					}
-				}
-
-				// merge adjacent lists
-				this.mergeAdjacentLists(jqList);
-
-				//use rangy to change the selection to the contents of
-				//the last li that was appended to the list
-				var li = lastAppendedLi.get(0);
-				if (GENTICS.Utils.Dom.isEmpty(li)) {
-					var range = Aloha.createRange();
-					var selection = Aloha.getSelection();
-					//IE7 requires an (empty or non-empty) text node
-					//inside the li for the selection to work.
-					li.appendChild(document.createTextNode(""));
-					range.selectNodeContents( li.lastChild );
-					selection.removeAllRanges();
-					selection.addRange( range );
-					Aloha.Selection.updateSelection();
-				}
+				this.createList(listtype, domToTransform);
 			}
-
-			// refresh the selection
+			
 			this.refreshSelection();
 		},
 
@@ -673,12 +845,41 @@ define([
 		}
 	});
 
-	/**
-	 * 
-	 */
+	Engine.commands['insertdefinitionlist'] = {
+		action: function(value, range) {
+			ListPlugin.transformList('dl');
+			if (range && Aloha.Selection.rangeObject) {
+				range.startContainer = Aloha.Selection.rangeObject.startContainer;
+				range.startOffset = Aloha.Selection.rangeObject.startOffset;
+				range.endContainer = Aloha.Selection.rangeObject.endContainer;
+				range.endOffset = Aloha.Selection.rangeObject.endOffset;
+			}
+		},
+		indeterm: function() {
+			// TODO
+		},
+		state: function() {
+			for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
+				effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
+				if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ul></ul>'))) {
+					return false;
+				}
+				if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ol></ol>'))) {
+					return false;
+				}
+				if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<dl></dl>'))) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+	};
+
+
 	Engine.commands['insertorderedlist'] = {
 		action: function(value, range) {
-			ListPlugin.transformList(true);
+			ListPlugin.transformList('ol');
 			if (range && Aloha.Selection.rangeObject) {
 				range.startContainer = Aloha.Selection.rangeObject.startContainer;
 				range.startOffset = Aloha.Selection.rangeObject.startOffset;
@@ -698,6 +899,9 @@ define([
 				if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ol></ol>'))) {
 					return true;
 				}
+				if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<dl></dl>'))) {
+					return false;
+				}
 			}
 
 			return false;
@@ -706,7 +910,7 @@ define([
 
 	Engine.commands['insertunorderedlist'] = {
 		action: function(value, range) {
-			ListPlugin.transformList(false);
+			ListPlugin.transformList('ul');
 			if (range && Aloha.Selection.rangeObject) {
 				range.startContainer = Aloha.Selection.rangeObject.startContainer;
 				range.startOffset = Aloha.Selection.rangeObject.startOffset;
@@ -724,6 +928,9 @@ define([
 					return true;
 				}
 				if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ol></ol>'))) {
+					return false;
+				}
+				if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<dl></dl>'))) {
 					return false;
 				}
 			}
@@ -816,7 +1023,7 @@ define([
 	 * </ul>
 	 *
 	 * And similar situations, some of which are not so easy to reproduce.
-	 * 
+	 *
 	 * @param event a jQuery key event
 	 * @return false if no action needed to be taken, true if cleanup has been performed
 	 */
@@ -830,11 +1037,11 @@ define([
 
 		//the hack is only relevant if after the deletion has been
 		//performed we are inside a li of a nested list
-		var $nestedList = jQuery(startContainer).closest('ul, ol');
+		var $nestedList = jQuery(startContainer).closest('ul, ol, dl');
 		if ( ! $nestedList.length ) {
 			return false;
 		}
-		var $parentList = $nestedList.parent().closest('ul, ol');
+		var $parentList = $nestedList.parent().closest('ul, ol, dl');
 		if ( ! $parentList.length ) {
 			return false;
 		}
@@ -857,9 +1064,9 @@ define([
 	}
 
 	/**
-	 * If uls or ols are nested directly inside the given list (invalid
+	 * If dls, uls or ols are nested directly inside the given list (invalid
 	 * HTML), they will be cleaned up by being appended to the preceding
-	 * li.
+	 * element.
 	 */
 	function fixListNesting($list) {
 		var actionPerformed = false;
@@ -868,6 +1075,14 @@ define([
 			if ( ! jQuery(this).prev('li').append(this).length ) {
 				//if there is no preceding li, create a new one and append to that
 				jQuery(this).parent().prepend(document.createElement('li')).append(this);
+			}
+			actionPerformed = true;
+		});
+		$list.children('dl').each(function(){
+			Aloha.Log.debug("performing list-nesting cleanup");
+			if ( ! jQuery(this).prev('dt').append(this).length ) {
+				//if there is no preceding dt, create a new one and append to that
+				jQuery(this).parent().prepend(document.createElement('dt')).append(this);
 			}
 			actionPerformed = true;
 		});

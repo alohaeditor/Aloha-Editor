@@ -3,5 +3,18 @@ define({
 	"button.createolist.tooltip": "Sortierte Liste einfügen",
 	"button.indentlist.tooltip": "Liste einrücken",
 	"button.outdentlist.tooltip": "Liste ausrücken",
-	"floatingmenu.tab.list": "Listen"
+	"floatingmenu.tab.list": "Listen",
+	"button.liststyle.disc": "Punkt",
+	"button.liststyle.circle": "Kreis",
+	"button.liststyle.square": "Quadrat",
+    "button.liststyle.decimal": "Dezimal",
+    "button.liststyle.decimal-leading-zero": "Dezimal mit führender Null",
+    "button.liststyle.lower-roman": "Kleinbuchstaben römisch",
+    "button.liststyle.upper-roman": "Großbuchstaben römisch",
+    "button.liststyle.lower-greek": "Kleinbuchstaben griechisch",
+    "button.liststyle.lower-latin": "Kleinbuchstaben",
+    "button.liststyle.upper-latin": "Großbuchstaben",
+	"button.liststyle.blue": "Blau",
+	"button.liststyle.green": "Grün",
+	"button.liststyle.red": "Rot"
 });

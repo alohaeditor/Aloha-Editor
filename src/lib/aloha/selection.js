@@ -253,6 +253,42 @@ define([
 				'ol': {
 					'li': true
 				},
+				'dl': {
+					'dt': true,
+					'dd': true
+				},
+				'dt': {
+					'textNode': true
+				},
+				'dd': {
+					'textNode': true,
+					'b': true,
+					'i': true,
+					'em': true,
+					'sup': true,
+					'sub': true,
+					'br': true,
+					'span': true,
+					'img': true,
+					'ul': true,
+					'ol': true,
+					'dt': true,
+					'table': true,
+					'h1': true,
+					'h2': true,
+					'h3': true,
+					'h4': true,
+					'h5': true,
+					'h6': true,
+					'del': true,
+					'ins': true,
+					'u': true,
+					'p': true,
+					'div': true,
+					'pre': true,
+					'blockquote': true,
+					'a': true
+				},
 				'li': {
 					'textNode': true,
 					'b': true,
@@ -295,6 +331,7 @@ define([
 					'img': true,
 					'ul': true,
 					'ol': true,
+					'dt': true,
 					'table': true,
 					'h1': true,
 					'h2': true,
@@ -354,6 +391,7 @@ define([
 				'a': this.tagHierarchy.b,
 				'ul': this.tagHierarchy.ul,
 				'ol': this.tagHierarchy.ol,
+				'dl': this.tagHierarchy.dl,
 				'li': this.tagHierarchy.li,
 				'td': this.tagHierarchy.li,
 				'div': this.tagHierarchy.div,

@@ -1,0 +1,2 @@
+- **ENHANCEMENT**: list-plugin: Possibility to add definition lists.
+- **ENHANCEMENT**: list-plugin: Possibility to set pre-defined or user defined styles on lists.
