@@ -7,6 +7,7 @@
  */
 define([
 	'dom',
+	'misc',
 	'mutation',
 	'arrays',
 	'strings',
@@ -15,6 +16,7 @@ define([
 	'boundaries'
 ], function BoundaryMarkers(
 	Dom,
+	Misc,
 	Mutation,
 	Arrays,
 	Strings,
@@ -30,16 +32,13 @@ define([
 	 * @param {Range} range
 	 */
 	function insert(range) {
-		Mutation.insertTextAtBoundary(
-			Dom.isTextNode(range.endContainer) ? ']' : '}',
-			Boundaries.fromRangeEnd(range),
-			true
-		);
-		Mutation.insertTextAtBoundary(
-			Dom.isTextNode(range.startContainer) ? '[' : '{',
-			Boundaries.fromRangeStart(range),
-			true
-		);
+		var doc = range.commonAncestorContainer.ownerDocument;
+		var startMarker = doc.createTextNode(Dom.isTextNode(range.endContainer) ? ']' : '}');
+		var endMarker = doc.createTextNode(Dom.isTextNode(range.startContainer) ? '[' : '{');
+		var start = Mutation.splitBoundary(Boundaries.fromRangeStart(range), [range]);
+		var end = Mutation.splitBoundary(Boundaries.fromRangeEnd(range));
+		Dom.insert(startMarker, Boundaries.nextNode(end), Boundaries.isAtEnd(end));
+		Dom.insert(endMarker, Boundaries.nextNode(start), Boundaries.isAtEnd(start));
 	}
 
 	/**
@@ -70,7 +69,7 @@ define([
 			markersFound += 1;
 			if (marker === '[' || marker === ']') {
 				var previousSibling = node.previousSibling;
-				if (!previousSibling || Dom.Nodes.TEXT !== previousSibling.nodeType) {
+				if (!previousSibling || !Dom.isTextNode(previousSibling)) {
 					previousSibling = document.createTextNode('');
 					node.parentNode.insertBefore(previousSibling, node);
 				}
@@ -83,7 +82,7 @@ define([
 			return true;
 		}
 		function extractMarkers(node) {
-			if (Dom.Nodes.TEXT !== node.nodeType) {
+			if (!Dom.isTextNode(node)) {
 				return;
 			}
 			var text = node.nodeValue;
@@ -102,7 +101,7 @@ define([
 					forceNextSplit = setBoundaryPoint(part, node);
 				} else if (!forceNextSplit
 						&& node.previousSibling
-							&& Dom.Nodes.TEXT === node.previousSibling.nodeType) {
+							&& Dom.isTextNode(node.previousSibling)) {
 					node.previousSibling.insertData(
 						node.previousSibling.length,
 						part
@@ -130,7 +129,7 @@ define([
 	 * @param  {Range} range
 	 * @return {string}
 	 */
-	function show(range) {
+	function showRange(range) {
 		var cac = range.commonAncestorContainer;
 		var start = Paths.fromBoundary(
 			cac,
@@ -183,7 +182,7 @@ define([
 	 * @return {string}
 	 */
 	function showBoundary(boundary) {
-		return show(Ranges.fromBoundaries(boundary, boundary));
+		return showRange(Ranges.fromBoundaries(boundary, boundary));
 	}
 
 	/**
@@ -194,7 +193,7 @@ define([
 	 * @return {string}
 	 */
 	function showBoundaries(boundaries) {
-		return show(Ranges.fromBoundaries(boundaries[0], boundaries[1]));
+		return showRange(Ranges.fromBoundaries(boundaries[0], boundaries[1]));
 	}
 
 	/**
@@ -204,14 +203,12 @@ define([
 	 * @param  {Boundary|Array.<Boundary>|Range}
 	 * @return {string}
 	 */
-	function hint() {
-		var arg = arguments[0];
-		if (arg.length) {
-			return ('string' === typeof arg[0].nodeName)
-			     ? showBoundary(arg)
-			     : showBoundaries(arg);
-		}
-		return show(arg);
+	function hint(selection) {
+		return (!Misc.defined(selection.length))
+		     ? showRange(selection)
+		     : ('string' === typeof selection[0].nodeName)
+		     ? showBoundary(selection)
+		     : showBoundaries(selection);
 	}
 
 	return {

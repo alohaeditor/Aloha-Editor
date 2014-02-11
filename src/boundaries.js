@@ -296,14 +296,12 @@ define([
 
 	/**
 	 * Returns the node that is after the given boundary position.
-	 *
-	 * Will return null if the given boundary is at the end position, otherwise
-	 * returns the node that is after the given boundary position.
+	 * Will return null if the given boundary is at the end position.
 	 *
 	 * Note that the given boundary will be normalized.
 	 *
 	 * @param  {Boundary} boundary
-	 * @return {Node}.
+	 * @return {Node}
 	 */
 	function nodeAfter(boundary) {
 		boundary = normalize(boundary);
@@ -311,12 +309,10 @@ define([
 	}
 
 	/**
-	 * The node that is before the given boundary position.
+	 * Returns the node that is before the given boundary position.
+	 * Will returns null if the given boundary is at the start position.
 	 *
 	 * Note that the given boundary will be normalized.
-	 *
-	 * Will returns null if the given boundary is at the start position,
-	 * otherwise returns the node after `boundary`.
 	 *
 	 * @param  {Boundary} boundary
 	 * @return {Node}

@@ -2,19 +2,20 @@
 	'use strict';
 
 	var Boundaries = aloha.boundaries;
-	var ranges = aloha.ranges;
-	var boundarymarkers = aloha.boundarymarkers;
+	var Ranges = aloha.ranges;
+	var Mutation = aloha.mutation;
+	var BoundaryMarkers = aloha.boundarymarkers;
 	var tested = [];
 
     module('boundaries');
 
 	function runTest(before, after, op) {
 		var dom = $(before)[0];
-		var range = ranges.create(dom, 0);
-		boundarymarkers.extract(dom, range);
+		var range = Ranges.create(dom, 0);
+		BoundaryMarkers.extract(dom, range);
 		var boundary = op([range.startContainer, range.startOffset]);
 		range.setStart(boundary[0], boundary[1]);
-		boundarymarkers.insert(range);
+		BoundaryMarkers.insert(range);
 		equal(dom.outerHTML, after, before + ' ⇒ ' + after);
 	}
 
@@ -32,7 +33,7 @@
 
 		t('<p><b>f[oo]</b></p>', '<p><b>{foo]</b></p>');
 		t('<p><b>foo[]</b></p>', '<p><b>{foo]</b></p>');
-		t('<p><b>[]</b></p>', '<p><b>{]</b></p>');
+		t('<p><b>[}</b></p>', '<p><b>{}</b></p>');
 
 		// ie will automatically convery <b>{]</b> to <b>[]</b>
 		if (!aloha.browsers.msie) {
@@ -49,28 +50,6 @@
 		t('<p><b>foo{]</b></p>', '<p><b>{foo]</b></p>');
 	});
 
-	test('prevWhile', function () {
-		tested.push('prevWhile');
-		var dom = $('<div>foo<p>bar<b><u><i>baz</i></u>buzz</b></p></div>')[0];
-		var range = ranges.create(dom, 0);
-		Boundaries.prevWhile(
-			[dom, aloha.dom.nodeIndex(dom.lastChild) + 1],
-			function (pos, container, offset) {
-				if (container && container.parentNode) {
-					range.setStart(container, offset);
-					range.setEnd(container, offset);
-					ranges.insertTextBehind(range, '|');
-					return true;
-				}
-				return false;
-			}
-		);
-		equal(
-			dom.outerHTML,
-			'<div>|foo|<p>|bar|<b>|<u>|<i>|baz|</i>|</u>|buzz|</b>|</p>|</div>'
-		);
-	});
-
 	test('next', function () {
 		tested.push('next');
 
@@ -80,7 +59,8 @@
 
 		t('<p><b>[foo</b>}</p>', '<p><b>foo{</b>}</p>');
 		t('<p><b>f[oo</b>}</p>', '<p><b>foo{</b>}</p>');
-		t('<p><b>foo[</b>}</p>', '<p><b>foo{</b>}</p>');
+		t('<p><b>foo[</b>}</p>', '<p><b>foo</b>{}</p>');
+
 		t('<p><b>[</b>}</p>', '<p><b>{</b>}</p>');
 
 		t('<p><b>{</b>}</p>', '<p><b></b>{}</p>');
@@ -100,22 +80,31 @@
 		t('<p><b>{foo]</b></p>', '<p><b>foo{}</b></p>');
 	});
 
-	test('nextWhile', function () {
-		tested.push('nextWhile');
-		var dom = $('<div>foo<p>bar<b><br><u><i>baz</i></u>buzz</b></p></div>')[0];
-		var range = ranges.create(dom, 0);
-		Boundaries.nextWhile([dom, 0], function (pos, container, offset) {
-			if (container && container.parentNode) {
-				range.setStart(container, offset);
-				range.setEnd(container, offset);
-				ranges.insertTextBehind(range, '|');
-				return true;
-			}
-			return false;
+	test('prevWhile', function () {
+		tested.push('prevWhile');
+		var dom = document.createElement('div');
+		dom.innerHTML = 'foo<p>bar<b><u><i>baz</i></u>buzz</b></p>';
+		Boundaries.prevWhile(Boundaries.fromEndOfNode(dom), function (boundary) {
+			Mutation.insertTextAtBoundary('|', boundary, false);
+			return Boundaries.prevNode(boundary) !== dom;
 		});
 		equal(
 			dom.outerHTML,
-			'<div>|foo|<p>|bar|<b>||<br>||<u>||<i>|baz|</i>||</u>|buzz|</b>||</p>||</div>'
+			'<div>|foo|<p>|bar|<b>|<u>|<i>|baz|</i>|</u>|buzz|</b>|</p>|</div>'
+		);
+	});
+
+	test('nextWhile', function () {
+		tested.push('nextWhile');
+		var dom = document.createElement('div');
+		dom.innerHTML = 'foo<p>bar<b><u><i>baz</i></u>buzz</b></p>';
+		Boundaries.nextWhile(Boundaries.fromNode(dom.firstChild), function (boundary) {
+			Mutation.insertTextAtBoundary('|', boundary, true);
+			return Boundaries.nextNode(boundary) !== dom;
+		});
+		equal(
+			dom.outerHTML,
+			'<div>|foo|<p>|bar|<b>||<u>||<i>|baz|</i>||</u>|buzz|</b>||</p>||</div>'
 		);
 	});
 
@@ -123,10 +112,10 @@
 		tested.push('nodeBefore');
 		tested.push('nodeAfter');
 		var t = function (markup, expected) {
-			var range = ranges.create(document.documentElement, 0);
-			boundarymarkers.extract($(markup)[0], range);
-			var left = Boundaries.nodeBefore(Boundaries.fromRangeStart(range));
-			var right = Boundaries.nodeAfter(Boundaries.fromRangeEnd(range));
+			var range = Ranges.create(document.documentElement, 0);
+			BoundaryMarkers.extract($(markup)[0], range);
+			var left = Boundaries.prevNode(Boundaries.fromRangeStart(range));
+			var right = Boundaries.nextNode(Boundaries.fromRangeEnd(range));
 			equal(left.data || left.nodeName, expected[0], markup + ' => ' + expected.join());
 			equal(right.data || right.nodeName, expected[1], markup + ' => ' + expected.join());
 		};
