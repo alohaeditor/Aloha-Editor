@@ -27,6 +27,7 @@ define([
 	'events',
 	'functions',
 	'html',
+	'image',
 	'keys',
 	'maps',
 	'mouse',
@@ -65,6 +66,7 @@ define([
 	Events,
 	Fn,
 	Html,
+	Image,
 	Keys,
 	Maps,
 	Mouse,
@@ -106,6 +108,7 @@ define([
 	exports['events'] = Events;
 	exports['fn'] = Fn;
 	exports['html'] = Html;
+	exports['image'] = Image;
 	exports['keys'] = Keys;
 	exports['maps'] = Maps;
 	exports['mouse'] = Mouse;
