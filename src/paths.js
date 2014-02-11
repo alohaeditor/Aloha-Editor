@@ -22,7 +22,7 @@ define([
 	 *
 	 * @param  {Node}     limit
 	 * @param  {Boundary} boundary
-	 * @return {Arrays.<number>}
+	 * @return {Array.<number>}
 	 */
 	function fromBoundary(limit, boundary) {
 		var offset = Boundaries.offset(boundary);
@@ -50,7 +50,7 @@ define([
 		var node = path.slice(0, -1).reduce(function (node, offset) {
 			return node.childNodes[offset] || node;
 		}, container);
-		return Boundaries.create(node, Arrays.last(path) || 0);
+		return Boundaries.raw(node, Arrays.last(path) || 0);
 	}
 
 	return {

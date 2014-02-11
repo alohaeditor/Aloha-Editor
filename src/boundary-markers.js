@@ -11,14 +11,18 @@ define([
 	'cursors',
 	'arrays',
 	'strings',
-	'ranges'
+	'ranges',
+	'paths',
+	'boundaries'
 ], function BoundaryMarkers(
 	Dom,
 	Mutation,
 	Cursors,
 	Arrays,
 	Strings,
-	Ranges
+	Ranges,
+	Paths,
+	Boundaries
 ) {
 	'use strict';
 
@@ -50,7 +54,7 @@ define([
 	 * of `rootElem`.
 	 *
 	 * @param {Element} rootElem
-	 * @param {Range} range
+	 * @param {Range}   range
 	 */
 	function extract(rootElem, range) {
 		var markers = ['[', '{', '}', ']'];
@@ -125,96 +129,94 @@ define([
 		}
 	}
 
-	function getPathToPosition(container, offset, limit) {
-		var path = [offset];
-		if (container === limit) {
-			return path;
-		}
-		Dom.childAndParentsUntilIncl(container, function (node) {
-			if (node === limit) {
-				return true;
-			}
-			path.push(Dom.nodeIndex(node));
-			return false;
-		});
-		return path;
-	}
-
-	function getPositionFromPath(container, path) {
-		var node = container;
-		while (path.length > 1) {
-			node = node.childNodes[path.pop()];
-		}
-		return {
-			container: node,
-			offset: path.pop()
-		};
-	}
-
 	/**
 	 * Returns a string with boundary markers inserted into the representation
 	 * of the DOM to indicate the span of the given range.
 	 *
-	 * @param {Range} range
+	 * @private
+	 * @param  {Range} range
 	 * @return {string}
 	 */
 	function show(range) {
-		var container = range.commonAncestorContainer;
-
-		var startPath = getPathToPosition(
-			range.startContainer,
-			range.startOffset,
-			container
+		var cac = range.commonAncestorContainer;
+		var start = Paths.fromBoundary(
+			cac,
+			Boundaries.raw(range.startContainer, range.startOffset)
 		);
-
-		var endPath = getPathToPosition(
-			range.endContainer,
-			range.endOffset,
-			container
+		var end = Paths.fromBoundary(
+			cac,
+			Boundaries.raw(range.endContainer, range.endOffset)
 		);
+		var clone;
+		var root;
 
-		var node = container.parentNode
-			? getPositionFromPath(
-				container.parentNode.cloneNode(true),
-				getPathToPosition(
-					container,
-					Dom.nodeIndex(container),
-					container.parentNode
-				)
-			).container
-			: document.createElement('div').appendChild(
-				container.cloneNode(true)
+		if (cac.parentNode) {
+			root = Paths.fromBoundary(cac.parentNode, Boundaries.fromNode(cac));
+			clone = Boundaries.container(
+				Paths.toBoundary(cac.parentNode.cloneNode(true), root)
 			);
+		} else {
+			clone = cac.cloneNode(true);
+			var one = cac.ownerDocument.createDocumentFragment();
+			var two = cac.ownerDocument.createDocumentFragment();
+			Dom.append(clone, two);
+			Dom.append(two, one);
+		}
 
-		var start = getPositionFromPath(node, startPath);
-		var end = getPositionFromPath(node, endPath);
+		start = root.concat(start);
+		end = root.concat(end);
 
-		range = Ranges.create(
-			start.container,
-			start.offset,
-			end.container,
-			end.offset
+		var copy = Ranges.fromBoundaries(
+			Paths.toBoundary(clone, start),
+			Paths.toBoundary(clone, end)
 		);
 
-		insert(range);
+		insert(copy);
 
-		return range.commonAncestorContainer.outerHTML;
+		if (Dom.Nodes.DOCUMENT_FRAGMENT !== clone.nodeType) {
+			return clone.outerHTML;
+		}
+
+		var node = cac.ownerDocument.createElement('div');
+		Dom.append(clone, node);
+		return node.innerHTML;
 	}
 
-	function boundary(boundary) {
+	/**
+	 * Show a single boundary.
+	 *
+	 * @private
+	 * @param  {Boundary} boundary
+	 * @return {string}
+	 */
+	function showBoundary(boundary) {
 		return show(Ranges.fromBoundaries(boundary, boundary));
 	}
 
-	function boundaries(boundaries) {
+	/**
+	 * Show start/end boundary tuple.
+	 *
+	 * @private
+	 * @param  {Array.<Boundary>} boundaries
+	 * @return {string}
+	 */
+	function showBoundaries(boundaries) {
 		return show(Ranges.fromBoundaries(boundaries[0], boundaries[1]));
 	}
 
+	/**
+	 * Returns string representation of the given boundary boundaries tuple or
+	 * range.
+	 *
+	 * @param  {Boundary|Array.<Boundary>|Range}
+	 * @return {string}
+	 */
 	function hint() {
 		var arg = arguments[0];
 		if (arg.length) {
 			return ('string' === typeof arg[0].nodeName)
-			     ? boundary(arg)
-			     : boundaries(arg);
+			     ? showBoundary(arg)
+			     : showBoundaries(arg);
 		}
 		return show(arg);
 	}
