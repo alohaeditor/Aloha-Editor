@@ -25,8 +25,8 @@
  * recipients can access the Corresponding Source.
  */
 define('highlighteditables/highlighteditables-plugin',
-['aloha', 'jquery', 'aloha/plugin'],
-function(Aloha, jQuery, Plugin) {
+['aloha', 'jquery', 'aloha/plugin', 'aloha/ephemera'],
+function(Aloha, jQuery, Plugin, Ephemera) {
 	"use strict";
 
 	var
@@ -44,6 +44,8 @@ function(Aloha, jQuery, Plugin) {
 			// remember refernce to this class for callback
 			var that = this,
 				config;
+
+			Ephemera.classes('aloha-editable-highlight');
 
 			// highlight editables as long as the mouse is moving
 			GENTICS.Utils.Position.addMouseMoveCallback(function () {
