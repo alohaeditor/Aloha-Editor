@@ -20,3 +20,8 @@ All changes are categorized into one of the following keywords:
 - **BUGFIX**: link plugin: When typing the URL for a link and then pressing Enter,
               it creates the link but you must click tow times to open the link
               properties. The fix allows the user to click just once. RT#57711
+
+- **BUGFIX**: formatlesspaste plugin: The strippedElements config parameter was
+              previously ignored and is now respected again. If no configuration
+              is specified for it, a default list of text level semantic elements
+              is used.
