@@ -92,45 +92,6 @@ define([
 	}
 
 	/**
-	 * Finds the first node that returns true for `match` before reaching a node
-	 * that returns true for `until`.
-	 *
-	 * The traversing algorithm step twice in and out of elements and once
-	 * inside of text nodes and void elements.
-	 *
-	 * Goes upward and backward in the DOM hierarchy.
-	 *
-	 * @param {DOMObject} node
-	 * @param {Function(DOMObject, Boolean):Boolean}
-	 * @param {Function(DOMObject, Boolean):Boolean}
-	 * @return {DOMObject}
-	 */
-	function findThrough(start, match, until) {
-		match = match || Fn.returnTrue;
-		until = until || Fn.returnFalse;
-		var next;
-		var node = start;
-		var isSteppingIn = true;
-		while (node) {
-			next = (isSteppingIn && node.lastChild) || node.previousSibling;
-			if (next) {
-				isSteppingIn = true;
-			} else {
-				isSteppingIn = false;
-				next = node.parentNode;
-			}
-			if (!next || until(next, isSteppingIn)) {
-				return null;
-			}
-			if (match(next, isSteppingIn)) {
-				return next;
-			}
-			node = next;
-		}
-		return null;
-	}
-
-	/**
 	 * Finds the first node for which `match` returns true by traversing through
 	 * `step`.
 	 *

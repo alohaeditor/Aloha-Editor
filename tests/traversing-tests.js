@@ -90,30 +90,6 @@
 		equal(nodes.join(' '), '#text B');
 	});
 
-	test('findThrough', function () {
-		tested.push('findThrough');
-		var nodes = [];
-		var steps = [];
-		Traversing.findThrough(
-			$('<div>one<b>two<u><i>three</i></u>four</b>five</div>')[0],
-			function (node, isSteppingIn) {
-				steps.push(isSteppingIn ? 1 : 0);
-				nodes.push(node);
-			}
-		);
-		var expectedNodes = [
-			'five', 'B', 'four', 'U', 'I', 'three', 'I', 'U', 'two', 'B', 'one'
-		];
-		var i;
-		for (i = 0; i < expectedNodes.length; i++) {
-			equal(nodes[i] && (nodes[i].data || nodes[i].nodeName), expectedNodes[i]);
-		}
-		var expectedSteps = [1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0];
-		for (i = 0; i < expectedSteps.length; i++) {
-			equal(steps[i], expectedSteps[i], nodes[i] && (nodes[i].data || nodes[i].nodeName));
-		}
-	});
-
 	function testTraversing(node, op, expected) {
 		var nodes = [node];
 		while (node && (node = op(node))) {
@@ -124,24 +100,6 @@
 			equal(nodes[i] && (nodes[i].data || nodes[i].nodeName), expected[i]);
 		}
 	}
-
-	test('backward', function () {
-		tested.push('backward');
-		testTraversing(
-			$('<div>one<b>two<u><i>three</i></u>four</b>five</div>')[0].lastChild,
-			Traversing.backward,
-			['five', 'four', 'three', 'I', 'U', 'two', 'B', 'one']
-		);
-	});
-
-	test('forward', function () {
-		tested.push('forward');
-		testTraversing(
-			$('<div>one<b>two<u><i>three</i></u>four</b>five</div>')[0].firstChild,
-			Traversing.forward,
-			['one', 'B', 'two', 'U', 'I', 'three', 'four', 'five']
-		);
-	});
 
 	test('findBackward', function () {
 		tested.push('findBackward');
@@ -157,49 +115,6 @@
 		equal(Traversing.findForward(node.lastChild, function (elem) {
 			return 'U' === elem.nodeName;
 		}), null);
-	});
-
-	test('parentsUntil', function () {
-		tested.push('parentsUntil');
-
-		var node = $('<div><p><u><b><i>bar</i></b></u></p></div>')[0];
-
-		var parents = Traversing.parentsUntil(
-			node.firstChild.firstChild.firstChild.firstChild,
-			function (elem) {
-				return 'DIV' === elem.nodeName;
-			}
-		);
-
-		equal(parents.length, 3);
-
-		if (parents.length === 3) {
-			equal(parents[0].nodeName, 'B');
-			equal(parents[1].nodeName, 'U');
-			equal(parents[2].nodeName, 'P');
-		}
-	});
-
-	test('parentsUntilIncl', function () {
-		tested.push('parentsUntilIncl');
-
-		var node = $('<div><p><u><b><i>bar</i></b></u></p></div>')[0];
-
-		var parents = Traversing.parentsUntilIncl(
-			node.firstChild.firstChild.firstChild.firstChild,
-			function (elem) {
-				return 'DIV' === elem.nodeName;
-			}
-		);
-
-		equal(parents.length, 4);
-
-		if (parents.length === 4) {
-			equal(parents[0].nodeName, 'B');
-			equal(parents[1].nodeName, 'U');
-			equal(parents[2].nodeName, 'P');
-			equal(parents[3].nodeName, 'DIV');
-		}
 	});
 
 	test('childAndParentsUntil', function () {
