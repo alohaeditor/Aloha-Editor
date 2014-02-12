@@ -20,3 +20,9 @@ All changes are categorized into one of the following keywords:
 - **BUGFIX**: link plugin: When typing the URL for a link and then pressing Enter,
               it creates the link but you must click tow times to open the link
               properties. The fix allows the user to click just once. RT#57711
+
+- **BUGFIX**: highlighteditables plugin: When using nested editables, isModfied()
+              would sometimes detect a change although the content is untouched.
+              This was due to highlighteditables plugin, which previously didn't
+              register the aloha-editable-highlight css class as ephemeral.
+              RT#52589
