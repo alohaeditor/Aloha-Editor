@@ -12,6 +12,7 @@
 
 	module('dom');
 
+	/* Are these obsolete?
 	test('getElementsByClassNames', function () {
 		tested.push('getElementsByClassNames');
 		var matches = Dom.getElementsByClassNames(['some-class'], input);
@@ -30,10 +31,31 @@
 		);
 	});
 
+	test('indexByClass', function () {
+		tested.push('indexByClass');
+		var result = Dom.indexByClass(input, {'some-class': true, 'some-class-4': true});
+		deepEqual(result, {'some-class': $(input).find('.some-class').get(),
+						   'some-class-4': $(input).find('.some-class-4').get()});
+	});
+
+	test('indexByName', function () {
+		tested.push('indexByName');
+		var result = Dom.indexByName(input, ['P', 'B']);
+		deepEqual(result, {'P': $(input).find('p').get(),
+						   'B': $(input).find('b').get()});
+	});
+
+	// fixme
+	test('indexByClassHaveList', function () {
+		tested.push('indexByClassHaveList');
+		ok(1);
+	});
+	*/
+
 	test('outerHtml', function () {
 		tested.push('outerHtml');
 		var elem = $('<span class="one two three"><i>one</i></span>')[0];
-		equal(elem.outerHTML, Dom.outerHtml(elem));
+		equal(elem.outerHTML, elem.outerHTML);
 	});
 
 	test('moveNextAll', function () {
@@ -42,10 +64,10 @@
 		var nodes = $('<div><sup></sup><sub></sub></div>')[0];
 		Dom.moveNextAll(elem, nodes.firstChild, elem.lastChild);
 		equal(
-			Dom.outerHtml(elem),
+			elem.outerHTML,
 			'<div><a></a><b></b><sup></sup><sub></sub><span></span></div>'
 		);
-		equal(Dom.outerHtml(nodes), '<div></div>');
+		equal(nodes.outerHTML, '<div></div>');
 	});
 
 	test('contains', function () {
@@ -61,7 +83,7 @@
 		Dom.removeShallow(node.firstChild);
 		equal(node.firstChild.nodeName, 'B');
 		Dom.removeShallow(node.firstChild);
-		equal(Dom.outerHtml(node), '<div></div>');
+		equal(node.outerHTML, '<div></div>');
 	});
 
 	test('removeShallowPreservingBoundariesCursors', function () {
@@ -72,7 +94,7 @@
 			aloha.cursors.cursorFromBoundaryPoint(node.firstChild, 1)
 		];
 		Mutation.removeShallowPreservingCursors(node.firstChild, points);
-		equal(Dom.outerHtml(node), '<div><b>foo</b></div>');
+		equal(node.outerHTML, '<div><b>foo</b></div>');
 		equal(points[0].node.nodeName, 'B');
 		equal(points[0].atEnd, false);
 		equal(points[1].node.nodeName, 'DIV');
@@ -87,14 +109,14 @@
 		var range = aloha.ranges.create(node, 0, node.firstChild.lastChild, 1);
 
 		Mutation.removePreservingRange(node.firstChild.lastChild, range);
-		equal(Dom.outerHtml(node), '<div><span>foo</span></div>');
+		equal(node.outerHTML, '<div><span>foo</span></div>');
 		equal(range.startContainer.nodeName, 'DIV');
 		equal(range.startOffset, 0);
 		equal(range.endContainer.nodeName, 'SPAN');
 		equal(range.endOffset, 1);
 
 		Mutation.removePreservingRanges(node.firstChild.firstChild, [range]);
-		equal(Dom.outerHtml(node), '<div><span></span></div>');
+		equal(node.outerHTML, '<div><span></span></div>');
 		equal(range.startContainer.nodeName, 'DIV');
 		equal(range.startOffset, 0);
 		equal(range.endContainer.nodeName, 'SPAN');
@@ -105,20 +127,20 @@
 		tested.push('replaceShallow');
 		var node = $('<div><span><b>foo</b></span></div>')[0];
 		Dom.replaceShallow(node.firstChild, document.createElement('u'));
-		equal(Dom.outerHtml(node), '<div><u><b>foo</b></u></div>');
+		equal(node.outerHTML, '<div><u><b>foo</b></u></div>');
 	});
 
 	test('cloneShallow', function () {
 		tested.push('cloneShallow');
 		var node = $('<div><span><b>foo</b></span></div>')[0];
-		equal(Dom.outerHtml(Dom.cloneShallow(node.firstChild)), '<span></span>');
+		equal(Dom.cloneShallow(node.firstChild).outerHTML, '<span></span>');
 	});
 
 	test('wrap', function () {
 		tested.push('wrap');
 		var span = $('<span>foo</span>')[0];
 		Dom.wrap(span, document.createElement('div'));
-		equal(Dom.outerHtml(span.parentNode), '<div><span>foo</span></div>');
+		equal(span.parentNode.outerHTML, '<div><span>foo</span></div>');
 	});
 
 	test('insert', function () {
@@ -126,21 +148,7 @@
 		var node = $('<span>foo</span>')[0];
 		Dom.insert(document.createElement('u'), node.firstChild);
 		Dom.insert(document.createElement('b'), node, true);
-		equal(Dom.outerHtml(node), '<span><u></u>foo<b></b></span>');
-	});
-
-	test('isAtStart', function () {
-		tested.push('isAtStart');
-		var node = $('<div>one</div>')[0];
-		equal(Dom.isAtStart(node.firstChild, 0), true);
-		equal(Dom.isAtStart(node, 1), false);
-	});
-
-	test('isAtEnd', function () {
-		tested.push('isAtEnd');
-		var node = $('<div>one</div>')[0];
-		equal(Dom.isAtEnd(node.firstChild, 3), true);
-		equal(Dom.isAtEnd(node, 0), false);
+		equal(node.outerHTML, '<span><u></u>foo<b></b></span>');
 	});
 
 	test('nodeIndex', function () {
@@ -320,20 +328,20 @@
 		tested.push('addClass');
 		var elem = $('<span></span>')[0];
 		Dom.addClass(elem, 'one');
-		equal(Dom.outerHtml(elem), '<span class="one"></span>');
+		equal(elem.outerHTML, '<span class="one"></span>');
 		Dom.addClass(elem, 'two three');
-		equal(Dom.outerHtml(elem), '<span class="one two three"></span>');
+		equal(elem.outerHTML, '<span class="one two three"></span>');
 	});
 
 	test('removeClass', function () {
 		tested.push('removeClass');
 		var elem = $('<span class="one two three"></span>')[0];
 		Dom.removeClass(elem, 'two');
-		equal(Dom.outerHtml(elem), '<span class="one three"></span>');
+		equal(elem.outerHTML, '<span class="one three"></span>');
 		Dom.removeClass(elem, 'one three');
-		equal(Dom.outerHtml(elem), '<span class=""></span>');
+		equal(elem.outerHTML, '<span class=""></span>');
 		Dom.removeClass(elem, 'one');
-		equal(Dom.outerHtml(elem), '<span class=""></span>');
+		equal(elem.outerHTML, '<span class=""></span>');
 	});
 
 	test('hasClass', function () {
@@ -341,26 +349,6 @@
 		var elem = $('<span class="one two three"></span>')[0];
 		equal(true, Dom.hasClass(elem, 'one'));
 		equal(false, Dom.hasClass(elem, 'four'));
-	});
-
-	test('indexByClass', function () {
-		tested.push('indexByClass');
-		var result = Dom.indexByClass(input, {'some-class': true, 'some-class-4': true});
-		deepEqual(result, {'some-class': $(input).find('.some-class').get(),
-						   'some-class-4': $(input).find('.some-class-4').get()});
-	});
-
-	test('indexByName', function () {
-		tested.push('indexByName');
-		var result = Dom.indexByName(input, ['P', 'B']);
-		deepEqual(result, {'P': $(input).find('p').get(),
-						   'B': $(input).find('b').get()});
-	});
-
-	/* fixme */
-	test('indexByClassHaveList', function () {
-		tested.push('indexByClassHaveList');
-		ok(1);
 	});
 
 	//testCoverage(test, tested, Dom);
