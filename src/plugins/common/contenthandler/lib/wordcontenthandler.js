@@ -245,7 +245,7 @@ define([
 			spans = content.find(detectionFilter);
 			spans.each(function() {
 				var jqElem = jQuery(this),
-						innerText = jQuery.trim(jqElem.text()).replace(/&nbsp;/g, ''),
+				    innerText = jQuery.trim(jqElem.text()).replace(/&nbsp;/g, ''),
 					outerText;
 				
 				if (innerText.length === 0) {
