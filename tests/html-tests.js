@@ -7,7 +7,6 @@
 	var Boundaries = aloha.boundaries;
 	var Traversing = aloha.traversing;
 	var BoundaryMarkers = aloha.boundarymarkers;
-	var tested = [];
 
     module('html');
 
@@ -21,8 +20,7 @@
 		equal(dom.outerHTML, after, before + ' ⇒ ' + after);
 	}
 
-	test('Html.next', function () {
-		tested.push('Html.next');
+	test('Html.next()', function () {
 		var t = function (before, after) {
 			return runTest(before, after, function (range) {
 				var pos = Html.next(Boundaries.fromRangeEnd(range));
@@ -32,44 +30,41 @@
 			});
 		};
 
-		/*
 		t('<div><p contenteditable="true">{}<br></p>foo</div>',
 		  '<div><p contenteditable="true">{<br>}</p>foo</div>');
 
 		t('<div><p>foo[]</p><div><ul><li>bar</li></ul></div></div>',
-		  '<div><p>foo[</p><div><ul><li>]bar</li></ul></div></div>');
+		  '<div><p>foo[</p><div><ul><li>}bar</li></ul></div></div>');
 
 		t('<div>foo<p contenteditable="true">{}bar</p></div>',
 		  '<div>foo<p contenteditable="true">{b]ar</p></div>');
 
-		t('<div><p>foo{}<br></p>bar</div>', '<div><p>foo{<br></p>]bar</div>');
-		t('<div><i>foo{}<br></i>bar</div>', '<div><i>foo{<br></i>]bar</div>');
-
+		t('<div><p>foo{}<br></p>bar</div>', '<div><p>foo{<br></p>}bar</div>');
+		t('<div><i>foo{}<br></i>bar</div>', '<div><i>foo{<br></i>}bar</div>');
 
 		t('<div><p>foo{}</p><ul><li>bar</li></ul></div>',
-		  '<div><p>foo{</p><ul><li>]bar</li></ul></div>');
+		  '<div><p>foo{</p><ul><li>}bar</li></ul></div>');
 
 		t('<div>foo{}<ul><li>bar</li></ul></div>',
-		  '<div>foo{<ul><li>]bar</li></ul></div>');
+		  '<div>foo{<ul><li>}bar</li></ul></div>');
 
 		t('<p>foo{}<b>bar</b>baz</p>', '<p>foo{<b>b]ar</b>baz</p>');
 
 		t('<p>{}foo</p>', '<p>{f]oo</p>');
 
 		t('<p>[] foo</p>', '<p>[ f]oo</p>');
-		t('<div><p>foo[] </p>bar</div>', '<div><p>foo[ </p>]bar</div>');
+		t('<div><p>foo[] </p>bar</div>', '<div><p>foo[ </p>}bar</div>');
 
-		*/
-
-		t('<p><i>[] <b> foo</b></i></p>', '<p><i>[ <b> f]oo</b></i></p>');
-
-		return;
+		// t('<p><i>[] <b> foo</b></i></p>', '<p><i>[ <b> f]oo</b></i></p>'); // known issue
 
 		t('<div><p><b>foo </b></p><p><i><b>[bar]  </b> </i> </p>baz</div>',
-		  '<div><p><b>foo </b></p><p><i><b>[bar  </b> </i> </p>]baz</div>');
+		  '<div><p><b>foo </b></p><p><i><b>[bar  </b> </i> </p>}baz</div>');
 
-		t('<div>foo<b>[]  bar</b></div>',        '<div>foo<b>[  ]bar</b></div>');
+		t('<div>foo<b>[]  bar</b></div>',        '<div>foo<b>[ ] bar</b></div>');
+
+
 		t('<div>foo<p><b>[]  bar</b></p></div>', '<div>foo<p><b>[  b]ar</b></p></div>');
+
 		t('<div>foo<p>[]  bar</p></div>',        '<div>foo<p>[  b]ar</p></div>');
 		t('<div><p>foo</p>[]  bar</div>',        '<div><p>foo</p>[  b]ar</div>');
 
@@ -95,16 +90,16 @@
 
 		//            ,-- visible whitespace
 		//            |
-        //            v
+		//            v
 		t('<p><b>[fo]o </b><i>bar</i></p>', '<p><b>[foo] </b><i>bar</i></p>');
 
 		//            ,-- unrendered whitespace
 		//            |
-        //            v
-		t('<p><b>[fo]o </b></p>', '<p><b>[foo }</b></p>');
+		//            v
+		t('<p><b>[fo]o </b></p>', '<p><b>[foo] </b></p>');
 
 		t('<p><b>[fo]o  </b><i>bar</i></p>', '<p><b>[foo]  </b><i>bar</i></p>');
-		t('<p><b>[fo]o  </b></p>',           '<p><b>[foo  }</b></p>');
+		t('<p><b>[fo]o  </b></p>',           '<p><b>[foo]  </b></p>');
 
 		t('<p contenteditable="true"><b>[foo]</b></p>',   '<p contenteditable="true"><b>[foo</b>}</p>');
 		t('<p contenteditable="true"><b>[foo] </b></p>',  '<p contenteditable="true"><b>[foo </b>}</p>');
@@ -112,8 +107,8 @@
 
 		//             ,-- unrendered whitespace
 		//             |
-        //             v
-		t('<p><b>[foo]  </b>bar</p>', '<p><b>[foo  }</b>bar</p>');
+		//             v
+		t('<p><b>[foo]  </b>bar</p>', '<p><b>[foo ] </b>bar</p>');
 
 		t('<b>[foo]bar</b>',   '<b>[foob]ar</b>');
 		t('<b>[foo] bar</b>',  '<b>[foo ]bar</b>');
@@ -131,24 +126,23 @@
 		t('<p contenteditable="true"><b>[foo  ] </b></p>',  '<p contenteditable="true"><b>[foo   </b>}</p>');
 		t('<p contenteditable="true"><b>[foo  ]  </b></p>', '<p contenteditable="true"><b>[foo    </b>}</p>');
 
-		t('<b>foo[ ] &nbsp; </b>', '<b>foo[  &nbsp; }</b>');
+		t('<b>foo[ ] &nbsp; </b>', '<b>foo[  &nbsp;] </b>');
 
 		t('<p contenteditable="true">[]<br></p>', '<p contenteditable="true">[<br>}</p>');
 
-		t('<p>[]<br>foo</p>', '<p>[<br>]foo</p>');
-		t('<p>foo[]<br>bar</p>', '<p>foo[<br>]bar</p>');
+		t('<p>[]<br>foo</p>', '<p>[<br>}foo</p>');
+		t('<p>foo[]<br>bar</p>', '<p>foo[<br>}bar</p>');
 		t('<p>foo{}<br><br>bar</p>', '<p>foo{<br>}<br>bar</p>');
 		t('<p>foo[]<br><br>bar</p>', '<p>foo[<br>}<br>bar</p>');
 
-		t('<div><p>foo[]<br></p>bar</div>', '<div><p>foo[<br></p>]bar</div>');
-		t('<div>foo[]<br><p>bar</p></div>', '<div>foo[<br><p>]bar</p></div>');
-		t('<div>foo{}<br><p>bar</p></div>', '<div>foo{<br><p>]bar</p></div>');
+		t('<div><p>foo[]<br></p>bar</div>', '<div><p>foo[<br></p>}bar</div>');
+		t('<div>foo[]<br><p>bar</p></div>', '<div>foo[<br><p>}bar</p></div>');
+		t('<div>foo{}<br><p>bar</p></div>', '<div>foo{<br><p>}bar</p></div>');
 	});
 
 	return;
 
-	test('Html.prev', function () {
-		tested.push('Html.prev');
+	test('Html.prev()', function () {
 		var t = function (before, after) {
 			return runTest(before, after, function (range) {
 				var boundary = Html.prev(Boundaries.fromRangeStart(range));
@@ -213,12 +207,9 @@
 		t('<div><p>foo<br></p>[]one</div>', '<div><p>foo[<br></p>]one</div>');
 	});
 
-	return;
-
-	test('nextWordBoundary', function () {
-		tested.push('nextWordBoundary');
+	test('Html.next("word")', function () {
 		var dom = $('<div>foo<b>bar</b>s baz</div>')[0];
-		var boundary = Html.nextWordBoundary(Boundaries.fromNode(dom.firstChild));
+		var boundary = Html.next(Boundaries.fromNode(dom.firstChild), 'word');
 		equal(Boundaries.container(boundary), dom.lastChild);
 		equal(Boundaries.offset(boundary), 1);
 
@@ -234,7 +225,9 @@
 			function (boundary) {
 				return !Dom.isEditingHost(Boundaries.nextNode(boundary));
 			},
-			Html.nextWordBoundary,
+			function (boundary) {
+				return Html.next(boundary, 'word');
+			},
 			function (boundary) {
 				if (!Boundaries.isNodeBoundary(boundary)) {
 					var offset = Boundaries.offset(boundary) + (index++);
@@ -245,10 +238,9 @@
 		equal(control, expected, dom.innerHTML + ' => ' + expected);
 	});
 
-	test('prevWordBoundary', function () {
-		tested.push('prevWordBoundary');
+	test('Html.prev("word")', function () {
 		var dom = $('<div>foo <b>bar</b>s baz</div>')[0];
-		var boundary = Html.prevWordBoundary(Boundaries.create(dom.firstChild.nextSibling, 1));
+		var boundary = Html.prev(Boundaries.create(dom.firstChild.nextSibling, 1), 'word');
 		equal(Boundaries.container(boundary), dom.firstChild);
 		equal(Boundaries.offset(boundary), 4);
 
@@ -263,7 +255,9 @@
 			function (boundary) {
 				return !Dom.isEditingHost(Boundaries.nextNode(boundary));
 			},
-			Html.prevWordBoundary,
+			function (boundary) {
+				return Html.prev(boundary, 'word');
+			},
 			function (boundary) {
 				if (!Boundaries.isNodeBoundary(boundary)) {
 					var offset = Boundaries.offset(boundary);
@@ -275,7 +269,6 @@
 	});
 
 	test('isVisuallyAdjacent()', function () {
-		tested.push('isVisuallyAdjacent');
 		var t = function (markup, expected) {
 			var dom = $(markup)[0];
 			var range = Ranges.create(dom, 0);
@@ -310,13 +303,11 @@
 	});
 
 	test('isStyleInherited', function () {
-		tested.push('isStyleInherited');
 		equal(Html.isStyleInherited('color'), true);
 		equal(Html.isStyleInherited('background'), true);
 	});
 
 	test('hasBlockStyle', function () {
-		tested.push('hasBlockStyle');
 		var span = $('<span style="display: block"></span>')[0];
 		var div = $('<div></div>')[0];
 		var b = $('<b>foo</b>')[0];
@@ -331,7 +322,6 @@
 	});
 
 	test('hasInlineStyle', function () {
-		tested.push('hasInlineStyle');
 		var span = $('<span style="display: block"></span>')[0];
 		var div = $('<div></div>')[0];
 		var b = $('<b>foo</b>')[0];
@@ -346,14 +336,12 @@
 	});
 
 	test('isUnrenderedWhitespace', function () {
-		tested.push('isUnrenderedWhitespace');
 		equal(Html.isUnrenderedWhitespace(document.createTextNode('\t\r')), false);
 		equal(Html.isUnrenderedWhitespace($('<div>\t\r</div>')[0].firstChild), true);
 		equal(Html.isUnrenderedWhitespace($('<div>\t\rt</div>')[0].firstChild), false);
 	});
 
 	test('skipUnrenderedToStartOfLine', function () {
-		tested.push('skipUnrenderedToStartOfLine');
 		var node = $('<div>foo<b>bar </b>\t\r</div>')[0];
 
 		equal(Html.skipUnrenderedToStartOfLine(
@@ -368,18 +356,15 @@
 	});
 
 	test('skipUnrenderedToEndOfLine', function () {
-		tested.push('skipUnrenderedToEndOfLine');
 		var node = $('<div>\t\r</div>')[0].firstChild;
 		var point = aloha.cursors.cursor(node, false);
 		equal(Html.skipUnrenderedToEndOfLine(point), true);
 	});
 
 	test('normalizeBoundary', function () {
-		tested.push('normalizeBoundary');
 	});
 
 	test('isEmpty', function () {
-		tested.push('isEmpty');
 
 		function emptyTest(string, expectedResult) {
 			var node = $(string)[0];
@@ -393,7 +378,6 @@
 	});
 
 	test('nextLineBreak', function () {
-		tested.push('nextLineBreak');
 		var t = function (before, after) {
 			var dom = $(before)[0];
 			var range = Ranges.create(dom, 0);
@@ -416,7 +400,5 @@
 		t('<div><p>{foo<i>bar<b>baz</b></i></p>foo}</div>',
 		  '<div><p>foo<i>bar<b>baz</b></i>{</p>foo}</div>');
 	});
-
-	//testCoverage(test, tested, Html);
 
 }(window.aloha));

@@ -71,9 +71,8 @@ define([
 	}
 
 	/**
-	 * Moves the list of nodes into a destination element, until `until`
-	 * returns true.
-	 *
+	 * Moves the list of nodes into the end of destination element, until
+	 * `until` returns true.
 	 *
 	 * @param  {Element}                destination
 	 * @param  {Array.<Nodes>}          nodes
@@ -92,7 +91,6 @@ define([
 	/**
 	 * Moves the list of nodes before the reference element, until `until`
 	 * returns true.
-	 *
 	 *
 	 * @param  {Element}                reference
 	 * @param  {Array.<Nodes>}          nodes

@@ -474,7 +474,7 @@ define([
 		var nodes = [];
 		walkUntil(node, function (next) {
 			nodes.push(next);
-		}, until);
+		}, until || Fn.returnFalse);
 		return nodes;
 	}
 

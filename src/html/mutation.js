@@ -8,9 +8,6 @@
 define([
 	'html/elements',
 	'html/styles',
-	'dom/nodes',
-	'dom/mutation',
-	'dom/traversing',
 	'dom',
 	'mutation',
 	'predicates',
@@ -23,9 +20,6 @@ define([
 ], function HtmlMutation(
 	Elements,
 	Styles,
-	Nodes,
-	DomMutation,
-	Traversing,
 	Dom,
 	Mutation,
 	Predicates,
@@ -47,7 +41,7 @@ define([
 	 * @return {boolean}
 	 */
 	function closestEditable(node) {
-		return Traversing.upWhile(node, Fn.complement(Dom.isContentEditable));
+		return Dom.upWhile(node, Fn.complement(Dom.isContentEditable));
 	}
 
 	/**
@@ -76,8 +70,8 @@ define([
 		if (!Predicates.isBlockNode(elem) || (Browsers.msie && closestEditable(elem))) {
 			return;
 		}
-		if (!elem.firstChild || !Traversing.nextWhile(elem.firstChild, Elements.isUnrenderedWhitespace)) {
-			DomMutation.insert(elem.ownerDocument.createElement('br'), elem, true);
+		if (!elem.firstChild || !Dom.nextWhile(elem.firstChild, Elements.isUnrenderedWhitespace)) {
+			Dom.insert(elem.ownerDocument.createElement('br'), elem, true);
 		}
 	}
 
@@ -94,7 +88,7 @@ define([
 	function createTransferFunction(boundary) {
 		var ref = Boundaries.nextNode(boundary);
 		var atEnd = Boundaries.isAtEnd(boundary);
-		if (Nodes.isTextNode(ref)) {
+		if (Dom.isTextNode(ref)) {
 			ref = ref.parentNode;
 		}
 		return function insert(node, out_inserted) {
@@ -102,13 +96,13 @@ define([
 				return out_inserted(true);
 			}
 			if (ref.nodeName === node.nodeName) {
-				DomMutation.merge(ref, node);
+				Dom.merge(ref, node);
 				return out_inserted(true);
 			}
 			var parent = atEnd ? ref : ref.parentNode;
 			if (Content.allowsNesting(parent.nodeName, node.nodeName)) {
-				DomMutation.insert(node, ref, atEnd);
-				DomMutation.merge(node.previousSibling, node);
+				Dom.insert(node, ref, atEnd);
+				Dom.merge(node.previousSibling, node);
 				return out_inserted(true);
 			}
 			return out_inserted(false);
@@ -169,11 +163,11 @@ define([
 			if (Boundaries.offset(pos) > 0) {
 				// TODO:
 				// var node = Boundaries.nodeBefore(pos);
-				var node = Nodes.nodeAtOffset(
+				var node = Dom.nodeAtOffset(
 					Boundaries.container(pos),
 					Boundaries.offset(pos) - 1
 				);
-				if ((Nodes.isTextNode(node) || Predicates.isVoidNode(node)) && Elements.isRendered(node)) {
+				if ((Dom.isTextNode(node) || Predicates.isVoidNode(node)) && Elements.isRendered(node)) {
 					adjacent = false;
 					return false;
 				}
@@ -191,11 +185,11 @@ define([
 	 * @return {boolean}
 	 */
 	function hasRenderedContent(node) {
-		if (Nodes.isTextNode(node)) {
+		if (Dom.isTextNode(node)) {
 			return !Elements.isUnrenderedWhitespaceNoBlockCheck(node);
 		}
 		return Elements.isRendered(
-			Traversing.nextWhile(node.firstChild, Elements.isUnrendered)
+			Dom.nextWhile(node.firstChild, Elements.isUnrendered)
 		);
 	}
 
@@ -221,18 +215,18 @@ define([
 
 		if (Boundaries.equals(linebreak, below)) {
 			context.overrides = context.overrides.concat(Overrides.harvest(below[0]));
-			Traversing.climbUntil(below[0], DomMutation.remove, isVisible);
+			Dom.climbUntil(below[0], Dom.remove, isVisible);
 			return;
 		}
 
 		var right = Boundaries.nextNode(below);
 		var parent = right.parentNode;
 
-		if (0 === Nodes.nodeLength(right)) {
+		if (0 === Dom.nodeLength(right)) {
 			context.overrides = context.overrides.concat(Overrides.harvest(right));
-			DomMutation.remove(right);
+			Dom.remove(right);
 		} else {
-			Traversing.walkUntil(
+			Dom.walkUntil(
 				right,
 				createTransferFunction(linebreak),
 				cannotMove,
@@ -242,7 +236,7 @@ define([
 
 		if (parent) {
 			context.overrides = context.overrides.concat(Overrides.harvest(parent, isVisible));
-			Traversing.climbUntil(parent, DomMutation.remove, isVisible);
+			Dom.climbUntil(parent, Dom.remove, isVisible);
 		}
 	}
 
@@ -276,28 +270,35 @@ define([
 	 * @return {boolean}
 	 */
 	function isUnrenderedTextNode(node) {
-		return Nodes.isTextNode(node) && Elements.isUnrendered(node);
+		return Dom.isTextNode(node) && Elements.isUnrendered(node);
 	}
 
 	/**
 	 * Wraps `ref` into `wrapper` element.
 	 *
 	 * @private
-	 * @param {Node} node
+	 * @param {Node}    node
 	 * @param {Element} wrapper
 	 */
 	function wrapWithBreakingNode(ref, wrapper, context) {
-		var first = Traversing.prevWhile(ref, function (node) {
+		var first = Dom.prevWhile(ref, function (node) {
 			return node.previousSibling && Styles.hasInlineStyle(node.previousSibling);
 		});
 		if (first) {
-			/*
 			Dom.wrap(first, wrapper);
-			//Dom.moveSiblingsAfter(first.nextSibling, first, function (node) {
-			//	return node === ref;
-			//});
-			Dom.move(Dom.children(first), wrapper);
-			Dom.append(wrapper, ref);
+			var siblings = Dom.nextSiblings(first.nextSibling, function (node) {
+				return node === ref;
+			});
+			Dom.move(siblings, wrapper);
+			Dom.append(ref, wrapper);
+			/*
+
+			Dom.wrap(first, wrapper);
+			Dom.moveSiblingsAfter(first.nextSibling, first, function (node) {
+					return node === ref;
+			});
+			Dom.insert(ref, wrapper, true);
+
 			*/
 		} else {
 			Dom.wrap(ref, wrapper);
@@ -317,10 +318,10 @@ define([
 		};
 
 		var prev = br.previousSibling
-		        && Traversing.prevWhile(br.previousSibling, ignorable);
+		        && Dom.prevWhile(br.previousSibling, ignorable);
 
 		var next = br.nextSibling
-		        && Traversing.nextWhile(br.nextSibling, ignorable);
+		        && Dom.nextWhile(br.nextSibling, ignorable);
 
 		var significant = !prev
 		               || ((prev && next) && Predicates.isInlineNode(br.parentNode));
@@ -400,7 +401,7 @@ define([
 			return insertBreakingNodeBeforeBoundary(boundary, context);
 		}
 
-		var ascend = Traversing.childAndParentsUntilIncl(
+		var ascend = Dom.childAndParentsUntilIncl(
 			start,
 			isBreakingContainer
 		);
@@ -434,25 +435,25 @@ define([
 
 		for (i = 0, len = ascend.length; i < len; i++) {
 			node = ascend[i];
-			parent = node.parentNode.cloneNode(false);
-			copy = (node === movable) ? node : node.cloneNode(false);
+			parent = Dom.cloneShallow(node.parentNode);
+			copy = (node === movable) ? node : Dom.cloneShallow(node);
 			next = node.nextSibling;
 			Dom.insert(heirarchy || copy, parent, true);
 			if (next) {
-				Dom.moveSiblings(next, parent);
+				Dom.move(Dom.children(next), parent);
 			}
 			heirarchy = parent;
 		}
 
 		if (!heirarchy) {
-			heirarchy = anchor.cloneNode(false);
+			heirarchy = Dom.cloneShallow(anchor);
 		}
 
-		DomMutation.insertAfter(heirarchy, anchor);
+		Dom.insertAfter(heirarchy, anchor);
 		prop(anchor);
 
 		while (heirarchy && heirarchy.firstChild) {
-			heirarchy = Traversing.nextWhile(
+			heirarchy = Dom.nextWhile(
 				heirarchy.firstChild,
 				isUnrenderedTextNode
 			) || heirarchy.firstChild;
@@ -466,14 +467,14 @@ define([
 			Overrides.harvest(heirarchy, isVisibleOrHasBreakingStyle)
 		);
 
-		var nodesToRemove = Traversing.childAndParentsUntil(
+		var nodesToRemove = Dom.childAndParentsUntil(
 			heirarchy,
 			isVisibleOrHasBreakingStyle
 		);
 
 		if (nodesToRemove.length) {
 			heirarchy = Arrays.last(nodesToRemove).parentNode;
-			nodesToRemove.forEach(DomMutation.remove);
+			nodesToRemove.forEach(Dom.remove);
 		}
 
 		return Predicates.isVoidNode(heirarchy)

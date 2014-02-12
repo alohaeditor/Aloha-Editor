@@ -52,12 +52,6 @@
 	});
 	*/
 
-	test('outerHtml', function () {
-		tested.push('outerHtml');
-		var elem = $('<span class="one two three"><i>one</i></span>')[0];
-		equal(elem.outerHTML, elem.outerHTML);
-	});
-
 	test('moveNextAll', function () {
 		tested.push('moveNextAll');
 		var elem = $('<div><a></a><b></b><span></span></div>')[0];

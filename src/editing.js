@@ -22,7 +22,6 @@
 define([
 	'dom',
 	'mutation',
-	'dom/traversing',
 	'boundaries',
 	'arrays',
 	'maps',
@@ -36,7 +35,6 @@ define([
 ], function Editing(
 	Dom,
 	Mutation,
-	Traversing,
 	Boundaries,
 	Arrays,
 	Maps,
@@ -57,7 +55,7 @@ define([
 	 */
 	function walkSiblings(parent, beforeAtAfterChild, before, at, after, arg) {
 		var func = before;
-		Traversing.walk(parent.firstChild, function (child) {
+		Dom.walk(parent.firstChild, function (child) {
 			if (child !== beforeAtAfterChild) {
 				func(child, arg);
 			} else {
@@ -98,7 +96,7 @@ define([
 		// <elem>text{</elem> or <elem>text}</elem>
 		// ascendecending would start at <elem> ignoring "text".
 		if (ascendNodes.length && atEnd) {
-			Traversing.walk(ascendNodes[0].firstChild, before, args[0]);
+			Dom.walk(ascendNodes[0].firstChild, before, args[0]);
 		}
 		for (i = 0; i < ascendNodes.length - 1; i++) {
 			var child = ascendNodes[i];
@@ -151,8 +149,8 @@ define([
 		var startAtEnd = Boundaries.isAtEnd(Boundaries.raw(sc, so));
 		var endAtEnd   = Boundaries.isAtEnd(Boundaries.raw(ec, eo));
 
-		var ascStart    = Traversing.childAndParentsUntilNode(start, cac);
-		var ascEnd      = Traversing.childAndParentsUntilNode(end,   cac);
+		var ascStart    = Dom.childAndParentsUntilNode(start, cac);
+		var ascEnd      = Dom.childAndParentsUntilNode(end,   cac);
 		var stepAtStart = makePointNodeStep(start, startAtEnd, stepRightStart, stepPartial);
 		var stepAtEnd   = makePointNodeStep(end, endAtEnd, stepRightEnd, stepPartial);
 		ascendWalkSiblings(ascStart, startAtEnd, carryDown, stepLeftStart, stepAtStart, stepRightStart, arg);
@@ -160,7 +158,7 @@ define([
 		var cacChildStart = Arrays.last(ascStart);
 		var cacChildEnd   = Arrays.last(ascEnd);
 		stepAtStart = makePointNodeStep(start, startAtEnd, stepInbetween, stepPartial);
-		Traversing.walkUntilNode(cac.firstChild, stepLeftStart, cacChildStart, arg);
+		Dom.walkUntilNode(cac.firstChild, stepLeftStart, cacChildStart, arg);
 		if (cacChildStart) {
 			var next = cacChildStart.nextSibling;
 			if (cacChildStart === cacChildEnd) {
@@ -169,14 +167,14 @@ define([
 				}
 			} else {
 				stepAtStart(cacChildStart, arg);
-				Traversing.walkUntilNode(next, stepInbetween, cacChildEnd, arg);
+				Dom.walkUntilNode(next, stepInbetween, cacChildEnd, arg);
 				if (cacChildEnd) {
 					next = cacChildEnd.nextSibling;
 					stepAtEnd(cacChildEnd, arg);
 				}
 			}
 			if (cacChildEnd) {
-				Traversing.walk(next, stepRightEnd, arg);
+				Dom.walk(next, stepRightEnd, arg);
 			}
 		}
 	}
@@ -207,7 +205,7 @@ define([
 		// refer to it before traversal.
 		var cac = liveRange.commonAncestorContainer;
 		walkBoundaryInsideOutside(liveRange, getOverride, pushDownOverride, clearOverride, clearOverrideRec, cacOverride);
-		var fromCacToTop = Traversing.childAndParentsUntilInclNode(
+		var fromCacToTop = Dom.childAndParentsUntilInclNode(
 			cac,
 			pushDownFrom
 		);
@@ -234,7 +232,7 @@ define([
 			// Because we prefer a node above the cac if possible.
 			return (cac !== node && isReusable(node)) || isUpperBoundary(node) || isObstruction(node);
 		}
-		var cacToReusable = Traversing.childAndParentsUntilIncl(cac, untilIncl);
+		var cacToReusable = Dom.childAndParentsUntilIncl(cac, untilIncl);
 		var reusable = Arrays.last(cacToReusable);
 		if (!isReusable(reusable)) {
 			// Because, although we preferred a node above the cac, we
@@ -349,13 +347,13 @@ define([
 		var isContextOverride = formatter.isContextOverride;
 		var isClearable = formatter.isClearable;
 		var clearOverrideRec = formatter.clearOverrideRec  || function (node) {
-			Traversing.walkRec(node, clearOverride);
+			Dom.walkRec(node, clearOverride);
 		};
 		var topmostOverrideNode = null;
 		var cacOverride = null;
 		var isNonClearableOverride = false;
 		var upperBoundaryAndAbove = false;
-		var fromCacToContext = Traversing.childAndParentsUntilIncl(
+		var fromCacToContext = Dom.childAndParentsUntilIncl(
 			cac,
 			function (node) {
 				// Because we shouldn't expect hasContext to handle the document
@@ -510,11 +508,11 @@ define([
 		if (!Dom.isElementNode(node) || !ignoreVertical(node)) {
 			return null;
 		}
-		var maybeContext = Traversing.nextWhile(node.firstChild, ignoreHorizontal);
+		var maybeContext = Dom.nextWhile(node.firstChild, ignoreHorizontal);
 		if (!maybeContext) {
 			return null;
 		}
-		var notIgnorable = Traversing.nextWhile(maybeContext.nextSibling, ignoreHorizontal);
+		var notIgnorable = Dom.nextWhile(maybeContext.nextSibling, ignoreHorizontal);
 		if (notIgnorable) {
 			return null;
 		}
@@ -556,7 +554,7 @@ define([
 			} else {
 				// Because if wrapping is not successful, we try again
 				// one level down.
-				Traversing.walk(node.firstChild, function (node) {
+				Dom.walk(node.firstChild, function (node) {
 					ensureWrapper(node, createWrapper, isWrapper, isMergable, pruneContext, addContextValue, leftPoint, rightPoint);
 				});
 			}
@@ -668,7 +666,7 @@ define([
 		}
 
 		function clearOverrideRec(node) {
-			Traversing.walkRec(node, clearOverrideRecStep);
+			Dom.walkRec(node, clearOverrideRecStep);
 		}
 
 		function pushDownOverride(node, override) {
@@ -686,7 +684,7 @@ define([
 			if (isContextOverride(override)) {
 				return;
 			}
-			Traversing.walk(node.firstChild, clearOverrideRec);
+			Dom.walk(node.firstChild, clearOverrideRec);
 			wrapContextValue(node, contextValue);
 		}
 
@@ -1112,7 +1110,7 @@ define([
 			moveBackIntoWrapper(node, wrapper, true, leftPoint, rightPoint);
 		}
 
-		var ascend = Traversing.childAndParentsUntilIncl(node, opts.below);
+		var ascend = Dom.childAndParentsUntilIncl(node, opts.below);
 		var unsplitParent = ascend.pop();
 		if (unsplitParent && opts.below(unsplitParent)) {
 			ascendWalkSiblings(ascend, atEnd, carryDown, intoWrapper, Fn.noop, Fn.noop);
