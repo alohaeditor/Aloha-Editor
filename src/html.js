@@ -734,6 +734,14 @@ define([
 		above = Boundaries.normalize(above);
 		below = Boundaries.normalize(below);
 
+		if (!context) {
+			context = {};
+		}
+
+		if (!context.overrides) {
+			context.overrides = [];
+		}
+
 		if (!isVisuallyAdjacent(above, below)) {
 			return;
 		}

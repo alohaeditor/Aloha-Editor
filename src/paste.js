@@ -129,18 +129,16 @@ define([
 		return Traversing.upWhile(element, Fn.complement(Html.hasBlockStyle));
 	}
 
-
 	/**
-	 * Inserts document fragment into the DOM, updating the range selection.
+	 * Inserts document fragment into the DOM, in `range`.
 	 * @param {DocumentFragment} fragment
 	 * @param {Editable} editable
 	 * @param {Document} doc
 	 */
-	function insertIntoDom(fragment, editable, doc) {
+	function insertIntoDomFromRange(range, fragment, editable, doc) {
 		var firstChild = fragment.firstChild;
 		var lastChild = fragment.lastChild;
 		var needSplitText = fragment.childNodes.length >= 2;
-		var range = Ranges.get();
 		var referenceElement;
 
 		Editing.delete(range, editable);
@@ -165,11 +163,23 @@ define([
 
 		if (fragment.childNodes.length) {
 			referenceElement.parentNode.insertBefore(fragment, referenceElement);
-			 setSelectionAfter(range, lastChild);
+			setSelectionAfter(range, lastChild);
 		}
 
 		scrollToRange(doc, range);
 		Ranges.select(range);
+	}
+
+
+	/**
+	 * Inserts document fragment into the DOM, updating the range selection.
+	 * @param {DocumentFragment} fragment
+	 * @param {Editable} editable
+	 * @param {Document} doc
+	 */
+	function insertIntoDom(fragment, editable, doc) {
+		var range = Ranges.get();
+		insertIntoDomFromRange(range, fragment, editable, doc);
 	}
 
 	/**
@@ -237,6 +247,8 @@ define([
 	}
 
 	return {
-		handle: handle
+		handle: handle,
+		insertIntoDom: insertIntoDom,
+		insertIntoDomFromRange: insertIntoDomFromRange
 	};
 });
