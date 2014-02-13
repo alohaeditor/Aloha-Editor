@@ -889,7 +889,7 @@ define([
 			return 'SPAN' === node.nodeName;
 		}
 		function isPrunable(node) {
-			return isReusable(node) && !Dom.hasAttr(node);
+			return isReusable(node) && !Dom.hasAttrs(node);
 		}
 		function createWrapper(value) {
 			value = normalizeStyleValue(value);
@@ -957,7 +957,7 @@ define([
 			// does more than just provide a context (for example a <b>
 			// node may have a class which shouldn't also being wrapped
 			// around the merged-with node).
-			return node.nodeName === nodeName && !Dom.hasAttr(node);
+			return node.nodeName === nodeName && !Dom.hasAttrs(node);
 		}
 		function isPrunable(node) {
 			return isReusable(node);

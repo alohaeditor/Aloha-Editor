@@ -8,10 +8,10 @@
  * Provides public utility methods to convert DOM nodes to XHTML.
  */
 define([
-	'dom/nodes',
+	'dom',
 	'ephemera'
 ], function Xhtml(
-	Nodes,
+	Dom,
 	ephemera
 ) {
 	'use strict';
@@ -129,7 +129,7 @@ define([
 	 *        element, separated by space. The string will have a leading space.
 	 */
 	function makeAttrString(element, ephemera) {
-		var attrs = dom.attrs(element);
+		var attrs = Dom.attrs(element);
 		var str = '';
 		var i, len;
 		for (i = 0, len = attrs.length; i < len; i++) {
@@ -209,12 +209,12 @@ define([
 	 */
 	function serializeChildren(element, child, unrecognized, ephemera, xhtml) {
 		while (null != child) {
-			if (Nodes.Nodes.ELEMENT === child.nodeType
+			if (Dom.isElementNode(child)
 					&& unrecognized
 						&& '/' + element.nodeName === child.nodeName) {
 				child = child.nextSibling;
 				break;
-			} else if (Nodes.Nodes.ELEMENT === child.nodeType && isUnrecognized(child)) {
+			} else if (Dom.isElementNode(child) && isUnrecognized(child)) {
 				child = serializeElement(
 					child,
 					child.nextSibling,
@@ -233,9 +233,9 @@ define([
 	/**
 	 * Serializes an element into an XHTML string.
 	 *
-	 * @param {DOMObject} element
+	 * @param {Element} element
 	 *        An element to serialize.
-	 * @param {DOMObject} child
+	 * @param {Element} child
 	 *        The first child of the given element. This will usually be
 	 *        element.firstChild. On IE this may be element.nextSibling because
 	 *        of the broken DOM structure IE sometimes generates.
@@ -248,9 +248,9 @@ define([
 	 *        Only attrMap and attrRxs are supported at the moment.
 	 *        See ephemera.ephemera().
 	 * @param {Array} xhtml
-	 *        An array which receives the serialized element and whic, if
+	 *        An array which receives the serialized element and which, if
 	 *        joined, will yield the XHTML string.
-	 * @return {DOMObject}
+	 * @return {?Element}
 	 *        null if all siblings of the given child have been processed as
 	 *        children of the given element, or otherwise the first sibling of
 	 *        child that is not considered a child of the given element.
@@ -300,8 +300,7 @@ define([
 	 *        which if joined will yield the XHTML string.
 	 */
 	function serialize(node, ephemera, xhtml) {
-		var nodeType = node.nodeType;
-		if (Nodes.Nodes.ELEMENT === nodeType) {
+		if (Dom.isElementNode(node)) {
 			serializeElement(
 				node,
 				node.firstChild,
@@ -309,9 +308,9 @@ define([
 				ephemera,
 				xhtml
 			);
-		} else if (Nodes.Nodes.TEXT === node.nodeType) {
+		} else if (Dom.isTextNode(node)) {
 			xhtml.push(encodePcdata(node.nodeValue));
-		} else if (Nodes.Nodes.COMMENT === node.nodeType) {
+		} else if (Dom.Nodes.COMMENT === node.nodeType) {
 			xhtml.push('<' + '!--' + node.nodeValue + '-->');
 		} else {
 			console.warn(
