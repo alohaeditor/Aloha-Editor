@@ -176,11 +176,11 @@ define([
 	 * Scrolls to the range.
 	 */
 	function scrollToRange(doc, range) {
-		var position = Dom.offset(getFirstParentBlockElement(range.startContainer));
+		var position = Ranges.box(range);
 		var win = Dom.windowFromDocument(doc);
 
 		var adjust = (win.innerHeight - (win.innerHeight / 5));
-		win.scrollTo(position.left, position.top - adjust);
+		win.scrollTo(position.left, position.top + win.pageYOffset - adjust);
 	}
 
 	/**
