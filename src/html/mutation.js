@@ -8,6 +8,7 @@
 define([
 	'html/elements',
 	'html/styles',
+	'html/traversing',
 	'dom',
 	'mutation',
 	'predicates',
@@ -20,6 +21,7 @@ define([
 ], function HtmlMutation(
 	Elements,
 	Styles,
+	Traversing,
 	Dom,
 	Mutation,
 	Predicates,
@@ -282,7 +284,8 @@ define([
 	 */
 	function wrapWithBreakingNode(ref, wrapper, context) {
 		var first = Dom.prevWhile(ref, function (node) {
-			return node.previousSibling && Styles.hasInlineStyle(node.previousSibling);
+			return node.previousSibling
+			    && Styles.hasInlineStyle(node.previousSibling);
 		});
 		if (first) {
 			Dom.wrap(first, wrapper);
@@ -291,15 +294,6 @@ define([
 			});
 			Dom.move(siblings, wrapper);
 			Dom.append(ref, wrapper);
-			/*
-
-			Dom.wrap(first, wrapper);
-			Dom.moveSiblingsAfter(first.nextSibling, first, function (node) {
-					return node === ref;
-			});
-			Dom.insert(ref, wrapper, true);
-
-			*/
 		} else {
 			Dom.wrap(ref, wrapper);
 		}
@@ -352,10 +346,9 @@ define([
 		var container = Boundaries.container(boundary);
 		var doc = container.ownerDocument;
 		var br = doc.createElement('br');
-		Mutation.insertNodeAtBoundary(br, boundary);
-		boundary = Boundaries.next(boundary);
+		boundary = Mutation.insertNodeAtBoundary(br, boundary, true);
 		if (!isSignificantBr(br)) {
-			Mutation.insertNodeAtBoundary(doc.createElement('br'), boundary);
+			return Mutation.insertNodeAtBoundary(doc.createElement('br'), boundary, true);
 		}
 		return boundary;
 	}
@@ -378,6 +371,24 @@ define([
 		return Boundaries.create(node, 0);
 	}
 
+	function splitBoundaryUntil(boundary, until) {
+		if (until && until(boundary)) {
+			return boundary;
+		}
+		boundary = Boundaries.normalize(boundary);
+		if (Boundaries.isTextBoundary(boundary)) {
+			return splitBoundaryUntil(Mutation.splitBoundary(boundary), until);
+		}
+		var container = Boundaries.container(boundary);
+		var duplicate = Dom.cloneShallow(container);
+		var node = Boundaries.nodeAfter(boundary);
+		if (node) {
+			Dom.move(Dom.nextSiblings(node), duplicate);
+		}
+		Dom.insertAfter(duplicate, container);
+		return splitBoundaryUntil(Traversing.stepForward(boundary), until);
+	}
+
 	/**
 	 * Inserts a visual line break after the given boundary position.
 	 *
@@ -385,10 +396,19 @@ define([
 	 * visually adjacent to the newly created line.
 	 *
 	 * @param  {Boundary} boundary
-	 * @param  {Object} context
-	 * @return {?Boundary}
+	 * @param  {Object}   context
+	 * @return {Boundary}
 	 */
 	function insertBreak(boundary, context) {
+		boundary = splitBoundaryUntil(boundary, function (boundary) {
+			var node = Boundaries.container(boundary).parentNode;
+			return !node
+			    || Styles.hasLinebreakingStyle(node)
+			    || Dom.isEditingHost(node);
+		});
+
+		boundary = Mutation.splitBoundary(boundary);
+
 		var start = Boundaries.nextNode(boundary);
 
 		// Because any nodes which are entirely after the boundary position
@@ -401,11 +421,7 @@ define([
 			return insertBreakingNodeBeforeBoundary(boundary, context);
 		}
 
-		var ascend = Dom.childAndParentsUntilIncl(
-			start,
-			isBreakingContainer
-		);
-
+		var ascend = Dom.childAndParentsUntilIncl(start, isBreakingContainer);
 		var anchor = ascend.pop();
 
 		// Because if there are no breaking containers below the editing host,
@@ -438,9 +454,9 @@ define([
 			parent = Dom.cloneShallow(node.parentNode);
 			copy = (node === movable) ? node : Dom.cloneShallow(node);
 			next = node.nextSibling;
-			Dom.insert(heirarchy || copy, parent, true);
+			Dom.append(heirarchy || copy, parent);
 			if (next) {
-				Dom.move(Dom.children(next), parent);
+				Dom.move(Dom.nextSiblings(next), parent);
 			}
 			heirarchy = parent;
 		}

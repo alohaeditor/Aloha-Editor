@@ -8,7 +8,7 @@
 define([
 	'dom',
 	'arrays',
-	'boundaries',
+	'boundaries'
 ], function Mutation(
 	Dom,
 	Arrays,

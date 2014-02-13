@@ -894,6 +894,9 @@ define([
 	 *		or a word-breaker (in languages that do not use space to delimit
 	 *		word boundaries).
 	 *
+	 * "boundary" -- Move in front of the next boundary and skip over void
+	 *               elements.
+	 *
 	 * "offset" -- Move in front of the next visual offset.
 	 *
 	 *		A visual offset is the smallest unit of consumed space.  This can
@@ -919,6 +922,9 @@ define([
 				nextBoundary = nextVisualBoundary(boundary);
 			}
 			break;
+		case 'boundary':
+			nextBoundary = stepForward(boundary);
+			break;
 		default:
 			nextBoundary = nextVisualBoundary(boundary);
 			break;
@@ -942,6 +948,9 @@ define([
 	 *		or a word-breaker (in languages that do not use space to delimit
 	 *		word boundaries).
 	 *
+	 * "boundary" -- Move in behind of the previous boundary and skip over void
+	 *               elements.
+	 *
 	 * "offset" -- Move behind the previous visual offset.
 	 *
 	 *		A visual offset is the smallest unit of consumed space.  This can
@@ -964,6 +973,9 @@ define([
 			if (equals(prevBoundary, boundary)) {
 				prevBoundary = prevVisualBoundary(boundary);
 			}
+			break;
+		case 'boundary':
+			prevBoundary = stepBackward(boundary);
 			break;
 		default:
 			prevBoundary = prevVisualBoundary(boundary);
@@ -1055,6 +1067,8 @@ define([
 		prevNode              : prevNode,
 		nextNode              : nextNode,
 		prevSignificantOffset : prevSignificantOffset,
-		nextSignificantOffset : nextSignificantOffset
+		nextSignificantOffset : nextSignificantOffset,
+		stepForward           : stepForward,
+		stepBackward          : stepBackward
 	};
 });
