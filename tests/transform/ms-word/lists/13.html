@@ -1,0 +1,89 @@
+<div class="test">
+    <div class="input">
+        <p style="margin: 0in 0in 0pt 1.5in; text-indent: -9pt; mso-add-space: auto; mso-list: l0 level3 lfo1;" class="MsoListParagraphCxSpFirst">
+            <span style="font-family: Symbol; mso-fareast-font-family: Symbol; mso-bidi-font-family: Symbol;">
+                <span style="mso-list: Ignore;">·
+                            
+                    <span style='font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;'>&nbsp;&nbsp;</span>
+                </span>
+            </span>
+            <font face="Calibri">Unordered
+                        
+                <?xml:namespace prefix = o ns = "urn:schemas-microsoft-com:office:office" />
+                <o:p></o:p>
+            </font>
+        </p>
+        <p style="margin: 0in 0in 0pt 3in; text-indent: -3in; mso-add-space: auto; mso-list: l0 level6 lfo1; mso-text-indent-alt: -9.0pt;" class="MsoListParagraphCxSpMiddle">
+            <span style="mso-bidi-font-family: Calibri; mso-bidi-theme-font: minor-latin;">
+                <span style="mso-list: Ignore;">
+                    <span style='font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <font
+			face="Calibri">i.</font>
+                    <span style='font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                </span>
+            </span>
+            <font face="Calibri">sdfs
+                        
+                <o:p></o:p>
+            </font>
+        </p>
+        <p style="margin: 0in 0in 0pt 0.5in; text-indent: -0.25in; mso-list: l0 level1 lfo1;" class="MsoListParagraphCxSpMiddle">
+            <span style="mso-bidi-font-family: Calibri; mso-bidi-theme-font: minor-latin;">
+                <span style="mso-list: Ignore;">
+                    <font face="Calibri">6.</font>
+                    <span style='font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                </span>
+            </span>
+            <font face="Calibri">Five
+                        
+                <o:p></o:p>
+            </font>
+        </p>
+        <p style="margin: 0in 0in 8pt 3.5in; text-indent: -0.25in; mso-add-space: auto; mso-list: l0 level7 lfo1;" class="MsoListParagraphCxSpLast">
+            <span style="font-family: Symbol; mso-fareast-font-family: Symbol; mso-bidi-font-family: Symbol;">
+                <span style="mso-list: Ignore;">·
+                            
+                    <span style='font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                </span>
+            </span>
+            <font face="Calibri">Things
+                        
+                <o:p></o:p>
+            </font>
+        </p>
+    </div>
+    <div class="expected">
+        <ul>
+			<li>
+				<ul><li>
+						<ul><li>Unordered
+								<ol type="i"><li>
+										<ol type="i"><li>
+												<ol type="i">
+													<li>sdfs</li>
+												</ol>
+										</li></ol>
+								</li></ol>
+						</li></ul>
+				</li></ul>
+			</li>
+            <li>Five
+				<ul>
+					<li>
+						<ul><li>
+							<ul><li>
+								<ul><li>
+									<ul><li>
+										<ul>
+											<li>Things</li>
+										</ul>
+									</li></ul>
+								</li></ul>
+							</li></ul>
+						</li></ul>
+					</li>
+				</ul>
+			</li>
+        </ul>
+    </div>
+</div>

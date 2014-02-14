@@ -33,9 +33,17 @@ define([
 	var LIST_NUMBERS = new RegExp('^\\s*'
 	                 + '('
 	                 + '(?:[0-9]{1,3}|[a-zA-Z]{1,5})+' // 123 or xiii
-	                 + '[\\.\\)]'                    // .   or )
+	                 + '[\\.\\)]'                      // .   or )
 	                 + ')+'
 	                 + '\\s*$');
+
+	/**
+	 * Matches mso-list ignore style.
+	 *
+	 * @private
+	 * @type {RegExp}
+	 */
+	var LIST_IGNORE_STYLE = /mso-list:\s*Ignore/i;
 
 	/**
 	 * Extracts the number from an ordered list item.
@@ -127,7 +135,7 @@ define([
 	 */
 	function isIgnorableSpan(node) {
 		if ('SPAN' === node.nodeName
-				&& Dom.getAttr(node, 'style') === 'mso-list:Ignore') {
+				&& LIST_IGNORE_STYLE.test(Dom.getAttr(node, 'style'))) {
 			return true;
 		}
 		return !Dom.isTextNode(node) && isIgnorableSpan(node.firstChild);
@@ -143,7 +151,8 @@ define([
 		if ('P' !== node.nodeName) {
 			return false;
 		}
-		return Dom.hasClass(node, 'MsoListParagraphCxSpFirst')
+		return Dom.hasClass(node, 'MsoListParagraph')
+		    || Dom.hasClass(node, 'MsoListParagraphCxSpFirst')
 		    || Dom.hasClass(node, 'MsoListParagraphCxSpMiddle')
 		    || Dom.hasClass(node, 'MsoListParagraphCxSpLast');
 	}
@@ -157,7 +166,19 @@ define([
 	 */
 	function isFirstListParagraph(node) {
 		return ('P' === node.nodeName)
-		    && Dom.hasClass(node, 'MsoListParagraphCxSpFirst');
+			&& Dom.hasClass(node, 'MsoListParagraphCxSpFirst');
+	}
+
+	/**
+	 * Checks whether the given node is a list-paragraph that denotes a one
+	 * item list.
+	 *
+	 * @param  {Node} node
+	 * @return {boolean}
+	 */
+	function isSingleListParagraph(node) {
+		return ('P' === node.nodeName)
+		    && Dom.hasClass(node, 'MsoListParagraph');
 	}
 
 	/**
@@ -283,7 +304,7 @@ define([
 			if (!list) {
 				first = list = {
 					parent : null,
-					level  : level,
+					level  : 1,
 					node   : node,
 					items  : []
 				};
@@ -353,15 +374,22 @@ define([
 		var i;
 		var l = children.length;
 		var list;
+		var last;
 		var node;
+		var nodes;
 		for (i = 0; i < l; i++) {
-			node = transform(children[i], doc);
-			if (!isFirstListParagraph(node)) {
-				processed.push(node);
+			node = children[i];
+			if (isSingleListParagraph(node)) {
+				processed.push(createList([node], doc, transform));
+			} else if (!isFirstListParagraph(node)) {
+				processed.push(transform(node, doc));
 			} else {
-				var nodes =  Dom.nextSiblings(node, isLastListParagraph);
+				nodes =  Dom.nextSiblings(node, isLastListParagraph);
 				// Becuase Dom.nextSibling() excludes the predicative node
-				nodes.push(Arrays.last(nodes).nextSibling);
+				last = Arrays.last(nodes).nextSibling;
+				if (last) {
+					nodes.push(last);
+				}
 				list = createList(nodes, doc, transform);
 				if (list) {
 					processed.push(list);

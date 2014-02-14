@@ -1,0 +1,110 @@
+<div class="test">
+    <div class="input">
+        <p class=MsoListParagraphCxSpFirst style='margin-left:1.1in;mso-add-space:auto;text-indent:-.35in;mso-list:l0 level3 lfo1'>
+            <![if !supportLists]>
+            <span style='mso-fareast-font-family:Ubuntu;mso-bidi-font-family:Ubuntu'>
+                <span style='mso-list:Ignore'>1.1.1.
+                            
+                    <span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                </span>
+            </span>
+            <![endif]>working correctly.
+			
+                    
+            <o:p></o:p>
+        </p>
+        <p class=MsoListParagraphCxSpMiddle style='margin-left:1.1in;mso-add-space:auto;text-indent:-.35in;mso-list:l0 level3 lfo1'>
+            <![if !supportLists]>
+            <span style='mso-fareast-font-family:Ubuntu;mso-bidi-font-family:Ubuntu'>
+                <span style='mso-list:Ignore'>1.1.2.
+                            
+                    <span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                </span>
+            </span>
+            <![endif]>Five
+			
+                    
+            <o:p></o:p>
+        </p>
+        <p class=MsoListParagraphCxSpMiddle style='text-indent:-.25in;mso-list:l0 level1 lfo1'>
+            <![if !supportLists]>
+            <b style='mso-bidi-font-weight:normal'>
+                <i style='mso-bidi-font-style:normal'>
+                    <span style='mso-fareast-font-family:Ubuntu;mso-bidi-font-family:Ubuntu'>
+                        <span style='mso-list:Ignore'>2.
+                                    
+                            <span style='font:7.0pt "Times New Roman"'>&nbsp; </span>
+                        </span>
+                    </span>
+                </i>
+            </b>
+            <![endif]>
+            <b style='mso-bidi-font-weight:normal'>
+                <i style='mso-bidi-font-style:normal'>
+                    <u>Six
+                                
+                        <o:p></o:p>
+                    </u>
+                </i>
+            </b>
+        </p>
+        <p class=MsoListParagraphCxSpMiddle style='margin-left:.25in;mso-add-space:auto;text-indent:0in'>
+            <b style='mso-bidi-font-weight:normal'>
+                <i style='mso-bidi-font-style:normal'>
+                    <s>
+                        <u>
+                            <span style='color:red;background:yellow;mso-highlight:yellow'>A Multi-level list with bullets</span>
+                        </u>
+                    </s>
+                </i>
+            </b>:
+			
+                    
+            <o:p></o:p>
+        </p>
+        <p class=MsoListParagraphCxSpLast style='text-indent:-.25in;mso-list:l1 level1 lfo2'>
+            <![if !supportLists]>
+            <span style='font-family:Wingdings;mso-fareast-font-family:Wingdings;mso-bidi-font-family:Wingdings'>
+                <span style='mso-list:Ignore'>§
+                            
+                    <span style='font:7.0pt "Times New Roman"'>&nbsp;</span>
+                </span>
+            </span>
+            <![endif]>One
+			
+                    
+            <o:p></o:p>
+        </p>
+    </div>
+    <div class="expected">
+        <ol start="1" type="1">
+			<li>
+				<ol start="1" type="1">
+					<li>
+						<ol start="1" type="1">
+							<li>working correctly.</li>
+							<li>Five</li>
+						</ol>
+					</li>
+				</ol>
+			</li>
+            <li>
+                <b>
+                    <i>
+                        <u>Six</u>
+                    </i>
+                </b>
+				<p>
+					<b>
+						<i>
+							<s>
+								<u>A Multi-level list with bullets</u>
+							</s>
+						</i>
+					</b>:
+				</p>
+			</li>
+			<li>One</li>
+        </ol>
+    </div>
+</div>

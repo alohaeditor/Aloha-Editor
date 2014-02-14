@@ -1,0 +1,70 @@
+<div class="test">
+    <div class="input">
+        <p style="margin: 0in 0in 0pt 0.5in; text-indent: -0.25in; mso-list: l0 level1 lfo1;" class="MsoListParagraphCxSpFirst">
+            <!--This is a commment-->
+            <span style="font-family: Symbol; mso-ansi-language: ES; mso-fareast-font-family: Symbol; mso-bidi-font-family: Symbol;" lang="ES">
+                <!--This is a commment-->
+                <span style="mso-list: Ignore;">·
+                            
+                    <span style='font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                </span>
+            </span>
+            <span style="mso-ansi-language: ES;" lang="ES">
+                <font face="Calibri">Aaaaa
+                            
+                    <?xml:namespace prefix = o ns = "urn:schemas-microsoft-com:office:office" />
+                    <o:p></o:p>
+                </font>
+            </span>
+        </p>
+        <p style="margin: 0in 0in 0pt 0.5in; text-indent: -0.25in; mso-list: l0 level1 lfo1;" class="MsoListParagraphCxSpMiddle">
+            <span style="font-family: Symbol; mso-ansi-language: ES; mso-fareast-font-family: Symbol; mso-bidi-font-family: Symbol;" lang="ES">
+                <span style="mso-list: Ignore;">·
+                            
+                    <span style='font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                </span>
+            </span>
+            <span style="mso-ansi-language: ES;" lang="ES">
+                <font face="Calibri">Bbbbb
+                            
+                    <o:p></o:p>
+                </font>
+            </span>
+        </p>
+        <p style="margin: 0in 0in 0pt 0.5in; text-indent: -0.25in; mso-list: l0 level1 lfo1;" class="MsoListParagraphCxSpMiddle">
+            <span style="font-family: Symbol; mso-ansi-language: ES; mso-fareast-font-family: Symbol; mso-bidi-font-family: Symbol;" lang="ES">
+                <span style="mso-list: Ignore;">·
+                            
+                    <span style='font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                </span>
+            </span>
+            <span style="mso-ansi-language: ES;" lang="ES">
+                <font face="Calibri">&nbsp;
+                            
+                    <o:p></o:p>
+                </font>
+            </span>
+        </p>
+        <p style="margin: 0in 0in 8pt 0.5in; text-indent: -0.25in; mso-list: l0 level1 lfo1;" class="MsoListParagraphCxSpLast">
+            <span style="font-family: Symbol; mso-ansi-language: ES; mso-fareast-font-family: Symbol; mso-bidi-font-family: Symbol;" lang="ES">
+                <span style="mso-list: Ignore;">·
+                            
+                    <span style='font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                </span>
+            </span>
+            <span style="mso-ansi-language: ES;" lang="ES">
+                <o:p>
+                    <font face="Calibri">Ccccc</font>
+                </o:p>
+            </span>
+        </p>
+    </div>
+    <div class="expected">
+        <ul>
+            <li>Aaaaa</li>
+            <li>Bbbbb</li>
+            <li></li>
+			<li><p>Ccccc</p></li>
+        </ul>
+    </div>
+</div>

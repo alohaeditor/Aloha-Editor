@@ -1,0 +1,99 @@
+<!-- TEST: parse ordered list multilevel -->
+<div class="test">
+    <div class="input">
+        <p style="margin: 0in 0in 0pt 0.5in; text-indent: -0.25in; mso-list: l0 level1 lfo1;" class="MsoListParagraphCxSpFirst">
+            <span style="mso-ansi-language: ES; mso-bidi-font-family: Calibri;" lang="ES">
+                <span style="mso-list: Ignore;">
+                    <font face="Calibri">1.</font>
+                    <span style='font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                        
+                        <!--This is a comment-->
+                    </span>
+                </span>
+            </span>
+            <span style="mso-ansi-language: ES;" lang="ES">
+                <font face="Calibri">1111
+                    
+                    <?xml:namespace prefix = o ns = "urn:schemas-microsoft-com:office:office" />
+                    <o:p></o:p>
+                </font>
+            </span>
+        </p>
+        <p style="margin: 0in 0in 0pt 0.5in; text-indent: -0.25in; mso-list: l0 level1 lfo1" class="MsoListParagraphCxSpMiddle">
+            <span style="mso-ansi-language: ES; mso-bidi-font-family: Calibri;" lang="ES">
+                <span style="mso-list: Ignore;">
+                    <font face="Calibri">2.</font>
+                    <span style='font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <!--This is a commment-->
+                </span>
+            </span>
+            <span style="mso-ansi-language: ES;" lang="ES">
+                <font face="Calibri">2222
+                    
+                    <o:p></o:p>
+                </font>
+            </span>
+        </p>
+        <p style="margin: 0in 0in 0pt 1.5in; text-indent: -1.5in; mso-list: l0 level3 lfo1; mso-add-space: auto; mso-text-indent-alt: -9.0pt;" class="MsoListParagraphCxSpMiddle">
+            <span style="mso-ansi-language: ES; mso-bidi-font-family: Calibri;" lang="ES">
+                <span style="mso-list: Ignore;">
+                    <span style='font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <font
+    		face="Calibri">i.</font>
+                    <span style='font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                </span>
+            </span>
+            <span style="mso-ansi-language: ES;" lang="ES">
+                <font face="Calibri">aaaaa
+                    
+                    <o:p></o:p>
+                </font>
+            </span>
+        </p>
+        <p style="margin: 0in 0in 0pt 0.5in; text-indent: -0.25in; mso-list: l0 level1 lfo1;" class="MsoListParagraphCxSpMiddle">
+            <span style="mso-ansi-language: ES; mso-bidi-font-family: Calibri;" lang="ES">
+                <span style="mso-list: Ignore;">
+                    <font face="Calibri">3.</font>
+                    <span style='font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                </span>
+            </span>
+            <span style="mso-ansi-language: ES;" lang="ES">
+                <font face="Calibri">333
+                    
+                    <o:p></o:p>
+                </font>
+            </span>
+        </p>
+        <p style="margin: 0in 0in 8pt 0.5in; text-indent: -0.25in; mso-list: l0 level1 lfo1;" class="MsoListParagraphCxSpLast">
+            <span style="mso-ansi-language: ES; mso-bidi-font-family: Calibri;" lang="ES">
+                <span style="mso-list: Ignore;">
+                    <font face="Calibri">4.</font>
+                    <span style='font: 7pt/normal "Times New Roman"; font-size-adjust: none; font-stretch: normal;'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                </span>
+            </span>
+            <span style="mso-ansi-language: ES;" lang="ES">
+                <font face="Calibri">4444
+                    
+                    <o:p></o:p>
+                </font>
+            </span>
+        </p>
+    </div>
+    <div class="expected">
+        <ol start="1" type="1">
+            <li>1111</li>
+            <li>2222
+				<ol type="i">
+					<li>
+						<ol type="i">
+							<li>aaaaa</li>
+						</ol>
+					</li>
+				</ol>
+			</li>
+            <li>333</li>
+            <li>4444</li>
+        </ol>
+    </div>
+</div>

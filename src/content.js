@@ -495,13 +495,8 @@ define([], function Content() {
 		'A'   : ['href', '_target'],
 		'TD'  : ['colspan', 'rowspan'],
 		'TH'  : ['colspan', 'rowspan'],
-		'*'   : ['xstyle']
-	};
-
-	var STYLES_WHITELIST = {
-		'IMG' : ['width', 'height'],
 		'OL'  : ['start', 'type'],
-		'*'   : ['style']
+		'*'   : ['xstyle']
 	};
 
 	var STYLES_WHITELIST = {

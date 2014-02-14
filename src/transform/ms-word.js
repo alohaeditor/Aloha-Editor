@@ -31,14 +31,23 @@ define([
 	 * Matches tags in the markup that are deemed superfluous: having no effect
 	 * in the representation of the content.
 	 *
-	 * This will be used to strip tags like "<w:data>08D0C9EA7...</w:data>" and
-	 * "<o:p></o:p>"
+	 * This will be used to strip tags like "<w:data>08D0C9EA7...</w:data>" but
+	 * not "<o:p></o:p>"
 	 *
 	 * @private
 	 * @const
 	 * @type {RegExp}
 	 */
-	var SUPERFLUOUS_TAG = /(xml|o:\w+|v:\w+)/i;
+	var SUPERFLUOUS_TAG = /xml|v\:\w+/i;
+
+	/**
+	 * Matches namespaced tags like "<o:p></o:p>".
+	 *
+	 * @private
+	 * @const
+	 * @type {RegExp}
+	 */
+	var NAMESPACED_NODENAME = /o\:(\w+)/i;
 
 	/**
 	 * Checks whether the given node is considered superfluous (has not affect
@@ -50,7 +59,7 @@ define([
 	 */
 	function isSuperfluous(node) {
 		return node.nodeType === Dom.Nodes.COMMENT
-		    && SUPERFLUOUS_TAG.test(node.nodeName);
+		    || SUPERFLUOUS_TAG.test(node.nodeName);
 	}
 
 	/**
@@ -70,11 +79,23 @@ define([
 	}
 
 	/**
-	 * Cleans the given node.
+	 * Returns the the non-namespaced version of the given node's nodeName.
+	 * If the node is not namespaced, will return null.
+	 *
+	 * @param  {Node} node
+	 * @return {String}
+	 */
+	function namespacedNodeName(node) {
+		var match = node.nodeName.match(NAMESPACED_NODENAME);
+		return match ? match[1] : null;
+	}
+
+	/**
+	 * Returns a clean copy of the given node.
 	 *
 	 * @param  {Node}     node
 	 * @param  {Document} doc
-	 * @return {Node} A copy of `node`
+	 * @return {Node}
 	 */
 	function clean(node, doc) {
 		if (isSuperfluous(node)) {
@@ -88,6 +109,10 @@ define([
 		}
 		if (Dom.hasClass(node, 'MsoSubtitle')) {
 			return rewrap(node, 'h2', doc);
+		}
+		var nodeName = namespacedNodeName(node);
+		if (nodeName) {
+			return rewrap(node, nodeName, doc);
 		}
 		return Dom.clone(node);
 	}

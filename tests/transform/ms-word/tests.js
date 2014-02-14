@@ -11,7 +11,11 @@
 		ok(!WordTransform.isMSWordContent(htmlRes, document));
 	});
 
+	$.ajax('content.html', function (content) {
+		console.log(content);
+	});
 
+	/*
 	test('part heading and titles', function () {
 		var htmlRes =
 			'<h1 style="margin: 12pt 0in 0pt;"><span style="mso-ansi-language: ES;" lang="ES"><font size="5"><font color="#2e74b5"><font face="Calibri Light">Heading1<?xml:namespace prefix = o ns = "urn:schemas-microsoft-com:office:office" /><o:p></o:p></font></font></font></span></h1>' +
@@ -104,5 +108,6 @@
 
 		equal(htmlRes, '<p><br></p><p>things happens</p><p><hr></p><p>between</p><p><hr></p>');
 	});
+	*/
 
 })(window.aloha);

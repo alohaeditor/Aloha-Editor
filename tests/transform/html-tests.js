@@ -3,11 +3,9 @@
 
 	module('Transform');
 
-	var Transform = aloha.transform;
-
 	function t(input, expected) {
 		test(input + ' => ' + expected, function () {
-			equal(Transform.html(input, document), expected);
+			equal(aloha.transform.html(input, document), expected);
 		});
 	}
 

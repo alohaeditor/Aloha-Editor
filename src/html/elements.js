@@ -288,7 +288,10 @@ define([
 			return true;
 		}
 
-		if (!Predicates.isVoidNode(node) && 0 === Nodes.nodeLength(node)) {
+		if (!Predicates.isVoidNode(node)
+				// Because empty list elements are rendered
+				&& !LIST_ITEMS[node.nodeName]
+				&& 0 === Nodes.nodeLength(node)) {
 			return true;
 		}
 
