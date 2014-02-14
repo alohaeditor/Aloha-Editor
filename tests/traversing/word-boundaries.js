@@ -168,6 +168,6 @@
 		test(EDITABLE, markBackward, EXPECTED);
 	}
 
-	setInterval(run, 100);
+	setInterval(run, 10);
 
 }(window.aloha));
