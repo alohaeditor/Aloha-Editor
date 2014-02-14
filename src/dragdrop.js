@@ -152,6 +152,8 @@ define([
 			return alohaEvent;
 		}
 
+		var doc = event.target.ownerDocument;
+
 		switch (alohaEvent.type) {
 
 		case 'dragstart':
@@ -167,8 +169,8 @@ define([
 
 			x = event.clientX + DRAGGING_CARET_OFFSET;
 			y = event.clientY + DRAGGING_CARET_OFFSET;
-			carets = Selections.hideCarets(event.target.ownerDocument);
-			alohaEvent.range = Ranges.fromPosition(x, y);
+			carets = Selections.hideCarets(doc);
+			alohaEvent.range = Ranges.fromPosition(x, y, doc);
 			Selections.unhideCarets(carets);
 
 			// Because this is necessary to enable dropping to work
@@ -180,8 +182,8 @@ define([
 
 			x = event.clientX + DRAGGING_CARET_OFFSET;
 			y = event.clientY + DRAGGING_CARET_OFFSET;
-			carets = Selections.hideCarets(event.target.ownerDocument);
-			alohaEvent.range = Ranges.fromPosition(x, y);
+			carets = Selections.hideCarets(doc);
+			alohaEvent.range = Ranges.fromPosition(x, y, doc);
 			Selections.unhideCarets(carets);
 
 			if (alohaEvent.range) {
