@@ -12,8 +12,7 @@
  * https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer
  */
 define([
-	'dom/nodes',
-	'dom/mutation',
+	'dom',
 	'maps',
 	'arrays',
 	'ranges',
@@ -21,8 +20,7 @@ define([
 	'selections',
 	'dom/traversing'
 ], function DragDrop(
-	Nodes,
-	Mutation,
+	Dom,
 	Maps,
 	Arrays,
 	Ranges,
@@ -97,10 +95,9 @@ define([
 	 *
 	 * @param  {Element} node
 	 * @return {boolean}
-	 *         True if the given node is draggable.
 	 */
 	function isDraggable(node) {
-		if (!Nodes.isElementNode(node)) {
+		if (!Dom.isElementNode(node)) {
 			return false;
 		}
 
@@ -131,7 +128,7 @@ define([
 		var prev = node.previousSibling;
 		Editing.insert(range, node);
 		if (prev && prev.nextSibling) {
-			Mutation.merge(prev, prev.nextSibling);
+			Dom.merge(prev, prev.nextSibling);
 		}
 		Ranges.collapseToEnd(range);
 	}
