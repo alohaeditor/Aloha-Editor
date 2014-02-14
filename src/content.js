@@ -500,7 +500,15 @@ define([], function Content() {
 
 	var STYLES_WHITELIST = {
 		'IMG' : ['width', 'height'],
-		'*'   : [
+		'OL'  : ['start', 'type'],
+		'*'   : ['style']
+	};
+
+	var STYLES_WHITELIST = {
+		'TABLE' : ['width'],
+		'IMG'   : ['width', 'height'],
+		'*'     : [
+			// '*',
 			'color',
 			'font-family', 'font-size', 'font-weight', 'font-stlye', 'font-decoration',
 			'background', 'background-image', 'background-color'
@@ -510,6 +518,7 @@ define([], function Content() {
 	var NODES_BLACKLIST = [
 		'AUDIO',
 		'COMMAND',
+		'COLGROUP',
 		'IFRAME',
 		'INPUT',
 		'INS',

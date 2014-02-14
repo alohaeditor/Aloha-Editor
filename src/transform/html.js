@@ -12,7 +12,7 @@ define([
 	'functions',
 	'html',
 	'content',
-	'utils'
+	'./utils'
 ], function (
 	Dom,
 	Arrays,
@@ -25,30 +25,25 @@ define([
 	'use strict';
 
 	/**
-	 * Strategy:
-	 * 1) Harvest from each, their color, face, and size attribute.
-	 * 2) Determine if the font node is wrapping a single element as it's only
-	 *    child.
-	 *		- If it does, then apply these styles into that element, giving the
-	 *		  child's styles preference. Then unwrap the font node.
-	 *		- If the font node is not wrapping a single element, but several,
-	 *		  then convert the font node into a span.
+	 * Unwraps or replaces the given font element while preserving the styles
+	 * it effected.
+	 *
+	 * @param  {Element}  font Must be a font element
+	 * @param  {Document} doc
+	 * @return {Element}
 	 */
-	function normalizeFont(doc, node) {
-		var children = Dom.children(node);
-		var color = Dom.getStyle(node, 'color')       || Dom.getAttr(node, 'color');
-		var size  = Dom.getStyle(node, 'font-size')   || Dom.getAttr(node, 'font-size');
-		var face  = Dom.getStyle(node, 'font-family') || Dom.getAttr(node, 'font-family');
+	function normalizeFont(font, doc) {
+		var children = Dom.children(font);
+		var color = Dom.getStyle(font, 'color')      || Dom.getAttr(font, 'color');
+		var size = Dom.getStyle(font, 'font-size')   || Dom.getAttr(font, 'font-size');
+		var face = Dom.getStyle(font, 'font-family') || Dom.getAttr(font, 'font-family');
 		var child;
-
 		if (1 === children.length && Dom.isElementNode(children[0])) {
-			Dom.removeShallow(node);
 			child = children[0];
 		} else {
-			child = doc.createElement('span')
-			Dom.replaceShallow(node, child);
+			child = doc.createElement('span');
+			Dom.move(children, child);
 		}
-
 		if (color) {
 			Dom.setStyle(child, 'color', color);
 		}
@@ -68,40 +63,43 @@ define([
 	 *      does allow for a paragraph, then insert the center at the split.
 	 * 2) replace the center node with a paragraph
 	 * 3) add alignment styling to new paragraph
+	 *
+	 * @todo
+	 * @param  {Element}  element
+	 * @param  {Document} doc
+	 * @return {Element}
 	 */
 	function normalizeCenter(doc, node) {
 		return node;
 	}
 
 	/**
-	 * Extracts width and height attributes and applies them as styles instead.
+	 * Extracts width and height attributes from the given element, and applies
+	 * them as styles instead.
+	 *
+	 * @param  {Element} img Must be an image
+	 * @return {Element}
 	 */
-	function normalizeImage(doc, node) {
-		var width = Dom.getAttr(node, 'width');
-		var height = Dom.getAttr(node, 'height');
+	function normalizeImage(img) {
+		var width = Dom.getAttr(img, 'width');
+		var height = Dom.getAttr(img, 'height');
 		if (width) {
-			Dom.setStyle(node, 'width', width);
+			Dom.setStyle(img, 'width', width);
 		}
 		if (height) {
-			Dom.setStyle(node, 'height', height);
+			Dom.setStyle(img, 'height', height);
 		}
-		return node;
-	}
-
-	var blacklist = Content.NODES_BLACKLIST.reduce(function (map, item) {
-		map[item] = true;
-		return map;
-	}, {});
-
-	function isBlacklisted(node) {
-		return blacklist[node.nodeName];
+		return img;
 	}
 
 	/**
-	 * Remove all disallowed attributes from the given node.
+	 * Removes all disallowed attributes from the given node.
+	 *
+	 * @param  {Node} node
+	 * @return {Node}
 	 */
 	function normalizeAttributes(node) {
-		var permitted = Content.ATTRIBUTES_WHITELIST['*'].concat(
+		var permitted = (Content.ATTRIBUTES_WHITELIST['*'] || []).concat(
 			Content.ATTRIBUTES_WHITELIST[node.nodeName] || []
 		);
 		var attrs = Dom.attrNames(node);
@@ -111,12 +109,18 @@ define([
 	}
 
 	/**
-	 * Remove all disallowed styles from the given node.
+	 * Removes all disallowed styles from the given node.
+	 *
+	 * @param {Node} node
 	 */
 	function normalizeStyles(node) {
-		var permitted = Content.STYLES_WHITELIST['*'].concat(
+		var permitted = (Content.STYLES_WHITELIST['*'] || []).concat(
 			Content.STYLES_WHITELIST[node.nodeName] || []
 		);
+		// Because '*' means that all styles are permitted
+		if (Arrays.contains(permitted, '*')) {
+			return;
+		}
 		var styles = permitted.reduce(function (map, name) {
 			map[name] = Dom.getStyle(node, name);
 			return map;
@@ -131,12 +135,27 @@ define([
 
 	/**
 	 * Unwrap spans that have not attributes
+	 *
+	 * @param  {Node} node
+	 * @param  {Document} doc
+	 * @return {Node}
 	 */
-	function normalizeSpan(doc, node) {
+	function normalizeSpan(node, doc) {
 		return Dom.hasAttrs(node) ? node : null;
 	}
 
-	function clean(doc, node) {
+	/**
+	 * Runs the appropriate cleaning processes on the given node based on its
+	 * type.  The returned node will not necessarily be of the same type as
+	 * that of the given (eg: <font> => <span>).
+	 *
+	 * @param  {Node}     node
+	 * @param  {Document} doc
+	 * @return {Node}     May be a document fragment
+	 */
+	function clean(node, doc) {
+		node = Dom.clone(node);
+
 		if (Dom.isTextNode(node)) {
 			return node;
 		}
@@ -145,14 +164,18 @@ define([
 
 		switch (node.nodeName) {
 		case 'IMG':
-			cleaned = normalizeImage(doc, node);
+			cleaned = normalizeImage(node, doc);
 			break;
 		case 'FONT':
-			cleaned = normalizeFont(doc, node);
+			cleaned = node;
+			// Because <font> elements may be nested
+			do {
+				cleaned = normalizeFont(cleaned, doc);
+			} while ('FONT' === cleaned.nodeName);
 			break;
 		case 'CENTER':
-			cleaned = normalizeCenter(doc, node);
-		break;
+			cleaned = normalizeCenter(node, doc);
+			break;
 		default:
 			cleaned = node;
 		}
@@ -161,27 +184,10 @@ define([
 		normalizeStyles(cleaned);
 
 		if ('SPAN' === cleaned.nodeName) {
-			cleaned = normalizeSpan(doc, cleaned);
+			cleaned = normalizeSpan(cleaned, doc);
 		}
 
 		return cleaned;
-	}
-
-	function normalize(element, doc) {
-		element = clean(doc, element);
-		var children = Dom.children(element);
-		var allowed = children.filter(Fn.complement(isBlacklisted));
-		var rendered = allowed.filter(Html.isRendered);
-		var cleaned = rendered.reduce(function (nodes, node) {
-			var copy = clean(doc, node);
-			if (copy) {
-				copy = normalize(copy, doc);
-			}
-			return copy ? nodes.concat(copy) : nodes;
-		}, []);
-		var copy = element.cloneNode(false);
-		Dom.move(cleaned, copy);
-		return copy;
 	}
 
 	/**
@@ -192,8 +198,8 @@ define([
 	 * @return {string}
 	 */
 	function transform(markup, doc) {
-		var content = Html.parse(Utils.extractContent(markup), doc);
-		return normalize(content, doc).innerHTML;
+		var content = Html.parse(Utils.extract(markup), doc);
+		return Utils.normalize(content, doc, clean).innerHTML;
 	}
 
 	return {

@@ -7,14 +7,44 @@
  */
 define([
 	'dom',
-	'predicates',
-	'../utils'
+	'predicates'
 ], function(
 	Dom,
-	Predicates,
-	TransformUtils
+	Predicates
 ) {
 	'use strict';
+
+	/**
+	 * Walks the decendents of the given element, calling the callback function
+	 * when `pred` return true.
+	 *
+	 * @param {Element} element
+	 * @param {function(Element):boolean} pred
+	 * @param {function(Element)} callback
+	 */
+	function walkDescendants(element, pred, callback) {
+		var childNodes = Dom.children(element);
+		var child;
+		var i;
+		var len = childNodes.length;
+		for (i = 0; i < len; i++) {
+			child = childNodes[i];
+			if (child) {
+				if (pred(child)) {
+					callback(child);
+					// check if the child has changed
+					// the size of the children nodes can change
+					if (child !== childNodes[i]) {
+						i--;
+						len = element.childNodes.length;
+					}
+				}
+				if (Dom.isElementNode(child)) {
+					walkDescendants(child, pred,  callback);
+				}
+			}
+		}
+	}
 
 	/**
 	 * Get next sibling ignoring empty Text Nodes
@@ -67,7 +97,7 @@ define([
 	 *                   the child should be removed
 	 */
 	function removeDescendants(node, conditionFn) {
-		TransformUtils.walkDescendants(node, conditionFn, Dom.remove);
+		walkDescendants(node, conditionFn, Dom.remove);
 	}
 
 	/**
@@ -77,7 +107,7 @@ define([
 	 * @param {function(Element):boolean} conditionFn
 	 */
 	function unwrapDescendants(node, conditionFn) {
-		TransformUtils.walkDescendants(node, conditionFn, function(child) {
+		walkDescendants(node, conditionFn, function(child) {
 			Dom.removeShallow(child);
 		});
 	}
@@ -137,7 +167,7 @@ define([
 			return node.nodeName === 'SPAN' || node.nodeName === 'FONT';
 		});
 
-		TransformUtils.walkDescendants(element, function(node) {
+		walkDescendants(element, function(node) {
 			return node.nodeName !== 'IMG' && node.nodeName !== 'A';
 		}, removeAllAttributes);
 

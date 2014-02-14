@@ -89,6 +89,24 @@ define([
 	}
 
 	/**
+	 * Copies the list of nodes into a destination element, until `until`
+	 * returns true.
+	 *
+	 * @param  {Element}                destination
+	 * @param  {Array.<Nodes>}          nodes
+	 * @param  {function(Node):boolean} until
+	 * @return {Array.<Nodes>}          The nodes that were not moved
+	 */
+	function copy(nodes, destination, until) {
+		var end = Arrays.someIndex(nodes, until || Fn.returnFalse);
+		end = -1 === end ? nodes.length : end + 1;
+		nodes.slice(0, end).forEach(function (node) {
+			append(Nodes.clone(node), destination);
+		});
+		return nodes.slice(end);
+	}
+
+	/**
 	 * Moves the list of nodes before the reference element, until `until`
 	 * returns true.
 	 *
@@ -206,8 +224,9 @@ define([
 		append            : append,
 		merge             : merge,
 		moveNextAll       : moveNextAll,
-		move              : move,
 		moveBefore        : moveBefore,
+		move              : move,
+		copy              : copy,
 		wrap              : wrap,
 		wrapWith          : wrapWith,
 		insert            : insert,

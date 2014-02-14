@@ -99,8 +99,8 @@ define([
 	 * Pastes the markup at the given boundary range.
 	 *
 	 * @param  {Array.<Boundary>} boundaries
-	 * @param  {string}
-	 * @return {Boundary}
+	 * @param  {string}           markup
+	 * @return {Boundary} Boundary position after the inserted content
 	 */
 	function insert(boundaries, markup) {
 		var doc = Boundaries.container(boundaries[0]).ownerDocument;
@@ -112,16 +112,16 @@ define([
 			return boundary;
 		}
 
-		// Because we want to treat the paste content as though it were already
-		// editable
+		// Because we can only detect "void type" (non-content editable nodes)
+		// if is contained within a editing host
 		Dom.setAttr(element, 'contentEditable', true);
 
 		var first = children[0];
 
-		// Because (unlike plaintext), pasted html will contain an unintended
-		// linebreak caused by the wrapper in which the pasted content is
-		// contained (P in most cases). We therefore unfold this wrapper
-		// whenever is is valid to do so
+		// Because (unlike plain-text), pasted html will contain an unintended
+		// linebreak caused by the wrapper inwhich the pasted content is placed
+		// (P in most cases).  We therefore unfold this wrapper whenever is
+		// valid to do so (ie: we cannot unfold 'ul', 'table', etc)
 		if (!Dom.isTextNode(first) && !Html.isVoidType(first) && !Html.isGroupContainer(first)) {
 			children = Dom.children(first).concat(children.slice(1));
 		}
@@ -139,11 +139,16 @@ define([
 
 		var last = Arrays.last(children);
 
+		// Because we want to remove the unintentional line added at the end of
+		// the pasted content.
 		if ('P' === last.nodeName || 'DIV' === last.nodeName) {
 			var next = Boundaries.nextNode(boundary);
 			if (Html.hasInlineStyle(next)) {
+				// Move the next inline nodes into the last element
 				Dom.move(Dom.nextSiblings(next, Html.hasLinebreakingStyle), last);
 			} else if (!Html.isVoidType(next) && !Html.isGroupContainer(next)) {
+				// Move the children of the last element into the beginning of
+				// the next block element
 				boundary = Dom.children(last).reduce(moveBeforeBoundary, Boundaries.create(next, 0));
 				Dom.remove(last);
 			}
@@ -163,7 +168,7 @@ define([
 		if (holds(event, Mime.html)) {
 			var content = getData(event, Mime.html);
 			return WordTransform.isMSWordContent(content, doc)
-			     ? Transform.msword(content, doc)
+			     ? Transform.html(Transform.msword(content, doc), doc)
 			     : Transform.html(content, doc);
 		}
 		if (holds(event, Mime.plaintext)) {
@@ -182,14 +187,21 @@ define([
 		var event = alohaEvent.nativeEvent;
 		if (event && isPasteEvent(event)) {
 			Events.suppress(event);
+			var boundary = Boundaries.get();
+			if (!boundary) {
+				return alohaEvent;
+			}
 			var content = extractContent(
 				event,
 				alohaEvent.editable.elem.ownerDocument
 			);
+			if (!content) {
+				return alohaEvent;
+			}
 			Undo.capture(alohaEvent.editable.undoContext, {
 				meta: {type: 'paste'}
 			}, function () {
-				var boundary = insert(Boundaries.get(), content);
+				boundary = insert(boundary, content);
 				Selections.scrollTo(boundary);
 				alohaEvent.range = Ranges.fromBoundaries(boundary, boundary);
 			});

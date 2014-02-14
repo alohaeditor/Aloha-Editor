@@ -42,9 +42,21 @@
 				display: block;
 				padding: 0;
 			}
+			/*
+			ol {
+			  counter-reset: section;
+			  list-style-type: none;
+			}
+			li:before {
+			  counter-increment: section;
+			  content: counters(section, ".") " ";
+			}
+			*/
+		</style>
 
+		<style id="metaview">
 			/* metaview */
-			ul,ol,li,td,p,b,i,u,div,h1,h2,h3,h4,h5,h6 {
+			ul,ol,li,td,th,p,b,i,u,div,h1,h2,h3,h4,h5,h6 {
 				padding: 2px 4px;
 				margin: 2px;
 				border: 1px solid rgba(0,0,0,0.2);
@@ -90,18 +102,17 @@
 				porta lorem lacinia consectetur. Donec ut libero sed arc
 				vehicula ultricies a non tortor*
 			</p>
-			<div>
-				<ul>
-					<li>one</li>
-					<li>two</li>
-					<li>three<ul>
-								<li>four</li>
-								<li>five</li>
-								<li>six</li>
-							</ul>
-					</li>
-				</ul>
-			</div>
+			<ul>
+				<li>one</li>
+				<li>two</li>
+				<li>three
+					<ul>
+						<li>four</li>
+						<li>five</li>
+						<li>six</li>
+					</ul>
+				</li>
+			</ul>
 			<p>
 				Donec et mollis dolor.  Praesent et diam eget libero egesta
 				mattis sit amet vitae augue.

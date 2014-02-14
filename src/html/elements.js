@@ -272,8 +272,8 @@ define([
 	 * @return {boolean}
 	 */
 	function isAdjacentToBlock(node) {
-		return Predicates.isBlockNode(node.previousSibling)
-		    || Predicates.isBlockNode(node.nextSibling);
+		return (node.previousSibling && Predicates.isBlockNode(node.previousSibling))
+		    || (node.nextSibling && Predicates.isBlockNode(node.nextSibling));
 	}
 
 	/**
