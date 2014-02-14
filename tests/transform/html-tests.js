@@ -29,7 +29,7 @@
 	// nested divs and paragraph
 	t(
 		'<div style="border: dotted"><p><span>One </span></p><p><p>and a half</p></p> <div>Two</div>Three</div>',
-		'<p>One </p><p>and a half</p><p>Two</p><p>Three</p>'
+		'<div><p>One </p><p>and a half</p><p>Two</p><p>Three</p></div>'
 	);
 
 	// divs and spans

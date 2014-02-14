@@ -138,10 +138,15 @@ define([
 	 *
 	 * @param  {Node} node
 	 * @param  {Document} doc
-	 * @return {Node}
+	 * @return {Node|Fragment}
 	 */
 	function normalizeSpan(node, doc) {
-		return Dom.hasAttrs(node) ? node : null;
+		if (Dom.hasAttrs(node)) {
+			return node;
+		}
+		var fragment = doc.createDocumentFragment();
+		Dom.move(Dom.children(node), fragment);
+		return fragment;
 	}
 
 	/**
@@ -151,7 +156,7 @@ define([
 	 *
 	 * @param  {Node}     node
 	 * @param  {Document} doc
-	 * @return {Node}     May be a document fragment
+	 * @return {Node|Fragment}
 	 */
 	function clean(node, doc) {
 		node = Dom.clone(node);
@@ -178,6 +183,10 @@ define([
 			break;
 		default:
 			cleaned = node;
+		}
+
+		if (Dom.isFragmentNode(cleaned)) {
+			return cleaned;
 		}
 
 		normalizeAttributes(cleaned);
