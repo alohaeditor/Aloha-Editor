@@ -83,9 +83,9 @@ define([
 		$.extend(obj, config);
 	}
 
-	function registerFormatlessPasteHandler(plugin) {
+	function registerFormatlessPasteHandler(plugin, config) {
 		ContentHandlerManager.register('formatless', FormatlessPasteHandler);
-		FormatlessPasteHandler.strippedElements = Html.TEXT_LEVEL_SEMANTIC_ELEMENTS;
+		FormatlessPasteHandler.strippedElements = config.strippedElements || Html.TEXT_LEVEL_SEMANTIC_ELEMENTS;
 
 		plugin._toggleFormatlessPasteButton =
 			Ui.adopt('toggleFormatlessPaste', ToggleButton, {
@@ -166,9 +166,10 @@ define([
 		init: function () {
 			var plugin = this;
 			var config = plugin.settings.config || plugin.settings;
+			var parsedConfig = parseConfiguration(config);
 
-			applyConfiguration(plugin, parseConfiguration(config));
-			registerFormatlessPasteHandler(plugin);
+			applyConfiguration(plugin, parsedConfig);
+			registerFormatlessPasteHandler(plugin, parsedConfig);
 
 			Aloha.bind('aloha-editable-activated', function ($event, data) {
 				var config = getEditableConfig(plugin, data.editable);
