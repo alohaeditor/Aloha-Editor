@@ -1,2 +1,5 @@
 - **ENHANCEMENT**: list-plugin: Possibility to add definition lists.
 - **ENHANCEMENT**: list-plugin: Possibility to set pre-defined or user defined styles on lists.
+- **ENHANCEMENT**: list-plugin: Render preview templates in Aloha toolbar list style submenus.
+- **ENHANCEMENT**: list-plugin: Highlight corresponding list button when cusror is on a list.
+- **ENHANCEMENT**: list-plugin: Set class "alohafocus" on focused definition lists.

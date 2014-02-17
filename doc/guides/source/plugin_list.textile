@@ -13,7 +13,7 @@ Move the cursor to your desired position and click on the ordered +<ol>+, unorde
 In order to add new elements or edit existing elements just move to cursor to the desired position of the list and add via pressing enter or edit elements.
 To delete an element or the whole list mark the element(s) and press backspace.
 
-You can use the tab key to indent lists or use shift-tab to outdent them if you are inside of a nested list (only unordered and ordered lists). The type of lists and nested lists may be changed from ordered to unordered lists and vice versa by clicking the ordered list or unordered list button from the FloatingMenu.
+You can use the tab key to indent unordered and ordered lists or use shift-tab to outdent them if you are inside of a nested list (only unordered and ordered lists). The type of lists and nested lists may be changed between unordered, ordered and definition lists by clicking the corresponding list button from the Aloha toolbar.
 
 You can remove lists by clicking the applied list type a second time, which will turn individual list items back into paragraphs.
 
@@ -64,31 +64,34 @@ To define custom list styles use the following syntax:
 
 <javascript>
     Aloaha.settings.plugins: {
-        list: {
-            classes: {
-                ul: [
-                    {
-                        name: 'Display name', 
-                        class: 'css-class', 
-                        iconUrl: 'optional/path/to/icon'
-                    }
-                ],
-                ol: [
-                    {
-                        name: 'Display name', 
-                        class: 'css-class', 
-                        iconUrl: 'optional/path/to/icon'
-                    }
-                ],
-                dl: [
-                    {
-                        name: 'Display name', 
-                        class: 'css-class', 
-                        iconUrl: 'optional/path/to/icon'
-                    }
-                ]
-            }
-        }
+    	templates: {
+    		ul: {
+    			classes: ['aloha-list-disc', 'aloha-list-circle', 'aloha-list-square'],
+    			template: '<ul class="${cssClass}"><li>${first}<ul class="${cssClass}"><li>${second}<ul class="${cssClass}"><li>${third}</li></ul></li></ul></li></ul>',
+    			locale: {
+    				default: {first: 'first layer', second: 'second layer', third: 'third layer'},
+    				de: {first: 'erste Ebene', second: 'zweite Ebene', third: 'dritte Ebene'}
+    			}
+    		},
+    		ol: {
+    			classes: ['aloha-list-decimal', 'aloha-list-decimal-leading-zero',
+    				'aloha-list-lower-roman', 'aloha-list-upper-roman', 'aloha-list-lower-greek',
+    				'aloha-list-lower-latin', 'aloha-list-upper-latin' ],
+    			template: '<ol class="${cssClass}"><li>${first}<ol class="${cssClass}"><li>${second}<ol class="${cssClass}"><li>${third}</li></ol></li></ol></li></ol>',
+    			locale: {
+    				default: {first: 'first layer', second: 'second layer', third: 'third layer'},
+    				de: {first: 'erste Ebene', second: 'zweite Ebene', third: 'dritte Ebene'}
+    			}
+    		},
+    		dl: {
+    			classes: ['aloha-list-blue', 'aloha-list-green', 'aloha-list-red'],
+    			template: '<dl class="${cssClass}"><dt>${first}<dt><dd>${second}</dd></dl>',
+    			locale: {
+    				default: {first: 'first item', second: 'second item'},
+    				de: {first: 'erstes Element', second: 'zweites Element'}
+    			}
+    		},
+    	}
     }
 </javascript>
 
