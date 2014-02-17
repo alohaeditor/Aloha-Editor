@@ -76,27 +76,6 @@
 					$html
 					<hr />
 				#end
-				
-				#set($range = [1..2])
-				#foreach($i in $range)
-					#set($alohadate = $changelog.getGenericProperties().get("alohaversion.${i}.date"))
-					#if(!$alohadate)
-						#set($alohadate = "-")
-					#end
-					#set($alohaurl = $changelog.getGenericProperties().get("alohaversion.${i}.url"))
-					#set($alohaversion = $changelog.getGenericProperties().get("alohaversion.${i}.version"))
-					#if($alohaversion)
-						#set($legacychangelog = true)
-					<div class="note"><p>This Aloha.Editor version includes the <a href="$alohaurl">Aloha Editor $alohaversion – $alohadate</a></p></div>
-				#end
-					#set($alohaversion = false)
-				#end
-				
-				#if(!$legacychangelog)
-					#set($alohaversion = $changelog.getGenericProperties().get("alohaeditor-version"))
-					#set($alohadate = $changelog.getGenericProperties().get("alohaeditor-date"))
-					<div class="note"><p>This Aloha.Editor version includes the <a href="https://github.com/alohaeditor/Aloha-Editor/blob/alohaeditor-${alohaversion}/CHANGELOG.md">Aloha Editor $alohaversion – $alohadate</a></p></div>
-				#end
 				</div>
 			</div>
 	</div>
