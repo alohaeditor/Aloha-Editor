@@ -1,0 +1,4 @@
+Panels added to the sidebar when activating blocks were
+never removed from the sidebar, but were added again every time the
+block was activated. This has been fixed now, panels will now be removed
+before adding the panels of activated blocks.
