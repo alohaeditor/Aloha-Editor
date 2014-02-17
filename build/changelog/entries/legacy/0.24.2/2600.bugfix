@@ -1,0 +1,1 @@
+blockmanager: Fixed scripts in a block being executed, when getting its configuration.

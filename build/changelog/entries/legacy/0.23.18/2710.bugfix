@@ -1,0 +1,1 @@
+ utilities: Pressing backspace in a text node in a paragraph adjacent to a table will now correctly delete the character to the left of the cursor rather than jumping into the table.

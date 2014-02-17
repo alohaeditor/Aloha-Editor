@@ -1,0 +1,1 @@
+Fixed Transforming an empty contenteditable into a list, which caused the contenteditable container to disappear.

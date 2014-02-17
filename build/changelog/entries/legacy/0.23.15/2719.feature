@@ -1,0 +1,1 @@
+     autoparagraph-plugin: The Autoparagraph Plugin checks the contents of editables and wraps content that is not contained in block level elements into paragraphs.

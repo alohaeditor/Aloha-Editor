@@ -1,0 +1,1 @@
+ DOM-to-XHTML plugin: Fixed handling of closing angle brackets, which caused problems when these were included in attributes. 

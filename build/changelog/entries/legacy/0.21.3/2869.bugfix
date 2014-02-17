@@ -1,0 +1,1 @@
+ Fixed adding of unwanted <span>'S before tables every time an editable was deactivated when the table plugin and block plugin was used.

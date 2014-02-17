@@ -1,0 +1,1 @@
+cite-plugin: Removal of a cite specific data attribute caused a crash in Native Internet Explorer 7. The removal will now be skipped for Native Internet Explorer 7.

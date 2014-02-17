@@ -1,0 +1,1 @@
+ core: Fixed problem of Internet Explorer 7 crashing when invoking jQuery's `removeAttr`.

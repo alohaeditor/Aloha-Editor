@@ -1,0 +1,1 @@
+ Characterpicker plugin: Fixed the overlay not defining a font color for the characters in the overlay and inheriting the color from the content. If the font color was white the text in the overlay wasn't visible.

@@ -1,0 +1,13 @@
+{
+  "version": "0.22.0",
+  "date": "03.09.2012",
+  "changeLogEntryFileNames": [
+         "2672.feature",
+         "2857.manualchange",
+         "2858.manualchange",
+         "2859.bugfix",
+         "2860.bugfix"
+   ],
+  "genericProperties": {
+  }
+}

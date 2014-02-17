@@ -1,0 +1,12 @@
+{
+  "version": "0.22.5",
+  "date": "04.12.2012",
+  "changeLogEntryFileNames": [
+          "2802.feature",
+          "2803.bugfix",
+          "2804.bugfix",
+          "2805.bugfix"
+   ],
+  "genericProperties": {
+  }
+}

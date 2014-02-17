@@ -1,0 +1,1 @@
+ core: when a placeholder was defined for an editable, a placeholder wrapper element was injected into all editables instead of only the editable the placeholder was defined for.

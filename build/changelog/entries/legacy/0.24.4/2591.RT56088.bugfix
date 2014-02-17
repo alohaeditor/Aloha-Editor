@@ -1,0 +1,1 @@
+table plugin: The "scope" attribute in TH elements will now be correctly set to "col" instead of "column".  This attribute only accepts "col" or "row" as values.

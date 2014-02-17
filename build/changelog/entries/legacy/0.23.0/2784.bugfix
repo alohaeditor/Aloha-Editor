@@ -1,0 +1,1 @@
+ table-plugin: Formatting a table row as header will now correctly set the scope of the header elements to refer to the column.

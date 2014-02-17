@@ -1,0 +1,1 @@
+ commands.delete: fixed a bug with the delete command when contents are preceded by ignorable whitespace. also added a delete test for that.

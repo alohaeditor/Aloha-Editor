@@ -1,0 +1,1 @@
+Outline on icons is too big resulting in too little visual difference between enabled or disabled state. The outline when the icon is focused is too big and the user can't distinguish when a button icon is enabled or disabled. By adding box-shadow (same behavior for different browsers) the problem was solved.

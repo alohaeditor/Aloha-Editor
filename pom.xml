@@ -52,10 +52,68 @@
 		<developerConnection>scm:git:git@github.com:alohaeditor/Aloha-Editor.git</developerConnection>
 		<url>https://github.com/alohaeditor/Aloha-Editor</url>
 	</scm>
-
 	<build>
 
 	<plugins>
+		<plugin>
+				<groupId>com.gentics</groupId>
+				<artifactId>changelog-manager-plugin</artifactId>
+				<version>2.2</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<phase>package</phase>
+					</execution>
+				</executions>
+				<configuration>
+					<baseDirectory>${basedir}/build/changelog</baseDirectory>
+					<outputDirectory>${basedir}/target/output</outputDirectory>
+					<changelogTitle>Gentics Content.Node Changelog</changelogTitle>
+					<changelogTypes>note,manualchange,optional-manualchange,security,feature,enhancement,bugfix</changelogTypes>
+					<changelogVersion>${project.version}</changelogVersion>
+					<strictRenderMode>true</strictRenderMode>
+					<allowEmptyChangelog>true</allowEmptyChangelog>
+					<includeProjectProperties>false</includeProjectProperties>
+					<overviewTemplateFiles>index.vm, plain_merged_changelog.vm, merged_changelog.vm</overviewTemplateFiles>
+					<perMajorVersionTemplateFiles>majorversion/index.vm, majorversion/merged_changelog.vm</perMajorVersionTemplateFiles>
+					<perMajorVersionChangelogFile>majorversion/changelog.vm</perMajorVersionChangelogFile>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>dist</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<attach>true</attach>
+							<appendAssemblyId>false</appendAssemblyId>
+							<descriptors>
+								<descriptor>${project.basedir}/build/assembly/changelog-site-package.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+					<execution>
+						<id>single</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<attach>true</attach>
+							<appendAssemblyId>true</appendAssemblyId>
+							<descriptors>
+								<descriptor>${project.basedir}/build/assembly/changelog-single-package.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>com.googlecode.jslint4java</groupId>
 				<artifactId>jslint4java-maven-plugin</artifactId>

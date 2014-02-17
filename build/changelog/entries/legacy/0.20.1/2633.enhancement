@@ -1,0 +1,1 @@
+table-plugin: fixed incorrect repairing of tables (cells were appended to rows containing th elements).

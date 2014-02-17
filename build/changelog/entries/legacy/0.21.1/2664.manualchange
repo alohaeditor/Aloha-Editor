@@ -1,0 +1,2 @@
+Changed the aloha-smart-content-changed event. The snapshotContent property provided bythe aloha-smart-content-changed event was replaced with the getSnapshotContent property which is a function that must be
+    called to retrieve the value that was provided by snapshotContent.This was done to make snapshotting of the editable contents optional, since it is a very expensive operation.

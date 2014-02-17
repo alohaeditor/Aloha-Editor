@@ -1,0 +1,1 @@
+ HotKey feature added for link, format and wai-lang plugin

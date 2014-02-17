@@ -1,0 +1,1 @@
+rangy: Change rangy-core configuration property "preferTextRange" to false in order to allow for more performant ways to work with ranges in IE. Accommodations were taken to ensure that IE 9 would not crash with this flag.

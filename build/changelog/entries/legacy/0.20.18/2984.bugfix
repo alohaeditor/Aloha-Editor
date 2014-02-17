@@ -1,0 +1,1 @@
+ table-plugin: When the contents of a table cell gains the focus, the whole cell is no longer selected. This also affects applying format to contents of a table cell.

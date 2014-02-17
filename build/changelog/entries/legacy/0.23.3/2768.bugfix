@@ -1,0 +1,1 @@
+ Characterpicker plugin: Fixed the error "Object [object Object] has no method 'is'" occuring, when clicking into an editable.

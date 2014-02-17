@@ -1,0 +1,1 @@
+ wai-lang-plugin: Incluing the WAI Language plugin will no longer result in a JavaScript error during initialization.

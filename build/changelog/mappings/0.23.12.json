@@ -1,0 +1,13 @@
+{
+  "version": "0.23.12",
+  "date": "04.07.2013",
+  "changeLogEntryFileNames": [
+        "2728.bugfix",
+        "2729.bugfix",
+        "2730.bugfix",
+        "2731.bugfix",
+        "2732.bugfix"
+   ],
+  "genericProperties": {
+  }
+}

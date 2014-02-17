@@ -1,0 +1,16 @@
+{
+  "version": "0.20.22",
+  "date": "16.08.2012",
+  "changeLogEntryFileNames": [
+        "2657.bugfix",
+        "2964.enhancement",
+        "2965.bugfix",
+        "2966.bugfix",
+        "2967.bugfix",
+        "2968.bugfix",
+        "2969.bugfix",
+        "2970.bugfix"
+   ],
+  "genericProperties": {
+  }
+}

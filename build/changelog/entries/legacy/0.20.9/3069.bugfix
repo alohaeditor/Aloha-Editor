@@ -1,0 +1,1 @@
+ table-plugin: Fixed the cleanup of the table cells on blur not cleaning up correctly (caused by a typo in the element class)

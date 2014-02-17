@@ -1,0 +1,1 @@
+      repositorybrowser: Fix i18n of repository browser to use the language configured in Aloha.settings.locale

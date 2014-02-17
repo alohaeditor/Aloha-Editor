@@ -1,0 +1,1 @@
+ numerated-headers-plugin: Fixed error that annotations would not be removed when converting a header to a paragraph. The plugin also added leading spaces to the heading's text. This was removed.

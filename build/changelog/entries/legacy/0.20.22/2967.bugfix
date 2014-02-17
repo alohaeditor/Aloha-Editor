@@ -1,0 +1,1 @@
+ wai-lang: We now load the language dataset in the query method. This fixes the issue that if the first request went wrong it was never loaded again.
