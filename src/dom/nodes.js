@@ -327,6 +327,12 @@ define([
 		return node.cloneNode(false);
 	}
 
+	function fragmentHtml(fragment) {
+		var div = Dom.createElement('div');
+		div.appendChild(fragment);
+		return div.innerHTMl;
+	}
+
 	return {
 		Nodes : Nodes,
 		offset : offset,
@@ -357,5 +363,7 @@ define([
 
 		clone        : clone,
 		cloneShallow : cloneShallow,
+
+		fragmentHtml : fragmentHtml
 	};
 });

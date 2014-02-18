@@ -12,25 +12,26 @@
 	}
 
 	test('text/html', function () {
+		/*
 		// simple text
 		t('some text', 'some text');
 
 		// sequential divs
 		t(
 			'<div style="border: dotted">One</div> <div>Two</div> <div>Three</div>',
-			'<p>One</p><p>Two</p><p>Three</p>'
+			'<div>One</div><div>Two</div><div>Three</div>'
 		);
 
 		// nested divs
 		t(
 			'<div style="border: dotted">One <div>Two</div>Three</div> <br/>',
-			'<p>One </p><p>Two</p><p>Three</p><p><br></p>'
+			'<div>One <div>Two</div>Three</div><div><br></div>'
 		);
 
 		// nested divs and paragraph
 		t(
 			'<div style="border: dotted"><p><span>One </span></p><p><p>and a half</p></p> <div>Two</div>Three</div>',
-			'<div><p>One </p><p>and a half</p><p>Two</p><p>Three</p></div>'
+			'<div><p>One </p><p>and a half</p><div>Two</div>Three</div>'
 		);
 
 		// divs and spans
@@ -41,20 +42,37 @@
 
 		// headers and spans div wrapper
 		t(
-			'<div><div><div style="border: dotted"><h1><strong><a href="http://www.marca.com/" style="">One</a></strong></h1> <span>and a half</span><h2>Two</h2>Three</div> <br/></div></div>',
-			'<h1><strong><a href="http://www.marca.com/">One</a></strong></h1><p>and a half</p><h2>Two</h2><p>Three</p><p><br></p>'
+			'<div>' +
+				'<div style="border: dotted">' +
+					'<h1><strong><a href="http://www.marca.com/" style="">One</a></strong></h1>' +
+					'<span>and a half</span><h2>Two</h2>Three' +
+				'</div>' +
+				'<br/>' +
+			'</div>',
+			'<div>' +
+				'<div>' +
+					'<h1><strong><a href="http://www.marca.com/">One</a></strong></h1>' +
+					'and a half<h2>Two</h2>Three' +
+				'</div>' +
+				'<p><br></p>' +
+			'</div>'
 		);
 
-		// headers and spans
+		// Wrap inline nodes
 		t(
 			'<h1>One</h1> <span>and a half</span><h2>Two</h2>Three',
 			'<h1>One</h1><p>and a half</p><h2>Two</h2><p>Three</p>'
 		);
 
-		// nested spans and divs
+		*/
+
+		// Normalize illegal dom structure
 		t(
 			'<h1>One</h1> <strong><div><b><div><span>and</span> a half</div></b></div></strong><h2>Two</h2>Three',
-			'<h1>One</h1><p>and a half</p><h2>Two</h2><p>Three</p>');
+			'<h1>One</h1><p>and a half</p><h2>Two</h2><p>Three</p>'
+		);
+
+		return;
 
 		// lists
 		t(

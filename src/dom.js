@@ -243,6 +243,7 @@ define([
 		contains                : Nodes.contains,
 		followedBy              : Nodes.followedBy,
 		hasText                 : Nodes.hasText,
+		fragmetHtml             : Nodes.fragmentHtml,
 
 		append            : Mutation.append,
 		merge             : Mutation.merge,

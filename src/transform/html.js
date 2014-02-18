@@ -134,9 +134,9 @@ define([
 	}
 
 	/**
-	 * Unwrap spans that have not attributes
+	 * Unwrap spans that have not attributes.
 	 *
-	 * @param  {Node} node
+	 * @param  {Node}     node
 	 * @param  {Document} doc
 	 * @return {Node|Fragment}
 	 */
@@ -156,13 +156,13 @@ define([
 	 *
 	 * @param  {Node}     node
 	 * @param  {Document} doc
-	 * @return {Node|Fragment}
+	 * @return {Array.<Node>}
 	 */
 	function clean(node, doc) {
 		node = Dom.clone(node);
 
 		if (Dom.isTextNode(node)) {
-			return node;
+			return [node];
 		}
 
 		var cleaned;
@@ -186,7 +186,7 @@ define([
 		}
 
 		if (Dom.isFragmentNode(cleaned)) {
-			return cleaned;
+			return [cleaned];
 		}
 
 		normalizeAttributes(cleaned);
@@ -196,7 +196,15 @@ define([
 			cleaned = normalizeSpan(cleaned, doc);
 		}
 
-		return cleaned;
+		var kids = Dom.children(cleaned);
+		var i;
+		for (i = 0; i < kids.length; i++) {
+			if (!Content.allowsNesting(cleaned.nodeName, kids[i].nodeName)) {
+				return kids;
+			}
+		}
+
+		return [cleaned];
 	}
 
 	/**
@@ -208,7 +216,10 @@ define([
 	 */
 	function transform(markup, doc) {
 		var content = Html.parse(Utils.extract(markup), doc);
-		return Utils.normalize(content, doc, clean).innerHTML;
+		var cleaned = Utils.normalize(content, doc, clean);
+		return Dom.isFragmentNode(cleaned)
+		     ? Dom.fragmentHtml(cleaned)
+		     : cleaned.innerHTML;
 	}
 
 	return {

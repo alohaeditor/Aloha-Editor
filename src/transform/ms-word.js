@@ -97,26 +97,26 @@ define([
 	 * @private
 	 * @param  {Node}     node
 	 * @param  {Document} doc
-	 * @return {Node}
+	 * @return {Array.<Node>}
 	 */
 	function clean(node, doc) {
 		if (isSuperfluous(node)) {
-			return null;
+			return [];
 		}
 		if (Dom.isTextNode(node)) {
-			return Dom.clone(node);
+			return [Dom.clone(node)];
 		}
 		if (Dom.hasClass(node, 'MsoTitle')) {
-			return rewrap(node, 'h1', doc);
+			return [rewrap(node, 'h1', doc)];
 		}
 		if (Dom.hasClass(node, 'MsoSubtitle')) {
-			return rewrap(node, 'h2', doc);
+			return [rewrap(node, 'h2', doc)];
 		}
 		var nodeName = namespacedNodeName(node);
 		if (nodeName) {
-			return rewrap(node, nodeName, doc);
+			return [rewrap(node, nodeName, doc)];
 		}
-		return Dom.clone(node);
+		return [Dom.clone(node)];
 	}
 
 	/**
@@ -146,7 +146,10 @@ define([
 		var cleaned = Utils.normalize(raw, doc, clean) || raw;
 		cleaned = Lists.transform(cleaned, doc);
 		cleaned = Tables.transform(cleaned, doc);
-		return cleaned.innerHTML;
+		var cleaned = Utils.normalize(content, doc, clean);
+		return Dom.isFragmentNode(cleaned)
+		     ? Dom.fragmentHtml(cleaned)
+		     : cleaned.innerHTML;
 	}
 
 	return {
