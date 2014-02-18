@@ -1,0 +1,1 @@
+ editable: Aloha.Editable.registerEvents(), which attaches necessary events to the given editable, has been introduced.  This is part of a bug fix for applications that intergrate Aloha Editor and need to re-attach events to editables.

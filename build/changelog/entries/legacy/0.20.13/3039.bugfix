@@ -1,0 +1,1 @@
+ core: Fixed Javascript errors that occurred in IE7 when pressing Enter at the end of paragraphs (multiple times).

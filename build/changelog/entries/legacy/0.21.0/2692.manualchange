@@ -1,0 +1,11 @@
+The jquery.store and jquery.json plugins have been removed
+
+    The jquery.store plugin was used for persisting the floating menu
+    position and pinned state. The functionality provided by
+    jquery.store has been replaced with amplify.store.
+
+    The jquery.json plugin has been removed since the functionality
+    provided by this module is already provided by util/json2.
+
+    This also fixes the problem that pinning the floating menu was not
+    persisted in IE8 and below.

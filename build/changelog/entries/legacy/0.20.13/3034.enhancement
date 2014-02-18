@@ -1,0 +1,1 @@
+ added a new helper function jQuery.isEmpty() to check if a mixed var is empty or not

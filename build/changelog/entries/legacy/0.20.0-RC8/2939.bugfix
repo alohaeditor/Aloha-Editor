@@ -1,0 +1,1 @@
+ link-plugin: Fixed problem with auto-suggestion mechanism for the link input field causing the the wrong href value to be taken.

@@ -1,0 +1,1 @@
+ building/undo-plugin: The undo plugin was removed from the list of plugins that are included in the build process because it caused some silent javascript errors with content in frameset environments.

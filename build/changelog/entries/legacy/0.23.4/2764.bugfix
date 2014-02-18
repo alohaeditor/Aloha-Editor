@@ -1,0 +1,1 @@
+ naturalfit-button (reset) in table resize plugin did not remove width from table head (th) elements

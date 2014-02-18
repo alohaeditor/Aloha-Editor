@@ -1,0 +1,1 @@
+ Fixed the ContentHandlerManager to use the content handlers in the correct order.

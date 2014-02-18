@@ -1,0 +1,1 @@
+ table-plugin: Pressing delete or backspace in an empty node that is adjacent to a table element will no longer result in the table being deleted.

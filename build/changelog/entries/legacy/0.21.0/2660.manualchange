@@ -1,0 +1,8 @@
+The jquery requirejs dependency was renamed from aloha/jquery to just jquery.
+
+    define(['aloha/jquery', function($) { });
+
+    must be changed to
+
+    define(['jquery', function($) { });
+

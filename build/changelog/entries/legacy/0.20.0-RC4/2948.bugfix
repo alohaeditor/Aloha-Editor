@@ -1,0 +1,1 @@
+ FloatingMenu: The FloatingMenu will now check the Aloha.settings.floatingmenu.topalignOffset parameter to be not undefined, as checking for 'number' was too strict.

@@ -1,0 +1,1 @@
+ engine.js: insert paragraph was sometimes broken in IE7 (copy of empty/all p-element attributes)

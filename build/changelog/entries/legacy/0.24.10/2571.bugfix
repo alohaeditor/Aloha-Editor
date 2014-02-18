@@ -1,0 +1,3 @@
+table-plugin: Table selection for rows or columns in IE8 did not
+                            show Table Row/Column panel options. This error is
+                            fixed.

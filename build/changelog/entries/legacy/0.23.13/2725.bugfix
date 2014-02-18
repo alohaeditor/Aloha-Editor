@@ -1,0 +1,1 @@
+ contenthandler: The content sanitizer has been corrected to use the editable that is passed to it’s handler() function rather than the currently active aditable.

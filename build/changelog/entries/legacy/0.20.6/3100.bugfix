@@ -1,0 +1,1 @@
+ floatingmenu: fixed floating menu positioning when view port is scrolled so that it takes into account the aligntopOffset setting.

@@ -1,0 +1,4 @@
+Aloha Editor will no longer annotate end <br> tags, which
+				   are used to prop up empty block-level elements that would be
+				   otherwise rendererd invisbly, with the "aloha-end-br" class.
+				   This should result in cleaner markup.

@@ -1,0 +1,1 @@
+Creation of several links or abbreviation is not fill with the same value. When create several links in different paragraphs or item list the value is not set the same for all the links but only for the first in the range selection. Changes were made so several links or abbreviation in the same selection have the same value.

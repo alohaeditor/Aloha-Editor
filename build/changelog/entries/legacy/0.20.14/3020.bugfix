@@ -1,0 +1,1 @@
+ repositorymanager: Fixed a bug in the repository manager that caused an javascript error when no result items were passed to the processResults method.

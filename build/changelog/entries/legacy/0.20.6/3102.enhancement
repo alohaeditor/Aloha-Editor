@@ -1,0 +1,1 @@
+ The new plugin dom-to-xhtml attempts to create a valid XHTML serialization of the document when getContents() is called.

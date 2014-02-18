@@ -1,0 +1,1 @@
+ link: fixed a bug in the link list static repository plugin that would cause aloha to fail when no settings for the linklist repository were specified.

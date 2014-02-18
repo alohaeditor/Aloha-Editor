@@ -1,0 +1,1 @@
+ core: Fixed possible Javascript error when cleanup operation is done (e.g. after pasting text into an editable).

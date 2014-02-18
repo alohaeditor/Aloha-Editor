@@ -1,0 +1,8 @@
+Properties exposed by Aloha.Selection or aloha/selection were changed
+
+    - tagHierarchy
+    - replacingElements
+    - allowedToStealElements
+
+    These properties are now maps of maps instead of maps of lists.
+

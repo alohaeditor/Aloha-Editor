@@ -1,0 +1,1 @@
+ floatingmenu: fixed a bug with topalign behaviour where scrolling would attach the floatingmenu to the left side of the screen.

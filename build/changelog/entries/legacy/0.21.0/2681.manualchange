@@ -1,0 +1,5 @@
+The default jQuery version distributed with Aloha was updated from 1.6.1 to 1.7.2.
+
+    The jQuery.isNumeric extension added to jQuery by Aloha was removed
+    to account for jQuery's own isNumeric function added in 1.7.
+

@@ -1,0 +1,1 @@
+ abbr-plugin: Fixed a javascript error when Aloha.activeEditable.obj / Aloha.activeEditable was not defined

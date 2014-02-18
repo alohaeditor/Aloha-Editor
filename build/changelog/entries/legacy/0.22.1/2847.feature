@@ -1,0 +1,1 @@
+ metaview: We now also display HR tags in the metaview. We also removed the dependency to the flag-icons plugin.

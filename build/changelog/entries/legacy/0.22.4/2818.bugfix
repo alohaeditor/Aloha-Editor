@@ -1,0 +1,1 @@
+ word content handler: Fixed handling of pasted MS Word content to not result in broken markup when the content contains tables with cells that are all empty.

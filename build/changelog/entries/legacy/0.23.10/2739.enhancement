@@ -1,0 +1,1 @@
+ The extra plugin headerids now uses PubSub.sub instead Aloha.bind, when is available

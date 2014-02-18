@@ -7,11 +7,9 @@ All changes are categorized into one of the following keywords:
                function, usage, or intent of an existing one.
 
 ----
-
-- **BUGFIX**: formatlesspaste plugin: The strippedElements config parameter was
-              previously ignored and is now respected again. If no configuration
-              is specified for it, a default list of text level semantic elements
-              is used. RT#57733
+  
+ !! PLEASE NO LONGER ADD ENTRIES TO THIS FILE !!
+http://www.alohaeditor.org/guides/develop_aloha.html#changelog
 
 - **BUGFIX**: highlighteditables plugin: When using nested editables, isModfied()
               would sometimes detect a change although the content is untouched.

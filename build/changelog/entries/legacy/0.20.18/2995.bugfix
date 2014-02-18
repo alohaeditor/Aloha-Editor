@@ -1,0 +1,1 @@
+ cite-plugin: The css animations for the cite plugin were removed because they were poluting the dom with style attributes.

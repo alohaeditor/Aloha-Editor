@@ -1,0 +1,1 @@
+ Aloha Blocks dropzones and configuration. Aloha Blocks now allow for additional configuration settings which allow you to disable the drag'n'drop functionality of blocks globally or for individual editables as well as defining customdropzones for each editable. See http://www.aloha-editor.org/guides/plugin_block.html#en-disabling-drag-drop-for-blocks for details.
