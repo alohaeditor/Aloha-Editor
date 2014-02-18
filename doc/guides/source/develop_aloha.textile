@@ -7,9 +7,9 @@ h3. Clone from Github
 Fork it on github "Github repository":http://github.com/alohaeditor/Aloha-Editor, then:
 
 <shell>
-git clone git@github.com:YOURNAME/Aloha-Editor.git alohaeditor
-cd alohaeditor
-git checkout dev
+  git clone git@github.com:YOURNAME/Aloha-Editor.git alohaeditor
+  cd alohaeditor
+  git checkout dev
 </shell>
 
 h3. Pre-commit hook
@@ -24,7 +24,7 @@ The pre-commit hook will also invoke the jslint command on every
 javascript file that is to be committed. You can get jslint via npm:
 
 <shell>
-npm install -g jslint
+  npm install -g jslint
 </shell>
 
 For the appropriate flags please see .githooks/pre-commit.
@@ -62,6 +62,43 @@ h3. Repository Directory Structure
 * /src/test - QUnit tests
 
 
+h3. Changelog
+
+New changelog entries should not be added to the CHANGELOG.md file.
+
+* Draw a number for your changelog entry using the "numbercrunsher":http://www.alohaeditor.org/numbercrunsher/
+* Write your changelog entry in textile syntax.
+* Save the entry to the changelog entry file (e.g: /alohaeditor/build/changelog/entries/2014/02/4698.bugfix). You can also add a ticket reference to the filename.
+* Commit this file
+
+Repeat this process for each new changelog entry.
+
+h4. Changelog Filenames
+
+* The pattern is: 
+
+```[numbercruncher].{RT|RM|GH|KB}[TICKETNUMBER].{bugfix|enhancement|manualchange|security|note|optional-manualchange}```
+
+
+* bugfix: 5.RT52145-RM7654.bugfix
+* enhancement: 5.RT52145-RM7654.enhancement
+* manualchange: 5.RT52145-RM7654.manualchange
+* optiona-manualchange: 5.RT52145-RM7654.optional-manualchange
+* security fix: 5.RT52145-RM7654.security
+* note: 5.RT52145-RM7654.note
+
+h4. Rules
+
+* Write in english!
+* Write full sentences!
+* Write customer friendly changelog entries!
+* Add a ticket id to your changelog entry filename
+* Finish your sentences with correct punctuation marks!
+
+h4. What happens after i pushed?
+
+Once a release is executed the maven changelog plugin will collect all changes that were not assigned to a specific aloha version and add them to a newly created changelog mapping file.
+
 h3. Building  - Aloha Building
 
 h4. Debian Linux / Mac OS X
@@ -72,24 +109,24 @@ See: http://nodejs.org
 * Install npm
 See: http://npmjs.org
 <shell>
-curl http://npmjs.org/install.sh | sh
+  curl http://npmjs.org/install.sh | sh
 </shell>
 
 
 * Invoke Building:
 <shell>
-cd alohaeditor
-mvn3 clean package
+  cd alohaeditor
+  mvn clean package
 </shell>
 
 You probably want to ommit building of the api and guides:
 <shell>
-mvn3 clean package -DbareMode=true
+  mvn clean package -DbareMode=true
 </shell>
 
 You can also build just the css:
 <shell>
-mvn3 generate-sources
+  mvn generate-sources
 </shell>
 
 The resulting css will be generated in src/css/aloha.css.
@@ -192,20 +229,20 @@ h4. Installation
 h5. Debian Linux
 
 <shell>
-apt-get install build-essential
-apt-get install ruby1.9.1-full
-cd /usr/bin
-ln -s ruby1.9.1  ruby
-ln -s gem1.9.1  gem
-gem install guides
-ln -s /var/lib/gems/1.9.1/gems/guides-0.7.1/bin/guides /usr/bin/guides
-guides preview 
+  apt-get install build-essential
+  apt-get install ruby1.9.1-full
+  cd /usr/bin
+  ln -s ruby1.9.1  ruby
+  ln -s gem1.9.1  gem
+  gem install guides
+  ln -s /var/lib/gems/1.9.1/gems/guides-0.7.1/bin/guides /usr/bin/guides
+  guides preview 
 </shell>
 
 h5. Mac OSX
 
 <shell>
-gem install guides
+  gem install guides
 </shell>
 
 h5. Microsoft Windows
@@ -216,13 +253,13 @@ h4. Using the Guides
 
 * Preview Guides:
 <shell>
-cd alohaeditor/doc/guides
-guides preview
+  cd alohaeditor/doc/guides
+  guides preview
 </shell>
 
 Preview URL: http://localhost:9292/
 
 * Building Guides:
 <shell>
-guides build
+  guides build
 </shell>
