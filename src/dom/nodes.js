@@ -105,6 +105,15 @@ define([
 	}
 
 	/**
+	 * Checks is `element` has children
+	 * @param {Element} element
+	 * @returns {boolean}
+	 */
+	function hasChildren(element) {
+		return numChildren(element) > 0;
+	}
+
+	/**
 	 * Get the nth (zero based) child of the given element.
 	 * 
 	 * NB elem.childNodes.length is unreliable because "IE up to 8 does not count
@@ -295,6 +304,7 @@ define([
 		numChildren  : numChildren,
 		nodeIndex    : nodeIndex,
 		nodeLength   : nodeLength,
+		hasChildren  : hasChildren,
 
 		normalizedNthChild      : normalizedNthChild,
 		normalizedNodeIndex     : normalizedNodeIndex,

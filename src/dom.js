@@ -229,6 +229,7 @@ define([
 		numChildren             : Nodes.numChildren,
 		nodeIndex               : Nodes.nodeIndex,
 		nodeLength              : Nodes.nodeLength,
+		hasChildren             : Nodes.hasChildren,
 		nodeAtOffset            : Nodes.nodeAtOffset,
 		normalizedNthChild      : Nodes.normalizedNthChild,
 		normalizedNodeIndex     : Nodes.normalizedNodeIndex,

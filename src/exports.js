@@ -29,6 +29,8 @@ define([
 	'html',
 	'image',
 	'keys',
+	'list',
+	'list/list-selection',
 	'maps',
 	'mouse',
 	'mutation',
@@ -68,6 +70,8 @@ define([
 	Html,
 	Image,
 	Keys,
+	List,
+	ListSelection,
 	Maps,
 	Mouse,
 	Mutation,
@@ -110,6 +114,8 @@ define([
 	exports['html'] = Html;
 	exports['image'] = Image;
 	exports['keys'] = Keys;
+	exports['list'] = List;
+	exports['listselection'] = ListSelection;
 	exports['maps'] = Maps;
 	exports['mouse'] = Mouse;
 	exports['mutation'] = Mutation;
