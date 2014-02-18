@@ -1,0 +1,66 @@
+<div class="test">
+	<div class="input">
+		<p style="margin: 0in 0in 0pt;" class="MsoTitle">
+			<font size="7">
+				<font face="Calibri Light">Title
+					<?xml:namespace prefix = o ns = "urn:schemas-microsoft-com:office:office" />
+					<o:p></o:p>
+				</font>
+			</font>
+		</p>
+		<p style="margin: 0in 0in 8pt;" class="MsoNormal">
+			<font face="Calibri">This is some text
+				<o:p></o:p>
+			</font>
+		</p>
+		<p style="margin: 0in 0in 8pt;" class="MsoNormal">
+			<o:p>
+				<font face="Calibri">&nbsp;</font>
+			</o:p>
+		</p>
+		<p style="margin: 0in 0in 8pt;" class="MsoNormal">
+			<font face="Calibri">This is more text
+				<o:p></o:p>
+			</font>
+		</p>
+		<p style="margin: 0in 0in 8pt;" class="MsoNormal">
+			<o:p>
+				<font face="Calibri">&nbsp;</font>
+			</o:p>
+		</p>
+		<p style="margin: 0in 0in 0pt;" class="MsoTitle">
+			<font size="7">
+				<font face="Calibri Light">Other title
+					<o:p></o:p>
+				</font>
+			</font>
+		</p>
+		<p style="margin: 0in 0in 8pt;" class="MsoNormal">
+			<font face="Calibri">This is some text
+				<o:p></o:p>
+			</font>
+		</p>
+		<p style="margin: 0in 0in 8pt;" class="MsoNormal">
+			<font face="Calibri">This is some text
+				<o:p></o:p>
+			</font>
+		</p> 
+	</div><!-- /input -->
+
+	<div class="expected">
+		<h1>Title</h1>
+		<p>This is some text</p>
+		<p>
+			<br/>
+		</p>
+		<p>This is more text</p>
+		<p>
+			<br/>
+		</p>
+		<h1>Other title</h1>
+		<p>This is some text</p>
+		<p>This is some text</p>
+	</div>
+
+</div>
+

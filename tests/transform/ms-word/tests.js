@@ -48,25 +48,23 @@
 		});
 	}
 
-	/*
-	test('Lists', function () {
-		for (var i = 1; i <= 16; i++) {
-			$.ajax({
-				url: 'transform/ms-word/lists/' + (i < 10 ? '0' : '') + i + '.html',
-				async: false,
-				success: run
-			});
-		}
-	});
-	*/
+	function runTests(directory, total) {
+		test(directory, function () {
+			var path = 'transform/ms-word/' + directory + '/';
+			for (var i = 1; i <= total; i++) {
+				$.ajax({
+					url: path + (i < 10 ? '0' : '') + i + '.html',
+					async: false,
+					success: run
+				});
+			}
+		});
+	}
 
-	test('Headings', function () {
-		for (var i = 1; i <= 4; i++) {
-			$.ajax({
-				url: 'transform/ms-word/headings/' + (i < 10 ? '0' : '') + i + '.html',
-				async: false,
-				success: run
-			});
-		}
-	});
+	/*
+	runTests('lists', 16);
+	runTests('headings', 4);
+	*/
+	runTests('paragraphs', 8);
+
 }(window.aloha));
