@@ -1,5 +1,5 @@
 // http://codebeautify.org/htmlviewer
-(function (aloha) {
+(function (aloha, $) {
 	'use strict';
 
 	module('Transform MS-Word');
@@ -34,7 +34,6 @@
 			var expected = trim($test.find('>.expected')[0]).innerHTML;
 			var actual = Transform.html(Transform.msword(input, document), document);
 			equal(actual, expected, input + ' ⇒ ' + expected);
-			/*
 			// For debugging
 			$('body')
 				.append('======= input:\n\n\n\n\n\n\n\n\n\n\n\n\n')
@@ -44,14 +43,14 @@
 				.append('======= actual: \n\n\n\n\n\n\n\n\n\n\n\n\n')
 				.append(actual)
 				.append('<hr>');
-			*/
 		});
 	}
 
 	function runTests(directory, total) {
 		test(directory, function () {
 			var path = 'transform/ms-word/' + directory + '/';
-			for (var i = 1; i <= total; i++) {
+			var i;
+			for (i = 1; i <= total; i++) {
 				$.ajax({
 					url: path + (i < 10 ? '0' : '') + i + '.html',
 					async: false,
@@ -61,11 +60,10 @@
 		});
 	}
 
-	/*
-	runTests('lists', 16);
-	runTests('headings', 4);
+	runTests('toc',        3);
+	runTests('lists',     16);
+	runTests('tables',     4);
+	runTests('headings',   4);
 	runTests('paragraphs', 8);
-	*/
-	runTests('tables', 4);
 
-}(window.aloha));
+}(window.aloha, window.jQuery));
