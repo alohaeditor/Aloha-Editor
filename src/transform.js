@@ -17,7 +17,7 @@ define([
 	'use strict';
 
 	/**
-	 * Each transform function is mapped to it's corresponding mime-subtype.
+	 * Transformation functions, mapped to their corresponding mime-subtype.
 	 */
 	return {
 		html   : Html.transform,
