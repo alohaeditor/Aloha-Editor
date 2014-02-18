@@ -370,14 +370,14 @@
 				<version>2.2.1</version>
 				<executions>
 					<execution>
-						<id>dist</id>
+						<id>dist-changelog</id>
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>
 						<configuration>
 							<attach>true</attach>
-							<appendAssemblyId>false</appendAssemblyId>
+							<appendAssemblyId>true</appendAssemblyId>
 							<descriptors>
 								<descriptor>${project.basedir}/build/assembly/changelog-site-package.xml</descriptor>
 							</descriptors>
