@@ -1,0 +1,1 @@
+ link-plugin: Fixed a bug that prevented correct selection of items from the repository browser when a new link was created on a fresh loaded page.

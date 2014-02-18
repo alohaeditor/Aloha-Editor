@@ -1,0 +1,1 @@
+      table: The table plugin will now handle pressing down in the last cell as well as pressing up in the first cell by positioning the cursor directly before or after the table.

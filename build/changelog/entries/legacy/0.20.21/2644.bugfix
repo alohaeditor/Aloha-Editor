@@ -1,0 +1,1 @@
+core: We now catch an exception that is thrown when the selection is not properly updated. This exception would lead to unexpected behaviour.

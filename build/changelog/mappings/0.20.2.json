@@ -1,0 +1,16 @@
+{
+  "version": "0.20.2",
+  "date": "19.01.2012",
+  "changeLogEntryFileNames": [
+        "2694.bugfix",
+        "3124.bugfix",
+        "3125.bugfix",
+        "3126.bugfix",
+        "3127.bugfix",
+        "3128.enhancement",
+        "3129.enhancement",
+        "3130.enhancement"
+   ],
+  "genericProperties": {
+  }
+}

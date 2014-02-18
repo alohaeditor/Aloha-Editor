@@ -1,0 +1,1 @@
+ characterpicker & horizontalruler: Fixes icon styling to display correct images event when a user-specified jquery ui stylsheet is included in the page.

@@ -1,0 +1,1 @@
+ Aloha Blocks will now publish a message on the channel "aloha.blocks.initialized" when a block is fully initialized.

@@ -1,0 +1,1 @@
+ A bug was fixed with additional elements being appended to a table, if a rowspan was set in its last column.

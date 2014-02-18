@@ -1,0 +1,1 @@
+ Fix calling mahalo in a blur event handler

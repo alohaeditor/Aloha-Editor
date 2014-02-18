@@ -1,0 +1,1 @@
+ An error was turned into a warning. The error message "encountered range object without start or end container" was incorrectly logged as an error instead of a warning.

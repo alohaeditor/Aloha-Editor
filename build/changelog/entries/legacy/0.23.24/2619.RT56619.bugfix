@@ -1,0 +1,1 @@
+core: Some performance improvements were made, so the Aloha-editor smartContenthandler is faster in large contents. Improvements of loop-for, jQuery selector and Dom iteration.

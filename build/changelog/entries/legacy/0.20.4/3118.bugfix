@@ -1,0 +1,1 @@
+ core: fixed IE7 browser crash caused by dereferencing element attributes.

@@ -1,0 +1,1 @@
+wai-lang plugin: The styling of the language input field, and dropdown suggestion box has been improved.

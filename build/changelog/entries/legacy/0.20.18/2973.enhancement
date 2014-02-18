@@ -1,0 +1,1 @@
+ list-plugin: Some internet explorer specific attributes (hidefocus, tabindex) will now be removed on makeClean.

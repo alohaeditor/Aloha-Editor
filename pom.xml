@@ -31,7 +31,7 @@
 		<releases.repoName>Gentics Public Repository</releases.repoName>
 		<releases.repoId>archiva.com.gentics.public</releases.repoId>
 	</properties>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>rhino</groupId>
@@ -54,8 +54,40 @@
 	</scm>
 
 	<build>
-
-	<plugins>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<configuration>
+					<completionGoals>scm:checkin -Dmessage="Added generated changelog mapping" -Dbasedir=${project.basedir}/ -Dincludes=build/changelog/mappings/**</completionGoals>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.gentics</groupId>
+				<artifactId>changelog-manager-plugin</artifactId>
+				<version>2.2</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<phase>package</phase>
+					</execution>
+				</executions>
+				<configuration>
+					<baseDirectory>${basedir}/build/changelog</baseDirectory>
+					<outputDirectory>${basedir}/target/output</outputDirectory>
+					<changelogTitle>Gentics Content.Node Changelog</changelogTitle>
+					<changelogTypes>note,manualchange,optional-manualchange,security,feature,enhancement,bugfix</changelogTypes>
+					<changelogVersion>${project.version}</changelogVersion>
+					<strictRenderMode>true</strictRenderMode>
+					<allowEmptyChangelog>true</allowEmptyChangelog>
+					<includeProjectProperties>false</includeProjectProperties>
+					<overviewTemplateFiles>index.vm, plain_merged_changelog.vm, merged_changelog.vm</overviewTemplateFiles>
+					<perMajorVersionTemplateFiles>majorversion/index.vm, majorversion/merged_changelog.vm</perMajorVersionTemplateFiles>
+					<perMajorVersionChangelogFile>majorversion/changelog.vm</perMajorVersionChangelogFile>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>com.googlecode.jslint4java</groupId>
 				<artifactId>jslint4java-maven-plugin</artifactId>
@@ -73,7 +105,7 @@
 					<failOnError>false</failOnError>
 					<!-- See http://docs.jslint4java.googlecode.com/git/2.0.2/apidocs/com/googlecode/jslint4java/Option.html -->
 					<options>
-						<!-- If names may have dangling _  -->
+						<!-- If names may have dangling _ -->
 						<nomen>true</nomen>
 						<!-- If multiple var statements per function should be allowed -->
 						<vars>true</vars>
@@ -261,7 +293,7 @@
 							<jsDestinationFolder>${project.build.directory}/${build.profile}/minified-full/</jsDestinationFolder>
 						</configuration>
 					</execution>
-					
+
 					<execution>
 						<id>aloha-${build.profile}-debug-full</id>
 						<phase>compile</phase>
@@ -275,7 +307,7 @@
 							<jsDestinationFolder>${project.build.directory}/${build.profile}/debug-full/</jsDestinationFolder>
 						</configuration>
 					</execution>
-					
+
 					<!-- Bare version of aloha (Without jquery and requirejs) -->
 					<execution>
 						<id>aloha-${build.profile}-debug-bare</id>
@@ -290,7 +322,7 @@
 							<jsDestinationFolder>${project.build.directory}/${build.profile}/debug-bare/</jsDestinationFolder>
 						</configuration>
 					</execution>
-					
+
 					<execution>
 						<id>aloha-${build.profile}-minified-bare</id>
 						<phase>compile</phase>
@@ -304,7 +336,7 @@
 							<jsDestinationFolder>${project.build.directory}/${build.profile}/minified-bare/</jsDestinationFolder>
 						</configuration>
 					</execution>
-					
+
 					<execution>
 						<id>less-css</id>
 						<phase>generate-sources</phase>
@@ -337,6 +369,20 @@
 				<version>2.2.1</version>
 				<executions>
 					<execution>
+						<id>dist-changelog</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<attach>true</attach>
+							<appendAssemblyId>true</appendAssemblyId>
+							<descriptors>
+								<descriptor>${project.basedir}/build/assembly/changelog-site-package.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+					<execution>
 						<id>dist</id>
 						<phase>package</phase>
 						<goals>
@@ -350,7 +396,7 @@
 							</descriptors>
 						</configuration>
 					</execution>
-						<execution>
+					<execution>
 						<id>cdn</id>
 						<phase>package</phase>
 						<goals>
@@ -421,4 +467,3 @@
 		</snapshotRepository>
 	</distributionManagement>
 </project>
-

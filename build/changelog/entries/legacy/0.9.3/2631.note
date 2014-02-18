@@ -1,0 +1,9 @@
+- Link/Href handling
+- Repository browser
+	- As well as sample Delicious and LinkList Repositories
+- Textarea and $('#myTextarea').aloha() support
+- Table plugin
+- Paste from Microsoft Word
+- Plugins are now submodules
+- Abbreviation plugin
+- LinkChecker plugin

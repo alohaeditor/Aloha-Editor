@@ -1,0 +1,2 @@
+formatlesspaste plugin: The strippedElements config parameter was previously ignored and is now respected again. 
+If no configuration is specified for it, a default list of text level semantic elements is used.

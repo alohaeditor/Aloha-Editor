@@ -1,0 +1,1 @@
+commands: Further cleanup will no longer be done after inserting paragraphs since this extra processing was not necessary and very expensive on large content.

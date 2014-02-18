@@ -1,0 +1,11 @@
+{
+  "version": "0.21.4",
+  "date": "03.09.2012",
+  "changeLogEntryFileNames": [
+       "2861.enhancement",
+       "2862.bugfix",
+       "2863.bugfix"
+   ],
+  "genericProperties": {
+  }
+}

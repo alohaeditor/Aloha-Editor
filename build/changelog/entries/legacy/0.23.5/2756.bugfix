@@ -1,0 +1,1 @@
+ Cursor styles that are added inside tables for resizing are now correctly removed when the table is no longer editable.

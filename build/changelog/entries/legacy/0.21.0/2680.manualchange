@@ -1,0 +1,5 @@
+The following jQuery extensions were removed
+
+    jQuery.isBoolean - Instead consider typeof x === 'boolean'. 
+    jQuery.isEmpty
+

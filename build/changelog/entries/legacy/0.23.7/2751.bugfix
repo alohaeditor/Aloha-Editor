@@ -1,0 +1,1 @@
+ (core/pluginmanager) Initialization will complete and Aloha.ready() will fire even when no plugins have been configured.

@@ -1,0 +1,1 @@
+ hints plugin: Implemented using Tipsy as tooltip library and the latest Aloha-Editor plugin standard.

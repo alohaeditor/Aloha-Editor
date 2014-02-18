@@ -1,0 +1,1 @@
+ image-plugin: The reset image button function was fixed.  Previously a javascript error occured when the button was pressed.

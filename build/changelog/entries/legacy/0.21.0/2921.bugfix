@@ -1,0 +1,1 @@
+ image plugin: fixing focus and value of srcField when image is clicked (previously handled by selectionChange)

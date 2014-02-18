@@ -1,0 +1,10 @@
+listenforcer-plugin: The listenforcer plugin was refactored.
+                  Method names were changed and the way the plugin works with
+				  lists was also changed. It will now no longer replace list
+				  dom elments. Instead it will move sibling lists into the
+				  first list element within the editable. Previously the whole
+				  element was replaced and thus the selection was lost. This
+				  caused problems with the floating menu. The user had to click
+				  two times into a list to make the floating menu appear since
+				  the selection was lost due to dom replacements. This is now
+				  fixed.

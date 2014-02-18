@@ -1,0 +1,1 @@
+ Adding blocks and tables will no longer results in empty paragraphs being littered before the inserted element.

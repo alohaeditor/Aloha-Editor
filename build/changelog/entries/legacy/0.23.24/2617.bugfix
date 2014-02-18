@@ -1,0 +1,1 @@
+Inputs containing image height/width don't display when image is loaded (ie9) When selecting an image the width and height inputs were not displayed. The problem was that when assigning the value to the input, the jQuery.val function was not working, because the element wasn't associated to the DOM yet.

@@ -1,0 +1,1 @@
+ cite-plugin: Fixed a javascript error when the cite plugin had no explicit sidebar configuration.

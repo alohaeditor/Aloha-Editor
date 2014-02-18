@@ -1,0 +1,1 @@
+      table-plugin: The table plugin will now not lose the drag handles any more, when getContents() is called for the editable (which is done on smart content change)

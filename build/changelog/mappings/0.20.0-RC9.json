@@ -1,0 +1,16 @@
+{
+  "version": "0.20.0-RC9",
+  "date": "07.12.2011",
+  "changeLogEntryFileNames": [
+        "2649.bugfix",
+        "2650.feature",
+        "2651.feature",
+        "2652.enhancement",
+        "2653.feature",
+        "2654.feature",
+        "2655.enhancement",
+        "2656.bugfix"
+   ],
+  "genericProperties": {
+  }
+}

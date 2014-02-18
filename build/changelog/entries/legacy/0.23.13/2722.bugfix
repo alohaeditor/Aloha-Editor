@@ -1,0 +1,1 @@
+ blocks: The floating toolbar will now be shown when clicking inside of editables that are nested inside of standalone Empty blocks.

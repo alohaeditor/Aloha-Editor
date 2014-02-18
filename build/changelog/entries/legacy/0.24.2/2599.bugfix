@@ -1,0 +1,1 @@
+image plugin: Various fixes and improvements for resizing, cropping and resetting images have been added, to improve the cohesion between displayed values and actual sizes.

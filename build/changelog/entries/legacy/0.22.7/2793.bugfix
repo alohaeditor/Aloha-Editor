@@ -1,0 +1,1 @@
+ table-plugin: Fixed the cursor problem with ie7. Now ie7 shows the system default arrows.

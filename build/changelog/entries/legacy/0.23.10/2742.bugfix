@@ -1,0 +1,1 @@
+ Merging table cells which contains &nbsp; will no longer result in the cell that was merged having unnecessary white spaces.

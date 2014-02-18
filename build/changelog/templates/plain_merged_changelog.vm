@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta http-equiv="cache-control" content="no-store, no-cache, must-revalidate, post-check=0, pre-check=0">
+	<title>$changelogTitle</title>
+</head>
+<body>
+	<div id="main">
+		<h2>Aloha.Editor Changelog Summary</h2>
+		The online version of the changelog can be found <a href="http://www.alohaedtior.org/guides/changelog/index.html" target="_blank">here</a>
+
+		#foreach($changelog in $changelogs)
+			<div id="$changelog.version" class="version-entry">
+				<h2>Aloha.Editor $changelog.version</h2>
+				#foreach($entry in $changelog.getChangelogEntries())
+					#set($html = $entry.getHTML())
+					<div class="changelog-entry $entry.type">
+						#if ($entry.type == "note")
+							<div style="padding: 5px; background: rgb(255, 245, 194); font-style: italic; font-size: 14px;">$html</div>
+							#set($html= "")
+						#elseif ($entry.type == "bugfix")
+							<h4 style="vertical-align:middle;"> <strong>Bugfix $entry.ticketReference</strong></h4>
+						#elseif ($entry.type == "enhancement")
+							<h4 style="vertical-align:middle;"> <strong>Enhancement $entry.ticketReference</strong></h4>
+						#elseif ($entry.type == "feature")
+							<h4 style="vertical-align:middle;"> <strong>Feature $entry.ticketReference</strong></h4>
+						#elseif ($entry.type == "optional-manualchange")
+							<div class="warning"><p><strong style="color: red; font-size: 16px">Optional Manual Change</strong> $entry.getHTMLHeadline() </p></div>
+							#set($html = $entry.getHTMLWithoutHeadline())
+						#elseif ($entry.type == "security")
+							<h4 style="vertical-align:middle;"> <strong>Security $entry.ticketReference</strong></h4>
+						#elseif ($entry.type == "manualchange")
+							<div class="warning"><p><strong style="color: red; font-size: 16px">Manual Change</strong> $entry.getHTMLHeadline() </p></div>
+							#set($html = $entry.getHTMLWithoutHeadline())
+						#elseif ($entry.type == "security")
+							<h4 style="vertical-align:middle;"> <strong>Security $entry.ticketReference</strong></h4>
+						#end
+						$html
+					</div>
+					<hr />
+				#end
+				<p><br/><br/></p>
+			</div>
+		#end
+		</div>
+	</div>
+</body>
+</html>

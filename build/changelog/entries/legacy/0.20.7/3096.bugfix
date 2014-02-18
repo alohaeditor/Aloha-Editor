@@ -1,0 +1,1 @@
+ formatlesspaste plugin: fixed IE syntax error caused by a comma at the end of a list.

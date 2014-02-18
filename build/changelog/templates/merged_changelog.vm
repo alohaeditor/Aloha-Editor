@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta http-equiv="cache-control" content="no-store, no-cache, must-revalidate, post-check=0, pre-check=0">
+	<title>$changelogTitle</title>
+	
+	<link rel="stylesheet" type="text/css" href="static/stylesheets/style.css" />
+	<link rel="stylesheet" type="text/css" href="static/stylesheets/print.css" media="print" />
+	<link rel="stylesheet" type="text/css" href="static/stylesheets/overrides.style.css" />
+	<link rel="stylesheet" type="text/css" href="static/stylesheets/overrides.print.css" media="print" />
+	<link rel="stylesheet" type="text/css" href="static/stylesheets/syntaxhighlighter/shCore.css" />
+	<link rel="stylesheet" type="text/css" href="static/stylesheets/syntaxhighlighter/shThemeRailsGuides.css" />
+</head>
+
+<body class="guide">
+	<div id="topNav">
+		<div class="wrapper"></div>
+	</div>
+
+	<div id="header">
+		<div class="wrapper clearfix">
+			<h1><a href="index.html" title="Return to home page">Aloha.Editor Changelogs</a></h1>
+			<p class="hide"><a href="#mainCol">Skip navigation</a>.</p>
+			<ul class="nav">
+				<li><a href="index.html">Home</a></li>
+				<li class="index"><a href="index.html" onclick="guideMenu(); return false;" id="guidesMenu">Changelog Index <span id="guidesArrow">&#9656;</span></a>
+					<div id="guides" class="clearfix" style="display: none;">
+						<hr />
+						<dl class="L">
+							<dt>Summary</dt>
+							<dd><a href="merged_changelog.html">Aloha.Editor Changelog Summary</a></dd>
+							<dt>Releases</dt>
+							#foreach($changelog in $changelogs)
+								<dd><a href="${changelog.minorVersion}/${changelog.version}.html">Aloha.Editor Feature Release $changelog.version</a></dd>
+							#end
+						</dl>
+						<dl class="R"></dl>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+	
+	<hr class="hide" />
+	
+	<div id="feature">
+		<div class="wrapper"><h2>Aloha.Editor Changelog Summary</h2></div>
+	</div>
+
+	<div id="container">
+		<div class="wrapper">
+			<div id="mainCol">
+				<div class="manual"></div>
+				#foreach($changelog in $changelogs)
+				<h2>Aloha.Editor $changelog.version</h2>
+				<hr />
+					#foreach($entry in $changelog.getChangelogEntries())
+						#set($html = $entry.getHTML())
+			
+						#if ($entry.type == "note") 
+							<div class="note"><strong>$html</strong></div>
+							#set($html="")
+						#elseif ($entry.type == "bugfix") 
+							<h4 style="vertical-align:middle;"><img src="static/images/changelog_types/bugfix_24.png" alt="" /> <strong>Bugfix $entry.ticketReference</strong></h4>
+						#elseif ($entry.type == "enhancement") 
+							<h4 style="vertical-align:middle;"><img src="static/images/changelog_types/enhancement_24.png" alt="" /> <strong>Enhancement $entry.ticketReference</strong></h4>
+						#elseif ($entry.type == "feature") 
+							<h4 style="vertical-align:middle;"><img src="static/images/changelog_types/feature_24.png" alt="" /> <strong>Feature $entry.ticketReference</strong></h4>
+						#elseif ($entry.type == "manualchange" || $entry.type == "optional-manualchange")
+							<div class="warning"><p><strong>Manual Change</strong> $entry.getHTMLHeadline()</p></div>
+							#set($html = $entry.getHTMLWithoutHeadline())
+						#elseif ($entry.type == "security")
+							<h4 style="vertical-align:middle;"><img src="static/images/changelog_types/security_24.png" alt="" \> <strong>Security $entry.ticketReference</strong></h4>
+						#else
+							<h4 style="vertical-align:middle;"><strong>Unknown type: $entry.type</strong></h4>
+						#end
+						$html
+						<hr />
+					#end
+					<p></p>
+				#end
+			</div>
+		</div>
+	</div>
+
+	<hr class="hide" />
+	<div id="footer">
+		<div class="wrapper"><p></p></div>
+	</div>
+	
+	<script type="text/javascript" src="static/javascripts/guides.js"></script>
+	<script type="text/javascript" src="static/javascripts/syntaxhighlighter/shCore.js"></script>
+	<script type="text/javascript" src="static/javascripts/syntaxhighlighter/shBrushRuby.js"></script>
+	<script type="text/javascript" src="static/javascripts/syntaxhighlighter/shBrushJScript.js"></script>
+	<script type="text/javascript" src="static/javascripts/syntaxhighlighter/shBrushCss.js"></script>
+	<script type="text/javascript" src="static/javascripts/syntaxhighlighter/shBrushXml.js"></script>
+	<script type="text/javascript" src="static/javascripts/syntaxhighlighter/shBrushSql.js"></script>
+	<script type="text/javascript" src="static/javascripts/syntaxhighlighter/shBrushPlain.js"></script>
+	<script type="text/javascript">
+		SyntaxHighlighter.all()
+	</script>
+</body>
+</html>

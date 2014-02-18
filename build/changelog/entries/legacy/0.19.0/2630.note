@@ -1,0 +1,2 @@
+The reason for not releasing this builds was the ongoing refactoring of the core engine to implement all functionallities based on execCommand.
+Non of these releases reached a production ready state. We still increased the release number due to the fact that we also tested the new release process with maven and archivia and it would brake dependencies if we wouldn't have increased the version number.

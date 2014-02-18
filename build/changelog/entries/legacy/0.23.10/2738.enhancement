@@ -1,0 +1,1 @@
+ Added trimWhitespaceCharacters method in util/html to remove the weirds whitespace characters, this is necessary in Internet Explorer 7

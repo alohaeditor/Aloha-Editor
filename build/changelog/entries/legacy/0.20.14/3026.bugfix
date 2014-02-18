@@ -1,0 +1,1 @@
+ enumerated-headers plugin: Added default configuration, which fixes some javascript error, if no other configuration is set.

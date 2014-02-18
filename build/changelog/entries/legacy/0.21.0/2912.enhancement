@@ -1,0 +1,1 @@
+ image plugin: new method getImgFocus used in place of findImgMarkup which is pointless now
