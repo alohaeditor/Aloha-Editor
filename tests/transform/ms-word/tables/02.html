@@ -1,0 +1,91 @@
+<div class="test">
+    <div class="input">
+        <table style="border: red; border-collapse: collapse; mso-border-alt: solid windowtext .5pt; mso-yfti-tbllook: 1184; mso-padding-alt: 0in 5.4pt 0in 5.4pt;" class="MsoTableGrid" border="1" cellSpacing="0" cellPadding="0">
+            <tbody>
+                <tr style="mso-yfti-irow: 0; mso-yfti-firstrow: yes;">
+                    <td style="padding: 0in 5.4pt; border: 1pt solid windowtext; width: 239.4pt; background-color: transparent; mso-border-alt: solid windowtext .5pt;" vAlign="top" width="319">
+                        <p style="margin: 0in 0in 0pt; line-height: normal;" class="MsoNormal">
+                            <font face="Calibri">Cell 1 1
+                                <?xml:namespace prefix = o ns = "urn:schemas-microsoft-com:office:office" />
+                                <o:p></o:p>
+                            </font>
+                        </p>
+                        <p style="margin: 0in 0in 0pt; line-height: normal;" class="MsoNormal">
+                            <font face="Calibri">Same cell
+                                <o:p></o:p>
+                            </font>
+                        </p>
+                        <p style="margin: 0in 0in 0pt; line-height: normal;" class="MsoNormal">
+                            <o:p>
+                                <font face="Calibri">&nbsp;</font>
+                            </o:p>
+                        </p>
+                        <p style="margin: 0in 0in 0pt; line-height: normal;" class="MsoNormal">
+                            <font face="Calibri">Same cell
+                                <o:p></o:p>
+                            </font>
+                        </p>
+                        <p style="margin: 0in 0in 0pt; line-height: normal;" class="MsoNormal">
+                            <o:p>
+                                <font face="Calibri">&nbsp;</font>
+                            </o:p>
+                        </p>
+                        <p style="margin: 0in 0in 0pt; line-height: normal;" class="MsoNormal">
+                            <font face="Calibri">Same Cell
+                                <o:p></o:p>
+                            </font>
+                        </p>
+                    </td>
+                    <td style="border-width: 1pt 1pt 1pt 0px; border-style: solid solid solid none; border-color: windowtext windowtext windowtext rgb(0, 0, 0); padding: 0in 5.4pt; width: 239.4pt; background-color: transparent; mso-border-alt: solid windowtext .5pt; mso-border-left-alt: solid windowtext .5pt;" vAlign="top" width="319">
+                        <p style="margin: 0in 0in 0pt; line-height: normal;" class="MsoNormal">
+                            <font face="Calibri">Cell 1 2
+                                <o:p></o:p>
+                            </font>
+                        </p>
+                    </td>
+                </tr>
+                <tr style="mso-yfti-irow: 1; mso-yfti-lastrow: yes;">
+                    <td style="border-width: 0px 1pt 1pt; border-style: none solid solid; border-color: rgb(0, 0, 0) windowtext windowtext; padding: 0in 5.4pt; width: 239.4pt; background-color: transparent; mso-border-alt: solid windowtext .5pt; mso-border-top-alt: solid windowtext .5pt;" vAlign="top" width="319">
+                        <p style="margin: 0in 0in 0pt; line-height: normal;" class="MsoNormal">
+                            <font face="Calibri">Cell 2 1
+                                <o:p></o:p>
+                            </font>
+                        </p>
+                    </td>
+                    <td style="border-width: 0px 1pt 1pt 0px; border-style: none solid solid none; border-color: rgb(0, 0, 0) windowtext windowtext rgb(0, 0, 0); padding: 0in 5.4pt; width: 239.4pt; background-color: transparent; mso-border-alt: solid windowtext .5pt; mso-border-left-alt: solid windowtext .5pt; mso-border-top-alt: solid windowtext .5pt;" vAlign="top" width="319">
+                        <p style="margin: 0in 0in 0pt; line-height: normal;" class="MsoNormal">
+                            <font face="Calibri">Cell 2 2
+                                <o:p></o:p>
+                            </font>
+                        </p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div><!-- /input -->
+    <div class="expected">
+		<table>
+			<tbody>
+				<tr>
+					<td>
+						<p>Cell 1 1</p>
+						<p>Same cell</p>
+						<p>
+							<br/>
+						</p>
+						<p>Same cell</p>
+						<p>
+							<br/>
+						</p>
+						<p>Same Cell</p>
+                    </td>
+                    <td>Cell 1 2</td>
+                </tr>
+                <tr>
+                    <td>Cell 2 1</td>
+                    <td>Cell 2 2</td>
+                </tr>
+            </tbody>
+        </table> 
+	</div>
+</div>

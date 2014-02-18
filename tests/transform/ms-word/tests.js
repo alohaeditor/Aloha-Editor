@@ -64,7 +64,8 @@
 	/*
 	runTests('lists', 16);
 	runTests('headings', 4);
-	*/
 	runTests('paragraphs', 8);
+	*/
+	runTests('tables', 4);
 
 }(window.aloha));
