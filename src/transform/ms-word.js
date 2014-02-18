@@ -82,6 +82,7 @@ define([
 	 * Returns the the non-namespaced version of the given node's nodeName.
 	 * If the node is not namespaced, will return null.
 	 *
+	 * @private
 	 * @param  {Node} node
 	 * @return {String}
 	 */
@@ -93,6 +94,7 @@ define([
 	/**
 	 * Returns a clean copy of the given node.
 	 *
+	 * @private
 	 * @param  {Node}     node
 	 * @param  {Document} doc
 	 * @return {Node}
