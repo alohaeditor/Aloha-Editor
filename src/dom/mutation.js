@@ -121,7 +121,9 @@ define([
 	 * @param {string}  nodeName
 	 */
 	function wrapWithNodeName(node, nodeName) {
-		wrap(node, node.ownerDocument.createElement(nodeName));
+		var wrapper = node.ownerDocument.createElement(nodeName);
+		wrap(node, wrapper);
+		return wrapper;
 	}
 
 	/**
@@ -215,6 +217,6 @@ define([
 		replace           : replace,
 		replaceShallow    : replaceShallow,
 		remove            : remove,
-		removeShallow     : removeShallow,
+		removeShallow     : removeShallow
 	};
 });
