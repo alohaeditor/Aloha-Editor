@@ -38,14 +38,21 @@ define([
 ) {
 	'use strict';
 
+	/**
+	 * Mime types
+	 *
+	 * @private
+	 * @type {Object<string, string>}
+	 */
 	var Mime = {
-		plaintext : 'text/plain',
-		html      : 'text/html'
+		plain : 'text/plain',
+		html  : 'text/html'
 	};
 
 	/**
 	 * Checks if the given event is a Paste Event.
 	 *
+	 * @private
 	 * @param  {Event} event
 	 * @return {boolean}
 	 */
@@ -56,6 +63,7 @@ define([
 	/**
 	 * Checks the content type of `event`.
 	 *
+	 * @private
 	 * @param  {Event}  event
 	 * @param  {string} type
 	 * @return {boolean}
@@ -67,6 +75,7 @@ define([
 	/**
 	 * Gets content of the paste data that matches the given mime type.
 	 *
+	 * @private
 	 * @param  {Event}  event
 	 * @param  {string} type
 	 * @return {string}
@@ -87,10 +96,27 @@ define([
 		return Boundaries.fromRangeStart(range);
 	}
 
+	/**
+	 * Checks whether the inner node is allowed to be nested as the immediate
+	 * child of `outer`.
+	 *
+	 * @private
+	 * @param  {Node} outer
+	 * @param  {Node} inner
+	 * @return {boolean}
+	 */
 	function allowsNesting(outer, inner) {
 		return Content.allowsNesting(outer.nodeName, inner.nodeName);
 	}
 
+	/**
+	 * Moves the given node before the given boundary.
+	 *
+	 * @private
+	 * @param  {Boundary} boundary
+	 * @param  {Node}     node
+	 * @return {Bounbary}
+	 */
 	function moveBeforeBoundary(boundary, node) {
 		return Mutation.insertNodeAtBoundary(node, boundary, true);
 	}
@@ -98,6 +124,7 @@ define([
 	/**
 	 * Pastes the markup at the given boundary range.
 	 *
+	 * @private
 	 * @param  {Array.<Boundary>} boundaries
 	 * @param  {string}           markup
 	 * @return {Boundary} Boundary position after the inserted content
@@ -140,7 +167,7 @@ define([
 		var last = Arrays.last(children);
 
 		// Because we want to remove the unintentional line added at the end of
-		// the pasted content.
+		// the pasted content
 		if ('P' === last.nodeName || 'DIV' === last.nodeName) {
 			var next = Boundaries.nextNode(boundary);
 			if (Html.hasInlineStyle(next)) {
@@ -160,6 +187,7 @@ define([
 	/**
 	 * Extracts the paste data from the event object.
 	 *
+	 * @private
 	 * @param  {Event}    event
 	 * @param  {Document} doc
 	 * @return {string}
@@ -171,8 +199,8 @@ define([
 			     ? Transform.html(Transform.msword(content, doc), doc)
 			     : Transform.html(content, doc);
 		}
-		if (holds(event, Mime.plaintext)) {
-			return Transform.plain(getData(event, Mime.plaintext), doc);
+		if (holds(event, Mime.plain)) {
+			return Transform.plain(getData(event, Mime.plain), doc);
 		}
 		return content;
 	}
