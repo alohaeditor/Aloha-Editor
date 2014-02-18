@@ -4,6 +4,7 @@
 
 	module('Transform MS-Word');
 
+	var Html = aloha.html;
 	var Dom = aloha.dom;
 	var Transform = aloha.transform;
 
@@ -15,7 +16,7 @@
 	 */
 	function trim(node) {
 		if (Dom.isTextNode(node)) {
-			node.data = node.data.trim();
+			node.data = node.data.trim()
 		} else {
 			Dom.children(node).forEach(trim);
 		}
@@ -30,8 +31,8 @@
 	function run(content) {
 		$('<div>' + content + '</div>').find('>.test').each(function () {
 			var $test = $(this);
-			var input = trim($test.find('>.input')[0]).innerHTML;
-			var expected = trim($test.find('>.expected')[0]).innerHTML;
+			var input = trim($test.find('>.input')[0]).innerHTML.trim();
+			var expected = trim($test.find('>.expected')[0]).innerHTML.trim();
 			var actual = Transform.html(Transform.msword(input, document), document);
 			equal(actual, expected, input + ' ⇒ ' + expected);
 			// For debugging
@@ -61,8 +62,9 @@
 	}
 
 	runTests('toc',        3);
+	runTests('fonts',      1);
 	runTests('lists',     16);
-	runTests('tables',     4);
+	runTests('tables',     3);
 	runTests('headings',   4);
 	runTests('paragraphs', 8);
 
