@@ -239,9 +239,9 @@ define([
 	 */
 	function toBoundary(cursor) {
 		if (cursor.atEnd) {
-			return Boundaries.create(cursor.node, dom.nodeLength(cursor.node));
+			return Boundaries.create(cursor.node, Nodes.nodeLength(cursor.node));
 		}
-		return Boundaries.create(cursor.node.parentNode, dom.nodeIndex(cursor.node));
+		return Boundaries.create(cursor.node.parentNode, Nodes.nodeIndex(cursor.node));
 	}
 
 	/**

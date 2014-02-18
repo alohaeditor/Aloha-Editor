@@ -542,7 +542,7 @@ define([
 	 * @param  {Node} node
 	 * @return {boolean}
 	 */
-	function getContentEditableElement(node) {
+	function closestEditable(node) {
 		return Traversing.upWhile(node, Fn.complement(Dom.isContentEditable));
 	}
 

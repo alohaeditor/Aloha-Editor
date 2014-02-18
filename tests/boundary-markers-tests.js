@@ -24,7 +24,7 @@
 	});
 
 	test('extract()', function () {
-		tested.push('extract')
+		tested.push('extract');
 		var range = ranges.create(document.documentElement, 0);
 		boundarymarkers.extract($('<p><b>a[bc</b><i>}xyz</i></p>')[0], range);
 		equal(range.commonAncestorContainer.nodeName, 'P');
@@ -35,7 +35,8 @@
 	test('hint()', function () {
 		tested.push('hint');
 		var t = function (before, after) {
-			var range = ranges.create(document.documentElement, 0);
+			var div = document.createElement('div');
+			var range = document.createRange();
 			boundarymarkers.extract($(before)[0], range);
 			equal(
 				aloha.boundarymarkers.hint(range).replace(/ xmlns=['"][^'"]*['"]/, ''),
@@ -50,6 +51,14 @@
 		t('<p>x{<b>y}</b>z</p>', '<p>x{<b>y}</b>z</p>');
 		t('<p>x<b>{y</b>}z</p>', '<p>x<b>{y</b>}z</p>');
 		t('<p>x<b>{y}</b>z</p>', '<p>x<b>{y}</b>z</p>');
+
+		try {
+			// Fail cause the character `]` could not be int that position
+			t('<table><tr><td>Link[</td></tr><tr><td>Something</td>]</tr></table>',
+		      '<table><tr><td>Link[</td></tr><tr><td>Something</td>]</tr></table>');
+		} catch (e) {
+			equal(e, 'end marker before start marker');
+		}
 	});
 
 	testCoverage(test, tested, boundarymarkers);

@@ -154,6 +154,21 @@ define([
 	}
 
 	/**
+	 * Gets root parent of `range`.
+	 * @param container
+	 * @param range
+	 * @returns {Node|StableRange.commonAncestorContainer|*}
+	 */
+	function getRootParent(range) {
+		var container = range.commonAncestorContainer;
+
+		while (container.parentNode && !Nodes.isDocumentFragment(container.parentNode)) {
+			container = container.parentNode;
+		}
+		return container;
+	}
+
+	/**
 	 * Returns a string with boundary markers inserted into the representation
 	 * of the DOM to indicate the span of the given range.
 	 *
@@ -200,16 +215,15 @@ define([
 
 		insert(range);
 
-		//(range.commonAncestorContainer.parentNode || range.commonAncestorContainer).outerHTML;
-		return range.commonAncestorContainer.outerHTML;
+		return Nodes.outerHtml(getRootParent(range));
 	}
 
-	function boundary(boundary) {
-		return show(Ranges.fromBoundaries(boundary, boundary));
+	function boundary(bndry) {
+		return show(Ranges.fromBoundaries(bndry, bndry));
 	}
 
-	function boundaries(boundaries) {
-		return show(Ranges.fromBoundaries(boundaries[0], boundaries[1]));
+	function boundaries(bndries) {
+		return show(Ranges.fromBoundaries(bndries[0], bndries[1]));
 	}
 
 	function hint() {
@@ -225,6 +239,6 @@ define([
 	return {
 		hint    : hint,
 		insert  : insert,
-		extract : extract,
+		extract : extract
 	};
 });

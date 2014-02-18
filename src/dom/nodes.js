@@ -46,6 +46,15 @@ define([
 	}
 
 	/**
+	 * Checks if `node` is a document fragment.
+	 * @param {Node} node
+	 * @returns {boolean}
+	 */
+	function isDocumentFragment(node) {
+		return Nodes.DOCUMENT_FRAGMENT === node.nodeType;
+	}
+
+	/**
 	 * Check if `node` is an Element.
 	 *
 	 * @param {Node} node
@@ -128,12 +137,15 @@ define([
 	}
 
 	/**
-	 * @param node if a text node, should have a parent node.
+	 * Gets a node from `node`
+	 * @param {Node} node if a text node, should have a parent node.
+	 * @param {number} offset
+	 * @returns {Node}
 	 */
 	function nodeAtOffset(node, offset) {
 		if (isElementNode(node) && offset < nodeLength(node)) {
 			node = nthChild(node, offset);
-		} else if (isTextNode(node) && offset === node.length) {
+		} else if (isTextNode(node) && !isEmptyTextNode(node) && offset === node.length) {
 			node = node.nextSibling || node.parentNode;
 		}
 		return node;
@@ -291,6 +303,10 @@ define([
 		return node.cloneNode(false);
 	}
 
+	function outerHtml(node) {
+		return node.outerHTML;
+	}
+
 	return {
 		Nodes : Nodes,
 
@@ -311,9 +327,10 @@ define([
 		realFromNormalizedIndex : realFromNormalizedIndex,
 		normalizedNumChildren   : normalizedNumChildren,
 
-		isTextNode      : isTextNode,
-		isElementNode   : isElementNode,
-		isEmptyTextNode : isEmptyTextNode,
+		isTextNode         : isTextNode,
+		isElementNode      : isElementNode,
+		isEmptyTextNode    : isEmptyTextNode,
+		isDocumentFragment : isDocumentFragment,
 
 		equals     : equals,
 		contains   : contains,
@@ -321,5 +338,6 @@ define([
 
 		clone             : clone,
 		cloneShallow      : cloneShallow,
+		outerHtml         : outerHtml
 	};
 });

@@ -1228,8 +1228,8 @@ define([
 		var normalizeLeft = opts.normalizeRange ? left : left.clone();
 		var normalizeRight = opts.normalizeRange ? right : right.clone();
 
-		Html.normalizeBoundary(Cursors.toBoundary(normalizeLeft));
-		Html.normalizeBoundary(Cursors.toBoundary(normalizeRight));
+		normalizeBoundary(Cursors.toBoundary(normalizeLeft));
+		normalizeBoundary(Cursors.toBoundary(normalizeRight));
 
 		Cursors.setToRange(range, normalizeLeft, normalizeRight);
 

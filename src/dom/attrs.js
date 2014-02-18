@@ -80,6 +80,16 @@ define([
 		elem.removeAttribute(name);
 	}
 
+	/**
+	 * Removes all attributes from `elem`.
+	 * @param elem
+	 */
+	function removeAll(elem) {
+		attrs(elem).forEach(function (item) {
+			remove(elem, item[0]);
+		});
+	}
+
 	function set(elem, name, value) {
 		if (null == value) {
 			remove(elem, name);
@@ -143,5 +153,6 @@ define([
 		getNS     : getNS,
 		remove    : remove,
 		removeNS  : removeNS,
+		removeAll : removeAll
 	};
 });
