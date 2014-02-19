@@ -234,6 +234,6 @@ define([
 		replace           : replace,
 		replaceShallow    : replaceShallow,
 		remove            : remove,
-		removeShallow     : removeShallow,
+		removeShallow     : removeShallow
 	};
 });

@@ -92,7 +92,7 @@ define([
 
 	function delete_(boundaries) {
 		var range = Ranges.fromBoundaries(boundaries[0], boundaries[1]);
-		Editing.delete(range, {overrides:[]});
+		Editing.delete(range, {overrides: []});
 		return Boundaries.fromRangeStart(range);
 	}
 
@@ -202,7 +202,7 @@ define([
 		if (holds(event, Mime.plain)) {
 			return Transform.plain(getData(event, Mime.plain), doc);
 		}
-		return content;
+		return '';
 	}
 
 	/**

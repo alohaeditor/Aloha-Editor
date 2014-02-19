@@ -121,7 +121,16 @@ define([
 	}
 
 	/**
-	 * Gets the nth (zero based) child of the given element.
+	 * Checks is `element` has children
+	 * @param  {Element} element
+	 * @return {boolean}
+	 */
+	function hasChildren(element) {
+		return numChildren(element) > 0;
+	}
+
+	/**
+	 * Get the nth (zero based) child of the given element.
 	 * 
 	 * NB elem.childNodes.length is unreliable because "IE up to 8 does not count
 	 * empty text nodes." (http://www.quirksmode.org/dom/w3c_core.html)
@@ -343,6 +352,7 @@ define([
 		numChildren  : numChildren,
 		nodeIndex    : nodeIndex,
 		nodeLength   : nodeLength,
+		hasChildren  : hasChildren,
 
 		normalizedNthChild      : normalizedNthChild,
 		normalizedNodeIndex     : normalizedNodeIndex,
