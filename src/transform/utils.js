@@ -22,6 +22,9 @@ define([
 ) {
 	'use strict';
 
+	/**
+	 * @TODO Use editable configuration.
+	 */
 	var DEFAULT_BLOCK_ELEMENT = 'p';
 
 	var blacklist = Content.NODES_BLACKLIST.reduce(function (map, item) {
@@ -87,6 +90,34 @@ define([
 	}
 
 	/**
+	 * Removes redundant nested blocks in the given list of nodes.
+	 *
+	 * Example:
+	 * <div><div><p>The 2 outer divs are reduntant</p></div></div>
+	 * <div><p>This outer div is also reduntant</p></div>
+	 *
+	 * @private
+	 * @param  {Array.<Node>} nodes
+	 * @param  {Document}     doc
+	 * @return {Array.<Node>}
+	 */
+	function removeRedundantNesting(nodes, doc) {
+		return nodes.reduce(function (nodes, node) {
+			if (!Html.isGroupContainer(node)) {
+				var kids = Dom.children(node);
+				if (1 === kids.length
+						&& Html.hasLinebreakingStyle(node)
+							&& Html.hasLinebreakingStyle(kids[0])) {
+					node = kids[0];
+				}
+			}
+			var copy = Dom.cloneShallow(node);
+			Dom.move(removeRedundantNesting(Dom.children(node), doc), copy);
+			return nodes.concat(copy);
+		}, []);
+	}
+
+	/**
 	 * Recursively cleans the given node and it's children according to the
 	 * given clean function.
 	 *
@@ -113,9 +144,9 @@ define([
 		if (1 === nodes.length) {
 			var copy = Dom.cloneShallow(node);
 			Dom.move(processed, copy);
-			return [copy];
+			processed = [copy];
 		}
-		return processed;
+		return removeRedundantNesting(processed, doc);
 	}
 
 	/**
