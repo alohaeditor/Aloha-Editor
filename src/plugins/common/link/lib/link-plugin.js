@@ -47,7 +47,8 @@ define( [
 	'i18n!aloha/nls/i18n',
 	'aloha/console',
 	'PubSub',
-	'util/keys'
+	'util/keys',
+	'../../../shared/languages/languages'
 ], function (
 	Aloha,
 	Plugin,
@@ -63,7 +64,8 @@ define( [
 	i18nCore,
 	console,
 	PubSub,
-	Keys
+	Keys,
+	LanguageRepository
 ) {
 	'use strict';
 	
@@ -71,6 +73,71 @@ define( [
 	    pluginNamespace = 'aloha-link',
 	    oldValue = '',
 	    newValue;
+	
+	/**
+	 * Regular expression that matches if an URL is an external link.
+	 */
+	var EXTERNAL_LINK_REG_EXP = /^([a-z]){3,10}:\/\/.+/i;
+	
+	/**
+	 * Field for hrefLang value in the link sidebar.
+	 */
+	var hrefLangField;
+	
+	/**
+	 * Language repository
+	 */
+	var LANG_REPOSITORY;
+	
+	/**
+	 * Initializes href lang input text.
+	 */
+	function initHrefLang(plugin, sidebar) {
+		hrefLangField = AttributeField({
+			name: 'hreflangfield',
+			valueField: 'id',
+			minChars: 1,
+			scope: 'Aloha.continuoustext'
+		});
+		
+		if (plugin.flags) {
+			hrefLangField.setTemplate(
+				 '<div class="aloha-wai-lang-img-item">' +
+				  '<img class="aloha-wai-lang-img" src="{url}" />' +
+				  '<div class="aloha-wai-lang-label-item">{name} ({id})</div>' +
+				  '</div>');
+		} else {
+			hrefLangField.setTemplate('<div class="aloha-wai-lang-img-item">' +
+				  '<div class="aloha-wai-lang-label-item">{name} ({id})</div>' +
+				  '</div>'
+			);
+		}
+		
+		
+
+		hrefLangField.setObjectTypeFilter(['language/link']);
+		
+		hrefLangField.addListener('item-change', function() {
+			if (this.getItem()) {
+				jQuery(sidebar.effective ).attr( 'hreflang', this.getItem().id);
+			}
+		});
+		
+		hrefLangField.addListener('keyup', function() {
+			if (jQuery.isEmptyObject(jQuery.trim(this.getValue()))) {
+				this.setValue('');
+				jQuery(sidebar.effective ).attr( 'hreflang', '');
+			}
+		});
+	}
+	
+	/**
+	 * Gets the language name for laguage code 'langCode'.
+	 * @param {string} langCode Language code
+	 */
+	function getLanguageName(langCode) {
+		return LANG_REPOSITORY.languageData ? LANG_REPOSITORY.languageData[langCode].name : langCode;
+	}
 
 	/**
 	 * Properties for cleaning up markup immediately after inserting new link
@@ -215,7 +282,12 @@ define( [
 		hrefValue: 'http://',
 		
 		/**
-		 * Initialize the plugin
+		 * Shows the flags when setting language ('hreflang' attribute).
+		 */
+		flags: true,
+		
+		/**
+		 * Initializes the plugin.
 		 */
 		init: function () {
 			var plugin = this;
@@ -261,6 +333,14 @@ define( [
 					plugin: plugin
 				})
 			});
+			
+			LANG_REPOSITORY = new LanguageRepository(
+				'link-languages',
+				this.flags,
+				'iso639-1',
+				Aloha.settings.locale,
+				'language/link'
+			);
 		},
 
 		nsSel: function () {
@@ -282,7 +362,6 @@ define( [
 
 		initSidebar: function ( sidebar ) {
 			var pl = this;
-			pl.sidebar = sidebar;
 			sidebar.addPanel( {
 				
 				id       : pl.nsClass( 'sidebar-panel-target' ),
@@ -292,6 +371,8 @@ define( [
 				activeOn : 'a, link',
 				
 				onInit: function () {
+					initHrefLang(pl, this);
+
 					 var that = this,
 						 content = this.setContent(
 							'<div class="' + pl.nsClass( 'target-container' ) + '"><fieldset><legend>' + i18n.t( 'link.target.legend' ) + '</legend><ul><li><input type="radio" name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '" value="_self" /><span>' + i18n.t( 'link.target.self' ) + '</span></li>' + 
@@ -300,8 +381,12 @@ define( [
 							'<li><input type="radio" name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '" value="_top" /><span>' + i18n.t( 'link.target.top' ) + '</span></li>' + 
 							'<li><input type="radio" name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '" value="framename" /><span>' + i18n.t( 'link.target.framename' ) + '</span></li>' + 
 							'<li><input type="text" class="' + pl.nsClass( 'framename' ) + '" /></li></ul></fieldset></div>' + 
-							'<div class="' + pl.nsClass( 'title-container' ) + '" ><fieldset><legend>' + i18n.t( 'link.title.legend' ) + '</legend><input type="text" class="' + pl.nsClass( 'linkTitle' ) + '" /></fieldset></div>'
+							'<div class="' + pl.nsClass( 'title-container' ) + '" ><fieldset><legend>' + i18n.t( 'link.title.legend' ) + '</legend><input type="text" class="' + pl.nsClass( 'linkTitle' ) + '" /></fieldset></div>' +
+							'<div class="' + pl.nsClass( 'href-lang-container' ) + '" ><fieldset><legend>' + i18n.t( 'href.lang.legend' ) + '</legend></fieldset></div>'
 						).content; 
+					 
+					 jQuery(hrefLangField.getInputElem()).addClass(pl.nsClass( 'hrefLang' ));
+					 jQuery(content).find("." + pl.nsClass( 'href-lang-container' ) + " fieldset").append(hrefLangField.getInputElem());
 					 
 					 jQuery( pl.nsSel( 'framename' ) ).live( 'keyup', function () {
 						jQuery( that.effective ).attr( 'target', jQuery( this ).val().replace( '\"', '&quot;' ).replace( "'", "&#39;" ) );
@@ -348,6 +433,21 @@ define( [
 					var that = this;
 					that.effective = effective;
 					jQuery( pl.nsSel( 'linkTitle' ) ).val( jQuery( that.effective ).attr( 'title' ) );
+					
+					var hrefLangAttr = jQuery(effective).attr('hreflang');
+					
+					if (!jQuery.isEmptyObject(hrefLangAttr)) {
+						var languageName = getLanguageName(hrefLangAttr);
+						hrefLangField.setValue(languageName);
+					} else {
+						hrefLangField.setValue('');
+					}
+					
+					if (EXTERNAL_LINK_REG_EXP.test(jQuery(effective).attr('href'))) {
+						hrefLangField.enableInput();
+					} else {
+						hrefLangField.disableInput();
+					}
 				}
 				
 			} );
@@ -582,6 +682,11 @@ define( [
 		bindInteractions: function () {
 			var that = this;
 
+			this.hrefField.addListener('item-change', function(){
+				// because 'hrefChange()' references 'this' object.
+				that.hrefChange();
+			});
+			
 			// update link object when src changes
 			this.hrefField.addListener( 'keyup', function ( event ) {
 				if (Keys.getToken(event.keyCode) === 'escape') {
@@ -589,7 +694,7 @@ define( [
 					if ( curval[ 0 ] == '/' || // local link
 						 curval[ 0 ] == '#' || // inner document link
 						 curval.match( /^.*\.([a-z]){2,4}$/i ) || // local file with extension
-						 curval.match( /^([a-z]){3,10}:\/\/.+/i ) || // external link (http(s), ftp(s), ssh, file, skype, ... )
+						 curval.match( EXTERNAL_LINK_REG_EXP ) || // external link (http(s), ftp(s), ssh, file, skype, ... )
 						 curval.match( /^(mailto|tel):.+/i ) // mailto / tel link
 					) {
 						// could be a link better leave it as it is
@@ -891,6 +996,26 @@ define( [
 					this.hrefField.getValue(),
 					this.hrefField.getItem()
 				);
+			}
+			
+			var hrefFieldItem = this.hrefField.getItem();
+			// If href has been set to an item (Page)
+			if (hrefFieldItem && hrefFieldItem.language) {
+				var languageName = getLanguageName(hrefFieldItem.language);
+				
+				this.hrefField.setAttribute('hreflang', hrefFieldItem.language);
+				hrefLangField.setValue(languageName);
+				hrefLangField.disableInput();
+			}
+			// href is an external link
+			else if (EXTERNAL_LINK_REG_EXP.test(href)){
+				hrefLangField.enableInput();
+			}
+			// href is being defined
+			else {
+				hrefLangField.setValue('');
+				this.hrefField.setAttribute('hreflang', '');
+				hrefLangField.disableInput();
 			}
 		}
 	});

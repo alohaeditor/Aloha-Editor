@@ -9,16 +9,41 @@
  * -------------------
  * Provides a set of language codes and images
  */
-define(['aloha', 'jquery', 'flag-icons/flag-icons-plugin', 'aloha/console', 'wai-lang/wai-lang-plugin'],
-function(Aloha, jQuery, FlagIcons, console) {
+define([
+	'aloha',
+	'jquery',
+	'./iso639-1-de',
+	'./iso639-2-de',
+	'./iso639-1-en',
+	'./iso639-2-en'
+], function(
+	Aloha,
+	jQuery,
+	iso1de,
+	iso2de,
+	iso1en,
+	iso2en
+) {
 	'use strict';
 	
 	/**
-	 * global Deferred Object
+	 * Keeps reference to the language codes and names.
 	 */
-	var deferred = jQuery.Deferred();
+	var ISO_MAP = {
+		'iso639-1-de': iso1de,
+		'iso639-2-de': iso2de,
+		'iso639-1-en': iso1en,
+		'iso639-2-en': iso2en
+	};
+	
+	/**
+	 * Path to the languages files.
+	 */
+	var PATH = Aloha.getAlohaUrl() + '/../plugins/shared/languages/';
 
-	return new (Aloha.AbstractRepository.extend({
+	return Aloha.AbstractRepository.extend({
+		
+		_deferred: jQuery.Deferred(),
 
 		/**
 		 * Set of language codes
@@ -34,47 +59,52 @@ function(Aloha, jQuery, FlagIcons, console) {
 		 * Set default iso
 		 */
 		iso: 'iso639-1',
+		
+		/**
+		 * Object type of the values for this repository.
+		 */
+		objectType: 'language',
 
 		/**
 		 * Whether to show flags or not
 		 */
 		flags: false,
 
-		_constructor: function () {
-			this._super('wai-languages');
+		_constructor: function (name, flags, iso, locale, objectType) {
+			this._super(name);
+
+			if ('undefined' !== flags) {
+				this.flags = flags;
+			}
+
+			if ('undefined' !== iso) {
+				this.iso = ('iso639-1' === iso) ? 'iso639-1' : 'iso639-2';
+			}
+
+			if ('undefined' !== locale) {
+				this.locale = locale;
+			}
+			
+			if ('undefined' !== typeFilter) {
+				this.objectType = objectType;
+			}
+			
+			
+			var data = ISO_MAP[this.iso + '-' + this.locale];
+			
+			this.storeLanguageCodes(data);
+			this.languageData = data;
 		},
 
 		/**
-		 * Initialize WAI Languages, load the language file and prepare the data.
+		 * Initializes the repository: loads the language files and prepares the data.
 		 */
 		init: function () {
-			
-			var that = this;
-			var waiLang = Aloha.require('wai-lang/wai-lang-plugin');
-			var locale = Aloha.settings.locale;
-			var iso = waiLang.iso639;
-
-			if (locale !== 'de') {
-				this.locale = 'en';
-			}
-
-			if (iso !== 'iso639-1') {
-				this.iso = 'iso639-2';
-			}
-
-			this.flags = waiLang.flags;
-
-			this.repositoryName = 'WaiLanguages';
-			
-			Aloha.require(['wai-lang/' + this.iso + '-' + this.locale], function (data) {
-				that.storeLanguageCodes(data);
-				deferred.resolve();
-			});
 			
 		},
 
 		markObject: function (obj, item) {
-			//copied from wai-lang-plugin makeVisible to avoid a circular dependency
+			// Copied from wai-lang-plugin makeVisible to avoid a circular dependency
 			// We do not need to add this class here since it already being
 			// done in the wai-lang plugin
 			// jQuery( obj ).addClass( 'aloha-wai-lang' );
@@ -92,19 +122,18 @@ function(Aloha, jQuery, FlagIcons, console) {
 		 */
 		storeLanguageCodes: function (data) {
 			var that = this;
-			var waiLangPath = Aloha.getPluginUrl('wai-lang');
-
+			var path = PATH + 'img/';
 			// Transform loaded json into a set of repository documents
 			jQuery.each(data, function (key, value) {
 				var el = value;
 				el.id = key;
 				el.repositoryId = that.repositoryId;
-				el.type = 'language';
+				el.type = that.objectType;
 				if (that.flags) {
 					if (el.flag) {
-						el.url =  FlagIcons.path + '/img/flags/' + el.flag + '.png';
+						el.url = path + el.flag + '.png';
 					} else {
-						el.url =  waiLangPath + '/img/button.png';
+						el.url = path + 'default.png';
 					}
 				}
 				// el.renditions.url = "img/flags/" + e.id + ".png";
@@ -145,10 +174,9 @@ function(Aloha, jQuery, FlagIcons, console) {
 		 */
 		query: function (p, callback) {
 			var that = this;
-			
-			deferred.done(function(){
+//			this._deferred.done(function(){
 				that._searchInLanguageCodes(p, callback);
-			});
+//			});
 			
 		},
 
@@ -170,5 +198,5 @@ function(Aloha, jQuery, FlagIcons, console) {
 			}
 
 		}
-	}))();
+	});
 });
