@@ -66,7 +66,7 @@ h3. Changelog
 
 New changelog entries should not be added to the CHANGELOG.md file.
 
-* Draw a number for your changelog entry using the "numbercrunsher":http://www.alohaeditor.org/numbercrunsher/
+* Draw a number for your changelog entry using the "numbercruncher":http://www.alohaeditor.org/numbercruncher/
 * Write your changelog entry in textile syntax.
 * Save the entry to the changelog entry file (e.g: /alohaeditor/build/changelog/entries/2014/02/4698.bugfix). You can also add a ticket reference to the filename.
 * Commit this file
