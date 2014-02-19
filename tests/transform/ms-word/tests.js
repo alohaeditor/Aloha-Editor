@@ -11,7 +11,7 @@
 	/**
 	 * Removes trailing white spaces from DOM tree recursively
 	 *
-	 * @param  {Node}
+	 * @param  {Node} node
 	 * @return {Node}
 	 */
 	function trim(node) {
@@ -26,7 +26,7 @@
 	/**
 	 * Runs a ms-word tranformation test on the given content.
 	 *
-	 * @param  {String} content
+	 * @param {String} content
 	 */
 	function run(content) {
 		$('<div>' + content + '</div>').find('>.test').each(function () {
@@ -47,6 +47,12 @@
 		});
 	}
 
+	/**
+	 * Run `total` number of tests in the given directory.
+	 *
+	 * @param {String} directory
+	 * @param {number} total
+	 */
 	function runTests(directory, total) {
 		test(directory, function () {
 			var path = 'transform/ms-word/' + directory + '/';
@@ -55,7 +61,7 @@
 				$.ajax({
 					url: path + (i < 10 ? '0' : '') + i + '.html',
 					async: false,
-					success: run
+					success: function (x) { setTimeout(run(x), 10) }
 				});
 			}
 		});

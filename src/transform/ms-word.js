@@ -146,7 +146,6 @@ define([
 		var cleaned = Utils.normalize(raw, doc, clean) || raw;
 		cleaned = Lists.transform(cleaned, doc);
 		cleaned = Tables.transform(cleaned, doc);
-		var cleaned = Utils.normalize(content, doc, clean);
 		return Dom.isFragmentNode(cleaned)
 		     ? Dom.fragmentHtml(cleaned)
 		     : cleaned.innerHTML;
