@@ -87,8 +87,28 @@ define([
 		'MENU'     : true
 	};
 
+	/**
+	 * These element's cannot be simply unwrapped because they parents only
+	 * allows these as their immediate child nodes.
+	 *
+	 * @param {<string, Array.<string>}
+	 */
+	var GROUPED_ELEMENTS = {
+		'LI'    : ['OL', 'UL' , 'DL'],
+		'DT'    : ['DL'],
+		'DD'    : ['DL'],
+		'TBODY' : ['TABLE'],
+		'TR'    : ['TABLE', 'TBODY'],
+		'TH'    : ['TABLE', 'TBODY'],
+		'TD'    : ['TR', 'TH']
+	};
+
 	function isGroupContainer(node) {
 		return GROUP_CONTAINERS[node.nodeName];
+	}
+
+	function isGroupedElement(node) {
+		return GROUPED_ELEMENTS[node.nodeName];
 	}
 
 	/**
@@ -380,6 +400,7 @@ define([
 		isListContainer        : isListContainer,
 		isTableContainer       : isTableContainer,
 		isGroupContainer       : isGroupContainer,
+		isGroupedElement       : isGroupedElement,
 		isUnrenderedWhitespaceNoBlockCheck
 		                       : isUnrenderedWhitespaceNoBlockCheck,
 		parse                  : parse

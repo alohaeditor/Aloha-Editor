@@ -4,6 +4,8 @@
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
+ *
+ * @TODO: remove this file once toc.js has been refactored
  */
 define([
 	'dom',

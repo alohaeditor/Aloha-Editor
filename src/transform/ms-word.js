@@ -143,12 +143,10 @@ define([
 	 */
 	function transform(markup, doc) {
 		var raw = Html.parse(Utils.extract(markup), doc);
-		var cleaned = Utils.normalize(raw, doc, clean) || raw;
-		cleaned = Lists.transform(cleaned, doc);
-		cleaned = Tables.transform(cleaned, doc);
-		return Dom.isFragmentNode(cleaned)
-		     ? Dom.fragmentHtml(cleaned)
-		     : cleaned.innerHTML;
+		var fragment = Utils.normalize(raw, doc, clean) || raw;
+		fragment = Lists.transform(fragment, doc);
+		fragment = Tables.transform(fragment, doc);
+		return Dom.children(fragment)[0].innerHTML;
 	}
 
 	return {

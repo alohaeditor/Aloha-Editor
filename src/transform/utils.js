@@ -101,18 +101,20 @@ define([
 	 * @param  {Document}     doc
 	 * @return {Array.<Node>}
 	 */
-	function removeRedundantNesting(nodes, doc) {
+	function removeRedundantNesting(nodes) {
 		return nodes.reduce(function (nodes, node) {
-			if (!Html.isGroupContainer(node)) {
-				var kids = Dom.children(node);
-				if (1 === kids.length
-						&& Html.hasLinebreakingStyle(node)
-							&& Html.hasLinebreakingStyle(kids[0])) {
+			var kids = Dom.children(node);
+			if (1 === kids.length && Html.hasLinebreakingStyle(kids[0])) {
+				if (Html.isGroupedElement(node)) {
+					if (!Html.isGroupContainer(kids[0])) {
+						Dom.removeShallow(kids[0]);
+					}
+				} else if (!Html.isGroupContainer(node) && Html.hasLinebreakingStyle(node)) {
 					node = kids[0];
 				}
 			}
 			var copy = Dom.cloneShallow(node);
-			Dom.move(removeRedundantNesting(Dom.children(node), doc), copy);
+			Dom.move(removeRedundantNesting(Dom.children(node)), copy);
 			return nodes.concat(copy);
 		}, []);
 	}
@@ -128,8 +130,7 @@ define([
 	 * @return {Array.<Node>}
 	 */
 	function cleanNode(node, doc, clean) {
-		var nodes = clean(node, doc);
-		var processed = nodes.reduce(function (nodes, node) {
+		return clean(node, doc).reduce(function (nodes, node) {
 			var children = cleanNodes(Dom.children(node), doc, clean, cleanNode);
 			if ('DIV' === node.nodeName) {
 				children = wrapSublists(
@@ -139,31 +140,23 @@ define([
 					DEFAULT_BLOCK_ELEMENT
 				);
 			}
-			return nodes.concat(children);
-		}, []);
-		if (1 === nodes.length) {
 			var copy = Dom.cloneShallow(node);
-			Dom.move(processed, copy);
-			processed = [copy];
-		}
-		return removeRedundantNesting(processed, doc);
+			Dom.move(removeRedundantNesting(children), copy);
+			return nodes.concat(copy);
+		}, []);
 	}
 
 	/**
-	 * Normalizes the given node tree.
+	 * Normalizes the given node tree and returns a fragment.
 	 *
 	 * @param  {Element}             element
 	 * @param  {Document}            doc
 	 * @param  {function(Node):Node} clean
-	 * @return {Element|Fragment}
+	 * @return {Fragment}
 	 */
 	function normalize(element, doc, clean) {
-		var cleaned = cleanNode(element, doc, clean);
-		if (1 === cleaned.length) {
-			return cleaned[0];
-		}
 		var fragment = doc.createDocumentFragment();
-		Dom.move(cleaned, fragment);
+		Dom.move(cleanNode(element, doc, clean), fragment);
 		return fragment;
 	}
 

@@ -328,9 +328,9 @@ define([
 	}
 
 	function fragmentHtml(fragment) {
-		var div = Dom.createElement('div');
+		var div = fragment.ownerDocument.createElement('div');
 		div.appendChild(fragment);
-		return div.innerHTMl;
+		return div.innerHTML;
 	}
 
 	return {

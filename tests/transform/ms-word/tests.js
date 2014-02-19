@@ -67,11 +67,10 @@
 		});
 	}
 
-	runTests('toc',        3);
-	runTests('fonts',      1);
 	runTests('lists',     16);
-	runTests('tables',     3);
 	runTests('headings',   4);
+	runTests('tables',     3);
 	runTests('paragraphs', 8);
+	runTests('toc',        3);
 
 }(window.aloha, window.jQuery));

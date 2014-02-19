@@ -33,6 +33,7 @@ define([
 		isListContainer           : Elements.isListContainer,
 		isTableContainer          : Elements.isTableContainer,
 		isGroupContainer          : Elements.isGroupContainer,
+		isGroupedElement          : Elements.isGroupedElement,
 		parse                     : Elements.parse,
 		isVoidType                : Elements.isVoidType,
 

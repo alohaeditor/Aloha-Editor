@@ -215,11 +215,9 @@ define([
 	 * @return {string}
 	 */
 	function transform(markup, doc) {
-		var content = Html.parse(Utils.extract(markup), doc);
-		var cleaned = Utils.normalize(content, doc, clean);
-		return Dom.isFragmentNode(cleaned)
-		     ? Dom.fragmentHtml(cleaned)
-		     : cleaned.innerHTML;
+		var raw = Html.parse(Utils.extract(markup), doc);
+		var fragment = Utils.normalize(raw, doc, clean);
+		return Dom.children(fragment)[0].innerHTML;
 	}
 
 	return {
