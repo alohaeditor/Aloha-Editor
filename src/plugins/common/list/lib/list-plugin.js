@@ -243,18 +243,29 @@ define([
 		definitionListStyleButtons: [],
 
 		/**
-		* Construct button for list styles (CSS classes)
-		* @param String listtype ol, ul or dl
-		* @param String cssClass selected list style
-	 	* @return Object for MenuButton menu property
-		*/
+		 * Construct button for list styles (CSS classes).
+		 *
+		 * @param  {String} listtype ol, ul or dl
+		 * @param  {String} cssClass selected list style
+		 * @return {Object} MenuButton menu property
+		 */
 		makeListStyleButton: function (listtype, cssClass) {
 			var that = this;
-			var lang = typeof(Aloha.settings.locale) !== 'undefined' ? Aloha.settings.locale : 'default';
-			var locale = that.templates[listtype].locale[lang];
-			var htmlTemplate = tmpl(that.templates[listtype].template, {cssClass: cssClass, first: locale.first, second: locale.second, third: locale.third});
+
+			var template = that.templates[listtype];
+
+			var locale = template.locale[Aloha.settings.locale]
+			          || template.locale['default'];
+
+			var html = tmpl(template.template, {
+				cssClass : cssClass,
+				first    : locale.first,
+				second   : locale.second,
+				third    : locale.third
+			});
+
 			return {
-				html: '<div class="aloha-list-templates">' + htmlTemplate + '</div>',
+				html: '<div class="aloha-list-templates">' + html + '</div>',
 				click: function () {
 					that.toggleListStyle(listtype, cssClass);
 				}
