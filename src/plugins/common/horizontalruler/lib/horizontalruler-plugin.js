@@ -32,8 +32,8 @@ define([
 	'ui/button',
 	'i18n!horizontalruler/nls/i18n',
 	'i18n!aloha/nls/i18n'
-], function(Aloha,
-            jQuery,
+], function (Aloha,
+			jQuery,
 			Plugin,
 			Ui,
 			Button,
@@ -44,11 +44,11 @@ define([
 	var GENTICS = window.GENTICS;
 
 	return Plugin.create('horizontalruler', {
-		_constructor: function(){
+		_constructor: function () {
 			this._super('horizontalruler');
 		},
 		config: ['hr'],
-		init: function() {
+		init: function () {
 			var that = this;
 
 			this._insertHorizontalRuleButton = Ui.adopt("insertHorizontalRule", Button, {
@@ -56,29 +56,29 @@ define([
 				iconOnly: true,
 				icon: 'aloha-icon-horizontalruler',
 				scope: 'Aloha.continuoustext',
-				click: function(){
+				click: function () {
 					that.insertHR();
 				}
 			});
 
-			Aloha.bind( 'aloha-editable-activated', function ( event, rangeObject ) {
+			Aloha.bind('aloha-editable-activated', function (event, rangeObject) {
 				if (Aloha.activeEditable) {
-					that.cfg = that.getEditableConfig( Aloha.activeEditable.obj );
+					that.cfg = that.getEditableConfig(Aloha.activeEditable.obj);
 
-					if ( jQuery.inArray( 'hr', that.cfg ) != -1 ) {
+					if (jQuery.inArray('hr', that.cfg) != -1) {
 						that._insertHorizontalRuleButton.show(true);
-		        	} else {
+					} else {
 						that._insertHorizontalRuleButton.show(false);
-		        		return;
-		        	}
+						return;
+					}
 				}
 			});
 
 		},
-		insertHR: function(character) {
+		insertHR: function (character) {
 			var self = this;
 			var range = Aloha.Selection.getRangeObject();
-			if(Aloha.activeEditable) {
+			if (Aloha.activeEditable) {
 				var hr = jQuery('<hr>');
 				GENTICS.Utils.Dom.insertIntoDOM(
 					hr,
