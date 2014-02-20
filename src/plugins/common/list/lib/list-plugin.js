@@ -76,6 +76,13 @@ define([
 	    return str;
 	};
 
+	/**
+	* Shows or hides the ul, ol or dl buttons in Aloha floating menu
+	* if they are configured.
+	* @param Plugin plugin the list plugin 
+	* @param String listtype the type of listbutton to toggle (ul, ol, dl)
+	* @param Boolean show hide or show the button
+	*/
 	function toggleListOption(plugin, listtype, show) {
 		switch (listtype) {
 		case 'ul':
