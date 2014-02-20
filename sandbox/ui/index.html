@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Aloha Editor UI Integration Demo</title>
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="../../src/aloha.css">
+    <link href="starter-template.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <div class="starter-template aloha-editable">
+        <h1>Bootstrap starter template</h1>
+        <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.</p>
+      </div>
+
+    </div><!-- /.container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="../../src/require-pronto.js"></script>
+    <script src="../../src/require-pronto.dev.js"></script>
+    <script>
+      (function () {
+        'use strict';
+        function setVersion (version) {
+          var h1 = document.querySelector('h1');
+          if (h1) {
+            h1.innerHTML = h1.innerHTML + ': <span style="color:#df215a">' + version + '</span>';
+          }
+        }
+        function main(aloha) {
+          [].forEach.call(document.querySelectorAll('.aloha-editable'), aloha);
+        }
+        if ('undefined' === typeof aloha) {
+          setVersion('src');
+          require(['../../src/aloha'], main);
+        } else {
+          setVersion('build');
+          main(aloha);
+        }
+      }());
+    </script>    
+    <script src="js/aloha-ui.js"></script>
+  </body>
+</html>
