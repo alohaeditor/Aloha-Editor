@@ -1,4 +1,4 @@
-define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays, Maps, Trees){
+define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function ($, Arrays, Maps, Trees) {
 	var defaultToolbarSettings = {
 		tabs: [
 			// Format Tab
@@ -134,7 +134,7 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 		var exclusionLookup = makeExclusionMap(userTabs, exclude);
 		function pruneDefaultComponents(form) {
 			return 'array' === $.type(form) ? !form.length : exclusionLookup[form];
-		};
+		}
 		userTabs = mergeDefaultComponents(userTabs, defaultTabsByLabel, pruneDefaultComponents);
 		defaultTabs = remainingDefaultTabs(defaultTabs, exclusionLookup, pruneDefaultComponents);
 		return userTabs.concat(defaultTabs);
@@ -162,12 +162,13 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 
 	function mergeDefaultComponents(userTabs, defaultTabsByLabel, pruneDefaultComponents) {
 		var i,
-            tab,
-		    tabs = [],
-		    userTab,
-		    components,
-		    defaultTab,
-		    defaultComponents;
+			tab,
+			tabs = [],
+			userTab,
+			components,
+			defaultTab,
+			defaultComponents;
+
 		for (i = 0; i < userTabs.length; i++) {
 			userTab = userTabs[i];
 			components = userTab.components || [];

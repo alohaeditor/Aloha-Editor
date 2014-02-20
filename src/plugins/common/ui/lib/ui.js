@@ -90,7 +90,7 @@ define('ui/ui', [
 	'jquery',
 	'ui/ui-plugin'
 ],
-function(
+function (
 	$,
 	UiPlugin
 ) {

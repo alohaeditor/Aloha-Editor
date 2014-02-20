@@ -87,7 +87,7 @@ define([
 
 		component = Ui.adopt(props.name, Component, {
 			scope: props.scope,
-			init: function(){
+			init: function () {
 
 				if (props.element) {
 					this.element = element;
@@ -107,12 +107,12 @@ define([
 				element.autocomplete({
 					'html': true,
 					'appendTo': Context.selector,
-					'source': function( req, res ) {
+					'source': function (req, res) {
 						RepositoryManager.query({
 							queryString: req.term,
 							objectTypeFilter: objectTypeFilter
-						}, function( data ) {
-							res($.map(data.items, function(item) {
+						}, function (data) {
+							res($.map(data.items, function (item) {
 								return {
 									label: parse(template, item),
 									value: item.name,
@@ -151,7 +151,7 @@ define([
 		}
 
 		function onFocus(event, ui) {
-			if ( ! $(event.target).is(':visible') ) {
+			if (!$(event.target).is(':visible')) {
 				// The check for visible fixes the bug that the background
 				// color of the target element is not restored.
 				// Rationale: it's possible for the input to receive the focus event,
@@ -171,9 +171,9 @@ define([
 			}
 		}
 
-		function onKeyDown(event){
+		function onKeyDown(event) {
 			// on ENTER or ESC leave the editing
-			if ( event.keyCode == 13 || event.keyCode == 27 ) {
+			if (event.keyCode == 13 || event.keyCode == 27) {
 				event.preventDefault();
 			}
 		}
@@ -203,12 +203,12 @@ define([
 		function finishEditing() {
 			restoreTargetBackground();
 
-			if ( ! targetObject || lastAttributeValue === $(targetObject).attr(targetAttribute)) {
+			if (!targetObject || lastAttributeValue === $(targetObject).attr(targetAttribute)) {
 				return;
 			}
 
 			// when no resource item was selected, remove any marking of the target object
-			if ( ! resourceItem ) {
+			if (!resourceItem) {
 				RepositoryManager.markObject( targetObject );
 			}
 
@@ -239,7 +239,7 @@ define([
 			var target = $(targetObject);
 			if (targetHighlightClass) {
 				executeForTargets(function (target) {
-					target.addClass(targetHighlightClass)
+					target.addClass(targetHighlightClass);
 				});
 			}
 
@@ -291,8 +291,8 @@ define([
 		}
 
 		function parse(template, item) {
-			return template.replace( /\{([^}]+)\}/g, function(_, name) {
-				return name in item ? item[ name ] : "";
+			return template.replace(/\{([^}]+)\}/g, function (_, name) {
+				return name in item ? item[name] : "";
 			});
 		}
 
@@ -304,7 +304,7 @@ define([
 			element.val(placeholder);
 		}
 
-		function setTemplate(tmpl){
+		function setTemplate(tmpl) {
 			template = tmpl;
 		}
 

@@ -17,15 +17,15 @@ define([
 	var idCounter = 0;
 	var slottedComponents = {};
 
-	function hasVisibleComponents(tab){
+	function hasVisibleComponents(tab) {
 		var i, slot, component, hasVisible = false;
 
 		// the problem is, a container component had a button to expand the options
-		if( $(
+		if ($(
 				'button:not(.aloha-multisplit-toggle)',
 				tab.panel
 			).length !== 0
-		){
+		) {
 			hasVisible = true;
 		}
 
@@ -33,7 +33,7 @@ define([
 		// @todo this algorithm must be enhanced, asking each component if is visible
 		// this is the longest aproach, I iterate the components registered in
 		// this tab
-		for(i = 0; i < tab._slotsList.length; i++){
+		for (i = 0; i < tab._slotsList.length; i++){
 			if(undefined !== slottedComponents[slotName]){
 				if($(
 						'button:not(.aloha-multisplit-toggle)',
@@ -89,12 +89,12 @@ define([
 		 */
 		_constructor: function (context, settings, components) {
 			var thisTab = this,
-			    i, j,
-			    elem,
-			    groupedComponents,
-			    group,
-			    groupProps,
-			    componentName;
+				i, j,
+				elem,
+				groupedComponents,
+				group,
+				groupProps,
+				componentName;
 
 			this._elemBySlot = {};
 			this._groupBySlot = {};
@@ -153,7 +153,7 @@ define([
 			alohaTabs.push(this);
 		},
 
-		adoptInto: function(slot, component) {
+		adoptInto: function (slot, component) {
 			var elem = this._elemBySlot[slot],
 			    group;
 			if (!elem) {
@@ -176,11 +176,11 @@ define([
 			return true;
 		},
 
-		foreground: function() {
+		foreground: function () {
 			this.container.tabs('select', this.index);
 		},
 
-		childForeground: function(childComponent) {
+		childForeground: function (childComponent) {
 			this.foreground();
 		},
 
@@ -197,7 +197,7 @@ define([
 			return false;
 		},
 
-		childVisible: function(childComponent, visible) {
+		childVisible: function (childComponent, visible) {
 			if (visible) {
 				childComponent.container.show();
 			} else if (!childComponent.container.hasVisibleComponents()) {
@@ -223,7 +223,7 @@ define([
 		/**
 		 * @override
 		 */
-		show: function() {
+		show: function () {
 			if (!this.list.children().length || !hasVisibleComponents(this)) {
 				return;
 			}
@@ -236,8 +236,8 @@ define([
 			this.container.show();
 
 			// If no tabs are selected, then select the tab which was just shown.
-			if (   !this.container.find('.ui-tabs-active').length
-			    ||  this.container.tabs('option', 'selected') === this.index) {
+			if (!this.container.find('.ui-tabs-active').length ||
+				this.container.tabs('option', 'selected') === this.index) {
 				this.foreground();
 			}
 		},
@@ -245,9 +245,9 @@ define([
 		/**
 		 * @override
 		 */
-		hide: function() {
+		hide: function () {
 			var tabs = this.list.children();
-			if ( 0 === tabs.length ) {
+			if (0 === tabs.length) {
 				return;
 			}
 			this.handle.hide();
@@ -256,13 +256,13 @@ define([
 			// If the tab we just hid was the selected tab, then we need to
 			// select another tab in its stead.  We will select the first
 			// visible tab we find, or else we deselect all tabs.
-			if ( this.index === this.container.tabs( 'option', 'selected' ) ) {
-				tabs = this.container.data( 'aloha-tabs' );
+			if (this.index === this.container.tabs('option', 'selected')) {
+				tabs = this.container.data('aloha-tabs');
 
 				var i;
-				for ( i = 0; i < tabs.length; ++i ) {
-					if ( tabs[ i ].visible ) {
-						this.container.tabs( 'select', i );
+				for (i = 0; i < tabs.length; ++i) {
+					if (tabs[i].visible) {
+						this.container.tabs('select', i);
 						return;
 					}
 				}
@@ -271,7 +271,7 @@ define([
 				// this.container.tabs( 'select', -1 );
 
 				// Why do we remove this class?
-				this.handle.removeClass( 'ui-tabs-active' );
+				this.handle.removeClass('ui-tabs-active');
 
 				// It doesn't make any sense to leave the toolbar
 				// visible after all tabs have been hidden.
