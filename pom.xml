@@ -161,15 +161,16 @@
 						</goals>
 						<configuration>
 							<options>
-								<predef>Aloha, window, global, process, define, require, jQuery, GCN</predef>
+								<predef>Aloha, window, global, process, define, require, jQuery, GCN, document, Image</predef>
 							</options>
 							<failOnError>false</failOnError>
 							<includes>
-								<include>plugins/**/*.js</include>
+								<include>plugins/common/**/*plugin.js</include>
 							</includes>
 							<excludes>
 								<exclude>plugins/**/extra/**</exclude>
 								<exclude>plugins/**/vendor/**</exclude>
+								<exclude>plugins/**/nls/**</exclude>
 							</excludes>
 							<outputFolder>${project.build.directory}/jslint-plugins</outputFolder>
 						</configuration>
