@@ -26,7 +26,7 @@
  */
 define(
 ['aloha', 'jquery', 'aloha/plugin', 'undo/vendor/undo', 'undo/vendor/diff_match_patch_uncompressed'],
-function( Aloha, jQuery, Plugin) {
+function (Aloha, jQuery, Plugin) {
 	"use strict";
 	var
 		dmp = new diff_match_patch,
@@ -53,30 +53,30 @@ function( Aloha, jQuery, Plugin) {
 			this.stack = new Undo.Stack();
 			var that = this;
 			var EditCommand = Undo.Command.extend({
-					constructor: function(editable, patch) {
+					constructor: function (editable, patch) {
 						this.editable = editable;
 						this.patch = patch;
 					},
-					execute: function() {
+					execute: function () {
 						//command object is created after execution.
 					},
-					undo: function() {
+					undo: function () {
 						this.phase(reversePatch(this.patch));
 					},
-					redo: function() {
+					redo: function () {
 						this.phase(this.patch);
 					},
-					phase: function(patch) {
+					phase: function (patch) {
 						var contents = this.editable.getContents(),
 							applied = dmp.patch_apply(patch, contents),
 							newValue = applied[0],
 							didNotApply = applied[1];
-						if (didNotApply.length) {
-							//error
-						}
+						//if (didNotApply.length) {
+						//	//error
+						//}
 						this.reset(newValue);
 					},
-					reset: function(val) {
+					reset: function (val) {
 						//we have to trigger a smartContentChange event
 						//after doing an undo or redo, but we mustn't
 						//push new commands on the stack, because there
@@ -105,12 +105,12 @@ function( Aloha, jQuery, Plugin) {
 					}
 				});
 
-			this.stack.changed = function() {
+			this.stack.changed = function () {
 				// update UI
 			};
 
-			Aloha.bind('aloha-editable-created', function(e, editable){
-				editable.obj.bind('keydown', 'ctrl+z shift+ctrl+z', function(event){
+			Aloha.bind('aloha-editable-created', function (e, editable) {
+				editable.obj.bind('keydown', 'ctrl+z shift+ctrl+z', function (event) {
 					event.preventDefault();
 					if (event.shiftKey) {
 						that.redo();
@@ -120,7 +120,7 @@ function( Aloha, jQuery, Plugin) {
 				});
 			});
 
-			Aloha.bind('aloha-smart-content-changed', function(jevent, aevent) {
+			Aloha.bind('aloha-smart-content-changed', function (jevent, aevent) {
 				// The editable only actually makes a snapshot when
 				// getSnapshotContent is called, so we need to call it now
 				// to ensure such a snapshot is made at all times, even when
@@ -134,7 +134,7 @@ function( Aloha, jQuery, Plugin) {
 					patch = dmp.patch_make(oldValue, newValue);
 				// only push an EditCommand if something actually changed.
 				if (0 !== patch.length) {
-					that.stack.execute( new EditCommand( aevent.editable, patch ) );
+					that.stack.execute(new EditCommand(aevent.editable, patch));
 				}
 			});
 		},
@@ -148,16 +148,20 @@ function( Aloha, jQuery, Plugin) {
 			return 'undo';
 		},
 		undo: function () {
-			if ( null !== Aloha.getActiveEditable() ) {
+			if (null !== Aloha.getActiveEditable()) {
 				Aloha.getActiveEditable().smartContentChange({type : 'blur'});
 			}
-			this.stack.canUndo() && this.stack.undo();
+			if (this.stack.canUndo()) {
+				this.stack.undo();
+			}
 		},
 		redo: function () {
-			if ( null !== Aloha.getActiveEditable() ) {
+			if (null !== Aloha.getActiveEditable()) {
 				Aloha.getActiveEditable().smartContentChange({type : 'blur'});
 			}
-			this.stack.canRedo() && this.stack.redo();
+			if (this.stack.canRedo()) {
+				this.stack.redo();
+			}
 		},
 		stack: undefined // Defined in init above
 
