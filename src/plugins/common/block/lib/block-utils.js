@@ -16,8 +16,8 @@ define([
 	 * @returns {Boolean}
 	 */
 	function isObsoleteLandingNode(node) {
-		return 'SPAN' === node.nodeName
-		    && (node.childNodes.length === 0 || node.innerHTML === '&nbsp;');
+		return 'SPAN' === node.nodeName &&
+			(node.childNodes.length === 0 || node.innerHTML === '&nbsp;');
 	}
 
 	function createLandingElement() {
@@ -27,8 +27,8 @@ define([
 	}
 
 	function isVisibleNode(node) {
-		return (Html.isBlock(node) || Dom.isTextNode(node))
-		    && !Html.isUnrenderedNode(node);
+		return (Html.isBlock(node) || Dom.isTextNode(node)) &&
+			!Html.isUnrenderedNode(node);
 	}
 
 	function skipNodeForward(node) {
@@ -46,7 +46,7 @@ define([
 		var previous = Dom.findBackward(
 			Dom.backward($block[0]),
 			isVisibleNode,
-			function(node) {
+			function (node) {
 				return Html.isBlock(node) || DomLegacy.isEditingHost(node);
 			}
 		);
@@ -58,8 +58,7 @@ define([
 			isVisibleNode,
 			function (node) {
 				return Html.isBlock(node) || DomLegacy.isEditingHost(node) || (
-					node.previousSibling
-					&&
+					node.previousSibling &&
 					DomLegacy.isEditingHost(node.previousSibling)
 				);
 			}
@@ -114,26 +113,26 @@ define([
         return $block.parents('.aloha-editable').filter(':first');
     }
 
-    /**
-     * Get table inside the block or null if this block is not for a table
-     *
-     * @param $block
-     * @returns {jQuery Element} jQuery table or null if this block
-     * is not for a Table
-     */
-    function getTableByBlock($block) {
-        return isTable($block)? $block.find('table').filter(':first') : null;
-    }
+	/**
+	 * Get table inside the block or null if this block is not for a table
+	 *
+	 * @param $block
+	 * @returns {jQuery Element} jQuery table or null if this block
+	 * is not for a Table
+	 */
+	function getTableByBlock($block) {
+		return isTable($block) ? $block.find('table').filter(':first') : null;
+	}
 
-    /**
-     * Check if a block element is a table.
-     *
-     * @param {jQuery Element} $blockElement
-     * @returns {Boolean} true if it is a table, false otherwise
-     */
-    function isTable($blockElement) {
-        return $blockElement.hasClass('aloha-table-wrapper');
-    }
+	/**
+	 * Check if a block element is a table.
+	 *
+	 * @param {jQuery Element} $blockElement
+	 * @returns {Boolean} true if it is a table, false otherwise
+	 */
+	function isTable($blockElement) {
+		return $blockElement.hasClass('aloha-table-wrapper');
+	}
 
 	return {
 		pad: pad,
