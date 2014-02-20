@@ -15,7 +15,9 @@ The Format plugin allows you to format texts and headlines.
 h4. Paragraph, Headline, Preformatted or remove formatting
 
 In order to enter normal text choose the paragraph layout at the Aloha Editor or select an entered text and choose the layout. In order to create a headline choose one of the headlines (h2 to h6) at Aloha Editor. Normal text will be wrapped into a +<p>+ tag, headlines into e.g. a +<h2>+ tag and preformatted text into a +<pre>+ tag.
-You can change the layout each time or remove a formatting via clicking the remove formatting button at the Aloha Editor.
+You can change the layout each time or remove a formatting via clicking the remove formatting button at the Aloha Editor. 
+
+Removing a format will unwrap the contents from the corresponding formatting tag. If you want to ensure that contents are within paragraphs all the time, use the "common/autoparagraph plugin":plugin_autoparagraph.html. Removing a format will also trigger a "smart-content-changed event":events.html#aloha-smart-content-changed-event.
  
 h4. Bold and Italic
 
