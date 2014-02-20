@@ -28,6 +28,7 @@ define([
 	'aloha',
 	'jquery',
 	'aloha/plugin',
+	'util/dom',
 	'ui/ui',
 	'ui/scopes',
 	'ui/button',
@@ -41,6 +42,7 @@ define([
 	Aloha,
 	jQuery,
 	Plugin,
+	Dom,
 	Ui,
 	Scopes,
 	Button,
@@ -309,9 +311,9 @@ define([
 					rangeObject = message.range;
 
 				// un-press all menubuttons buttons
-				jQuery('.aloha-icon-unorderedlist').parent().parent().parent().parent().removeClass('aloha-button-active');
-				jQuery('.aloha-icon-orderedlist').parent().parent().parent().parent().removeClass('aloha-button-active');
-				jQuery('.aloha-icon-definitionlist').parent().parent().parent().parent().removeClass('aloha-button-active');
+				jQuery('.aloha-icon-unorderedlist').parents('.aloha-ui-menubutton-container').removeClass('aloha-button-active');
+				jQuery('.aloha-icon-orderedlist').parents('.aloha-ui-menubutton-container').removeClass('aloha-button-active');
+				jQuery('.aloha-icon-definitionlist').parents('.aloha-ui-menubutton-container').removeClass('aloha-button-active');
 
 				// Hide all buttons in the list tab will make the list tab disappear
 				that._outdentListButton.show(false);
@@ -439,7 +441,7 @@ define([
 
 			for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 				effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
-				if (GENTICS.Utils.Dom.isListElement(effectiveMarkup)) {
+				if (Dom.isListElement(effectiveMarkup)) {
 					return effectiveMarkup;
 				}
 			}
@@ -466,10 +468,12 @@ define([
 			jqToTransform.children().unwrap();
 		},
 
-		checkIfNestedList: function (jqParentList) {
-				// when the list is nested into another, our list items will be
-				// added to the list items of the outer list
-
+		/**
+		* When the list is nested into another, our list items will be
+		* added to the list items of the outer list.
+		* @param Dom List Dom element
+		*/
+		fixupNestedLists: function (jqParentList) {
 				// find the place where to put the children of the inner list
 				if (jqParentList.get(0).nodeName.toLowerCase() === 'li') {
 					// inner list is nested in a li (this conforms to the html5 spec)
@@ -532,7 +536,7 @@ define([
 				var o = true;
 				var lastEl = false;
 				for (var i = 0; i < selectedSiblings.length; ++i) {
-					if (GENTICS.Utils.Dom.isBlockLevelElement(selectedSiblings[i])) {
+					if (Dom.isBlockLevelElement(selectedSiblings[i])) {
 						if (lastEl) {
 							lastEl = false;
 						}
@@ -569,7 +573,7 @@ define([
 			//use rangy to change the selection to the contents of
 			//the last li that was appended to the list
 			el = lastAppendedEl.get(0);
-			if (GENTICS.Utils.Dom.isEmpty(el)) {
+			if (Dom.isEmpty(el)) {
 				var range = Aloha.createRange();
 				var selection = Aloha.getSelection();
 				//IE7 requires an (empty or non-empty) text node
@@ -665,9 +669,9 @@ define([
 			if (nodeName === listtype) {
 				jqList = jQuery(domToTransform);
 				jqParentList = jqList.parent();
-				if (jqParentList.length > 0 && GENTICS.Utils.Dom.isListElement(jqParentList.get(0))) {
+				if (jqParentList.length > 0 && Dom.isListElement(jqParentList.get(0))) {
 					// we are in a nested list
-					this.checkIfNestedList(jqParentList);
+					this.fixupNestedLists(jqParentList);
 				} else {
 					// we are in an list and shall transform it to paragraphs
 					if (listtype === 'dl') {
@@ -775,7 +779,7 @@ define([
 				wrappingLi = jqList.parent('li');
 
 				if (jqParentList.length > 0
-						&& GENTICS.Utils.Dom.isListElement(jqParentList.get(0))) {
+						&& Dom.isListElement(jqParentList.get(0))) {
 					// the list is nested into another list
 
 					// get the also selected siblings of the dom object
