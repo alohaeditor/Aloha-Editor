@@ -32,7 +32,7 @@
  * Clicking on any links inside the editable activates the this plugin's
  * floating menu scope.
  */
-define( [
+define([
 	'aloha',
 	'aloha/plugin',
 	'aloha/ephemera',
@@ -85,16 +85,15 @@ define( [
 	var insertLinkPostCleanup = {
 		merge: true,
 		mergeable: function (node) {
-			return ('aloha-new-link' === node.className && node.nextSibling
-			     && 'aloha-new-link' === node.nextSibling.className);
+			return ('aloha-new-link' === node.className && node.nextSibling &&
+				'aloha-new-link' === node.nextSibling.className);
 		}
 	};
 	
 	Ephemera.classes('aloha-link-pointer', 'aloha-link-text');
 
 	function setupMousePointerFix() {
-		jQuery(document)
-			.bind('keydown.aloha-link.pointer-fix', function (e) {
+		jQuery(document).bind('keydown.aloha-link.pointer-fix', function (e) {
 				// metaKey for OSX, 17 for PC (we can't check
 				// e.ctrlKey because it's only set on keyup or
 				// keypress, not on keydown).
@@ -226,28 +225,28 @@ define( [
 			if ('undefined' !== typeof this.settings.titleregex) {
 				this.titleregex = this.settings.titleregex;
 			}
-			if ( typeof this.settings.targetregex != 'undefined' ) {
+			if (typeof this.settings.targetregex != 'undefined') {
 				this.targetregex = this.settings.targetregex;
 			}
-			if ( typeof this.settings.target != 'undefined' ) {
+			if (typeof this.settings.target != 'undefined') {
 				this.target = this.settings.target;
 			}
-			if ( typeof this.settings.cssclassregex != 'undefined' ) {
+			if (typeof this.settings.cssclassregex != 'undefined') {
 				this.cssclassregex = this.settings.cssclassregex;
 			}
-			if ( typeof this.settings.cssclass != 'undefined' ) {
+			if (typeof this.settings.cssclass != 'undefined') {
 				this.cssclass = this.settings.cssclass;
 			}
-			if ( typeof this.settings.objectTypeFilter != 'undefined' ) {
+			if (typeof this.settings.objectTypeFilter != 'undefined') {
 				this.objectTypeFilter = this.settings.objectTypeFilter;
 			}
-			if ( typeof this.settings.onHrefChange != 'undefined' ) {
+			if (typeof this.settings.onHrefChange != 'undefined') {
 				this.onHrefChange = this.settings.onHrefChange;
 			}
-			if ( typeof this.settings.hotKey != 'undefined' ) {
+			if (typeof this.settings.hotKey != 'undefined') {
 				jQuery.extend(true, this.hotKey, this.settings.hotKey);
 			}
-			if ( typeof this.settings.hrefValue != 'undefined' ) {
+			if (typeof this.settings.hrefValue != 'undefined') {
 				this.hrefValue = this.settings.hrefValue;
 			}
 			
@@ -259,32 +258,31 @@ define( [
 				plugin.initSidebar(Aloha.Sidebar.right);
 				PubSub.pub('aloha.link.ready', {
 					plugin: plugin
-				})
+				});
 			});
 		},
 
 		nsSel: function () {
 			var stringBuilder = [], prefix = pluginNamespace;
-			jQuery.each( arguments, function () {
-				stringBuilder.push( '.' + ( this == '' ? prefix : prefix + '-' + this ) );
-			} );
+			jQuery.each(arguments, function () {
+				stringBuilder.push('.' + (this === '' ? prefix : prefix + '-' + this));
+			});
 			return jQuery.trim(stringBuilder.join(' '));
 		},
 
 		//Creates string with this component's namepsace prefixed the each classname
 		nsClass: function () {
 			var stringBuilder = [], prefix = pluginNamespace;
-			jQuery.each( arguments, function () {
-				stringBuilder.push( this == '' ? prefix : prefix + '-' + this );
-			} );
+			jQuery.each(arguments, function () {
+				stringBuilder.push(this === '' ? prefix : prefix + '-' + this);
+			});
 			return jQuery.trim(stringBuilder.join(' '));
 		},
 
-		initSidebar: function ( sidebar ) {
+		initSidebar: function (sidebar) {
 			var pl = this;
 			pl.sidebar = sidebar;
-			sidebar.addPanel( {
-				
+			sidebar.addPanel({
 				id       : pl.nsClass( 'sidebar-panel-target' ),
 				title    : i18n.t( 'floatingmenu.tab.link' ),
 				content  : '',
@@ -292,8 +290,8 @@ define( [
 				activeOn : 'a, link',
 				
 				onInit: function () {
-					 var that = this,
-						 content = this.setContent(
+					var that = this,
+						content = this.setContent(
 							'<div class="' + pl.nsClass( 'target-container' ) + '"><fieldset><legend>' + i18n.t( 'link.target.legend' ) + '</legend><ul><li><input type="radio" name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '" value="_self" /><span>' + i18n.t( 'link.target.self' ) + '</span></li>' + 
 							'<li><input type="radio" name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '" value="_blank" /><span>' + i18n.t( 'link.target.blank' ) + '</span></li>' + 
 							'<li><input type="radio" name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '" value="_parent" /><span>' + i18n.t( 'link.target.parent' ) + '</span></li>' + 
@@ -303,16 +301,16 @@ define( [
 							'<div class="' + pl.nsClass( 'title-container' ) + '" ><fieldset><legend>' + i18n.t( 'link.title.legend' ) + '</legend><input type="text" class="' + pl.nsClass( 'linkTitle' ) + '" /></fieldset></div>'
 						).content; 
 					 
-					 jQuery( pl.nsSel( 'framename' ) ).live( 'keyup', function () {
-						jQuery( that.effective ).attr( 'target', jQuery( this ).val().replace( '\"', '&quot;' ).replace( "'", "&#39;" ) );
-					 } );
-					 
-					 jQuery( pl.nsSel( 'radioTarget' ) ).live( 'change', function () {
-						if ( jQuery( this ).val() == 'framename' ) {
-							jQuery( pl.nsSel( 'framename' ) ).slideDown();
+					jQuery(pl.nsSel('framename')).live('keyup', function () {
+						jQuery(that.effective).attr( 'target', jQuery( this ).val().replace( '\"', '&quot;' ).replace( "'", "&#39;" ) );
+					});
+
+					jQuery(pl.nsSel('radioTarget')).live('change', function () {
+						if (jQuery(this).val() == 'framename') {
+							jQuery(pl.nsSel('framename')).slideDown();
 						} else {
-							jQuery( pl.nsSel( 'framename' ) ).slideUp().val( '' );
-							jQuery( that.effective ).attr( 'target', jQuery( this ).val() );
+							jQuery(pl.nsSel('framename')).slideUp().val( '' );
+							jQuery(that.effective).attr('target', jQuery( this ).val());
 						}
 					 } );
 					 
