@@ -35,7 +35,7 @@ define([
 	'aloha/ephemera',
 	'aloha/console'
 ],
-function(
+function (
 	$,
 	Dom,
 	Misc,
@@ -208,13 +208,13 @@ function(
 	function isUnrecognized(element) {
 		var name = element.nodeName;
 		var unrecognized = isUnrecognizedMap[name];
-		if (null != unrecognized) {
+		if (null !== unrecognized) {
 			return unrecognized;
 		}
 		var closingName = "/" + element.nodeName;
 		var sibling = element.nextSibling;
 		unrecognized = false;
-		while (null != sibling) {
+		while (null !== sibling) {
 			if (closingName == sibling.nodeName) {
 				unrecognized = true;
 				break;
@@ -234,7 +234,7 @@ function(
 	 * @see serializeElement()
 	 */
 	function serializeChildren(element, child, unrecognized, ephemera, xhtml) {
-		while (null != child) {
+		while (null !== child) {
 			if (1 === child.nodeType && unrecognized && "/" + element.nodeName == child.nodeName) {
 				child = child.nextSibling;
 				break;
@@ -281,7 +281,7 @@ function(
 		if (element.scopeName && 'HTML' != element.scopeName && -1 === elementName.indexOf(':')) {
 			elementName = element.scopeName.toLowerCase() + ':' + elementName;
 		}
-		if (!unrecognized && null == child && emptyElements[elementName]) {
+		if (!unrecognized && null === child && emptyElements[elementName]) {
 			xhtml.push('<' + elementName + makeAttrString(element, ephemera) + '/>');
 		} else {
 			xhtml.push('<' + elementName + makeAttrString(element, ephemera) + '>');
@@ -313,10 +313,10 @@ function(
 		} else if (8 === node.nodeType) {
 			xhtml.push('<' + '!--' + node.nodeValue + '-->');
 		} else {
-			console.warn('Unknown node type encountered during serialization, ignoring it:'
-						 + ' type=' + node.nodeType
-						 + ' name=' + node.nodeName
-						 + ' value=' + node.nodeValue);
+			console.warn('Unknown node type encountered during serialization, ignoring it:' +
+						' type=' + node.nodeType +
+						' name=' + node.nodeName +
+						' value=' + node.nodeValue);
 		}
 	}
 	
@@ -337,7 +337,7 @@ function(
 		 *        The result may look like an XML fragment with multiple top-level elements and text nodes.
 		 * @see nodeToXhtml()
 		 */
-		contentsToXhtml: function(element, ephemera) {
+		contentsToXhtml: function (element, ephemera) {
 			var xhtml = [];
 			serializeChildren(element, element.firstChild, false, ephemera, xhtml);
 			return xhtml.join("");
@@ -406,7 +406,7 @@ function(
 		 * @return
 		 *        The serialized XHTML string represnting the given DOM node.
 		 */
-		nodeToXhtml: function(node, ephemera) {
+		nodeToXhtml: function (node, ephemera) {
 			var xhtml = [];
 			serialize(node, ephemera, xhtml);
 			return xhtml.join("");
