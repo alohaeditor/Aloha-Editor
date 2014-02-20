@@ -47,6 +47,9 @@
 	}
 
 
+	// get current override states
+	// aloha.overrides.harvest($('.aloha-editable i:first').get(0))
+
 	// load aloha editor
 	require(['../../src/aloha'], main);
 }($));
