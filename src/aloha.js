@@ -122,6 +122,7 @@ define([
 
 	Api['aloha'] = aloha;
 	Api['mahalo'] = mahalo;
+	Api['editor'] = editor;
 
 	aloha = Maps.extend(aloha, Api);
 
