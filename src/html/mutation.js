@@ -133,17 +133,17 @@ define([
 	 * @return {Boundary}
 	 */
 	function nextLineBreak(above, below) {
-		return Boundaries.nextWhile(above, function (pos) {
-			if (Boundaries.equals(pos, below)) {
+		return Boundaries.nextWhile(above, function (boundary) {
+			if (Boundaries.equals(boundary, below)) {
 				return false;
 			}
-			if (Styles.hasLinebreakingStyle(Boundaries.nextNode(pos))) {
+			if (Styles.hasLinebreakingStyle(Boundaries.nextNode(boundary))) {
 				return false;
 			}
-			if (!Boundaries.isAtEnd(pos)) {
+			if (!Boundaries.isAtEnd(boundary)) {
 				return true;
 			}
-			return !Dom.isEditingHost(Boundaries.container(pos));
+			return !Dom.isEditingHost(Boundaries.container(boundary));
 		});
 	}
 
@@ -191,9 +191,7 @@ define([
 			return Elements.isRendered(node);
 		}
 		var children = Dom.children(node).filter(function (node) {
-			return Elements.isListItems(node)
-			     ? hasRenderedContent(node)
-			     : Elements.isRendered(node);
+			return Elements.isListItem(node) || Elements.isRendered(node);
 		});
 		return children.length > 0;
 	}
@@ -216,21 +214,21 @@ define([
 		var isVisibleNode = function (node) {
 			return Boundaries.container(above) === node || hasRenderedContent(node);
 		};
-		var moveBeforeBoundary = function (boundary, node) {
-			return Mutation.insertNodeAtBoundary(node, boundary, true);
-		};
 		if (Boundaries.equals(linebreak, below)) {
-			Dom.childAndParentsUntil(right, isVisibleNode).forEach(Dom.remove);
+			Dom.climbUntil(right, Dom.remove, isVisibleNode);
 			return overrides;
 		}
+		var moveNodeBeforeBoundary = function (boundary, node) {
+			return Mutation.insertNodeAtBoundary(node, boundary, true);
+		};
 		var parent = right.parentNode;
 		var nodes = Dom.nextSiblings(right, Styles.hasLinebreakingStyle);
 		if (0 === nodes.length) {
 			parent = right;
 		}
-		var boundary = nodes.reduce(moveBeforeBoundary, linebreak);
+		var boundary = nodes.reduce(moveNodeBeforeBoundary, linebreak);
 		if (parent) {
-			Dom.childAndParentsUntil(parent, isVisibleNode).forEach(Dom.remove);
+			Dom.climbUntil(parent, Dom.remove, isVisibleNode);
 		}
 		return overrides;
 	}

@@ -140,8 +140,6 @@
 		t('<div>foo{}<br><p>bar</p></div>', '<div>foo{<br><p>}bar</p></div>');
 	});
 
-	return;
-
 	test('Html.prev()', function () {
 		var t = function (before, after) {
 			return runTest(before, after, function (range) {
@@ -151,6 +149,10 @@
 				}
 			});
 		};
+
+		t('<ul><li>x</li><li></li><li>{}y</li></ul>', '<ul><li>x</li><li>{</li><li>}y</li></ul>');
+
+		return;
 
 		t('<p contenteditable="true"><b>[]</b></p>',        '<p contenteditable="true">{<b>]</b></p>');
 		t('<p contenteditable="true"><b>[foo]</b></p>',     '<p contenteditable="true">{<b>foo]</b></p>');
@@ -206,6 +208,8 @@
 		t('<p>foo<br><br>[]bar</p>', '<p>foo<br>{<br>]bar</p>');
 		t('<div><p>foo<br></p>[]one</div>', '<div><p>foo[<br></p>]one</div>');
 	});
+
+	return;
 
 	test('Html.next("word")', function () {
 		var dom = $('<div>foo<b>bar</b>s baz</div>')[0];

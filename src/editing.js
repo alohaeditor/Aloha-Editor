@@ -1269,7 +1269,10 @@ define([
 					var above = Boundaries.fromRangeStart(range);
 					var below = Boundaries.fromRangeEnd(range);
 					var overrides = Html.removeBreak(above, below);
-					var pos = Cursors.createFromBoundary(above[0], above[1]);
+					var pos = Cursors.createFromBoundary(
+						Boundaries.container(above),
+						Boundaries.offset(above)
+					);
 					left.setFrom(pos);
 					right.setFrom(pos);
 				}

@@ -68,6 +68,7 @@ define([
 	 * These element's cannot be simply unwrapped because they have dependent
 	 * children.
 	 *
+	 * @see   GROUPED_CONTAINERS
 	 * @param {<string, boolean>}
 	 */
 	var GROUP_CONTAINERS = {
@@ -91,6 +92,7 @@ define([
 	 * These element's cannot be simply unwrapped because they parents only
 	 * allows these as their immediate child nodes.
 	 *
+	 * @see   GROUP_CONTAINERS
 	 * @param {<string, Array.<string>}
 	 */
 	var GROUPED_ELEMENTS = {
@@ -103,10 +105,29 @@ define([
 		'TD'    : ['TR', 'TH']
 	};
 
+	/**
+	 * Checks if the given node is grouping container.
+	 *
+	 * Grouping containers include TABLE, FIELDSET, SELECT.  
+	 *
+	 * @see    GROUP_CONTAINERS
+	 * @param  {Node} node
+	 * @return {boolean}
+	 */
 	function isGroupContainer(node) {
 		return GROUP_CONTAINERS[node.nodeName];
 	}
 
+	/**
+	 * Checks if the given node an element that can only be a child of a group
+	 * container.
+	 *
+	 * LI, TD are the classic cases.
+	 *
+	 * @see    GROUPED_CONTAINER
+	 * @param  {Node} node
+	 * @return {boolean}
+	 */
 	function isGroupedElement(node) {
 		return GROUPED_ELEMENTS[node.nodeName];
 	}
@@ -117,7 +138,7 @@ define([
 	 * @param  {Node} node
 	 * @return {boolean}
 	 */
-	function isListItems(node) {
+	function isListItem(node) {
 		return LIST_ITEMS[node.nodeName];
 	}
 
@@ -404,7 +425,7 @@ define([
 		isRendered                         : isRendered,
 		isUnrendered                       : isUnrendered,
 		isUnrenderedWhitespace             : isUnrenderedWhitespace,
-		isListItems                        : isListItems,
+		isListItem                         : isListItem,
 		isListContainer                    : isListContainer,
 		isTableContainer                   : isTableContainer,
 		isGroupContainer                   : isGroupContainer,

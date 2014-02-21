@@ -305,15 +305,16 @@
 		t('<p>x<b>fo[o</b>bar<u>b]az</u>y</p>', '<p>x<b>fo{}</b><u>az</u>y</p>');
 		t('<p><b>x</b>{}<i>y</i></p>', '<p><b>x</b>{}<i>y</i></p>');
 
-		t('<ul><li>fo[o<ol><li>}</li></ol></li></ul>', '<ul><li>fo{}</li></ul>');
-		t('<ul><li>foo{</li><li>}bar</li></ul>', '<ul><li>foo[]bar</li></ul>');
-		t('<ul><li>foo[</li><li>]bar</li></ul>', '<ul><li>foo[]bar</li></ul>');
-		t('<ul><li>x{</li><li>}</li><li>y</li></ul>', '<ul><li>x{}</li><li>y</li></ul>');
-
-		t('<div>foo{<ul><li>}bar</li></ul></div>', '<div>foo[]bar</div>');
 		t('<div><p>x</p><p>{y</p><p>}z</p></div>', '<div><p>x</p><p>{}z</p></div>');
 		t('<div><h1><i>foo{</i></h1><p>}bar</p></div>', '<div><h1><i>foo{}</i>bar</h1></div>');
 
+		t('<ul><li>foo{</li><li>}bar</li></ul>', '<ul><li>foo[]bar</li></ul>');
+		t('<ul><li>foo[</li><li>]bar</li></ul>', '<ul><li>foo[]bar</li></ul>');
+		t('<ul><li>x{</li><li>}</li><li>y</li></ul>', '<ul><li>x{}</li><li>y</li></ul>');
+		t('<ul><li>ab[c]<ol><li></li></ol></li></ul>', '<ul><li>ab{}<ol><li></li></ol></li></ul>');
+
+		t('<div>foo{<ul><li>}bar</li></ul></div>', '<div>foo[]bar</div>');
+		t('<ul><li>fo[o<ol><li>}</li></ol></li></ul>', '<ul><li>fo{}</li></ul>');
 	});
 
 	function switchElemTextSelection(html) {
