@@ -6,6 +6,10 @@ function help {
 \t--o\tOptimization level
 \t--e\tEntry module
 \t--t\tTarget file
+
+\tor
+
+\t--advanced
 	"
 }
 

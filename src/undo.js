@@ -303,7 +303,7 @@ define([
 
 	/**
 	 * Enters a new frame in the given undo context.
-	 * 
+	 *
 	 * @param context {Undo}
 	 * @param opts {Object.<string,*>}
 	 *        A map of options:
@@ -578,7 +578,7 @@ define([
 	function insertFollowedByInsert(recordA, recordB) {
 		return Nodes.followedBy(recordA.node, recordB.node);
 	}
-	
+
 	function prevSiblingFollowedByDelete(prevA, recordB) {
 		var prevB = recordB.prevSibling;
 		var targetB = recordB.target;
@@ -1213,14 +1213,15 @@ define([
 	}
 
 	/**
-	 * Undoes the last changeSet in the history and decreases the
-	 * history index.
+	 * Undoes the last changeSet in the history and decreases the history
+	 * index.
 	 *
-	 * @param context {Undo}
-	 * @param range {Range} will be set to the recorded range before the
-	 *        changes in the changeSet occurred.
-	 * @param ranges {Array.<Range>} will be preserved.
-	 * @return {void}
+	 * Will set to given range to the recorded range before the changes in the
+	 * changeSet occurred.
+	 *
+	 * @param {Contex}        context
+	 * @param {Range}         range
+	 * @param {Array.<Range>} Ranges to preserve
 	 */
 	function undo(context, range, ranges) {
 		advanceHistory(context);
@@ -1242,11 +1243,12 @@ define([
 	 * Redoes a previously undone changeSet in the history and
 	 * increments the history index.
 	 *
-	 * @param context {Undo}
-	 * @param range {Range} will be set to the recorded range after the
-	 *        changes in the changeSet occurred.
-	 * @param ranges {Array.<Range>} will be preserved.
-	 * @return {void}
+	 * Will set to given range to the recorded range after the changes in the
+	 * changeSet occurred.
+	 *
+	 * @param {Context}       context
+	 * @param {Range}         range
+	 * @param {Array.<Range>} ranges
 	 */
 	function redo(context, range, ranges) {
 		advanceHistory(context);

@@ -36,6 +36,7 @@
 			var actual = Transform.html(Transform.msword(input, document), document);
 			equal(actual, expected, input + ' ⇒ ' + expected);
 			// For debugging
+			/*
 			$('body')
 				.append('======= input:\n\n\n\n\n\n\n\n\n\n\n\n\n')
 				.append(input)
@@ -44,6 +45,7 @@
 				.append('======= actual: \n\n\n\n\n\n\n\n\n\n\n\n\n')
 				.append(actual)
 				.append('<hr>');
+			*/
 		});
 	}
 

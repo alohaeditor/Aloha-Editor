@@ -194,6 +194,14 @@ define([
 	}
 
 	/**
+	 * Removes all children from `node`.
+	 * @param {Node} node
+	 */
+	function removeChildren(node) {
+		Nodes.children(node).forEach(remove);
+	}
+
+	/**
 	 * Merges all contents of `right` into `left` by appending them to the end
 	 * of `left`, and then removing `right`.
 	 *
@@ -234,6 +242,7 @@ define([
 		replace           : replace,
 		replaceShallow    : replaceShallow,
 		remove            : remove,
-		removeShallow     : removeShallow
+		removeShallow     : removeShallow,
+		removeChildren    : removeChildren
 	};
 });
