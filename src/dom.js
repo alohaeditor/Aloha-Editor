@@ -240,6 +240,7 @@ define([
 		isElementNode           : Nodes.isElementNode,
 		isFragmentNode          : Nodes.isFragmentNode,
 		isEmptyTextNode         : Nodes.isEmptyTextNode,
+		isSameNode              : Nodes.isSameNode,
 		equals                  : Nodes.equals,
 		contains                : Nodes.contains,
 		followedBy              : Nodes.followedBy,
@@ -260,6 +261,7 @@ define([
 		replaceShallow    : Mutation.replaceShallow,
 		remove            : Mutation.remove,
 		removeShallow     : Mutation.removeShallow,
+		removeChildren     : Mutation.removeChildren,
 
 		addClass     : Classes.add,
 		removeClass  : Classes.remove,
@@ -285,6 +287,7 @@ define([
 		query                        : Traversing.query,
 		nextSiblings                 : Traversing.nextSiblings,
 		nextWhile                    : Traversing.nextWhile,
+		nextSibling                  : Traversing.nextSibling,
 		prevWhile                    : Traversing.prevWhile,
 		upWhile                      : Traversing.upWhile,
 		walk                         : Traversing.walk,

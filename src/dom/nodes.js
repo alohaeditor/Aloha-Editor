@@ -48,8 +48,8 @@ define([
 	/**
 	 * Checks whether the given node is an Element.
 	 *
-	 * @param   {Node} node
-	 * @returns {boolean}
+	 * @param {Node} node
+	 * @return {boolean}
 	 */
 	function isElementNode(node) {
 		return Nodes.ELEMENT === node.nodeType;
@@ -163,6 +163,16 @@ define([
 	 */
 	function isEmptyTextNode(node) {
 		return isTextNode(node) && 0 === nodeLength(node);
+	}
+
+	/**
+	 * Checks is `node1` is the same as `node2`.
+	 * @param {Node} node1
+	 * @param {Node} node2
+	 * @returns {boolean}
+	 */
+	function isSameNode(node1, node2) {
+		return node1 === node2;
 	}
 
 	function translateNodeIndex(elem, normalizedIndex, realIndex) {
@@ -363,6 +373,7 @@ define([
 		isElementNode   : isElementNode,
 		isFragmentNode  : isFragmentNode,
 		isEmptyTextNode : isEmptyTextNode,
+		isSameNode      : isSameNode,
 
 		text : text,
 		hasText : hasText,
