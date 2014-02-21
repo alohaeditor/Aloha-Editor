@@ -46,6 +46,12 @@
 		$('.aloha-ui').bind('click', bind);
 	}
 
+	var overrides;
+
+	// will be invoked after each aloha event
+	function alohaCB(alohaEvent) {
+		overrides = [];
+	}
 
 	// get current override states
 	// aloha.overrides.harvest($('.aloha-editable i:first').get(0))
