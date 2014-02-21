@@ -241,14 +241,8 @@
 	test('delete()', function () {
 		tested.push('delete');
 		var t = function (before, after) {
-			return runTest(before, after, editing.delete, {
-				overrides: []
-			});
+			return runTest(before, after, editing.delete);
 		};
-
-		t('<ul><li>{</li><li>}a<ul><li>b</li></ul></li></ul>', '');
-
-		//return;
 
 		t('<p>x[y]z</p>', '<p>x[]z</p>');
 		t('<p>x[]y</p>', '<p>x[]y</p>');
@@ -319,6 +313,7 @@
 		t('<p>x<b>fo[o</b>bar<u>b]az</u>y</p>', '<p>x<b>fo{}</b><u>az</u>y</p>');
 
 		t('<ul><li>fo[o<ol><li>}</li></ol></li></ul>', '<ul><li>fo{}</li></ul>');
+
 		t('<ul><li>foo{</li><li>}bar</li></ul>', '<ul><li>foo[]bar</li></ul>');
 		t('<ul><li>foo[</li><li>]bar</li></ul>', '<ul><li>foo[]bar</li></ul>');
 

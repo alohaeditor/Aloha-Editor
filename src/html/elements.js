@@ -94,7 +94,7 @@ define([
 	 * @param {<string, Array.<string>}
 	 */
 	var GROUPED_ELEMENTS = {
-		'LI'    : ['OL', 'UL' , 'DL'],
+		'LI'    : ['OL', 'UL', 'DL'],
 		'DT'    : ['DL'],
 		'DD'    : ['DL'],
 		'TBODY' : ['TABLE'],
@@ -109,6 +109,16 @@ define([
 
 	function isGroupedElement(node) {
 		return GROUPED_ELEMENTS[node.nodeName];
+	}
+
+	/**
+	 * Checks if the given node is one of the 4 list item elements.
+	 *
+	 * @param  {Node} node
+	 * @return {boolean}
+	 */
+	function isListItems(node) {
+		return LIST_ITEMS[node.nodeName];
 	}
 
 	/**
@@ -304,10 +314,6 @@ define([
 	 * @return {boolean}
 	 */
 	function isUnrendered(node) {
-		if (!node) {
-			return true;
-		}
-
 		if (!Predicates.isVoidNode(node)
 				// Because empty list elements are rendered
 				&& !LIST_ITEMS[node.nodeName]
@@ -393,16 +399,16 @@ define([
 	}
 
 	return {
-		isVoidType             : isVoidType,
-		isRendered             : isRendered,
-		isUnrendered           : isUnrendered,
-		isUnrenderedWhitespace : isUnrenderedWhitespace,
-		isListContainer        : isListContainer,
-		isTableContainer       : isTableContainer,
-		isGroupContainer       : isGroupContainer,
-		isGroupedElement       : isGroupedElement,
-		isUnrenderedWhitespaceNoBlockCheck
-		                       : isUnrenderedWhitespaceNoBlockCheck,
-		parse                  : parse
+		parse                              : parse,
+		isVoidType                         : isVoidType,
+		isRendered                         : isRendered,
+		isUnrendered                       : isUnrendered,
+		isUnrenderedWhitespace             : isUnrenderedWhitespace,
+		isListItems                        : isListItems,
+		isListContainer                    : isListContainer,
+		isTableContainer                   : isTableContainer,
+		isGroupContainer                   : isGroupContainer,
+		isGroupedElement                   : isGroupedElement,
+		isUnrenderedWhitespaceNoBlockCheck : isUnrenderedWhitespaceNoBlockCheck
 	};
 });

@@ -57,7 +57,7 @@ define([
 		alohaEvent.editor = editor;
 		Fn.comp(
 			setSelection,
-			//Selections.handle,
+			// Selections.handle,
 			Typing.handle,
 			Blocks.handle,
 			DragDrop.handle,

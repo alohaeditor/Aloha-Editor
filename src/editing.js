@@ -1270,7 +1270,7 @@ define([
 				postprocess: function () {
 					var above = Boundaries.fromRangeStart(range);
 					var below = Boundaries.fromRangeEnd(range);
-					Html.removeBreak(above, below, context);
+					var overrides = Html.removeBreak(above, below);
 					var pos = Cursors.createFromBoundary(above[0], above[1]);
 					left.setFrom(pos);
 					right.setFrom(pos);
