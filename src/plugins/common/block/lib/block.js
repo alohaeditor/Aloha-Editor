@@ -401,6 +401,7 @@ define([
 			// TODO set old value of contentEditable
 			// TODO set old values for draggable attributes
 
+			BlockUtils.unpad(this.$element);
 			// deactivate
 			this.deactivate();
 			// remove handlers
