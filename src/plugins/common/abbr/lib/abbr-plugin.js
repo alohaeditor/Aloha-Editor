@@ -130,7 +130,7 @@ define([
 			
 			// on blur check if abbr title is empty. If so remove the a tag
 			this.abbrField.addListener('blur', function (obj, event) {
-				if (this.getValue() === '') {
+				if (this.getValue() == '') {
 					me.removeAbbr();
 				}
 			});

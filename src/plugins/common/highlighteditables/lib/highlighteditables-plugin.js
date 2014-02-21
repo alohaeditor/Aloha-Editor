@@ -24,12 +24,15 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define('highlighteditables/highlighteditables-plugin', ['aloha', 'jquery', 'aloha/plugin', 'aloha/ephemera'],
-	function (Aloha, jQuery, Plugin, Ephemera) {
+define('highlighteditables/highlighteditables-plugin', [
+	'aloha', 
+	'jquery', 
+	'aloha/plugin', 
+	'aloha/ephemera'
+], function (Aloha, jQuery, Plugin, Ephemera) {
 		"use strict";
 
-		var
-			GENTICS = window.GENTICS;
+		var GENTICS = window.GENTICS;
 
 		return Plugin.create('highlighteditables', {
 

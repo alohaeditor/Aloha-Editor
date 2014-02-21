@@ -514,7 +514,7 @@ define([
 	function nsSel() {
 		var stringBuilder = [], prefix = tableNamespace;
 		jQuery.each(arguments, function () {
-			stringBuilder.push('.' + (this === '' ? prefix : prefix + '-' + this));
+			stringBuilder.push('.' + (this == '' ? prefix : prefix + '-' + this));
 		});
 		return jQuery.trim(stringBuilder.join(' '));
 	}
@@ -523,7 +523,7 @@ define([
 	function nsClass() {
 		var stringBuilder = [], prefix = tableNamespace;
 		jQuery.each(arguments, function () { 
-			stringBuilder.push(this === '' ? prefix : prefix + '-' + this);
+			stringBuilder.push(this == '' ? prefix : prefix + '-' + this);
 		});
 		return jQuery.trim(stringBuilder.join(' '));
 	}

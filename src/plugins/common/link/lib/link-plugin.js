@@ -265,7 +265,7 @@ define([
 		nsSel: function () {
 			var stringBuilder = [], prefix = pluginNamespace;
 			jQuery.each(arguments, function () {
-				stringBuilder.push('.' + (this === '' ? prefix : prefix + '-' + this));
+				stringBuilder.push('.' + (this == '' ? prefix : prefix + '-' + this));
 			});
 			return jQuery.trim(stringBuilder.join(' '));
 		},
@@ -274,7 +274,7 @@ define([
 		nsClass: function () {
 			var stringBuilder = [], prefix = pluginNamespace;
 			jQuery.each(arguments, function () {
-				stringBuilder.push(this === '' ? prefix : prefix + '-' + this);
+				stringBuilder.push(this == '' ? prefix : prefix + '-' + this);
 			});
 			return jQuery.trim(stringBuilder.join(' '));
 		},

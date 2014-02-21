@@ -226,7 +226,7 @@ define('format/format-plugin', [
 			markup = jQuery('<' + button + '>'),
 			rangeObject = Aloha.Selection.rangeObject;
 		
-		if (typeof button === "undefined" || button === "") {
+		if (typeof button === "undefined" || button == "") {
 			return;
 		}
 
@@ -563,7 +563,7 @@ define('format/format-plugin', [
 		nsClass: function () {
 			var stringBuilder = [], prefix = pluginNamespace;
 			jQuery.each(arguments, function () {
-				stringBuilder.push(this === '' ? prefix : prefix + '-' + this);
+				stringBuilder.push(this == '' ? prefix : prefix + '-' + this);
 			});
 			return jQuery.trim(stringBuilder.join(' '));
 		},
@@ -572,7 +572,7 @@ define('format/format-plugin', [
 		nsSel: function () {
 			var stringBuilder = [], prefix = pluginNamespace;
 			jQuery.each(arguments, function () {
-				stringBuilder.push('.' + (this === '' ? prefix : prefix + '-' + this));
+				stringBuilder.push('.' + (this == '' ? prefix : prefix + '-' + this));
 			});
 			return jQuery.trim(stringBuilder.join(' '));
 		},
