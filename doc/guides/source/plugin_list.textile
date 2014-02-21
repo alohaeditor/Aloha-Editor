@@ -1,6 +1,6 @@
 h2. List Plugin
 
-The List Plugin allows you to handle and create ordered and unordered lists within your contents. You either may select existing contents to be turned into a list, or just click the ordered or unordered list button to start a new one.
+The List Plugin allows you to handle and create ordered, unordered and definition lists within your contents. You either may select existing contents to be turned into a list, or just click one of the list buttons to start a new one.
 
 endprologue.
 
@@ -9,22 +9,49 @@ NOTE: The list plugin will turn existing paragraphs into list items. Single line
 
 h3. Functional Description
 
-Move the cursor to your desired position and click on the ordered +<ol>+ or unordered +<ul>+ list icon at the Aloha Editor to start creating a list. Now you can enter list elements and add a new ones by pressing enter on your keyboard. To end adding new list elements press enter twice. Now you are able to enter paragraphs again.
+Move the cursor to your desired position and click on the ordered +<ol>+, unordered +<ul>+ or definition +<dl>+ list icon in the Aloha Editor toolbar to start creating a list. Now you can enter list elements and add a new ones by pressing enter on your keyboard. To end adding new list elements press enter twice. Now you are able to enter paragraphs again.
 In order to add new elements or edit existing elements just move to cursor to the desired position of the list and add via pressing enter or edit elements.
-To delete an element or the whole list mark the element(s) and press backspace. If you want to delete the formatting but not the content of a list, just mark the list elements and click on the unordered or ordered list button on the "Format" tab again.
+To delete an element or the whole list mark the element(s) and press backspace.
 
-You can use the tab key to indent lists or use shift-tab to outdent them if you are inside of a nested list. The type of lists and nested lists may be changed from ordered to unordered lists and vice versa by clicking the ordered list or unordered list button from the FloatingMenu.
+You can use the tab key to indent unordered and ordered lists or use shift-tab to outdent them if you are inside of a nested list (only unordered and ordered lists). The type of lists and nested lists may be changed between unordered, ordered and definition lists by clicking the corresponding list button from the Aloha toolbar.
 
 You can remove lists by clicking the applied list type a second time, which will turn individual list items back into paragraphs.
 
+h4. List styles
+
+If you open the dropdown next to the respective list icon, you can choose from a list of pre-defined list styles.
+Shipped with Aloha Editor are the following:
+
+h5. Unordered list styles
+
+* disc
+* circle
+* square
+
+h5. Ordered list styles
+
+* decimal
+* decimal-leading-zero
+* lower-roman
+* upper-roman
+* lower-greek
+* lower-latin
+* upper-latin
+
+h5. Definition list styles
+
+* blue
+* green
+* red
+  
 h3. Configuration settings
 
-Add the available components +'ol', 'ul'+ to the editables where you want to use them:
+Add the available components +'ol', 'ul', 'dl'+ to the editables where you want to use them:
 
 <javascript>
 	Aloha.settings.plugins: {
 		list: {
-			config: [ 'ol', 'ul' ],
+			config: [ 'ol', 'ul', 'dl' ],
 			editables: {
 				'#one': [ 'ul' ],
 				'#two': [ ]
@@ -33,9 +60,45 @@ Add the available components +'ol', 'ul'+ to the editables where you want to use
 	}
 </javascript>
 
+To define custom list styles use the following syntax:
+
+<javascript>
+    Aloaha.settings.plugins: {
+    	templates: {
+    		ul: {
+    			classes: ['aloha-list-disc', 'aloha-list-circle', 'aloha-list-square'],
+    			template: '<ul class="${cssClass}"><li>${first}<ul class="${cssClass}"><li>${second}<ul class="${cssClass}"><li>${third}</li></ul></li></ul></li></ul>',
+    			locale: {
+    				default: {first: 'first layer', second: 'second layer', third: 'third layer'},
+    				de: {first: 'erste Ebene', second: 'zweite Ebene', third: 'dritte Ebene'}
+    			}
+    		},
+    		ol: {
+    			classes: ['aloha-list-decimal', 'aloha-list-decimal-leading-zero',
+    				'aloha-list-lower-roman', 'aloha-list-upper-roman', 'aloha-list-lower-greek',
+    				'aloha-list-lower-latin', 'aloha-list-upper-latin' ],
+    			template: '<ol class="${cssClass}"><li>${first}<ol class="${cssClass}"><li>${second}<ol class="${cssClass}"><li>${third}</li></ol></li></ol></li></ol>',
+    			locale: {
+    				default: {first: 'first layer', second: 'second layer', third: 'third layer'},
+    				de: {first: 'erste Ebene', second: 'zweite Ebene', third: 'dritte Ebene'}
+    			}
+    		},
+    		dl: {
+    			classes: ['aloha-list-blue', 'aloha-list-green', 'aloha-list-red'],
+    			template: '<dl class="${cssClass}"><dt>${first}<dt><dd>${second}</dd></dl>',
+    			locale: {
+    				default: {first: 'first item', second: 'second item'},
+    				de: {first: 'erstes Element', second: 'zweites Element'}
+    			}
+    		},
+    	}
+    }
+</javascript>
+
 h3. Components
 
-The List Plugin provides two components
+The List Plugin provides three components
 
-* ul - for inserting unordered lists
 * ol - for inserting ordered lists
+* ul - for inserting unordered lists
+* dl - for inserting definition lists
