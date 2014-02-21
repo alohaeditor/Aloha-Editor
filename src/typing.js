@@ -57,10 +57,10 @@ define([
 		if (range.collapsed) {
 			if (direction) {
 				boundary = Boundaries.fromRangeEnd(range);
-				Boundaries.setRangeEnd(range, Html.next(boundary) || boundary);
+				Boundaries.setRangeEnd(range, Html.next(boundary));
 			} else {
 				boundary = Boundaries.fromRangeStart(range);
-				Boundaries.setRangeStart(range, Html.prev(boundary) || boundary);
+				Boundaries.setRangeStart(range, Html.prev(boundary));
 			}
 		}
 		Editing.delete(

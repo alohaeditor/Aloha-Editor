@@ -214,7 +214,7 @@ define([
 		}
 		var linebreak = nextLineBreak(above, below);
 		var isVisibleNode = function (node) {
-			return above[0] === node || hasRenderedContent(node);
+			return Boundaries.container(above) === node || hasRenderedContent(node);
 		};
 		var moveBeforeBoundary = function (boundary, node) {
 			return Mutation.insertNodeAtBoundary(node, boundary, true);
@@ -225,6 +225,9 @@ define([
 		}
 		var parent = right.parentNode;
 		var nodes = Dom.nextSiblings(right, Styles.hasLinebreakingStyle);
+		if (0 === nodes.length) {
+			parent = right;
+		}
 		var boundary = nodes.reduce(moveBeforeBoundary, linebreak);
 		if (parent) {
 			Dom.childAndParentsUntil(parent, isVisibleNode).forEach(Dom.remove);

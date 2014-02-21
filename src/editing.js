@@ -1228,13 +1228,11 @@ define([
 	 *
 	 * @see https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#deleting-the-selection
 	 *
-	 * @param {Range} range
-	 * @param {Object} context
+	 * @param  {Range} range
 	 * @return {Range}
-	 *         The modified range, after deletion.
 	 */
-	function delete_(liveRange, context) {
-		fixupRange(liveRange, function delete_(range, left, right) {
+	function delete_(range) {
+		fixupRange(range, function delete_(range, left, right) {
 			var remove = function (node) {
 				Mutation.removePreservingRange(node, range);
 			};
