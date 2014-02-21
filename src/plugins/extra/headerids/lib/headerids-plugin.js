@@ -202,8 +202,17 @@ define([
 		 * @return {String} Santized copy of `str`.
 		 */
 		sanitize: function(str) {
-			return html.trimWhitespaceCharacters(str)
-				.replace(/[^a-z0-9]+/gi, '_');
+			var sanitizeCharacters = Aloha.settings.sanitizeCharacters || {};
+			var strSanitized = str;
+			
+			for (var key in sanitizeCharacters) {
+				if (sanitizeCharacters.hasOwnProperty(key)) {
+					strSanitized = strSanitized.replace(key, sanitizeCharacters[key]);
+				}
+			}
+			
+			return html.trimWhitespaceCharacters(strSanitized)
+			           .replace(/[^a-z0-9]/gi, '_');
 		},
 
 		//ns = headerids
@@ -223,8 +232,12 @@ define([
 
 					content.find(nsSel('set-button')).click(function () {
 						var content = thisSidebarPanel.content;
+						var $input = jQuery(nsSel('input'));
+						var name = thisPlugin.sanitize($input.val());
+						
+						$input.val(name);
 						jQuery(thisSidebarPanel.effective)
-							.attr('id', jQuery(nsSel('input')).val())
+							.attr('id', name)
 							.addClass('aloha-customized');
 					});
 
