@@ -113,8 +113,6 @@ define( [
 			);
 		}
 		
-		
-
 		hrefLangField.setObjectTypeFilter(['language/link']);
 		
 		hrefLangField.addListener('item-change', function() {

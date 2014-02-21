@@ -43,8 +43,6 @@ define([
 
 	return Aloha.AbstractRepository.extend({
 		
-		_deferred: jQuery.Deferred(),
-
 		/**
 		 * Set of language codes
 		 */
@@ -85,7 +83,7 @@ define([
 				this.locale = locale;
 			}
 			
-			if ('undefined' !== typeFilter) {
+			if ('undefined' !== objectType) {
 				this.objectType = objectType;
 			}
 			
@@ -173,11 +171,7 @@ define([
 		 * searches the collection with the given query.
 		 */
 		query: function (p, callback) {
-			var that = this;
-//			this._deferred.done(function(){
-				that._searchInLanguageCodes(p, callback);
-//			});
-			
+			this._searchInLanguageCodes(p, callback);
 		},
 
 		/**

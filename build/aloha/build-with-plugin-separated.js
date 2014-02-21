@@ -373,11 +373,6 @@
     "cite/css": "../plugins/extra/cite/css",
     "cite/nls": "../plugins/extra/cite/nls",
     "cite/res": "../plugins/extra/cite/res",
-    "flag-icons": "../plugins/extra/flag-icons/lib",
-    "flag-icons/vendor": "../plugins/extra/flag-icons/vendor",
-    "flag-icons/css": "../plugins/extra/flag-icons/css",
-    "flag-icons/nls": "../plugins/extra/flag-icons/nls",
-    "flag-icons/res": "../plugins/extra/flag-icons/res",
     "numerated-headers": "../plugins/extra/numerated-headers/lib",
     "numerated-headers/vendor": "../plugins/extra/numerated-headers/vendor",
     "numerated-headers/css": "../plugins/extra/numerated-headers/css",
@@ -576,10 +571,6 @@
     //  exclude: ['aloha', 'ui/ui-plugin']
     //},
     {
-      name: 'flag-icons/flag-icons-plugin',
-      exclude: ['aloha', 'ui/ui-plugin']
-    },
-    {
       name: 'formatlesspaste/formatlesspaste-plugin',
       exclude: ['aloha', 'ui/ui-plugin']
     },
@@ -652,7 +643,7 @@
     //},
     {
       name: 'wai-lang/wai-lang-plugin',
-      exclude: ['aloha', 'ui/ui-plugin', 'flag-icons/flag-icons-plugin']
+      exclude: ['aloha', 'ui/ui-plugin']
     }
     //{
     //  name: 'zemanta/zemanta-plugin',
