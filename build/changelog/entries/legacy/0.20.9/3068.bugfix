@@ -1,0 +1,1 @@
+ core: Fixed a permission error in Firefox, when Aloha Editor tried to access a document property of an external ressource

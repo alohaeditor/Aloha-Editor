@@ -1,0 +1,1 @@
+ ui: Floating toolbar will attempt to adjust is positioning to remain entirely in the viewport whenever possible.

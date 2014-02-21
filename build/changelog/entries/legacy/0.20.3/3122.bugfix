@@ -1,0 +1,1 @@
+ image-plugin: The image plugin will now only display the crop buttons when the cropping area selection was finished. This avoids a bug in Internet Explorer 7 where the crop area could not be resized once the user entered those crop buttons.

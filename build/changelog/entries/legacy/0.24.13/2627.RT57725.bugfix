@@ -1,0 +1,5 @@
+copy-paste: Copy and paste text content from MS-Word to Aloha content
+              in IE9 Browser, added line break between paragraphs. When
+              copying from MS-Word unrendered whitespaces are added between
+              paragraphs and are rendered as lines break for Aloha Editor.
+              Removing these unrendered whitespaces solves the line break problem.

@@ -1,0 +1,3 @@
+button tooltip: 'Insert Table' button tooltip did not disappear when selecting
+              the rows and the columns of the table. This has been fixed so the tooltip does
+              disappear. 

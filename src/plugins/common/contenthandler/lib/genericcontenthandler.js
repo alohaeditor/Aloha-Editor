@@ -119,7 +119,7 @@ define([
 
 		// Because Aloha does not provide a means for editors to manipulate
 		// these properties.
-		$content.find('td,tr')
+		$content.find('table,th,td,tr')
 			.removeAttr('width')
 			.removeAttr('height')
 			.removeAttr('valign');
@@ -128,7 +128,7 @@ define([
 		// @TODO Use sanitize.js?
 		$content.find('colgroup').remove();
 	}
-	
+
 	/**
 	 * Return true if the nodeType is allowed in the settings,
 	 * Aloha.settings.contentHandler.allows.elements
@@ -174,7 +174,6 @@ define([
 			}
 
 			prepareTables($content);
-
 			this.cleanLists($content);
 			this.removeComments($content);
 			this.unwrapTags($content);

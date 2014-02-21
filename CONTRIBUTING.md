@@ -15,7 +15,7 @@ Prior to each commit be sure to obey the n commandments of committing to Aloha E
 1. obey [coding guidelines](http://www.aloha-editor.org/guides/style_guide.html)
 1. write JSLint compliant code
 1. write **JSDoc** for every method you touched during your implementation
-1. write a **human-readable :) [Changelog](https://github.com/alohaeditor/Aloha-Editor/wiki/Changelog)** entry that describes your change
+1. write a **human-readable :) [Changelog](http://www.alohaeditor.org/guides/develop_aloha.html#changelog)** entry that describes your change
 1. add a **qunit test** (if it makes sense) and/or document the **steps to manually test it** (in a separate guides page)
 1. test your changes in Internet Explorer 7, 8, 9 and the latest Firefox and latest Chrome
 1. document your changes in a **guides page**

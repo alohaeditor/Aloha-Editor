@@ -1,0 +1,1 @@
+ list-plugin/link-plugin: The list plugin interfered with the link plugin behaviour. Previously it was not possible to create links within a list due to a bug within the list plugin. The list plugin will now no longer use the Aloha.List scope.

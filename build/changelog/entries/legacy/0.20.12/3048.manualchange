@@ -1,0 +1,1 @@
+ wai-lang: The wai lang plugin will now fail loading when the flag-icons plugin was not loaded. Previously the plugin did not fail loading but showed broken flag icon images. Please note that it is currently mandatory to add third party dependencies for some plugins to the data-aloha-plugins attribute otherwise those dependencies can't be resolved correctly.

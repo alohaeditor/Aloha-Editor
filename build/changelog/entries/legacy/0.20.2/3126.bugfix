@@ -1,0 +1,1 @@
+ html5shims: Function `getRootParent` in ecma5schims.js no longer throws an error when `null` or `undefined` is passed to it.

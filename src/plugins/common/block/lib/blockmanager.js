@@ -207,9 +207,15 @@ define([
 				var commandId = data.commandId;
 
 				// Internet Explorer *magically* sets the range to the "Body" object after deselecting everything. yeah :-D
-				var onlyBlockSelected = (Aloha.getSelection().getRangeCount() === 0) || // Firefox / Chrome
-					(Aloha.getSelection().getRangeCount() === 1 && Aloha.getSelection().getRangeAt(0).endContainer === Aloha.getSelection().getRangeAt(0).startContainer && Aloha.getSelection().getRangeAt(0).endContainer === jQuery('body')[0]) || // Internet explorer: Inline Elements
-					(Aloha.getSelection().getRangeCount() === 1 && Aloha.getSelection().getRangeAt(0).endContainer === Aloha.getSelection().getRangeAt(0).startContainer && Aloha.getSelection().getRangeAt(0).startOffset + 1 === Aloha.getSelection().getRangeAt(0).endOffset); // Internet explorer: Block level elements
+				var selection = Aloha.getSelection(),
+				    rangeCount = selection.getRangeCount(),
+				    range = selection.getRangeAt(0),
+				    rangeEndContainer = range.endContainer,
+				    rangeStartContainer = range.startContainer,
+
+				    onlyBlockSelected = (rangeCount === 0) || // Firefox / Chrome
+					       (rangeCount === 1 && rangeEndContainer === rangeStartContainer && rangeEndContainer === jQuery('body')[0]) || // Internet explorer: Inline Elements
+					       (rangeCount === 1 && rangeEndContainer === rangeStartContainer && range.startOffset + 1 === range.endOffset); // Internet explorer: Block level elements
 
 				if (that._activeBlock && (commandId === 'delete' || commandId === 'forwarddelete') && onlyBlockSelected) {
 					// Deletion when a block is currently selected
@@ -217,7 +223,7 @@ define([
 					// In this case, the default command shall not be executed.
 					data.preventDefault = true;
 					that._activeBlock.destroy();
-				} else if (!that._activeBlock && (commandId === 'delete' || commandId === 'forwarddelete') && Aloha.getSelection().getRangeCount() === 1 && Aloha.getSelection().getRangeAt(0).collapsed === false) {
+				} else if (!that._activeBlock && (commandId === 'delete' || commandId === 'forwarddelete') && rangeCount === 1 && range.collapsed === false) {
 					// Deletion when a block is inside a bigger selection currently
 					// In this case, we check if we find an aloha-block. If yes, we delete it right away as the browser does not delete it correctly by default
 					var traverseSelectionTree;
@@ -347,80 +353,13 @@ define([
 		 * drop targets for block-level aloha blocks.
 		 */
 		initializeBlockLevelDragDrop: function () {
-			var that = this;
+			var blockmanager = this;
 			jQuery.each(Aloha.editables, function (i, editable) {
-				editable.obj.data("block-dragdrop", that._dragdropEnabled);
-				that.createBlockLevelSortableForEditableOrBlockCollection(editable.obj);
+				editable.obj.data('block-dragdrop', blockmanager._dragdropEnabled);
 			});
 			Aloha.bind('aloha-editable-created', function (e, editable) {
-				editable.obj.data("block-dragdrop", that._dragdropEnabled);
-				that.createBlockLevelSortableForEditableOrBlockCollection(editable.obj);
+				editable.obj.data('block-dragdrop', blockmanager._dragdropEnabled);
 			});
-		},
-
-		/**
-		 * We make editables or block collections sortable using jQuery UI here, if we
-		 * did not do this before.
-		 *
-		 * This is an internal method a user should never call!
-		 */
-		createBlockLevelSortableForEditableOrBlockCollection: function ($editableOrBlockCollection) {
-			var that = this;
-
-			if (!$editableOrBlockCollection.hasClass('aloha-block-blocklevel-sortable')) {
-
-				// We only want to make "block-level" aloha blocks sortable. According to the docs,
-				// sortable.cancel should have a CSS selector and if this matches, the element is only
-				// a drop target but NOT draggable. However, passing :not(.aloha-block) does not work somehow :-(
-				//
-				// Thus, we implemented the following alternative:
-				// Every "block-level" aloha block drag handle gets a new CSS class, and we only select this as
-				// drag handle. As only "block-level" aloha blocks have this CSS class, this will also only make
-				// aloha blocks draggable.
-				$editableOrBlockCollection.addClass("aloha-block-blocklevel-sortable").sortable({
-					revert: 100,
-					handle: ".aloha-block-draghandle-blocklevel",
-					connectWith: ".aloha-block-blocklevel-sortable.aloha-block-dropzone", // we want to be able to drag an element to other editables
-					disabled: !that._dragdropEnabled, // if drag & drop is disabled, sortable should also be disabled
-					start: function (event, ui) {
-						// check if the block's parent is a dropzone
-						ui.item.data("block-sort-allowed", (ui.item.parents(".aloha-block-dropzone").length > 0));
-					},
-					change: function (event, ui) {
-						ui.item.data("block-sort-allowed", (ui.placeholder.parents(".aloha-block-dropzone").length > 0));
-					},
-					stop: function (event, ui) {
-						var $blockItem = ui.item;
-						if (!$blockItem.data("block-sort-allowed")) {
-							jQuery(this).sortable("cancel");
-						}
-						$blockItem.removeData("block-sort-allowed");
-
-						var $table = BlockUitls.getTableByBlock($blockItem);
-						if ($table !== null) {
-							var actualParentEditable = Aloha.getEditableById(
-								BlockUitls.getEditableByBlock($blockItem)
-								          .attr('id'));
-							Table.getTableFromRegistry($table.get(0))
-							     .parentEditable = actualParentEditable;
-						}
-					}
-				});
-
-				// Hack for Internet Explorer 8:
-				// If you first click inside an editable, and THEN want to drag a block-level block,
-				// it sometimes occurs that the *whole editable* is selected and should be dragged away.
-				// This breaks dragging of Aloha Blocks.
-				// Bugfix: We disable the "ondragstart" event on every editable.
-				// However, as the "ondragstart" is also fired when a nested (inline) editable is moved using drag/drop,
-				// we need to allow this case.
-				$editableOrBlockCollection.get(0).ondragstart = function (e, ui) {
-					if (!ui || !ui.helper || !ui.helper.is('.aloha-block')) {
-						// You tried to move something else than an aloha block
-						return false;
-					}
-				};
-			}
 		},
 
 		/**

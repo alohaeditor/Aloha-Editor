@@ -1,0 +1,1 @@
+ commands: fixed weird behaviour when using the backspace key to delete text (cursor was jumping).

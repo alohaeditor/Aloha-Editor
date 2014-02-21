@@ -1,0 +1,1 @@
+ link plugin: removed linklist (and slowlinklist) which where loaded by default (we should not force everyone to have them active by default)

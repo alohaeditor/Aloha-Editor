@@ -1,0 +1,19 @@
+baseUrl and data-aloha-plugins attribute detection changed slightly
+
+    This change can be ignored if aloha.js is loaded in a page where
+    only a single script element refers to a file with this name and if
+    this script include is also the one carrying the data-aloha-plugins
+    attribute, and no other script include is carrying this attribute -
+    this should normally be the case. If this is not the case, aloha may
+    not load correctly due to this change.
+
+    The exact rules are now as follows:
+
+    If Aloha.settings.baseUrl is not specified, it will be taken from
+    the first script element that has a data-aloha-plugins attribute,
+    or, if there is no such script element, the first script element of
+    which the src attribute matches /\/aloha.js$/.
+     
+    If Aloha.settings.plugins.load is not specified, it will be taken
+    from the data-aloha-plugins attribute of the first script element
+    carrying this attribute.

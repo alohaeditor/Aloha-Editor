@@ -1,3 +1,4 @@
 define({
-	"button.textcolor.tooltip": "Textfarbe ändern"
+	'change-text-color': 'Textfarbe ändern',
+	'remove-text-color': 'Textfarbe entfernen'
 });

@@ -1,0 +1,1 @@
+ core: We now also remove jquery* attributes before the content is saved.

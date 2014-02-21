@@ -1,0 +1,1 @@
+ cite-plugin: Fixed cite plugin DOM element attributes. It is not needed to add attributes to blockquote and q tags unless you have defined a referencecontainer.

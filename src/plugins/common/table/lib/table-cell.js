@@ -1,9 +1,11 @@
 define([
+	'aloha',
 	'aloha/jquery',
 	'aloha/ephemera',
 	'table/table-plugin-utils',
 	'util/browser'
 ], function (
+	Aloha,
 	jQuery,
 	Ephemera,
 	Utils,
@@ -458,8 +460,11 @@ define([
 		this.tableObj.selection.unselectCells();
 
 		if (this.tableObj.hasFocus) {
-			if (!Browser.ie)
+			if (typeof jqEvent.stopPropagation === 'function') {
 				jqEvent.stopPropagation();
+			} else if (typeof jqEvent.cancelBubble !== 'undefined') {
+				jqEvent.cancelBubble = true;
+			}
 		}
 	};
 
@@ -492,7 +497,16 @@ define([
 			// only add a row on a single key-press of tab (so check that alt-,
 			// shift- or ctrl-key are NOT pressed)
 			if (KEYCODE_TAB == jqEvent.keyCode && !jqEvent.altKey && !jqEvent.shiftKey && !jqEvent.ctrlKey) {
-				this.tableObj.addRow(this.obj.parent().index() + 1);
+				var lastInsertedRow = this.tableObj.addRow(this.obj.parent().index() + 1);
+
+				if (Browser.mozilla) {
+					// After the row is inserted, mozilla sets the cursor outside
+					// the Table in weird places.
+					jqEvent.preventDefault();
+
+					// Place focus into first editable cell of new row
+					$(lastInsertedRow).find('td:nth-child(2) .aloha-table-cell-editable').focus();
+				}
 			}
 		}
 	};

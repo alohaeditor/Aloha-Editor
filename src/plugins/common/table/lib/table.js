@@ -23,7 +23,8 @@ define([
 	'table/table-plugin-utils',
 	'aloha/ephemera',
 	'util/html',
-	'util/dom2'
+	'util/dom2',
+	'aloha/console'
 ], function (
 	Aloha,
 	jQuery,
@@ -35,7 +36,8 @@ define([
 	Utils,
 	Ephemera,
 	Html,
-	Dom
+	Dom,
+    Console
 ) {
 	var undefined = void 0;
 	var GENTICS = window.GENTICS;
@@ -729,25 +731,31 @@ define([
 	};
 
 	/**
-	 * check the WAI conformity of the table and sets the attribute.
+	 * Check the WAI conformity of the table and sets the attribute.
+	 *
+	 * @returns {boolean} True is WAI is activated, False otherwise.
 	 */
 	Table.prototype.checkWai = function () {
-		var w = this.wai;
-		if (!w) {
-			return;
+		var thisWai = this.wai;
+		if (!thisWai) {
+			return false;
 		}
 
-		w.removeClass(this.get('waiGreen'));
-		w.removeClass(this.get('waiRed'));
+		var waiGreen = this.get('waiGreen'),
+			waiRed = this.get('waiRed');
+
+		thisWai.removeClass(waiGreen + ' ' + waiRed);
 
 		// Y U NO explain why we must check that summary is longer than 5 characters?
 		// http://cdn3.knowyourmeme.com/i/000/089/665/original/tumblr_l96b01l36p1qdhmifo1_500.jpg
 
-		if (jQuery.trim(this.obj[0].summary) != '') {
-			w.addClass(this.get('waiGreen'));
-		} else {
-			w.addClass(this.get('waiRed'));
+		if (jQuery.trim(this.obj[0].summary) !== '') {
+			thisWai.addClass(waiGreen);
+			return true;
 		}
+
+		thisWai.addClass(waiRed);
+		return false;
 	};
 
 	/**
@@ -1008,6 +1016,7 @@ define([
 						e.stopPropagation();
 						e.preventDefault();
 					} catch (e) {
+						Console.error ('Table', e.message);
 					}
 
 					return false;
@@ -1416,36 +1425,37 @@ define([
 	 *
 	 * @param {int} rowIndex
 	 *        the index at which the new row shall be inserted
+	 * @return <HTMLElemenet> last row inserted
 	 */
 	Table.prototype.addRow = function(newRowIndex) {
-
-		var that = this;
 		var rowsToInsert = 1;
+		var $insertionRow;
+		var classSelectionColumn = this.get('classSelectionColumn');
 
-		var numCols = this.countVirtualCols();
 		var $rows = this.obj.children().children('tr');
 		for (var j = 0; j < rowsToInsert; j++) {
-			var insertionRow = jQuery('<tr>');
+			$insertionRow = jQuery('<tr>');
 
 			// create the first column, the "select row" column
-			var selectionColumn = jQuery('<td>');
-			selectionColumn.addClass(this.get('classSelectionColumn'));
-			this.attachRowSelectionEventsToCell(selectionColumn);
-			insertionRow.append(selectionColumn);
+			var $selectionColumn = jQuery('<td>');
+			$selectionColumn.addClass(classSelectionColumn);
+			this.attachRowSelectionEventsToCell($selectionColumn);
+			$insertionRow.append($selectionColumn);
 
 			var grid = Utils.makeGrid($rows);
 			var selectColOffset = 1;
 			if ( newRowIndex >= grid.length ) {
 				for (var i = selectColOffset; i < grid[0].length; i++) {
-					insertionRow.append(this.newActiveCell().obj);
+					$insertionRow.append(this.newActiveCell().obj);
 				}
 			} else {
-				for (var i = selectColOffset; i < grid[newRowIndex].length; ) {
-					var cellInfo = grid[newRowIndex][i];
+				var newRow = grid[newRowIndex];
+				for (var i = selectColOffset, len = newRow.length; i < len; ) {
+					var cellInfo = newRow[i];
 					if (Utils.containsDomCell(cellInfo)) {
 						var colspan = cellInfo.colspan;
 						while (colspan--) {
-							insertionRow.append(this.newActiveCell().obj);
+							$insertionRow.append(this.newActiveCell().obj);
 						}
 					} else {
 						jQuery( cellInfo.cell ).attr('rowspan', cellInfo.rowspan + 1);
@@ -1455,13 +1465,15 @@ define([
 			}
 
 			if ( newRowIndex >= $rows.length ) {
-				$rows.eq( $rows.length - 1 ).after( insertionRow );
+				$rows.eq( $rows.length - 1 ).after( $insertionRow );
 			} else {
-				$rows.eq( newRowIndex ).before( insertionRow );
+				$rows.eq( newRowIndex ).before( $insertionRow );
 			}
 		}
 
 		this.numRows += rowsToInsert;
+
+		return $insertionRow[0];
 	};
 
 	/**
@@ -1799,10 +1811,10 @@ define([
 
 		var rows = cell.closest( 'tbody' ).children( 'tr' );
 		var cellRow = cell.closest( 'tr' );
-		var gridId = Utils.cellIndexToGridColumn( rows,
-																							rows.index( cellRow ),
-																							cellRow.children().index( cell )
-																						);
+		var gridId = Utils.cellIndexToGridColumn(rows,
+			rows.index(cellRow),
+			cellRow.children().index(cell)
+		);
 
 		var resizeColumns = function(pixelsMoved) {
 			var expandToWidth, reduceToWidth;
@@ -1835,19 +1847,22 @@ define([
 			});
 		};
 
-		cell.bind( 'mousedown.resize', function() {
+		cell.bind('mousedown.resize', function() {
 
 			// create a guide
 			var guide = jQuery( '<div></div>' );
+			var $cell = jQuery(cell);
+			var width = $cell.outerWidth() - $cell.innerWidth();
+			var height = $cell.closest( 'tbody' ).innerHeight();
 			guide.css({
-				'height': jQuery( cell ).closest( 'tbody' ).innerHeight(),
-				'width': jQuery( cell ).outerWidth() - jQuery( cell ).innerWidth(),
-				'top': jQuery( cell ).closest( 'tbody' ).offset().top,
-				'left': jQuery( cell ).offset().left,
+				'height': (height < 1) ? 1 : height,
+				'width': (width < 1) ? 1 : width,
+				'top': $cell.closest( 'tbody' ).offset().top,
+				'left': $cell.offset().left,
 				'position': 'absolute',
 				'background-color': '#80B5F2'
 			});
-			jQuery( 'body' ).append( guide );
+			jQuery('body').append(guide);
 
 			Utils.getCellResizeBoundaries(gridId, rows, function(maxPageX, minPageX) {
 
@@ -1939,9 +1954,12 @@ define([
 				}
 			};
 
+			var width = cell.closest( 'tbody' ).innerWidth();
+			var height = cell.outerHeight() - cell.innerHeight();
+
 			guide.css({
-				'width': cell.closest( 'tbody' ).innerWidth(),
-				'height': cell.outerHeight() - cell.innerHeight(),
+				'width': (width < 1) ? 1 : width,
+				'height': (height < 1) ? 1: height,
 				'top': guideTop(),
 				'left': cell.closest( 'tbody' ).offset().left,
 				'position': 'absolute',
@@ -2052,15 +2070,19 @@ define([
 
 			// create a guide
 			var guide = jQuery( '<div></div>' );
+
+			var height = table.children( 'tbody' ).innerHeight();
+			var width = lastCell.outerWidth() - lastCell.innerWidth();
+
 			guide.css({
-				'height': table.children( 'tbody' ).innerHeight(),
-				'width': lastCell.outerWidth() - lastCell.innerWidth(),
+				'height': (height < 1) ? 1 : height,
+				'width': (width < 1) ? 1 : width,
 				'top': table.find('tbody').offset().top,
 				'left': table.offset().left + table.outerWidth(),
 				'position': 'absolute',
 				'background-color': '#80B5F2'
 			});
-			jQuery( 'body' ).append( guide );
+			jQuery('body').append( guide );
 
 			// set the maximum and minimum resize
 			var maxPageX = tableContainer.offset().left + tableContainer.width();

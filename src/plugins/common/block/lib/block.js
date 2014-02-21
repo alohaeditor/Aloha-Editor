@@ -39,7 +39,8 @@ define([
 	'util/class',
 	'PubSub',
 	'block/block-utils',
-	'util/html'
+	'util/html',
+	'util/functions'
 ], function(
 	Aloha,
 	jQuery,
@@ -49,7 +50,8 @@ define([
 	Class,
 	PubSub,
 	BlockUtils,
-    Html
+	Html,
+	Fn
 ){
 	'use strict';
 
@@ -152,7 +154,20 @@ define([
 			if (this.isDraggable()) {
 				// Remove default drag/drop behavior of the browser
 				$element.find('img').attr('draggable', 'false');
-				$element.find('a').attr('draggable', 'false');
+
+				try {
+					$element.find('a').attr('draggable', 'false');
+				} catch(e) {
+					// If we get in here, it is most likely an issue with IE 10 in documentmode 7
+					// and IE10 compatibility mode. It maybe happens in older versions too.
+					// Error: Member not found
+					// https://connect.microsoft.com/IE/feedback/details/774078
+					// http://bugs.jquery.com/ticket/12577
+					// Our fallback solution:
+					$element.find('a').each(function() {
+						this.setAttribute('draggable', 'false');
+					});
+				}
 			}
 
 			// set the attributes
@@ -456,11 +471,12 @@ define([
 		 * @return Boolean
 		 */
 		isDraggable: function() {
-			if (this.$element[0].tagName.toLowerCase() === 'div' && this.$element.parents('.aloha-editable,.aloha-block,.aloha-block-collection').first().hasClass('aloha-block-collection')) {
+			if (this.$element[0].nodeName === 'DIV' &&
+				this.$element.parents('.aloha-editable,.aloha-block:not(.aloha-table-wrapper),.aloha-block-collection').first().hasClass('aloha-block-collection')) {
 				// Here, we are inside an aloha-block-collection, and thus also need to be draggable.
 				return true;
 			}
-			return this.$element.parents('.aloha-editable,.aloha-block').first().hasClass('aloha-editable');
+			return this.$element.parents('.aloha-block:not(.aloha-table-wrapper),.aloha-editable').first().hasClass('aloha-editable');
 		},
 
 		/**************************
@@ -615,12 +631,15 @@ define([
 			this._makeNestedBlockCollectionsSortable();
 
 			this.renderBlockHandlesIfNeeded();
-			if (this.isDraggable() && this.$element[0].tagName.toLowerCase() === 'span') {
-				this._setupDragDropForInlineElements();
-				this._disableUglyInternetExplorerDragHandles();
-			} else if (this.isDraggable() && this.$element[0].tagName.toLowerCase() === 'div') {
-				this._setupDragDropForBlockElements();
-				this._disableUglyInternetExplorerDragHandles();
+			if (this.isDraggable()) {
+				var nodeName = this.$element[0].nodeName;
+				if (nodeName === 'SPAN') {
+					this._setupDragDropForInlineElements();
+					this._disableUglyInternetExplorerDragHandles();
+				} else if (nodeName === 'DIV') {
+					this._setupDragDropForBlockElements();
+					this._disableUglyInternetExplorerDragHandles();
+				}
 			}
 			this._hideDragHandlesIfDragDropDisabled();
 			this._attachDropzoneHighlightEvents();
@@ -657,7 +676,7 @@ define([
 					// for nested ones.
 					BlockManager.createBlockLevelSortableForEditableOrBlockCollection($blockCollection);
 				}
-			})
+			});
 		},
 
 		/**
@@ -666,10 +685,11 @@ define([
 		 */
 		_disableUglyInternetExplorerDragHandles: function() {
 			if (jQuery.browser.msie) {
-				this.$element.get( 0 ).onresizestart = function ( e ) { return false; };
-				this.$element.get( 0 ).oncontrolselect = function ( e ) { return false; };
+				var $elem = this.$element.get(0);
+				$elem.onresizestart = Fn.returnFalse;
+				$elem.oncontrolselect = Fn.returnFalse;
 				// We do NOT abort the "ondragstart" event as it is required for drag/drop.
-				this.$element.get( 0 ).onmovestart = function ( e ) { return false; };
+				$elem.onmovestart = Fn.returnFalse;
 				// We do NOT abort the "onselectstart" event because this would disable selection in nested editables
 			}
 		},
@@ -709,7 +729,7 @@ define([
 
                 // Remove the dropzones as soon as the mouse is released,
                 // irrespective of where the drop took place.
-                jQuery( document ).one( "mouseup.aloha-block-dropzone", function(e) {
+                jQuery( document ).one( "mouseup.aloha-block-dropzone", function() {
                     var dropzones = that.$element.parents( ".aloha-editable" ).first().data( "block-dropzones" ) || [];
                     jQuery.each( dropzones, function(i, editable_selector) {
                         jQuery( editable_selector ).removeClass( "aloha-block-dropzone" );      

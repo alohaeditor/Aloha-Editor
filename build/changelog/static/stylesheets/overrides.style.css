@@ -1,0 +1,53 @@
+#header h1 {
+	background: url(../images/ae_logo256.png) 0px 13px no-repeat;
+}
+
+#feature, #topNav {
+	background: white;
+}
+
+#header {
+	background: #77afd4 url(../images/guide-bg.jpg) no-repeat top right;
+}
+
+#header .nav .index, #header .nav .index a, #guides {
+	background: #405664;
+}
+
+h4 {
+	font-size: 1.2142em;
+}
+
+h4 img {
+	margin-bottom: -5px;
+}
+
+#guides dd {
+	color: white;
+}
+
+hr {
+	display: none;
+}
+
+#guides hr {
+	display: none;
+}
+
+#guides .L, #guides .R {
+	width: 60%;	
+}
+
+#guides dt {
+	font-size: 20px;
+	margin-bottom: 10px;
+	color: rgb(180,180,180);
+}
+
+#subCol .chapters {
+	color: #405664;
+}
+
+a, #subCol .chapters a, #mainCol a, #subCol a, #feature a {
+	color: #77afd4;
+}

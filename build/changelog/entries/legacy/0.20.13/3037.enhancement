@@ -1,0 +1,1 @@
+ core: The getEditableConfig will now also return the selector within the configuration object. This only applies to custom editable configurations that provide objects instead of arrays since arrays can't be extended with custom properties. The returned object will now also contain nested arrays. Previously nested arrays were omitted.

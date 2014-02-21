@@ -31,6 +31,8 @@ define([
 	'util/range',
 	'util/arrays',
 	'util/strings',
+	'util/dom',
+	'util/dom2',
 	'aloha/console',
 	'PubSub',
 	'aloha/engine',
@@ -43,6 +45,8 @@ define([
 	Range,
 	Arrays,
 	Strings,
+	Dom,
+	Dom2,
 	console,
 	PubSub,
 	Engine,
@@ -431,7 +435,7 @@ define([
 		 * @return true when rangeObject was modified, false otherwise
 		 * @hide
 		 */
-		onChange: function (objectClicked, event, timeout) {
+		onChange: function (objectClicked, event, timeout, editableChanged) {
 			if (this.updateSelectionTimeout) {
 				window.clearTimeout(this.updateSelectionTimeout);
 			}
@@ -453,6 +457,24 @@ define([
 						selection.onChange(objectClicked, event, 10 + (timeout || 5) * 2);
 					}
 					return;
+				} else {
+					// And yet another IE workaround. Somehow the caret is not
+					// positioned inside the clicked editable. This occures only
+					// when switching editables in IE. In those cases the caret is
+					// invisible. I tried to trace the origin of the issue but i
+					// could not find the place where the caret is mispositioned.
+					// I noticed that IE is sometimes adding drag handles to
+					// editables. Aloha is removing those handles.
+					// If those handles are visible it apears that two clicks are needed
+					// to activate the editable. The first click is to select the
+					// editable and the second to enable it and activeate it. I added a
+					// range select call that will cirumvent this issue by resetting
+					// the selection. I also checked the range object. In all cases
+					// i found the range object contained correct properties. The
+					// workaround will only be applied for IE.
+					if (jQuery.browser.msie && editableChanged) {
+						range.select();
+					}
 				}
 				Aloha.Selection._updateSelection(event, range);
 			}, timeout || 5);
@@ -553,15 +575,31 @@ define([
 							.closest('.aloha-editable').length > 0;
 
 				if (inEditable) {
-					var validStartPosition = !(3 === range.startContainer.nodeType &&
-							!jQuery(range.startContainer.parentNode).contentEditable());
+					var validStartPosition = this._validEditablePosition(range.startContainer);
+					var validEndPosition = this._validEditablePosition(range.endContainer);
+					var newPos;
+					// when we are moving down (with the cursor down key), we want to position the
+					// cursor AFTER the non-editable area
+					// otherwise BEFORE the non-editable area
+					var movingDown = event && (event.keyCode === 40);
 
-					var validEndPosition = !(3 === range.endContainer.nodeType &&
-							!jQuery(range.endContainer.parentNode).contentEditable());
-
+					if (!validStartPosition) {
+						newPos = this._getNearestEditablePosition(range.startContainer, movingDown);
+						if (newPos) {
+							range.startContainer = newPos.container;
+							range.startOffset = newPos.offset;
+						}
+					}
+					if (!validEndPosition) {
+						newPos = this._getNearestEditablePosition(range.endContainer, movingDown);
+						if (newPos) {
+							range.endContainer = newPos.container;
+							range.endOffset = newPos.offset;
+						}
+					}
 					if (!validStartPosition || !validEndPosition) {
-						Aloha.getSelection().removeAllRanges();
-						return true;
+						range.correctRange();
+						range.select();
 					}
 				}
 			}
@@ -582,6 +620,71 @@ define([
 			Aloha.trigger('aloha-selection-changed-after', [this.rangeObject, event]);
 
 			return true;
+		},
+
+		/**
+		 * Check whether a position with the given node as container is a valid editable position
+		 * @param {DOMObject} node DOM node
+		 * @return true if the position is editable, false if not
+		 */
+		_validEditablePosition: function (node) {
+			if (!node) {
+				return false;
+			}
+			switch (node.nodeType) {
+			case 1:
+				return jQuery(node).contentEditable();
+			case 3:
+				return jQuery(node.parentNode).contentEditable();
+			default:
+				return false;
+			}
+		},
+
+		/**
+		 * Starting with the given node (which is supposed to be not editable)
+		 * find the nearest editable position
+		 * 
+		 * @param {DOMObject} node DOM node
+		 * @param {Boolean} forward true for searching forward, false for searching backward
+		 */
+		_getNearestEditablePosition: function (node, forward) {
+			var current = node;
+			var parent = current.parentNode;
+			while (parent !== null && !jQuery(parent).contentEditable()) {
+				current = parent;
+				parent = parent.parentNode;
+			}
+			if (current === null) {
+				return false;
+			}
+			if (forward) {
+				// check whether the element after the non editable element is editable and a blocklevel element
+				if (Dom.isBlockLevelElement(current.nextSibling) && jQuery(current.nextSibling).contentEditable()) {
+					return {
+						container: current.nextSibling,
+						offset: 0
+					};
+				} else {
+					return {
+						container: parent,
+						offset: Dom.getIndexInParent(current) + 1
+					};
+				}
+			} else {
+				// check whether the element before the non editable element is editable and a blocklevel element
+				if (Dom.isBlockLevelElement(current.previousSibling) && jQuery(current.previousSibling).contentEditable()) {
+					return {
+						container: current.previousSibling,
+						offset: current.previousSibling.childNodes.length
+					};
+				} else {
+					return {
+						container: parent,
+						offset: Dom.getIndexInParent(current)
+					};
+				}
+			}
 		},
 
 		/**

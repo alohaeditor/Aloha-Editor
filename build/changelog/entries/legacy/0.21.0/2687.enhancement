@@ -1,0 +1,6 @@
+Aloha specific css rules that are not in use any more were removed:
+
+    .aloha-editable-zerowidthfix
+    .aloha-logo
+    .aloha-maximize
+    

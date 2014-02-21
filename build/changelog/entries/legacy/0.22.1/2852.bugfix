@@ -1,0 +1,1 @@
+ Moved call to execCommand('enableObjectResizing', false, false) to init method of editable. Otherwise, FF 15 (and above) will throw a JS error, if execCommand('enableObjectResizing', false, false) is called with no contenteditable elements found in the page.

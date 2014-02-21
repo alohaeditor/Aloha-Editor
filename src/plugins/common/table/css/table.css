@@ -67,6 +67,13 @@ td.aloha-table-selectrow {
 }
 
 /* wai indicator */
+input.aloha-wai-green {
+	background: url(../img/wai-green.png) no-repeat scroll 2px 2px;
+}
+
+input.aloha-wai-red {
+	background: url(../img/wai-red.png) no-repeat scroll 2px 2px;
+}
 .aloha-table-wrapper div.aloha-wai-red {
 	background-image: url(../img/wai-red.png);
 }

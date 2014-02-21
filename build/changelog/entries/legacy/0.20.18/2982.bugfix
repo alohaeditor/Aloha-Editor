@@ -1,0 +1,1 @@
+ characterpicker-plugin: Fixed inserting a special character with a collapsed selection, when using IE.

@@ -1,0 +1,1 @@
+ blocks: Selecting with <CTRL>+A, when inside of a nested editable, will now only select all of the contents of the immediate editable, rather the contents of parent editables as well.

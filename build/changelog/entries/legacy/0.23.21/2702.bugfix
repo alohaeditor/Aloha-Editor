@@ -1,0 +1,1 @@
+ tables: Tables with col- and rowspans will now be correctly initialialized in IE9.

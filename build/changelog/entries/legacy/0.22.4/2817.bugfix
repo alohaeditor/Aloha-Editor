@@ -1,0 +1,1 @@
+ dom utils: fixes potential bug that may cause attributes with the slash '/' character in the name to appear in the result of getContents().

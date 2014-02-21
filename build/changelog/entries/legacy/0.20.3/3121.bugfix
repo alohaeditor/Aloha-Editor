@@ -1,0 +1,1 @@
+ core: Removes ExtJS' IE6 style fixes which break layout in IE9.

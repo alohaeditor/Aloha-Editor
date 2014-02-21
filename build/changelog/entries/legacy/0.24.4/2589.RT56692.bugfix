@@ -1,0 +1,1 @@
+paste plugin: Pasting will no longer always break the line. A wrapping element will no longer be created to contain the copy content.

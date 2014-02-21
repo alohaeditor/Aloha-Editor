@@ -1,0 +1,1 @@
+ Selection of content in an contenteditable=false which is not a child of an Aloha Editor instance now works like expected

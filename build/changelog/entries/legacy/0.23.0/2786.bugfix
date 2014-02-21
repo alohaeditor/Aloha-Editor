@@ -1,0 +1,1 @@
+ link-plugin: Fix anchor class would always be set to cssclass even when cssclassregex was not configured

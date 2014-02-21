@@ -1,0 +1,1 @@
+ core: fixed incorrect dependency on jquery.json-2.2 where util/json2 is needed instead and made it globally available

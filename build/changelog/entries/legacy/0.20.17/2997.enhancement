@@ -1,0 +1,1 @@
+ contenthandler plugin: A new Blockelement Content Handler has been added, that handles breaks in blockelements upon initialization and getContents

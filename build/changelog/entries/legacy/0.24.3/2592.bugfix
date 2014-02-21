@@ -1,0 +1,1 @@
+ tables: When selection is placed into table, all other tables will now have their visual selection removed.

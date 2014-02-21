@@ -1,0 +1,1 @@
+ added aloha-cleanme class to aloha-block-handle to prevent potential issues with temporary elements not being cleaned up.

@@ -1,0 +1,1 @@
+ Fixed the way the table plugin unwrapped it's cell contents when deactivating a table - all dom object references where lost before. Now the objects are truly unwrapped, and just moved up one step within the dom structure.

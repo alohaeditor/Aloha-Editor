@@ -1,0 +1,1 @@
+tables: The cell merge and cell split buttons are now correctly disable when not applicable in IE7 and IE8.

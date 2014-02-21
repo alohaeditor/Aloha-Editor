@@ -1,0 +1,1 @@
+ core: Adds a guard in `execCommand()' to prevent `INDEX_SIZE_ERR' exceptions.

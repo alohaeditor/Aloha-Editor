@@ -32,7 +32,8 @@ define([
 	'ui/toggleButton',
 	'formatlesspaste/formatlesshandler',
 	'aloha/contenthandlermanager',
-	'i18n!formatlesspaste/nls/i18n'
+	'i18n!formatlesspaste/nls/i18n',
+	'util/html'
 ], function (
 	Aloha,
 	Plugin,
@@ -41,7 +42,8 @@ define([
 	ToggleButton,
 	FormatlessPasteHandler,
 	ContentHandlerManager,
-	i18n
+	i18n,
+    Html
 ) {
 	'use strict';
 
@@ -81,9 +83,9 @@ define([
 		$.extend(obj, config);
 	}
 
-	function registerFormatlessPasteHandler(plugin) {
+	function registerFormatlessPasteHandler(plugin, config) {
 		ContentHandlerManager.register('formatless', FormatlessPasteHandler);
-		FormatlessPasteHandler.strippedElements = plugin.strippedElements;
+		FormatlessPasteHandler.strippedElements = config.strippedElements || Html.TEXT_LEVEL_SEMANTIC_ELEMENTS;
 
 		plugin._toggleFormatlessPasteButton =
 			Ui.adopt('toggleFormatlessPaste', ToggleButton, {
@@ -158,54 +160,16 @@ define([
 		button: true,
 
 		/**
-		 * Text-level semantic and edit elements to be remove during
-		 * copying or pasting.
-		 *
-		 * See:
-		 * http://dev.w3.org/html5/spec/text-level-semantics.html#usage-summary
-		 *
-		 * Configurable.
-		 *
-		 * @type {Array.<string>}
-		 */
-		strippedElements: ['a',
-		                   'abbr',
-		                   'b',
-		                   'bdi',
-		                   'bdo',
-		                   'cite',
-		                   'code',
-		                   'del',
-		                   'dfn',
-		                   'em',
-		                   'i',
-		                   'ins',
-		                   'kbd',
-		                   'mark',
-		                   'q',
-		                   'rp',
-		                   'rt',
-		                   'ruby',
-		                   's',
-		                   'samp',
-		                   'small',
-		                   'strong',
-		                   'sub',
-		                   'sup',
-		                   'time',
-		                   'u',
-		                   'var'],
-
-		/**
 		 * Initializes formatless copying and pasting.
 		 * Parses configuration.
 		 */
 		init: function () {
 			var plugin = this;
 			var config = plugin.settings.config || plugin.settings;
+			var parsedConfig = parseConfiguration(config);
 
-			applyConfiguration(plugin, parseConfiguration(config));
-			registerFormatlessPasteHandler(plugin);
+			applyConfiguration(plugin, parsedConfig);
+			registerFormatlessPasteHandler(plugin, parsedConfig);
 
 			Aloha.bind('aloha-editable-activated', function ($event, data) {
 				var config = getEditableConfig(plugin, data.editable);

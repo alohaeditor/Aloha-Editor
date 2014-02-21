@@ -1,0 +1,17 @@
+{
+  "version": "0.21.3",
+  "date": "24.08.2012",
+  "changeLogEntryFileNames": [
+       "2669.enhancement",
+       "2864.enhancement",
+       "2865.enhancement",
+       "2866.enhancement",
+       "2867.bugfix",
+       "2868.bugfix",
+       "2869.bugfix",
+       "2870.bugfix",
+       "2871.bugfix"
+   ],
+  "genericProperties": {
+  }
+}

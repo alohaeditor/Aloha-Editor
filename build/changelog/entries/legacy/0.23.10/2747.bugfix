@@ -1,0 +1,1 @@
+ Prevents write outside the p tags, when you insert a table and select just above of this or just in the right, selecting the table wrapper element.

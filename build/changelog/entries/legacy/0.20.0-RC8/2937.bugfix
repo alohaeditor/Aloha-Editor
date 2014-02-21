@@ -1,0 +1,1 @@
+ image-plugin: Fixed handling of width and height when the user entered the cropping mode. You can resize the crop area by entering values in the width and height field. 

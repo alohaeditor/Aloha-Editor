@@ -1,0 +1,1 @@
+ A problem was fixed that prevented table-cells to be selected after their header-status was changed.

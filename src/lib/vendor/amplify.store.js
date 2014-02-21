@@ -198,7 +198,7 @@ if ( window.globalStorage ) {
 		// http://www.w3.org/TR/REC-xml/#NT-Name
 		// simplified to assume the starting character is valid
 		// also removed colon as it is invalid in HTML attribute names
-		key = key.replace( /[^-._0-9A-Za-z\xb7\xc0-\xd6\xd8-\xf6\xf8-\u037d\u37f-\u1fff\u200c-\u200d\u203f\u2040\u2070-\u218f]/g, "-" );
+		key = key.replace( /[^-._0-9A-Za-z\xb7\xc0-\xd6\xd8-\xf6\xf8-\u037d\u037f-\u1fff\u200c-\u200d\u203f\u2040\u2070-\u218f]/g, "-" );
 
 		if ( value === undefined ) {
 			attr = div.getAttribute( key );

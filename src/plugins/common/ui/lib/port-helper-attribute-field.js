@@ -75,7 +75,8 @@ define([
 			resourceValue,
 			targetObject,
 			targetAttribute,
-			lastAttributeValue;
+			lastAttributeValue,
+			additionalTargetObjects = [];
 
 		if (props.cls) {
 			element.addClass(props.cls);
@@ -216,10 +217,30 @@ define([
 			}
 		}
 
+		/**
+		 * Execute a function for every targets this attribute
+		 *
+		 * fields is pointing to.
+		 * @param {Function} fn Function to execute for each target
+		 */
+		function executeForTargets(fn) {
+			var target = $(targetObject);
+			fn(target);
+			for (var i = 0, len = additionalTargetObjects.length; i < len ; i++) {
+				fn($(additionalTargetObjects[i]));
+			}
+		}
+
+		/**
+		 * Change target background so the targets are
+		 * highlighted
+		 */
 		function changeTargetBackground() {
 			var target = $(targetObject);
 			if (targetHighlightClass) {
-				target.addClass(targetHighlightClass);
+				executeForTargets(function (target) {
+					target.addClass(targetHighlightClass)
+				});
 			}
 
 			if (noTargetHighlight) {
@@ -234,27 +255,39 @@ define([
 			// set background color to give visual feedback which link is modified
 			if (target.context && target.context.style &&
 				target.context.style['background-color']) {
-				target.attr('data-original-background-color',
-							target.context.style['background-color']);
+				executeForTargets(function (target) {
+					target.attr('data-original-background-color',
+					            target.context.style['background-color']);
+				});
 			}
-			target.css('background-color', '#80B5F2');
+			executeForTargets(function (target) {
+				target.css('background-color', '#80B5F2');
+			});
 		}
 
 		function restoreTargetBackground() {
 			var target = $(targetObject);
 			if (targetHighlightClass) {
-				target.removeClass(targetHighlightClass);
+				executeForTargets(function (target) {
+					target.removeClass(targetHighlightClass);
+				});
 			}
 			if (noTargetHighlight) {
 				return;
 			}
 			// Remove the highlighting and restore original color if was set before
 			var color = target.attr('data-original-background-color');
-			target.css('background-color', color || '');
+			executeForTargets(function (target) {
+				target.css('background-color', color || '');
+			});
 			if (!target.attr('style')) {
-				target.removeAttr('style');
+				executeForTargets(function (target) {
+					target.removeAttr('style');
+				});
 			}
-			target.removeAttr('data-original-background-color');
+			executeForTargets(function (target) {
+				target.removeAttr('data-original-background-color');
+			});
 		}
 
 		function parse(template, item) {
@@ -333,20 +366,12 @@ define([
 		function setAttribute(attr, value, regex, reference) {
 			if (targetObject) {
 				// check if a reference value is submitted to check against with a regex
-				var setAttr = true;
-				if (typeof reference != 'undefined') {
-					var regxp = new RegExp(regex);
-					if ( ! reference.match(regxp) ) {
-						setAttr = false;
-					}
-				}
-
-				// if no regex was successful or no reference value
-				// was submitted remove the attribute
-				if ( setAttr ) {
-					$(targetObject).attr(attr, value);
-				} else {
+				if (typeof reference !== 'undefined' && !reference.match(new RegExp(regex))) {
 					$(targetObject).removeAttr(attr);
+				} else {
+					executeForTargets(function (target) {
+						target.attr(attr, value);
+					});
 				}
 			}
 		}
@@ -360,6 +385,7 @@ define([
 		function setTargetObject(obj, attr) {
 			targetObject = obj;
 			targetAttribute = attr;
+			additionalTargetObjects = [];
 
 			setItem(null);
 			
@@ -377,6 +403,10 @@ define([
 					setItem(items[0]);
 				}
 			} );
+		}
+
+		function addAdditionalTargetObject(targetObj) {
+			additionalTargetObjects.push(targetObj);
 		}
 
 		function getTargetObject() {
@@ -412,6 +442,10 @@ define([
 			return element[0];
 		}
 
+		function getInputJQuery() {
+			return element;
+		}
+
 		var attrField = {
 			getInputElem: getInputElem,
 			hasInputElem: hasInputElem,
@@ -422,6 +456,7 @@ define([
 			focus: focus,
 			getTargetObject: getTargetObject,
 			setTargetObject: setTargetObject,
+			addAdditionalTargetObject: addAdditionalTargetObject,
 			setAttribute: setAttribute,
 			getItem: getItem,
 			setItem: setItem,
@@ -430,7 +465,8 @@ define([
 			addListener: addListener,
 			setObjectTypeFilter: setObjectTypeFilter,
 			setTemplate: setTemplate,
-			setPlaceholder: setPlaceholder
+			setPlaceholder: setPlaceholder,
+			getInputJQuery: getInputJQuery
 		};
 
 		return attrField;

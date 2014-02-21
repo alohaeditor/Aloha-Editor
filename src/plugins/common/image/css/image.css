@@ -51,7 +51,7 @@
 
 /* Crop and Resize */
 .aloha-icon-cnr-resize, .aloha-icon-cnr-crop, .aloha-icon-cnr-reset {
-	background: url(../img/cropnresize.png);
+	background: url(../img/cropnresize.gif);
 }
 
 .aloha-icon-cnr-crop {
@@ -63,7 +63,7 @@
 }
 
 .aloha-icon-cnr-ratio {
-	background-image: url(../img/cropnresize.png) !important;
+	background-image: url(../img/cropnresize.gif) !important;
 	background-position: -60px -2px !important;
 }
 

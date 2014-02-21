@@ -1,0 +1,1 @@
+ core: UP and DOWN cursor key will now not be processed specially by Aloha, they will be left to native handeling.

@@ -1,11 +1,13 @@
 define([
 	'jquery',
 	'aloha/copypaste',
-	'util/browser'
+	'util/browser',
+	'aloha/console'
 ], function (
 	$,
 	CopyPaste,
-	Browser
+	Browser,
+	Console
 ) {
 	'use strict';
 
@@ -528,11 +530,11 @@ define([
 			var anchor = getAnchorCell(selection);
 			if (anchor) {
 				var element = $('>.aloha-table-cell-editable', anchor)[0];
-				if (Browser.ie7) {
+				if (Browser.ie7 || Browser.ie8) {
 					try {
-						CopyPaste.selectAllOf(element)
+						CopyPaste.selectAllOf(element);
 					} catch (e) {
-						console.error (e.message);
+						Console.warn('Table Plugin', e.message);
 					}
 				} else {
 					CopyPaste.selectAllOf(element);
