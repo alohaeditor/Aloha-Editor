@@ -232,6 +232,21 @@ define([
 	function isWSPorZWSPNode(node) {
 		return 3 === node.nodeType && isWSPorZWSPText(node.data);
 	}
+	
+	/**
+	 * Checks is `elem` has only White Spaces chilren.
+	 * @paran {Element} elem
+	 */
+	function hasOnlyWhiteSpaceChildren (elem) {
+		var children = elem.childNodes;
+		for (var i = 0, len = children.length; i < len; i++) {
+			if (!isWSPorZWSPNode(children[i])) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
 
 	/**
 	 * Map containing lowercase and uppercase tagnames of block element as keys
@@ -373,6 +388,7 @@ define([
 		trimWhitespaceCharacters: trimWhitespaceCharacters,
 		isWSPorZWSPNode: isWSPorZWSPNode,
 		isWSPorZWSPText: isWSPorZWSPText,
-		isUnrenderedNode: isUnrenderedNode
+		isUnrenderedNode: isUnrenderedNode,
+		hasOnlyWhiteSpaceChildren: hasOnlyWhiteSpaceChildren
 	};
 });
