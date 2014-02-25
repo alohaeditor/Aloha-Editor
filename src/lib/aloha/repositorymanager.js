@@ -610,8 +610,8 @@ define([
 				var repository = manager.getRepository(item.repositoryId);
 				if (repository) {
 					// only mark the object if something changed
-					if ($obj.attr('data-gentics-aloha-repository') !== item.repositoryId
-						|| $obj.attr('data-gentics-aloha-object-id') !== item.id) {
+					if ($obj.attr('data-gentics-aloha-repository') !== item.repositoryId ||
+							$obj.attr('data-gentics-aloha-object-id') !== item.id) {
 						$obj.attr({
 							'data-gentics-aloha-repository': item.repositoryId,
 							'data-gentics-aloha-object-id': item.id
