@@ -1,0 +1,2 @@
+The repository manager will now call markObject() on the repository only if a new object was selected from the repository.
+If the already selected object is selected again, markObject() will not be called.
