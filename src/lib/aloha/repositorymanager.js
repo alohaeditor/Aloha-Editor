@@ -604,24 +604,28 @@ define([
 				return;
 			}
 
-			var manager = this;
+			var manager = this, $obj = $(obj);
 
 			if (item) {
 				var repository = manager.getRepository(item.repositoryId);
 				if (repository) {
-					$(obj).attr({
-						'data-gentics-aloha-repository': item.repositoryId,
-						'data-gentics-aloha-object-id': item.id
-					});
-					repository.markObject(obj, item);
+					// only mark the object if something changed
+					if ($obj.attr('data-gentics-aloha-repository') !== item.repositoryId
+						|| $obj.attr('data-gentics-aloha-object-id') !== item.id) {
+						$obj.attr({
+							'data-gentics-aloha-repository': item.repositoryId,
+							'data-gentics-aloha-object-id': item.id
+						});
+						repository.markObject(obj, item);
+					}
 				} else {
 					Console.error(manager, 'Trying to apply a repository "'
 							+ item.name
 							+ '" to an object, but item has no repositoryId.');
 				}
 			} else {
-				$(obj).removeAttr('data-gentics-aloha-repository')
-				      .removeAttr('data-gentics-aloha-object-id');
+				$obj.removeAttr('data-gentics-aloha-repository')
+				    .removeAttr('data-gentics-aloha-object-id');
 			}
 		},
 
