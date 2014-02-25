@@ -122,7 +122,7 @@ define( [
 		});
 		
 		hrefLangField.addListener('keyup', function() {
-			if (jQuery.isEmptyObject(jQuery.trim(this.getValue()))) {
+			if (jQuery.trim(this.getValue()).length === 0) {
 				this.setValue('');
 				jQuery(sidebar.effective ).attr( 'hreflang', '');
 			}
@@ -434,7 +434,7 @@ define( [
 					
 					var hrefLangAttr = jQuery(effective).attr('hreflang');
 					
-					if (!jQuery.isEmptyObject(hrefLangAttr)) {
+					if (hrefLangAttr && hrefLangAttr.length > 0) {
 						var languageName = getLanguageName(hrefLangAttr);
 						hrefLangField.setValue(languageName);
 					} else {
