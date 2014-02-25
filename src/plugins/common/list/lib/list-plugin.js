@@ -38,7 +38,7 @@ define([
 	'i18n!aloha/nls/i18n',
 	'aloha/engine',
 	'PubSub'
-], function(
+], function (
 	Aloha,
 	jQuery,
 	Plugin,
@@ -55,16 +55,14 @@ define([
 ) {
 	'use strict';
 
-	var GENTICS = window.GENTICS;
-
 	/**
 	* Small JS template function
 	* @param String str The template where substitution takes place
 	* @param Object obj The object containing strings to insert into template
 	* @return String
 	*/
-	function tmpl (str, obj) {
-	    var replacer = function(wholeMatch, key) {
+	function tmpl(str, obj) {
+	    var replacer = function (wholeMatch, key) {
 	            return obj[key] === undefined ? wholeMatch : obj[key];
 	        },
 	        regexp = /\${\s*([a-z0-9\-_]+)\s*}/ig;
@@ -79,6 +77,33 @@ define([
 	};
 
 	/**
+	* Shows or hides the ul, ol or dl buttons in Aloha floating menu
+	* if they are configured.
+	* @param Plugin plugin the list plugin 
+	* @param String listtype the type of listbutton to toggle (ul, ol, dl)
+	* @param Boolean show hide or show the button
+	*/
+	function toggleListOption(plugin, listtype, show) {
+		switch (listtype) {
+		case 'ul':
+			if (plugin.templates.ul) {
+				plugin._unorderedListFormatSelectorButton.show(show);
+			}
+			break;
+		case 'ol':
+			if (plugin.templates.ol) {
+				plugin._orderedListFormatSelectorButton.show(show);
+			}
+			break;
+		case 'dl':
+			if (plugin.templates.dl) {
+				plugin._definitionListFormatSelectorButton.show(show);
+			}
+			break;
+		}
+	}
+
+	/**
 	 * Transforms the given list element and its sub elements (if they are in the selection) into
 	 * the given transformTo target.
 	 * @param domToTransform - The list object that should be transformed
@@ -86,7 +111,7 @@ define([
 	 */
 	function transformExistingListAndSubLists (domToTransform, transformTo) {
 		// find and transform sublists if they are in the selection
-		jQuery(domToTransform).find(domToTransform.nodeName).each(function(){
+		jQuery(domToTransform).find(domToTransform.nodeName).each(function () {
 			if (isListInSelection(this)) {
 				Aloha.Markup.transformDomObject(this, transformTo, Aloha.Selection.rangeObject);
 			}
@@ -113,7 +138,7 @@ define([
 	 */
 	function checkSelectionTreeEntryForElement(treeElementArray, needle) {
 		var found = false;
-		jQuery.each(treeElementArray, function(index, element){
+		jQuery.each(treeElementArray, function (index, element) {
 			if ((element.domobj === needle && element.selection !== "none") || checkSelectionTreeEntryForElement(element.children, needle)) {
 				found = true;
 			}
@@ -173,7 +198,7 @@ define([
 		 * @param String style: selected CSS class
 		 * @return void
 		 */
-		toggleListStyle: function(listtype, style) {
+		toggleListStyle: function (listtype, style) {
 			var domObject = this.getStartingDomObjectToTransform();
 			var nodeName = domObject.nodeName.toLowerCase();
 			var listToStyle =  jQuery(domObject);
@@ -187,16 +212,16 @@ define([
 				listToStyle = jQuery(this.getStartingDomObjectToTransform());
 			}
 
-			if(listtype === nodeName){
+			if (listtype === nodeName) {
 				// remove all classes
-				jQuery.each(this.templates[nodeName].classes, function(){
-					if(listToStyle.hasClass(this.cssClass) && this.cssClass === style){
+				jQuery.each(this.templates[nodeName].classes, function () {
+					if (listToStyle.hasClass(this.cssClass) && this.cssClass === style) {
 						remove = true;
 					}
 					listToStyle.removeClass(this.cssClass);
 				});
 
-				if(!remove){
+				if (!remove) {
 					listToStyle.addClass(style);
 				}
 			}
@@ -218,18 +243,29 @@ define([
 		definitionListStyleButtons: [],
 
 		/**
-		* Construct button for list styles (CSS classes)
-		* @param String listtype ol, ul or dl
-		* @param String cssClass selected list style
-	 	* @return Object for MenuButton menu property
-		*/
+		 * Construct button for list styles (CSS classes).
+		 *
+		 * @param  {String} listtype ol, ul or dl
+		 * @param  {String} cssClass selected list style
+		 * @return {Object} MenuButton menu property
+		 */
 		makeListStyleButton: function (listtype, cssClass) {
 			var that = this;
-			var lang = typeof(Aloha.settings.locale) !== 'undefined' ? Aloha.settings.locale : 'default';
-			var locale = that.templates[listtype].locale[lang];
-			var htmlTemplate = tmpl(that.templates[listtype].template, {cssClass: cssClass, first: locale.first, second: locale.second, third: locale.third});
+
+			var template = that.templates[listtype];
+
+			var locale = template.locale[Aloha.settings.locale]
+			          || template.locale['default'];
+
+			var html = tmpl(template.template, {
+				cssClass : cssClass,
+				first    : locale.first,
+				second   : locale.second,
+				third    : locale.third
+			});
+
 			return {
-				html: '<div class="aloha-list-templates">' + htmlTemplate + '</div>',
+				html: '<div class="aloha-list-templates">' + html + '</div>',
 				click: function () {
 					that.toggleListStyle(listtype, cssClass);
 				}
@@ -239,56 +275,62 @@ define([
 		/**
 		 * Initialize the plugin, register the buttons
 		 */
-		init: function() {
+		init: function () {
 
 			var that = this;
 
-			// List format classes can be overwritten via Aloha.settings.plugins.list.classes
-			if (typeof Aloha.settings.plugins.list !== 'undefined') {
+			// List formats can be overwritten via Aloha.settings.plugins.list.templates
+			if (Aloha.settings.plugins.list && Aloha.settings.plugins.list.templates) {
 				that.templates = Aloha.settings.plugins.list.templates;
 			}
+			
+			if (that.templates.dl) {
+				jQuery.each(that.templates.dl.classes, function (i, cssClass) {
+					that.definitionListStyleButtons.push(that.makeListStyleButton('dl', cssClass));
+				});
 
-			jQuery.each(that.templates.dl.classes, function (i, cssClass) {
-				that.definitionListStyleButtons.push(that.makeListStyleButton('dl', cssClass));
-			});
+				this._definitionListFormatSelectorButton = Ui.adopt("definitionListFormatSelector", MenuButton, {
+					click: function () {
+						that.transformList('dl');
+					},
+					html: '<span class="ui-button-icon-primary ui-icon aloha-icon aloha-icon-definitionlist"></span>',
+					menu: (that.definitionListStyleButtons.length) ? that.definitionListStyleButtons : null
+				});				
+			}
 
-			this._definitionListFormatSelectorButton = Ui.adopt("definitionListFormatSelector", MenuButton, {
-				click: function(){
-					that.transformList('dl');
-				},
-				html: '<span class="ui-button-icon-primary ui-icon aloha-icon aloha-icon-definitionlist"></span>',
-				menu: (that.definitionListStyleButtons.length) ? that.definitionListStyleButtons : null
-			});
+			if (that.templates.ol) {
+				jQuery.each(that.templates.ol.classes, function (i, cssClass) {
+					that.orderedListStyleButtons.push(that.makeListStyleButton('ol', cssClass));
+				});
 
-			jQuery.each(that.templates.ol.classes, function (i, cssClass) {
-				that.orderedListStyleButtons.push(that.makeListStyleButton('ol', cssClass));
-			});
+				this._orderedListFormatSelectorButton = Ui.adopt("orderedListFormatSelector", MenuButton, {
+					click: function () {
+						that.transformList('ol');
+					},
+					html: '<span class="ui-button-icon-primary ui-icon aloha-icon aloha-icon-orderedlist"></span>',
+					menu: (that.orderedListStyleButtons.length) ? that.orderedListStyleButtons : null
+				});				
+			}
 
-			this._orderedListFormatSelectorButton = Ui.adopt("orderedListFormatSelector", MenuButton, {
-				click: function(){
-					that.transformList('ol');
-				},
-				html: '<span class="ui-button-icon-primary ui-icon aloha-icon aloha-icon-orderedlist"></span>',
-				menu: (that.orderedListStyleButtons.length) ? that.orderedListStyleButtons : null
-			});
+			if (that.templates.ul) {
+				jQuery.each(that.templates.ul.classes, function (i, cssClass) {
+					that.unorderedListStyleButtons.push(that.makeListStyleButton('ul', cssClass));
+				});
 
-			jQuery.each(that.templates.ul.classes, function (i, cssClass) {
-				that.unorderedListStyleButtons.push(that.makeListStyleButton('ul', cssClass));
-			});
-
-			this._unorderedListFormatSelectorButton = Ui.adopt("unorderedListFormatSelector", MenuButton, {
-				click: function(){
-					that.transformList('ul');
-				},
-				html: '<span class="ui-button-icon-primary ui-icon aloha-icon aloha-icon-unorderedlist"></span>',
-				menu: (that.unorderedListStyleButtons.length) ? that.unorderedListStyleButtons : null
-			});
+				this._unorderedListFormatSelectorButton = Ui.adopt("unorderedListFormatSelector", MenuButton, {
+					click: function () {
+						that.transformList('ul');
+					},
+					html: '<span class="ui-button-icon-primary ui-icon aloha-icon aloha-icon-unorderedlist"></span>',
+					menu: (that.unorderedListStyleButtons.length) ? that.unorderedListStyleButtons : null
+				});				
+			}
 
 			this._indentListButton = Ui.adopt("indentList", Button, {
 				tooltip: i18n.t('button.indentlist.tooltip'),
 				icon: 'aloha-icon aloha-icon-indent',
 				scope: 'Aloha.continuoustext',
-				click: function() {
+				click: function () {
 					that.indentList();
 				}
 			});
@@ -297,7 +339,7 @@ define([
 				tooltip: i18n.t('button.outdentlist.tooltip'),
 				icon: 'aloha-icon aloha-icon-outdent',
 				scope: 'Aloha.continuoustext',
-				click: function() {
+				click: function () {
 					that.outdentList();
 				}
 			});
@@ -305,7 +347,7 @@ define([
 			Scopes.createScope('Aloha.List', 'Aloha.continuoustext');
 
 			// add the event handler for context selection change
-			PubSub.sub('aloha.selection.context-change', function(message){
+			PubSub.sub('aloha.selection.context-change', function (message) {
 				var i,
 					effectiveMarkup,
 					rangeObject = message.range;
@@ -318,33 +360,33 @@ define([
 				// Hide all buttons in the list tab will make the list tab disappear
 				that._outdentListButton.show(false);
 				that._indentListButton.show(false);
-				that._unorderedListFormatSelectorButton.show(false);
-				that._orderedListFormatSelectorButton.show(false);
-				that._definitionListFormatSelectorButton.show(false);
+				toggleListOption(that, 'ul', false);
+				toggleListOption(that, 'ol', false);
+				toggleListOption(that, 'dl', false);
 
 				for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 					effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
 
 					if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ul></ul>'))) {
-						that._unorderedListFormatSelectorButton.show(true);
+						toggleListOption(that, 'ul', true);
 						// Show all buttons in the list tab
 						that._outdentListButton.show(true);
 						that._indentListButton.show(true);
-						jQuery('.aloha-icon-unorderedlist').parent().parent().parent().parent().addClass('aloha-button-active');
+						jQuery('.aloha-icon-unorderedlist').parents('.aloha-ui-menubutton-container').addClass('aloha-button-active');
 						break;
 					}
 					if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ol></ol>'))) {
-						that._orderedListFormatSelectorButton.show(true);
+						toggleListOption(that, 'ol', true);
 						// Show all buttons in the list tab
 						that._outdentListButton.show(true);
 						that._indentListButton.show(true);
-						jQuery('.aloha-icon-orderedlist').parent().parent().parent().parent().addClass('aloha-button-active');
+						jQuery('.aloha-icon-orderedlist').parents('.aloha-ui-menubutton-container').addClass('aloha-button-active');
 						break;
 					}
 					if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<dl></dl>'))) {
-						that._definitionListFormatSelectorButton.show(true);
+						toggleListOption(that, 'dl', true);
 						jQuery(effectiveMarkup).addClass('alohafocus');
-						jQuery('.aloha-icon-definitionlist').parent().parent().parent().parent().addClass('aloha-button-active');
+						jQuery('.aloha-icon-definitionlist').parents('.aloha-ui-menubutton-container').addClass('aloha-button-active');
 						break;
 					}
 				}
@@ -364,7 +406,7 @@ define([
 			});
 
 			// add the key handler for Tab
-			Aloha.Markup.addKeyHandler(9, function(event) {
+			Aloha.Markup.addKeyHandler(9, function (event) {
 				return that.processTab(event);
 			});
 		},
@@ -380,21 +422,21 @@ define([
 			if (Aloha.Selection.rangeObject.unmodifiableMarkupAtStart[0]) {
 				// show/hide them according to the config
 				if (jQuery.inArray('ul', config) != -1 && Aloha.Selection.canTag1WrapTag2(Aloha.Selection.rangeObject.unmodifiableMarkupAtStart[0].nodeName, "ul") != -1) {
-					this._unorderedListFormatSelectorButton.show(true);
+					toggleListOption(this, 'ul', true);
 				} else {
-					this._unorderedListFormatSelectorButton.show(false);
+					toggleListOption(this, 'ul', false);
 				}
 
 				if (jQuery.inArray('ol', config) != -1 && Aloha.Selection.canTag1WrapTag2(Aloha.Selection.rangeObject.unmodifiableMarkupAtStart[0].nodeName, "ol") != -1) {
-					this._orderedListFormatSelectorButton.show(true);
+					toggleListOption(this, 'ol', true);
 				} else {
-					this._orderedListFormatSelectorButton.show(false);
+					toggleListOption(this, 'ol', false);
 				}
 
 				if (jQuery.inArray('dl', config) != -1 && Aloha.Selection.canTag1WrapTag2(Aloha.Selection.rangeObject.unmodifiableMarkupAtStart[0].nodeName, "dl") != -1) {
-					this._definitionListFormatSelectorButton.show(true);
+					toggleListOption(this, 'dl', true);
 				} else {
-					this._definitionListFormatSelectorButton.show(false);
+					toggleListOption(this, 'dl', false);
 				}
 			}
 		},
@@ -457,7 +499,7 @@ define([
 		transformListToParagraph: function (domToTransform, listElement) {
 			var newPara;
 			var jqToTransform = jQuery(domToTransform);
-			jQuery.each(jqToTransform.children(listElement), function(index, el) {
+			jQuery.each(jqToTransform.children(listElement), function (index, el) {
 				newPara = Aloha.Markup.transformDomObject(el, 'p', Aloha.Selection.rangeObject);
 				// if any lists are in the paragraph, move the to after the paragraph
 				newPara.after(newPara.children('ol,ul,dl'));
@@ -541,8 +583,8 @@ define([
 							lastEl = false;
 						}
 						// transform the block level element
-						if(listtype === 'dl'){
-							if(!o){
+						if (listtype === 'dl') {
+							if (!o) {
 								jqNewEl = Aloha.Markup.transformDomObject(selectedSiblings[i], 'dt', Aloha.Selection.rangeObject);
 							} else {
 								jqNewEl = Aloha.Markup.transformDomObject(selectedSiblings[i], 'dd', Aloha.Selection.rangeObject);
@@ -605,7 +647,7 @@ define([
 			if (!domToTransform) {
 				if ( Aloha.Selection.rangeObject.startContainer.contentEditable ) {
 					// create a new list with an empty item
-					switch (listtype){
+					switch (listtype) {
 						case 'ol':
 							jqList = jQuery('<ol></ol>');
 							jqNewEl = jQuery('<li></li>');
@@ -898,7 +940,7 @@ define([
 	});
 
 	Engine.commands['insertdefinitionlist'] = {
-		action: function(value, range) {
+		action: function (value, range) {
 			ListPlugin.transformList('dl');
 			if (range && Aloha.Selection.rangeObject) {
 				range.startContainer = Aloha.Selection.rangeObject.startContainer;
@@ -907,10 +949,10 @@ define([
 				range.endOffset = Aloha.Selection.rangeObject.endOffset;
 			}
 		},
-		indeterm: function() {
+		indeterm: function () {
 			// TODO
 		},
-		state: function() {
+		state: function () {
 			for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 				effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
 				if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ul></ul>'))) {
@@ -930,7 +972,7 @@ define([
 
 
 	Engine.commands['insertorderedlist'] = {
-		action: function(value, range) {
+		action: function (value, range) {
 			ListPlugin.transformList('ol');
 			if (range && Aloha.Selection.rangeObject) {
 				range.startContainer = Aloha.Selection.rangeObject.startContainer;
@@ -939,10 +981,10 @@ define([
 				range.endOffset = Aloha.Selection.rangeObject.endOffset;
 			}
 		},
-		indeterm: function() {
+		indeterm: function () {
 			// TODO
 		},
-		state: function() {
+		state: function () {
 			for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 				effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
 				if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ul></ul>'))) {
@@ -961,7 +1003,7 @@ define([
 	};
 
 	Engine.commands['insertunorderedlist'] = {
-		action: function(value, range) {
+		action: function (value, range) {
 			ListPlugin.transformList('ul');
 			if (range && Aloha.Selection.rangeObject) {
 				range.startContainer = Aloha.Selection.rangeObject.startContainer;
@@ -970,10 +1012,10 @@ define([
 				range.endOffset = Aloha.Selection.rangeObject.endOffset;
 			}
 		},
-		indeterm: function() {
+		indeterm: function () {
 			// TODO
 		},
-		state: function() {
+		state: function () {
 			for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 				effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
 				if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ul></ul>'))) {
@@ -992,7 +1034,7 @@ define([
 	};
 
 	Engine.commands['indent'] = {
-		action: function(value, range) {
+		action: function (value, range) {
 			ListPlugin.indentList();
 			if (range && Aloha.Selection.rangeObject) {
 				range.startContainer = Aloha.Selection.rangeObject.startContainer;
@@ -1001,17 +1043,17 @@ define([
 				range.endOffset = Aloha.Selection.rangeObject.endOffset;
 			}
 		},
-		indeterm: function() {
+		indeterm: function () {
 			// TODO
 		},
-		state: function() {
+		state: function () {
 			// TODO
 			return false;
 		}
 	};
 
 	Engine.commands['outdent'] = {
-		action: function(value, range) {
+		action: function (value, range) {
 			ListPlugin.outdentList();
 			if (range && Aloha.Selection.rangeObject) {
 				range.startContainer = Aloha.Selection.rangeObject.startContainer;
@@ -1020,10 +1062,10 @@ define([
 				range.endOffset = Aloha.Selection.rangeObject.endOffset;
 			}
 		},
-		indeterm: function() {
+		indeterm: function () {
 			// TODO
 		},
-		state: function() {
+		state: function () {
 			// TODO
 			return false;
 		}
@@ -1101,7 +1143,7 @@ define([
 		var ranges = Aloha.getSelection().getAllRanges();
 
 		var actionPerformed = false;
-		$parentList.each(function(){
+		$parentList.each(function () {
 			actionPerformed = actionPerformed || fixListNesting(jQuery(this));
 		});
 
@@ -1122,7 +1164,7 @@ define([
 	 */
 	function fixListNesting($list) {
 		var actionPerformed = false;
-		$list.children('ul, ol').each(function(){
+		$list.children('ul, ol').each(function () {
 			Aloha.Log.debug("performing list-nesting cleanup");
 			if ( ! jQuery(this).prev('li').append(this).length ) {
 				//if there is no preceding li, create a new one and append to that
@@ -1130,7 +1172,7 @@ define([
 			}
 			actionPerformed = true;
 		});
-		$list.children('dl').each(function(){
+		$list.children('dl').each(function () {
 			Aloha.Log.debug("performing list-nesting cleanup");
 			if ( ! jQuery(this).prev('dt').append(this).length ) {
 				//if there is no preceding dt, create a new one and append to that

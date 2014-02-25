@@ -752,7 +752,7 @@ define('format/format-plugin', [
 
 			// select the modified range
 			rangeObject.select();
-			// TODO: trigger event - removed Format
+			Aloha.activeEditable.smartContentChange({type: 'block-change'});
 		},
 
 		/**
