@@ -1,0 +1,5 @@
+'span' elements surrounding inline blocks set as ephemeral.
+To be able to set the caret after inline blocks, empty 'span' elements are added at the
+beginning and the end of all inline blocks. When saving the page, these elements were saved too. 
+With this fix these 'span' are ephemeral and are deleted once the page is saved.
+These 'span' elements are removed if the inline blocks are removed.
