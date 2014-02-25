@@ -103,6 +103,8 @@ define([
 		$('.' + className).each(function (index, elem) {
 			if (Html.hasOnlyWhiteSpaceChildren(elem)) {
 				elem.parentNode.removeChild(elem);
+			} else {
+				$(elem.childNodes).unwrap();
 			}
 		});
 	}
