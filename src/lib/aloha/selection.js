@@ -1,9 +1,9 @@
 /* selection.js is part of Aloha Editor project http://aloha-editor.org
  *
- * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://aloha-editor.org/contribution.php 
- * 
+ * Contributors http://aloha-editor.org/contribution.php
+ *
  * Aloha Editor is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- * 
+ *
  * As an additional permission to the GNU GPL version 2, you may distribute
  * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
  * source code without the copy of the GNU GPL normally required,
@@ -257,6 +257,42 @@ define([
 				'ol': {
 					'li': true
 				},
+				'dl': {
+					'dt': true,
+					'dd': true
+				},
+				'dt': {
+					'textNode': true
+				},
+				'dd': {
+					'textNode': true,
+					'b': true,
+					'i': true,
+					'em': true,
+					'sup': true,
+					'sub': true,
+					'br': true,
+					'span': true,
+					'img': true,
+					'ul': true,
+					'ol': true,
+					'dt': true,
+					'table': true,
+					'h1': true,
+					'h2': true,
+					'h3': true,
+					'h4': true,
+					'h5': true,
+					'h6': true,
+					'del': true,
+					'ins': true,
+					'u': true,
+					'p': true,
+					'div': true,
+					'pre': true,
+					'blockquote': true,
+					'a': true
+				},
 				'li': {
 					'textNode': true,
 					'b': true,
@@ -299,6 +335,7 @@ define([
 					'img': true,
 					'ul': true,
 					'ol': true,
+					'dt': true,
 					'table': true,
 					'h1': true,
 					'h2': true,
@@ -358,6 +395,7 @@ define([
 				'a': this.tagHierarchy.b,
 				'ul': this.tagHierarchy.ul,
 				'ol': this.tagHierarchy.ol,
+				'dl': this.tagHierarchy.dl,
 				'li': this.tagHierarchy.li,
 				'td': this.tagHierarchy.li,
 				'div': this.tagHierarchy.div,
@@ -472,7 +510,7 @@ define([
 					// the selection. I also checked the range object. In all cases
 					// i found the range object contained correct properties. The
 					// workaround will only be applied for IE.
-					if (jQuery.browser.msie && editableChanged) {
+					if (Aloha.browser.msie && editableChanged) {
 						range.select();
 					}
 				}
@@ -1163,7 +1201,7 @@ define([
 					}
 
 					// setting the focus is needed for mozilla and IE 7 to have a working rangeObject.select()
-					if (Aloha.activeEditable && jQuery.browser.mozilla) {
+					if (Aloha.activeEditable && Aloha.browser.mozilla) {
 						Aloha.activeEditable.obj.focus();
 					}
 
@@ -1682,7 +1720,7 @@ define([
 
 				// make a fix for text nodes in <li>'s in ie
 				jQuery.each(objects2wrap, function (index, element) {
-					if (jQuery.browser.msie && element.nodeType == 3 && !element.nextSibling && !element.previousSibling && element.parentNode && element.parentNode.nodeName.toLowerCase() == 'li') {
+					if (Aloha.browser.msie && element.nodeType == 3 && !element.nextSibling && !element.previousSibling && element.parentNode && element.parentNode.nodeName.toLowerCase() == 'li') {
 						element.data = jQuery.trim(element.data);
 					}
 				});
@@ -2234,7 +2272,7 @@ define([
 	 */
 	function nestedListInIEWorkaround(range) {
 		var nextSibling;
-		if (jQuery.browser.msie && range.startContainer === range.endContainer && range.startOffset === range.endOffset && range.startContainer.nodeType == 3 && range.startOffset == range.startContainer.data.length && range.startContainer.nextSibling) {
+		if (Aloha.browser.msie && range.startContainer === range.endContainer && range.startOffset === range.endOffset && range.startContainer.nodeType == 3 && range.startOffset == range.startContainer.data.length && range.startContainer.nextSibling) {
 			nextSibling = range.startContainer.nextSibling;
 			if ('OL' === nextSibling.nodeName || 'UL' === nextSibling.nodeName) {
 				if (range.startContainer.data[range.startContainer.data.length - 1] == ' ') {
@@ -2278,7 +2316,7 @@ define([
 		anchorNode: null,
 
 		/**
-		 * Returns the offset of the start of the selection relative to the element that contains the start 
+		 * Returns the offset of the start of the selection relative to the element that contains the start
 		 * of the selection. Returns 0 if there's no selection.
 		 * @readonly
 		 * @type int
@@ -2294,7 +2332,7 @@ define([
 		focusNode: null,
 
 		/**
-		 * Returns the offset of the end of the selection relative to the element that contains the end 
+		 * Returns the offset of the end of the selection relative to the element that contains the end
 		 * of the selection. Returns 0 if there's no selection.
 		 * @readonly
 		 * @type int
@@ -2335,7 +2373,7 @@ define([
 			throw "NOT_IMPLEMENTED";
 		},
 
-		/** 
+		/**
 		 * @void
 		 */
 		extend: function (parentNode, offset) {
@@ -2343,9 +2381,9 @@ define([
 		},
 
 		/**
-		 * @param alter DOMString 
-		 * @param direction DOMString 
-		 * @param granularity DOMString 
+		 * @param alter DOMString
+		 * @param direction DOMString
+		 * @param granularity DOMString
 		 * @void
 		 */
 		modify: function (alter, direction, granularity) {
@@ -2385,13 +2423,13 @@ define([
 		 * so even if we normalize it during getRangeAt, in IE, we will be
 		 * correcting the range to the "correct" place, but still not the place
 		 * where it was originally set.
-		 * 
+		 *
 		 * Returns the given range.
-		 * The getRangeAt(index) method returns the indexth range in the list. 
+		 * The getRangeAt(index) method returns the indexth range in the list.
 		 * NOTE: Aloha Editor only support 1 range! index can only be 0
-		 * @throws INDEX_SIZE_ERR DOM exception if index is less than zero or 
+		 * @throws INDEX_SIZE_ERR DOM exception if index is less than zero or
 		 * greater or equal to the value returned by the rangeCount.
-		 * @param index int 
+		 * @param index int
 		 * @return Range return the selected range from index
 		 */
 		getRangeAt: function (index) {
@@ -2405,12 +2443,12 @@ define([
 		/**
 		 * Adds the given range to the selection.
 		 * The addRange(range) method adds the given range Range object to the list of
-		 * selections, at the end (so the newly added range is the new last range). 
-		 * NOTE: Aloha Editor only support 1 range! The added range will replace the 
+		 * selections, at the end (so the newly added range is the new last range).
+		 * NOTE: Aloha Editor only support 1 range! The added range will replace the
 		 * range at index 0
 		 * see http://html5.org/specs/dom-range.html#selection note about addRange
 		 * @throws an INVALID_NODE_TYPE_ERR exception if the given Range has a boundary point
-		 * node that's not a Text or Element node, and an INVALID_MODIFICATION_ERR exception 
+		 * node that's not a Text or Element node, and an INVALID_MODIFICATION_ERR exception
 		 * if it has a boundary point node that doesn't descend from a Document.
 		 * @param range Range adds the range to the selection
 		 * @void
@@ -2429,7 +2467,7 @@ define([
 
 		/**
 		 * Removes the given range from the selection, if the range was one of the ones in the selection.
-		 * NOTE: Aloha Editor only support 1 range! The added range will replace the 
+		 * NOTE: Aloha Editor only support 1 range! The added range will replace the
 		 * range at with index 0
 		 * @param range Range removes the range from the selection
 		 * @void
@@ -2451,7 +2489,7 @@ define([
 		 * Aloha, has no use otherwise Updates the rangeObject
 		 * according to the current user selection Method is
 		 * always called on selection change
-		 * 
+		 *
 		 * @param event
 		 *            jQuery browser event object
 		 * @return true when rangeObject was modified, false
@@ -2464,7 +2502,7 @@ define([
 
 		/**
 		 * String representation
-		 * 
+		 *
 		 * @return "Aloha.Selection"
 		 * @hide
 		 */
@@ -2488,7 +2526,7 @@ define([
 	Aloha.getSelection = function (target) {
 		target = (target !== document || target !== window) ? window : target;
 		// Aloha.Selection.refresh()
-		// implement Aloha Selection 
+		// implement Aloha Selection
 		// TODO cache
 		return new AlohaSelection(window.rangy.getSelection(target));
 	};
