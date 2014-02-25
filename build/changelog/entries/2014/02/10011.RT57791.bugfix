@@ -1,0 +1,2 @@
+Text-color: a new span is created when setting color inside an editable span.
+When formatting style inside an editable span, the style should not be include in the span style but in a new span.
