@@ -564,6 +564,8 @@
 	} // end load()
 
 	global.Aloha = global.Aloha || {};
+	global.Aloha.settings = global.Aloha.settings || {};
+
 	// set the locale in the global __DEPS__ here to enable i18n of dependencies
 	// like repository browser
 	global.__DEPS__ = global.__DEPS__ || {};
