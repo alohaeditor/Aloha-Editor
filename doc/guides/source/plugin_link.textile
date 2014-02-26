@@ -15,6 +15,19 @@ h3. Components
 * editLink - allows you to edit an existing link
 * unlink - removes an existing link by unwrapping
 
+h3. Events
+
+When a link is removed, the link plugin will publish the event 'aloha.link.remove' with PubSub:
+
+<javascript>
+define(['PubSub'], function (PubSub) {
+    PubSub.sub('aloha.link.remove', function (eventArgument) {
+    	// eventArgument.range defines the selection when the link was removed
+    	// eventArgument.text contains the link text
+    });
+});
+</javascript>
+
 h3. Configuration
 
 <javascript>

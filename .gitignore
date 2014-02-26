@@ -6,6 +6,7 @@ doc/guides/staging
 *.js~
 *.orig
 *.swp
+build/changelog/mappings/*SNAPSHOT.json
 .externalToolBuilders
 doc/guides/output
 dist

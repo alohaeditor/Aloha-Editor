@@ -1,0 +1,14 @@
+{
+  "version": "0.24.17",
+  "date": "26.02.2014",
+  "changeLogEntryFileNames": [
+    "10006.RT52589.bugfix",
+    "10010.RT57811.bugfix",
+    "10008.bugfix",
+    "10005.bugfix",
+    "10011.RT57791.bugfix",
+    "10009.enhancement",
+    "10004.RT57814.bugfix"
+  ],
+  "genericProperties": {}
+}

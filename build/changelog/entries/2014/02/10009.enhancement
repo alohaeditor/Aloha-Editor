@@ -1,0 +1,1 @@
+The link plugin will now publish the event 'aloha.link.remove' with PubSub when a link is removed.
