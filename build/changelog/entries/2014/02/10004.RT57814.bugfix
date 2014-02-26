@@ -1,0 +1,1 @@
+format plugin: added missing smartcontentchange event after removing a formatting, which would eg. have the autoparagraph plugin not handling the resulting html code correctly. Now every click on the remove format button will produce a smartcontentchange event.
