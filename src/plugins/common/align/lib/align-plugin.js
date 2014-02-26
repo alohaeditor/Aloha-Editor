@@ -49,7 +49,43 @@ define([
 ) {
 	'use strict';
 
-	var GENTICS = window.GENTICS;
+	/**
+	 * Gets block elements inside `range`.
+	 * @return {Array}
+	 */
+	function getCurrentSelectedBlockElements() {
+		var range = Aloha.Selection.getRangeObject();
+		var selection = range.getRangeTree(),
+			cac = range.getCommonAncestorContainer(),
+			elements = [];
+
+		jQuery.each(selection, function () {
+			var node = this.domobj;
+			if (this.type === 'none') {
+				return;
+			}
+			if (Html.isBlock(node)) {
+				elements.push(node);
+				return;
+			}
+			// Because the align-text property needs to be set on a block-level
+			// element in order for it to have visual effect
+			while (node && !Html.isBlock(node)) {
+				if ((Html.isBlock(cac) && cac === node.parentNode) ||
+					DomLegacy.isEditingHost(node.parentNode)) {
+					break;
+				}
+				node = node.parentNode;
+			}
+			if (Html.isBlock(node)) {
+				elements.push(node);
+			}
+		});
+		if (elements.length === 0 && selection.length > 0 && Html.isBlock(cac)) {
+			elements.push(cac);
+		}
+		return elements;
+	}
 
 	/**
 	 * register the plugin with unique name
@@ -357,26 +393,8 @@ define([
 			this.lastAlignment = this.alignment;
 			this.alignment = alignment;
 
-			var range = Aloha.Selection.getRangeObject();
-			var cac = range.getCommonAncestorContainer();
-
-			// Because the align-text property needs to be set on a block-level
-			// element in order for it to have visual effect
-			while (cac && !Html.isBlock(cac) && !DomLegacy.isEditingHost(cac)) {
-				cac = cac.parentNode;
-			}
-
-			if (DomLegacy.isEditingHost(cac)) {
-				var elements = [];
-				jQuery.each(range.getSelectionTree(), function () {
-					if (this.selection !== 'none' && this.domobj.nodeType !== 3) {
-						elements.push(this.domobj);
-					}
-				});
-				this.toggleAlign(elements);
-			} else {
-				this.toggleAlign(cac);
-			}
+			var elements = getCurrentSelectedBlockElements();
+			this.toggleAlign(elements);
 
 			// reset previous button states
 			if (this.alignment !== this.lastAlignment) {
