@@ -625,7 +625,7 @@ define([
 		 *
 		 * @hide
 		 */
-		browser: function () {
+		browser: (function () {
 			function uaMatch(ua) {
 				ua = ua.toLowerCase();
 
@@ -656,9 +656,8 @@ define([
 				browser.safari = true;
 			}
 
-			Aloha.browser = browser;
-
-		}
+			return browser;
+		}())
 	});
 
 	return Aloha;
