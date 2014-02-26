@@ -121,6 +121,7 @@ define([
 							}));
 						});
 					},
+					"open": props.open,
 					"select": onSelect
 				});
 			}

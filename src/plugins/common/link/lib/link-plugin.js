@@ -97,7 +97,18 @@ define( [
 			name: 'hreflangfield',
 			valueField: 'id',
 			minChars: 1,
-			scope: 'Aloha.continuoustext'
+			scope: 'Aloha.continuoustext',
+			open: function (elm, ui) {
+				// known issue http://bugs.jquery.com/ticket/10079
+				// $.css('z-index') return 1e+9, and when call partseInt, then 
+				// parseInt($.css('z-index'), 10) returns 1.
+				// Only firefox issue
+				// Everytime is open the autocomple the z-index must be set,
+				// because is automatically changed. 
+				if (Aloha.browser.mozilla) {
+					hrefLangField.getInputJQuery().autocomplete('widget').css('z-index', '9999999999');
+				}
+			}
 		});
 		
 		if (plugin.flags) {
