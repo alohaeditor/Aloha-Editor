@@ -1,0 +1,1 @@
+ block-plugin: Fixed handling of copy & paste in editables that are nested inside blocks. Before this fix, when pressing CTRL-C to copy the current selection in an editable nested inside a block, the whole block was selected and copied.

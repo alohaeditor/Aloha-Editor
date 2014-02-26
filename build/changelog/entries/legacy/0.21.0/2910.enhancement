@@ -1,0 +1,1 @@
+ image plugin: splitting main fat file (1500 lines) for easying maintenance and evolutions. The new file which contains the gui is called 'image-floatingMenu.js'. The all sources of the image plugin were jslinted.

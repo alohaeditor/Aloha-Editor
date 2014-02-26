@@ -1,0 +1,1 @@
+block plugin: Fix the error "Member not found" occurring when initializing a block with links in it. This error occurs on IE 10 compatibility mode with document mode 7.

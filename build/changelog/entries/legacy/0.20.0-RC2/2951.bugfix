@@ -1,0 +1,1 @@
+ browser-plugin: Fixed a bug that prevented the browser plugin to load its dependencies correctly.

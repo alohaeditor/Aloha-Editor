@@ -1,0 +1,1 @@
+ generic contenthandler: Do not trim text nodes in list elements, because this could remove spaces between words, where one word is formatted.

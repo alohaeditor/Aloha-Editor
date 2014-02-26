@@ -1,0 +1,1 @@
+ block-plugin: Fixed activation of correct block when active editable is changed using Keys (Tab, Shift-Tab) or programmatically.

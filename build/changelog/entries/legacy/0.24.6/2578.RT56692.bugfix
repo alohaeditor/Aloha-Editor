@@ -1,0 +1,1 @@
+ Formatless Copy/Paste not working. When paste action was made the formatlesshandler was never called. We manually call this handler before pasting the content into the DOM element.

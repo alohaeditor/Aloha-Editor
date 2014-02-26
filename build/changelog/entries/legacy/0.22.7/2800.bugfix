@@ -1,0 +1,1 @@
+ link-plugins: Fixed inserting of links so that links that span multiple elements are not unnecessarily split into fragments.

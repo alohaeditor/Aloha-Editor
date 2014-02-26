@@ -1,0 +1,1 @@
+ core: Fixes numerous issues with repository manager including how query() and getChildren() handle immediate, and asynchronous repositories.

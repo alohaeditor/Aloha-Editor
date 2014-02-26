@@ -1,0 +1,17 @@
+{
+  "version": "0.23.24",
+  "date": "24.10.2013",
+  "changeLogEntryFileNames": [
+      "2614.RT56649.bugfix",
+      "2615.RT55298.bugfix",
+      "2616.RT56649.bugfix",
+      "2617.bugfix",
+      "2618.bugfix",
+      "2619.RT56619.bugfix",
+      "2620.bugfix",
+      "2621.bugfix",
+      "2622.RT55759.bugfix"
+   ],
+  "genericProperties": {
+  }
+}

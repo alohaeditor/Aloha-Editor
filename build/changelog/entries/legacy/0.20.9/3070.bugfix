@@ -1,0 +1,1 @@
+ core: Fixed a javascript error in IE9 stating that the method createContextualFragment doesn't exist (fixed in extjs)

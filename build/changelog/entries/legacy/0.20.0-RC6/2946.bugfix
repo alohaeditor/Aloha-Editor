@@ -1,0 +1,1 @@
+ link-plugin/linkbrowser-plugin: Previously the highlight css for a link was not removed after an item was selected by the linkbrowser. Now highlight css will be correctly removed and the cursor will be placed back into the content. Previously the selection was lost.

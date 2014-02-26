@@ -1,0 +1,1 @@
+ Fixed Javascript error when doing searches in the repository browser (which caused to search to not be done).

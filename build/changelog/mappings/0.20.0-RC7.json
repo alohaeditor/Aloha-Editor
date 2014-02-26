@@ -1,0 +1,14 @@
+{
+  "version": "0.20.0-RC7",
+  "date": "01.11.2011",
+  "changeLogEntryFileNames": [
+       "2940.bugfix",
+       "2941.bugfix",
+       "2942.enhancement",
+       "2943.enhancement",
+       "2944.enhancement",
+       "2945.bugfix"
+   ],
+  "genericProperties": {
+  }
+}

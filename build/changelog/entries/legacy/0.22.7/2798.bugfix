@@ -1,0 +1,1 @@
+ vendor/repository-browser: Updates repository browser with fix to not listing repository folders multiple times into wrong repositories on the tree.

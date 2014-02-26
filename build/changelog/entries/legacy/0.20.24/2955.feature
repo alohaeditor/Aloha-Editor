@@ -1,0 +1,1 @@
+ core: Added method Aloha.getEditableHost() to get the editable, that contains the given jQuery object.

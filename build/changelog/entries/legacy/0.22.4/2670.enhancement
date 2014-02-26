@@ -1,0 +1,10 @@
+The metaview view can now be enabled per editable.
+Aloha.settings = {
+			plugins: {
+				metaview: {
+					editables: {
+						'#top-text': ['metaview','enabled']
+					}
+				}
+			}
+		};

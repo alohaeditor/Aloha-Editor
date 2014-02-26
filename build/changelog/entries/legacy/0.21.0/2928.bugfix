@@ -1,0 +1,1 @@
+ headerids-plugin: Fixed a bug in the headerids plugin that the ids were not generated when the getContents was called.

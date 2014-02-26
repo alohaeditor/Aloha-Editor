@@ -1,0 +1,14 @@
+{
+  "version": "0.24.4",
+  "date": "17.10.2013",
+  "changeLogEntryFileNames": [
+      "2588.bugfix", 
+      "2589.RT56692.bugfix",
+      "2590.RT56670.bugfix",
+      "2591.RT56088.bugfix"
+   ],
+  "genericProperties": {
+  }
+}
+
+ 

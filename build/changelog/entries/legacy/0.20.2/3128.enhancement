@@ -1,0 +1,1 @@
+ core: Removed unneeded JSON empty function definition that surpressed errors in IE.

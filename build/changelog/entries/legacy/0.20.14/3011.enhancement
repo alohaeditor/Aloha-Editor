@@ -1,0 +1,1 @@
+ sanitize contenthandler: Added 'del' as allowed element to the default configuration of the sanitize contenthandler.

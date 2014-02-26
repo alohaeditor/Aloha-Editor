@@ -1,0 +1,83 @@
+Added the ui-plugin and removed ui specific code from the Aloha core
+
+    Due to a complete re-implementation of the Aloha user interface in
+    the form of the ui-plugin, most of the ui specific Aloha API has
+    changed.
+
+    * FloatingMenu - removed
+
+    * Aloha.ui - removed
+
+      Affects
+      Aloha.ui.AttributeField
+      Aloha.ui.Button
+      Aloha.ui.MultiSplitButton
+      Aloha.isMessageVisible
+      Aloha.hideMessage
+      Aloha.ui.MultiSplitButton.idCounter
+      Aloha.showMessage
+      Aloha.i18n
+      Plugin.i18n (has been deprecated for some time now)
+
+    * Aloha.Message - removed
+
+    * Aloha.settings.plugins.table.summaryinsidebar - meaning changed
+
+      This setting decided whether the summary was displayed either in
+      the side bar or in the floating-menu. This setting now only
+      decides whether or not a summary is displayed in the sidebar.
+
+      The table-plugin defines a component with the name
+      tableSummary. It is up to the toolbar configuration whether or not
+      this component is displayed in the toolbar.
+
+    * image-plugin - the following settings are obsolete
+
+       Aloha.settings.plugins.image.ui.oneTab
+       Aloha.settings.plugins.image.ui.insert
+       Aloha.settings.plugins.image.ui.meta
+       Aloha.settings.plugins.image.ui.reset
+       Aloha.settings.plugins.image.ui.align
+       Aloha.settings.plugins.image.ui.margin
+       Aloha.settings.plugins.image.ui.crop
+       Aloha.settings.plugins.image.ui.resize
+       Aloha.settings.plugins.image.ui.aspectRatioToggle
+
+      It is now up to the toolbar configuration whether or not and how
+      to display these components.
+
+    * Selection.isFloatingMenuVisible - removed
+ 
+    All settings associated with the removed components do not have any
+    effect any more.
+
+    Most Aloha css rules have been re-implemented.
+    
+    In particular, the Aloha block handles now have z-index 10000, the
+    floating menu has 10100, and Aloha dialogs have 10200. The sidebar
+    continues to have a z-index of 999999999.
+
+    The new common/ui plugin is now required for the user interface to
+    be shown. This plugin is not loaded automatically. Most plugins
+    require a user interface and will fail to load if this plugin is not
+    configured to be loaded.
+
+    The requirejs plugins order! and jquery-plugin!  have been removed.
+
+    Many plugins exposed buttons, attribute-field and multi-split-button
+    components as non-private members. For example, as in the case of
+    the cite plugin, buttons were pushed onto the exposed
+    multi-split-button of the Format plugin. Most of these exposed
+    components were removed.
+
+    The removal of the Ext.* namespace and the ExtJs css may
+    inadvertently affect the behaviour and display of any site that
+    includes Aloha.
+
+    In particular the trim() function on the String object was provided
+    by ExtJs for older versions of IE. Since ExtJs is gone, calling this
+    function will now probably cause errors on older versions of
+    IE. jQuery.trim() may be used as an alternative.
+
+    See the ui.html guide for more information about the new UI.
+

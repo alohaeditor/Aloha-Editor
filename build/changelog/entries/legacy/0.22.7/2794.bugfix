@@ -1,0 +1,1 @@
+ core: getEditableHost() returns nearest editable rather than the furthest.

@@ -1,0 +1,8 @@
+requirejs is not loaded as part of Aloha-Editor
+
+    For aloha development the user must now load requirejs himself
+    before loading aloha.js.
+
+    When using a built version of Aloha, it's possible to choose between
+    aloha-bare.js, which doesn't include requirejs (or jQuery), and
+    aloha-full.js, which does include requirejs (and jQuery).

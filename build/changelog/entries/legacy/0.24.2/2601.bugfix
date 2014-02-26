@@ -1,0 +1,1 @@
+editables: Initializing empty editables in Firefox will no longer result in them aquiring an extra <br/>. This was previously done to work around a Firefox bug that seems not no longer be an issue.

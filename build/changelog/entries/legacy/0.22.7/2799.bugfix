@@ -1,0 +1,1 @@
+ core: Fixed disappearing attributes in browsers that do not support outerHTML.

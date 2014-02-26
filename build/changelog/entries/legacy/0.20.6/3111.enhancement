@@ -1,0 +1,1 @@
+ Browser plugin: loading of required jQuery plugins is now changed so all can be loaded via CDN

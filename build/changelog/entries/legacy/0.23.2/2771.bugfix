@@ -1,0 +1,1 @@
+ Fixed editables losing focus and the toolbar dissapearing	when clicking on the toolbar, on a dialog or on an attribute field from a plugin (link, wai-lang)

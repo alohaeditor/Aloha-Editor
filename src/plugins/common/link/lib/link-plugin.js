@@ -623,15 +623,12 @@ define( [
 					// The first one we need to ignore is the one trigger when
 					// we reposition the selection to right at the end of the
 					// link.
-					// Not sure what the next event is yet but we need to
-					// ignore it as well, ignoring it prevents the value of
-					// hrefField from being set to the old value.
+
 					that.ignoreNextSelectionChangedEvent = true;
 					range.startContainer = range.endContainer;
 					range.startOffset = range.endOffset;
 					range.select();
-					that.ignoreNextSelectionChangedEvent = true;
-					
+
 					var hrefValue = jQuery( that.hrefField.getInputElem() ).attr( 'value' );
 					
 					if ( hrefValue == that.hrefValue || hrefValue == '' ) {
@@ -798,10 +795,12 @@ define( [
 		removeLink: function ( terminateLinkScope ) {
 			var	range = Aloha.Selection.getRangeObject(),
 				foundMarkup = this.findLinkMarkup();
-			
+			var linkText;
+
 			// clear the current item from the href field
 			this.hrefField.setItem(null);
 			if ( foundMarkup ) {
+				linkText = jQuery(foundMarkup).text();
 				// remove the link
 				GENTICS.Utils.Dom.removeFromDOM( foundMarkup, range, true );
 
@@ -815,6 +814,16 @@ define( [
 						terminateLinkScope === true ) {
 					Scopes.setScope('Aloha.continuoustext');
 				}
+
+				// trigger an event for removing the link
+				var apiRange = Aloha.createRange();
+				apiRange.setStart(range.startContainer, range.startOffset);
+				apiRange.setEnd(range.endContainer, range.endOffset);
+
+				PubSub.pub('aloha.link.remove', {
+					range: apiRange,
+					text: linkText
+				});
 			}
 		},
 

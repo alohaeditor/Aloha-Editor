@@ -1,0 +1,1 @@
+ plugin formatlesspaste: will now be more tolerant with the button and formatlessPasteOption setting and not only accept boolean values

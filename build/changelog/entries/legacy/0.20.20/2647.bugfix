@@ -1,0 +1,1 @@
+core: An issue that resize handles were displayed on inline elements that contained a new lines in IE7/8 was fixed.

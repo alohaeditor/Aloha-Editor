@@ -1,0 +1,1 @@
+ Fixed the text selection background color not being removed when selecting something from the attribute field of a plugin (link, wai-lang)

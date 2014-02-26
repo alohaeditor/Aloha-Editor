@@ -1,0 +1,1 @@
+ format-plugin: b/strong and i/em handling. The "b" button will show as pressed if the selection contains "strong" formatting, and will unformat the "strong" if unpressed. The same behaviour was implemented for the i/em combination.
