@@ -564,7 +564,7 @@ define([
 	}
 
 	function isStyleWrapperReusable_default(node) {
-		return 'SPAN' === node.nodeName;
+		return 'SPAN' === node.nodeName && !Html.isEditingHost(node);
 	}
 
 	function isStyleWrapperPrunable_default(node) {

@@ -1,13 +1,22 @@
 define([
+	'jquery',
 	'util/dom',
 	'util/dom2',
-	'util/html'
+	'util/html',
+	'aloha/ephemera'
 ], function (
+	$,
 	DomLegacy,
 	Dom,
-	Html
+	Html,
+	Ephemera
 ) {
 	'use strict';
+
+	/**
+	 * Class name for landing element.
+	 */
+	var LANDING_ELEMENT_CLASS = 'aloha-caret-landing';
 
 	/**
 	 * Check if a white space span should be removed
@@ -19,10 +28,25 @@ define([
 		return 'SPAN' === node.nodeName
 		    && (node.childNodes.length === 0 || node.innerHTML === '&nbsp;');
 	}
+	
+	/**
+	 * Creates unique class name for `$blockELement`.
+	 */
+	function createLandingClassName ($blockElement) {
+		return LANDING_ELEMENT_CLASS + '_' + $blockElement.attr('id');
+	}
 
-	function createLandingElement() {
+	/**
+	 * Creates landing element.
+	 * @return {HTMLElement}
+	 */
+	function createLandingElement($blockElement) {
 		var node = document.createElement('span');
+		node.className = createLandingClassName($blockElement);
 		node.appendChild(document.createTextNode('\u00A0'));
+		
+		Ephemera.markWhiteSpaceWrapper(node);
+		
 		return node;
 	}
 
@@ -51,7 +75,7 @@ define([
 			}
 		);
 		if (!previous) {
-			$block.before(createLandingElement());
+			$block.before(createLandingElement($block));
 		}
 		var next = Dom.findForward(
 			skipNodeForward($block[0]),
@@ -65,7 +89,7 @@ define([
 			}
 		);
 		if (!next) {
-			$block.after(createLandingElement());
+			$block.after(createLandingElement($block));
 		}
 	}
 
@@ -75,14 +99,14 @@ define([
 	 * @param {jQuery<DOMElement>} $block
 	 */
 	function unpad($block) {
-		var previous = $block[0].previousSibling;
-		var next = $block[0].nextSibling;
-		if (previous && isObsoleteLandingNode(previous)) {
-			previous.parentNode.removeChild(previous);
-		}
-		if (next && isObsoleteLandingNode(next)) {
-			next.parentNode.removeChild(next);
-		}
+		var className = createLandingClassName($block);
+		$('.' + className).each(function (index, elem) {
+			if (Html.hasOnlyWhiteSpaceChildren(elem)) {
+				elem.parentNode.removeChild(elem);
+			} else {
+				$(elem.childNodes).unwrap();
+			}
+		});
 	}
 
 	/**

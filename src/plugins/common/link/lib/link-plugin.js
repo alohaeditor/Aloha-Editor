@@ -909,10 +909,12 @@ define( [
 		removeLink: function ( terminateLinkScope ) {
 			var	range = Aloha.Selection.getRangeObject(),
 				foundMarkup = this.findLinkMarkup();
-			
+			var linkText;
+
 			// clear the current item from the href field
 			this.hrefField.setItem(null);
 			if ( foundMarkup ) {
+				linkText = jQuery(foundMarkup).text();
 				// remove the link
 				GENTICS.Utils.Dom.removeFromDOM( foundMarkup, range, true );
 
@@ -926,6 +928,16 @@ define( [
 						terminateLinkScope === true ) {
 					Scopes.setScope('Aloha.continuoustext');
 				}
+
+				// trigger an event for removing the link
+				var apiRange = Aloha.createRange();
+				apiRange.setStart(range.startContainer, range.startOffset);
+				apiRange.setEnd(range.endContainer, range.endOffset);
+
+				PubSub.pub('aloha.link.remove', {
+					range: apiRange,
+					text: linkText
+				});
 			}
 		},
 

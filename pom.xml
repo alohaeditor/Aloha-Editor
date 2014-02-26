@@ -98,6 +98,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
+				<version>2.2</version>
 				<configuration>
 					<completionGoals>scm:checkin -Dmessage="Added generated changelog mapping" -Dbasedir=${project.basedir}/ -Dincludes=build/changelog/mappings/**</completionGoals>
 				</configuration>
