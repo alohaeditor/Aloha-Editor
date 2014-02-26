@@ -81,7 +81,8 @@ define([
 				elements.push(node);
 			}
 		});
-		if (elements.length === 0 && selection.length > 0 && Html.isBlock(cac)) {
+
+		if (elements.length === 0 && selection.length > 0 && Html.isBlock(cac) && !DomLegacy.isEditingHost(cac)) {
 			elements.push(cac);
 		}
 		return elements;
