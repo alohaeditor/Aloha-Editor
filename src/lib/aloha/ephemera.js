@@ -71,6 +71,7 @@ define([
 	'util/maps',
 	'util/dom2',
 	'util/functions',
+	'util/html',
 	'util/misc',
 	'util/browser',
 	'PubSub'
@@ -84,6 +85,7 @@ define([
 	Maps,
 	Dom,
 	Functions,
+	Html,
 	Misc,
 	Browser,
 	PubSub
@@ -305,6 +307,15 @@ define([
 	}
 
 	/**
+	 * Marks an element as a ephemeral. If all subnodes are White Spaces,
+	 * the elements would be removed completed. Otherwise only the wrapper
+	 * will be removed, without deleting the subnodes. 
+	 */
+	function markWhiteSpaceWrapper(elem) {
+		$(elem).addClass('aloha-ephemera-empty-wrapper');
+	}
+
+	/**
 	 * Marks an element as ephemeral, excluding subnodes.
 	 *
 	 * Adds the class 'aloha-ephemera-filler' to the given element.
@@ -408,6 +419,15 @@ define([
 				return false;
 			}
 
+			// Ephemera.markWhiteSpaceWrapper() and Ephemera.markFiller()
+			if (-1 !== Arrays.indexOf(classes, 'aloha-ephemera-empty-wrapper')) {
+				if (!Html.hasOnlyWhiteSpaceChildren(elem)) {
+					Dom.moveNextAll(elem.parentNode, elem.firstChild, elem.nextSibling);
+				}
+				$.removeData(elem);
+				return false;
+			}
+
 			// Ephemera.markAttr()
 			if (-1 !== Arrays.indexOf(classes, 'aloha-ephemera-attr')) {
 				pruneMarkedAttrs(elem);
@@ -485,6 +505,7 @@ define([
 		markElement: markElement,
 		markAttr: markAttr,
 		markWrapper: markWrapper,
+		markWhiteSpaceWrapper: markWhiteSpaceWrapper,
 		markFiller: markFiller,
 		prune: prune,
 		isAttrEphemeral: isAttrEphemeral

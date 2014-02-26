@@ -379,6 +379,8 @@ define([
 
 			newRange.startContainer = newRange.endContainer = this.$element.parent()[0];
 			newRange.startOffset = newRange.endOffset = GENTICS.Utils.Dom.getIndexInParent(this.$element[0]);
+			
+			BlockUtils.unpad(this.$element);
 
 			BlockManager.trigger('block-delete', this);
 			this.free();
@@ -403,6 +405,7 @@ define([
 			// TODO set old value of contentEditable
 			// TODO set old values for draggable attributes
 
+			BlockUtils.unpad(this.$element);
 			// deactivate
 			this.deactivate();
 			// remove handlers

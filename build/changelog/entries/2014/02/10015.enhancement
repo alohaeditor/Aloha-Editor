@@ -1,0 +1,7 @@
+list-plugin: Various enhancements have been added to the plugin.
+
+* It is now possible to add definition lists.
+* It is now possible to set pre-defined or user defined styles on lists.
+* Preview templates are now render in the Aloha toolbar list style submenus.
+* The corresponding list button will be highlighted when the cursor is on a list.
+* The class "alohafocus" will be set on focused definition lists.

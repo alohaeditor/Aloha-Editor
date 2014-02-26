@@ -121,6 +121,7 @@ define([
 							}));
 						});
 					},
+					"open": props.open,
 					"select": onSelect
 				});
 			}
@@ -347,6 +348,8 @@ define([
 				resourceValue = v;
 				setAttribute(targetAttribute, item[valueField]);
 				RepositoryManager.markObject(targetObject, item);
+				
+				element.trigger('item-change');
 			} else {
 				resourceValue = null;
 			}
@@ -429,6 +432,20 @@ define([
 		function hide() {
 			element.hide();
 		}
+		
+		/**
+		 * Disables input text, so the text can not be edit.
+		 */
+		function disableInput() {
+			element.attr('disabled','disabled'); 
+		}
+		
+		/**
+		 * Enables input text, so the text can be edit.
+		 */
+		function enableInput() {
+			element.removeAttr('disabled');
+		}
 
 		function getInputId(){
 			return element.attr("id");
@@ -466,7 +483,9 @@ define([
 			setObjectTypeFilter: setObjectTypeFilter,
 			setTemplate: setTemplate,
 			setPlaceholder: setPlaceholder,
-			getInputJQuery: getInputJQuery
+			getInputJQuery: getInputJQuery,
+			enableInput: enableInput,
+			disableInput: disableInput
 		};
 
 		return attrField;

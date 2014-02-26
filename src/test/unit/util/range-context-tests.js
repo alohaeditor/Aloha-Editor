@@ -377,4 +377,9 @@ Aloha.require([
 	t('don\'t reuse if there is an obstruction above (&lt;code>)',
 	  '<p>one<span style="font-family: times;"><code>[Some text]</code></span>two</p>',
 	  '<p>one<span style="font-family: times;"><code>{<span style="font-family: arial;">Some text</span>}</code></span>two</p>');
+
+	t('don\'t reuse if it is an editable span',
+		'<p>one<span contenteditable="true" style="font-family: times;">[Some text]</span>two</p>',
+		'<p>one<span contenteditable="true" style="font-family: times;">{<span style="font-family: arial;">Some text</span>}</span>two</p>');
+
 });
