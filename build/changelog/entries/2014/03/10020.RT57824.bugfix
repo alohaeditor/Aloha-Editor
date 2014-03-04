@@ -1,0 +1,2 @@
+When pasting nested ordered lists from Word, some lists where incorrectly recognized as unordered lists.
+This has been fixed now.
