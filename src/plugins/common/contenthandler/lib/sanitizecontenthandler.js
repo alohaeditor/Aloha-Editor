@@ -166,18 +166,18 @@ define([
                 initEditableSpecific();
             },
 
-            instanceForEditable: function() {
+            instanceForEditable: function(editable) {
                 var editableSelector = defaultKey;
-                if (Aloha.activeEditable) {
+                if (editable) {
                     var selector = null;
 
-                    var containerId = '#' + Aloha.activeEditable.getId();
+                    var containerId = '#' + editable.getId();
                     if (map[containerId]) {
                         selector = containerId;
                     }
 
                     if (!selector) {
-                        var containerClasses = Aloha.activeEditable.obj.attr('class').split(' ');
+                        var containerClasses = editable.obj.attr('class').split(' ');
                         for (var i=0; i < containerClasses.length; i++) {
                             if (map['.' + containerClasses[i]]) {
                                 selector = containerClasses[i];
@@ -187,7 +187,7 @@ define([
                     }
 
                     if (!selector) {
-                        var containerTag = Aloha.activeEditable.obj.prop('tagName').toLowerCase();
+                        var containerTag = editable.obj.prop('tagName').toLowerCase();
                         if (map[containerTag]) {
                             selector = containerTag;
                         }
@@ -221,7 +221,7 @@ define([
                 content = jQuery( '<div>' ).append(content).get(0);
             }
 
-            return jQuery('<div>').append(sanitizers.instanceForEditable().clean_node(content)).html();
+            return jQuery('<div>').append(sanitizers.instanceForEditable(editable).clean_node(content)).html();
         }
     });
 
