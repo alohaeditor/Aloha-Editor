@@ -189,7 +189,7 @@ define([
 					default: {first: 'first item', second: 'second item'},
 					de: {first: 'erstes Element', second: 'zweites Element'}
 				}
-			},
+			}
 		},
 
 		/**
