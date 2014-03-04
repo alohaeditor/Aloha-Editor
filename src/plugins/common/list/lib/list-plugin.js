@@ -168,7 +168,7 @@ define([
 				classes: ['aloha-list-disc', 'aloha-list-circle', 'aloha-list-square'],
 				template: '<ul class="${cssClass}"><li>${first}<ul class="${cssClass}"><li>${second}<ul class="${cssClass}"><li>${third}</li></ul></li></ul></li></ul>',
 				locale: {
-					default: {first: 'first layer', second: 'second layer', third: 'third layer'},
+					fallback: {first: 'first layer', second: 'second layer', third: 'third layer'},
 					de: {first: 'erste Ebene', second: 'zweite Ebene', third: 'dritte Ebene'}
 				}
 			},
@@ -178,7 +178,7 @@ define([
 					'aloha-list-lower-latin', 'aloha-list-upper-latin' ],
 				template: '<ol class="${cssClass}"><li>${first}<ol class="${cssClass}"><li>${second}<ol class="${cssClass}"><li>${third}</li></ol></li></ol></li></ol>',
 				locale: {
-					default: {first: 'first layer', second: 'second layer', third: 'third layer'},
+					fallback: {first: 'first layer', second: 'second layer', third: 'third layer'},
 					de: {first: 'erste Ebene', second: 'zweite Ebene', third: 'dritte Ebene'}
 				}
 			},
@@ -186,7 +186,7 @@ define([
 				classes: ['aloha-list-blue', 'aloha-list-green', 'aloha-list-red'],
 				template: '<dl class="${cssClass}"><dt>${first}<dt><dd>${second}</dd></dl>',
 				locale: {
-					default: {first: 'first item', second: 'second item'},
+					fallback: {first: 'first item', second: 'second item'},
 					de: {first: 'erstes Element', second: 'zweites Element'}
 				}
 			}
@@ -255,7 +255,7 @@ define([
 			var template = that.templates[listtype];
 
 			var locale = template.locale[Aloha.settings.locale]
-			          || template.locale['default'];
+			          || template.locale['fallback'];
 
 			var html = tmpl(template.template, {
 				cssClass : cssClass,
@@ -280,7 +280,7 @@ define([
 			var that = this;
 
 			// List formats can be overwritten via Aloha.settings.plugins.list.templates
-			if (Aloha.settings.plugins.list && Aloha.settings.plugins.list.templates) {
+			if (Aloha.settings.plugins && Aloha.settings.plugins.list && Aloha.settings.plugins.list.templates) {
 				that.templates = Aloha.settings.plugins.list.templates;
 			}
 			
