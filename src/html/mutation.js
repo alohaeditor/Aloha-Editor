@@ -133,17 +133,17 @@ define([
 	 * @return {Boundary}
 	 */
 	function nextLineBreak(above, below) {
-		return Boundaries.nextWhile(above, function (pos) {
-			if (Boundaries.equals(pos, below)) {
+		return Boundaries.nextWhile(above, function (boundary) {
+			if (Boundaries.equals(boundary, below)) {
 				return false;
 			}
-			if (Styles.hasLinebreakingStyle(Boundaries.nextNode(pos))) {
+			if (Styles.hasLinebreakingStyle(Boundaries.nextNode(boundary))) {
 				return false;
 			}
-			if (!Boundaries.isAtEnd(pos)) {
+			if (!Boundaries.isAtEnd(boundary)) {
 				return true;
 			}
-			return !Dom.isEditingHost(Boundaries.container(pos));
+			return !Dom.isEditingHost(Boundaries.container(boundary));
 		});
 	}
 
@@ -188,58 +188,49 @@ define([
 	 */
 	function hasRenderedContent(node) {
 		if (Dom.isTextNode(node)) {
-			return !Elements.isUnrenderedWhitespaceNoBlockCheck(node);
+			return Elements.isRendered(node);
 		}
-		return Elements.isRendered(
-			Dom.nextWhile(node.firstChild, Elements.isUnrendered)
-		);
+		var children = Dom.children(node).filter(function (node) {
+			return Elements.isListItem(node) || Elements.isRendered(node);
+		});
+		return children.length > 0;
 	}
 
 	/**
 	 * Removes the visual line break between the adjacent boundaries `above`
 	 * and `below` by moving the nodes after `below` over to before `above`.
 	 *
-	 * @param {Boundary} above
-	 * @param {Boundary} below
+	 * @param  {Boundary} above
+	 * @param  {Boundary} below
+	 * @return {Arrays.<Array.<string, boolean|string>>} Overrides
 	 */
-	function removeBreak(above, below, context) {
-		above = Boundaries.normalize(above);
-		below = Boundaries.normalize(below);
-
-		if (!isVisuallyAdjacent(above, below)) {
-			return;
-		}
-
-		var linebreak = nextLineBreak(above, below);
-		var isVisible = function (node) {
-			return above[0] === node || hasRenderedContent(node);
-		};
-
-		if (Boundaries.equals(linebreak, below)) {
-			context.overrides = context.overrides.concat(Overrides.harvest(below[0]));
-			Dom.climbUntil(below[0], Dom.remove, isVisible);
-			return;
-		}
-
+	function removeBreak(above, below) {
 		var right = Boundaries.nextNode(below);
+		var overrides = Overrides.harvest(right);
+		if (!isVisuallyAdjacent(above, below)) {
+			return overrides;
+		}
+		var linebreak = nextLineBreak(above, below);
+		var isVisibleNode = function (node) {
+			return Boundaries.container(above) === node || hasRenderedContent(node);
+		};
+		if (Boundaries.equals(linebreak, below)) {
+			Dom.climbUntil(right, Dom.remove, isVisibleNode);
+			return overrides;
+		}
+		var moveNodeBeforeBoundary = function (boundary, node) {
+			return Mutation.insertNodeAtBoundary(node, boundary, true);
+		};
 		var parent = right.parentNode;
-
-		if (0 === Dom.nodeLength(right)) {
-			context.overrides = context.overrides.concat(Overrides.harvest(right));
-			Dom.remove(right);
-		} else {
-			Dom.walkUntil(
-				right,
-				createTransferFunction(linebreak),
-				cannotMove,
-				Fn.outparameter(true)
-			);
+		var nodes = Dom.nextSiblings(right, Styles.hasLinebreakingStyle);
+		if (0 === nodes.length) {
+			parent = right;
 		}
-
+		var boundary = nodes.reduce(moveNodeBeforeBoundary, linebreak);
 		if (parent) {
-			context.overrides = context.overrides.concat(Overrides.harvest(parent, isVisible));
-			Dom.climbUntil(parent, Dom.remove, isVisible);
+			Dom.climbUntil(parent, Dom.remove, isVisibleNode);
 		}
+		return overrides;
 	}
 
 	function determineBreakingNode(context, container) {

@@ -241,18 +241,11 @@
 	test('delete()', function () {
 		tested.push('delete');
 		var t = function (before, after) {
-			return runTest(before, after, editing.delete, {
-				overrides: []
-			});
+			return runTest(before, after, editing.delete);
 		};
-
-		t('<ul><li>{</li><li>}a<ul><li>b</li></ul></li></ul>', '');
-
-		//return;
 
 		t('<p>x[y]z</p>', '<p>x[]z</p>');
 		t('<p>x[]y</p>', '<p>x[]y</p>');
-		t('<p><b>x</b>{}<i>y</i></p>', '<p><b>x</b>{}<i>y</i></p>');
 
 		t('<p>[x]</p>', '<p>{}</p>');
 		t('<p>x[y}</p>', '<p>x{}</p>');
@@ -274,8 +267,6 @@
 		t('<p>x{<b>y</b>]z</p>', '<p>x[]z</p>');
 		t('<p>x[<b>y</b>}z</p>', '<p>x[]z</p>');
 
-		//
-
 		t('<p>x{<b>y}</b>z</p>', '<p>x{}z</p>'); // fixme should be x[]z
 		t('<p>x[<b>y]</b>z</p>', '<p>x{}z</p>'); // fixme should be x[]z
 		t('<p>x{<b>y]</b>z</p>', '<p>x{}z</p>'); // fixme should be x[]z
@@ -285,8 +276,6 @@
 		t('<p>x<b>[y</b>]z</p>', '<p>x<b>{}</b>z</p>');
 		t('<p>x<b>{y</b>]z</p>', '<p>x<b>{}</b>z</p>');
 		t('<p>x<b>[y</b>}z</p>', '<p>x<b>{}</b>z</p>');
-
-		//
 
 		t('<p>x<b>y{</b>z}</p>', '<p>x<b>y{}</b></p>');
 		t('<p>x<b>y[</b>z]</p>', '<p>x<b>y{}</b></p>');
@@ -298,8 +287,6 @@
 		t('<p>{x<b>]y</b>z</p>', '<p>{}<b>y</b>z</p>');
 		t('<p>[x<b>}y</b>z</p>', '<p>{}<b>y</b>z</p>');
 
-		//
-
 		t('<div>w<p>{x<b>yz}</b></p></div>', '<div>w<p>{}</p></div>');
 		t('<div>w<p>[x<b>yz]</b></p></div>', '<div>w<p>{}</p></div>');
 		t('<div>w<p>{x<b>yz]</b></p></div>', '<div>w<p>{}</p></div>');
@@ -308,26 +295,26 @@
 		t('<div>w<p>{x<b>y]z</b></p></div>', '<div>w<p>{}<b>z</b></p></div>');
 		t('<div>w<p>[x<b>y]z</b></p></div>', '<div>w<p>{}<b>z</b></p></div>');
 
-		t('<p>x<u><b>{</b></u>x<i>}</i>y</p>', '<p>x<u><b>{}</b></u>y</p>');
-
 		t('<p>1<b>{2</b>3<u>4</u>]5<i>6</i></p>', '<p>1<b>{}</b>5<i>6</i></p>');
 		t('<p>1<b>{2</b>3<u>4</u>5<i>]6</i></p>', '<p>1<b>{}</b><i>6</i></p>');
 		t('<p><b>1[2</b><u>3]4</u></p>',          '<p><b>1{}</b><u>4</u></p>');
 		t('<p><b>1[2</b><u>3}<b>4</b></u></p>',   '<p><b>1{}</b><u><b>4</b></u></p>');
 		t('<p><i><b>1[2</b></i><u>3]4</u></p>',   '<p><i><b>1{}</b></i><u>4</u></p>');
 
+		t('<p>x<u><b>{</b></u>x<i>}</i>y</p>', '<p>x<u><b>{}</b></u>y</p>');
 		t('<p>x<b>fo[o</b>bar<u>b]az</u>y</p>', '<p>x<b>fo{}</b><u>az</u>y</p>');
-
-		t('<ul><li>fo[o<ol><li>}</li></ol></li></ul>', '<ul><li>fo{}</li></ul>');
-		t('<ul><li>foo{</li><li>}bar</li></ul>', '<ul><li>foo[]bar</li></ul>');
-		t('<ul><li>foo[</li><li>]bar</li></ul>', '<ul><li>foo[]bar</li></ul>');
-
-		t('<div>foo{<ul><li>}bar</li></ul></div>', '<div>foo[]bar</div>');
+		t('<p><b>x</b>{}<i>y</i></p>', '<p><b>x</b>{}<i>y</i></p>');
 
 		t('<div><p>x</p><p>{y</p><p>}z</p></div>', '<div><p>x</p><p>{}z</p></div>');
+		t('<div><h1><i>foo{</i></h1><p>}bar</p></div>', '<div><h1><i>foo{}</i>bar</h1></div>');
 
-		t('<div><h1><i>foo{</i></h1><p>}bar</p></div>',
-		  '<div><h1><i>foo{}</i>bar</h1></div>');
+		t('<ul><li>foo{</li><li>}bar</li></ul>', '<ul><li>foo[]bar</li></ul>');
+		t('<ul><li>foo[</li><li>]bar</li></ul>', '<ul><li>foo[]bar</li></ul>');
+		t('<ul><li>x{</li><li>}</li><li>y</li></ul>', '<ul><li>x{}</li><li>y</li></ul>');
+		t('<ul><li>ab[c]<ol><li></li></ol></li></ul>', '<ul><li>ab{}<ol><li></li></ol></li></ul>');
+
+		t('<div>foo{<ul><li>}bar</li></ul></div>', '<div>foo[]bar</div>');
+		t('<ul><li>fo[o<ol><li>}</li></ol></li></ul>', '<ul><li>fo{}</li></ul>');
 	});
 
 	function switchElemTextSelection(html) {

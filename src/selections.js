@@ -621,13 +621,18 @@ define([
 	/**
 	 * Returns a range based on the given event object.
 	 *
-	 * @param  {Object} event An Aloha Editor event
+	 * @param  {AlohaEvent} alohaEvent An Aloha Editor event
 	 * @return {?Range}
 	 */
 	function fromEvent(alohaEvent) {
-		return alohaEvent.range
-		    || Ranges.fromPosition(alohaEvent.nativeEvent.clientX, alohaEvent.nativeEvent.clientY)
-		    || Ranges.get();
+		if (alohaEvent.range) {
+			return Ranges.fromPosition(
+				alohaEvent.nativeEvent.clientX,
+				alohaEvent.nativeEvent.clientY,
+				alohaEvent.range.commonAncestorContainer.ownerDocument
+			);
+		}
+		return Ranges.get();
 	}
 
 	/**
