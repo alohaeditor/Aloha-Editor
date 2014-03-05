@@ -215,7 +215,7 @@ define([
 				return false;
 			}
 			// otherwise check for a number, letter or '(' as first character
-			return listSpan.text().match(/^([0-9]{1,3}\.)|([0-9]{1,3}\)|([a-zA-Z]{1,5}\.)|([a-zA-Z]{1,5}\)))$/) ? true : false;
+			return $.trim(listSpan.text()).match(/^([0-9]{1,3}\.)|([0-9]{1,3}\)|([a-zA-Z]{1,5}\.)|([a-zA-Z]{1,5}\)))$/) ? true : false;
 		},
 
 		/**
