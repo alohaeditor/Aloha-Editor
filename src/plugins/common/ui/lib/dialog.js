@@ -194,7 +194,7 @@ define([
 		'progress': function (props) {
 			var progressbar = $("<div>").progressbar({
 				// TODO if no initial value is specific, show a full but an animated progress bar instead
-				value: null !== props.value ? props.value : 100
+				value: null != props.value ? props.value : 100
 			});
 			var dialog = makeDialogDiv(props).dialog(
 				$.extend(makeDialogProps(props, 'Progress'), {
@@ -204,7 +204,7 @@ define([
 				})
 			);
 			return function (value) {
-				if (null !== value) {
+				if (null != value) {
 					progressbar.progressbar({ value: value });
 				} else {
 					dialog.dialog('destroy').remove();

@@ -202,7 +202,9 @@ define([
 		applyButtonConfig: function (obj) {
 			var config = this.getEditableConfig(obj);
 
-			if (config[0] && config[0].alignment) {
+			if ( config && config.alignment && !this.settings.alignment ) {
+				config = config;
+			} else if ( config[0] && config[0].alignment) {
 				config = config[0];
 			} else if (this.settings.alignment) {
 				config.alignment = this.settings.alignment;

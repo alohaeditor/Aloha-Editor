@@ -43,7 +43,7 @@ function (Aloha, jQuery, ContentHandlerManager) {
 			return this.each(function () {
 
 				var container = jQuery(this),
-					resourceURL = (url !== null) ? url : container.attr("href"),
+					resourceURL = (url != null) ? url : container.attr("href"),
 					provider;
 
 	            if (embedAction) {
@@ -55,10 +55,10 @@ function (Aloha, jQuery, ContentHandlerManager) {
 	                };
 	            }
 
-	            if (resourceURL !== null) {
+	            if (resourceURL != null) {
 	                provider = jQuery.fn.oembed.getOEmbedProvider(resourceURL);
 
-	                if (provider !== null) {
+	                if (provider != null) {
 	                    provider.params = getNormalizedParams(settings[provider.name]) || {};
 	                    provider.maxWidth = settings.maxWidth;
 	                    provider.maxHeight = settings.maxHeight;

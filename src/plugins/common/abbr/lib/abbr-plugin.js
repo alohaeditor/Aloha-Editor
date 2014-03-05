@@ -267,7 +267,7 @@ define([
 			}
 
 			// if selection is collapsed then extend to the word.
-			if (range.isCollapsed() && extendToWord !== false) {
+			if (range.isCollapsed() && extendToWord != false) {
 				GENTICS.Utils.Dom.extendToWord(range);
 			}
 			
