@@ -1,0 +1,4 @@
+align-plugin: align only applies to the selected paragraphs.
+When selecting several paragraphs and these paragraphs are wrapped in a block element which is not the editing host,
+the align style was set into the block element instead of into the paragraphs. With these changes the align style is
+only applied to the selected paragraphs.
