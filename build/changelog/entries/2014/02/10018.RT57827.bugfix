@@ -1,0 +1,5 @@
+table-plugin: WAI input stays when you click on it.
+
+WAI input disappeared because of a selection issue with mouse-up event. Mouse-up event was stopped
+if a cell is selected. Mouseup event should not be stopped because it is used in the
+jquery.aloha.js file (jquery.aloha.js:207) for initializing the selection.

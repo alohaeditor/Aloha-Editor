@@ -324,7 +324,6 @@ define([
 			var that = this;
 			jQuery('body').bind('mouseup.cellselection', function(event) {
 				that._endCellSelection();
-				event.stopPropagation();
 			});
 
 			this.tableObj.selection.baseCellPosition = [this._virtualY(), this._virtualX()];
