@@ -1,0 +1,5 @@
+table-plugin: row/column floating menu stays when a row/column is selected.
+
+Selecting a row/column in a table did throw a javascript exception regarding the selection range (rangy-core issue).
+This error is caught for IE7 and IE8, but not for document mode 7 or 8. Catching the error in case the
+document mode is less or equal to 8 solves the issue.
