@@ -4504,6 +4504,23 @@ define([
 		}
 	}
 
+	/**
+	 * Node names that can not be unwrapped.
+	 *
+	 * @const
+	 * @type {string[]}
+	 */
+	var NOT_UNWRAPPABLE_NODES = ['TABLE', 'OL', 'UL', 'DL'];
+
+	/**
+	 * Checks if `node` can be unwrapped.
+	 *
+	 * @param  {Element} node
+	 * @return {boolean}
+	 */
+	function isUnwrappable(node) {
+		return NOT_UNWRAPPABLE_NODES.indexOf(node.nodeName) === -1;
+	}
 	//@}
 	///// Assorted block formatting command algorithms /////
 	//@{
@@ -4599,7 +4616,9 @@ define([
 			// now that the parent has only the node as child (because we
 			// removed any existing empty text nodes), we can safely unwrap the
 			// node's contents, and correct the range if necessary
-			if (node.parentNode.childNodes.length == 1) {
+			// if the node is unwrappable (table, lists) the node is not unwrapped
+			// but splitted.
+			if (node.parentNode.childNodes.length == 1 && isUnwrappable(node)) {
 				newStartOffset = range.startOffset;
 				newEndOffset = range.endOffset;
 
