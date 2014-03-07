@@ -160,6 +160,8 @@ define([
 
 			this.preventSelectionChangedFlag = false; // will remember if someone urged us to skip the next aloha-selection-changed event
 
+			this.correctSelectionFlag = false; // this is true, when the current selection is corrected (to prevent endless loops)
+
 			// define basics first
 			this.tagHierarchy = {
 				'textNode': {},
@@ -607,7 +609,7 @@ define([
 
 			// Workaround for nasty IE bug that allows the user to select
 			// text nodes inside areas with contenteditable "false"
-			if (range && range.startContainer && range.endContainer) {
+			if (range && range.startContainer && range.endContainer && !this.correctSelectionFlag) {
 				var inEditable =
 						jQuery(range.commonAncestorContainer)
 							.closest('.aloha-editable').length > 0;
@@ -636,11 +638,13 @@ define([
 						}
 					}
 					if (!validStartPosition || !validEndPosition) {
+						this.correctSelectionFlag = true;
 						range.correctRange();
 						range.select();
 					}
 				}
 			}
+			this.correctSelectionFlag = false;
 
 			// check if aloha-selection-changed event has been prevented
 			if (this.isSelectionChangedPrevented()) {

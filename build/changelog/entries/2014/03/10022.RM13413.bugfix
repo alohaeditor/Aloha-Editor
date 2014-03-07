@@ -1,0 +1,2 @@
+Sometimes changing the selection (e.g. by clicking into an editable) caused an endless loop in Internet Explorer, which finally caused IE to throw an "Out of stack space" error.
+This endless loop is prevented now.
