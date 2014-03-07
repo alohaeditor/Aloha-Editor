@@ -24,8 +24,6 @@
 	<script src="../../lib/require.js"></script>
 	<script src="../../lib/aloha.js" data-aloha-plugins=""></script>
 
-	<!-- inject into testswarm -->
-	<script type="text/javascript" src="../vendor/swarminject.js"></script>
 	<script>
 		// load command test suite
 		require( ['commandtest'] );
@@ -43,6 +41,7 @@
 			defaultCommand: '',
 			defaultAttributes: [ ],
 			tests: [
+			        /*
 					{  	start: '{}',
 						value: '<ul><li></li></ul>',
 				       	execResult: '<ul><li>[]</li></ul>' 
@@ -50,7 +49,7 @@
 					{  	start: '<p>foo[]bar</p>',
 						value: '<ul><li></li></ul>',
 				       	execResult: '<ul><li>foobar[]</li></ul>' 
-				    }
+				    }*/
 
 /*
 					{	start: 'foo<ol><li>[]bar<li>baz</ol>',

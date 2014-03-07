@@ -41,7 +41,7 @@ define([
 	'block/block-utils',
 	'util/html',
 	'util/functions'
-], function(
+], function (
 	Aloha,
 	jQuery,
 	BlockManager,
@@ -52,7 +52,7 @@ define([
 	BlockUtils,
 	Html,
 	Fn
-){
+) {
 	'use strict';
 
 	var GENTICS = window.GENTICS;
@@ -157,14 +157,14 @@ define([
 
 				try {
 					$element.find('a').attr('draggable', 'false');
-				} catch(e) {
+				} catch (e) {
 					// If we get in here, it is most likely an issue with IE 10 in documentmode 7
 					// and IE10 compatibility mode. It maybe happens in older versions too.
 					// Error: Member not found
 					// https://connect.microsoft.com/IE/feedback/details/774078
 					// http://bugs.jquery.com/ticket/12577
 					// Our fallback solution:
-					$element.find('a').each(function() {
+					$element.find('a').each(function () {
 						this.setAttribute('draggable', 'false');
 					});
 				}
@@ -247,8 +247,8 @@ define([
 		 * NOTE: Purely internal, "this" is not available inside this method!
 		 */
 		_preventSelectionChangedEventHandler: function ($event) {
-			if (('dblclick' !== $event.type)
-					&& !jQuery($event.target).is('.aloha-editable')) {
+			if (('dblclick' !== $event.type) && 
+				!jQuery($event.target).is('.aloha-editable')) {
 				Aloha.Selection.preventSelectionChanged();
 			}
 		},
@@ -267,7 +267,7 @@ define([
 		 * a block inside a nested block with editable in between is detected
 		 * as inconsistent.
 		 */
-		_connectThisBlockToDomElement: function(newElement, callback) {
+		_connectThisBlockToDomElement: function (newElement, callback) {
 			var that = this;
 			var $newElement = jQuery(newElement);
 			this._disconnectFromDomElement();
@@ -278,7 +278,7 @@ define([
 			this.$element.bind('focus', this._preventSelectionChangedEventHandler);
 			this.$element.bind('dblclick', this._preventSelectionChangedEventHandler);
 
-			this.init(this.$element, function() {
+			this.init(this.$element, function () {
 				// WORKAROUND against loading order dependencies. If we have
 				// nested Blocks inside each other (with no editables in between)
 				// it could be that the *inner* block is initialized *before* the outer one.
@@ -288,7 +288,7 @@ define([
 				//
 				// In order to fix this case, we delay the the drag-handle-rendering (and all the other
 				// post-processing) to the next JavaScript Run Loop using a small timeout.
-				window.setTimeout(function() {
+				window.setTimeout(function () {
 					that._postProcessElementIfNeeded();
 					if (callback) {
 						callback();
@@ -300,7 +300,7 @@ define([
 		/**
 		 * Disconnect the block from the DOM element
 		 */
-		_disconnectFromDomElement: function() {
+		_disconnectFromDomElement: function () {
 			if (this.$element) {
 				this.$element.unbind('click', this._onElementClickHandler);
 				this.$element.unbind('mousedown', this._preventSelectionChangedEventHandler);
@@ -317,9 +317,9 @@ define([
 		 * We can detect this and scroll right back; although this will flicker
 		 * a little (but still a lot better than before)
 		 */
-		_fixScrollPositionBugsInIE: function() {
+		_fixScrollPositionBugsInIE: function () {
 			var scrollPositionBefore = jQuery(window).scrollTop();
-			window.setTimeout(function() {
+			window.setTimeout(function () {
 				if (jQuery(window).scrollTop() !== scrollPositionBefore) {
 					jQuery(window).scrollTop(scrollPositionBefore);
 				}
@@ -342,7 +342,7 @@ define([
 		 * @param {Function} postProcessFn this function MUST be called at all times the $element has been updated; as it adds drag/drop/delete/... handles if necessary
 		 * @api
 		 */
-		init: function($element, postProcessFn) {
+		init: function ($element, postProcessFn) {
 			postProcessFn();
 		},
 
@@ -353,7 +353,7 @@ define([
 		 *
 		 * @return {Boolean} true of destruction should happen, false otherwise
 		 */
-		shouldDestroy: function() {
+		shouldDestroy: function () {
 			var $closest = this.$element.parent().closest('.aloha-block,.aloha-editable,.aloha-block-collection');
 			if ($closest.hasClass('aloha-block-collection') && this.$element[0].tagName.toLowerCase() === 'div') {
 				return true;
@@ -369,8 +369,10 @@ define([
 		 * @param {Boolean} force TRUE if you want to force deletion, despite shouldDestroy() returning false.
 		 * @api
 		 */
-		destroy: function(force) {
-			if (!this.shouldDestroy() && force !== true) return;
+		destroy: function (force) {
+			if (!this.shouldDestroy() && force !== true) {
+				return;
+			}
 
 			var that = this;
 			var newRange = new GENTICS.Utils.RangeObject();
@@ -385,10 +387,10 @@ define([
 
 			var isInlineElement = this.$element[0].tagName.toLowerCase() === 'span';
 
-			this.$element.fadeOut('fast', function() {
+			this.$element.fadeOut('fast', function () {
 				that.$element.remove();
 				BlockManager.trigger('block-selection-change', []);
-				window.setTimeout(function() {
+				window.setTimeout(function () {
 					if (isInlineElement) {
 						newRange.select();
 					}
@@ -440,7 +442,7 @@ define([
 		 * Get the id of the block
 		 * @returns {String}
 		 */
-		getId: function() {
+		getId: function () {
 			return this.id;
 		},
 
@@ -451,7 +453,7 @@ define([
 		 * @api
 		 * @returns {Object}
 		 */
-		getSchema: function() {
+		getSchema: function () {
 			return null;
 		},
 
@@ -461,7 +463,7 @@ define([
 		 *
 		 * @api
 		 */
-		getTitle: function() {
+		getTitle: function () {
 			return this.title;
 		},
 
@@ -473,7 +475,7 @@ define([
 		 *
 		 * @return Boolean
 		 */
-		isDraggable: function() {
+		isDraggable: function () {
 			if (this.$element[0].nodeName === 'DIV' &&
 				this.$element.parents('.aloha-editable,.aloha-block:not(.aloha-table-wrapper),.aloha-block-collection').first().hasClass('aloha-block-collection')) {
 				// Here, we are inside an aloha-block-collection, and thus also need to be draggable.
@@ -493,11 +495,11 @@ define([
 		 * When calling programmatically, do not set eventTarget or event arguments.
 		 * @api
 		 */
-		activate: function(eventTarget, event) {
+		activate: function (eventTarget, event) {
 			var highlightedBlocks = [];
 
 			// Deactivate currently highlighted blocks
-			jQuery.each(BlockManager._getHighlightedBlocks(), function() {
+			jQuery.each(BlockManager._getHighlightedBlocks(), function () {
 				this.deactivate();
 			});
 
@@ -510,7 +512,7 @@ define([
 			highlightedBlocks.push(this);
 
 			// Highlight parent blocks
-			this.$element.parents('.aloha-block').each(function() {
+			this.$element.parents('.aloha-block').each(function () {
 				var block = BlockManager.getBlock(this);
 				if (block) {
 					block._highlight();
@@ -539,11 +541,11 @@ define([
 		/**
 		 * Deactive the block
 		 */
-		deactivate: function() {
+		deactivate: function () {
 			var that = this;
 			var deactivatedBlocks = [this];
 			this._unhighlight();
-			this.$element.parents('.aloha-block').each(function() {
+			this.$element.parents('.aloha-block').each(function () {
 				deactivatedBlocks.push(this);
 				that._unhighlight();
 			});
@@ -558,7 +560,7 @@ define([
 		/**
 		 * @returns {Boolean} True if this block is active
 		 */
-		isActive: function() {
+		isActive: function () {
 			return this.$element.hasClass('aloha-block-active');
 		},
 
@@ -566,7 +568,7 @@ define([
 		 * Internal helper which sets a block as highlighted, because the block itself
 		 * or a child block has been activated.
 		 */
-		_highlight: function() {
+		_highlight: function () {
 			this.$element.addClass('aloha-block-highlighted');
 			BlockManager._setHighlighted(this);
 		},
@@ -574,7 +576,7 @@ define([
 		/**
 		 * Internal helper which sets a block as un-highlighted.
 		 */
-		_unhighlight: function() {
+		_unhighlight: function () {
 			this.$element.removeClass('aloha-block-highlighted');
 			BlockManager._setUnhighlighted(this);
 		},
@@ -587,14 +589,19 @@ define([
 		 * Internal _update method, which needs to be called internally if a property
 		 * changed. This is just a wrapper around update().
 		 */
-		_update: function() {
+		_update: function () {
 			var that = this;
-			if (this._currentlyRendering) return;
-			if (!this._initialized) return;
+			if (this._currentlyRendering) {
+				return;
+			}
+
+			if (!this._initialized) {
+				return;
+			}
 
 			this._currentlyRendering = true;
 
-			this.update(this.$element, function() {
+			this.update(this.$element, function () {
 				that._postProcessElementIfNeeded();
 			});
 
@@ -617,7 +624,7 @@ define([
 		 *
 		 * @api
 		 */
-		update: function($element, postProcessFn) {
+		update: function ($element, postProcessFn) {
 			postProcessFn();
 		},
 
@@ -628,7 +635,7 @@ define([
 		 * This method must be idempotent. I.e. it must produce the same results
 		 * when called once or twice.
 		 */
-		_postProcessElementIfNeeded: function() {
+		_postProcessElementIfNeeded: function () {
 			this.createEditablesIfNeeded();
 			this._checkThatNestedBlocksAreStillConsistent();
 			this._makeNestedBlockCollectionsSortable();
@@ -656,8 +663,8 @@ define([
 		 * This is the case we detect here; and if it happens, we reconnect the
 		 * block to its currently visible DOM element.
 		 */
-		_checkThatNestedBlocksAreStillConsistent: function() {
-			this.$element.find('.aloha-block').each(function() {
+		_checkThatNestedBlocksAreStillConsistent: function () {
+			this.$element.find('.aloha-block').each(function () {
 				var block = BlockManager.getBlock(this);
 				if (block && block.$element[0] !== this) {
 					block._connectThisBlockToDomElement(this);
@@ -670,9 +677,9 @@ define([
 		 * we want to make it sortable, by calling the appropriate Block Manager
 		 * function.
 		 */
-		_makeNestedBlockCollectionsSortable: function() {
+		_makeNestedBlockCollectionsSortable: function () {
 			var that = this;
-			this.$element.find('.aloha-block-collection').each(function() {
+			this.$element.find('.aloha-block-collection').each(function () {
 				var $blockCollection = jQuery(this);
 				if ($blockCollection.closest('.aloha-block').get(0) === that.$element.get(0)) {
 					// We are only responsible for one-level-down Block Collections, not
@@ -686,7 +693,7 @@ define([
 		 * Helper which disables the ugly IE drag handles. They are still shown, but at
 		 * least they do not work anymore
 		 */
-		_disableUglyInternetExplorerDragHandles: function() {
+		_disableUglyInternetExplorerDragHandles: function () {
 			if (jQuery.browser.msie) {
 				var $elem = this.$element.get(0);
 				$elem.onresizestart = Fn.returnFalse;
@@ -701,8 +708,8 @@ define([
          * Removes the draghandle class from block handle,
          * if drag & drop is disabled for the editable
          */
-        _hideDragHandlesIfDragDropDisabled: function() {
-			if ( !this._dd_isDragdropEnabled() ){
+        _hideDragHandlesIfDragDropDisabled: function () {
+			if (!this._dd_isDragdropEnabled()) {
 				this.$element.find('.aloha-block-draghandle').each(function () {
 					var $draghandle = jQuery(this);
 					if (!BlockUtils.isDragdropEnabledForElement($draghandle)) {
@@ -716,26 +723,26 @@ define([
          * Attach mousedown/up events to block's draghandle 
          * to toggle dropzones when dragging starts and ends.
          */
-        _attachDropzoneHighlightEvents: function() {
+        _attachDropzoneHighlightEvents: function () {
             var that = this;
 
-            this.$element.delegate( ".aloha-block-draghandle", "mousedown", function() {
-                var dropzones = that.$element.parents( ".aloha-editable" ).first().data( "block-dropzones" ) || [];
-                jQuery.each( dropzones, function(i, editable_selector) {
-                    var editables = jQuery( editable_selector );
-                    jQuery( editables ).each(function() {
-                        if (jQuery( this ).data( "block-dragdrop" )) {
-                            jQuery( this ).addClass( "aloha-block-dropzone" );      
+            this.$element.delegate(".aloha-block-draghandle", "mousedown", function () {
+                var dropzones = that.$element.parents(".aloha-editable").first().data("block-dropzones") || [];
+                jQuery.each(dropzones, function (i, editable_selector) {
+                    var editables = jQuery(editable_selector);
+                    jQuery(editables).each(function () {
+                        if (jQuery(this).data("block-dragdrop")) {
+                            jQuery(this).addClass("aloha-block-dropzone");
                         }
                     });
                 });
 
                 // Remove the dropzones as soon as the mouse is released,
                 // irrespective of where the drop took place.
-                jQuery( document ).one( "mouseup.aloha-block-dropzone", function() {
-                    var dropzones = that.$element.parents( ".aloha-editable" ).first().data( "block-dropzones" ) || [];
-                    jQuery.each( dropzones, function(i, editable_selector) {
-                        jQuery( editable_selector ).removeClass( "aloha-block-dropzone" );      
+                jQuery(document).one("mouseup.aloha-block-dropzone", function () {
+                    var dropzones = that.$element.parents(".aloha-editable").first().data("block-dropzones") || [];
+                    jQuery.each(dropzones, function (i, editable_selector) {
+                        jQuery(editable_selector).removeClass("aloha-block-dropzone");
                     });
                 });
             });
@@ -744,7 +751,7 @@ define([
 		/**************************
 		 * SECTION: Drag&Drop for INLINE elements
 		 **************************/
-		_setupDragDropForInlineElements: function() {
+		_setupDragDropForInlineElements: function () {
 			var that = this;
 
 			// Here, we store the character DOM element which has been hovered upon recently.
@@ -774,7 +781,7 @@ define([
 			// This dropFn is the callback which handles the actual moving of
 			// nodes. We created a separate function for it, as it is called inside the "stop" callback
 			// in IE7 and inside the "drop" callback in all other browsers.
-			var dropFn = function() {
+			var dropFn = function () {
 				if (lastHoveredCharacter) {
 					// the user recently hovered over a character
 					var $dropReferenceNode = jQuery(lastHoveredCharacter);
@@ -806,7 +813,7 @@ define([
 				jQuery('.aloha-block-dropInlineElementIntoEmptyBlock').removeClass('aloha-block-dropInlineElementIntoEmptyBlock');
 
                 // clear the created droppables
-                $createdDroppables.droppable( "destroy" );
+                $createdDroppables.droppable("destroy");
                 $createdDroppables = null;
 
                 blockDroppedProperly = true;
@@ -816,22 +823,22 @@ define([
 				handle: '.aloha-block-draghandle',
 				scope: 'aloha-block-inlinedragdrop',
 				disabled: !this._dd_isDragdropEnabled(),
-				revert: function() {
+				revert: function () {
 					return (lastHoveredCharacter === null || !blockDroppedProperly);
 				},
 				revertDuration: 250,
-				stop: function() {
+				stop: function () {
 					if (jQuery.browser.msie && 7 === parseInt(jQuery.browser.version, 10)) {
 						dropFn();
 					}
-					jQuery.each(editablesWhichNeedToBeCleaned, function() {
+					jQuery.each(editablesWhichNeedToBeCleaned, function () {
 						that._dd_traverseDomTreeAndRemoveSpans(this);
 					});
 					$currentDraggable = null;
 
 					editablesWhichNeedToBeCleaned = [];
 				},
-				start: function() {
+				start: function () {
 					blockDroppedProperly = false;
 					editablesWhichNeedToBeCleaned = [];
 
@@ -852,7 +859,7 @@ define([
 						 * When hovering over a paragraph, we make convert its contents into spans, to make
 						 * them droppable.
 						 */
-						over: function(event, ui) {
+						over: function (event, ui) {
 							if (jQuery.inArray(this, editablesWhichNeedToBeCleaned) === -1) {
 								editablesWhichNeedToBeCleaned.push(this);
 							}
@@ -879,7 +886,7 @@ define([
 								tolerance: 'pointer',
 								addClasses: false,
 								scope: 'aloha-block-inlinedragdrop',
-								over: function() {
+								over: function () {
 									if (lastHoveredCharacter) {
 										// Just to be sure, we remove the css class of the last hovered character.
 										// This is needed such that spans are deselected which contain multiple
@@ -889,7 +896,7 @@ define([
 									lastHoveredCharacter = this;
 									jQuery(this).addClass('aloha-block-droppable');
 								},
-								out: function() {
+								out: function () {
 									jQuery(this).removeClass('aloha-block-droppable');
 									if (lastHoveredCharacter === this) {
 										lastHoveredCharacter = null;
@@ -900,7 +907,7 @@ define([
 							// the Drag Drop offsets.
 							jQuery.ui.ddmanager.prepareOffsets(ui.draggable.data('draggable'), event);
 						},
-						out: function() {
+						out: function () {
 							jQuery(this).removeClass('aloha-block-dropInlineElementIntoEmptyBlock');
 						},
 
@@ -908,15 +915,15 @@ define([
 						 * When dropping over a paragraph, we use the "lastHoveredCharacter"
 						 * as drop target.
 						 */
-						drop: function() {
+						drop: function () {
 							if (!(jQuery.browser.msie && 7 === parseInt(jQuery.browser.version, 10))) {
 								dropFn();
 							}
 						}
 					};
 
-					$createdDroppables = jQuery( ".aloha-editable.aloha-block-dropzone" ).children( ":not(.aloha-block)" );
-					$createdDroppables.droppable( droppableCfg );
+					$createdDroppables = jQuery(".aloha-editable.aloha-block-dropzone").children(":not(.aloha-block)");
+					$createdDroppables.droppable(droppableCfg);
 					// Small HACK: Also make table cells droppable
 					jQuery('.aloha-table-cell-editable').droppable(droppableCfg);
 				}
@@ -929,9 +936,9 @@ define([
 		 *
 		 * @param {DomElement} el
 		 */
-		_dd_traverseDomTreeAndWrapCharactersWithSpans: function(el) {
+		_dd_traverseDomTreeAndWrapCharactersWithSpans: function (el) {
 			var child;
-			for(var i=0, l=el.childNodes.length; i < l; i++) {
+			for (var i = 0, l = el.childNodes.length; i < l; i++) {
 				child = el.childNodes[i];
 				if (child.nodeType === 1) { // DOM Nodes
 					if (!~child.className.indexOf('aloha-block') && child.attributes['data-i'] === undefined) {
@@ -956,12 +963,12 @@ define([
 		 * - " Hello world" -> [" Hello", " world"]
 		 * --> see the unit tests for the specification
 		 */
-		_dd_splitText: function(text) {
+		_dd_splitText: function (text) {
 			var textParts = text.split(/(?=\b)/);
 			var cleanedTextParts = [];
 
 			var isWhitespace = false;
-			for (var i=0,l=textParts.length; i<l; i++) {
+			for (var i = 0, l = textParts.length; i < l; i++) {
 				if (!/[^\t\n\r ]/.test(textParts[i])) {
 					// if the current text part is just whitespace, we add a flag...
 					isWhitespace = true;
@@ -988,7 +995,7 @@ define([
 		 * This function returns the number of additional DOM elements inserted.
 		 * This is "numberOfSpansCreated - 1" (because one text node has been initially there)
 		 */
-		_dd_insertSpans: function(el) {
+		_dd_insertSpans: function (el) {
 			var text = el.nodeValue;
 
 			// If node just contains empty strings, we do not do anything.
@@ -1004,12 +1011,14 @@ define([
 			var x, word, leftWordPartLength, t;
 			var numberOfSpansInserted = 0;
 
-			for (var i=0; i<l; i++) {
+			for (var i = 0; i < l; i++) {
 				// left half of word
 				word = splitText[i];
-				if (word.length === 0) continue;
+				if (word.length === 0) {
+					continue;
+				}
 				// We use "floor" here such that sentence delimiters like "!" can have a block placed afterwards
-				leftWordPartLength = Math.floor(word.length/2);
+				leftWordPartLength = Math.floor(word.length / 2);
 
 				// For Internet Explorer, we only make dropping AFTER words possible to improve performance
 				var browserMajorVersion = parseInt(jQuery.browser.version, 10);
@@ -1037,19 +1046,19 @@ define([
 				numberOfSpansInserted++;
 			}
 			el.parentNode.replaceChild(newNodes, el);
-			return numberOfSpansInserted-1;
+			return numberOfSpansInserted - 1;
 		},
 
 		/**
 		 * After the Drag/Drop operation, we need to remove the SPAN elements
 		 * again.
 		 */
-		_dd_traverseDomTreeAndRemoveSpans: function(el) {
+		_dd_traverseDomTreeAndRemoveSpans: function (el) {
 			var nodesToDelete = [], convertBack;
-			convertBack = function(el) {
+			convertBack = function (el) {
 				var currentlyTraversingExpandedText = false, currentText, lastNode;
 				var child;
-				for(var i=0, l=el.childNodes.length; i < l; i++) {
+				for (var i = 0, l = el.childNodes.length; i < l; i++) {
 					child = el.childNodes[i];
 					if (child.nodeType === 1) { // Node
 						if (child.attributes['data-i'] !== undefined) {
@@ -1101,7 +1110,7 @@ define([
 
 			convertBack(el);
 
-			for (var i=0, l=nodesToDelete.length; i<l; i++) {
+			for (var i = 0, l = nodesToDelete.length; i < l; i++) {
 				nodesToDelete[i].parentNode.removeChild(nodesToDelete[i]);
 			}
 		},
@@ -1118,7 +1127,7 @@ define([
 		 * SECTION: Drag&Drop for Block elements
 		 **************************/
 
-		_setupDragDropForBlockElements: function() {
+		_setupDragDropForBlockElements: function () {
 			// Mark the drag handle with an extra CSS class, such that it is picked up by BlockManager.initializeBlockLevelDragDrop()
 			this.$element.find('.aloha-block-draghandle').addClass('aloha-block-draghandle-blocklevel');
 		},
@@ -1138,7 +1147,7 @@ define([
 		 * Override to use a custom implementation and to pass
 		 * special configuration to .aloha()
 		 */
-		createEditablesIfNeeded: function() {
+		createEditablesIfNeeded: function () {
 			// TODO: only create them if they are no aloha element yet...
 			// TODO: should only happen inside Aloha
 			this.$element.find('.aloha-editable').aloha();
@@ -1153,7 +1162,7 @@ define([
 		 * Template method to render custom block UI.
 		 * @api
 		 */
-		renderBlockHandlesIfNeeded: function() {
+		renderBlockHandlesIfNeeded: function () {
 			if (this.isDraggable()) {
 				if (this.$element.children('.aloha-block-draghandle').length === 0) {
 					this.$element.prepend('<span class="aloha-block-handle aloha-block-draghandle aloha-cleanme"></span>');
@@ -1179,7 +1188,7 @@ define([
 		 * @param {String} attributeValue
 		 * @param {Boolean} Optional. If true, we do not fire change events.
 		 */
-		attr: function(attributeNameOrObject, attributeValue, suppressEvents) {
+		attr: function (attributeNameOrObject, attributeValue, suppressEvents) {
 			var that = this, attributeChanged = false;
 
 			if (arguments.length >= 2) {
@@ -1192,7 +1201,7 @@ define([
 				}
 				this._setAttribute(attributeNameOrObject, attributeValue);
 			} else if (typeof attributeNameOrObject === 'object') {
-				jQuery.each(attributeNameOrObject, function(key, value) {
+				jQuery.each(attributeNameOrObject, function (key, value) {
 					if (key.substr(0, 12) === 'aloha-block-') {
 						Aloha.Log.error('block/block', 'It is not allowed to set internal block attributes (starting with aloha-block-) through Block.attr() (You tried to set ' + key + ')');
 						return;
@@ -1220,25 +1229,25 @@ define([
 		/**
 		 * Internal helper for setting  a single attribute.
 		 */
-		_setAttribute: function(name, value) {
+		_setAttribute: function (name, value) {
 			this.$element.attr('data-' + name.toLowerCase(), value);
 		},
 
 		/**
 		 * Internal helper for getting an attribute
 		 */
-		_getAttribute: function(name) {
+		_getAttribute: function (name) {
 			return this.$element.attr('data-' + name.toLowerCase());
 		},
 
 		/**
 		 * Internal helper for getting all attributes
 		 */
-		_getAttributes: function() {
+		_getAttributes: function () {
 			var attributes = {};
 
 			// element.data() not always up-to-date, that's why we iterate over the attributes directly.
-			jQuery.each(this.$element[0].attributes, function(i, attribute) {
+			jQuery.each(this.$element[0].attributes, function (i, attribute) {
 				if (attribute.name.substr(0, 5) === 'data-') {
 					attributes[attribute.name.substr(5).toLowerCase()] = attribute.value;
 				}
@@ -1256,7 +1265,7 @@ define([
 	var DefaultBlock = AbstractBlock.extend(
 	/** @lends block.block.DefaultBlock */
 	{
-		update: function($element, postProcessFn) {
+		update: function ($element, postProcessFn) {
 			postProcessFn();
 		}
 	});
@@ -1270,13 +1279,13 @@ define([
 	/** @lends block.block.DebugBlock */
 	{
 		title: 'Debugging',
-		init: function($element, postProcessFn) {
+		init: function ($element, postProcessFn) {
 			this.update($element, postProcessFn);
 		},
-		update: function($element, postProcessFn) {
+		update: function ($element, postProcessFn) {
 			$element.css({display: 'block'});
 			var renderedAttributes = '<table class="debug-block">';
-			jQuery.each(this.attr(), function(k, v) {
+			jQuery.each(this.attr(), function (k, v) {
 				renderedAttributes += '<tr><th>' + k + '</th><td>' + v + '</td></tr>';
 			});
 
@@ -1292,11 +1301,11 @@ define([
 	 * @class An empty block doesn't render any tag fill icons or borders (no Aloha tags)
 	 * @extends block.block.AbstractBlock
 	 */
-	var EmptyBlock = AbstractBlock.extend (
+	var EmptyBlock = AbstractBlock.extend(
 	/** @lends block.block.EmptyBlock */
 	{
 		title: 'EmptyBlock',
-		init: function() {},
+		init: function () {},
 		activate: function () {},
 		deactivate: function () {},
 		renderBlockHandlesIfNeeded: function () {},

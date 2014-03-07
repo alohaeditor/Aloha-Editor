@@ -25,8 +25,7 @@
  * recipients can access the Corresponding Source.
  */
 define(
-['aloha/registry'],
-function(Registry) {
+['aloha/registry'], function (Registry) {
 	"use strict";
 
 	/**
@@ -44,7 +43,7 @@ function(Registry) {
 		 *
 		 * @param {Object} definition
 		 */
-		createEditor: function(definition) {
+		createEditor: function (definition) {
 			if (!this.has(definition.type)) {
 				throw 'Editor for type "' + definition.type + '" not found.';
 			}

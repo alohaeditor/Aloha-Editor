@@ -17,7 +17,7 @@ define([
 	'ui/toggleButton',
 	'ui/port-helper-attribute-field',
 	'i18n!wai-lang/nls/i18n',
-	'wai-lang/languages'
+	'../../../shared/languages/languages'
 ], function WaiLangPlugin(
 	Aloha,
 	$,
@@ -30,7 +30,8 @@ define([
 	Button,
 	ToggleButton,
 	attributeField,
-	i18n
+	i18n,
+	LanguageRepository
 ) {
 	'use strict';
 
@@ -378,7 +379,7 @@ define([
 		 *
 		 * @type {Array.<string>}
 		 */
-		objectTypeFilter: ['language'],
+		objectTypeFilter: ['language/wai'],
 
 		/**
 		 * HotKeys used for special actions.
@@ -391,6 +392,7 @@ define([
 
 		init: function init() {
 			this._instanceId = uniqueId('wai-lang');
+
 			if (this.settings.objectTypeFilter) {
 				this.objectTypeFilter = this.settings.objectTypeFilter;
 			}
@@ -403,6 +405,14 @@ define([
 			this.flags = isTrue(this.settings.flags);
 			prepareUi(this);
 			subscribeEvents(this);
+			
+			var repo = new LanguageRepository(
+				'wai-languages',
+				this.flags,
+				this.iso639 == 'iso639-1' ? 'iso639-1' : 'iso639-2',
+				Aloha.settings.locale,
+				'language/wai'
+			);
 		},
 
 		/**

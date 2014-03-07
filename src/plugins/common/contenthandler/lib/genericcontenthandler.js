@@ -65,8 +65,8 @@ define([
 			return false;
 		}
 		var node = $('<div>' + trimmed + '</div>')[0];
-		var containsSingleP = node.firstChild === node.lastChild
-		    && 'p' === node.firstChild.nodeName.toLowerCase();
+		var containsSingleP = node.firstChild === node.lastChild &&
+			'p' === node.firstChild.nodeName.toLowerCase();
 		if (containsSingleP) {
 			var kids = node.firstChild.children;
 			return (kids && 1 === kids.length &&
@@ -137,12 +137,12 @@ define([
 	 * 
 	 * @return {Boolean}
 	 */
-	function isAllowedNodeName(nodeType){
+	function isAllowedNodeName(nodeType) {
 		return !!(
-			Aloha.settings.contentHandler
-			&& Aloha.settings.contentHandler.allows
-			&& Aloha.settings.contentHandler.allows.elements
-			&& ($.inArray(
+			Aloha.settings.contentHandler &&
+			Aloha.settings.contentHandler.allows &&
+			Aloha.settings.contentHandler.allows.elements &&
+			($.inArray(
 		              nodeType.toLowerCase(), 
 				      Aloha.settings.contentHandler.allows.elements
 				         ) !== -1
@@ -183,11 +183,11 @@ define([
 
 			var transformFormatting = true;
 
-			if (Aloha.settings.contentHandler
-				&& Aloha.settings.contentHandler.handler
-				&& Aloha.settings.contentHandler.handler.generic
-				&& typeof Aloha.settings.contentHandler.handler.generic.transformFormattings !== 'undefinded'
-				&& !Aloha.settings.contentHandler.handler.generic.transformFormattings ) {
+			if (Aloha.settings.contentHandler &&
+				Aloha.settings.contentHandler.handler &&
+				Aloha.settings.contentHandler.handler.generic &&
+				typeof Aloha.settings.contentHandler.handler.generic.transformFormattings !== 'undefinded' &&
+				!Aloha.settings.contentHandler.handler.generic.transformFormattings) {
 				transformFormatting = false;
 			}
 
@@ -217,13 +217,12 @@ define([
 		 * Transform formattings
 		 * @param content
 		 */
-		transformFormattings: function ( content ) {
+		transformFormattings: function (content) {
 			// find all formattings we will transform
 			// @todo this makes troubles -- don't change semantics! at least in this way...
 
 			var selectors = [],
-				i
-			;
+				i;
 
 			for (i = 0; i < formattingTags.length; i++) {
 				if (!isAllowedNodeName(formattingTags[i])) {
@@ -252,12 +251,12 @@ define([
 		 * Transform links
 		 * @param content
 		 */
-		transformLinks: function ( content ) {
+		transformLinks: function (content) {
 			// find all links and remove the links without href (will be destination anchors from word table of contents)
 			// aloha is not supporting anchors at the moment -- maybe rewrite anchors in headings to "invisible"
 			// in the test document there are anchors for whole paragraphs --> the whole P appear as link
 			content.find('a').each(function () {
-				if ( typeof $(this).attr('href') === 'undefined' ) {
+				if (typeof $(this).attr('href') === 'undefined') {
 					$(this).contents().unwrap();
 				}
 			});
@@ -267,7 +266,7 @@ define([
 		 * Remove all comments
 		 * @param content
 		 */
-		removeComments: function ( content ) {
+		removeComments: function (content) {
 			var that = this;
 
 			// ok, remove all comments
@@ -285,7 +284,7 @@ define([
 		 * Remove some unwanted tags from content pasted
 		 * @param content
 		 */
-		unwrapTags: function ( content ) {
+		unwrapTags: function (content) {
 			var that = this;
 
 			// Note: we exclude all elements (they will be spans) here, that have the class aloha-wai-lang
@@ -297,7 +296,7 @@ define([
 					if (this.innerHTML === '<br>') {
 						$(this).contents().unwrap();
 					} else {
-						$( Aloha.Markup.transformDomObject($(this), 'p').append('<br>') ).contents().unwrap();
+						$(Aloha.Markup.transformDomObject($(this), 'p').append('<br>')).contents().unwrap();
 					}
 				} else {
 					$(this).contents().unwrap();
@@ -309,7 +308,7 @@ define([
 		 * Remove styles
 		 * @param content
 		 */
-		removeStyles: function ( content ) {
+		removeStyles: function (content) {
 			var that = this;
 
 			// completely remove style tags
@@ -340,7 +339,7 @@ define([
 						: (this.scopeName ? this.scopeName : undefined);
 				// when the prefix is set (and different from 'HTML'), we remove the
 				// element
-				if ((nsPrefix && nsPrefix !== 'HTML') || this.nodeName.indexOf(':') >= 0 ) {
+				if ((nsPrefix && nsPrefix !== 'HTML') || this.nodeName.indexOf(':') >= 0) {
 					var $this = $(this), $contents = $this.contents();
 					if ($contents.length) {
 						// the element has contents, so unwrap the contents

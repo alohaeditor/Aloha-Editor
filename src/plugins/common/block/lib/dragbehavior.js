@@ -74,8 +74,7 @@ define([
 	 */
 	function allowDropRegions($hovering, $dragging) {
 		return !$hovering || !(
-			$hovering.is('.ui-draggable-dragging')
-			||
+			$hovering.is('.ui-draggable-dragging') ||
 			$hovering.closest($dragging).length > 0
 		);
 	}
@@ -143,8 +142,7 @@ define([
 		var range = null;
 		var x = 0;
 		var y = 0;
-		return $.browser.msie
-			? {
+		return $.browser.msie ? {
 
 				/**
 				 * Remember the selection state.
@@ -301,10 +299,10 @@ define([
 	 */
 	DragBehavior.prototype.highlightElement = function (elm) {
 
-		if (elm.nodeName === 'DIV'
-				&& elm.parentNode.nodeName === 'TD'
-				&& elm.parentNode.firstChild === elm
-				&& elm.parentNode.lastChild === elm) {
+		if (elm.nodeName === 'DIV' &&
+				elm.parentNode.nodeName === 'TD' &&
+				elm.parentNode.firstChild === elm &&
+				elm.parentNode.lastChild === elm) {
 
 			elm = elm.parentNode;
 		}
@@ -427,8 +425,8 @@ define([
 	DragBehavior.prototype.onDragStop = function () {
 		// @todo check if the $overElement is a Valid element to drop the block
 		if (allowDropRegions(this.$overElement, this.$element)) {
-			if (this.$overElement
-					&& !this._isAllowedOverElement(this.$overElement[0])) {
+			if (this.$overElement &&
+				!this._isAllowedOverElement(this.$overElement[0])) {
 				this.enableInsertBeforeOrAfter(this.$overElement[0]);
 			}
 

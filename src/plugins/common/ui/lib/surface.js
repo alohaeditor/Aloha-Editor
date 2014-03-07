@@ -3,7 +3,7 @@ define([
 	'jquery',
 	'util/class',
 	'ui/container'
-], function(
+], function (
 	Aloha,
 	$,
 	Class,
@@ -18,7 +18,7 @@ define([
 	 * @base
 	 */
 	var Surface = Class.extend({
-		_constructor: function(context) {
+		_constructor: function (context) {
 			context.surfaces.push(this);
 		},
 
@@ -28,7 +28,7 @@ define([
 		 *
 		 * @eturn {boolean} True if this surface is visible.
 		 */
-		isActive: function() {
+		isActive: function () {
 			return true;
 		}
 	});
@@ -54,8 +54,8 @@ define([
 		 *
 		 * @param {!Object} context.
 		 */
-		show: function(context) {
-			$.each(context.surfaces, function(i, surface) {
+		show: function (context) {
+			$.each(context.surfaces, function (i, surface) {
 				surface.show();
 			});
 		},
@@ -65,7 +65,7 @@ define([
 		 *
 		 * @param {!Object} context
 		 */
-		hide: function(context) {
+		hide: function (context) {
 			$.each(context.surfaces, function (i, surface) {
 				surface.hide();
 			});
@@ -80,21 +80,20 @@ define([
 		 *                                      when the user interacts with
 		 *                                      it.
 		 */
-		trackRange: function(element) {
-			element.bind('mousedown', function(e) {
+		trackRange: function (element) {
+			element.bind('mousedown', function (e) {
 				e.originalEvent.stopSelectionUpdate = true;
 				Aloha.eventHandled = true;
 				Surface.suppressHide = true;
 
 				if (Aloha.activeEditable) {
 					var selection = Aloha.getSelection();
-					Surface.range = (0 < selection.getRangeCount())
-					              ? selection.getRangeAt(0)
-								  : null;
+					Surface.range = (0 < selection.getRangeCount()) ?
+						selection.getRangeAt(0) : null;
 				}
 			});
 			
-			element.bind('mouseup', function(e) {
+			element.bind('mouseup', function (e) {
 				e.originalEvent.stopSelectionUpdate = true;
 				Aloha.eventHandled = false;
 				Surface.suppressHide = false;

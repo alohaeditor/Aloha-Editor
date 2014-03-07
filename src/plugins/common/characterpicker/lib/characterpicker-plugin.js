@@ -90,10 +90,10 @@ define([
 		$('body').click(function ($event) {
 			// Because click events on the overlay ui should not cause it to
 			// hide itself.
-			if (!overlay._overlayActive
-					|| ($event.target === overlay.$element[0])
-					|| $($event.target).is('.aloha-icon-characterpicker')
-					|| $($event.target).find('.aloha-icon-characterpicker').length) {
+			if (!overlay._overlayActive ||
+					($event.target === overlay.$element[0]) ||
+					$($event.target).is('.aloha-icon-characterpicker') ||
+					$($event.target).find('.aloha-icon-characterpicker').length) {
 				return;
 			}
 			overlay.hide();
@@ -134,8 +134,8 @@ define([
 
 		if (source.currentStyle) {
 			style = source.currentStyle[camelize(styleProp)];
-		} else if (document.defaultView
-		        && document.defaultView.getComputedStyle) {
+		} else if (document.defaultView &&
+			document.defaultView.getComputedStyle) {
 			style = document.defaultView
 			                .getComputedStyle(source, null)
 			                .getPropertyValue(styleProp);
@@ -394,10 +394,9 @@ define([
 		init: function () {
 			var characterpicker = this;
 
-			if (Aloha.settings.plugins
-					&& Aloha.settings.plugins.characterpicker) {
-				characterpicker.settings
-						= Aloha.settings.plugins.characterpicker;
+			if (Aloha.settings.plugins &&
+				Aloha.settings.plugins.characterpicker) {
+				characterpicker.settings = Aloha.settings.plugins.characterpicker;
 			}
 
 			var button = Ui.adopt('characterPicker', Button, {
@@ -430,14 +429,14 @@ define([
 				if (editableIndex < Aloha.editables.length) {
 					generateOverlay(characterpicker,
 							Aloha.editables[editableIndex]);
-					setTimeout(function () {
+					window.setTimeout(function () {
 						pregenerateOverlays(editableIndex + 1);
 					}, 100);
 				}
 			}
 
 			// FIXME: ... but why?
-			setTimeout(function () {
+			window.setTimeout(function () {
 				pregenerateOverlays(0);
 			}, 100);
 

@@ -1,17 +1,22 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.alohaeditor</groupId>
 	<artifactId>alohaeditor</artifactId>
-	<version>0.24.18-commercial-SNAPSHOT</version>
+	<version>0.25.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Aloha Editor</name>
 	<url>http://aloha-editor.org</url>
 	<licenses>
 		<license>
-			<name>${build.licenseType}</name>
-			<url>${build.licenseUrl}</url>
+			<name>GPLv2 or later</name>
+			<url>http://www.gnu.org/licenses/gpl-2.0.html</url>
+		</license>
+		<license>
+			<name>Aloha Editor Enterprise</name>
+			<url>http://aloha-editor.com/terms/</url>
 		</license>
 	</licenses>
 	<properties>
@@ -21,15 +26,6 @@
 		<ALOHADEPLOYMENTURL>NA</ALOHADEPLOYMENTURL>
 		<ALOHADEPLOYMENTPATH>NA</ALOHADEPLOYMENTPATH>
 		<build.profile>build-profile-with-common-extra-plugins</build.profile>
-		<build.license>gpl</build.license>
-		<build.licenseType>GPLv2 or later</build.licenseType>
-		<build.licenseUrl>http://www.gnu.org/licenses/gpl-2.0.html</build.licenseUrl>
-		<snapshots.repoUrl>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public_snapshots</snapshots.repoUrl>
-		<snapshots.repoName>Gentics Public Snapshots Repository</snapshots.repoName>
-		<snapshots.repoId>archiva.com.gentics.public_snapshots</snapshots.repoId>
-		<releases.repoUrl>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public</releases.repoUrl>
-		<releases.repoName>Gentics Public Repository</releases.repoName>
-		<releases.repoId>archiva.com.gentics.public</releases.repoId>
 	</properties>
 
 	<dependencies>
@@ -45,6 +41,18 @@
 			<version>r1918</version>
 			<scope>runtime</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.gentics</groupId>
+			<artifactId>junit-selenium-qunit-runner</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.1</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<scm>
@@ -55,6 +63,35 @@
 
 	<build>
 		<plugins>
+			<!-- Don't deploy any jars -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
+				<executions>
+					<execution>
+						<id>default-jar</id>
+						<phase>never</phase>
+						<configuration>
+							<finalName>unwanted</finalName>
+							<classifier>unwanted</classifier>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<verbose>true</verbose>
+					<fork>true</fork>
+					<executable>${JAVA_1_6_HOME}/bin/javac</executable>
+					<compilerVersion>6.0</compilerVersion>
+					<source>6</source>
+					<target>6</target>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
@@ -162,15 +199,16 @@
 						</goals>
 						<configuration>
 							<options>
-								<predef>Aloha, window, global, process, define, require, jQuery, GCN</predef>
+								<predef>Aloha, window, global, process, define, require, jQuery, GCN, document, Image</predef>
 							</options>
 							<failOnError>false</failOnError>
 							<includes>
-								<include>plugins/**/*.js</include>
+								<include>plugins/common/**/*plugin.js</include>
 							</includes>
 							<excludes>
 								<exclude>plugins/**/extra/**</exclude>
 								<exclude>plugins/**/vendor/**</exclude>
+								<exclude>plugins/**/nls/**</exclude>
 							</excludes>
 							<outputFolder>${project.build.directory}/jslint-plugins</outputFolder>
 						</configuration>
@@ -196,21 +234,6 @@
 								<argument>${project.basedir}/build/r.js</argument>
 								<argument>-o</argument>
 								<argument>${project.basedir}/build/aloha/${build.profile}.js</argument>
-							</arguments>
-						</configuration>
-					</execution>
-					<execution>
-						<phase>deploy</phase>
-						<id>deploy</id>
-						<goals>
-							<goal>exec</goal>
-						</goals>
-						<configuration>
-							<executable>bin/deploy-aloha.sh</executable>
-							<arguments>
-								<argument>${ALOHADEPLOYMENTURL}</argument>
-								<argument>${ALOHADEPLOYMENTPATH}</argument>
-								<argument>${maven.build.timestamp}</argument>
 							</arguments>
 						</configuration>
 					</execution>
@@ -253,28 +276,6 @@
 				<include>aloha.less</include> </includes> <compress>true</compress> <force>true</force> 
 				</configuration> </execution> </executions> </plugin> -->
 
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.6</version>
-				<executions>
-					<execution>
-						<id>copy-resources</id>
-						<phase>initialize</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${basedir}/target/extra-resources</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${project.basedir}/build/filtered</directory>
-									<filtering>true</filtering>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 			<plugin>
 				<groupId>ro.isdc.wro4j</groupId>
 				<artifactId>wro4j-maven-plugin</artifactId>
@@ -361,7 +362,7 @@
 					<contextFolder>${basedir}</contextFolder>
 					<buildDirectory>${basedir}</buildDirectory>
 					<ignoreMissingResources>false</ignoreMissingResources>
-					<wroFile>${basedir}/target/extra-resources/wro.xml</wroFile>
+					<wroFile>${basedir}/build/wro/wro.xml</wroFile>
 					<wroManagerFactory>ro.isdc.wro.extensions.manager.standalone.GoogleStandaloneManagerFactory</wroManagerFactory>
 				</configuration>
 			</plugin>
@@ -430,7 +431,6 @@
 			<plugin>
 				<groupId>org.eclipse.m2e</groupId>
 				<artifactId>lifecycle-mapping</artifactId>
-				<version>1.0.0</version>
 				<configuration>
 					<lifecycleMappingMetadata>
 						<pluginExecutions>
@@ -453,18 +453,68 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.codehaus.mojo
+										</groupId>
+										<artifactId>
+											exec-maven-plugin
+										</artifactId>
+										<versionRange>
+											[1.1.1,)
+										</versionRange>
+										<goals>
+											<goal>exec</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
+
+	<repositories>
+		<repository>
+			<id>maven.gentics.com</id>
+			<name>Gentics Maven Repository</name>
+			<url>https://maven.gentics.com/maven2</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 
 	<distributionManagement>
 		<repository>
-			<id>${releases.repoId}</id>
-			<name>${releases.repoName}</name>
-			<url>${releases.repoUrl}</url>
+			<id>archiva.com.gentics.public</id>
+			<name>Gentics Public Repository</name>
+			<url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public</url>
 		</repository>
 		<snapshotRepository>
-			<id>${snapshots.repoId}</id>
-			<name>${snapshots.repoName}</name>
-			<url>${snapshots.repoUrl}</url>
+			<id>archiva.com.gentics.public_snapshots</id>
+			<name>Gentics Public Snapshots Repository</name>
+			<url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public_snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 </project>

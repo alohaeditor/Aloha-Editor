@@ -7,7 +7,7 @@
 		<js>/target/build-profile-with-common-plugins/rjs-output/lib/require.js</js>
 		<js>/target/build-profile-with-common-plugins/rjs-output/lib/vendor/jquery-1.7.2.js</js>
 		<js>/target/build-profile-with-common-plugins/rjs-output/lib/aloha-jquery-noconflict.js</js>
-		<js>/build/aloha/${build.license}-header.frag</js>
+		<js>/build/aloha/license-header.frag</js>
 		<js>/target/build-profile-with-common-plugins/rjs-output/lib/aloha.js</js>
 	</group>
 	<group name="build-profile-with-common-plugins-bare">
@@ -20,11 +20,11 @@
 		<js>/target/build-profile-with-common-extra-plugins/rjs-output/lib/require.js</js>
 		<js>/target/build-profile-with-common-extra-plugins/rjs-output/lib/vendor/jquery-1.7.2.js</js>
 		<js>/target/build-profile-with-common-extra-plugins/rjs-output/lib/aloha-jquery-noconflict.js</js>
-		<js>/build/aloha/${build.license}-header.frag</js>
+		<js>/build/aloha/license-header.frag</js>
 		<js>/target/build-profile-with-common-extra-plugins/rjs-output/lib/aloha.js</js>
 	</group>
 	<group name="build-profile-with-common-extra-plugins-bare">
-		<js>/build/aloha/${build.license}-header.frag</js>
+		<js>/build/aloha/license-header.frag</js>
 		<js>/target/build-profile-with-common-extra-plugins/rjs-output/lib/aloha.js</js>
 	</group>
 	

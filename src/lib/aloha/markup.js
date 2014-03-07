@@ -45,7 +45,7 @@ define([
 
 	var GENTICS = window.GENTICS;
 
-	var isOldIE = !!(jQuery.browser.msie && 9 > parseInt(jQuery.browser.version, 10));
+	var isOldIE = !!(Aloha.browser.msie && 9 > parseInt(Aloha.browser.version, 10));
 
 	function isBR(node) {
 		return 'BR' === node.nodeName;
@@ -674,7 +674,7 @@ define([
 			var sibling, offset;
 
 			// special handling for moving Cursor around zero-width whitespace in IE7
-			if (jQuery.browser.msie && parseInt(jQuery.browser.version, 10) <= 7 && isTextNode(node)) {
+			if (Aloha.browser.msie && parseInt(Aloha.browser.version, 10) <= 7 && isTextNode(node)) {
 				if (keyCode == 37) {
 					// moving left -> skip zwsp to the left
 					offset = range.startOffset;
@@ -768,7 +768,7 @@ define([
 		processEnter: function (rangeObject) {
 			if (rangeObject.splitObject) {
 				// now comes a very evil hack for ie, when the enter is pressed in a text node in an li element, we just append an empty text node
-				// if ( jQuery.browser.msie
+				// if ( Aloha.browser.msie
 				//      && GENTICS.Utils.Dom
 				//           .isListElement( rangeObject.splitObject ) ) {
 				//  jQuery( rangeObject.splitObject ).append(
@@ -924,7 +924,7 @@ define([
 		 */
 		needEndingBreak: function () {
 			// currently, all browser except IE need ending breaks
-			return !jQuery.browser.msie;
+			return !Aloha.browser.msie;
 		},
 
 		/**
@@ -1223,7 +1223,7 @@ define([
 		 * @return fillUpElement HTML Code
 		 */
 		getFillUpElement: function (splitObject) {
-			if (jQuery.browser.msie) {
+			if (Aloha.browser.msie) {
 				return false;
 			}
 			return jQuery('<br class="aloha-cleanme"/>');

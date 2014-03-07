@@ -56,18 +56,18 @@ GENTICS.Aloha.Repositories.delicious.settings.weight = 0.35;
 /**
  * init Delicious repository
  */
-GENTICS.Aloha.Repositories.delicious.init = function() {
+GENTICS.Aloha.Repositories.delicious.init = function () {
 	var that = this;
 
 	// check weight
-	if ( this.settings.weight + 0.15 > 1 ) {
+	if (this.settings.weight + 0.15 > 1) {
 		this.settings.weight = 1 - 0.15;
 	}
 
 	// default delicious URL. Returns most popular links.
 	this.deliciousURL = "http://feeds.delicious.com/v2/json/";
 
-	if ( this.settings.username ) {
+	if (this.settings.username) {
 
 		// if a username is set use public user links
 		this.deliciousURL += this.settings.username + '/';
@@ -81,7 +81,7 @@ GENTICS.Aloha.Repositories.delicious.init = function() {
 		jQuery.ajax({ type: "GET",
 			dataType: "jsonp",
 			url: 'http://feeds.delicious.com/v2/json/tags/'+that.settings.username,
-			success: function(data) {
+			success: function (data) {
 				// convert data
 				for (var tag in data) {
 					that.tags.push(tag);
@@ -101,26 +101,26 @@ GENTICS.Aloha.Repositories.delicious.init = function() {
  * Searches a repository for items matching query if objectTypeFilter.
  * If none found it returns null.
  */
-GENTICS.Aloha.Repositories.delicious.query = function( p, callback) {
+GENTICS.Aloha.Repositories.delicious.query = function (p, callback) {
 	var that = this;
 
-	if ( p.objectTypeFilter && jQuery.inArray('website', p.objectTypeFilter) == -1) {
+	if (p.objectTypeFilter && jQuery.inArray('website', p.objectTypeFilter) == -1) {
 
 		// return if no website type is requested
-		callback.call( this, []);
+		callback.call(this, []);
 
 	} else {
 
 		// prepare tags
 		var tags = [];
-		if ( this.settings.username ) {
+		if (this.settings.username) {
 
 			// search in user tags
 			var queryTags = p.queryString ? p.queryString.split(' ') : [];
 		    for (var i = 0; i < queryTags.length; i++) {
 				var queryTag = queryTags[i].trim();
 				if ( jQuery.inArray(queryTag, that.tags) == -1 ) {
-					var newtags = that.tags.filter(function(e, i, a) {
+					var newtags = that.tags.filter(function (e, i, a) {
 						var r = new RegExp(queryTag, 'i');
 						return ( e.match(r) );
 					});
@@ -144,7 +144,7 @@ GENTICS.Aloha.Repositories.delicious.query = function( p, callback) {
 		jQuery.extend(tags, folderTags);
 
 		// if we have a query and no tag matching return
-		if ( p.queryString && tags.length == 0 ) {
+		if (p.queryString && tags.length == 0) {
 			callback.call( that, []);
 			return;
 		}
@@ -152,7 +152,7 @@ GENTICS.Aloha.Repositories.delicious.query = function( p, callback) {
 		jQuery.ajax({ type: "GET",
 			dataType: "jsonp",
 			url: that.deliciousURL + tags.join('+'),
-			success: function(data) {
+			success: function (data) {
 				var items = [];
 				// convert data to Aloha objects
 				for (var i = 0; i < data.length; i++) {
@@ -167,7 +167,7 @@ GENTICS.Aloha.Repositories.delicious.query = function( p, callback) {
 						}));
 					}
 			    }
-				callback.call( that, items);
+				callback.call(that, items);
 			}
 		});
 	}
@@ -176,7 +176,7 @@ GENTICS.Aloha.Repositories.delicious.query = function( p, callback) {
 /**
  * Returns all tags for username in a tree style way
  */
-GENTICS.Aloha.Repositories.delicious.getChildren = function( p, callback) {
+GENTICS.Aloha.Repositories.delicious.getChildren = function ( p, callback) {
 	var that = this;
 
 	// tags are only available when a username is available
@@ -203,7 +203,7 @@ GENTICS.Aloha.Repositories.delicious.getChildren = function( p, callback) {
 			jQuery.ajax({ type: "GET",
 				dataType: "jsonp",
 				url: 'http://feeds.delicious.com/v2/json/tags/'+that.settings.username+'/'+p.inFolderId,
-				success: function(data) {
+				success: function (data) {
 					var items = [];
 					// convert data
 					for (var tag in data) {
