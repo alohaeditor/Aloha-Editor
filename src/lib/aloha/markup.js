@@ -131,8 +131,21 @@ define([
 		return null;
 	}
 
+	/**
+	 * Checks if the caret (the passed offset) is at the start
+	 * of the passed node. This also trims whitespace before checking.
+	 *
+	 * @param {Object} node    A DOM node
+	 * @param {number} offset  Offset into the node, this is 0 or 1 for elements
+	 * @return {boolean}       True or false
+	 */
 	function isFrontPosition(node, offset) {
-		return (0 === offset) || (offset <= node.data.length - node.data.replace(/^\s+/, '').length);
+		if (isTextNode(node)
+				&& offset <= node.data.length - node.data.replace(/^\s+/, '').length) {
+			return true;
+		}
+
+		return offset === 0;
 	}
 
 	function isBlockInsideEditable($block) {

@@ -530,7 +530,7 @@ define([
 			var anchor = getAnchorCell(selection);
 			if (anchor) {
 				var element = $('>.aloha-table-cell-editable', anchor)[0];
-				if (Browser.ie7 || Browser.ie8) {
+				if (Browser.ie && anchor.ownerDocument.documentMode <= 8) {
 					try {
 						CopyPaste.selectAllOf(element);
 					} catch (e) {
