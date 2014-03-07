@@ -55,6 +55,15 @@ define([
 	var GENTICS = window.GENTICS;
 
 	/**
+	 * Selects the entire `block` for cut/copy.
+	 * @param {Block} block
+	 */
+	function selectWholeBlockForCopy(block) {
+		block.$element.attr('data-aloha-block-copy-only-block', 'true');
+		GENTICS.Utils.Dom.selectDomNode(block.$element[0]);
+	}
+
+	/**
 	 * This is the block manager, which is the central entity for maintaining the lifecycle of blocks.
 	 *
 	 * @name block.blockmanager
@@ -298,22 +307,25 @@ define([
 					}
 				}
 
-				// IF: Ctrl/Command C pressed -- COPY
-				if (that._activeBlock && (e.ctrlKey || e.metaKey) && e.which === 67) {
-					currentlyCopying = true;
-					//selectionBeforeCopying = new GENTICS.Utils.RangeObject(true);
-					that._activeBlock.$element.attr('data-aloha-block-copy-only-block', 'true');
-					GENTICS.Utils.Dom.selectDomNode(that._activeBlock.$element[0]);
-				}
+				// If the block is a table do not select whole table,
+				// table has its own selection methods.
+				if (that._activeBlock
+					&& (e.ctrlKey || e.metaKey)
+					&& !BlockUitls.isTable(that._activeBlock.$element)) {
 
-				// IF: Ctrl/Command X pressed -- CUT
-				if (that._activeBlock && (e.ctrlKey || e.metaKey) && e.which === 88) {
-					currentlyCutting = true;
-					//selectionBeforeCopying = new GENTICS.Utils.RangeObject(true);
-					that._activeBlock.$element.attr('data-aloha-block-copy-only-block', 'true');
-					GENTICS.Utils.Dom.selectDomNode(that._activeBlock.$element[0]);
+					// IF: Ctrl/Command C pressed -- COPY
+					if (e.which === 67) {
+						currentlyCopying = true;
+						selectWholeBlockForCopy(that._activeBlock);
+					}
+					// IF: Ctrl/Command X pressed -- CUT
+					else if (e.which === 88) {
+						currentlyCutting = true;
+						selectWholeBlockForCopy(that._activeBlock);
+					}
 				}
 			});
+
 			jQuery(window.document).keyup(function (e) {
 				// IF: Release of ctrl / command C
 				if (!currentlyCutting && currentlyCopying && (e.which === 67 || e.which === 18 || e.which === 91)) {
