@@ -455,18 +455,19 @@
 		</plugins>
 	</build>
 
-        <repository>
-              <id>maven.gentics.com</id>
-              <name>Gentics Maven Repository</name>
-              <url>https://maven.gentics.com/maven2</url>
-              <releases>
-                      <enabled>true</enabled>
-              </releases>
-              <snapshots>
-                      <enabled>true</enabled>
-              </snapshots>
-        </repository>
-
+        <repositories>
+     	   <repository>
+     	         <id>maven.gentics.com</id>
+     	         <name>Gentics Maven Repository</name>
+     	         <url>https://maven.gentics.com/maven2</url>
+     	         <releases>
+     	                 <enabled>true</enabled>
+     	         </releases>
+     	         <snapshots>
+     	                 <enabled>true</enabled>
+     	         </snapshots>
+     	   </repository>
+        </repositories>
 	<distributionManagement>
 		<repository>
 			<id>${releases.repoId}</id>
