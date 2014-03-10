@@ -27,10 +27,10 @@
 		<build.licenseUrl>http://www.gnu.org/licenses/gpl-2.0.html</build.licenseUrl>
 		<snapshots.repoUrl>http://archiva.office/repository/public_snapshots</snapshots.repoUrl>
 		<snapshots.repoName>Gentics Public Snapshots Repository</snapshots.repoName>
-		<snapshots.repoId>archiva.com.gentics.public_snapshots</snapshots.repoId>
+		<snapshots.repoId>archiva.lan.public_snapshots</snapshots.repoId>
 		<releases.repoUrl>http://archiva.office/repository/public_releases</releases.repoUrl>
 		<releases.repoName>Gentics Public Repository</releases.repoName>
-		<releases.repoId>archiva.com.gentics.public</releases.repoId>
+		<releases.repoId>archiva.lan.public</releases.repoId>
 	</properties>
 
 	<dependencies>
