@@ -204,4 +204,8 @@
 			}
 		}
 	};
+
+	Aloha.settings.contentHandler = {
+		insertHtml: [ 'word', 'generic', 'oembed', 'sanitize' ]
+	};
 } )( window );

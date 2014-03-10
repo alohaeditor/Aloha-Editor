@@ -1,0 +1,8 @@
+Copy paste tables from MS Word to IE does not create several tables.
+
+When copying and pasting tables from Word to IE several tables were created, one table for each row,
+instead of one unique table. This was due to 2 problems: the generic content handler was not set and
+a bug in the pasting code. Generic content handler sanitizes the copied content. The second problem
+is that an element is unwrapped if this is the only element in the paragraph. If the element is a Table
+the unwrap should not be done. For Firefox or Chrome this not happens because the paragraph has always
+more than one element, it contains empty elements.
