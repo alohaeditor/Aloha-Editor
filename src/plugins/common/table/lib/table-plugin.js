@@ -262,7 +262,6 @@ define([
 			j,
 			allHeaders = table.selection.isHeader(),
 			domCell, // representation of the cell in the dom
-			tableCell, // table-cell object
 			bufferCell; // temporary buffer
 
 		for (i = 0; i < table.selection.selectedCells.length; i++) {
@@ -808,8 +807,9 @@ define([
 
 					toggleHeaderStatus(that.activeTable, 'col');
 
-					that.activeTable.selection.unselectCells();
+					// Update selection to the new row
 					that.activeTable.selection.selectRows(that.activeTable.selection.selectedRowIdxs);
+					that.activeTable.selection.unselectCells();
 				}
 			}
 		});
@@ -920,8 +920,9 @@ define([
 
 					toggleHeaderStatus(that.activeTable, 'row');
 
-					that.activeTable.selection.unselectCells();
+					// Update selection to the new column
 					that.activeTable.selection.selectColumns(that.activeTable.selection.selectedColumnIdxs);
+					that.activeTable.selection.unselectCells();
 				}
 			}
 		});
