@@ -1,0 +1,5 @@
+ctrl-c or ctrl-x inside a table copies or cuts the selected text.
+
+When the key commands ctrl-c(copy) or ctrl-x(cut) are pressed the whole table was selected.
+This is due to a feature that sets the selection to the whole block when copying or cutting via key commands.
+With this fix, the selection of the whole block is only done if the block is not a table.
