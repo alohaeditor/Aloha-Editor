@@ -947,6 +947,12 @@ define([
 	//////////////////////////////
 	//@{
 
+	var unwrappableElementsMap = {
+		'TABLE': true,
+		'UL': true,
+		'OL': true
+	}
+
 	// "A prohibited paragraph child name is "address", "article", "aside",
 	// "blockquote", "caption", "center", "col", "colgroup", "dd", "details",
 	// "dir", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer",
@@ -4599,7 +4605,8 @@ define([
 			// now that the parent has only the node as child (because we
 			// removed any existing empty text nodes), we can safely unwrap the
 			// node's contents, and correct the range if necessary
-			if (node.parentNode.childNodes.length == 1) {
+			// Some nodes can not be unwrapped
+			if (node.parentNode.childNodes.length === 1 && !unwrappableElementsMap[node.nodeName]) {
 				newStartOffset = range.startOffset;
 				newEndOffset = range.endOffset;
 

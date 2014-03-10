@@ -1,0 +1,3 @@
+unwrappable elements when copy/paste
+There is some elements than can not be unwrapped just because they are
+inside a <p> element. These elements will be sanitized after.
