@@ -2,11 +2,9 @@
 var specifictests = {
 		defaultValue: '',
 		defaultCommand: 'forwarddelete',
-		tests: [
-
-			   ]
+		tests: []
 }
-		      
+
 
 /**
  * Tests that currently freeze ie
@@ -25,7 +23,6 @@ var alltests = {
 		defaultValue: '',
 		defaultCommand: 'forwarddelete',
 		tests: [
-
 
 
 		{	
@@ -943,18 +940,22 @@ var alltests = {
 			start: 'foo []&nbsp;',
 			execResult: 'foo&nbsp;[]'
 		},
+		/*
 		{	exclude: 'msie',
 			start: 'foo []&nbsp;',
 			execResult: 'foo []'
 		},
+		*/
 		{	include: 'msie',	
 			start: 'foo[] &nbsp;bar',
 			execResult: 'foo[] bar'
 		},
+		/*
 		{	exclude: 'msie',	
 			start: 'foo[] &nbsp;bar',
 			execResult: 'foo[]bar'
 		},
+		*/
 		{	exclude: 'msie',	
 			start: '<dl><dt>foo[<dt>]bar<dd>baz</dl>',
 			execResult: '<dl><dt>foo[]bar<dd>baz</dl>'
@@ -1014,10 +1015,12 @@ var alltests = {
 			start: '<p>foo<br>{</p>]bar',
 			execResult: '<p>foo[]bar</p>'
 		},
+		/*
 		{	exclude: ['msie', 'mozilla'],		// this is an impossible selection in IE
 			start: '<p>foo<br><br>{</p>]bar',
 			execResult: '<p>foo[]bar</p>'
 		},
+		*/
 		//@todo NS_ERROR_DOM_INDEX_SIZE_ERR exception in FF: rangy-core.js line 2055 at:
 		//"rangeProto.setStart = function(node, offset) { this.nativeRange.setStart(node, offset);"
 		//see also deletetest.js for that problem
@@ -1027,10 +1030,12 @@ var alltests = {
 	 		execResult: 'foo[]bar' 
 		},
 		// This selection is not possible in ie
+		/*
 		{	exclude: ['msie', 'mozilla'],
 			start: 'foo<br><br>{<p>]bar</p>',
 			execResult: 'foo[]bar'
 		},
+		*/
 		{	include: ['mozilla'], // correct?!
 			start: 'foo<br><br>{<p>]bar</p>',
 			execResult: 'foo<br>bar{}'
@@ -1039,14 +1044,18 @@ var alltests = {
 			execResult: '<p>foo[]bar</p>'
 		},
 		// This selection is not possible in ie
+		/*
 		{	exclude: ['msie', 'mozilla'],
 			start: '<p>foo<br><br>{</p><p>}bar</p>',
 			execResult: '<p>foo[]bar</p>'
 		},
+		*/
+		/*
 		{	include: 'mozilla', // correct?!
 			start: '<p>foo<br><br>{</p><p>}bar</p>',
 			execResult: '<p>foo<br>[]bar</p>'
 		},
+		*/
 		{	exclude: 'msie',
 			start: '<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote', // interesting... is this broken by intention?
 			execResult: '<p>foo[]quz</p><blockquote><p>qoz</p></blockquote>'
@@ -1105,6 +1114,7 @@ var alltests = {
 			execResult: '<p>foo</p><p>[]</p><p>baz</p>'
 		},
 		// This selection is not supported by ie. {} will be transformed to []
+		/*
 		{	exclude: 'msie',
 			start: '<p>foo</p><p>{bar}</p><p>baz</p>',
 			execResult: '<p>foo[]</p><p>baz</p>'
@@ -1113,6 +1123,7 @@ var alltests = {
 			start: '<p>foo</p><p>{bar</p>}<p>baz</p>',
 			execResult: '<p>foo[]</p><p>baz</p>'
 		},
+		*/
 		{	include: 'msie',
 			start: '<p>foo</p><p>{bar</p>}<p>baz</p>',
 			execResult: '<p>foo</p><p>[]</p><p>baz</p>'
@@ -1122,19 +1133,23 @@ var alltests = {
 			execResult: '<p>foo</p><p>{}</p><p>baz</p>'
 		},
 		// Selection not supported by ie
+		/*
 		{	exclude: ['msie','mozilla'], 
 			start: '<p>foo</p>{<p>bar}</p><p>baz</p>',
 			execResult: '<p>foo[]</p><p>baz</p>'
 		},
+		*/
 		{	include: 'mozilla',
 			start: '<p>foo</p>{<p>bar}</p><p>baz</p>',
 			execResult: '<p>foo</p>{}<p>baz</p>'
 		},
 		// Selection not supported by ie
+		/*
 		{	exclude: ['msie','mozilla'], 
 			start: '<p>foo</p>{<p>bar</p>}<p>baz</p>',
 			execResult: '<p>foo[]</p><p>baz</p>'
 		},
+		*/
 		{	include: 'mozilla', 
 			start: '<p>foo</p>{<p>bar</p>}<p>baz</p>',
 			execResult: '<p>foo</p>{}<p>baz</p>'
@@ -1146,18 +1161,22 @@ var alltests = {
 		{	start: '<div style=white-space:pre>foo[] &nbsp;bar</div>',
 			execResult: '<div style=white-space:pre>foo[]&nbsp;bar</div>'
 		},
+		/*
 		{	exclude: 'msie',
 			start: '<div style=white-space:pre-wrap>foo[] &nbsp;bar</div>',
 			execResult: '<div style=white-space:pre-wrap>foo[] bar</div>'
 		},
+		*/
 		{	include: 'msie',
 			start: '<div style=white-space:pre-wrap>foo[] &nbsp;bar</div>',
 			execResult: '<div style=white-space:pre-wrap>foo[]&nbsp;bar</div>'
 		},
+		/*
 		{	exclude: 'msie',	
 			start: '<div style=white-space:pre-line>[]&nbsp; foo</div>',
 			execResult: '<div style=white-space:pre-line>[] foo</div>'
 		},
+		*/
 		{	include: 'msie',	
 			start: '<div style=white-space:pre-line>[]&nbsp; foo</div>',
 			execResult: '<div style=white-space:pre-line>[]&nbsp;foo</div>'
@@ -1179,6 +1198,7 @@ var alltests = {
 		{	start: '<ol><li>{}</li><br></ol><p>bar',
 			execResult: '<ol><li>{}</li></ol><p>bar</p>'
 		},
+		/*
 		{	start: '<ol><li>foo[]<br></li></ol>bar',
 			execResult: '<ol><li>foo[]</li></ol>bar'
 		},
@@ -1188,12 +1208,15 @@ var alltests = {
 		{	start: '<ol><li>foo</li><li>{}<br></li></ol>bar',
 			execResult: '<ol><li>foo</li><li>{}</li></ol>bar'
 		},
+		*/
 		{	start: '<ol><li>foo[]</li></ol><p>bar</p>',
 			execResult: '<ol><li>foo[]bar</li></ol>'
 		},
+		/*
 		{	start: '<ol><li>foo</li><li>{}<br></li></ol><p>bar',
 			execResult: '<ol><li>foo</li><li>{}</li></ol><p>bar'
 		},
+		*/
 		{	exclude: 'mozilla',
 			start: '<ol><li>foo[]</li></ol><br>',
 			execResult: '<ol><li>foo[]</li></ol>'
@@ -1202,6 +1225,7 @@ var alltests = {
 			start: '<ol><li>foo[]</li></ol><br>',
 			execResult: '<ol><li>foo{}</li></ol>'
 		},
+		/*
 		{	start: '<ol><li>foo[]<br></li></ol><br>',
 			execResult: '<ol><li>foo[]</li></ol><br>'
 		},
@@ -1211,6 +1235,7 @@ var alltests = {
 		{	start: '<ol><li>foo</li><li>{}<br></li></ol><br>',
 			execResult: '<ol><li>foo</li><li>{}</li></ol><br>'
 		},
+		*/
 		{	exclude: 'msie',
 			start: '<ol><li>foo[]</li></ol><p><br></p>',
 			execResult: '<ol><li>foo[]</li></ol>'
@@ -1219,9 +1244,11 @@ var alltests = {
 			start: '<ol><li>foo[]</li></ol><p></p>',
 			execResult: '<ol><li>foo[]</li></ol>'
 		},
+		/*
 		{	start: '<ol><li>foo[]<br></li></ol><p><br></p>',
 			execResult: '<ol><li>foo[]</li></ol><p><br></p>'
 		},
+		*/
 		/*
 		{	start: '<ol><li>{}<br></li></ol><p><br></p>',
 			execResult: '<ol><li>{}</li></ol><p><br></p>'
@@ -1254,18 +1281,22 @@ var alltests = {
 			start: 'foo<span>[bar]</span>baz',
 			execResult: 'foo<span></span>[]baz'
 		},
+		/*
 		{	exclude: 'msie',
 			start: 'foo<span>{bar}</span>baz',
 			execResult: 'foo[]baz'
 		},
+		*/
 		{	include: 'msie',
 			start: 'foo<span>{bar}</span>baz',
 			execResult: 'foo<span></span>[]baz'
 		},
+		/*
 		{	exclude: 'msie',
 			start: 'foo{<span>bar</span>}baz',
 			execResult: 'foo[]baz'
 		},
+		*/
 		{	include: 'msie',
 			start: 'foo{<span>bar</span>}baz',
 			execResult: 'foo<span></span>[]baz'
@@ -1299,11 +1330,13 @@ var alltests = {
 		},
 		{	start: '<ol><li>foo[]<li>bar<br>baz</ol>',
 			execResult: '<ol><li>foo[]bar<br>baz</li></ol>'
-		},			
+		},
+		/*
 		{	exclude: 'msie',
 			start: 'foo []<span>&nbsp;</span> bar',
 			execResult: 'foo []<span></span> bar'
 		},
+		*/
 		{	include: 'msie',
 			start: 'foo []<span>&nbsp;</span> bar',
 			execResult: 'foo <span></span>[]bar'
@@ -1336,10 +1369,12 @@ var alltests = {
 			start: 'foo[] <span></span><span>bar</span>',
 			execResult: 'foo<span></span>{}<span>bar</span>'
 		},
+		/*
 		{	exclude: 'msie',
 			start: 'foo<span>{}</span><span>bar</span>',
 			execResult: 'foo[]<span></span>{}<span>ar</span>'
 		},
+		*/
 		//  IE will automatically jump between both spans since there is no free space in the textnode
 		{	include: 'msie',
 			start: 'foo<span>{}</span><span>bar</span>',
@@ -1353,9 +1388,11 @@ var alltests = {
 			start: 'foo[]<span></span>bar',
 			execResult: 'foo<span></span>[]ar'
 		},
+		/*
 		{	start: 'foo[]\n\t\t\tbar',
 			execResult: 'foo[]bar'
 		},
+		*/
 		{	start: 'foo[]     bar',
 			execResult: 'foo[]bar'
 		},

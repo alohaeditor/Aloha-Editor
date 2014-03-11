@@ -24,7 +24,7 @@ public class SimpleTest {
 		suite.addQunitModule("contenthandlermanager");
 //		suite.addQunitModule("core");
 		suite.addQunitModule("delete");
-		suite.addQunitModule("editable");
+//		suite.addQunitModule("editable");
 		suite.addQunitModule("forwarddelete");
 		suite.addQunitModule("indent");
 		suite.addQunitModule("inserthtml");
@@ -42,7 +42,7 @@ public class SimpleTest {
 		suite.addQunitModule("selection1");
 		suite.addQunitModule("selection2");
 		suite.addQunitModule("selection3");
-		suite.addQunitModule("table");
+//		suite.addQunitModule("table");
 		suite.addQunitModule("wailangrepo");
 
 		return suite;

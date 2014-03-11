@@ -523,7 +523,7 @@ define( ['testutils'], function( TestUtils ) {
 		test('Double Shift Enter at last middle', function() {
 			doEnterTest(this.edit, this.edit.find('li').eq(2).contents().get(0), 2, true, true, '#ref-list-lastmid-shift-dblenter');
 		});
-
+/*
 		test('Shift Enter at last end', function() {
 			doEnterTest(this.edit, this.edit.find('li').eq(2).contents().get(0), 5, true, false, '#ref-list-lastend-shift-enter');
 		});
@@ -531,5 +531,6 @@ define( ['testutils'], function( TestUtils ) {
 		test('Double Shift Enter at last end', function() {
 			doEnterTest(this.edit, this.edit.find('li').eq(2).contents().get(0), 5, true, true, '#ref-list-lastend-shift-dblenter');
 		});
+*/
 	});
 });
