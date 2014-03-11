@@ -15,7 +15,7 @@ define([
 	'html',
 	'ranges',
 	'editing',
-	'dom/traversing',
+	'traversing',
 	'boundaries',
 	'functions',
 	'undo',
@@ -57,10 +57,10 @@ define([
 		if (range.collapsed) {
 			if (direction) {
 				boundary = Boundaries.fromRangeEnd(range);
-				Boundaries.setRangeEnd(range, Html.next(boundary));
+				Boundaries.setRangeEnd(range, Traversing.next(boundary));
 			} else {
 				boundary = Boundaries.fromRangeStart(range);
-				Boundaries.setRangeStart(range, Html.prev(boundary));
+				Boundaries.setRangeStart(range, Traversing.prev(boundary));
 			}
 		}
 		Editing.delete(

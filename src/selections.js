@@ -16,7 +16,6 @@ define([
 	'dom/classes',
 	'dom/mutation',
 	'dom',
-	'html',
 	'keys',
 	'maps',
 	'events',
@@ -25,7 +24,7 @@ define([
 	'browsers',
 	'overrides',
 	'boundaries',
-	'dom/traversing'
+	'traversing'
 ], function Selection(
 	Fn,
 	Nodes,
@@ -33,7 +32,6 @@ define([
 	Classes,
 	DomMutation,
 	Dom,
-	Html,
 	Keys,
 	Maps,
 	Events,
@@ -199,10 +197,10 @@ define([
 		return Ranges.fromPosition(box.left, box.top + box.height + stride);
 	}
 	function left(boundary, stride) {
-		return Html.prev(boundary, stride);
+		return Traversing.prev(boundary, stride);
 	}
 	function right(boundary, stride) {
-		return Html.next(boundary, stride);
+		return Traversing.next(boundary, stride);
 	}
 
 	/**

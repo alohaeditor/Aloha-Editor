@@ -16,7 +16,7 @@ define([
 	'arrays',
 	'stable-range',
 	'html',
-	'dom/traversing',
+	'traversing',
 	'functions',
 	'cursors',
 	'boundaries'
@@ -145,7 +145,7 @@ define([
 	 */
 	function parentBlock(node) {
 		var block = Dom.isEditable(node) ? Dom.editingHost(node) : node;
-		var parent = Traversing.upWhile(block, function (node) {
+		var parent = Dom.upWhile(block, function (node) {
 			return node.parentNode && !Dom.isEditable(node.parentNode);
 		});
 		return (Nodes.Nodes.DOCUMENT === parent.nodeType) ? null : parent;
@@ -317,8 +317,8 @@ define([
 	 */
 	function expandToWord(start, end) {
 		return [
-			Html.prev(start, 'word') || start,
-			Html.next(end,   'word') || end
+			Traversing.prev(start, 'word') || start,
+			Traversing.next(end,   'word') || end
 		];
 	}
 
@@ -350,13 +350,13 @@ define([
 	 */
 	function expandToBlock(start, end) {
 		var cac = commonContainer(start, end);
-		var ancestors = Traversing.childAndParentsUntilIncl(cac, function (node) {
+		var ancestors = Dom.childAndParentsUntilIncl(cac, function (node) {
 			return Html.hasLinebreakingStyle(node) || Dom.isEditingHost(node);
 		});
 		var node = Arrays.last(ancestors);
 		var len = Nodes.nodeLength(node);
 		var prev = Boundaries.create(node, 0);
-		var next = Html.next(Boundaries.create(node, len));
+		var next = Traversing.next(Boundaries.create(node, len));
 		return [prev, next];
 	}
 
@@ -572,7 +572,7 @@ define([
 			if (Html.hasLinebreakingStyle(Html.prevNode(boundary))) {
 				return {};
 			}
-			Boundaries.setRangeStart(clone, Html.prev(boundary));
+			Boundaries.setRangeStart(clone, Traversing.prev(boundary));
 		}
 
 		var len = Nodes.nodeLength(clone.endContainer);
@@ -582,7 +582,7 @@ define([
 			if (Html.hasLinebreakingStyle(Html.nextNode(boundary))) {
 				return {};
 			}
-			Boundaries.setRangeEnd(clone, Html.next(boundary));
+			Boundaries.setRangeEnd(clone, Traversing.next(boundary));
 		}
 
 		var rect = clone.getBoundingClientRect();
@@ -614,7 +614,7 @@ define([
 
 		var len = Nodes.nodeLength(range.startContainer);
 		if (range.startOffset === len) {
-			var boundary = Html.prev(Boundaries.fromRangeStart(range));
+			var boundary = Traversing.prev(Boundaries.fromRangeStart(range));
 			return box(fromBoundaries(boundary, boundary));
 		}
 
