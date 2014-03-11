@@ -11,7 +11,6 @@
 (function (aloha) {
 	'use strict';
 
-	var OUTPUT = document.getElementById('test-console');
 	var CONTROL = 'she stopped.  she said, "hello there," and then went on.';
 	var EXPECTED = 'she| |stopped|.| | she| |said|,| |"|hello| |there|,|"| |and| |then| |went| |on|.';
 	var INLINE = ['i', 'b', 'u', 'span', 'del', '#text'];
@@ -128,19 +127,6 @@
 		}, '');
 	}
 
-	function assert(actual, expected, elem, mark) {
-		var stripped = actual.replace(/^\||\|$/, '');
-		if (expected === stripped) {
-			OUTPUT.innerHTML = print(elem);
-		} else {
-			var result = '\n"' + expected + '"\n!==\n"' + stripped + '"';
-			console.error(result, elem);
-			//debugger;
-			//mark(elem);
-			//throw '!';
-		}
-	}
-
 	/**
 	 * Tests one traversal through the given element's DOM structure.
 	 *
@@ -148,7 +134,7 @@
 	 * @param  {Function(Element):string} mark
 	 * @param  {string}                   expected
 	 */
-	function test(elem, mark, expected) {
+	function run(elem, mark, expected) {
 		var control = elem.textContent;
 		var snapshots = mark(elem).reduce(function (snaps, path) {
 			var clone = Dom.clone(elem);
@@ -159,15 +145,19 @@
 			var index = snap.indexOf('|') + i;
 			return result.substr(0, index) + '|' + result.substr(index);
 		}, control);
-		assert(result, expected, elem, mark);
+		var actual = result.replace(/^\||\|$/, '');
+		equal(expected, actual, elem.innerHTML + ' ⇒ ' + actual);
+		//console.log(print(elem));
 	}
 
-	function run() {
-		generate(EDITABLE, CONTROL, INLINE, 0);
-		test(EDITABLE, markForward, EXPECTED);
-		test(EDITABLE, markBackward, EXPECTED);
-	}
+	module('traversing');
 
-	setInterval(run, 10);
+	test('randomized word traversing', function () {
+		for (var i = 0; i < 200; i++) {
+			generate(EDITABLE, CONTROL, INLINE, 0);
+			run(EDITABLE, markForward, EXPECTED);
+			run(EDITABLE, markBackward, EXPECTED);
+		}
+	});
 
 }(window.aloha));

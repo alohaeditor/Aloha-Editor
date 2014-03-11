@@ -3,7 +3,7 @@
 
 	var Dom = aloha.dom;
 
-	module('traversing');
+	module('dom');
 
 	test('nextWhile', function () {
 		var node = $('<div><u></u><a>foo</a>bar<b></b><br/></div>')[0];

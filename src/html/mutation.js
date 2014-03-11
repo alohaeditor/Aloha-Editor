@@ -490,9 +490,11 @@ define([
 	}
 
 	return {
-		prop            : prop,
-		removeBreak     : removeBreak,
-		insertBreak     : insertBreak,
-		insertLineBreak : insertLineBreak
+		prop               : prop,
+		removeBreak        : removeBreak,
+		insertBreak        : insertBreak,
+		insertLineBreak    : insertLineBreak,
+		nextLineBreak      : nextLineBreak,
+		isVisuallyAdjacent : isVisuallyAdjacent
 	};
 });

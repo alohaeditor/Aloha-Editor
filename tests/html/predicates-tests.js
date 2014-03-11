@@ -3,7 +3,7 @@
 
 	var Html = aloha.html;
 
-	module('predicates');
+	module('html');
 
 	var span = $('<span style="display: block"></span>')[0];
 	var div = $('<div></div>')[0];

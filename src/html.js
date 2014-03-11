@@ -61,6 +61,11 @@ define([
 		isVoidNode               : Predicates.isVoidNode,
 		isBlockNode              : Predicates.isBlockNode,
 		isInlineNode             : Predicates.isInlineNode,
-		isTextLevelSemanticNode  : Predicates.isTextLevelSemanticNode
+		isTextLevelSemanticNode  : Predicates.isTextLevelSemanticNode,
+
+		__ : {
+			nextLineBreak      : Mutation.nextLineBreak,
+			isVisuallyAdjacent : Mutation.isVisuallyAdjacent
+		}
 	};
 });
