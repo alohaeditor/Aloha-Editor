@@ -73,6 +73,10 @@
    margin-left: 15px;
 }
 
+.aloha-list-templates dl dd {
+	margin-left: 1em;
+}
+
 /**
 * Predefined list styles
 **/

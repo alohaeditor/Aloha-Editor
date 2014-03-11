@@ -79,7 +79,7 @@ define([
 				this.iso = ('iso639-1' === iso) ? 'iso639-1' : 'iso639-2';
 			}
 
-			if ('undefined' !== locale) {
+			if (undefined !== locale) {
 				this.locale = locale;
 			}
 			
