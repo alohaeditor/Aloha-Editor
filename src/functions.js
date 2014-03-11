@@ -12,9 +12,8 @@ define([], function Functions() {
 	 * Returns its single argument.
 	 * Useful for composition when some default behaviour is needed.
 	 *
-	 * @param {*} arg
-	 * @return {*}
-	 *         The given argument `arg`.
+	 * @param  {*} arg
+	 * @return {*} The given argument `arg`.
 	 */
 	function identity(arg) {
 		return arg;
@@ -22,7 +21,6 @@ define([], function Functions() {
 
 	/**
 	 * Does nothing.
-	 * A noop function.
 	 */
 	function noop() {
 	}
@@ -30,8 +28,7 @@ define([], function Functions() {
 	/**
 	 * Always returns `true`.
 	 *
-	 * @return {Boolean}
-	 *         `true`
+	 * @return {boolean}
 	 */
 	function returnTrue() {
 		return true;
@@ -40,8 +37,7 @@ define([], function Functions() {
 	/**
 	 * Always returns `false`.
 	 *
-	 * @return {Boolean}
-	 *         `false`
+	 * @return {boolean}
 	 */
 	function returnFalse() {
 		return false;
@@ -52,8 +48,8 @@ define([], function Functions() {
 	 * The complement function will return the opposite boolean result when
 	 * called with the same arguments as the given `fn` function.
 	 *
-	 * @param {Function:Boolean} fn
-	 * @return {Function:Boolean}
+	 * @param  {function:boolean} fn
+	 * @return {function:boolean}
 	 */
 	function complement(fn) {
 		return function () {
@@ -62,14 +58,15 @@ define([], function Functions() {
 	}
 
 	/**
-	 * Like Function.prototype.bind except without the `this` argument.
-	 * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind
+	 * Like function.prototype.bind except without the `this` argument.
+	 * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/function/bind
 	 *
-	 * @param {Function} fn
-	 * @param {Object} thisArg
-	 * @return {Function}
-	 *         A function that, when invoked, will call `fn` with `thisArg` as
-	 *         this, and return the return value.
+	 * Returns a function that, when invoked, will call `fn` with `thisArg` as
+	 * this, and returns the return value.
+	 *
+	 * @param  {function} fn
+	 * @param  {Object} thisArg
+	 * @return {function}
 	 */
 	function partial(fn) {
 		var args = Array.prototype.slice.call(arguments, 1);
@@ -91,9 +88,8 @@ define([], function Functions() {
 	 * variable.  Calling the closure without any arguments will return the
 	 * value of the enclosed variable.
 	 *
-	 * @param {*} value
-	 *        The initial value that the enclosed variable should hold.
-	 * @return {Function(*):*}
+	 * @param {*} value The initial value that the enclosed variable should hold.
+	 * @return {function(*):*}
 	 */
 	function outparameter(value) {
 		var variable = value;
@@ -112,7 +108,7 @@ define([], function Functions() {
 	 *
 	 * @param a {*}
 	 * @param b {*}
-	 * @return {boolean}
+	 * @return  {boolean}
 	 */
 	function strictEquals(a, b) {
 		return a === b;

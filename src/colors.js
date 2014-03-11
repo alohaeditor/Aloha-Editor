@@ -23,8 +23,8 @@ define([
 	 * Normalizes hexidecimal colors from
 	 * #f34 to #ff3344
 	 *
-	 * @param {String} color
-	 * @return {String} Long version of hexidecimal color value
+	 * @param  {string} color
+	 * @return {string} Long version of hexidecimal color value
 	 */
 	function normalizeHex(color) {
 		if (7 === color.length) {
@@ -39,8 +39,8 @@ define([
 	/**
 	 * Converts rgb color array to a hex color string.
 	 *
-	 * @param {Array<String>} rgb
-	 * @return {String}
+	 * @param  {Array.<string>} rgb
+	 * @return {string}
 	 */
 	function rgb2hex(rgb) {
 		var r = parseInt(rgb[0], 10).toString(16);
@@ -61,8 +61,8 @@ define([
 	/**
 	 * Given a color string will normalize it to a hex color string.
 	 *
-	 * @param {String} value
-	 * @return {String}
+	 * @param  {string} value
+	 * @return {string}
 	 */
 	function hex(value) {
 		var color = value.match(COLOR_PREFIX);
@@ -83,9 +83,9 @@ define([
 	 *
 	 * isColorEqual('#f00', 'rgb(255,0,0)') === true
 	 *
-	 * @param {String} colorA
-	 * @param {String} colorB
-	 * @return {Boolean}
+	 * @param  {string} colorA
+	 * @param  {string} colorB
+	 * @return {boolean}
 	 */
 	function isColorEqual(colorA, colorB) {
 		return (
@@ -98,9 +98,9 @@ define([
 	/**
 	 * Gets the style of the start container of the given range.
 	 *
-	 * @param {Range} range
-	 * @param {String} property
-	 * @return {String} Style value
+	 * @param  {Range}  range
+	 * @param  {string} property
+	 * @return {string} Style value
 	 */
 	function getStyle(range, property) {
 		var node = Dom.nodeAtOffset(range.startContainer, range.startOffset);
@@ -113,8 +113,8 @@ define([
 	/**
 	 * Gets the text color at the given range.
 	 *
-	 * @param {Range} range
-	 * @return {String} Style color string
+	 * @param  {Range}  range
+	 * @return {string} Style color string
 	 */
 	function getTextColor(range) {
 		return getStyle(range, 'color');
@@ -123,8 +123,8 @@ define([
 	/**
 	 * Sets the text color at the given range.
 	 *
-	 * @param {Range} range
-	 * @param {String} color
+	 * @param {Range}  range
+	 * @param {string} color
 	 */
 	function setTextColor(range, color) {
 		Editing.format(range, 'color', color, isColorEqual);
@@ -145,8 +145,8 @@ define([
 	/**
 	 * Gets the background color at the given range.
 	 *
-	 * @param {Range} range
-	 * @return {String} Style color string
+	 * @param  {Range}  range
+	 * @return {string} Style color string
 	 */
 	function getBackgroundColor(range) {
 		return getStyle(range, 'background-color');
@@ -155,8 +155,8 @@ define([
 	/**
 	 * Sets the background color at the given range.
 	 *
-	 * @param {Range} range
-	 * @param {String} color
+	 * @param {Range}  range
+	 * @param {string} color
 	 */
 	function setBackgroundColor(range, color) {
 		Editing.format(range, 'background-color', color, isColorEqual);

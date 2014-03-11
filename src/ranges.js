@@ -254,8 +254,8 @@ define([
 	 * @todo: Implement in terms of boundaries
 	 *
 	 * @param  {Range} range
-	 * @param  {Function=} ignoreLeft
-	 * @param  {Function=} ignoreRight
+	 * @param  {function=} ignoreLeft
+	 * @param  {function=} ignoreRight
 	 * @return {Range}
 	 */
 	function trim(range, ignoreLeft, ignoreRight) {
@@ -423,8 +423,8 @@ define([
 	 * the right).
 	 *
 	 * @param {Range} range
-	 * @param {Function=} ignoreLeft
-	 * @param {Function=} ignoreRight
+	 * @param {function=} ignoreLeft
+	 * @param {function=} ignoreRight
 	 * @return {Range}
 	 */
 	function trimClosingOpening(range, ignoreLeft, ignoreRight) {
@@ -446,10 +446,10 @@ define([
 	 *
 	 * @param {Cusor} start
 	 * @param {Cusor} end
-	 * @param {Function:boolean} until
+	 * @param {function:boolean} until
 	 *        Optional predicate.  May be used to stop the trimming process from
 	 *        moving the Cursor from within an element outside of it.
-	 * @param {Function:boolean} ignore
+	 * @param {function:boolean} ignore
 	 *        Optional predicate.  May be used to ignore (skip)
 	 *        following/preceding siblings which otherwise would stop the
 	 *        trimming process, like for example underendered whitespace.
@@ -478,10 +478,10 @@ define([
 	 *
 	 * @param {Cusor} start
 	 * @param {Cusor} end
-	 * @param {Function:boolean} until
+	 * @param {function:boolean} until
 	 *        Optional predicate.  May be used to stop the trimming process from
 	 *        moving the Cursor from within an element outside of it.
-	 * @param {Function:boolean} ignore
+	 * @param {function:boolean} ignore
 	 *        Optional predicate.  May be used to ignore (skip)
 	 *        following/preceding siblings which otherwise would stop the
 	 *        trimming process, like for example underendered whitespace.

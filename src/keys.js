@@ -72,7 +72,7 @@ define([
 	 * https://lists.webkit.org/pipermail/webkit-dev/2007-December/002992.html
 	 *
 	 * @param {Event} event Native event object
-	 * @return {Boolean}
+	 * @return {boolean}
 	 */
 	function isTextInput(event) {
 		return 'keypress' === event.type && !event.altKey && !event.ctrlKey

@@ -541,7 +541,7 @@ define([
 	 *
 	 * @private
 	 * @param  {Node} node
-	 * @return {Boolean}
+	 * @return {boolean}
 	 */
 	function isWordbreakingNode(node) {
 		return !IN_WORD_TAGS[node.nodeName];

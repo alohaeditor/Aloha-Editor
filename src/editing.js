@@ -995,7 +995,7 @@ define([
 	 * @param {Range} liveRange The range of the current selection.
 	 * @param {String} nodeName The name of the tag that should serve as the
 	 *                          wrapping node.
-	 * @param {Boolean} remove Optional flag, which when set to false will cause
+	 * @param {boolean} remove Optional flag, which when set to false will cause
 	 *                         the given markup to be removed (unwrapped) rather
 	 *                         then set.
 	 * @param {Object} opts A map of options (all optional):

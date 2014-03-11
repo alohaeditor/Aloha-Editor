@@ -319,7 +319,7 @@ define([
 	/**
 	 * Caret movement operations mapped against cursor key keycodes.
 	 *
-	 * @type {Object.<String, Function(Event, Range, string):Object>}
+	 * @type {Object.<String, function(Event, Range, string):Object>}
 	 */
 	var movements = {};
 
@@ -467,7 +467,7 @@ define([
 	/**
 	 * Event handlers.
 	 *
-	 * @type {Object.<string, Function>}
+	 * @type {Object.<string, function>}
 	 */
 	var handlers = {
 		'keydown'   : keydown,

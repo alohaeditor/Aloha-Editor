@@ -555,7 +555,7 @@ define([], function Content() {
 	 *        The node which would contain the other.
 	 * @param {String} inner
 	 *        The node to be nested a child of `outer`.
-	 * @return {Boolean}
+	 * @return {boolean}
 	 *        True if `inner` is allowed a direct child of `outer`.
 	 */
 	function allowsNesting(outer, inner) {

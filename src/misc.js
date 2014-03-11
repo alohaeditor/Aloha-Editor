@@ -29,7 +29,7 @@ define([], function Misc() {
 	 * Checks whether the given value is defined.
 	 * @param {*} value
 	 *        An object of any type
-	 * @return {Boolean}
+	 * @return {boolean}
 	 *         True of the value of the given object is not undefined.
 	 */
 	function defined(value) {

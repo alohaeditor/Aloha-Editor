@@ -12,7 +12,7 @@ define([], function Predicates() {
 	 * Void elements are elements which are not permitted to contain content.
 	 * https://developer.mozilla.org/en-US/docs/Web/HTML/Element
 	 *
-	 * @type {Object}
+	 * @type {Object.<string, boolean>}
 	 */
 	var VOID_ELEMENTS = {
 		'AREA'    : true,
@@ -39,7 +39,7 @@ define([], function Predicates() {
 	 * NB: "block-level" is not technically defined for elements that are new in
 	 * HTML5.
 	 *
-	 * @type {Object}
+	 * @type {Object.<string, boolean>}
 	 */
 	var BLOCK_LEVEL_ELEMENTS = {
 		'ADDRESS'    : true,
@@ -77,25 +77,31 @@ define([], function Predicates() {
 		'VIDEO'      : true  // HTML5
 	};
 
+	/**
+	 * Elements which don't constitue a word boundaries limit..
+	 *
+	 * @param {object.<string, true>
+	 *
+	 */
 	var TEXT_LEVEL_SEMANTIC_ELEMENTS = {
 		'A'      : true,
 		'ABBR'   : true,
 		'B'      : true,
-		'BDI'    : true, // HTML5
+		'BDI'    : true,
 		'BDO'    : true,
 		'BR'     : true,
 		'CITE'   : true,
 		'CODE'   : true,
-		'DATA'   : true, // HTML5
+		'DATA'   : true,
 		'DFN'    : true,
 		'EM'     : true,
 		'I'      : true,
 		'KBD'    : true,
-		'MARK'   : true, // HTML5
+		'MARK'   : true,
 		'Q'      : true,
-		'RP'     : true, // HTML5
-		'RT'     : true, // HTML5
-		'RUBY'   : true, // HTML5
+		'RP'     : true,
+		'RT'     : true,
+		'RUBY'   : true,
 		'S'      : true,
 		'SAMP'   : true,
 		'SMALL'  : true,
@@ -103,17 +109,17 @@ define([], function Predicates() {
 		'STRONG' : true,
 		'SUB'    : true,
 		'SUP'    : true,
-		'TIME'   : true, // HTML5
+		'TIME'   : true,
 		'U'      : true,
 		'VAR'    : true,
-		'WBR'    : true  // HTML5
+		'WBR'    : true
 	};
 
 	/**
 	 * Check whether the given node is a void element type.
 	 *
-	 * @param {DOMObject} node
-	 * @return {Boolean}
+	 * @param  {Node} node
+	 * @return {boolean}
 	 */
 	function isVoidNode(node) {
 		return !!VOID_ELEMENTS[node.nodeName];
@@ -123,8 +129,8 @@ define([], function Predicates() {
 	 * Similar to hasBlockStyle() except relies on the nodeName of the given
 	 * node which works for attached as well as and detached nodes.
 	 *
-	 * @param {DOMObject} node
-	 * @return {Boolean}
+	 * @param  {Node} node
+	 * @return {boolean}
 	 *         True if the given node is a block node type--regardless of how it
 	 *         is rendered.
 	 */
@@ -136,8 +142,8 @@ define([], function Predicates() {
 	 * Similar to hasInlineStyle() in the same sense as isBlockNode() is similar
 	 * to hasBlockStyle()
 	 *
-	 * @param {DOMObject} node
-	 * @return {Boolean}
+	 * @param  {Node} node
+	 * @return {boolean}
 	 *         True if the given node is an inline node type--regardless of how
 	 *         it is rendered.
 	 */
@@ -148,8 +154,8 @@ define([], function Predicates() {
 	/**
 	 * Check whether the given node is a text-level semantic element type.
 	 *
-	 * @param {DOMObject} node
-	 * @return {Boolean}
+	 * @param  {Node} node
+	 * @return {boolean}
 	 */
 	function isTextLevelSemanticNode(node) {
 		return !!TEXT_LEVEL_SEMANTIC_ELEMENTS[node.nodeName];

@@ -31,11 +31,10 @@ define(['arrays'], function Maps(Arrays) {
 	 *
 	 * @param {Object} map
 	 *        The given map will have one entry added for each given key.
-	 * @param {Array[String]} keys
+	 * @param {Array.<string>} keys
 	 *        An array of string keys. JavaScript maps can only contain string
 	 *        keys, so these must be strings or they will be cast to string.
-	 * @param {String} value
-	 *        A single value that each given key will map to.
+	 * @param {string} value A single value that each given key will map to.
 	 * @return {Object}
 	 *         The given map.
 	 */
@@ -53,7 +52,7 @@ define(['arrays'], function Maps(Arrays) {
 	 * @param {Object} map
 	 *        The given map will have one entry added for each item in the given
 	 *        array.
-	 * @param {Array[Array[String, *]]}tuples
+	 * @param {Array.<Array.<string, *?>>}tuples
 	 *        An array of [key, value] tuples. Javascript maps can only contain
 	 *        string keys, so the keys must be strings or or they will be cast
 	 *        to string.
