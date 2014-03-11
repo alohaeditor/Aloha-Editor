@@ -381,6 +381,10 @@ define([
 		while (boundary) {
 			node = nextNode(boundary);
 
+			if (!canPassThrough(node) || Dom.isEditingHost(node)) {
+				break;
+			}
+
 			//   .-- node --.
 			//   |          |
 			//   v          v
@@ -388,10 +392,6 @@ define([
 			//  <p>|  or  </h1>|
 			crossedVisualBreak = crossedVisualBreak
 					|| (Styles.hasLinebreakingStyle(node) && Elements.isRendered(node));
-
-			if (!canPassThrough(node) || Dom.isEditingHost(node)) {
-				break;
-			}
 
 			do {
 				boundary = nextBoundary(boundary);
