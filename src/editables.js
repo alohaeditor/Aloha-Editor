@@ -11,7 +11,6 @@ define([
 	'dom',
 	'boundaries',
 	'functions',
-	'dom/traversing',
 	'undo'
 ], function Editables(
 	Arrays,
@@ -19,7 +18,6 @@ define([
 	Dom,
 	Boundaries,
 	Fn,
-	Traversing,
 	Undo
 ) {
 	'use strict';
@@ -30,7 +28,7 @@ define([
 
 	function fromBoundary(editor, boundary) {
 		var container = Boundaries.container(boundary);
-		var elem = Traversing.upWhile(container, function (node) {
+		var elem = Dom.upWhile(container, function (node) {
 			return !editor.editables[Dom.ensureExpandoId(node)];
 		});
 		return elem && fromElem(editor, elem);

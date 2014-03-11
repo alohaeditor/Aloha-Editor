@@ -6,13 +6,11 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'dom/nodes',
-	'dom/style',
+	'dom',
 	'ranges',
 	'editing'
 ], function Colors(
-	Nodes,
-	Style,
+	Dom,
 	Ranges,
 	Editing
 ) {
@@ -105,9 +103,9 @@ define([
 	 * @return {String} Style value
 	 */
 	function getStyle(range, property) {
-		var node = Nodes.nodeAtOffset(range.startContainer, range.startOffset);
-		return Style.getComputedStyle(
-			Nodes.isTextNode(node) ? node.parentNode : node,
+		var node = Dom.nodeAtOffset(range.startContainer, range.startOffset);
+		return Dom.getComputedStyle(
+			Dom.isTextNode(node) ? node.parentNode : node,
 			property
 		);
 	}
@@ -140,7 +138,7 @@ define([
 	function unsetTextColor(range) {
 		var editable = Ranges.nearestEditingHost(range);
 		if (editable) {
-			setTextColor(range, Style.getComputedStyle(editable, 'color'));
+			setTextColor(range, Dom.getComputedStyle(editable, 'color'));
 		}
 	}
 
@@ -172,7 +170,7 @@ define([
 	function unsetBackgroundColor(range) {
 		var editable = Ranges.nearestEditingHost(range);
 		if (editable) {
-			setBackgroundColor(range, Style.getComputedStyle(editable, 'background-color'));
+			setBackgroundColor(range, Dom.getComputedStyle(editable, 'background-color'));
 		}
 	}
 

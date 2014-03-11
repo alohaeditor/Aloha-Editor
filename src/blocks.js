@@ -6,11 +6,11 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'dom/classes',
+	'dom',
 	'events',
 	'dragdrop'
 ], function Blocks(
-	Classes,
+	Dom,
 	Events,
 	DragDrop
 ) {
@@ -75,7 +75,7 @@ define([
 	 * @return {boolean}
 	 */
 	function isBlockEvent(event) {
-		return Classes.has(event.nativeEvent.target, event.editor.BLOCK_CLASS);
+		return Dom.hasClass(event.nativeEvent.target, event.editor.BLOCK_CLASS);
 	}
 
 	/**
@@ -104,15 +104,15 @@ define([
 		case 'dragstart':
 			if (isBlockEvent(event)) {
 				context = event.editor.dndContext;
-				Classes.add(context.element, 'aloha-block-dragging');
-				Classes.add(context.target, 'aloha-block-dragging');
+				Dom.addClass(context.element, 'aloha-block-dragging');
+				Dom.addClass(context.target, 'aloha-block-dragging');
 			}
 			break;
 		case 'dragend':
 			if (isBlockEvent(event)) {
 				context = event.editor.dndContext;
-				Classes.remove(context.element, 'aloha-block-dragging');
-				Classes.remove(context.target, 'aloha-block-dragging');
+				Dom.removeClass(context.element, 'aloha-block-dragging');
+				Dom.removeClass(context.target, 'aloha-block-dragging');
 			}
 			break;
 		}

@@ -1,20 +1,14 @@
 (function (aloha) {
 	'use strict';
 
-	var Traversing = aloha.traversing;
-	var Boundaries = aloha.boundaries;
-	var BoundaryMarkers = aloha.boundarymarkers;
-	var Ranges = aloha.ranges;
 	var Dom = aloha.dom;
-	var tested = [];
 
 	module('traversing');
 
 	test('nextWhile', function () {
-		tested.push('nextWhile');
 		var node = $('<div><u></u><a>foo</a>bar<b></b><br/></div>')[0];
 		var a;
-		var br = Traversing.nextWhile(node.firstChild, function (elem, arg) {
+		var br = Dom.nextWhile(node.firstChild, function (elem, arg) {
 			if ('BR' === elem.nodeName) {
 				a = arg;
 				return false;
@@ -26,10 +20,9 @@
 	});
 
 	test('prevWhile', function () {
-		tested.push('prevWhile');
 		var node = $('<div><u></u><a>foo</a>bar<b></b><br/></div>')[0];
 		var a;
-		var br = Traversing.prevWhile(node.lastChild, function (elem, arg) {
+		var br = Dom.prevWhile(node.lastChild, function (elem, arg) {
 			if ('BR' === elem.nodeName) {
 				a = arg;
 				return false;
@@ -39,18 +32,17 @@
 		equal(br.nodeName, node.lastChild.nodeName);
 		equal(a, 'foo');
 
-		var text = Traversing.prevWhile(node.lastChild, function (elem) {
+		var text = Dom.prevWhile(node.lastChild, function (elem) {
 			return aloha.dom.Nodes.TEXT !== elem.nodeType;
 		});
 		equal(text.data, 'bar');
 	});
 
 	test('walk', function () {
-		tested.push('walk');
 		var node = $('<div><u></u><a>foo</a>bar<b></b><br/></div>')[0];
 		var nodes = [];
 		var counter = {count: 0};
-		Traversing.walk(node.firstChild, function (elem, arg) {
+		Dom.walk(node.firstChild, function (elem, arg) {
 			arg.count++;
 			nodes.push(elem.nodeName);
 		}, counter);
@@ -59,20 +51,18 @@
 	});
 
 	test('walkRec', function () {
-		tested.push('walkRec');
 		var node = $('<div><a>foo<b><i><br></i><u>bar</u></b></a></div>')[0];
 		var nodes = [];
-		Traversing.walkRec(node, function (elem) {
+		Dom.walkRec(node, function (elem) {
 			nodes.push(elem.nodeName);
 		});
 		equal(nodes.join(' '), '#text BR I #text U B A DIV');
 	});
 
 	test('walkUntil', function () {
-		tested.push('walkUntil');
 		var node = $('<div>foo<b><i><br></i></b><br/><u>bar</u></div>')[0];
 		var nodes = [];
-		Traversing.walkUntil(node.firstChild, function (elem) {
+		Dom.walkUntil(node.firstChild, function (elem) {
 			nodes.push(elem.nodeName);
 		}, function (elem, arg) {
 			return arg === elem.nodeName;
@@ -81,10 +71,9 @@
 	});
 
 	test('walkUntilNode', function () {
-		tested.push('walkUntilNode');
 		var node = $('<div>foo<b><i><br></i></b><br/><u>bar</u></div>')[0];
 		var nodes = [];
-		Traversing.walkUntilNode(node.firstChild, function (elem) {
+		Dom.walkUntilNode(node.firstChild, function (elem) {
 			nodes.push(elem.nodeName);
 		}, node.lastChild.previousSibling);
 		equal(nodes.join(' '), '#text B');
@@ -102,27 +91,23 @@
 	}
 
 	test('findBackward', function () {
-		tested.push('findBackward');
 		var node = $('<div>foo<b><i><br></i></b><br/><u>bar</u></div>')[0];
-		equal(Traversing.findBackward(node.lastChild, function (elem) {
+		equal(Dom.findBackward(node.lastChild, function (elem) {
 			return 'B' === elem.nodeName;
 		}), node.firstChild.nextSibling);
 	});
 
 	test('findForward', function () {
-		tested.push('findForward');
 		var node = $('<div>foo<b><i><br></i></b><br/><u>bar</u></div>')[0];
-		equal(Traversing.findForward(node.lastChild, function (elem) {
+		equal(Dom.findForward(node.lastChild, function (elem) {
 			return 'U' === elem.nodeName;
 		}), null);
 	});
 
 	test('childAndParentsUntil', function () {
-		tested.push('childAndParentsUntil');
-
 		var node = $('<div><p><u><b><i>bar</i></b></u></p></div>')[0];
 
-		var parents = Traversing.childAndParentsUntil(
+		var parents = Dom.childAndParentsUntil(
 			node.firstChild.firstChild.firstChild.firstChild,
 			function (elem) {
 				return 'DIV' === elem.nodeName;
@@ -140,11 +125,9 @@
 	});
 
 	test('childAndParentsUntilIncl', function () {
-		tested.push('childAndParentsUntilIncl');
-
 		var node = $('<div><p><u><b><i>bar</i></b></u></p></div>')[0];
 
-		var parents = Traversing.childAndParentsUntilIncl(
+		var parents = Dom.childAndParentsUntilIncl(
 			node.firstChild.firstChild.firstChild.firstChild,
 			function (elem) {
 				return 'DIV' === elem.nodeName;
@@ -163,11 +146,9 @@
 	});
 
 	test('childAndParentsUntilNode', function () {
-		tested.push('childAndParentsUntilNode');
-
 		var node = $('<div><p><u><b><i>bar</i></b></u></p></div>')[0];
 
-		var parents = Traversing.childAndParentsUntilNode(
+		var parents = Dom.childAndParentsUntilNode(
 			node.firstChild.firstChild.firstChild.firstChild,
 			node.firstChild
 		);
@@ -182,11 +163,9 @@
 	});
 
 	test('childAndParentsUntilInclNode', function () {
-		tested.push('childAndParentsUntilInclNode');
-
 		var node = $('<div><p><u><b><i>bar</i></b></u></p></div>')[0];
 
-		var parents = Traversing.childAndParentsUntilInclNode(
+		var parents = Dom.childAndParentsUntilInclNode(
 			node.firstChild.firstChild.firstChild.firstChild,
 			node.firstChild
 		);
@@ -200,7 +179,5 @@
 			equal(parents[3].nodeName, 'P');
 		}
 	});
-
-	//testCoverage(test, tested, Traversing);
 
 }(window.aloha));

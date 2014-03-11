@@ -6,14 +6,14 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'dom/nodes',
+	'dom',
 	'misc',
 	'arrays',
 	'assert',
 	'strings',
 	'predicates'
 ], function Boundaries(
-	Nodes,
+	Dom,
 	Misc,
 	Arrays,
 	Asserts,
@@ -60,11 +60,11 @@ define([
 	 * @return {Boundary}
 	 */
 	function fromNode(node) {
-		return raw(node.parentNode, Nodes.nodeIndex(node));
+		return raw(node.parentNode, Dom.nodeIndex(node));
 	}
 
 	function fromEndOfNode(node) {
-		return raw(node, Nodes.nodeLength(node));
+		return raw(node, Dom.nodeLength(node));
 	}
 
 	/**
@@ -88,7 +88,7 @@ define([
 	 */
 	function normalize(boundary) {
 		var node = container(boundary);
-		if (Nodes.isTextNode(node)) {
+		if (Dom.isTextNode(node)) {
 			Asserts.assertTrue(
 				Misc.defined(node.parentNode),
 				Asserts.errorLink('boundaries.normalize#parentNode')
@@ -97,8 +97,8 @@ define([
 			if (0 === boundaryOffset) {
 				return fromNode(node);
 			}
-			if (boundaryOffset >= Nodes.nodeLength(node)) {
-				return raw(node.parentNode, Nodes.nodeIndex(node) + 1);
+			if (boundaryOffset >= Dom.nodeLength(node)) {
+				return raw(node.parentNode, Dom.nodeIndex(node) + 1);
 			}
 		}
 		return boundary;
@@ -262,7 +262,7 @@ define([
 	 */
 	function isAtEnd(boundary) {
 		boundary = normalize(boundary);
-		return offset(boundary) === Nodes.nodeLength(container(boundary));
+		return offset(boundary) === Dom.nodeLength(container(boundary));
 	}
 
 	function isAtRawStart(boundary) {
@@ -270,7 +270,7 @@ define([
 	}
 
 	function isAtRawEnd(boundary) {
-		return offset(boundary) === Nodes.nodeLength(container(boundary));
+		return offset(boundary) === Dom.nodeLength(container(boundary));
 	}
 
 	/**
@@ -280,7 +280,7 @@ define([
 	 * @return {boolean}
 	 */
 	function isTextBoundary(boundary) {
-		return Nodes.isTextNode(container(boundary));
+		return Dom.isTextNode(container(boundary));
 	}
 
 	/**
@@ -305,7 +305,7 @@ define([
 	 */
 	function nodeAfter(boundary) {
 		boundary = normalize(boundary);
-		return isAtEnd(boundary) ? null : Nodes.nthChild(container(boundary), offset(boundary));
+		return isAtEnd(boundary) ? null : Dom.nthChild(container(boundary), offset(boundary));
 	}
 
 	/**
@@ -319,7 +319,7 @@ define([
 	 */
 	function nodeBefore(boundary) {
 		boundary = normalize(boundary);
-		return isAtStart(boundary) ? null : Nodes.nthChild(container(boundary), offset(boundary) - 1);
+		return isAtStart(boundary) ? null : Dom.nthChild(container(boundary), offset(boundary) - 1);
 	}
 
 	/**
@@ -348,7 +348,7 @@ define([
 
 	function jumpOver(boundary) {
 		var node = nextNode(boundary);
-		return raw(node.parentNode, Nodes.nodeIndex(node) + 1);
+		return raw(node.parentNode, Dom.nodeIndex(node) + 1);
 	}
 
 	/**
@@ -382,13 +382,13 @@ define([
 	 */
 	function prev(boundary) {
 		var node = container(boundary);
-		if (Nodes.isTextNode(node) || isAtStart(boundary)) {
+		if (Dom.isTextNode(node) || isAtStart(boundary)) {
 			return fromNode(node);
 		}
-		node = Nodes.nthChild(node, offset(boundary) - 1);
-		return Nodes.isTextNode(node)
+		node = Dom.nthChild(node, offset(boundary) - 1);
+		return Dom.isTextNode(node)
 		     ? fromNode(node)
-		     : raw(node, Nodes.nodeLength(node));
+		     : raw(node, Dom.nodeLength(node));
 	}
 
 	/**
@@ -401,11 +401,11 @@ define([
 	function next(boundary) {
 		var node = container(boundary);
 		var boundaryOffset = offset(boundary);
-		if (Nodes.isTextNode(node) || isAtEnd(boundary)) {
+		if (Dom.isTextNode(node) || isAtEnd(boundary)) {
 			return jumpOver(boundary);
 		}
-		node = Nodes.nthChild(node, boundaryOffset);
-		return Nodes.isTextNode(node)
+		node = Dom.nthChild(node, boundaryOffset);
+		return Dom.isTextNode(node)
 		     ? raw(node.parentNode, boundaryOffset + 1)
 		     : raw(node, 0);
 	}
@@ -418,7 +418,7 @@ define([
 		if (isTextBoundary(boundary)) {
 			return raw(container(boundary), 0);
 		}
-		node = Nodes.nthChild(node, offset(boundary) - 1);
+		node = Dom.nthChild(node, offset(boundary) - 1);
 		return fromEndOfNode(node);
 	}
 
@@ -430,7 +430,7 @@ define([
 		if (isTextBoundary(boundary)) {
 			return fromEndOfNode(node);
 		}
-		return raw(Nodes.nthChild(node, offset(boundary)), 0);
+		return raw(Dom.nthChild(node, offset(boundary)), 0);
 	}
 
 	/**
@@ -505,8 +505,8 @@ define([
 			len += offset(boundary);
 			node = container(boundary).previousSibling;
 		}
-		while (node && Nodes.isTextNode(node)) {
-			len += Nodes.nodeLength(node);
+		while (node && Dom.isTextNode(node)) {
+			len += Dom.nodeLength(node);
 			node = node.previousSibling;
 		}
 		return len;

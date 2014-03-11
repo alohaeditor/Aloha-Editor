@@ -9,8 +9,6 @@
  * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#deleting-the-selection
  */
 define([
-	'dom/nodes',
-	'dom/style',
 	'dom',
 	'mutation',
 	'arrays',
@@ -21,8 +19,6 @@ define([
 	'cursors',
 	'boundaries'
 ], function Ranges(
-	Nodes,
-	Style,
 	Dom,
 	Mutation,
 	Arrays,
@@ -148,7 +144,7 @@ define([
 		var parent = Dom.upWhile(block, function (node) {
 			return node.parentNode && !Dom.isEditable(node.parentNode);
 		});
-		return (Nodes.Nodes.DOCUMENT === parent.nodeType) ? null : parent;
+		return (Dom.Nodes.DOCUMENT === parent.nodeType) ? null : parent;
 	}
 
 	/**
@@ -175,8 +171,8 @@ define([
 			return null;
 		}
 		var body = block.ownerDocument.body;
-		var offsets = Nodes.offset(block);
-		var offset = Nodes.nodeIndex(block);
+		var offsets = Dom.offset(block);
+		var offset = Dom.nodeIndex(block);
 		var pointX = x + body.scrollLeft;
 		var blockX = offsets.left + body.scrollLeft + block.offsetWidth;
 		if (pointX > blockX) {
@@ -213,7 +209,7 @@ define([
 		// cursor starts before the node, which is what
 		// cursorFromBoundaryPoint() does automatically.
 		if (backwards
-				&& Nodes.isTextNode(container)
+				&& Dom.isTextNode(container)
 					&& offset > 0
 						&& offset < container.length) {
 			if (cursor.next()) {
@@ -354,7 +350,7 @@ define([
 			return Html.hasLinebreakingStyle(node) || Dom.isEditingHost(node);
 		});
 		var node = Arrays.last(ancestors);
-		var len = Nodes.nodeLength(node);
+		var len = Dom.nodeLength(node);
 		var prev = Boundaries.create(node, 0);
 		var next = Traversing.next(Boundaries.create(node, len));
 		return [prev, next];
@@ -414,7 +410,7 @@ define([
 		if (Boundaries.isTextBoundary(end)) {
 			var offset = Html.nextSignificantOffset(end);
 			if (-1 === offset) {
-				range.setEnd(range.endContainer, Nodes.nodeLength(range.endContainer));
+				range.setEnd(range.endContainer, Dom.nodeLength(range.endContainer));
 			} else {
 				range.setEnd(Boundaries.container(end), offset);
 			}
@@ -575,7 +571,7 @@ define([
 			Boundaries.setRangeStart(clone, Traversing.prev(boundary));
 		}
 
-		var len = Nodes.nodeLength(clone.endContainer);
+		var len = Dom.nodeLength(clone.endContainer);
 
 		if (!isStart && clone.endOffset < len) {
 			boundary = Boundaries.fromRangeEnd(clone);
@@ -612,15 +608,15 @@ define([
 			return rect;
 		}
 
-		var len = Nodes.nodeLength(range.startContainer);
+		var len = Dom.nodeLength(range.startContainer);
 		if (range.startOffset === len) {
 			var boundary = Traversing.prev(Boundaries.fromRangeStart(range));
 			return box(fromBoundaries(boundary, boundary));
 		}
 
-		var node = Nodes.isTextNode(range.startContainer)
+		var node = Dom.isTextNode(range.startContainer)
 		         ? range.startContainer
-		         : Nodes.nthChild(range.startContainer, range.startOffset);
+		         : Dom.nthChild(range.startContainer, range.startOffset);
 
 		var element = node.ownerDocument.documentElement;
 
@@ -628,7 +624,7 @@ define([
 			top    : node.parentNode.offsetTop - element.scrollTop,
 			left   : node.parentNode.offsetLeft - element.scrollLeft,
 			width  : node.offsetWidth,
-			height : parseInt(Style.getComputedStyle(node, 'line-height'), 10)
+			height : parseInt(Dom.getComputedStyle(node, 'line-height'), 10)
 		};
 	}
 

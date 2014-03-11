@@ -46,7 +46,7 @@ define([
 	'selections',
 	'stable-range',
 	'strings',
-	'dom/traversing',
+	'traversing',
 	'trees',
 	'typing',
 	'undo',

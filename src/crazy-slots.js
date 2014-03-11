@@ -6,16 +6,16 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
+	'dom',
 	'arrays',
 	'ranges',
-	'dom/nodes',
 	'boundaries',
 	'undo',
 	'functions'
 ], function CrazySlots(
+	Dom,
 	Arrays,
 	Ranges,
-	Nodes,
 	Boundaries,
 	Undo,
 	Fn
@@ -40,7 +40,7 @@ define([
 	}
 
 	function boundariesInElem(elem) {
-		var children = Nodes.children(elem);
+		var children = Dom.children(elem);
 		return children.map(function (node, i) {
 			return [elem, i];
 		}).concat([[elem, children.length]]);
@@ -88,14 +88,14 @@ define([
 	}
 
 	function empty(elem) {
-		Nodes.children(elem).forEach(function (child) {
+		Dom.children(elem).forEach(function (child) {
 			elem.removeChild(child);
 		});
 	}
 
 	function replaceChildren(target, source) {
 		empty(target);
-		Nodes.children(source).forEach(function (child) {
+		Dom.children(source).forEach(function (child) {
 			target.appendChild(child);
 		});
 	}
@@ -103,7 +103,7 @@ define([
 	function run(editable, mutations, opts) {
 		opts = opts || {};
 		var wait = opts.wait || 0;
-		var initialElem = Nodes.clone(editable.elem);
+		var initialElem = Dom.clone(editable.elem);
 		var maxRuns = (null != opts.runs ? opts.run : Number.POSITIVE_INFINITY);
 		var runs = 0;
 		var timeout;
@@ -132,7 +132,7 @@ define([
 					mutation.mutate(editable.elem, range);
 				});
 				if (error) {
-					replaceChildren(editable.elem, Nodes.clone(initialElem));
+					replaceChildren(editable.elem, Dom.clone(initialElem));
 					editable.undoContext.stack.length = 0;
 					editable.undoContext.frame = null;
 					Undo.enter(editable.undoContext, {

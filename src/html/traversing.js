@@ -9,7 +9,6 @@ define([
 	'html/elements',
 	'html/styles',
 	'dom',
-	'dom/traversing',
 	'predicates',
 	'arrays',
 	'boundaries',
@@ -18,7 +17,6 @@ define([
 	Elements,
 	Styles,
 	Dom,
-	DomTraversing,
 	Predicates,
 	Arrays,
 	Boundaries,
@@ -78,7 +76,7 @@ define([
 	 * @return {Node}
 	 */
 	function prevNonAncestor(node, match, until) {
-		return DomTraversing.nextNonAncestor(node, true, match, until || Dom.isEditingHost);
+		return Dom.nextNonAncestor(node, true, match, until || Dom.isEditingHost);
 	}
 
 	/**
@@ -89,7 +87,7 @@ define([
 	 * @return {Node}
 	 */
 	function nextNonAncestor(node, match, until) {
-		return DomTraversing.nextNonAncestor(node, false, match, until || Dom.isEditingHost);
+		return Dom.nextNonAncestor(node, false, match, until || Dom.isEditingHost);
 	}
 
 	/**

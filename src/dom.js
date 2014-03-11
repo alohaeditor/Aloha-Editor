@@ -261,7 +261,7 @@ define([
 		replaceShallow    : Mutation.replaceShallow,
 		remove            : Mutation.remove,
 		removeShallow     : Mutation.removeShallow,
-		removeChildren     : Mutation.removeChildren,
+		removeChildren    : Mutation.removeChildren,
 
 		addClass     : Classes.add,
 		removeClass  : Classes.remove,
@@ -288,6 +288,7 @@ define([
 		nextSiblings                 : Traversing.nextSiblings,
 		nextWhile                    : Traversing.nextWhile,
 		nextSibling                  : Traversing.nextSibling,
+		nextNonAncestor              : Traversing.nextNonAncestor,
 		prevWhile                    : Traversing.prevWhile,
 		upWhile                      : Traversing.upWhile,
 		walk                         : Traversing.walk,

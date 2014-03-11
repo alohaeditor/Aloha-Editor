@@ -7,18 +7,12 @@
  */
 define([
 	'html/styles',
-	'dom/style',
-	'dom/traversing',
-	'dom/nodes',
 	'dom',
 	'predicates',
 	'cursors',
 	'strings'
 ], function HtmlElements(
-	HtmlStyles,
-	DomStyle,
-	Traversing,
-	Nodes,
+	Styles,
 	Dom,
 	Predicates,
 	Cursors,
@@ -191,7 +185,7 @@ define([
 	 * @return {boolean}
 	 */
 	function isUnrenderedWhitespaceNoBlockCheck(node) {
-		if (!Nodes.isTextNode(node)) {
+		if (!Dom.isTextNode(node)) {
 			return false;
 		}
 		if (!node.length) {
@@ -202,8 +196,8 @@ define([
 		}
 		var cssWhiteSpace;
 		if (node.parentNode) {
-			cssWhiteSpace = DomStyle.getComputedStyle(node.parentNode, 'white-space');
-			if (HtmlStyles.isWhiteSpacePreserveStyle(cssWhiteSpace)) {
+			cssWhiteSpace = Dom.getComputedStyle(node.parentNode, 'white-space');
+			if (Styles.isWhiteSpacePreserveStyle(cssWhiteSpace)) {
 				return false;
 			}
 		}
@@ -225,8 +219,8 @@ define([
 	 */
 	function isUnrenderedAtPoint(point) {
 		return (isUnrenderedWhitespaceNoBlockCheck(point.node)
-				|| (Nodes.isElementNode(point.node)
-					&& HtmlStyles.hasInlineStyle(point.node)
+				|| (Dom.isElementNode(point.node)
+					&& Styles.hasInlineStyle(point.node)
 					&& !LINE_BREAKING_VOID_ELEMENTS[point.node]));
 	}
 
@@ -244,7 +238,7 @@ define([
 	function skipUnrenderedToEndOfLine(point) {
 		var cursor = point.clone();
 		cursor.nextWhile(isUnrenderedAtPoint);
-		if (!HtmlStyles.hasLinebreakingStyle(cursor.node)) {
+		if (!Styles.hasLinebreakingStyle(cursor.node)) {
 			return false;
 		}
 		point.setFrom(cursor);
@@ -266,7 +260,7 @@ define([
 		var cursor = point.clone();
 		cursor.prev();
 		cursor.prevWhile(isUnrenderedAtPoint);
-		if (!HtmlStyles.hasLinebreakingStyle(cursor.node)) {
+		if (!Styles.hasLinebreakingStyle(cursor.node)) {
 			return false;
 		}
 		var isBr = ('BR' === cursor.node.nodeName);
@@ -278,7 +272,7 @@ define([
 			if (skipUnrenderedToEndOfLine(endOfBlock) && endOfBlock.atEnd) {
 				cursor.skipPrev(); // before the br
 				cursor.prevWhile(isUnrenderedAtPoint);
-				if (!HtmlStyles.hasLinebreakingStyle(cursor.node)) {
+				if (!Styles.hasLinebreakingStyle(cursor.node)) {
 					return false;
 				}
 				cursor.next(); // after/out of the linebreaking node
@@ -338,11 +332,11 @@ define([
 		if (!Predicates.isVoidNode(node)
 				// Because empty list elements are rendered
 				&& !LIST_ITEMS[node.nodeName]
-				&& 0 === Nodes.nodeLength(node)) {
+				&& 0 === Dom.nodeLength(node)) {
 			return true;
 		}
 
-		if (node.firstChild && !Traversing.nextWhile(node.firstChild, isUnrendered)) {
+		if (node.firstChild && !Dom.nextWhile(node.firstChild, isUnrendered)) {
 			return true;
 		}
 
@@ -356,17 +350,17 @@ define([
 		if (!maybeUnrenderedNode
 				&& 'BR' === node.nodeName
 				&& isTerminalNode(node)
-				&& HtmlStyles.hasLinebreakingStyle(node.parentNode)) {
+				&& Styles.hasLinebreakingStyle(node.parentNode)) {
 			if (node.nextSibling && 'BR' === node.nextSibling.nodeName) {
 				return true;
 			}
 			if (node.previousSibling && 'BR' === node.previousSibling.nodeName) {
 				return true;
 			}
-			if (node.nextSibling && Traversing.nextWhile(node.nextSibling, isUnrendered)) {
+			if (node.nextSibling && Dom.nextWhile(node.nextSibling, isUnrendered)) {
 				return true;
 			}
-			if (node.previousSibling && Traversing.prevWhile(node.previousSibling, isUnrendered)) {
+			if (node.previousSibling && Dom.prevWhile(node.previousSibling, isUnrendered)) {
 				return true;
 			}
 			return false;
@@ -377,14 +371,14 @@ define([
 		}
 
 		if (isTerminalNode(node)) {
-			if (!Nodes.isTextNode(node)) {
+			if (!Dom.isTextNode(node)) {
 				return false;
 			}
 
-			var inlineNode = Traversing.nextNonAncestor(node, false, function (node) {
+			var inlineNode = Dom.nextNonAncestor(node, false, function (node) {
 				return Predicates.isInlineNode(node) && !isUnrendered(node);
 			}, function (node) {
-				return HtmlStyles.hasLinebreakingStyle(node) || Dom.isEditingHost(node);
+				return Styles.hasLinebreakingStyle(node) || Dom.isEditingHost(node);
 			});
 
 			return !inlineNode;

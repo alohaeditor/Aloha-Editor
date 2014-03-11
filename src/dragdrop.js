@@ -17,16 +17,14 @@ define([
 	'arrays',
 	'ranges',
 	'editing',
-	'selections',
-	'dom/traversing'
+	'selections'
 ], function DragDrop(
 	Dom,
 	Maps,
 	Arrays,
 	Ranges,
 	Editing,
-	Selections,
-	Traversing
+	Selections
 ) {
 	'use strict';
 

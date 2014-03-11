@@ -6,8 +6,6 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'dom/nodes',
-	'dom/style',
 	'dom',
 	'mutation',
 	'keys',
@@ -21,8 +19,6 @@ define([
 	'undo',
 	'overrides'
 ], function Typing(
-	Nodes,
-	Style,
 	Dom,
 	Mutation,
 	Keys,
@@ -90,9 +86,9 @@ define([
 		if (' ' === text) {
 			var elem = Traversing.upWhile(
 				Boundaries.container(boundary),
-				Nodes.isTextNode
+				Dom.isTextNode
 			);
-			var whiteSpaceStyle = Style.getComputedStyle(elem, 'white-space');
+			var whiteSpaceStyle = Dom.getComputedStyle(elem, 'white-space');
 			if (!Html.isWhiteSpacePreserveStyle(whiteSpaceStyle)) {
 				text = '\xa0';
 			}
@@ -126,7 +122,7 @@ define([
 				editable,
 				0,
 				editable,
-				Nodes.nodeLength(editable)
+				Dom.nodeLength(editable)
 			);
 		}
 	}
