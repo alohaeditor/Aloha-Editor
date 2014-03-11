@@ -10,15 +10,13 @@ define([
 	'misc',
 	'arrays',
 	'assert',
-	'strings',
-	'predicates'
+	'strings'
 ], function Boundaries(
 	Dom,
 	Misc,
 	Arrays,
 	Asserts,
-	Strings,
-	Predicates
+	Strings
 ) {
 	'use strict';
 

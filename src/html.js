@@ -17,12 +17,14 @@ define([
 	'html/styles',
 	'html/elements',
 	'html/mutation',
-	'html/traversing'
+	'html/traversing',
+	'html/predicates'
 ], function Html(
 	Styles,
 	Elements,
 	Mutation,
-	Traversing
+	Traversing,
+	Predicates
 ) {
 	'use strict';
 
@@ -53,6 +55,11 @@ define([
 		prevNode                  : Traversing.prevNode,
 		nextNode                  : Traversing.nextNode,
 		prevSignificantOffset     : Traversing.prevSignificantOffset,
-		nextSignificantOffset     : Traversing.nextSignificantOffset
+		nextSignificantOffset     : Traversing.nextSignificantOffset,
+
+		isVoidNode               : Predicates.isVoidNode,
+		isBlockNode              : Predicates.isBlockNode,
+		isInlineNode             : Predicates.isInlineNode,
+		isTextLevelSemanticNode  : Predicates.isTextLevelSemanticNode
 	};
 });

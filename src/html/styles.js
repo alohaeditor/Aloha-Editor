@@ -7,7 +7,7 @@
  */
 define([
 	'dom',
-	'predicates'
+	'html/predicates'
 ], function HtmlStyles(
 	Dom,
 	Predicates

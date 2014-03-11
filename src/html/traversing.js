@@ -8,16 +8,16 @@
 define([
 	'html/elements',
 	'html/styles',
+	'html/predicates',
 	'dom',
-	'predicates',
 	'arrays',
 	'boundaries',
 	'strings'
 ], function HtmlTraversing(
 	Elements,
 	Styles,
-	Dom,
 	Predicates,
+	Dom,
 	Arrays,
 	Boundaries,
 	Strings

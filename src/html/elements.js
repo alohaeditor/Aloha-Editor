@@ -7,14 +7,14 @@
  */
 define([
 	'html/styles',
+	'html/predicates',
 	'dom',
-	'predicates',
 	'cursors',
 	'strings'
 ], function HtmlElements(
 	Styles,
-	Dom,
 	Predicates,
+	Dom,
 	Cursors,
 	Strings
 ) {

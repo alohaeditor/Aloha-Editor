@@ -10,15 +10,13 @@ define([
 	'functions',
 	'html',
 	'arrays',
-	'content',
-	'predicates'
+	'content'
 ], function (
 	Dom,
 	Fn,
 	Html,
 	Arrays,
-	Content,
-	Predicates
+	Content
 ) {
 	'use strict';
 
@@ -136,7 +134,7 @@ define([
 				children = wrapSublists(
 					children,
 					doc,
-					Predicates.isInlineNode,
+					Html.isInlineNode,
 					DEFAULT_BLOCK_ELEMENT
 				);
 			}

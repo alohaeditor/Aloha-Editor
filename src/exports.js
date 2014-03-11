@@ -40,7 +40,6 @@ define([
 	'overrides',
 	'paths',
 	'paste',
-	'predicates',
 	'ranges',
 	'selection-change',
 	'selections',
@@ -83,7 +82,6 @@ define([
 	Overrides,
 	Paths,
 	Paste,
-	Predicates,
 	Ranges,
 	SelectionChange,
 	Selections,
@@ -129,7 +127,6 @@ define([
 	exports['overrides'] = Overrides;
 	exports['paths'] = Paths;
 	exports['paste'] = Paste;
-	exports['predicates'] = Predicates;
 	exports['ranges'] = Ranges;
 	exports['selectionchange'] = SelectionChange;
 	exports['selections'] = Selections;
