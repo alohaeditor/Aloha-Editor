@@ -18,7 +18,8 @@ define([
 	'html/elements',
 	'html/mutation',
 	'html/traversing',
-	'html/predicates'
+	'html/predicates',
+	'browsers' // Hack for require-pronto
 ], function Html(
 	Styles,
 	Elements,
