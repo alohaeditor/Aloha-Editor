@@ -2,26 +2,21 @@
 	'use strict';
 
 	var Boundaries = aloha.boundaries;
-	var Ranges = aloha.ranges;
 	var Mutation = aloha.mutation;
 	var BoundaryMarkers = aloha.boundarymarkers;
-	var tested = [];
 
     module('boundaries');
 
 	function runTest(before, after, op) {
-		var dom = $(before)[0];
-		var range = Ranges.create(dom, 0);
-		BoundaryMarkers.extract(dom, range);
-		var boundary = op([range.startContainer, range.startOffset]);
-		range.setStart(boundary[0], boundary[1]);
-		BoundaryMarkers.insert(range);
-		equal(dom.outerHTML, after, before + ' ⇒ ' + after);
+		var boundaries = BoundaryMarkers.extract($(before)[0]);
+		equal(
+			BoundaryMarkers.hint([op(boundaries[0]), boundaries[1]]),
+			after,
+			before + ' ⇒ ' + after
+		);
 	}
 
 	test('prev', function () {
-		tested.push('prev');
-
 		var t = function (before, after) {
 			runTest(before, after, Boundaries.prev);
 		};
@@ -51,8 +46,6 @@
 	});
 
 	test('next', function () {
-		tested.push('next');
-
 		var t = function (before, after) {
 			runTest(before, after, Boundaries.next);
 		};
@@ -77,11 +70,10 @@
 
 		t('<p>{foo<b>]</b></p>', '<p>foo{<b>]</b></p>');
 
-		t('<p><b>{foo]</b></p>', '<p><b>foo{}</b></p>');
+		t('<p><b>{foo]</b></p>', '<b>foo[]</b>');
 	});
 
 	test('prevWhile', function () {
-		tested.push('prevWhile');
 		var dom = document.createElement('div');
 		dom.innerHTML = 'foo<p>bar<b><u><i>baz</i></u>buzz</b></p>';
 		Boundaries.prevWhile(Boundaries.fromEndOfNode(dom), function (boundary) {
@@ -95,7 +87,6 @@
 	});
 
 	test('nextWhile', function () {
-		tested.push('nextWhile');
 		var dom = document.createElement('div');
 		dom.innerHTML = 'foo<p>bar<b><u><i>baz</i></u>buzz</b></p>';
 		Boundaries.nextWhile(Boundaries.fromNode(dom.firstChild), function (boundary) {
@@ -109,13 +100,10 @@
 	});
 
 	test('nodeBefore() & nodeAfter()', function () {
-		tested.push('nodeBefore');
-		tested.push('nodeAfter');
 		var t = function (markup, expected) {
-			var range = Ranges.create(document.documentElement, 0);
-			BoundaryMarkers.extract($(markup)[0], range);
-			var left = Boundaries.prevNode(Boundaries.fromRangeStart(range));
-			var right = Boundaries.nextNode(Boundaries.fromRangeEnd(range));
+			var boundaries = BoundaryMarkers.extract($(markup)[0]);
+			var left = Boundaries.prevNode(boundaries[0]);
+			var right = Boundaries.nextNode(boundaries[1]);
 			equal(left.data || left.nodeName, expected[0], markup + ' => ' + expected.join());
 			equal(right.data || right.nodeName, expected[1], markup + ' => ' + expected.join());
 		};
@@ -133,7 +121,5 @@
 		t('<p><i>a{</i>}b</p>', ['a', 'b']);
 		t('<p><i>{foo</i>b<u>a}<u>r</p>', ['I', 'U']);
 	});
-
-	//testCoverage(test, tested, Boundaries);
 
 }(window.aloha));

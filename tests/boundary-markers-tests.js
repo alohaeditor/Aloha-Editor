@@ -1,44 +1,37 @@
 (function (aloha) {
 	'use strict';
 
-	var ranges = aloha.ranges;
-	var boundarymarkers = aloha.boundarymarkers;
-	var tested = [];
+	var Boundaries = aloha.boundaries;
+	var BoundaryMarkers = aloha.boundarymarkers;
 
 	module('boundarymarkers');
 
 	test('insert()', function () {
-		tested.push('insert');
 		var $dom = $('<p><b>abc</b><i>xyz</i></p>');
-		var range = ranges.create(
-			$dom.find('b')[0].firstChild,
-			1,
-			$dom.find('i')[0],
-			0
-		);
-		boundarymarkers.insert(range);
+		var start = Boundaries.create($dom.find('b')[0].firstChild, 1);
+		var end = Boundaries.create($dom.find('i')[0], 0);
+		var boundaries = BoundaryMarkers.insert(start, end);
 		equal(
-			range.commonAncestorContainer.outerHTML,
+			Boundaries.commonContainer(boundaries[0], boundaries[1]).outerHTML,
 			'<p><b>a[bc</b><i>}xyz</i></p>'
 		);
 	});
 
 	test('extract()', function () {
-		tested.push('extract')
-		var range = ranges.create(document.documentElement, 0);
-		boundarymarkers.extract($('<p><b>a[bc</b><i>}xyz</i></p>')[0], range);
-		equal(range.commonAncestorContainer.nodeName, 'P');
-		equal(range.startContainer.nodeType, aloha.dom.Nodes.TEXT);
-		equal(range.endContainer.nodeName, 'I');
+		var boundaries = BoundaryMarkers.extract($('<p><b>a[bc</b><i>}xyz</i></p>')[0]);
+		var start = Boundaries.container(boundaries[0]);
+		var end = Boundaries.container(boundaries[1]);
+		var common = Boundaries.commonContainer(boundaries[0], boundaries[1]);
+		equal(common.nodeName, 'P');
+		equal(start.nodeType, aloha.dom.Nodes.TEXT);
+		equal(end.nodeName, 'I');
 	});
 
 	test('hint()', function () {
-		tested.push('hint');
 		var t = function (before, after) {
-			var range = ranges.create(document.documentElement, 0);
-			boundarymarkers.extract($(before)[0], range);
+			var boundaries = BoundaryMarkers.extract($(before)[0]);
 			equal(
-				aloha.boundarymarkers.hint(range).replace(/ xmlns=['"][^'"]*['"]/, ''),
+				BoundaryMarkers.hint(boundaries).replace(/ xmlns=['"][^'"]*['"]/, ''),
 				after,
 				before + ' ⇒ ' + after
 			);
@@ -51,7 +44,5 @@
 		t('<p>x<b>{y</b>}z</p>', '<p>x<b>{y</b>}z</p>');
 		t('<p>x<b>{y}</b>z</p>', '<p>x<b>{y}</b>z</p>');
 	});
-
-	//testCoverage(test, tested, boundarymarkers);
 
 }(window.aloha));

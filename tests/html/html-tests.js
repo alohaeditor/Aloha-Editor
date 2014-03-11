@@ -11,14 +11,9 @@
 
 	test('isVisuallyAdjacent()', function () {
 		var t = function (markup, expected) {
-			var dom = $(markup)[0];
-			var range = Ranges.create(dom, 0);
-			BoundaryMarkers.extract(dom, range);
+			var boundaries = BoundaryMarkers.extract($(markup)[0]);
 			equal(
-				Html.__.isVisuallyAdjacent(
-					Boundaries.fromRangeStart(range),
-					Boundaries.fromRangeEnd(range)
-				),
+				Html.__.isVisuallyAdjacent(boundaries[0], boundaries[1]),
 				expected,
 				markup
 			);
@@ -51,18 +46,13 @@
 
 	test('nextLineBreak', function () {
 		var t = function (before, after) {
-			var dom = $(before)[0];
-			var range = Ranges.create(dom, 0);
-			BoundaryMarkers.extract(dom, range);
-			var linebreak = Html.__.nextLineBreak(
-				Boundaries.fromRangeStart(range),
-				Boundaries.fromRangeEnd(range)
+			var boundaries = BoundaryMarkers.extract($(before)[0]);
+			var linebreak = Html.__.nextLineBreak(boundaries[0], boundaries[1]);
+			equal(
+				BoundaryMarkers.hint([linebreak || boundaries[0], boundaries[1]]),
+				after,
+				before + ' ⇒ ' + after
 			);
-			if (linebreak) {
-				range.setStart(linebreak[0], linebreak[1]);
-				BoundaryMarkers.insert(range);
-			}
-			equal(dom.outerHTML, after, before + ' ⇒ ' + after);
 		};
 		t('<p>{foo<br>bar}</p>', '<p>foo{<br>bar}</p>');
 		t('<p>foo{<br>bar}</p>', '<p>foo{<br>bar}</p>');

@@ -552,6 +552,24 @@ define([
 		selection.addRange(range);
 	}
 
+	/**
+	 * Return the ancestor container that contains both the given boundaries.
+	 *
+	 * @param  {Boundary} start
+	 * @param  {Boundary} end
+	 * @return {Node}
+	 */
+	function commonContainer(start, end) {
+		var sc = container(start);
+		var so = offset(start);
+		var ec = container(end);
+		var eo = offset(end);
+		var range = sc.ownerDocument.createRange();
+		range.setStart(sc, so);
+		range.setEnd(ec, eo);
+		return range.commonAncestorContainer;
+	}
+
 	return {
 		get                 : get,
 		select              : select,
@@ -601,6 +619,8 @@ define([
 		nodeAfter           : nodeAfter,
 		nodeBefore          : nodeBefore,
 
-		precedingTextLength : precedingTextLength
+		precedingTextLength : precedingTextLength,
+
+		commonContainer     : commonContainer
 	};
 });

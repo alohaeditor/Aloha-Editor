@@ -3,7 +3,6 @@
 
 	var Dom = aloha.dom;
 	var Traversing = aloha.traversing;
-	var Ranges = aloha.ranges;
 	var Boundaries = aloha.boundaries;
 	var BoundaryMarkers = aloha.boundarymarkers;
 
@@ -12,21 +11,14 @@
 	function runTest(before, after, op) {
 		var dom = $(before)[0];
 		$('#editable').html('').append(dom);
-		var range = Ranges.create(dom, 0);
-		BoundaryMarkers.extract(dom, range);
-		op(range);
-		BoundaryMarkers.insert(range);
-		equal(dom.outerHTML, after, before + ' ⇒ ' + after);
+		var actual = BoundaryMarkers.hint(op(BoundaryMarkers.extract(dom)));
+		equal(actual, after, before + ' ⇒ ' + after);
 	}
-
 
 	test('next', function () {
 		var t = function (before, after) {
-			return runTest(before, after, function (range) {
-				var pos = Traversing.next(Boundaries.fromRangeEnd(range));
-				if (pos[0]) {
-					range.setEnd(pos[0], pos[1]);
-				}
+			return runTest(before, after, function (boundaries) {
+				return [boundaries[0], Traversing.next(boundaries[1])];
 			});
 		};
 
@@ -142,11 +134,8 @@
 
 	test('prev', function () {
 		var t = function (before, after) {
-			return runTest(before, after, function (range) {
-				var boundary = Traversing.prev(Boundaries.fromRangeStart(range));
-				if (boundary) {
-					range.setStart(boundary[0], boundary[1]);
-				}
+			return runTest(before, after, function (boundaries) {
+				return [Traversing.prev(boundaries[0]), boundaries[1]];
 			});
 		};
 
