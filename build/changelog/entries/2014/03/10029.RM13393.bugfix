@@ -1,0 +1,6 @@
+table-plugin: setting a row/column as table header does remove the cells selection.
+
+When setting a row/column as table header the cell selection was not removed. Setting a row/column as
+table header removes the selected row/column and replaces it by a new one. The
+problem was that the 'unselect' function was called for the removed row/column instead of
+for the newly inserted row/column. Updating the selection to the new row/column fixes the issue.
