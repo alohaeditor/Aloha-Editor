@@ -19,6 +19,7 @@ There are some Content Handler available:
 * Word
 * oEmbed
 * Sanitize
+* Style Attribute
 
 Plugins also provide Content Handler:
 * Block +common/block+ plugin
@@ -88,12 +89,12 @@ h4. Writing your own Content Handler
 	['aloha', 'jquery', 'aloha/contenthandlermanager'],
 	function(Aloha, jQuery, ContentHandlerManager) {
 		"use strict";
-	
+
 		var MyContentHandler = ContentHandlerManager.createHandler({
 			handleContent: function( content ) {
-				
+
 				// do something with the content
-				
+
 				return content; // return as HTML text not jQuery/DOM object
 			}
 		});
@@ -123,6 +124,7 @@ The Contenthandler Plugin has no user interface and is used in conjunction with 
 * word
 * generic
 * sanitize
+* style attribute
 
 h4. Word Content Handler
 
@@ -164,7 +166,7 @@ WARNING: The Sanitize Content Handler does not work reliably on IE7, and will th
 The Sanitize Content Handler will remove all dom elements and attributes not covered by it's configuration. You may specify your own configuration based on these default settings:
 
 <javascript>
-Aloha.settings.contentHandler.sanitize = {
+Aloha.settings.contentHandler.allows = {
 	// elements allowed in the content
 	elements: [
 		'a', 'abbr', 'b', 'blockquote', 'br', 'cite', 'code', 'dd', 'del', 'dl', 'dt', 'em',
@@ -183,5 +185,18 @@ Aloha.settings.contentHandler.sanitize = {
 		'blockquote' : {'cite': ['http', 'https', '__relative__']},
 		'q' : {'cite': ['http', 'https', '__relative__']}
 	}
+}
+
+// OR
+
+Aloha.settings.contentHandler.sanitize = 'relaxed'; // 'basic'|'restricted'|'relaxed'
+
+// OR
+
+Aloha.settings.contentHandler.sanitize = {
+  '#myId': { elements: [...], attributes: {...}, protocols;{...} },
+  '.myclass': { elements: [...], attributes: {...}, protocols;{...} },,
+  'p': { elements: [...], attributes: {...}, protocols;{...} },
+  'div': { elements: [...], attributes: {...}, protocols;{...} }
 }
 </javascript>
