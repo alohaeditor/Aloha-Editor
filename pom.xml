@@ -30,7 +30,7 @@
 		<snapshots.repoId>archiva.lan.public_snapshots</snapshots.repoId>
 		<releases.repoUrl>http://archiva.office/repository/public_releases</releases.repoUrl>
 		<releases.repoName>Gentics Public Repository</releases.repoName>
-		<releases.repoId>archiva.lan.public</releases.repoId>
+		<releases.repoId>archiva.lan.public_releases</releases.repoId>
 	</properties>
 
 	<dependencies>

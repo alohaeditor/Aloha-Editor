@@ -1,0 +1,14 @@
+{
+  "version": "0.24.19",
+  "date": "12.03.2014",
+  "changeLogEntryFileNames": [
+    "10018.RT57827.bugfix",
+    "10022.RM13413.bugfix",
+    "10024.rm12385.bugfix",
+    "10029.RM13393.bugfix",
+    "10023.RM13435.bugfix",
+    "10026.RT57667.bugfix",
+    "10027.RT57827.bugfix"
+  ],
+  "genericProperties": {}
+}
