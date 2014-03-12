@@ -34,12 +34,12 @@ define([
 	 * @return {Array.<Boundary>}
 	 */
 	function insert(start, end) {
-		var range = Ranges.fromBoundaries(start, end);
 		var startContainer = Boundaries.container(start);
 		var endContainer = Boundaries.container(end);
 		var doc = startContainer.ownerDocument;
 		var startMarker = doc.createTextNode(Dom.isTextNode(endContainer) ? ']' : '}');
 		var endMarker = doc.createTextNode(Dom.isTextNode(startContainer) ? '[' : '{');
+		var range = Ranges.fromBoundaries(start, end);
 		start = Mutation.splitBoundary(Boundaries.fromRangeStart(range), [range]);
 		end = Mutation.splitBoundary(Boundaries.fromRangeEnd(range));
 		Dom.insert(startMarker, Boundaries.nextNode(end), Boundaries.isAtEnd(end));
@@ -134,19 +134,14 @@ define([
 	 * of the DOM to indicate the span of the given range.
 	 *
 	 * @private
-	 * @param  {Range} range
+	 * @param  {Boundary} start
+	 * @param  {Boundary} end
 	 * @return {string}
 	 */
-	function showRange(range) {
-		var cac = range.commonAncestorContainer;
-		var start = Paths.fromBoundary(
-			cac,
-			Boundaries.raw(range.startContainer, range.startOffset)
-		);
-		var end = Paths.fromBoundary(
-			cac,
-			Boundaries.raw(range.endContainer, range.endOffset)
-		);
+	function show(start, end) {
+		var cac = Boundaries.commonContainer(start, end);
+		var startPath = Paths.fromBoundary(cac, start);
+		var endPath = Paths.fromBoundary(cac, end);
 		var clone;
 		var root;
 
@@ -163,10 +158,13 @@ define([
 			Dom.append(two, one);
 		}
 
-		start = root.concat(start);
-		end = root.concat(end);
+		startPath = root.concat(startPath);
+		endPath = root.concat(endPath);
 
-		insert(Paths.toBoundary(clone, start), Paths.toBoundary(clone, end));
+		insert(
+			Paths.toBoundary(clone, startPath),
+			Paths.toBoundary(clone, endPath)
+		);
 
 		if (Dom.Nodes.DOCUMENT_FRAGMENT !== clone.nodeType) {
 			return clone.outerHTML;
@@ -178,28 +176,6 @@ define([
 	}
 
 	/**
-	 * Show a single boundary.
-	 *
-	 * @private
-	 * @param  {Boundary} boundary
-	 * @return {string}
-	 */
-	function showBoundary(boundary) {
-		return showRange(Ranges.fromBoundaries(boundary, boundary));
-	}
-
-	/**
-	 * Show start/end boundary tuple.
-	 *
-	 * @private
-	 * @param  {Array.<Boundary>} boundaries
-	 * @return {string}
-	 */
-	function showBoundaries(boundaries) {
-		return showRange(Ranges.fromBoundaries(boundaries[0], boundaries[1]));
-	}
-
-	/**
 	 * Returns string representation of the given boundary boundaries tuple or
 	 * range.
 	 *
@@ -207,11 +183,13 @@ define([
 	 * @return {string}
 	 */
 	function hint(selection) {
-		return (!Misc.defined(selection.length))
-		     ? showRange(selection)
-		     : ('string' === typeof selection[0].nodeName)
-		     ? showBoundary(selection)
-		     : showBoundaries(selection);
+		if (Misc.defined(selection.length)) {
+			return ('string' === typeof selection[0].nodeName)
+			     ? show(selection, selection)
+			     : show(selection[0], selection[1]);
+		}
+		var boundaries = Boundaries.fromRange(selection);
+		return show(boundaries[0], boundaries[1]);
 	}
 
 	return {
