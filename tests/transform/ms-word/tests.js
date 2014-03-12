@@ -2,7 +2,7 @@
 (function (aloha, $) {
 	'use strict';
 
-	module('Transform MS-Word');
+	module('transform');
 
 	var Html = aloha.html;
 	var Dom = aloha.dom;

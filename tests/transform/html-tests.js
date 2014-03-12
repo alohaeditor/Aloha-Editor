@@ -1,7 +1,7 @@
 (function (aloha) {
 	'use strict';
 
-	module('Transform');
+	module('transform');
 
 	function t(input, expected) {
 		equal(
