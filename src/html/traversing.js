@@ -331,79 +331,6 @@ define([
 	}
 
 	/**
-	 * Checks whether a boundary can pass in or out of the given node without
-	 * the visual position of the boundary being changed.
-	 *
-	 * Calling this function with a <b> node will return true, for example
-	 * because the boundary position right in front of a B element's start tag
-	 * and the boundary position right after the start tag are rendered at the
-	 * same visual position.
-	 *
-	 * "|<b>foo..." is visually at the same position as "<b>|foo.."
-	 *
-	 * Likewise "..bar|</div>" is visually the same as "..bar</div>|" therefore
-	 * it is deemed possible for a boundary to pass through (into or out of)
-	 * the DIV element without the boundary being moved visually.
-	 *
-	 * The same is not true with single-tag elements like textnode and IMG
-	 * elements:
-	 *
-	 * "|foo" is not visually the same as "f|oo".
-	 *
-	 * Nor is "|<img>" visually the same as "<img>|"
-	 *
-	 * Visible text nodes and void-type (blocks) nodes are therefore deemed as
-	 * nodes that we cannot pass through.
-	 *
-	 * @private
-	 * @param  {Node} node
-	 * @return {boolean}
-	 */
-	function canPassThrough(node) {
-		return !(Dom.isTextNode(node) || Elements.isVoidType(node))
-		    || Elements.isUnrendered(node);
-	}
-
-	/**
-	 * Steps from one node boundary to the next until we reach a node that we
-	 * cannot step into or out of without causing the visual position of
-	 * `boundary` to change.
-	 *
-	 * @private
-	 * @param  {Boundary}                    boundary
-	 * @param  {function(Boundary):Node}     nextNode
-	 * @param  {function(Boundary):Boundary} nextBoundary
-	 * @return {Object}
-	 */
-	function nextVisiblePosition(boundary, nextNode, nextBoundary) {
-		var crossedVisualBreak = false;
-		var node;
-		while (boundary) {
-			node = nextNode(boundary);
-
-			if (!canPassThrough(node) || Dom.isEditingHost(node)) {
-				break;
-			}
-
-			//   .-- node --.
-			//   |          |
-			//   v          v
-			// |<p>   or |</h1>
-			//  <p>|  or  </h1>|
-			crossedVisualBreak = crossedVisualBreak
-					|| (Styles.hasLinebreakingStyle(node) && Elements.isRendered(node));
-
-			do {
-				boundary = nextBoundary(boundary);
-			} while (Elements.isUnrendered(Boundaries.container(boundary)));
-		}
-		return {
-			boundary           : boundary,
-			crossedVisualBreak : crossedVisualBreak
-		};
-	}
-
-	/**
 	 * Returns an node/offset namedtuple of the next visible position in the
 	 * document.
 	 *
@@ -412,7 +339,8 @@ define([
 	 *
 	 * @private
 	 * @param  {Boundary} boundary
-	 * @return {Object}
+	 * @param  {Object}   steps
+	 * @return {Boundary}
 	 */
 	function stepVisualBoundary(boundary, steps) {
 		// Inside of text node
@@ -423,57 +351,43 @@ define([
 			    || stepVisualBoundary(steps.stepBoundary(boundary), steps);
 		}
 
-		var move = nextVisiblePosition(
-			boundary,
-			steps.nodeAt,
-			steps.stepBoundary
-		);
+		var node = steps.nodeAt(boundary);
 
-		var next = move.boundary;
-		var crossedVisualBreak = move.crossedVisualBreak;
-		var node = steps.adjacentNode(next);
+		if (Dom.isTextNode(node)) {
+			return stepVisualBoundary(steps.stepBoundary(boundary), steps);
+		}
 
-		// At start or end of block
+		// At start or end of editable
 		//
 		//       <    >
 		// <host>| or |</host>
-		//    <p>| or |</p>
-		if (!node) {
-			return next;
+		if (Dom.isEditingHost(node)) {
+			return boundary;
 		}
 
-		// Before void element
-		//
-		//   .------- node -------.
-		//   |                    |
-		//   v  <              >  v
-		//  <br>|<b>   or   <b>|<br>
-		//
-		//   .------- node -------.
-		//   |                    |
-		//   v  <              >  v
-		// <img>|<div> or <div>|<img>
-		if (Elements.isVoidType(node)) {
-			return Boundaries.stepWhile(steps.stepBoundary(next), function (pos) {
-				var node = steps.nodeAt(pos);
-				return canPassThrough(node) && !Dom.isEditingHost(node);
-			}, steps.stepBoundary);
+		if (Styles.hasLinebreakingStyle(node)) {
+			return steps.stepBoundary(boundary);
 		}
 
-		// If crossedVisualBreak
-		//
-		//    .-------- node --------.
-		//    |                      |
-		//    v   <              >   v
-		// <#text>|<div> or <div>|<#text>
-		//
-		// else
-		//
-		//    .-------- node --------.
-		//    |                      |
-		//    v   <              >   v
-		// <#text>|<b>   or   <b>|<#text>
-		return crossedVisualBreak ? next : steps.stepVisualBoundary(node);
+		while (true) {
+			if (Elements.isRendered(node)) {
+				// At space consuming tag
+				// >               <
+				// |<#text> or <br>|
+				if (Dom.isTextNode(node)
+						|| Styles.hasLinebreakingStyle(node)
+							|| Dom.isEditingHost(node)) {
+					break;
+				}
+			}
+			// At inline nodes
+			//    >             <
+			// <p>|<i>  or  </b>|<br>
+			boundary = steps.stepBoundary(boundary);
+			node = steps.nodeAt(boundary);
+		}
+
+		return stepVisualBoundary(boundary, steps);
 	}
 
 	/**
@@ -490,7 +404,7 @@ define([
 				return Boundaries.jumpOver(boundary);
 			}
 		}
-		return Boundaries.next(boundary);
+		return Boundaries.nextRawBoundary(boundary);
 	}
 
 	/**
@@ -908,7 +822,7 @@ define([
 	 */
 	function next(boundary, unit) {
 		boundary = skipInsignificantPositions(boundary);
-		var nextBoundary = boundary;
+		var nextBoundary;
 		switch (unit) {
 		case 'char':
 			nextBoundary = nextCharacterBoundary(boundary);

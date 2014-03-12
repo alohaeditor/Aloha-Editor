@@ -156,6 +156,7 @@ define([
 			var two = cac.ownerDocument.createDocumentFragment();
 			Dom.append(clone, two);
 			Dom.append(two, one);
+			root = [];
 		}
 
 		startPath = root.concat(startPath);

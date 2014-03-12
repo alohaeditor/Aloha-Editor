@@ -22,15 +22,15 @@
 		};
 
 		t('<div><p contenteditable="true">{}<br></p>foo</div>',
-		  '<div><p contenteditable="true">{<br>}</p>foo</div>');
+		  '<div><p contenteditable="true">{<br></p>}foo</div>');
 
 		t('<div contenteditable="true"><p>foo[]</p><div><ul><li>bar</li></ul></div></div>',
 		  '<div contenteditable="true"><p>foo[</p><div><ul><li>}bar</li></ul></div></div>');
 
-		t('<div>foo<p contenteditable="true">{}bar</p></div>',
-		  '<div>foo<p contenteditable="true">{b]ar</p></div>');
+		t('<p contenteditable="true">{}bar</p>', '<p contenteditable="true">{b]ar</p>');
 
 		t('<div><p>foo{}<br></p>bar</div>', '<div><p>foo{<br></p>}bar</div>');
+
 		t('<div><i>foo{}<br></i>bar</div>', '<div><i>foo{<br></i>}bar</div>');
 
 		t('<div><p>foo{}</p><ul><li>bar</li></ul></div>',
