@@ -89,6 +89,41 @@ define([
 		addRangeParameter(toParagraphsFromRange, doc);
 	}
 
+	/**
+	 * Transforms the content between the given boundaries into an ordered
+	 * list.
+	 *
+	 * @param  {Boundary} start
+	 * @param  {Boundary} end
+	 * @return {Array.<Boundary>}
+	 */
+	function orderedList(start, end) {
+
+	}
+
+	/**
+	 * Transforms the content between the given boundaries into an unordered
+	 * list.
+	 *
+	 * @param  {Boundary} start
+	 * @param  {Boundary} end
+	 * @return {Array.<Boundary>}
+	 */
+	function unorderedList(start, end) {
+
+	}
+
+	/**
+	 * Transforms the content between the given boundaries into paragraphs.
+	 *
+	 * @param  {Boundary} start
+	 * @param  {Boundary} end
+	 * @return {Array.<Boundary>}
+	 */
+	function paragraphs(start, end) {
+
+	}
+
 	return {
 		toOrderedListFromRange: toOrderedListFromRange,
 		toUnorderedListFromRange: toUnorderedListFromRange,
@@ -96,6 +131,10 @@ define([
 
 		toOrderedList: toOrderedList,
 		toUnorderedList: toUnorderedList,
-		toParagraph: toParagraphs
+		toParagraph: toParagraphs,
+
+		paragraphs    : paragraphs,
+		orderedList   : orderedList,
+		unorderedList : unorderedList
 	};
 });
