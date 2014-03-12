@@ -2,7 +2,6 @@
 	'use strict';
 
 	var Strings = aloha.strings;
-	var tested = [];
 
 	function fromDashesToCamelCaseAndBack(dashes, expectedCamelCase) {
 		var camelCase = Strings.dashesToCamelCase(dashes);
@@ -11,10 +10,9 @@
 		equal(dashesAgain, dashes);
 	}
 
-	module('Strings');
+	module('strings');
 
-	test('words()', function () {
-		tested.push('words');
+	test('words', function () {
 		deepEqual(Strings.words(''), []);
 		deepEqual(Strings.words(' '), []);
 		deepEqual(Strings.words('\u0009\u000A\u000B\u000C\u000D\u0020' +
@@ -25,15 +23,12 @@
 		deepEqual(Strings.words('\nabc\ndef\rghi\r\n'), ['abc', 'def', 'ghi']);
 	});
 
-	test('dashesToCamelCase(), camelCaseToDashes()', function () {
-		tested.push('dashesToCamelCase');
-		tested.push('camelCaseToDashes');
+	test('dashesToCamelCase, camelCaseToDashes', function () {
 		fromDashesToCamelCaseAndBack('data-a-b', 'dataAB');
 		fromDashesToCamelCaseAndBack('data-some-attr', 'dataSomeAttr');
 	});
 
-	test('splitIncl()', function () {
-		tested.push('splitIncl');
+	test('splitIncl', function () {
 		var parts = Strings.splitIncl('foo-bar', /\-/g);
 		equal(3, parts.length);
 		if (3 === parts.length) {
@@ -44,15 +39,13 @@
 		equal('foo', Strings.splitIncl('foo', /\-/g));
 	});
 
-	test('isEmpty()', function () {
-		tested.push('isEmpty');
+	test('isEmpty', function () {
 		equal(true, Strings.isEmpty(''));
 		equal(true, Strings.isEmpty(null));
 		equal(true, Strings.isEmpty(void 0));
 	});
 
 	test('isControlCharacter', function () {
-		tested.push('isControlCharacter');
 		equal(Strings.isControlCharacter('\0'), true);
 		equal(Strings.isControlCharacter('\b'), true);
 		equal(Strings.isControlCharacter('\n'), true);
@@ -65,7 +58,5 @@
 		equal(Strings.isControlCharacter(''), false);
 		equal(Strings.isControlCharacter('a'), false);
 	});
-
-	//testCoverage(test, tested, Strings);
 
 }(window.aloha));

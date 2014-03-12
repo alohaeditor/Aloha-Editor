@@ -6,7 +6,7 @@
 
 	module('boundarymarkers');
 
-	test('insert()', function () {
+	test('insert', function () {
 		var $dom = $('<p><b>abc</b><i>xyz</i></p>');
 		var start = Boundaries.create($dom.find('b')[0].firstChild, 1);
 		var end = Boundaries.create($dom.find('i')[0], 0);
@@ -17,7 +17,7 @@
 		);
 	});
 
-	test('extract()', function () {
+	test('extract', function () {
 		var boundaries = BoundaryMarkers.extract($('<p><b>a[bc</b><i>}xyz</i></p>')[0]);
 		var start = Boundaries.container(boundaries[0]);
 		var end = Boundaries.container(boundaries[1]);
@@ -27,7 +27,7 @@
 		equal(end.nodeName, 'I');
 	});
 
-	test('hint()', function () {
+	test('hint', function () {
 		var t = function (before, after) {
 			var boundaries = BoundaryMarkers.extract($(before)[0]);
 			equal(

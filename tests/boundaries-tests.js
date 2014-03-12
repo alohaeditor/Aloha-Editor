@@ -28,7 +28,7 @@
 
 		t('<p><b>f[oo]</b></p>', '<p><b>{foo]</b></p>');
 		t('<p><b>foo[]</b></p>', '<p><b>{foo]</b></p>');
-		t('<p><b>[}</b></p>', '<p><b>{}</b></p>');
+		t('<p><b>[}</b></p>',    '<p><b>{}</b></p>');
 
 		// ie will automatically convery <b>{]</b> to <b>[]</b>
 		if (!aloha.browsers.msie) {
@@ -49,28 +49,20 @@
 		var t = function (before, after) {
 			runTest(before, after, Boundaries.next);
 		};
-
 		t('<p><b>[foo</b>}</p>', '<p><b>foo{</b>}</p>');
 		t('<p><b>f[oo</b>}</p>', '<p><b>foo{</b>}</p>');
 		t('<p><b>foo[</b>}</p>', '<p><b>foo</b>{}</p>');
-
-		t('<p><b>[</b>}</p>', '<p><b>{</b>}</p>');
-
-		t('<p><b>{</b>}</p>', '<p><b></b>{}</p>');
+		t('<p><b>[</b>}</p>',    '<p><b>{</b>}</p>');
+		t('<p><b>{</b>}</p>',    '<p><b></b>{}</p>');
 		t('<p><b>{foo</b>}</p>', '<p><b>foo{</b>}</p>');
-
 		t('<p><b>foo{</b>}</p>', '<p><b>foo</b>{}</p>');
-		t('<p><b>{</b>}</p>', '<p><b></b>{}</p>');
-
-		t('<p>{foo}</p>', '<p>foo{}</p>');
+		t('<p><b>{</b>}</p>',    '<p><b></b>{}</p>');
+		t('<p>{foo}</p>',        '<p>foo{}</p>');
 		t('<p>{<b>foo</b>}</p>', '<p><b>{foo</b>}</p>');
-
 		t('<p><b>{</b>foo]</p>', '<p><b></b>{foo]</p>');
 		t('<p>{foo<b>]</b></p>', '<p>foo{<b>]</b></p>');
-
 		t('<p>{foo<b>]</b></p>', '<p>foo{<b>]</b></p>');
-
-		t('<p><b>{foo]</b></p>', '<b>foo[]</b>');
+		t('<p><b>[foo}</b></p>', '<p><b>foo{}</b></p>');
 	});
 
 	test('prevWhile', function () {
@@ -99,7 +91,7 @@
 		);
 	});
 
-	test('nodeBefore() & nodeAfter()', function () {
+	test('nodeBefore & nodeAfter', function () {
 		var t = function (markup, expected) {
 			var boundaries = BoundaryMarkers.extract($(markup)[0]);
 			var left = Boundaries.prevNode(boundaries[0]);
@@ -107,18 +99,18 @@
 			equal(left.data || left.nodeName, expected[0], markup + ' => ' + expected.join());
 			equal(right.data || right.nodeName, expected[1], markup + ' => ' + expected.join());
 		};
-		t('<p>{}<i></i></p>',   ['P', 'I']);
-		t('<p>{<i>}</i></p>',   ['P', 'I']);
-		t('<p><i>{}</i></p>',   ['I', 'I']);
-		t('<p><i>{</i>}</p>',   ['I', 'P']);
-		t('<p><i></i>{}</p>',   ['I', 'P']);
-		t('<p>a{}<i></i></p>',  ['a', 'I']);
-		t('<p>a{<i>}</i></p>',  ['a', 'I']);
-		t('<p><i>a{</i>}</p>',  ['a', 'P']);
-		t('<p>{<i>}a</i></p>',  ['P', 'a']);
-		t('<p><i>{</i>}a</p>',  ['I', 'a']);
-		t('<p><i></i>{}a</p>',  ['I', 'a']);
-		t('<p><i>a{</i>}b</p>', ['a', 'b']);
+		t('<p>{}<i></i></p>',             ['P', 'I']);
+		t('<p>{<i>}</i></p>',             ['P', 'I']);
+		t('<p><i>{}</i></p>',             ['I', 'I']);
+		t('<p><i>{</i>}</p>',             ['I', 'P']);
+		t('<p><i></i>{}</p>',             ['I', 'P']);
+		t('<p>a{}<i></i></p>',            ['a', 'I']);
+		t('<p>a{<i>}</i></p>',            ['a', 'I']);
+		t('<p><i>a{</i>}</p>',            ['a', 'P']);
+		t('<p>{<i>}a</i></p>',            ['P', 'a']);
+		t('<p><i>{</i>}a</p>',            ['I', 'a']);
+		t('<p><i></i>{}a</p>',            ['I', 'a']);
+		t('<p><i>a{</i>}b</p>',           ['a', 'b']);
 		t('<p><i>{foo</i>b<u>a}<u>r</p>', ['I', 'U']);
 	});
 
