@@ -12,6 +12,7 @@ define([], function Predicates() {
 	 * Void elements are elements which are not permitted to contain content.
 	 * https://developer.mozilla.org/en-US/docs/Web/HTML/Element
 	 *
+	 * @private
 	 * @type {Object.<string, boolean>}
 	 */
 	var VOID_ELEMENTS = {
@@ -24,7 +25,7 @@ define([], function Predicates() {
 		'HR'      : true,
 		'IMG'     : true,
 		'INPUT'   : true,
-		'KEYGEN'  : true, // HTML5
+		'KEYGEN'  : true,
 		'LINK'    : true,
 		'META'    : true,
 		'PARAM'   : true,
@@ -39,15 +40,16 @@ define([], function Predicates() {
 	 * NB: "block-level" is not technically defined for elements that are new in
 	 * HTML5.
 	 *
+	 * @private
 	 * @type {Object.<string, boolean>}
 	 */
 	var BLOCK_LEVEL_ELEMENTS = {
 		'ADDRESS'    : true,
-		'ARTICLE'    : true, // HTML5
-		'ASIDE'      : true, // HTML5
-		'AUDIO'      : true, // HTML5
+		'ARTICLE'    : true,
+		'ASIDE'      : true,
+		'AUDIO'      : true,
 		'BLOCKQUOTE' : true,
-		'CANVAS'     : true, // HTML5
+		'CANVAS'     : true,
 		'DD'         : true,
 		'DIV'        : true,
 		'DL'         : true,
@@ -70,18 +72,18 @@ define([], function Predicates() {
 		'OUTPUT'     : true,
 		'P'          : true,
 		'PRE'        : true,
-		'SECTION'    : true, // HTML5
+		'SECTION'    : true,
 		'TABLE'      : true,
 		'TFOOT'      : true,
 		'UL'         : true,
-		'VIDEO'      : true  // HTML5
+		'VIDEO'      : true
 	};
 
 	/**
-	 * Elements which don't constitue a word boundaries limit..
+	 * Elements which don't constitue a word boundaries limit.
 	 *
-	 * @param {object.<string, true>
-	 *
+	 * @private
+	 * @type {object.<string, true>}
 	 */
 	var TEXT_LEVEL_SEMANTIC_ELEMENTS = {
 		'A'      : true,
@@ -116,6 +118,131 @@ define([], function Predicates() {
 	};
 
 	/**
+	 * Tags representing list container elements.
+	 *
+	 * @private
+	 * @type {Object.<string, boolean>}
+	 */
+	var LIST_CONTAINERS = {
+		'OL'   : true,
+		'UL'   : true,
+		'DL'   : true,
+		'MENU' : true
+	};
+
+	/**
+	 * Tags representing list item elements.
+	 *
+	 * @private
+	 * @type {Object.<string, boolean>}
+	 */
+	var LIST_ITEMS = {
+		'LI' : true,
+		'DT' : true,
+		'DD' : true
+	};
+
+	/**
+	 * These element's cannot be simply unwrapped because they have dependent
+	 * children.
+	 *
+	 * @private
+	 * @see   GROUPED_CONTAINERS
+	 * @param {<string, boolean>}
+	 */
+	var GROUP_CONTAINERS = {
+		'FIELDSET' : true,
+		'OBJECT'   : true,
+		'FIGURE'   : true,
+		'AUDIO'    : true,
+		'SELECT'   : true,
+		'COLGROUP' : true,
+		'HGROUP'   : true,
+		'TABLE'    : true,
+		'TBODY'    : true,
+		'TR'       : true,
+		'OL'       : true,
+		'UL'       : true,
+		'DL'       : true,
+		'MENU'     : true
+	};
+
+	/**
+	 * These element's cannot be simply unwrapped because they parents only
+	 * allows these as their immediate child nodes.
+	 *
+	 * @private
+	 * @see   GROUP_CONTAINERS
+	 * @param {<string, Array.<string>}
+	 */
+	var GROUPED_ELEMENTS = {
+		'LI'    : ['OL', 'UL', 'DL'],
+		'DT'    : ['DL'],
+		'DD'    : ['DL'],
+		'TBODY' : ['TABLE'],
+		'TR'    : ['TABLE', 'TBODY'],
+		'TH'    : ['TABLE', 'TBODY'],
+		'TD'    : ['TR', 'TH']
+	};
+
+	/**
+	 * Checks if the given node is grouping container.
+	 *
+	 * Grouping containers include TABLE, FIELDSET, SELECT.  
+	 *
+	 * @see    GROUP_CONTAINERS
+	 * @param  {Node} node
+	 * @return {boolean}
+	 */
+	function isGroupContainer(node) {
+		return GROUP_CONTAINERS[node.nodeName];
+	}
+
+	/**
+	 * Checks if the given node an element that can only be a child of a group
+	 * container.
+	 *
+	 * LI, TD are the classic cases.
+	 *
+	 * @see    GROUPED_CONTAINER
+	 * @param  {Node} node
+	 * @return {boolean}
+	 */
+	function isGroupedElement(node) {
+		return !!GROUPED_ELEMENTS[node.nodeName];
+	}
+
+	/**
+	 * Checks if the given node is one of the 4 list item elements.
+	 *
+	 * @param  {Node} node
+	 * @return {boolean}
+	 */
+	function isListItem(node) {
+		return !!LIST_ITEMS[node.nodeName];
+	}
+
+	/**
+	 * Checks if the given node is one of the 4 list grouping containers.
+	 *
+	 * @param  {Node} node
+	 * @return {boolean}
+	 */
+	function isListContainer(node) {
+		return !!LIST_CONTAINERS[node.nodeName];
+	}
+
+	/**
+	 * Checks whether `node` is the TABLE element.
+	 *
+	 * @param  {Node} node
+	 * @return {boolean}
+	 */
+	function isTableContainer(node) {
+		return node.nodeName === 'TABLE';
+	}
+
+	/**
 	 * Check whether the given node is a void element type.
 	 *
 	 * @param  {Node} node
@@ -129,10 +256,11 @@ define([], function Predicates() {
 	 * Similar to hasBlockStyle() except relies on the nodeName of the given
 	 * node which works for attached as well as and detached nodes.
 	 *
+	 * Will return true if the given node is a block node type--regardless of
+	 * how it is rendered.
+	 *
 	 * @param  {Node} node
 	 * @return {boolean}
-	 *         True if the given node is a block node type--regardless of how it
-	 *         is rendered.
 	 */
 	function isBlockNode(node) {
 		return !!BLOCK_LEVEL_ELEMENTS[node.nodeName];
@@ -140,12 +268,13 @@ define([], function Predicates() {
 
 	/**
 	 * Similar to hasInlineStyle() in the same sense as isBlockNode() is similar
-	 * to hasBlockStyle()
+	 * to hasBlockStyle().
+	 *
+	 * Will return true if the given node is an inline node type--regardless of
+	 * how it is rendered.
 	 *
 	 * @param  {Node} node
 	 * @return {boolean}
-	 *         True if the given node is an inline node type--regardless of how
-	 *         it is rendered.
 	 */
 	function isInlineNode(node) {
 		return !isBlockNode(node);
@@ -165,6 +294,11 @@ define([], function Predicates() {
 		isVoidNode               : isVoidNode,
 		isBlockNode              : isBlockNode,
 		isInlineNode             : isInlineNode,
-		isTextLevelSemanticNode  : isTextLevelSemanticNode
+		isTextLevelSemanticNode  : isTextLevelSemanticNode,
+		isListItem               : isListItem,
+		isListContainer          : isListContainer,
+		isTableContainer         : isTableContainer,
+		isGroupContainer         : isGroupContainer,
+		isGroupedElement         : isGroupedElement
 	};
 });

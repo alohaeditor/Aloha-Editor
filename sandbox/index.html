@@ -42,20 +42,18 @@
 				display: block;
 				padding: 0;
 			}
-			/*
 			ol {
-			  counter-reset: section;
+			  counter-reset: counter;
 			  list-style-type: none;
 			}
-			li:before {
-			  counter-increment: section;
-			  content: counters(section, ".") " ";
+			ol>li:before {
+				counter-increment: counter;
+				content: counters(counter, ".") ") ";
+				margin-left: -1em;
 			}
-			*/
 		</style>
 
 		<style id="metaview">
-			/* metaview */
 			ul,ol,li,td,th,p,b,i,u,div,h1,h2,h3,h4,h5,h6 {
 				padding: 2px 4px;
 				margin: 2px;
@@ -83,15 +81,14 @@
 	</head>
 	<body>
 		<div class="aloha-editable">
-			<ul><li>abc<ol><li></li></ol></li></ul>
+ 
+			<ul><li>x</li><li></li><li>y</li></ul>
 
-			<br/>
-			<br/>
-			<br/>
-			<br/>
-			<br/>
-			<br/>
+			<br><br><br>
 
+			<p><b><i><u>one</u></i></b></p>
+			<ul></ul>
+			<p><b><i><u>two</u></i></b></p>
 			<h1>Aloha Editor</h1>
 			<p>
 				<img draggable="true"
@@ -115,11 +112,11 @@
 				<li>one</li>
 				<li>two</li>
 				<li>three
-					<ul>
+					<ol>
 						<li>four</li>
 						<li>five</li>
-						<li>six</li>
-					</ul>
+						<li class="bold"><u><i>six</i></u></li>
+					</ol>
 				</li>
 			</ul>
 			<p>
@@ -149,7 +146,7 @@
 					require(['../src/aloha'], main);
 				} else {
 					setVersion('build');
-					main(aloha)
+					main(aloha);
 				}
 			}());
 		</script>

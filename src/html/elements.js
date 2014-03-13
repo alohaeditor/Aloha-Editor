@@ -21,142 +21,6 @@ define([
 	'use strict';
 
 	/**
-	 * Tags representing non-block-level elements which are nevertheless line
-	 * breaking.
-	 *
-	 * @private
-	 * @type {Object.<string, boolean>}
-	 */
-	var LINE_BREAKING_VOID_ELEMENTS = {
-		'BR'  : true,
-		'HR'  : true,
-		'IMG' : true
-	};
-
-	/**
-	 * Tags representing list container elements.
-	 *
-	 * @private
-	 * @type {Object.<string, boolean>}
-	 */
-	var LIST_CONTAINERS = {
-		'OL'   : true,
-		'UL'   : true,
-		'DL'   : true,
-		'MENU' : true
-	};
-
-	/**
-	 * Tags representing list item elements.
-	 *
-	 * @private
-	 * @type {Object.<string, boolean>}
-	 */
-	var LIST_ITEMS = {
-		'LI' : true,
-		'DT' : true,
-		'DD' : true
-	};
-
-	/**
-	 * These element's cannot be simply unwrapped because they have dependent
-	 * children.
-	 *
-	 * @see   GROUPED_CONTAINERS
-	 * @param {<string, boolean>}
-	 */
-	var GROUP_CONTAINERS = {
-		'FIELDSET' : true,
-		'OBJECT'   : true,
-		'FIGURE'   : true,
-		'AUDIO'    : true,
-		'SELECT'   : true,
-		'COLGROUP' : true,
-		'HGROUP'   : true,
-		'TABLE'    : true,
-		'TBODY'    : true,
-		'TR'       : true,
-		'OL'       : true,
-		'UL'       : true,
-		'DL'       : true,
-		'MENU'     : true
-	};
-
-	/**
-	 * These element's cannot be simply unwrapped because they parents only
-	 * allows these as their immediate child nodes.
-	 *
-	 * @see   GROUP_CONTAINERS
-	 * @param {<string, Array.<string>}
-	 */
-	var GROUPED_ELEMENTS = {
-		'LI'    : ['OL', 'UL', 'DL'],
-		'DT'    : ['DL'],
-		'DD'    : ['DL'],
-		'TBODY' : ['TABLE'],
-		'TR'    : ['TABLE', 'TBODY'],
-		'TH'    : ['TABLE', 'TBODY'],
-		'TD'    : ['TR', 'TH']
-	};
-
-	/**
-	 * Checks if the given node is grouping container.
-	 *
-	 * Grouping containers include TABLE, FIELDSET, SELECT.  
-	 *
-	 * @see    GROUP_CONTAINERS
-	 * @param  {Node} node
-	 * @return {boolean}
-	 */
-	function isGroupContainer(node) {
-		return GROUP_CONTAINERS[node.nodeName];
-	}
-
-	/**
-	 * Checks if the given node an element that can only be a child of a group
-	 * container.
-	 *
-	 * LI, TD are the classic cases.
-	 *
-	 * @see    GROUPED_CONTAINER
-	 * @param  {Node} node
-	 * @return {boolean}
-	 */
-	function isGroupedElement(node) {
-		return GROUPED_ELEMENTS[node.nodeName];
-	}
-
-	/**
-	 * Checks if the given node is one of the 4 list item elements.
-	 *
-	 * @param  {Node} node
-	 * @return {boolean}
-	 */
-	function isListItem(node) {
-		return LIST_ITEMS[node.nodeName];
-	}
-
-	/**
-	 * Checks if the given node is one of the 4 list grouping containers.
-	 *
-	 * @param  {Node} node
-	 * @return {boolean}
-	 */
-	function isListContainer(node) {
-		return LIST_CONTAINERS[node.nodeName];
-	}
-
-	/**
-	 * Checks whether `node` is the TABLE element.
-	 *
-	 * @param  {Node} node
-	 * @return {boolean}
-	 */
-	function isTableContainer(node) {
-		return node.nodeName === 'TABLE';
-	}
-
-	/**
 	 * Checks whether the given node should be treated like a void element.
 	 *
 	 * Void elements like IMG and INPUT are considered as void type, but so are
@@ -208,6 +72,19 @@ define([
         }
 		return true;
 	}
+
+	/**
+	 * Tags representing non-block-level elements which are nevertheless line
+	 * breaking.
+	 *
+	 * @private
+	 * @type {Object.<string, boolean>}
+	 */
+	var LINE_BREAKING_VOID_ELEMENTS = {
+		'BR'  : true,
+		'HR'  : true,
+		'IMG' : true
+	};
 
 	/**
 	 * Returns true if the node at point is unrendered, with the caveat that it
@@ -331,7 +208,7 @@ define([
 	function isUnrendered(node) {
 		if (!Predicates.isVoidNode(node)
 				// Because empty list elements are rendered
-				&& !LIST_ITEMS[node.nodeName]
+				&& !Predicates.isListItem(node)
 				&& 0 === Dom.nodeLength(node)) {
 			return true;
 		}
@@ -419,11 +296,6 @@ define([
 		isRendered                         : isRendered,
 		isUnrendered                       : isUnrendered,
 		isUnrenderedWhitespace             : isUnrenderedWhitespace,
-		isListItem                         : isListItem,
-		isListContainer                    : isListContainer,
-		isTableContainer                   : isTableContainer,
-		isGroupContainer                   : isGroupContainer,
-		isGroupedElement                   : isGroupedElement,
 		isUnrenderedWhitespaceNoBlockCheck : isUnrenderedWhitespaceNoBlockCheck
 	};
 });

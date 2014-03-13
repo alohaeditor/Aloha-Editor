@@ -191,7 +191,7 @@ define([
 			return Elements.isRendered(node);
 		}
 		var children = Dom.children(node).filter(function (node) {
-			return Elements.isListItem(node) || Elements.isRendered(node);
+			return Predicates.isListItem(node) || Elements.isRendered(node);
 		});
 		return children.length > 0;
 	}

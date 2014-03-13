@@ -33,10 +33,6 @@ define([
 		isRendered                : Elements.isRendered,
 		isUnrendered              : Elements.isUnrendered,
 		isUnrenderedWhitespace    : Elements.isUnrenderedWhitespace,
-		isListContainer           : Elements.isListContainer,
-		isTableContainer          : Elements.isTableContainer,
-		isGroupContainer          : Elements.isGroupContainer,
-		isGroupedElement          : Elements.isGroupedElement,
 		parse                     : Elements.parse,
 		isVoidType                : Elements.isVoidType,
 
@@ -57,16 +53,23 @@ define([
 		nextNode                  : Traversing.nextNode,
 		prevSignificantOffset     : Traversing.prevSignificantOffset,
 		nextSignificantOffset     : Traversing.nextSignificantOffset,
+		isAtStart                 : Traversing.isAtStart,
+		isAtEnd                   : Traversing.isAtEnd,
 
 		isVoidNode               : Predicates.isVoidNode,
 		isBlockNode              : Predicates.isBlockNode,
 		isInlineNode             : Predicates.isInlineNode,
 		isTextLevelSemanticNode  : Predicates.isTextLevelSemanticNode,
+		isListItem               : Predicates.isListItem,
+		isListContainer          : Predicates.isListContainer,
+		isTableContainer         : Predicates.isTableContainer,
+		isGroupContainer         : Predicates.isGroupContainer,
+		isGroupedElement         : Predicates.isGroupedElement,
 
 		__ : {
+			isRenderedBr       : Mutation.isRenderedBr,
 			nextLineBreak      : Mutation.nextLineBreak,
-			isVisuallyAdjacent : Mutation.isVisuallyAdjacent,
-			isRenderedBr       : Mutation.isRenderedBr
+			isVisuallyAdjacent : Mutation.isVisuallyAdjacent
 		}
 	};
 });
