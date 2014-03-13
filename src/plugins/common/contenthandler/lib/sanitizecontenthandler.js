@@ -32,7 +32,7 @@ define([
 	'aloha/console',
 	'vendor/sanitize'
 ],
-function( Aloha, jQuery, ContentHandlerManager, Plugin, console ) {
+function ( Aloha, jQuery, ContentHandlerManager, Plugin, console ) {
 	"use strict";
 	
 	var sanitize;
@@ -134,10 +134,10 @@ function( Aloha, jQuery, ContentHandlerManager, Plugin, console ) {
 		}
 
 		// add a filter to stop cleaning elements with contentEditable "false"
-		config.filters = [function( elem ) {
+		config.filters = [function (elem) {
 			return elem.contentEditable != "false";
 		}];
-		sanitize = new Sanitize( config, jQuery );
+		sanitize = new Sanitize(config, jQuery);
 	}
 
 	var SanitizeContentHandler = ContentHandlerManager.createHandler({

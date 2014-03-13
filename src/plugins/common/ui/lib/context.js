@@ -17,7 +17,7 @@ define([
 	'aloha',
 	'jquery',
 	'util/class'
-], function(
+], function (
 	Aloha,
 	$,
 	Class
@@ -34,7 +34,9 @@ define([
 		element = $('<div>', {'class': 'aloha', 'id': id});
 		// In the built aloha.js, init will happend before the body has
 		// finished loading, so we have to defer appending the element.
-		$(function(){ element.appendTo('body'); });
+		$(function () { 
+			element.appendTo('body');
+		});
 	}
 
 	var Context =  Class.extend({

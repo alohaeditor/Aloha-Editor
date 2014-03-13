@@ -18,7 +18,7 @@
 		
 		<!-- License -->
 		<file>
-			<source>${project.basedir}/build/LICENSE.${build.license}.txt</source>
+			<source>${project.basedir}/LICENSE.txt</source>
 			<outputDirectory>/alohaeditor-${project.version}</outputDirectory>
 			<destName>LICENSE.txt</destName>
 		</file>
@@ -102,18 +102,7 @@
 			<includes>
 				<include>**/*</include>
 			</includes>
-		</fileSet>
-		
-		<!-- Changelog -->
-		<fileSet>
-			<directory>${project.basedir}/</directory>
-			<outputDirectory>/alohaeditor-${project.version}</outputDirectory>
-			<includes>
-				<include>/CHANGELOG*</include>
-			</includes>
-		</fileSet>
-		
+		</fileSet>		
 	</fileSets>
-
 	<includeBaseDirectory>false</includeBaseDirectory>
 </assembly>

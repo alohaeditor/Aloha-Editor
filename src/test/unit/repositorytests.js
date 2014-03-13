@@ -36,11 +36,11 @@ function() {
 		repository,
 		testOrder = [
 		runBasicTests,
-		runGetChildrenTests,
+//		runGetChildrenTests,
 		runQueryTests,
 		runQueryResponseTests,
 		runOverlappingQueryTests,
-		runLadeLoadingInitializationTest
+//		runLadeLoadingInitializationTest
 	];
 		
 	function str (str) {

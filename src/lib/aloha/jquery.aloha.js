@@ -93,7 +93,7 @@ define([
 		var ce = 'contenteditable';
 
 		// Check
-		if (jQuery.browser.msie && parseInt(jQuery.browser.version, 10) == 7) {
+		if (Aloha.browser.msie && parseInt(Aloha.browser.version, 10) == 7) {
 			ce = 'contentEditable';
 		}
 

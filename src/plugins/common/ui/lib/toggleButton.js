@@ -3,7 +3,7 @@ define([
 	'ui/button',
 	'jqueryui'
 ],
-function( jQuery, Button ) {
+function (jQuery, Button) {
 	'use strict';
 
 	var idCounter = 0;
@@ -28,7 +28,7 @@ function( jQuery, Button ) {
 		 * @param {boolean} toggled Whether the button is to be set to the
 		 *                          "toggled/checked" state.
 		 */
-		setState: function( toggled ) {
+		setState: function (toggled) {
 			// It is very common to set the button state on every
 			// selection change even if the state hasn't changed.
 			// Profiling showed that this is very inefficient.
@@ -43,12 +43,12 @@ function( jQuery, Button ) {
 			}
 		},
 
-		getState: function() {
+		getState: function () {
 			return this._checked;
 		},
 
-		_onClick: function() {
-			this.setState( ! this._checked );
+		_onClick: function () {
+			this.setState(! this._checked);
 			this.click();
 		}
 	});

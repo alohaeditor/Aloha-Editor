@@ -11,4 +11,5 @@ build/changelog/mappings/*SNAPSHOT.json
 doc/guides/output
 dist
 node_modules
+/target.classpath
 .classpath

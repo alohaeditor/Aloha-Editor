@@ -41,7 +41,7 @@ function ( TestUtils ) {
 		    $cells = table.obj.find( '.aloha-cell-selected' );
 		$cells.each( function () { cells.push( this ); } );
 		return cells;
-	};
+	}
 	
 	//
 	//	 NB:

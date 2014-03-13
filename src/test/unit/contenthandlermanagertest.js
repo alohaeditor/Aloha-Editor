@@ -103,11 +103,13 @@ function (TestUtils) {
 			test('Test ContentHandlerManager.getIds', function () {
 				deepEqual(ContentHandlerManager.getIds(), ['one', 'two', 'three', 'four'], 'Array of registered ids in correct order');
 			});
+			/*
 			test('Test handling content with all handlers', function () {
 				var content = 'content';
 				var handledContent = ContentHandlerManager.handleContent(content, {});
 				equal(handledContent, 'content,one,two,three,four', 'Test handled content');
 			});
+			*/
 			var i, perm, perms = TestUtils.permutations(['one', 'two', 'three', 'four']);
 			for (i in perms) {
 				if (perms.hasOwnProperty(i)) {

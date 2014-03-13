@@ -2931,7 +2931,7 @@
 				// Added try/catch as fix for issue #21
 				try {
 
-					var isNativeIE7 = (jQuery.browser.msie && jQuery.browser.version < 8 && (typeof document.documentMode === 'undefined'));
+					var isNativeIE7 = (Aloha.browser.msie && Aloha.browser.version < 8 && (typeof document.documentMode === 'undefined'));
 					if (!isNativeIE7) {
 						this.docSelection.empty();
 					}

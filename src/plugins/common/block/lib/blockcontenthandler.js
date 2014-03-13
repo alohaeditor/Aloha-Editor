@@ -26,7 +26,7 @@
  */
 define(
 ['jquery', 'aloha/contenthandlermanager', 'block/blockmanager'],
-function(jQuery, ContentHandlerManager, BlockManager) {
+function (jQuery, ContentHandlerManager, BlockManager) {
 
 	/**
 	 * @name block.BlockContentHandler
@@ -51,11 +51,11 @@ function(jQuery, ContentHandlerManager, BlockManager) {
 		 * do additional cleanups.
 		 * @param {jQuery} content
 		 */
-		handleContent: function( content ) {
-			if ( typeof content === 'string' ){
-				content = jQuery( '<div>' + content + '</div>' );
-			} else if ( content instanceof jQuery ) {
-				content = jQuery( '<div>' ).append(content);
+		handleContent: function (content) {
+			if (typeof content === 'string') {
+				content = jQuery('<div>' + content + '</div>');
+			} else if (content instanceof jQuery) {
+				content = jQuery('<div>').append(content);
 			}
 
 			if (content.find('.aloha-block[data-aloha-block-copy-only-block="true"]').length > 0) {
@@ -79,13 +79,15 @@ function(jQuery, ContentHandlerManager, BlockManager) {
 
 			}
 
-			content.find('.aloha-block').each(function() {
+			content.find('.aloha-block').each(function () {
 				var oldBlock = jQuery(this);
 
 				var elementAttributes = {}; // all attributes except data-*
 				var blockAttributes = {}; // all data* attributes
-				jQuery.each(oldBlock[0].attributes, function(k, v) {
-					if (v.nodeName === 'id') return;
+				jQuery.each(oldBlock[0].attributes, function (k, v) {
+					if (v.nodeName === 'id') {
+						return;
+					}
 
 					if (v.nodeName.match(/^data-/)) {
 						blockAttributes[v.nodeName.substr(5)] = v.nodeValue;
@@ -106,7 +108,7 @@ function(jQuery, ContentHandlerManager, BlockManager) {
 				oldBlock.replaceWith(newBlock);
 
 				// We need to blockify the contents with a timeout, as we need the connected DOM node for it.
-				window.setTimeout(function() {
+				window.setTimeout(function () {
 					BlockManager._blockify(jQuery('#' + newBlockId), blockAttributes);
 				}, 50);
 			});

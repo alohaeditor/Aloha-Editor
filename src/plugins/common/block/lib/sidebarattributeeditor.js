@@ -36,11 +36,11 @@ define([ 'jquery', 'block/blockmanager', 'aloha/sidebar', 'block/editormanager',
 	 * @name block.sidebarattributeeditor
 	 * @class Sidebar attribute editor singleton
 	 */
-	return new (Class.extend(
-	/** @lends block.sidebarattributeeditor */
-	{
+		return new (Class.extend(
+		/** @lends block.sidebarattributeeditor */
+		{
 
-		_sidebar: null,
+			_sidebar: null,
 
 		/**
 		 * Panels, which were added to the sidebar for blocks
@@ -100,29 +100,29 @@ define([ 'jquery', 'block/blockmanager', 'aloha/sidebar', 'block/editormanager',
 							// Editor -> Block binding
 							editor.bind('change', function(value) {
 								block.attr(attributeName, value);
+								});
+
+								// Block -> Editor binding
+								block.bind('change', function () {
+									editor.setValue(block.attr(attributeName));
 							});
 
-							// Block -> Editor binding
-							block.bind('change', function() {
+								$form.append(editor.render());
+
+								// Set initial value Block -> Editor
 								editor.setValue(block.attr(attributeName));
-							})
+	
+								editors.push(editor);
+							});
+							this.setContent($form);
+						},
 
-							$form.append(editor.render());
-
-							// Set initial value Block -> Editor
-							editor.setValue(block.attr(attributeName));
-
-							editors.push(editor);
-						});
-						this.setContent($form);
-					},
-
-					deactivate: function() {
-						// On deactivating the panel, we need to tell each editor to deactivate itself,
-						// so it can throw another change event if the value has been modified.
-						jQuery.each(editors, function(index, editor) {
-							editor._deactivate();
-						});
+						deactivate: function () {
+							// On deactivating the panel, we need to tell each editor to deactivate itself,
+							// so it can throw another change event if the value has been modified.
+							jQuery.each(editors, function (index, editor) {
+								editor._deactivate();
+							});
 
 						// This code is from the superclass
 						this.isActive = false;

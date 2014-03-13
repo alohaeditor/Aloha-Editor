@@ -65,14 +65,13 @@ define([
 			menu.hide().parent().removeClass('aloha-ui-menubutton-pressed');
 		}
 
-		expand
-			.click(function (){
+		expand.click(function () {
 				wrapper.addClass('aloha-ui-menubutton-pressed');
 
 				if (props.siblingContainer) {
 					props.siblingContainer
 						.find('.aloha-ui-menubutton-menu')
-						.each(function (){
+						.each(function () {
 							if (this !== menu[0]) {
 								hideMenu($(this));
 							}
@@ -103,7 +102,7 @@ define([
 				menu.css('top', target.height() + target.offset().top + bodyOffset);
 				*/
 
-				$(document).bind('click', function (event){
+				$(document).bind('click', function (event) {
 					$(this).unbind(event);
 					menu.hide();
 					wrapper.removeClass('aloha-ui-menubutton-pressed');
@@ -147,7 +146,7 @@ define([
 
 	function makeCloseHandler(menu, parentCloseHandler) {
 		parentCloseHandler = parentCloseHandler || $.noop;
-		return function (){
+		return function () {
 			// We must blur the parent menu otherwise it will remain in
 			// focused state and not expand the next time it is hovered over
 			// after the user has selected an item.
@@ -159,7 +158,9 @@ define([
 
 	function onSelect(event, ui) {
 		var clickHandler = ui.item.data('aloha-ui-menubutton-select');
-		clickHandler && clickHandler(event, ui);
+		if (clickHandler) {
+			clickHandler(event, ui);
+		}
 		// We use preventDefault() to keep a click on a menu item from
 		// scrolling to the top of the page.
 		event.preventDefault();

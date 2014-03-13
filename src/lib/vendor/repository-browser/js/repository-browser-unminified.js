@@ -1283,7 +1283,7 @@ define('RepositoryBrowser', [
 					opacity: 1
 				}, 1500, 'easeOutExpo', function () {
 					// Disable filter to prevent IE<=8 filter bug.
-					if (jQuery.browser.msie) {
+					if (Aloha.browser.msie) {
 						jQuery(this).add($element).css(
 							'filter',
 							'progid:DXImageTransform.Microsoft.gradient(enabled=false)'

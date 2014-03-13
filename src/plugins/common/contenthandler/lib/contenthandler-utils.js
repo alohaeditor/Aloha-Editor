@@ -31,8 +31,8 @@ define(['jquery'], function ($) {
 			return false;
 		}
 		var node = $('<div>' + trimmed + '</div>')[0];
-		var containsSingleP = node.firstChild === node.lastChild
-		                   && 'p' === node.firstChild.nodeName.toLowerCase();
+		var containsSingleP = node.firstChild === node.lastChild &&
+			'p' === node.firstChild.nodeName.toLowerCase();
 		if (containsSingleP) {
 			var kids = node.firstChild.children;
 			return (kids && 1 === kids.length &&
