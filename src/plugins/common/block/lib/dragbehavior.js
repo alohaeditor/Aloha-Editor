@@ -163,11 +163,18 @@ define([
 				 * before dragging is started.
 				 */
 				restore: function restoreSelection() {
+					if (!range) {
+						return;
+					}
 					var editable = CopyPaste.getEditableAt(range);
 					if (editable) {
 						editable.obj.focus();
 					}
-					CopyPaste.setSelectionAt(range);
+					try {
+						CopyPaste.setSelectionAt(range);
+					} catch (e) {
+						Console.warn(e);
+					}
 					window.scrollTo(x, y);
 				}
 			}
@@ -191,7 +198,15 @@ define([
 
 		// Prevent the prevention of drag inside a cell
 		element.ondragstart = function (e) {
-			e.stopPropagation();
+			if (e) {
+				if (typeof e.stopPropagation === 'function') {
+					e.stopPropagation();
+				} else {
+					e.cancelBubble = true;
+				}
+			} else {
+				window.event.cancelBubble = true;
+			}
 		};
 
 		$handle
