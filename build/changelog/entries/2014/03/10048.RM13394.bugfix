@@ -1,0 +1,6 @@
+table-plugin: inserting new row/column keeps the headers.
+
+If a header was set in a table and then a new row/column was inserted,
+the newly inserted row/column had not header cell, it looked like the
+table header was broken in two parts. With this fix the new
+inserted row/column keeps the header.
