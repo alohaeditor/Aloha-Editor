@@ -1454,8 +1454,12 @@ define([
 					var cellInfo = newRow[i];
 					if (Utils.containsDomCell(cellInfo)) {
 						var colspan = cellInfo.colspan;
+						var newCellNode = '<td>&nbsp;</td>';
+						if (cellInfo.cell.nodeName === 'TH') {
+							newCellNode = '<th>&nbsp;</th>';
+						}
 						while (colspan--) {
-							$insertionRow.append(this.newActiveCell().obj);
+							$insertionRow.append(this.newActiveCell(newCellNode).obj);
 						}
 					} else {
 						jQuery( cellInfo.cell ).attr('rowspan', cellInfo.rowspan + 1);
@@ -1510,12 +1514,12 @@ define([
 	 */
 	Table.prototype.addColumns = function( position ) {
 		var
-			that = this,
 			emptyCell = jQuery( '<td>' ),
+			emptyHeaderCell = jQuery( '<th>' ),
+			leftCell,
 		    rows = this.getRows(),
 			cell,
 			currentColIdx,
-			columnsToSelect = [],
 			selectedColumnIdxs = this.selection.selectedColumnIdxs;
 
 		if ( 0 === selectedColumnIdxs.length ) {
@@ -1548,7 +1552,13 @@ define([
 
 		for ( var i = 0; i < rows.length; i++ ) {
 			// prepare the cell to be inserted
-			cell = emptyCell.clone();
+			leftCell = Utils.leftDomCell( grid, i, currentColIdx );
+
+			if (leftCell && leftCell.nodeName === 'TH') {
+				cell = emptyHeaderCell.clone();
+			} else {
+				cell = emptyCell.clone();
+			}
 			cell.html( '\u00a0' );
 
 			// on first row correct the position of the selected columns
@@ -1561,8 +1571,7 @@ define([
 				cell = cellObj.obj;
 			}
 
-			var leftCell = Utils.leftDomCell( grid, i, currentColIdx );
-			if ( null == leftCell ) {
+			if (!leftCell) {
 				jQuery( rows[i] ).prepend( cell );
 			} else {
 				if ( 'left' === position && Utils.containsDomCell( grid[ i ][ currentColIdx ] ) ) {
