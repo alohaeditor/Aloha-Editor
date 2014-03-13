@@ -23,12 +23,12 @@
 
 		// ie will automatically convert <b>[foo]</b> to <b>{foo]</b>
 		if (!aloha.browsers.msie) {
-			t('<p><b>[foo]</b></p>', '<p><b>{foo]</b></p>');
+			t('<p><b>[foo]</b></p>', '<p>{<b>foo]</b></p>');
 		}
 
 		t('<p><b>f[oo]</b></p>', '<p><b>{foo]</b></p>');
 		t('<p><b>foo[]</b></p>', '<p><b>{foo]</b></p>');
-		t('<p><b>[}</b></p>',    '<p><b>{}</b></p>');
+		t('<p><b>[}</b></p>',    '<p>{<b>}</b></p>');
 
 		// ie will automatically convery <b>{]</b> to <b>[]</b>
 		if (!aloha.browsers.msie) {
@@ -43,6 +43,21 @@
 		t('<p><b></b>{foo]</p>', '<p><b>{</b>foo]</p>');
 		t('<p>foo{<b>]</b></p>', '<p>{foo<b>]</b></p>');
 		t('<p><b>foo{]</b></p>', '<p><b>{foo]</b></p>');
+	});
+
+	test('prevRawBoundary', function () {
+		var t = function (before, after) {
+			runTest(before, after, Boundaries.prevRawBoundary);
+		};
+
+		// ie will automatically convert <b>[foo]</b> to <b>{foo]</b>
+		if (!aloha.browsers.msie) {
+			t('<p><b>[foo]</b></p>', '<p><b>{foo]</b></p>');
+		}
+
+		t('<p><b>[}</b></p>',    '<p><b>{}</b></p>');
+		t('<p><b>{}</b></p>',    '<p>{<b>}</b></p>');
+		t('<p><b>foo{}</b></p>', '<p><b>foo[}</b></p>');
 	});
 
 	test('next', function () {

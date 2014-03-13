@@ -61,6 +61,12 @@ define([
 		return raw(node.parentNode, Dom.nodeIndex(node));
 	}
 
+	/**
+	 * Returns a boundary that is at the end position of the given node.
+	 *
+	 * @param  {Node} node
+	 * @return {Boundary}
+	 */
 	function fromEndOfNode(node) {
 		return raw(node, Dom.nodeLength(node));
 	}
@@ -263,10 +269,24 @@ define([
 		return offset(boundary) === Dom.nodeLength(container(boundary));
 	}
 
+	/**
+	 * Checks if the unnormalized boundary is at the start position of it's
+	 * container.
+	 *
+	 * @param  {Boundary} boundary
+	 * @return {boolean}
+	 */
 	function isAtRawStart(boundary) {
 		return 0 === offset(boundary);
 	}
 
+	/**
+	 * Checks if the unnormalized boundary is at the end position of it's
+	 * container.
+	 *
+	 * @param  {Boundary} boundary
+	 * @return {boolean}
+	 */
 	function isAtRawEnd(boundary) {
 		return offset(boundary) === Dom.nodeLength(container(boundary));
 	}
@@ -344,6 +364,12 @@ define([
 		return nodeBefore(boundary) || container(boundary);
 	}
 
+	/**
+	 * Skips the given boundary over the node that is next to the boundary.
+	 *
+	 * @param  {Boundary} boundary
+	 * @return {Boundary}
+	 */
 	function jumpOver(boundary) {
 		var node = nextNode(boundary);
 		return raw(node.parentNode, Dom.nodeIndex(node) + 1);
@@ -368,17 +394,18 @@ define([
 	 *		</p>
 	 *	</div>
 	 *
-	 * the boundary positions which can be traversed with this function will be
-	 * are those marked with the pipe ("|") below:
+	 * the boundary positions which can be traversed with this function are
+	 * those marked with the pipe ("|") below:
 	 *
 	 * |foo|<p>|bar|<b>|<u>|</u>|baz|<b>|</p>|
 	 *
 	 * This function complements Boundaries.next()
 	 *
-	 * @param  {Boundary} boundary Reference boundary
-	 * @return {Boundary} Preceding boundary position
+	 * @param  {Boundary} boundary
+	 * @return {Boundary}
 	 */
 	function prev(boundary) {
+		boundary = normalize(boundary);
 		var node = container(boundary);
 		if (Dom.isTextNode(node) || isAtStart(boundary)) {
 			return fromNode(node);
@@ -393,10 +420,11 @@ define([
 	 * Like Boundaries.prev(), but returns the boundary position that follows
 	 * from the given.
 	 *
-	 * @param  {Boundary} boundary Reference boundary
-	 * @return {Boundary} Next boundary position
+	 * @param  {Boundary} boundary
+	 * @return {Boundary}
 	 */
 	function next(boundary) {
+		boundary = normalize(boundary);
 		var node = container(boundary);
 		var boundaryOffset = offset(boundary);
 		if (Dom.isTextNode(node) || isAtEnd(boundary)) {
@@ -408,6 +436,13 @@ define([
 		     : raw(node, 0);
 	}
 
+	/**
+	 * Like Boundaries.prev() but treats the given boundary as an unnormalized
+	 * boundary.
+	 *
+	 * @param  {Boundary} boundary
+	 * @return {Boundary}
+	 */
 	function prevRawBoundary(boundary) {
 		var node = container(boundary);
 		if (isAtRawStart(boundary)) {
@@ -420,6 +455,13 @@ define([
 		return fromEndOfNode(node);
 	}
 
+	/**
+	 * Like Boundaries.next() but treats the given boundary as an unnormalized
+	 * boundary.
+	 *
+	 * @param  {Boundary} boundary
+	 * @return {Boundary}
+	 */
 	function nextRawBoundary(boundary) {
 		var node = container(boundary);
 		if (isAtRawEnd(boundary)) {
@@ -434,10 +476,10 @@ define([
 	/**
 	 * Steps through boundaries while the given condition is true.
 	 *
-	 * @param  {Boundary} boundary Boundary from which to start stepping
-	 * @param  {function(Boundary):boolean} cond Predicate
-	 * @param  {function(Boundary):Boundary} step Returns the next boundary
-	 * @return {Boundary} Boundary at which stepping was terminated
+	 * @param  {Boundary}                    boundary Start position
+	 * @param  {function(Boundary):boolean}  cond     Predicate
+	 * @param  {function(Boundary):Boundary} step     Gets the next boundary
+	 * @return {Boundary}
 	 */
 	function stepWhile(boundary, cond, step) {
 		var pos = boundary;
@@ -448,10 +490,10 @@ define([
 	}
 
 	/**
-	 * Step forward while the given condition is true.
+	 * Steps forward while the given condition is true.
 	 *
-	 * @param  {Boundary} boundary
-	 * @param  {function(Boundary, Element, offset):boolean} cond
+	 * @param  {Boundary}                   boundary
+	 * @param  {function(Boundary):boolean} cond
 	 * @return {Boundary}
 	 */
 	function nextWhile(boundary, cond) {
@@ -459,9 +501,9 @@ define([
 	}
 
 	/**
-	 * Step backwards while the given condition is true.
+	 * Steps backwards while the given condition is true.
 	 *
-	 * @param  {Boundary} boundary
+	 * @param  {Boundary}                   boundary
 	 * @param  {function(Boundary):boolean} cond
 	 * @return {Boundary}
 	 */
@@ -473,9 +515,9 @@ define([
 	 * Walks along boundaries according to step(), applying callback() to each
 	 * boundary along the traversal until cond() returns false.
 	 *
-	 * @param  {Boundary}                    boundary Where we start walking
+	 * @param  {Boundary}                    boundary Start position
 	 * @param  {function(Boundary):boolean}  cond     Predicate
-	 * @param  {function(Boundary):Boundary} step     Next boundary
+	 * @param  {function(Boundary):Boundary} step     Gets the next boundary
 	 * @param  {function(Boundary)}          callback Applied to each boundary
 	 */
 	function walkWhile(boundary, cond, step, callback) {
@@ -590,6 +632,7 @@ define([
 		fromNode            : fromNode,
 		fromEndOfNode       : fromEndOfNode,
 
+		/* these functions should be in ranges.js */
 		setRange            : setRange,
 		setRanges           : setRanges,
 		setRangeStart       : setRangeStart,

@@ -43,6 +43,16 @@
 		t('<p>x{<b>y}</b>z</p>', '<p>x{<b>y}</b>z</p>');
 		t('<p>x<b>{y</b>}z</p>', '<p>x<b>{y</b>}z</p>');
 		t('<p>x<b>{y}</b>z</p>', '<p>x<b>{y}</b>z</p>');
+
+		equal(
+			BoundaryMarkers.hint(Boundaries.fromEndOfNode($('<p>x</p>')[0])),
+			'<p>x|</p>'
+		);
+
+		equal(
+			BoundaryMarkers.hint(Boundaries.fromEndOfNode($('<p>x</p>')[0].firstChild)),
+			'<p>x¦</p>'
+		);
 	});
 
 }(window.aloha));

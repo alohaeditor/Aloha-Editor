@@ -27,7 +27,7 @@ define([
 	'use strict';
 
 	/**
-	 * Insert boundary markers at the given range.
+	 * Insert boundary markers at the given boundaries.
 	 *
 	 * @param  {Boundary} start
 	 * @param  {Boundary} end
@@ -45,6 +45,22 @@ define([
 		Dom.insert(startMarker, Boundaries.nextNode(end), Boundaries.isAtEnd(end));
 		Dom.insert(endMarker, Boundaries.nextNode(start), Boundaries.isAtEnd(start));
 		return [start, end];
+	}
+
+	/**
+	 * Insert a single boundary marker at the given boundary.
+	 *
+	 * @param  {Boundary} boundary
+	 * @return {Boundary}
+	 */
+	function insertSingle(boundary) {
+		var container = Boundaries.container(boundary);
+		var marker = container.ownerDocument.createTextNode(
+			Boundaries.isTextBoundary(boundary) ? '¦' : '|'
+		);
+		boundary = Mutation.splitBoundary(boundary);
+		Dom.insert(marker, Boundaries.nextNode(boundary), Boundaries.isAtEnd(boundary));
+		return boundary;
 	}
 
 	/**
@@ -139,6 +155,10 @@ define([
 	 * @return {string}
 	 */
 	function show(start, end) {
+		var single = !end;
+
+		end = end || start;
+
 		var cac = Boundaries.commonContainer(start, end);
 		var startPath = Paths.fromBoundary(cac, start);
 		var endPath = Paths.fromBoundary(cac, end);
@@ -162,10 +182,14 @@ define([
 		startPath = root.concat(startPath);
 		endPath = root.concat(endPath);
 
-		insert(
-			Paths.toBoundary(clone, startPath),
-			Paths.toBoundary(clone, endPath)
-		);
+		if (single) {
+			insertSingle(Paths.toBoundary(clone, startPath));
+		} else {
+			insert(
+				Paths.toBoundary(clone, startPath),
+				Paths.toBoundary(clone, endPath)
+			);
+		}
 
 		if (Dom.Nodes.DOCUMENT_FRAGMENT !== clone.nodeType) {
 			return clone.outerHTML;
@@ -186,7 +210,7 @@ define([
 	function hint(selection) {
 		if (Misc.defined(selection.length)) {
 			return ('string' === typeof selection[0].nodeName)
-			     ? show(selection, selection)
+			     ? show(selection)
 			     : show(selection[0], selection[1]);
 		}
 		var boundaries = Boundaries.fromRange(selection);
