@@ -65,7 +65,8 @@ define([
 
 		__ : {
 			nextLineBreak      : Mutation.nextLineBreak,
-			isVisuallyAdjacent : Mutation.isVisuallyAdjacent
+			isVisuallyAdjacent : Mutation.isVisuallyAdjacent,
+			isRenderedBr       : Mutation.isRenderedBr
 		}
 	};
 });

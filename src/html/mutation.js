@@ -291,39 +291,53 @@ define([
 	}
 
 	/**
-	 * Checks whether or not the given BR element is significant or not.
+	 * Checks whether or not the given node is a significant BR element.
 	 *
-	 * @private
-	 * @param  {Element} br
+	 * @param  {Node} node
 	 * @return {boolean}
 	 */
-	function isSignificantBr(br) {
+	function isRenderedBr(node) {
+		if ('BR' === node.nodeName) {
+			return false;
+		}
+
 		var ignorable = function (node) {
 			return 'BR' !== node.nodeName && Elements.isUnrendered(node);
 		};
 
-		var prev = br.previousSibling
-		        && Dom.prevWhile(br.previousSibling, ignorable);
+		var prev = node.previousSibling
+		        && Dom.prevWhile(node.previousSibling, ignorable);
 
-		var next = br.nextSibling
-		        && Dom.nextWhile(br.nextSibling, ignorable);
+		var next = node.nextSibling
+		        && Dom.nextWhile(node.nextSibling, ignorable);
 
-		var significant = !prev
-		               || ((prev && next) && Predicates.isInlineNode(br.parentNode));
+		// Because the first visible child node that is a br is rendered
+		if (!prev) {
+			return true;
+		}
 
-		significant = significant || (
-			(prev && ('BR' === prev.nodeName || !Styles.hasLinebreakingStyle(prev)))
-			&&
-			(next && ('BR' === next.nodeName || !Styles.hasLinebreakingStyle(next)))
-		);
+		// Because a br between two visible siblings in an inline node is
+		// rendered
+		if (prev && next && Predicates.isInlineNode(node.parentNode)) {
+			return true;
+		}
 
-		significant = significant || (
-			(prev && ('BR' === prev.nodeName))
-			||
-			(next && ('BR' === next.nodeName))
-		);
+		// Because a br between two br or inline nodes is rendered
+		if ((prev && ('BR' === prev.nodeName || !Styles.hasLinebreakingStyle(prev)))
+				&&
+				(next && ('BR' === next.nodeName || !Styles.hasLinebreakingStyle(next)))) {
+			return true;
+		}
 
-		return significant || (!prev && !next);
+		// Because a br next to another br will mean that both are rendered
+		if ((prev && ('BR' === prev.nodeName))
+				||
+				(next && ('BR' === next.nodeName))) {
+			return true;
+		}
+
+		// Because a br that is an only child is always rendered
+		return !prev && !next;
 	}
 
 	/**
@@ -338,7 +352,7 @@ define([
 		var doc = container.ownerDocument;
 		var br = doc.createElement('br');
 		boundary = Mutation.insertNodeAtBoundary(br, boundary, true);
-		if (!isSignificantBr(br)) {
+		if (!isRenderedBr(br)) {
 			return Mutation.insertNodeAtBoundary(doc.createElement('br'), boundary, true);
 		}
 		return boundary;
@@ -495,6 +509,7 @@ define([
 		insertBreak        : insertBreak,
 		insertLineBreak    : insertLineBreak,
 		nextLineBreak      : nextLineBreak,
-		isVisuallyAdjacent : isVisuallyAdjacent
+		isVisuallyAdjacent : isVisuallyAdjacent,
+		isRenderedBr       : isRenderedBr
 	};
 });
