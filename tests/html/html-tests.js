@@ -9,7 +9,7 @@
 
     module('html');
 
-	test('isVisuallyAdjacent()', function () {
+	test('isVisuallyAdjacent', function () {
 		var t = function (markup, expected) {
 			var boundaries = BoundaryMarkers.extract($(markup)[0]);
 			equal(

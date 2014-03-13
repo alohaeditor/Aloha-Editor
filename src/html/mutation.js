@@ -297,7 +297,7 @@ define([
 	 * @return {boolean}
 	 */
 	function isRenderedBr(node) {
-		if ('BR' === node.nodeName) {
+		if ('BR' !== node.nodeName) {
 			return false;
 		}
 
@@ -310,11 +310,6 @@ define([
 
 		var next = node.nextSibling
 		        && Dom.nextWhile(node.nextSibling, ignorable);
-
-		// Because the first visible child node that is a br is rendered
-		if (!prev) {
-			return true;
-		}
 
 		// Because a br between two visible siblings in an inline node is
 		// rendered
@@ -336,8 +331,25 @@ define([
 			return true;
 		}
 
-		// Because a br that is an only child is always rendered
-		return !prev && !next;
+		// Because a br is the first space-consuming *tag* inside of a
+		// line-breaking element is rendered
+		var boundary = Boundaries.fromNode(node);
+		while (Traversing.isAtStart(boundary)) {
+			if (Styles.hasLinebreakingStyle(Boundaries.container(boundary))) {
+				return true;
+			}
+			boundary = Boundaries.prev(boundary);
+		}
+
+		boundary = Boundaries.jumpOver(Boundaries.fromNode(node));
+		while (Traversing.isAtEnd(boundary)) {
+			if (Styles.hasLinebreakingStyle(Boundaries.container(boundary))) {
+				return false;
+			}
+			boundary = Boundaries.next(boundary);
+		}
+
+		return !Styles.hasLinebreakingStyle(Traversing.nextNode(boundary));
 	}
 
 	/**

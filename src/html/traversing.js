@@ -347,15 +347,13 @@ define([
 		//
 		// <#te|xt>
 		if (Boundaries.isTextBoundary(boundary)) {
-			return steps.nextCharacter(boundary)
-			    || stepVisualBoundary(steps.stepBoundary(boundary), steps);
+			var next = steps.nextCharacter(boundary);
+			if (next) {
+				return next;
+			}
 		}
 
 		var node = steps.nodeAt(boundary);
-
-		if (Dom.isTextNode(node)) {
-			return stepVisualBoundary(steps.stepBoundary(boundary), steps);
-		}
 
 		// At start or end of editable
 		//
@@ -363,6 +361,10 @@ define([
 		// <host>| or |</host>
 		if (Dom.isEditingHost(node)) {
 			return boundary;
+		}
+
+		if (Dom.isTextNode(node) || Elements.isUnrendered(node)) {
+			return stepVisualBoundary(steps.stepBoundary(boundary), steps);
 		}
 
 		if (Styles.hasLinebreakingStyle(node)) {
@@ -505,12 +507,21 @@ define([
 			// Because there may be no visible characters following the node
 			// boundary in its container.
 			//
-			// "foo| "</p> or "foo| "" bar"
+			// "foo| "</p> or "foo| "" bar" or "foo|"<br>
 			//      .              .  .
 			if (-1 === offset) {
+				var node = Boundaries.nodeAfter(next);
+				if (node && Elements.isUnrendered(node)) {
+					return skipInsignificantPositions(Boundaries.jumpOver(next));
+				}
+				if (node && Elements.isVoidType(node)) {
+					return next;
+				}
 				return skipInsignificantPositions(Boundaries.next(next));
 			}
 
+			// Because the boundary may already be at a significant offset.
+			//
 			// "|foo"
 			if (Boundaries.offset(next) === offset) {
 				return next;
@@ -533,10 +544,6 @@ define([
 		while (!Dom.isEditingHost(node) && Elements.isUnrendered(node)) {
 			next = Boundaries.next(next);
 			node = Boundaries.nextNode(next);
-		}
-
-		if (Styles.hasLinebreakingStyle(node)) {
-			return next;
 		}
 
 		return next;
@@ -915,12 +922,13 @@ define([
 		}
 		if (Boundaries.isTextBoundary(boundary)) {
 			// "fo|o" or "foo| "
-			return !NOT_WSP.test(Boundaries.container(boundary).data.substr(Boundaries.offset(boundary)));
+			return !NOT_WSP.test(Boundaries.container(boundary).data.substr(
+				Boundaries.offset(boundary)
+			));
 		}
 		var node = Boundaries.nodeAfter(boundary);
-		var next = Dom.nextWhile(node, Elements.isUnrendered);
 		// foo|<br></p> or foo|<i>bar</i>
-		return !next || next === node;
+		return !Dom.nextWhile(node, Elements.isUnrendered);
 	}
 
 	/**
@@ -940,11 +948,13 @@ define([
 			return true;
 		}
 		if (Boundaries.isTextBoundary(boundary)) {
-			return !NOT_WSP.test(Boundaries.container(boundary).data.substr(0, Boundaries.offset(boundary)));
+			return !NOT_WSP.test(Boundaries.container(boundary).data.substr(
+				0,
+				Boundaries.offset(boundary)
+			));
 		}
 		var node = Boundaries.nodeBefore(boundary);
-		var next = Dom.prevWhile(node, Elements.isUnrendered);
-		return !next || next === node;
+		return !Dom.prevWhile(node, Elements.isUnrendered);
 	}
 
 	/**
@@ -956,8 +966,9 @@ define([
 	 * @return {Node}
 	 */
 	function nextNode(boundary) {
-		var node = Boundaries.nextNode(boundary);
-		return isAtEnd(boundary) ? node.parentNode : node;
+		return isAtEnd(boundary)
+		     ? Boundaries.container(boundary)
+		     : Boundaries.nodeAfter(boundary);
 	}
 
 	/**
@@ -969,8 +980,9 @@ define([
 	 * @return {Node}
 	 */
 	function prevNode(boundary) {
-		var node = Boundaries.prevNode(boundary);
-		return isAtStart(boundary) ? node.parentNode : node;
+		return isAtEnd(boundary)
+		     ? Boundaries.container(boundary)
+		     : Boundaries.nodeBefore(boundary);
 	}
 
 	return {
@@ -981,6 +993,8 @@ define([
 		prevSignificantOffset : prevSignificantOffset,
 		nextSignificantOffset : nextSignificantOffset,
 		stepForward           : stepForward,
-		stepBackward          : stepBackward
+		stepBackward          : stepBackward,
+		isAtStart             : isAtStart,
+		isAtEnd               : isAtEnd
 	};
 });
