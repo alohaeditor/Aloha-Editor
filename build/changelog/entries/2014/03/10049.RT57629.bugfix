@@ -1,0 +1,8 @@
+IE default drag and drop behavior is stopped when dragging and dropping block elements.
+
+In some cases the default IE drag and drop behavior was not stopped for block elements,
+which end up with pasted elements that could not be removed. The root of
+the problem was a Javascript Error (rangy-core) when dragging the element. This error
+was thrown due to a bug in the IE selection. With this fix the IE default drag and drop 
+behavior is stopped and the Javascript Error is catch so the execution of the program 
+can continue.
