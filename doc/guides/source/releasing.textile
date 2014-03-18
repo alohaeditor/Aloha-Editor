@@ -8,14 +8,19 @@ h3. Release Lifecycle
 
 h4. Feature Release
 
-For every feature release a new release branch will be created. This branch must be named using the targeted release version. If you want to release 0.20.0 it will be named: +release-0.20.0+. The release branch will always be created from the +dev+ branch. 
+* Create a new hotfix branch from the +dev+ branch (eg. hotfix-0.26.x)
+* Create a maven changelog skiplist by listing all changelog entries from (eg. hotfix-0.25.x) 
+* Release from that hotfix-0.26.x branch
 
 h4. Hotfix Release
 
-A hotfix release can be done from an existing hotfix branch. The hotfix level of the version will be raised one leve. (eg. 0.20.0 -> 0.20.1)
+A hotfix release can be done from an existing hotfix branch. The hotfix level of the version will be raised one leve. (eg. 0.20.0 -> 0.20.1). Use the jenkins task to release from the hotfix branch.
+
+NOTE: Exception: hotfix-0.24.x are still split between commercial release and gpl releases. This means you have to release the GPL version _first_. After this step the commercial version can be released. This step is not needed for 0.25.x releases. 
 
 h4. Post Release Steps
-* After a release has been done the tagged version will be merged into the master branch.
+
+* After a release has been done the tagged version will be merged into the master and dev branch.
 * A hotfix branch for the release will be created in which hotfixes can be applied.
 * The tagged version will be merged into the dev branch. Please note that the dev version should always be one level above the current major release version. (eg. current stable is 0.20.0 than the dev branch version would be 0.30.0-dev.)  
 
@@ -29,9 +34,8 @@ h3. Practical Maven Feature Release Example For Version 0.20.0
 
 2. Switch into the release branch and update it.
 <shell>
-  git checkout release
-  git pull origin dev
-  git push origin release
+  git checkout -b hotfix-0.26.x
+  git push origin hotfix-0.26.x
 </shell>
  
 3. Prepare the release and define the release version. 
@@ -75,7 +79,7 @@ What is the new development version for "Aloha Editor"? (org.alohaeditor:alohaed
 <shell>
   git add .
   git commit -m "Maven release prepare"
-  git push origin release
+  git push origin hotfix-0.26.x
   mvn release:perform
 </shell>
 
@@ -83,14 +87,14 @@ What is the new development version for "Aloha Editor"? (org.alohaeditor:alohaed
 <shell>
   git checkout master
   git pull origin master 
-  git pull origin release
+  git pull origin hotfix-0.26.x
   git push origin master
 </shell>
 
 8. Update the dev branch
 <shell> 
   git checkout dev
-  git pull origin release
+  git pull origin hotfix-0.26.x
   git push origin dev
 </shell>
 
