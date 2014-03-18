@@ -69,6 +69,22 @@ define([
 	}
 
 	/**
+	 * Fills empty paragraph with a 'br' element, so it does rendered.
+	 * @param  {Array} elements
+	 * @return {Array}
+	 */
+	function fillEmptyParagraph(elements) {
+		var result = [];
+		for (var i = 0, len = elements.length; i < len; i++) {
+			if (elements[i].nodeName === 'P' && !Html.isRendered(elements[i])) {
+				elements[i].innerHTML = '<br>';
+			}
+			result.push(elements[i]);
+		}
+		return result;
+	}
+
+	/**
 	 * Reduces the given list of nodes into a list of cleaned nodes.
 	 *
 	 * @private
@@ -80,6 +96,7 @@ define([
 	 */
 	function cleanNodes(nodes, doc, clean, normalize) {
 		var allowed = nodes.filter(Fn.complement(isBlacklisted));
+		allowed = fillEmptyParagraph(allowed);
 		var rendered = allowed.filter(Html.isRendered);
 		return rendered.reduce(function (nodes, node) {
 			clean(node, doc).forEach(function (node) {
@@ -104,7 +121,7 @@ define([
 	function removeRedundantNesting(nodes) {
 		return nodes.reduce(function (nodes, node) {
 			var kids = Dom.children(node);
-			if (1 === kids.length && Html.hasLinebreakingStyle(kids[0])) {
+			if (1 === kids.length && Html.hasLinebreakingStyle(kids[0]) && node.nodeName !== 'P') {
 				if (Html.isGroupedElement(node)) {
 					if (!Html.isGroupContainer(kids[0])) {
 						Dom.removeShallow(kids[0]);

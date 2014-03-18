@@ -52,7 +52,7 @@ define([
 	 */
 	function createUnorderedList(doc) {
 		var ul = doc.createElement('ul');
-		Dom.setAttr(ul, 'style', 'list-style: none;');
+		Dom.setAttr(ul, 'xstyle', 'list-style: none;');
 		return ul;
 	}
 
@@ -65,12 +65,9 @@ define([
 	 * @return {Element} List element
 	 */
 	function createNestedList(actualTocNumber, lastTocNumber, listElement) {
-		var list;
 		var doc = listElement.ownerDocument;
-		    createListFn = function() {
-		        var list = doc.createElement('ul');
-		        Dom.setAttr(list, 'style', 'list-style: none;');
-		        return list;
+		var createListFn = function() {
+		        return createUnorderedList(doc);
 		    };
 		return WordUtils.createNestedList(actualTocNumber, lastTocNumber, listElement, createListFn);
 
@@ -116,7 +113,7 @@ define([
 		var i,
 		    len,
 		    msoHideSpans = element.querySelectorAll('span[style*="mso-hide"]'),
-		    tocRefs = element.querySelectorAll('a[name^="_Toc"]');
+		    tocRefs = element.querySelectorAll('a[name^="_Toc"], a[href*="#_Toc"');
 
 		for (i = 0, len = tocRefs.length; i < len; i++) {
 			Dom.removeShallow(tocRefs[i]);
@@ -154,15 +151,19 @@ define([
 		var anchorSpan;
 		var listElement;
 
-		removeUselessElements(element);
-		replaceTocHeadings(element);
+		var clone = Dom.cloneDeep(element);
 
-		while ((msoToc = element.querySelector('p[class^="MsoToc"]')) !== null) {
+		removeUselessElements(clone);
+		replaceTocHeadings(clone);
+
+		while ((msoToc = clone.querySelector('p[class^="MsoToc"]')) !== null) {
 			anchorSpan = msoToc.ownerDocument.createElement('span');
 			msoToc.parentNode.insertBefore(anchorSpan, msoToc);
 			listElement = transformTocHeading(msoToc, anchorSpan.parentNode);
 			anchorSpan.parentNode.replaceChild(listElement, anchorSpan);
 		}
+
+		return clone;
 	}
 
 	return {

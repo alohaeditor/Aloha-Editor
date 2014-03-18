@@ -346,6 +346,16 @@ define([
 		return node.cloneNode(false);
 	}
 
+	/**
+	 * Returns a deep clone of the given node.
+	 *
+	 * @param  {Node} node
+	 * @return {Node}
+	 */
+	function cloneDeep(node) {
+		return node.cloneNode(true);
+	}
+
 	function fragmentHtml(fragment) {
 		var div = fragment.ownerDocument.createElement('div');
 		div.appendChild(fragment);
@@ -384,6 +394,7 @@ define([
 
 		clone        : clone,
 		cloneShallow : cloneShallow,
+		cloneDeep    : cloneDeep,
 
 		fragmentHtml : fragmentHtml
 	};
