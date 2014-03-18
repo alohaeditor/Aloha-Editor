@@ -1,0 +1,1 @@
+The extra/formatlesspaste plugin now can remove tags that don't contain text (e.g. img)
