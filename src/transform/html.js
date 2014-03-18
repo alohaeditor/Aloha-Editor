@@ -217,6 +217,7 @@ define([
 	function transform(markup, doc) {
 		var raw = Html.parse(Utils.extract(markup), doc);
 		var fragment = Utils.normalize(raw, doc, clean);
+		Arrays.coerce(fragment.querySelectorAll('*')).forEach(Content.replaceWhitelist);
 		return Dom.children(fragment)[0].innerHTML;
 	}
 

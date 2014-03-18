@@ -5,7 +5,11 @@
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define([], function Content() {
+define([
+	'dom'
+], function Content(
+	Dom
+) {
 	'use strict';
 
 	var TABLE_CHILDREN = {
@@ -498,17 +502,20 @@ define([], function Content() {
 	};
 
 	var ATTRIBUTES_WHITELIST = {
-		'IMG' : ['alt', 'src'],
+		'IMG' : ['alt', 'src', 'height', 'width'],
 		'A'   : ['href', '_target'],
 		'TD'  : ['colspan', 'rowspan'],
 		'TH'  : ['colspan', 'rowspan'],
 		'OL'  : ['start', 'type'],
+		'UL'  : ['start', 'type'],
 		'*'   : ['xstyle']
 	};
 
 	var STYLES_WHITELIST = {
 		'TABLE' : ['width'],
 		'IMG'   : ['width', 'height'],
+		'OL'    : ['list-style'],
+		'UL'    : ['list-style'],
 		'*'     : [
 			// '*',
 			'color',
@@ -541,6 +548,18 @@ define([], function Content() {
 		'TITLE',
 		'WBR'
 	];
+
+	/**
+	 * Replaces XStyle for style
+	 * @param element
+	 */
+	function replaceWhitelist(element) {
+		var xstyleAttribute = Dom.getAttr(element, 'xstyle');
+		if (xstyleAttribute) {
+			element.style.cssText = xstyleAttribute;
+			Dom.removeAttr(element, 'xstyle');
+		}
+	}
 
 	/**
 	 * Checks whether the node name `outer` is allowed to contain in a node with
@@ -592,6 +611,7 @@ define([], function Content() {
 	}
 
 	return {
+		replaceWhitelist     : replaceWhitelist,
 		allowsNesting        : allowsNesting,
 		NODES_BLACKLIST      : NODES_BLACKLIST,
 		STYLES_WHITELIST     : STYLES_WHITELIST,

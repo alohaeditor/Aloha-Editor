@@ -14,7 +14,7 @@ define([
 	'arrays',
 	'ms-word/lists',
 	'ms-word/tables',
-	//'ms-word/toc',
+	'ms-word/toc',
 	'./utils'
 ], function (
 	Dom,
@@ -22,7 +22,7 @@ define([
 	Arrays,
 	Lists,
 	Tables,
-	//TOC,
+	Toc,
 	Utils
 ) {
 	'use strict';
@@ -146,6 +146,7 @@ define([
 		var fragment = Utils.normalize(raw, doc, clean) || raw;
 		fragment = Lists.transform(fragment, doc);
 		fragment = Tables.transform(fragment, doc);
+		fragment = Toc.transform(fragment, doc);
 		return Dom.children(fragment)[0].innerHTML;
 	}
 

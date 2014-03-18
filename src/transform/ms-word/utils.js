@@ -190,6 +190,12 @@ define([
 		}
 	}
 
+	function appendList(listHTML, newList) {
+		if (listHTML.lastElementChild && listHTML.lastElementChild.nodeName === 'LI') {
+			listHTML.lastElementChild.appendChild(newList);
+		}
+	}
+
 	/**
 	 * Creates a nested list.
 	 * @param {integer} actualLevel
@@ -203,7 +209,7 @@ define([
 
 		while (actualLevel > lastLevel) {
 			newList = createListFn();
-			listHTML.appendChild(newList);
+			appendList(listHTML, newList);
 			listHTML = newList;
 			lastLevel++;
 		}
@@ -211,7 +217,7 @@ define([
 		while (actualLevel < lastLevel) {
 			if (listHTML.parentNode === null) {
 				newList = createListFn();
-				newList.appendChild(listHTML);
+				appendList(listHTML, newList);
 			}
 			listHTML = listHTML.parentNode;
 			lastLevel--;

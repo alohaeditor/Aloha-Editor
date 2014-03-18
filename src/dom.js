@@ -223,6 +223,7 @@ define([
 		Nodes                   : Nodes.Nodes,
 		offset                  : Nodes.offset,
 		cloneShallow            : Nodes.cloneShallow,
+		cloneDeep               : Nodes.cloneDeep,
 		clone                   : Nodes.clone,
 		text                    : Nodes.text,
 		children                : Nodes.children,
