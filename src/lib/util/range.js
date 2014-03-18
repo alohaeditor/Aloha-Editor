@@ -349,7 +349,16 @@ define([
 
 			// update the selection
 			sel = rangy.getSelection();
-			sel.setSingleRange(range);
+			// Selection type 'Control' (elements selected), 'Text' (text selected), 'None' (nothing selected) 
+			// (http://help.dottoro.com/ljitmswc.php)
+			// If the selection is 'Text' or 'Control' and the range is collapsed then there is nothing selected, and 
+			// this can produce a Javascript Error only in IE. (Reproducible: Just by dragging and drop block elements)
+			// catching the exception so the execution can continue
+			try {
+				sel.setSingleRange(range);
+			} catch (e) {
+				console.warn(e);
+			}
 		},
 
 		/**
