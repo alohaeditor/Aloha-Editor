@@ -1,0 +1,6 @@
+Setting sanitize contenthandler configuration as a Map is load.
+
+If a configuration in Aloha.settings.contenthandler.sanitize was defined, this was never load unless
+was a text ('restricted', 'basic', 'relaxed'). If a map of object was defined, this setting was
+never load (see http://aloha-editor.org/guides/plugin_contenthandler.html).
+With this fix, the sanitize object is load.
