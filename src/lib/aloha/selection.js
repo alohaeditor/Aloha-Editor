@@ -361,7 +361,6 @@ define([
 				'ul': this.tagHierarchy.ul,
 				'ol': this.tagHierarchy.ol,
 				'li': this.tagHierarchy.li,
-				'td': this.tagHierarchy.li,
 				'div': this.tagHierarchy.div,
 				'h1': this.tagHierarchy.h1,
 				'h2': this.tagHierarchy.h1,
@@ -369,7 +368,14 @@ define([
 				'h4': this.tagHierarchy.h1,
 				'h5': this.tagHierarchy.h1,
 				'h6': this.tagHierarchy.h1,
-				'table': this.tagHierarchy.table
+				// for tables (and all related tags) we set the hierarchy to div
+				// this enables to add anything into tables. We also need to set this
+				// for tr, td and th, because the check in canTag1WrapTag2 does not check
+				// transitively
+				'table': this.tagHierarchy.div,
+				'tr': this.tagHierarchy.div,
+				'th': this.tagHierarchy.div,
+				'td': this.tagHierarchy.div
 			};
 
 			// When applying this elements to selection they will replace the assigned elements
