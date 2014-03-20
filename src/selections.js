@@ -661,7 +661,7 @@ define([
 			// Because we want to move the caret out of the way when the user
 			// starts to create an expanded selection by dragging.
 			if (!old.dragging && context.dragging) {
-				Style.set(context.caret, 'display', 'none');
+				Dom.setStyle(context.caret, 'display', 'none');
 				Dom.removeClass(context.caret, 'aloha-caret-blink');
 			}
 

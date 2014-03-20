@@ -57,7 +57,7 @@ define([
 		alohaEvent.editor = editor;
 		Fn.comp(
 			setSelection,
-			// Selections.handle,
+			//Selections.handle,
 			Typing.handle,
 			Blocks.handle,
 			DragDrop.handle,
@@ -78,6 +78,7 @@ define([
 
 	Events.setup(editor, document);
 
+	/*
 	SelectionChange.addHandler(document, SelectionChange.handler(
 		Fn.partial(Boundaries.get, document),
 		Boundaries.fromEndOfNode(document),
@@ -85,6 +86,7 @@ define([
 			editor(event);
 		}
 	));
+	*/
 
 	/**
 	 * The Aloha Editor namespace root.

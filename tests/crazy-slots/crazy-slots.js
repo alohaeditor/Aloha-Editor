@@ -6,6 +6,7 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
+	'../../src/aloha',
 	'../../src/dom',
 	'../../src/arrays',
 	'../../src/ranges',
@@ -13,6 +14,7 @@ define([
 	'../../src/undo',
 	'../../src/functions'
 ], function CrazySlots(
+	aloha,
 	Dom,
 	Arrays,
 	Ranges,

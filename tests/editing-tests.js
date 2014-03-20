@@ -1,57 +1,82 @@
 (function (aloha) {
 	'use strict';
 
-	var html = aloha.html;
-	var ranges = aloha.ranges;
-	var editing = aloha.editing;
-	var fn = aloha.fn;
+	var Html = aloha.html;
+	var Ranges = aloha.ranges;
+	var Editing = aloha.editing;
+	var Fn = aloha.fn;
 	var Browsers = aloha.browsers;
-	var boundarymarkers = aloha.boundarymarkers;
-	var xhtml = aloha.xhtml;
-	var tested = [];
+	var BoundaryMarkers = aloha.boundarymarkers;
+	var Xhtml = aloha.xhtml;
 
 	module('editing');
 
 	var $editable = $('<div id="editable" contentEditable="true"></div>').appendTo('body');
 
 	function runTest(before, after, op, context) {
-		var dom = $(before)[0];
-		$editable.html('').append(dom);
-		var range = ranges.create(dom, 0);
-		boundarymarkers.extract(dom, range);
-		op(range, context);
-		boundarymarkers.insert(range);
-		equal($editable.html(), after, before + ' ⇒ ' + after);
+		var boundaries = BoundaryMarkers.extract($(before)[0]);
+		var actual = BoundaryMarkers.hint(op(boundaries));
+		equal(actual, after, before + ' ⇒ ' + after);
 	}
 
 	test('break()', function () {
-		tested.push('break');
-		var t = function (before, after, linebreak, overrides) {
-			return runTest(before, after, function (range) {
+		(function t(before, after, linebreak, overrides) {
+			runTest(before, after, function (boundaries) {
 				var context = {
 					settings: {
 						defaultBlockNodeName: 'h1'
 					},
 					overrides: []
 				};
-				editing.break(range, context, linebreak);
+				var next = Editing.break(
+					Ranges.fromBoundaries(boundaries[0], boundaries[1]),
+					context,
+					linebreak
+				);
 				if (overrides) {
 					deepEqual(context.overrides, overrides, overrides.join());
 				}
+				return [next, next];
 			});
-		};
-
-		t('<div contenteditable="true">{}</div>', '<div contenteditable="true"><h1><br></h1><h1>{}</h1></div>');
-
-		t(
-			'<b><u style="text-decoration: none">[]</u>foo</b>',
-			'<h1><b><u style="text-decoration: none"></u></b></h1><h1><b>{}foo</b></h1>',
+			return t;
+		})(
+			/*
+			'<div contenteditable="true">{}</div>',
+			'<div contenteditable="true"><h1>{}<br></h1></div>'
+		)(
+			'<div contenteditable="true">{}<br></div>',
+			'<div contenteditable="true"><br><h1>{}<br></h1></div>'
+		)(
+			'<div contenteditable="true">{}<br><br></div>',
+			'<div contenteditable="true"><br><h1>{}<br><br></h1></div>'
+		)(
+			'<div contenteditable="true"><br>{}<br></div>',
+			'<div contenteditable="true"><br><br><h1>{}<br></h1></div>'
+		)(
+			'<div contenteditable="true">one{}<br>two</div>',
+			'<div contenteditable="true">one<br><h1>{}<br>two</h1></div>'
+		)(
+			'<div contenteditable="true">{}<br>one</div>',
+			'<div contenteditable="true"><br><h1>{}<br>one</h1></div>'
+		)(
+			'<div contenteditable="true"><br>{}one</div>',
+			'<div contenteditable="true"><br><br><h1>{}one</h1></div>'
+		)(
+			'<div contenteditable="true"><p>{}<br>one</p></div>',
+			'<div contenteditable="true"><p><br></p><p>{}<br>one</p></div>'
+		)(
+		*/
+			'<div contenteditable="true"><h1><b><u style="text-decoration: none">[]</u>foo</b></h1></div>',
+			'<div contenteditable="true"><h1><br></h1><h1><b>{}foo</b></h1></div>',
 			false,
 			[
+				['bold', true],
 				['underline', false],
 				['strikethrough', false]
 			]
 		);
+
+		return;
 
 		t(
 			'<u style="text-decoration: none">[]</u>',
@@ -239,9 +264,8 @@
 	});
 
 	test('delete()', function () {
-		tested.push('delete');
 		var t = function (before, after) {
-			return runTest(before, after, editing.delete);
+			return runTest(before, after, Editing.delete);
 		};
 
 		t('<p>x[y]z</p>', '<p>x[]z</p>');
@@ -331,11 +355,11 @@
 			var titleForDebugginDontRemove = title;
 			$('#test-editable').empty().html(before);
 			var dom = $('#test-editable')[0].firstChild;
-			var range = ranges.create(dom, 0);
-			boundarymarkers.extract(dom, range);
+			var range = Ranges.create(dom, 0);
+			BoundaryMarkers.extract(dom, range);
 			dom = mutate(dom, range) || dom;
-			boundarymarkers.insert(range);
-			var actual = xhtml.nodeToXhtml(dom);
+			BoundaryMarkers.insert(range);
+			var actual = Xhtml.nodeToXhtml(dom);
 			if ($.type(expected) === 'function') {
 				expected(actual);
 			} else {
@@ -377,32 +401,32 @@
 
 	function testWrap(title, before, after) {
 		testMutation(title, before, after, function (dom, range) {
-			editing.wrap(range, 'B');
+			Editing.wrap(range, 'B');
 		});
 	}
 
 	function testUnformat(title, before, after) {
 		testMutation(title, before, after, function (dom, range) {
-			editing.wrap(range, 'B', true);
+			Editing.wrap(range, 'B', true);
 		});
 	}
 
 	function testInsertExtractBoundaryMarkers(title, htmlWithBoundaryMarkers) {
 		test(title, function () {
 			var dom = $(htmlWithBoundaryMarkers)[0];
-			var range = ranges.create(dom, 0);
-			boundarymarkers.extract(dom, range);
+			var range = Ranges.create(dom, 0);
+			BoundaryMarkers.extract(dom, range);
 			equal(
-				xhtml.nodeToXhtml(dom),
+				Xhtml.nodeToXhtml(dom),
 				htmlWithBoundaryMarkers.replace(/[\[\{\}\]]/g, ''),
 
 				htmlWithBoundaryMarkers
 				+ ' ⇒  ' +
 				htmlWithBoundaryMarkers.replace(/[\[\{\}\]]/g, '')
 			);
-			boundarymarkers.insert(range);
+			BoundaryMarkers.insert(range);
 			equal(
-				xhtml.nodeToXhtml(dom),
+				Xhtml.nodeToXhtml(dom),
 				htmlWithBoundaryMarkers,
 				htmlWithBoundaryMarkers.replace(/[\[\{\}\]]/g, '')
 				+ ' ⇒  ' +
@@ -418,7 +442,7 @@
 
 	function testTrimRange(title, before, after, switched) {
 		testMutationSwitchElemTextSelection(title, before, after, function (dom, range) {
-			ranges.trimClosingOpening(range, html.isUnrenderedWhitespace, html.isUnrenderedWhitespace);
+			Ranges.trimClosingOpening(range, Html.isUnrenderedWhitespace, Html.isUnrenderedWhitespace);
 		});
 	}
 
@@ -435,13 +459,13 @@
 			equal(actual, after, before + ' ⇒  ' + after);
 		}
 		function isObstruction(node) {
-			return !html.hasInlineStyle(node) || 'CODE' === node.nodeName;
+			return !Html.hasInlineStyle(node) || 'CODE' === node.nodeName;
 		}
 		var opts = {
 			isObstruction: isObstruction
 		};
 		testMutation('editing.format - ' + title, before, expected, function (dom, range) {
-			editing.format(range, styleName, styleValue, opts);
+			Editing.format(range, styleName, styleValue, opts);
 		});
 	}
 
@@ -488,8 +512,6 @@
 	var t = function (title, before, after) {
 		testWrap('editing.wrap -' + title, before, after);
 	};
-
-	tested.push('wrap');
 
 	t('noop1', '<p><b>[Some text.]</b></p>', '<p><b>{Some text.}</b></p>');
 	t('noop2', '<p>{<b>Some text.</b>}</p>', '<p>{<b>Some text.</b>}</p>');
@@ -643,11 +665,9 @@
 			function below(node) {
 				return node.nodeName === 'DIV';
 			}
-			editing.split(range, {below: below});
+			Editing.split(range, {below: below});
 		});
 	};
-
-	tested.push('split');
 
 	t('split cac',
 	  '<div><p><b>one</b>{<i>two</i><i>three</i>}<b>four</b></p></div>',
@@ -715,8 +735,8 @@
 			function below(node) {
 				return cac === node;
 			}
-			editing.split(range, {below: below, until: until});
-			editing.wrap(range, 'B');
+			Editing.split(range, {below: below, until: until});
+			Editing.wrap(range, 'B');
 		});
 	};
 
@@ -740,14 +760,12 @@
 				 '<div><i>a[b</i>c<b>d]e</b></div>',
 				 '<div><i>a[b</i>c<b>d]e</b></div>',
 				 function (dom, range) {
-					 editing.split(range, {below: fn.returnFalse});
+					 Editing.split(range, {below: Fn.returnFalse});
 				 });
 
 	t = function (title, before, after) {
 		testFormat(title, before, after, 'font-family', 'arial');
 	};
-
-	tested.push('format');
 
 	t('format some text',
 	  '<p>Some [text]</p>',
@@ -992,7 +1010,5 @@
 	  '<ul>{<li><ins>Some</ins> <del>text</del></li>}</ul>',
 	  '<ul>{<li><b><ins>Some</ins> <del>text</del></b></li>}</ul>',
 	  true);
-
-	//testCoverage(test, tested, editing);
 
 }(window.aloha));

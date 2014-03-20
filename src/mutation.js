@@ -336,6 +336,25 @@ define([
 		removePreservingRanges(node, [range]);
 	}
 
+	function boundaryToRange(boundary) {
+		var container = Boundaries.container(boundary);
+		var range = container.ownerDocument.createRange();
+		var offset = Boundaries.offset(boundary);
+		range.setStart(container, offset);
+		range.setEnd(container, offset);
+		return range;
+	}
+
+	function rangeFromBoundary(range) {
+		return Boundaries.fromRange(range)[0];
+	}
+
+	function removeNode(node, boundaries) {
+		var ranges = boundaries.map(boundaryToRange);
+		removePreservingRanges(node, ranges);
+		return ranges.map(rangeFromBoundary);
+	}
+
 	function preserveCursorForShallowRemove(node, cursor) {
 		if (cursor.node === node) {
 			if (cursor.node.firstChild) {
@@ -361,6 +380,7 @@ define([
 	}
 
 	return {
+		removeNode                     : removeNode,
 		removeShallowPreservingCursors : removeShallowPreservingCursors,
 		removePreservingRange          : removePreservingRange,
 		removePreservingRanges         : removePreservingRanges,

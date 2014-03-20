@@ -137,7 +137,7 @@ define([
 	 * predicate `match`.  If `until` returns true the given node, for any other
 	 * node during traversal, null is returned.
 	 *
-	 * @param  {Node} node
+	 * @param  {Node}                   node
 	 * @param  {function(Node):boolean} match
 	 * @param  {function(Node):boolean} until
 	 * @return {Node}
@@ -169,6 +169,7 @@ define([
 	/**
 	 * Returns the given node's parent element.
 	 *
+	 * @private
 	 * @param  {Node} node
 	 * @return {Element}
 	 */
@@ -176,6 +177,15 @@ define([
 		return node.parentNode;
 	}
 
+	/**
+	 * Returns the given node's parent element.
+	 *
+	 * @param  {Node}                   node
+	 * @param  {function(Node):Node}    step
+	 * @param  {function(Node):boolean} cond
+	 * @param  {*}                      arg
+	 * @return {Element}
+	 */
 	function stepWhile(node, step, cond, arg) {
 		while (node && cond(node, arg)) {
 			node = step(node, arg);
@@ -184,7 +194,7 @@ define([
 	}
 
 	/**
-	 * Steps through the node tree acording to `step` and `next` while the
+	 * Steps through the node tree according to `step` and `next` while the
 	 * given condition is true.
 	 *
 	 * @param  {Node}                   node
@@ -277,8 +287,15 @@ define([
 	 * @param {*} arg
 	 *        A value that will be passed to `func()` as the second argument.
 	 */
-	function walkUntil(node, func, until, arg) {
+	function nextUntil(node, func, until, arg) {
 		stepNextUntil(node, func, nextSibling, until, arg);
+	}
+
+	/**
+	 * Like nextUntil() but in reverse.
+	 */
+	function prevUntil(node, func, until, arg) {
+		stepNextUntil(node, func, prevSibling, until, arg);
 	}
 
 	/**
@@ -309,7 +326,7 @@ define([
 	 *        A value that will be passed to `func()` as the second argument.
 	 */
 	function walk(node, func, arg) {
-		walkUntil(node, func, Fn.returnFalse, arg);
+		nextUntil(node, func, Fn.returnFalse, arg);
 	}
 
 	/**
@@ -344,7 +361,7 @@ define([
 	 *        A value that will be passed to `func()` as the second argument.
 	 */
 	function walkUntilNode(node, func, untilNode, arg) {
-		walkUntil(node, func, function (nextNode) {
+		nextUntil(node, func, function (nextNode) {
 			return nextNode === untilNode;
 		}, arg);
 	}
@@ -521,7 +538,23 @@ define([
 	 */
 	function nextSiblings(node, until) {
 		var nodes = [];
-		walkUntil(node, function (next) {
+		nextUntil(node, function (next) {
+			nodes.push(next);
+		}, until || Fn.returnFalse);
+		return nodes;
+	}
+
+	/**
+	 * Returns a non-live list of the given node and all it's preceeding
+	 * siblings until the predicate returns true.
+	 *
+	 * @param  {Node}                   node
+	 * @param  {function(Node):boolean} until
+	 * @return {Array.<Node>}
+	 */
+	function prevSiblings(node, until) {
+		var nodes = [];
+		prevUntil(node, function (next) {
 			nodes.push(next);
 		}, until || Fn.returnFalse);
 		return nodes;
@@ -529,22 +562,33 @@ define([
 
 	return {
 		query                        : query,
-		nextSiblings                 : nextSiblings,
+
+		nextNonAncestor              : nextNonAncestor,
+
+		nextUntil                    : nextUntil,
 		nextWhile                    : nextWhile,
+		nextSibling                  : nextSibling,
+		nextSiblings                 : nextSiblings,
+
+		prevUntil                    : prevUntil,
 		prevWhile                    : prevWhile,
-		upWhile                      : upWhile,
+		prevSibling                  : prevSibling,
+		prevSiblings                 : prevSiblings,
+
 		walk                         : walk,
 		walkRec                      : walkRec,
-		walkUntil                    : walkUntil,
 		walkUntilNode                : walkUntilNode,
-		findBackward                 : findBackward,
+
+		forward                      : forward,
+		backward                     : backward,
 		findForward                  : findForward,
+		findBackward                 : findBackward,
+
+		upWhile                      : upWhile,
 		climbUntil                   : climbUntil,
 		childAndParentsUntil         : childAndParentsUntil,
 		childAndParentsUntilIncl     : childAndParentsUntilIncl,
 		childAndParentsUntilNode     : childAndParentsUntilNode,
-		childAndParentsUntilInclNode : childAndParentsUntilInclNode,
-		nextNonAncestor              : nextNonAncestor,
-		nextSibling                  : nextSibling
+		childAndParentsUntilInclNode : childAndParentsUntilInclNode
 	};
 });

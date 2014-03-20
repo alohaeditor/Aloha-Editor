@@ -430,10 +430,14 @@ define([
 		if (Dom.isTextNode(node) || isAtEnd(boundary)) {
 			return jumpOver(boundary);
 		}
-		node = Dom.nthChild(node, boundaryOffset);
-		return Dom.isTextNode(node)
-		     ? raw(node.parentNode, boundaryOffset + 1)
-		     : raw(node, 0);
+		var next = Dom.nthChild(node, boundaryOffset);
+		if (!next) {
+			console.warn(aloha.boundarymarkers.hint(boundary));
+			debugger;
+		}
+		return Dom.isTextNode(next)
+		     ? raw(next.parentNode, boundaryOffset + 1)
+		     : raw(next, 0);
 	}
 
 	/**
@@ -606,7 +610,8 @@ define([
 		var so = offset(start);
 		var ec = container(end);
 		var eo = offset(end);
-		var range = sc.ownerDocument.createRange();
+		var doc = Dom.Nodes.DOCUMENT === sc.nodeType ? sc : sc.ownerDocument;
+		var range = doc.createRange();
 		range.setStart(sc, so);
 		range.setEnd(ec, eo);
 		return range.commonAncestorContainer;

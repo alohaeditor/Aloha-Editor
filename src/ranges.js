@@ -565,7 +565,7 @@ define([
 
 		if (isStart && clone.startOffset > 0) {
 			boundary = Boundaries.fromRangeStart(clone);
-			if (Html.hasLinebreakingStyle(Html.prevNode(boundary))) {
+			if (Html.hasLinebreakingStyle(Boundaries.prevNode(boundary))) {
 				return {};
 			}
 			Boundaries.setRangeStart(clone, Traversing.prev(boundary));
@@ -575,7 +575,7 @@ define([
 
 		if (!isStart && clone.endOffset < len) {
 			boundary = Boundaries.fromRangeEnd(clone);
-			if (Html.hasLinebreakingStyle(Html.nextNode(boundary))) {
+			if (Html.hasLinebreakingStyle(Boundaries.nextNode(boundary))) {
 				return {};
 			}
 			Boundaries.setRangeEnd(clone, Traversing.next(boundary));

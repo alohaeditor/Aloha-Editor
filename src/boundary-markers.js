@@ -160,6 +160,11 @@ define([
 		end = end || start;
 
 		var cac = Boundaries.commonContainer(start, end);
+
+		var doc = Dom.Nodes.DOCUMENT === cac.nodeType
+		        ? cac
+		        : cac.ownerDocument;
+
 		var startPath = Paths.fromBoundary(cac, start);
 		var endPath = Paths.fromBoundary(cac, end);
 		var clone;
@@ -172,8 +177,8 @@ define([
 			);
 		} else {
 			clone = cac.cloneNode(true);
-			var one = cac.ownerDocument.createDocumentFragment();
-			var two = cac.ownerDocument.createDocumentFragment();
+			var one = doc.createDocumentFragment();
+			var two = doc.createDocumentFragment();
 			Dom.append(clone, two);
 			Dom.append(two, one);
 			root = [];
@@ -195,7 +200,7 @@ define([
 			return clone.outerHTML;
 		}
 
-		var node = cac.ownerDocument.createElement('div');
+		var node = doc.createElement('div');
 		Dom.append(clone, node);
 		return node.innerHTML;
 	}

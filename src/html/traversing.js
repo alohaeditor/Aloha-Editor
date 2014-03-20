@@ -1086,6 +1086,7 @@ define([
 		stepForward           : stepForward,
 		stepBackward          : stepBackward,
 		isAtStart             : isAtStart,
-		isAtEnd               : isAtEnd
+		isAtEnd               : isAtEnd,
+		expandForward         : expandForward
 	};
 });

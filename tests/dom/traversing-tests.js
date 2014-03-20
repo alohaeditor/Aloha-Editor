@@ -59,10 +59,10 @@
 		equal(nodes.join(' '), '#text BR I #text U B A DIV');
 	});
 
-	test('walkUntil', function () {
+	test('nextUntil', function () {
 		var node = $('<div>foo<b><i><br></i></b><br/><u>bar</u></div>')[0];
 		var nodes = [];
-		Dom.walkUntil(node.firstChild, function (elem) {
+		Dom.nextUntil(node.firstChild, function (elem) {
 			nodes.push(elem.nodeName);
 		}, function (elem, arg) {
 			return arg === elem.nodeName;
