@@ -1,10 +1,10 @@
 {
-  "version": "0.23.20",
-  "date": "25.09.2013",
+  "version": "0.24.20",
+  "date": "20.03.2014",
   "changeLogEntryFileNames": [
-      "2706.bugfix",
-      "2707.bugfix"
-   ],
-  "genericProperties": {
-  }
+    "10049.RT57629.bugfix",
+    "10031.RT13396.bugfix",
+    "10030.RT57823.bugfix"
+  ],
+  "genericProperties": {}
 }
