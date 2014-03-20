@@ -330,6 +330,18 @@ define([
 		     : Boundaries.create(Boundaries.container(boundary), offset - 1);
 	}
 
+	/**
+	 * Expands the boundary.
+	 *
+	 * @private
+	 * @param  {Boundary}                   boundary
+	 * @param  {function(Boundary, function(Boundary):boolean):Boundary}
+	 *                                      step
+	 * @param  {function(Boundary):Node}    nodeAt
+	 * @param  {function(Boundary):boolean} isAtStart
+	 * @param  {function(Boundary):boolean} isAtEnd
+	 * @return {Boundary}
+	 */
 	function expand(boundary, step, nodeAt, isAtStart, isAtEnd) {
 		return step(boundary, function (boundary) {
 			var node = nodeAt(boundary);
@@ -347,22 +359,30 @@ define([
 				if (Predicates.isListItem(node) && isAtStart(boundary)) {
 					return false;
 				}
-				// >
-				// |</p>
+				//    <    >
+				// <p>| or |</p>
 				return true;
 			}
 			return !Dom.isTextNode(node) && !Elements.isVoidType(node);
 		});
 	}
 
-		// Drill through...
-		//
-		// >
-		// |</p></li><li><b><i>foo...
-		//
-		// should result in
-		//
-		// </p></li><li><b><i>|foo...
+	/**
+	 * Expands the boundary backward.
+	 *
+	 * Drilling through...
+	 *
+	 * >
+	 * |</p></li><li><b><i>foo...
+	 *
+	 * should result in
+	 *
+	 * </p></li><li><b><i>|foo...
+	 *
+	 * @private
+	 * @param  {Boundary} boundary
+	 * @return {Boundary}
+	 */
 	function expandBackward(boundary) {
 		return expand(
 			boundary,
@@ -373,6 +393,13 @@ define([
 		);
 	}
 
+	/**
+	 * Expands the boundary forward.
+	 *
+	 * @private
+	 * @param  {Boundary} boundary
+	 * @return {Boundary}
+	 */
 	function expandForward(boundary) {
 		return expand(
 			boundary,
@@ -402,7 +429,7 @@ define([
 		if (Boundaries.isTextBoundary(boundary)) {
 			var next = steps.nextCharacter(boundary);
 			if (next) {
-				return steps.expand(next);
+				return next;
 			}
 		}
 
