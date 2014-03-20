@@ -908,10 +908,13 @@ define([
 	 * "node" -- Move in front of the next visible node.
 	 *
 	 * @param  {Boundary} boundary
-	 * @param  {unit=}    unit Defaults to "offset"
+	 * @param  {string=}  unit Defaults to "offset"
 	 * @return {Boundary}
 	 */
 	function next(boundary, unit) {
+		if ('node' === unit) {
+			return Boundaries.next(boundary);
+		}
 		boundary = skipInsignificantPositions(Boundaries.normalize(boundary));
 		var nextBoundary;
 		switch (unit) {
@@ -933,7 +936,6 @@ define([
 			break;
 		}
 		return nextBoundary;
-		//return skipInsignificantPositions(nextBoundary);
 	}
 
 	/**
@@ -959,11 +961,16 @@ define([
 	 *		A visual offset is the smallest unit of consumed space.  This can
 	 *		be a line break, or a visible character.
 	 *
+	 * "node" -- Move in front of the previous visible node.
+	 *
 	 * @param  {Boundary} boundary
 	 * @param  {string=}  unit Defaults to "offset"
 	 * @return {Boundary}
 	 */
 	function prev(boundary, unit) {
+		if ('node' === unit) {
+			return Boundaries.prev(boundary);
+		}
 		boundary = skipPrevInsignificantPositions(Boundaries.normalize(boundary));
 		var prevBoundary;
 		switch (unit) {
