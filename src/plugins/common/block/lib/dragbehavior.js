@@ -29,12 +29,14 @@ define([
 	'aloha/jquery',
 	'aloha',
 	'PubSub',
-	'aloha/copypaste'
+	'aloha/copypaste',
+	'block/block-utils'
 ], function (
 	$,
 	Aloha,
 	PubSub,
-	CopyPaste
+	CopyPaste,
+	BlockUtils
 ) {
 	'use strict';
 
@@ -63,6 +65,21 @@ define([
 			'.aloha-ui',
 			'.ui-draggable-dragging'
 		];
+
+
+	/**
+	 * Checks if the drag and drop is for a nested Table.
+	 *
+	 * @param  {jQuery<Element>} $hovering
+	 * @param  {jQuery<Element>} $dragging
+	 * @return {boolean}
+	 */
+	function isNestedTable ($hovering, $dragging) {
+		return $hovering
+			&& $dragging
+			&& $hovering.parents('table').length !== 0
+			&& BlockUtils.isTable($dragging);
+	}
 
 	/**
 	 * Checks whether or not the element over which we are hovering should allow
@@ -425,6 +442,10 @@ define([
 			}
 
 			if ($elm.is(notAllowedDropSelector.join(','))) {
+				return false;
+			}
+
+			if (isNestedTable($elm, this.$element)) {
 				return false;
 			}
 
