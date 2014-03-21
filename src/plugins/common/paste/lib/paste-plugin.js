@@ -38,7 +38,8 @@ define([
 	'contenthandler/contenthandler-utils',
 	'aloha/console',
 	'aloha/copypaste',
-	'aloha/contenthandlermanager'
+	'aloha/contenthandlermanager',
+	'util/browser'
 ], function (
 	$,
 	Aloha,
@@ -47,7 +48,8 @@ define([
 	ContentHandlerUtils,
 	Console,
 	CopyPaste,
-	ContentHandlerManager
+	ContentHandlerManager,
+	Browser
 ) {
 	'use strict';
 
@@ -275,6 +277,15 @@ define([
 	}
 
 	/**
+	 * Checks if browser and document mode are 9 or above versions.
+	 * @param  {Document} doc
+	 * @return {boolean}
+	 */
+	function isIEorDocModeGreater9(doc) {
+		return Browser.ie && doc.documentMode >= 9;
+	}
+
+	/**
 	 * Gets the pasted content and inserts them into the current active
 	 * editable.
 	 *
@@ -362,13 +373,14 @@ define([
 	 *
 	 * @param {jQuery.<HTMLElement>} $editable jQuery object containing an
 	 *                                         editable DOM element.
-	 * @param {boolean} hasClipboardAccess Whether clipboard access is possible.
 	 */
-	function prepare($editable, hasClipboardAccess) {
-		// FIXME: Because the alternative method, which relies on clipboard
-		//        access, leads to incorrect cursor positions after pasting.
-		// if (IS_IE && !hasClipboardAccess) {
-		if (IS_IE) {
+	function prepare($editable) {
+		// Clipboard in IE can no be used, because it does not return HTML content, just text
+		// (http://msdn.microsoft.com/en-us/library/ie/ms536436(v=vs.85).aspx).
+		// We relay on range.execCommand('paste') for the paste, but for IE9 and above the pasted content
+		// is treated differently (it replaces '\n' by '<br>').
+		var doc = $editable[0].ownerDocument;
+		if (isIEorDocModeGreater9(doc)) {
 			$editable.bind('beforepaste', function ($event) {
 				scrollPositionBeforePaste.x = window.scrollX ||
 					document.documentElement.scrollLeft;
@@ -389,6 +401,7 @@ define([
 				var range = CopyPaste.getRange();
 				redirect(range, $CLIPBOARD);
 				if (IS_IE) {
+					$event.preventDefault();
 					var tmpRange = document.selection.createRange();
 					tmpRange.execCommand('paste');
 				}
@@ -404,16 +417,13 @@ define([
 		init: function () {
 			$('body').append($CLIPBOARD);
 
-			var hasClipboardAccess = !this.settings.noclipboardaccess;
-
 			Aloha.bind('aloha-editable-created', function ($event, editable) {
-				prepare(editable.obj, hasClipboardAccess);
+				prepare(editable.obj);
 			});
 
-			// Bind a handler to the paste event of the pasteDiv to get the
-			// pasted content (but do this only once, not for every editable)
-			// if (IS_IE && !hasClipboardAccess) {
-			if (IS_IE) {
+			if (isIEorDocModeGreater9($CLIPBOARD[0].ownerDocument)) {
+				// Bind a handler to the paste event of the pasteDiv to get the
+				// pasted content (but do this only once, not for every editable)
 				$CLIPBOARD.bind('paste', function ($event) {
 					onPaste($event, ieRangeBeforePaste, function () {
 						ieRangeBeforePaste = null;
