@@ -4519,7 +4519,7 @@ define([
 	 * @return {boolean}
 	 */
 	function isUnwrappable(node) {
-		return NOT_UNWRAPPABLE_NODES.indexOf(node.nodeName) === -1;
+		return jQuery.inArray(node.nodeName, NOT_UNWRAPPABLE_NODES) === -1;
 	}
 	//@}
 	///// Assorted block formatting command algorithms /////
