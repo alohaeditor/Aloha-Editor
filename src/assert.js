@@ -8,26 +8,31 @@
 define([], function Assert() {
 	'use strict';
 
+	// @deprecated
 	function assertEqual(a, b, msg) {
 		if (a !== b) {
 			throw Error(msg || 'assertion error ' + a + ' !== ' + b);
 		}
 	}
 
+	// @deprecated
 	function assertNotEqual(a, b) {
 		if (a === b) {
 			throw Error(msg || 'assertion error ' + a + ' === ' + b);
 		}
 	}
 
+	// @deprecated
 	function assertFalse(value, msg) {
 		assertEqual(value, false, msg);
 	}
 
+	// @deprecated
 	function assertTrue(value, msg) {
 		assertEqual(value, true, msg);
 	}
 
+	// @deprecated
 	function assertError(msg) {
 		throw Error(msg);
 	}
@@ -36,11 +41,21 @@ define([], function Assert() {
 	 * Generates an error message with a link to corresponding helpful resource
 	 * on the Aloha Editor website.
 	 *
-	 * @param  {String} msg
+	 * @param  {String} type
 	 * @return {String}
 	 */
-	function errorLink(msg) {
-		return 'Error (' + msg + '). See http://www.aloha-editor.org/docs/errors/' + msg;
+	function errorLink(type) {
+		return 'Error (' + type + '). See http://www.aloha-editor.org/docs/errors/' + type;
+	}
+
+	function error(type) {
+		throw Error(type ? 'assertion failed' : errorLink(type));
+	}
+
+	function assert(cond, type) {
+		if (!cond) {
+			error(type);
+		}
 	}
 
 	return {
@@ -49,6 +64,8 @@ define([], function Assert() {
 		assertFalse    : assertFalse,
 		assertTrue     : assertTrue,
 		assertError    : assertError,
-		errorLink      : errorLink
+		errorLink      : errorLink,
+		assert         : assert,
+		error          : error
 	};
 });
