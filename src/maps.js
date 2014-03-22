@@ -92,11 +92,12 @@ define(['arrays'], function Maps(Arrays) {
 	 *
 	 * @param {!Object} m
 	 * @param {!Array} ks
+	 * @param {?*} _default used in place of non-existing properties
 	 * @return {!Array}
 	 */
-	function selectVals(m, ks) {
+	function selectVals(m, ks, _default) {
 		return ks.map(function (k) {
-			return m[k];
+			return m.hasOwnProperty(k) ? m[k] : _default;
 		});
 	}
 
