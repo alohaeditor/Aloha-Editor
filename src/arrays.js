@@ -157,27 +157,6 @@ define(['functions'], function Arrays(Fn) {
 	}
 
 	/**
-	 * Similar to 
-	 * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some
-	 * Except, instead of returning true, returns the first value in the array
-	 * for which the `pred` returns true.
-	 *
-	 * @param  {Array.<*>}           xs
-	 * @param  {function(*):boolean} pred
-	 * @return {*} One of xs
-	 */
-	function some(xs, pred) {
-		var result = null;
-		xs.some(function (x) {
-			if (pred(x)) {
-				result = x;
-				return true;
-			}
-		});
-		return result;
-	}
-
-	/**
 	 * Similar to some(), except that it returns an index into the given array
 	 * for the first element for which `pred` returns true.
 	 *
@@ -188,13 +167,29 @@ define(['functions'], function Arrays(Fn) {
 	 * @return {*}
 	 */
 	function someIndex(xs, pred) {
-		var index = 0;
-		return xs.some(function (x) {
+		var result = -1;
+		xs.some(function (x, i) {
 			if (pred(x)) {
+				result = i;
 				return true;
 			}
-			index++;
-		}) ? index : -1;
+		});
+		return result;
+	}
+
+	/**
+	 * Similar to 
+	 * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some
+	 * Except, instead of returning true, returns the first value in the array
+	 * for which the `pred` returns true.
+	 *
+	 * @param  {Array.<*>}           xs
+	 * @param  {function(*):boolean} pred
+	 * @return {*} One of xs
+	 */
+	function some(xs, pred) {
+		var index = someIndex(xs, pred);
+		return -1 === index ? null : xs[index];
 	}
 
 	return {
