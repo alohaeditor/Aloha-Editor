@@ -152,6 +152,12 @@ define([], function Functions() {
 		};
 	}
 
+	function constantly(value) {
+		return function () {
+			return value;
+		};
+	}
+
 	return {
 		identity     : identity,
 		noop         : noop,
@@ -162,6 +168,7 @@ define([], function Functions() {
 		outparameter : outparameter,
 		strictEquals : strictEquals,
 		comp         : comp,
-		and          : and
+		and          : and,
+		constantly   : constantly
 	};
 });
