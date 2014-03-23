@@ -308,16 +308,11 @@ define([
 	 * See ephemera().
 	 */
 	function pruneEmapAttrs(elem, emap) {
-		var attrs = dom.attrNames(elem),
-		    name,
-		    i,
-		    len;
-		for (i = 0, len = attrs.length; i < len; i++) {
-			name = attrs[i];
+		Maps.forEach(dom.attrs(elem), function (value, name) {
 			if (isAttrEphemeral(elem, name, emap.attrMap, emap.attrRxs)) {
 				elem.removeAttribute(name);
 			}
-		}
+		});
 	}
 
 	/**

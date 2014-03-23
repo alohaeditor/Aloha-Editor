@@ -127,14 +127,10 @@ define([
 	 *        element, separated by space. The string will have a leading space.
 	 */
 	function makeAttrString(element, ephemera) {
-		var attrs = Dom.attrs(element);
 		var str = '';
-		var i, len;
-		for (i = 0, len = attrs.length; i < len; i++) {
+		Maps.forEach(Dom.attrs(element), function (value, name) {
 			// The XHTML spec says attributes are lowercase
-			var attr  = attrs[i];
-			var name  = attr[0].toLowerCase();
-			var value = attr[1];
+			name = name.toLowerCase();
 
 			if (ephemera && ephemera.isAttrEphemeral(
 				element,
@@ -142,7 +138,7 @@ define([
 				ephemera.attrMap || {},
 				ephemera.attrRxs || {}
 			)) {
-				continue;
+				return;
 			}
 
 			//TODO: it's only a boolean attribute if the element is in an HTML
@@ -152,14 +148,14 @@ define([
 			if (!isBool && '' === value) {
 				// I don't think it is ever an error to make an attribute not
 				// appear if its string value is empty.
-				continue;
+				return;
 			}
 
 			// For boolean attributes, the mere existence of the attribute means
 			// it is true.
 			str += ' ' + name + '="'
 			    + encodeDqAttrValue((isBool ? name : value)) + '"';
-		}
+		});
 		return str;
 	}
 

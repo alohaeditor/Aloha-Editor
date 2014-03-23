@@ -102,7 +102,7 @@ define([
 		var permitted = (Content.ATTRIBUTES_WHITELIST['*'] || []).concat(
 			Content.ATTRIBUTES_WHITELIST[node.nodeName] || []
 		);
-		var attrs = Dom.attrNames(node);
+		var attrs = Maps.keys(Dom.attrs(node));
 		var allowed = Arrays.intersect(permitted, attrs);
 		var disallowed = Arrays.difference(attrs, allowed);
 		disallowed.forEach(Fn.partial(Dom.removeAttr, node));
