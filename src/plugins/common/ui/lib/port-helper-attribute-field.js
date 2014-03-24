@@ -84,6 +84,9 @@ define([
 		if (props.width) {
 			element.width(props.width);
 		}
+		if (props.placeholder) {
+			element.attr('placeholder', props.placeholder);
+		}
 
 		component = Ui.adopt(props.name, Component, {
 			scope: props.scope,
