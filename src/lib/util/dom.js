@@ -809,6 +809,12 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 					if (content.length > 0) {
 						// when the object has children, we unwrap them
 						content.first().unwrap();
+						// wrap the children with p tags if they were originally in Heading or PRE tags.
+						var re = new RegExp(/\b(h[1-6]{1}|pre)\b/i),
+                        			exec = re.exec(markup.get(0).nodeName);
+                        			if (exec !== null && 0 === exec.index) {
+                            				content.first().wrap('<p></p>');
+						}
 					} else {
 						// obj has no children, so just remove it
 						jQuery(rangeTree[i].domobj).remove();
