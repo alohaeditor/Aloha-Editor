@@ -84,10 +84,10 @@ define(['arrays'], function Maps(Arrays) {
 	 * and only if the predicate returns true, will the entry appear in
 	 * the result.
 	 */
-	function filterEntries(m, pred) {
+	function filter(m, pred) {
 		var result = {};
-		forEach(m, function (key, val) {
-			if (pred(key, val)) {
+		forEach(m, function (val, key) {
+			if (pred(val, key, m)) {
 				result[key] = val;
 			}
 		});
@@ -166,7 +166,7 @@ define(['arrays'], function Maps(Arrays) {
 		keys       : keys,
 		vals       : vals,
 		selectVals : selectVals,
-		filterEntries: filterEntries,
+		filter     : filter,
 		forEach    : forEach,
 		extend     : extend,
 		merge      : merge,
