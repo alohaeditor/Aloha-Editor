@@ -22,25 +22,15 @@
 	test('break()', function () {
 		(function t(before, after, linebreak, overrides) {
 			runTest(before, after, function (boundaries) {
-				var context = {
-					settings: {
-						defaultBlockNodeName: 'h1'
-					},
-					overrides: []
-				};
 				var next = Editing.break(
 					Ranges.fromBoundaries(boundaries[0], boundaries[1]),
-					context,
+					'h1',
 					linebreak
 				);
-				if (overrides) {
-					deepEqual(context.overrides, overrides, overrides.join());
-				}
 				return [next, next];
 			});
 			return t;
 		})(
-			/*
 			'<div contenteditable="true">{}</div>',
 			'<div contenteditable="true"><h1>{}<br></h1></div>'
 		)(
@@ -65,15 +55,9 @@
 			'<div contenteditable="true"><p>{}<br>one</p></div>',
 			'<div contenteditable="true"><p><br></p><p>{}<br>one</p></div>'
 		)(
-		*/
 			'<div contenteditable="true"><h1><b><u style="text-decoration: none">[]</u>foo</b></h1></div>',
 			'<div contenteditable="true"><h1><br></h1><h1><b>{}foo</b></h1></div>',
-			false,
-			[
-				['bold', true],
-				['underline', false],
-				['strikethrough', false]
-			]
+			false
 		);
 
 		return;

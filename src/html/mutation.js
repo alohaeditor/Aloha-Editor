@@ -260,7 +260,7 @@ define([
 	 * @param  {object}
 	 * @return {Boundary}
 	 */
-	function insertLineBreak(boundary, context) {
+	function insertLineBreak(boundary) {
 		var container = Boundaries.container(boundary);
 		var doc = container.ownerDocument;
 		var br = doc.createElement('br');
@@ -272,66 +272,21 @@ define([
 	}
 
 	/**
-	 * Determine which element to use to create a visual break.
-	 *
-	 * @private
-	 * @param  {Object}  context
-	 * @param  {Element} container
-	 * @return {boolean}
-	 */
-	function determineBreakingNode(context, container) {
-		var name;
-		if (context && context.settings && context.settings.defaultBlockNodeName) {
-		    name = context.settings.defaultBlockNodeName;
-		} else {
-			name = 'div';
-		}
-		return Content.allowsNesting(container.nodeName, name) ? name : null;
-	}
-
-	/**
 	 * Inserts a breaking node behind the given boundary.
 	 *
 	 * @private
 	 * @param  {Boundary} boundary
 	 * @return {Boundary}
 	 */
-	function insertBreakAtBoundary(boundary, context) {
-		var next = Boundaries.nextNode(boundary);
-		var name = determineBreakingNode(context, next.parentNode);
-		if (!name) {
-			return insertLineBreak(boundary, context);
-		}
-		var node = next.ownerDocument.createElement(name);
-		Mutation.insertNodeAtBoundary(node, boundary);
-		return Boundaries.create(node, 0);
-	}
-
-	/**
-	 * Splits the given boundary's ancestors until the boundary position
-	 * returns true when applyied to the given predicate.
-	 *
-	 * @private
-	 * @param  {Boundary}                    boundary
-	 * @param  {function(Boundary):Boundary} until
-	 * @return {Boundary}
-	 */
-	function splitBoundaryUntil(boundary, until) {
-		boundary = Boundaries.normalize(boundary);
-		if (until && until(boundary)) {
-			return boundary;
-		}
-		if (Boundaries.isTextBoundary(boundary)) {
-			return splitBoundaryUntil(Mutation.splitBoundary(boundary), until);
-		}
+	function insertBreakAtBoundary(boundary, defaultBreakingElement) {
 		var container = Boundaries.container(boundary);
-		var duplicate = Dom.cloneShallow(container);
-		var node = Boundaries.nodeAfter(boundary);
-		if (node) {
-			Dom.move(Dom.nextSiblings(node), duplicate);
+		var name = defaultBreakingElement || 'div';
+		if (!Content.allowsNesting(container.nodeName, name)) {
+			return insertLineBreak(boundary);
 		}
-		Dom.insertAfter(duplicate, container);
-		return splitBoundaryUntil(Traversing.stepForward(boundary), until);
+		var breaker = container.ownerDocument.createElement(name);
+		Mutation.insertNodeAtBoundary(breaker, boundary);
+		return Boundaries.create(breaker, 0);
 	}
 
 	/**
@@ -360,7 +315,7 @@ define([
 	 * @return {Boundary}
 	 */
 	function splitToBreakingContainer(boundary) {
-		return splitBoundaryUntil(boundary, function (boundary) {
+		return Mutation.splitBoundaryUntil(boundary, function (boundary) {
 			var node = Boundaries.container(boundary);
 			return !node || isBreakingContainer(node);
 		});
@@ -400,12 +355,10 @@ define([
 	 * Inserts a visual line break after the given boundary position.
 	 *
 	 * @param  {Boundary} boundary
-	 * @param  {Object}   context
+	 * @param  {string}   defaultBreakingElement
 	 * @return {Boundary}
 	 */
-	function insertBreak(boundary, context) {
-		context.overrides = Overrides.harvest(Boundaries.container(boundary));
-
+	function insertBreak(boundary, defaultBreakingElement) {
 		var br = adjacentBr(boundary);
 		if (br) {
 			boundary = insertNodeBeforeBoundary(
@@ -416,44 +369,21 @@ define([
 
 		var split     = splitToBreakingContainer(boundary);
 		var next      = Boundaries.nodeAfter(split);
+		var children  = next ? Dom.nextSiblings(next) : [];
 		var container = Boundaries.container(split);
-		var siblings  = next ? Dom.nextSiblings(next) : [];
-		var breaker;
 
-		// Because if the boundary is right before a breaking container, then a
-		// default new break element should be inserted right before this
-		// position:
-		//
-		// <b>foo</b>|<p>bar</p>
-		if (next && isBreakingContainer(next)) {
-			return insertBreakAtBoundary(split, context);
-		}
-
-		// Because if there are no breaking containers below the editing host,
-		// then we need to wrap the inline nodes adjacent to the boundary with
-		// the default breaking container instead of attempting to split it:
-		//
-		// <host>foo|bar</host>
 		if (Dom.isEditingHost(container)) {
-			var last = Arrays.last(siblings);
-			var name = determineBreakingNode(context, container);
-			if (!name) {
-				return insertLineBreak(split, context);
-			}
-			breaker = container.ownerDocument.createElement(name);
-			if (last) {
-				// <host>|<b>foo</b><breaker/></host>
-				Dom.insertAfter(breaker, last);
-			} else {
-				// <host><b>foo</b>|<breaker/></host>
-				Dom.insert(breaker, container, true);
-			}
+			split = insertBreakAtBoundary(split, defaultBreakingElement);
+			var breaker = Boundaries.container(split);
+			Dom.moveAfter(
+				Dom.move(children, breaker, isBreakingContainer),
+				breaker
+			);
 		} else {
-			breaker = Dom.cloneShallow(container);
-			Dom.insertAfter(breaker, container);
+			split = Mutation.splitBoundaryUntil(split, function (boundary) {
+				return Boundaries.container(boundary) === container.parentNode;
+			});
 		}
-
-		Dom.moveAfter(Dom.move(siblings, breaker, isBreakingContainer), breaker);
 
 		var left = Boundaries.prevWhile(split, function (boundary) {
 			var node = Boundaries.prevNode(boundary);
@@ -462,15 +392,12 @@ define([
 			    || Dom.isTextNode(node));
 		});
 
-		var right = Boundaries.nextWhile(
-			Boundaries.create(breaker, 0),
-			function (boundary) {
-				var node = Boundaries.nextNode(boundary);
-				return !(Boundaries.isAtEnd(boundary)
-				    || Elements.isVoidType(node)
-				    || Dom.isTextNode(node));
-			}
-		);
+		var right = Boundaries.nextWhile(split, function (boundary) {
+			var node = Boundaries.nextNode(boundary);
+			return !(Boundaries.isAtEnd(boundary)
+			    || Elements.isVoidType(node)
+			    || Dom.isTextNode(node));
+		});
 
 		//             split
 		//       left    |   right
@@ -483,8 +410,6 @@ define([
 		boundaries = removeInvisibleContainers(boundaries[1], boundaries);
 		prop(Boundaries.container(boundaries[0]));
 		prop(Boundaries.container(boundaries[1]));
-
-		console.log(aloha.boundarymarkers.hint(boundaries[1]));
 
 		var node = Boundaries.nodeAfter(boundaries[1]);
 		var visible = Dom.nextWhile(node, function (node) {
