@@ -53,7 +53,7 @@
 			}
 		</style>
 
-		<style id="metaview">
+		<!-- style id="metaview">
 			ul,ol,li,td,th,p,b,i,u,div,h1,h2,h3,h4,h5,h6 {
 				padding: 2px 4px;
 				margin: 2px;
@@ -77,10 +77,10 @@
 			font {
 				background: red;
 			}
-		</style>
+		</style -->
 	</head>
 	<body>
-		<div class="aloha-editable">
+		<div contenteditable=true class="aloha-editable">
 			<h1>Aloha Editor</h1>
 			<p>
 				<img draggable="true"
@@ -120,7 +120,6 @@
 		</div>
 		<script src="../src/require-pronto.js"></script>
 		<script src="../src/require-pronto.dev.js"></script>
-		<script src="../build/aloha.js"></script>
 		<script>
 			(function () {
 				'use strict';

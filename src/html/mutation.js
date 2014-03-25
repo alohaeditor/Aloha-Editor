@@ -160,7 +160,7 @@ define([
 	 *
 	 * @param  {Boundary} above
 	 * @param  {Boundary} below
-	 * @return {Arrays.<Array.<string, boolean|string>>} Overrides
+	 * @return {Array.<Array.<string, boolean|string>>} Overrides
 	 */
 	function removeBreak(above, below) {
 		var right = Boundaries.nextNode(below);
@@ -335,6 +335,18 @@ define([
 	}
 
 	/**
+	 * Checks whether that the given node is a line breaking node.
+	 *
+	 * @private
+	 * @param  {Node} node
+	 * @return {boolean}
+	 */
+	function isBreakingContainer(node) {
+		return !Elements.isVoidType(node)
+		    && (Styles.hasLinebreakingStyle(node) || Dom.isEditingHost(node));
+	}
+
+	/**
 	 * Splits the given boundary's ancestors up to the first linebreaking
 	 * element which will not be split.
 	 *
@@ -350,22 +362,8 @@ define([
 	function splitToBreakingContainer(boundary) {
 		return splitBoundaryUntil(boundary, function (boundary) {
 			var node = Boundaries.container(boundary);
-			return !node
-			    || Styles.hasLinebreakingStyle(node)
-			    || Dom.isEditingHost(node);
+			return !node || isBreakingContainer(node);
 		});
-	}
-
-	/**
-	 * Checks whether that the given node is a line breaking node.
-	 *
-	 * @private
-	 * @param  {Node} node
-	 * @return {boolean}
-	 */
-	function isBreakingContainer(node) {
-		return !Predicates.isVoidNode(node)
-		    && (Styles.hasLinebreakingStyle(node) || Dom.isEditingHost(node));
 	}
 
 	/**
@@ -390,16 +388,12 @@ define([
 		return boundaries;
 	}
 
-	function insertBr(boundary) {
+	function adjacentBr(boundary) {
 		var before = Boundaries.nodeBefore(boundary);
 		var after = Boundaries.nodeAfter(boundary);
-		var br = (before && isRenderedBr(before)) ? before
-		       : (after && isRenderedBr(after)) ? after
-		       : null;
-		return br ? insertNodeBeforeBoundary(
-			br.ownerDocument.createElement('br'),
-			boundary
-		) : boundary;
+		return (before && isRenderedBr(before)) ? before
+		     : (after  && isRenderedBr(after))  ? after
+		     : null;
 	}
 
 	/**
@@ -412,11 +406,18 @@ define([
 	function insertBreak(boundary, context) {
 		context.overrides = Overrides.harvest(Boundaries.container(boundary));
 
-		var split     = splitToBreakingContainer(insertBr(boundary));
-		var container = Boundaries.container(split);
+		var br = adjacentBr(boundary);
+		if (br) {
+			boundary = insertNodeBeforeBoundary(
+				br.ownerDocument.createElement('br'),
+				boundary
+			);
+		}
+
+		var split     = splitToBreakingContainer(boundary);
 		var next      = Boundaries.nodeAfter(split);
+		var container = Boundaries.container(split);
 		var siblings  = next ? Dom.nextSiblings(next) : [];
-		var last      = Arrays.last(siblings);
 		var breaker;
 
 		// Because if the boundary is right before a breaking container, then a
@@ -424,10 +425,7 @@ define([
 		// position:
 		//
 		// <b>foo</b>|<p>bar</p>
-		var isBreakPoint = next && !Elements.isVoidType(next)
-			&& (Styles.hasLinebreakingStyle(next) || Dom.isEditingHost(next));
-
-		if (isBreakPoint) {
+		if (next && isBreakingContainer(next)) {
 			return insertBreakAtBoundary(split, context);
 		}
 
@@ -437,16 +435,17 @@ define([
 		//
 		// <host>foo|bar</host>
 		if (Dom.isEditingHost(container)) {
+			var last = Arrays.last(siblings);
 			var name = determineBreakingNode(context, container);
 			if (!name) {
 				return insertLineBreak(split, context);
 			}
 			breaker = container.ownerDocument.createElement(name);
 			if (last) {
-				// <host>|<b>foo</b></host>
+				// <host>|<b>foo</b><breaker/></host>
 				Dom.insertAfter(breaker, last);
 			} else {
-				// <host><b>foo</b>|</host>
+				// <host><b>foo</b>|<breaker/></host>
 				Dom.insert(breaker, container, true);
 			}
 		} else {
@@ -454,7 +453,7 @@ define([
 			Dom.insertAfter(breaker, container);
 		}
 
-		Dom.move(siblings, breaker);
+		Dom.moveAfter(Dom.move(siblings, breaker, isBreakingContainer), breaker);
 
 		var left = Boundaries.prevWhile(split, function (boundary) {
 			var node = Boundaries.prevNode(boundary);
@@ -468,13 +467,12 @@ define([
 			function (boundary) {
 				var node = Boundaries.nextNode(boundary);
 				return !(Boundaries.isAtEnd(boundary)
-					|| Elements.isVoidType(node)
-					|| Dom.isTextNode(node));
+				    || Elements.isVoidType(node)
+				    || Dom.isTextNode(node));
 			}
 		);
 
 		//             split
-		//               |
 		//       left    |   right
 		//          |    |   |
 		//          v    v   v
@@ -485,6 +483,21 @@ define([
 		boundaries = removeInvisibleContainers(boundaries[1], boundaries);
 		prop(Boundaries.container(boundaries[0]));
 		prop(Boundaries.container(boundaries[1]));
+
+		console.log(aloha.boundarymarkers.hint(boundaries[1]));
+
+		var node = Boundaries.nodeAfter(boundaries[1]);
+		var visible = Dom.nextWhile(node, function (node) {
+			return !isRenderedBr(node) && Elements.isUnrendered(node);
+		});
+
+		// <li>|<ul>...
+		if (visible && isBreakingContainer(visible)) {
+			return Mutation.insertNodeAtBoundary(
+				visible.ownerDocument.createElement('br'),
+				boundaries[1]
+			);
+		}
 
 		return boundaries[1];
 	}
