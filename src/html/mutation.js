@@ -372,13 +372,20 @@ define([
 		var children  = next ? Dom.nextSiblings(next) : [];
 		var container = Boundaries.container(split);
 
-		if (Dom.isEditingHost(container)) {
+		// ..</p>|<p>...
+		if (next && isBreakingContainer(next)) {
+			split = insertBreakAtBoundary(split, defaultBreakingElement);
+
+		// <host>foo|bar</host>
+		} else if (Dom.isEditingHost(container)) {
 			split = insertBreakAtBoundary(split, defaultBreakingElement);
 			var breaker = Boundaries.container(split);
 			Dom.moveAfter(
 				Dom.move(children, breaker, isBreakingContainer),
 				breaker
 			);
+
+		// <host><p>foo|bar</p></host>
 		} else {
 			split = Mutation.splitBoundaryUntil(split, function (boundary) {
 				return Boundaries.container(boundary) === container.parentNode;

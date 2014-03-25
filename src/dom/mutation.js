@@ -143,6 +143,7 @@ define([
 	function moveAfter(nodes, reference, until) {
 		return walkUntil(nodes, function (node) {
 			insertAfter(node, reference);
+			reference = node;
 		}, until);
 	}
 

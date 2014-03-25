@@ -56,179 +56,217 @@
 			'<div contenteditable="true"><p><br></p><p>{}<br>one</p></div>'
 		)(
 			'<div contenteditable="true"><h1><b><u style="text-decoration: none">[]</u>foo</b></h1></div>',
-			'<div contenteditable="true"><h1><br></h1><h1><b>{}foo</b></h1></div>',
-			false
-		);
+			'<h1><b>{}foo</b></h1>'
+		)(
+			'<div contenteditable="true"><u style="text-decoration: none">[]</u></div>',
+			'<div contenteditable="true"><u style="text-decoration: none"></u><h1>{}<br></h1></div>'
+		)(
+			'<div contenteditable="true"><u style="text-decoration: none">[]foo</u></div>',
+			'<h1><u style="text-decoration: none">{}foo</u></h1>'
+		)(
+			'<div contenteditable="true">'
+				+ '<strike><b style="text-decoration: underline"><i style="font-weight: normal">[]</i>foo</b></strike>'
+				+ '</div>',
+			'<strike><b style="text-decoration: underline">{}foo</b></strike>'
+		)(
+			'<div contenteditable="true"><b><i>[]</i>foo</b></div>',
+			'<h1><b>{}foo</b></h1>'
+		)
 
-		return;
-
-		t(
-			'<u style="text-decoration: none">[]</u>',
-			'<h1><u style="text-decoration: none"></u></h1><h1>{}</h1>',
-			false,
-			[
-				['underline', false],
-				['strikethrough', false]
-			]
-		);
-
-		t(
-			'<u style="text-decoration: none">[]foo</u>',
-			'<h1><u style="text-decoration: none"></u></h1><h1><u style="text-decoration: none">{}foo</u></h1>',
-			false,
-			[]
-		);
-
-		t(
-			'<strike><b style="text-decoration: underline"><i style="font-weight: normal">[]</i>foo</b></strike>',
-			'<h1><strike><b style="text-decoration: underline"><i style="font-weight: normal"></i></b></strike></h1>' +
-			'<h1><strike><b style="text-decoration: underline">{}foo</b></strike></h1>',
-			false,
-			[
-				['italic', true],
-				['bold', false]
-			]
-		);
-
-		t(
-			'<b><i>[]</i>foo</b>',
-			'<h1><b><i></i></b></h1><h1><b>{}foo</b></h1>',
-			false,
-			[
-				['italic', true]
-			]
-		);
-
-		t('<i>{}</i>', '<i><br>{}</i>', true);
-
-		t('<i>{}<br></i>', '<i><br>{}<br></i>', true);
-		t('<i><br>{}</i>', '<i><br><br>{}</i>', true);
-
-		t('<i>{}foo</i>', '<i><br>{}foo</i>', true);
-		t('<i>foo{}</i>', '<i>foo<br><br>{}</i>', true);
-
-		t('<i>foo{}<br></i>', '<i>foo<br>{}<br></i>', true);
-		t('<i><br>{}foo</i>', '<i><br><br>{}foo</i>', true);
-
-		t('<p>[]</p>', '<p><br>{}</p>', true);
-		t('<p>{}<br></p>', '<p><br>{}<br></p>', true);
-		t('<p><br>{}</p>', '<p><br><br>{}</p>', true);
-
-		t('<p>foo[]<br></p>', '<p>foo<br>{}<br></p>', true);
-		t('<p>foo[]bar</p>', '<p>foo<br>{}bar</p>', true);
-		t('<div><p>foo</p>[]bar</div>', '<div><p>foo</p><br><br>{}bar</div>', true);
-		t('<p>foo<i>bar[]</i></p>', '<p>foo<i>bar<br><br>{}</i></p>', true);
+		// inserting br's
+		
+		(
+			'<div contenteditable="true"><i>{}</i></div>',
+			'<div contenteditable="true"><i><br>{}</i></div>',
+			true
+		)(
+			'<div contenteditable="true"><i>{}<br></i></div>',
+			'<div contenteditable="true"><i><br>{}<br></i></div>',
+			true
+		)(
+			'<div contenteditable="true"><i><br>{}</i></div>',
+			'<div contenteditable="true"><i><br><br>{}</i></div>',
+			true
+		)(
+			'<div contenteditable="true"><i>{}foo</i></div>',
+			'<div contenteditable="true"><i><br>{}foo</i></div>',
+			true
+		)(
+			'<div contenteditable="true"><i>foo{}</i></div></div>',
+			'<div contenteditable="true"><i>foo<br><br>{}</i></div>',
+			true
+		)(
+			'<div contenteditable="true"><i>foo{}<br></i></div>',
+			'<div contenteditable="true"><i>foo<br>{}<br></i></div>',
+			true
+		)(
+			'<div contenteditable="true"><i><br>{}foo</i></div>',
+			'<div contenteditable="true"><i><br><br>{}foo</i></div>',
+			true
+		)(
+			'<div contenteditable="true"><p>[]</p></div>',
+			'<div contenteditable="true"><p><br>{}</p></div>',
+			true
+		)(
+			'<div contenteditable="true"><p>{}<br></p></div>',
+			'<div contenteditable="true"><p><br>{}<br></p></div>',
+			true
+		)(
+			'<div contenteditable="true"><p><br>{}</p></div>',
+			'<div contenteditable="true"><p><br><br>{}</p></div>',
+			true
+		)(
+			'<div contenteditable="true"><p>foo[]<br></p></div>',
+			'<div contenteditable="true"><p>foo<br>{}<br></p></div>',
+			true
+		)(
+			'<div contenteditable="true"><p>foo[]bar</p></div>',
+			'<div contenteditable="true"><p>foo<br>{}bar</p></div>',
+			true
+		)(
+			'<div contenteditable="true"><div><p>foo</p>[]bar</div></div>',
+			'<div contenteditable="true"><div><p>foo</p><br>{}bar</div></div>',
+			true
+		)(
+			'<div contenteditable="true"><p>foo<i>bar[]</i></p></div>',
+			'<p>foo<i>bar<br><br>{}</i></p>',
+			true
+		)
 
 		// Is this test valid?
 		//t('<div><p>1</p>[]<p>2</p></div>', '<div><p>1</p><h1>{}</h1><p>2</p></div>');
 
-		t('<p>{}</p>', '<p><br></p><p>{}</p>');
-		t('<p>[]</p>', '<p><br></p><p>{}</p>');
+		(
+			'<div contenteditable="true"><p>{}</p></div>',
+			'<div contenteditable="true"><p><br></p><p>{}<br></p></div>'
+		)(
+			'<div contenteditable="true"><p>[]</p></div>',
+			'<div contenteditable="true"><p><br></p><p>{}<br></p></div>'
+		)(
+			'<div contenteditable="true"><div><p><i>fo[]o</i>bar</p></div></div>',
+			'<p><i>{}o</i>bar</p>'
+		)(
+			'<div contenteditable="true"><div><p><i>fo[]o<b>bar</b></i>baz</p></div></div>',
+			'<p><i>{}o<b>bar</b></i>baz</p>'
+		)(
+			'<div contenteditable="true"><i>[]foo</i></div>',
+			'<h1><i>{}foo</i></h1>'
+		)(
+			'<div contenteditable="true"><i>[]<u>foo</u>bar</i></div>',
+			'<h1><i>{}<u>foo</u>bar</i></h1>'
+		)(
+			'<div contenteditable="true"><i>{}</i></div>',
+			'<div contenteditable="true"><i></i><h1>{}<br></h1></div>'
+		)(
+			'<div contenteditable="true"><i>b[]</i></div>',
+			'<div contenteditable="true"><i>b</i><h1>{}<br></h1></div>'
+		)(
+			'<div contenteditable="true"><i>b{}</i></div>',
+			'<div contenteditable="true"><i>b</i><h1>{}<br></h1></div>'
+		)
 
-		t('<div><p><i>fo[]o</i>bar</p></div>',
-		  '<div><p><i>fo</i></p><p><i>{}o</i>bar</p></div>');
+		(
+			'<div contenteditable="true"><i>[]b</i></div>',
+			'<h1><i>{}b</i></h1>'
+		)(
+			'<div contenteditable="true"><i>{}b</i></div>',
+			'<h1><i>{}b</i></h1>'
+		)(
+			'<div contenteditable="true"><i>b[]a</i></div>',
+			'<h1><i>{}a</i></h1>'
+		)
 
-		t('<div><p><i>fo[]o<b>bar</b></i>baz</p></div>',
-		  '<div><p><i>fo</i></p><p><i>{}o<b>bar</b></i>baz</p></div>');
+		(
+			'<div contenteditable="true"><p>[]</p></div>',
+			'<div contenteditable="true"><p><br></p><p>{}<br></p></div>'
+		)(
+			'<div contenteditable="true"><p>{}</p></div>',
+			'<div contenteditable="true"><p><br></p><p>{}<br></p></div>'
+		)(
+			'<div contenteditable="true"><p>[]b</p></div>',
+			'<div contenteditable="true"><p><br></p><p>{}b</p></div>'
+		)(
+			'<div contenteditable="true"><p>{}b</p></div>',
+			'<div contenteditable="true"><p><br></p><p>{}b</p></div>'
+		)(
+			'<div contenteditable="true"><p>b[]</p></div>',
+			'<div contenteditable="true"><p>b</p><p>{}<br></p></div>'
+		)(
+			'<div contenteditable="true"><p>b{}</p></div>',
+			'<div contenteditable="true"><p>b</p><p>{}<br></p></div>'
+		)(
+			'<div contenteditable="true"><p>b[]a</p></div>',
+			'<div contenteditable="true"><p>b</p><p>{}a</p></div>'
+		)(
+			'<div contenteditable="true"><p>b[]<br></p></div>',
+			'<div contenteditable="true"><p>b</p><p>{}<br></p></div>'
+		)(
+			'<div contenteditable="true"><p>{}<br></p></div>',
+			'<div contenteditable="true"><p><br></p><p>{}<br></p></div>'
+		)
 
-		t('<i>[]foo</i>', '<h1><i></i></h1><h1><i>{}foo</i></h1>');
-
-		t('<i>[]<u>foo</u>bar</i>', '<h1><i></i></h1><h1><i><u>{}foo</u>bar</i></h1>');
-
-		t('<i>{}</i>', '<h1><i></i></h1><h1>{}</h1>', false, [
-			['italic', true]
-		]);
-
-		t('<i>b[]</i>', '<h1><i>b</i></h1><h1>{}</h1>', false, [
-			['italic', true]
-		]);
-
-		t('<i>b{}</i>', '<h1><i>b</i></h1><h1>{}</h1>', false, [
-			['italic', true]
-		]);
-
-		t('<i>[]b</i>', '<h1><i></i></h1><h1><i>{}b</i></h1>');
-		t('<i>{}b</i>', '<h1><i></i></h1><h1><i>{}b</i></h1>');
-		t('<i>b[]a</i>', '<h1><i>b</i></h1><h1><i>{}a</i></h1>');
-
-		t('<p>[]</p>', '<p><br></p><p>{}</p>');
-		t('<p>{}</p>', '<p><br></p><p>{}</p>');
-		t('<p>[]b</p>', '<p><br></p><p>{}b</p>');
-		t('<p>{}b</p>', '<p><br></p><p>{}b</p>');
-		t('<p>b[]</p>', '<p>b</p><p>{}</p>');
-		t('<p>b{}</p>', '<p>b</p><p>{}</p>');
-
-		t('<p>b[]a</p>', '<p>b</p><p>{}a</p>');
-
-		t('<p>b[]<br></p>', '<p>b</p><p>{}<br></p>');
-		t('<p><br>{}</p>', '<p><br></p><p>{}</p>');
-
-		t('<p><i>[]</i></p>', '<p><i></i></p><p>{}</p>', false, [
-			['italic', true]
-		]);
-		t('<p><i>{}</i></p>', '<p><i></i></p><p>{}</p>', false, [
-			['italic', true]
-		]);
-
-		t('<p><i>[]b</i></p>', '<p><i></i></p><p><i>{}b</i></p>');
-		t('<p><i>{}b</i></p>', '<p><i></i></p><p><i>{}b</i></p>');
-
-		t('<p><i>b[]</i></p>', '<p><i>b</i></p><p>{}</p>', false, [
-			['italic', true]
-		]);
-
-		t('<p><i>b{}</i></p>', '<p><i>b</i></p><p>{}</p>', false, [
-			['italic', true]
-		]);
-
-		t('<p>a<i>[]</i>b</p>', '<p>a<i></i></p><p>{}b</p>', false, [
-			['italic', true]
-		]);
-
-		t('<p><i>b[]a</i></p>', '<p><i>b</i></p><p><i>{}a</i></p>');
-
-		t('<p>a<u><i>b[]c</i></u>d<i>e</i></p>',
-		  '<p>a<u><i>b</i></u></p><p><u><i>{}c</i></u>d<i>e</i></p>');
-
-		t('<div><p><i>ba[]r</i></p></div>',
-		  '<div><p><i>ba</i></p><p><i>{}r</i></p></div>');
-
-		t('<div><p><i>fo[]o</i>bar</p></div>',
-		  '<div><p><i>fo</i></p><p><i>{}o</i>bar</p></div>');
-
-		t('<div><div><p>1</p>{}<p>2</p></div></div>',
-		  '<div><div><p>1</p><h1>{}</h1><p>2</p></div></div>');
-
-		t('<div><p>1</p>{}<p>2</p></div>', '<div><p>1</p><h1>{}</h1><p>2</p></div>');
-
-		t('<div contenteditable="true">1{}<p>2</p>3</div>',
-		  '<div contenteditable="true">1<h1>{}</h1><p>2</p>3</div>');
-
-		t(
+		(
+			'<div contenteditable="true"><p><i>[]</i></p></div>',
+			'<div contenteditable="true"><p><br></p><p>{}<br></p></div>'
+		)(
+			'<div contenteditable="true"><p><i>{}</i></p></div>',
+			'<div contenteditable="true"><p><br></p><p>{}<br></p></div>'
+		)(
+			'<div contenteditable="true"><p><i>[]b</i></p></div>',
+			'<p><i>{}b</i></p>'
+		)(
+			'<div contenteditable="true"><p><i>{}b</i></p></div>',
+			'<p><i>{}b</i></p>'
+		)(
+			'<div contenteditable="true"><p><i>b[]</i></p></div>',
+			'<div contenteditable="true"><p><i>b</i></p><p>{}<br></p></div>'
+		)(
+			'<div contenteditable="true"><p><i>b{}</i></p></div>',
+			'<div contenteditable="true"><p><i>b</i></p><p>{}<br></p></div>'
+		)(
+			'<div contenteditable="true"><p>a<i>[]</i>b</p></div>',
+			'<div contenteditable="true"><p>a</p><p>{}b</p></div>'
+		)
+		
+		(
+			'<div contenteditable="true"><p><i>b[]a</i></p></div></div>',
+			'<p><i>{}a</i></p>'
+		)(
+			'<div contenteditable="true"><p>a<u><i>b[]c</i></u>d<i>e</i></p></div>',
+			'<u><i>{}c</i></u>'
+		)(
+			'<div contenteditable="true"><div><p><i>ba[]r</i></p></div></div>',
+			'<p><i>{}r</i></p>'
+		)(
+			'<div contenteditable="true"><div><p><i>fo[]o</i>bar</p></div>',
+			'<p><i>{}o</i>bar</p>'
+		)(
+			'<div contenteditable="true"><div><div><p>1</p>{}<p>2</p></div></div></div>',
+			'<div><p>1</p><h1>{}<br></h1><p>2</p></div>'
+		)(
+			'<div contenteditable="true"><div><p>1</p>{}<p>2</p></div></div>',
+			'<div><p>1</p><h1>{}<br></h1><p>2</p></div>'
+		)(
+			'<div contenteditable="true">1{}<p>2</p>3</div>',
+			'<div contenteditable="true">1<h1>{}<br></h1><p>2</p>3</div>'
+		)(
 			'<div contenteditable="true"><i>1{}</i><p>2</p></div>',
-			'<div contenteditable="true"><h1><i>1</i></h1><h1>{}</h1><p>2</p></div>',
-			false,
-			[
-				['italic', true]
-			]
+			'<div contenteditable="true"><i>1</i><h1>{}<br></h1><p>2</p></div>'
+		)(
+			'<div contenteditable="true">foo[]bar</div>',
+			'<div contenteditable="true">foo<h1>{}bar</h1></div>'
+		)(
+			'<div contenteditable="true"><p>one</p>foo[]bar</div>',
+			'<div contenteditable="true"><p>one</p>foo<h1>{}bar</h1></div>'
+		)(
+			'<div contenteditable="true"><div><i>1{}</i><p>2</p></div></div>',
+			'<div contenteditable="true"><div><i>1</i></div><div>{}<br><p>2</p></div></div>'
+		)(
+			'<div contenteditable="true"<div><i>1{}<u>2</u>3</i><p>4</p></div></div>',
+			'<i><u>{}2</u>3</i>'
 		);
 
-		t('<div contenteditable="true">foo[]bar</div>',
-		  '<div contenteditable="true"><h1>foo</h1><h1>{}bar</h1></div>');
-		t('<div contenteditable="true"><p>one</p>foo[]bar</div>',
-		  '<div contenteditable="true"><p>one</p><h1>foo</h1><h1>{}bar</h1></div>');
-
-		t(
-			'<div><i>1{}</i><p>2</p></div>',
-			'<div><i>1</i></div><div>{}<p>2</p></div>',
-			false,
-			[
-				['italic', true]
-			]
-		);
-
-		t('<div><i>1{}<u>2</u>3</i><p>4</p></div>',
-		  '<div><i>1</i></div><div><i><u>{}2</u>3</i><p>4</p></div>');
+		return;
 
 		t('<p>foo{}<i>bar</i></p>', '<p>foo</p><p><i>{}bar</i></p>');
 		t('<p>foo[]<i>bar</i></p>', '<p>foo</p><p><i>{}bar</i></p>');
