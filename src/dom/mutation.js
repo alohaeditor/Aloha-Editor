@@ -71,57 +71,79 @@ define([
 	}
 
 	/**
+	 * Applies `func` on the elements of `list` until the given predicate
+	 * returns true.
+	 *
+	 * @private
+	 * @param  {Array.<*>}           list
+	 * @param  {function(*)}         func
+	 * @param  {function(*):boolean} until
+	 * @return {Array.<*>}           dropWhile() of the given list
+	 */
+	function walkUntil(list, func, until) {
+		var lists = Arrays.split(list, until || Fn.returnFalse);
+		lists[0].forEach(func);
+		return lists[1];
+	}
+
+	/**
 	 * Moves the list of nodes into the end of destination element, until
 	 * `until` returns true.
 	 *
-	 * @param  {Element}                destination
 	 * @param  {Array.<Nodes>}          nodes
+	 * @param  {Element}                destination
 	 * @param  {function(Node):boolean} until
 	 * @return {Array.<Nodes>}          The nodes that were not moved
 	 */
 	function move(nodes, destination, until) {
-		var end = Arrays.someIndex(nodes, until || Fn.returnFalse);
-		end = -1 === end ? nodes.length : end + 1;
-		nodes.slice(0, end).forEach(function (node) {
+		return walkUntil(nodes, function (node) {
 			append(node, destination);
-		});
-		return nodes.slice(end);
+		}, until);
 	}
 
 	/**
 	 * Copies the list of nodes into a destination element, until `until`
 	 * returns true.
 	 *
-	 * @param  {Element}                destination
 	 * @param  {Array.<Nodes>}          nodes
+	 * @param  {Element}                destination
 	 * @param  {function(Node):boolean} until
-	 * @return {Array.<Nodes>}          The nodes that were not moved
+	 * @return {Array.<Nodes>}          The nodes that were not copied
 	 */
 	function copy(nodes, destination, until) {
-		var end = Arrays.someIndex(nodes, until || Fn.returnFalse);
-		end = -1 === end ? nodes.length : end + 1;
-		nodes.slice(0, end).forEach(function (node) {
+		return walkUntil(nodes, function (node) {
 			append(Nodes.clone(node), destination);
-		});
-		return nodes.slice(end);
+		}, until);
 	}
 
 	/**
 	 * Moves the list of nodes before the reference element, until `until`
 	 * returns true.
 	 *
-	 * @param  {Element}                reference
 	 * @param  {Array.<Nodes>}          nodes
+	 * @param  {Element}                reference
 	 * @param  {function(Node):boolean} until
 	 * @return {Array.<Nodes>}          The nodes that were not moved
 	 */
-	function moveBefore(reference, nodes, until) {
-		var end = Arrays.someIndex(nodes, until || Fn.returnFalse);
-		end = -1 === end ? nodes.length : end + 1;
-		nodes.slice(0, end).forEach(function (node) {
+	function moveBefore(nodes, reference, until) {
+		return walkUntil(nodes, function (node) {
 			insert(node, reference, false);
-		});
-		return nodes.slice(end);
+		}, until);
+	}
+
+	/**
+	 * Moves the list of nodes after the reference element, until `until`
+	 * returns true.
+	 *
+	 * @param  {Array.<Nodes>}          nodes
+	 * @param  {Element}                reference
+	 * @param  {function(Node):boolean} until
+	 * @return {Array.<Nodes>}          The nodes that were not moved
+	 */
+	function moveAfter(nodes, reference, until) {
+		return walkUntil(nodes, function (node) {
+			insertAfter(node, reference);
+		}, until);
 	}
 
 	/**
@@ -167,7 +189,7 @@ define([
 	 * @param {Node} node
 	 */
 	function removeShallow(node) {
-		moveBefore(node, Nodes.children(node));
+		moveBefore(Nodes.children(node), node);
 		remove(node);
 	}
 
@@ -232,6 +254,7 @@ define([
 		append            : append,
 		merge             : merge,
 		moveNextAll       : moveNextAll,
+		moveAfter         : moveAfter,
 		moveBefore        : moveBefore,
 		move              : move,
 		copy              : copy,

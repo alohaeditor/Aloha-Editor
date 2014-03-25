@@ -192,6 +192,22 @@ define(['functions'], function Arrays(Fn) {
 		return -1 === index ? null : xs[index];
 	}
 
+	/**
+	 * Splits the list into two parts using the given predicate.
+	 *
+	 * The first element will be the "prefix" equal to takeWhile(list), and the
+	 * second element is equal to dropWhile(list).
+	 *
+	 * @param  {Array<*>}            list
+	 * @param  {function(*):boolean} predicate
+	 * @return {Array<Array<*>>}     The prefix and suffix of `list`
+	 */
+	function split(xs, predicate) {
+		var end = someIndex(xs, predicate);
+		end = -1 === end ? xs.length : end + 1;
+		return [xs.slice(0, end), xs.slice(end)];
+	}
+
 	return {
 		contains   : contains,
 		difference : difference,
@@ -203,6 +219,7 @@ define(['functions'], function Arrays(Fn) {
 		mapcat     : mapcat,
 		partition  : partition,
 		some       : some,
-		someIndex  : someIndex
+		someIndex  : someIndex,
+		split      : split
 	};
 });

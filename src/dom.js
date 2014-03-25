@@ -251,6 +251,7 @@ define([
 		merge             : Mutation.merge,
 		moveNextAll       : Mutation.moveNextAll,
 		moveBefore        : Mutation.moveBefore,
+		moveAfter         : Mutation.moveAfter,
 		move              : Mutation.move,
 		copy              : Mutation.copy,
 		wrap              : Mutation.wrap,
