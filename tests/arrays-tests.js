@@ -70,4 +70,22 @@
 		equal(Arrays.some([1, 2, 10, 8], biggerThan9), 10);
 	});
 
+	test('split', function () {
+		function biggerThan5(number) {
+			return number > 5;
+		}
+
+		var list, lists;
+
+		list = [1, 2, 10, 0, 8];
+		lists = Arrays.split(list, biggerThan5);
+		deepEqual(lists[0], [1, 2],     list.join() + ' ⇒ ' + lists[0].join());
+		deepEqual(lists[1], [10, 0, 8], list.join() + ' ⇒ ' + lists[1].join());
+
+		list = [10, 8, 9];
+		lists = Arrays.split(list, biggerThan5);
+		deepEqual(lists[0], [],         list.join() + ' ⇒ ' + lists[0].join());
+		deepEqual(lists[1], [10, 8, 9], list.join() + ' ⇒ ' + lists[1].join());
+	});
+
 }(window.aloha));

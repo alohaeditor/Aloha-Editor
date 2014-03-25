@@ -195,8 +195,10 @@ define(['functions'], function Arrays(Fn) {
 	/**
 	 * Splits the list into two parts using the given predicate.
 	 *
-	 * The first element will be the "prefix" equal to takeWhile(list), and the
-	 * second element is equal to dropWhile(list).
+	 * The first element will be the "prefix," containing all elements of `list` before
+	 * the element that returns true for the predicate.
+	 *
+	 * The second element is equal to dropWhile(list).
 	 *
 	 * @param  {Array<*>}            list
 	 * @param  {function(*):boolean} predicate
@@ -204,7 +206,7 @@ define(['functions'], function Arrays(Fn) {
 	 */
 	function split(xs, predicate) {
 		var end = someIndex(xs, predicate);
-		end = -1 === end ? xs.length : end + 1;
+		end = -1 === end ? xs.length : end;
 		return [xs.slice(0, end), xs.slice(end)];
 	}
 
