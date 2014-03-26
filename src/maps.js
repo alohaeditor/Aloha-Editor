@@ -47,30 +47,6 @@ define(['arrays'], function Maps(Arrays) {
 	}
 
 	/**
-	 * Fills the given map with entries from the given tuples.
-	 *
-	 * @param {Object} map
-	 *        The given map will have one entry added for each item in the given
-	 *        array.
-	 * @param {Array.<Array.<string, *?>>}tuples
-	 *        An array of [key, value] tuples. Javascript maps can only contain
-	 *        string keys, so the keys must be strings or or they will be cast
-	 *        to string.
-	 * @return {Object}
-	 *         The given map.
-	 */
-	function fillTuples(map, tuples) {
-		var i = tuples.length,
-			tuple;
-		while (i--) {
-			tuple = tuples[i];
-			map[tuple[0]] = tuple[1];
-		}
-		return map;
-	}
-
-
-	/**
 	 * For each mapping, calls `cb(value, key, m)`.
 	 *
 	 * Emulates ECMAScript edition 5 Array.forEach.
@@ -169,7 +145,6 @@ define(['arrays'], function Maps(Arrays) {
 
 	return {
 		isEmpty    : isEmpty,
-		fillTuples : fillTuples,
 		fillKeys   : fillKeys,
 		keys       : keys,
 		vals       : vals,
