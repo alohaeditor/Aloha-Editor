@@ -20,9 +20,9 @@
 	}
 
 	test('break()', function () {
-		(function t(before, after, linebreak, overrides) {
+		(function t(before, after, linebreak) {
 			runTest(before, after, function (boundaries) {
-				var next = Editing.break(
+				return Editing.break(
 					Ranges.fromBoundaries(boundaries[0], boundaries[1]),
 					'h1',
 					linebreak
@@ -74,7 +74,7 @@
 		)
 
 		// inserting br's
-		
+
 		(
 			'<div contenteditable="true"><i>{}</i></div>',
 			'<div contenteditable="true"><i><br>{}</i></div>',
@@ -227,7 +227,7 @@
 			'<div contenteditable="true"><p>a<i>[]</i>b</p></div>',
 			'<div contenteditable="true"><p>a</p><p>{}b</p></div>'
 		)
-		
+
 		(
 			'<div contenteditable="true"><p><i>b[]a</i></p></div></div>',
 			'<p><i>{}a</i></p>'
@@ -264,103 +264,117 @@
 		)(
 			'<div contenteditable="true"<div><i>1{}<u>2</u>3</i><p>4</p></div></div>',
 			'<i><u>{}2</u>3</i>'
+		)(
+			'<div contenteditable="true"><p>foo{}<i>bar</i></p></div>',
+			'<p><i>{}bar</i></p>'
+		)(
+			'<div contenteditable="true"><p>foo[]<i>bar</i></p></div>',
+			'<p><i>{}bar</i></p>'
+		)(
+			'<div contenteditable="true"><p>1[]</p><p>2</p></div>',
+			'<div contenteditable="true"><p>1</p><p>{}<br></p><p>2</p></div>'
+		)(
+			'<div contenteditable="true">1[]<p>2</p></div>',
+			'<div contenteditable="true">1<h1>{}<br></h1><p>2</p></div>'
+		)(
+			'<div contenteditable="true">1{}<p>2</p></div>',
+			'<div contenteditable="true">1<h1>{}<br></h1><p>2</p></div>'
+		)(
+			'<div contenteditable="true"><p id="foo">1[]2</p></div>',
+			'<div contenteditable="true"><p id="foo">1</p><p id="foo">{}2</p></div>'
+		)(
+			'<div contenteditable="true"><p><i style="color:red">1[]2</i></p></div>',
+			'<p><i style="color:red">{}2</i></p>'
+		)(
+			'<p contenteditable="true">foo[]bar</p>',
+			'<p contenteditable="true">foo<br>{}bar</p>'
 		);
-
-		return;
-
-		t('<p>foo{}<i>bar</i></p>', '<p>foo</p><p><i>{}bar</i></p>');
-		t('<p>foo[]<i>bar</i></p>', '<p>foo</p><p><i>{}bar</i></p>');
-
-		t('<div><p>1[]</p><p>2</p></div>', '<div><p>1</p><p>{}</p><p>2</p></div>');
-		t('<div>1[]<p>2</p></div>', '<div>1<h1>{}</h1><p>2</p></div>');
-		t('<div>1{}<p>2</p></div>', '<div>1<h1>{}</h1><p>2</p></div>');
-
-		t('<p id="foo">1[]2</p>', '<p id="foo">1</p><p id="foo">{}2</p>');
-
-		t('<p><i style="color:red">1[]2</i></p>',
-		  '<p><i style="color:red">1</i></p><p><i style="color:red">{}2</i></p>');
-
-		t('<p contenteditable="true">foo[]bar</p>', '<p contenteditable="true">foo<br>{}bar</p>');
 
 		$editable.remove();
 	});
 
 	test('delete()', function () {
-		var t = function (before, after) {
-			return runTest(before, after, Editing.delete);
-		};
+		(function t(before, after) {
+			runTest(before, after, function (boundaries) {
+				return Editing.delete(Ranges.fromBoundaries(
+					boundaries[0],
+					boundaries[1]
+				));
+			});
+			return t;
+		})
 
-		t('<p>x[y]z</p>', '<p>x[]z</p>');
-		t('<p>x[]y</p>', '<p>x[]y</p>');
+		('<p>x[y]z</p>', '<p>x[]z</p>')
+		('<p>x[]y</p>', '<p>x[]y</p>')
 
-		t('<p>[x]</p>', '<p>{}</p>');
-		t('<p>x[y}</p>', '<p>x{}</p>');
-		t('<p>[x]y</p>', '<p>{}y</p>');
-		t('<p>{x]y</p>', '<p>{}y</p>');
+		('<p>[x]</p>', '<p>{}</p>')
+		('<p>x[y}</p>', '<p>x{}</p>')
+		('<p>[x]y</p>', '<p>{}y</p>')
+		('<p>{x]y</p>', '<p>{}y</p>')
 
-		t('<p>{y}</p>', '<p>{}</p>');
-		t('<p>[y]</p>', '<p>{}</p>');
-		t('<p>[y}</p>', '<p>{}</p>');
-		t('<p>{y]</p>', '<p>{}</p>');
+		('<p>{y}</p>', '<p>{}</p>')
+		('<p>[y]</p>', '<p>{}</p>')
+		('<p>[y}</p>', '<p>{}</p>')
+		('<p>{y]</p>', '<p>{}</p>')
 
-		t('<p>x<b>{y}</b>z</p>', '<p>x<b>{}</b>z</p>');
-		t('<p>x<b>[y]</b>z</p>', '<p>x<b>{}</b>z</p>');
-		t('<p>x<b>{y]</b>z</p>', '<p>x<b>{}</b>z</p>');
-		t('<p>x<b>[y}</b>z</p>', '<p>x<b>{}</b>z</p>');
+		('<p>x<b>{y}</b>z</p>', '<p>x<b>{}</b>z</p>')
+		('<p>x<b>[y]</b>z</p>', '<p>x<b>{}</b>z</p>')
+		('<p>x<b>{y]</b>z</p>', '<p>x<b>{}</b>z</p>')
+		('<p>x<b>[y}</b>z</p>', '<p>x<b>{}</b>z</p>')
 
-		t('<p>x{<b>y</b>}z</p>', '<p>x[]z</p>');
-		t('<p>x[<b>y</b>]z</p>', '<p>x[]z</p>');
-		t('<p>x{<b>y</b>]z</p>', '<p>x[]z</p>');
-		t('<p>x[<b>y</b>}z</p>', '<p>x[]z</p>');
+		('<p>x{<b>y</b>}z</p>', '<p>x[]z</p>')
+		('<p>x[<b>y</b>]z</p>', '<p>x[]z</p>')
+		('<p>x{<b>y</b>]z</p>', '<p>x[]z</p>')
+		('<p>x[<b>y</b>}z</p>', '<p>x[]z</p>')
 
-		t('<p>x{<b>y}</b>z</p>', '<p>x{}z</p>'); // fixme should be x[]z
-		t('<p>x[<b>y]</b>z</p>', '<p>x{}z</p>'); // fixme should be x[]z
-		t('<p>x{<b>y]</b>z</p>', '<p>x{}z</p>'); // fixme should be x[]z
-		t('<p>x[<b>y}</b>z</p>', '<p>x{}z</p>'); // fixme should be x[]z
+		('<p>x{<b>y}</b>z</p>', '<p>x{}z</p>') // fixme should this be x[]z ?
+		('<p>x[<b>y]</b>z</p>', '<p>x{}z</p>') // fixme should this be x[]z ?
+		('<p>x{<b>y]</b>z</p>', '<p>x{}z</p>') // fixme should this be x[]z ?
+		('<p>x[<b>y}</b>z</p>', '<p>x{}z</p>') // fixme should this be x[]z ?
 
-		t('<p>x<b>{y</b>}z</p>', '<p>x<b>{}</b>z</p>');
-		t('<p>x<b>[y</b>]z</p>', '<p>x<b>{}</b>z</p>');
-		t('<p>x<b>{y</b>]z</p>', '<p>x<b>{}</b>z</p>');
-		t('<p>x<b>[y</b>}z</p>', '<p>x<b>{}</b>z</p>');
+		('<p>x<b>{y</b>}z</p>', '<p>x<b>{}</b>z</p>')
+		('<p>x<b>[y</b>]z</p>', '<p>x<b>{}</b>z</p>')
+		('<p>x<b>{y</b>]z</p>', '<p>x<b>{}</b>z</p>')
+		('<p>x<b>[y</b>}z</p>', '<p>x<b>{}</b>z</p>')
 
-		t('<p>x<b>y{</b>z}</p>', '<p>x<b>y{}</b></p>');
-		t('<p>x<b>y[</b>z]</p>', '<p>x<b>y{}</b></p>');
-		t('<p>x<b>y{</b>z]</p>', '<p>x<b>y{}</b></p>');
-		t('<p>x<b>y[</b>z}</p>', '<p>x<b>y{}</b></p>');
+		('<p>x<b>y{</b>z}</p>', '<p>x<b>y{}</b></p>')
+		('<p>x<b>y[</b>z]</p>', '<p>x<b>y{}</b></p>')
+		('<p>x<b>y{</b>z]</p>', '<p>x<b>y{}</b></p>')
+		('<p>x<b>y[</b>z}</p>', '<p>x<b>y{}</b></p>')
 
-		t('<p>{x<b>}y</b>z</p>', '<p>{}<b>y</b>z</p>');
-		t('<p>[x<b>]y</b>z</p>', '<p>{}<b>y</b>z</p>');
-		t('<p>{x<b>]y</b>z</p>', '<p>{}<b>y</b>z</p>');
-		t('<p>[x<b>}y</b>z</p>', '<p>{}<b>y</b>z</p>');
+		('<p>{x<b>}y</b>z</p>', '<p>{}<b>y</b>z</p>')
+		('<p>[x<b>]y</b>z</p>', '<p>{}<b>y</b>z</p>')
+		('<p>{x<b>]y</b>z</p>', '<p>{}<b>y</b>z</p>')
+		('<p>[x<b>}y</b>z</p>', '<p>{}<b>y</b>z</p>')
 
-		t('<div>w<p>{x<b>yz}</b></p></div>', '<div>w<p>{}</p></div>');
-		t('<div>w<p>[x<b>yz]</b></p></div>', '<div>w<p>{}</p></div>');
-		t('<div>w<p>{x<b>yz]</b></p></div>', '<div>w<p>{}</p></div>');
-		t('<div>w<p>[x<b>yz}</b></p></div>', '<div>w<p>{}</p></div>');
+		('<div>w<p>{x<b>yz}</b></p></div>', '<div>w<p>{}</p></div>')
+		('<div>w<p>[x<b>yz]</b></p></div>', '<div>w<p>{}</p></div>')
+		('<div>w<p>{x<b>yz]</b></p></div>', '<div>w<p>{}</p></div>')
+		('<div>w<p>[x<b>yz}</b></p></div>', '<div>w<p>{}</p></div>')
 
-		t('<div>w<p>{x<b>y]z</b></p></div>', '<div>w<p>{}<b>z</b></p></div>');
-		t('<div>w<p>[x<b>y]z</b></p></div>', '<div>w<p>{}<b>z</b></p></div>');
+		('<div>w<p>{x<b>y]z</b></p></div>', '<div>w<p>{}<b>z</b></p></div>')
+		('<div>w<p>[x<b>y]z</b></p></div>', '<div>w<p>{}<b>z</b></p></div>')
 
-		t('<p>1<b>{2</b>3<u>4</u>]5<i>6</i></p>', '<p>1<b>{}</b>5<i>6</i></p>');
-		t('<p>1<b>{2</b>3<u>4</u>5<i>]6</i></p>', '<p>1<b>{}</b><i>6</i></p>');
-		t('<p><b>1[2</b><u>3]4</u></p>',          '<p><b>1{}</b><u>4</u></p>');
-		t('<p><b>1[2</b><u>3}<b>4</b></u></p>',   '<p><b>1{}</b><u><b>4</b></u></p>');
-		t('<p><i><b>1[2</b></i><u>3]4</u></p>',   '<p><i><b>1{}</b></i><u>4</u></p>');
+		('<p>1<b>{2</b>3<u>4</u>]5<i>6</i></p>', '<p>1<b>{}</b>5<i>6</i></p>')
+		('<p>1<b>{2</b>3<u>4</u>5<i>]6</i></p>', '<p>1<b>{}</b><i>6</i></p>')
+		('<p><b>1[2</b><u>3]4</u></p>',          '<p><b>1{}</b><u>4</u></p>')
+		('<p><b>1[2</b><u>3}<b>4</b></u></p>',   '<p><b>1{}</b><u><b>4</b></u></p>')
+		('<p><i><b>1[2</b></i><u>3]4</u></p>',   '<i><b>1{}</b></i>')
 
-		t('<p>x<u><b>{</b></u>x<i>}</i>y</p>', '<p>x<u><b>{}</b></u>y</p>');
-		t('<p>x<b>fo[o</b>bar<u>b]az</u>y</p>', '<p>x<b>fo{}</b><u>az</u>y</p>');
-		t('<p><b>x</b>{}<i>y</i></p>', '<p><b>x</b>{}<i>y</i></p>');
+		('<p>x<u><b>{</b></u>x<i>}</i>y</p>',  '<u><b>{}</b></u>')
+		('<p>x<b>fo[o</b>bar<u>b]az</u>y</p>', '<p>x<b>fo{}</b><u>az</u>y</p>')
+		('<p><b>x</b>{}<i>y</i></p>',          '<p><b>x</b>{}<i>y</i></p>')
 
-		t('<div><p>x</p><p>{y</p><p>}z</p></div>', '<div><p>x</p><p>{}z</p></div>');
-		t('<div><h1><i>foo{</i></h1><p>}bar</p></div>', '<div><h1><i>foo{}</i>bar</h1></div>');
+		('<div><p>x</p><p>{y</p><p>}z</p></div>',      '<div><p>x</p><p>{}z</p></div>')
+		('<div><h1><i>foo{</i></h1><p>}bar</p></div>', '<h1><i>foo{}</i>bar</h1>')
 
-		t('<ul><li>foo{</li><li>}bar</li></ul>', '<ul><li>foo[]bar</li></ul>');
-		t('<ul><li>foo[</li><li>]bar</li></ul>', '<ul><li>foo[]bar</li></ul>');
-		t('<ul><li>x{</li><li>}</li><li>y</li></ul>', '<ul><li>x{}</li><li>y</li></ul>');
-		t('<ul><li>ab[c]<ol><li></li></ol></li></ul>', '<ul><li>ab{}<ol><li></li></ol></li></ul>');
+		('<ul><li>foo{</li><li>}bar</li></ul>',       '<li>foo[]bar</li>')
+		('<ul><li>foo[</li><li>]bar</li></ul>',       '<li>foo[]bar</li>')
+		('<ul><li>x{</li><li>}</li><li>y</li></ul>',  '<ul><li>x{}</li><li>y</li></ul>')
+		('<ul><li>ab[c]<ol><li></li></ol></li></ul>', '<ul><li>ab{}<ol><li></li></ol></li></ul>')
 
-		t('<div>foo{<ul><li>}bar</li></ul></div>', '<div>foo[]bar</div>');
-		t('<ul><li>fo[o<ol><li>}</li></ol></li></ul>', '<ul><li>fo{}</li></ul>');
+		('<div>foo{<ul><li>}bar</li></ul></div>',     '<div>foo[]bar</div>')
+		('<ul><li>fo[o<ol><li>}</li></ol></li></ul>', '<ul><li>fo{}</li></ul>');
 	});
 
 	function switchElemTextSelection(html) {

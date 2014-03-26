@@ -1229,7 +1229,7 @@ define([
 	 * @see https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#deleting-the-selection
 	 *
 	 * @param  {Range} range
-	 * @return {Range}
+	 * @return {Array.<Boundary>}
 	 */
 	function delete_(range) {
 		fixupRange(range, function delete_(range, left, right) {
@@ -1278,6 +1278,7 @@ define([
 				}
 			};
 		}, false);
+		return Boundaries.fromRange(range);
 	}
 
 	/**
@@ -1287,16 +1288,17 @@ define([
 	 * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#splitting-a-node-list's-parent
 	 * http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031700.html
 	 *
-	 * @param {Range}   liveRange
-	 * @param {object}  context
-	 * @param {boolean} linebreak
+	 * @param  {Range}   liveRange
+	 * @param  {object}  context
+	 * @param  {boolean} linebreak
+	 * @return {Array.<Boundary>}
 	 */
 	function break_(liveRange, context, linebreak) {
 		var range = Ranges.collapseToEnd(StableRange(liveRange));
 		var op = linebreak ? Html.insertLineBreak : Html.insertBreak;
 		var boundary = op(Boundaries.fromRangeStart(range), context);
 		Boundaries.setRange(liveRange, boundary, boundary);
-		return boundary;
+		return [boundary, boundary];
 	}
 
 	function insert(liveRange, insertion) {
