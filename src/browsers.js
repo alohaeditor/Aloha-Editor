@@ -57,7 +57,6 @@ define([], function Browsers() {
 		safari            : safari,
 		vendor            : vendor,
 		version           : version,
-		hasRemoveProperty : !!testElem.style.removeProperty,
 		VENDOR_PREFIX     : VENDOR_PREFIX
 	};
 

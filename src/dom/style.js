@@ -8,13 +8,11 @@
 define([
 	'dom/nodes',
 	'dom/attrs',
-	'strings',
-	'browsers'
+	'strings'
 ], function DomStyles(
 	Nodes,
 	Attrs,
-	Strings,
-	Browsers
+	Strings
 ) {
 	'use strict';
 
@@ -103,39 +101,16 @@ define([
 	/**
 	 * Removes the given style property from the given DOM element.
 	 *
+	 * The style attribute is removed completely if it is left empty
+	 * after removing the style.
+	 *
 	 * @param {Element} elem
 	 * @param {string}  styleName
 	 */
 	function remove(elem, styleName) {
-		if (Browsers.hasRemoveProperty) {
-			elem.style.removeProperty(styleName);
-			if (Strings.isEmpty(elem.getAttribute('style'))) {
-				elem.removeAttribute('style');
-			}
-			return;
-		}
-		// TODO: this is a hack for browsers that don't support
-		//       removeProperty (ie < 9)and will not work correctly for all
-		//       valid inputs, but it's the simplest thing I can come up
-		//       with without implementing a full css parser.
-		var style = elem.getAttribute('style');
-		if (null == style) {
-			return;
-		}
-		// Because concatenating just any input into the regex might
-		// be dangerous.
-		if ((/[^\w\-]/).test(styleName)) {
-			throw 'unrecognized style name ' + styleName;
-		}
-		var stripRegex = new RegExp(
-			'(:?^|;)\\s*' + styleName + '\\s*:.*?(?=;|$)',
-			'i'
-		);
-		style = style.replace(stripRegex, '');
-		if (!Strings.isEmpty(style)) {
-			Attrs.set(elem, 'style', style);
-		} else {
-			Attrs.remove(elem, 'style');
+		elem.style.removeProperty(styleName);
+		if (Strings.isEmpty(elem.getAttribute('style'))) {
+			elem.removeAttribute('style');
 		}
 	}
 
