@@ -368,9 +368,9 @@ define([
 		}
 
 		var split     = splitToBreakingContainer(boundary);
+		var container = Boundaries.container(split);
 		var next      = Boundaries.nodeAfter(split);
 		var children  = next ? Dom.nextSiblings(next) : [];
-		var container = Boundaries.container(split);
 
 		// ..</p>|<p>...
 		if (next && isBreakingContainer(next)) {
@@ -380,10 +380,8 @@ define([
 		} else if (Dom.isEditingHost(container)) {
 			split = insertBreakAtBoundary(split, defaultBreakingElement);
 			var breaker = Boundaries.container(split);
-			Dom.moveAfter(
-				Dom.move(children, breaker, isBreakingContainer),
-				breaker
-			);
+			var remainder = Dom.move(children, breaker, isBreakingContainer);
+			Dom.moveAfter(remainder, breaker);
 
 		// <host><p>foo|bar</p></host>
 		} else {
