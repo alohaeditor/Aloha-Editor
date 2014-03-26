@@ -119,19 +119,30 @@ define(['functions'], function Arrays(Fn) {
 	}
 
 	/**
-	 * Like Array.prototype.map() except that it expects the given function to
-	 * return arrays which will be concatenated together into the resulting
-	 * array.
+	 * Like Array.prototype.map() except expects the given function to return
+	 * arrays which will be concatenated together into the resulting array.
 	 *
 	 * Related to partition() in the sense that
 	 * mapcat(partition(xs, n), identity) == xs.
+	 *
+	 * Don't use Array.prototype.concat.apply():
+	 * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply
+	 * "The consequences of applying a function with too many arguments
+	 * (think more than tens of thousands of arguments) vary across
+	 * engines (JavaScriptCore has hard-coded argument limit of 65536),
+	 * because the limit (indeed even the nature of any
+	 * excessively-large-stack behavior) is unspecified. "
 	 *
 	 * @param xs {Array.<*>}
 	 * @param fn {function(*):Array.<*>}
 	 * @return {Array.<*>}
 	 */
 	function mapcat(xs, fn) {
-		return Array.prototype.concat.apply([], xs.map(fn));
+		var result = [];
+		forEach(xs, function (x) {
+			result = result.concat(fn(x));
+		});
+		return result;
 	}
 
 	/**
