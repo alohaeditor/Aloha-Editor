@@ -68,13 +68,30 @@ define(['arrays'], function Maps(Arrays) {
 	 *
 	 * @param {!Object} m
 	 * @param {!Array} ks
-	 * @param {?*} _default used in place of non-existing properties
+	 * @param {*} _default used in place of non-existing properties
 	 * @return {!Array}
 	 */
 	function selectVals(m, ks, _default) {
 		return ks.map(function (k) {
 			return m.hasOwnProperty(k) ? m[k] : _default;
 		});
+	}
+
+	/**
+	 * Same as Array.filter except for maps.
+	 *
+	 * The given predicate is applied to each entry in the given map,
+	 * and only if the predicate returns true, will the entry appear in
+	 * the result.
+	 */
+	function filterEntries(m, pred) {
+		var result = {};
+		forEach(m, function (key, val) {
+			if (pred(key, val)) {
+				result[key] = val;
+			}
+		});
+		return result;
 	}
 
 	/**
@@ -149,6 +166,7 @@ define(['arrays'], function Maps(Arrays) {
 		keys       : keys,
 		vals       : vals,
 		selectVals : selectVals,
+		filterEntries: filterEntries,
 		forEach    : forEach,
 		extend     : extend,
 		merge      : merge,

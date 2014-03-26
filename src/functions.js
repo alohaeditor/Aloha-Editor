@@ -44,6 +44,13 @@ define([], function Functions() {
 	}
 
 	/**
+	 * Is null or undefined.
+	 */
+	function isNou(obj) {
+		return null == obj;
+	}
+
+	/**
 	 * Generates the complete function for `fn`.
 	 * The complement function will return the opposite boolean result when
 	 * called with the same arguments as the given `fn` function.
@@ -152,9 +159,40 @@ define([], function Functions() {
 		};
 	}
 
+	/**
+	 * Returns a function that constantly returns the given value.
+	 */
 	function constantly(value) {
 		return function () {
 			return value;
+		};
+	}
+
+	/**
+	 * Returns true if the given value is a function.
+	 */
+	function is(obj) {
+		return 'function' === typeof obj;
+	}
+
+	/**
+	 * Wraps a function and passes `this` as the first argument.
+	 */
+	function thisless(fn) {
+		return function () {
+			return fn.apply(null, Array.prototype.concat.call([this], arguments));
+		};
+	}
+
+	/**
+	 * Like thisless, but for a function of only a single argument.
+	 *
+	 * Useful as an optimization because the presence of the arguments
+	 * variable makes an approximately 30x difference in IE10.
+	 */
+	function thisless1(fn) {
+		return function (arg) {
+			return Fn(this, arg);
 		};
 	}
 
@@ -169,6 +207,10 @@ define([], function Functions() {
 		strictEquals : strictEquals,
 		comp         : comp,
 		and          : and,
-		constantly   : constantly
+		constantly   : constantly,
+		is: is,
+		isNou: isNou,
+		thisless: thisless,
+		thisless1: thisless1
 	};
 });
