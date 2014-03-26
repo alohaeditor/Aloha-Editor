@@ -39,13 +39,13 @@ function ( Aloha, jQuery, ContentHandlerManager, Plugin, console ) {
 	
 	// predefined set of sanitize options if no dynamic or custom config is used
 	if( !Aloha.defaults.sanitize ) {
-		Aloha.defaults.sanitize = {}
+		Aloha.defaults.sanitize = {};
 	}
 
 	// very restricted sanitize config
 	Aloha.defaults.sanitize.restricted = {
 		elements: [ 'b', 'em', 'i', 'strong', 'u', 'del', 'p', 'span', 'div', 'br' ]
-	}
+	};
 
 	// sanitize  config allowing a bit more (no tables)
 	Aloha.defaults.sanitize.basic = {
@@ -70,7 +70,7 @@ function ( Aloha, jQuery, ContentHandlerManager, Plugin, console ) {
 			'blockquote' : {'cite': ['http', 'https', '__relative__']},
 			'q' : {'cite': ['http', 'https', '__relative__']}
 		}
-	}
+	};
 
 	// relaxed sanitize config allows also tables
 	Aloha.defaults.sanitize.relaxed = {
@@ -108,25 +108,27 @@ function ( Aloha, jQuery, ContentHandlerManager, Plugin, console ) {
 			'img': {'src' : ['http', 'https', '__relative__']},
 			'q': {'cite': ['http', 'https', '__relative__']}
 		}
-	}
+	};
 
 	function initSanitize (configAllows) {
 		var 
 			filter = [ 'restricted', 'basic', 'relaxed' ],
 			config = Aloha.defaults.supports; // @TODO: needs to be implemented into all plugins
 
-		// @TODO think about Aloha.settings.contentHandler.sanitize name/options
-		if (Aloha.settings.contentHandler.sanitize &&
-			jQuery.inArray(Aloha.settings.contentHandler.sanitize, filter) > -1) {
-			config = Aloha.defaults.sanitize[Aloha.settings.contentHandler.sanitize];
-		} else {
-			// use relaxed filter by default
-			config = Aloha.defaults.sanitize.relaxed;
-		}
-
 		// @TODO move to Aloha.settings.contentHandler.sanitize.allows ?
 		if (Aloha.settings.contentHandler.allows) {
 			config = Aloha.settings.contentHandler.allows;
+		}
+
+		// @TODO think about Aloha.settings.contentHandler.sanitize name/options
+		if (typeof Aloha.settings.contentHandler.sanitize === 'string' &&
+			jQuery.inArray(Aloha.settings.contentHandler.sanitize, filter) > -1) {
+			config = Aloha.defaults.sanitize[Aloha.settings.contentHandler.sanitize];
+		} else if (typeof Aloha.settings.contentHandler.sanitize === 'object') {
+			config = Aloha.settings.contentHandler.sanitize;
+		} else if (!config) {
+			// use relaxed filter by default
+			config = Aloha.defaults.sanitize.relaxed;
 		}
 
 		if (configAllows) {
