@@ -27,6 +27,7 @@ require([
 		editables: {}
 	};
 	var elem = document.getElementById('aloha-editable');
+	elem.setAttribute('contentEditable', 'true');
 	var editable = Editables.Editable(elem);
 	editable.overrides = [];
 	editable.settings = {
