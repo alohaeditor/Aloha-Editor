@@ -1,13 +1,14 @@
 (function (aloha) {
 	'use strict';
 
+	var Fn = aloha.fn;
 	var Html = aloha.html;
+	var Xhtml = aloha.xhtml;
 	var Ranges = aloha.ranges;
 	var Editing = aloha.editing;
-	var Fn = aloha.fn;
 	var Browsers = aloha.browsers;
+	var Boundaries = aloha.boundaries;
 	var BoundaryMarkers = aloha.boundarymarkers;
-	var Xhtml = aloha.xhtml;
 
 	module('editing');
 
@@ -26,9 +27,10 @@
 		test(title, function () {
 			$('#test-editable').empty().html(before);
 			var dom = $('#test-editable')[0].firstChild;
-			var range = Ranges.fromBoundaries(BoundaryMarkers.extract(dom));
+			var boundaries = BoundaryMarkers.extract(dom);
+			var range = Ranges.fromBoundaries(boundaries[0], boundaries[1]);
 			dom = mutate(dom, range) || dom;
-			var boundaries = Boundaries.fromRange(range);
+			boundaries = Boundaries.fromRange(range);
 			BoundaryMarkers.insert(boundaries[0], boundaries[1]);
 			var actual = Xhtml.nodeToXhtml(dom);
 			if ($.type(expected) === 'function') {
@@ -82,12 +84,6 @@
 		});
 	}
 
-	function testTrimRange(title, before, after, switched) {
-		testMutationSwitchElemTextSelection(title, before, after, function (dom, range) {
-			Ranges.trimClosingOpening(range, Html.isUnrenderedWhitespace, Html.isUnrenderedWhitespace);
-		});
-	}
-
 	function testFormat(title, before, after, styleName, styleValue) {
 		// Because different browsers render style attributes
 		// differently we have to normalize them.
@@ -111,31 +107,41 @@
 		});
 	}
 
-	var t = function (before, after) {
-		testTrimRange('ranges.trim()', before, after);
-	};
-
-	t('<p>So[me te]xt.</p>', '<p>So[me te]xt.</p>');
-	t('<p>So[]xt.</p>', '<p>So[]xt.</p>');
-	t('<p>{Some text.}</p>', '<p>{Some text.}</p>');
-	t('<p>{}Some text.</p>', '<p>{}Some text.</p>');
-	t('<p>Some text.{}</p>', '<p>Some text.{}</p>');
-	t('<p>{}</p>', '<p>{}</p>');
-	t('<p><b>So[me</b><i> </i><b>te]xt.</b></p>',
-	  '<p><b>So[me</b><i> </i><b>te]xt.</b></p>');
-	t('<p><b>Some</b>{<i> </i>}<b>text.</b></p>',
-	  '<p><b>Some</b>{<i> </i>}<b>text.</b></p>');
-	t('<p><b>[Some</b><i> </i><b>text.]</b></p>',
-	  '<p><b>[Some</b><i> </i><b>text.]</b></p>');
-	t('<p><b>{</b><i>}</i></p>', '<p><b></b>{}<i></i></p>');
-	t('<p><b><i>{</i></b><i><b>}</b></i></p>',
-	  '<p><b><i></i></b>{}<i><b></b></i></p>');
-	t('<p><b><i>one{</i></b><i>two</i><b><i>}three</i></b></p>',
-	  '<p><b><i>one</i></b>{<i>two</i>}<b><i>three</i></b></p>');
-	t('<p><b><i>one{</i>.</b><i>two</i><b>.<i>}three</i></b></p>',
-	  '<p><b><i>one</i>{.</b><i>two</i><b>.}<i>three</i></b></p>');
-	t('<p><b><i>{one</i></b><i>two</i><b><i>three}</i></b></p>',
-	  '<p><b><i>{one</i></b><i>two</i><b><i>three}</i></b></p>');
+	(function t(before, after) {
+		testMutationSwitchElemTextSelection('ranges.trim()', before, after, function (dom, range) {
+			Ranges.trimClosingOpening(range, Html.isUnrenderedWhitespace, Html.isUnrenderedWhitespace);
+		});
+		return t;
+	})
+	('<p>{}</p>', '<p>{}</p>')
+	('<p>So[]xt.</p>', '<p>So[]xt.</p>')
+	('<p>So[me te]xt.</p>', '<p>So[me te]xt.</p>')
+	('<p>{Some text.}</p>', '<p>{Some text.}</p>')
+	('<p>{}Some text.</p>', '<p>{}Some text.</p>')
+	('<p>Some text.{}</p>', '<p>Some text.{}</p>')
+	('<p><b>{</b><i>}</i></p>', '<p><b></b>{}<i></i></p>')
+	(
+		'<p><b>So[me</b><i> </i><b>te]xt.</b></p>',
+		'<p><b>So[me</b><i> </i><b>te]xt.</b></p>'
+	)(
+		'<p><b>Some</b>{<i> </i>}<b>text.</b></p>',
+		'<p><b>Some</b>{<i> </i>}<b>text.</b></p>'
+	)(
+		'<p><b>[Some</b><i> </i><b>text.]</b></p>',
+		'<p><b>{Some</b><i> </i><b>text.}</b></p>'
+	)(
+		'<p><b><i>{</i></b><i><b>}</b></i></p>',
+		'<p><b><i></i></b>{}<i><b></b></i></p>'
+	)(
+		'<p><b><i>one{</i></b><i>two</i><b><i>}three</i></b></p>',
+		'<p><b><i>one</i></b>{<i>two</i>}<b><i>three</i></b></p>'
+	)(
+		'<p><b><i>one{</i>.</b><i>two</i><b>.<i>}three</i></b></p>',
+		'<p><b><i>one</i>{.</b><i>two</i><b>.}<i>three</i></b></p>'
+	)(
+		'<p><b><i>{one</i></b><i>two</i><b><i>three}</i></b></p>',
+		'<p><b><i>{one</i></b><i>two</i><b><i>three}</i></b></p>'
+	);
 
 	var t = function (title, before, after) {
 		testWrap('editing.wrap -' + title, before, after);
