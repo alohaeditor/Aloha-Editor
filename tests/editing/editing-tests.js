@@ -24,13 +24,12 @@
 
 	function testMutation(title, before, expected, mutate) {
 		test(title, function () {
-			var titleForDebugginDontRemove = title;
 			$('#test-editable').empty().html(before);
 			var dom = $('#test-editable')[0].firstChild;
-			var range = Ranges.create(dom, 0);
-			BoundaryMarkers.extract(dom, range);
+			var range = Ranges.fromBoundaries(BoundaryMarkers.extract(dom));
 			dom = mutate(dom, range) || dom;
-			BoundaryMarkers.insert(range);
+			var boundaries = Boundaries.fromRange(range);
+			BoundaryMarkers.insert(boundaries[0], boundaries[1]);
 			var actual = Xhtml.nodeToXhtml(dom);
 			if ($.type(expected) === 'function') {
 				expected(actual);
@@ -83,35 +82,6 @@
 		});
 	}
 
-	function testInsertExtractBoundaryMarkers(title, htmlWithBoundaryMarkers) {
-		test(title, function () {
-			var dom = $(htmlWithBoundaryMarkers)[0];
-			var range = Ranges.create(dom, 0);
-			BoundaryMarkers.extract(dom, range);
-			equal(
-				Xhtml.nodeToXhtml(dom),
-				htmlWithBoundaryMarkers.replace(/[\[\{\}\]]/g, ''),
-
-				htmlWithBoundaryMarkers
-				+ ' ⇒  ' +
-				htmlWithBoundaryMarkers.replace(/[\[\{\}\]]/g, '')
-			);
-			BoundaryMarkers.insert(range);
-			equal(
-				Xhtml.nodeToXhtml(dom),
-				htmlWithBoundaryMarkers,
-				htmlWithBoundaryMarkers.replace(/[\[\{\}\]]/g, '')
-				+ ' ⇒  ' +
-				htmlWithBoundaryMarkers
-			);
-		});
-	};
-
-	function testInsertExtractBoundaryMarkers2(title, htmlWithBoundaryMarkers) {
-		testInsertExtractBoundaryMarkers(title, htmlWithBoundaryMarkers);
-		testInsertExtractBoundaryMarkers(title, switchElemTextSelection(htmlWithBoundaryMarkers));
-	}
-
 	function testTrimRange(title, before, after, switched) {
 		testMutationSwitchElemTextSelection(title, before, after, function (dom, range) {
 			Ranges.trimClosingOpening(range, Html.isUnrenderedWhitespace, Html.isUnrenderedWhitespace);
@@ -140,20 +110,6 @@
 			Editing.format(range, styleName, styleValue, opts);
 		});
 	}
-
-	var t = function (htmlWithBoundaryMarkers) {
-		testInsertExtractBoundaryMarkers('extractBoundaryMarkers,insertBoundaryMarkers', htmlWithBoundaryMarkers);
-	};
-
-	t('<p>{Some text.}</p>');
-	t('<p>Some{ }text.</p>');
-	t('<p>{}Some text.</p>');
-	t('<p>Some text.{}</p>');
-	t('<p>Som{}e text.</p>');
-	t('<p>{<b>Some text.</b>}</p>');
-	t('<p>12{34<b>Some text.</b>56}78</p>');
-	t('<p>{1234<b>Some text.</b>5678}</p>');
-	t('<p>1234{<b>Some text.</b>}5678</p>');
 
 	var t = function (before, after) {
 		testTrimRange('ranges.trim()', before, after);

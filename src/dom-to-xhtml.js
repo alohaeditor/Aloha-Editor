@@ -9,9 +9,11 @@
  */
 define([
 	'dom',
+	'maps',
 	'ephemera'
 ], function Xhtml(
 	Dom,
+	Maps,
 	ephemera
 ) {
 	'use strict';
@@ -407,6 +409,7 @@ define([
 	 *         The serialized XHTML string represnting the given DOM node.
 	 */
 	function nodeToXhtml(node, ephemera) {
+		var xhtml = [];
 		serialize(node, ephemera, xhtml);
 		return xhtml.join('');
 	}

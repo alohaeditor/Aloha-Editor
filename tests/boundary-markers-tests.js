@@ -1,6 +1,7 @@
 (function (aloha) {
 	'use strict';
 
+	var Xhtml = aloha.xhtml;
 	var Boundaries = aloha.boundaries;
 	var BoundaryMarkers = aloha.boundarymarkers;
 
@@ -28,21 +29,22 @@
 	});
 
 	test('hint', function () {
-		var t = function (before, after) {
+		(function t(before, after) {
 			var boundaries = BoundaryMarkers.extract($(before)[0]);
 			equal(
 				BoundaryMarkers.hint(boundaries).replace(/ xmlns=['"][^'"]*['"]/, ''),
 				after,
 				before + ' ⇒ ' + after
 			);
-		};
-		t('<p>x[y]z</p>',        '<p>x[y]z</p>');
-		t('<p>x[yz]</p>',        '<p>x[yz]</p>');
-		t('<p>[xyz]</p>',        '<p>[xyz]</p>');
-		t('<p>x{<b>y</b>}z</p>', '<p>x{<b>y</b>}z</p>');
-		t('<p>x{<b>y}</b>z</p>', '<p>x{<b>y}</b>z</p>');
-		t('<p>x<b>{y</b>}z</p>', '<p>x<b>{y</b>}z</p>');
-		t('<p>x<b>{y}</b>z</p>', '<p>x<b>{y}</b>z</p>');
+			return t;
+		})
+		('<p>x[y]z</p>',        '<p>x[y]z</p>')
+		('<p>x[yz]</p>',        '<p>x[yz]</p>')
+		('<p>[xyz]</p>',        '<p>[xyz]</p>')
+		('<p>x{<b>y</b>}z</p>', '<p>x{<b>y</b>}z</p>')
+		('<p>x{<b>y}</b>z</p>', '<p>x{<b>y}</b>z</p>')
+		('<p>x<b>{y</b>}z</p>', '<p>x<b>{y</b>}z</p>')
+		('<p>x<b>{y}</b>z</p>', '<p>x<b>{y}</b>z</p>');
 
 		equal(
 			BoundaryMarkers.hint(Boundaries.fromEndOfNode($('<p>x</p>')[0])),
@@ -53,6 +55,28 @@
 			BoundaryMarkers.hint(Boundaries.fromEndOfNode($('<p>x</p>')[0].firstChild)),
 			'<p>x¦</p>'
 		);
+	});
+
+	test('insert,extract', function () {
+		(function t(markup) {
+			var dom = $(markup)[0];
+			var stripped = markup.replace(/[\[\{\}\]]/g, '');
+			var boundaries = BoundaryMarkers.extract(dom);
+			equal(Xhtml.nodeToXhtml(dom), stripped, markup + ' ⇒  ' + stripped);
+			BoundaryMarkers.insert(boundaries[0], boundaries[1]);
+			equal(Xhtml.nodeToXhtml(dom), markup, stripped + ' ⇒  ' + markup
+			);
+			return t;
+		})
+		('<p>{Some text.}</p>')
+		('<p>Some{ }text.</p>')
+		('<p>{}Some text.</p>')
+		('<p>Some text.{}</p>')
+		('<p>Som{}e text.</p>')
+		('<p>{<b>Some text.</b>}</p>')
+		('<p>12{34<b>Some text.</b>56}78</p>')
+		('<p>{1234<b>Some text.</b>5678}</p>')
+		('<p>1234{<b>Some text.</b>}5678</p>');
 	});
 
 }(window.aloha));
