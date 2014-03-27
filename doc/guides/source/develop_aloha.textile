@@ -12,6 +12,14 @@ Fork it on github "Github repository":http://github.com/alohaeditor/Aloha-Editor
   git checkout dev
 </shell>
 
+h3. Branches for hotfixes
+
+Try to base your fixes on the oldest Aloha Editor Branch if possible. Currently hotfix-0.24.x is the oldest branch. Your fix will be merged in hotfix-0.25.x during the release process.
+
+* hotfix-0.24.x	(0.24.x)
+* hotfix		(0.25.x always the latest version)
+* hotfix-0.25.x	(0.25.x - the latest version at this moment)
+
 h3. Pre-commit hook
 
 A precommit hook is provided in .githooks/pre-commit. This file has to

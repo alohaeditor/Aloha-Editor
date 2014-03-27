@@ -29,12 +29,14 @@ define([
 	'aloha/jquery',
 	'aloha',
 	'PubSub',
-	'aloha/copypaste'
+	'aloha/copypaste',
+	'block/block-utils'
 ], function (
 	$,
 	Aloha,
 	PubSub,
-	CopyPaste
+	CopyPaste,
+	BlockUtils
 ) {
 	'use strict';
 
@@ -63,6 +65,21 @@ define([
 			'.aloha-ui',
 			'.ui-draggable-dragging'
 		];
+
+
+	/**
+	 * Checks if the drag and drop is for a nested Table.
+	 *
+	 * @param  {jQuery<Element>} $hovering
+	 * @param  {jQuery<Element>} $dragging
+	 * @return {boolean}
+	 */
+	function isNestedTable ($hovering, $dragging) {
+		return $hovering
+			&& $dragging
+			&& $hovering.parents('table').length !== 0
+			&& BlockUtils.isTable($dragging);
+	}
 
 	/**
 	 * Checks whether or not the element over which we are hovering should allow
@@ -161,11 +178,18 @@ define([
 				 * before dragging is started.
 				 */
 				restore: function restoreSelection() {
+					if (!range) {
+						return;
+					}
 					var editable = CopyPaste.getEditableAt(range);
 					if (editable) {
 						editable.obj.focus();
 					}
-					CopyPaste.setSelectionAt(range);
+					try {
+						CopyPaste.setSelectionAt(range);
+					} catch (e) {
+						Console.warn(e);
+					}
 					window.scrollTo(x, y);
 				}
 			}
@@ -189,7 +213,15 @@ define([
 
 		// Prevent the prevention of drag inside a cell
 		element.ondragstart = function (e) {
-			e.stopPropagation();
+			if (e) {
+				if (typeof e.stopPropagation === 'function') {
+					e.stopPropagation();
+				} else {
+					e.cancelBubble = true;
+				}
+			} else {
+				window.event.cancelBubble = true;
+			}
 		};
 
 		$handle
@@ -408,6 +440,10 @@ define([
 			}
 
 			if ($elm.is(notAllowedDropSelector.join(','))) {
+				return false;
+			}
+
+			if (isNestedTable($elm, this.$element)) {
 				return false;
 			}
 

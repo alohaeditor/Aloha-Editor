@@ -1,0 +1,4 @@
+Dragging and dropping a table inside another table is not permitted.
+
+Nested table are forbidden, but dragging and dropping tables inside tables
+were permitted. With this fix this behavior is not allowed anymore.
