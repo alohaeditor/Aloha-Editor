@@ -138,11 +138,9 @@ define(['functions'], function Arrays(Fn) {
 	 * @return {Array.<*>}
 	 */
 	function mapcat(xs, fn) {
-		var result = [];
-		forEach(xs, function (x) {
-			result = result.concat(fn(x));
-		});
-		return result;
+		return xs.reduce(function(result, x) {
+			return result.concat(fn(x));
+		}, []);
 	}
 
 	/**
