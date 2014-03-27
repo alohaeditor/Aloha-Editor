@@ -1,4 +1,5 @@
 .project
+.lvimrc
 .settings
 .DS_Store
 .env
