@@ -1296,7 +1296,7 @@ define([
 	function break_(liveRange, context, linebreak) {
 		var range = Ranges.collapseToEnd(StableRange(liveRange));
 		var op = linebreak ? Html.insertLineBreak : Html.insertBreak;
-		var boundary = op(Boundaries.fromRangeStart(range), context);
+		var boundary = op(Boundaries.fromRangeStart(range), context.defaultBlockNodeName);
 		Boundaries.setRange(liveRange, boundary, boundary);
 		return [boundary, boundary];
 	}
