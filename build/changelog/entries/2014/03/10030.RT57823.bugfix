@@ -1,0 +1,3 @@
+It is now possible to insert tables into editables that are contained in (not editable) tables themselves.
+Nesting editable tables into editable tables still does not work. The table plugin will show the insert button,
+but will prevent nesting with a message to the user.

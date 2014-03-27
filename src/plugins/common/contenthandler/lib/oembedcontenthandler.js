@@ -26,7 +26,7 @@
  */
 define(
 ['aloha', 'jquery', 'aloha/contenthandlermanager'],
-function(Aloha, jQuery, ContentHandlerManager) {
+function (Aloha, jQuery, ContentHandlerManager) {
 	"use strict";
 
 	var
@@ -34,15 +34,15 @@ function(Aloha, jQuery, ContentHandlerManager) {
 		escape = window.escape,
 		providers, getOEmbedProvider, getNormalizedParams, OEmbedProvider;
 
-	    jQuery.fn.oembed = function (url, options, embedAction) {
+	jQuery.fn.oembed = function (url, options, embedAction) {
 
-	        settings = jQuery.extend(true, jQuery.fn.oembed.defaults, options);
+		settings = jQuery.extend(true, jQuery.fn.oembed.defaults, options);
 
-	        initializeProviders();
+			initializeProviders();
 
-	        return this.each(function () {
+			return this.each(function () {
 
-	            var container = jQuery(this),
+				var container = jQuery(this),
 					resourceURL = (url != null) ? url : container.attr("href"),
 					provider;
 
@@ -91,7 +91,7 @@ function(Aloha, jQuery, ContentHandlerManager) {
 	        beforeEmbed: function () { },
 	        afterEmbed: function () { },
 	        onEmbed: function () { },
-			onError: function() {},
+			onError: function () {},
 			ajaxOptions: {}
 	    };
 	
@@ -127,12 +127,12 @@ function(Aloha, jQuery, ContentHandlerManager) {
 						qs +
 						"&" + callbackparameter + "=?";
 
-	        return url;
-	    };
+			return url;
+		}
 
-	    function embedCode(container, externalUrl, embedProvider) {
+	function embedCode(container, externalUrl, embedProvider) {
 
-	        var requestUrl = getRequestUrl(embedProvider, externalUrl), 		
+		var requestUrl = getRequestUrl(embedProvider, externalUrl),
 				ajaxopts = jQuery.extend({
 					url: requestUrl,
 					type: 'get',
@@ -394,7 +394,7 @@ function(Aloha, jQuery, ContentHandlerManager) {
 		 * Handle the pasting. Try to detect content pasted from word and transform to clean html
 		 * @param content
 		 */
-		handleContent: function( content ) {
+		handleContent: function ( content ) {
 			
 			if ( typeof content === 'string' ){
 				content = jQuery( '<div>' + content + '</div>' ).get(0);
@@ -407,7 +407,7 @@ function(Aloha, jQuery, ContentHandlerManager) {
 			content = jQuery( content ).oembed(jQuery(content).text(), {embedMethod: "replace"});
 			//console.log('content embed ', content);
 			
-			var returnval = setTimeout(function() {
+			var returnval = setTimeout(function () {
 				content = jQuery.fn.oembed.embedCode;
 				//console.log('content code ', content);
 				return jQuery('<div>').append( content ).html();
@@ -415,7 +415,7 @@ function(Aloha, jQuery, ContentHandlerManager) {
 			//return returnval;
 		},
 
-		/*handleContent: function( content )  {
+		/*handleContent: function ( content )  {
 			if ( typeof sanitize === 'undefined' ) {
 			   initSanitize();
 			}
@@ -434,23 +434,23 @@ function(Aloha, jQuery, ContentHandlerManager) {
 		 * @param content
 		 * @return true for content pasted from word, false for other content
 		 */
-		replaceoEmbedContent: function( content ) {
+		replaceoEmbedContent: function ( content ) {
 			
 			//console.log('container text ', jQuery(content).text());
 			//return jQuery.fn.oembed.insertCode(content, options.embedMethod, oembed);
 			//return jQuery(content).oembed( jQuery(content).text() );
 			
 			// check every element which was pasted.
-			/*jQuery(content).each(function() {
+			/*jQuery(content).each(function () {
 				var container = jQuery(this);
 				console.log('container ', container);
 				
 				container.oembed( container.text() );
 			});*/
 		}
-		/*replaceoEmbedContent: function( content ) {
+		/*replaceoEmbedContent: function ( content ) {
 			// check every element which was pasted.
-			content.contents().each(function() {
+			content.contents().each(function () {
 				var container = jQuery(this);
 				container.oembed( container.text() );
 			});

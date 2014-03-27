@@ -3,8 +3,8 @@ define([
 	'aloha/repositorymanager',
 	'ui/component',
 	'ui/context',
-	'./vendor/jquery-ui-autocomplete-html',
-], function(
+	'./vendor/jquery-ui-autocomplete-html'
+], function (
 	jQuery,
 	RepositoryManager,
 	Context,
@@ -18,9 +18,9 @@ define([
 	 * @param {object} item
 	 * @return {string}
 	 */
-	function parse( template, item ) {
-		return template.replace( /{{([^}]+)}}/g, function( _, name ) {
-			return name in item ? item[ name ] : "";
+	function parse(template, item) {
+		return template.replace(/{{([^}]+)}}/g, function (_, name) {
+			return name in item ? item[name] : "";
 		});
 	}
 
@@ -30,21 +30,21 @@ define([
 	 * @extends {Component}
 	 */
 	var Autocomplete = Component.extend({
-		init: function() {
+		init: function () {
 			this._super();
 			var that = this;
-			this.element = jQuery( "<input>" )
+			this.element = jQuery("<input>")
 				.autocomplete({
 					html: true,
 					appendTo: Context.selector,
-					source: function( req, res ) {
+					source: function (req, res) {
 						RepositoryManager.query({
 							queryString: req.term,
 							objectTypeFilter: that.types
-						}, function( data ) {
-							res( jQuery.map( data.items, function( item ) {
+						}, function (data) {
+							res(jQuery.map(data.items, function (item) {
 								return {
-									label: parse( that.template, item ),
+									label: parse(that.template, item),
 									value: item.name,
 									obj: item
 								};
@@ -52,9 +52,9 @@ define([
 						});
 					}
 				})
-				.bind( "autocompletechange", jQuery.proxy( function( event, ui ) {
-					this.setValue( event.target.value, ui.item ? ui.item.obj : null );
-				}, this ) );
+				.bind("autocompletechange", jQuery.proxy(function (event, ui) {
+					this.setValue(event.target.value, ui.item ? ui.item.obj : null);
+				}, this));
 		},
 
 		// invoked when the user has changed the value and blurred the field
@@ -63,7 +63,7 @@ define([
 		 * @param {string} value Raw value
 		 * @param {object} item Structured value
 		 */
-		setValue: function( value, item ) {}
+		setValue: function (value, item) {}
 	});
 
 	return Autocomplete;

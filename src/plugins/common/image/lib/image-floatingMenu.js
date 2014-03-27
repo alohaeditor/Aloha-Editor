@@ -83,7 +83,7 @@ function (
 				tooltip: i18n.t('button.toggle.tooltip'),
 				icon: 'aloha-icon-cnr-ratio',
 				scope: plugin.name,
-				click: function(){
+				click: function () {
 					plugin.toggleKeepAspectRatio();
 				}
 			});
@@ -106,7 +106,7 @@ function (
 				tooltip: i18n.t('Reset'),
 				icon: 'aloha-icon-cnr-reset',
 				scope: plugin.name,
-				click: function(){
+				click: function () {
 					plugin.reset();
 				}
 			});
@@ -122,29 +122,29 @@ function (
 				tooltip: i18n.t('button.addimg.tooltip'),
 				icon: 'aloha-button aloha-image-insert',
 				scope: 'Aloha.continuoustext',
-				click: function(){
+				click: function () {
 					plugin.insertImg();
 				}
 			});
 		},
 
-        /**
-         * Adds the ui meta fields (search, title) to the floating menu. 
-         */
+		/**
+		 * Adds the ui meta fields (search, title) to the floating menu. 
+		 */
 		_addUIMetaButtons: function () {
 			var plugin = this.plugin;
-			
-			this.imgSrcField = AttributeField({
+
+			this.imgSrcField = new AttributeField({
 				label: i18n.t('field.img.src.label'),
 				labelClass: 'aloha-image-input-label',
 				tooltip: i18n.t('field.img.src.tooltip'),
 				name: 'imageSource',
 				scope: plugin.name
 			});
-			this.imgSrcField.setTemplate( '<span><b>{name}</b><br/>{url}</span>' );
+			this.imgSrcField.setTemplate('<span><b>{name}</b><br/>{url}</span>');
 			this.imgSrcField.setObjectTypeFilter(plugin.objectTypeFilter);
-			
-			this.imgTitleField = AttributeField({
+
+			this.imgTitleField = new AttributeField({
 				label: i18n.t('field.img.title.label'),
 				labelClass: 'aloha-image-input-label',
 				tooltip: i18n.t('field.img.title.tooltip'),
@@ -153,13 +153,13 @@ function (
 			});
 			this.imgTitleField.setObjectTypeFilter();
 		},
-		
+
 		/**
 		 * Adds the ui align buttons to the floating menu
 		 */
 		_addUIAlignButtons: function () {
 			var plugin = this.plugin;
-		
+
 			this._imageAlignLeftButton = Ui.adopt("imageAlignLeft", Button, {
 				tooltip: i18n.t('button.img.align.left.tooltip'),
 				icon: 'aloha-img aloha-image-align-left',
@@ -169,7 +169,7 @@ function (
 					el.add(el.parent()).css('float', 'left');
 				}
 			});
-			
+
 			this._imageAlignRightButton = Ui.adopt("imageAlignRight", Button, {
 				tooltip: i18n.t('button.img.align.right.tooltip'),
 				icon: 'aloha-img aloha-image-align-right',
@@ -193,7 +193,7 @@ function (
 				}
 			});
 		},
-		
+
 		/**
 		 * Adds the ui margin buttons to the floating menu
 		 */
@@ -208,7 +208,7 @@ function (
 					jQuery(plugin.getPluginFocus()).increase('padding');
 				}
 			});
-			
+
 			this._imageDecPaddingButton = Ui.adopt("imageDecPadding", Button, {
 				tooltip: i18n.t('padding.decrease'),
 				icon: 'aloha-img aloha-image-padding-decrease',
@@ -218,7 +218,7 @@ function (
 				}
 			});
 		},
-		
+
 		/**
 		 * Adds the crop buttons to the floating menu
 		 */		
@@ -241,14 +241,14 @@ function (
 			});
 		},
 
-        /**
-         * Adds the resize buttons to the floating menu
-         */	
+		/**
+		 * Adds the resize buttons to the floating menu
+		 */	
 		_addUIResizeButtons: function () {
 			var plugin = this.plugin;
 
 			// Manual resize fields
-			this.imgResizeHeightField = AttributeField({
+			this.imgResizeHeightField = new AttributeField({
 				label:  i18n.t('height'),
 				labelClass: 'aloha-image-input-label',
 				name: "imageResizeHeight",
@@ -257,8 +257,8 @@ function (
 			});
 			this.imgResizeHeightField.maxValue = plugin.settings.maxHeight;
 			this.imgResizeHeightField.minValue = plugin.settings.minHeight;
-			
-			this.imgResizeWidthField = AttributeField({
+
+			this.imgResizeWidthField = new AttributeField({
 				label:  i18n.t('width'),				
 				labelClass: 'aloha-image-input-label',
 				name: "imageResizeWidth",
@@ -267,7 +267,7 @@ function (
 			});
 			this.imgResizeWidthField.maxValue = plugin.settings.maxWidth;
 			this.imgResizeWidthField.minValue = plugin.settings.minWidth;
- 		},
+		},
 
 		/**
 		 * Adds the natural size button to the floating menu
@@ -303,6 +303,5 @@ function (
 			// the jqueryui toolbar because it seems to be a hack that
 			// is not needed with the new implementation.
 		}
-    });
+	});
 });
-	

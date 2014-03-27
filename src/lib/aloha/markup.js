@@ -45,7 +45,7 @@ define([
 
 	var GENTICS = window.GENTICS;
 
-	var isOldIE = !!(jQuery.browser.msie && 9 > parseInt(jQuery.browser.version, 10));
+	var isOldIE = !!(Aloha.browser.msie && 9 > parseInt(Aloha.browser.version, 10));
 
 	function isBR(node) {
 		return 'BR' === node.nodeName;
@@ -131,8 +131,21 @@ define([
 		return null;
 	}
 
+	/**
+	 * Checks if the caret (the passed offset) is at the start
+	 * of the passed node. This also trims whitespace before checking.
+	 *
+	 * @param {Object} node    A DOM node
+	 * @param {number} offset  Offset into the node, this is 0 or 1 for elements
+	 * @return {boolean}       True or false
+	 */
 	function isFrontPosition(node, offset) {
-		return (0 === offset) || (offset <= node.data.length - node.data.replace(/^\s+/, '').length);
+		if (isTextNode(node)
+				&& offset <= node.data.length - node.data.replace(/^\s+/, '').length) {
+			return true;
+		}
+
+		return offset === 0;
 	}
 
 	function isBlockInsideEditable($block) {
@@ -661,7 +674,7 @@ define([
 			var sibling, offset;
 
 			// special handling for moving Cursor around zero-width whitespace in IE7
-			if (jQuery.browser.msie && parseInt(jQuery.browser.version, 10) <= 7 && isTextNode(node)) {
+			if (Aloha.browser.msie && parseInt(Aloha.browser.version, 10) <= 7 && isTextNode(node)) {
 				if (keyCode == 37) {
 					// moving left -> skip zwsp to the left
 					offset = range.startOffset;
@@ -755,7 +768,7 @@ define([
 		processEnter: function (rangeObject) {
 			if (rangeObject.splitObject) {
 				// now comes a very evil hack for ie, when the enter is pressed in a text node in an li element, we just append an empty text node
-				// if ( jQuery.browser.msie
+				// if ( Aloha.browser.msie
 				//      && GENTICS.Utils.Dom
 				//           .isListElement( rangeObject.splitObject ) ) {
 				//  jQuery( rangeObject.splitObject ).append(
@@ -911,7 +924,7 @@ define([
 		 */
 		needEndingBreak: function () {
 			// currently, all browser except IE need ending breaks
-			return !jQuery.browser.msie;
+			return !Aloha.browser.msie;
 		},
 
 		/**
@@ -1210,7 +1223,7 @@ define([
 		 * @return fillUpElement HTML Code
 		 */
 		getFillUpElement: function (splitObject) {
-			if (jQuery.browser.msie) {
+			if (Aloha.browser.msie) {
 				return false;
 			}
 			return jQuery('<br class="aloha-cleanme"/>');

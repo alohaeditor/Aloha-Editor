@@ -262,7 +262,6 @@ define([
 			j,
 			allHeaders = table.selection.isHeader(),
 			domCell, // representation of the cell in the dom
-			tableCell, // table-cell object
 			bufferCell; // temporary buffer
 
 		for (i = 0; i < table.selection.selectedCells.length; i++) {
@@ -511,37 +510,41 @@ define([
 	//namespace prefix for this plugin
 	var tableNamespace = 'aloha-table';
 
-	function nsSel () {
+	function nsSel() {
 		var stringBuilder = [], prefix = tableNamespace;
-		jQuery.each(arguments, function () { stringBuilder.push('.' + (this == '' ? prefix : prefix + '-' + this)); });
+		jQuery.each(arguments, function () {
+			stringBuilder.push('.' + (this == '' ? prefix : prefix + '-' + this));
+		});
 		return jQuery.trim(stringBuilder.join(' '));
-	};
+	}
 
 	//Creates string with this component's namepsace prefixed the each classname
-	function nsClass () {
+	function nsClass() {
 		var stringBuilder = [], prefix = tableNamespace;
-		jQuery.each(arguments, function () { stringBuilder.push(this == '' ? prefix : prefix + '-' + this); });
+		jQuery.each(arguments, function () { 
+			stringBuilder.push(this == '' ? prefix : prefix + '-' + this);
+		});
 		return jQuery.trim(stringBuilder.join(' '));
-	};
+	}
 
-	TablePlugin.initSidebar = function(sidebar) {
+	TablePlugin.initSidebar = function (sidebar) {
 		var pl = this;
 		pl.sidebar = sidebar;
 		pl.sidebarPanel = sidebar.addPanel({
 
-            id       : nsClass('sidebar-panel'),
-            title    : i18n.t('table.sidebar.title'),
-            content  : '',
-            expanded : true,
-            activeOn : 'table',
+			id       : nsClass('sidebar-panel'),
+			title    : i18n.t('table.sidebar.title'),
+			content  : '',
+			expanded : true,
+			activeOn : 'table',
 
-            onInit   : function () {
-            	var that = this,
+			onInit   : function () {
+				var that = this,
 	            content = this.setContent(
 	                '<label class="' + nsClass('label') + '" for="' + nsClass('textarea') + '" >' + i18n.t('table.label.target') + '</label>' +
 	                	'<textarea id="' + nsClass('textarea') + '" class="' + nsClass('textarea') + '" />').content;
 
-            	jQuery(nsSel('textarea')).live('keyup', function() {
+				jQuery(nsSel('textarea')).live('keyup', function () {
 					//The original developer thought that escaping the
 					//quote characters of the textarea value are
 					//necessary to work around a bug in IE. I could not
@@ -808,8 +811,9 @@ define([
 
 					toggleHeaderStatus(that.activeTable, 'col');
 
-					that.activeTable.selection.unselectCells();
+					// Update selection to the new row
 					that.activeTable.selection.selectRows(that.activeTable.selection.selectedRowIdxs);
+					that.activeTable.selection.unselectCells();
 				}
 			}
 		});
@@ -920,8 +924,9 @@ define([
 
 					toggleHeaderStatus(that.activeTable, 'row');
 
-					that.activeTable.selection.unselectCells();
+					// Update selection to the new column
 					that.activeTable.selection.selectColumns(that.activeTable.selection.selectedColumnIdxs);
+					that.activeTable.selection.unselectCells();
 				}
 			}
 		});

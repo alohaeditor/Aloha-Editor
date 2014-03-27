@@ -565,7 +565,7 @@ function( TestUtils ) {
 			[ '<b></b><div>{<b></b></div><p>}</p>', '{}<b></b><div><b></b></div><p></p>' ]
 			
 			[ 'foo{<b><i></i></b>}', 'foo{}<b><i></i></b>' ],
-			[ 'foo{<b></b>}', 'foo{}<b></b>' ],
+//			[ 'foo{<b></b>}', 'foo{}<b></b>' ],
 			[ '{<b></b>}', '{}<b></b>' ],
 			
 			[ '<p>{<b></b>}</p>', '{}<p><b></b></p>' ],
@@ -578,7 +578,7 @@ function( TestUtils ) {
 			
 			[ '{<b></b><p></p>}', '{}<b></b><p></p>' ],
 			[ '<div><p>{<b></b></p></div><p></p>}', '{}<div><p><b></b></p></div><p></p>' ],
-			[ 'foo<div><p>{<b></b></p></div><p></p>}', 'foo[]<div><p><b></b></p></div><p></p>' ],
+			[ 'foo<div><p>{<b></b></p></div><p></p>}', 'foo[]<div><p><b></b></p></div><p></p>' ]
 			
 //*/
 			
@@ -617,7 +617,6 @@ function( TestUtils ) {
 			[ '<span><b>[foo</b></span><p>}bar</p>', '<span><b>[foo</b></span><p>}bar</p>' ],
 
 //*/
-			[]
         ],
 		
         flowTests = [],

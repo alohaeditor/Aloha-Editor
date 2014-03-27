@@ -26,12 +26,12 @@
  */
 define(
 ['aloha/core', 'jquery', 'aloha/command', 'aloha/selection', 'util/dom', 'aloha/contenthandlermanager', 'aloha/console'],
-function(Aloha, jQuery, command, selection, dom, ContentHandlerManager, console) {
+function (Aloha, jQuery, command, selection, dom, ContentHandlerManager, console) {
 	"use strict";
 
 	// Exported commands
-	command.register( 'inserthtml', {
-		action: function(value, range) {
+	command.register('inserthtml', {
+		action: function (value, range) {
 			var 
 				$editable = jQuery(dom.getEditingHostOf(range.startContainer)),
 				cac = range.commonAncestorContainer,
@@ -53,7 +53,7 @@ function(Aloha, jQuery, command, selection, dom, ContentHandlerManager, console)
 				if (!dom.insertIntoDOM($object, range, $editable, false)) {
 					
 					// if that is not possible, we unwrap the content and insert every child element
-					 contents = $object.contents();
+					contents = $object.contents();
 
 					// when a block level element was unwrapped, we at least insert a break
 					if (dom.isBlockLevelElement(object) || dom.isListElement(object)) {
@@ -61,25 +61,25 @@ function(Aloha, jQuery, command, selection, dom, ContentHandlerManager, console)
 					}
 
 					// and now all children (starting from the back)
-					for ( i = contents.length - 1; i >= 0; --i) {
+					for (var i = contents.length - 1; i >= 0; --i) {
 						pasteElement(contents[i]);
 					}
 				}
-			};
+			}
 
 			// apply content handler to cleanup inserted data
 			//if (typeof Aloha.settings.contentHandler.insertHtml === 'undefined') {
 			// just use all registerd content handler or specity Aloha.defaults.contentHandler.insertHtml manually?
 			//	Aloha.settings.contentHandler.insertHtml = Aloha.defaults.contentHandler.insertHtml;
 			//}
-			value = ContentHandlerManager.handleContent( value, { contenthandler: Aloha.settings.contentHandler.insertHtml } );
+			value = ContentHandlerManager.handleContent(value, { contenthandler: Aloha.settings.contentHandler.insertHtml});
 
 			// allowed values are string or jQuery objects
 			// add value to a container div
-			if ( typeof value === 'string' ){
-				value = jQuery( '<div>' + value + '</div>' );
-			} else if ( value instanceof jQuery ) {
-				value = jQuery( '<div>' ).append(value);
+			if (typeof value === 'string') {
+				value = jQuery('<div>' + value + '</div>');
+			} else if (value instanceof jQuery) {
+				value = jQuery('<div>').append(value);
 			} else {
 				throw "INVALID_VALUE_ERR";
 			}
@@ -88,14 +88,14 @@ function(Aloha, jQuery, command, selection, dom, ContentHandlerManager, console)
 			domNodes = value.contents();
 			
 			// check if range starts an ends in same editable host
-//			if ( !(dom.inSameEditingHost(range.startContainer, range.endContainer)) ) {
+//			if (!(dom.inSameEditingHost(range.startContainer, range.endContainer))) {
 //				throw "INVALID_RANGE_ERR";
 //			}
 			
 			// delete currently selected contents
 			dom.removeRange(range);
 			
-			for ( i = domNodes.length - 1; i >= 0; --i) {
+			for (i = domNodes.length - 1; i >= 0; --i) {
 				// insert the elements
 				pasteElement(domNodes[i]);
 			}
@@ -109,7 +109,7 @@ function(Aloha, jQuery, command, selection, dom, ContentHandlerManager, console)
 				range.select();
 			}
 
-			dom.doCleanup({merge:true, removeempty: true}, range, cac);
+			dom.doCleanup({merge: true, removeempty: true}, range, cac);
 			//In some cases selecting the range does not work properly 
 			//e.g. when pasting from word in an h2 after the first character in IE
 			//in these cases we should fail gracefully.
@@ -117,7 +117,7 @@ function(Aloha, jQuery, command, selection, dom, ContentHandlerManager, console)
 			try {
 				range.select();
 			} catch (e) {
-				console.warn('Error:',e);
+				console.warn('Error:', e);
 			}
 
 		}

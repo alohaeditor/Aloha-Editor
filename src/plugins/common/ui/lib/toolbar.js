@@ -113,9 +113,9 @@ define([
 			// caluclated.
 			var toolbar = this;
 			if (toolbar._moveTimeout) {
-				clearTimeout(toolbar._moveTimeout);
+				window.clearTimeout(toolbar._moveTimeout);
 			}
-			toolbar._moveTimeout = setTimeout(function () {
+			toolbar._moveTimeout = window.setTimeout(function () {
 				toolbar._moveTimeout = null;
 				if (Aloha.activeEditable && Toolbar.isFloatingMode) {
 					floating.floatSurface(
@@ -234,7 +234,9 @@ define([
 
 			// In the built aloha.js, init will happend before the body has
 			// finished loading, so we have to defer appending the element.
-			$(function () { Toolbar.$surfaceContainer.appendTo('body'); });
+			$(function () {
+				Toolbar.$surfaceContainer.appendTo('body');
+			});
 			Surface.trackRange(Toolbar.$surfaceContainer);
 			var pinState = floating.getPinState();
 			Toolbar.pinTop = pinState.top;

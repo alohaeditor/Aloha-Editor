@@ -53,14 +53,14 @@ define([
 		},
 
 		onSelect: function (item) {
-			Links.hrefField.setItem(item)
+			Links.hrefField.setItem(item);
 
 			// Now create a selection within the editable since the user should
 			// be able to type once the link has been created.
 
 			// 1. We need to save the current cursor position since the a
 			//    activate editable event will be fired and this will set the
-			//    cursor in the upper left cornor of the editable.
+			//    cursor in the upper left corner of the editable.
 			var range = Aloha.Selection.getRangeObject();
 			var currentStartContainer = range.startContainer = range.endContainer;
 			var currentStartOffset = range.startOffset = range.endOffset;

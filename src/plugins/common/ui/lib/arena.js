@@ -1,9 +1,9 @@
-define(['jquery', 'ui/component'],function($, Component){
+define(['jquery', 'ui/component'], function ($, Component) {
 	var Arena = Component.extend({
-		init: function(){
+		init: function () {
 			this.element = $('<div>');
 		},
-		adopt: function(component) {
+		adopt: function (component) {
 			this.element.append(component.element);
 		}
 	});

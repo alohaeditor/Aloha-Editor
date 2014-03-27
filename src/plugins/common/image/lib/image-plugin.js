@@ -34,7 +34,7 @@ define([
 	ImageFloatingMenu,
 	i18nCore,
 	i18n
-){
+) {
 
 	'use strict';
 
@@ -258,7 +258,7 @@ define([
 
 			var imagePluginUrl = Aloha.getPluginUrl('image');
 
-			if ( typeof this.settings.objectTypeFilter != 'undefined' ) {
+			if (typeof this.settings.objectTypeFilter != 'undefined') {
 				this.objectTypeFilter = this.settings.objectTypeFilter;
 			}
 
@@ -267,7 +267,7 @@ define([
 			plugin.settings = jQuery.extend(true, plugin.defaultSettings, plugin.settings);
 
 			// Determine the flag and the value of the aspect ratio depending on settings
-			if ( typeof this.settings.fixedAspectRatio === 'number' ) {
+			if (typeof this.settings.fixedAspectRatio === 'number') {
 				aspectRatioValue = cropRatioValue = this.settings.fixedAspectRatio;
 				plugin.keepAspectRatio = true;
 			} else {
@@ -462,7 +462,7 @@ define([
 		 * Automatically resize the image to fit into defined bounds.
 		 * @param doScaleUp if true, small images are scaled up to fit minimum size
 		 */
-		autoResize: function(doScaleUp) {
+		autoResize: function (doScaleUp) {
 			// @todo handle ratio mismatches (eg 4:3 is set but image is 16:9 --> image needs to be cut)
 
 			var that = this;
@@ -516,7 +516,7 @@ define([
 		/**
 		 * Toggle the keep aspect ratio functionality
 		 */
-		toggleKeepAspectRatio: function() {
+		toggleKeepAspectRatio: function () {
 
 			this.keepAspectRatio = !this.keepAspectRatio;
 
@@ -585,8 +585,8 @@ define([
 							plugin.setSizeByFieldValue();
 						}
 					}
-				// 0-9 keys
-				} else if (e.keyCode <= 57 && e.keyCode >= 48 || e.keyCode <= 105 && e.keyCode >= 96 ) {
+					// 0-9 keys
+				} else if (e.keyCode <= 57 && e.keyCode >= 48 || e.keyCode <= 105 && e.keyCode >= 96) {
 
 					// Only resize if field values are ok
 					if (plugin._updateFields(fieldName, $(this).val(), false)) {
@@ -846,7 +846,7 @@ define([
 			if (primaryFieldName == 'width') {
 				$primaryField = $("#" + plugin.ui.imgResizeWidthField.getInputId());
 				$secondaryField = $("#" + plugin.ui.imgResizeHeightField.getInputId());
-				adjustedAspectRatio = ( 1 / adjustedAspectRatio );
+				adjustedAspectRatio = (1 / adjustedAspectRatio);
 
 				primaryMin = plugin.settings.minWidth;
 				primaryMax = plugin.settings.maxWidth;
@@ -913,7 +913,7 @@ define([
 			var correctSecondary = true;
 
 			// If keep aspect ratio is enabled, the field that is not edited is updated as well
-			if ( plugin.keepAspectRatio ) {
+			if (plugin.keepAspectRatio) {
 				var secondary = Math.round(newValue * adjustedAspectRatio);
 
 				if (secondary > secondaryMax) {
@@ -1002,7 +1002,7 @@ define([
 			var width =  parseInt(this.ui.imgResizeWidthField.getValue(), 10);
 			var height = parseInt(this.ui.imgResizeHeightField.getValue(), 10);
 
-			var selection = [currentCropArea['x'], currentCropArea['y'], currentCropArea['x'] + width,currentCropArea['y'] + height];
+			var selection = [currentCropArea.x, currentCropArea.y, currentCropArea.x + width, currentCropArea.y + height];
 
 			this.jcAPI.setSelect(selection);
 			this._onCropSelect();
@@ -1028,14 +1028,13 @@ define([
 					//newImg.click( Aloha.Image.clickImage ); - Using delegate now
 					GENTICS.Utils.Dom.insertIntoDOM(newImg, range, jQuery(Aloha.activeEditable.obj));
 
-			} else {
-				Aloha.Log.error('img cannot markup a selection');
-				// TODO the desired behavior could be me the selected content is
-				// replaced by an image.
-				// TODO it should be editor's choice, with an NON-Ext Dialog instead of alert
-
-			}
-		},
+				} else {
+					Aloha.Log.error('img cannot markup a selection');
+					// TODO the desired behavior could be me the selected content is
+					// replaced by an image.
+					// TODO it should be editor's choice, with an NON-Ext Dialog instead of alert
+				}
+			},
 
 		srcChange: function () {
 			// TODO the src changed. I suggest :
@@ -1044,7 +1043,7 @@ define([
 			// 2. start a request to get the image
 			// 3a. the image is ok change the src
 			// 3b. the image is not availbable show an error.
-			 this.imageObj.attr('src', this.ui.imgSrcField.getValue()); // (the img tag)
+			this.imageObj.attr('src', this.ui.imgSrcField.getValue()); // (the img tag)
 //			 jQuery(img).attr('src', this.imgSrcField.getQueryValue()); // (the query value in the inputfield)
 //			 this.imgSrcField.getItem(); // (optinal a selected resource item)
 			// TODO additionally implement an srcChange Handler to let implementer
@@ -1054,7 +1053,7 @@ define([
 		/**
 		 * Reposition the crop buttons below the crop area
 		 */
-		positionCropButtons: function() {
+		positionCropButtons: function () {
 
 			var jt = jQuery('.jcrop-tracker:first'),
 				off = jt.offset(),
@@ -1090,7 +1089,7 @@ define([
 		 * Code imported from CropnResize Plugin
 		 *
 		 */
-		initCropButtons: function() {
+		initCropButtons: function () {
 			var that = this,
 				btns;
 
@@ -1111,7 +1110,7 @@ define([
 				that.endCrop();
 			});
 
-			this.interval = setInterval(function () {
+			this.interval = window.setInterval(function () {
 				that.positionCropButtons();
 			}, 10);
 		},
@@ -1121,7 +1120,7 @@ define([
 		 */
 		destroyCropButtons: function () {
 			jQuery('#aloha-CropNResize-btns').remove();
-			clearInterval(this.interval);
+			window.clearInterval(this.interval);
 		},
 
 		/**
@@ -1130,12 +1129,12 @@ define([
 		_disableSelection: function (el) {
 			el.find('*').attr('unselectable', 'on')
 					.css({
-					'-moz-user-select':'none',
-					'-webkit-user-select':'none',
-					'user-select':'none'
-					});
+					'-moz-user-select': 'none',
+					'-webkit-user-select': 'none',
+					'user-select': 'none'
+				});
 				/*
-					.each(function() {
+					.each(function () {
 					this.onselectstart = function () { return false; };
 					});
 					*/
@@ -1199,7 +1198,7 @@ define([
 					jQuery('#aloha-CropNResize-btns').fadeIn('slow');
 				}
 
-				plugin._applyValuesToFields(currentCropArea['w'], currentCropArea['h']);
+				plugin._applyValuesToFields(currentCropArea.w, currentCropArea.h);
 			}
 
 		},
@@ -1320,7 +1319,7 @@ define([
 		},
 
 		resetSize: function () {
-			var	plugin = this,
+			var plugin = this,
 				img = new Image();
 			img.onload = function () {
 				var myimage = plugin.getPluginFocus();

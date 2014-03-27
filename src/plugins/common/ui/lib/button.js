@@ -66,8 +66,9 @@ function (jQuery, Component, Utils) {
 				}, this));
 		},
 
-		closeTooltip: function() {
-			this.buttonElement.tooltip('close', null/*event*/, true/*force*/);
+		closeTooltip: function () {
+			// 'close', /*event*/, /*force*/
+			this.buttonElement.tooltip('close', null, true);
 		},
 
 		/**
@@ -100,7 +101,7 @@ function (jQuery, Component, Utils) {
 			this.element = this.buttonElement = button;
 
 			var that = this;
-			button.bind('mouseleave', function() {
+			button.bind('mouseleave', function () {
 				that.closeTooltip();
 			});
 
@@ -110,14 +111,14 @@ function (jQuery, Component, Utils) {
 		/**
 		 * Shows the button in a greyed-out inactive (unclickable) state.
 		 */
-		disable: function() {
+		disable: function () {
 			this.element.button('option', 'disabled', false);
 		},
 
 		/**
 		 * Enables the button again after it has previously been disabled.
 		 */
-		enable: function(enable_opt) {
+		enable: function (enable_opt) {
 			this.element.button('option', 'disabled', enable_opt === false);
 		}
 	});

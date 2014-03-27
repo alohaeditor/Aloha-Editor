@@ -65,7 +65,7 @@ $.fn.extend({
 
 	scrollParent: function() {
 		var scrollParent;
-		if (($.browser.msie && (/(static|relative)/).test(this.css('position'))) || (/absolute/).test(this.css('position'))) {
+		if ((Aloha.browser.msie && (/(static|relative)/).test(this.css('position'))) || (/absolute/).test(this.css('position'))) {
 			scrollParent = this.parents().filter(function() {
 				return (/(relative|absolute|fixed)/).test($.css(this,'position')) && (/(auto|scroll)/).test($.css(this,'overflow')+$.css(this,'overflow-y')+$.css(this,'overflow-x'));
 			}).eq(0);
@@ -923,7 +923,7 @@ $.widget("ui.mouse", {
 
 	_mouseMove: function(event) {
 		// IE mouseup check - mouseup happened when mouse was out of window
-		if ($.browser.msie && !(document.documentMode >= 9) && !event.button) {
+		if (Aloha.browser.msie && !(document.documentMode >= 9) && !event.button) {
 			return this._mouseUp(event);
 		}
 
@@ -1791,7 +1791,7 @@ $.widget("ui.draggable", $.ui.mouse, {
 		}
 
 		if((this.offsetParent[0] == document.body) //This needs to be actually done for all browsers, since pageX/pageY includes this information
-		|| (this.offsetParent[0].tagName && this.offsetParent[0].tagName.toLowerCase() == 'html' && $.browser.msie)) //Ugly IE fix
+		|| (this.offsetParent[0].tagName && this.offsetParent[0].tagName.toLowerCase() == 'html' && Aloha.browser.msie)) //Ugly IE fix
 			po = { top: 0, left: 0 };
 
 		return {
@@ -3022,7 +3022,7 @@ $.widget("ui.resizable", $.ui.mouse, {
 			this.helper = this.helper || $('<div style="overflow:hidden;"></div>');
 
 			// fix ie6 offset TODO: This seems broken
-			var ie6 = $.browser.msie && $.browser.version < 7, ie6offset = (ie6 ? 1 : 0),
+			var ie6 = Aloha.browser.msie && Aloha.browser.version < 7, ie6offset = (ie6 ? 1 : 0),
 			pxyoffset = ( ie6 ? 2 : -1 );
 
 			this.helper.addClass(this._helper).css({
@@ -4411,7 +4411,7 @@ $.widget("ui.sortable", $.ui.mouse, {
 		}
 
 		if((this.offsetParent[0] == document.body) //This needs to be actually done for all browsers, since pageX/pageY includes this information
-		|| (this.offsetParent[0].tagName && this.offsetParent[0].tagName.toLowerCase() == 'html' && $.browser.msie)) //Ugly IE fix
+		|| (this.offsetParent[0].tagName && this.offsetParent[0].tagName.toLowerCase() == 'html' && Aloha.browser.msie)) //Ugly IE fix
 			po = { top: 0, left: 0 };
 
 		return {
@@ -7978,7 +7978,7 @@ $.extend(Datepicker.prototype, {
 			}
 			html += group;
 		}
-		html += buttonPanel + ($.browser.msie && parseInt($.browser.version,10) < 7 && !inst.inline ?
+		html += buttonPanel + (Aloha.browser.msie && parseInt(Aloha.browser.version,10) < 7 && !inst.inline ?
 			'<iframe src="javascript:false;" class="ui-datepicker-cover" frameborder="0"></iframe>' : '');
 		inst._keyEvent = false;
 		return html;
@@ -8968,7 +8968,7 @@ $.extend( $.ui.dialog.overlay, {
 		var scrollHeight,
 			offsetHeight;
 		// handle IE
-		if ( $.browser.msie ) {
+		if ( Aloha.browser.msie ) {
 			scrollHeight = Math.max(
 				document.documentElement.scrollHeight,
 				document.body.scrollHeight
@@ -8993,7 +8993,7 @@ $.extend( $.ui.dialog.overlay, {
 		var scrollWidth,
 			offsetWidth;
 		// handle IE
-		if ( $.browser.msie ) {
+		if ( Aloha.browser.msie ) {
 			scrollWidth = Math.max(
 				document.documentElement.scrollWidth,
 				document.body.scrollWidth

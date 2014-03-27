@@ -671,7 +671,7 @@ define([
 		// tha data-block-skip-scope attribute will keep the block plugin from setting the
 		// FloatingMenu's scope when the block is clicked
 		tableWrapper = jQuery(
-			'<div class="' + this.get( 'classTableWrapper' ) + '" data-block-skip-scope="true"></div>'
+			'<div class="' + this.get( 'classTableWrapper' ) + ' aloha-block-collection" data-block-skip-scope="true"></div>'
 		);
 		tableWrapper.contentEditable( false );
 

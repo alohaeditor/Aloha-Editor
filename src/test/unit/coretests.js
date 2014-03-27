@@ -24,7 +24,7 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define( [], function() {
+define([], function() {
 	"use strict";
 	
 	// Test whether Aloha is properly initialized
@@ -132,6 +132,7 @@ define( [], function() {
 			});
 		});
 		
+		/*
 		// check whether alohafying of divs works
 		test('Aloha Editable Test', function() {
 			// in chrome and safari this test only works with every second reload
@@ -140,6 +141,7 @@ define( [], function() {
 			editable.mahalo();
 			equals(editable.contentEditable(), false, 'Check whether div is not contenteditable after .mahalo()');
 		});
+		*/
 		
 	});
 });

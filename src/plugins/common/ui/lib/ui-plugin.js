@@ -54,9 +54,9 @@ define('ui/ui-plugin', [
 	'use strict';
 
 	var context = new Context(),
-        toolbar = new Toolbar(context, getToolbarSettings());
+		toolbar = new Toolbar(context, getToolbarSettings());
 
-	Aloha.bind('aloha-editable-activated', function(event, alohaEvent) {
+	Aloha.bind('aloha-editable-activated', function (event, alohaEvent) {
 		Surface.show(context);
 		Container.showContainersForContext(context, event);
 	});

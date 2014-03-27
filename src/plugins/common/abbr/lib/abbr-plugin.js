@@ -66,7 +66,7 @@ define([
 	/**
 	 * register the plugin with unique name
 	 */
-	return Plugin.create( 'abbr', {
+	return Plugin.create('abbr', {
 		/**
 		 * default button configuration
 		 */
@@ -91,7 +91,7 @@ define([
 				tooltip: i18n.t("button.abbr.tooltip"),
 				icon: "aloha-icon aloha-icon-abbr",
 				scope: 'Aloha.continuoustext',
-				click: function(){
+				click: function () {
 					me.formatAbbr();
 				}
 			});
@@ -100,18 +100,18 @@ define([
 				tooltip: i18n.t('button.addabbr.tooltip'),
 				icon: 'aloha-icon aloha-icon-abbr',
 				scope: 'Aloha.continuoustext',
-				click: function(){
-					me.insertAbbr( false );
+				click: function () {
+					me.insertAbbr(false);
 				}
 			});
 
-		    this.abbrField = AttributeField({
-		    	width: 320,
-		    	name: 'abbrText',
-		        scope: 'Aloha.continuoustext'
-		    });
-		    
-		    this.remAbbrButton = Ui.adopt("removeAbbr", Button, {
+			this.abbrField = new AttributeField({
+				width: 320,
+				name: 'abbrText',
+				scope: 'Aloha.continuoustext'
+			});
+
+			this.remAbbrButton = Ui.adopt("removeAbbr", Button, {
 				tooltip: i18n.t('button.remabbr.tooltip'),
 				icon: 'aloha-icon aloha-icon-abbr-rem',
 				scope: 'Aloha.continuoustext',
@@ -128,34 +128,34 @@ define([
 		bindInteractions: function () {
 			var me = this;
 			
-		    // on blur check if abbr title is empty. If so remove the a tag
-		    this.abbrField.addListener( 'blur', function ( obj, event ) {
-		        if ( this.getValue() == '' ) {
-		            me.removeAbbr();
-		        }
-		    } );
+			// on blur check if abbr title is empty. If so remove the a tag
+			this.abbrField.addListener('blur', function (obj, event) {
+				if (this.getValue() == '') {
+					me.removeAbbr();
+				}
+			});
 
-		    // add to all editables the abbr shortcut
-		    for ( var i = 0; i < Aloha.editables.length; i++ ) {
-		        // CTRL+G
-		        Aloha.editables[ i ].obj.keydown( function ( e ) {
-		    		if ( e.metaKey && e.which == 71 ) {
-				        if ( me.findAbbrMarkup() ) {
+			// add to all editables the abbr shortcut
+			for (var i = 0; i < Aloha.editables.length; i++) {
+				// CTRL+G
+				Aloha.editables[i].obj.keydown(function (e) {
+					if (e.metaKey && e.which == 71) {
+						if (me.findAbbrMarkup()) {
 							me.abbrField.foreground();
 							me.abbrField.focus();
-				        } else {
-				        	me.insertAbbr();
-				        }
+						} else {
+							me.insertAbbr();
+						}
+
+						// prevent from further handling
+						// on a MAC Safari cursor would jump to location bar. Use ESC then META+L
+						e.stopPropagation();
+						e.preventDefault();
 						
-				        // prevent from further handling
-			            // on a MAC Safari cursor would jump to location bar. Use ESC then META+L
-				        e.stopPropagation();
-				        e.preventDefault();
-						
-			            return false;
-		    		}
-		        } );
-		    }
+						return false;
+					}
+				});
+			}
 		},
 
 		subscribeEvents: function () {
@@ -222,15 +222,15 @@ define([
 		 * @return markup
 		 * @hide
 		 */
-		findAbbrMarkup: function ( range ) {
-			if ( typeof range == 'undefined' ) {
-		        var range = Aloha.Selection.getRangeObject();
-		    }
-			
-			if ( Aloha.activeEditable ) {
-			    return range.findMarkup( function() {
-			        return this.nodeName.toLowerCase() == 'abbr';
-			    }, Aloha.activeEditable.obj );
+		findAbbrMarkup: function (range) {
+			if (typeof range == 'undefined') {
+				range = Aloha.Selection.getRangeObject();
+			}
+
+			if (Aloha.activeEditable) {
+				return range.findMarkup( function() {
+					return this.nodeName.toLowerCase() == 'abbr';
+				}, Aloha.activeEditable.obj);
 			} else {
 				return null;
 			}
@@ -243,8 +243,8 @@ define([
 		formatAbbr: function () {
 			var range = Aloha.Selection.getRangeObject();
 
-		    if ( Aloha.activeEditable ) {
-		        if ( this.findAbbrMarkup( range ) ) {
+			if (Aloha.activeEditable) {
+				if (this.findAbbrMarkup(range)) {
 		            this.removeAbbr();
 		        } else {
 		            this.insertAbbr();
@@ -257,31 +257,31 @@ define([
 		 * the abbr will have a default abbr text, otherwise the selected text will be
 		 * the abbr text.
 		 */
-		insertAbbr: function ( extendToWord ) {
+		insertAbbr: function (extendToWord) {
 		    // current selection or cursor position
 		    var range = Aloha.Selection.getRangeObject();
 
-		    // do not insert a abbr in a abbr
-		    if ( this.findAbbrMarkup( range ) ) {
-		        return;
-		    }
+			// do not insert a abbr in a abbr
+			if (this.findAbbrMarkup(range)) {
+				return;
+			}
 
-		    // if selection is collapsed then extend to the word.
-		    if ( range.isCollapsed() && extendToWord != false ) {
-		        GENTICS.Utils.Dom.extendToWord( range );
-		    }
+			// if selection is collapsed then extend to the word.
+			if (range.isCollapsed() && extendToWord != false) {
+				GENTICS.Utils.Dom.extendToWord(range);
+			}
 			
-		    if ( range.isCollapsed() ) {
+			if (range.isCollapsed()) {
 		        // insert a abbr with text here
-		        var abbrText = i18n.t( 'newabbr.defaulttext' );
-		        var newAbbr = jQuery( '<abbr title="">' + abbrText + '</abbr>' );
-		        GENTICS.Utils.Dom.insertIntoDOM( newAbbr, range, jQuery( Aloha.activeEditable.obj ) );
-		        range.startContainer = range.endContainer = newAbbr.contents().get( 0 );
+		        var abbrText = i18n.t('newabbr.defaulttext');
+		        var newAbbr = jQuery('<abbr title="">' + abbrText + '</abbr>');
+		        GENTICS.Utils.Dom.insertIntoDOM(newAbbr, range, jQuery(Aloha.activeEditable.obj));
+		        range.startContainer = range.endContainer = newAbbr.contents().get(0);
 		        range.startOffset = 0;
 		        range.endOffset = abbrText.length;
 		    } else {
-		        var newAbbr = jQuery( '<abbr title=""></abbr>' );
-		        GENTICS.Utils.Dom.addMarkup( range, newAbbr, false );
+				var newAbbr = jQuery('<abbr title=""></abbr>');
+		        GENTICS.Utils.Dom.addMarkup(range, newAbbr, false);
 		    }
 			
 		    range.select();
@@ -296,9 +296,9 @@ define([
 		removeAbbr: function () {
 		    var range = Aloha.Selection.getRangeObject();
 		    var foundMarkup = this.findAbbrMarkup();
-		    if ( foundMarkup ) {
+		    if (foundMarkup) {
 		        // remove the abbr
-		        GENTICS.Utils.Dom.removeFromDOM( foundMarkup, range, true );
+		        GENTICS.Utils.Dom.removeFromDOM(foundMarkup, range, true);
 		        // select the (possibly modified) range
 		        range.select();
 		    }
@@ -310,7 +310,7 @@ define([
 		 * @param obj jQuery object to make clean
 		 * @return void
 		 */
-		makeClean: function ( obj ) {
+		makeClean: function (obj) {
 			// nothing to do...
 		},
 
@@ -322,6 +322,6 @@ define([
 			return 'abbr';
 		}
 
-	} );
+	});
 	
-} );
+});

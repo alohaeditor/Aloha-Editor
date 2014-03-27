@@ -1,0 +1,3 @@
+core: A shim has been added to the Aloha object to replace the deprecated jQuery.browser. 
+Aloha.browser now performs the same function as $.browser.  This allows Aloha to be run in applications using
+jQuery 1.9.* and 2.*.*.  Code references to $.browser have been changed to Aloha.browser.

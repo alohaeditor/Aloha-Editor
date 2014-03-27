@@ -1,0 +1,2 @@
+Fixed a javascript error that occured when inserting a new block in an editable and then moving the cursor with the keyboard up.
+Error: "SCRIPT5007: Die Eigenschaft "length" eines undefinierten oder Nullverweises kann nicht abgerufen werden. " - aloha.js:22381

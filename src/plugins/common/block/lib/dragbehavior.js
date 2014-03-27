@@ -29,12 +29,14 @@ define([
 	'aloha/jquery',
 	'aloha',
 	'PubSub',
-	'aloha/copypaste'
+	'aloha/copypaste',
+	'block/block-utils'
 ], function (
 	$,
 	Aloha,
 	PubSub,
-	CopyPaste
+	CopyPaste,
+	BlockUtils
 ) {
 	'use strict';
 
@@ -64,6 +66,21 @@ define([
 			'.ui-draggable-dragging'
 		];
 
+
+	/**
+	 * Checks if the drag and drop is for a nested Table.
+	 *
+	 * @param  {jQuery<Element>} $hovering
+	 * @param  {jQuery<Element>} $dragging
+	 * @return {boolean}
+	 */
+	function isNestedTable ($hovering, $dragging) {
+		return $hovering
+			&& $dragging
+			&& $hovering.parents('table').length !== 0
+			&& BlockUtils.isTable($dragging);
+	}
+
 	/**
 	 * Checks whether or not the element over which we are hovering should allow
 	 * drop a region, in or around it?
@@ -74,8 +91,7 @@ define([
 	 */
 	function allowDropRegions($hovering, $dragging) {
 		return !$hovering || !(
-			$hovering.is('.ui-draggable-dragging')
-			||
+			$hovering.is('.ui-draggable-dragging') ||
 			$hovering.closest($dragging).length > 0
 		);
 	}
@@ -143,8 +159,7 @@ define([
 		var range = null;
 		var x = 0;
 		var y = 0;
-		return $.browser.msie
-			? {
+		return $.browser.msie ? {
 
 				/**
 				 * Remember the selection state.
@@ -163,11 +178,18 @@ define([
 				 * before dragging is started.
 				 */
 				restore: function restoreSelection() {
+					if (!range) {
+						return;
+					}
 					var editable = CopyPaste.getEditableAt(range);
 					if (editable) {
 						editable.obj.focus();
 					}
-					CopyPaste.setSelectionAt(range);
+					try {
+						CopyPaste.setSelectionAt(range);
+					} catch (e) {
+						Console.warn(e);
+					}
 					window.scrollTo(x, y);
 				}
 			}
@@ -191,7 +213,15 @@ define([
 
 		// Prevent the prevention of drag inside a cell
 		element.ondragstart = function (e) {
-			e.stopPropagation();
+			if (e) {
+				if (typeof e.stopPropagation === 'function') {
+					e.stopPropagation();
+				} else {
+					e.cancelBubble = true;
+				}
+			} else {
+				window.event.cancelBubble = true;
+			}
 		};
 
 		$handle
@@ -301,10 +331,10 @@ define([
 	 */
 	DragBehavior.prototype.highlightElement = function (elm) {
 
-		if (elm.nodeName === 'DIV'
-				&& elm.parentNode.nodeName === 'TD'
-				&& elm.parentNode.firstChild === elm
-				&& elm.parentNode.lastChild === elm) {
+		if (elm.nodeName === 'DIV' &&
+				elm.parentNode.nodeName === 'TD' &&
+				elm.parentNode.firstChild === elm &&
+				elm.parentNode.lastChild === elm) {
 
 			elm = elm.parentNode;
 		}
@@ -413,6 +443,10 @@ define([
 				return false;
 			}
 
+			if (isNestedTable($elm, this.$element)) {
+				return false;
+			}
+
 			return true;
 		} else {
 			return false;
@@ -427,8 +461,8 @@ define([
 	DragBehavior.prototype.onDragStop = function () {
 		// @todo check if the $overElement is a Valid element to drop the block
 		if (allowDropRegions(this.$overElement, this.$element)) {
-			if (this.$overElement
-					&& !this._isAllowedOverElement(this.$overElement[0])) {
+			if (this.$overElement &&
+				!this._isAllowedOverElement(this.$overElement[0])) {
 				this.enableInsertBeforeOrAfter(this.$overElement[0]);
 			}
 
