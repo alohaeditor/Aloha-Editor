@@ -139,7 +139,7 @@ define(['functions'], function Arrays(Fn) {
 	 */
 	function mapcat(xs, fn) {
 		var result = [];
-		forEach(xs, function (x) {
+		Array.prototype.forEach.call(xs, function (x) {
 			result = result.concat(fn(x));
 		});
 		return result;
