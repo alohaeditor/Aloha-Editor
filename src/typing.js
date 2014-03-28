@@ -84,7 +84,7 @@ define([
 		var boundary = Boundaries.fromRangeStart(range);
 
 		if (' ' === text) {
-			var elem = Traversing.upWhile(
+			var elem = Dom.upWhile(
 				Boundaries.container(boundary),
 				Dom.isTextNode
 			);
