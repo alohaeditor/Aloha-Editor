@@ -296,6 +296,8 @@ define([
 		isRendered                         : isRendered,
 		isUnrendered                       : isUnrendered,
 		isUnrenderedWhitespace             : isUnrenderedWhitespace,
-		isUnrenderedWhitespaceNoBlockCheck : isUnrenderedWhitespaceNoBlockCheck
+		isUnrenderedWhitespaceNoBlockCheck : isUnrenderedWhitespaceNoBlockCheck,
+		skipUnrenderedToEndOfLine          : skipUnrenderedToEndOfLine,
+		skipUnrenderedToStartOfLine        : skipUnrenderedToStartOfLine
 	};
 });

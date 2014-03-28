@@ -28,6 +28,7 @@ define([
 	'strings',
 	'functions',
 	'html',
+	'html/elements',
 	'ranges',
 	'stable-range',
 	'cursors',
@@ -41,6 +42,7 @@ define([
 	Strings,
 	Fn,
 	Html,
+	HtmlElements,
 	Ranges,
 	StableRange,
 	Cursors,
@@ -1119,26 +1121,63 @@ define([
 		return unsplitParent;
 	}
 
+	/**
+	 * Tries to move the given boundary to the start of line, skipping over any
+	 * unrendered nodes, or if that fails to the end of line (after a br
+	 * element if present), and for the last line in a block, to the very end
+	 * of the block.
+	 *
+	 * If the selection is inside a block with only a single empty line (empty
+	 * except for unrendered nodes), and both boundary points are normalized,
+	 * the selection will be collapsed to the start of the block.
+	 *
+	 * For some operations it's useful to think of a block as a number of
+	 * lines, each including its respective br and any preceding unrendered
+	 * whitespace and in case of the last line, also any following unrendered
+	 * whitespace.
+	 *
+	 * @param  {Cursor}  point
+	 * @return {Boolean} True if the cursor is moved.
+	 */
+	function normalizeBoundary(point) {
+		if (HtmlElements.skipUnrenderedToStartOfLine(point)) {
+			return true;
+		}
+		if (!HtmlElements.skipUnrenderedToEndOfLine(point)) {
+			return false;
+		}
+		if ('BR' === point.node.nodeName) {
+			point.skipNext();
+			// Because, if this is the last line in a block, any unrendered
+			// whitespace after the last br will not constitute an independent
+			// line, and as such we must include it in the last line.
+			var endOfBlock = point.clone();
+			if (HtmlElements.skipUnrenderedToEndOfLine(endOfBlock) && endOfBlock.atEnd) {
+				point.setFrom(endOfBlock);
+			}
+		}
+		return true;
+	}
+
 	function splitRangeAtBoundaries(range, left, right, opts) {
 		var normalizeLeft = opts.normalizeRange ? left : left.clone();
 		var normalizeRight = opts.normalizeRange ? right : right.clone();
+		normalizeBoundary(normalizeLeft);
+		normalizeBoundary(normalizeRight);
 
 		Cursors.setToRange(range, normalizeLeft, normalizeRight);
 
 		var removeEmpty = [];
-
 		var start = Dom.nodeAtOffset(range.startContainer, range.startOffset);
 		var end = Dom.nodeAtOffset(range.endContainer, range.endOffset);
-
 		var startAtEnd = Boundaries.isAtEnd(Boundaries.raw(range.startContainer, range.startOffset));
 		var endAtEnd = Boundaries.isAtEnd(Boundaries.raw(range.endContainer, range.endOffset));
-
 		var unsplitParentStart = splitBoundaryPoint(start, startAtEnd, left, right, removeEmpty, opts);
 		var unsplitParentEnd = splitBoundaryPoint(end, endAtEnd, left, right, removeEmpty, opts);
 
 		removeEmpty.forEach(function (elem) {
-			// Because we may end up cloning the same node twice (by
-			// splitting both start and end points).
+			// Because we may end up cloning the same node twice (by splitting
+			// both start and end points)
 			if (!elem.firstChild && elem.parentNode) {
 				Mutation.removeShallowPreservingCursors(elem, [left, right]);
 			}
