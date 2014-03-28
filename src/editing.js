@@ -1266,15 +1266,16 @@ define([
 			return {
 				postprocessTextNodes: Fn.noop,
 				postprocess: function () {
-					var above = Boundaries.fromRangeStart(range);
-					var below = Boundaries.fromRangeEnd(range);
-					var overrides = Html.removeBreak(above, below);
-					var pos = Cursors.createFromBoundary(
-						Boundaries.container(above),
-						Boundaries.offset(above)
+					var split = Html.removeBreak(
+						Boundaries.fromRangeStart(range),
+						Boundaries.fromRangeEnd(range)
+					)[0];
+					var cursor = Cursors.createFromBoundary(
+						Boundaries.container(split),
+						Boundaries.offset(split)
 					);
-					left.setFrom(pos);
-					right.setFrom(pos);
+					left.setFrom(cursor);
+					right.setFrom(cursor);
 				}
 			};
 		}, false);
@@ -1289,14 +1290,14 @@ define([
 	 * http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031700.html
 	 *
 	 * @param  {Range}   liveRange
-	 * @param  {object}  context
+	 * @param  {string}  breaker
 	 * @param  {boolean} linebreak
 	 * @return {Array.<Boundary>}
 	 */
-	function break_(liveRange, context, linebreak) {
+	function break_(liveRange, breaker, linebreak) {
 		var range = Ranges.collapseToEnd(StableRange(liveRange));
 		var op = linebreak ? Html.insertLineBreak : Html.insertBreak;
-		var boundary = op(Boundaries.fromRangeStart(range), context.defaultBlockNodeName);
+		var boundary = op(Boundaries.fromRangeStart(range), breaker);
 		Boundaries.setRange(liveRange, boundary, boundary);
 		return [boundary, boundary];
 	}
