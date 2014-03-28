@@ -57,7 +57,21 @@
  * optimal DOM updating (no split text node and re-insert, then split
  *   again reinsert and join and reinsert etc.)
  */
-define(['fn', 'maps', 'record', 'dom'], function (Fn, Dom, Record, Maps) {
+define([
+	'functions',
+	'maps',
+	'accessor',
+	'record',
+	'dom',
+	'assert'
+], function (
+	Fn,
+	Maps,
+	Accessor,
+	Record,
+	Dom,
+	Assert
+) {
 	'use strict';
 
 	var idCounter = 0;
@@ -73,7 +87,7 @@ define(['fn', 'maps', 'record', 'dom'], function (Fn, Dom, Record, Maps) {
 	}
 
 	function type(node) {
-		return node.type.get(node).nodeType;
+		return node.domNode.get(node).nodeType;
 	}
 
 	function attrs(node) {
@@ -93,7 +107,7 @@ define(['fn', 'maps', 'record', 'dom'], function (Fn, Dom, Record, Maps) {
 	}
 
 	function changeableChildren(node) {
-		return node.children.get(node);
+		return node.unchangedChildren.get(node);
 	}
 
 	function name(node) {
@@ -105,7 +119,7 @@ define(['fn', 'maps', 'record', 'dom'], function (Fn, Dom, Record, Maps) {
 	}
 
 	function setName(node, name, set) {
-		Assert.assert(!Fn.isNou(name));
+		Assert.assertNotNou(name);
 		return set(node, name);
 	}
 
@@ -118,7 +132,7 @@ define(['fn', 'maps', 'record', 'dom'], function (Fn, Dom, Record, Maps) {
 	}
 
 	function setText(node, text, set) {
-		Assert.assert(!Fn.isNou(text));
+		Assert.assertNotNou(text);
 		return set(node, text);
 	}
 
@@ -127,11 +141,24 @@ define(['fn', 'maps', 'record', 'dom'], function (Fn, Dom, Record, Maps) {
 		var changedAttrs = node.changedAttrs.get(node);
 		var attrs = Maps.extend({}, unchangedAttrs, changedAttrs);
 		delete attrs['style'];
-		return Maps.filterByValue(attrs, Fn.complement(Fn.isNou));
+		return Maps.filter(attrs, Fn.complement(Fn.isNou));
+	}
+
+	function assertStyleNotAsAttr(cond) {
+		Assert.assert(cond, 'style-not-as-attr');
+	}
+
+	function assertElement(node) {
+		Assert.assert(1 === node.type.get(node), 'expect-element');
+	}
+
+	function assertTextNode(node) {
+		Assert.assert(3 === node.type.get(node), 'expect-text-node');
 	}
 
 	function setAttrsAffectChanges(node, attrs, set) {
-		Assert.assert(!Fn.isNou(attrs) && Fn.isNou(attrs['style']));
+		Assert.assertNotNou(attrs);
+		assertStyleNotAsAttr(Fn.isNou(attrs['style']));
 		var unchangedAttrs = node.unchangedAttrs.get(node);
 		var removedAttrs = Maps.fillKeys({}, Maps.keys(unchangedAttrs), null);
 		var changedAttrs = Maps.extend(removedAttrs, attrs);
@@ -140,7 +167,7 @@ define(['fn', 'maps', 'record', 'dom'], function (Fn, Dom, Record, Maps) {
 		return node;
 	}
 
-	function getChangedOrCached(node, name, changedField, cachedField, getFromDomNode) {
+	function getChangedOrCachedFromElem(node, name, changedField, cachedField, getFromDomNode) {
 		var changedMap = changedField.get(node);
 		if (changedMap && changedMap.hasOwnProperty(name)) {
 			return changedMap[name];
@@ -149,6 +176,7 @@ define(['fn', 'maps', 'record', 'dom'], function (Fn, Dom, Record, Maps) {
 		if (cached.hasOwnProperty(name)) {
 			return cached[name];
 		}
+		assertElement(node);
 		var domNode = node.domNode.get(node);
 		var value = cached[name] = getFromDomNode(domNode, name);
 		return value;
@@ -161,22 +189,26 @@ define(['fn', 'maps', 'record', 'dom'], function (Fn, Dom, Record, Maps) {
 		return changedField.set(node, changedMap);
 	}
 
-	function attr(name, value) {
-		Assert.assert('style' !== name);
-		var node = this;
-		if (arguments.length > 1) {
-			return getChangedOrCached(node, name, node.changedAttrs,
-			                          node._cachedAttrs, Dom.getAttr);
-		}
-		return setChangedOrCached(node, name, value, node.changedAttrs);
+	function getAttr(node, name) {
+		assertStyleNotAsAttr('style' !== name);
+		assertElement(node);
+		return getChangedOrCachedFromElem(node, name, node.changedAttrs,
+		                                  node._cachedAttrs, Dom.getAttr);
+	}
+	function setAttr(node, name, value) {
+		assertStyleNotAsAttr('style' !== name);
+		assertElement(node);
+		node = setChangedOrCached(node, name, value, node.changedAttrs);
+		node = node.attrs.computeLazily(node, node);
+		return node;
 	}
 
-	function style(name, value) {
-		var node = this;
-		if (arguments.length > 1) {
-			return getChangedOrCached(node, name, node.changedStyles,
-			                          node._cachedStyles, Dom.getStyle);
-		}
+	function getStyle(node, name) {
+		return getChangedOrCachedFromElem(node, name, node.changedStyles,
+		                                  node._cachedStyles, Dom.getStyle);
+	}
+
+	function setStyle(node, name, value) {
 		return setChangedOrCached(node, name, value, node.changedStyles);
 	}
 
@@ -248,17 +280,25 @@ define(['fn', 'maps', 'record', 'dom'], function (Fn, Dom, Record, Maps) {
 		if (children === unchangedChildren) {
 			return null;
 		}
-		return combineChildrenWithChangeInParent(children, childrenWithChanges);
+		return combineChildrenWithChangeInParent(unchangedChildren, children);
 	}
 
 	function setChildrenAffectChanges(node, children, set) {
-		Assert.assert(!Fn.isNou(children));
+		Assert.assertNotNou(children);
 		node = set(node, children);
-		node = node.changedChildren.computeLazily(node);
+		node = node.changedChildren.computeLazily(node, node);
 		return node;
 	}
 
-	var Node = Record.define({
+	function allocateId() {
+		return ++idCounter;
+	}
+
+	function createCache() {
+		return {};
+	}
+
+	var Node = Record.defineMap({
 		name           : {get: changeableName    , set: setName},
 		text           : {get: changeableText    , set: setText},
 		// excludes style attribute
@@ -271,7 +311,7 @@ define(['fn', 'maps', 'record', 'dom'], function (Fn, Dom, Record, Maps) {
 		// Properties used for change-tracking, shouldn't be written to by client code.
 		changedStyles  : {defaultValue: null},
 		changedAttrs   : {defaultValue: null},
-		changedChildren: changedChildren
+		changedChildren: changedChildren,
 		changedInParent: {defaultValue: NO_CHANGE},
 		unchangedName  : name,
 		unchangedText  : text,
@@ -279,36 +319,46 @@ define(['fn', 'maps', 'record', 'dom'], function (Fn, Dom, Record, Maps) {
 		unchangedAttrs : attrs,
 		unchangedChildren: children,
 		// Caches are stateful maps only for internal optimization!
-		_cachedAttrs   : Object,
-		_cachedStyles  : Object
-	}, function (node, domNode) {
-		var computeFrom = node;
+		_cachedAttrs   : createCache,
+		_cachedStyles  : createCache
+	}, function (node, domNodeOrProps) {
 		node = node.asTransient();
-		node = node.computeLazilyAllT(computeFrom);
-		node = node.domNode.setT(node, domNode);
+		if (domNodeOrProps.nodeType) {
+			var domNode = domNodeOrProps;
+			node = node.domNode.setT(node, domNode);
+			node = node.computeLazilyAllFromSelfT();
+		} else if (!Fn.isNou(domNodeOrProps.name)) {
+			var props = domNodeOrProps;
+			Assert.assertNou(props.text);
+			Assert.assertNou(props.nodeType);
+			var name = props.name;
+			var attrs = props.attrs || {};
+			var children = props.children || [];
+			node = node.computeLazilyAllFromSelfT();
+			node = node.type.setT(node, 1);
+			node = node.unchangedName.setT(node, name);
+			node = node.unchangedAttrs.setT(node, attrs);
+			node = node.unchangedChildren.setT(node, children);
+			node = node.name.setT(node, name);
+			node = node.attrs.setT(node, attrs);
+			node = node.children.setT(node, children);
+		} else if (!Fn.isNou(domNodeOrProps.text)) {
+			var props = domNodeOrProps;
+			Assert.assertNou(props.name);
+			Assert.assertNou(props.nodeType);
+			var text = props.text;
+			node = node.computeLazilyAllFromSelfT();
+			node = node.type.setT(node, 3);
+			node = node.unchangedText.setT(node, text);
+			node = node.text.setT(node, text);
+		}
 		return node.asPersistent();
 	});
 
-	Node.withElementType = function (name) {
-		var node = Node(null).asTransient();
-		node = node.unchangedName.setT(name);
-		node = node.unchangedAttrs.setT({});
-		node = node.unchangedChildren.setT([]);
-		node = node.type.setT(1);
-		return node.asPersistent();
-	};
-
-	Node.withTextType = function (text) {
-		var node = Node(null).asTransient();
-		node = node.unchangedText.setT(text);
-		node = node.type.setT(3);
-		return node.asPersistent();
-	};
-
 	Maps.extend(Node.prototype, {
-		attr     : attr,
-		style    : style,
-		updateDom: updateDom
+		attr     : Accessor.asMethod(Accessor(getAttr, setAttr)),
+		style    : Accessor.asMethod(Accessor(getStyle, setStyle)),
+		updateDom: Fn.asMethod1(updateDom)
 	});
 
 	function updateDomNodeFromMap(domNode, map, updateFn) {
@@ -318,10 +368,10 @@ define(['fn', 'maps', 'record', 'dom'], function (Fn, Dom, Record, Maps) {
 	}
 
 	function updateName(node) {
-		if (node.name.isMemoized()) {
+		if (node.name.isMemoized(node)) {
 			var name = node.name.get(node);
-			var isMemoized = node.unchangedName.isMemoized();
-			if (!isMemoized || name !== node.unchangedName.get(node);) {
+			var isMemoized = node.unchangedName.isMemoized(node);
+			if (!isMemoized || name !== node.unchangedName.get(node)) {
 				Assert.error('not-implemented');
 			}
 		}
@@ -329,9 +379,9 @@ define(['fn', 'maps', 'record', 'dom'], function (Fn, Dom, Record, Maps) {
 	}
 
 	function updateText(node) {
-		if (node.text.isMemoized()) {
+		if (node.text.isMemoized(node)) {
 			var text = node.text.get(node);
-			if (!node.unchangedText.isMemoized()
+			if (!node.unchangedText.isMemoized(node)
 			    || text !== node.unchangedText.get(node)) {
 				var domNode = node.domNode.get(node);
 				dom.node.data = text;
@@ -349,7 +399,7 @@ define(['fn', 'maps', 'record', 'dom'], function (Fn, Dom, Record, Maps) {
 		var domNode = node.domNode.get(node);
 		updateDomNodeFromMap(domNode, changedMap, updateDom);
 		node = changedField.set(node, null);
-		if (cachedField.isMemoized()) {
+		if (cachedField.isMemoized(node)) {
 			var cachedMap = cachedField.get(node);
 			cachedMap = Maps.extend({}, cachedMap, changedMap);
 			node = cachedField.set(node, cachedMap);
@@ -388,7 +438,7 @@ define(['fn', 'maps', 'record', 'dom'], function (Fn, Dom, Record, Maps) {
 		var type = node.type.get(node);
 		if (1 === type) {
 			return createElementNode(doc, node);
-		} else {
+		} else if (3 === type) {
 			return createTextNode(doc, node);
 		} else {
 			Assert.error('not-implemented');
@@ -398,7 +448,7 @@ define(['fn', 'maps', 'record', 'dom'], function (Fn, Dom, Record, Maps) {
 	function updateChildren(node, doc, insertIndex) {
 		var changedChildren = node.changedChildren.get(node);
 		if (!changedChildren) {
-			return;
+			return node;
 		}
 		var domNode = node.domNode.get(node);
 		var childNodes = domNode.childNodes;
@@ -410,6 +460,11 @@ define(['fn', 'maps', 'record', 'dom'], function (Fn, Dom, Record, Maps) {
 				var refNode = i < childNodes.length ? childNodes[i] : null;
 				// TODO use insertIndex to move elements if it occurred
 				// in the old tree during a recursive update.
+				// TODO support normalized update that will join
+				// inserted text nodes and re-use existing text nodes if
+				// the content is the same instead of replacing them, so
+				// that you can split up Boromir text nodes any way you
+				// want and it will not result in changes to the DOM.
 				var childDomNode = createDomNode(doc, child);
 				domNode.insertBefore(childDomNode, refNode);
 				child = child.domNode.set(child, childDomNode);
@@ -448,7 +503,7 @@ define(['fn', 'maps', 'record', 'dom'], function (Fn, Dom, Record, Maps) {
 	function updateDom(node) {
 		var domNode = node.domNode.get(node);
 		var doc = domNode.ownerDocument;
-		Assert.assert(doc);
+		Assert.assert(doc, 'element-not-attached');
 		return updateDomRec(node, doc, {});
 	}
 

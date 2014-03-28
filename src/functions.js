@@ -51,7 +51,7 @@ define([], function Functions() {
 	}
 
 	/**
-	 * Generates the complete function for `fn`.
+	 * Generates the complement function for `fn`.
 	 * The complement function will return the opposite boolean result when
 	 * called with the same arguments as the given `fn` function.
 	 *
@@ -68,8 +68,16 @@ define([], function Functions() {
 	 * Like function.prototype.bind except without the `this` argument.
 	 * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/function/bind
 	 *
-	 * Returns a function that, when invoked, will call `fn` with `thisArg` as
-	 * this, and returns the return value.
+	 * Returns a function that concatenates the given arguments, and the
+	 * arguments given to the returned function and calls the given
+	 * function with it.
+	 *
+	 * The returned function will have a length of 0, not a length of
+	 * fn.length - number of partially applied arguments. This is
+	 * important consideration for any code that introspects the arity
+	 * of the returned function. Function.prototype.bind() returns a
+	 * function with the correct number of arguments but is not
+	 * available across all browsers.
 	 *
 	 * @param  {function} fn
 	 * @param  {Object} thisArg
@@ -88,8 +96,8 @@ define([], function Functions() {
 	 * Creates a bound variable and returns the closure which can be use to get
 	 * and set the value of it as a free variable.
 	 *
-	 * This construct can be used to as a convenient way to simulate generic out
-	 * parameters in JavaScript.
+	 * This construct can be used as a convenient way to simulate
+	 * generic out parameters in JavaScript.
 	 *
 	 * Calling the closure with an argument changes the value of the enclosed
 	 * variable.  Calling the closure without any arguments will return the
@@ -178,21 +186,23 @@ define([], function Functions() {
 	/**
 	 * Wraps a function and passes `this` as the first argument.
 	 */
-	function thisless(fn) {
+	function asMethod(fn) {
 		return function () {
-			return fn.apply(null, Array.prototype.concat.call([this], arguments));
+			var args = Array.prototype.slice.call(arguments, 0);
+			args.unshift(this);
+			return fn.apply(null, args);
 		};
 	}
 
 	/**
-	 * Like thisless, but for a function of only a single argument.
+	 * Like Fn.asMethod(), but for a function of only a single argument.
 	 *
-	 * Useful as an optimization because the presence of the arguments
-	 * variable makes an approximately 30x difference in IE10.
+	 * Useful as an optimization because the presence of the special
+	 * `arguments` variable makes an approximately 30x difference in IE10.
 	 */
-	function thisless1(fn) {
+	function asMethod1(fn) {
 		return function (arg) {
-			return Fn(this, arg);
+			return fn(this, arg);
 		};
 	}
 
@@ -210,7 +220,7 @@ define([], function Functions() {
 		constantly   : constantly,
 		is: is,
 		isNou: isNou,
-		thisless: thisless,
-		thisless1: thisless1
+		asMethod: asMethod,
+		asMethod1: asMethod1
 	};
 });

@@ -50,7 +50,9 @@ define([
 	'typing',
 	'undo',
 	'transform/ms-word/utils',
-	'transform'
+	'transform',
+	'record',
+	'boromir'
 ], function Exports(
 	Arrays,
 	Blocks,
@@ -92,7 +94,9 @@ define([
 	Typing,
 	Undo,
 	WordTransformUtils,
-	Transform
+	Transform,
+	Record,
+	Boromir
 ) {
 	'use strict';
 
@@ -138,6 +142,8 @@ define([
 	exports['undo'] = Undo;
 	exports['wordTransformUtils'] = WordTransformUtils;
 	exports['xhtml'] = Xhtml;
+	exports['Record'] = Record;
+	exports['Boromir'] = Boromir;
 
 	return exports;
 });

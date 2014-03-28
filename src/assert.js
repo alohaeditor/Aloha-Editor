@@ -49,13 +49,21 @@ define([], function Assert() {
 	}
 
 	function error(type) {
-		throw Error(type ? 'assertion failed' : errorLink(type));
+		throw Error(type ? errorLink(type) : 'assertion failed');
 	}
 
 	function assert(cond, type) {
 		if (!cond) {
 			error(type);
 		}
+	}
+
+	function assertNotNou(obj) {
+		assert(null != obj, 'null-or-undefined');
+	}
+
+	function assertNou(obj) {
+		assert(null == obj, 'not-null-or-undefined');
 	}
 
 	return {
@@ -66,6 +74,8 @@ define([], function Assert() {
 		assertError    : assertError,
 		errorLink      : errorLink,
 		assert         : assert,
+		assertNou      : assertNou,
+		assertNotNou   : assertNotNou,
 		error          : error
 	};
 });
