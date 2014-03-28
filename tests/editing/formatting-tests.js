@@ -1,27 +1,14 @@
 (function (aloha) {
 	'use strict';
 
-	var Fn = aloha.fn;
+	module('editing');
+
 	var Html = aloha.html;
 	var Xhtml = aloha.xhtml;
 	var Ranges = aloha.ranges;
 	var Editing = aloha.editing;
-	var Browsers = aloha.browsers;
 	var Boundaries = aloha.boundaries;
 	var BoundaryMarkers = aloha.boundarymarkers;
-
-	module('editing');
-
-	var $editable = $('<div id="editable" contentEditable="true"></div>').appendTo('body');
-
-	function switchElemTextSelection(html) {
-		return html.replace(/[\{\}\[\]]/g, function (match) {
-			return {'{': '[',
-					'}': ']',
-					'[': '{',
-					']': '}'}[match];
-		});
-	}
 
 	function testMutation(title, before, expected, mutate) {
 		test(title, function () {
@@ -41,37 +28,6 @@
 		});
 	}
 
-	function testMutationSwitchElemTextSelection(title, before, after, mutate) {
-		testMutation(title, before, after, mutate);
-		var afterSwitched = switchElemTextSelection(after);
-		testMutation(title, switchElemTextSelection(before), function (actual) {
-			if (actual !== afterSwitched
-				    // Because it's ok as long as they come out at the
-				    // same position, we ignore differences between
-				    // selection type (text or element boundaries).
-				    && actual !== after
-				    // Because we must account for end of text node
-				    // normalization performed by dom.nodeAtOffset() and
-				    // dom.isAtEnd().
-				    && actual !== afterSwitched.replace(/\]/g, '}')
-				    ) {
-				if (actual !== afterSwitched) {
-					equal(actual, afterSwitched, before + ' ⇒ ' + afterSwitched);
-				} else if (actual !== afterSwitched.replace(/\]/g, '}')) {
-					equal(
-						actual,
-						afterSwitched.replace(/\]/g, '}'),
-						before + ' ⇒ ' + afterSwitched.replace(/\]/g, '}')
-					);
-				} else if (actual !== after) {
-					equal(actual, after, before + ' ⇒ ' + after);
-				}
-			} else {
-				expect(0);
-			}
-		}, mutate);
-	}
-
 	function testWrap(title, before, after) {
 		testMutation(title, before, after, function (dom, range) {
 			Editing.wrap(range, 'B');
@@ -85,8 +41,8 @@
 	}
 
 	function testFormat(title, before, after, styleName, styleValue) {
-		// Because different browsers render style attributes
-		// differently we have to normalize them.
+		// Because different browsers render style attributes differently we
+		// have to normalize them
 		function expected(actual) {
 			actual = actual
 				.replace(/;"/g, '"')
@@ -99,56 +55,18 @@
 		function isObstruction(node) {
 			return !Html.hasInlineStyle(node) || 'CODE' === node.nodeName;
 		}
-		var opts = {
-			isObstruction: isObstruction
-		};
+		var opts = {isObstruction: isObstruction};
 		testMutation('editing.format - ' + title, before, expected, function (dom, range) {
 			Editing.format(range, styleName, styleValue, opts);
 		});
 	}
 
-	(function t(before, after) {
-		testMutationSwitchElemTextSelection('ranges.trim()', before, after, function (dom, range) {
-			Ranges.trimClosingOpening(range, Html.isUnrenderedWhitespace, Html.isUnrenderedWhitespace);
-		});
-		return t;
-	})
-	('<p>{}</p>', '<p>{}</p>')
-	('<p>So[]xt.</p>', '<p>So[]xt.</p>')
-	('<p>So[me te]xt.</p>', '<p>So[me te]xt.</p>')
-	('<p>{Some text.}</p>', '<p>{Some text.}</p>')
-	('<p>{}Some text.</p>', '<p>{}Some text.</p>')
-	('<p>Some text.{}</p>', '<p>Some text.{}</p>')
-	('<p><b>{</b><i>}</i></p>', '<p><b></b>{}<i></i></p>')
-	(
-		'<p><b>So[me</b><i> </i><b>te]xt.</b></p>',
-		'<p><b>So[me</b><i> </i><b>te]xt.</b></p>'
-	)(
-		'<p><b>Some</b>{<i> </i>}<b>text.</b></p>',
-		'<p><b>Some</b>{<i> </i>}<b>text.</b></p>'
-	)(
-		'<p><b>[Some</b><i> </i><b>text.]</b></p>',
-		'<p><b>{Some</b><i> </i><b>text.}</b></p>'
-	)(
-		'<p><b><i>{</i></b><i><b>}</b></i></p>',
-		'<p><b><i></i></b>{}<i><b></b></i></p>'
-	)(
-		'<p><b><i>one{</i></b><i>two</i><b><i>}three</i></b></p>',
-		'<p><b><i>one</i></b>{<i>two</i>}<b><i>three</i></b></p>'
-	)(
-		'<p><b><i>one{</i>.</b><i>two</i><b>.<i>}three</i></b></p>',
-		'<p><b><i>one</i>{.</b><i>two</i><b>.}<i>three</i></b></p>'
-	)(
-		'<p><b><i>{one</i></b><i>two</i><b><i>three}</i></b></p>',
-		'<p><b><i>{one</i></b><i>two</i><b><i>three}</i></b></p>'
-	);
-
 	var t = function (title, before, after) {
 		testWrap('editing.wrap -' + title, before, after);
 	};
 
-	t('noop1', '<p><b>[Some text.]</b></p>', '<p><b>{Some text.}</b></p>');
-	t('noop2', '<p>{<b>Some text.</b>}</p>', '<p>{<b>Some text.</b>}</p>');
+	t('noop1', '<p><b>[Some text.]</b></p>',        '<p><b>{Some text.}</b></p>');
+	t('noop2', '<p>{<b>Some text.</b>}</p>',        '<p>{<b>Some text.</b>}</p>');
 	t('noop3', '<p><b><i>[Some text.]</i></b></p>', '<p><b><i>{Some text.}</i></b></p>');
 
 	t('join existing context elements',
@@ -248,12 +166,15 @@
 	t('unbolding end tag 1',
 	  '<p><b><i>one{</i>two}</b></p>',
 	  '<p><b><i>one</i></b>{two}</p>');
+
 	t('unbolding start tag 1',
 	  '<p><b>{one<i>}two</i></b></p>',
 	  '<p>{one}<b><i>two</i></b></p>');
+
 	t('unbolding end tag with additional previous sibling',
 	  '<p><b>one<i>two{</i>three}</b></p>',
 	  '<p><b>one<i>two</i></b>{three}</p>');
+
 	t('unbolding start tag with additional next sibling',
 	  '<p><b>{one<i>}two</i>three</b></p>',
 	  '<p>{one}<b><i>two</i>three</b></p>');
@@ -275,120 +196,27 @@
 	  + ' with boundaries at start/end respectively',
 	  '<p><b>1<em>2<i>3<sub>4<u>{Some</u>Z</sub>text<sub>Z<u>.}</u>5</sub>6</i>7</em>8</b></p>',
 	  '<p><b>1</b><em><b>2</b><i><b>3</b><sub><b>4</b><u>{Some</u>Z</sub>text<sub>Z<u>.}</u><b>5</b></sub><b>6</b></i><b>7</b></em><b>8</b></p>');
+
 	// Same as above except "boundaries in the middle"
 	t('pushing down two levels through commonAncestorContainer,'
 	  + ' and two levels down to each boundary,'
 	  + ' with boundaries in the mioddle',
 	  '<p><b>1<em>2<i>3<sub>4<u>left{Some</u>Z</sub>text<sub>Z<u>.}right</u>5</sub>6</i>7</em>8</b></p>',
 	  '<p><b>1</b><em><b>2</b><i><b>3</b><sub><b>4</b><u><b>left</b>{Some</u>Z</sub>text<sub>Z<u>.}<b>right</b></u><b>5</b></sub><b>6</b></i><b>7</b></em><b>8</b></p>');
+
 	// Same as above except "boundaries at end/start respectively"
 	t('pushing down two levels through commonAncestorContainer,'
 	  + ' and two levels down to each boundary,'
 	  + ' with boundaries at start/end respectively',
 	  '<p><b>1<em>2<i>3<sub>4<u>Some{</u>Z</sub>text<sub>Z<u>}.</u>5</sub>6</i>7</em>8</b></p>',
 	  '<p><b>1</b><em><b>2</b><i><b>3</b><sub><b>4<u>Some</u></b>{Z</sub>text<sub>Z}<b><u>.</u>5</b></sub><b>6</b></i><b>7</b></em><b>8</b></p>');
+
 	// Same as above except "boundaries in empty container"
 	t('pushing down two levels through commonAncestorContainer,'
 	  + ' and two levels down to each boundary,'
 	  + ' with boundaries in empty container',
 	  '<p><b>1<em>2<i>3<sub>4<u>{</u>Z</sub>text<sub>Z<u>}</u>5</sub>6</i>7</em>8</b></p>',
 	  '<p><b>1</b><em><b>2</b><i><b>3</b><sub><b>4<u></u></b>{Z</sub>text<sub>Z}<b><u></u>5</b></sub><b>6</b></i><b>7</b></em><b>8</b></p>');
-
-	t = function (title, before, after) {
-		testMutation('editing.split ' + title, before, after, function (dom, range) {
-			function below(node) {
-				return node.nodeName === 'DIV';
-			}
-			Editing.split(range, {below: below});
-		});
-	};
-
-	t('split cac',
-	  '<div><p><b>one</b>{<i>two</i><i>three</i>}<b>four</b></p></div>',
-	  '<div><p><b>one</b></p>{<p><i>two</i><i>three</i></p>}<p><b>four</b></p></div>');
-
-	t('split above incl cac 1',
-	  '<div><p><em><b>one</b>{<i>two</i><i>three</i>}<b>four</b></em></p></div>',
-	  '<div><p><em><b>one</b></em></p>{<p><em><i>two</i><i>three</i></em></p>}<p><em><b>four</b></em></p></div>');
-
-	t('split above incl cac 2',
-	  '<div><p>one<span class="cls">t[]wo</span></p></div>',
-	  '<div><p>one<span class="cls">t</span></p>{}<p><span class="cls">wo</span></p></div>');
-
-	t('split above and below cac 1',
-	  '<div><p><em><b>one</b>{<i>two</i><i>three</i>}<b>four</b></em></p></div>',
-	  '<div><p><em><b>one</b></em></p>{<p><em><i>two</i><i>three</i></em></p>}<p><em><b>four</b></em></p></div>');
-
-	t('split above and below cac 2',
-	  '<div><p><em><b>one</b><strong><u>-{<i>two</i></u><u><i>three</i>}-</u></strong><b>four</b></em></p></div>',
-	  '<div><p><em><b>one</b><strong><u>-</u></strong></em></p>{<p><em><strong><u><i>two</i></u><u><i>three</i></u></strong></em></p>}<p><em><strong><u>-</u></strong><b>four</b></em></p></div>');
-
-	t('split at start end doesn\'t leave empty nodes 1',
-	  '<div><b>one{</b><i>two</i><b>}three</b></div>',
-	  '<div><b>one</b>{<i>two</i>}<b>three</b></div>');
-
-	t('split at start end doesn\'t leave empty nodes 2',
-	  '<div><b>{one</b><i>two</i><b><em>three</em>}</b></div>',
-	  '<div>{<b>one</b><i>two</i><b><em>three</em></b>}</div>');
-
-	t('split collapsed range 1',
-	  '<div><b><i>1</i><i>2{}</i><i>3</i></b></div>',
-	  '<div><b><i>1</i><i>2</i></b>{}<b><i>3</i></b></div>');
-
-	t('split collapsed range in empty element',
-	  '<div><b><i>1</i><i>{}</i><i>3</i></b></div>',
-	  '<div><b><i>1</i></b>{}<b><i></i><i>3</i></b></div>');
-
-	t('trim/include the last br if it is the last child of the block',
-	  '<div><h1>1{<br/></h1><p>2}<br/></p></div>',
-	  '<div><h1>1<br/></h1>{<p>2<br/></p>}</div>');
-
-	t('trim/include the last br if it is the last child of an inline element',
-	  '<div><h1>1{<br/></h1><p><b>2}<br/></b></p></div>',
-	  '<div><h1>1<br/></h1>{<p><b>2<br/></b></p>}</div>');
-
-	// TODO This test doesn't work on IE because IE automatically strips some
-	// spaces and not others. Could be made to work by stripping exactly
-	// those whitespace from the expected result.
-	if (!Browsers.ie) {
-		t('split ignores unrendered nodes 1',
-		  '<div>  <span> {  </span> <span>text} </span><b> </b> </div>',
-		  '<div>{  <span>   </span> <span>text </span><b> </b> }</div>');
-	}
-
-	t('split ignores unrendered nodes 2',
-	  '<div><i><u><sub>{</sub></u>a</i>b<i>c<u><sub>}</sub></u></i></div>',
-	  '<div>{<i><u><sub></sub></u>a</i>b<i>c<u><sub></sub></u></i>}</div>');
-
-	t = function (title, before, after) {
-		testMutation('editing.split+format - ' + title, before, after, function (dom, range) {
-			var cac = range.commonAncestorContainer;
-			function until(node) {
-				return node.nodeName === 'CODE';
-			}
-			function below(node) {
-				return cac === node;
-			}
-			Editing.split(range, {below: below, until: until});
-			Editing.wrap(range, 'B');
-		});
-	};
-
-	t('a single level to the right',
-	  '<p>So[me <i>te]xt</i></p>',
-	  '<p>So{<b>me <i>te</i></b>}<i>xt</i></p>');
-
-	t('multiple levels to the right',
-	  '<p>So[me <i>a<u>b]c</u></i></p>',
-	  '<p>So{<b>me <i>a<u>b</u></i></b>}<i><u>c</u></i></p>');
-
-	t('multiple levels to the left and right',
-	  '<p>S<sub>o<em>{m</em></sub>e <i>a<u>b]c</u></i></p>',
-	  '<p>S<sub>o</sub>{<b><sub><em>m</em></sub>e <i>a<u>b</u></i></b>}<i><u>c</u></i></p>');
-
-	t('don\'t split obstruction on the left; with element siblings on the right',
-	  '<p><i><em>-</em><code>Some<em>-{-</em>text</code></i>-<i><em>-</em><em>-</em>}<em>-</em><em>-</em></i></p>',
-	  '<p><i><em>-</em></i><i><code>Some<em>-{<b>-</b></em><b>text</b></code></i><b>-<i><em>-</em><em>-</em></i></b>}<i><em>-</em><em>-</em></i></p>');
 
 	testMutation('don\'t split if opts.below returns false',
 				 '<div><i>a[b</i>c<b>d]e</b></div>',
@@ -604,12 +432,11 @@
 	  '<p>So<b>m</b>{e t}<b>e</b>xt</p>',
 	  false);
 
-	// NB when this test is executed for "text-decoration: underline"
-	// the result will look like the result for bold, but the visual
-	// result will be incorrect, since it's not possible to unformat an
-	// underline in an inner element. The only way to unformat an
-	// underline is to split the underline ancestor, but we can't do
-	// that when a class is set on the ancestor.
+	// NB when this test is executed for "text-decoration: underline" the
+	// result will look like the result for bold, but the visual result will be
+	// incorrect, since it's not possible to unformat an underline in an inner
+	// element. The only way to unformat an underline is to split the underline
+	// ancestor, but we can't do that when a class is set on the ancestor
 	t('unformat inside class context',
 	  '<p><span class="test-bold">Som[e t]ext</span></p>',
 	  '<p><span class="test-bold">Som{<span style="font-weight: normal">e t</span>}ext</span></p>',

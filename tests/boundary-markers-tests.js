@@ -64,8 +64,7 @@
 			var boundaries = BoundaryMarkers.extract(dom);
 			equal(Xhtml.nodeToXhtml(dom), stripped, markup + ' ⇒  ' + stripped);
 			BoundaryMarkers.insert(boundaries[0], boundaries[1]);
-			equal(Xhtml.nodeToXhtml(dom), markup, stripped + ' ⇒  ' + markup
-			);
+			equal(Xhtml.nodeToXhtml(dom), markup, stripped + ' ⇒  ' + markup);
 			return t;
 		})
 		('<p>{Some text.}</p>')

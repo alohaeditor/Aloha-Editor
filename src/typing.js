@@ -73,7 +73,11 @@ define([
 	}
 
 	function break_(isLinebreak, alohaEvent) {
-		Editing.break(alohaEvent.range, alohaEvent.editable, isLinebreak);
+		Editing.break(
+			alohaEvent.range,
+			alohaEvent.editable.defaultBlockNodeName,
+			isLinebreak
+		);
 		return alohaEvent.range;
 	}
 
