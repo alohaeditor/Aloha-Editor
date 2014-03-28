@@ -345,9 +345,13 @@ define([
 	function adjacentBr(boundary) {
 		var before = Boundaries.nodeBefore(boundary);
 		var after = Boundaries.nodeAfter(boundary);
-		return (before && isRenderedBr(before)) ? before
-		     : (after  && isRenderedBr(after))  ? after
-		     : null;
+		if (before && isRenderedBr(before)) {
+			return before;
+		}
+		if (after && isRenderedBr(after)) {
+			return after;
+		}
+		return null;
 	}
 
 	/**

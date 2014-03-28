@@ -430,14 +430,10 @@ define([
 		if (Dom.isTextNode(node) || isAtEnd(boundary)) {
 			return jumpOver(boundary);
 		}
-		var next = Dom.nthChild(node, boundaryOffset);
-		if (!next) {
-			console.warn(aloha.boundarymarkers.hint(boundary));
-			debugger;
-		}
-		return Dom.isTextNode(next)
-		     ? raw(next.parentNode, boundaryOffset + 1)
-		     : raw(next, 0);
+		var nextNode = Dom.nthChild(node, boundaryOffset);
+		return Dom.isTextNode(nextNode)
+		     ? raw(nextNode.parentNode, boundaryOffset + 1)
+		     : raw(nextNode, 0);
 	}
 
 	/**
