@@ -358,6 +358,7 @@ define([
 	Maps.extend(Node.prototype, {
 		attr     : Accessor.asMethod(Accessor(getAttr, setAttr)),
 		style    : Accessor.asMethod(Accessor(getStyle, setStyle)),
+		create   : Node,
 		updateDom: Fn.asMethod1(updateDom)
 	});
 
