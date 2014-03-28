@@ -372,7 +372,7 @@ define([
 		var next      = Boundaries.nodeAfter(split);
 		var children  = next ? Dom.nextSiblings(next) : [];
 
-		// ..</p>|<p>...
+		// ...foo</p>|<h1>bar...
 		if (next && isBreakingContainer(next)) {
 			split = insertBreakAtBoundary(split, defaultBreakingElement);
 
@@ -417,7 +417,7 @@ define([
 		prop(Boundaries.container(boundaries[1]));
 
 		var node = Boundaries.nodeAfter(boundaries[1]);
-		var visible = Dom.nextWhile(node, function (node) {
+		var visible = node && Dom.nextWhile(node, function (node) {
 			return !isRenderedBr(node) && Elements.isUnrendered(node);
 		});
 
