@@ -3,6 +3,7 @@
 
 	module('editing');
 
+	var Fn = aloha.fn;
 	var Html = aloha.html;
 	var Xhtml = aloha.xhtml;
 	var Ranges = aloha.ranges;
