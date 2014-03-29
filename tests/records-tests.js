@@ -180,12 +180,12 @@
 			return computedState;
 		}
 		var Type = Record.defineMap({
-			lazy: {defaultValue: 'lazy', getLazily: lazyFn},
+			lazy: {defaultValue: 'lazy', compute: lazyFn},
 			computed: {defaultValue: computedValue}
 		});
 		var record = Type();
 		equal(record.lazy(), 'lazy');
-		var record1 = record.lazy.setLazily(record, record);
+		var record1 = record.lazy.compute(record, record);
 		equal(computedState, null);
 		equal(record1.lazy(), computedValue);
 		equal(computedState, computedValue);

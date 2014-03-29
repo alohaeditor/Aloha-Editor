@@ -199,7 +199,7 @@ define([
 		assertStyleNotAsAttr('style' !== name);
 		assertElement(node);
 		node = setChangedOrCached(node, name, value, node.changedAttrs);
-		node = node.attrs.setLazily(node, node);
+		node = node.attrs.compute(node, node);
 		return node;
 	}
 
@@ -286,7 +286,7 @@ define([
 	function setChildrenAffectChanges(node, children, set) {
 		Assert.assertNotNou(children);
 		node = set(node, children);
-		node = node.changedChildren.setLazily(node, node);
+		node = node.changedChildren.compute(node, node);
 		return node;
 	}
 
@@ -299,29 +299,29 @@ define([
 	}
 
 	var Node = Record.defineMap({
-		name             : {getLazily: changeableName    , set: setName},
-		text             : {getLazily: changeableText    , set: setText},
+		name             : {compute: changeableName    , set: setName},
+		text             : {compute: changeableText    , set: setText},
 		// excludes style attribute
-		attrs            : {getLazily: changeableAttrs   , set: setAttrsAffectChanges},
-		children         : {getLazily: changeableChildren, set: setChildrenAffectChanges},
+		attrs            : {compute: changeableAttrs   , set: setAttrsAffectChanges},
+		children         : {compute: changeableChildren, set: setChildrenAffectChanges},
 		// Constant properties.
 		domNode          : {defaultValue: null},
-		id               : {getLazily: allocateId},
-		type             : {getLazily: type},
+		id               : {compute: allocateId},
+		type             : {compute: type},
 		// Properties used for change-tracking, shouldn't be written to by client code.
 		// TODO make these private
 		changedStyles    : {defaultValue: null},
 		changedAttrs     : {defaultValue: null},
-		changedChildren  : {getLazily: changedChildren},
+		changedChildren  : {compute: changedChildren},
 		changedInParent  : {defaultValue: NO_CHANGE},
-		unchangedName    : {getLazily: name},
-		unchangedText    : {getLazily: text},
+		unchangedName    : {compute: name},
+		unchangedText    : {compute: text},
 		// includes style attribute
-		unchangedAttrs   : {getLazily: attrs},
-		unchangedChildren: {getLazily: children},
+		unchangedAttrs   : {compute: attrs},
+		unchangedChildren: {compute: children},
 		// Caches are stateful maps only for internal optimization!
-		_cachedAttrs     : {getLazily: createCache},
-		_cachedStyles    : {getLazily: createCache}
+		_cachedAttrs     : {compute: createCache},
+		_cachedStyles    : {compute: createCache}
 	}, function (node, domNodeOrProps) {
 		node = node.asTransient();
 		if (domNodeOrProps.nodeType) {
@@ -331,28 +331,28 @@ define([
 			var computeFrom = node.asPersistent();
 			node = computeFrom.asTransient();
 
-			// TODO setLazilyT() should be inside the setters of the
+			// TODO computeT() should be inside the setters of the
 			// respective fields.
-			node = node.type.setLazilyT(node, computeFrom);
-			node = node.id.setLazilyT(node);
-			node = node._cachedAttrs.setLazilyT(node);
-			node = node._cachedStyles.setLazilyT(node);
+			node = node.type.computeT(node, computeFrom);
+			node = node.id.computeT(node);
+			node = node._cachedAttrs.computeT(node);
+			node = node._cachedStyles.computeT(node);
 
 			computeFrom = node.asPersistent();
 			node = computeFrom.asTransient();
 
-			node = node.unchangedText.setLazilyT(node, computeFrom);
-			node = node.unchangedName.setLazilyT(node, computeFrom);
-			node = node.unchangedAttrs.setLazilyT(node, computeFrom);
-			node = node.unchangedChildren.setLazilyT(node, computeFrom);
+			node = node.unchangedText.computeT(node, computeFrom);
+			node = node.unchangedName.computeT(node, computeFrom);
+			node = node.unchangedAttrs.computeT(node, computeFrom);
+			node = node.unchangedChildren.computeT(node, computeFrom);
 
 			computeFrom = node.asPersistent();
 			node = computeFrom.asTransient();
 
-			node = node.text.setLazilyT(node, computeFrom);
-			node = node.name.setLazilyT(node, computeFrom);
-			node = node.attrs.setLazilyT(node, computeFrom);
-			node = node.children.setLazilyT(node, computeFrom);
+			node = node.text.computeT(node, computeFrom);
+			node = node.name.computeT(node, computeFrom);
+			node = node.attrs.computeT(node, computeFrom);
+			node = node.children.computeT(node, computeFrom);
 
 		} else if (!Fn.isNou(domNodeOrProps.name)) {
 			var props = domNodeOrProps;
@@ -362,9 +362,9 @@ define([
 			var attrs = props.attrs || {};
 			var children = props.children || [];
 			node = node.type.setT(node, 1);
-			node = node.id.setLazilyT(node);
-			node = node._cachedAttrs.setLazilyT(node);
-			node = node._cachedStyles.setLazilyT(node);
+			node = node.id.computeT(node);
+			node = node._cachedAttrs.computeT(node);
+			node = node._cachedStyles.computeT(node);
 
 			node = node.unchangedName.setT(node, name);
 			node = node.unchangedAttrs.setT(node, attrs);

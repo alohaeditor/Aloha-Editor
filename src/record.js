@@ -184,7 +184,7 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	}
 
 	function addFieldWithDescriptor(Record, descriptor) {
-		var computedGet = descriptor.getLazily;
+		var computedGet = descriptor.compute;
 		var computedSet = descriptor.set;
 		var computedSetT = descriptor.setT;
 		var defaultValue = descriptor.defaultValue;
@@ -193,8 +193,8 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 		var setT = field.setT;
 		var set = field.set;
 		var get = field.get;
-		var setLazily = null;
-		var setLazilyT = null;
+		var compute = null;
+		var computeT = null;
 		var isMemoized = null;
 		var isComputed = Fn.returnFalse;
 		if (computedGet) {
@@ -213,10 +213,10 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 			isMemoized = function (record) {
 				return wrappedGet(record)(true);
 			};
-			setLazily = function (record, arg) {
+			compute = function (record, arg) {
 				return wrappedSet(record, lazyFn(computedGet, arg));
 			};
-			setLazilyT = function (record, arg) {
+			computeT = function (record, arg) {
 				return wrappedSetT(record, lazyFn(computedGet, arg));
 			};
 			isComputed = Fn.returnTrue;
@@ -241,8 +241,8 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 		}
 		field = Accessor(get, set);
 		field.setT = setT;
-		field.setLazily = setLazily;
-		field.setLazilyT = setLazilyT;
+		field.compute = compute;
+		field.computeT = computeT;
 		field.isMemoized = isMemoized;
 		field.isComputed = isComputed;
 		field.fieldName = descriptor.name;
@@ -256,8 +256,8 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 			var field = addFieldWithDescriptor(Record, descriptor);
 			var method = Accessor.asMethod(field);
 			method.setT = field.setT;
-			method.setLazily = field.setLazily;
-			method.setLazilyT = field.setLazilyT;
+			method.compute = field.compute;
+			method.computeT = field.computeT;
 			method.isComputed = field.isComputed;
 			method.isMemoized = field.isMemoized;
 			Record.prototype[name] = method;
