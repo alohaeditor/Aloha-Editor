@@ -309,6 +309,7 @@ define([
 		id             : allocateId,
 		type           : type,
 		// Properties used for change-tracking, shouldn't be written to by client code.
+		// TODO make these private
 		changedStyles  : {defaultValue: null},
 		changedAttrs   : {defaultValue: null},
 		changedChildren: changedChildren,
@@ -359,7 +360,7 @@ define([
 		attr     : Accessor.asMethod(Accessor(getAttr, setAttr)),
 		style    : Accessor.asMethod(Accessor(getStyle, setStyle)),
 		create   : Node,
-		updateDom: Fn.asMethod1(updateDom)
+		updateDom: Fn.asMethod(updateDom)
 	});
 
 	function updateDomNodeFromMap(domNode, map, updateFn) {
@@ -501,7 +502,7 @@ define([
 		return node;
 	}
 
-	function updateDom(node) {
+	function updateDom(node, opts) {
 		var domNode = node.domNode.get(node);
 		var doc = domNode.ownerDocument;
 		Assert.assert(doc, 'element-not-attached');

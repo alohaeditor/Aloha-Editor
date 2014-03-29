@@ -9,6 +9,9 @@
  * - record.merge(values) shares values array (values must be persistent)
  * - transient support with linear-time record.asTransient()
  * - optional init function (default calls record.merge())
+ *
+ * TODO: computed getters should compute from a defaultComputeFrom value
+ * analogous to defaultValue which.
  */
 define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor, Assert) {
 	'use strict';
@@ -267,6 +270,8 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	}
 
 	/**
+	 * @deprecated confusing semantics
+	 *
 	 * Recomputes all lazy fields from the given transient record.
 	 *
 	 * Useful to ensure that a computed field will receive a record in
@@ -291,6 +296,8 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	}
 
 	/**
+	 * @depreacted confusing semantics
+	 *
 	 * Like computeLazilyAllFromSelfT() but for persistent records.
 	 */
 	function computeLazilyAllFromSelf(record) {
