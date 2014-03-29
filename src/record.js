@@ -129,6 +129,11 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 		return field;
 	}
 
+	function mergeValues(record, values) {
+		assertRead(record);
+		return initWithValues(clone(record), values);
+	}
+
 	function defineBase(init) {
 		var defaults = [];
 		function Record(values) {
@@ -143,18 +148,6 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 			asPersistent: Fn.asMethod1(asPersistent)
 		});
 		Record._record_defaults = defaults;
-		return Record;
-	}
-
-	function mergeValues(record, values) {
-		assertRead(record);
-		return initWithValues(clone(record), values);
-	}
-
-	function define(init) {
-		var Record = defineBase(init || initWithValues);
-		Record.addField = Fn.partial(addField, Record);
-		Record.prototype.merge = Fn.asMethod1(mergeValues);
 		return Record;
 	}
 
@@ -278,7 +271,7 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	 * is also set, but which may be set before or after the first,
 	 * depending on the order the fields were defined in.
 	 */
-	function mergeMapT(record, valueMap) {
+	function mergeValueMapT(record, valueMap) {
 		if (!valueMap) {
 			return record;
 		}
@@ -298,10 +291,10 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	}
 
 	/**
-	 * Like mergeMapT() but for persistent records.
+	 * Like mergeValueMapT() but for persistent records.
 	 */
-	function mergeMap(record, valueMap) {
-		return asPersistent(mergeMapT(asTransient(record), valueMap));
+	function mergeValueMap(record, valueMap) {
+		return asPersistent(mergeValueMapT(asTransient(record), valueMap));
 	}
 
 	function addFieldWithoutName(Record, defaultValue) {
@@ -310,15 +303,28 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 		return field;
 	}
 
-	function defineMap(fieldMap, init) {
-		var Record = defineBase(init || mergeMap);
+	function defaultInit(record, valueArrayOrMap) {
+		if (Array.isArray(valueArrayOrMap)) {
+			return initWithValues(record, valueArrayOrMap);
+		}
+		return mergeValueMap(record, valueArrayOrMap);
+	}
+
+	function define(fieldMap, init) {
+		if (Fn.is(fieldMap)) {
+			init = fieldMap;
+			fieldMap = null;
+		}
+		var Record = defineBase(init || defaultInit);
 		Record._record_fields = [];
 		Record.addField = Fn.partial(addFieldWithoutName, Record);
 		Record.addFieldWithDescriptor = Fn.partial(addFieldWithDescriptor, Record);
 		Record.extend = Fn.partial(extend, Record);
 		Maps.extend(Record.prototype, {
-			merge: Fn.asMethod1(mergeMap),
-			mergeT: Fn.asMethod1(mergeMapT)
+			// TODO mergeValues must consider computed fields like mergeValueMap does
+			mergeValues: Fn.asMethod1(mergeValues),
+			mergeValueMap: Fn.asMethod1(mergeValueMap),
+			mergeValueMapT: Fn.asMethod1(mergeValueMapT)
 		});
 		if (fieldMap) {
 			extend(Record, fieldMap);
@@ -327,7 +333,6 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	}
 
 	return {
-		define: define,
-		defineMap: defineMap
+		define: define
 	};
 });

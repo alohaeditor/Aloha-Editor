@@ -66,7 +66,7 @@
 		var two = Type.addField(2);
 		var three = Type.addField(3);
 		var record = Type(values);
-		var record1 = record.merge(valuesIncomplete);
+		var record1 = record.mergeValues(valuesIncomplete);
 		equal(one.get(record), values[0]);
 		equal(two.get(record), values[1]);
 		equal(one.get(record1), valuesIncomplete[0]);
@@ -114,7 +114,7 @@
 	});
 
 	function defineType(init) {
-		return Record.defineMap({
+		return Record.define({
 			one: {defaultValue: 1},
 			two: {defaultValue: 2},
 			three: {defaultValue: 3}
@@ -163,7 +163,7 @@
 	test('merge map with defaults', function () {
 		var Type = defineType();
 		var record = Type(valueMap);
-		var record1 = record.merge(valueMapIncomplete);
+		var record1 = record.mergeValueMap(valueMapIncomplete);
 		equal(record.one(), valueMap.one);
 		equal(record.two(), valueMap.two);
 		equal(record1.one(), valueMap.one);
@@ -179,7 +179,7 @@
 			computedState = record.computed();
 			return computedState;
 		}
-		var Type = Record.defineMap({
+		var Type = Record.define({
 			lazy: {defaultValue: 'lazy', compute: lazyFn},
 			computed: {defaultValue: computedValue}
 		});
@@ -201,7 +201,7 @@
 			numSet++;
 			return set(record, value + numSet);
 		}
-		var Type = Record.defineMap({
+		var Type = Record.define({
 			num: {defaultValue: 0, set: computedSet}
 		});
 		var record = Type();

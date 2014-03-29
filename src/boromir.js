@@ -298,7 +298,7 @@ define([
 		return {};
 	}
 
-	var Node = Record.defineMap({
+	var Node = Record.define({
 		name             : {compute: changeableName    , set: setName},
 		text             : {compute: changeableText    , set: setText},
 		// excludes style attribute
