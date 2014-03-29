@@ -180,7 +180,7 @@
 			return computedState;
 		}
 		var Type = Record.defineMap({
-			lazy: {defaultValue: 'lazy', get: lazyFn},
+			lazy: {defaultValue: 'lazy', getLazily: lazyFn},
 			computed: {defaultValue: computedValue}
 		});
 		var record = Type();

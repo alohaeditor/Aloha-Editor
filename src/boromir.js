@@ -299,29 +299,29 @@ define([
 	}
 
 	var Node = Record.defineMap({
-		name           : {get: changeableName    , set: setName},
-		text           : {get: changeableText    , set: setText},
+		name             : {getLazily: changeableName    , set: setName},
+		text             : {getLazily: changeableText    , set: setText},
 		// excludes style attribute
-		attrs          : {get: changeableAttrs   , set: setAttrsAffectChanges},
-		children       : {get: changeableChildren, set: setChildrenAffectChanges},
+		attrs            : {getLazily: changeableAttrs   , set: setAttrsAffectChanges},
+		children         : {getLazily: changeableChildren, set: setChildrenAffectChanges},
 		// Constant properties.
-		domNode        : {defaultValue: null},
-		id             : allocateId,
-		type           : type,
+		domNode          : {defaultValue: null},
+		id               : {getLazily: allocateId},
+		type             : {getLazily: type},
 		// Properties used for change-tracking, shouldn't be written to by client code.
 		// TODO make these private
-		changedStyles  : {defaultValue: null},
-		changedAttrs   : {defaultValue: null},
-		changedChildren: changedChildren,
-		changedInParent: {defaultValue: NO_CHANGE},
-		unchangedName  : name,
-		unchangedText  : text,
+		changedStyles    : {defaultValue: null},
+		changedAttrs     : {defaultValue: null},
+		changedChildren  : {getLazily: changedChildren},
+		changedInParent  : {defaultValue: NO_CHANGE},
+		unchangedName    : {getLazily: name},
+		unchangedText    : {getLazily: text},
 		// includes style attribute
-		unchangedAttrs : attrs,
-		unchangedChildren: children,
+		unchangedAttrs   : {getLazily: attrs},
+		unchangedChildren: {getLazily: children},
 		// Caches are stateful maps only for internal optimization!
-		_cachedAttrs   : createCache,
-		_cachedStyles  : createCache
+		_cachedAttrs     : {getLazily: createCache},
+		_cachedStyles    : {getLazily: createCache}
 	}, function (node, domNodeOrProps) {
 		node = node.asTransient();
 		if (domNodeOrProps.nodeType) {

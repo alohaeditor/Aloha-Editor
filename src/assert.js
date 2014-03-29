@@ -81,11 +81,12 @@ define([], function Assert() {
 		error          : error,
 		assertNou      : assertNou,
 		assertNotNou   : assertNotNou,
+		// Don't renumber to maintain well-known values for error
+		// conditions.
 		READ_FROM_DISCARDED_TRANSIENT: 3,
 		PERSISTENT_WRITE_TO_TRANSIENT: 4,
 		TRANSIENT_WRITE_TO_PERSISTENT: 5,
 		ONLY_ONE_OF_SET_OR_SETT      : 6,
-		NO_DESCRIPTOR                : 7,
 		STYLE_NOT_AS_ATTR            : 8,
 		EXPECT_ELEMENT               : 9,
 		EXPECT_TEXT_NODE             : 10,
