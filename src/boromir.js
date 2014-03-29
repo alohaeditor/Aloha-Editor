@@ -331,6 +331,8 @@ define([
 			var computeFrom = node.asPersistent();
 			node = computeFrom.asTransient();
 
+			// TODO setLazilyT() should be inside the setters of the
+			// respective fields.
 			node = node.type.setLazilyT(node, computeFrom);
 			node = node.id.setLazilyT(node);
 			node = node._cachedAttrs.setLazilyT(node);
