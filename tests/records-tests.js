@@ -185,7 +185,7 @@
 		});
 		var record = Type();
 		equal(record.lazy(), 'lazy');
-		var record1 = record.lazy.computeLazily(record, record);
+		var record1 = record.lazy.setLazily(record, record);
 		equal(computedState, null);
 		equal(record1.lazy(), computedValue);
 		equal(computedState, computedValue);

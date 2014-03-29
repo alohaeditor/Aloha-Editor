@@ -9,9 +9,6 @@
  * - record.merge(values) shares values array (values must be persistent)
  * - transient support with linear-time record.asTransient()
  * - optional init function (default calls record.merge())
- *
- * TODO: computed getters should compute from a defaultComputeFrom value
- * analogous to defaultValue which.
  */
 define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor, Assert) {
 	'use strict';
@@ -63,15 +60,15 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 
 	function assertRead(record) {
 		var transience = record._record_transience;
-		Assert.assert(transience === NOT_TRANSIENT || transience === TRANSIENT, 'read-from-discarded-transient');
+		Assert.assert(transience === NOT_TRANSIENT || transience === TRANSIENT, Assert.READ_FROM_DISCARDED_TRANSIENT);
 	}
 
 	function assertWrite(record) {
-		Assert.assert(record._record_transience === NOT_TRANSIENT, 'persistent-write-to-transient');
+		Assert.assert(record._record_transience === NOT_TRANSIENT, Assert.PERSISTENT_WRITE_TO_TRANSIENT);
 	}
 
 	function assertTransientWrite(record) {
-		Assert.assert(record._record_transience === TRANSIENT, 'transient-write-to-persistent');
+		Assert.assert(record._record_transience === TRANSIENT, Assert.TRANSIENT_WRITE_TO_PERSISTENT);
 	}
 
 	function asPersistent(record) {
@@ -191,7 +188,7 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 		var computedSet = descriptor.set;
 		var computedSetT = descriptor.setT;
 		var defaultValue = descriptor.defaultValue;
-		Assert.assert(!(computedSet && computedSetT), 'only-one-of-set-setT');
+		Assert.assert(!(computedSet && computedSetT), Assert.ONLY_ONE_OF_SET_OR_SETT);
 		var field = addField(Record, computedGet ? constantFn(defaultValue) : defaultValue);
 		var setT = field.setT;
 		var set = field.set;
@@ -211,16 +208,10 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 			field.isMemoized = function (record) {
 				return get(record)(true);
 			};
-			/**
-			 * To understand computeLazily, think you are setting the
-			 * value at the time you call computeLazily, from the
-			 * argument passed to computeLazily, not later from an
-			 * updated argument.
-			 */
-			field.computeLazily = function (record, arg) {
+			field.setLazily = function (record, arg) {
 				return wrappedSet(record, lazyFn(computedGet, arg));
 			};
-			field.computeLazilyT = function (record, arg) {
+			field.setLazilyT = function (record, arg) {
 				return wrappedSetT(record, lazyFn(computedGet, arg));
 			};
 			field.isComputed = Fn.returnTrue;
@@ -250,14 +241,14 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 
 	function extend(Record, fieldMap) {
 		Maps.forEach(fieldMap, function (descriptor, name) {
-			Assert.assert(descriptor, 'no-descriptor');
+			Assert.assert(descriptor, Assert.NO_DESCRIPTOR);
 			descriptor = Fn.is(descriptor) ? {get: descriptor} : descriptor;
 			descriptor = Maps.extend({name: name}, descriptor);
 			var field = addFieldWithDescriptor(Record, descriptor);
 			var method = Accessor.asMethod(field);
 			method.setT = field.setT;
-			method.computeLazily = field.computeLazily;
-			method.computeLazilyT = field.computeLazilyT;
+			method.setLazily = field.setLazily;
+			method.setLazilyT = field.setLazilyT;
 			method.isComputed = field.isComputed;
 			method.isMemoized = field.isMemoized;
 			Record.prototype[name] = method;
@@ -270,48 +261,13 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	}
 
 	/**
-	 * @deprecated confusing semantics
-	 *
-	 * Recomputes all lazy fields from the given transient record.
-	 *
-	 * Useful to ensure that a computed field will receive a record in
-	 * which all other recomputed fields are available to it for
-	 * reading. The only other way to ensure this is to call
-	 * record.computeLazily() on each individual field in dependency
-	 * order.
-	 */
-	function computeLazilyAllFromSelfT(record) {
-		record = discardTransient(record);
-		fieldsFromRecord(record).forEach(function (field) {
-			if (field.isComputed()) {
-				field.computeLazilyT(record, record);
-				// We cheat and reuse the transient instance so that
-				// every recomputed field gets the same instance and
-				// they can call each other in any order.
-				record._record_transience = TRANSIENT;
-			}
-		});
-		record._record_transience = NOT_TRANSIENT;
-		return record.asTransient();
-	}
-
-	/**
-	 * @depreacted confusing semantics
-	 *
-	 * Like computeLazilyAllFromSelfT() but for persistent records.
-	 */
-	function computeLazilyAllFromSelf(record) {
-		return asPersistent(computeLazilyAllFromSelfT(asTransient(record)));
-	}
-
-	/**
 	 * Returns an updated version of the given transient record that has
 	 * the values in the given map set in it.
 	 *
 	 * Doesn't call computed setters since that may cause unpredictable
 	 * behaviour if a setter reads from another field on the record that
-	 * is also set, but which may be set before or after the first
-	 * depending the order the fields were defined.
+	 * is also set, but which may be set before or after the first,
+	 * depending on the order the fields were defined in.
 	 */
 	function mergeMapT(record, valueMap) {
 		if (!valueMap) {
@@ -353,9 +309,7 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 		Record.extend = Fn.partial(extend, Record);
 		Maps.extend(Record.prototype, {
 			merge: Fn.asMethod1(mergeMap),
-			mergeT: Fn.asMethod1(mergeMapT),
-			computeLazilyAllFromSelf: Fn.asMethod1(computeLazilyAllFromSelf),
-			computeLazilyAllFromSelfT: Fn.asMethod1(computeLazilyAllFromSelfT)
+			mergeT: Fn.asMethod1(mergeMapT)
 		});
 		if (fieldMap) {
 			extend(Record, fieldMap);

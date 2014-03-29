@@ -145,15 +145,15 @@ define([
 	}
 
 	function assertStyleNotAsAttr(cond) {
-		Assert.assert(cond, 'style-not-as-attr');
+		Assert.assert(cond, Assert.STYLE_NOT_AS_ATTR);
 	}
 
 	function assertElement(node) {
-		Assert.assert(1 === node.type.get(node), 'expect-element');
+		Assert.assert(1 === node.type.get(node), Assert.EXPECT_ELEMENT);
 	}
 
 	function assertTextNode(node) {
-		Assert.assert(3 === node.type.get(node), 'expect-text-node');
+		Assert.assert(3 === node.type.get(node), Assert.EXPECT_TEXT_NODE);
 	}
 
 	function setAttrsAffectChanges(node, attrs, set) {
@@ -199,7 +199,7 @@ define([
 		assertStyleNotAsAttr('style' !== name);
 		assertElement(node);
 		node = setChangedOrCached(node, name, value, node.changedAttrs);
-		node = node.attrs.computeLazily(node, node);
+		node = node.attrs.setLazily(node, node);
 		return node;
 	}
 
@@ -286,7 +286,7 @@ define([
 	function setChildrenAffectChanges(node, children, set) {
 		Assert.assertNotNou(children);
 		node = set(node, children);
-		node = node.changedChildren.computeLazily(node, node);
+		node = node.changedChildren.setLazily(node, node);
 		return node;
 	}
 
@@ -327,7 +327,31 @@ define([
 		if (domNodeOrProps.nodeType) {
 			var domNode = domNodeOrProps;
 			node = node.domNode.setT(node, domNode);
-			node = node.computeLazilyAllFromSelfT();
+
+			var computeFrom = node.asPersistent();
+			node = computeFrom.asTransient();
+
+			node = node.type.setLazilyT(node, computeFrom);
+			node = node.id.setLazilyT(node);
+			node = node._cachedAttrs.setLazilyT(node);
+			node = node._cachedStyles.setLazilyT(node);
+
+			computeFrom = node.asPersistent();
+			node = computeFrom.asTransient();
+
+			node = node.unchangedText.setLazilyT(node, computeFrom);
+			node = node.unchangedName.setLazilyT(node, computeFrom);
+			node = node.unchangedAttrs.setLazilyT(node, computeFrom);
+			node = node.unchangedChildren.setLazilyT(node, computeFrom);
+
+			computeFrom = node.asPersistent();
+			node = computeFrom.asTransient();
+
+			node = node.text.setLazilyT(node, computeFrom);
+			node = node.name.setLazilyT(node, computeFrom);
+			node = node.attrs.setLazilyT(node, computeFrom);
+			node = node.children.setLazilyT(node, computeFrom);
+
 		} else if (!Fn.isNou(domNodeOrProps.name)) {
 			var props = domNodeOrProps;
 			Assert.assertNou(props.text);
@@ -335,11 +359,15 @@ define([
 			var name = props.name;
 			var attrs = props.attrs || {};
 			var children = props.children || [];
-			node = node.computeLazilyAllFromSelfT();
 			node = node.type.setT(node, 1);
+			node = node.id.setLazilyT(node);
+			node = node._cachedAttrs.setLazilyT(node);
+			node = node._cachedStyles.setLazilyT(node);
+
 			node = node.unchangedName.setT(node, name);
 			node = node.unchangedAttrs.setT(node, attrs);
 			node = node.unchangedChildren.setT(node, children);
+
 			node = node.name.setT(node, name);
 			node = node.attrs.setT(node, attrs);
 			node = node.children.setT(node, children);
@@ -348,7 +376,6 @@ define([
 			Assert.assertNou(props.name);
 			Assert.assertNou(props.nodeType);
 			var text = props.text;
-			node = node.computeLazilyAllFromSelfT();
 			node = node.type.setT(node, 3);
 			node = node.unchangedText.setT(node, text);
 			node = node.text.setT(node, text);
@@ -374,7 +401,7 @@ define([
 			var name = node.name.get(node);
 			var isMemoized = node.unchangedName.isMemoized(node);
 			if (!isMemoized || name !== node.unchangedName.get(node)) {
-				Assert.error('not-implemented');
+				Assert.notImplemented();
 			}
 		}
 		return node;
@@ -443,7 +470,7 @@ define([
 		} else if (3 === type) {
 			return createTextNode(doc, node);
 		} else {
-			Assert.error('not-implemented');
+			Assert.notImplemented()
 		}
 	}
 
@@ -505,7 +532,7 @@ define([
 	function updateDom(node, opts) {
 		var domNode = node.domNode.get(node);
 		var doc = domNode.ownerDocument;
-		Assert.assert(doc, 'element-not-attached');
+		Assert.assert(doc, Assert.ELEMENT_NOT_ATTACHED);
 		return updateDomRec(node, doc, {});
 	}
 

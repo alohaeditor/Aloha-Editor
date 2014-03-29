@@ -58,12 +58,16 @@ define([], function Assert() {
 		}
 	}
 
+	function notImplemented() {
+		error(0);
+	}
+
 	function assertNotNou(obj) {
-		assert(null != obj, 'null-or-undefined');
+		assert(null != obj, 1);
 	}
 
 	function assertNou(obj) {
-		assert(null == obj, 'not-null-or-undefined');
+		assert(null == obj, 2);
 	}
 
 	return {
@@ -74,8 +78,17 @@ define([], function Assert() {
 		assertError    : assertError,
 		errorLink      : errorLink,
 		assert         : assert,
+		error          : error,
 		assertNou      : assertNou,
 		assertNotNou   : assertNotNou,
-		error          : error
+		READ_FROM_DISCARDED_TRANSIENT: 3,
+		PERSISTENT_WRITE_TO_TRANSIENT: 4,
+		TRANSIENT_WRITE_TO_PERSISTENT: 5,
+		ONLY_ONE_OF_SET_OR_SETT      : 6,
+		NO_DESCRIPTOR                : 7,
+		STYLE_NOT_AS_ATTR            : 8,
+		EXPECT_ELEMENT               : 9,
+		EXPECT_TEXT_NODE             : 10,
+		ELEMENT_NOT_ATTACHED         : 11
 	};
 });
