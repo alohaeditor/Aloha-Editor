@@ -171,13 +171,11 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 		}
 	}
 
-	function addFieldWithDescriptor(Record, descriptor) {
+	function wrapBasicField(field, descriptor) {
 		var computedGet = descriptor.compute;
 		var computedSet = descriptor.set;
 		var computedSetT = descriptor.setT;
-		var defaultValue = descriptor.defaultValue;
 		Assert.assert(!(computedSet && computedSetT), Assert.ONLY_ONE_OF_SET_OR_SETT);
-		var field = addField(Record, computedGet ? constantFn(defaultValue) : defaultValue);
 		var setT = field.setT;
 		var set = field.set;
 		var get = field.get;
@@ -235,7 +233,14 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 			field.isMemoized = isMemoized;
 		}
 		field.isComputed = isComputed;
-		field.fieldName = descriptor.name;
+		field.descriptor = descriptor;
+		return field;
+	}
+
+	function addFieldWithDescriptor(Record, descriptor) {
+		var defaultValue = descriptor.defaultValue;
+		var field = addField(Record, descriptor.compute ? constantFn(defaultValue) : defaultValue);
+		field = wrapBasicField(field, descriptor);
 		Record._record_fields.push(field);
 		return field;
 	}
@@ -280,7 +285,7 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 		record = discardTransient(record);
 		var values = ensureTypeDefaults(record);
 		fieldsFromRecord(record).forEach(function (field, i) {
-			var name = field.fieldName;
+			var name = field.descriptor.name;
 			if (valueMap.hasOwnProperty(name)) {
 				var value = valueMap[name];
 				if (field.isComputed()) {
