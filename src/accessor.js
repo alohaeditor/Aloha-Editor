@@ -1,13 +1,21 @@
-define(['assert'], function (Assert) {
+define(['functions', 'assert'], function (Fn, Assert) {
 	'use strict';
 
 	function ensureAccessorLength(get, set) {
 		var getLen = get.length;
 		var setLen = set.length;
-		Assert.assert(getLen >= 1);
-		Assert.assert(setLen >= 2);
-		Assert.assert(getLen === setLen - 1);
+		Assert.assert(getLen >= 1, Assert.GETTER_AT_LEAST_1_ARG);
+		Assert.assert(setLen >= 2, Assert.SETTER_1_MORE_THAN_GETTER);
+		Assert.assert(getLen === setLen - 1, Assert.SETTER_1_MORE_THAN_GETTER);
 		return getLen;
+	}
+
+	function accessorFn(get, set, getLen) {
+		return function () {
+			return (arguments.length - getLen > 0
+			        ? set.apply(null, arguments)
+			        : get.apply(null, arguments));
+		};
 	}
 
 	/**
@@ -19,11 +27,12 @@ define(['assert'], function (Assert) {
 	 * setter function, or otherwise calls the getter function.
 	 *
 	 * A getter must have at least one argument, the object something is
-	 * being got from. The setter must have at least one more than the
-	 * getter, which is presumably the value that is to be set.
+	 * being gotten from. The setter must have at least one more
+	 * argument than the getter, which is presumably the value that is
+	 * to be set.
 	 *
 	 * The getter and setter the accessor is composed of are available
-	 * as the accessor.get and accessor.set properties of the accessor
+	 * as the accessor.get and accessor.set properties on the accessor
 	 * function. Using the getter and setter directly should only be
 	 * done for optimizing accesses when it is really needed.
 	 *
@@ -39,16 +48,16 @@ define(['assert'], function (Assert) {
 	 */
 	function Accessor(get, set) {
 		var getLen = ensureAccessorLength(get, set);
-		// Optimize the common case of 1 === getLen
+		// Optimize the common case of getLen <= 2
 		var accessor = (1 === getLen) ? function (obj, value) {
 			return (arguments.length > 1
 			        ? set(obj, value)
 			        : get(obj));
-		} : function () {
-			return (arguments.length - getLen > 0
-			        ? set.apply(null, arguments)
-			        : get.apply(null, arguments));
-		};
+		} : (2 === getLen) ? function (obj, arg, value) {
+			return (arguments.length > 2
+			        ? set(obj, arg, value)
+			        : get(obj, arg));
+		} : accessorFn(get, set, getLen);
 		accessor.get = get;
 		accessor.set = set;
 		return accessor;
@@ -66,18 +75,16 @@ define(['assert'], function (Assert) {
 		var get = accessor.get;
 		var set = accessor.set;
 		var getLen = ensureAccessorLength(get, set);
-		// Optimize the common case of 1 === getLen
+		// Optimize the common case of getLen <= 2
 		var method = (1 === getLen) ? function (value) {
 			return (arguments.length
 			        ? set(this, value)
 			        : get(this));
-		} : function (value) {
-			var args = Array.prototype.slice.call(arguments, 0);
-			args.unshift(this);
-			return (arguments.length + 1 - getLen > 0
-			        ? set.apply(null, args)
-			        : get.apply(null, args));
-		};
+		} : (2 === getLen) ? function (arg, value) {
+			return (arguments.length > 1
+			        ? set(this, arg, value)
+			        : get(this, arg));
+		} : Fn.asMethod(accessorFn(get, set, getLen));
 		method.get = get;
 		method.set = set;
 		return method;
@@ -104,7 +111,7 @@ define(['assert'], function (Assert) {
 				return fromString(symbol);
 			}
 		}
-		Assert.error();
+		Assert.error(Assert.MISSING_PROPERTY);
 	}
 
 	Accessor.fromString = fromString;
