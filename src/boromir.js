@@ -197,7 +197,7 @@ define([
 		return getChangedOrCachedFromElem(node, name, node.changedAttrs,
 		                                  cachedAttrs, Dom.getAttr);
 	}
-	function setAttr(node, name, value) {
+	function setAttrAffectChanges(node, name, value) {
 		assertStyleNotAsAttr('style' !== name);
 		assertElement(node);
 		node = setChangedOrCached(node, name, value, node.changedAttrs);
@@ -210,7 +210,7 @@ define([
 		                                  cachedStyles, Dom.getStyle);
 	}
 
-	function setStyle(node, name, value) {
+	function setStyleAffectChanges(node, name, value) {
 		return setChangedOrCached(node, name, value, node.changedStyles);
 	}
 
@@ -386,8 +386,8 @@ define([
 	var cachedAttrs  = Node.addField({compute: Object});
 
 	Maps.extend(Node.prototype, {
-		attr     : Accessor.asMethod(Accessor(getAttr, setAttr)),
-		style    : Accessor.asMethod(Accessor(getStyle, setStyle)),
+		attr     : Accessor.asMethod(Accessor(getAttr, setAttrAffectChanges)),
+		style    : Accessor.asMethod(Accessor(getStyle, setStyleAffectChanges)),
 		create   : Node,
 		updateDom: Fn.asMethod(updateDom)
 	});
