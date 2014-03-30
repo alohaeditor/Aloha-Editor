@@ -15,7 +15,7 @@ define([
 	Dom,
 	Misc,
 	Arrays,
-	Asserts,
+	Assert,
 	Strings
 ) {
 	'use strict';
@@ -93,10 +93,7 @@ define([
 	function normalize(boundary) {
 		var node = container(boundary);
 		if (Dom.isTextNode(node)) {
-			Asserts.assertTrue(
-				Misc.defined(node.parentNode),
-				Asserts.errorLink('boundaries.normalize#parentNode')
-			);
+			Assert.assertNotNou(node.parentNode);
 			var boundaryOffset = offset(boundary);
 			if (0 === boundaryOffset) {
 				return fromNode(node);

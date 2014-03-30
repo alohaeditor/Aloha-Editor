@@ -130,25 +130,25 @@ define([
 	function boundaryFromPath(container, path) {
 		for (var i = 0; i < path.length - 1; i++) {
 			var step = path[i];
-			Assert.assertEqual(step[1], container.nodeName);
+			Assert.assert(step[1] === container.nodeName);
 			container = Dom.normalizedNthChild(container, step[0]);
 		}
 		var lastStep = Arrays.last(path);
 		var off = lastStep[0];
 		container = Dom.nextWhile(container, Dom.isEmptyTextNode);
 		// NB: container must be non-null at this point.
-		Assert.assertEqual(lastStep[1], container.nodeName);
+		Assert.assert(lastStep[1] === container.nodeName);
 		if (Dom.isTextNode(container)) {
 			// Because text offset paths with value 0 are invalid.
-			Assert.assertNotEqual(off, 0);
+			Assert.assert(off !== 0);
 			while (off > Dom.nodeLength(container)) {
-				Assert.assertTrue(Dom.isTextNode(container));
+				Assert.assert(Dom.isTextNode(container));
 				off -= Dom.nodeLength(container);
 				container = container.nextSibling;
 			}
 			// Because we may have stepped out of a text node.
 			if (!Dom.isTextNode(container)) {
-				Assert.assertEqual(off, 0);
+				Assert.assert(off === 0);
 				container = container.parentNode;
 				off = Dom.nodeIndex(container);
 			}
@@ -352,7 +352,7 @@ define([
 		var noObserve = frame.opts.noObserve;
 		// Because we expect either a result to be returned by the
 		// capture function, or observed by the observer, but not both.
-		Assert.assertFalse(!!(!noObserve && result && result.changes));
+		Assert.assert(!(!noObserve && result && result.changes));
 		if (noObserve && result && result.changes && result.changes.length) {
 			frame.records.push({changes: result.changes});
 		}
@@ -536,12 +536,12 @@ define([
 					map[refId] = dels.concat(delsHavingRefs);
 				}
 			} else if (INSERT === type) {
-				Assert.assertFalse(!!inserted[id]);
+				Assert.assert(!inserted[id]);
 				inserted[id] =  move;
 			} else {
 				// NB: moves should only contains INSERTs and DELETEs
 				// (not COMPOUND_DELETEs).
-				Assert.assertError();
+				Assert.error();
 			}
 		});
 	}
@@ -656,7 +656,7 @@ define([
 			});
 		});
 		var containerId = Dom.ensureExpandoId(container);
-		Assert.assertFalse(!!index[containerId]);
+		Assert.assert(!index[containerId]);
 		var containerInsert = makeInsert(container);
 		index[containerId] = [containerInsert];
 		recs.forEach(function (record) {
@@ -803,7 +803,7 @@ define([
 			} else {
 				// NB: only COMPOUND_DELETEs should occur in a recordTree,
 				// DELETEs should not except as part of a COMPOUND_DELETE.
-				Assert.assertError();
+				Assert.error();
 			}
 		});
 	}
@@ -837,7 +837,7 @@ define([
 					moves.push(makeInsert(node));
 				});
 			} else {
-				Assert.assertError();
+				Assert.error();
 			}
 		});
 		var recordTree = makeRecordTree(container, moves, updateAttr, updateText);
@@ -974,7 +974,7 @@ define([
 				if (Dom.isTextNode(removedNode)) {
 					var removedLen = Dom.nodeLength(removedNode);
 					while (removedLen) {
-						Assert.assertEqual(node.nodeName, removedNode.nodeName);
+						Assert.assert(node.nodeName === removedNode.nodeName);
 						var len = Dom.nodeLength(node);
 						if (removedLen >= len) {
 							next = node.nextSibling;
@@ -993,13 +993,13 @@ define([
 					}
 				} else {
 					next = node.nextSibling;
-					Assert.assertEqual(node.nodeName, removedNode.nodeName);
+					Assert.assert(node.nodeName === removedNode.nodeName);
 					Mutation.removePreservingRanges(node, ranges);
 					node = next;
 				}
 			});
 		} else {
-			Assert.assertError();
+			Assert.error();
 		}
 	}
 
@@ -1039,7 +1039,7 @@ define([
 		} else if ('delete' === type) {
 			inverse = Maps.merge(change, {type: 'insert'});
 		} else {
-			Assert.assertError();
+			Assert.error();
 		}
 		return inverse;
 	}
@@ -1177,7 +1177,7 @@ define([
 	 * @return {void}
 	 */
 	function advanceHistory(context) {
-		Assert.assertFalse(!!context.stack.length);
+		Assert.assert(!context.stack.length);
 		var history = context.history;
 		var historyIndex = context.historyIndex;
 		var frame = context.frame;

@@ -8,35 +8,6 @@
 define([], function Assert() {
 	'use strict';
 
-	// @deprecated
-	function assertEqual(a, b, msg) {
-		if (a !== b) {
-			throw Error(msg || 'assertion error ' + a + ' !== ' + b);
-		}
-	}
-
-	// @deprecated
-	function assertNotEqual(a, b) {
-		if (a === b) {
-			throw Error(msg || 'assertion error ' + a + ' === ' + b);
-		}
-	}
-
-	// @deprecated
-	function assertFalse(value, msg) {
-		assertEqual(value, false, msg);
-	}
-
-	// @deprecated
-	function assertTrue(value, msg) {
-		assertEqual(value, true, msg);
-	}
-
-	// @deprecated
-	function assertError(msg) {
-		throw Error(msg);
-	}
-
 	/**
 	 * Generates an error message with a link to corresponding helpful resource
 	 * on the Aloha Editor website.
@@ -71,18 +42,15 @@ define([], function Assert() {
 	}
 
 	return {
-		assertEqual    : assertEqual,
-		assertNotEqual : assertNotEqual,
-		assertFalse    : assertFalse,
-		assertTrue     : assertTrue,
-		assertError    : assertError,
-		errorLink      : errorLink,
 		assert         : assert,
 		error          : error,
 		assertNou      : assertNou,
 		assertNotNou   : assertNotNou,
 		// Don't renumber to maintain well-known values for error
 		// conditions.
+		NOT_IMPLEMENTED:               0,
+		NOU:                           1,
+		NOT_NOU:                       2,
 		READ_FROM_DISCARDED_TRANSIENT: 3,
 		PERSISTENT_WRITE_TO_TRANSIENT: 4,
 		TRANSIENT_WRITE_TO_PERSISTENT: 5,
@@ -90,6 +58,9 @@ define([], function Assert() {
 		STYLE_NOT_AS_ATTR            : 8,
 		EXPECT_ELEMENT               : 9,
 		EXPECT_TEXT_NODE             : 10,
-		ELEMENT_NOT_ATTACHED         : 11
+		ELEMENT_NOT_ATTACHED         : 11,
+		MISSING_PROPERTY             : 12,
+		GETTER_AT_LEAST_1_ARG        : 13,
+		SETTER_1_MORE_THAN_GETTER    : 14
 	};
 });
