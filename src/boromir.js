@@ -79,6 +79,8 @@ define([
 	var CHANGE_INSERT = 1;
 	var CHANGE_REMOVE = 2;
 	var CHANGE_REF = 4;
+	var AFFINITY_DOM = 1;
+	var AFFINITY_MODEL = 2;
 
 	function nestedGetter(field, nestedField) {
 		return function (node) {
@@ -90,13 +92,13 @@ define([
 		return node.domNode.get(node).nodeType;
 	}
 
-	function attrs(node) {
+	function unchangedAttrs(node) {
 		var attrs = Dom.attrs(node.domNode.get(node));
-		Maps.extend(node._cachedAttrs.get(node), attrs);
+		Maps.extend(cachedAttrs.get(node), attrs);
 		return attrs;
 	}
 
-	function children(node) {
+	function unchangedChildren(node) {
 		var domNode = node.domNode.get(node);
 		var childNodes = domNode.childNodes;
 		var nodes = [];
@@ -106,15 +108,15 @@ define([
 		return nodes;
 	}
 
-	function changeableChildren(node) {
+	function children(node) {
 		return node.unchangedChildren.get(node);
 	}
 
-	function name(node) {
+	function unchangedName(node) {
 		return node.domNode.get(node).nodeName;
 	}
 
-	function changeableName(node) {
+	function name(node) {
 		return node.unchangedName.get(node);
 	}
 
@@ -123,11 +125,11 @@ define([
 		return set(node, name);
 	}
 
-	function text(node) {
+	function unchangedText(node) {
 		return node.domNode.get(node).data;
 	}
 
-	function changeableText(node) {
+	function text(node) {
 		return node.unchangedText.get(node);
 	}
 
@@ -136,7 +138,7 @@ define([
 		return set(node, text);
 	}
 
-	function changeableAttrs(node) {
+	function attrs(node) {
 		var unchangedAttrs = node.unchangedAttrs.get(node);
 		var changedAttrs = node.changedAttrs.get(node);
 		var attrs = Maps.extend({}, unchangedAttrs, changedAttrs);
@@ -193,7 +195,7 @@ define([
 		assertStyleNotAsAttr('style' !== name);
 		assertElement(node);
 		return getChangedOrCachedFromElem(node, name, node.changedAttrs,
-		                                  node._cachedAttrs, Dom.getAttr);
+		                                  cachedAttrs, Dom.getAttr);
 	}
 	function setAttr(node, name, value) {
 		assertStyleNotAsAttr('style' !== name);
@@ -205,7 +207,7 @@ define([
 
 	function getStyle(node, name) {
 		return getChangedOrCachedFromElem(node, name, node.changedStyles,
-		                                  node._cachedStyles, Dom.getStyle);
+		                                  cachedStyles, Dom.getStyle);
 	}
 
 	function setStyle(node, name, value) {
@@ -294,16 +296,13 @@ define([
 		return ++idCounter;
 	}
 
-	function createCache() {
-		return {};
-	}
-
 	var Node = Record.define({
-		name             : {compute: changeableName    , set: setName},
-		text             : {compute: changeableText    , set: setText},
+		name             : {compute: name    , set: setName},
+		text             : {compute: text    , set: setText},
 		// excludes style attribute
-		attrs            : {compute: changeableAttrs   , set: setAttrsAffectChanges},
-		children         : {compute: changeableChildren, set: setChildrenAffectChanges},
+		attrs            : {compute: attrs   , set: setAttrsAffectChanges},
+		children         : {compute: children, set: setChildrenAffectChanges},
+		affinity         : {defaultValue: AFFINITY_DOM},
 		// Constant properties.
 		domNode          : {defaultValue: null},
 		id               : {compute: allocateId},
@@ -314,14 +313,12 @@ define([
 		changedAttrs     : {defaultValue: null},
 		changedChildren  : {compute: changedChildren},
 		changedInParent  : {defaultValue: NO_CHANGE},
-		unchangedName    : {compute: name},
-		unchangedText    : {compute: text},
+		// Cached properties of the domNode
+		unchangedName    : {compute: unchangedName},
+		unchangedText    : {compute: unchangedText},
 		// includes style attribute
-		unchangedAttrs   : {compute: attrs},
-		unchangedChildren: {compute: children},
-		// Caches are stateful maps only for internal optimization!
-		_cachedAttrs     : {compute: createCache},
-		_cachedStyles    : {compute: createCache}
+		unchangedAttrs   : {compute: unchangedAttrs},
+		unchangedChildren: {compute: unchangedChildren}
 	}, function (node, domNodeOrProps) {
 		node = node.asTransient();
 		if (domNodeOrProps.nodeType) {
@@ -335,8 +332,8 @@ define([
 			// respective fields.
 			node = node.type.computeT(node, computeFrom);
 			node = node.id.computeT(node);
-			node = node._cachedAttrs.computeT(node);
-			node = node._cachedStyles.computeT(node);
+			node = cachedAttrs.computeT(node);
+			node = cachedStyles.computeT(node);
 
 			computeFrom = node.asPersistent();
 			node = computeFrom.asTransient();
@@ -363,8 +360,8 @@ define([
 			var children = props.children || [];
 			node = node.type.setT(node, 1);
 			node = node.id.computeT(node);
-			node = node._cachedAttrs.computeT(node);
-			node = node._cachedStyles.computeT(node);
+			node = cachedAttrs.computeT(node);
+			node = cachedStyles.computeT(node);
 
 			node = node.unchangedName.setT(node, name);
 			node = node.unchangedAttrs.setT(node, attrs);
@@ -384,6 +381,9 @@ define([
 		}
 		return node.asPersistent();
 	});
+	// attr and style caches are stateful maps only for internal optimization!
+	var cachedStyles = Node.addField({compute: Object});
+	var cachedAttrs  = Node.addField({compute: Object});
 
 	Maps.extend(Node.prototype, {
 		attr     : Accessor.asMethod(Accessor(getAttr, setAttr)),
@@ -442,11 +442,11 @@ define([
 		if (node.unchangedAttrs.isMemoized(node) && node.changedAttrs.get(node)) {
 			node = node.unchangedAttrs.set(node, node.attrs.get(node));
 		}
-		return updateFromMapField(node, node.changedAttrs, node._cachedAttrs, Dom.setAttr);
+		return updateFromMapField(node, node.changedAttrs, cachedAttrs, Dom.setAttr);
 	}
 
 	function updateStyles(node) {
-		return updateFromMapField(node, node.changedStyles, node._cachedStyles, Dom.setStyle);
+		return updateFromMapField(node, node.changedStyles, cachedStyles, Dom.setStyle);
 	}
 
 	function createElementNode(doc, node) {

@@ -15,9 +15,9 @@
 
 	test('defaults', function () {
 		var Type = Record.define();
-		var one = Type.addField(1);
-		var two = Type.addField(2);
-		var three = Type.addField(3);
+		var one = Type.addField({defaultValue: 1});
+		var two = Type.addField({defaultValue: 2});
+		var three = Type.addField({defaultValue: 3});
 
 		var record = Type();
 		equal(one.get(record), 1);
@@ -27,9 +27,9 @@
 
 	test('construct', function () {
 		var Type = Record.define();
-		var one = Type.addField(1);
-		var two = Type.addField(2);
-		var three = Type.addField(3);
+		var one = Type.addField({defaultValue: 1});
+		var two = Type.addField({defaultValue: 2});
+		var three = Type.addField({defaultValue: 3});
 		var record = Type(values);
 		equal(one.get(record), values[0]);
 		equal(two.get(record), values[1]);
@@ -42,9 +42,9 @@
 			record = two.set(record, 'init');
 			return record;
 		});
-		var one = InitType.addField(1);
-		var two = InitType.addField(2);
-		var three = InitType.addField(3);
+		var one = InitType.addField({defaultValue: 1});
+		var two = InitType.addField({defaultValue: 2});
+		var three = InitType.addField({defaultValue: 3});
 		var record = InitType(values);
 		// Must be the default since we ignore all init values
 		equal(one.get(record), 1);
@@ -53,18 +53,18 @@
 
 	test('reuse values instance', function () {
 		var Type = Record.define();
-		var one = Type.addField(1);
-		var two = Type.addField(2);
-		var three = Type.addField(3);
+		var one = Type.addField({defaultValue: 1});
+		var two = Type.addField({defaultValue: 2});
+		var three = Type.addField({defaultValue: 3});
 		var record = Type(values);
 		ok(record._record_values === values);
 	});
 	
 	test('merge with defaults', function () {
 		var Type = Record.define();
-		var one = Type.addField(1);
-		var two = Type.addField(2);
-		var three = Type.addField(3);
+		var one = Type.addField({defaultValue: 1});
+		var two = Type.addField({defaultValue: 2});
+		var three = Type.addField({defaultValue: 3});
 		var record = Type(values);
 		var record1 = record.mergeValues(valuesIncomplete);
 		equal(one.get(record), values[0]);
@@ -77,9 +77,9 @@
 
 	test('update', function () {
 		var Type = Record.define();
-		var one = Type.addField(1);
-		var two = Type.addField(2);
-		var three = Type.addField(3);
+		var one = Type.addField({defaultValue: 1});
+		var two = Type.addField({defaultValue: 2});
+		var three = Type.addField({defaultValue: 3});
 
 		var record = Type(values);
 		var record1 = two.set(record, 'updated');
@@ -93,9 +93,9 @@
 	     
 	test('transients', function () {
 		var Type = Record.define();
-		var one = Type.addField(1);
-		var two = Type.addField(2);
-		var three = Type.addField(3);
+		var one = Type.addField({defaultValue: 1});
+		var two = Type.addField({defaultValue: 2});
+		var three = Type.addField({defaultValue: 3});
 
 		var record1 = Type(values);
 		equal(two.get(record1), 'two');

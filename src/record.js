@@ -129,11 +129,6 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 		return field;
 	}
 
-	function mergeValues(record, values) {
-		assertRead(record);
-		return initWithValues(clone(record), values);
-	}
-
 	function defineBase(init) {
 		var defaults = [];
 		function Record(values) {
@@ -232,11 +227,13 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 				return asTransient(computedSet(asPersistent(record), newValue, wrappedAgainSet));
 			};
 		}
-		field = Accessor(get, set);
-		field.setT = setT;
-		field.compute = compute;
-		field.computeT = computeT;
-		field.isMemoized = isMemoized;
+		if (computedGet || computedSetT || computedSet) {
+			field = Accessor(get, set);
+			field.setT = setT;
+			field.compute = compute;
+			field.computeT = computeT;
+			field.isMemoized = isMemoized;
+		}
 		field.isComputed = isComputed;
 		field.fieldName = descriptor.name;
 		Record._record_fields.push(field);
@@ -260,6 +257,11 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	function fieldsFromRecord(record) {
 		var Record = record.constructor;
 		return Record._record_fields;
+	}
+
+	function mergeValues(record, values) {
+		assertRead(record);
+		return initWithValues(clone(record), values);
 	}
 
 	/**
@@ -297,12 +299,6 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 		return asPersistent(mergeValueMapT(asTransient(record), valueMap));
 	}
 
-	function addFieldWithoutName(Record, defaultValue) {
-		var field = addField(Record, defaultValue);
-		Record._record_fields.push(field);
-		return field;
-	}
-
 	function defaultInit(record, valueArrayOrMap) {
 		if (Array.isArray(valueArrayOrMap)) {
 			return initWithValues(record, valueArrayOrMap);
@@ -317,8 +313,7 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 		}
 		var Record = defineBase(init || defaultInit);
 		Record._record_fields = [];
-		Record.addField = Fn.partial(addFieldWithoutName, Record);
-		Record.addFieldWithDescriptor = Fn.partial(addFieldWithDescriptor, Record);
+		Record.addField = Fn.partial(addFieldWithDescriptor, Record);
 		Record.extend = Fn.partial(extend, Record);
 		Maps.extend(Record.prototype, {
 			// TODO mergeValues must consider computed fields like mergeValueMap does
