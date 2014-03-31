@@ -264,6 +264,7 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 		return Record._record_fields;
 	}
 
+	// TODO mergeValues must consider computed fields like mergeValueMap does
 	function mergeValues(record, values) {
 		assertRead(record);
 		return initWithValues(clone(record), values);
@@ -273,10 +274,11 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	 * Returns an updated version of the given transient record that has
 	 * the values in the given map set in it.
 	 *
-	 * Doesn't call computed setters since that may cause unpredictable
-	 * behaviour if a setter reads from another field on the record that
-	 * is also set, but which may be set before or after the first,
-	 * depending on the order the fields were defined in.
+	 * Doesn't call computed setters. There is no implementation that
+	 * calls computed setters from a map since that may cause
+	 * unpredictable behaviour if a setter reads from another field on
+	 * the record that is also set, but which may be set before or after
+	 * the first, depending on the order the fields were defined in.
 	 */
 	function mergeValueMapT(record, valueMap) {
 		if (!valueMap) {
@@ -321,7 +323,6 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 		Record.addField = Fn.partial(addFieldWithDescriptor, Record);
 		Record.extend = Fn.partial(extend, Record);
 		Maps.extend(Record.prototype, {
-			// TODO mergeValues must consider computed fields like mergeValueMap does
 			mergeValues: Fn.asMethod1(mergeValues),
 			mergeValueMap: Fn.asMethod1(mergeValueMap),
 			mergeValueMapT: Fn.asMethod1(mergeValueMapT)

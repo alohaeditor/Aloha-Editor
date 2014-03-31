@@ -44,6 +44,7 @@ define([], function Assert() {
 	return {
 		assert         : assert,
 		error          : error,
+		notImplemented : notImplemented,
 		assertNou      : assertNou,
 		assertNotNou   : assertNotNou,
 		// Don't renumber to maintain well-known values for error

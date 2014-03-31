@@ -79,8 +79,11 @@ define([
 	var CHANGE_INSERT = 1;
 	var CHANGE_REMOVE = 2;
 	var CHANGE_REF = 4;
+	var CHANGE_REF_AFFINITY_DOM = 8;
+	var CHANGE_REF_AFFINITY_MODEL = 16;
 	var AFFINITY_DOM = 1;
 	var AFFINITY_MODEL = 2;
+	var AFFINITY_DEFAULT = AFFINITY_DOM | AFFINITY_MODEL;
 
 	function nestedGetter(field, nestedField) {
 		return function (node) {
@@ -184,11 +187,10 @@ define([
 		return value;
 	}
 
-	function setChangedOrCached(node, name, value, changedField) {
-		var changedMap = changedField.get(node) || {};
-		changedMap = Maps.extend({}, changedMap);
-		changedMap[name] = value;
-		return changedField.set(node, changedMap);
+	function updateInMapField(node, field, name, value) {
+		var changedMap = field.get(node) || {};
+		var updatedMap = Maps.cloneSet(changedMap, name, value);
+		return field.set(node, updatedMap);
 	}
 
 	function getAttr(node, name) {
@@ -197,10 +199,11 @@ define([
 		return getChangedOrCachedFromElem(node, name, node.changedAttrs,
 		                                  cachedAttrs, Dom.getAttr);
 	}
+
 	function setAttrAffectChanges(node, name, value) {
 		assertStyleNotAsAttr('style' !== name);
 		assertElement(node);
-		node = setChangedOrCached(node, name, value, node.changedAttrs);
+		node = updateInMapField(node, node.changedAttrs, name, value);
 		node = node.attrs.compute(node, node);
 		return node;
 	}
@@ -211,7 +214,7 @@ define([
 	}
 
 	function setStyleAffectChanges(node, name, value) {
-		return setChangedOrCached(node, name, value, node.changedStyles);
+		return updateInMapField(node, node.changedStyles, name, value);
 	}
 
 	function indexChildren(children, index, value) {
@@ -242,7 +245,16 @@ define([
 			if (oldId === newId) {
 				if (oldChild !== newChild) {
 					changed = true;
-					newChild = newChild.changedInParent.set(newChild, CHANGE_REF);
+					var change = CHANGE_REF;
+					var oldAffinity = oldChild.affinity.get(oldChild);
+					var newAffinity = newChild.affinity.get(newChild);
+					if ((oldAffinity & AFFINITY_DOM) !== (newAffinity & AFFINITY_DOM)) {
+						change = change | CHANGE_REF_AFFINITY_DOM;
+					}
+					if ((oldAffinity & AFFINITY_MODEL) !== (newAffinity & AFFINITY_MODEL)) {
+						change = change | CHANGE_REF_AFFINITY_MODEL;
+					}
+					newChild = newChild.changedInParent.set(newChild, change);
 				}
 				children.push(newChild);
 				i += 1;
@@ -297,28 +309,29 @@ define([
 	}
 
 	var Node = Record.define({
-		name             : {compute: name    , set: setName},
-		text             : {compute: text    , set: setText},
+		name               : {compute: name    , set: setName},
+		text               : {compute: text    , set: setText},
 		// excludes style attribute
-		attrs            : {compute: attrs   , set: setAttrsAffectChanges},
-		children         : {compute: children, set: setChildrenAffectChanges},
-		affinity         : {defaultValue: AFFINITY_DOM},
-		// Constant properties.
-		domNode          : {defaultValue: null},
-		id               : {compute: allocateId},
-		type             : {compute: type},
-		// Properties used for change-tracking, shouldn't be written to by client code.
-		// TODO make these private
-		changedStyles    : {defaultValue: null},
-		changedAttrs     : {defaultValue: null},
-		changedChildren  : {compute: changedChildren},
-		changedInParent  : {defaultValue: NO_CHANGE},
-		// Cached properties of the domNode
-		unchangedName    : {compute: unchangedName},
-		unchangedText    : {compute: unchangedText},
+		attrs              : {compute: attrs   , set: setAttrsAffectChanges},
+		children           : {compute: children, set: setChildrenAffectChanges},
+		affinity           : {defaultValue: AFFINITY_DEFAULT},
+		// Constant properties
+		domNode            : {defaultValue: null},
+		id                 : {compute: allocateId},
+		type               : {compute: type},
+		// Properties used for change-tracking, must be kept in sync
+		// with the unchanged and current properties.
+		changedStyles      : {defaultValue: null},
+		changedAttrs       : {defaultValue: null},
+		changedChildren    : {compute: changedChildren},
+		changedInParent    : {defaultValue: NO_CHANGE},
+		// Cached properties of the domNode, must be kept in sync with
+		// the domNode.
+		unchangedName      : {compute: unchangedName},
+		unchangedText      : {compute: unchangedText},
 		// includes style attribute
-		unchangedAttrs   : {compute: unchangedAttrs},
-		unchangedChildren: {compute: unchangedChildren}
+		unchangedAttrs     : {compute: unchangedAttrs},
+		unchangedChildren  : {compute: unchangedChildren}
 	}, function (node, domNodeOrProps) {
 		node = node.asTransient();
 		if (domNodeOrProps.nodeType) {
@@ -328,8 +341,6 @@ define([
 			var computeFrom = node.asPersistent();
 			node = computeFrom.asTransient();
 
-			// TODO computeT() should be inside the setters of the
-			// respective fields.
 			node = node.type.computeT(node, computeFrom);
 			node = node.id.computeT(node);
 			node = cachedAttrs.computeT(node);
@@ -386,11 +397,19 @@ define([
 	var cachedAttrs  = Node.addField({compute: Object});
 
 	Maps.extend(Node.prototype, {
-		attr     : Accessor.asMethod(Accessor(getAttr, setAttrAffectChanges)),
-		style    : Accessor.asMethod(Accessor(getStyle, setStyleAffectChanges)),
-		create   : Node,
-		updateDom: Fn.asMethod(updateDom)
+		attr         : Accessor.asMethod(Accessor(getAttr, setAttrAffectChanges)),
+		style        : Accessor.asMethod(Accessor(getStyle, setStyleAffectChanges)),
+		create       : Node,
+		updateDom    : Fn.asMethod(updateDom)
 	});
+
+	Node.CHANGE_INSERT = CHANGE_INSERT;
+	Node.CHANGE_REMOVE = CHANGE_REMOVE;
+	Node.CHANGE_REF    = CHANGE_REF;
+	Node.CHANGE_REF_AFFINITY_DOM   = CHANGE_REF_AFFINITY_DOM;
+	Node.CHANGE_REF_AFFINITY_MODEL = CHANGE_REF_AFFINITY_MODEL;
+	Node.AFFINITY_DOM   = AFFINITY_DOM;
+	Node.AFFINITY_MODEL = AFFINITY_MODEL;
 
 	function updateDomNodeFromMap(domNode, map, updateFn) {
 		Maps.forEach(map, function (value, name) {
@@ -476,6 +495,27 @@ define([
 		}
 	}
 
+	// TODO use insertIndex to move elements if a node is
+	// being removed in the old tree during a recursive
+	// update.
+	// TODO support normalized update that will join
+	// inserted text nodes and re-use existing text nodes if
+	// the content is the same instead of replacing them, so
+	// that you can split up Boromir text nodes any way you
+	// want and it will not result in changes to the DOM.
+	function insertChild(domNode, childNodes, child, i, doc, insertIndex) {
+		var refNode = i < childNodes.length ? childNodes[i] : null;
+		var childDomNode = createDomNode(doc, child);
+		domNode.insertBefore(childDomNode, refNode);
+		child = child.domNode.set(child, childDomNode);
+		child = updateDomRec(child, doc, insertIndex);
+		return child;
+	}
+
+	function removeChild(domNode, childNodes, i) {
+		domNode.removeChild(childNodes[i]);
+	}
+
 	function updateChildren(node, doc, insertIndex) {
 		var changedChildren = node.changedChildren.get(node);
 		if (!changedChildren) {
@@ -483,35 +523,38 @@ define([
 		}
 		var domNode = node.domNode.get(node);
 		var childNodes = domNode.childNodes;
-		var i = 0;
 		var children = [];
+		var i = 0;
 		changedChildren.forEach(function (child) {
 			var changedInParent = child.changedInParent.get(child);
-			if (changedInParent & CHANGE_INSERT) {
-				var refNode = i < childNodes.length ? childNodes[i] : null;
-				// TODO use insertIndex to move elements if it occurred
-				// in the old tree during a recursive update.
-				// TODO support normalized update that will join
-				// inserted text nodes and re-use existing text nodes if
-				// the content is the same instead of replacing them, so
-				// that you can split up Boromir text nodes any way you
-				// want and it will not result in changes to the DOM.
-				var childDomNode = createDomNode(doc, child);
-				domNode.insertBefore(childDomNode, refNode);
-				child = child.domNode.set(child, childDomNode);
-				child = updateDomRec(child, doc, insertIndex);
-				children.push(child);
-				i += 1;
-			} else if (changedInParent & CHANGE_REMOVE) {
-				domNode.removeChild(childNodes[i]);
-			} else if (changedInParent & CHANGE_REF) {
-				child = updateDomRec(child, doc, insertIndex);
-				children.push(child);
-				i += 1;
-			} else {
-				i += 1;
+			var affinity = child.affinity.get(child);
+			if (changedInParent & CHANGE_REF_AFFINITY_DOM) {
+				if (affinity & AFFINITY_DOM) {
+					child = insertChild(domNode, childNodes, child, i, doc, insertIndex);
+					i += 1;
+				} else {
+					removeChild(domNode, childNodes, i);
+				}
+			} else if (affinity & AFFINITY_DOM) {
+				if (changedInParent & CHANGE_INSERT) {
+					child = insertChild(domNode, childNodes, child, i, doc, insertIndex);
+					i += 1;
+				} else if (changedInParent & CHANGE_REMOVE) {
+					removeChild(domNode, childNodes, i)
+				} else {
+					if (changedInParent & CHANGE_REF) {
+						child = updateDomRec(child, doc, insertIndex);
+					}
+					i += 1;
+				}
+			}
+			if (!(changedInParent & CHANGE_REMOVE)) {
+				children.push((changedInParent === NO_CHANGE)
+				              ? child
+				              : child.changedInParent.set(child, NO_CHANGE));
 			}
 		});
+		node = node.children.set(node, children);
 		node = node.changedChildren.set(node, null);
 		return node;
 	}

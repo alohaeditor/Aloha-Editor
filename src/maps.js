@@ -5,7 +5,7 @@
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define(['arrays'], function Maps(Arrays) {
+define(['arrays', 'assert'], function Maps(Arrays, Assert) {
 	'use strict';
 
 	/**
@@ -147,6 +147,31 @@ define(['arrays'], function Maps(Arrays) {
 	}
 
 	/**
+	 * Clones a map.
+	 *
+	 * @param map {!Object}
+	 * @return {!Object}
+	 */
+	function clone(map) {
+		Assert.assertNotNou(map);
+		return extend({}, map);
+	}
+
+	/**
+	 * Sets a value on a copy of the given map and returns the copy.
+	 *
+	 * @param map {!Object}
+	 * @param accessor {string}
+	 * @param value {*}
+	 * @return {!Object}
+	 */
+	function cloneSet(map, key, value) {
+		map = clone(map);
+		map[key] = value;
+		return map;
+	}
+
+	/**
 	 * Whether the given object is a map that can be operated on by
 	 * other functions in this module.
 	 *
@@ -170,6 +195,8 @@ define(['arrays'], function Maps(Arrays) {
 		forEach    : forEach,
 		extend     : extend,
 		merge      : merge,
-		isMap      : isMap
+		isMap      : isMap,
+		clone      : clone,
+		cloneSet   : cloneSet
 	};
 });
