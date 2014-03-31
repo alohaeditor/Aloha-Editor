@@ -172,7 +172,7 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	}
 
 	function wrapBasicField(field, descriptor) {
-		var computedGet = descriptor.compute;
+		var computable = descriptor.computable;
 		var computedSet = descriptor.set;
 		var computedSetT = descriptor.setT;
 		Assert.assert(!(computedSet && computedSetT), Assert.ONLY_ONE_OF_SET_OR_SETT);
@@ -182,8 +182,7 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 		var compute = null;
 		var computeT = null;
 		var isMemoized = null;
-		var isComputed = Fn.returnFalse;
-		if (computedGet) {
+		if (computable) {
 			var wrappedSetT = setT;
 			var wrappedSet = set;
 			var wrappedGet = get;
@@ -199,13 +198,12 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 			isMemoized = function (record) {
 				return wrappedGet(record)(true);
 			};
-			compute = function (record, arg) {
-				return wrappedSet(record, lazyFn(computedGet, arg));
+			compute = function (record, fn, arg) {
+				return wrappedSet(record, lazyFn(fn, arg));
 			};
-			computeT = function (record, arg) {
-				return wrappedSetT(record, lazyFn(computedGet, arg));
+			computeT = function (record, fn, arg) {
+				return wrappedSetT(record, lazyFn(fn, arg));
 			};
-			isComputed = Fn.returnTrue;
 		}
 		if (computedSetT) {
 			var wrappedAgainSetT = setT;
@@ -225,21 +223,20 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 				return asTransient(computedSet(asPersistent(record), newValue, wrappedAgainSet));
 			};
 		}
-		if (computedGet || computedSetT || computedSet) {
+		if (computable || computedSetT || computedSet) {
 			field = Accessor(get, set);
-			field.setT = setT;
-			field.compute = compute;
-			field.computeT = computeT;
+			field.setT       = setT;
+			field.compute    = compute;
+			field.computeT   = computeT;
 			field.isMemoized = isMemoized;
 		}
-		field.isComputed = isComputed;
 		field.descriptor = descriptor;
 		return field;
 	}
 
 	function addFieldWithDescriptor(Record, descriptor) {
 		var defaultValue = descriptor.defaultValue;
-		var field = addField(Record, descriptor.compute ? constantFn(defaultValue) : defaultValue);
+		var field = addField(Record, descriptor.computable ? constantFn(defaultValue) : defaultValue);
 		field = wrapBasicField(field, descriptor);
 		Record._record_fields.push(field);
 		return field;
@@ -250,11 +247,11 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 			descriptor = Maps.extend({name: name}, descriptor);
 			var field = addFieldWithDescriptor(Record, descriptor);
 			var method = Accessor.asMethod(field);
-			method.setT = field.setT;
-			method.compute = field.compute;
-			method.computeT = field.computeT;
-			method.isComputed = field.isComputed;
+			method.setT       = field.setT;
+			method.compute    = field.compute;
+			method.computeT   = field.computeT;
 			method.isMemoized = field.isMemoized;
+			method.descriptor = field.descriptor;
 			Record.prototype[name] = method;
 		});
 	}
@@ -290,7 +287,7 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 			var name = field.descriptor.name;
 			if (valueMap.hasOwnProperty(name)) {
 				var value = valueMap[name];
-				if (field.isComputed()) {
+				if (field.descriptor.computable) {
 					value = constantFn(value);
 				}
 				values[i] = value;

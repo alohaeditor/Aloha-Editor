@@ -175,24 +175,24 @@
 	test('computedGet', function () {
 		var computedValue = {};
 		var computedState = null;
-		function lazyFn(record) {
-			computedState = record.computed();
+		function computedGet(record) {
+			computedState = record.field2();
 			return computedState;
 		}
 		var Type = Record.define({
-			lazy: {defaultValue: 'lazy', compute: lazyFn},
-			computed: {defaultValue: computedValue}
+			field1: {defaultValue: 'field1', computable: true},
+			field2: {defaultValue: computedValue}
 		});
 		var record = Type();
-		equal(record.lazy(), 'lazy');
-		var record1 = record.lazy.compute(record, record);
+		equal(record.field1(), 'field1');
+		var record1 = record.field1.compute(record, computedGet, record);
 		equal(computedState, null);
-		equal(record1.lazy(), computedValue);
+		equal(record1.field1(), computedValue);
 		equal(computedState, computedValue);
 		computedState = null;
-		equal(record1.lazy(), computedValue);
+		equal(record1.field1(), computedValue);
 		equal(computedState, null);
-		equal(record.lazy(), 'lazy');
+		equal(record.field1(), 'field1');
 	});
 
 	test('computedSet', function () {

@@ -158,16 +158,29 @@ define(['arrays', 'assert'], function Maps(Arrays, Assert) {
 	}
 
 	/**
-	 * Sets a value on a copy of the given map and returns the copy.
+	 * Sets a value on a clone of the given map and returns the clone.
 	 *
 	 * @param map {!Object}
-	 * @param accessor {string}
+	 * @param key {string}
 	 * @param value {*}
 	 * @return {!Object}
 	 */
 	function cloneSet(map, key, value) {
 		map = clone(map);
 		map[key] = value;
+		return map;
+	}
+
+	/**
+	 * Deletes a key from a clone of the given map and returns the clone.
+	 *
+	 * @param map {!Object}
+	 * @param key {string}
+	 * @return {!Object}
+	 */
+	function cloneDelete(map, key) {
+		map = clone(map);
+		delete map[key];
 		return map;
 	}
 
@@ -185,6 +198,14 @@ define(['arrays', 'assert'], function Maps(Arrays, Assert) {
 		          && Object.prototype.toString.call(obj) === '[object Object]');
 	}
 
+	function setIn(map, accessors, value) {
+		var i, len;
+		for (i = 0, len = accessors.length - 1; i < len; i++) {
+			map = accessors[i].get(map);
+		}
+		return accessors[i].set(map, value);
+	}
+
 	return {
 		isEmpty    : isEmpty,
 		fillKeys   : fillKeys,
@@ -197,6 +218,8 @@ define(['arrays', 'assert'], function Maps(Arrays, Assert) {
 		merge      : merge,
 		isMap      : isMap,
 		clone      : clone,
-		cloneSet   : cloneSet
+		cloneSet   : cloneSet,
+		cloneDelete: cloneDelete,
+		setIn      : setIn
 	};
 });
