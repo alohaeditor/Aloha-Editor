@@ -37,6 +37,7 @@ define('format/format-plugin', [
 	'ui/port-helper-multi-split',
 	'PubSub',
 	'i18n!format/nls/i18n',
+	'aloha/ephemera',
 	'i18n!aloha/nls/i18n',
 	'aloha/selection'
 ], function (
@@ -51,7 +52,8 @@ define('format/format-plugin', [
 	ToggleButton,
 	MultiSplitButton,
 	PubSub,
-	i18n
+	i18n,
+	Ephemera
 ) {
 	'use strict';
 
@@ -168,6 +170,15 @@ define('format/format-plugin', [
 	 */
 	function isListElement(node){
 		return LIST_ELEMENT[node.nodeName];
+	}
+
+	/**
+	 * Determines if a markup is a heading
+	 * @param string markup
+	 * @returns {boolean}
+	 */
+	function isHeading(markup){
+		return jQuery.inArray(markup,['h1', 'h2', 'h3', 'h4', 'h5', 'h6']) >= 0;
 	}
 
 	/**
@@ -340,8 +351,80 @@ define('format/format-plugin', [
 		};
 	}
 
+	/**
+	 * Checks the hierarchy of headings (h1, h2, ..., h6) and adds a class
+	 * "aloha-heading-hierarchy-violated" if the hierarchy is violated.
+	 * The hierarchy is violated if a heading is more than one hierarchy lower
+	 * than the previous heading.
+	 * It is also checked, if the hierarchy is higher than the highest hierarchy
+	 * found in the plugin configuration.
+	 * For example if the plugin configuration contains the possible headings:
+	 * 'h2', 'h3', 'h4', 'h5', 'h6', then all occurrences of 'h1' will be marked.
+	 * @param {config} the plugin config
+	 * @returns {undefined}
+	 */
+	function checkHeadingHierarchy(config) {
+		var parent = Aloha.activeEditable.obj,
+			startHeading,
+			lastCorrectHeading,
+			currentHeading;
+
+		if (config.length === 0) {
+			return;
+		}
+
+		//set startheading to heading with smallest number available in the config
+		for (var i = 0; i < config.length; i++){
+			if (isHeading(config[i])) {
+				if (typeof startHeading !== 'undefined') {
+					if (parseInt(config[i].charAt(1),10) < startHeading) {
+						startHeading = parseInt(config[i].charAt(1),10);
+					}
+				} else {
+					//first heading found in config
+					startHeading = parseInt(config[i].charAt(1),10);
+				}
+			}
+		}
+
+		//check the heading hierarchy of every heading
+		if (typeof startHeading !== 'undefined') {
+			//this find() returns all headings in tree order
+			parent.find("h1,h2,h3,h4,h5,h6").each(function (){
+				currentHeading = parseInt(this.nodeName.charAt(1),10);
+				if (typeof lastCorrectHeading !== 'undefined') {
+					//the current heading hierarchy must be lower than the startHeading hierarchy
+					if (currentHeading < startHeading) {
+						$(this).addClass("aloha-heading-hierarchy-violated");
+					} else {
+						//heading hierarchy is violated if a heading is more
+						//than one hierarchy lower than the last correct heading
+						if (currentHeading > (lastCorrectHeading+1)) {
+							$(this).addClass("aloha-heading-hierarchy-violated");
+						} else {
+							//only set the last heading if the hierarchy is not violated
+							lastCorrectHeading = currentHeading;
+							$(this).removeClass("aloha-heading-hierarchy-violated");
+						}
+					}
+				} else {
+					//first heading! see if it starts with correct heading
+					if (currentHeading === startHeading) {
+						lastCorrectHeading = currentHeading;
+						$(this).removeClass("aloha-heading-hierarchy-violated");
+					} else {
+						$(this).addClass("aloha-heading-hierarchy-violated");
+					}
+				}
+			});
+		}
+	}
+
 	function changeMarkup(button) {
 		Aloha.Selection.changeMarkupOnSelection(jQuery('<' + button + '>'));
+		if (Aloha.settings.plugins.format.checkHeadingHierarchy === true) {
+			checkHeadingHierarchy(this.formatOptions);
+		}
 	}
 
 	function updateUiAfterMutation(formatPlugin, rangeObject) {
@@ -499,6 +582,9 @@ define('format/format-plugin', [
 			// Prepare
 			var me = this;
 
+			//add ephemeron classes
+			Ephemera.classes('aloha-heading-hierarchy-violated');
+
 			if (typeof this.settings.hotKey !== 'undefined') {
 				jQuery.extend(true, this.hotKey, this.settings.hotKey);
 			}
@@ -513,6 +599,11 @@ define('format/format-plugin', [
 			// apply specific configuration if an editable has been activated
 			Aloha.bind('aloha-editable-activated', function (e, params) {
 				me.applyButtonConfig(params.editable.obj);
+
+				//check heading hierarchy on activation
+				if (Aloha.settings.plugins.format.checkHeadingHierarchy === true) {
+					checkHeadingHierarchy(me.formatOptions);
+				}
 
 				var createAdder = function (tagname) {
 					return function () {
@@ -551,6 +642,14 @@ define('format/format-plugin', [
 				params.editable.obj.unbind('keydown.aloha.format');
 			});
 
+			if (Aloha.settings.plugins.format.checkHeadingHierarchy === true) {
+				Aloha.bind('aloha-smart-content-changed', function (e) {
+					checkHeadingHierarchy(me.formatOptions);
+				});
+				Aloha.bind('aloha-markup-change', function (e) {
+					checkHeadingHierarchy(me.formatOptions);
+				});
+			}
 		},
 
 		/**
