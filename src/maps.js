@@ -120,7 +120,7 @@ define(['arrays', 'assert'], function Maps(Arrays, Assert) {
 
 	function extend(dest) {
 		var i;
-		for (i = 0; i < arguments.length; i++) {
+		for (i = 1; i < arguments.length; i++) {
 			var src = arguments[i];
 			if (src) {
 				forEach(src, function (value, key) {

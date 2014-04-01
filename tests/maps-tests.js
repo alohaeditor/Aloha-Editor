@@ -83,6 +83,17 @@
 		equal(maps.isMap(document.createTextNode("xx")), false);
 	});
 
+	test('extend', function () {
+		tested.push('extend');
+		var map = {
+			one: 1
+		}
+		maps.extend(map, {two: 2}, {three: 3});
+		equal(map.one,   1);
+		equal(map.two,   2);
+		equal(map.three, 3);
+	});
+
 	//testCoverage(test, tested, maps);
 
 }(window.aloha));
