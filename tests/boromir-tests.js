@@ -39,6 +39,20 @@
 		equal(Boromir(node.domNode()).attr('id'), '456');
 	});
 
+	test('set an attribute map', function () {
+		var domNode = setupDomNode();
+		var node = Boromir(domNode);
+		var node1 = node.attrs({'lang': 'sp'});
+		equal(node.attr('lang'), 'en');
+		equal(node.attr('id'), '123');
+		equal(node1.attr('lang'), 'sp');
+		ok(null == node1.attr('id'));
+		var node2 = node1.updateDom();
+		ok(!node1.attrs().hasOwnProperty('id'));
+		equal(Boromir(node2.domNode()).attr('lang'), 'sp');
+		ok(null == Boromir(node2.domNode()).attr('id'));
+	});
+
 	test('set a style', function () {
 		var domNode = setupDomNode();
 		var node = Boromir(domNode);

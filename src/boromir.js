@@ -84,129 +84,6 @@ define([
 	var AFFINITY_DEFAULT = AFFINITY_DOM | AFFINITY_MODEL;
 	var SPECIAL_PRIVATE_VALUE = {};
 
-	function assertElement(node) {
-		Assert.assert(1 === node.type.get(node), Assert.EXPECT_ELEMENT);
-	}
-
-	function assertTextNode(node) {
-		Assert.assert(3 === node.type.get(node), Assert.EXPECT_TEXT_NODE);
-	}
-
-	function getChanged(node, name, changedField, default_) {
-		var changedProps = node.changed.get(node);
-		var changedMap = changedField.get(changedProps);
-		if (changedMap && changedMap.hasOwnProperty(name)) {
-			return changedMap[name];
-		}
-		return default_;
-	}
-
-	function setChanged(node, name, value, changedField) {
-		var changedProps = node.changed.get(node);
-		var changedMap = changedField.get(changedProps) || {};
-		var updatedMap = Maps.cloneSet(changedMap, name, value);
-		changedProps = changedField.set(changedProps, updatedMap);
-		return node.changed.set(node, changedProps);
-	}
-
-	function getChangedOrCached(node, name, getFromDom, changedField, cachedField) {
-		var value = getChanged(node, name, changedField, SPECIAL_PRIVATE_VALUE);
-		if (value !== SPECIAL_PRIVATE_VALUE) {
-			return value;
-		}
-		var changedProps = node.changed.get(node);
-		var cachedMap = cachedField.get(changedProps);
-		if (cachedMap.hasOwnProperty(name)) {
-			return cachedMap[name];
-		}
-		var domNode = node.domNode.get(node);
-		value = cachedMap[name] = getFromDom(domNode, name);
-		return value;
-	}
-
-	function getAttr(node, name) {
-		assertElement(node);
-		Assert.assert('style' !== name, Assert.STYLE_NOT_AS_ATTR);
-		return getChangedOrCached(node, name, Dom.getAttr,
-		                          ChangeProps.prototype.changedAttrs,
-		                          ChangeProps.prototype.cachedAttrs);
-	}
-
-	function getStyle(node, name) {
-		assertElement(node);
-		return getChangedOrCached(node, name, Dom.getStyle,
-		                          ChangeProps.prototype.changedStyles,
-		                          ChangeProps.prototype.cachedStyles);
-	}
-
-	function setAttrsAffectChanges(node, attrs, set) {
-		assertElement(node);
-		Assert.assert(Fn.isNou(attrs['style']), Assert.STYLE_NOT_AS_ATTR);
-		var changedProps = node.changed.get(node);
-		var changedAttrs = changedProps.changedAttrs.get(changedProps) || {};
-		var unchangedProps = node.unchanged.get(node);
-		var unchangedAttrs = unchangedProps.attrs.get(unchangedProps);
-		var removedAttrs = Maps.fillKeys({}, Maps.keys(unchangedAttrs), null);
-		var changedAttrs = Maps.extend(removedAttrs, attrs);
-		changedProps = changedProps.changedAttrs.set(changedProps, changedAttrs);
-		node = node.changed.set(node, changedProps);
-		return set(node, attrs);
-	}
-
-	function attrsWithChangesWithoutStyle(node) {
-		assertElement(node);
-		var unchangedProps = node.unchanged.get(node);
-		var unchangedAttrs = unchangedProps.attrs.get(unchangedProps);
-		var changedProps = node.changed.get(node);
-		var attrs = unchangedAttrs;
-		if (attrs.hasOwnProperty('style')) {
-			attrs = Maps.cloneDelete(attrs, 'style');
-		}
-		var changedAttrs = changedProps.changedAttrs.get(changedProps);
-		if (changedAttrs) {
-			attrs = Maps.merge(unchangedAttrs, changedAttrs);
-			attrs = Maps.filter(attrs, Fn.complement(Fn.isNou));
-		}
-		return attrs;
-	}
-
-	function setAttrAffectChanges(node, name, value) {
-		assertElement(node);
-		Assert.assert('style' !== name, Assert.STYLE_NOT_AS_ATTR);
-		node = setChanged(node, name, value, ChangeProps.prototype.changedAttrs);
-		node = node.attrs.compute(node, attrsWithChangesWithoutStyle, node);
-		return node;
-	}
-
-	function setStyleAffectChanges(node, name, value) {
-		assertElement(node);
-		return setChanged(node, name, value, ChangeProps.prototype.changedStyles);
-	}
-
-	function setAttrAffinity(node, name, affinity) {
-		assertElement(node);
-		return setChanged(node, name, affinity, ChangeProps.prototype.changedAttrAffinity);
-	}
-
-	function setClassAffinity(node, name, affinity) {
-		assertElement(node);
-		return setChanged(node, name, affinity, ChangeProps.prototype.changedClassAffinity);
-	}
-
-	function getAttrAffinity(node, name) {
-		assertElement(node);
-		return getChanged(node, name,
-		                  ChangeProps.prototype.changedAttrAffinity,
-		                  AFFINITY_DEFAULT);
-	}
-
-	function getClassAffinity(node, name) {
-		assertElement(node);
-		return getChanged(node, name,
-		                  ChangeProps.prototype.changedClassAffinity,
-		                  AFFINITY_DEFAULT);
-	}
-
 	function setName(node, value, set) {
 		assertElement(node);
 		return set(node, value);
@@ -345,20 +222,143 @@ define([
 		return node;
 	});
 
-	Maps.extend(Node.prototype, {
-		attr         : Accessor.asMethod(Accessor(getAttr         , setAttrAffectChanges)),
-		style        : Accessor.asMethod(Accessor(getStyle        , setStyleAffectChanges)),
-		attrAffinity : Accessor.asMethod(Accessor(getAttrAffinity , setAttrAffinity)),
-		classAffinity: Accessor.asMethod(Accessor(getClassAffinity, setClassAffinity)),
-		create       : Node,
-		updateDom    : Fn.asMethod(updateDom)
-	});
+	function assertElement(node) {
+		Assert.assert(1 === node.type.get(node), Assert.EXPECT_ELEMENT);
+	}
 
-	Node.CHANGE_INSERT  = CHANGE_INSERT;
-	Node.CHANGE_REMOVE  = CHANGE_REMOVE;
-	Node.CHANGE_REF     = CHANGE_REF;
-	Node.AFFINITY_DOM   = AFFINITY_DOM;
-	Node.AFFINITY_MODEL = AFFINITY_MODEL;
+	function assertTextNode(node) {
+		Assert.assert(3 === node.type.get(node), Assert.EXPECT_TEXT_NODE);
+	}
+
+	function getChanged(node, name, changedField, default_) {
+		var changedProps = node.changed.get(node);
+		var changedMap = changedField.get(changedProps);
+		if (changedMap && changedMap.hasOwnProperty(name)) {
+			return changedMap[name];
+		}
+		return default_;
+	}
+
+	function getChangedOrUnchanged(node, name, changedField, unchangedField, default_) {
+		var value = getChanged(node, name, changedField, SPECIAL_PRIVATE_VALUE);
+		if (value !== SPECIAL_PRIVATE_VALUE) {
+			return value;
+		}
+		var unchangedProps = node.unchanged.get(node);
+		var unchangedMap = unchangedField.get(unchangedProps);
+		if (unchangedMap && unchangedMap.hasOwnProperty(name)) {
+			return unchangedMap[name];
+		}
+		return default_;
+	}
+
+	function getChangedOrCached(node, name, getFromDom, changedField, cachedField) {
+		var value = getChanged(node, name, changedField, SPECIAL_PRIVATE_VALUE);
+		if (value !== SPECIAL_PRIVATE_VALUE) {
+			return value;
+		}
+		var changedProps = node.changed.get(node);
+		var cachedMap = cachedField.get(changedProps);
+		if (cachedMap.hasOwnProperty(name)) {
+			return cachedMap[name];
+		}
+		var domNode = node.domNode.get(node);
+		value = cachedMap[name] = getFromDom(domNode, name);
+		return value;
+	}
+
+	function setChanged(node, name, value, changedField) {
+		var changedProps = node.changed.get(node);
+		var changedMap = changedField.get(changedProps) || {};
+		var updatedMap = Maps.cloneSet(changedMap, name, value);
+		changedProps = changedField.set(changedProps, updatedMap);
+		return node.changed.set(node, changedProps);
+	}
+
+	function setAttrsAffectChanges(node, attrs, set) {
+		assertElement(node);
+		Assert.assert(Fn.isNou(attrs['style']), Assert.STYLE_NOT_AS_ATTR);
+		var changedProps = node.changed.get(node);
+		var changedAttrs = changedProps.changedAttrs.get(changedProps) || {};
+		var unchangedProps = node.unchanged.get(node);
+		var unchangedAttrs = unchangedProps.attrs.get(unchangedProps);
+		var removedAttrs = Maps.fillKeys({}, Maps.keys(unchangedAttrs), null);
+		var changedAttrs = Maps.extend(removedAttrs, attrs);
+		changedProps = changedProps.changedAttrs.set(changedProps, changedAttrs);
+		node = node.changed.set(node, changedProps);
+		return set(node, attrs);
+	}
+
+	function attrsWithChangesWithoutStyle(node) {
+		assertElement(node);
+		var unchangedProps = node.unchanged.get(node);
+		var unchangedAttrs = unchangedProps.attrs.get(unchangedProps);
+		var changedProps = node.changed.get(node);
+		var attrs = unchangedAttrs;
+		if (attrs.hasOwnProperty('style')) {
+			attrs = Maps.cloneDelete(attrs, 'style');
+		}
+		var changedAttrs = changedProps.changedAttrs.get(changedProps);
+		if (changedAttrs) {
+			attrs = Maps.merge(unchangedAttrs, changedAttrs);
+			attrs = Maps.filter(attrs, Fn.complement(Fn.isNou));
+		}
+		return attrs;
+	}
+
+	function setAttrAffectChanges(node, name, value) {
+		assertElement(node);
+		Assert.assert('style' !== name, Assert.STYLE_NOT_AS_ATTR);
+		node = setChanged(node, name, value, ChangeProps.prototype.changedAttrs);
+		node = node.attrs.compute(node, attrsWithChangesWithoutStyle, node);
+		return node;
+	}
+
+	function setStyleAffectChanges(node, name, value) {
+		assertElement(node);
+		return setChanged(node, name, value, ChangeProps.prototype.changedStyles);
+	}
+
+	function setAttrAffinityAffectChanges(node, name, affinity) {
+		assertElement(node);
+		return setChanged(node, name, affinity, ChangeProps.prototype.changedAttrAffinity);
+	}
+
+	function setClassAffinityAffectChanges(node, name, affinity) {
+		assertElement(node);
+		return setChanged(node, name, affinity, ChangeProps.prototype.changedClassAffinity);
+	}
+
+	function getAttr(node, name) {
+		assertElement(node);
+		Assert.assert('style' !== name, Assert.STYLE_NOT_AS_ATTR);
+		return getChangedOrCached(node, name, Dom.getAttr,
+		                          ChangeProps.prototype.changedAttrs,
+		                          ChangeProps.prototype.cachedAttrs);
+	}
+
+	function getStyle(node, name) {
+		assertElement(node);
+		return getChangedOrCached(node, name, Dom.getStyle,
+		                          ChangeProps.prototype.changedStyles,
+		                          ChangeProps.prototype.cachedStyles);
+	}
+
+	function getAttrAffinity(node, name) {
+		assertElement(node);
+		return getChangedOrUnchanged(node, name,
+		                             ChangeProps.prototype.changedAttrAffinity,
+		                             NodeProps.prototype.attrAffinityMap,
+		                             AFFINITY_DEFAULT);
+	}
+
+	function getClassAffinity(node, name) {
+		assertElement(node);
+		return getChangedOrUnchanged(node, name,
+		                             ChangeProps.prototype.changedClassAffinity,
+		                             NodeProps.prototype.classAffinityMap,
+		                             AFFINITY_DEFAULT);
+	}
 
 	function updateDomNodeFromMap(domNode, map, updateFn) {
 		Maps.forEach(map, function (value, name) {
@@ -421,6 +421,16 @@ define([
 		    && changedProps.changedAttrs.get(changedProps)) {
 			unchangedProps = unchangedProps.attrs.set(unchangedProps, node.attrs.get(node));
 			node = node.unchanged.set(node, unchangedProps);
+		}
+		var attrAffinityMap = unchangedProps.attrAffinityMap.get(unchangedProps);
+		var classAffinityMap = unchangedProps.classAffinityMap.get(unchangedProps);
+		var changedAttrAffinity = changedProps.changedAttrAffinity.get(changedProps);
+		var changedClassAffinity = changedProps.changedClassAffinity.get(changedProps);
+		if (changedAttrAffinity) {
+			// TODO
+		}
+		if (changedClassAffinity) {
+			// TODO
 		}
 		return updateFromMapField(Dom.setAttr, node, 
 		                          ChangeProps.prototype.changedAttrs,
@@ -628,6 +638,21 @@ define([
 		Assert.assert(doc, Assert.ELEMENT_NOT_ATTACHED);
 		return updateDomRec(node, doc, {});
 	}
+
+	Maps.extend(Node.prototype, {
+		attr         : Accessor.asMethod(Accessor(getAttr         , setAttrAffectChanges)),
+		style        : Accessor.asMethod(Accessor(getStyle        , setStyleAffectChanges)),
+		attrAffinity : Accessor.asMethod(Accessor(getAttrAffinity , setAttrAffinityAffectChanges)),
+		classAffinity: Accessor.asMethod(Accessor(getClassAffinity, setClassAffinityAffectChanges)),
+		create       : Node,
+		updateDom    : Fn.asMethod(updateDom)
+	});
+
+	Node.CHANGE_INSERT  = CHANGE_INSERT;
+	Node.CHANGE_REMOVE  = CHANGE_REMOVE;
+	Node.CHANGE_REF     = CHANGE_REF;
+	Node.AFFINITY_DOM   = AFFINITY_DOM;
+	Node.AFFINITY_MODEL = AFFINITY_MODEL;
 
 	return Node;
 });
