@@ -27,6 +27,8 @@
 define([
 	'aloha',
 	'aloha/plugin',
+	'align/align-table-utils',
+	'util/arrays',
 	'util/html',
 	'util/dom',
 	'ui/ui',
@@ -38,6 +40,8 @@ define([
 ], function(
 	Aloha,
 	Plugin,
+	AlignTableUtils,
+	Arrays,
 	Html,
 	DomLegacy,
 	Ui,
@@ -58,10 +62,11 @@ define([
 		var selection = range.getRangeTree(),
 			cac = range.getCommonAncestorContainer(),
 			elements = [];
+		var cells, i, len;
 
 		jQuery.each(selection, function () {
 			var node = this.domobj;
-			if (this.type === 'none') {
+			if (this.type === 'none' || !node) {
 				return;
 			}
 			if (Html.isBlock(node)) {
@@ -84,6 +89,10 @@ define([
 
 		if (elements.length === 0 && selection.length > 0 && Html.isBlock(cac) && !DomLegacy.isEditingHost(cac)) {
 			elements.push(cac);
+		}
+
+		if (AlignTableUtils.isInsideTable(cac)) {
+			elements = AlignTableUtils.getSelectedTableCells(cac, elements);
 		}
 		return elements;
 	}
