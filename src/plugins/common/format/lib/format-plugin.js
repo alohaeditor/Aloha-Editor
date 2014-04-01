@@ -1,28 +1,9 @@
-/* format-plugin.js is part of Aloha Editor project http://aloha-editor.org
+/* format-plugin.js is part of the Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
- *
- * Aloha Editor is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or any later version.
- *
- * Aloha Editor is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- *
- * As an additional permission to the GNU GPL version 2, you may distribute
- * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
- * source code without the copy of the GNU GPL normally required,
- * provided you include this license notice and a URL through which
- * recipients can access the Corresponding Source.
+ * License http://aloha-editor.org/license.php
  */
 define('format/format-plugin', [
 	'aloha',
@@ -36,6 +17,7 @@ define('format/format-plugin', [
 	'ui/toggleButton',
 	'ui/port-helper-multi-split',
 	'PubSub',
+	'aloha/content-rules',
 	'i18n!format/nls/i18n',
 	'i18n!aloha/nls/i18n',
 	'aloha/selection'
@@ -43,7 +25,7 @@ define('format/format-plugin', [
 	Aloha,
 	Plugin,
 	StateOverride,
-	jQuery,
+	$,
 	Arrays,
 	Html,
 	Dom,
@@ -51,10 +33,12 @@ define('format/format-plugin', [
 	ToggleButton,
 	MultiSplitButton,
 	PubSub,
+	ContentRules,
 	i18n
 ) {
 	'use strict';
 
+	var $ = jQuery;
 	var pluginNamespace = 'aloha-format';
 	var commandsByElement = {
 		'b': 'bold',
@@ -358,8 +342,11 @@ define('format/format-plugin', [
 	}
 
 	function isFormatAllowed(tagname, plugin, editable) {
+		if (!ContentRules.isAllowed(editable.obj[0], tagname)) {
+			return false;
+		}
 		var config = plugin.getEditableConfig(editable.obj);
-		return jQuery.inArray(tagname, config) > -1;
+		return config ? $.inArray(tagname, config) > -1 : false;
 	}
 
 	function addMarkup(button) {
@@ -477,19 +464,20 @@ define('format/format-plugin', [
 		 * HotKeys used for special actions
 		 */
 		hotKey: {
-			formatBold: 'ctrl+b',
-			formatItalic: 'ctrl+i',
+			formatBold:      'ctrl+b meta+b',
+			formatItalic:    'ctrl+i meta+i',
+			formatUnderline: 'ctrl+u meta+u',
+			formatPre:       'ctrl+p meta+p',
+			formatDel:       'ctrl+d meta+d',
 			formatParagraph: 'alt+ctrl+0',
-			formatH1: 'alt+ctrl+1',
-			formatH2: 'alt+ctrl+2',
-			formatH3: 'alt+ctrl+3',
-			formatH4: 'alt+ctrl+4',
-			formatH5: 'alt+ctrl+5',
-			formatH6: 'alt+ctrl+6',
-			formatPre: 'ctrl+p',
-			formatDel: 'ctrl+d',
-			formatSub: 'alt+shift+s',
-			formatSup: 'ctrl+shift+s'
+			formatH1:        'alt+ctrl+1',
+			formatH2:        'alt+ctrl+2',
+			formatH3:        'alt+ctrl+3',
+			formatH4:        'alt+ctrl+4',
+			formatH5:        'alt+ctrl+5',
+			formatH6:        'alt+ctrl+6',
+			formatSub:       'alt+shift+s',
+			formatSup:       'ctrl+shift+s'
 		},
 
 		/**
@@ -515,36 +503,44 @@ define('format/format-plugin', [
 				me.applyButtonConfig(params.editable.obj);
 
 				var createAdder = function (tagname) {
-					return function () {
-						if (isFormatAllowed(tagname, me, params.editable)) {
+					if (isFormatAllowed(tagname, me, params.editable)) {
+						return function addFormat() {
+							console.warn(tagname);
 							me.addMarkup(tagname);
-						}
+							return false;
+						};
+					}
+					return function () {
 						return false;
 					};
 				};
 
 				var createChanger = function (tagname) {
-					return function () {
-						if (isFormatAllowed(tagname, me, params.editable)) {
+					if (isFormatAllowed(tagname, me, params.editable)) {
+						return function changeFormat() {
 							me.changeMarkup(tagname);
-						}
+							return false;
+						};
+					}
+					return function () {
 						return false;
 					};
 				};
 
-				params.editable.obj.bind('keydown.aloha.format',  me.hotKey.formatBold,     createAdder('b'));
-				params.editable.obj.bind('keydown.aloha.format',  me.hotKey.formatItalic,   createAdder('i'));
-				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatDel,       createAdder('del'));
-				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatSub,       createAdder('sub'));
-				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatSup,       createAdder('sup'));
-				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatParagraph, createChanger('p'));
-				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatH1,        createChanger('h1'));
-				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatH2,        createChanger('h2'));
-				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatH3,        createChanger('h3'));
-				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatH4,        createChanger('h4'));
-				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatH5,        createChanger('h5'));
-				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatH6,        createChanger('h6'));
-				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatPre,       createChanger('pre'));
+				params.editable.obj.bind('keydown.aloha.format',  me.hotKey.formatBold,      createAdder('b'));
+				params.editable.obj.bind('keydown.aloha.format',  me.hotKey.formatItalic,    createAdder('i'));
+				params.editable.obj.bind('keydown.aloha.format',  me.hotKey.formatUnderline, createAdder('u'));
+				params.editable.obj.bind('keydown.aloha.format',  me.hotKey.formatDel,       createAdder('del'));
+				params.editable.obj.bind('keydown.aloha.format',  me.hotKey.formatSub,       createAdder('sub'));
+				params.editable.obj.bind('keydown.aloha.format',  me.hotKey.formatSup,       createAdder('sup'));
+				params.editable.obj.bind('keydown.aloha.format',  me.hotKey.formatParagraph, createChanger('p'));
+				params.editable.obj.bind('keydown.aloha.format',  me.hotKey.formatH1,        createChanger('h1'));
+				params.editable.obj.bind('keydown.aloha.format',  me.hotKey.formatH2,        createChanger('h2'));
+				params.editable.obj.bind('keydown.aloha.format',  me.hotKey.formatH3,        createChanger('h3'));
+				params.editable.obj.bind('keydown.aloha.format',  me.hotKey.formatH4,        createChanger('h4'));
+				params.editable.obj.bind('keydown.aloha.format',  me.hotKey.formatH5,        createChanger('h5'));
+				params.editable.obj.bind('keydown.aloha.format',  me.hotKey.formatH6,        createChanger('h6'));
+				params.editable.obj.bind('keydown.aloha.format',  me.hotKey.formatPre,       createChanger('pre'));
 			});
 
 			Aloha.bind('aloha-editable-deactivated', function (e, params) {
@@ -559,8 +555,8 @@ define('format/format-plugin', [
 		 * @param {Object} id of the activated editable
 		 * @return void
 		 */
-		applyButtonConfig: function (obj) {
-			var config = this.getEditableConfig(obj),
+		applyButtonConfig: function ($editable) {
+			var config = this.getEditableConfig($editable),
 			    button, i, len;
 
 			if (typeof config === 'object') {
@@ -577,10 +573,14 @@ define('format/format-plugin', [
 			}
 			this.formatOptions = config;
 
+			var editable = $editable[0];
+
 			// now iterate all buttons and show/hide them according to the config
 			for (button in this.buttons) {
 				if (this.buttons.hasOwnProperty(button)) {
-					if (jQuery.inArray(button, config) !== -1) {
+					if (!ContentRules.isAllowed(editable, button)) {
+						this.buttons[button].handle.hide();
+					} else if (jQuery.inArray(button, config) !== -1) {
 						this.buttons[button].handle.show();
 					} else {
 						this.buttons[button].handle.hide();
@@ -591,10 +591,13 @@ define('format/format-plugin', [
 			// and the same for multisplit items
 			len = this.multiSplitItems.length;
 			for (i = 0; i < len; i++) {
-				if (jQuery.inArray(this.multiSplitItems[i].name, config) !== -1) {
-					this.multiSplitButton.showItem(this.multiSplitItems[i].name);
+				var name = this.multiSplitItems[i].name;
+				if (!ContentRules.isAllowed(editable, name)) {
+					this.multiSplitButton.hideItem(name);
+				} else if (jQuery.inArray(name, config) !== -1) {
+					this.multiSplitButton.showItem(name);
 				} else {
-					this.multiSplitButton.hideItem(this.multiSplitItems[i].name);
+					this.multiSplitButton.hideItem(name);
 				}
 			}
 		},

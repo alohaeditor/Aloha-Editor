@@ -1,33 +1,16 @@
-/* abbr-plugin.js is part of Aloha Editor project http://aloha-editor.org
+/* abbr-plugin.js is part of the Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
- * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php 
- * 
- * Aloha Editor is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or any later version.
- *
- * Aloha Editor is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- * 
- * As an additional permission to the GNU GPL version 2, you may distribute
- * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
- * source code without the copy of the GNU GPL normally required,
- * provided you include this license notice and a URL through which
- * recipients can access the Corresponding Source.
+ * License http://aloha-editor.org/license.php
  */
 define([
 	'aloha',
 	'jquery',
+	'PubSub',
 	'aloha/plugin',
+	'aloha/content-rules',
 	'ui/ui',
 	'ui/toggleButton',
 	'ui/button',
@@ -37,8 +20,10 @@ define([
 	'i18n!aloha/nls/i18n'
 ], function (
 	Aloha,
-	jQuery,
+	$,
+	PubSub,
 	Plugin,
+	ContentRules,
 	Ui,
 	ToggleButton,
 	Button,
@@ -48,11 +33,69 @@ define([
 	i18nCore
 ) {
 	'use strict';
+
 	var GENTICS = window.GENTICS;
+	var $ = jQuery;
+	var configurations = {};
 
 	/**
-	 * Add additional target objects, in case the selection includes
-	 * several abbrs tag
+	 * Subscribes event handlers to facilitate user interaction on editables.
+	 *
+	 * @private
+	 * @param {ListPlugin} plugin
+	 */
+	function registerEventHandlers(plugin) {
+		PubSub.sub('aloha.editable.created', function (message) {
+			var editable = message.editable;
+			var config = plugin.getEditableConfig(editable.obj);
+			var enabled = config
+			           && ($.inArray('abbr', config) > -1)
+			           && ContentRules.isAllowed(editable.obj[0], 'abbr');
+			configurations[editable.getId()] = !!enabled;
+		});
+
+		PubSub.sub('aloha.editable.destroyed', function (message) {
+			delete configurations[message.editable.getId()];
+		});
+
+		PubSub.sub('aloha.selection.context-changed', function (message) {
+			if (!Aloha.activeEditable) {
+				return;
+			}
+
+			if (!configurations[Aloha.activeEditable.getId()]) {
+				plugin._formatAbbrButton.hide();
+				plugin._insertAbbrButton.hide();
+				return;
+			}
+
+			plugin._formatAbbrButton.show();
+			plugin._insertAbbrButton.show();
+
+			var range = message.range;
+			var foundMarkup = plugin.findAbbrMarkup(range);
+
+			if (foundMarkup) {
+				plugin.abbrField.show();
+				plugin.remAbbrButton.show();
+				plugin.abbrField.setTargetObject(foundMarkup, 'title');
+				plugin._formatAbbrButton.setState(true);
+				plugin._insertAbbrButton.hide();
+				addAdditionalTargetObject(range, plugin.abbrField);
+				Scopes.enterScope(plugin.name, 'abbr');
+			} else {
+				plugin.abbrField.hide();
+				plugin.remAbbrButton.hide();
+				plugin.abbrField.setTargetObject(null);
+				plugin._formatAbbrButton.setState(false);
+				Scopes.leaveScope(plugin.name, 'abbr', true);
+			}
+		});
+	}
+
+	/**
+	 * Add additional target objects, in case the selection includes several
+	 * abbrs tag.
 	 *
 	 * @param {RangeObject} rangeObject Selection Range
 	 * @param {LinkPlugin} that Link Plugin object
@@ -77,8 +120,8 @@ define([
 		 */
 		init: function () {
 			this.createButtons();
-		    this.subscribeEvents();
 		    this.bindInteractions();
+		    registerEventHandlers(this);
 		},
 
 		/**
@@ -156,64 +199,6 @@ define([
 					}
 				});
 			}
-		},
-
-		subscribeEvents: function () {
-			var me = this;
-			var editableConfig = {};
-
-			Aloha.bind('aloha-editable-activated', function () {
-				if (!Aloha.activeEditable || !Aloha.activeEditable.obj) {
-					return;
-				}
-				var config = me.getEditableConfig(Aloha.activeEditable.obj);
-				editableConfig[Aloha.activeEditable.getId()] =
-						jQuery.inArray('abbr', config) !== -1;
-			});
-
-			Aloha.bind('aloha-editable-destroyed', function () {
-				if (Aloha.activeEditable && Aloha.activeEditable.obj) {
-					delete editableConfig[Aloha.activeEditable.getId()];
-				}
-			});
-
-			Aloha.bind('aloha-selection-changed', function (event, range) {
-		        if (!Aloha.activeEditable) {
-					return;
-				}
-
-				if (editableConfig[Aloha.activeEditable.getId()]) {
-					me._formatAbbrButton.show();
-					me._insertAbbrButton.show();
-				} else {
-					me._formatAbbrButton.hide();
-					me._insertAbbrButton.hide();
-					return;
-				}
-
-				var foundMarkup = me.findAbbrMarkup(range);
-				if (foundMarkup) {
-					me._insertAbbrButton.hide();
-					me._formatAbbrButton.setState(true);
-					// show the field and button for abbreviation
-					me.abbrField.show();
-					me.remAbbrButton.show();
-
-					Scopes.enterScope(me.name, 'abbr');
-
-					me.abbrField.setTargetObject(foundMarkup, 'title');
-					addAdditionalTargetObject(range, me.abbrField);
-				} else {
-					// hide the field and button for abbreviation
-					me.abbrField.hide();
-					me.remAbbrButton.hide();
-
-					Scopes.leaveScope(me.name, 'abbr', true);
-
-					me._formatAbbrButton.setState(false);
-					me.abbrField.setTargetObject(null);
-				}
-		    });
 		},
 
 		/**

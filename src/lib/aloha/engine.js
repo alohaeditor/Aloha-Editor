@@ -4,14 +4,18 @@ define([
 	'util/maps',
 	'util/html',
 	'util/dom',
-	'jquery'
+	'util/dom2',
+	'jquery',
+	'aloha/content-rules'
 ], function (
 	Aloha,
 	$_,
 	Maps,
 	Html,
 	Dom,
-	jQuery
+	Dom2,
+	jQuery,
+	ContentRules
 ) {
 	"use strict";
 
@@ -7516,12 +7520,46 @@ define([
 		}
 	};
 
+	/**
+	 * Given a string of html content to be inserted at the given range.
+	 * Strip away any elements which are dissallowed by ContentRule configuration.
+	 *
+	 * @param  {string} content
+	 * @param  {Range}  range
+	 * @return {string}
+	 */
+	function stripDissallowed(content, range) {
+		var editable = Dom.getEditingHostOf(range.commonAncestorContainer);
+		if (!editable) {
+			return content;
+		}
+		var doc = range.commonAncestorContainer.ownerDocument;
+		var container = doc.createElement('div');
+		container.innerHTML = content;
+		var node = Dom2.forward(container);
+		var next;
+		while (node) {
+			next = Dom2.forward(node);
+			if (!ContentRules.isAllowed(editable, node.nodeName)) {
+				Dom2.removeShallow(node);
+			}
+			var translation = ContentRules.translate(editable, node.nodeName);
+			if (translation !== node.nodeName) {
+				next = doc.createElement(translation);
+				node.parentNode.replaceChild(next, node);
+			} else {
+				node = next;
+			}
+		}
+		return container.innerHTML;
+	}
+
 	//@}
 	///// The insertHTML command /////
 	//@{
 	commands.inserthtml = {
-		action: function (value, range) {
-
+		action: function (raw, range) {
+			var value = stripDissallowed(raw, range);
 
 			// "Delete the contents of the active range."
 			deleteContents(range);

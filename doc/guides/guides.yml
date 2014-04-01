@@ -36,6 +36,9 @@ index:
     - title: "Internals"
       url: internals
       text: "Miscellaneous implementation details."
+    - title: "Content Rules"
+      url: content_rules
+      text: "How to configure what elements are permitted inside editables."
 
   UI:
     - title: "Aloha Editor UI"

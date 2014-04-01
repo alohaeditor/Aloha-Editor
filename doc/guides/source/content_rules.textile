@@ -1,0 +1,172 @@
+h2. Content Rules
+
+Content Rules is a module that facilitates global HTML content restriction
+across Aloha Editor. It is designed as a single point of configuration that will
+provide a contract to uniformly effect editing interactions and the user
+interface in cohesive way.
+
+endprologue.
+
+
+h3. Informer not enforcer
+
+Plugin developers should note that there are myriad ways to insert content into
+an editable and that Content Rules does not provide a mechanism to forcibly
+prevent content from being inserted.
+
+It remains the responsibility of all implementations to use Content Rules to
+check whether the content that is to be inserted in a given editable is
+permitted according to Content Rules configuration.
+
+
+h3. Configuration
+
+There are 3 configurable settings for using Content Rules:
+* "whitelist":#whitelists
+* "blacklist":#blacklists
+* "translation":#translation
+
+All these options targets editables using "CSS
+selectors":http://www.w3.org/TR/CSS2/selector.html.
+
+NOTE: If not Content Rules configuration is provided then all elements will be
+considered permissable with regards to Content Rules.  The same is true for any
+editable which does not match any configured selectors.
+
+h3. Whitelists 
+
+Whitelist configuration explicitly specifies white type of elements are to be
+permitted in editables.
+
+For example, the following configuration stipulates that all editables which
+match the selector +*+ are permitted to only contain the elements @<b>@, @<i>@,
+and @<u>@.
+
+<javascript>
+Aloha.settings.contentRules = {
+	whitelist: {
+		'*': ['b', 'i', 'u']
+	}
+}
+</javascript>
+
+It is possible to combine whitelist settings across different selectors. All
+settings whose selectors match an editable will take effect when checking
+Content Rules.
+
+The configuration below permits all editables to contain @<b>@, @<i>@, and @<u>@
+elements, as in the example before. In addition, however, the second selector
+matches editables with the class name @longform@. Since any editable matching
+the selector +.longform+ also matches the selector +*+, this editable will not
+only be allowed to contain @<p>@ and @<h2>@ elements, but will also be allowed
+to contain @<b>@, @<i>@, and @<u>@ elements.
+
+<javascript>
+Aloha.settings.contentRules = {
+	whitelist: {
+		'*': ['b', 'i', 'u'],
+		'.longform': ['p', 'h2']
+	}
+}
+</javascript>
+
+
+h3. Blacklists
+
+In cases where only a few elements are to be dissallowed in an editable, it
+would be cumbersome to have to specify every single element that is permitted,
+since this would require writing out most of all the HTML elements.
+
+This is where blacklists are useful. Blacklists are opposite to whitelists in
+that elements that are specified in a blacklist are the only elements that are
+not allowed in a matching editable.
+
+The configuration below declares that no editable is permitted to contain
+@<script>@ or @<style>@ elements; all other elements are permitted.
+
+<javascript>
+Aloha.settings.contentRules = {
+	blacklist: {
+		'*': ['script', 'style']
+	}
+}
+</javascript>
+
+NOTE: Blacklist settings always win over whitelist settings.
+
+
+h3. Using blacklists and whitelists together
+
+It is possible to combine both whitelists and blacklists as follows:
+
+In the case below, all editables are permitted to contain all the elements
+specified in the whitelist array for the selector +*+. The blacklist setting for
++.title+ forbids the a subset of the lists permitted in the whitelist.
+
+This means that an editable with the class name @title@ will be permitted to
+contain all elements whitelisted against the +*+ selector, but unlike other
+editables, it will be further restricted to only allow only those elements that
+are not blacklist specified in +.title+.
+
+<javascript>
+Aloha.settings.contentRules = {
+	whitelist: {
+		'*': ['p', 'h1', 'h2', 'h3', 'span', 'b', 'i', 'u']
+	},
+	blacklist: {
+		'.title': ['p', 'h1', 'h2', 'h3']
+	}
+}
+</javascript>
+
+NOTE: Text nodes (@#text@) are automatically permitted unless explicitly
+specified in a blacklist setting.
+
+
+h3. Translation
+
+Translations allows for uniform translation between visually paritable semantic
+elements such as from @i@ → @em@, or @strong@ → @b@.  Selectors work in the
+same way they do for whitelists and blacklists.
+
+<javascript>
+Aloha.settings.contentRules = {
+	translate: {
+		'.blog': {
+			'i': 'em',
+			'b': 'strong'
+		}
+	}
+}
+</javascript>
+
+
+h3. isAllowed()
+
+In order to use content rules in your implementation, you will need to require
+the +aloha/content-rules+ module.
+
+To checkout whether an element of a given node name is permitted in an editable,
+one should use the +isAllowed()+ function:
+
+<javascript>
+require(['PubSub', 'aloha/content-rules'], function (PubSub, ContentRules) {
+	PubSub.sub('aloha.editable.activated', function (message) {
+		var isBoldPermitted = ContentRules.isAllowed(message.editable, 'b');
+		if (isBoldPermitted) {
+			// ... do something cool ...
+		}
+	});
+});
+</javascript>
+
+NOTE: isAllowed() does not indicate whether an element is allowed in an editable
+based on HTML schema rules, but simply on arbitrary Content Rules configuration.
+
+
+h3. translate()
+
+Given an editable, and a node name, this function returns a translation of that
+node name into another, according to configured Content Rules. If no translation
+has been mapped in the settings, than none will be done by translate(), and the
+same node name will be retured instead.
