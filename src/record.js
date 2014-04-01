@@ -58,17 +58,26 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 		return newInstanceFromExisting(record, record._record_values.slice(0));
 	}
 
-	function assertRead(record) {
+	function assertRead(record, Record) {
+		Assert.assert(!Record || record.constructor === Record,
+		              Assert.RECORD_WRONG_TYPE);
 		var transience = record._record_transience;
-		Assert.assert(transience === NOT_TRANSIENT || transience === TRANSIENT, Assert.READ_FROM_DISCARDED_TRANSIENT);
+		Assert.assert(transience === NOT_TRANSIENT || transience === TRANSIENT,
+		              Assert.READ_FROM_DISCARDED_TRANSIENT);
 	}
 
-	function assertWrite(record) {
-		Assert.assert(record._record_transience === NOT_TRANSIENT, Assert.PERSISTENT_WRITE_TO_TRANSIENT);
+	function assertWrite(record, Record) {
+		Assert.assert(!Record || record.constructor === Record,
+		              Assert.RECORD_WRONG_TYPE);
+		Assert.assert(record._record_transience === NOT_TRANSIENT,
+		              Assert.PERSISTENT_WRITE_TO_TRANSIENT);
 	}
 
-	function assertTransientWrite(record) {
-		Assert.assert(record._record_transience === TRANSIENT, Assert.TRANSIENT_WRITE_TO_PERSISTENT);
+	function assertTransientWrite(record, Record) {
+		Assert.assert(!Record || record.constructor === Record,
+		              Assert.RECORD_WRONG_TYPE);
+		Assert.assert(record._record_transience === TRANSIENT,
+		              Assert.TRANSIENT_WRITE_TO_PERSISTENT);
 	}
 
 	function asPersistent(record) {
@@ -113,16 +122,16 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 		var defaults = Record._record_defaults;
 		var offset = Record._record_defaults.length;
 		function get(record) {
-			assertRead(record);
+			assertRead(record, Record);
 			return getValue(record, offset, defaults);
 		}
 		function set(record, newValue) {
-			assertWrite(record);
+			assertWrite(record, Record);
 			return setValue(record, newValue, offset, defaults);
 		}
 		var field = Accessor(get, set);
 		field.setT = function setT(record, newValue) {
-			assertTransientWrite(record);
+			assertTransientWrite(record, Record);
 			return setValueT(record, newValue, offset, defaults);
 		};
 		defaults.push(defaultValue);
