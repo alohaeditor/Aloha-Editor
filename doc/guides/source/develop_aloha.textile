@@ -72,7 +72,7 @@ h3. Repository Directory Structure
 
 h3. Changelog
 
-New changelog entries should not be added to the CHANGELOG.md file.
+NOTE: New changelog entries should *not* be added to the CHANGELOG.md file.
 
 * Draw a number for your changelog entry using the "numbercruncher":http://www.alohaeditor.org/numbercruncher/
 * Write your changelog entry in textile syntax.
@@ -85,13 +85,15 @@ h4. Changelog Filenames
 
 * The pattern is: 
 
-```[numbercruncher].{RT|RM|GH|KB}[TICKETNUMBER].{bugfix|enhancement|manualchange|security|note|optional-manualchange}```
-
+<shell>
+[ numbercruncher ].{ RT | RM | GH | KB }[ TICKETNUMBER ].{ bugfix | feature | enhancement |
+security | note | manualchange | optional-manualchange }
+</shell>
 
 * bugfix: 5.RT52145-RM7654.bugfix
 * enhancement: 5.RT52145-RM7654.enhancement
 * manualchange: 5.RT52145-RM7654.manualchange
-* optiona-manualchange: 5.RT52145-RM7654.optional-manualchange
+* optional-manualchange: 5.RT52145-RM7654.optional-manualchange
 * security fix: 5.RT52145-RM7654.security
 * note: 5.RT52145-RM7654.note
 
