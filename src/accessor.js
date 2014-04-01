@@ -111,7 +111,7 @@ define(['functions', 'assert'], function (Fn, Assert) {
 				return fromString(symbol);
 			}
 		}
-		Assert.error(Assert.MISSING_PROPERTY);
+		Assert.error(Assert.MISSING_SYMBOL);
 	}
 
 	Accessor.fromString = fromString;
