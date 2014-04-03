@@ -161,6 +161,8 @@ define([
 		return node.asPersistent();
 	}
 
+	// TODO: NodeProps should actually just be a Node with changed and
+	// unchanged properties being null.
 	var NodeProps = Record.define({
 		id              : {},
 		type            : {computable: true},
@@ -201,24 +203,26 @@ define([
 		changed      : {},
 		unchanged    : {}
 	}, function (node, domNodeOrProps) {
-		node = node.asTransient();
-		var unchanged = NodeProps();
-		if (domNodeOrProps.nodeType) {
-			node = node.domNode.setT(node, domNodeOrProps);
-			unchanged = setPropsFromDomNode(unchanged, domNodeOrProps);
-		} else if (!Fn.isNou(domNodeOrProps.text)) {
-			unchanged = setTextProps(unchanged, domNodeOrProps)
-		} else if (!Fn.isNou(domNodeOrProps.name)) {
-			unchanged = setElementProps(unchanged, domNodeOrProps);
+		if (domNodeOrProps) {
+			node = node.asTransient();
+			var unchanged = NodeProps();
+			if (domNodeOrProps.nodeType) {
+				node = node.domNode.setT(node, domNodeOrProps);
+				unchanged = setPropsFromDomNode(unchanged, domNodeOrProps);
+			} else if (!Fn.isNou(domNodeOrProps.text)) {
+				unchanged = setTextProps(unchanged, domNodeOrProps)
+			} else if (!Fn.isNou(domNodeOrProps.name)) {
+				unchanged = setElementProps(unchanged, domNodeOrProps);
+			}
+			node = node.type.computeT(node, NodeProps.prototype.type.get, unchanged);
+			node = node.name.computeT(node, NodeProps.prototype.name.get, unchanged);
+			node = node.text.computeT(node, NodeProps.prototype.text.get, unchanged);
+			node = node.children.computeT(node, NodeProps.prototype.children.get, unchanged);
+			node = node.unchanged.setT(node, unchanged);
+			node = node.changed.setT(node, ChangeProps());
+			node = node.asPersistent();
+			node = node.attrs.compute(node, attrsWithChangesWithoutStyle, node);
 		}
-		node = node.type.computeT(node, NodeProps.prototype.type.get, unchanged);
-		node = node.name.computeT(node, NodeProps.prototype.name.get, unchanged);
-		node = node.text.computeT(node, NodeProps.prototype.text.get, unchanged);
-		node = node.children.computeT(node, NodeProps.prototype.children.get, unchanged);
-		node = node.unchanged.setT(node, unchanged);
-		node = node.changed.setT(node, ChangeProps());
-		node = node.asPersistent();
-		node = node.attrs.compute(node, attrsWithChangesWithoutStyle, node);
 		return node;
 	});
 
