@@ -672,6 +672,7 @@ define([
 	Node.CHANGE_NONE    = CHANGE_NONE;
 	Node.AFFINITY_DOM   = AFFINITY_DOM;
 	Node.AFFINITY_MODEL = AFFINITY_MODEL;
+	Node.AFFINITY_DEFAULT = AFFINITY_DEFAULT;
 	Node.childrenChangedInParent = childrenChangedInParent;
 
 	return Node;
