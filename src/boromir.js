@@ -267,6 +267,15 @@ define([
 			return cachedMap[name];
 		}
 		var domNode = node.domNode.get(node);
+		// This is the only place where we might read from the domNode
+		// even if we have already for example read all attributes or
+		// set all the attributes, because there is no way to tell
+		// whether there aren't more attributes on the element that we
+		// have not read. Contrast this to children which we always read
+		// in one go and therefore know that we've read all of them.
+		if (!domNode) {
+			return null;
+		}
 		value = cachedMap[name] = getFromDom(domNode, name);
 		return value;
 	}
