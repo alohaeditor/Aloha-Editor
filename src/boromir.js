@@ -218,6 +218,8 @@ define([
 			} else if (!Fn.isNou(domNodeOrProps.name)) {
 				node = node.domNode.setT(node, domNodeOrProps.domNode);
 				unchanged = setElementProps(unchanged, domNodeOrProps);
+			} else {
+				Assert.error(Assert.INVALID_ARGUMENT);
 			}
 			node = node.type.computeT(node, NodeProps.prototype.type.get, unchanged);
 			node = node.name.computeT(node, NodeProps.prototype.name.get, unchanged);
