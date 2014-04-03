@@ -43,7 +43,7 @@ define([
 	function get(elem, name) {
 		// Because IE7 needs dashesToCamelCase().
 		name = Strings.dashesToCamelCase(name);
-		return Nodes.isElementNode(elem) ? elem.style[name] : null;
+		return elem.style[name];
 	}
 
 	/**

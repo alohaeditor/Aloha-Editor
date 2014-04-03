@@ -795,6 +795,12 @@ define([
 	wrapperProperties['bold'] = wrapperProperties.bold;
 	wrapperProperties['italic'] = wrapperProperties.italic;
 
+	function getStyleSafely(node, name) {
+		return (Dom.isElementNode(node)
+		        ? Dom.getStyle(node, name)
+		        : null);
+	}
+
 	function makeStyleFormatter(styleName, styleValue, leftPoint, rightPoint, opts) {
 		var isStyleEqual = opts.isStyleEqual || isStyleEqual_default;
 		var nodeNames = [];
@@ -816,7 +822,7 @@ define([
 			if (Arrays.contains(nodeNames, node.nodeName)) {
 				return wrapperProps.value;
 			}
-			var override = Dom.getStyle(node, styleName);
+			var override = getStyleSafely(node, styleName);
 			return !Strings.isEmpty(override) ? override : null;
 		}
 		function getInheritableOverride(node) {
@@ -836,20 +842,20 @@ define([
 			if (Arrays.contains(nodeNames, node.nodeName)) {
 				return true;
 			}
-			return !Strings.isEmpty(Dom.getStyle(node, styleName));
+			return !Strings.isEmpty(getStyleSafely(node, styleName));
 		}
 		function hasContextValue(node, value) {
 			value = normalizeStyleValue(value);
 			if (Arrays.contains(nodeNames, node.nodeName) && isStyleEqual(wrapperProps.value, value)) {
 				return true;
 			}
-			return isStyleEqual(Dom.getStyle(node, styleName), value);
+			return isStyleEqual(getStyleSafely(node, styleName), value);
 		}
 		function hasContext(node) {
 			if (!unformat && Arrays.contains(nodeNames, node.nodeName)) {
 				return true;
 			}
-			return isContextStyle(Dom.getStyle(node, styleName));
+			return isContextStyle(getStyleSafely(node, styleName));
 		}
 		function hasInheritableContext(node) {
 			if (!unformat && Arrays.contains(nodeNames, node.nodeName)) {
@@ -864,7 +870,7 @@ define([
 			// style to the default value, for example
 			// "text-decoration: none" to be ignored.
 			if (unformat && Html.isStyleInherited(styleName)) {
-				return isContextStyle(Dom.getStyle(node, styleName));
+				return isContextStyle(getStyleSafely(node, styleName));
 			}
 			return isContextStyle(Dom.getComputedStyle(node, styleName));
 		}
