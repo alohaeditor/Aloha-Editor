@@ -75,7 +75,7 @@ define([
 	'use strict';
 
 	var idCounter = 0;
-	var NO_CHANGE = 0;
+	var CHANGE_NONE = 0;
 	var CHANGE_INSERT = 1;
 	var CHANGE_REMOVE = 2;
 	var CHANGE_REF = 4;
@@ -505,29 +505,21 @@ define([
 		return index;
 	}
 
-	var changedInParentField = Node.addField({});
-
 	/**
 	 * Fast for common cases, but may have a suboptimal result (too many
 	 * removes/inserts) when siblings are moved around rather than just
 	 * inserted and removed.
 	 */
-	function childrenWithChangeInParent(node) {
-		if (!node.children.isMemoized(node)) {
-			return null;
-		}
-		var newChildren = node.children.get(node)
-		var unchangedProps = node.unchanged.get(node);
-		var oldChildren = unchangedProps.children.get(unchangedProps)
+	function childrenChangedInParent(oldChildren, newChildren) {
 		if (newChildren === oldChildren) {
 			return null;
 		}
-		var newIndex = indexChildren(newChildren, {}, true);
+		var newIndex = null;
 		var i = 0;
 		var j = 0;
 		var oldLen = oldChildren.length;
 		var newLen = newChildren.length;
-		var children = [];
+		var changedInParent = [];
 		var changed = false;
 		while (i < oldLen && j < newLen) {
 			var oldChild = oldChildren[i];
@@ -536,80 +528,99 @@ define([
 			var newUnchanged = newChild.unchanged.get(newChild);
 			var oldId = oldUnchanged.id.get(oldUnchanged);
 			var newId = newUnchanged.id.get(newUnchanged);
-			var child;
+			var change;
 			if (oldId === newId) {
-				child = newChild;
-				if (oldChild !== newChild) {
+				if (oldChild === newChild) {
+					change = CHANGE_NONE;
+				} else {
 					changed = true;
-					child = changedInParentField.set(child, CHANGE_REF);
+					change = CHANGE_REF;
 				}
 				i += 1;
 				j += 1;
-			} else if (!newIndex[oldId]) {
-				changed = true;
-				child = changedInParentField.set(oldChild, CHANGE_REMOVE);
-				i += 1;
 			} else {
-				changed = true;
-				child = changedInParentField.set(newChild, CHANGE_INSERT);
-				j += 1;
+				newIndex = newIndex || indexChildren(newChildren, {}, true);
+				if (!newIndex[oldId]) {
+					changed = true;
+					change = CHANGE_REMOVE;
+					i += 1;
+				} else {
+					changed = true;
+					change = CHANGE_INSERT;
+					j += 1;
+				}
 			}
-			children.push(child);
+			changedInParent.push(change);
 		}
 		for (; i < oldLen; i++) {
 			var oldChild = oldChildren[i];
 			changed = true;
-			children.push(changedInParentField.set(oldChild, CHANGE_REMOVE));
+			changedInParent.push(CHANGE_REMOVE);
 		}
 		for (; j < newLen; j++) {
 			var newChild = newChildren[j];
 			changed = true;
-			children.push(changedInParentField.set(newChild, CHANGE_INSERT));
+			changedInParent.push(CHANGE_INSERT);
 		}
 		if (!changed) {
 			return null;
 		}
-		return children;
+		return changedInParent;
 	}
 
 	function updateChildren(node, doc, insertIndex) {
-		var changedChildren = childrenWithChangeInParent(node);
-		if (!changedChildren) {
+		if (!node.children.isMemoized(node)) {
+			return node;
+		}
+		var newChildren = node.children.get(node)
+		var unchangedProps = node.unchanged.get(node);
+		var oldChildren = unchangedProps.children.get(unchangedProps)
+		var changedInParent = childrenChangedInParent(oldChildren, newChildren);
+		if (!changedInParent) {
 			return node;
 		}
 		var domNode = node.domNode.get(node);
 		var childNodes = domNode.childNodes;
 		var children = [];
-		var i = 0;
-		changedChildren.forEach(function (child) {
-			var changedInParent = changedInParentField.get(child);
+		var oldI = 0, newI = 0, domI = 0;
+		changedInParent.forEach(function (change) {
+			var child;
+			if (change & CHANGE_INSERT) {
+				child = newChildren[newI];
+				newI += 1;
+			} else if (change & CHANGE_REMOVE) {
+				child = oldChildren[oldI];
+				oldI += 1;
+			} else {
+				child = newChildren[newI];
+				newI += 1;
+				oldI += 1;
+			}
 			var affinity = child.affinity.get(child);
 			var unchangedProps = child.unchanged.get(child);
 			var unchangedAffinity = unchangedProps.affinity.get(unchangedProps);
 			if ((affinity & AFFINITY_DOM) !== (unchangedAffinity & AFFINITY_DOM)) {
-				if ((affinity & AFFINITY_DOM) && !(changedInParent & CHANGE_REMOVE)) {
-					child = insertChild(domNode, childNodes, child, i, doc, insertIndex);
-					i += 1;
-				} else if (!(changeInParent & CHANGE_INSERT)) {
-					removeChild(domNode, childNodes, i);
+				if ((affinity & AFFINITY_DOM) && !(change & CHANGE_REMOVE)) {
+					child = insertChild(domNode, childNodes, child, domI, doc, insertIndex);
+					domI += 1;
+				} else if (!(change & CHANGE_INSERT)) {
+					removeChild(domNode, childNodes, domI);
 				}
 			} else if (affinity & AFFINITY_DOM) {
-				if (changedInParent & CHANGE_INSERT) {
-					child = insertChild(domNode, childNodes, child, i, doc, insertIndex);
-					i += 1;
-				} else if (changedInParent & CHANGE_REMOVE) {
-					removeChild(domNode, childNodes, i)
+				if (change & CHANGE_INSERT) {
+					child = insertChild(domNode, childNodes, child, domI, doc, insertIndex);
+					domI += 1;
+				} else if (change & CHANGE_REMOVE) {
+					removeChild(domNode, childNodes, domI)
 				} else {
-					if (changedInParent & CHANGE_REF) {
+					if (change & CHANGE_REF) {
 						child = updateDomRec(child, doc, insertIndex);
 					}
-					i += 1;
+					domI += 1;
 				}
 			}
-			if (!(changedInParent & CHANGE_REMOVE)) {
-				children.push((changedInParent === NO_CHANGE)
-				              ? child
-				              : changedInParentField.set(child, NO_CHANGE));
+			if (!(change & CHANGE_REMOVE)) {
+				children.push(child);
 			}
 		});
 		node = node.asTransient();
@@ -654,10 +665,10 @@ define([
 	Node.CHANGE_INSERT  = CHANGE_INSERT;
 	Node.CHANGE_REMOVE  = CHANGE_REMOVE;
 	Node.CHANGE_REF     = CHANGE_REF;
+	Node.CHANGE_NONE    = CHANGE_NONE;
 	Node.AFFINITY_DOM   = AFFINITY_DOM;
 	Node.AFFINITY_MODEL = AFFINITY_MODEL;
-	Node.childrenWithChangeInParent = childrenWithChangeInParent;
-	Node.changedInParent = changedInParentField;
+	Node.childrenChangedInParent = childrenChangedInParent;
 
 	return Node;
 });
