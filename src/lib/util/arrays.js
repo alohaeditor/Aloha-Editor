@@ -277,6 +277,32 @@ define(['util/functions'], function (Fn) {
 		return xs[1];
 	}
 
+	/**
+	 * Coerces the given object (NodeList, arguments) to an array.
+	 * @param  {*} list
+	 * @return {Array}
+	 */
+	function coerce(list) {
+		var i;
+		var len;
+		var resultArray = [];
+
+		for (i = 0, len = list.length; i < len; i++) {
+			resultArray.push(list[i]);
+		}
+
+		return resultArray;
+	}
+
+	/**
+	 * Checks if `array` is empty.
+	 * @param {Array.<*>} array
+	 * @return {boolean}
+	 */
+	function isEmpty(array) {
+		return array.length === 0;
+	}
+
 	return {
 		filter: filter,
 		indexOf: indexOf,
@@ -292,6 +318,8 @@ define(['util/functions'], function (Fn) {
 		intersect: intersect,
 		subtract: subtract,
 		second: second,
-		last: last
+		last: last,
+		coerce: coerce,
+		isEmpty: isEmpty
 	};
 });
