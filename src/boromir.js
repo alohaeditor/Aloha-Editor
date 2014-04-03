@@ -486,6 +486,9 @@ define([
 		var childDomNode = createDomNode(doc, child);
 		domNode.insertBefore(childDomNode, refNode);
 		child = child.domNode.set(child, childDomNode);
+		var unchanged = child.unchanged.get(child);
+		unchanged = unchanged.children.set(unchanged, []);
+		child = child.unchanged.set(child, unchanged);
 		child = updateDomRec(child, doc, insertIndex);
 		return child;
 	}
@@ -653,6 +656,8 @@ define([
 	Node.CHANGE_REF     = CHANGE_REF;
 	Node.AFFINITY_DOM   = AFFINITY_DOM;
 	Node.AFFINITY_MODEL = AFFINITY_MODEL;
+	Node.childrenWithChangeInParent = childrenWithChangeInParent;
+	Node.changedInParent = changedInParentField;
 
 	return Node;
 });
