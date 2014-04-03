@@ -138,11 +138,12 @@ define([
 	function setTextProps(node, props) {
 		Assert.assertNou(props.name);
 		Assert.assertNou(props.nodeType);
-		var text = props.text;
+		var affinity = props.affinity || AFFINITY_DEFAULT;
 		node = node.asTransient();
 		node = node.id.setT(node, allocateId());
 		node = node.type.setT(node, 3);
-		node = node.text.setT(node, text);
+		node = node.text.setT(node, props.text);
+		node = node.affinity.setT(node, affinity);
 		return node.asPersistent();
 	}
 
@@ -152,12 +153,14 @@ define([
 		var name = props.name;
 		var attrs = props.attrs || {};
 		var children = props.children || [];
+		var affinity = props.affinity || AFFINITY_DEFAULT;
 		node = node.asTransient();
 		node = node.id.setT(node, allocateId());
 		node = node.type.setT(node, 1);
 		node = node.name.setT(node, name);
 		node = node.attrs.setT(node, attrs);
 		node = node.children.setT(node, children);
+		node = node.affinity.setT(node, affinity);
 		return node.asPersistent();
 	}
 
@@ -210,8 +213,10 @@ define([
 				node = node.domNode.setT(node, domNodeOrProps);
 				unchanged = setPropsFromDomNode(unchanged, domNodeOrProps);
 			} else if (!Fn.isNou(domNodeOrProps.text)) {
+				node = node.domNode.setT(node, domNodeOrProps.domNode);
 				unchanged = setTextProps(unchanged, domNodeOrProps)
 			} else if (!Fn.isNou(domNodeOrProps.name)) {
+				node = node.domNode.setT(node, domNodeOrProps.domNode);
 				unchanged = setElementProps(unchanged, domNodeOrProps);
 			}
 			node = node.type.computeT(node, NodeProps.prototype.type.get, unchanged);
@@ -342,6 +347,24 @@ define([
 		return setChanged(node, name, affinity, ChangeProps.prototype.changedClassAffinity);
 	}
 
+	/**
+	 * Gets the value of the attribute with the given name.
+	 *
+	 * The node has to be of the Element type (node.type() === 1), and
+	 * the name mustn't be "style" (use node.style(name) instead).
+	 *
+	 * The reason the style attribute isn't accessible is that styles
+	 * can be updated on the Boromir node without affecting the DOM
+	 * node, and the serialization/deserialization of styls isn't
+	 * currently implemented as part of Boromir.
+	 *
+	 * Attribtes are read from the element lazily and cached. This also
+	 * means that, should attributes be added to the DOM node that
+	 * haven't been read through the Boromir node before the update,
+	 * they will become available after the DOM update, but attributes
+	 * removed from the DOM will still be readable through Boromir,
+	 * which may result in an unexpected view of the DOM.
+	 */
 	function getAttr(node, name) {
 		assertElement(node);
 		Assert.assert('style' !== name, Assert.STYLE_NOT_AS_ATTR);
@@ -350,6 +373,11 @@ define([
 		                          ChangeProps.prototype.cachedAttrs);
 	}
 
+	/**
+	 * Gets the value of a style with the given name.
+	 *
+	 * Same caveates regarding DOM update as with getAttr().
+	 */
 	function getStyle(node, name) {
 		assertElement(node);
 		return getChangedOrCached(node, name, Dom.getStyle,
