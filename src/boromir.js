@@ -584,10 +584,10 @@ define([
 			var unchangedProps = child.unchanged.get(child);
 			var unchangedAffinity = unchangedProps.affinity.get(unchangedProps);
 			if ((affinity & AFFINITY_DOM) !== (unchangedAffinity & AFFINITY_DOM)) {
-				if (affinity & AFFINITY_DOM) {
+				if ((affinity & AFFINITY_DOM) && !(changedInParent & CHANGE_REMOVE)) {
 					child = insertChild(domNode, childNodes, child, i, doc, insertIndex);
 					i += 1;
-				} else {
+				} else if (!(changeInParent & CHANGE_INSERT)) {
 					removeChild(domNode, childNodes, i);
 				}
 			} else if (affinity & AFFINITY_DOM) {
