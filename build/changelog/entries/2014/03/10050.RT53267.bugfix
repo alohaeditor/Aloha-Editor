@@ -1,0 +1,6 @@
+Right clicking on selected content should not remove the selection in IE
+
+The problem was that 'beforepaste' event was thrown when right clicking. The 'beforepaste' event was
+used to copy/paste content for IE. With this fix the 'beforepaste' event is not necessary any more, the
+whole copy/paste process is done in the 'paste' event. This solution is only for IE8 and below. For
+other IE versions (9 and above) the event 'beforepaste' is still needed.
