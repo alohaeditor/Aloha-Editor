@@ -152,6 +152,7 @@ define([
 		Assert.assertNou(props.nodeType);
 		var name = props.name;
 		var attrs = props.attrs || {};
+		Assert.assert(Fn.isNou(attrs['style']), Assert.STYLE_NOT_AS_ATTR);
 		var children = props.children || [];
 		var affinity = props.affinity || AFFINITY_DEFAULT;
 		node = node.asTransient();
@@ -201,7 +202,7 @@ define([
 		// Excludes style attribute.
 		attrs        : {computable: true, set: setAttrsAffectChanges},
 		children     : {computable: true, set: setChildren},
-		affinity     : {defaultValue: AFFINITY_DEFAULT},
+		affinity     : {computable: true},
 		// Nested records that are used to track changes to this record.
 		changed      : {},
 		unchanged    : {}
@@ -225,10 +226,15 @@ define([
 			node = node.name.computeT(node, NodeProps.prototype.name.get, unchanged);
 			node = node.text.computeT(node, NodeProps.prototype.text.get, unchanged);
 			node = node.children.computeT(node, NodeProps.prototype.children.get, unchanged);
+			node = node.affinity.computeT(node, NodeProps.prototype.affinity.get, unchanged);
 			node = node.unchanged.setT(node, unchanged);
 			node = node.changed.setT(node, ChangeProps());
 			node = node.asPersistent();
-			node = node.attrs.compute(node, attrsWithChangesWithoutStyle, node);
+			if (!Fn.isNou(domNodeOrProps.name) && !Fn.isNou(domNodeOrProps.attrs)) {
+				node = node.attrs.set(node, domNodeOrProps.attrs);
+			} else {
+				node = node.attrs.compute(node, attrsWithChangesWithoutStyle, node);
+			}
 		}
 		return node;
 	});
