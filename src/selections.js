@@ -560,11 +560,11 @@ define([
 	 *
 	 * Will create a DOM element at the end of the document body to be used to
 	 * represent the caret position.
-	 *
+	 * @param {Document} doc
 	 * @return {Object}
 	 */
-	function Context() {
-		var caret = document.createElement('div');
+	function Context(doc) {
+		var caret = doc.createElement('div');
 		caret.style.display = 'none';
 		Dom.addClass(caret, 'aloha-caret');
 		Dom.insert(caret, caret.ownerDocument.body, true);
@@ -622,7 +622,7 @@ define([
 				alohaEvent.range.commonAncestorContainer.ownerDocument
 			);
 		}
-		return Ranges.get();
+		return Ranges.get(alohaEvent.editor.selectionContext.caret.ownerDocument);
 	}
 
 	/**

@@ -104,7 +104,8 @@ define([
 		if (!event) {
 			return alohaEvent;
 		}
-		var range = (event instanceof KeyboardEvent) ? Ranges.get() : null;
+		var doc = alohaEvent.editor.selectionContext.caret.ownerDocument;
+		var range = (event instanceof KeyboardEvent) ? Ranges.get(doc) : null;
 		if (range) {
 			alohaEvent.range = range;
 			var editable = Editables.fromBoundary(
