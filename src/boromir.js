@@ -486,7 +486,7 @@ define([
 		                          ChangeProps.prototype.cachedStyles);
 	}
 
-	function createElementNode(doc, node) {
+	function createElementNode(node, doc) {
 		var name = node.name.get(node);
 		var attrs = node.attrs.get(node);
 		var domNode = doc.createElement(name);
@@ -500,17 +500,17 @@ define([
 		return domNode;
 	}
 
-	function createTextNode(doc, node) {
+	function createTextNode(node, doc) {
 		var text = node.text.get(node);
 		return doc.createTextNode(text);
 	}
 
-	function createDomNode(doc, node) {
+	function createDomNode(node, doc) {
 		var type = node.type.get(node);
 		if (1 === type) {
-			return createElementNode(doc, node);
+			return createElementNode(node, doc);
 		} else if (3 === type) {
-			return createTextNode(doc, node);
+			return createTextNode(node, doc);
 		} else {
 			Assert.notImplemented()
 		}
@@ -526,7 +526,7 @@ define([
 	// want and it will not result in changes to the DOM.
 	function insertChild(domNode, childNodes, child, i, doc, insertIndex) {
 		var refNode = i < childNodes.length ? childNodes[i] : null;
-		var childDomNode = createDomNode(doc, child);
+		var childDomNode = createDomNode(child, doc);
 		domNode.insertBefore(childDomNode, refNode);
 		child = child.domNode.set(child, childDomNode);
 		var unchanged = child.unchanged.get(child);
@@ -697,13 +697,30 @@ define([
 		return updateDomRec(node, doc, {});
 	}
 
+	function asDom(node, doc) {
+		var domNode;
+		if (1 === node.type()) {
+			domNode = createElementNode(node, doc);
+			node.children().forEach(function (child) {
+				domNode.appendChild(asDom(child, doc));
+			});
+		} else if (3 === node.type()) {
+			domNode = createTextNode(node, doc);
+		} else {
+			Asssert.notImplemented();
+		}
+		return domNode;
+	}
+
 	Maps.extend(Node.prototype, {
 		attr         : Accessor.asMethod(Accessor(getAttr         , setAttrAffectChanges)),
 		style        : Accessor.asMethod(Accessor(getStyle        , setStyleAffectChanges)),
 		attrAffinity : Accessor.asMethod(Accessor(getAttrAffinity , setAttrAffinityAffectChanges)),
 		classAffinity: Accessor.asMethod(Accessor(getClassAffinity, setClassAffinityAffectChanges)),
-		create       : Node,
-		updateDom    : Fn.asMethod(updateDom)
+		// Node is a constructor function and interprets `this`
+		create       : function (arg) { return Node(arg); },
+		updateDom    : Fn.asMethod(updateDom),
+		asDom        : Fn.asMethod(asDom)
 	});
 
 	Node.CHANGE_INSERT  = CHANGE_INSERT;
