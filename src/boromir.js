@@ -531,6 +531,7 @@ define([
 		child = child.domNode.set(child, childDomNode);
 		var unchanged = child.unchanged.get(child);
 		unchanged = unchanged.children.set(unchanged, []);
+		unchanged = unchanged.id.set(unchanged, allocateId());
 		child = child.unchanged.set(child, unchanged);
 		child = updateDomRec(child, doc, insertIndex);
 		return child;
