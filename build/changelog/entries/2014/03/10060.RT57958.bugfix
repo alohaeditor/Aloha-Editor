@@ -1,0 +1,4 @@
+align-plugin: Alignment inside table cells is now permitted.
+
+Setting alignment inside a table cell was not permitted unless the cell content was wrapped inside a
+block element. With this fix this action is now permitted.
