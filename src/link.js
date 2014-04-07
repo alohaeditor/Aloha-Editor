@@ -11,7 +11,7 @@ define([
 	'link/link-remove',
 	'link/link-util',
 	'ranges'
-], function(
+], /** @exports Link */ function(
 	Dom,
 	LinkSelection,
 	LinkRemove,

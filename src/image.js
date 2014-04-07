@@ -11,7 +11,7 @@ define([
 	'image/image-selection',
 	'paste',
 	'ranges'
-], function(
+], /** @exports Image */ function(
 	Boundaries,
 	Dom,
 	ImageSelection,

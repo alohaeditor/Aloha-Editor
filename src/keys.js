@@ -16,7 +16,7 @@ define([
 	'strings',
 	'editables',
 	'boundaries'
-], function Keys(
+], /** @exports Keys */ function Keys(
 	Ranges,
 	Strings,
 	Editables,

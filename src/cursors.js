@@ -8,7 +8,7 @@
 define([
 	'dom',
 	'boundaries'
-], function Cursors(
+], /** @exports Cursors */ function Cursors(
 	Dom,
 	Boundaries
 ) {

@@ -11,7 +11,7 @@ define([
 	'arrays',
 	'assert',
 	'strings'
-], function Boundaries(
+], /** @exports Boundaries */ function Boundaries(
 	Dom,
 	Misc,
 	Arrays,

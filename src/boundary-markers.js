@@ -14,7 +14,7 @@ define([
 	'ranges',
 	'paths',
 	'boundaries'
-], function BoundaryMarkers(
+], /** @exports BoundaryMarkers */ function BoundaryMarkers(
 	Dom,
 	Misc,
 	Mutation,

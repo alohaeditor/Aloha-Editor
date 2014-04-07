@@ -25,7 +25,7 @@ define([
 	'selection-change',
 	'typing',
 	'undo'
-], function Aloha(
+], /** @exports Aloha */ function Aloha(
 	Api,
 	Boundaries,
 	Blocks,

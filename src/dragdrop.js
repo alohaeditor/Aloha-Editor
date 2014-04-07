@@ -18,7 +18,7 @@ define([
 	'ranges',
 	'editing',
 	'selections'
-], function DragDrop(
+], /** @exports DragDrop */ function DragDrop(
 	Dom,
 	Maps,
 	Arrays,

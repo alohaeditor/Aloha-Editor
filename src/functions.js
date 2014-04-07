@@ -5,7 +5,7 @@
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php 
  */
-define([], function Functions() {
+define([], /** @exports Functions */ function Functions() {
 	'use strict';
 
 	/**

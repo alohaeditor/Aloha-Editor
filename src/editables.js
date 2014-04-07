@@ -12,7 +12,7 @@ define([
 	'boundaries',
 	'functions',
 	'undo'
-], function Editables(
+], /** @exports Editables */ function Editables(
 	Arrays,
 	Maps,
 	Dom,
