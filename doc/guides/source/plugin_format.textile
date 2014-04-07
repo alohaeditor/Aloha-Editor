@@ -19,13 +19,25 @@ You can change the layout each time or remove a formatting via clicking the remo
 
 Removing a format will unwrap the contents from the corresponding formatting tag. If you want to ensure that contents are within paragraphs all the time, use the "common/autoparagraph plugin":plugin_autoparagraph.html. Removing a format will also trigger a "smart-content-changed event":events.html#aloha-smart-content-changed-event.
 
+h5. Heading Hierarchy Check
+
+If enabled in the configuration, the hierarchy of headings will be checked and a class "aloha-heading-hierarchy-violated" will be added, if the hierarchy is violated. The highlighting itself must be implemented in the css code.
+If a heading is violating the hierarchy, then the following heading will be checked against the last correct heading.
+The hierarchy is violated, if a heading is more than one hierarchy lower than the previous heading.
+
+It is also checked, if the hierarchy is higher than the highest hierarchy found in the plugin configuration. The purpose of this is to tell the editor, that a 'h1' should not be used in this editable.
+
+For example: if the plugin configuration @config: []@ contains the possible headings: @'h2', 'h3', 'h4', 'h5', 'h6'@, then all occurences of @<h1>@ will be marked like this: @<h1 class='aloha-heading-hierarchy-violated'>@.
+
+This feature is turned on with @'checkHeadingHierarchy: true'@ in the format plugin configuration.
+
 h5. Remove formatting in lists
 
 If you remove formatting on unordered-, ordered- or definition lists and your selection doesn't span more than one individual list, list items will be taken out of the list. If only part of one list item is selected, then the item won't be taken out of the list. In that case only the text formats will be removed.
 
 h5. Tables
 
-Tables won't be deconstructed if you press "remove fromatting" on them, only text formats will be removed.
+Tables won't be deconstructed if you press "remove formatting" on them, only text formats will be removed.
 
  
 h4. Bold and Italic
@@ -90,7 +102,11 @@ Aloha.settings.plugins.format = {
     'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'quote', 'blockquote', 
     'section', 'article', 'aside', 'header', 'footer', 'address', 'main', 'hr', 'figure', 
     'figcaption', 'div', 'small', 'cite', 'dfn', 'abbr', 'data', 'time', 'var', 'samp', 
-    'kbd', 'mark', 'span', 'wbr', 'ins' ]
+    'kbd', 'mark', 'span', 'wbr', 'ins' ],
+	// if set true, a class 'aloha-heading-hierarchy-violated' will be added
+	// to headings that violate the hierarchy, or headings, that are not contained
+	// in config
+	checkHeadingHierarchy: true
 };
 </javascript>
 
