@@ -84,21 +84,6 @@ define([
 	var AFFINITY_DEFAULT = AFFINITY_DOM | AFFINITY_MODEL;
 	var SPECIAL_PRIVATE_VALUE = {};
 
-	function setName(node, value, set) {
-		assertElement(node);
-		return set(node, value);
-	}
-
-	function setChildren(node, value, set) {
-		assertElement(node);
-		return set(node, value);
-	}
-
-	function setText(node, value, set) {
-		assertTextNode(node);
-		return set(node, value);
-	}
-
 	function allocateId() {
 		return ++idCounter;
 	}
@@ -168,25 +153,25 @@ define([
 	// TODO: NodeProps should actually just be a Node with changed and
 	// unchanged properties being null.
 	var NodeProps = Record.define({
-		id              : {},
-		type            : {computable: true},
-		name            : {computable: true},
-		text            : {computable: true},
+		id              : -1,
+		type            : -1,
+		name            : null,
+		text            : null,
 		// Includes style attribute.
-		attrs           : {computable: true},
-		children        : {computable: true},
-		affinity        : {defaultValue: AFFINITY_DEFAULT},
-		attrAffinityMap : {},
-		classAffinityMap: {}
+		attrs           : null,
+		children        : null,
+		affinity        : AFFINITY_DEFAULT,
+		attrAffinityMap : null,
+		classAffinityMap: null
 	});
 
 	var ChangeProps = Record.define({
-		changedAttrs        : {},
-		changedStyles       : {},
-		changedAttrAffinity : {},
-		changedClassAffinity: {},
-		cachedAttrs         : {computable: true},
-		cachedStyles        : {computable: true}
+		changedAttrs        : null,
+		changedStyles       : null,
+		changedAttrAffinity : null,
+		changedClassAffinity: null,
+		cachedAttrs         : null,
+		cachedStyles        : null
 	}, function (props) {
 		props = props.asTransient();
 		props = props.cachedAttrs.computeT(props, Object);
@@ -195,17 +180,17 @@ define([
 	});
 
 	var Node = Record.define({
-		domNode      : {},
-		type         : {computable: true},
-		name         : {computable: true, set: setName},
-		text         : {computable: true, set: setText},
+		domNode      : null,
+		type         : null,
+		name         : null,
+		text         : null,
 		// Excludes style attribute.
-		attrs        : {computable: true, set: setAttrsAffectChanges},
-		children     : {computable: true, set: setChildren},
-		affinity     : {computable: true},
+		attrs        : null,
+		children     : null,
+		affinity     : null,
 		// Nested records that are used to track changes to this record.
-		changed      : {},
-		unchanged    : {}
+		changed      : null,
+		unchanged    : null
 	}, function (node, domNodeOrProps) {
 		if (domNodeOrProps) {
 			node = node.asTransient();
@@ -238,6 +223,23 @@ define([
 		}
 		return node;
 	});
+
+	function withComputedSet(accessor, computedSet) {
+		var newAccessor = Accessor.asMethod(Accessor(accessor.get, function (record, value) {
+			return computedSet(record, value, accessor.set);
+		}));
+		newAccessor.setT = function (record, value) {
+			return record.asTransient(computedSet(record.asPersistent(), value, accessor.set));
+		};
+		if (accessor.compute) {
+			newAccessor.compute = accessor.compute;
+			newAccessor.computeT = accessor.computeT;
+			newAccessor.isMemoized = accessor.isMemoized;
+		}
+		return newAccessor;
+	}
+
+	Node.prototype.attrs = withComputedSet(Node.prototype.attrs, setAttrsAffectChanges);
 
 	function assertElement(node) {
 		Assert.assert(1 === node.type.get(node), Assert.EXPECT_ELEMENT);
