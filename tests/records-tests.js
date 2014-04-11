@@ -14,87 +14,95 @@
     module('record');
 
 	test('defaults', function () {
-		var Type = Record.defineStrict();
-		var one = Type.addField(1);
-		var two = Type.addField(2);
-		var three = Type.addField(3);
+		var Type = Record.defineStrict({
+			one: 1,
+			two: 2,
+			three: 3
+		});
 
 		var record = Type();
-		equal(one.get(record), 1);
-		equal(two.get(record), 2);
-		equal(three.get(record), 3);
+		equal(record.one(), 1);
+		equal(record.two(), 2);
+		equal(record.three(), 3);
 	});
 
 	test('construct', function () {
-		var Type = Record.defineStrict();
-		var one = Type.addField(1);
-		var two = Type.addField(2);
-		var three = Type.addField(3);
+		var Type = Record.defineStrict({
+			one: 1,
+			two: 2,
+			three: 3
+		});
+
 		var record = Type(values);
-		equal(one.get(record), values[0]);
-		equal(two.get(record), values[1]);
-		equal(three.get(record), values[2]);
+		equal(record.one(), values[0]);
+		equal(record.two(), values[1]);
+		equal(record.three(), values[2]);
 	});
 
 	test('init', function () {
-		var InitType = Record.defineStrict(function (record, initValues) {
+		var InitType = Record.defineStrict({
+			one: 1,
+			two: 2,
+			three: 3
+		}, function (record, initValues) {
 			equal(values, initValues);
-			record = two.set(record, 'init');
+			record = record.two('init');
 			return record;
 		});
-		var one = InitType.addField(1);
-		var two = InitType.addField(2);
-		var three = InitType.addField(3);
+
 		var record = InitType(values);
-		// Must be the default since we ignore all init values
-		equal(one.get(record), 1);
-		equal(two.get(record), 'init');
+		equal(record.one(), 1);
+		equal(record.two(), 'init');
 	});
 
 	test('reuse values instance', function () {
-		var Type = Record.defineStrict();
-		var one = Type.addField(1);
-		var two = Type.addField(2);
-		var three = Type.addField(3);
+		var Type = Record.defineStrict({
+			one: 1,
+			two: 2,
+			three: 3
+		});
+
 		var record = Type(values);
 		ok(record._record_values === values);
 	});
-	
+
 	test('update', function () {
-		var Type = Record.defineStrict();
-		var one = Type.addField(1);
-		var two = Type.addField(2);
-		var three = Type.addField(3);
+		var Type = Record.defineStrict({
+			one: 1,
+			two: 2,
+			three: 3
+		});
 
 		var record = Type(values);
-		var record1 = two.set(record, 'updated');
-		equal(one.get(record), values[0]);
-		equal(two.get(record), values[1]);
-		equal(three.get(record), values[2]);
-		equal(one.get(record1), values[0]);
-		equal(two.get(record1), 'updated');
-		equal(three.get(record1), values[2]);
+		var record1 = record.two('updated');
+		equal(record.one(), values[0]);
+		equal(record.two(), values[1]);
+		equal(record.three(), values[2]);
+		equal(record1.one(), values[0]);
+		equal(record1.two(), 'updated');
+		equal(record1.three(), values[2]);
 	});
 	     
 	test('transients', function () {
-		var Type = Record.defineStrict();
-		var one = Type.addField(1);
-		var two = Type.addField(2);
-		var three = Type.addField(3);
+		var Type = Record.defineStrict({
+			one: 1,
+			two: 2,
+			three: 3
+		});
 
 		var record1 = Type(values);
-		equal(two.get(record1), 'two');
+		equal(record1.two(), 'two');
 		var record2 = record1.asTransient();
-		equal(two.get(record2), 'two');
-		var record3 = two.setT(record2, 'update');
-		equal(two.get(record3), 'update');
+		equal(record2.two(), 'two');
+		var record3 = record2.two.setT(record2, 'update');
+		equal(record3.two(), 'update');
 		throws(function () {
-			two.get(record2);
+			record2.two();
 		});
 		var record4 = record3.asPersistent();
-		equal(two.get(record4), 'update');
+		equal(record4.two(), 'update');
 		throws(function () {
-			two.get(record2);
+			record2.two();
 		});
 	});
 

@@ -58,23 +58,33 @@ define([], function Assert() {
 		notImplemented : notImplemented,
 		assertNou      : assertNou,
 		assertNotNou   : assertNotNou,
+
 		// Don't renumber to maintain well-known values for error
 		// conditions.
 		NOT_IMPLEMENTED              : NOT_IMPLEMENTED,
 		NOU                          : NOU,
 		NOT_NOU                      : NOT_NOU,
+
+		// assert.js
+		ASSERT_TYPE_NOU              : ASSERT_TYPE_NOU,
+
+		// record.js
 		READ_FROM_DISCARDED_TRANSIENT: 3,
 		PERSISTENT_WRITE_TO_TRANSIENT: 4,
 		TRANSIENT_WRITE_TO_PERSISTENT: 5,
-		ONLY_ONE_OF_SET_OR_SETT      : 6,
+		RECORD_WRONG_TYPE            : 16,
+		RECORD_CLOSED                : 17,
+		RECORD_OPEN                  : 18,
+
+		// boromir.js
 		STYLE_NOT_AS_ATTR            : 8,
 		EXPECT_ELEMENT               : 9,
 		EXPECT_TEXT_NODE             : 10,
 		ELEMENT_NOT_ATTACHED         : 11,
 		MISSING_SYMBOL               : 12,
+
+		// accessors.js
 		GETTER_AT_LEAST_1_ARG        : 13,
-		SETTER_1_MORE_THAN_GETTER    : 14,
-		ASSERT_TYPE_NOU              : ASSERT_TYPE_NOU,
-		RECORD_WRONG_TYPE            : 16
+		SETTER_1_MORE_THAN_GETTER    : 14
 	};
 });

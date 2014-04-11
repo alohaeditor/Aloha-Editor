@@ -96,7 +96,7 @@ define([
 		var childNodes = domNode.childNodes;
 		var nodes = [];
 		for (var i = 0, len = childNodes.length; i < len; i++) {
-			nodes.push(Node(childNodes[i]));
+			nodes.push(Node.create(childNodes[i]));
 		}
 		return nodes;
 	}
@@ -725,8 +725,6 @@ define([
 		style        : Accessor.asMethod(Accessor(getStyle        , setStyleAffectChanges)),
 		attrAffinity : Accessor.asMethod(Accessor(getAttrAffinity , setAttrAffinityAffectChanges)),
 		classAffinity: Accessor.asMethod(Accessor(getClassAffinity, setClassAffinityAffectChanges)),
-		// Node is a constructor function and interprets `this`
-		create       : function (arg) { return Node(arg); },
 		updateDom    : Fn.asMethod(updateDom),
 		asDom        : Fn.asMethod(asDom)
 	});

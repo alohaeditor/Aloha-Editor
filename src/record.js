@@ -99,11 +99,6 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 		return newRecord;
 	}
 
-	function getValues(record) {
-		assertRead(record);
-		return record._record_values;
-	}
-
 	function getValue(record, offset, defaults) {
 		var values = ensureDefaults(record, defaults);
 		return values[offset];
@@ -123,7 +118,7 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 		return newRecord;
 	}
 
-	function addBasicField(Record, defaultValue) {
+	function addStrictField(Record, defaultValue) {
 		var defaults = Record._record_defaults;
 		var offset = Record._record_defaults.length;
 		function get(record) {
@@ -143,18 +138,34 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 		return field;
 	}
 
-	function defineBasic(init) {
+	function getValues(record) {
+		assertRead(record);
+		return record._record_values;
+	}
+
+	function defineStrict(init) {
 		var defaults = [];
-		function Record(values) {
+		function create(arg) {
+			return init(new Record(), arg);
+		}
+		function Record(arg) {
+			// Using the constructor as a function is a bit of a hack and
+			// doesn't behave like a real function since it interprets the
+			// `this` variable, making it impossible to use it as a method
+			// (the `this` variable should only be interpreted in response
+			// to calling the constructor with new, and not due to calling
+			// it as a method).
 			if (!(this instanceof Record)) {
-				return init(new Record(), values);
+				return create(arg);
 			}
 			this._record_values = defaults;
 			this._record_transience = NOT_TRANSIENT;
 		}
+		Record.create = create;
 		Maps.extend(Record.prototype, {
-			asTransient: Fn.asMethod1(asTransient),
-			asPersistent: Fn.asMethod1(asPersistent)
+			asTransient : Fn.asMethod1(asTransient),
+			asPersistent: Fn.asMethod1(asPersistent),
+			create      : create
 		});
 		Record._record_defaults = defaults;
 		return Record;
@@ -185,7 +196,7 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 		}
 	}
 
-	function computableFromBasicField(field) {
+	function computableFromStrictField(field) {
 		var compute = null;
 		var computeT = null;
 		var isMemoized = null;
@@ -223,8 +234,8 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	}
 
 	function addComputableField(Record, defaultValue) {
-		return computableFromBasicField(
-			addBasicField(Record, constantFn(defaultValue))
+		return computableFromStrictField(
+			addStrictField(Record, constantFn(defaultValue))
 		);
 	}
 
@@ -242,32 +253,32 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 		});
 	}
 
-	function getValuesComputed(record) {
-		assertRead(record);
-		// TODO like getValues() but compute values
-		Assert.notImplemented();
-	}
-
-	function define(addField, getValues, fieldMap, init) {
+	function define(addField, addFieldInit, getValues, defaultInit,
+	                fieldMap, init) {
 		if (Fn.is(fieldMap)) {
 			init = fieldMap;
 			fieldMap = null;
 		}
-		var Record = defineBasic(init || initWithValues);
-		Record.addField         = Fn.partial(addField, Record);
-		Record.extend           = Fn.partial(extend, addField, Record);
-		Record.prototype.values = Fn.asMethod(getValues);
+		var Record = defineStrict(init || defaultInit);
+		Record.addField = Fn.partial(addField, Record);
+		Record.extend   = Fn.partial(extend, addField, Record);
+		Record.prototype.values = Fn.asMethod1(getValues);
 		if (fieldMap) {
-			extend(Record, addField, fieldMap);
+			extend(Record, addFieldInit, fieldMap);
 		}
 		return Record;
 	}
 
-	var defineStrict = Fn.partial(define, addBasicField     , getValues);
-	var defineLazy   = Fn.partial(define, addComputableField, getValuesComputed);
-
 	return {
-		define      : defineLazy,
-		defineStrict: defineStrict
+		define      : Fn.partial(define,
+		                         addComputableField,
+		                         addComputableField,
+		                         Fn.partial(Assert.error, Assert.RECORD_OPEN),
+		                         Fn.identity),
+		defineStrict: Fn.partial(define,
+		                         Fn.partial(Assert.error, Assert.RECORD_CLOSED),
+		                         addStrictField,
+		                         getValues,
+		                         initWithValues)
 	};
 });
