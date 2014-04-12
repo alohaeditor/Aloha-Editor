@@ -36,11 +36,10 @@ define(['functions', 'assert'], function (Fn, Assert) {
 	 * function. Using the getter and setter directly should only be
 	 * done for optimizing accesses when it is really needed.
 	 *
-	 * The getter and setter function must not be wrapped by a function
-	 * that doesn't have the proper number of arguments. Fn.partial()
-	 * for example returns functions that have a length of 0, and we
-	 * conciously reject such functions which reduces the potential of
-	 * difficult to find errors.
+	 * The Function.length property of the given function is examined
+	 * and may be either 0, no matter how many arguments the function
+	 * expects, or if not 0, must be the actual number of arguments the
+	 * function expects.
 	 *
 	 * @param get {function}
 	 * @param set {function}
@@ -70,6 +69,11 @@ define(['functions', 'assert'], function (Fn, Assert) {
 	 * takes one less argument than the acesssor function of a normal
 	 * accessor, and which uses the `this` special variable in place of
 	 * the missing argument to pass to the getter and setter.
+	 *
+	 * The Function.length property of the given function is examined
+	 * and may be either 0, no matter how many arguments the function
+	 * expects, or if not 0, must be the actual number of arguments the
+	 * function expects.
 	 */
 	function asMethod(accessor) {
 		var get = accessor.get;

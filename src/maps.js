@@ -49,7 +49,7 @@ define(['arrays', 'assert'], function Maps(Arrays, Assert) {
 	/**
 	 * For each mapping, calls `cb(value, key, m)`.
 	 *
-	 * Emulates ECMAScript edition 5 Array.forEach.
+	 * Like ECMAScript edition 5 Array.forEach but for Maps.
 	 *
 	 * Contrary to "for (key in m)" iterates only over the "hasOwnProperty"
 	 * properties of the m, which is usually what you want.

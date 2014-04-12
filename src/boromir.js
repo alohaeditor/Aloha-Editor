@@ -96,7 +96,7 @@ define([
 		var childNodes = domNode.childNodes;
 		var nodes = [];
 		for (var i = 0, len = childNodes.length; i < len; i++) {
-			nodes.push(Node.create(childNodes[i]));
+			nodes.push(Node(childNodes[i]));
 		}
 		return nodes;
 	}
@@ -111,12 +111,12 @@ define([
 
 	function setPropsFromDomNode(node, domNode) {
 		node = node.asTransient();
-		node = node.id.setT(node, allocateId());
-		node = node.type.computeT(node, typeFromDomNode, domNode);
-		node = node.name.computeT(node, nameFromDomNode, domNode);
-		node = node.text.computeT(node, textFromDomNode, domNode);
-		node = node.attrs.computeT(node, Dom.attrs, domNode);
-		node = node.children.computeT(node, childrenFromDomNode, domNode);
+		node = node.setT(node.id, allocateId());
+		node = node.delayT(node.type, typeFromDomNode, domNode);
+		node = node.delayT(node.name, nameFromDomNode, domNode);
+		node = node.delayT(node.text, textFromDomNode, domNode);
+		node = node.delayT(node.attrs, Dom.attrs, domNode);
+		node = node.delayT(node.children, childrenFromDomNode, domNode);
 		return node.asPersistent();
 	}
 
@@ -125,10 +125,10 @@ define([
 		Assert.assertNou(props.nodeType);
 		var affinity = props.affinity || AFFINITY_DEFAULT;
 		node = node.asTransient();
-		node = node.id.setT(node, allocateId());
-		node = node.type.setT(node, 3);
-		node = node.text.setT(node, props.text);
-		node = node.affinity.setT(node, affinity);
+		node = node.setT(node.id, allocateId());
+		node = node.setT(node.type, 3);
+		node = node.setT(node.text, props.text);
+		node = node.setT(node.affinity, affinity);
 		return node.asPersistent();
 	}
 
@@ -141,12 +141,12 @@ define([
 		var children = props.children || [];
 		var affinity = props.affinity || AFFINITY_DEFAULT;
 		node = node.asTransient();
-		node = node.id.setT(node, allocateId());
-		node = node.type.setT(node, 1);
-		node = node.name.setT(node, name);
-		node = node.attrs.setT(node, attrs);
-		node = node.children.setT(node, children);
-		node = node.affinity.setT(node, affinity);
+		node = node.setT(node.id, allocateId());
+		node = node.setT(node.type, 1);
+		node = node.setT(node.name, name);
+		node = node.setT(node.attrs, attrs);
+		node = node.setT(node.children, children);
+		node = node.setT(node.affinity, affinity);
 		return node.asPersistent();
 	}
 
@@ -174,8 +174,8 @@ define([
 		cachedStyles        : null
 	}, function (props) {
 		props = props.asTransient();
-		props = props.cachedAttrs.computeT(props, Object);
-		props = props.cachedStyles.computeT(props, Object);
+		props = props.delayT(props.cachedAttrs, Object);
+		props = props.delayT(props.cachedStyles, Object);
 		return props.asPersistent();
 	});
 
@@ -196,50 +196,35 @@ define([
 			node = node.asTransient();
 			var unchanged = NodeProps();
 			if (domNodeOrProps.nodeType) {
-				node = node.domNode.setT(node, domNodeOrProps);
+				node = node.setT(node.domNode, domNodeOrProps);
 				unchanged = setPropsFromDomNode(unchanged, domNodeOrProps);
 			} else if (!Fn.isNou(domNodeOrProps.text)) {
-				node = node.domNode.setT(node, domNodeOrProps.domNode);
+				node = node.setT(node.domNode, domNodeOrProps.domNode);
 				unchanged = setTextProps(unchanged, domNodeOrProps)
 			} else if (!Fn.isNou(domNodeOrProps.name)) {
-				node = node.domNode.setT(node, domNodeOrProps.domNode);
+				node = node.setT(node.domNode, domNodeOrProps.domNode);
 				unchanged = setElementProps(unchanged, domNodeOrProps);
 			} else {
 				Assert.error(Assert.INVALID_ARGUMENT);
 			}
-			node = node.type.computeT(node, NodeProps.prototype.type.get, unchanged);
-			node = node.name.computeT(node, NodeProps.prototype.name.get, unchanged);
-			node = node.text.computeT(node, NodeProps.prototype.text.get, unchanged);
-			node = node.children.computeT(node, NodeProps.prototype.children.get, unchanged);
-			node = node.affinity.computeT(node, NodeProps.prototype.affinity.get, unchanged);
-			node = node.unchanged.setT(node, unchanged);
-			node = node.changed.setT(node, ChangeProps());
+			node = node.delayT(node.type, NodeProps.prototype.type.get, unchanged);
+			node = node.delayT(node.name, NodeProps.prototype.name.get, unchanged);
+			node = node.delayT(node.text, NodeProps.prototype.text.get, unchanged);
+			node = node.delayT(node.children, NodeProps.prototype.children.get, unchanged);
+			node = node.delayT(node.affinity, NodeProps.prototype.affinity.get, unchanged);
+			node = node.setT(node.unchanged, unchanged);
+			node = node.setT(node.changed, ChangeProps());
 			node = node.asPersistent();
 			if (!Fn.isNou(domNodeOrProps.name) && !Fn.isNou(domNodeOrProps.attrs)) {
 				node = node.attrs.set(node, domNodeOrProps.attrs);
 			} else {
-				node = node.attrs.compute(node, attrsWithChangesWithoutStyle, node);
+				node = node.delay(node.attrs, attrsWithChangesWithoutStyle, node);
 			}
 		}
 		return node;
 	});
 
-	function withComputedSet(accessor, computedSet) {
-		var newAccessor = Accessor.asMethod(Accessor(accessor.get, function (record, value) {
-			return computedSet(record, value, accessor.set);
-		}));
-		newAccessor.setT = function (record, value) {
-			return record.asTransient(computedSet(record.asPersistent(), value, accessor.set));
-		};
-		if (accessor.compute) {
-			newAccessor.compute = accessor.compute;
-			newAccessor.computeT = accessor.computeT;
-			newAccessor.isMemoized = accessor.isMemoized;
-		}
-		return newAccessor;
-	}
-
-	Node.prototype.attrs = withComputedSet(Node.prototype.attrs, setAttrsAffectChanges);
+	Node.prototype.attrs = Record.hookSetter(Node.prototype.attrs, setAttrsAffectChanges, null, true);
 
 	function assertElement(node) {
 		Assert.assert(1 === node.type.get(node), Assert.EXPECT_ELEMENT);
@@ -303,8 +288,9 @@ define([
 		return node.changed.set(node, changedProps);
 	}
 
-	function setAttrsAffectChanges(node, attrs, set) {
+	function setAttrsAffectChanges(node) {
 		assertElement(node);
+		var attrs = node.attrs();
 		Assert.assert(Fn.isNou(attrs['style']), Assert.STYLE_NOT_AS_ATTR);
 		var changedProps = node.changed.get(node);
 		var changedAttrs = changedProps.changedAttrs.get(changedProps) || {};
@@ -314,7 +300,7 @@ define([
 		var changedAttrs = Maps.extend(removedAttrs, attrs);
 		changedProps = changedProps.changedAttrs.set(changedProps, changedAttrs);
 		node = node.changed.set(node, changedProps);
-		return set(node, attrs);
+		return node;
 	}
 
 	function attrsWithChangesWithoutStyle(node) {
@@ -338,7 +324,7 @@ define([
 		assertElement(node);
 		Assert.assert('style' !== name, Assert.STYLE_NOT_AS_ATTR);
 		node = setChanged(node, name, value, ChangeProps.prototype.changedAttrs);
-		node = node.attrs.compute(node, attrsWithChangesWithoutStyle, node);
+		node = node.delay(node.attrs, attrsWithChangesWithoutStyle, node);
 		return node;
 	}
 
@@ -363,10 +349,11 @@ define([
 	 * The node has to be of the Element type (node.type() === 1), and
 	 * the name mustn't be "style" (use node.style(name) instead).
 	 *
-	 * The reason the style attribute isn't accessible is that styles
-	 * can be updated on the Boromir node without affecting the DOM
-	 * node, and the serialization/deserialization of styls isn't
-	 * currently implemented as part of Boromir.
+	 * The reason the style attribute isn't accessible is that
+	 * individual styles can be updated on the Boromir node without
+	 * affecting the DOM node, and the serialization/deserialization of
+	 * individual styles from/into an attribute value isn't currently
+	 * implemented as part of Boromir.
 	 *
 	 * Attribtes are read from the element lazily and cached. This also
 	 * means that, should attributes be added to the DOM node that
@@ -417,33 +404,23 @@ define([
 		});
 	}
 
-	// TODO here and in updateText we should track changes to the
-	// name/text properties rather than checking whether they are
-	// memoized, since we can't depend on being the only ones to compute
-	// properties.
 	function updateName(node) {
-		if (node.name.isMemoized(node)) {
-			var name = node.name.get(node);
-			var unchangedProps = node.unchanged.get(node);
-			if (!unchangedProps.name.isMemoized(unchangedProps)
-			    || name !== unchangedProps.name.get(unchangedProps)) {
-				Assert.notImplemented();
-			}
+		var name = node.name.get(node);
+		var unchangedProps = node.unchanged.get(node);
+		if (name !== unchangedProps.name.get(unchangedProps)) {
+			Assert.notImplemented();
 		}
 		return node;
 	}
 
 	function updateText(node) {
-		if (node.text.isMemoized(node)) {
-			var text = node.text.get(node);
-			var unchangedProps = node.unchanged.get(node);
-			if (!unchangedProps.text.isMemoized(unchangedProps)
-			    || text !== unchangedProps.text.get(unchangedProps)) {
-				var domNode = node.domNode.get(node);
-				domNode.data = text;
-				unchangedProps = unchangedProps.text.set(unchangedProps, text);
-				node = node.unchanged.set(node, unchangedProps);
-			}
+		var text = node.text.get(node);
+		var unchangedProps = node.unchanged.get(node);
+		if (text !== unchangedProps.text.get(unchangedProps)) {
+			var domNode = node.domNode.get(node);
+			domNode.data = text;
+			unchangedProps = unchangedProps.text.set(unchangedProps, text);
+			node = node.unchanged.set(node, unchangedProps);
 		}
 		return node;
 	}
@@ -457,19 +434,17 @@ define([
 		var domNode = node.domNode.get(node);
 		updateDomNodeFromMap(domNode, changedMap, updateDom);
 		changedProps = changedField.set(changedProps, null);
-		if (cachedField.isMemoized(changedProps)) {
-			var cachedMap = cachedField.get(changedProps);
-			cachedMap = Maps.extend({}, cachedMap, changedMap);
-			changedProps = cachedField.set(changedProps, cachedMap);
-		}
+
+		var cachedMap = cachedField.get(changedProps);
+		cachedMap = Maps.extend({}, cachedMap, changedMap);
+		changedProps = cachedField.set(changedProps, cachedMap);
 		return node.changed.set(node, changedProps);
 	}
 
 	function updateAttrs(node) {
 		var unchangedProps = node.unchanged.get(node);
 		var changedProps = node.changed.get(node);
-		if (unchangedProps.attrs.isMemoized(unchangedProps)
-		    && changedProps.changedAttrs.get(changedProps)) {
+		if (changedProps.changedAttrs.get(changedProps)) {
 			unchangedProps = unchangedProps.attrs.set(unchangedProps, node.attrs.get(node));
 			node = node.unchanged.set(node, unchangedProps);
 		}
@@ -621,9 +596,6 @@ define([
 	}
 
 	function updateChildren(node, doc, insertIndex) {
-		if (!node.children.isMemoized(node)) {
-			return node;
-		}
 		var newChildren = node.children.get(node)
 		var unchangedProps = node.unchanged.get(node);
 		var oldChildren = unchangedProps.children.get(unchangedProps)
@@ -676,10 +648,10 @@ define([
 			}
 		});
 		node = node.asTransient();
-		node = node.children.setT(node, children);
+		node = node.setT(node.children, children);
 		var unchangedProps = node.unchanged.get(node);
 		unchangedProps = unchangedProps.children.set(unchangedProps, children);
-		node = node.unchanged.setT(node, unchangedProps);
+		node = node.setT(node.unchanged, unchangedProps);
 		return node.asPersistent();
 	}
 
@@ -726,7 +698,8 @@ define([
 		attrAffinity : Accessor.asMethod(Accessor(getAttrAffinity , setAttrAffinityAffectChanges)),
 		classAffinity: Accessor.asMethod(Accessor(getClassAffinity, setClassAffinityAffectChanges)),
 		updateDom    : Fn.asMethod(updateDom),
-		asDom        : Fn.asMethod(asDom)
+		asDom        : Fn.asMethod(asDom),
+		create       : Node
 	});
 
 	Node.CHANGE_INSERT  = CHANGE_INSERT;

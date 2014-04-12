@@ -73,8 +73,6 @@ define([], function Assert() {
 		PERSISTENT_WRITE_TO_TRANSIENT: 4,
 		TRANSIENT_WRITE_TO_PERSISTENT: 5,
 		RECORD_WRONG_TYPE            : 16,
-		RECORD_CLOSED                : 17,
-		RECORD_OPEN                  : 18,
 
 		// boromir.js
 		STYLE_NOT_AS_ATTR            : 8,

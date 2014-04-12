@@ -185,25 +185,45 @@ define([], function Functions() {
 
 	/**
 	 * Wraps a function and passes `this` as the first argument.
+	 *
+	 * The Function.length property of the given function is examined
+	 * and may be either 0, no matter how many arguments the function
+	 * expects, or if not 0, must be the actual number of arguments the
+	 * function expects.
 	 */
 	function asMethod(fn) {
-		return function () {
+		var len = fn.length;
+		// Optimize the common case of len <= 4
+		var method = (1 === len) ? function () {
+			return fn(this);
+		} : (2 === len) ? function (arg1) {
+			return fn(this, arg1);
+		} : (3 === len) ? function (arg1, arg2) {
+			return fn(this, arg1, arg2);
+		} : (4 === len) ? function (arg1, arg2, arg3) {
+			return fn(this, arg1, arg2, arg3);
+		} : function () {
 			var args = Array.prototype.slice.call(arguments, 0);
 			args.unshift(this);
 			return fn.apply(null, args);
 		};
+		return method;
 	}
 
 	/**
-	 * Like Fn.asMethod(), but for a function of only a single argument.
+	 * Adds functions to the given type's prototype.
 	 *
-	 * Useful as an optimization because the presence of the special
-	 * `arguments` variable makes an approximately 30x difference in IE10.
+	 * The functions will be converted to methods using Fn.asMethod().
+	 *
+	 * @param Type {!*}
+	 * @param fnByName {Object.<string,function>}
 	 */
-	function asMethod1(fn) {
-		return function (arg) {
-			return fn(this, arg);
-		};
+	function extendType(Type, fnByName) {
+		for (var name in fnByName) {
+			if (fnByName.hasOwnProperty(name)) {
+				Type.prototype[name] = asMethod(fnByName[name]);
+			}
+		}
 	}
 
 	return {
@@ -221,6 +241,6 @@ define([], function Functions() {
 		is: is,
 		isNou: isNou,
 		asMethod: asMethod,
-		asMethod1: asMethod1
+		extendType: extendType
 	};
 });
