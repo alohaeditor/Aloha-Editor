@@ -52,6 +52,7 @@ define([
 	'transform/ms-word/utils',
 	'transform',
 	'record',
+	'delayed-map',
 	'boromir'
 ], function Exports(
 	Arrays,
@@ -96,6 +97,7 @@ define([
 	WordTransformUtils,
 	Transform,
 	Record,
+	DelayedMap,
 	Boromir
 ) {
 	'use strict';
@@ -143,6 +145,7 @@ define([
 	exports['wordTransformUtils'] = WordTransformUtils;
 	exports['xhtml'] = Xhtml;
 	exports['Record'] = Record;
+	exports['DelayedMap'] = DelayedMap;
 	exports['Boromir'] = Boromir;
 
 	return exports;
