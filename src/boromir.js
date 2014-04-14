@@ -62,6 +62,7 @@ define([
 	'maps',
 	'accessor',
 	'record',
+	'delayed-map',
 	'dom',
 	'assert'
 ], function (
@@ -69,6 +70,7 @@ define([
 	Maps,
 	Accessor,
 	Record,
+	DelayedMap,
 	Dom,
 	Assert
 ) {
@@ -83,6 +85,13 @@ define([
 	var AFFINITY_MODEL = 2;
 	var AFFINITY_DEFAULT = AFFINITY_DOM | AFFINITY_MODEL;
 	var SPECIAL_PRIVATE_VALUE = {};
+	var CHANGED_INIT = 1;
+	var CHANGED_NAME = 2;
+	var CHANGED_TEXT = 4;
+	var CHANGED_ATTRS = 8;
+	var CHANGED_STYLES = 16;
+	var CHANGED_CHILDREN = 32;
+	var CHANGED_AFFINITY = 64;
 
 	function allocateId() {
 		return ++idCounter;
@@ -96,7 +105,7 @@ define([
 		var childNodes = domNode.childNodes;
 		var nodes = [];
 		for (var i = 0, len = childNodes.length; i < len; i++) {
-			nodes.push(Node(childNodes[i]));
+			nodes.push(Boromir(childNodes[i]));
 		}
 		return nodes;
 	}
@@ -109,122 +118,116 @@ define([
 		return domNode.data;
 	}
 
-	function setPropsFromDomNode(node, domNode) {
-		node = node.asTransient();
-		node = node.setT(node.id, allocateId());
+	var delayedAttrsFromDom = {
+		realize: Dom.attrs,
+		get: DelayedMap.makeGetWithDefault(Dom.getAttr, Fn.isNou)
+	};
+
+	var delayedStylesFromDom = {
+		realize: Assert.notImplemented,
+		get: DelayedMap.makeGetWithDefault(Dom.getStyle, Fn.isNou)
+	};
+
+	function setPropsFromDomNodeT(node, domNode) {
+		var delayedAttrs  = DelayedMap(delayedAttrsFromDom, domNode);
+		var delayedStyles = DelayedMap(delayedStylesFromDom, domNode);
+		node = node.setT(node.domNode, domNode);
 		node = node.delayT(node.type, typeFromDomNode, domNode);
 		node = node.delayT(node.name, nameFromDomNode, domNode);
 		node = node.delayT(node.text, textFromDomNode, domNode);
-		node = node.delayT(node.attrs, Dom.attrs, domNode);
 		node = node.delayT(node.children, childrenFromDomNode, domNode);
-		return node.asPersistent();
+		node = node.setT(delayedAttrsField, delayedAttrs);
+		node = node.setT(delayedStylesField, delayedStyles);
+		return node;
 	}
 
-	function setTextProps(node, props) {
+	function setTextPropsT(node, props) {
 		Assert.assertNou(props.name);
 		Assert.assertNou(props.nodeType);
 		var affinity = props.affinity || AFFINITY_DEFAULT;
-		node = node.asTransient();
-		node = node.setT(node.id, allocateId());
+		node = node.setT(node.domNode, props.domNode);
 		node = node.setT(node.type, 3);
 		node = node.setT(node.text, props.text);
 		node = node.setT(node.affinity, affinity);
-		return node.asPersistent();
+		return node;
 	}
 
-	function setElementProps(node, props) {
+	function setElementPropsT(node, props) {
 		Assert.assertNou(props.text);
 		Assert.assertNou(props.nodeType);
 		var name = props.name;
 		var attrs = props.attrs || {};
-		Assert.assert(Fn.isNou(attrs['style']), Assert.STYLE_NOT_AS_ATTR);
+		var styles = props.styles || {};
 		var children = props.children || [];
 		var affinity = props.affinity || AFFINITY_DEFAULT;
-		node = node.asTransient();
-		node = node.setT(node.id, allocateId());
+		Assert.assert(Fn.isNou(attrs['style']), Assert.STYLE_NOT_AS_ATTR);
+		node = node.setT(node.domNode, props.domNode);
 		node = node.setT(node.type, 1);
 		node = node.setT(node.name, name);
-		node = node.setT(node.attrs, attrs);
 		node = node.setT(node.children, children);
 		node = node.setT(node.affinity, affinity);
-		return node.asPersistent();
+		node = node.setT(delayedAttrsField, DelayedMap.realized(attrs));
+		node = node.setT(delayedStylesField, DelayedMap.realized(styles));
+		return node;
 	}
 
-	// TODO: NodeProps should actually just be a Node with changed and
-	// unchanged properties being null.
-	var NodeProps = Record.define({
-		id              : -1,
-		type            : -1,
-		name            : null,
-		text            : null,
-		// Includes style attribute.
-		attrs           : null,
-		children        : null,
-		affinity        : AFFINITY_DEFAULT,
-		attrAffinityMap : null,
-		classAffinityMap: null
-	});
-
-	var ChangeProps = Record.define({
-		changedAttrs        : null,
-		changedStyles       : null,
-		changedAttrAffinity : null,
-		changedClassAffinity: null,
-		cachedAttrs         : null,
-		cachedStyles        : null
-	}, function (props) {
-		props = props.asTransient();
-		props = props.delayT(props.cachedAttrs, Object);
-		props = props.delayT(props.cachedStyles, Object);
-		return props.asPersistent();
-	});
-
-	var Node = Record.define({
+	var Boromir = Record.define({
 		domNode      : null,
 		type         : null,
 		name         : null,
 		text         : null,
-		// Excludes style attribute.
-		attrs        : null,
 		children     : null,
-		affinity     : null,
-		// Nested records that are used to track changes to this record.
-		changed      : null,
-		unchanged    : null
+		affinity     : AFFINITY_DEFAULT
 	}, function (node, domNodeOrProps) {
-		if (domNodeOrProps) {
-			node = node.asTransient();
-			var unchanged = NodeProps();
-			if (domNodeOrProps.nodeType) {
-				node = node.setT(node.domNode, domNodeOrProps);
-				unchanged = setPropsFromDomNode(unchanged, domNodeOrProps);
-			} else if (!Fn.isNou(domNodeOrProps.text)) {
-				node = node.setT(node.domNode, domNodeOrProps.domNode);
-				unchanged = setTextProps(unchanged, domNodeOrProps)
-			} else if (!Fn.isNou(domNodeOrProps.name)) {
-				node = node.setT(node.domNode, domNodeOrProps.domNode);
-				unchanged = setElementProps(unchanged, domNodeOrProps);
-			} else {
-				Assert.error(Assert.INVALID_ARGUMENT);
-			}
-			node = node.delayT(node.type, NodeProps.prototype.type.get, unchanged);
-			node = node.delayT(node.name, NodeProps.prototype.name.get, unchanged);
-			node = node.delayT(node.text, NodeProps.prototype.text.get, unchanged);
-			node = node.delayT(node.children, NodeProps.prototype.children.get, unchanged);
-			node = node.delayT(node.affinity, NodeProps.prototype.affinity.get, unchanged);
-			node = node.setT(node.unchanged, unchanged);
-			node = node.setT(node.changed, ChangeProps());
-			node = node.asPersistent();
-			if (!Fn.isNou(domNodeOrProps.name) && !Fn.isNou(domNodeOrProps.attrs)) {
-				node = node.attrs.set(node, domNodeOrProps.attrs);
-			} else {
-				node = node.delay(node.attrs, attrsWithChangesWithoutStyle, node);
-			}
+		if (!domNodeOrProps) {
+			return node;
 		}
+		node = node.asTransient();
+		if (domNodeOrProps.nodeType) {
+			node = setPropsFromDomNodeT(node, domNodeOrProps);
+		} else if (!Fn.isNou(domNodeOrProps.text)) {
+			node = setTextPropsT(node, domNodeOrProps)
+		} else if (!Fn.isNou(domNodeOrProps.name)) {
+			node = setElementPropsT(node, domNodeOrProps);
+		} else {
+			Assert.error(Assert.INVALID_ARGUMENT);
+		}
+		node = node.setT(idField, allocateId());
+		// We start listening for changes after all changable fields
+		// have been initialized.
+		node = node.setT(changedField, CHANGED_INIT);
+		node = node.asPersistent();
+		node = unchangedField.set(node, node);
 		return node;
 	});
+	var unchangedField     = Boromir.addField();
+	var idField            = Boromir.addField();
+	var delayedAttrsField  = Boromir.addField();
+	var delayedStylesField = Boromir.addField();
+	var changedAttrsField  = Boromir.addField();
+	var changedStylesField = Boromir.addField();
+	var changedField       = Boromir.addField();
 
-	Node.prototype.attrs = Record.hookSetter(Node.prototype.attrs, setAttrsAffectChanges, null, true);
+	function updateMask(node, changedMask, set) {
+		var changed = changedField.get(node);
+		if ((changed & CHANGED_INIT)
+		    && changedMask !== (changed & changedMask)) {
+			changed |= changedMask;
+			node = set(node, changed);
+		}
+		return node;
+	}
+
+	function hookUpdateChanged(field, changedMask) {
+		var getChanged = changedField.get;
+		var setChanged = changedField.set
+		var setChangedT = setChanged.setT;
+		return Record.hookSetter(field, function (node) {
+			return updateMask(node, changedMask, changedField.set);
+		} , function (node) {
+			return updateMask(node, changedMask, changedField.set.setT);
+		});
+	}
 
 	function assertElement(node) {
 		Assert.assert(1 === node.type.get(node), Assert.EXPECT_ELEMENT);
@@ -234,113 +237,22 @@ define([
 		Assert.assert(3 === node.type.get(node), Assert.EXPECT_TEXT_NODE);
 	}
 
-	function getChanged(node, name, changedField, default_) {
-		var changedProps = node.changed.get(node);
-		var changedMap = changedField.get(changedProps);
+	function getChangedOrDelayed(changedMapField, delayedField, node, name) {
+		var changedMap = changedMapField.get(node);
 		if (changedMap && changedMap.hasOwnProperty(name)) {
 			return changedMap[name];
 		}
-		return default_;
+		var delayedMap = delayedField.get(node);
+		return delayedMap.get(name);
 	}
 
-	function getChangedOrUnchanged(node, name, changedField, unchangedField, default_) {
-		var value = getChanged(node, name, changedField, SPECIAL_PRIVATE_VALUE);
-		if (value !== SPECIAL_PRIVATE_VALUE) {
-			return value;
-		}
-		var unchangedProps = node.unchanged.get(node);
-		var unchangedMap = unchangedField.get(unchangedProps);
-		if (unchangedMap && unchangedMap.hasOwnProperty(name)) {
-			return unchangedMap[name];
-		}
-		return default_;
-	}
-
-	function getChangedOrCached(node, name, getFromDom, changedField, cachedField) {
-		var value = getChanged(node, name, changedField, SPECIAL_PRIVATE_VALUE);
-		if (value !== SPECIAL_PRIVATE_VALUE) {
-			return value;
-		}
-		var changedProps = node.changed.get(node);
-		var cachedMap = cachedField.get(changedProps);
-		if (cachedMap.hasOwnProperty(name)) {
-			return cachedMap[name];
-		}
-		var domNode = node.domNode.get(node);
-		// This is the only place where we might read from the domNode
-		// even if we have already for example read all attributes or
-		// set all the attributes, because there is no way to tell
-		// whether there aren't more attributes on the element that we
-		// have not read. Contrast this to children which we always read
-		// in one go and therefore know that we've read all of them.
-		if (!domNode) {
-			return null;
-		}
-		value = cachedMap[name] = getFromDom(domNode, name);
-		return value;
-	}
-
-	function setChanged(node, name, value, changedField) {
-		var changedProps = node.changed.get(node);
-		var changedMap = changedField.get(changedProps) || {};
-		var updatedMap = Maps.cloneSet(changedMap, name, value);
-		changedProps = changedField.set(changedProps, updatedMap);
-		return node.changed.set(node, changedProps);
-	}
-
-	function setAttrsAffectChanges(node) {
-		assertElement(node);
-		var attrs = node.attrs();
-		Assert.assert(Fn.isNou(attrs['style']), Assert.STYLE_NOT_AS_ATTR);
-		var changedProps = node.changed.get(node);
-		var changedAttrs = changedProps.changedAttrs.get(changedProps) || {};
-		var unchangedProps = node.unchanged.get(node);
-		var unchangedAttrs = unchangedProps.attrs.get(unchangedProps);
-		var removedAttrs = Maps.fillKeys({}, Maps.keys(unchangedAttrs), null);
-		var changedAttrs = Maps.extend(removedAttrs, attrs);
-		changedProps = changedProps.changedAttrs.set(changedProps, changedAttrs);
-		node = node.changed.set(node, changedProps);
-		return node;
-	}
-
-	function attrsWithChangesWithoutStyle(node) {
-		assertElement(node);
-		var unchangedProps = node.unchanged.get(node);
-		var unchangedAttrs = unchangedProps.attrs.get(unchangedProps);
-		var changedProps = node.changed.get(node);
-		var attrs = unchangedAttrs;
-		if (attrs.hasOwnProperty('style')) {
-			attrs = Maps.cloneDelete(attrs, 'style');
-		}
-		var changedAttrs = changedProps.changedAttrs.get(changedProps);
-		if (changedAttrs) {
-			attrs = Maps.merge(unchangedAttrs, changedAttrs);
-			attrs = Maps.filter(attrs, Fn.complement(Fn.isNou));
-		}
-		return attrs;
-	}
-
-	function setAttrAffectChanges(node, name, value) {
-		assertElement(node);
-		Assert.assert('style' !== name, Assert.STYLE_NOT_AS_ATTR);
-		node = setChanged(node, name, value, ChangeProps.prototype.changedAttrs);
-		node = node.delay(node.attrs, attrsWithChangesWithoutStyle, node);
-		return node;
-	}
-
-	function setStyleAffectChanges(node, name, value) {
-		assertElement(node);
-		return setChanged(node, name, value, ChangeProps.prototype.changedStyles);
-	}
-
-	function setAttrAffinityAffectChanges(node, name, affinity) {
-		assertElement(node);
-		return setChanged(node, name, affinity, ChangeProps.prototype.changedAttrAffinity);
-	}
-
-	function setClassAffinityAffectChanges(node, name, affinity) {
-		assertElement(node);
-		return setChanged(node, name, affinity, ChangeProps.prototype.changedClassAffinity);
+	function setChanged(changedMapField, changedMask, node, name, value) {
+		var changedMap = changedMapField.get(node);
+		changedMap = Maps.cloneSet(changedMap || {}, name, value);
+		node = node.asTransient();
+		node = node.setT(changedMapField, changedMap);
+		node = updateMask(node, changedMask, changedField.set.setT);
+		return node.asPersistent()
 	}
 
 	/**
@@ -365,9 +277,13 @@ define([
 	function getAttr(node, name) {
 		assertElement(node);
 		Assert.assert('style' !== name, Assert.STYLE_NOT_AS_ATTR);
-		return getChangedOrCached(node, name, Dom.getAttr,
-		                          ChangeProps.prototype.changedAttrs,
-		                          ChangeProps.prototype.cachedAttrs);
+		return getChangedOrDelayed(changedAttrsField, delayedAttrsField, node, name);
+	}
+
+	function setAttr(node, name, value) {
+		assertElement(node);
+		Assert.assert('style' !== name, Assert.STYLE_NOT_AS_ATTR);
+		return setChanged(changedAttrsField, CHANGED_ATTRS, node, name, value);
 	}
 
 	/**
@@ -377,115 +293,99 @@ define([
 	 */
 	function getStyle(node, name) {
 		assertElement(node);
-		return getChangedOrCached(node, name, Dom.getStyle,
-		                          ChangeProps.prototype.changedStyles,
-		                          ChangeProps.prototype.cachedStyles);
+		return getChangedOrDelayed(changedStylesField, delayedStylesField, node, name);
 	}
 
-	function getAttrAffinity(node, name) {
+	function setStyle(node, name, value) {
 		assertElement(node);
-		return getChangedOrUnchanged(node, name,
-		                             ChangeProps.prototype.changedAttrAffinity,
-		                             NodeProps.prototype.attrAffinityMap,
-		                             AFFINITY_DEFAULT);
+		return setChanged(changedStylesField, CHANGED_STYLES, node, name, value);
 	}
 
-	function getClassAffinity(node, name) {
+	function getAttrs(node) {
 		assertElement(node);
-		return getChangedOrUnchanged(node, name,
-		                             ChangeProps.prototype.changedClassAffinity,
-		                             NodeProps.prototype.classAffinityMap,
-		                             AFFINITY_DEFAULT);
+		var delayedMap = delayedAttrsField.get(node);
+		var changedMap = changedAttrsField.get(node);
+		var attrs = delayedMap.realize();
+		attrs = Maps.extend({}, attrs, changedMap);
+		attrs = Maps.filter(attrs, Fn.complement(Fn.isNou));
+		delete attrs['style']; // safe because Maps.extends copies the map
+		return attrs;
 	}
 
-	function updateDomNodeFromMap(domNode, map, updateFn) {
-		Maps.forEach(map, function (value, name) {
-			updateFn(domNode, name, value);
-		});
+	function setAttrs(node, attrs) {
+		assertElement(node);
+		Assert.assert(Fn.isNou(attrs['style']), Assert.STYLE_NOT_AS_ATTR);
+		var delayedMap = delayedAttrsField.get(node);
+		var removedMap = Maps.fillKeys({}, delayedMap.keys(), null);
+		var changedMap = Maps.extend(removedMap, attrs);
+		delete changedMap['style']; // safe because fillKeys copies the map
+		node = node.asTransient();
+		node = updateMask(node, CHANGED_ATTRS, changedField.set.setT);
+		node = node.setT(changedAttrsField, changedMap);
+		return node.asPersistent();
+	}
+
+	function updateInUnchanged(node, field, value, nodeSet) {
+		var unchangedNode = unchangedField.get(node);
+		unchangedNode = field.set(unchangedNode, value);
+		return nodeSet(node, unchangedNode);
+	}
+
+	function getInUnchanged(node, field) {
+		var unchangedNode = unchangedField.get(node);
+		return field.get(unchangedNode);
 	}
 
 	function updateName(node) {
-		var name = node.name.get(node);
-		var unchangedProps = node.unchanged.get(node);
-		if (name !== unchangedProps.name.get(unchangedProps)) {
-			Assert.notImplemented();
-		}
-		return node;
+		Assert.notImplemented();
 	}
 
 	function updateText(node) {
 		var text = node.text.get(node);
-		var unchangedProps = node.unchanged.get(node);
-		if (text !== unchangedProps.text.get(unchangedProps)) {
-			var domNode = node.domNode.get(node);
-			domNode.data = text;
-			unchangedProps = unchangedProps.text.set(unchangedProps, text);
-			node = node.unchanged.set(node, unchangedProps);
-		}
-		return node;
+		var domNode = node.domNode.get(node);
+		domNode.data = text;
+		return updateInUnchanged(node, node.text, text, unchangedField.set);
 	}
 
-	function updateFromMapField(updateDom, node, changedField, cachedField) {
-		var changedProps = node.changed.get(node);
-		var changedMap = changedField.get(changedProps);
+	function updateDomNodeFromMap(domNode, map, updateDom) {
+		Maps.forEach(map, function (value, name) {
+			updateDom(domNode, name, value);
+		});
+	}
+
+	function updateChangedAndDelayed(changedField, delayedField, updateDom, node) {
+		var changedMap = changedField.get(node);
 		if (!changedMap) {
 			return node;
 		}
 		var domNode = node.domNode.get(node);
 		updateDomNodeFromMap(domNode, changedMap, updateDom);
-		changedProps = changedField.set(changedProps, null);
-
-		var cachedMap = cachedField.get(changedProps);
-		cachedMap = Maps.extend({}, cachedMap, changedMap);
-		changedProps = cachedField.set(changedProps, cachedMap);
-		return node.changed.set(node, changedProps);
+		var newAttrs = delayedField.get(node).mergeObject(changedMap, true);
+		node = node.asTransient();
+		node = node.setT(changedField, null);
+		node = node.setT(delayedField, newAttrs);
+		return node.asPersistent();
 	}
 
-	function updateAttrs(node) {
-		var unchangedProps = node.unchanged.get(node);
-		var changedProps = node.changed.get(node);
-		if (changedProps.changedAttrs.get(changedProps)) {
-			unchangedProps = unchangedProps.attrs.set(unchangedProps, node.attrs.get(node));
-			node = node.unchanged.set(node, unchangedProps);
-		}
-		var attrAffinityMap = unchangedProps.attrAffinityMap.get(unchangedProps);
-		var classAffinityMap = unchangedProps.classAffinityMap.get(unchangedProps);
-		var changedAttrAffinity = changedProps.changedAttrAffinity.get(changedProps);
-		var changedClassAffinity = changedProps.changedClassAffinity.get(changedProps);
-		if (changedAttrAffinity) {
-			// TODO
-		}
-		if (changedClassAffinity) {
-			// TODO
-		}
-		return updateFromMapField(Dom.setAttr, node, 
-		                          ChangeProps.prototype.changedAttrs,
-		                          ChangeProps.prototype.cachedAttrs);
-	}
-
-	function updateStyles(node) {
-		return updateFromMapField(Dom.setStyle, node,
-		                          ChangeProps.prototype.changedStyles,
-		                          ChangeProps.prototype.cachedStyles);
-	}
+	var updateAttrs = Fn.partial(updateChangedAndDelayed, changedAttrsField,
+	                             delayedAttrsField, Dom.setAttr);
+	var updateStyles = Fn.partial(updateChangedAndDelayed, changedStylesField,
+	                              delayedStylesField, Dom.setStyle);
 
 	function createElementNode(node, doc) {
 		var name = node.name.get(node);
 		var attrs = node.attrs.get(node);
 		var domNode = doc.createElement(name);
 		updateDomNodeFromMap(domNode, attrs, Dom.setAttr);
-		var unchangedProps = node.unchanged.get(node);
-		var unchangedStyle = unchangedProps.attrs.get(unchangedProps)['style'];
-		Dom.setAttr(domNode, 'style', unchangedStyle);
-		var changedProps = node.changed.get(node);
-		var changedStyles = changedProps.changedStyles.get(changedProps);
-		updateDomNodeFromMap(domNode, changedStyles, Dom.setStyle);
+		var delayedAttrMap = delayedAttrsField.get(node);
+		Dom.setAttr(domNode, 'style', delayedAttrMap.get('style'));
+		var changedStylesMap = changedStylesField.get(node);
+		updateDomNodeFromMap(domNode, changedStylesMap, Dom.setStyle);
 		return domNode;
 	}
 
 	function createTextNode(node, doc) {
-		var text = node.text.get(node);
-		return doc.createTextNode(text);
+		return doc.createTextNode(node.text.get(node));
 	}
 
 	function createDomNode(node, doc) {
@@ -511,11 +411,11 @@ define([
 		var refNode = i < childNodes.length ? childNodes[i] : null;
 		var childDomNode = createDomNode(child, doc);
 		domNode.insertBefore(childDomNode, refNode);
-		child = child.domNode.set(child, childDomNode);
-		var unchanged = child.unchanged.get(child);
-		unchanged = unchanged.children.set(unchanged, []);
-		unchanged = unchanged.id.set(unchanged, allocateId());
-		child = child.unchanged.set(child, unchanged);
+		child = child.asTransient();
+		child = child.setT(child.domNode, childDomNode);
+		child = child.setT(idField, allocateId());
+		child = updateInUnchanged(child, child.children, [], unchangedField.set.setT);
+		child = child.asPersistent();
 		child = updateDomRec(child, doc, insertIndex);
 		return child;
 	}
@@ -524,15 +424,22 @@ define([
 		domNode.removeChild(childNodes[i]);
 	}
 
+	/**
+	 * Internal implementation that creats a map that maps the ids of
+	 * the given children to the given value.
+	 */
 	function indexChildren(children, index, value) {
 		children.forEach(function (child) {
-			var unchanged = child.unchanged.get(child);
-			index[unchanged.id.get(unchanged)] = value;
+			index[idField.get(child)] = value;
 		});
 		return index;
 	}
 
 	/**
+	 * Internal implementations that determines given an old and a new
+	 * children array, which ones were inserted or removed, based on the
+	 * id of the node.
+	 *
 	 * Fast for common cases, but may have a suboptimal result (too many
 	 * removes/inserts) when siblings are moved around rather than just
 	 * inserted and removed.
@@ -551,10 +458,8 @@ define([
 		while (i < oldLen && j < newLen) {
 			var oldChild = oldChildren[i];
 			var newChild = newChildren[j];
-			var oldUnchanged = oldChild.unchanged.get(oldChild);
-			var newUnchanged = newChild.unchanged.get(newChild);
-			var oldId = oldUnchanged.id.get(oldUnchanged);
-			var newId = newUnchanged.id.get(newUnchanged);
+			var oldId = idField.get(oldChild);
+			var newId = idField.get(newChild);
 			var change;
 			if (oldId === newId) {
 				if (oldChild === newChild) {
@@ -595,10 +500,13 @@ define([
 		return changedInParent;
 	}
 
+	/**
+	 * Internal implementation that updates the children of the DOM node
+	 * wrapped by the given boromir node.
+	 */
 	function updateChildren(node, doc, insertIndex) {
 		var newChildren = node.children.get(node)
-		var unchangedProps = node.unchanged.get(node);
-		var oldChildren = unchangedProps.children.get(unchangedProps)
+		var oldChildren = getInUnchanged(node, node.children);
 		var changedInParent = childrenChangedInParent(oldChildren, newChildren);
 		if (!changedInParent) {
 			return node;
@@ -621,8 +529,7 @@ define([
 				oldI += 1;
 			}
 			var affinity = child.affinity.get(child);
-			var unchangedProps = child.unchanged.get(child);
-			var unchangedAffinity = unchangedProps.affinity.get(unchangedProps);
+			var unchangedAffinity = getInUnchanged(node, node.affinity);
 			if ((affinity & AFFINITY_DOM) !== (unchangedAffinity & AFFINITY_DOM)) {
 				if ((affinity & AFFINITY_DOM) && !(change & CHANGE_REMOVE)) {
 					child = insertChild(domNode, childNodes, child, domI, doc, insertIndex);
@@ -647,29 +554,65 @@ define([
 				children.push(child);
 			}
 		});
-		node = node.asTransient();
-		node = node.setT(node.children, children);
-		var unchangedProps = node.unchanged.get(node);
-		unchangedProps = unchangedProps.children.set(unchangedProps, children);
-		node = node.setT(node.unchanged, unchangedProps);
-		return node.asPersistent();
+		node = node.set(node.children, children);
+		node = updateInUnchanged(node, node.children, children, unchangedField.set);
+		return node;
 	}
 
+	/**
+	 * Internal implementation that recursively updates the DOM wrapped
+	 * by the given boromir tree.
+	 */
 	function updateDomRec(node, doc, insertIndex) {
 		var type = node.type.get(node);
+		var changed = changedField.get(node);
 		if (1 === type) {
-			node = updateName(node);
-			node = updateAttrs(node);
-			node = updateStyles(node);
-			node = updateChildren(node, doc, insertIndex);
+			if (changed & CHANGED_NAME) {
+				node = updateName(node);
+			}
+			if (changed & CHANGED_ATTRS) {
+				node = updateAttrs(node);
+			}
+			if (changed & CHANGED_STYLES) {
+				node = updateStyles(node);
+			}
+			if (changed & CHANGED_CHILDREN) {
+				node = updateChildren(node, doc, insertIndex);
+			}
 		} else if (3 === type) {
-			node = updateText(node);
+			if (changed & CHANGED_TEXT) {
+				node = updateText(node);
+			}
 		} else {
 			// Nothing to do for other nodes
 		}
 		return node;
 	}
 
+	/**
+	 * Given a boromir node that wraps a DOM tree, updates the wrapped
+	 * DOM tree to reflect the given boromir tree, and returns a new
+	 * boromir tree that reflects the update.
+	 *
+	 * Subtrees that don't have modifications, will not be visited.
+	 *
+	 * The DOM must not have been modified since it was wrapped with
+	 * boromir nodes, otherwise the behviour is undefined and may cause
+	 * errors to be thrown. The assumption that the tree wasn't modified
+	 * is necessary so that the DOM can be updated in the most efficient
+	 * manner possible, without perorming any redundant read operations
+	 * on the DOM.
+	 *
+	 * For the reason above, after the DOM has been updated, the boromir
+	 * tree given to updateDom() can't be used any more to update the
+	 * DOM. Instead, a new boromir tree is returned that reflects the
+	 * updated DOM and which can be used in a subsequent updateDom()
+	 * operation.
+	 *
+	 * @param node {!Boromir}
+	 * @param opts {Map.<string,*>} no options currently
+	 * @return {!Boromir}
+	 */
 	function updateDom(node, opts) {
 		var domNode = node.domNode.get(node);
 		var doc = domNode.ownerDocument;
@@ -677,6 +620,15 @@ define([
 		return updateDomRec(node, doc, {});
 	}
 
+	/**
+	 * Creates a new dom tree that represents the given boromir tree.
+	 *
+	 * Doesn't change any existing DOM nodes.
+	 *
+	 * @param node {!Boromir}
+	 * @param doc {!Document} the document to creat the new DOM tree with
+	 * @return {!Node} a dom node representing the given boromir tree
+	 */
 	function asDom(node, doc) {
 		var domNode;
 		if (1 === node.type()) {
@@ -692,24 +644,32 @@ define([
 		return domNode;
 	}
 
-	Maps.extend(Node.prototype, {
-		attr         : Accessor.asMethod(Accessor(getAttr         , setAttrAffectChanges)),
-		style        : Accessor.asMethod(Accessor(getStyle        , setStyleAffectChanges)),
-		attrAffinity : Accessor.asMethod(Accessor(getAttrAffinity , setAttrAffinityAffectChanges)),
-		classAffinity: Accessor.asMethod(Accessor(getClassAffinity, setClassAffinityAffectChanges)),
+	var hookedName     = hookUpdateChanged(Boromir.prototype.name, CHANGED_NAME);
+	var hookedText     = hookUpdateChanged(Boromir.prototype.text, CHANGED_TEXT);
+	var hookedChildren = hookUpdateChanged(Boromir.prototype.children, CHANGED_CHILDREN);
+	var hookedAffinity = hookUpdateChanged(Boromir.prototype.affinity, CHANGED_AFFINITY);
+
+	Maps.extend(Boromir.prototype, {
+		name         : Accessor.asMethod(hookedName),
+		text         : Accessor.asMethod(hookedText),
+		children     : Accessor.asMethod(hookedChildren),
+		affinity     : Accessor.asMethod(hookedAffinity),
+		attrs        : Accessor.asMethod(Accessor(getAttrs, setAttrs)),
+		attr         : Accessor.asMethod(Accessor(getAttr, setAttr)),
+		style        : Accessor.asMethod(Accessor(getStyle, setStyle)),
 		updateDom    : Fn.asMethod(updateDom),
 		asDom        : Fn.asMethod(asDom),
-		create       : Node
+		create       : Boromir
 	});
 
-	Node.CHANGE_INSERT  = CHANGE_INSERT;
-	Node.CHANGE_REMOVE  = CHANGE_REMOVE;
-	Node.CHANGE_REF     = CHANGE_REF;
-	Node.CHANGE_NONE    = CHANGE_NONE;
-	Node.AFFINITY_DOM   = AFFINITY_DOM;
-	Node.AFFINITY_MODEL = AFFINITY_MODEL;
-	Node.AFFINITY_DEFAULT = AFFINITY_DEFAULT;
-	Node.childrenChangedInParent = childrenChangedInParent;
+	Boromir.CHANGE_INSERT    = CHANGE_INSERT;
+	Boromir.CHANGE_REMOVE    = CHANGE_REMOVE;
+	Boromir.CHANGE_REF       = CHANGE_REF;
+	Boromir.CHANGE_NONE      = CHANGE_NONE;
+	Boromir.AFFINITY_DOM     = AFFINITY_DOM;
+	Boromir.AFFINITY_MODEL   = AFFINITY_MODEL;
+	Boromir.AFFINITY_DEFAULT = AFFINITY_DEFAULT;
+	Boromir.childrenChangedInParent = childrenChangedInParent;
 
-	return Node;
+	return Boromir;
 });

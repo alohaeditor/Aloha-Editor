@@ -55,4 +55,24 @@
 		equal(map.realize(), source);
 	});
 
+	test('merge', function () {
+		var sourceB = {'three': 3, 'four': 4};
+		var sourceC = {'five': 5, 'six': 6};
+		var map = DelayedMap(sourceOpts, source);
+		deepEqual(map.mergeObject(sourceB).realize(),
+		          Maps.merge(source, sourceB));
+		equal(map.mergeObject(sourceB).get('one'), 1);
+		equal(map.mergeObject(sourceB).get('three'), 3);
+		ok(Fn.isNou(map.mergeObject(sourceB).get('five')));
+		deepEqual(map.mergeObject(sourceB).mergeObject(sourceC).realize(),
+		          Maps.merge(source, sourceB, sourceC));
+		// Ensure, after merging twice, the map is still referring to
+		// the first map and sourceB and sourceC were merged non-lazily
+		// to avoid a memory leak.
+		var mergedTwice = map.mergeObject(sourceB, true).mergeObject(sourceC, true);
+		equal(mergedTwice._map_source.map, map);
+		equal(mergedTwice._map_source.obj['four'], 4);
+		equal(mergedTwice._map_source.obj['five'], 5);
+	});
+
 }(window.aloha));

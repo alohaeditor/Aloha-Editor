@@ -170,6 +170,29 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	}
 
 	/**
+	 * Internal implementation that checks whether a value is a value
+	 * delayed by calling delay().
+	 */
+	function isDelayValue(value) {
+		return Array.isArray(value) && value[0] === SPECIAL_PRIVATE_VALUE;
+	}
+
+	/**
+	 * Internal implementation that realizes a value that was delayed by
+	 * calling delay().
+	 */
+	function realizeDelayValue(delayValue) {
+		var value;
+		if (delayValue.length > 3) {
+			value = delayValue[3];
+		} else {
+			value = delayValue[1](delayValue[2]);
+			delayValue[3] = value;
+		}
+		return value;
+	}
+
+	/**
 	 * Adds a field to the given type.
 	 *
 	 * The only way to access the field is through the returned accessor
@@ -194,14 +217,8 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 		function get(record) {
 			assertRead(record, Record);
 			var value = getValue(record, offset, defaults);
-			if (Array.isArray(value) && value[0] === SPECIAL_PRIVATE_VALUE) {
-				var delayed = value;
-				if (delayed.length > 3) {
-					value = delayed[3];
-				} else {
-					value = delayed[1](delayed[2]);
-					delayed[3] = value;
-				}
+			if (isDelayValue(value)) {
+				value = realizeDelayValue(value);
 				var values = ensureDefaults(record, defaults);
 				values[offset] = value;
 			}
@@ -354,7 +371,7 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 			set: set,
 			setT: setT,
 			delay: delay,
-			delayT: delayT,
+			delayT: delayT
 		});
 		Record.addField = Fn.partial(addField, Record);
 		Record.extend   = Fn.partial(extend, Record);
@@ -377,31 +394,22 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	 * @param field {function} a field of a Record
 	 * @param afterSet {function} invoked after the field is set
 	 * @param afterSetT {function} like afterSet but accepts a transient record
-	 * @param noDelayed deprecated
 	 * @return field {function} a new field
 	 */
-	function hookSetter(field, afterSet, afterSetT, noDelayed) {
+	function hookSetter(field, afterSet, afterSetT) {
 		var set = field.set;
 		var setT = set.setT;
 		afterSetT = afterSetT || function (record) {
 			return afterSet(record.asPersistent()).asTransient();
 		};
-		var newAccessor = Accessor.asMethod(Accessor(field.get, function (record, value) {
+		var newAccessor = Accessor(field.get, function (record, value) {
 			record = set(record, value);
-			if (!noDelayed
-			    || !Array.isArray(value)
-			    || SPECIAL_PRIVATE_VALUE !== value[0]) {
-				record = afterSet(record);
-			}
+			record = afterSet(record);
 			return record;
-		}));
+		});
 		newAccessor.set.setT = function (record, value) {
 			record = setT(record, value);
-			if (!noDelayed
-			    || !Array.isArray(value)
-			    || SPECIAL_PRIVATE_VALUE !== value[0]) {
-				record = afterSetT(record);
-			}
+			record = afterSetT(record);
 			return record;
 		};
 		return newAccessor;
