@@ -489,20 +489,33 @@
 		</pluginManagement>
 	</build>
 
-	<repositories>
-		<repository>
+	<pluginRepositories>
+		<pluginRepository>
 			<id>maven.gentics.com</id>
 			<name>Gentics Maven Repository</name>
 			<url>https://maven.gentics.com/maven2</url>
+			<layout>default</layout>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
-		</repository>
-	</repositories>
-
+		</pluginRepository>
+	</pluginRepositories>
+    <repositories>
+       <repository>
+             <id>maven.gentics.com</id>
+             <name>Gentics Maven Repository</name>
+             <url>https://maven.gentics.com/maven2</url>
+             <releases>
+                     <enabled>true</enabled>
+             </releases>
+             <snapshots>
+                     <enabled>true</enabled>
+             </snapshots>
+       </repository>
+    </repositories>
 	<distributionManagement>
 		<repository>
 			<id>archiva.lan.public_releases</id>
