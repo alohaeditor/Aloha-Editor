@@ -14,20 +14,41 @@ define([
 ) {
 	'use strict';
 
-	var whitelist = Aloha.settings && Aloha.settings.contentRules
-	             && Aloha.settings.contentRules.whitelist
-	             || [];
-
-	var blacklist = Aloha.settings && Aloha.settings.contentRules
-	             && Aloha.settings.contentRules.blacklist
-	             || [];
-
-	var translations = Aloha.settings && Aloha.settings.contentRules
-	                && Aloha.settings.contentRules.translations
-	                || {};
+	/**
+	 * Whitelist rules.
+	 *
+	 * @param {Array.<Array.<string>>}
+	 */
+	var whitelist = (
+		Aloha.settings &&
+		Aloha.settings.contentRules &&
+		Aloha.settings.contentRules.whitelist
+	) || [];
 
 	/**
-	 * Retrieve a list of all rules in a specified table that are applicable
+	 * Blacklist rules.
+	 *
+	 * @param {Array.<Array.<string>>}
+	 */
+	var blacklist = (
+		Aloha.settings &&
+		Aloha.settings.contentRules &&
+		Aloha.settings.contentRules.blacklist
+	) || [];
+
+	/**
+	 * Translation rules.
+	 *
+	 * @param {Object<string, string>}
+	 */
+	var translations = (
+		Aloha.settings &&
+		Aloha.settings.contentRules &&
+		Aloha.settings.contentRules.translations
+	) || {};
+
+	/**
+	 * Retrieves a list of all rules in a specified table that are applicable
 	 * the editable.
 	 *
 	 * @param {Element}                        editable
@@ -36,7 +57,8 @@ define([
 	function getRules(editable, table) {
 		var $editable = $(editable);
 		var rules = [];
-		for (var selector in table) {
+		var selector;
+		for (selector in table) {
 			if (table.hasOwnProperty(selector) && $editable.is(selector)) {
 				rules.push(table[selector]);
 			}
@@ -96,7 +118,8 @@ define([
 	}
 
 	/**
-	 * Translate i to em if translation is configured for the given editable.
+	 * Translates nodes from one name to another (eg: i to em) if translation is
+	 * configured for the given editable.
 	 *
 	 * @param  {Element} editable
 	 * @param  {string}  nodeName
