@@ -11,6 +11,7 @@
  */
 define([
 	'jquery',
+	'PubSub',
 	'aloha/plugin',
 	'aloha/core',
 	'aloha/content-rules',
@@ -18,6 +19,7 @@ define([
 	'util/dom'
 ], function (
 	$,
+	PubSub,
 	Plugin,
 	Aloha,
 	ContentRules,
@@ -158,7 +160,7 @@ define([
 				var enabled = config
 				           && ($.inArray(pluginName, config) > -1)
 				           && ContentRules.isAllowed(editable.obj[0], 'p');
-				configurations[editable.getId()] !!enabled;
+				configurations[editable.getId()] = !!enabled;
 				if (enabled) {
 					autogenerateParagraphs(editable);
 				}
