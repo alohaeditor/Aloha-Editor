@@ -506,7 +506,8 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 						// text node
 						secondPart = document.createTextNode(element.data.substring(splitPosition, element.data.length));
 						element.data = element.data.substring(0, splitPosition);
-						if (this.isEmpty(secondPart) && jQuery('br', newDom).length === 0) {
+						// this is done to make sure that empty block elements are visible.
+						if (this.isBlockLevelElement(element.parentElement) && this.isEmpty(secondPart) && jQuery('br', newDom).length === 0) {
 							secondPart = jQuery('<br/>').addClass('aloha-end-br');
 						}
 					} else {
