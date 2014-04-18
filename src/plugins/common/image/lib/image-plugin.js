@@ -404,11 +404,12 @@ define([
 					foundMarkup = plugin.findImgMarkup(rangeObject);
 					config = plugin.getEditableConfig(Aloha.activeEditable.obj);
 
-					if (typeof config !== 'undefined') {
-						plugin.ui._insertImageButton.show();
-					} else {
+					// check for empty config and hide button in ui
+					if (!config || (jQuery.isArray(config) && config.length < 1)) {
 						plugin.ui._insertImageButton.hide();
 						return;
+					} else {
+						plugin.ui._insertImageButton.show();
 					}
 
 					// Enable image specific ui components if the element is an image
