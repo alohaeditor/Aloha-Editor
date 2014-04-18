@@ -403,7 +403,7 @@ define([
 	 */
 	function pruneElem(elem, emap) {
 		var className = elem.className;
-		if (className && -1 !== className.indexOf(commonClsSubstr)) {
+		if ('string' === typeof className && -1 !== className.indexOf(commonClsSubstr)) {
 			var classes = Strings.words(className);
 
 			// Ephemera.markElement()
