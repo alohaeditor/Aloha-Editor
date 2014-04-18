@@ -1,0 +1,3 @@
+[submodule "docstrap"]
+	path = docstrap
+	url = git@github.com:terryweiss/docstrap.git

@@ -1,0 +1,16 @@
+{
+	"tags": {
+		"allowUnknownTags": true
+	},
+	"templates" : {
+		"cleverLinks"     : true,
+		"monospaceLinks"  : true,
+		"theme"           : "cerulean",
+		"default"         : {
+			"outputSourceFiles" : true
+		},
+		"linenums"        : true,
+		"collapseSymbols" : false,
+		"inverseNav"      : false
+	}
+}
