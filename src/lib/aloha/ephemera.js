@@ -403,6 +403,9 @@ define([
 	 */
 	function pruneElem(elem, emap) {
 		var className = elem.className;
+		// Because SVG elements will (sometimes) hold a SVGAnimatedString object
+		// (http://mdn.beonex.com/en/DOM/SVGStylable.html#Properties) instead of
+		// a string for the className property
 		if ('string' === typeof className && -1 !== className.indexOf(commonClsSubstr)) {
 			var classes = Strings.words(className);
 
