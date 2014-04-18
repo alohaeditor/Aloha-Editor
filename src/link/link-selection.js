@@ -13,7 +13,7 @@ define([
 	'html',
 	'mutation',
 	'link-util'
-], function(
+], /** @exports LinkSelection */ function(
 	Arrays,
 	Boundaries,
 	Dom,

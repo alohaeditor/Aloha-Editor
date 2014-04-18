@@ -13,7 +13,7 @@ define([
 	'arrays',
 	'boundaries',
 	'strings'
-], function HtmlTraversing(
+], /** @exports HtmlTraversing */ function HtmlTraversing(
 	Elements,
 	Styles,
 	Predicates,

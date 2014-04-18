@@ -9,7 +9,7 @@ define([
 	'dom/nodes',
 	'dom/attrs',
 	'strings'
-], function DomStyles(
+], /** @exports DomStyles */ function DomStyles(
 	Nodes,
 	Attrs,
 	Strings

@@ -14,7 +14,7 @@ define([
 	'list/list-util',
 	'list/list-range',
 	'ranges'
-], function (
+], /** @exports List */function (
 	Boundaries,
 	Dom,
 	ContentToList,

@@ -25,7 +25,7 @@ define([
 	'misc',
 	'maps',
 	'mutation'
-], function Overrides(
+], function /** @exports Overrides */ Overrides(
 	Dom,
 	Misc,
 	Maps,

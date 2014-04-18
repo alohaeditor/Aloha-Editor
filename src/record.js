@@ -10,7 +10,8 @@
  * - transient support with linear-time record.asTransient()
  * - optional init function (default calls record.merge())
  */
-define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor, Assert) {
+define(['functions', 'maps', 'accessor', 'assert'],
+/** @exports Record */ function (Fn, Maps, Accessor, Assert) {
 	'use strict';
 
 	var DEFAULT_FOR_COMPUTED_FIELDS = {};

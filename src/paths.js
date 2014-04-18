@@ -9,7 +9,7 @@ define([
 	'dom',
 	'arrays',
 	'boundaries'
-], function Paths(
+], /** @exports Paths */ function Paths(
 	Dom,
 	Arrays,
 	Boundaries

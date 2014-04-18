@@ -11,7 +11,7 @@ define([
 	'arrays',
 	'strings',
 	'browsers'
-], function DomClasses(
+], /** @exports DomClasses */ function DomClasses(
 	Nodes,
 	Maps,
 	Arrays,

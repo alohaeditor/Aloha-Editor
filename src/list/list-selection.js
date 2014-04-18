@@ -10,7 +10,7 @@ define([
 	'dom',
 	'html',
 	'list-util'
-], function (
+], /** @exports ListSelection */ function (
 	Boundaries,
     Dom,
     Html,

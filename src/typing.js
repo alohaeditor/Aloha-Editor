@@ -18,7 +18,7 @@ define([
 	'functions',
 	'undo',
 	'overrides'
-], function Typing(
+], /** @exports Typing */ function Typing(
 	Dom,
 	Mutation,
 	Keys,

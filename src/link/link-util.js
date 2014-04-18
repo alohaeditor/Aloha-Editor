@@ -11,7 +11,7 @@ define([
 	'editing',
 	'functions',
 	'html'
-], function(
+], /** @exports LinkUtil */ function(
 	Boundaries,
 	Dom,
 	Editing,
