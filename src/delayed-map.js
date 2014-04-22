@@ -31,10 +31,8 @@ define(['functions', 'maps', 'assert'], function (Fn, Maps, Assert) {
 	 * argument to the given functions. If it is not supplied, undefined
 	 * is passed instead.
 	 *
-	 * The returned type is a constructor function. The prototype of the
-	 * constructor function can be freely modified. The constructor
-	 * function must not be invoked with the new keyword, it must
-	 * instead must be used as a function.
+	 * This function must not be invoked with the new keyword, it must
+	 * instead be used as a function.
 	 *
 	 * @param opts {!Object.<string,function>}
 	 * @param source {*}

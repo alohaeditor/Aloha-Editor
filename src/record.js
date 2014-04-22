@@ -333,7 +333,7 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	 * The returned type is a constructor function. The prototype of the
 	 * constructor function can be freely modified. The constructor
 	 * function must not be invoked with the new keyword, it must
-	 * instead must be used as a function.
+	 * instead be used as a function.
 	 *
 	 * Example:
 	 *
@@ -393,7 +393,7 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	 *
 	 * @param field {function} a field of a Record
 	 * @param afterSet {function} invoked after the field is set
-	 * @param afterSetT {function} like afterSet but accepts a transient record
+	 * @param afterSetT {?function} like afterSet but accepts a transient record
 	 * @return field {function} a new field
 	 */
 	function hookSetter(field, afterSet, afterSetT) {
