@@ -198,12 +198,20 @@ define(['arrays', 'assert'], function Maps(Arrays, Assert) {
 		          && Object.prototype.toString.call(obj) === '[object Object]');
 	}
 
-	function setIn(map, accessors, value) {
-		var i, len;
-		for (i = 0, len = accessors.length - 1; i < len; i++) {
-			map = accessors[i].get(map);
-		}
-		return accessors[i].set(map, value);
+	/**
+	 * Creates a map without inheriting from Object.
+	 *
+	 * Use this instead of an object literal to avoid having unwanted,
+	 * inherited properties on the map.
+	 *
+	 * A map constructed like this allows for the
+	 * ```for (var key in map) { }```
+	 * pattern to be used without a hasOwnProperty check.
+	 *
+	 * @return {!Object}
+	 */
+	function create(map) {
+		return Object.create(null);
 	}
 
 	return {
@@ -220,6 +228,6 @@ define(['arrays', 'assert'], function Maps(Arrays, Assert) {
 		clone      : clone,
 		cloneSet   : cloneSet,
 		cloneDelete: cloneDelete,
-		setIn      : setIn
+		create     : create
 	};
 });
