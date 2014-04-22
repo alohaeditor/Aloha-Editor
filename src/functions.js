@@ -186,6 +186,10 @@ define([], function Functions() {
 	/**
 	 * Wraps a function and passes `this` as the first argument.
 	 *
+	 * The function that is wrapped is available on the returned method
+	 * as the fn property, which allows one to easily switch between
+	 * method and function invokation form.
+	 *
 	 * The Function.length property of the given function is examined
 	 * and may be either 0, no matter how many arguments the function
 	 * expects, or if not 0, must be the actual number of arguments the
@@ -207,6 +211,7 @@ define([], function Functions() {
 			args.unshift(this);
 			return fn.apply(null, args);
 		};
+		method.fn = fn;
 		return method;
 	}
 

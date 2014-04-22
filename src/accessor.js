@@ -70,6 +70,10 @@ define(['functions', 'assert'], function (Fn, Assert) {
 	 * accessor, and which uses the `this` special variable in place of
 	 * the missing argument to pass to the getter and setter.
 	 *
+	 * As with Fn.asMethod() the original accessor function is available
+	 * as the fn property on the accessor to allow easy switching
+	 * between method and function form.
+	 *
 	 * The Function.length property of the given function is examined
 	 * and may be either 0, no matter how many arguments the function
 	 * expects, or if not 0, must be the actual number of arguments the
@@ -91,6 +95,7 @@ define(['functions', 'assert'], function (Fn, Assert) {
 		} : Fn.asMethod(accessorFn(get, set, getLen));
 		method.get = get;
 		method.set = set;
+		method.fn = accessor;
 		return method;
 	}
 
