@@ -963,7 +963,6 @@ define([
 
 	Engine.commands['insertorderedlist'] = {
 		action: function (value, range) {
-					debugger;
 			ListPlugin.transformList('ol');
 			if (range && Aloha.Selection.rangeObject) {
 				range.startContainer = Aloha.Selection.rangeObject.startContainer;
