@@ -7521,14 +7521,16 @@ define([
 	};
 
 	/**
-	 * Given a string of html content to be inserted at the given range.
-	 * Strip away any elements which are dissallowed by ContentRule configuration.
+	 * Given a string of html content to be inserted at the given range, will
+	 * strip away any elements which are disallowed and translate any according
+	 * to the Content Rules configuration.
 	 *
+	 * @private
 	 * @param  {string} content
 	 * @param  {Range}  range
 	 * @return {string}
 	 */
-	function stripDissallowed(content, range) {
+	function applyContentRules(content, range) {
 		var editable = Dom.getEditingHostOf(range.commonAncestorContainer);
 		if (!editable) {
 			return content;
@@ -7559,7 +7561,7 @@ define([
 	//@{
 	commands.inserthtml = {
 		action: function (raw, range) {
-			var value = stripDissallowed(raw, range);
+			var value = applyContentRules(raw, range);
 
 			// "Delete the contents of the active range."
 			deleteContents(range);
