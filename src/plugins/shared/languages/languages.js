@@ -71,19 +71,19 @@ define([
 		_constructor: function (name, flags, iso, locale, objectType) {
 			this._super(name);
 
-			if ('undefined' !== flags) {
+			if (typeof flags !== 'undefined') {
 				this.flags = flags;
 			}
 
-			if ('undefined' !== iso) {
+			if (typeof iso !== 'undefined') {
 				this.iso = ('iso639-1' === iso) ? 'iso639-1' : 'iso639-2';
 			}
 
-			if ('undefined' !== locale) {
+			if (typeof locale !== 'undefined') {
 				this.locale = locale;
 			}
 			
-			if ('undefined' !== objectType) {
+			if (typeof objectType !== 'undefined') {
 				this.objectType = objectType;
 			}
 			
