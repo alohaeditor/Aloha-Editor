@@ -11,11 +11,9 @@ endprologue.
 h3. Informer not enforcer
 
 Plugin developers should note that there are myriad ways to insert content into
-an editable and that Content Rules does not provide a mechanism to forcibly
-prevent content from being inserted.
-
-It remains the responsibility of all implementations to use Content Rules to
-check whether the content that is to be inserted in a given editable is
+an editable and Content Rules does not provide a mechanism to forcibly prevent
+this. It remains the responsibility of all implementations to use Content Rules
+to check whether the content that is to be inserted in a given editable is
 permitted according to Content Rules configuration.
 
 
@@ -35,7 +33,7 @@ editable which does not match any configured selectors.
 
 h3. Whitelists 
 
-Whitelist configuration explicitly specifies white type of elements are to be
+Whitelist configuration explicitly specifies which type of elements are to be
 permitted in editables.
 
 For example, the following configuration stipulates that all editables which
