@@ -71,9 +71,9 @@ Aloha.settings.contentRules = {
 
 h3. Blacklists
 
-In cases where only a few elements are to be dissallowed in an editable, it
-would be cumbersome to have to specify every single element that is permitted,
-since this would require writing out most of all the HTML elements.
+In cases where only a few elements are to be disallowed in an editable, it would
+be cumbersome to have to specify every single element that is permitted, since
+this would require writing out most of all the HTML elements.
 
 This is where blacklists are useful. Blacklists are opposite to whitelists in
 that elements that are specified in a blacklist are the only elements that are
