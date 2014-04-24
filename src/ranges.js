@@ -579,10 +579,9 @@ define([
 			boundary = Boundaries.fromRangeEnd(clone);
 			if (Html.hasLinebreakingStyle(Boundaries.nextNode(boundary))) {
 				return {};
-			} else {
-				if (Html.isAtStart(boundary)) {
-					Boundaries.setRangeEnd(clone, Traversing.next(boundary));
-				}
+			}
+			if (Html.isAtStart(boundary)) {
+				Boundaries.setRangeEnd(clone, Traversing.next(boundary));
 			}
 		}
 
@@ -623,8 +622,8 @@ define([
 		         ? range.startContainer
 		         : Dom.nthChild(range.startContainer, range.startOffset);
 
-		var scrollTop = Dom.getScrollTop(node.ownerDocument);
-		var scrollLeft = Dom.getScrollLeft(node.ownerDocument);
+		var scrollTop = Dom.scrollTop(node.ownerDocument);
+		var scrollLeft = Dom.scrollLeft(node.ownerDocument);
 
 		return {
 			top    : node.parentNode.offsetTop - scrollTop,

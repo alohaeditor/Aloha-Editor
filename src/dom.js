@@ -223,36 +223,32 @@ define([
 
 	/**
 	 * Returns scroll position from top
-	 * @param {Document} doc
-	 * @returns {Number}
+	 * @param {!Document} doc
+	 * @return {number}
 	 */
-	function getScrollTop(doc) {
+	function scrollTop(doc) {
 		var win = documentWindow(doc);
 		if (!Fn.isNou(win.pageYOffset)) {
 			return win.pageYOffset;
-		} else {
-			var body = doc.body;
-			var doc = doc.documentElement;
-			doc = doc.clientHeight ? doc : body;
-			return doc.scrollTop;
 		}
+		var docElem = doc.documentElement;
+		var scrollTopElem = docElem.clientHeight ? docElem : doc.body;
+		return scrollTopElem.scrollTop;
 	}
 
 	/**
 	 * Returns scroll position from left
-	 * @param {Document} doc
-	 * @returns {Number}
+	 * @param {!Document} doc
+	 * @return {number}
 	 */
-	function getScrollLeft(doc) {
+	function scrollLeft(doc) {
 		var win = documentWindow(doc);
 		if (!Fn.isNou(win.pageXOffset)) {
 			return win.pageXOffset;
-		} else {
-			var body = doc.body;
-			var doc = doc.documentElement;
-			doc = doc.clientWidth ? doc : body;
-			return doc.scrollLeft;
 		}
+		var docElem = doc.documentElement;
+		var scrollLeftElem = docElem.clientWidth ? docElem : doc.body;
+		return scrollLeftElem.scrollLeft;
 	}
 
 	return {
@@ -363,7 +359,7 @@ define([
 		documentWindow     : documentWindow,
 		editingHost        : editingHost,
 		editableParent     : editableParent,
-		getScrollTop       : getScrollTop,
-		getScrollLeft      : getScrollLeft
+		scrollTop          : scrollTop,
+		scrollLeft         : scrollLeft
 	};
 });
