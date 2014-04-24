@@ -128,8 +128,8 @@ define([
 	};
 
 	/**
-	 * These element's cannot be simply unwrapped because they parents only
-	 * allows these as their immediate child nodes.
+	 * These element's cannot be simply unwrapped because their parents only
+	 * allow these as their immediate child nodes.
 	 *
 	 * @private
 	 * @see  GROUP_CONTAINERS
