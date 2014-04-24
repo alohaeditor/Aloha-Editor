@@ -9,6 +9,7 @@ define([
 	'aloha/core',
 	'util/class',
 	'jquery',
+	'aloha/content-rules',
 	'aloha/pluginmanager',
 	'aloha/selection',
 	'aloha/markup',
@@ -25,6 +26,7 @@ define([
 	Aloha,
 	Class,
 	$,
+	ContentRules,
 	PluginManager,
 	Selection,
 	Markup,
@@ -334,7 +336,7 @@ define([
 				contenthandler: Aloha.settings.contentHandler.initEditable,
 				command: 'initEditable'
 			}, me);
-			me.obj.html(content);
+			me.obj.html(ContentRules.applyRules(content, me.obj[0]));
 
 			// Because editables can only properly be initialized when Aloha
 			// plugins are loaded.

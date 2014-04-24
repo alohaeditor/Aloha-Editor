@@ -6,10 +6,14 @@
  * License http://aloha-editor.org/license.php
  */
 define([
+	'PubSub',
 	'aloha/core',
+	'util/dom2',
 	'aloha/jquery'
 ], function (
+	PubSub,
 	Aloha,
+	Dom,
 	$
 ) {
 	'use strict';
@@ -17,7 +21,8 @@ define([
 	/**
 	 * Whitelist rules.
 	 *
-	 * @param {Array.<Array.<string>>}
+	 * @private
+	 * @type {Array.<Array.<string>>}
 	 */
 	var whitelist = (
 		Aloha.settings &&
@@ -28,7 +33,8 @@ define([
 	/**
 	 * Blacklist rules.
 	 *
-	 * @param {Array.<Array.<string>>}
+	 * @private
+	 * @type {Array.<Array.<string>>}
 	 */
 	var blacklist = (
 		Aloha.settings &&
@@ -39,18 +45,20 @@ define([
 	/**
 	 * Translation rules.
 	 *
-	 * @param {Object<string, string>}
+	 * @private
+	 * @type {Object<string, string>}
 	 */
 	var translations = (
 		Aloha.settings &&
 		Aloha.settings.contentRules &&
-		Aloha.settings.contentRules.translations
+		Aloha.settings.contentRules.translate
 	) || {};
 
 	/**
 	 * Retrieves a list of all rules in a specified table that are applicable
-	 * the editable.
+	 * the given editable.
 	 *
+	 * @private
 	 * @param {Element}                        editable
 	 * @param {Object<string, Array.<string>}} table
 	 */
@@ -69,6 +77,7 @@ define([
 	/**
 	 * Checks whether `x` is contained in the set `xs`.
 	 *
+	 * @private
 	 * @param  {Array.<*>} xs
 	 * @param  {*}         x
 	 * @return {boolean}
@@ -80,6 +89,7 @@ define([
 	/**
 	 * Concatenates the given list of lists into a single set.
 	 *
+	 * @private
 	 * @param  {Array.<Array<string>>} lists
 	 * @return {Array.<string>}
 	 */
@@ -91,6 +101,49 @@ define([
 		$.unique(result);
 		return result;
 	}
+
+	/**
+	 * These element's cannot be simply unwrapped because they have dependent
+	 * children.
+	 *
+	 * @private
+	 * @see  GROUPED_ELEMENTS
+	 * @type {<string, boolean>}
+	 */
+	var GROUP_CONTAINERS = {
+		FIELDSET : true,
+		OBJECT   : true,
+		FIGURE   : true,
+		AUDIO    : true,
+		SELECT   : true,
+		COLGROUP : true,
+		HGROUP   : true,
+		TABLE    : true,
+		TBODY    : true,
+		TR       : true,
+		OL       : true,
+		UL       : true,
+		DL       : true,
+		MENU     : true
+	};
+
+	/**
+	 * These element's cannot be simply unwrapped because they parents only
+	 * allows these as their immediate child nodes.
+	 *
+	 * @private
+	 * @see  GROUP_CONTAINERS
+	 * @type {<string, Array.<string>}
+	 */
+	var GROUPED_ELEMENTS = {
+		LI    : ['OL', 'UL', 'DL'],
+		DT    : ['DL'],
+		DD    : ['DL'],
+		TBODY : ['TABLE'],
+		TR    : ['TABLE', 'TBODY'],
+		TH    : ['TABLE', 'TBODY'],
+		TD    : ['TR', 'TH']
+	};
 
 	/**
 	 * Checks whether nodes of the specified nodeName are allowed in the given
@@ -126,12 +179,52 @@ define([
 	 * @return {string}  Translated nodeName
 	 */
 	function translate(editable, nodeName) {
-		var rules = $.merge([], getRules(editable, translations));
+		var rules = $.extend.apply({}, getRules(editable, translations));
 		return rules[nodeName.toLowerCase()] || nodeName;
 	}
 
+	/**
+	 * Given a string of html content to be inserted in a specified editable
+	 * element, will strip away any elements which are disallowed and translate
+	 * any according to the Content Rules configuration.
+	 *
+	 * @param  {string}  content
+	 * @param  {Element} editable
+	 * @return {string}
+	 */
+	function applyRules(content, editable) {
+		var doc = editable.ownerDocument;
+		var container = doc.createElement('div');
+		container.innerHTML = content;
+		var node = Dom.forward(container);
+		while (node) {
+			var translation = translate(editable, node.nodeName);
+			if (translation !== node.nodeName) {
+				var replacement = doc.createElement(translation);
+				replacement.innerHTML = node.innerHTML;
+				node.parentNode.replaceChild(replacement, node);
+				node = replacement;
+			}
+			if (isAllowed(editable, node.nodeName)) {
+				node = Dom.forward(node);
+			} else if (GROUP_CONTAINERS[node.nodeName] || GROUPED_ELEMENTS[node.nodeName]) {
+				// Because `node` is being entirely removed, we skip over, and
+				// do not descend its subtree
+				var prev = Dom.backward(node);
+				node.parentNode.removeChild(node);
+				node = Dom.forward(prev);
+			} else {
+				var next = Dom.forward(node);
+				Dom.removeShallow(node);
+				node = next;
+			}
+		}
+		return container.innerHTML;
+	}
+
 	return {
-		isAllowed : isAllowed,
-		translate : translate
+		isAllowed  : isAllowed,
+		translate  : translate,
+		applyRules : applyRules
 	};
 });
