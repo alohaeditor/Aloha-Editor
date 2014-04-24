@@ -564,7 +564,10 @@ define([
 		var boundary;
 
 		// Get rid of empty text nodes
-		clearEmptyNodes(clone, isStart);
+		if (isStart) {
+			clearEmptyNodes(clone);
+		}
+
 		if (isStart && clone.startOffset > 0) {
 			boundary = Boundaries.fromRangeStart(clone);
 			if (Html.hasLinebreakingStyle(Boundaries.prevNode(boundary))) {
@@ -658,12 +661,9 @@ define([
 	 * The method is destructive, so don't call it passing original range.
 	 *
 	 * @param {Range} range Range clone
-	 * @param {boolean} isStart
 	 * @return {Range}
 	 */
-	function clearEmptyNodes(range, isStart) {
-		if (!isStart) return;
-
+	function clearEmptyNodes(range) {
 		var container = range.startContainer,
 			offset = range.startOffset,
 			clone, node;
