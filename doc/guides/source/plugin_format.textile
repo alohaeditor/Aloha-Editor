@@ -44,10 +44,12 @@ h4. Code
 Texts or headlines can a layout for codes via selecting the text or headline and click on the code button at Aloha Editor. This wraps the selected text or headline into a +<code>+ tag.
 To undo this select the text or headline and click the button again.
 
+h4. Cite and quote
+
+See "cite plugin":plugin_cite.html
+
 h3. Components
 
-* cite - format content as a citation
-* quote - format content as a quote
 * code - format content as a code block
 * emphasize - emphasize content
 * strong (not def command) - put strong emphasis on content
