@@ -6,13 +6,15 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
+	'functions',
 	'dom/attrs',
 	'dom/classes',
 	'dom/mutation',
 	'dom/nodes',
 	'dom/style',
-	'dom/traversing'
+	'dom/traversing',
 ], function Dom(
+	Fn,
 	Attrs,
 	Classes,
 	Mutation,
@@ -219,6 +221,36 @@ define([
 		return doc['defaultView'] || doc['parentWindow'];
 	}
 
+	/**
+	 * Returns scroll position from top
+	 * @param {!Document} doc
+	 * @return {number}
+	 */
+	function scrollTop(doc) {
+		var win = documentWindow(doc);
+		if (!Fn.isNou(win.pageYOffset)) {
+			return win.pageYOffset;
+		}
+		var docElem = doc.documentElement;
+		var scrollTopElem = docElem.clientHeight ? docElem : doc.body;
+		return scrollTopElem.scrollTop;
+	}
+
+	/**
+	 * Returns scroll position from left
+	 * @param {!Document} doc
+	 * @return {number}
+	 */
+	function scrollLeft(doc) {
+		var win = documentWindow(doc);
+		if (!Fn.isNou(win.pageXOffset)) {
+			return win.pageXOffset;
+		}
+		var docElem = doc.documentElement;
+		var scrollLeftElem = docElem.clientWidth ? docElem : doc.body;
+		return scrollLeftElem.scrollLeft;
+	}
+
 	return {
 		Nodes                   : Nodes.Nodes,
 		offset                  : Nodes.offset,
@@ -326,6 +358,8 @@ define([
 
 		documentWindow     : documentWindow,
 		editingHost        : editingHost,
-		editableParent     : editableParent
+		editableParent     : editableParent,
+		scrollTop          : scrollTop,
+		scrollLeft         : scrollLeft
 	};
 });

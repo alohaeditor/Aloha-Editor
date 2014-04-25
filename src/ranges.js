@@ -563,6 +563,11 @@ define([
 		var clone = range.cloneRange();
 		var boundary;
 
+		// Get rid of empty text nodes
+		if (isStart) {
+			clearEmptyNodes(clone);
+		}
+
 		if (isStart && clone.startOffset > 0) {
 			boundary = Boundaries.fromRangeStart(clone);
 			if (Html.hasLinebreakingStyle(Boundaries.prevNode(boundary))) {
@@ -578,7 +583,9 @@ define([
 			if (Html.hasLinebreakingStyle(Boundaries.nextNode(boundary))) {
 				return {};
 			}
-			Boundaries.setRangeEnd(clone, Traversing.next(boundary));
+			if (Html.isAtStart(boundary)) {
+				Boundaries.setRangeEnd(clone, Traversing.next(boundary));
+			}
 		}
 
 		var rect = clone.getBoundingClientRect();
@@ -618,11 +625,12 @@ define([
 		         ? range.startContainer
 		         : Dom.nthChild(range.startContainer, range.startOffset);
 
-		var element = node.ownerDocument.documentElement;
+		var scrollTop = Dom.scrollTop(node.ownerDocument);
+		var scrollLeft = Dom.scrollLeft(node.ownerDocument);
 
 		return {
-			top    : node.parentNode.offsetTop - element.scrollTop,
-			left   : node.parentNode.offsetLeft - element.scrollLeft,
+			top    : node.parentNode.offsetTop - scrollTop,
+			left   : node.parentNode.offsetLeft - scrollLeft,
 			width  : node.offsetWidth,
 			height : parseInt(Dom.getComputedStyle(node, 'line-height'), 10)
 		};
@@ -646,6 +654,61 @@ define([
 		var stable = StableRange(range);
 		trim(stable, isNotEditingHost, isNotEditingHost);
 		return Dom.editingHost(stable.startContainer);
+	}
+
+	/**
+	 * Removes empty text node from the beginning of range.
+	 * The method is destructive, so don't call it passing original range.
+	 *
+	 * @param {Range} range Range clone
+	 * @return {Range}
+	 */
+	function clearEmptyNodes(range) {
+		var container = range.startContainer,
+			offset = range.startOffset,
+			clone, node;
+
+		// Don't mess with text nodes, that leads to NOU Error
+		// No need in removing nodes if offset is 0
+		// Proceed only if unrendered whitespaces found
+		if (Dom.isTextNode(container)
+			|| offset === 0
+			|| !shouldRemoveNode(container.childNodes[offset - 1])) {
+			return;
+		}
+
+		// Make clone
+		clone = Dom.clone(container, true);
+
+		// Clear IDs to avoid duplicates
+		if (clone.id) {
+			clone.id = '';
+		}
+
+		node = clone.childNodes[offset - 1];
+
+		if (shouldRemoveNode(node)) {
+			Dom.remove(node);
+		}
+
+		range.setStart(clone, offset - 1);
+
+		return range;
+	}
+
+	/**
+	 * Determine if node is unrendered whitespace and has 0 width for client;
+	 * @param {Element} node
+	 * @return {boolean}
+	 */
+	function shouldRemoveNode(node) {
+		if (!node) {
+			return false;
+		}
+		var range = document.createRange();
+		range.selectNodeContents(node);
+		var rect = range.getBoundingClientRect();
+		return !rect.width && Html.isUnrenderedWhitespace(node);
 	}
 
 	return {
