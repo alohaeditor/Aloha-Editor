@@ -10,7 +10,7 @@ define([
 	'arrays',
 	'boundaries',
 	'html/traversing'
-], function Mutation(
+], function /** @exports Mutation */ Mutation(
 	Dom,
 	Arrays,
 	Boundaries,

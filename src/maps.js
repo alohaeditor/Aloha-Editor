@@ -5,7 +5,7 @@
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define(['arrays', 'assert'], function Maps(Arrays, Assert) {
+define(['arrays', 'assert'], /** @exports Maps */ function Maps(Arrays, Assert) {
 	'use strict';
 
 	/**

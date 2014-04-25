@@ -10,7 +10,7 @@ define([
 	'maps',
 	'strings',
 	'functions'
-], function DomAttributes(
+], /** @exports DomAttributes */ function DomAttributes(
 	Arrays,
 	Maps,
 	Strings,

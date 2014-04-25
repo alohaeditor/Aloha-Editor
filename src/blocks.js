@@ -9,7 +9,7 @@ define([
 	'dom',
 	'events',
 	'dragdrop'
-], function Blocks(
+], /** @exports Blocks */ function Blocks(
 	Dom,
 	Events,
 	DragDrop

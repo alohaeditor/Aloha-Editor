@@ -20,7 +20,7 @@ define([
 	'transform/ms-word',
 	'transform',
 	'selections'
-], function (
+], /** @exports Paste */ function (
 	Editing,
 	Arrays,
 	Events,

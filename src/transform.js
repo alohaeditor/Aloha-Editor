@@ -9,7 +9,7 @@ define([
 	'transform/html',
 	'transform/plain',
 	'transform/ms-word'
-], function (
+], /** @exports Transform */ function (
 	Html,
 	Plain,
 	MSWord

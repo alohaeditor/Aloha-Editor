@@ -8,7 +8,7 @@
 define([
 	'arrays',
 	'misc'
-], function DomNodes(
+], /** @exports DomNodes */ function DomNodes(
 	Arrays,
 	Misc
 ) {

@@ -22,7 +22,7 @@ define([
 	'dom',
 	'misc',
 	'browsers'
-], function Ephemera(
+], /** @exports Ephemera */ function Ephemera(
 	strings,
 	arrays,
 	maps,

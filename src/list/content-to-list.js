@@ -12,7 +12,7 @@ define([
 	'editing',
 	'html',
 	'list-util',
-], function (
+], /** @exports ContentToList */ function (
 	Arrays,
 	Dom,
 	Ranges,

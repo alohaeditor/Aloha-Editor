@@ -9,7 +9,7 @@ define([
 	'arrays',
 	'maps',
 	'functions'
-], function Trees(
+], /** @exports Trees */ function Trees(
 	Arrays,
 	Maps,
 	Fn

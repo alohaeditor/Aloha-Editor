@@ -12,7 +12,7 @@ define([
 	'dom/nodes',
 	'dom/style',
 	'dom/traversing'
-], function Dom(
+], /** @exports Dom */ function Dom(
 	Attrs,
 	Classes,
 	Mutation,

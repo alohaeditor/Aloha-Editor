@@ -9,7 +9,7 @@ define([
 	'arrays',
 	'dom',
 	'html'
-], function (
+], /** @exports ListUtil */ function (
 	Arrays,
     Dom,
     Html

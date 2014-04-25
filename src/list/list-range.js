@@ -12,7 +12,7 @@ define([
 	'list-to-content',
 	'list-selection',
 	'list-util'
-], function (
+], /** @exports ListRange */ function (
 	Boundaries,
 	Dom,
 	ContentToList,

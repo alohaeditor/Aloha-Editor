@@ -9,7 +9,7 @@ define([
 	'dom/nodes',
 	'functions',
 	'arrays'
-], function DomMutation(
+], /** @exports DomMutation */ function DomMutation(
 	Nodes,
 	Fn,
 	Arrays

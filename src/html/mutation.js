@@ -18,7 +18,7 @@ define([
 	'overrides',
 	'functions',
 	'browsers'
-], function HtmlMutation(
+], /** @exports HtmlMutation */ function HtmlMutation(
 	Elements,
 	Styles,
 	Traversing,

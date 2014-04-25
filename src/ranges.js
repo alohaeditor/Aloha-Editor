@@ -18,7 +18,7 @@ define([
 	'functions',
 	'cursors',
 	'boundaries'
-], function Ranges(
+], /** exports Ranges */ function Ranges(
 	Dom,
 	Mutation,
 	Arrays,

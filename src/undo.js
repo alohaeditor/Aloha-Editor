@@ -14,7 +14,7 @@ define([
 	'functions',
 	'ranges',
 	'assert'
-], function Undo(
+], /** @exports Undo */ function Undo(
 	Arrays,
 	Maps,
 	Dom,

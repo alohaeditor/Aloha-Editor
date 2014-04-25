@@ -33,7 +33,7 @@ define([
 	'stable-range',
 	'cursors',
 	'content'
-], function Editing(
+], /** @exports Editing */ function Editing(
 	Dom,
 	Mutation,
 	Boundaries,

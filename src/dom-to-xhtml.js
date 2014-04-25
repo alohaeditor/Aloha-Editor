@@ -11,7 +11,7 @@ define([
 	'dom',
 	'maps',
 	'ephemera'
-], function Xhtml(
+], /** @exports Xhtml */ function Xhtml(
 	Dom,
 	Maps,
 	ephemera

@@ -1,4 +1,4 @@
-define(['functions', 'assert'], function (Fn, Assert) {
+define(['functions', 'assert'], /** @exports accessor */ function (Fn, Assert) {
 	'use strict';
 
 	function ensureAccessorLength(get, set) {

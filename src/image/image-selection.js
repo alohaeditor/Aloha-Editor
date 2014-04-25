@@ -7,7 +7,7 @@
 
 define([
 	'boundaries'
-], function(
+], /** @exports ImageSelection */ function(
 	Boundaries
 ) {
 	'use strict';

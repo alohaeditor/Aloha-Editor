@@ -21,7 +21,7 @@ define([
 	'overrides',
 	'boundaries',
 	'traversing'
-], function Selection(
+], /** @exports Selection */ function Selection(
 	Fn,
 	Dom,
 	Keys,

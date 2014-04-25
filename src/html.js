@@ -20,7 +20,7 @@ define([
 	'html/traversing',
 	'html/predicates',
 	'browsers' // Hack for require-pronto
-], function Html(
+], /** @exports Html */ function Html(
 	Styles,
 	Elements,
 	Mutation,
