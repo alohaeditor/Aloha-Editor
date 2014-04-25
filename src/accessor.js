@@ -95,7 +95,6 @@ define(['functions', 'assert'], function (Fn, Assert) {
 		} : Fn.asMethod(accessorFn(get, set, getLen));
 		method.get = get;
 		method.set = set;
-		method.fn = accessor;
 		return method;
 	}
 

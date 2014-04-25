@@ -211,7 +211,6 @@ define([], function Functions() {
 			args.unshift(this);
 			return fn.apply(null, args);
 		};
-		method.fn = fn;
 		return method;
 	}
 
