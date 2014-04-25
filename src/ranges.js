@@ -46,16 +46,14 @@ define([
 	}
 
 	/**
-	 * Sets the given range to the browser selection.  This will cause the
+	 * Sets the given range to the browser selection. This will cause the
 	 * selection to be visually rendered by the user agent.
 	 *
 	 * @param  {Range} range
-	 * @param  {!Document} doc
 	 * @return {Selection} Browser selection to which the range was set
 	 */
-	function select(range, doc) {
-		doc = doc || range.startContainer.ownerDocument;
-		var selection = doc.getSelection();
+	function select(range) {
+		var selection = range.startContainer.ownerDocument.getSelection();
 		selection.removeAllRanges();
 		selection.addRange(range);
 		return selection;
