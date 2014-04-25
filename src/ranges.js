@@ -532,14 +532,15 @@ define([
 	 * @return {?Range}
 	 */
 	function expandLeft(range) {
-		var clone = trimPreceedingNodes(range);
-		if (clone.startOffset > 0) {
-			var boundary = Boundaries.fromRangeStart(clone);
-			if (Html.hasLinebreakingStyle(Boundaries.prevNode(boundary))) {
-				return null;
-			}
-			Boundaries.setRangeStart(clone, Traversing.prev(boundary));
+		var boundary = trimPreceedingNodes(Boundaries.fromRangeStart(range));
+		if (Boundaries.isAtStart(boundary)) {
+			return null;
 		}
+		if (Html.hasLinebreakingStyle(Boundaries.prevNode(boundary))) {
+			return null;
+		}
+		var clone = range.cloneRange();
+		Boundaries.setRangeStart(clone, Traversing.prev(boundary));
 		return clone;
 	}
 
@@ -550,17 +551,19 @@ define([
 	 * @return {?Range}
 	 */
 	function expandRight(range) {
-		var clone = range.cloneRange();
-		var len = Dom.nodeLength(clone.endContainer);
-		if (clone.endOffset < len) {
-			var boundary = Boundaries.fromRangeEnd(clone);
-			if (Html.hasLinebreakingStyle(Boundaries.nextNode(boundary))) {
-				return null;
-			}
-			if (Html.isAtStart(boundary)) {
-				Boundaries.setRangeEnd(clone, Traversing.next(boundary));
-			}
+		var boundary = Boundaries.fromRangeEnd(range);
+		if (Boundaries.isAtEnd(boundary)) {
+			return null;
 		}
+		if (Html.hasLinebreakingStyle(Boundaries.nextNode(boundary))) {
+			return null;
+		}
+		// Petro: I still do understand this check :(
+		if (!Html.isAtStart(boundary)) {
+			return null;
+		}
+		var clone = range.cloneRange();
+		Boundaries.setRangeEnd(clone, Traversing.next(boundary));
 		return clone;
 	}
 
@@ -665,32 +668,29 @@ define([
 	}
 
 	/**
-	 * Trims away unrendered nodes that preceed the given range's start
-	 * boundary. This trimming is done to fix a bug in Chrome which causes
+	 * Trims away unrendered nodes that preceed the given boundary. This
+	 * trimming is done to fix a bug in Chrome which causes
 	 * getBoundingClientRect() to return 0s.
 	 *
 	 * @private
 	 * @see shouldRemoveNode(), expandLeft(), and bounds()
-	 * @param  {Range} range Range clone
-	 * @return {Range}
+	 * @param  {Boundary} boundary
+	 * @return {Boundary}
 	 */
-	function trimPreceedingNodes(range) {
-		var clone = range.cloneRange();
-		var boundary = Boundaries.fromRangeStart(clone);
+	function trimPreceedingNodes(boundary) {
 		if (Boundaries.isTextBoundary(boundary) || Boundaries.isAtStart(boundary)) {
-			return clone;
+			return boundary;
 		}
 		var node = Boundaries.nodeBefore(boundary);
-		var start = boundary;
+		var newBoundary = boundary;
 		var prev;
 		while (node && shouldRemoveNode(node)) {
-			start = Boundaries.fromNode(node);
+			newBoundary = Boundaries.fromNode(node);
 			prev = node.previousSibling;
 			Dom.remove(node);
 			node = prev;
 		}
-		clone.setStart(Boundaries.container(start), Boundaries.offset(start));
-		return clone;
+		return newBoundary;
 	}
 
 	/**
