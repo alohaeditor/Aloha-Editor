@@ -60,8 +60,8 @@ define([
 	}
 
 	/**
-	 * Creates a range object with boundaries defined by containers, and
-	 * offsets in those containers.
+	 * Creates a range object with boundaries defined by containers, and offsets
+	 * in those containers.
 	 *
 	 * @param  {Element} startContainer
 	 * @param  {number}  startOffset
@@ -109,8 +109,8 @@ define([
 	 * http://lists.w3.org/Archives/Public/public-webapps/2009OctDec/0113.html
 	 *
 	 * @private
-	 * @param  {number} x
-	 * @param  {number} y
+	 * @param  {number}    x
+	 * @param  {number}    y
 	 * @param  {!Document} doc
 	 * @return {?Range}
 	 */
@@ -118,7 +118,6 @@ define([
 		if (x < 0 || y < 0) {
 			return null;
 		}
-
 		if (doc.caretRangeFromPoint) {
 			return doc.caretRangeFromPoint(x, y);
 		}
@@ -134,8 +133,9 @@ define([
 	/**
 	 * Gets the given node's nearest non-editable parent.
 	 *
+	 * @private
 	 * @param  {Element} node
-	 * @return {Element|null}
+	 * @return {?Element}
 	 */
 	function parentBlock(node) {
 		var block = Dom.isEditable(node) ? Dom.editingHost(node) : node;
@@ -147,12 +147,12 @@ define([
 
 	/**
 	 * Creates a range from the horizontal and vertical offset pixel positions
-	 * relative to upper-left corner the document body.
+	 * relative to upper-left corner of the document body.
 	 *
 	 * Will ensure that the range is contained in a content editable node.
 	 *
-	 * @param  {number} x
-	 * @param  {number} y
+	 * @param  {number}    x
+	 * @param  {number}    y
 	 * @param  {!Document} doc
 	 * @return {?Range} Null if no suitable range can be determined
 	 */
@@ -317,13 +317,6 @@ define([
 	}
 
 	/**
-	 * TODO: Do this by climing the boundary containers' ancestors instead.
-	 */
-	function commonContainer(a, b) {
-		return fromBoundaries(a, b).commonAncestorContainer;
-	}
-
-	/**
 	 * Expands two boundaries to contain a block.
 	 *
 	 * The boundaries represent the start and end containers of a range.
@@ -334,7 +327,7 @@ define([
 	 *  +-------+     [ +-------+
 	 *  | block |       | block |
 	 *  |       |  ==>  |       |
-	 *  | []    |       |       |
+	 *  | [ ]   |       |       |
 	 *  +-------+       +-------+ ]
 	 *
 	 * @private
@@ -343,7 +336,7 @@ define([
 	 * @return {Array.<Boundary>}
 	 */
 	function expandToBlock(start, end) {
-		var cac = commonContainer(start, end);
+		var cac = Boundaries.commonContainer(start, end);
 		var ancestors = Dom.childAndParentsUntilIncl(cac, function (node) {
 			return Html.hasLinebreakingStyle(node) || Dom.isEditingHost(node);
 		});
@@ -533,66 +526,92 @@ define([
 	}
 
 	/**
-	 * Inserts `text` behind the start boundary of the given range.
-	 *
-	 * @param {Ranges} range
-	 * @param {string} text
-	 */
-	function insertTextBehind(range, text) {
-		var boundary = Boundaries.create(range.startContainer, range.startOffset);
-		boundary = Mutation.insertTextAtBoundary(text, boundary, true, [range]);
-		collapseToStart(range);
-		select(range);
-	}
-
-	/**
-	 * Gets the bounding rectangle offsets for the given range from is start or
-	 * end container.
-	 *
-	 * This function is a hack to work around the problems that user agents
-	 * have in determining the bounding client rect for collapsed ranges.
 	 *
 	 * @private
-	 * @param  {Range}   range
-	 * @param  {boolean} isStart
-	 * @return {Object.<string, number>}
+	 * @param  {Range} range
+	 * @return {?Range}
 	 */
-	function bounds(range, isStart) {
-		var clone = range.cloneRange();
-		var boundary;
-
-		// Get rid of empty text nodes
-		if (isStart) {
-			clearEmptyNodes(clone);
-		}
-
-		if (isStart && clone.startOffset > 0) {
-			boundary = Boundaries.fromRangeStart(clone);
+	function expandLeft(range) {
+		var clone = trimPreceedingNodes(range);
+		if (clone.startOffset > 0) {
+			var boundary = Boundaries.fromRangeStart(clone);
 			if (Html.hasLinebreakingStyle(Boundaries.prevNode(boundary))) {
-				return {};
+				return null;
 			}
 			Boundaries.setRangeStart(clone, Traversing.prev(boundary));
 		}
+		return clone;
+	}
 
+	/**
+	 *
+	 * @private
+	 * @param  {Range} range
+	 * @return {?Range}
+	 */
+	function expandRight(range) {
+		var clone = range.cloneRange();
 		var len = Dom.nodeLength(clone.endContainer);
-
-		if (!isStart && clone.endOffset < len) {
-			boundary = Boundaries.fromRangeEnd(clone);
+		if (clone.endOffset < len) {
+			var boundary = Boundaries.fromRangeEnd(clone);
 			if (Html.hasLinebreakingStyle(Boundaries.nextNode(boundary))) {
-				return {};
+				return null;
 			}
 			if (Html.isAtStart(boundary)) {
 				Boundaries.setRangeEnd(clone, Traversing.next(boundary));
 			}
 		}
+		return clone;
+	}
 
-		var rect = clone.getBoundingClientRect();
-
+	/**
+	 * Returns a mutable bounding client rectangle for the given range.
+	 *
+	 * @private
+	 * @param  {Range} range
+	 * @return {Object<string, number>}
+	 */
+	function boundingRect(range) {
+		var rect = range.getBoundingClientRect();
 		return {
 			top    : rect.top,
 			left   : rect.left,
 			width  : rect.width,
 			height : rect.height
+		};
+	}
+
+	/**
+	 * Attempts to calculates the bounding rectangle offsets for the given
+	 * range.
+	 *
+	 * This function is a hack to work around the problems that user agents have
+	 * in determining the bounding client rect for collapsed ranges.
+	 *
+	 * @private
+	 * @param  {Range} range
+	 * @return {Object.<string, number>}
+	 */
+	function bounds(range) {
+		var rect;
+		var expanded = expandRight(range);
+		if (expanded) {
+			 rect = boundingRect(expanded);
+			 if (rect.width > 0) {
+				return rect;
+			 }
+		}
+		expanded = expandLeft(range);
+		if (expanded) {
+			rect = boundingRect(expanded);
+			rect.left += rect.width;
+			return rect;
+		}
+		return {
+			top    : 0,
+			left   : 0,
+			width  : 0,
+			height : 0
 		};
 	}
 
@@ -603,29 +622,20 @@ define([
 	 * @return {Object.<string, number>}
 	 */
 	function box(range) {
-		var rect = bounds(range, false);
+		var rect = bounds(range);
+		// Because `rect` should be the box of an expanded range and must
+		// therefore have a non-zero width if valid
 		if (rect.width > 0) {
 			return rect;
 		}
-		rect = bounds(range, true);
-		if (rect.width > 0) {
-			rect.left += rect.width;
-			return rect;
+		var boundary = Boundaries.fromRangeStart(range);
+		if (Boundaries.isAtEnd(boundary)) {
+			var prev = Traversing.prev(boundary);
+			return box(fromBoundaries(prev, prev));
 		}
-
-		var len = Dom.nodeLength(range.startContainer);
-		if (range.startOffset === len) {
-			var boundary = Traversing.prev(Boundaries.fromRangeStart(range));
-			return box(fromBoundaries(boundary, boundary));
-		}
-
-		var node = Dom.isTextNode(range.startContainer)
-		         ? range.startContainer
-		         : Dom.nthChild(range.startContainer, range.startOffset);
-
+		var node = Boundaries.nodeAfter(boundary); // FIXME: what if `node` is null?
 		var scrollTop = Dom.scrollTop(node.ownerDocument);
 		var scrollLeft = Dom.scrollLeft(node.ownerDocument);
-
 		return {
 			top    : node.parentNode.offsetTop - scrollTop,
 			left   : node.parentNode.offsetLeft - scrollLeft,
@@ -655,43 +665,32 @@ define([
 	}
 
 	/**
-	 * Removes empty text node from the beginning of range.
-	 * The method is destructive, so don't call it passing original range.
+	 * Trims away unrendered nodes that preceed the given range's start
+	 * boundary. This trimming is done to fix a bug in Chrome which causes
+	 * getBoundingClientRect() to return 0s.
 	 *
-	 * @param {Range} range Range clone
+	 * @private
+	 * @see shouldRemoveNode(), expandLeft(), and bounds()
+	 * @param  {Range} range Range clone
 	 * @return {Range}
 	 */
-	function clearEmptyNodes(range) {
-		var container = range.startContainer,
-			offset = range.startOffset,
-			clone, node;
-
-		// Don't mess with text nodes, that leads to NOU Error
-		// No need in removing nodes if offset is 0
-		// Proceed only if unrendered whitespaces found
-		if (Dom.isTextNode(container)
-			|| offset === 0
-			|| !shouldRemoveNode(container.childNodes[offset - 1])) {
-			return;
+	function trimPreceedingNodes(range) {
+		var clone = range.cloneRange();
+		var boundary = Boundaries.fromRangeStart(clone);
+		if (Boundaries.isTextBoundary(boundary) || Boundaries.isAtStart(boundary)) {
+			return clone;
 		}
-
-		// Make clone
-		clone = Dom.clone(container, true);
-
-		// Clear IDs to avoid duplicates
-		if (clone.id) {
-			clone.id = '';
-		}
-
-		node = clone.childNodes[offset - 1];
-
-		if (shouldRemoveNode(node)) {
+		var node = Boundaries.nodeBefore(boundary);
+		var start = boundary;
+		var prev;
+		while (node && shouldRemoveNode(node)) {
+			start = Boundaries.fromNode(node);
+			prev = node.previousSibling;
 			Dom.remove(node);
+			node = prev;
 		}
-
-		range.setStart(clone, offset - 1);
-
-		return range;
+		clone.setStart(Boundaries.container(start), Boundaries.offset(start));
+		return clone;
 	}
 
 	/**
@@ -710,29 +709,27 @@ define([
 	}
 
 	return {
-		box                             : box,
+		box                         : box,
 
-		get                             : get,
-		select                          : select,
-		create                          : create,
-		equals                          : equals,
+		get                         : get,
+		select                      : select,
+		create                      : create,
+		equals                      : equals,
 
-		collapseToEnd                   : collapseToEnd,
-		collapseToStart                 : collapseToStart,
+		collapseToEnd               : collapseToEnd,
+		collapseToStart             : collapseToStart,
 
-		insertTextBehind                : insertTextBehind,
+		trim                        : trim,
+		trimClosingOpening          : trimClosingOpening,
+		trimBoundaries              : trimBoundaries,
+		expandBoundaries            : expandBoundaries,
 
-		trim                            : trim,
-		trimClosingOpening              : trimClosingOpening,
-		trimBoundaries                  : trimBoundaries,
-		expandBoundaries                : expandBoundaries,
+		nearestEditingHost          : nearestEditingHost,
 
-		nearestEditingHost              : nearestEditingHost,
+		expand                      : expand,
+		envelopeInvisibleCharacters : envelopeInvisibleCharacters,
 
-		expand                          : expand,
-		envelopeInvisibleCharacters     : envelopeInvisibleCharacters,
-
-		fromPosition                    : fromPosition,
-		fromBoundaries                  : fromBoundaries
+		fromPosition                : fromPosition,
+		fromBoundaries              : fromBoundaries
 	};
 });

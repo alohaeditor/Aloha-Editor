@@ -222,8 +222,9 @@ define([
 	}
 
 	/**
-	 * Returns scroll position from top
-	 * @param {!Document} doc
+	 * Returns scroll position from top.
+	 *
+	 * @param  {!Document} doc
 	 * @return {number}
 	 */
 	function scrollTop(doc) {
@@ -237,8 +238,9 @@ define([
 	}
 
 	/**
-	 * Returns scroll position from left
-	 * @param {!Document} doc
+	 * Returns scroll position from left.
+	 *
+	 * @param  {!Document} doc
 	 * @return {number}
 	 */
 	function scrollLeft(doc) {
@@ -356,10 +358,10 @@ define([
 		isEditingHost     : isEditingHost,
 		isContentEditable : isContentEditable,
 
-		documentWindow     : documentWindow,
-		editingHost        : editingHost,
-		editableParent     : editableParent,
-		scrollTop          : scrollTop,
-		scrollLeft         : scrollLeft
+		documentWindow    : documentWindow,
+		editingHost       : editingHost,
+		editableParent    : editableParent,
+		scrollTop         : scrollTop,
+		scrollLeft        : scrollLeft
 	};
 });
