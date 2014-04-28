@@ -251,7 +251,7 @@ define([
 	 *
 	 * @todo: Implement in terms of boundaries
 	 *
-	 * @param  {Range} range
+	 * @param  {Range}     range
 	 * @param  {function=} ignoreLeft
 	 * @param  {function=} ignoreRight
 	 * @return {Range}
@@ -413,9 +413,9 @@ define([
 	 * Like trim() but ignores closing (to the left) and opening positions (to
 	 * the right).
 	 *
-	 * @param {Range} range
-	 * @param {function=} ignoreLeft
-	 * @param {function=} ignoreRight
+	 * @param  {Range}     range
+	 * @param  {function=} ignoreLeft
+	 * @param  {function=} ignoreRight
 	 * @return {Range}
 	 */
 	function trimClosingOpening(range, ignoreLeft, ignoreRight) {
@@ -671,12 +671,26 @@ define([
 	}
 
 	/**
+	 * Determine if node is unrendered whitespace and has 0 width for client.
+	 *
+	 * @private
+	 * @param  {Element} node
+	 * @param  {Range}   range
+	 * @return {boolean}
+	 */
+	function invisibleNode(node, range) {
+		range.selectNodeContents(node);
+		return 0 === range.getBoundingClientRect().width
+		    && Html.isUnrenderedWhitespace(node);
+	}
+
+	/**
 	 * Trims away unrendered nodes that preceed the given boundary. This
 	 * trimming is done to fix a bug in Chrome which causes
 	 * getBoundingClientRect() to return 0s.
 	 *
 	 * @private
-	 * @see shouldRemoveNode(), expandLeft(), and bounds()
+	 * @see invisibleNode(), expandLeft(), and bounds()
 	 * @param  {Boundary} boundary
 	 * @return {Boundary}
 	 */
@@ -687,28 +701,14 @@ define([
 		var node = Boundaries.nodeBefore(boundary);
 		var newBoundary = boundary;
 		var prev;
-		while (node && shouldRemoveNode(node)) {
+		var range = node.ownerDocument.createRange();
+		while (node && invisibleNode(node, range)) {
 			newBoundary = Boundaries.fromNode(node);
 			prev = node.previousSibling;
 			Dom.remove(node);
 			node = prev;
 		}
 		return newBoundary;
-	}
-
-	/**
-	 * Determine if node is unrendered whitespace and has 0 width for client;
-	 * @param {Element} node
-	 * @return {boolean}
-	 */
-	function shouldRemoveNode(node) {
-		if (!node) {
-			return false;
-		}
-		var range = document.createRange();
-		range.selectNodeContents(node);
-		var rect = range.getBoundingClientRect();
-		return !rect.width && Html.isUnrenderedWhitespace(node);
 	}
 
 	return {
