@@ -612,7 +612,7 @@ define([
 				alohaEvent.editable.elem.ownerDocument
 			);
 		}
-		return Ranges.get();
+		return alohaEvent.range || Ranges.get();
 	}
 
 	/**

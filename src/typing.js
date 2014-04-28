@@ -9,7 +9,6 @@ define([
 	'dom',
 	'mutation',
 	'keys',
-	'maps',
 	'html',
 	'ranges',
 	'editing',
@@ -22,7 +21,6 @@ define([
 	Dom,
 	Mutation,
 	Keys,
-	Maps,
 	Html,
 	Ranges,
 	Editing,
@@ -83,8 +81,8 @@ define([
 
 	function insertText(alohaEvent) {
 		var editable = alohaEvent.editable;
-		var range = alohaEvent.range;
 		var text = alohaEvent.chr;
+		var range = alohaEvent.range;
 		var boundary = Boundaries.fromRangeStart(range);
 
 		if (' ' === text) {
@@ -269,11 +267,11 @@ define([
 					if (handle.deleteRange && !range.collapsed) {
 						delete_(false, alohaEvent);
 					}
-					handle.mutate(alohaEvent);
+					alohaEvent.range = handle.mutate(alohaEvent);
 					Html.prop(range.commonAncestorContainer);
 				});
 			} else {
-				handle.mutate(alohaEvent);
+				alohaEvent.range = handle.mutate(alohaEvent);
 			}
 		}
 		return alohaEvent;

@@ -57,7 +57,7 @@ define([
 		alohaEvent.editor = editor;
 		Fn.comp(
 			setSelection,
-			//Selections.handle,
+			Selections.handle,
 			Typing.handle,
 			Blocks.handle,
 			DragDrop.handle,
@@ -100,7 +100,7 @@ define([
 			defaultBlockNodeName: 'div'
 		};
 		Editables.assocIntoEditor(editor, editable);
-		elem.setAttribute('contentEditable', 'true');
+		//elem.setAttribute('contentEditable', 'true');
 		Undo.enter(editable.undoContext, {
 			meta: {type: 'external'},
 			partitionRecords: true
