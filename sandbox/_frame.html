@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+<head>
+		<link rel="stylesheet" type="text/css" href="../src/aloha.css">
+		<style>
+			@font-face {
+			  font-family: 'Open Sans';
+			  font-style: normal;
+			  font-weight: 300;
+			  src: local('Open Sans Light'), local('OpenSans-Light'), url(open-sans.woff) format('woff');
+			}
+			@font-face {
+			  font-family: 'Open Sans';
+			  font-style: normal;
+			  font-weight: 700;
+			  src: local('Open Sans Bold'), local('OpenSans-Bold'), url(open-sans-bold.woff) format('woff');
+			}
+			body {
+				font-family: 'Open Sans', sans-serif;
+			}
+			.aloha-block {
+				width: 100px;
+				height: 100px;
+				padding: 10px;
+				background: #999;
+				color: #fff;
+				text-align: center;
+				display: table-cell;
+				vertical-align: middle;
+				cursor: -webkit-grab;
+				cursor: -moz-grab;
+				box-shadow: 2px 2px 10px rgba(0,0,0,0.2) inset;
+			}
+			.aloha-block:hover {
+				background: #df215a;
+			}
+			img.aloha-block {
+				width: auto;
+				height: auto;
+				display: block;
+				padding: 0;
+			}
+			ol {
+			  counter-reset: counter;
+			  list-style-type: none;
+			}
+			ol>li:before {
+				counter-increment: counter;
+				content: counters(counter, ".") ") ";
+				margin-left: -1em;
+			}
+		</style>
+</head>
+<body>
+		<div contenteditable=true class="aloha-editable">
+			<h1>Aloha Editor</h1>
+			<p>
+				<img draggable="true"
+				     class="aloha-block"
+				     src="demo.jpg"
+					 alt=""
+					 style="float:left; margin: 0 20px 20px 0" />
+				Lorem    ipsum &nbsp;dolor sit amet, <b>consec<i>tet</i>ur</b> adipiscin
+				elit. Donec a diam lectus. Sed sit amet ipsum mauris.  Maecen
+				congue ligula ac quam viverra nec consectetur ante hendrerit
+			</p>
+			<div draggable="true" class="aloha-block"
+				data-aloha='{"hello":"word"}'>Aloha Block</div>
+			<p>
+				Donec et mollis dolor.  Praesent et diam eget libero egesta
+				mattis sit amet vitae augue.  Nam tincidunt congue enim, u
+				porta lorem lacinia consectetur. Donec ut libero sed arc
+				vehicula ultricies a non tortor*
+			</p>
+			<ul>
+				<li>one</li>
+				<li>two</li>
+				<li>three
+					<ol>
+						<li>four</li>
+						<li>five</li>
+						<li class="bold"><u><i>six</i></u></li>
+					</ol>
+				</li>
+			</ul>
+			<p>
+				Donec et mollis dolor.  Praesent et diam eget libero egesta
+				mattis sit amet vitae augue.
+				Nam tincidunt congue enim, u porta lorem lacinia consectetur.
+				Donec ut libero sed arc vehicula ultricies a non tortor
+			</p>
+		</div>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Aloha Editor</title>
+		<meta charset="UTF-8">
+		<style>
+			iframe {
+				margin: 50px auto 0 -500px;
+				left: 50%;
+				position: absolute;
+				display: block;
+			}
+		</style>
+	</head>
+	<body>
+		<iframe width=1000 height=400 src="./_frame.html"></iframe>
+		<script src="../src/require-pronto.js"></script>
+		<script src="../src/require-pronto.dev.js"></script>
+		<script>
+			(function () {
+				'use strict';
+				function setVersion (version) {
+					var h1 = document.querySelector('h1');
+					if (h1) {
+						h1.innerHTML = h1.innerHTML + ': <span style="color:#df215a">' + version + '</span>';
+					}
+				}
+				function main(aloha) {
+					aloha(document.querySelector('iframe').contentDocument.querySelector('.aloha-editable'));
+				}
+				if ('undefined' === typeof aloha) {
+					setVersion('src');
+					require(['../src/aloha'], main);
+				} else {
+					setVersion('build');
+					main(aloha);
+				}
+			}());
+		</script>
+	</body>
+</html>
+

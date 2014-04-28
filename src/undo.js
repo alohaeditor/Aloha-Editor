@@ -798,7 +798,7 @@ define([
 				lastInsertNode = null;
 				var node = record.node;
 				var path = containerPath.concat(pathBeforeNode(container, node));
-				changes.push(makeDeleteChange(path, [document.createTextNode(record.oldValue)]));
+				changes.push(makeDeleteChange(path, [node.ownerDocument.createTextNode(record.oldValue)]));
 				changes.push(makeInsertChange(path, [Dom.clone(node)]));
 			} else {
 				// NB: only COMPOUND_DELETEs should occur in a recordTree,

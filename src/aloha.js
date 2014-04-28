@@ -57,7 +57,8 @@ define([
 		alohaEvent.editor = editor;
 		Fn.comp(
 			setSelection,
-			//Selections.handle,
+			Selections.handle,
+			Keys.handle,
 			Typing.handle,
 			Blocks.handle,
 			DragDrop.handle,
@@ -66,17 +67,14 @@ define([
 				alohaEvent.editable = alohaEvent.editor.editables[1];
 				return alohaEvent;
 			},
-			Mouse.handle,
-			Keys.handle
+			Mouse.handle
 		)(alohaEvent);
 	}
 
 	editor.editables = {};
 	editor.BLOCK_CLASS = 'aloha-block';
 	editor.CARET_CLASS = 'aloha-caret';
-	editor.selectionContext = Selections.Context();
 
-	Events.setup(editor, document);
 
 	/*
 	SelectionChange.addHandler(document, SelectionChange.handler(
@@ -94,6 +92,8 @@ define([
 	 * Also serves as short aloha.aloha.
 	 */
 	function aloha(elem) {
+		editor.selectionContext = Selections.Context(elem.ownerDocument);
+		Events.setup(editor, elem.ownerDocument);
 		var editable = Editables.Editable(elem);
 		editable.overrides = [];
 		editable.settings = {
