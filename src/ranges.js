@@ -671,26 +671,12 @@ define([
 	}
 
 	/**
-	 * Determine if node is unrendered whitespace and has 0 width for client.
-	 *
-	 * @private
-	 * @param  {Element} node
-	 * @param  {Range}   range
-	 * @return {boolean}
-	 */
-	function invisibleNode(node, range) {
-		range.selectNodeContents(node);
-		return 0 === range.getBoundingClientRect().width
-		    && Html.isUnrenderedWhitespace(node);
-	}
-
-	/**
 	 * Trims away unrendered nodes that preceed the given boundary. This
 	 * trimming is done to fix a bug in Chrome which causes
 	 * getBoundingClientRect() to return 0s.
 	 *
 	 * @private
-	 * @see invisibleNode(), expandLeft(), and bounds()
+	 * @see expandLeft(), and bounds()
 	 * @param  {Boundary} boundary
 	 * @return {Boundary}
 	 */
@@ -698,11 +684,15 @@ define([
 		if (Boundaries.isTextBoundary(boundary) || Boundaries.isAtStart(boundary)) {
 			return boundary;
 		}
+		boundary = Boundaries.create(
+			Dom.clone(Boundaries.container(boundary), true),
+			Boundaries.offset(boundary)
+		);
 		var node = Boundaries.nodeBefore(boundary);
+		var range = node.ownerDocument.createRange();
 		var newBoundary = boundary;
 		var prev;
-		var range = node.ownerDocument.createRange();
-		while (node && invisibleNode(node, range)) {
+		while (node && Html.isUnrendered(node)) {
 			newBoundary = Boundaries.fromNode(node);
 			prev = node.previousSibling;
 			Dom.remove(node);
