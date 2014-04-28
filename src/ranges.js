@@ -636,7 +636,10 @@ define([
 			var prev = Traversing.prev(boundary);
 			return box(fromBoundaries(prev, prev));
 		}
-		var node = Boundaries.nodeAfter(boundary); // FIXME: what if `node` is null?
+		var node = Boundaries.nodeAfter(boundary);
+		if (!node) {
+			return rect;
+		}
 		var scrollTop = Dom.scrollTop(node.ownerDocument);
 		var scrollLeft = Dom.scrollLeft(node.ownerDocument);
 		return {

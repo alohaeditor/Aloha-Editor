@@ -148,7 +148,7 @@ define([
 	/**
 	 * Checks whether or not the given event is a mouse event.
 	 *
-	 * @param  {Object} event
+	 * @param  {Event|AlohaEvent} event
 	 * @return {boolean}
 	 */
 	function isMouseEvent(event) {
@@ -157,6 +157,7 @@ define([
 		case 'mousedown':
 		case 'mousemove':
 		case 'dblclick':
+		case 'dragover':
 			return true;
 		default:
 			return false;
@@ -425,12 +426,9 @@ define([
 				focus: focus
 			};
 		}
-
-		var sc, so, ec, eo, current;
-
-		sc = range.startContainer;
-		so = range.startOffset;
-
+		var sc = range.startContainer;
+		var so = range.startOffset;
+		var ec, eo, current;
 		if ('start' === focus) {
 			ec = previous.endContainer;
 			eo = previous.endOffset;
@@ -438,7 +436,6 @@ define([
 			ec = previous.startContainer;
 			eo = previous.startOffset;
 		}
-
 		if (isReversed(sc, so, ec, eo)) {
 			focus = 'end';
 			current = Ranges.create(ec, eo, sc, so);
@@ -446,7 +443,6 @@ define([
 			focus = 'start';
 			current = Ranges.create(sc, so, ec, eo);
 		}
-
 		return {
 			range: current,
 			focus: focus
@@ -480,35 +476,35 @@ define([
 	/**
 	 * Normalizes the event type.
 	 *
-	 * This function is necessary for us to properly determine how to treat a
-	 * given mouse event because we will sometime end up missing a dblclick
-	 * event when the user's cursor is hovering over caret element.
+	 * This function is necessary for us to properly determine how to treat
+	 * mouse events because we will sometime end up missing a dblclick event
+	 * when the user's cursor is hovering over caret element.
 	 *
-	 * Further more, browsers do not send triple click events to JavaScript;
-	 * this function will make it possible to detect them when they happen.
+	 * Furthermore, browsers do not send triple click events to JavaScript; this
+	 * function will make it possible to detect them.
 	 *
 	 * @param  {Object}  event
-	 * @param  {Range}   range
-	 * @param  {string}  focus
+	 * @param  {Range}   current
 	 * @param  {Range}   previous
+	 * @param  {string}  focus
 	 * @param  {number}  then
 	 * @param  {boolean} doubleclicking
 	 * @param  {boolean} tripleclicking
 	 * @return {string}
 	 */
-	function normalizeEventType(event, range, focus, previous, then,
+	function normalizeEventType(event, current, previous, focus, then,
 	                            doubleclicking, tripleclicking) {
 		if (!isMouseEvent(event)) {
 			return event.type;
 		}
 
 		var isMouseDown = 'mousedown' === event.type;
-		var multiclicking = range
-		                 && previous
-		                 && isMouseDown
-		                 && ((new Date() - then) < 500);
+		var isMulticlicking = current
+		                   && previous
+		                   && isMouseDown
+		                   && ((new Date() - then) < 500);
 
-		if (!multiclicking && isMouseDown) {
+		if (!isMulticlicking && isMouseDown) {
 			return event.type;
 		}
 
@@ -528,7 +524,7 @@ define([
 		        ? Ranges.collapseToStart(previous.cloneRange())
 		        : Ranges.collapseToEnd(previous.cloneRange());
 
-		return Ranges.equals(range, ref) ? 'dblclick' : event.type;
+		return Ranges.equals(current, ref) ? 'dblclick' : event.type;
 	}
 
 	/**
@@ -576,8 +572,8 @@ define([
 	}
 
 	/**
-	 * Returns a new context as a function of the given event, the previous
-	 * state, and changes to the state.
+	 * Returns a new selection context as a function of the given event, the
+	 * previous state, and changes to the state.
 	 *
 	 * @param  {Object} event
 	 * @param  {Object} old    context
@@ -586,7 +582,6 @@ define([
 	 */
 	function newContext(event, old, change) {
 		var context = Maps.extend({}, old, change);
-
 		switch (event.type) {
 		case 'mousedown':
 			context.time = new Date();
@@ -600,7 +595,6 @@ define([
 			context.dragging = old.mousedown;
 			break;
 		}
-
 		return context;
 	}
 
@@ -611,11 +605,11 @@ define([
 	 * @return {?Range}
 	 */
 	function fromEvent(alohaEvent) {
-		if (alohaEvent.range) {
+		if (isMouseEvent(alohaEvent)) {
 			return Ranges.fromPosition(
 				alohaEvent.nativeEvent.clientX,
 				alohaEvent.nativeEvent.clientY,
-				alohaEvent.range.commonAncestorContainer.ownerDocument
+				alohaEvent.editable.elem.ownerDocument
 			);
 		}
 		return Ranges.get();
@@ -650,12 +644,12 @@ define([
 		var old = event.editor.selectionContext;
 
 		// Because we will never update the caret position on mousemove, we
-		// avoid unncessary computation.
+		// avoid unncessary computation
 		if ('mousemove' === event.type) {
 			context = event.editor.selectionContext = newContext(event, old);
 
 			// Because we want to move the caret out of the way when the user
-			// starts to create an expanded selection by dragging.
+			// starts creating an expanded selection by dragging
 			if (!old.dragging && context.dragging) {
 				Dom.setStyle(context.caret, 'display', 'none');
 				Dom.removeClass(context.caret, 'aloha-caret-blink');
@@ -670,7 +664,7 @@ define([
 
 		// Because otherwise, if, in the process of a click, the user's cursor
 		// is over the caret, fromEvent() will compute the range to be inside
-		// the absolutely positioned caret element.
+		// the absolutely positioned caret element
 		Dom.setStyle(old.caret, 'display', 'none');
 
 		var range = fromEvent(event);
@@ -682,8 +676,8 @@ define([
 		var type = normalizeEventType(
 			event,
 			range,
-			old.focus,
 			old.range,
+			old.focus,
 			old.time,
 			old.doubleclicking,
 			old.tripleclicking
@@ -730,9 +724,9 @@ define([
 		}
 
 		// Because browsers have a non-intuitive way of handling expanding of
-		// selections when holding down the shift key.  We therefore "trick"
-		// the browser by setting the selection to a range which will cause the
-		// the expansion to be done in the way that the user expects.
+		// selections when holding down the shift key.  We therefore "trick" the
+		// browser by setting the selection to a range which will cause the the
+		// expansion to be done in the way that the user expects
 		if (!preventDefault && 'mousedown' === type && Events.isWithShift(event)) {
 			if ('start' === context.focus) {
 				range = Ranges.collapseToEnd(range);
