@@ -633,8 +633,7 @@ define([
 		}
 		var boundary = Boundaries.fromRangeStart(range);
 		if (Boundaries.isAtEnd(boundary)) {
-			var prev = Traversing.prev(boundary);
-			return box(fromBoundaries(prev, prev));
+			return box(fromBoundaries(Traversing.prev(boundary), boundary));
 		}
 		var node = Boundaries.nodeAfter(boundary);
 		if (!node) {
