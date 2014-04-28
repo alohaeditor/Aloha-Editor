@@ -37,8 +37,8 @@ define([
 	'use strict';
 
 	/**
-	 * Hides all visible carets elements and returns all carets that were
-	 * hidden in this operation.
+	 * Hides all visible caret elements and returns all those that were hidden
+	 * in this operation.
 	 *
 	 * @param  {Document} doc
 	 * @return {Array.<Element>}
@@ -58,7 +58,7 @@ define([
 	/**
 	 * Unhides the given list of caret elements.
 	 *
-	 * @param  {Array.<Element>} carets
+	 * @param {Array.<Element>} carets
 	 */
 	function unhideCarets(carets) {
 		carets.forEach(function (caret) {
@@ -68,26 +68,24 @@ define([
 
 	/**
 	 * Renders the given element at the specified boundary to represent the
-	 * caret position.  Will also style the caret if `opt_style` is provided.
+	 * caret position.
 	 *
 	 * @param {Element}  caret
 	 * @param {Boundary} boundary
-	 * @param {Object=}  opt_style
 	 */
-	function show(caret, boundary, opt_style) {
+	function show(caret, boundary) {
 		var box = Ranges.box(Ranges.fromBoundaries(boundary, boundary));
 		var doc = caret.ownerDocument;
 		var win = Dom.documentWindow(doc);
-		var topDelta = win.pageYOffset - doc.body.clientTop;
-		var leftDelta = win.pageXOffset - doc.body.clientLeft;
-		var style = {
-			'top': box.top + topDelta + 'px',
-			'left': box.left + leftDelta + 'px',
+		var topOffset = win.pageYOffset - doc.body.clientTop;
+		var leftOffset = win.pageXOffset - doc.body.clientLeft;
+		Maps.extend(caret.style, {
+			'top': box.top + topOffset + 'px',
+			'left': box.left + leftOffset + 'px',
 			'height': box.height + 'px',
 			'width': '2px',
 			'display': 'block'
-		};
-		Maps.extend(caret.style, style, opt_style);
+		});
 	}
 
 	/**
@@ -104,8 +102,7 @@ define([
 	 *
 	 * @param  {Object}  event
 	 * @param  {Element} container
-	 * @return {Object}
-	 *         An object with overrides mapped against their names.
+	 * @return {Object}  An object with overrides mapped against their names
 	 */
 	function overrides(event, container) {
 		if (event.editable) {
@@ -118,11 +115,10 @@ define([
 	}
 
 	/**
-	 * Determines how to style the caret based on the given overrides.
+	 * Determines how to style a caret element based on the given overrides.
 	 *
 	 * @param  {Object} overrides
-	 * @return {Object}
-	 *         A map of style properties and their values.
+	 * @return {Object} A map of style properties and their values
 	 */
 	function stylesFromOverrides(overrides) {
 		var style = {};
@@ -152,7 +148,7 @@ define([
 	/**
 	 * Checks whether or not the given event is a mouse event.
 	 *
-	 * @param  {Object}  event
+	 * @param  {Object} event
 	 * @return {boolean}
 	 */
 	function isMouseEvent(event) {
@@ -198,9 +194,9 @@ define([
 	/**
 	 * Given two ranges, creates a range that is between the two.
 	 *
-	 * @param  {Range} a
-	 * @param  {Range} b
-	 * @param  {string} focus
+	 * @param  {Range}  a
+	 * @param  {Range}  b
+	 * @param  {string} focus Either "start" or "end"
 	 * @return {Object}
 	 */
 	function mergeRanges(a, b, focus) {
@@ -482,14 +478,14 @@ define([
 	};
 
 	/**
-	 * Normalizes the event type based.
+	 * Normalizes the event type.
 	 *
 	 * This function is necessary for us to properly determine how to treat a
 	 * given mouse event because we will sometime end up missing a dblclick
-	 * event when the user's cursor is hover a caret element.
+	 * event when the user's cursor is hovering over caret element.
 	 *
 	 * Further more, browsers do not send triple click events to JavaScript;
-	 * this function will be able to detect them when they happen.
+	 * this function will make it possible to detect them when they happen.
 	 *
 	 * @param  {Object}  event
 	 * @param  {Range}   range
@@ -719,9 +715,10 @@ define([
 			container = range.endContainer;
 		}
 
-		show(
-			context.caret,
-			boundary,
+		show(context.caret, boundary);
+
+		Maps.extend(
+			context.caret.style,
 			stylesFromOverrides(overrides(event, container))
 		);
 
