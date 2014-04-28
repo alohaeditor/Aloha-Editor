@@ -558,7 +558,7 @@ define([
 		if (Html.hasLinebreakingStyle(Boundaries.nextNode(boundary))) {
 			return null;
 		}
-		// Petro: I still do understand this check :(
+		// Petro: I still don't understand this check :(
 		if (!Html.isAtStart(boundary)) {
 			return null;
 		}
