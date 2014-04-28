@@ -167,12 +167,13 @@ define([
 	/**
 	 * Creates a range that is `stride` pixels above the given offset bounds.
 	 *
-	 * @param  {Object} box
-	 * @param  {number} stride
+	 * @param  {Object}   box
+	 * @param  {number}   stride
+	 * @param  {Document} doc
 	 * @return {Range}
 	 */
-	function up(box, stride) {
-		return Ranges.fromPosition(box.left, box.top - stride);
+	function up(box, stride, doc) {
+		return Ranges.fromPosition(box.left, box.top - stride, doc);
 	}
 
 	/**
@@ -182,8 +183,8 @@ define([
 	 * @param  {number} stride
 	 * @return {Range}
 	 */
-	function down(box, stride) {
-		return Ranges.fromPosition(box.left, box.top + box.height + stride);
+	function down(box, stride, doc) {
+		return Ranges.fromPosition(box.left, box.top + box.height + stride, doc);
 	}
 	function left(boundary, stride) {
 		return Traversing.prev(boundary, stride);
@@ -244,25 +245,23 @@ define([
 		var half = box.height / 2;
 		var offset = half;
 		var move = ('up' === direction) ? up : down;
-		var next = move(box, offset);
+		var doc = range.commonAncestorContainer.ownerDocument;
+		var next = move(box, offset, doc);
 
 		// TODO: also check if `next` and `clone` are *visually* adjacent
 		while (next && Ranges.equals(next, clone)) {
 			offset += half;
-			next = move(box, offset);
+			next = move(box, offset, doc);
 		}
-
 		if (!next) {
 			return;
 		}
-
 		if (!Events.isWithShift(event)) {
 			return {
 				range: next,
 				focus: focus
 			};
 		}
-
 		return mergeRanges(next, range, focus);
 	}
 
@@ -281,11 +280,9 @@ define([
 		var shift = Events.isWithShift(event);
 		var clone = range.cloneRange();
 		var move = ('left' === direction) ? left : right;
-
 		if (range.collapsed || !shift) {
 			focus = ('left' === direction) ? 'start' : 'end';
 		}
-
 		if ('start' === focus) {
 			get = Boundaries.fromRangeStart;
 			set = Boundaries.setRangeStart;
@@ -295,18 +292,15 @@ define([
 			set = Boundaries.setRangeEnd;
 			collapse = Ranges.collapseToEnd;
 		}
-
 		if (range.collapsed || shift) {
 			Ranges.envelopeInvisibleCharacters(range);
 			var stride = Events.isWithCtrl(event) ? 'word' : 'visual';
 			var boundary = get(range);
 			set(clone, move(boundary, stride) || boundary);
 		}
-
 		if (!shift) {
 			collapse(clone);
 		}
-
 		return {
 			range: clone,
 			focus: focus
@@ -497,33 +491,26 @@ define([
 		if (!isMouseEvent(event)) {
 			return event.type;
 		}
-
 		var isMouseDown = 'mousedown' === event.type;
 		var isMulticlicking = current
 		                   && previous
 		                   && isMouseDown
 		                   && ((new Date() - then) < 500);
-
 		if (!isMulticlicking && isMouseDown) {
 			return event.type;
 		}
-
 		if (doubleclicking) {
 			return isMouseDown ? 'tplclick' : 'dblclick';
 		}
-
 		if (tripleclicking) {
 			return 'tplclick';
 		}
-
 		if (!isMouseDown) {
 			return event.type;
 		}
-
 		var ref = ('start' === focus)
 		        ? Ranges.collapseToStart(previous.cloneRange())
 		        : Ranges.collapseToEnd(previous.cloneRange());
-
 		return Ranges.equals(current, ref) ? 'dblclick' : event.type;
 	}
 
