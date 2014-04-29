@@ -1,51 +1,39 @@
-/*global documents: true define: true*/
-/*
-* Aloha Image Plugin - Allow image manipulation in Aloha Editor
-*
-* Author & Copyright (c) 2013 Gentics Software GmbH
-* aloha-sales@gentics.com
-* Contributors
-*		Johannes Schüth - http://jotschi.de
-*		Nicolas karageuzian - http://nka.me/
-*		Benjamin Athur Lupton - http://www.balupton.com/
-*		Thomas Lete
-*		Nils Dehl
-*		Christopher Hlubek
-*		Edward Tsech
-*		Haymo Meran
-*		Martin Schönberger
-*
-* Licensed under the terms of http://www.aloha-editor.org/license.php
-*/
-
+/* image-plugin.js is part of the Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
+ * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php
+ * License http://aloha-editor.org/license.php
+ */
 define([
-	// js
 	'jquery',
+	'PubSub',
+	'aloha/core',
 	'aloha/plugin',
+	'aloha/content-rules',
+	'util/dom',
 	'image/image-floatingMenu',
-	'i18n!aloha/nls/i18n',
 	'i18n!image/nls/i18n',
 	'jqueryui',
 	'image/vendor/jcrop/jquery.jcrop.min',
 	'image/vendor/mousewheel/mousewheel'
-], function AlohaImagePlugin(
-	aQuery,
+], function (
+	$,
+	PubSub,
+	Aloha,
 	Plugin,
+	ContentRules,
+	Dom,
 	ImageFloatingMenu,
-	i18nCore,
 	i18n
 ) {
-
 	'use strict';
 
-	var jQuery = aQuery;
-	var $ = aQuery;
-	var GENTICS = window.GENTICS;
-	var Aloha = window.Aloha;
+	var jQuery = $;
 	var resizing = false;
-
 	var aspectRatioValue = false;
 	var cropRatioValue = false;
+	var configurations = {};
 
 	// Attributes manipulation utilities
 	// Aloha team may want to factorize, it could be useful for other plugins
@@ -360,6 +348,16 @@ define([
 				plugin.clickImage(event);
 			});
 
+			PubSub.sub('aloha.editable.created', function (message) {
+				var enabled = plugin.getEditableConfig(message.editable.obj)
+				           && ContentRules.isAllowed(message.editable.obj[0], 'img');
+				configurations[message.editable.getId()] = enabled;
+			});
+
+			PubSub.sub('aloha.editable.destoryed', function (message) {
+				delete configurations[message.editable.getId()];
+			});
+
 			Aloha.bind('aloha-drop-files-in-editable', function (event, data) {
 				var img, len = data.filesObjs.length, fileObj, config;
 
@@ -380,17 +378,13 @@ define([
 						} else {
 							img.attr('src', fileObj.src);
 						}
-						GENTICS.Utils.Dom.insertIntoDOM(img, data.range, jQuery(Aloha.activeEditable.obj));
+						Dom.insertIntoDOM(img, data.range, Aloha.activeEditable.obj);
 					}
 				}
 
 			});
-			/*
-			 * Add the event handler for selection change
-			 */
-			Aloha.bind('aloha-selection-changed', function (event, rangeObject, originalEvent) {
-				var config, foundMarkup;
 
+			Aloha.bind('aloha-selection-changed', function (event, rangeObject, originalEvent) {
 				if (originalEvent && originalEvent.target) {
 					// Check if the element is currently being resized
 					if (plugin.settings.ui.resizable && !jQuery(originalEvent.target).hasClass('ui-resizable-handle')) {
@@ -400,36 +394,37 @@ define([
 					}
 				}
 
-				if (Aloha.activeEditable !== null) {
-					foundMarkup = plugin.findImgMarkup(rangeObject);
-					config = plugin.getEditableConfig(Aloha.activeEditable.obj);
-
-					if (typeof config !== 'undefined') {
-						plugin.ui._insertImageButton.show();
-					} else {
-						plugin.ui._insertImageButton.hide();
-						return;
-					}
-
-					// Enable image specific ui components if the element is an image
-					if (foundMarkup) { // TODO : this is always null (below is dead code, moving it to clickImage)
-						plugin.ui._insertImageButton.show();
-						plugin.ui.setScope();
-						if (plugin.settings.ui.meta) {
-							plugin.ui.imgSrcField.setTargetObject(foundMarkup, 'src');
-							plugin.ui.imgTitleField.setTargetObject(foundMarkup, 'title');
-						}
-						plugin.ui.imgSrcField.foreground();
-						plugin.ui.imgSrcField.focus();
-					} else {
-						if (plugin.settings.ui.meta) {
-							plugin.ui.imgSrcField.setTargetObject(null);
-						}
-					}
-					// TODO this should not be necessary here!
-					plugin.ui.doLayout();
+				if (!Aloha.activeEditable) {
+					return;
 				}
 
+				if (!configurations[Aloha.activeEditable.getId()]) {
+					plugin.ui._insertImageButton.hide();
+					return;
+				}
+
+				plugin.ui._insertImageButton.show();
+
+				var foundMarkup = plugin.findImgMarkup(rangeObject);
+
+				// Enable image specific ui components if the element is an image
+				if (foundMarkup) { // TODO : this is always null (below is dead code, moving it to clickImage)
+					plugin.ui._insertImageButton.show();
+					plugin.ui.setScope();
+					if (plugin.settings.ui.meta) {
+						plugin.ui.imgSrcField.setTargetObject(foundMarkup, 'src');
+						plugin.ui.imgTitleField.setTargetObject(foundMarkup, 'title');
+					}
+					plugin.ui.imgSrcField.foreground();
+					plugin.ui.imgSrcField.focus();
+				} else {
+					if (plugin.settings.ui.meta) {
+						plugin.ui.imgSrcField.setTargetObject(null);
+					}
+				}
+
+				// TODO this should not be necessary here!
+				plugin.ui.doLayout();
 			});
 
 			Aloha.bind('aloha-editable-created', function (event, editable) {
@@ -1026,7 +1021,7 @@ define([
 					newImg = jQuery(imagetag);
 					// add the click selection handler
 					//newImg.click( Aloha.Image.clickImage ); - Using delegate now
-					GENTICS.Utils.Dom.insertIntoDOM(newImg, range, jQuery(Aloha.activeEditable.obj));
+					Dom.insertIntoDOM(newImg, range, Aloha.activeEditable.obj);
 
 				} else {
 					Aloha.Log.error('img cannot markup a selection');

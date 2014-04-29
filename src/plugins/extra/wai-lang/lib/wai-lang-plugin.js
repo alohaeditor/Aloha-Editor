@@ -5,11 +5,12 @@
  * Licensed under the terms of http://www.aloha-editor.com/license.html
  */
 define([
-	'aloha',
 	'jquery',
+	'aloha',
 	'PubSub',
 	'aloha/plugin',
 	'aloha/selection',
+	'aloha/content-rules',
 	'util/dom',
 	'ui/ui',
 	'ui/scopes',
@@ -18,12 +19,13 @@ define([
 	'ui/port-helper-attribute-field',
 	'i18n!wai-lang/nls/i18n',
 	'../../../shared/languages/languages'
-], function WaiLangPlugin(
-	Aloha,
+], function (
 	$,
+	Aloha,
 	PubSub,
 	Plugin,
 	Selection,
+	ContentRules,
 	Dom,
 	Ui,
 	Scopes,
@@ -63,7 +65,6 @@ define([
 			field.foreground();
 			field.focus();
 		}
-		// show the field and remove button
 		FIELD.show();
 		removeButton.show();
 	}
@@ -77,18 +78,16 @@ define([
 	 * @return {boolean}
 	 */
 	function isTrue(value) {
-		return (
-			true === value
-			|| 1 === value
-			|| 'true' === value
-			|| '1' === value
-		);
+		return true   === value
+		    || 'true' === value
+		    || 1      === value
+		    || '1'    === value;
 	}
 
 	/**
 	 * Checks whether this element is a wai-lang wrapper element.
 	 *
-	 * @this {HTMLElement}
+	 * @this   {HTMLElement}
 	 * @return {boolean} True if the given markup denotes wai-lang wrapper.
 	 */
 	function filterForWaiLangMarkup() {
@@ -99,16 +98,13 @@ define([
 	/**
 	 * Looks for a wai-Lang wrapper DOM element within the the given range.
 	 *
-	 * @param {RangeObject} range
-	 * @return {HTMLElement|null} Wai-lang wrapper node; null otherwise.
+	 * @param  {RangeObject} range
+	 * @return {?HTMLElement} Wai-lang wrapper node; null otherwise.
 	 */
 	function findWaiLangMarkup(range) {
-		return (
-			Aloha.activeEditable
-				? range.findMarkup(filterForWaiLangMarkup,
-				                   Aloha.activeEditable.obj)
-				: null
-		);
+		return Aloha.activeEditable
+		     ? range.findMarkup(filterForWaiLangMarkup, Aloha.activeEditable.obj)
+		     : null;
 	}
 
 	/**
@@ -148,7 +144,7 @@ define([
 		var range = Selection.getRangeObject();
 
 		// Because we don't want to add markup to an area that already contains
-		// wai-lang markup.
+		// wai-lang markup
 		if (!findWaiLangMarkup(range)) {
 			addMarkup(range);
 		}
@@ -231,30 +227,6 @@ define([
 	}
 
 	/**
-	 * Create a unique id prefixed with the specified prefix.
-	 *
-	 * @param {string} prefix
-	 * @return {string} Unique identifier string
-	 */
-	var uniqueId = (function (prefix) {
-		var idCounter = 0;
-		return function uniqueId() {
-			return prefix + '-' + (++idCounter);
-		};
-	}());
-
-	/**
-	 * Return the unique id of the given wai-lang plugin instance.
-	 * For use with the caching editable configurations.
-	 *
-	 * @param {Plugin} plugin Wai-lang plugin instance
-	 * @return {string} Unique id of plugin instance
-	 */
-	function getPluginInstanceId(plugin) {
-		return plugin._instanceId;
-	}
-
-	/**
 	 * Cache of editable configuration for quicker lookup.
 	 *
 	 * Note that each configuration is the product of the per-editable
@@ -267,21 +239,6 @@ define([
 	var configurations = {};
 
 	/**
-	 * Get this plugin's configuration for the given editable.
-	 *
-	 * @param {Editable} editable
-	 * @param {Plugin} plugin A wai-lang plugin instance
-	 * @return {object} configuration
-	 */
-	function getConfig(editable, plugin) {
-		var key = editable.getId() + ':' + getPluginInstanceId(plugin);
-		if (!configurations[key]) {
-			configurations[key] = plugin.getEditableConfig(editable.obj);
-		}
-		return configurations[key];
-	}
-
-	/**
 	 * Registers event handlers for the given plugin instance.
 	 *
 	 * Assumes `FIELD` is initialized.
@@ -289,65 +246,70 @@ define([
 	 * @param {Plugin} plugin Instance of wai-lang plugin.
 	 */
 	function subscribeEvents(plugin) {
-		PubSub.sub('aloha.editable.activated',
-			function onEditableActivated(msg) {
-				var config = getConfig(msg.data.editable, plugin);
-				if ($.inArray('span', config) > -1) {
-					plugin._wailangButton.show();
-				} else {
-					plugin._wailangButton.hide();
-				}
-			});
+		PubSub.sub('aloha.editable.created', function (message) {
+			var $editable = message.editable.obj;
+			var config = plugin.getEditableConfig($editable);
+			var enabled = config
+			           && ($.inArray('span', config) > -1)
+			           && ContentRules.isAllowed($editable[0], 'span');
 
-		Aloha.bind('aloha-selection-changed',
+			configurations[message.editable.getId()] = enabled;
+
+			if (!enabled) {
+				return;
+			}
+
+			$editable.bind('keydown', plugin.hotKey.insertAnnotation, function () {
+					prepareAnnotation();
+
+					// Because on a MAC Safari, cursor would otherwise
+					// automatically jump to location bar.  We therefore prevent
+					// bubbling, so that the editor must hit ESC and then META+I
+					// to manually do that
+					return false;
+				}
+			);
+
+			$editable.find('span[lang]').each(function () {
+				annotate(this);
+			});
+		});
+
+		PubSub.sub('aloha.editable.activated', function (message) {
+			plugin._wailangButton.show(!!configurations[message.editable.getId()]);
+		});
+
+		PubSub.sub('aloha.editable.deleted', function (message) {
+			delete configurations[message.editable.getId()];
+		});
+
+		Aloha.bind(
+			'aloha-selection-changed',
 			function onSelectionChanged($event, range) {
 				var markup = findWaiLangMarkup(range);
 				if (markup) {
 					plugin._wailangButton.setState(true);
 					FIELD.setTargetObject(markup, 'lang');
-
-					// show the field and remove button
 					FIELD.show();
 					removeButton.show();
-
 					Scopes.enterScope(plugin.name, 'wai-lang');
 				} else {
 					plugin._wailangButton.setState(false);
 					FIELD.setTargetObject(null);
-
-					// hide the field and remove button
 					FIELD.hide();
 					removeButton.hide();
-
 					Scopes.leaveScope(plugin.name, 'wai-lang', true);
 				}
-			});
+			}
+		);
 
 		FIELD.addListener('blur', function onFieldBlur() {
 			// @TODO Validate value to not permit values outside the set of
-			//       configured language codes.
+			//       configured language codes
 			if (!this.getValue()) {
 				removeMarkup(Selection.getRangeObject());
 			}
 		});
-
-		Aloha.bind('aloha-editable-created',
-			function onEditableCreated($event, editable) {
-				editable.obj.bind('keydown', plugin.hotKey.insertAnnotation,
-					function () {
-						prepareAnnotation();
-
-						// Because on a MAC Safari, cursor would otherwise
-						// automatically jump to location bar.  We therefore
-						// prevent bubbling, so that the editor must hit ESC and
-						// then META+I to manually do that.
-						return false;
-					});
-
-				editable.obj.find('span[lang]').each(function () {
-					annotate(this);
-				});
-			});
 	}
 
 	return Plugin.create('wai-lang', {
@@ -391,8 +353,6 @@ define([
 		},
 
 		init: function init() {
-			this._instanceId = uniqueId('wai-lang');
-
 			if (this.settings.objectTypeFilter) {
 				this.objectTypeFilter = this.settings.objectTypeFilter;
 			}

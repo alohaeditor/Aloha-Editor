@@ -1,94 +1,80 @@
-/* horizontalruler-plugin.js is part of Aloha Editor project http://aloha-editor.org
+/* horizontalruler-plugin.js is part of the Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
- * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php 
- * 
- * Aloha Editor is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or any later version.
- *
- * Aloha Editor is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- * 
- * As an additional permission to the GNU GPL version 2, you may distribute
- * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
- * source code without the copy of the GNU GPL normally required,
- * provided you include this license notice and a URL through which
- * recipients can access the Corresponding Source.
+ * License http://aloha-editor.org/license.php
  */
 define([
 	'aloha',
 	'jquery',
+	'PubSub',
 	'aloha/plugin',
+	'aloha/content-rules',
+	'util/dom',
 	'ui/ui',
 	'ui/button',
-	'i18n!horizontalruler/nls/i18n',
-	'i18n!aloha/nls/i18n'
-], function (Aloha,
-			jQuery,
-			Plugin,
-			Ui,
-			Button,
-			i18n,
-			i18nCore) {
+	'i18n!horizontalruler/nls/i18n'
+], function (
+	Aloha,
+	$,
+	PubSub,
+	Plugin,
+	ContentRules,
+	Dom,
+	Ui,
+	Button,
+	i18n
+) {
 	'use strict';
 
-	var GENTICS = window.GENTICS;
+	var configurations = {};
+
+	function insertHR() {
+		if (Aloha.activeEditable) {
+			var range = Aloha.Selection.getRangeObject();
+			Dom.insertIntoDOM($('<hr>'), range, Aloha.activeEditable.obj, true);
+			range.select();
+		}
+	}
+
+	var button = Ui.adopt('insertHorizontalRule', Button, {
+		tooltip: i18n.t('button.addhr.tooltip'),
+		iconOnly: true,
+		icon: 'aloha-icon-horizontalruler',
+		scope: 'Aloha.continuoustext',
+		click: insertHR
+	});
 
 	return Plugin.create('horizontalruler', {
+
 		_constructor: function () {
 			this._super('horizontalruler');
 		},
+
 		config: ['hr'],
+
 		init: function () {
-			var that = this;
+			var plugin = this;
 
-			this._insertHorizontalRuleButton = Ui.adopt("insertHorizontalRule", Button, {
-				tooltip: i18n.t('button.addhr.tooltip'),
-				iconOnly: true,
-				icon: 'aloha-icon-horizontalruler',
-				scope: 'Aloha.continuoustext',
-				click: function () {
-					that.insertHR();
-				}
+			PubSub.sub('aloha.editable.created', function (message) {
+				var editable = message.editable;
+				var config = plugin.getEditableConfig(editable.obj);
+				var enabled = config
+				           && ($.inArray('hr', config) > -1)
+				           && ContentRules.isAllowed(editable.obj[0], 'hr');
+				configurations[editable.getId()] = !!enabled;
 			});
 
-			Aloha.bind('aloha-editable-activated', function (event, rangeObject) {
-				if (Aloha.activeEditable) {
-					that.cfg = that.getEditableConfig(Aloha.activeEditable.obj);
-
-					if (jQuery.inArray('hr', that.cfg) != -1) {
-						that._insertHorizontalRuleButton.show(true);
-					} else {
-						that._insertHorizontalRuleButton.show(false);
-						return;
-					}
-				}
+			PubSub.sub('aloha.editable.destroyed', function (message) {
+				delete configurations[message.editable.getId()];
 			});
 
-		},
-		insertHR: function (character) {
-			var self = this;
-			var range = Aloha.Selection.getRangeObject();
-			if (Aloha.activeEditable) {
-				var hr = jQuery('<hr>');
-				GENTICS.Utils.Dom.insertIntoDOM(
-					hr,
-					range,
-					jQuery(Aloha.activeEditable.obj),
-					true
-				);
-				range.select();
-			}
+			PubSub.sub('aloha.editable.activated', function (message) {
+				button.show(!!configurations[message.editable.getId()]);
+			});
 		}
+
 	});
 
 });

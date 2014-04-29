@@ -1,28 +1,9 @@
-/* headerids-plugin.js is part of Aloha Editor project http://aloha-editor.org
+/* headerids-plugin.js is part of the Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
- * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php 
- * 
- * Aloha Editor is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or any later version.
- *
- * Aloha Editor is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- * 
- * As an additional permission to the GNU GPL version 2, you may distribute
- * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
- * source code without the copy of the GNU GPL normally required,
- * provided you include this license notice and a URL through which
- * recipients can access the Corresponding Source.
+ * License http://aloha-editor.org/license.php 
  */
 define([
 	'aloha',
@@ -118,22 +99,14 @@ define([
 		 * Initialize the plugin
 		 */
 		init: function () {
-			var plugin = this,
-				invokeCheck = function(msg){
-					var $editable = msg.data.obj || msg.data.editable.obj;
-					plugin.check($editable);
-				}
-			;
-			
-			
-			
-			PubSub.sub('aloha.editable.created', invokeCheck);
-
-			// mark active Editable with a css class
-			PubSub.sub('aloha.editable.activated', invokeCheck);
-			PubSub.sub('aloha.editable.deactivated', invokeCheck);
-
-			Aloha.bind('aloha-plugins-loaded', function (ev) {
+			var plugin = this;
+			function setHeadingIds(message) {
+				plugin.check(message.editable.obj);
+			}
+			PubSub.sub('aloha.editable.created', setHeadingIds);
+			PubSub.sub('aloha.editable.activated', setHeadingIds);
+			PubSub.sub('aloha.editable.deactivated', setHeadingIds);
+			Aloha.bind('aloha-plugins-loaded', function () {
 				plugin.initSidebar(Aloha.Sidebar.right);
 			});
 		},

@@ -1,34 +1,17 @@
-/* table-plugin.js is part of Aloha Editor project http://aloha-editor.org
+/* table-plugin.js is part of the Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
- *
- * Aloha Editor is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or any later version.
- *
- * Aloha Editor is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- *
- * As an additional permission to the GNU GPL version 2, you may distribute
- * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
- * source code without the copy of the GNU GPL normally required,
- * provided you include this license notice and a URL through which
- * recipients can access the Corresponding Source.
+ * License http://aloha-editor.org/license.php
  */
 define([
 	'aloha',
 	'jquery',
+	'PubSub',
 	'aloha/plugin',
 	'aloha/pluginmanager',
+	'aloha/content-rules',
 	'ui/ui',
 	'ui/scopes',
 	'ui/button',
@@ -44,11 +27,13 @@ define([
 	'util/dom',
 	'aloha/ephemera',
 	'aloha/console'
-], function(
+], function (
 	Aloha,
-	jQuery,
+	$,
+	PubSub,
 	Plugin,
 	PluginManager,
+	ContentRules,
 	Ui,
 	Scopes,
 	Button,
@@ -65,8 +50,9 @@ define([
 	Ephemera,
 	Console
 ) {
-	var $ = jQuery;
+	var jQuery = $;
 	var GENTICS = window.GENTICS;
+	var configurations = {};
 
 	/**
 	 * Register the TablePlugin as Aloha.Plugin
@@ -345,22 +331,18 @@ define([
 	 * @return void
 	 */
 	TablePlugin.init = function() {
-		var that = this,
-		    isEnabled = {};
+		var that = this;
 
-		// register ephemeral classes
 		Ephemera.classes(this.get('className'), this.get('classCellSelected'));
 
-		// apply settings
-		this.tableConfig = this.checkConfig(this.tableConfig||this.settings.tableConfig);
-		this.columnConfig = this.checkConfig(this.columnConfig||this.settings.columnConfig);
-		this.rowConfig = this.checkConfig(this.rowConfig||this.settings.rowConfig);
-		this.cellConfig = this.checkConfig(this.cellConfig||this.settings.cellConfig);
+		this.tableConfig  = this.checkConfig(this.tableConfig  || this.settings.tableConfig);
+		this.columnConfig = this.checkConfig(this.columnConfig || this.settings.columnConfig);
+		this.rowConfig    = this.checkConfig(this.rowConfig    || this.settings.rowConfig);
+		this.cellConfig   = this.checkConfig(this.cellConfig   || this.settings.cellConfig);
 
-		// table resize settings
 		this.tableResize = this.settings.tableResize === undefined ? false : this.settings.tableResize;
-		this.colResize = this.settings.colResize === undefined ? false : this.settings.colResize;
-		this.rowResize = this.settings.rowResize === undefined ? false : this.settings.rowResize;
+		this.colResize   = this.settings.colResize   === undefined ? false : this.settings.colResize;
+		this.rowResize   = this.settings.rowResize   === undefined ? false : this.settings.rowResize;
 
 		// disable table resize settings on browsers below IE8
 		if (jQuery.browser.msie && parseInt(jQuery.browser.version, 10) < 8) {
@@ -370,65 +352,69 @@ define([
 		}
 
 		// add reference to the create layer object
-		this.createLayer = new CreateLayer( this );
+		this.createLayer = new CreateLayer(this);
 
-		// subscribe for the 'editableActivated' event to activate all tables in the editable
-		Aloha.bind( 'aloha-editable-created', function (event, editable) {
+		PubSub.sub('aloha.editable.created', function (message) {
+			var editable = message.editable;
 			var config = that.getEditableConfig(editable.obj);
-			isEnabled[editable.getId()] = (-1 !== jQuery.inArray('table', config));
+			var enabled = config
+			           && ($.inArray('table', config) > -1)
+			           && ContentRules.isAllowed(editable.obj[0], 'table');
 
-			// add a mousedown event to all created editables to check if focus leaves a table
-			editable.obj.bind( 'mousedown', function ( jqEvent ) {
-				TablePlugin.setFocusedTable( undefined );
-			} );
+			configurations[editable.getId()] = !!enabled;
 
-			editable.obj.find('table').each(function (__unused__, elem) {
+			editable.obj.bind('mousedown', function () {
+				TablePlugin.setFocusedTable(undefined);
+			});
+
+			editable.obj.find('table').each(function (index, elem) {
 				createNewTable(elem);
 			});
-		} );
+		});
 
 		// initialize the table buttons
 		this.initTableButtons();
 
 		Aloha.bind( 'aloha-table-selection-changed', function () {
-
 			// check if selected cells are split/merge able and set button status
-			if ( typeof TablePlugin.activeTable !== 'undefined' &&
-				TablePlugin.activeTable.selection ) {
-
-				TablePlugin.updateFloatingMenuScope();
-
-				if ( TablePlugin.activeTable.selection.cellsAreSplitable() ) {
-					that._splitcellsButton.enable(true);
-					that._splitcellsRowButton.enable(true);
-					that._splitcellsColumnButton.enable(true);
-				} else {
-					that._splitcellsButton.enable(false);
-					that._splitcellsRowButton.enable(false);
-					that._splitcellsColumnButton.enable(false);
-				}
-
-				if ( TablePlugin.activeTable.selection.cellsAreMergeable() ) {
-					that._mergecellsButton.enable(true);
-					that._mergecellsRowButton.enable(true);
-					that._mergecellsColumnButton.enable(true);
-				} else {
-					that._mergecellsButton.enable(false);
-					that._mergecellsRowButton.enable(false);
-					that._mergecellsColumnButton.enable(false);
-				}
+			if (!TablePlugin.activeTable || !TablePlugin.activeTable.selection) {
+				return;
 			}
 
+			TablePlugin.updateFloatingMenuScope();
+
+			if (TablePlugin.activeTable.selection.cellsAreSplitable()) {
+				that._splitcellsButton.enable(true);
+				that._splitcellsRowButton.enable(true);
+				that._splitcellsColumnButton.enable(true);
+			} else {
+				that._splitcellsButton.enable(false);
+				that._splitcellsRowButton.enable(false);
+				that._splitcellsColumnButton.enable(false);
+			}
+
+			if (TablePlugin.activeTable.selection.cellsAreMergeable()) {
+				that._mergecellsButton.enable(true);
+				that._mergecellsRowButton.enable(true);
+				that._mergecellsColumnButton.enable(true);
+			} else {
+				that._mergecellsButton.enable(false);
+				that._mergecellsRowButton.enable(false);
+				that._mergecellsColumnButton.enable(false);
+			}
 		});
 
-		Aloha.bind( 'aloha-selection-changed', function (event, rangeObject) {
+		PubSub.sub('aloha.selection.changed', function (message) {
+			var range = message.range;
+			var editable = message.editable;
+
 			// this case probably occurs when the selection is empty?
-			if (!rangeObject.startContainer || !Aloha.activeEditable) {
+			if (!range.startContainer) {
 				return;
 			}
 
 			// show hide buttons regarding configuration and DOM position
-			if (isEnabled[Aloha.activeEditable.getId()] && Aloha.Selection.mayInsertTag('table') ) {
+			if (configurations[Aloha.activeEditable.getId()] && Aloha.Selection.mayInsertTag('table') ) {
 				that._createTableButton.show();
 			} else {
 				that._createTableButton.hide();
@@ -438,10 +424,10 @@ define([
 				return;
 			}
 
-			// check wheater we are inside a table
-			var table = rangeObject.findMarkup(function() {
+			var table = range.findMarkup(function () {
 				return this.nodeName === 'TABLE';
-			}, Aloha.activeEditable.obj);
+			}, editable.obj);
+
 			if (table) {
 				TablePlugin.updateFloatingMenuScope();
 				TablePlugin.setActiveCellStyle();
@@ -453,7 +439,7 @@ define([
 			}
 		});
 
-		Aloha.bind('aloha-editable-activated', function (__event__, data) {
+		PubSub.sub('aloha.editable.activated', function (message) {
 			that._splitcellsButton.enable(false);
 			that._mergecellsButton.enable(false);
 			that._splitcellsRowButton.enable(false);
@@ -461,7 +447,7 @@ define([
 			that._splitcellsColumnButton.enable(false);
 			that._mergecellsColumnButton.enable(false);
 
-			data.editable.obj.find('table').each(function () {
+			message.editable.obj.find('table').each(function () {
 				var registry = TablePlugin.TableRegistry;
 				for (var i = 0; i < registry.length; i++) {
 					if (registry[i].obj.attr('id') === jQuery(this).attr('id')) {
@@ -469,15 +455,13 @@ define([
 						return true;
 					}
 				}
-
 				// Because table this is a new table that is not yet in the
-				// registry.
+				// registry
 				createNewTable(this);
 			});
-
 		});
 
-		Aloha.bind('aloha-editable-deactivated', function () {
+		PubSub.sub('aloha.editable.deactivated', function () {
 			if (TablePlugin.activeTable) {
 				TablePlugin.activeTable.selection.unselectCells();
 			}
@@ -507,7 +491,6 @@ define([
 		}
 	};
 
-	//namespace prefix for this plugin
 	var tableNamespace = 'aloha-table';
 
 	function nsSel() {

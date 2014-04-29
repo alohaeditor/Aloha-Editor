@@ -4,14 +4,18 @@ define([
 	'util/maps',
 	'util/html',
 	'util/dom',
-	'jquery'
+	'util/dom2',
+	'jquery',
+	'aloha/content-rules'
 ], function (
 	Aloha,
 	$_,
 	Maps,
 	Html,
 	Dom,
-	jQuery
+	Dom2,
+	jQuery,
+	ContentRules
 ) {
 	"use strict";
 
@@ -7520,8 +7524,9 @@ define([
 	///// The insertHTML command /////
 	//@{
 	commands.inserthtml = {
-		action: function (value, range) {
-
+		action: function (raw, range) {
+			var editable = Dom.getEditingHostOf(range.commonAncestorContainer);
+			var value = editable ? ContentRules.applyRules(raw, editable) : raw;
 
 			// "Delete the contents of the active range."
 			deleteContents(range);
@@ -7782,6 +7787,12 @@ define([
 				return;
 			}
 
+			var editable = Dom.getEditingHostOf(range.commonAncestorContainer);
+
+			if (!editable) {
+				return;
+			}
+
 			// "Let node and offset be the active range's start node and offset."
 			var node = range.startContainer;
 			var offset = range.startOffset;
@@ -7824,6 +7835,12 @@ define([
 			// "If container is not editable or not in the same editing host as
 			// node or is not a single-line container:"
 			if (!isEditable(container) || !inSameEditingHost(container, node) || !isSingleLineContainer(container)) {
+				editable = Dom.getEditingHostOf(container);
+
+				if (!editable || !ContentRules.isAllowed(editable, defaultSingleLineContainerName)) {
+					return;
+				}
+
 				// "Let tag be the default single-line container name."
 				var tag = defaultSingleLineContainerName;
 
@@ -7901,6 +7918,11 @@ define([
 			// "If container's local name is "address", "listing", or "pre":"
 			var oldHeight, newHeight;
 			if (container.tagName == "ADDRESS" || container.tagName == "LISTING" || container.tagName == "PRE") {
+
+				if (!ContentRules.isAllowed(editable, 'br')) {
+					return;
+				}
+
 				// "Let br be the result of calling createElement("br") on the
 				// context object."
 				var br = document.createElement("br");
@@ -8039,6 +8061,11 @@ define([
 				// "Otherwise, let new container name be the local name of container."
 			} else {
 				newContainerName = container.tagName.toLowerCase();
+			}
+
+			if (!listRelatedElements[newContainerName.toUpperCase()]
+					&& !ContentRules.isAllowed(editable, newContainerName)) {
+				return;
 			}
 
 			// "Let new container be the result of calling createElement(new

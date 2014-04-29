@@ -45,7 +45,6 @@ define([
 	var uid = +(new Date());
 
 	// Extend jQuery easing animations.
-	//debugger;
 	if (!$.easing.easeOutExpo) {
 		$.extend($.easing, {
 			easeOutExpo: function (x, t, b, c, d) {
