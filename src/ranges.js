@@ -675,7 +675,6 @@ define([
 	 * getBoundingClientRect() to return 0s.
 	 *
 	 * @private
-	 * @see expandLeft(), and bounds()
 	 * @param  {Boundary} boundary
 	 * @return {Boundary}
 	 */
@@ -683,13 +682,13 @@ define([
 		if (Boundaries.isTextBoundary(boundary) || Boundaries.isAtStart(boundary)) {
 			return boundary;
 		}
-		boundary = Boundaries.create(
+		var cloned = Boundaries.create(
 			Dom.clone(Boundaries.container(boundary), true),
 			Boundaries.offset(boundary)
 		);
-		var node = Boundaries.nodeBefore(boundary);
+		var node = Boundaries.nodeBefore(cloned);
 		var range = node.ownerDocument.createRange();
-		var newBoundary = boundary;
+		var newBoundary = cloned;
 		var prev;
 		while (node && Html.isUnrendered(node)) {
 			newBoundary = Boundaries.fromNode(node);

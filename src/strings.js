@@ -231,10 +231,10 @@ define([], function Strings() {
 	 * @type {RegExp}
 	 */
 	var SPACE = new RegExp('['
-		+ WHITE_SPACE_CHARACTERS.join('')
-		+ ZERO_WIDTH_CHARACTERS.join('')
-		+ NON_BREAKING_SPACE_CHARACTERS.join('')
-		+ ']');
+	          + WHITE_SPACE_CHARACTERS.join('')
+	          + ZERO_WIDTH_CHARACTERS.join('')
+	          + NON_BREAKING_SPACE_CHARACTERS.join('')
+	          + ']');
 
 	/**
 	 * Matches non-space characters.  Complement to Strings.SPACE.
@@ -242,10 +242,10 @@ define([], function Strings() {
 	 * @type {RegExp}
 	 */
 	var NOT_SPACE = new RegExp('[^'
-		+ WHITE_SPACE_CHARACTERS.join('')
-		+ ZERO_WIDTH_CHARACTERS.join('')
-		+ NON_BREAKING_SPACE_CHARACTERS.join('')
-		+ ']');
+	              + WHITE_SPACE_CHARACTERS.join('')
+	              + ZERO_WIDTH_CHARACTERS.join('')
+	              + NON_BREAKING_SPACE_CHARACTERS.join('')
+	              + ']');
 
 	var wbc = WORD_BREAKING_CHARACTERS.join('');
 

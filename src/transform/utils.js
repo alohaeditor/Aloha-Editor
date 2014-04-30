@@ -161,7 +161,7 @@ define([
 	 * What if `content` contains a comment like this:
 	 * <html><!-- <body>gotcha!</body> --><title>woops</title><body>hello, world!</body></html>
 	 *
-	 * @param  {string} content
+	 * @param  {string} markup
 	 * @return {string}
 	 */
 	function extract(markup) {
