@@ -429,6 +429,7 @@
 .aloha .ui-state-default .aloha-icon-abbr           { background-position: -336px 0; }
 .aloha .ui-state-default .aloha-icon-emphasis       { background-image: url(../img/em.png); }
 .aloha .ui-state-default .aloha-icon-strong         { background-image: url(../img/strong.png); }
+.aloha .ui-state-default .aloha-icon-code           { background-image: url(../img/code.png); }
 
 .aloha .ui-state-default .aloha-icon-indent {
 	background: url(../../../../img/text_indent.png) no-repeat center center;
