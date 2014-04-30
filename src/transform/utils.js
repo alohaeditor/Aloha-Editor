@@ -38,13 +38,13 @@ define([
 	 * Given a list of nodes, will wrap consecutive nodes that return true for
 	 * `pred` into a `wrapper` nodes.
 	 *
+	 * @private
 	 * @param  {Arrays.<Nodes>}         nodes
-	 * @param  {Document}               doc
 	 * @param  {function(Node):boolean} pred
 	 * @param  {string}                 wrapper
 	 * @return {Array.<Nodes>}
 	 */
-	function wrapSublists(nodes, doc, pred, wrapper) {
+	function wrapSublists(nodes, pred, wrapper) {
 		var elements = [];
 		var wrapplings;
 		var l = nodes.length;
@@ -56,7 +56,7 @@ define([
 				i++;
 			}
 			if (wrapplings.length > 0) {
-				elements.push(doc.createElement(wrapper));
+				elements.push(wrapplings[0].ownerDocument.createElement(wrapper));
 				Dom.move(wrapplings, Arrays.last(elements));
 			}
 			if (i < l) {
@@ -71,17 +71,16 @@ define([
 	 *
 	 * @private
 	 * @param  {Array.<Node>}                nodes
-	 * @param  {Document}                    doc
 	 * @param  {function(Node):Array.<Node>} clean
 	 * @param  {function():Node}             normalize
 	 * @return {Array.<Node>}
 	 */
-	function cleanNodes(nodes, doc, clean, normalize) {
+	function cleanNodes(nodes, clean, normalize) {
 		var allowed = nodes.filter(Fn.complement(isBlacklisted));
 		var rendered = allowed.filter(Html.isRendered);
 		return rendered.reduce(function (nodes, node) {
-			clean(node, doc).forEach(function (node) {
-				nodes = nodes.concat(normalize(node, doc, clean));
+			clean(node).forEach(function (node) {
+				nodes = nodes.concat(normalize(node, clean));
 			});
 			return nodes;
 		}, []);
@@ -96,7 +95,6 @@ define([
 	 *
 	 * @private
 	 * @param  {Array.<Node>} nodes
-	 * @param  {Document}     doc
 	 * @return {Array.<Node>}
 	 */
 	function removeRedundantNesting(nodes) {
@@ -123,17 +121,15 @@ define([
 	 *
 	 * @private
 	 * @param  {Node}                        node
-	 * @param  {Document}                    doc
 	 * @param  {function(Node):Array.<Node>} clean
 	 * @return {Array.<Node>}
 	 */
-	function cleanNode(node, doc, clean) {
-		return clean(node, doc).reduce(function (nodes, node) {
-			var children = cleanNodes(Dom.children(node), doc, clean, cleanNode);
+	function cleanNode(node, clean) {
+		return clean(node).reduce(function (nodes, node) {
+			var children = cleanNodes(Dom.children(node), clean, cleanNode);
 			if ('DIV' === node.nodeName) {
 				children = wrapSublists(
 					children,
-					doc,
 					Html.isInlineNode,
 					DEFAULT_BLOCK_ELEMENT
 				);
@@ -148,13 +144,12 @@ define([
 	 * Normalizes the given node tree and returns a fragment.
 	 *
 	 * @param  {Element}             element
-	 * @param  {Document}            doc
 	 * @param  {function(Node):Node} clean
 	 * @return {Fragment}
 	 */
-	function normalize(element, doc, clean) {
-		var fragment = doc.createDocumentFragment();
-		Dom.move(cleanNode(element, doc, clean), fragment);
+	function normalize(element, clean) {
+		var fragment = element.ownerDocument.createDocumentFragment();
+		Dom.move(cleanNode(element, clean), fragment);
 		return fragment;
 	}
 

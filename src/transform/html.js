@@ -25,14 +25,13 @@ define([
 	'use strict';
 
 	/**
-	 * Unwraps or replaces the given font element while preserving the styles
-	 * it effected.
+	 * Unwraps or replaces the given font element while preserving the styles it
+	 * effected.
 	 *
-	 * @param  {Element}  font Must be a font element
-	 * @param  {Document} doc
+	 * @param  {Element} font Must be a font element
 	 * @return {Element}
 	 */
-	function normalizeFont(font, doc) {
+	function normalizeFont(font) {
 		var children = Dom.children(font);
 		var color = Dom.getStyle(font, 'color')      || Dom.getAttr(font, 'color');
 		var size = Dom.getStyle(font, 'font-size')   || Dom.getAttr(font, 'font-size');
@@ -41,7 +40,7 @@ define([
 		if (1 === children.length && Dom.isElementNode(children[0])) {
 			child = children[0];
 		} else {
-			child = doc.createElement('span');
+			child = font.ownerDocument.createElement('span');
 			Dom.move(children, child);
 		}
 		if (color) {
@@ -65,11 +64,10 @@ define([
 	 * 3) add alignment styling to new paragraph
 	 *
 	 * @todo
-	 * @param  {Element}  element
-	 * @param  {Document} doc
+	 * @param  {Element} node
 	 * @return {Element}
 	 */
-	function normalizeCenter(doc, node) {
+	function normalizeCenter(node) {
 		return node;
 	}
 
@@ -136,15 +134,14 @@ define([
 	/**
 	 * Unwrap spans that have not attributes.
 	 *
-	 * @param  {Node}     node
-	 * @param  {Document} doc
+	 * @param  {Node} node
 	 * @return {Node|Fragment}
 	 */
-	function normalizeSpan(node, doc) {
+	function normalizeSpan(node) {
 		if (Dom.hasAttrs(node)) {
 			return node;
 		}
-		var fragment = doc.createDocumentFragment();
+		var fragment = node.ownerDocument.createDocumentFragment();
 		Dom.move(Dom.children(node), fragment);
 		return fragment;
 	}
@@ -154,11 +151,10 @@ define([
 	 * type.  The returned node will not necessarily be of the same type as
 	 * that of the given (eg: <font> => <span>).
 	 *
-	 * @param  {Node}     node
-	 * @param  {Document} doc
+	 * @param  {Node} node
 	 * @return {Array.<Node>}
 	 */
-	function clean(node, doc) {
+	function clean(node) {
 		node = Dom.clone(node);
 
 		if (Dom.isTextNode(node)) {
@@ -169,17 +165,17 @@ define([
 
 		switch (node.nodeName) {
 		case 'IMG':
-			cleaned = normalizeImage(node, doc);
+			cleaned = normalizeImage(node);
 			break;
 		case 'FONT':
 			cleaned = node;
 			// Because <font> elements may be nested
 			do {
-				cleaned = normalizeFont(cleaned, doc);
+				cleaned = normalizeFont(cleaned);
 			} while ('FONT' === cleaned.nodeName);
 			break;
 		case 'CENTER':
-			cleaned = normalizeCenter(node, doc);
+			cleaned = normalizeCenter(node);
 			break;
 		default:
 			cleaned = node;
@@ -193,7 +189,7 @@ define([
 		normalizeStyles(cleaned);
 
 		if ('SPAN' === cleaned.nodeName) {
-			cleaned = normalizeSpan(cleaned, doc);
+			cleaned = normalizeSpan(cleaned);
 		}
 
 		var kids = Dom.children(cleaned);
@@ -216,7 +212,7 @@ define([
 	 */
 	function transform(markup, doc) {
 		var raw = Html.parse(Utils.extract(markup), doc);
-		var fragment = Utils.normalize(raw, doc, clean);
+		var fragment = Utils.normalize(raw, clean);
 		return Dom.children(fragment)[0].innerHTML;
 	}
 

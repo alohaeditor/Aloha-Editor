@@ -69,11 +69,10 @@ define([
 	 * @private
 	 * @param  {Element}  element
 	 * @param  {String}   nodeName
-	 * @param  {Document} doc
 	 * @return {Element}
 	 */
-	function rewrap(element, nodeName, doc) {
-		var node = doc.createElement(nodeName);
+	function rewrap(element, nodeName) {
+		var node = element.ownerDocument.createElement(nodeName);
 		Dom.copy(Dom.children(element), node);
 		return node;
 	}
@@ -95,11 +94,10 @@ define([
 	 * Returns a clean copy of the given node.
 	 *
 	 * @private
-	 * @param  {Node}     node
-	 * @param  {Document} doc
+	 * @param  {Node} node
 	 * @return {Array.<Node>}
 	 */
-	function clean(node, doc) {
+	function clean(node) {
 		if (isSuperfluous(node)) {
 			return [];
 		}
@@ -107,14 +105,14 @@ define([
 			return [Dom.clone(node)];
 		}
 		if (Dom.hasClass(node, 'MsoTitle')) {
-			return [rewrap(node, 'h1', doc)];
+			return [rewrap(node, 'h1')];
 		}
 		if (Dom.hasClass(node, 'MsoSubtitle')) {
-			return [rewrap(node, 'h2', doc)];
+			return [rewrap(node, 'h2')];
 		}
 		var nodeName = namespacedNodeName(node);
 		if (nodeName) {
-			return [rewrap(node, nodeName, doc)];
+			return [rewrap(node, nodeName)];
 		}
 		return [Dom.clone(node)];
 	}
@@ -143,9 +141,9 @@ define([
 	 */
 	function transform(markup, doc) {
 		var raw = Html.parse(Utils.extract(markup), doc);
-		var fragment = Utils.normalize(raw, doc, clean) || raw;
-		fragment = Lists.transform(fragment, doc);
-		fragment = Tables.transform(fragment, doc);
+		var fragment = Utils.normalize(raw, clean) || raw;
+		fragment = Lists.transform(fragment);
+		fragment = Tables.transform(fragment);
 		return Dom.children(fragment)[0].innerHTML;
 	}
 

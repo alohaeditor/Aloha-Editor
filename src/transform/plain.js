@@ -11,11 +11,10 @@ define([], function() {
 	/**
 	 * Transforms plain text into visually comparable HTML.
 	 *
-	 * @param  {string}   text
-	 * @param  {Document} doc
+	 * @param  {string} text
 	 * @return {string}
 	 */
-	function transform(text, doc) {
+	function transform(text) {
 		var markup = text.split(/\n/).reduce(function (paragraphs, snippet) {
 			return paragraphs.concat('<p>', snippet.trim() || '<br>', '</p>');
 		}, []);
