@@ -582,9 +582,7 @@ define('format/format-plugin', [
 				me.initSidebar(Aloha.Sidebar.right);
 			});
 
-			var shouldCheckHeadingHierarchy =
-					Aloha.settings.plugins.format
-						&& true === Aloha.settings.plugins.format.checkHeadingHierarchy;
+			var shouldCheckHeadingHierarchy = (true === this.settings.checkHeadingHierarchy);
 
 			var checkHeadings = function () {
 				checkHeadingHierarchy(me.formatOptions);
