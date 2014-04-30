@@ -596,12 +596,14 @@ define('format/format-plugin', [
 				me.initSidebar(Aloha.Sidebar.right);
 			});
 
+			var isHeadingHierarchyActivated = (this.settings.checkHeadingHierarchy === true);
+
 			// apply specific configuration if an editable has been activated
 			Aloha.bind('aloha-editable-activated', function (e, params) {
 				me.applyButtonConfig(params.editable.obj);
 
 				//check heading hierarchy on activation
-				if (Aloha.settings.plugins.format.checkHeadingHierarchy === true) {
+				if (isHeadingHierarchyActivated) {
 					checkHeadingHierarchy(me.formatOptions);
 				}
 
@@ -642,7 +644,7 @@ define('format/format-plugin', [
 				params.editable.obj.unbind('keydown.aloha.format');
 			});
 
-			if (Aloha.settings.plugins.format.checkHeadingHierarchy === true) {
+			if (isHeadingHierarchyActivated) {
 				Aloha.bind('aloha-smart-content-changed', function (e) {
 					checkHeadingHierarchy(me.formatOptions);
 				});
