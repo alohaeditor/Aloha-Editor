@@ -279,7 +279,7 @@ define([
 		contains                : Nodes.contains,
 		followedBy              : Nodes.followedBy,
 		hasText                 : Nodes.hasText,
-		fragmentHtml            : Nodes.fragmentHtml,
+		outerHtml               : Nodes.outerHtml,
 
 		append            : Mutation.append,
 		merge             : Mutation.merge,
