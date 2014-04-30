@@ -19,30 +19,30 @@ Add the "video" content handler to the settings array for "insertHtml" (see exam
 The plugin's default settings can be overwritten here as well. Height and width set the initial size of inserted videos, embedUrl configures the desired HTTP protocol (SSL is default) and URL schema ("youtube.com/embed/" is default and should be used to avoid cross-domain problems).
 
 <javascript>
-	Aloha.settings = {
-    	contentHandler: {
-    		insertHtml: [ 'word', 'generic', 'oembed', 'sanitize', 'video' ]
-    	},
-	    toolbar: {
-            tabs: [
-    	        {
-    	            label: 'Video',
-    				showOn: {scope: 'Aloha.Block.VideoBlock'},
-    	            components: [
-    	                [ 'video-url', 'remove-video' ]
-    	            ]
-    	        }
-    		]
-	        
-	    },
-		plugins: {
-            videoblock: {
-    			'width': '800px',
-    			'height': '600px',
-    			'embedUrl': 'https://youtube.com/embed/'
-		    }
-        }
-	};
+Aloha.settings = {
+	contentHandler: {
+		insertHtml: [ 'word', 'generic', 'oembed', 'sanitize', 'video' ]
+	},
+    toolbar: {
+        tabs: [
+	        {
+	            label: 'Video',
+				showOn: {scope: 'Aloha.Block.VideoBlock'},
+	            components: [
+	                [ 'video-url', 'remove-video' ]
+	            ]
+	        }
+		]
+        
+    },
+	plugins: {
+        videoblock: {
+			'width': '800px',
+			'height': '600px',
+			'embedUrl': 'https://youtube.com/embed/'
+	    }
+    }
+};
 </javascript>
 
 h3. Components

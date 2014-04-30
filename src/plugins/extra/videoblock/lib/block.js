@@ -59,7 +59,7 @@ define([
 		/**
 		 * Block initalization
 		 * Creates YouTube iframe and overlay div (so clicking on video interacts
-		 * with Block an not with iframe content)
+		 * with Block and not with iframe content)
 		 * @param DOM $element where elements will be inserted to
 		 * @param funciton postProcessFn Aloha Block callback function
 		 */

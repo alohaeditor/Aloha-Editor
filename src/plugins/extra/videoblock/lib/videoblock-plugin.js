@@ -70,7 +70,9 @@ define([
 	 * Removes selected VideoBlock on toolbar button click
 	 */
 	function removeVideoBlock() {
-		selectedBlock.$element[0].remove();
+		if (selectedBlock) {
+			selectedBlock.$element[0].remove();
+		}
 	}
 
 	return Plugin.create('videoblock', {
@@ -103,9 +105,7 @@ define([
 			var removeVideoButton = Ui.adopt("remove-video", Button, {
 				tooltip: i18n.t("button.removevideo.tooltip"),
 				icon: "aloha-icon aloha-icon-unlink",
-				click: function() {
-					removeVideoBlock();
-				}
+				click: removeVideoBlock
 			});
 		},
 
@@ -113,7 +113,7 @@ define([
 		 * Set input field in video tab to video URL
 		 */
 		setHrefField: function () {
-			if(typeof selectedBlock !== 'undefined'){
+			if (selectedBlock) {
 				$(this.hrefField.getInputElem()).val('http://youtube.com/watch?v='
 					+ selectedBlock.$element.data('video-id'));
 			}
