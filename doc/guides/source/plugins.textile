@@ -103,7 +103,7 @@ Plugins in the @extra@ directory:
 * "extra/vie":plugin_vie.html - integrates VIE.js into Aloha Editor
 * "extra/wai-lang":plugin_wai-lang.html - annotate parts of the content with @lang@ attributes
 * "extra/zemanta°":plugin_zemanta.html - integrates Zemanta into Aloha Editor
-
+* "extra/videoblock":plugin_videoblock.html - allows for pasting of YouTube links which will then be converted to actual video embed code
 
 Community Plugins:
 * "colorselector":https://github.com/deliminator/Aloha-Plugin-Colorselector - add font color or background color

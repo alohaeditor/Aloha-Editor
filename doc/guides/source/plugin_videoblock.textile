@@ -1,0 +1,54 @@
+h2. VideoBlock Plugin
+
+The VideoBlock Plugin allows you to paste a YouTube URL into the active editable and it will be replaced by the appropriate iframe embed code.
+
+endprologue.
+
+NOTE: Inserted videos can not be played while editing, because you wouldn't be able to interact with the block if all clicks get sent through to the iframe content.
+
+h3. Functional Description
+
+Move the cursor to your desired position and paste a YouTube URL copied from your browser's address bar (e.g. http://www.youtube.com/watch?v=2ot_katYYiU). The plugin will immediately change the URL to YouTube's embed code and the video will be displayed.
+Now you can resize the video by dragging on the edge with your mouse.
+
+When clicking on a video block a separate toolbar tab will be displayed where you can paste a different URL or delete the whole block by clicking the remove button.
+
+h3. Configuration settings
+
+Add the "video" content handler to the settings array for "insertHtml" (see example below), to activate the conversion of pasted URLs into YouTube embed code. The video tab in the toolbar is activated by adding a new element to the "toolbar.tabs" array (see below).
+The plugin's default settings can be overwritten here as well. Height and width set the initial size of inserted videos, embedUrl configures the desired HTTP protocol (SSL is default) and URL schema ("youtube.com/embed/" is default and should be used to avoid cross-domain problems).
+
+<javascript>
+Aloha.settings = {
+	contentHandler: {
+		insertHtml: [ 'word', 'generic', 'oembed', 'sanitize', 'video' ]
+	},
+    toolbar: {
+        tabs: [
+	        {
+	            label: 'Video',
+				showOn: {scope: 'Aloha.Block.VideoBlock'},
+	            components: [
+	                [ 'video-url', 'remove-video' ]
+	            ]
+	        }
+		]
+        
+    },
+	plugins: {
+        videoblock: {
+			'width': '800px',
+			'height': '600px',
+			'embedUrl': 'https://youtube.com/embed/'
+	    }
+    }
+};
+</javascript>
+
+h3. Components
+
+The VideoBlock Plugin provides three components
+
+* videoblock-plugin.js - The plugin itself
+* block.js - Custom block definition for YouTube videos
+* content-handler.js - Content handler for converting pasted URLs into video blocks
