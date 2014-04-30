@@ -55,7 +55,8 @@ define([
 		if (!node.length) {
 			return true;
 		}
-		if (Strings.NOT_SPACE.test(node.nodeValue)) {
+		if (Strings.NOT_SPACE.test(node.nodeValue)
+				|| Strings.NON_BREAKING_SPACE.test(node.nodeValue)) {
 			return false;
 		}
 		var cssWhiteSpace;
@@ -219,31 +220,28 @@ define([
 
 		// Because isUnrenderedWhiteSpaceNoBlockCheck() will give us false
 		// positives but never false negatives, the algorithm that will follow
-		// will make certain, and will also consider unrendered <br>s.
+		// will make certain, and will also consider unrendered <br>s
 		var maybeUnrenderedNode = isUnrenderedWhitespaceNoBlockCheck(node);
 
 		// Because a <br> element that is a child node adjacent to its parent's
-		// end tag (terminal sibling) must not be rendered.
-		if (!maybeUnrenderedNode
-				&& 'BR' === node.nodeName
+		// end tag (terminal sibling) must not be rendered
+		if (!maybeUnrenderedNode) {
+			if ('BR' === node.nodeName
 				&& isTerminalNode(node)
 				&& Styles.hasLinebreakingStyle(node.parentNode)) {
-			if (node.nextSibling && 'BR' === node.nextSibling.nodeName) {
-				return true;
+				if (node.nextSibling && 'BR' === node.nextSibling.nodeName) {
+					return true;
+				}
+				if (node.previousSibling && 'BR' === node.previousSibling.nodeName) {
+					return true;
+				}
+				if (node.nextSibling && Dom.nextWhile(node.nextSibling, isUnrendered)) {
+					return true;
+				}
+				if (node.previousSibling && Dom.prevWhile(node.previousSibling, isUnrendered)) {
+					return true;
+				}
 			}
-			if (node.previousSibling && 'BR' === node.previousSibling.nodeName) {
-				return true;
-			}
-			if (node.nextSibling && Dom.nextWhile(node.nextSibling, isUnrendered)) {
-				return true;
-			}
-			if (node.previousSibling && Dom.prevWhile(node.previousSibling, isUnrendered)) {
-				return true;
-			}
-			return false;
-		}
-
-		if (!maybeUnrenderedNode) {
 			return false;
 		}
 
@@ -251,13 +249,11 @@ define([
 			if (!Dom.isTextNode(node)) {
 				return false;
 			}
-
 			var inlineNode = Dom.nextNonAncestor(node, false, function (node) {
 				return Predicates.isInlineNode(node) && !isUnrendered(node);
 			}, function (node) {
 				return Styles.hasLinebreakingStyle(node) || Dom.isEditingHost(node);
 			});
-
 			return !inlineNode;
 		}
 
