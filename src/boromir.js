@@ -128,31 +128,31 @@ define([
 		get: DelayedMap.makeGetWithDefault(Dom.getStyle, Fn.isNou)
 	};
 
-	function setPropsFromDomNodeT(node, domNode) {
+	function setPropsFromDomNodeT(nodeT, domNode) {
 		var delayedAttrs  = DelayedMap(delayedAttrsFromDom, domNode);
 		var delayedStyles = DelayedMap(delayedStylesFromDom, domNode);
-		node = node.setT(node.domNode, domNode);
-		node = node.delayT(node.type, typeFromDomNode, domNode);
-		node = node.delayT(node.name, nameFromDomNode, domNode);
-		node = node.delayT(node.text, textFromDomNode, domNode);
-		node = node.delayT(node.children, childrenFromDomNode, domNode);
-		node = node.setT(delayedAttrsField, delayedAttrs);
-		node = node.setT(delayedStylesField, delayedStyles);
-		return node;
+		nodeT = nodeT.setT(nodeT.domNode, domNode);
+		nodeT = nodeT.delayT(nodeT.type, typeFromDomNode, domNode);
+		nodeT = nodeT.delayT(nodeT.name, nameFromDomNode, domNode);
+		nodeT = nodeT.delayT(nodeT.text, textFromDomNode, domNode);
+		nodeT = nodeT.delayT(nodeT.children, childrenFromDomNode, domNode);
+		nodeT = nodeT.setT(delayedAttrsField, delayedAttrs);
+		nodeT = nodeT.setT(delayedStylesField, delayedStyles);
+		return nodeT;
 	}
 
-	function setTextPropsT(node, props) {
+	function setTextPropsT(nodeT, props) {
 		Assert.assertNou(props.name);
 		Assert.assertNou(props.nodeType);
 		var affinity = props.affinity || AFFINITY_DEFAULT;
-		node = node.setT(node.domNode, props.domNode);
-		node = node.setT(node.type, 3);
-		node = node.setT(node.text, props.text);
-		node = node.setT(node.affinity, affinity);
-		return node;
+		nodeT = nodeT.setT(nodeT.domNode, props.domNode);
+		nodeT = nodeT.setT(nodeT.type, 3);
+		nodeT = nodeT.setT(nodeT.text, props.text);
+		nodeT = nodeT.setT(nodeT.affinity, affinity);
+		return nodeT;
 	}
 
-	function setElementPropsT(node, props) {
+	function setElementPropsT(nodeT, props) {
 		Assert.assertNou(props.text);
 		Assert.assertNou(props.nodeType);
 		var name = props.name;
@@ -161,14 +161,30 @@ define([
 		var children = props.children || [];
 		var affinity = props.affinity || AFFINITY_DEFAULT;
 		Assert.assert(Fn.isNou(attrs['style']), Assert.STYLE_NOT_AS_ATTR);
-		node = node.setT(node.domNode, props.domNode);
-		node = node.setT(node.type, 1);
-		node = node.setT(node.name, name);
-		node = node.setT(node.children, children);
-		node = node.setT(node.affinity, affinity);
-		node = node.setT(delayedAttrsField, DelayedMap.realized(attrs));
-		node = node.setT(delayedStylesField, DelayedMap.realized(styles));
-		return node;
+		nodeT = nodeT.setT(nodeT.domNode, props.domNode);
+		nodeT = nodeT.setT(nodeT.type, 1);
+		nodeT = nodeT.setT(nodeT.name, name);
+		nodeT = nodeT.setT(nodeT.children, children);
+		nodeT = nodeT.setT(nodeT.affinity, affinity);
+		nodeT = nodeT.setT(delayedAttrsField, DelayedMap.realized(attrs));
+		nodeT = nodeT.setT(delayedStylesField, DelayedMap.realized(styles));
+		return nodeT;
+	}
+
+	function initWithDomNodeOrPropsT(nodeT, domNodeOrProps) {
+		if (!domNodeOrProps) {
+			return nodeT;
+		}
+		if (domNodeOrProps.nodeType) {
+			nodeT = setPropsFromDomNodeT(nodeT, domNodeOrProps);
+		} else if (!Fn.isNou(domNodeOrProps.text)) {
+			nodeT = setTextPropsT(nodeT, domNodeOrProps)
+		} else if (!Fn.isNou(domNodeOrProps.name)) {
+			nodeT = setElementPropsT(nodeT, domNodeOrProps);
+		} else {
+			Assert.error(Assert.INVALID_ARGUMENT);
+		}
+		return nodeT;
 	}
 
 	var Boromir = Record.define({
@@ -179,24 +195,13 @@ define([
 		children     : null,
 		affinity     : AFFINITY_DEFAULT
 	}, function (node, domNodeOrProps) {
-		if (!domNodeOrProps) {
-			return node;
-		}
-		node = node.asTransient();
-		if (domNodeOrProps.nodeType) {
-			node = setPropsFromDomNodeT(node, domNodeOrProps);
-		} else if (!Fn.isNou(domNodeOrProps.text)) {
-			node = setTextPropsT(node, domNodeOrProps)
-		} else if (!Fn.isNou(domNodeOrProps.name)) {
-			node = setElementPropsT(node, domNodeOrProps);
-		} else {
-			Assert.error(Assert.INVALID_ARGUMENT);
-		}
-		node = node.setT(idField, allocateId());
+		var nodeT = node.asTransient();
+		nodeT = initWithDomNodeOrPropsT(nodeT, domNodeOrProps);
+		nodeT = nodeT.setT(idField, allocateId());
 		// We start listening for changes after all changable fields
 		// have been initialized.
-		node = node.setT(changedField, CHANGED_INIT);
-		node = node.asPersistent();
+		nodeT = nodeT.setT(changedField, CHANGED_INIT);
+		node = nodeT.asPersistent();
 		node = unchangedField.set(node, node);
 		return node;
 	});
