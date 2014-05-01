@@ -92,6 +92,8 @@ define([
 	var CHANGED_STYLES = 16;
 	var CHANGED_CHILDREN = 32;
 	var CHANGED_AFFINITY = 64;
+	var ELEMENT = 1;
+	var TEXT = 3;
 
 	function allocateId() {
 		return ++idCounter;
@@ -146,7 +148,7 @@ define([
 		Assert.assertNou(props.nodeType);
 		var affinity = props.affinity || AFFINITY_DEFAULT;
 		nodeT = nodeT.setT(nodeT.domNode, props.domNode);
-		nodeT = nodeT.setT(nodeT.type, 3);
+		nodeT = nodeT.setT(nodeT.type, TEXT);
 		nodeT = nodeT.setT(nodeT.text, props.text);
 		nodeT = nodeT.setT(nodeT.affinity, affinity);
 		return nodeT;
@@ -162,7 +164,7 @@ define([
 		var affinity = props.affinity || AFFINITY_DEFAULT;
 		Assert.assert(Fn.isNou(attrs['style']), Assert.STYLE_NOT_AS_ATTR);
 		nodeT = nodeT.setT(nodeT.domNode, props.domNode);
-		nodeT = nodeT.setT(nodeT.type, 1);
+		nodeT = nodeT.setT(nodeT.type, ELEMENT);
 		nodeT = nodeT.setT(nodeT.name, name);
 		nodeT = nodeT.setT(nodeT.children, children);
 		nodeT = nodeT.setT(nodeT.affinity, affinity);
@@ -235,11 +237,11 @@ define([
 	}
 
 	function assertElement(node) {
-		Assert.assert(1 === node.type.get(node), Assert.EXPECT_ELEMENT);
+		Assert.assert(ELEMENT === node.type.get(node), Assert.EXPECT_ELEMENT);
 	}
 
 	function assertTextNode(node) {
-		Assert.assert(3 === node.type.get(node), Assert.EXPECT_TEXT_NODE);
+		Assert.assert(TEXT === node.type.get(node), Assert.EXPECT_TEXT_NODE);
 	}
 
 	function getChangedOrDelayed(changedMapField, delayedField, node, name) {
@@ -263,8 +265,8 @@ define([
 	/**
 	 * Gets the value of the attribute with the given name.
 	 *
-	 * The node has to be of the Element type (node.type() === 1), and
-	 * the name mustn't be "style" (use node.style(name) instead).
+	 * The node has to be of the Element type, and the name mustn't be
+	 * "style" (use node.style(name) instead).
 	 *
 	 * The reason the style attribute isn't accessible is that
 	 * individual styles can be updated on the Boromir node without
@@ -395,9 +397,9 @@ define([
 
 	function createDomNode(node, doc) {
 		var type = node.type.get(node);
-		if (1 === type) {
+		if (ELEMENT === type) {
 			return createElementNode(node, doc);
-		} else if (3 === type) {
+		} else if (TEXT === type) {
 			return createTextNode(node, doc);
 		} else {
 			Assert.notImplemented()
@@ -571,7 +573,7 @@ define([
 	function updateDomRec(node, doc, insertIndex) {
 		var type = node.type.get(node);
 		var changed = changedField.get(node);
-		if (1 === type) {
+		if (ELEMENT === type) {
 			if (changed & CHANGED_NAME) {
 				node = updateName(node);
 			}
@@ -584,7 +586,7 @@ define([
 			if (changed & CHANGED_CHILDREN) {
 				node = updateChildren(node, doc, insertIndex);
 			}
-		} else if (3 === type) {
+		} else if (TEXT === type) {
 			if (changed & CHANGED_TEXT) {
 				node = updateText(node);
 			}
@@ -636,12 +638,12 @@ define([
 	 */
 	function asDom(node, doc) {
 		var domNode;
-		if (1 === node.type()) {
+		if (ELEMENT === node.type()) {
 			domNode = createElementNode(node, doc);
 			node.children().forEach(function (child) {
 				domNode.appendChild(asDom(child, doc));
 			});
-		} else if (3 === node.type()) {
+		} else if (TEXT === node.type()) {
 			domNode = createTextNode(node, doc);
 		} else {
 			Asssert.notImplemented();
@@ -675,6 +677,8 @@ define([
 	Boromir.AFFINITY_MODEL   = AFFINITY_MODEL;
 	Boromir.AFFINITY_DEFAULT = AFFINITY_DEFAULT;
 	Boromir.childrenChangedInParent = childrenChangedInParent;
+	Boromir.ELEMENT          = ELEMENT;
+	Boromir.TEXT             = TEXT;
 
 	return Boromir;
 });

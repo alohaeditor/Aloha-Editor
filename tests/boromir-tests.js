@@ -15,7 +15,7 @@
 		var domNode = setupDomNode();
 		var node = Boromir(domNode);
 		equal(node.name(), 'P');
-		equal(node.type(), 1);
+		equal(node.type(), Boromir.ELEMENT);
 		equal(node.attr('id'), '123');
 		equal(node.attrs()['id'], '123');
 		ok(!node.attrs()['style']);
@@ -71,7 +71,7 @@
 		var node = Boromir(domNode);
 		equal(node.children().length, 3);
 		node = node.children(node.children().map(function (child, i) {
-			return child.type() === 1 ? child.attr('id', i) : child;
+			return child.type() === Boromir.ELEMENT ? child.attr('id', i) : child;
 		}));
 		node = node.updateDom();
 		equal(node.children().length, 3);
@@ -93,9 +93,9 @@
 		node = node.updateDom();
 		equal(node.children().length, 4);
 		node = Boromir(node.domNode());
-		equal(node.children()[1].type(), 1);
+		equal(node.children()[1].type(), Boromir.ELEMENT);
 		equal(node.children()[1].attr('id'), 'insert');
-		equal(node.children()[2].type(), 3);
+		equal(node.children()[2].type(), Boromir.TEXT);
 		equal(node.children()[2].text(), 'insert');
 	});
 
