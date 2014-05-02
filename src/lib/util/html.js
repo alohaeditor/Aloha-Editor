@@ -362,6 +362,11 @@ define([
 			.replace(ZWSP_CHARACTERS_RIGHT, '');
 	}
 
+	/**
+	 * Checks if `node` is unrendered.
+	 * @param {Node} node Node to be checked
+	 * @return {boolean} true if `node` is unrendered, false otherwise.
+	 */
 	function isUnrenderedNode(node) {
 		if (3 === node.nodeType && 0 === node.data.length) {
 			return true;
@@ -372,6 +377,15 @@ define([
 			return true;
 		}
 		return isWSPorZWSPNode(node);
+	}
+
+	/**
+	 * Checks if `node` is rendered.
+	 * @param {Node} node Node to be checked
+	 * @return {boolean} true if `node` is rendered, false otherwise.
+	 */
+	function isRenderedNode(node) {
+		return !isUnrenderedNode(node);
 	}
 
 	return {
@@ -390,6 +404,7 @@ define([
 		isWSPorZWSPNode: isWSPorZWSPNode,
 		isWSPorZWSPText: isWSPorZWSPText,
 		isUnrenderedNode: isUnrenderedNode,
+		isRenderedNode: isRenderedNode,
 		hasOnlyWhiteSpaceChildren: hasOnlyWhiteSpaceChildren
 	};
 });
