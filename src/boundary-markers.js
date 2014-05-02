@@ -205,6 +205,13 @@ define([
 		return node.innerHTML;
 	}
 
+	function rawBoundariesFromRange(range) {
+		return [
+			Boundaries.raw(range.startContainer, range.startOffset),
+			Boundaries.raw(range.endContainer, range.endOffset)
+		];
+	}
+
 	/**
 	 * Returns string representation of the given boundary boundaries tuple or
 	 * range.
@@ -218,7 +225,7 @@ define([
 			     ? show(selection)
 			     : show(selection[0], selection[1]);
 		}
-		var boundaries = Boundaries.fromRange(selection);
+		var boundaries = rawBoundariesFromRange(selection);
 		return show(boundaries[0], boundaries[1]);
 	}
 
