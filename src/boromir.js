@@ -432,8 +432,9 @@ define([
 	}
 
 	/**
-	 * Internal implementation that creats a map that maps the ids of
-	 * the given children to the given value.
+	 * Creates a map that maps the ids of the given children to the
+	 * given value.
+	 * @private
 	 */
 	function indexChildren(children, index, value) {
 		children.forEach(function (child) {
@@ -443,13 +444,16 @@ define([
 	}
 
 	/**
-	 * Internal implementations that determines given an old and a new
-	 * children array, which ones were inserted or removed, based on the
-	 * id of the node.
+	 * Determines, given an old and a new children array, which ones
+	 * were inserted or removed, based on the id of the node.
 	 *
 	 * Fast for common cases, but may have a suboptimal result (too many
 	 * removes/inserts) when siblings are moved around rather than just
 	 * inserted and removed.
+	 *
+	 * @param oldChildren {!Array.<!Boromir>}
+	 * @param newChildren {!Array.<!Boromir>}
+	 * @return {!Array.<int>}
 	 */
 	function childrenChangedInParent(oldChildren, newChildren) {
 		if (newChildren === oldChildren) {
@@ -508,8 +512,9 @@ define([
 	}
 
 	/**
-	 * Internal implementation that updates the children of the DOM node
-	 * wrapped by the given boromir node.
+	 * Updates the children of the DOM node wrapped by the given boromir
+	 * node.
+	 * @private
 	 */
 	function updateChildren(node, doc, insertIndex) {
 		var newChildren = node.children.get(node)
@@ -567,8 +572,8 @@ define([
 	}
 
 	/**
-	 * Internal implementation that recursively updates the DOM wrapped
-	 * by the given boromir tree.
+	 * Recursively updates the DOM wrapped by the given boromir tree.
+	 * @private
 	 */
 	function updateDomRec(node, doc, insertIndex) {
 		var type = node.type.get(node);

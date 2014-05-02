@@ -19,9 +19,9 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	var SPECIAL_PRIVATE_VALUE = {};
 
 	/**
-	 * Internal implementation that gets the values from a record,
-	 * ensuring that it has the correct length, expanding it using the
-	 * given defaults if necessary.
+	 * Gets the values from a record, ensuring that it has the correct
+	 * length, expanding it using the given defaults if necessary.
+	 * @private
 	 */
 	function ensureDefaults(record, defaults) {
 		var values = record._record_values;
@@ -34,8 +34,8 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	}
 
 	/**
-	 * Internal implementation that will create a new record instance
-	 * given an existing instance.
+	 * Creates a new record instance given an existing instance.
+	 * @private
 	 */
 	function newInstanceFromExisting(record, values) {
 		var Record = record.constructor;
@@ -43,17 +43,19 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	}
 
 	/**
-	 * Internal implementation that will create a clone of the given
-	 * record and its value array, presumably so that the values array
-	 * can be written to without mutating the existing record.
+	 * Create a clone of the given record and its value array,
+	 * presumably so that the values array can be written to without
+	 * mutating the existing record.
+	 * @private
 	 */
 	function cloneForWrite(record) {
 		return newInstanceFromExisting(record, record._record_values.slice(0));
 	}
 
 	/**
-	 * Internal assertion that makes sure the record is of the correct
-	 * type and its transience is of the correct level.
+	 * Ensures the record is of the correct type and its transience is
+	 * of the correct level.
+	 * @private
 	 */
 	function assertRead(record, Record) {
 		Assert.assert(!Record || record.constructor === Record,
@@ -64,8 +66,9 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	}
 
 	/**
-	 * Internal assertion that makes sure the record is of the correct
-	 * type and its transience is of the correct level.
+	 * Ensures the record is of the correct type and its transience is
+	 * of the correct level.
+	 * @private
 	 */
 	function assertWrite(record, Record) {
 		Assert.assert(!Record || record.constructor === Record,
@@ -75,8 +78,9 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	}
 
 	/**
-	 * Internal assertion that makes sure the record is of the correct
-	 * type and its transience is of the correct level.
+	 * Ensures the record is of the correct type and its transience is
+	 * of the correct level.
+	 * @private
 	 */
 	function assertTransientWrite(record, Record) {
 		Assert.assert(!Record || record.constructor === Record,
@@ -100,8 +104,9 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	}
 
 	/**
-	 * Internal implementation that allocates a new transient record and
-	 * discards the given transient record.
+	 * Allocates a new transient record and discards the given transient
+	 * record.
+	 * @private
 	 */
 	function discardTransient(record) {
 		var newRecord = asPersistent(record);
@@ -142,7 +147,8 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	}
 
 	/**
-	 * Internal implementation of getting a value of a record.
+	 * Gets a value of a record.
+	 * @private
 	 */
 	function getValue(record, offset, defaults) {
 		var values = ensureDefaults(record, defaults);
@@ -150,7 +156,8 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	}
 
 	/**
-	 * Internal implementaion of setting a value on a record.
+	 * Sets a value on a record.
+	 * @private
 	 */
 	function setValue(record, newValue, offset, defaults) {
 		var newRecord = cloneForWrite(record);
@@ -161,6 +168,7 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 
 	/**
 	 * Like setValue() but accepts a transient record.
+	 * @private
 	 */
 	function setValueT(record, newValue, offset, defaults) {
 		var newRecord = discardTransient(record);
@@ -170,16 +178,16 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	}
 
 	/**
-	 * Internal implementation that checks whether a value is a value
-	 * delayed by calling delay().
+	 * Checks whether a value is a value delayed by calling delay().
+	 * @private
 	 */
 	function isDelayValue(value) {
 		return Array.isArray(value) && value[0] === SPECIAL_PRIVATE_VALUE;
 	}
 
 	/**
-	 * Internal implementation that realizes a value that was delayed by
-	 * calling delay().
+	 * Realizes a value that was delayed by calling delay().
+	 * @private
 	 */
 	function realizeDelayValue(delayValue) {
 		var value;
@@ -209,7 +217,7 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	 *
 	 * @param Record {function}
 	 * @param defaultValue {*}
-	 * @return {function} the new field
+	 * @return {!Field} the new field
 	 */
 	function addField(Record, defaultValue) {
 		var defaults = Record._record_defaults;
@@ -244,8 +252,9 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	 * be returned that reflects the updated field.
 	 *
 	 * @param record {!Record}
-	 * @param field {function} a field of the given record
-	 * @return a new record with the given field updated in it
+	 * @param field {!Field} a field of the given record
+	 * @param newValue {*} the value to set the field to
+	 * @return {!Record} a new record with the given field updated in it
 	 */
 	function set(record, field, newValue) {
 		return field.set(record, newValue);
@@ -255,7 +264,7 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	 * Gets the value of the given field from the given record.
 	 *
 	 * @param record {!Record}
-	 * @param field {function} a field of the given record
+	 * @param field {!Field} a field of the given record
 	 * @return {*} the value of the given field on the given record
 	 */
 	function get(record, field) {
@@ -282,7 +291,7 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	 * be returned that reflects the updated field.
 	 *
 	 * @param record {!Record}
-	 * @param field {function} a field of the given record
+	 * @param field {!Field} a field of the given record
 	 * @param fn {function} a function that returns the value to set
 	 * @param arg {*} an optional argument to the given function
 	 * @return a new record with the given field updated in it
@@ -346,7 +355,7 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	 *     
 	 *     var myInstance = MyType(optionalArgument);
 	 *
-	 * @param fieldMap {?Object}
+	 * @param fieldMap {?Object.<string,*>}
 	 * @param init {?function}
 	 * @return a new record type
 	 */
@@ -391,10 +400,10 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	 *
 	 * Useful to recompute other fields whenever a field is set.
 	 *
-	 * @param field {function} a field of a Record
+	 * @param field {!Field} a field of a Record
 	 * @param afterSet {function} invoked after the field is set
 	 * @param afterSetT {?function} like afterSet but accepts a transient record
-	 * @return field {function} a new field
+	 * @return field {!Field} a new field
 	 */
 	function hookSetter(field, afterSet, afterSetT) {
 		var set = field.set;
@@ -415,8 +424,28 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 		return newAccessor;
 	}
 
+	/**
+	 * Similar to hookSetter() except the given recopute and recomputeT
+	 * functions recompute a value of the given computedField instead of
+	 * updating the record directly.
+	 *
+	 * @param observedField {!Field} a field of a Record
+	 * @param computedField {!Field} a field that is recomputed
+	 * @param recompute {function} given a record computes the value for computedField
+	 * @param recomputeT {?function} like recompute but gets a transient record
+	 * @return field {!Field} a new field
+	 */
+	function hookSetterRecompute(observedField, computedField, recompute, recomputeT) {
+		return hookSetter(observedField, function (record) {
+			return computedField.set(record, recompute(record));
+		}, recomputeT ? function (recordT) {
+			return computedField.set.setT(recordT, recomputeT(recordT));
+		} : null);
+	}
+
 	return {
 		define    : define,
-		hookSetter: hookSetter
+		hookSetter: hookSetter,
+		hookSetterRecompute: hookSetterRecompute
 	};
 });
