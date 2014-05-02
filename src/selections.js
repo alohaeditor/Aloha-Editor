@@ -596,7 +596,7 @@ define([
 			return Ranges.fromPosition(
 				alohaEvent.nativeEvent.clientX,
 				alohaEvent.nativeEvent.clientY,
-				alohaEvent.editable.elem.ownerDocument
+				alohaEvent.nativeEvent.target.ownerDocument
 			);
 		}
 		return alohaEvent.range || Ranges.get();
