@@ -1,6 +1,6 @@
 define({
 	"root":  {
-		"button.formatlessPaste.tooltip": "Toggle Formatless Pasting"
+		"button.formatlessPaste.tooltip": "Keep/Discard formatting"
 	},
 		"ca": true,
 		"de": true,
