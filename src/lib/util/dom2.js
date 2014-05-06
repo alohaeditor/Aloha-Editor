@@ -365,7 +365,9 @@ define([
 	 */
 	function remove(node) {
 		var parent = node.parentNode;
-		parent.removeChild(node);
+		if (parent) {
+			parent.removeChild(node);
+		}
 	}
 
 	function wrap(node, wrapper) {
