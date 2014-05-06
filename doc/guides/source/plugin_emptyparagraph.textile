@@ -28,8 +28,8 @@ Aloha.settings.plugins.emptyparagraph = {
 		'*'	        : {},      // default config
 		'#teaser'	: {},      // default config
 		'#teaser2'  : {
-			emptyelements: [], // No highlight empty elements
-			removebr: "false"  // No remove consecutive br's
+			emptyelements: [], // Don't highlight empty elements
+			removebr: "false"  // Don't remove consecutive br's
 		},
 		'#teaser3'  : {
 			emptyelements: ['p', 'h1'] // Highlight 'p' and 'h1' elements
