@@ -12,7 +12,6 @@ define([
 	'use strict';
 	
 	var EMPTY_ELEMENT_CSS_CLASS= 'aloha-empty-element';
-	var EMPTY_ELEMENTS_TAG_NAME = 'P';
 
 	/**
 	 * Checks if contains empty visible elements
@@ -44,7 +43,7 @@ define([
 	function getEmptyElements(node, elements) {
 		var paragraphs = [];
 
-		jQuery(node).find(arrayToString(elements)).each(function() {
+		jQuery(node).find(joinWithComma(elements)).each(function() {
 			var paragraph = cloneAndRemoveBRElements(this);
 
 			if (Dom.isEmpty(paragraph) && !containEmptyVisibleElements(paragraph)) {
@@ -77,7 +76,12 @@ define([
 		deleteElements(getEmptyElements(node, elements));
 	}
 
-	function arrayToString(elements) {
+	/**
+	 * Transforms an array to a string separated by commas.
+	 * @param {Array<String>} elements
+	 * @returns {string}
+	 */
+	function joinWithComma(elements) {
 		return elements.join();
 	}
 	
@@ -115,9 +119,8 @@ define([
 	 * @param {Node} node
 	 */
 	function removeCSSClassEmptyElement(node) {
-		jQuery(node).find('.'  + EMPTY_ELEMENT_CSS_CLASS).each(function(i, element) {
-			jQuery(element).removeClass(EMPTY_ELEMENT_CSS_CLASS);
-		});
+		jQuery(node).find('.'  + EMPTY_ELEMENT_CSS_CLASS)
+		            .removeClass(EMPTY_ELEMENT_CSS_CLASS);
 	}
 
 	/**

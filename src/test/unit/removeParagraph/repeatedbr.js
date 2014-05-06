@@ -10,12 +10,22 @@ Aloha.require([
 ) {
 	'use strict';
 
+	/**
+	 * Tests expected number of br's.
+	 * @param {Sring} input
+	 * @param {Number} expected
+	 */
 	function testExpectedNumberBR(input, expected) {
 		var brs = EmptyParagraph.getConsecutiveBr(input);
 		equal(brs.length, expected);
 	}
 
-	function testRemoveRepeatedBr(input, expected) {
+	/**
+	 * Tests removed consecutive br.
+	 * @param {String} input
+	 * @param {String} expected
+	 */
+	function testRemoveConsecutiveBr(input, expected) {
 		EmptyParagraph.removeConsecutiveBr(input);
 		equal(input.innerHTML, expected.innerHTML);
 	}
@@ -64,6 +74,6 @@ Aloha.require([
 			'<p><br id="repeated_2"></p>' +
 			' </div>')[0];
 		
-		testRemoveRepeatedBr(input, expected);
+		testRemoveConsecutiveBr(input, expected);
 	});
 });

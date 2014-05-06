@@ -10,12 +10,22 @@ Aloha.require([
 ) {
 	'use strict';
 
-	function testExpectedNumberEmptyParagraphs(input, expected) {
+	/**
+	 * Tests expected number of empty elements.
+	 * @param {String} input
+	 * @param {String} expected
+	 */
+	function testExpectedNumberEmptyElements(input, expected) {
 		var paragraphs = EmptyParagraph.getEmptyElements(input, ['p']);
 		equal(paragraphs.length, expected);
 	}
 
-	function testRemoveEmptyParagraph(input, expected) {
+	/**
+	 * Tests removed empty elements.
+	 * @param {String} input
+	 * @param {String} expected
+	 */
+	function testRemoveEmptyElements(input, expected) {
 		EmptyParagraph.removeEmptyElements(input, ['p']);
 		equal(input.innerHTML, expected.innerHTML);
 	}
@@ -30,7 +40,7 @@ Aloha.require([
 			'<p>     \t\r</p>' +
 			'<p>   <br>&nbsp;<span>&nbsp;</span>  \t\r</p>' +
 			'</div>')[0];
-		testExpectedNumberEmptyParagraphs(input, 5);
+		testExpectedNumberEmptyElements(input, 5);
 	});
 	
 	test('heading are not included', function() {
@@ -39,7 +49,7 @@ Aloha.require([
 			'<h2>&nbsp;</h2>' +
 			'<h3>&nbsp;</h3>' +
 			'</div>')[0];
-		testExpectedNumberEmptyParagraphs(input, 0);
+		testExpectedNumberEmptyElements(input, 0);
 	});
 
 	test('emtpy paragraph with br elements', function() {
@@ -47,7 +57,7 @@ Aloha.require([
 			'<p><br>\t <br></p>' +
 			'<p><br>\t &nbsp;<br></p>' +
 			'</div>')[0];
-		testExpectedNumberEmptyParagraphs(input, 2);
+		testExpectedNumberEmptyElements(input, 2);
 	});
 
 	test('emtpy paragraph with span elements', function() {
@@ -56,7 +66,7 @@ Aloha.require([
 			'<p><span>   </span><br></p>' +
 			'<p><b>   </b><br></p>' +
 			'</div>')[0];
-		testExpectedNumberEmptyParagraphs(input, 3);
+		testExpectedNumberEmptyElements(input, 3);
 	});
 
 	test('not emtpy paragraph', function() {
@@ -67,7 +77,7 @@ Aloha.require([
 			'<p><span><img/></span></p>' +
 			'<p><span></span><b>s</b><br>\t <br></p>' +
 			' </div>')[0];
-		testExpectedNumberEmptyParagraphs(input, 0);
+		testExpectedNumberEmptyElements(input, 0);
 	});
 
 	module('Remove empty paragraph');
@@ -80,7 +90,7 @@ Aloha.require([
 			'</div>')[0];
 
 		var expected = $('<div></div>')[0];
-		testRemoveEmptyParagraph(input, expected);
+		testRemoveEmptyElements(input, expected);
 	});
 
 	test('removes empty paragraph, between not empty paragraph', function() {
@@ -95,6 +105,6 @@ Aloha.require([
 			'<p>  never   \t\r</p>' +
 			'</div>')[0];
 		
-		testRemoveEmptyParagraph(input, expected);
+		testRemoveEmptyElements(input, expected);
 	});
 });

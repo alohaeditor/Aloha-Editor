@@ -10,20 +10,30 @@ Aloha.require([
 ) {
 	'use strict';
 
-	function testMarkEmptyElements(input, expected) {
+	/**
+	 * Tests highlighted empty elements.
+	 * @param {String} input
+	 * @param {String} expected
+	 */
+	function testHighlightEmptyElements(input, expected) {
 		EmptyParagraph.highlightEmptyElements(input, ['p']);
 		equal(input.innerHTML, expected.innerHTML);
 	}
-	
+
+	/**
+	 * Tests remove empty elements.
+	 * @param {String} input
+	 * @param {String} expected
+	 */
 	function testRemoveEmptyElements(input, expected) {
 		EmptyParagraph.removeEmptyElements(input, ['p']);
 		EmptyParagraph.removeConsecutiveBr(input);
 		equal(input.innerHTML, expected.innerHTML);
 	}
 
-	module('Mark Elements');
+	module('Highlight Elements');
 
-	test('mark empty paragraphs', function() {
+	test('Highlight empty paragraphs', function() {
 		var input = $('<div>' +
 			'<p></p>' +
 			'</div>')[0];
@@ -32,10 +42,10 @@ Aloha.require([
 				'<p class="' + EmptyParagraph.EMPTY_ELEMENT_CSS_CLASS + '"></p>' +
 				'</div>')[0];
 		
-		testMarkEmptyElements(input, expected);
+		testHighlightEmptyElements(input, expected);
 	});
 
-	test('mark empty paragraphs and Headings', function() {
+	test('Highlight empty paragraphs and Headings', function() {
 		var input = $('<div>' +
 			'<p></p>' +
 			'<h1></h1>' +
@@ -51,6 +61,7 @@ Aloha.require([
 			'</div>')[0];
 
 		EmptyParagraph.highlightEmptyElements(input, ['p', 'h1', 'h2']);
+
 		equal(input.innerHTML, expected.innerHTML);
 	});
 	

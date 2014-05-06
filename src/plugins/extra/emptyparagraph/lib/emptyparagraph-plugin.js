@@ -54,6 +54,11 @@ define([
 	var pluginName = 'emptyparagraph';
 	var DEFAULT_ELEMENTS = ['p'];
 
+	/**
+	 * Checks if this plugin is activated by name.
+	 * @param config
+	 * @returns {boolean}
+	 */
 	function isPluginActivatedByName(config) {
 		return $.type(config) === 'array' && $.inArray(pluginName, config) !== -1;
 	}
