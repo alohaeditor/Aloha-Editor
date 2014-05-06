@@ -1,0 +1,39 @@
+h2. Empty Paragraph Plugin
+
+The Empty Paragraph Plugin checks the contents of editables and highlights empty paragraph or consecutive br's. These elements will be removed when Editable.getContents is called.
+
+NOTE: As br's elements cannot be styled are not highlighted, but they will be removed when Editable.getContents function is called. 
+
+endprologue.
+
+h3. Functional Description
+
+The Plugin relies on the events @aloha-editable-created@ (which is fired when an editable is created) and @aloha-smart-content-changed@ (fired when the content of an editable changes).
+This will make sure that empty paragraphs are highlighted when starting to edit and whenever content was changed.
+
+NOTE: The @aloha-smart-content-changed@ is not triggered immediately after content changes, but may take some time.
+
+The plugin will then first check for empty paragraphs and consecutive br's, highlighting the empty paragraph (br's are not highlighted). The empty paragraphs are
+highlighted with a CSS class '.aloha-empty-element'. You can overwrite this class in your own CSS file.
+
+h3. Configuration settings
+
+The Empty Paragraph plugin provides the following config options:
+
+<javascript>	
+Aloha.settings.plugins.emptyparagraph = {
+	// specific configuration for each editable identified by css selectors
+	editables : {
+		// All editables
+		'*'	        : {},      // default config
+		'#teaser'	: {},      // default config
+		'#teaser2'  : {
+			emptyelements: [], // Don't highlight empty elements
+			removebr: "false"  // Don't remove consecutive br's
+		},
+		'#teaser3'  : {
+			emptyelements: ['p', 'h1'] // Highlight 'p' and 'h1' elements
+		}
+	}
+};
+</javascript>

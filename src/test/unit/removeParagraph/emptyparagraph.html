@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>QUnit Test Suite</title>
+	<link rel="stylesheet" href="../../vendor/qunit.css" type="text/css"
+	      media="screen">
+	<script type="text/javascript" src="../../vendor/qunit.js"></script>
+	<!-- include jquery -->
+	<script	src="../../../lib/vendor/jquery-1.7.2.js" ></script>
+	<script type="text/javascript" src="../../vendor/jquery.simulate.js"></script>
+
+	<!-- include aloha -->
+	<script>
+		var Aloha = {
+			settings: {
+				jQuery: $,
+				baseUrl: '../../../lib'
+			}
+		};
+	</script>
+	<script src="../../../lib/require.js"></script>
+	<script src="../../../lib/aloha.js" data-aloha-plugins=""></script>
+
+	<script type="text/javascript" src="emptyparagraph.js"></script>
+	<script type="text/javascript" src="repeatedbr.js"></script>
+	<script type="text/javascript" src="markElements.js"></script>
+</head>
+
+<body>
+	<h1 id="qunit-header">QUnit Test Suite</h1>
+
+	<h2 id="qunit-banner"></h2>
+
+	<div id="qunit-testrunner-toolbar"></div>
+	<h2 id="qunit-userAgent"></h2>
+	<ol id="qunit-tests"></ol>
+</body>
+</html>
