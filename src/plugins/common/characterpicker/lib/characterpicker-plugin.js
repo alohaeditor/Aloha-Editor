@@ -253,20 +253,24 @@ define([
 	}
 
 	/**
-	 * Returns the height of the scrollbar
+	 * Returns the height of the scrollbar.
 	 *
-	 * @returns {Number} the scrollbar height
+	 * @private
+	 * @return {number}
 	 */
-	function getScrollBarHeight () {
-		var $outer = $('<div>').css({visibility: 'hidden', height: 100, overflow: 'scroll'}).appendTo('body'),
-			heightWithScroll = $('<div>').css({height: '100%'}).appendTo($outer).outerHeight();
+	function getScrollBarHeight() {
+		var $outer = $('<div>').css({visibility: 'hidden', height: 100, overflow: 'scroll'}).appendTo('body');
+		var heightWithScroll = $('<div>').css({height: '100%'}).appendTo($outer).outerHeight();
 		$outer.remove();
 		return 100 - heightWithScroll;
 	}
 
 	/**
-	 * Scroll bar height.
+	 * The user-agent's scroll bar height.
+	 *
+	 * @private
 	 * @const
+	 * @type {number}
 	 */
 	var SCROLL_BAR_HEIGHT = getScrollBarHeight();
 
