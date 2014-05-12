@@ -539,8 +539,10 @@ define([
 		if (Html.hasLinebreakingStyle(Boundaries.prevNode(boundary))) {
 			return null;
 		}
+		var prev = Traversing.prev(boundary, 'char')
+		        || Traversing.prev(boundary, 'boundary');
 		var clone = range.cloneRange();
-		Boundaries.setRangeStart(clone, Traversing.prev(boundary));
+		Boundaries.setRangeStart(clone, prev);
 		return clone;
 	}
 
@@ -562,8 +564,10 @@ define([
 		if (!Html.isAtStart(boundary)) {
 			return null;
 		}
+		var next = Traversing.next(boundary, 'char')
+		        || Traversing.next(boundary, 'boundary');
 		var clone = range.cloneRange();
-		Boundaries.setRangeEnd(clone, Traversing.next(boundary));
+		Boundaries.setRangeEnd(clone, next);
 		return clone;
 	}
 
