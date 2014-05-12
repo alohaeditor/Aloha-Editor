@@ -253,17 +253,53 @@ define([
 	}
 
 	/**
+	 * Returns the height of the scrollbar.
+	 *
+	 * @private
+	 * @return {number}
+	 */
+	function getScrollBarHeight() {
+		var $outer = $('<div>').css({visibility: 'hidden', height: 100, overflow: 'scroll'}).appendTo('body');
+		var heightWithScroll = $('<div>').css({height: '100%'}).appendTo($outer).outerHeight();
+		$outer.remove();
+		return 100 - heightWithScroll;
+	}
+
+	/**
+	 * The user-agent's scroll bar height.
+	 *
+	 * @private
+	 * @const
+	 * @type {number}
+	 */
+	var SCROLL_BAR_HEIGHT = getScrollBarHeight();
+
+	/**
 	 * Calculates the offset at which to position the overlay element.
 	 *
 	 * @param {jQuery.<HTMLElement>} $element A DOM element around which to
 	 *                                        calculate the offset.
+	 * @param {jQuery <HTMLElement>} $overlay The overlay element
 	 */
-	function calculateOffset($element) {
+	function calculateOffset($element, $overlay) {
 		var offset = $element.offset();
 		if ('fixed' === Floating.POSITION_STYLE) {
 			offset.top -= $WINDOW.scrollTop();
 			offset.left -= $WINDOW.scrollLeft();
 		}
+
+		//adjust position if overlay element is overlapping window borders
+		var maxWidth = $WINDOW.width();
+		var maxHeight = $WINDOW.height() - SCROLL_BAR_HEIGHT;
+
+		if (maxWidth < offset.left + $overlay.width()) {
+			offset.left = maxWidth - $overlay.width();
+		}
+
+		if (maxHeight < offset.top + $overlay.height()) {
+			offset.top = maxHeight - $overlay.height();
+		}
+
 		return offset;
 	}
 
@@ -328,7 +364,7 @@ define([
 
 			// Because the overlay needs to be reposition relative its button.
 			overlay.$element
-			       .css(calculateOffset($insert))
+			       .css(calculateOffset($insert, overlay.$element))
 			       .css('position', Floating.POSITION_STYLE)
 			       .show()
 			       .find('.focused')
@@ -453,7 +489,7 @@ define([
 			PubSub.sub('aloha.floating.changed', function (message) {
 				if (characterpicker.overlay) {
 					characterpicker.overlay.$element.css(
-						calculateOffset(button.element)
+						calculateOffset(button.element, characterpicker.overlay.$element)
 					);
 				}
 			});

@@ -8,6 +8,7 @@
 	border: none;
 	border-collapse: collapse;
 	z-index: 999999;
+	width: auto;
 }
 
 .aloha-character-picker-overlay{
