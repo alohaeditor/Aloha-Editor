@@ -571,15 +571,14 @@ define([
 	 *
 	 * Insignificant boundary positions are those where the boundary is
 	 * immediately before unrendered content.  Since such content is invisible,
-	 * the boundary is rendered as though it is after the insignificant
-	 * content.  This function simply moves the boundary forward so that the
-	 * given boundary is infact where it seems to be visually.
+	 * the boundary is rendered as though it is after the insignificant content.
+	 * This function simply moves the boundary forward so that the given
+	 * boundary is infact where it seems to be visually.
 	 *
-	 * @private
 	 * @param  {Boundary} boundary
 	 * @return {Boundary}
 	 */
-	function skipInsignificantPositions(boundary) {
+	function nextSignificantBoundary(boundary) {
 		var next = boundary;
 		var node;
 
@@ -594,12 +593,12 @@ define([
 			if (-1 === offset) {
 				node = Boundaries.nodeAfter(next);
 				if (node && Elements.isUnrendered(node)) {
-					return skipInsignificantPositions(Boundaries.jumpOver(next));
+					return nextSignificantBoundary(Boundaries.jumpOver(next));
 				}
 				if (node && Elements.isVoidType(node)) {
 					return next;
 				}
-				return skipInsignificantPositions(Boundaries.next(next));
+				return nextSignificantBoundary(Boundaries.next(next));
 			}
 
 			// Because the boundary may already be at a significant offset.
@@ -612,7 +611,7 @@ define([
 			// "foo | bar"
 			//       .
 			next = Boundaries.create(Boundaries.container(next), offset);
-			return skipInsignificantPositions(next);
+			return nextSignificantBoundary(next);
 		}
 
 		node = Boundaries.nextNode(next);
@@ -620,7 +619,7 @@ define([
 		// |"foo" or <p>|" foo"
 		//                .
 		if (Dom.isTextNode(node)) {
-			return skipInsignificantPositions(Boundaries.nextRawBoundary(next));
+			return nextSignificantBoundary(Boundaries.nextRawBoundary(next));
 		}
 
 		while (!Dom.isEditingHost(node) && Elements.isUnrendered(node)) {
@@ -646,8 +645,8 @@ define([
 	function equals(left, right) {
 		var node, consumesOffset;
 
-		left = skipInsignificantPositions(Boundaries.normalize(left));
-		right = skipInsignificantPositions(Boundaries.normalize(right));
+		left = nextSignificantBoundary(Boundaries.normalize(left));
+		right = nextSignificantBoundary(Boundaries.normalize(right));
 
 		while (left && !Boundaries.equals(left, right)) {
 			node = Boundaries.nextNode(left);
@@ -664,7 +663,7 @@ define([
 				return false;
 			}
 
-			left = skipInsignificantPositions(Boundaries.next(left));
+			left = nextSignificantBoundary(Boundaries.next(left));
 		}
 
 		return true;
@@ -674,11 +673,10 @@ define([
 	 * Moves the given boundary backwards over any positions that are (visually
 	 * insignificant)invisible.
 	 *
-	 * @private
 	 * @param  {Boundary} boundary
 	 * @return {Boundary}
 	 */
-	function skipPrevInsignificantPositions(boundary) {
+	function prevSignificantBoundary(boundary) {
 		var next = boundary;
 		var node;
 
@@ -705,7 +703,7 @@ define([
 					}
 					after = Boundaries.prev(after);
 				}
-				return skipPrevInsignificantPositions(after);
+				return prevSignificantBoundary(after);
 			}
 
 			// "foo|"
@@ -716,14 +714,14 @@ define([
 			// "foo | bar"
 			//       .
 			next = Boundaries.create(Boundaries.container(next), offset);
-			return skipPrevInsignificantPositions(next);
+			return prevSignificantBoundary(next);
 		}
 
 		node = Boundaries.prevNode(next);
 
 		// <b>"foo"|</b>
 		if (Dom.isTextNode(node)) {
-			return skipPrevInsignificantPositions(Boundaries.prevRawBoundary(next));
+			return prevSignificantBoundary(Boundaries.prevRawBoundary(next));
 		}
 
 		while (!Dom.isEditingHost(node) && Elements.isUnrendered(node)) {
@@ -915,7 +913,7 @@ define([
 		if ('node' === unit) {
 			return Boundaries.next(boundary);
 		}
-		boundary = skipInsignificantPositions(Boundaries.normalize(boundary));
+		boundary = nextSignificantBoundary(Boundaries.normalize(boundary));
 		var nextBoundary;
 		switch (unit) {
 		case 'char':
@@ -971,7 +969,7 @@ define([
 		if ('node' === unit) {
 			return Boundaries.prev(boundary);
 		}
-		boundary = skipPrevInsignificantPositions(Boundaries.normalize(boundary));
+		boundary = prevSignificantBoundary(Boundaries.normalize(boundary));
 		var prevBoundary;
 		switch (unit) {
 		case 'char':
@@ -991,7 +989,7 @@ define([
 			prevBoundary = prevVisualBoundary(boundary);
 			break;
 		}
-		return skipPrevInsignificantPositions(prevBoundary);
+		return prevSignificantBoundary(prevBoundary);
 	}
 
 	/**
@@ -1077,16 +1075,17 @@ define([
 	}
 
 	return {
-		prev                  : prev,
-		next                  : next,
-		prevNode              : prevNode,
-		nextNode              : nextNode,
-		prevSignificantOffset : prevSignificantOffset,
-		nextSignificantOffset : nextSignificantOffset,
-		stepForward           : stepForward,
-		stepBackward          : stepBackward,
-		isAtStart             : isAtStart,
-		isAtEnd               : isAtEnd,
-		expandForward         : expandForward
+		prev                    : prev,
+		next                    : next,
+		prevNode                : prevNode,
+		nextNode                : nextNode,
+		prevSignificantOffset   : prevSignificantOffset,
+		nextSignificantOffset   : nextSignificantOffset,
+		prevSignificantBoundary : prevSignificantBoundary,
+		nextSignificantBoundary : nextSignificantBoundary,
+		stepForward             : stepForward,
+		stepBackward            : stepBackward,
+		isAtStart               : isAtStart,
+		isAtEnd                 : isAtEnd
 	};
 });
