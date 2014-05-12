@@ -253,6 +253,24 @@ define([
 	}
 
 	/**
+	 * Returns the height of the scrollbar
+	 *
+	 * @returns {Number} the scrollbar height
+	 */
+	function getScrollBarHeight () {
+		var $outer = $('<div>').css({visibility: 'hidden', height: 100, overflow: 'scroll'}).appendTo('body'),
+			heightWithScroll = $('<div>').css({height: '100%'}).appendTo($outer).outerHeight();
+		$outer.remove();
+		return 100 - heightWithScroll;
+	}
+
+	/**
+	 * Scroll bar height.
+	 * @const
+	 */
+	var SCROLL_BAR_HEIGHT = getScrollBarHeight();
+
+	/**
 	 * Calculates the offset at which to position the overlay element.
 	 *
 	 * @param {jQuery.<HTMLElement>} $element A DOM element around which to
@@ -267,32 +285,19 @@ define([
 		}
 
 		//adjust position if overlay element is overlapping window borders
-		if ($overlay !== undefined) {
-			var scrollbarHeight = getScrollBarHeight();
-			var maxWidth = $WINDOW.width();
-			var maxHeight = $WINDOW.height() - scrollbarHeight;
-			if (maxWidth < offset.left + $overlay.width()) {
-				offset.left = maxWidth - $overlay.width();
-			}
-			if (maxHeight < offset.top + $overlay.height()) {
-				offset.top = maxHeight - $overlay.height();
-			}
+		var maxWidth = $WINDOW.width();
+		var maxHeight = $WINDOW.height() - SCROLL_BAR_HEIGHT;
+
+		if (maxWidth < offset.left + $overlay.width()) {
+			offset.left = maxWidth - $overlay.width();
+		}
+
+		if (maxHeight < offset.top + $overlay.height()) {
+			offset.top = maxHeight - $overlay.height();
 		}
 
 		return offset;
 	}
-
-	/**
-	 * Returns the height of the scrollbar
-	 *
-	 * @returns {Number} the scrollbar height
-	 */
-	function getScrollBarHeight () {
-		var $outer = $('<div>').css({visibility: 'hidden', height: 100, overflow: 'scroll'}).appendTo('body'),
-			heightWithScroll = $('<div>').css({height: '100%'}).appendTo($outer).outerHeight();
-		$outer.remove();
-		return 100 - heightWithScroll;
-	};
 
 	/**
 	 * Inserts the selected character, at the editor's selection.
