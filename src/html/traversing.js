@@ -907,7 +907,7 @@ define([
 	 *
 	 * @param  {Boundary} boundary
 	 * @param  {string=}  unit Defaults to "offset"
-	 * @return {Boundary}
+	 * @return {?Boundary}
 	 */
 	function next(boundary, unit) {
 		if ('node' === unit) {
@@ -963,7 +963,7 @@ define([
 	 *
 	 * @param  {Boundary} boundary
 	 * @param  {string=}  unit Defaults to "offset"
-	 * @return {Boundary}
+	 * @return {?Boundary}
 	 */
 	function prev(boundary, unit) {
 		if ('node' === unit) {
@@ -989,7 +989,7 @@ define([
 			prevBoundary = prevVisualBoundary(boundary);
 			break;
 		}
-		return prevSignificantBoundary(prevBoundary);
+		return prevBoundary && prevSignificantBoundary(prevBoundary);
 	}
 
 	/**
