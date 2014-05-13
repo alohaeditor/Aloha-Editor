@@ -528,21 +528,26 @@ define([
 	}
 
 	/**
-	 * Return boundaries from the given range with cloned containers.
+	 * Removes an unrendered (empty text-) node infront of the given boundary.
 	 *
 	 * @private
-	 * @param  {Range} range
-	 * @return {Array.<Boundary>}
+	 * @param  {Boundary} boundary
+	 * @return {Boundary}
 	 */
-	function clonedBoundaries(range) {
-		var cac = range.commonAncestorContainer;
-		var root = Dom.clone(cac, true);
-		var startPath = Paths.fromBoundary(cac, Boundaries.fromRangeStart(range));
-		var endPath = Paths.fromBoundary(cac, Boundaries.fromRangeEnd(range));
-		return [
-			Paths.toBoundary(root, startPath),
-			Paths.toBoundary(root, endPath)
-		];
+	function trimPreceedingNode(boundary) {
+		if (Boundaries.isTextBoundary(boundary)) {
+			return boundary;
+		}
+		if (Boundaries.isAtStart(boundary)) {
+			return boundary;
+		}
+		if (Html.isRendered(Boundaries.nodeBefore(boundary))) {
+			return boundary;
+		}
+		var clone = Dom.clone(Boundaries.container(boundary), true);
+		var offset = Boundaries.offset(boundary) - 1;
+		Dom.remove(clone.childNodes[offset]);
+		return Boundaries.create(clone, offset);
 	}
 
 	/**
@@ -552,9 +557,9 @@ define([
 	 * @return {?Range}
 	 */
 	function expandLeft(range) {
-		var boundaries = clonedBoundaries(range);
-		var start = trimPreceedingNodes(boundaries[0]);
-		var end = boundaries[1];
+		var clone = range.cloneRange();
+		var start = trimPreceedingNode(Boundaries.fromRangeStart(clone));
+		var end = Boundaries.fromRangeEnd(clone);
 		if (Boundaries.isAtStart(start)) {
 			return null;
 		}
@@ -573,9 +578,8 @@ define([
 	 * @return {?Range}
 	 */
 	function expandRight(range) {
-		var boundaries = clonedBoundaries(range);
-		var start = boundaries[0];
-		var end = boundaries[1];
+		var start = Boundaries.fromRangeStart(range);
+		var end = Boundaries.fromRangeEnd(range);
 		if (Boundaries.isAtEnd(end)) {
 			return null;
 		}
@@ -691,31 +695,6 @@ define([
 		var stable = StableRange(range);
 		trim(stable, isNotEditingHost, isNotEditingHost);
 		return Dom.editingHost(stable.startContainer);
-	}
-
-	/**
-	 * Trims away unrendered nodes that preceed the given boundary. This
-	 * trimming is done to fix a bug in Chrome which causes
-	 * getBoundingClientRect() to return 0s.
-	 *
-	 * @private
-	 * @param  {Boundary} boundary
-	 * @return {Boundary}
-	 */
-	function trimPreceedingNodes(boundary) {
-		if (Boundaries.isTextBoundary(boundary) || Boundaries.isAtStart(boundary)) {
-			return boundary;
-		}
-		var node = Boundaries.nodeBefore(boundary);
-		var newBoundary = boundary;
-		var prev;
-		while (node && Html.isUnrendered(node)) {
-			newBoundary = Boundaries.fromNode(node);
-			prev = node.previousSibling;
-			Dom.remove(node);
-			node = prev;
-		}
-		return newBoundary;
 	}
 
 	return {
