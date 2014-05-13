@@ -1,61 +1,107 @@
-(function ($) {
+require([
+	'../../src/aloha',
+	'../../src/arrays',
+	'../../src/boundaries'
+], function (
+	aloha,
+	Arrays,
+	Boundaries
+) {
 	'use strict';
+
+  	[].forEach.call(document.querySelectorAll('.aloha-editable'), aloha);
+
+  	/**
+  	 * wires aloha-action-* classes on buttons to function calls
+  	 */
+  	var ACTIONS = {
+  		'bold': aloha.typing.actions.formatBold,
+  		'italic': aloha.typing.actions.formatItalic,
+  		'orderedList': aloha.list.toUnorderedList,
+  		'unorderedList': aloha.list.toUnorderedList,
+  		'undo': aloha.undo.undo,
+  		'redo': aloha.undo.redo
+  	};
+  	var CLASS_PREFIX = 'aloha-action-';
 	
-	// init editables
-	function main(aloha) {
-	  	[].forEach.call(document.querySelectorAll('.aloha-editable'), aloha);
-		
-		function execute(actionStack) {
-			var cur = aloha,
-				last = actionStack.length - 1,
-				next,
-				editable = aloha.editables.fromElem(aloha.editor, $('.aloha-editable').get(0)),
-				range = aloha.ranges.get(0),
-				alohaEvent = { 
-					editable : editable,
-					range: range
-				};
-			for (var i = 1; i <= last; i++) {
-				next = actionStack[i];
-				if (cur[next]) {
-					if (i === last && cur[next].mutate) {
-						cur[next].mutate(alohaEvent);
-					} else if (i === last) {
-						cur[next](editable.undoContext, range);
-					} else {
-						cur = cur[next];
-					}
-				} else {
-					return;
-				}
-			}
+	/**
+	 * executes an action identified by it's name
+	 * 
+	 * @param {String} actionName the name of the action to be executed
+	 * @param {Object} alohaEvent alohaEvent object
+	 */
+	function execute(actionName, alohaEvent) {
+		var action = ACTIONS[actionName];
+
+		if (!action) {
+			return;
 		}
 
-		// will bind a ui interaction to the specific aloha functions
-		function bind(event) {
-			var className = '',
-				actionStack = [];
-			for (var i = 0; i < this.classList.length; i++) {
-				className = this.classList[i];
-				if (className !== 'aloha-ui' && className.indexOf('aloha') === 0) {
-					execute(className.split('-'));
-				}
-			}
+		if (action.mutate) {
+			action.mutate(alohaEvent);
+		} else if (actionName === 'undo' || actionName === 'redo') {
+			action(alohaEvent.editable.undoContext, event.range);
+		} else {
+			action();
 		}
-
-		$('.aloha-ui').bind('click', bind);
 	}
 
-	var overrides;
+	/**
+	 * extract the intended aloha action from a dom element
+	 * will look through the classes to find an aloha-action-* class
+	 *
+	 * @param {Element} element dom element to search for an action
+	 * @return {String} action name
+	 */
+	function getAction(element) {
+		var className,
+			classes = Arrays.coerce(element.classList).concat(Arrays.coerce(element.parentNode.classList));
+		for (var i = 0; i < classes.length; i++) {
+			className = classes[i];
+			if (className.indexOf(CLASS_PREFIX) === 0) {
+				return className.substr(CLASS_PREFIX.length);
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * update the ui according to current state overrides
+	 */
+	function updateUi() {
+		var overrides = aloha.overrides.harvest(Boundaries.container(Boundaries.get()[0]));
+		// TODO simple, stateless, but slow
+		$('.aloha-ui-toolbar .active').removeClass('active');
+		overrides.forEach(function (override) {
+			$('.' + CLASS_PREFIX + override[0]).addClass('active');
+		});
+	}
+
+	var lastValidRange;
 
 	// will be invoked after each aloha event
-	function alohaCB(alohaEvent) {
-		overrides = [];
+	function alohaCB(event) {
+		if (event.type !== 'keyup' &&
+			event.type !== 'click') {
+			return;
+		}
+		
+		if (!event.range) {
+			// TODO it should not be neccessary to add missing values to the event
+			var range = aloha.ranges.get(0);
+			if (range) {
+				lastValidRange = event.range = range;
+			} else {
+				range = lastValidRange;
+			}
+		}
+
+		var action = getAction(event.nativeEvent.target);
+		if (action) {
+			execute(action, event);
+		}
+
+		updateUi();
 	}
-
-	// get current override states
-	// aloha.overrides.harvest($('.aloha-editable i:first').get(0))
-
-	// load aloha editor
-	require(['../../src/aloha'], main);
-}($));
+	window.alohaCB = alohaCB;
+});
