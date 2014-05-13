@@ -1,11 +1,13 @@
 require([
 	'../../src/aloha',
 	'../../src/arrays',
-	'../../src/boundaries'
+	'../../src/boundaries',
+	'../../src/dom'
 ], function (
 	aloha,
 	Arrays,
-	Boundaries
+	Boundaries,
+	Dom
 ) {
 	'use strict';
 
@@ -20,7 +22,12 @@ require([
   		'orderedList': aloha.list.toUnorderedList,
   		'unorderedList': aloha.list.toUnorderedList,
   		'undo': aloha.undo.undo,
-  		'redo': aloha.undo.redo
+  		'redo': aloha.undo.redo,
+  		'h2': { replace: 'h2' },
+  		'h3': { replace: 'h3' },
+  		'h4': { replace: 'h4' },
+  		'p': { replace: 'p' },
+  		'pre': { replace: 'pre' }
   	};
   	var CLASS_PREFIX = 'aloha-action-';
 	
@@ -39,6 +46,19 @@ require([
 
 		if (action.mutate) {
 			action.mutate(alohaEvent);
+		} else if (action.replace) {
+			// TODO this is too much implementation and should be moved 
+			// to a layer between the core api and the ui
+			// an algorithm needs to be provided that knows when to split
+			// or just wrap
+			var bounds = aloha.boundaries.get();
+			var cac = Boundaries.commonContainer(bounds[0], bounds[1]);
+			if (Dom.isTextNode(cac)) {
+				cac = cac.parentNode;
+			}
+			Dom.replaceShallow(
+				cac, 
+				document.createElement(action.replace));
 		} else if (actionName === 'undo' || actionName === 'redo') {
 			action(alohaEvent.editable.undoContext, event.range);
 		} else {
