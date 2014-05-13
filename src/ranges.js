@@ -551,6 +551,46 @@ define([
 	}
 
 	/**
+	 * Steps the given boundary one visual step left or until in behind of a
+	 * line break position.
+	 *
+	 * @private
+	 * @param  {Boundary} boundary
+	 * @return {Boundary}
+	 */
+	function stepLeft(boundary) {
+		var prev = Traversing.prev(boundary, 'char');
+		if (prev) {
+			return prev;
+		}
+		if (Html.hasLinebreakingStyle(Boundaries.prevNode(boundary))) {
+			return boundary;
+		}
+		return stepLeft(Traversing.prev(boundary, 'boundary'));
+	}
+
+	/**
+	 * Steps the given boundary one visual step right or until in front of a
+	 * line break position.
+	 *
+	 * @private
+	 * @param  {Boundary} boundary
+	 * @return {Boundary}
+	 */
+	function stepRight(boundary) {
+		var next = Traversing.next(boundary, 'char');
+		if (next) {
+			return next;
+		}
+		if (Html.hasLinebreakingStyle(Boundaries.nextNode(boundary))) {
+			return boundary;
+		}
+		return stepRight(Traversing.next(boundary, 'boundary'));
+	}
+
+	/**
+	 * Expands the range one visual step to the left if possible, returns null
+	 * otherwise.
 	 *
 	 * @private
 	 * @param  {Range} range
@@ -566,12 +606,12 @@ define([
 		if (Html.hasLinebreakingStyle(Boundaries.prevNode(start))) {
 			return null;
 		}
-		var prev = Traversing.prev(start, 'char')
-		        || Traversing.prev(start, 'boundary');
-		return fromBoundaries(prev, end);
+		return fromBoundaries(stepLeft(start), end);
 	}
 
 	/**
+	 * Expands the range one visual step to the right if possible, returns null
+	 * otherwise.
 	 *
 	 * @private
 	 * @param  {Range} range
@@ -590,9 +630,7 @@ define([
 		if (!Html.isAtStart(end)) {
 			return null;
 		}
-		var next = Traversing.next(end, 'char')
-		        || Traversing.next(end, 'boundary');
-		return fromBoundaries(start, next);
+		return fromBoundaries(start, stepRight(end));
 	}
 
 	/**
