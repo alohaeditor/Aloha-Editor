@@ -17,7 +17,8 @@ define([
 	'traversing',
 	'functions',
 	'cursors',
-	'boundaries'
+	'boundaries',
+	'paths'
 ], function Ranges(
 	Dom,
 	Mutation,
@@ -27,7 +28,8 @@ define([
 	Traversing,
 	Fn,
 	Cursors,
-	Boundaries
+	Boundaries,
+	Paths
 ) {
 	'use strict';
 
@@ -526,24 +528,42 @@ define([
 	}
 
 	/**
+	 * Return boundaries from the given range with cloned containers.
+	 *
+	 * @private
+	 * @param  {Range} range
+	 * @return {Array.<Boundary>}
+	 */
+	function clonedBoundaries(range) {
+		var cac = range.commonAncestorContainer;
+		var root = Dom.clone(cac, true);
+		var startPath = Paths.fromBoundary(cac, Boundaries.fromRangeStart(range));
+		var endPath = Paths.fromBoundary(cac, Boundaries.fromRangeEnd(range));
+		return [
+			Paths.toBoundary(root, startPath),
+			Paths.toBoundary(root, endPath)
+		];
+	}
+
+	/**
 	 *
 	 * @private
 	 * @param  {Range} range
 	 * @return {?Range}
 	 */
 	function expandLeft(range) {
-		var boundary = trimPreceedingNodes(Boundaries.fromRangeStart(range));
-		if (Boundaries.isAtStart(boundary)) {
+		var boundaries = clonedBoundaries(range);
+		var start = trimPreceedingNodes(boundaries[0]);
+		var end = boundaries[1];
+		if (Boundaries.isAtStart(start)) {
 			return null;
 		}
-		if (Html.hasLinebreakingStyle(Boundaries.prevNode(boundary))) {
+		if (Html.hasLinebreakingStyle(Boundaries.prevNode(start))) {
 			return null;
 		}
-		var prev = Traversing.prev(boundary, 'char')
-		        || Traversing.prev(boundary, 'boundary');
-		var clone = range.cloneRange();
-		Boundaries.setRangeStart(clone, prev);
-		return clone;
+		var prev = Traversing.prev(start, 'char')
+		        || Traversing.prev(start, 'boundary');
+		return fromBoundaries(prev, end);
 	}
 
 	/**
@@ -553,22 +573,22 @@ define([
 	 * @return {?Range}
 	 */
 	function expandRight(range) {
-		var boundary = Boundaries.fromRangeEnd(range);
-		if (Boundaries.isAtEnd(boundary)) {
+		var boundaries = clonedBoundaries(range);
+		var start = boundaries[0];
+		var end = boundaries[1];
+		if (Boundaries.isAtEnd(end)) {
 			return null;
 		}
-		if (Html.hasLinebreakingStyle(Boundaries.nextNode(boundary))) {
+		if (Html.hasLinebreakingStyle(Boundaries.nextNode(end))) {
 			return null;
 		}
 		// Petro: I still don't understand this check :(
-		if (!Html.isAtStart(boundary)) {
+		if (!Html.isAtStart(end)) {
 			return null;
 		}
-		var next = Traversing.next(boundary, 'char')
-		        || Traversing.next(boundary, 'boundary');
-		var clone = range.cloneRange();
-		Boundaries.setRangeEnd(clone, next);
-		return clone;
+		var next = Traversing.next(end, 'char')
+		        || Traversing.next(end, 'boundary');
+		return fromBoundaries(start, next);
 	}
 
 	/**
@@ -686,13 +706,8 @@ define([
 		if (Boundaries.isTextBoundary(boundary) || Boundaries.isAtStart(boundary)) {
 			return boundary;
 		}
-		var cloned = Boundaries.create(
-			Dom.clone(Boundaries.container(boundary), true),
-			Boundaries.offset(boundary)
-		);
-		var node = Boundaries.nodeBefore(cloned);
-		var range = node.ownerDocument.createRange();
-		var newBoundary = cloned;
+		var node = Boundaries.nodeBefore(boundary);
+		var newBoundary = boundary;
 		var prev;
 		while (node && Html.isUnrendered(node)) {
 			newBoundary = Boundaries.fromNode(node);
