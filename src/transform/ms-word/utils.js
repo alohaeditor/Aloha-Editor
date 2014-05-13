@@ -9,10 +9,10 @@
  */
 define([
 	'dom',
-	'predicates'
+	'html'
 ], function(
 	Dom,
-	Predicates
+	Html
 ) {
 	'use strict';
 
@@ -176,8 +176,7 @@ define([
 		child = element.firstChild;
 
 		while (child) {
-			textLevelElement = Predicates.isTextLevelSemanticNode(child)
-			                   && !Predicates.isVoidNode(child);
+			textLevelElement = Html.isTextLevelSemanticNode(child) && !Html.isVoidNode(child);
 
 			if (child.nodeName === 'SPAN' || child.nodeName === 'FONT'
 			    || (!Dom.hasText(child) && textLevelElement)) {

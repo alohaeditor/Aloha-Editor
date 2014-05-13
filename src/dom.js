@@ -6,13 +6,15 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
+	'functions',
 	'dom/attrs',
 	'dom/classes',
 	'dom/mutation',
 	'dom/nodes',
 	'dom/style',
-	'dom/traversing'
+	'dom/traversing',
 ], function Dom(
+	Fn,
 	Attrs,
 	Classes,
 	Mutation,
@@ -219,6 +221,38 @@ define([
 		return doc['defaultView'] || doc['parentWindow'];
 	}
 
+	/**
+	 * Returns scroll position from top.
+	 *
+	 * @param  {!Document} doc
+	 * @return {number}
+	 */
+	function scrollTop(doc) {
+		var win = documentWindow(doc);
+		if (!Fn.isNou(win.pageYOffset)) {
+			return win.pageYOffset;
+		}
+		var docElem = doc.documentElement;
+		var scrollTopElem = docElem.clientHeight ? docElem : doc.body;
+		return scrollTopElem.scrollTop;
+	}
+
+	/**
+	 * Returns scroll position from left.
+	 *
+	 * @param  {!Document} doc
+	 * @return {number}
+	 */
+	function scrollLeft(doc) {
+		var win = documentWindow(doc);
+		if (!Fn.isNou(win.pageXOffset)) {
+			return win.pageXOffset;
+		}
+		var docElem = doc.documentElement;
+		var scrollLeftElem = docElem.clientWidth ? docElem : doc.body;
+		return scrollLeftElem.scrollLeft;
+	}
+
 	return {
 		Nodes                   : Nodes.Nodes,
 		offset                  : Nodes.offset,
@@ -245,12 +279,13 @@ define([
 		contains                : Nodes.contains,
 		followedBy              : Nodes.followedBy,
 		hasText                 : Nodes.hasText,
-		fragmentHtml            : Nodes.fragmentHtml,
+		outerHtml               : Nodes.outerHtml,
 
 		append            : Mutation.append,
 		merge             : Mutation.merge,
 		moveNextAll       : Mutation.moveNextAll,
 		moveBefore        : Mutation.moveBefore,
+		moveAfter         : Mutation.moveAfter,
 		move              : Mutation.move,
 		copy              : Mutation.copy,
 		wrap              : Mutation.wrap,
@@ -261,7 +296,7 @@ define([
 		replaceShallow    : Mutation.replaceShallow,
 		remove            : Mutation.remove,
 		removeShallow     : Mutation.removeShallow,
-		removeChildren     : Mutation.removeChildren,
+		removeChildren    : Mutation.removeChildren,
 
 		addClass     : Classes.add,
 		removeClass  : Classes.remove,
@@ -285,17 +320,23 @@ define([
 		getComputedStyles : Style.getComputedStyles,
 
 		query                        : Traversing.query,
-		nextSiblings                 : Traversing.nextSiblings,
+		nextNonAncestor              : Traversing.nextNonAncestor,
 		nextWhile                    : Traversing.nextWhile,
+		nextUntil                    : Traversing.nextUntil,
 		nextSibling                  : Traversing.nextSibling,
+		nextSiblings                 : Traversing.nextSiblings,
 		prevWhile                    : Traversing.prevWhile,
-		upWhile                      : Traversing.upWhile,
+		prevUntil                    : Traversing.prevUntil,
+		prevSibling                  : Traversing.prevSibling,
+		prevSiblings                 : Traversing.prevSiblings,
 		walk                         : Traversing.walk,
 		walkRec                      : Traversing.walkRec,
-		walkUntil                    : Traversing.walkUntil,
 		walkUntilNode                : Traversing.walkUntilNode,
-		findBackward                 : Traversing.findBackward,
+		forward                      : Traversing.forward,
+		backward                     : Traversing.backward,
 		findForward                  : Traversing.findForward,
+		findBackward                 : Traversing.findBackward,
+		upWhile                      : Traversing.upWhile,
 		climbUntil                   : Traversing.climbUntil,
 		childAndParentsUntil         : Traversing.childAndParentsUntil,
 		childAndParentsUntilIncl     : Traversing.childAndParentsUntilIncl,
@@ -317,8 +358,10 @@ define([
 		isEditingHost     : isEditingHost,
 		isContentEditable : isContentEditable,
 
-		documentWindow     : documentWindow,
-		editingHost        : editingHost,
-		editableParent     : editableParent
+		documentWindow    : documentWindow,
+		editingHost       : editingHost,
+		editableParent    : editableParent,
+		scrollTop         : scrollTop,
+		scrollLeft        : scrollLeft
 	};
 });

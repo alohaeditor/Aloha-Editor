@@ -2,7 +2,7 @@
 (function (aloha, $) {
 	'use strict';
 
-	module('Transform MS-Word');
+	module('transform');
 
 	var Html = aloha.html;
 	var Dom = aloha.dom;
@@ -16,7 +16,8 @@
 	 */
 	function trim(node) {
 		if (Dom.isTextNode(node)) {
-			node.data = node.data.trim()
+			// Because we don't want to trim "&nbsp;" characters
+			node.data = node.data.replace(/^[ \t\r\n]*|[ \t\r\n]*$/g, '');
 		} else {
 			Dom.children(node).forEach(trim);
 		}

@@ -6,27 +6,21 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'dom/nodes',
-	'dom/style',
 	'dom',
 	'mutation',
 	'keys',
-	'maps',
 	'html',
 	'ranges',
 	'editing',
-	'dom/traversing',
+	'traversing',
 	'boundaries',
 	'functions',
 	'undo',
 	'overrides'
 ], function Typing(
-	Nodes,
-	Style,
 	Dom,
 	Mutation,
 	Keys,
-	Maps,
 	Html,
 	Ranges,
 	Editing,
@@ -57,10 +51,10 @@ define([
 		if (range.collapsed) {
 			if (direction) {
 				boundary = Boundaries.fromRangeEnd(range);
-				Boundaries.setRangeEnd(range, Html.next(boundary));
+				Boundaries.setRangeEnd(range, Traversing.next(boundary));
 			} else {
 				boundary = Boundaries.fromRangeStart(range);
-				Boundaries.setRangeStart(range, Html.prev(boundary));
+				Boundaries.setRangeStart(range, Traversing.prev(boundary));
 			}
 		}
 		Editing.delete(
@@ -77,22 +71,26 @@ define([
 	}
 
 	function break_(isLinebreak, alohaEvent) {
-		Editing.break(alohaEvent.range, alohaEvent.editable, isLinebreak);
+		Editing.break(
+			alohaEvent.range,
+			alohaEvent.editable.defaultBlockNodeName,
+			isLinebreak
+		);
 		return alohaEvent.range;
 	}
 
 	function insertText(alohaEvent) {
 		var editable = alohaEvent.editable;
-		var range = alohaEvent.range;
 		var text = alohaEvent.chr;
+		var range = alohaEvent.range;
 		var boundary = Boundaries.fromRangeStart(range);
 
 		if (' ' === text) {
-			var elem = Traversing.upWhile(
+			var elem = Dom.upWhile(
 				Boundaries.container(boundary),
-				Nodes.isTextNode
+				Dom.isTextNode
 			);
-			var whiteSpaceStyle = Style.getComputedStyle(elem, 'white-space');
+			var whiteSpaceStyle = Dom.getComputedStyle(elem, 'white-space');
 			if (!Html.isWhiteSpacePreserveStyle(whiteSpaceStyle)) {
 				text = '\xa0';
 			}
@@ -126,7 +124,7 @@ define([
 				editable,
 				0,
 				editable,
-				Nodes.nodeLength(editable)
+				Dom.nodeLength(editable)
 			);
 		}
 	}
@@ -269,11 +267,11 @@ define([
 					if (handle.deleteRange && !range.collapsed) {
 						delete_(false, alohaEvent);
 					}
-					handle.mutate(alohaEvent);
+					alohaEvent.range = handle.mutate(alohaEvent);
 					Html.prop(range.commonAncestorContainer);
 				});
 			} else {
-				handle.mutate(alohaEvent);
+				alohaEvent.range = handle.mutate(alohaEvent);
 			}
 		}
 		return alohaEvent;

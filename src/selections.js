@@ -11,12 +11,7 @@
  */
 define([
 	'functions',
-	'dom/nodes',
-	'dom/style',
-	'dom/classes',
-	'dom/mutation',
 	'dom',
-	'html',
 	'keys',
 	'maps',
 	'events',
@@ -25,15 +20,10 @@ define([
 	'browsers',
 	'overrides',
 	'boundaries',
-	'dom/traversing'
+	'traversing'
 ], function Selection(
 	Fn,
-	Nodes,
-	Style,
-	Classes,
-	DomMutation,
 	Dom,
-	Html,
 	Keys,
 	Maps,
 	Events,
@@ -47,8 +37,8 @@ define([
 	'use strict';
 
 	/**
-	 * Hides all visible carets elements and returns all carets that were
-	 * hidden in this operation.
+	 * Hides all visible caret elements and returns all those that were hidden
+	 * in this operation.
 	 *
 	 * @param  {Document} doc
 	 * @return {Array.<Element>}
@@ -57,9 +47,9 @@ define([
 		var carets = doc.querySelectorAll('div.aloha-caret');
 		var visible = [];
 		[].forEach.call(carets, function (caret) {
-			if ('block' === Style.get(caret, 'display')) {
+			if ('block' === Dom.getStyle(caret, 'display')) {
 				visible.push(caret);
-				Style.set(caret, 'display', 'none');
+				Dom.setStyle(caret, 'display', 'none');
 			}
 		});
 		return visible;
@@ -68,36 +58,34 @@ define([
 	/**
 	 * Unhides the given list of caret elements.
 	 *
-	 * @param  {Array.<Element>} carets
+	 * @param {Array.<Element>} carets
 	 */
 	function unhideCarets(carets) {
 		carets.forEach(function (caret) {
-			Style.set(caret, 'display', 'block');
+			Dom.setStyle(caret, 'display', 'block');
 		});
 	}
 
 	/**
 	 * Renders the given element at the specified boundary to represent the
-	 * caret position.  Will also style the caret if `opt_style` is provided.
+	 * caret position.
 	 *
 	 * @param {Element}  caret
 	 * @param {Boundary} boundary
-	 * @param {Object=}  opt_style
 	 */
-	function show(caret, boundary, opt_style) {
+	function show(caret, boundary) {
 		var box = Ranges.box(Ranges.fromBoundaries(boundary, boundary));
 		var doc = caret.ownerDocument;
 		var win = Dom.documentWindow(doc);
-		var topDelta = win.pageYOffset - doc.body.clientTop;
-		var leftDelta = win.pageXOffset - doc.body.clientLeft;
-		var style = {
-			'top': box.top + topDelta + 'px',
-			'left': box.left + leftDelta + 'px',
+		var topOffset = win.pageYOffset - doc.body.clientTop;
+		var leftOffset = win.pageXOffset - doc.body.clientLeft;
+		Maps.extend(caret.style, {
+			'top': box.top + topOffset + 'px',
+			'left': box.left + leftOffset + 'px',
 			'height': box.height + 'px',
 			'width': '2px',
 			'display': 'block'
-		};
-		Maps.extend(caret.style, style, opt_style);
+		});
 	}
 
 	/**
@@ -114,8 +102,7 @@ define([
 	 *
 	 * @param  {Object}  event
 	 * @param  {Element} container
-	 * @return {Object}
-	 *         An object with overrides mapped against their names.
+	 * @return {Object}  An object with overrides mapped against their names
 	 */
 	function overrides(event, container) {
 		if (event.editable) {
@@ -128,11 +115,10 @@ define([
 	}
 
 	/**
-	 * Determines how to style the caret based on the given overrides.
+	 * Determines how to style a caret element based on the given overrides.
 	 *
 	 * @param  {Object} overrides
-	 * @return {Object}
-	 *         A map of style properties and their values.
+	 * @return {Object} A map of style properties and their values
 	 */
 	function stylesFromOverrides(overrides) {
 		var style = {};
@@ -156,13 +142,13 @@ define([
 	 *         True if the boundary positions are reversed.
 	 */
 	function isReversed(sc, so, ec, eo) {
-		return (sc === ec && so > eo) || Nodes.followedBy(ec, sc);
+		return (sc === ec && so > eo) || Dom.followedBy(ec, sc);
 	}
 
 	/**
 	 * Checks whether or not the given event is a mouse event.
 	 *
-	 * @param  {Object}  event
+	 * @param  {Event|AlohaEvent} event
 	 * @return {boolean}
 	 */
 	function isMouseEvent(event) {
@@ -171,6 +157,7 @@ define([
 		case 'mousedown':
 		case 'mousemove':
 		case 'dblclick':
+		case 'dragover':
 			return true;
 		default:
 			return false;
@@ -180,12 +167,13 @@ define([
 	/**
 	 * Creates a range that is `stride` pixels above the given offset bounds.
 	 *
-	 * @param  {Object} box
-	 * @param  {number} stride
+	 * @param  {Object}   box
+	 * @param  {number}   stride
+	 * @param  {Document} doc
 	 * @return {Range}
 	 */
-	function up(box, stride) {
-		return Ranges.fromPosition(box.left, box.top - stride);
+	function up(box, stride, doc) {
+		return Ranges.fromPosition(box.left, box.top - stride, doc);
 	}
 
 	/**
@@ -195,22 +183,22 @@ define([
 	 * @param  {number} stride
 	 * @return {Range}
 	 */
-	function down(box, stride) {
-		return Ranges.fromPosition(box.left, box.top + box.height + stride);
+	function down(box, stride, doc) {
+		return Ranges.fromPosition(box.left, box.top + box.height + stride, doc);
 	}
 	function left(boundary, stride) {
-		return Html.prev(boundary, stride);
+		return Traversing.prev(boundary, stride);
 	}
 	function right(boundary, stride) {
-		return Html.next(boundary, stride);
+		return Traversing.next(boundary, stride);
 	}
 
 	/**
 	 * Given two ranges, creates a range that is between the two.
 	 *
-	 * @param  {Range} a
-	 * @param  {Range} b
-	 * @param  {string} focus
+	 * @param  {Range}  a
+	 * @param  {Range}  b
+	 * @param  {string} focus Either "start" or "end"
 	 * @return {Object}
 	 */
 	function mergeRanges(a, b, focus) {
@@ -257,25 +245,23 @@ define([
 		var half = box.height / 2;
 		var offset = half;
 		var move = ('up' === direction) ? up : down;
-		var next = move(box, offset);
+		var doc = range.commonAncestorContainer.ownerDocument;
+		var next = move(box, offset, doc);
 
 		// TODO: also check if `next` and `clone` are *visually* adjacent
 		while (next && Ranges.equals(next, clone)) {
 			offset += half;
-			next = move(box, offset);
+			next = move(box, offset, doc);
 		}
-
 		if (!next) {
 			return;
 		}
-
 		if (!Events.isWithShift(event)) {
 			return {
 				range: next,
 				focus: focus
 			};
 		}
-
 		return mergeRanges(next, range, focus);
 	}
 
@@ -294,11 +280,9 @@ define([
 		var shift = Events.isWithShift(event);
 		var clone = range.cloneRange();
 		var move = ('left' === direction) ? left : right;
-
 		if (range.collapsed || !shift) {
 			focus = ('left' === direction) ? 'start' : 'end';
 		}
-
 		if ('start' === focus) {
 			get = Boundaries.fromRangeStart;
 			set = Boundaries.setRangeStart;
@@ -308,18 +292,15 @@ define([
 			set = Boundaries.setRangeEnd;
 			collapse = Ranges.collapseToEnd;
 		}
-
 		if (range.collapsed || shift) {
 			Ranges.envelopeInvisibleCharacters(range);
 			var stride = Events.isWithCtrl(event) ? 'word' : 'visual';
 			var boundary = get(range);
 			set(clone, move(boundary, stride) || boundary);
 		}
-
 		if (!shift) {
 			collapse(clone);
 		}
-
 		return {
 			range: clone,
 			focus: focus
@@ -329,7 +310,7 @@ define([
 	/**
 	 * Caret movement operations mapped against cursor key keycodes.
 	 *
-	 * @type {Object.<String, Function(Event, Range, string):Object>}
+	 * @type {Object.<String, function(Event, Range, string):Object>}
 	 */
 	var movements = {};
 
@@ -439,12 +420,9 @@ define([
 				focus: focus
 			};
 		}
-
-		var sc, so, ec, eo, current;
-
-		sc = range.startContainer;
-		so = range.startOffset;
-
+		var sc = range.startContainer;
+		var so = range.startOffset;
+		var ec, eo, current;
 		if ('start' === focus) {
 			ec = previous.endContainer;
 			eo = previous.endOffset;
@@ -452,7 +430,6 @@ define([
 			ec = previous.startContainer;
 			eo = previous.startOffset;
 		}
-
 		if (isReversed(sc, so, ec, eo)) {
 			focus = 'end';
 			current = Ranges.create(ec, eo, sc, so);
@@ -460,7 +437,6 @@ define([
 			focus = 'start';
 			current = Ranges.create(sc, so, ec, eo);
 		}
-
 		return {
 			range: current,
 			focus: focus
@@ -477,7 +453,7 @@ define([
 	/**
 	 * Event handlers.
 	 *
-	 * @type {Object.<string, Function>}
+	 * @type {Object.<string, function>}
 	 */
 	var handlers = {
 		'keydown'   : keydown,
@@ -492,57 +468,50 @@ define([
 	};
 
 	/**
-	 * Normalizes the event type based.
+	 * Normalizes the event type.
 	 *
-	 * This function is necessary for us to properly determine how to treat a
-	 * given mouse event because we will sometime end up missing a dblclick
-	 * event when the user's cursor is hover a caret element.
+	 * This function is necessary for us to properly determine how to treat
+	 * mouse events because we will sometime end up missing a dblclick event
+	 * when the user's cursor is hovering over caret element.
 	 *
-	 * Further more, browsers do not send triple click events to JavaScript;
-	 * this function will be able to detect them when they happen.
+	 * Furthermore, browsers do not send triple click events to JavaScript; this
+	 * function will make it possible to detect them.
 	 *
 	 * @param  {Object}  event
-	 * @param  {Range}   range
-	 * @param  {string}  focus
+	 * @param  {Range}   current
 	 * @param  {Range}   previous
+	 * @param  {string}  focus
 	 * @param  {number}  then
 	 * @param  {boolean} doubleclicking
 	 * @param  {boolean} tripleclicking
 	 * @return {string}
 	 */
-	function normalizeEventType(event, range, focus, previous, then,
+	function normalizeEventType(event, current, previous, focus, then,
 	                            doubleclicking, tripleclicking) {
 		if (!isMouseEvent(event)) {
 			return event.type;
 		}
-
 		var isMouseDown = 'mousedown' === event.type;
-		var multiclicking = range
-		                 && previous
-		                 && isMouseDown
-		                 && ((new Date() - then) < 500);
-
-		if (!multiclicking && isMouseDown) {
+		var isMulticlicking = current
+		                   && previous
+		                   && isMouseDown
+		                   && ((new Date() - then) < 500);
+		if (!isMulticlicking && isMouseDown) {
 			return event.type;
 		}
-
 		if (doubleclicking) {
 			return isMouseDown ? 'tplclick' : 'dblclick';
 		}
-
 		if (tripleclicking) {
 			return 'tplclick';
 		}
-
 		if (!isMouseDown) {
 			return event.type;
 		}
-
 		var ref = ('start' === focus)
 		        ? Ranges.collapseToStart(previous.cloneRange())
 		        : Ranges.collapseToEnd(previous.cloneRange());
-
-		return Ranges.equals(range, ref) ? 'dblclick' : event.type;
+		return Ranges.equals(current, ref) ? 'dblclick' : event.type;
 	}
 
 	/**
@@ -576,8 +545,8 @@ define([
 	function Context() {
 		var caret = document.createElement('div');
 		caret.style.display = 'none';
-		Classes.add(caret, 'aloha-caret');
-		DomMutation.insert(caret, caret.ownerDocument.body, true);
+		Dom.addClass(caret, 'aloha-caret');
+		Dom.insert(caret, caret.ownerDocument.body, true);
 		return {
 			caret          : caret,
 			range          : null,
@@ -590,8 +559,8 @@ define([
 	}
 
 	/**
-	 * Returns a new context as a function of the given event, the previous
-	 * state, and changes to the state.
+	 * Returns a new selection context as a function of the given event, the
+	 * previous state, and changes to the state.
 	 *
 	 * @param  {Object} event
 	 * @param  {Object} old    context
@@ -600,7 +569,6 @@ define([
 	 */
 	function newContext(event, old, change) {
 		var context = Maps.extend({}, old, change);
-
 		switch (event.type) {
 		case 'mousedown':
 			context.time = new Date();
@@ -614,7 +582,6 @@ define([
 			context.dragging = old.mousedown;
 			break;
 		}
-
 		return context;
 	}
 
@@ -625,14 +592,14 @@ define([
 	 * @return {?Range}
 	 */
 	function fromEvent(alohaEvent) {
-		if (alohaEvent.range) {
+		if (isMouseEvent(alohaEvent)) {
 			return Ranges.fromPosition(
 				alohaEvent.nativeEvent.clientX,
 				alohaEvent.nativeEvent.clientY,
-				alohaEvent.range.commonAncestorContainer.ownerDocument
+				alohaEvent.nativeEvent.target.ownerDocument
 			);
 		}
-		return Ranges.get();
+		return alohaEvent.range || Ranges.get();
 	}
 
 	/**
@@ -664,28 +631,28 @@ define([
 		var old = event.editor.selectionContext;
 
 		// Because we will never update the caret position on mousemove, we
-		// avoid unncessary computation.
+		// avoid unncessary computation
 		if ('mousemove' === event.type) {
 			context = event.editor.selectionContext = newContext(event, old);
 
 			// Because we want to move the caret out of the way when the user
-			// starts to create an expanded selection by dragging.
+			// starts creating an expanded selection by dragging
 			if (!old.dragging && context.dragging) {
-				Style.set(context.caret, 'display', 'none');
-				Classes.remove(context.caret, 'aloha-caret-blink');
+				Dom.setStyle(context.caret, 'display', 'none');
+				Dom.removeClass(context.caret, 'aloha-caret-blink');
 			}
 
 			return event;
 		}
 
 		if ('mousedown' === event.type) {
-			Classes.add(old.caret, 'aloha-caret-blink');
+			Dom.addClass(old.caret, 'aloha-caret-blink');
 		}
 
 		// Because otherwise, if, in the process of a click, the user's cursor
-		// is over the caret, fromEvent() will compute the range to be
-		// inside the absolutely positioned caret element.
-		Style.set(old.caret, 'display', 'none');
+		// is over the caret, fromEvent() will compute the range to be inside
+		// the absolutely positioned caret element
+		Dom.setStyle(old.caret, 'display', 'none');
 
 		var range = fromEvent(event);
 
@@ -696,8 +663,8 @@ define([
 		var type = normalizeEventType(
 			event,
 			range,
-			old.focus,
 			old.range,
+			old.focus,
 			old.time,
 			old.doubleclicking,
 			old.tripleclicking
@@ -729,9 +696,10 @@ define([
 			container = range.endContainer;
 		}
 
-		show(
-			context.caret,
-			boundary,
+		show(context.caret, boundary);
+
+		Maps.extend(
+			context.caret.style,
 			stylesFromOverrides(overrides(event, container))
 		);
 
@@ -743,9 +711,9 @@ define([
 		}
 
 		// Because browsers have a non-intuitive way of handling expanding of
-		// selections when holding down the shift key.  We therefore "trick"
-		// the browser by setting the selection to a range which will cause the
-		// the expansion to be done in the way that the user expects.
+		// selections when holding down the shift key.  We therefore "trick" the
+		// browser by setting the selection to a range which will cause the the
+		// expansion to be done in the way that the user expects
 		if (!preventDefault && 'mousedown' === type && Events.isWithShift(event)) {
 			if ('start' === context.focus) {
 				range = Ranges.collapseToEnd(range);

@@ -11,21 +11,6 @@
 		equal(maps.isEmpty({}), true); 
 	});
 
-	test('fillTuples', function () {
-		tested.push('fillTuples');
-		var map = maps.fillTuples({
-			zero: 0
-		}, [
-			['one',   1],
-			['two',   2],
-			['three', 3]
-		]);
-		equal(map.zero,  0);
-		equal(map.one,   1);
-		equal(map.two,   2);
-		equal(map.three, 3);
-	});
-
 	test('fillKeys', function () {
 		tested.push('fillKeys');
 		var map = maps.fillKeys({
@@ -96,6 +81,17 @@
 		equal(maps.isMap(document.createElement("DIV")), false);
 		equal(maps.isMap(document.createElement("XX")), false);
 		equal(maps.isMap(document.createTextNode("xx")), false);
+	});
+
+	test('extend', function () {
+		tested.push('extend');
+		var map = {
+			one: 1
+		}
+		maps.extend(map, {two: 2}, {three: 3});
+		equal(map.one,   1);
+		equal(map.two,   2);
+		equal(map.three, 3);
 	});
 
 	//testCoverage(test, tested, maps);

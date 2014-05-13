@@ -6,11 +6,11 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'dom/traversing',
+	'dom',
 	'arrays',
 	'functions'
 ], function StableRange(
-	Traversing,
+	Dom,
 	Arrays,
 	Fn
 ) {
@@ -55,24 +55,18 @@ define([
 		for (i = 0; i < 4; i++) {
 			startAncestor = startAncestor.parentNode || startAncestor;
 		}
-		var startAncestors = Traversing.childAndParentsUntilInclNode(
+		var startAncestors = Dom.childAndParentsUntilInclNode(
 			start,
 			startAncestor
 		);
-		var endAncestors = Traversing.childAndParentsUntilInclNode(
+		var endAncestors = Dom.childAndParentsUntilInclNode(
 			end,
 			startAncestor
 		);
 
 		if (startAncestor !== Arrays.last(endAncestors)) {
-			startAncestors = Traversing.childAndParentsUntil(
-				start,
-				Fn.returnFalse
-			);
-			endAncestors = Traversing.childAndParentsUntil(
-				end,
-				Fn.returnFalse
-			);
+			startAncestors = Dom.childAndParentsUntil(start, Fn.returnFalse);
+			endAncestors = Dom.childAndParentsUntil(end, Fn.returnFalse);
 		}
 
 		return Arrays.intersect(

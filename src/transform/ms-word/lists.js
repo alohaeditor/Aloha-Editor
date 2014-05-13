@@ -208,28 +208,14 @@ define([
 	}
 
 	/**
-	 * Creates an LI from the given list-paragraph.
-	 *
-	 * @param  {Element}  p
-	 * @param  {Document} doc
-	 * @return {Element}
-	 */
-	function createItem(p, doc) {
-		var li = doc.createElement('li');
-		Dom.copy(Dom.children(p).filter(Fn.complement(isIgnorableSpan)), li);
-		return li;
-	}
-
-	/**
 	 * Creates an a list container from the given list-paragraph.
 	 *
-	 * @param  {Element}  p
-	 * @param  {Document} doc
+	 * @param  {Element} p
 	 * @return {Element}
 	 */
-	function createContainer(p, doc) {
+	function createContainer(p) {
 		var type = isOrderedList(p) ? 'ol' : 'ul';
-		var list = doc.createElement(type);
+		var list = p.ownerDocument.createElement(type);
 		if ('ul' === type) {
 			return list;
 		}
@@ -258,21 +244,20 @@ define([
 	 * Creates a list DOM structure based on the given `list` data structure
 	 * (created from createList()).
 	 *
-	 * @param  {Object}   list
-	 * @param  {Document} doc
-	 * @param  {String}   marker
+	 * @param  {Object} list
+	 * @param  {String} marker
 	 * @return {Element}
 	 */
-	function constructList(list, doc, marker) {
-		var container = createContainer(list.node, doc);
+	function constructList(list, marker) {
+		var container = createContainer(list.node);
 		var items = list.items.reduce(function (items, item) {
 			var children = item.reduce(function (children, contents) {
 				return children.concat(
-					contents[marker] ? constructList(contents, doc, marker)
+					contents[marker] ? constructList(contents, marker)
 					                 : contents
 				);
 			}, []);
-			var li = doc.createElement('li');
+			var li = list.node.ownerDocument.createElement('li');
 			Dom.copy(children, li);
 			return items.concat(li);
 		}, []);
@@ -289,16 +274,15 @@ define([
 	 * only valid way that lists are represented in MS-Word.
 	 *
 	 * @param  {Array.<Node>}              nodes
-	 * @param  {Document}                  doc
 	 * @param  {function(Element):Element} transform
 	 * @return {?Element}
 	 */
-	function createList(nodes, doc, transform) {
+	function createList(nodes, transform) {
 		var i, j, l, node, list, first, last, level;
 		var marker = '_aloha' + (new Date().getTime());
 
 		for (i = 0; i < nodes.length; i++) {
-			node = transform(nodes[i], doc);
+			node = transform(nodes[i]);
 			level = extractLevel(node);
 
 			if (!list) {
@@ -336,8 +320,8 @@ define([
 			}
 
 			if (!isListParagraph(node) || !isStartOfListItem(node)) {
-				// Because `node` is line-breaking content that continues
-				// inside of the previous list item
+				// Because `node` is line-breaking content that continues inside
+				// of the previous list item
 				last = Arrays.last(list.items);
 				if (!last) {
 					last = [];
@@ -351,7 +335,7 @@ define([
 			}
 		}
 
-		return first && constructList(first, doc, marker);
+		return first && constructList(first, marker);
 	}
 
 	/**
@@ -360,15 +344,14 @@ define([
 	 *
 	 * Note that decimal-pointer counters are a styling issue and not a
 	 * structural issue  This mean that the list numbering may look different,
-	 * even when the normalized structure matches MS-Word's, until you apply
-	 * the correct css styling.
+	 * even when the normalized structure matches MS-Word's, until you apply the
+	 * correct css styling.
 	 * (see: https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Counters). 
 	 *
-	 * @param  {Element}  element
-	 * @param  {Document} doc
+	 * @param  {Element} element
 	 * @return {Element} A normalized copy of `element`
 	 */
-	function transform(element, doc) {
+	function transform(element) {
 		var children = Dom.children(element);
 		var processed = [];
 		var i;
@@ -380,9 +363,9 @@ define([
 		for (i = 0; i < l; i++) {
 			node = children[i];
 			if (isSingleListParagraph(node)) {
-				processed.push(createList([node], doc, transform));
+				processed.push(createList([node], transform));
 			} else if (!isFirstListParagraph(node)) {
-				processed.push(transform(node, doc));
+				processed.push(transform(node));
 			} else {
 				nodes =  Dom.nextSiblings(node, isLastListParagraph);
 				// Becuase Dom.nextSibling() excludes the predicative node
@@ -390,7 +373,7 @@ define([
 				if (last) {
 					nodes.push(last);
 				}
-				list = createList(nodes, doc, transform);
+				list = createList(nodes, transform);
 				if (list) {
 					processed.push(list);
 					i += nodes.length - 1;

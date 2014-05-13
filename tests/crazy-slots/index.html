@@ -3,27 +3,9 @@
 	<head>
 		<title>Aloha Editor</title>
 		<meta charset="UTF-8">
-		<link rel="stylesheet" type="text/css" href="../src/aloha.css">
-		<style>
-			@font-face {
-			  font-family: 'Open Sans';
-			  font-style: normal;
-			  font-weight: 300;
-			  src: local('Open Sans Light'), local('OpenSans-Light'), url(open-sans.woff) format('woff');
-			}
-			@font-face {
-			  font-family: 'Open Sans';
-			  font-style: normal;
-			  font-weight: 700;
-			  src: local('Open Sans Bold'), local('OpenSans-Bold'), url(open-sans-bold.woff) format('woff');
-			}
-			body {
-				font-family: 'Open Sans', sans-serif;
-			}
-		</style>
 	</head>
 	<body>
-		<div id="aloha-editable" contentEditable="true">
+		<div id="aloha-editable">
 
 			<h1>Aloha Editor</h1>
 			<p>
@@ -59,10 +41,9 @@
 				</ul>
 			</div>
 		</div>
-		<script src="../src/require-pronto.js"></script>
-		<script src="../src/require-pronto.dev.js"></script>
-		<script src="../build/aloha.js"></script>
-        <script src="crazy-slots-run.js"></script>
+		<script src="../../src/require-pronto.js"></script>
+		<script src="../../src/require-pronto.dev.js"></script>
+        <script src="run.js"></script>
 	</body>
 </html>
 

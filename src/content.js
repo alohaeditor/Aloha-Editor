@@ -119,7 +119,7 @@ define([], function Content() {
 		 // font nodes, we need to accomodate this element, even though it is
 		 // non-standard.
 		 // http://htmlhelp.com/reference/html40/special/font.html
-		'FONT'               : '_PHRASING__',
+		'FONT'               : '_PHRASING_',
 		'FOOTER'             : '_FLOW_',
 		'FORM'               : '_FLOW_',
 		'H1'                 : '_PHRASING_',
@@ -555,7 +555,7 @@ define([], function Content() {
 	 *        The node which would contain the other.
 	 * @param {String} inner
 	 *        The node to be nested a child of `outer`.
-	 * @return {Boolean}
+	 * @return {boolean}
 	 *        True if `inner` is allowed a direct child of `outer`.
 	 */
 	function allowsNesting(outer, inner) {

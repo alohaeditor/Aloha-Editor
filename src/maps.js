@@ -5,7 +5,7 @@
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define(['arrays'], function Maps(Arrays) {
+define(['arrays', 'assert'], function Maps(Arrays, Assert) {
 	'use strict';
 
 	/**
@@ -31,11 +31,10 @@ define(['arrays'], function Maps(Arrays) {
 	 *
 	 * @param {Object} map
 	 *        The given map will have one entry added for each given key.
-	 * @param {Array[String]} keys
+	 * @param {Array.<string>} keys
 	 *        An array of string keys. JavaScript maps can only contain string
 	 *        keys, so these must be strings or they will be cast to string.
-	 * @param {String} value
-	 *        A single value that each given key will map to.
+	 * @param {string} value A single value that each given key will map to.
 	 * @return {Object}
 	 *         The given map.
 	 */
@@ -48,33 +47,9 @@ define(['arrays'], function Maps(Arrays) {
 	}
 
 	/**
-	 * Fills the given map with entries from the given tuples.
-	 *
-	 * @param {Object} map
-	 *        The given map will have one entry added for each item in the given
-	 *        array.
-	 * @param {Array[Array[String, *]]}tuples
-	 *        An array of [key, value] tuples. Javascript maps can only contain
-	 *        string keys, so the keys must be strings or or they will be cast
-	 *        to string.
-	 * @return {Object}
-	 *         The given map.
-	 */
-	function fillTuples(map, tuples) {
-		var i = tuples.length,
-			tuple;
-		while (i--) {
-			tuple = tuples[i];
-			map[tuple[0]] = tuple[1];
-		}
-		return map;
-	}
-
-
-	/**
 	 * For each mapping, calls `cb(value, key, m)`.
 	 *
-	 * Emulates ECMAScript edition 5 Array.forEach.
+	 * Like ECMAScript edition 5 Array.forEach but for Maps.
 	 *
 	 * Contrary to "for (key in m)" iterates only over the "hasOwnProperty"
 	 * properties of the m, which is usually what you want.
@@ -93,12 +68,30 @@ define(['arrays'], function Maps(Arrays) {
 	 *
 	 * @param {!Object} m
 	 * @param {!Array} ks
+	 * @param {*} _default used in place of non-existing properties
 	 * @return {!Array}
 	 */
-	function selectVals(m, ks) {
+	function selectVals(m, ks, _default) {
 		return ks.map(function (k) {
-			return m[k];
+			return m.hasOwnProperty(k) ? m[k] : _default;
 		});
+	}
+
+	/**
+	 * Same as Array.filter except for maps.
+	 *
+	 * The given predicate is applied to each entry in the given map,
+	 * and only if the predicate returns true, will the entry appear in
+	 * the result.
+	 */
+	function filter(m, pred) {
+		var result = {};
+		forEach(m, function (val, key) {
+			if (pred(val, key, m)) {
+				result[key] = val;
+			}
+		});
+		return result;
 	}
 
 	/**
@@ -127,7 +120,7 @@ define(['arrays'], function Maps(Arrays) {
 
 	function extend(dest) {
 		var i;
-		for (i = 0; i < arguments.length; i++) {
+		for (i = 1; i < arguments.length; i++) {
 			var src = arguments[i];
 			if (src) {
 				forEach(src, function (value, key) {
@@ -154,6 +147,44 @@ define(['arrays'], function Maps(Arrays) {
 	}
 
 	/**
+	 * Clones a map.
+	 *
+	 * @param map {!Object}
+	 * @return {!Object}
+	 */
+	function clone(map) {
+		Assert.assertNotNou(map);
+		return extend({}, map);
+	}
+
+	/**
+	 * Sets a value on a clone of the given map and returns the clone.
+	 *
+	 * @param map {!Object}
+	 * @param key {string}
+	 * @param value {*}
+	 * @return {!Object}
+	 */
+	function cloneSet(map, key, value) {
+		map = clone(map);
+		map[key] = value;
+		return map;
+	}
+
+	/**
+	 * Deletes a key from a clone of the given map and returns the clone.
+	 *
+	 * @param map {!Object}
+	 * @param key {string}
+	 * @return {!Object}
+	 */
+	function cloneDelete(map, key) {
+		map = clone(map);
+		delete map[key];
+		return map;
+	}
+
+	/**
 	 * Whether the given object is a map that can be operated on by
 	 * other functions in this module.
 	 *
@@ -167,16 +198,36 @@ define(['arrays'], function Maps(Arrays) {
 		          && Object.prototype.toString.call(obj) === '[object Object]');
 	}
 
+	/**
+	 * Creates a map without inheriting from Object.
+	 *
+	 * Use this instead of an object literal to avoid having unwanted,
+	 * inherited properties on the map.
+	 *
+	 * A map constructed like this allows for the
+	 * ```for (var key in map) { }```
+	 * pattern to be used without a hasOwnProperty check.
+	 *
+	 * @return {!Object}
+	 */
+	function create(map) {
+		return Object.create(null);
+	}
+
 	return {
 		isEmpty    : isEmpty,
-		fillTuples : fillTuples,
 		fillKeys   : fillKeys,
 		keys       : keys,
 		vals       : vals,
 		selectVals : selectVals,
+		filter     : filter,
 		forEach    : forEach,
 		extend     : extend,
 		merge      : merge,
-		isMap      : isMap
+		isMap      : isMap,
+		clone      : clone,
+		cloneSet   : cloneSet,
+		cloneDelete: cloneDelete,
+		create     : create
 	};
 });

@@ -6,12 +6,10 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'dom/nodes',
-	'dom/style',
-	'predicates'
+	'dom',
+	'html/predicates'
 ], function HtmlStyles(
-	Nodes,
-	Style,
+	Dom,
 	Predicates
 ) {
 	'use strict';
@@ -73,11 +71,11 @@ define([
 			return false;
 		}
 		switch (node.nodeType) {
-		case Nodes.Nodes.DOCUMENT:
-		case Nodes.Nodes.DOCUMENT_FRAGMENT:
+		case Dom.Nodes.DOCUMENT:
+		case Dom.Nodes.DOCUMENT_FRAGMENT:
 			return true;
-		case Nodes.Nodes.ELEMENT:
-			var style = Style.getComputedStyle(node, 'display');
+		case Dom.Nodes.ELEMENT:
+			var style = Dom.getComputedStyle(node, 'display');
 			return style ? !nonBlockDisplayValuesMap[style] : Predicates.isBlockNode(node);
 		default:
 			return false;

@@ -119,19 +119,28 @@ define(['functions'], function Arrays(Fn) {
 	}
 
 	/**
-	 * Like Array.prototype.map() except that it expects the given function to
-	 * return arrays which will be concatenated together into the resulting
-	 * array.
+	 * Like Array.prototype.map() except expects the given function to return
+	 * arrays which will be concatenated together into the resulting array.
 	 *
 	 * Related to partition() in the sense that
 	 * mapcat(partition(xs, n), identity) == xs.
+	 *
+	 * Don't use Array.prototype.concat.apply():
+	 * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply
+	 * "The consequences of applying a function with too many arguments
+	 * (think more than tens of thousands of arguments) vary across
+	 * engines (JavaScriptCore has hard-coded argument limit of 65536),
+	 * because the limit (indeed even the nature of any
+	 * excessively-large-stack behavior) is unspecified. "
 	 *
 	 * @param xs {Array.<*>}
 	 * @param fn {function(*):Array.<*>}
 	 * @return {Array.<*>}
 	 */
 	function mapcat(xs, fn) {
-		return Array.prototype.concat.apply([], xs.map(fn));
+		return xs.reduce(function(result, x) {
+			return result.concat(fn(x));
+		}, []);
 	}
 
 	/**
@@ -157,27 +166,6 @@ define(['functions'], function Arrays(Fn) {
 	}
 
 	/**
-	 * Similar to 
-	 * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some
-	 * Except, instead of returning true, returns the first value in the array
-	 * for which the `pred` returns true.
-	 *
-	 * @param  {Array.<*>}           xs
-	 * @param  {function(*):boolean} pred
-	 * @return {*} One of xs
-	 */
-	function some(xs, pred) {
-		var result = null;
-		xs.some(function (x) {
-			if (pred(x)) {
-				result = x;
-				return true;
-			}
-		});
-		return result;
-	}
-
-	/**
 	 * Similar to some(), except that it returns an index into the given array
 	 * for the first element for which `pred` returns true.
 	 *
@@ -188,13 +176,47 @@ define(['functions'], function Arrays(Fn) {
 	 * @return {*}
 	 */
 	function someIndex(xs, pred) {
-		var index = 0;
-		return xs.some(function (x) {
+		var result = -1;
+		xs.some(function (x, i) {
 			if (pred(x)) {
+				result = i;
 				return true;
 			}
-			index++;
-		}) ? index : -1;
+		});
+		return result;
+	}
+
+	/**
+	 * Similar to 
+	 * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some
+	 * Except, instead of returning true, returns the first value in the array
+	 * for which the `pred` returns true.
+	 *
+	 * @param  {Array.<*>}           xs
+	 * @param  {function(*):boolean} pred
+	 * @return {*} One of xs
+	 */
+	function some(xs, pred) {
+		var index = someIndex(xs, pred);
+		return -1 === index ? null : xs[index];
+	}
+
+	/**
+	 * Splits the list into two parts using the given predicate.
+	 *
+	 * The first element will be the "prefix," containing all elements of `list` before
+	 * the element that returns true for the predicate.
+	 *
+	 * The second element is equal to dropWhile(list).
+	 *
+	 * @param  {Array<*>}            list
+	 * @param  {function(*):boolean} predicate
+	 * @return {Array<Array<*>>}     The prefix and suffix of `list`
+	 */
+	function split(xs, predicate) {
+		var end = someIndex(xs, predicate);
+		end = -1 === end ? xs.length : end;
+		return [xs.slice(0, end), xs.slice(end)];
 	}
 
 	return {
@@ -208,6 +230,7 @@ define(['functions'], function Arrays(Fn) {
 		mapcat     : mapcat,
 		partition  : partition,
 		some       : some,
-		someIndex  : someIndex
+		someIndex  : someIndex,
+		split      : split
 	};
 });

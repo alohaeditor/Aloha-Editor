@@ -9,7 +9,7 @@
 	<script src="../src/require-pronto.js"></script>
 	<script src="../src/require-pronto.dev.js"></script>
 	<script>define.amd = {jQuery:true};</script>
-	<script src="../build/aloha.js"></script>
+	<!-- script src="../build/aloha.js"></script -->
 </head>
 <body>
 	<h1 id="qunit-header">Aloha Editor Test Suite</h1>
@@ -18,7 +18,7 @@
 	<h2 id="qunit-userAgent"></h2>
 	<ol id="qunit-tests"></ol>
 	<div id="qunit-fixture">
-		<div id="test-editable"></div>
+		<div id="test-editable" contentEditable="true"></div>
 	</div>
 	<script>
 		var isBuild = false;
@@ -47,31 +47,60 @@
 
 		function run() {
 			require([
+				'maps-tests',
+				'trees-tests',
 				'arrays-tests',
-				'content-tests',
-				'boundaries-tests',
-				'dom-tests',
-				'editing-tests',
+				'strings-tests',
 				'functions-tests',
-				'html-tests',
+
+				'boundary-markers-tests',
+				'boundaries-tests',
+
+				'content-tests',
+
+				'dom/general-tests',
+				'dom/attributes-tests',
+				'dom/mutation-tests',
+				'dom/styles-tests',
+				'dom/classes-tests',
+				'dom/traversing-tests',
+
+				'html/html-tests',
+				'html/br-tests',
+				'html/styles-tests',
+				'html/predicates-tests',
+
+				'traversing/traversing-tests',
+				'traversing/word-boundaries-tests',
+
+				'editing/breaking-tests',
+				'editing/deleting-tests',
+				'editing/splitting-tests',
+				'editing/formatting-tests',
+				'editing/range-trimming-tests',
+
+				/*
 				'image-tests',
+				'ranges-tests',
+
 				'list/list-selection-tests',
 				'list/content-to-list-tests',
 				'list/list-tests',
-				'maps-tests',
-				'predicates-tests',
-				'trees-tests',
+
 				'link/link-creation-tests',
 				'link/link-remove-tests',
 				'link/link-selection-tests',
-				'strings-tests',
-				'traversing-tests',
-				//'ranges-tests',
-				'boundary-markers-tests',
+				*/
+
 				'undo-tests',
+
 				'transform/html-tests',
 				'transform/plain-tests',
-				'transform/ms-word/tests'
+				'transform/ms-word/tests',
+
+                'records-tests',
+                'delayed-map-tests',
+                'boromir-tests'
 			], function () {});
 		}
 

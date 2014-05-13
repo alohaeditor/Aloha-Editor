@@ -40,18 +40,20 @@ define([
 	'overrides',
 	'paths',
 	'paste',
-	'predicates',
 	'ranges',
 	'selection-change',
 	'selections',
 	'stable-range',
 	'strings',
-	'dom/traversing',
+	'traversing',
 	'trees',
 	'typing',
 	'undo',
 	'transform/ms-word/utils',
-	'transform'
+	'transform',
+	'record',
+	'delayed-map',
+	'boromir'
 ], function Exports(
 	Arrays,
 	Blocks,
@@ -83,7 +85,6 @@ define([
 	Overrides,
 	Paths,
 	Paste,
-	Predicates,
 	Ranges,
 	SelectionChange,
 	Selections,
@@ -94,7 +95,10 @@ define([
 	Typing,
 	Undo,
 	WordTransformUtils,
-	Transform
+	Transform,
+	Record,
+	DelayedMap,
+	Boromir
 ) {
 	'use strict';
 
@@ -129,7 +133,6 @@ define([
 	exports['overrides'] = Overrides;
 	exports['paths'] = Paths;
 	exports['paste'] = Paste;
-	exports['predicates'] = Predicates;
 	exports['ranges'] = Ranges;
 	exports['selectionchange'] = SelectionChange;
 	exports['selections'] = Selections;
@@ -141,6 +144,9 @@ define([
 	exports['undo'] = Undo;
 	exports['wordTransformUtils'] = WordTransformUtils;
 	exports['xhtml'] = Xhtml;
+	exports['Record'] = Record;
+	exports['DelayedMap'] = DelayedMap;
+	exports['Boromir'] = Boromir;
 
 	return exports;
 });

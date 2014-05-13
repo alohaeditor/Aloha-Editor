@@ -8,18 +8,16 @@
 define([
 	'html/elements',
 	'html/styles',
+	'html/predicates',
 	'dom',
-	'dom/traversing',
-	'predicates',
 	'arrays',
 	'boundaries',
 	'strings'
 ], function HtmlTraversing(
 	Elements,
 	Styles,
-	Dom,
-	DomTraversing,
 	Predicates,
+	Dom,
 	Arrays,
 	Boundaries,
 	Strings
@@ -78,7 +76,7 @@ define([
 	 * @return {Node}
 	 */
 	function prevNonAncestor(node, match, until) {
-		return DomTraversing.nextNonAncestor(node, true, match, until || Dom.isEditingHost);
+		return Dom.nextNonAncestor(node, true, match, until || Dom.isEditingHost);
 	}
 
 	/**
@@ -89,7 +87,7 @@ define([
 	 * @return {Node}
 	 */
 	function nextNonAncestor(node, match, until) {
-		return DomTraversing.nextNonAncestor(node, false, match, until || Dom.isEditingHost);
+		return Dom.nextNonAncestor(node, false, match, until || Dom.isEditingHost);
 	}
 
 	/**
@@ -333,76 +331,83 @@ define([
 	}
 
 	/**
-	 * Checks whether a boundary can pass in or out of the given node without
-	 * the visual position of the boundary being changed.
-	 *
-	 * Calling this function with a <b> node will return true, for example
-	 * because the boundary position right in front of a B element's start tag
-	 * and the boundary position right after the start tag are rendered at the
-	 * same visual position.
-	 *
-	 * "|<b>foo..." is visually at the same position as "<b>|foo.."
-	 *
-	 * Likewise "..bar|</div>" is visually the same as "..bar</div>|" therefore
-	 * it is deemed possible for a boundary to pass through (into or out of)
-	 * the DIV element without the boundary being moved visually.
-	 *
-	 * The same is not true with single-tag elements like textnode and IMG
-	 * elements:
-	 *
-	 * "|foo" is not visually the same as "f|oo".
-	 *
-	 * Nor is "|<img>" visually the same as "<img>|"
-	 *
-	 * Visible text nodes and void-type (blocks) nodes are therefore deemed as
-	 * nodes that we cannot pass through.
+	 * Expands the boundary.
 	 *
 	 * @private
-	 * @param  {Node} node
-	 * @return {boolean}
+	 * @param  {Boundary}                   boundary
+	 * @param  {function(Boundary, function(Boundary):boolean):Boundary}
+	 *                                      step
+	 * @param  {function(Boundary):Node}    nodeAt
+	 * @param  {function(Boundary):boolean} isAtStart
+	 * @param  {function(Boundary):boolean} isAtEnd
+	 * @return {Boundary}
 	 */
-	function canPassThrough(node) {
-		return !(Dom.isTextNode(node) || Elements.isVoidType(node))
-		    || Elements.isUnrendered(node);
+	function expand(boundary, step, nodeAt, isAtStart, isAtEnd) {
+		return step(boundary, function (boundary) {
+			var node = nodeAt(boundary);
+			if (!Elements.isRendered(node)) {
+				return true;
+			}
+			if (isAtEnd(boundary)) {
+				//       <    >
+				// <host>| or |</host>
+				if (Dom.isEditingHost(node)) {
+					return false;
+				}
+				//    < >
+				// <li>|</li>
+				if (Predicates.isListItem(node) && isAtStart(boundary)) {
+					return false;
+				}
+				//    <    >
+				// <p>| or |</p>
+				return true;
+			}
+			return !Dom.isTextNode(node) && !Elements.isVoidType(node);
+		});
 	}
 
 	/**
-	 * Steps from one node boundary to the next until we reach a node that we
-	 * cannot step into or out of without causing the visual position of
-	 * `boundary` to change.
+	 * Expands the boundary backward.
+	 *
+	 * Drilling through...
+	 *
+	 * >
+	 * |</p></li><li><b><i>foo...
+	 *
+	 * should result in
+	 *
+	 * </p></li><li><b><i>|foo...
 	 *
 	 * @private
-	 * @param  {Boundary}                    boundary
-	 * @param  {function(Boundary):Node}     nextNode
-	 * @param  {function(Boundary):Boundary} nextBoundary
-	 * @return {Object}
+	 * @param  {Boundary} boundary
+	 * @return {Boundary}
 	 */
-	function nextVisiblePosition(boundary, nextNode, nextBoundary) {
-		var crossedVisualBreak = false;
-		var node;
-		while (boundary) {
-			node = nextNode(boundary);
+	function expandBackward(boundary) {
+		return expand(
+			boundary,
+			Boundaries.prevWhile,
+			Boundaries.prevNode,
+			Boundaries.isAtEnd,
+			Boundaries.isAtStart
+		);
+	}
 
-			//   .-- node --.
-			//   |          |
-			//   v          v
-			// |<p>   or |</h1>
-			//  <p>|  or  </h1>|
-			crossedVisualBreak = crossedVisualBreak
-					|| (Styles.hasLinebreakingStyle(node) && Elements.isRendered(node));
-
-			if (!canPassThrough(node) || Dom.isEditingHost(node)) {
-				break;
-			}
-
-			do {
-				boundary = nextBoundary(boundary);
-			} while (Elements.isUnrendered(Boundaries.container(boundary)));
-		}
-		return {
-			boundary           : boundary,
-			crossedVisualBreak : crossedVisualBreak
-		};
+	/**
+	 * Expands the boundary forward.
+	 *
+	 * @private
+	 * @param  {Boundary} boundary
+	 * @return {Boundary}
+	 */
+	function expandForward(boundary) {
+		return expand(
+			boundary,
+			Boundaries.nextWhile,
+			Boundaries.nextNode,
+			Boundaries.isAtStart,
+			Boundaries.isAtEnd
+		);
 	}
 
 	/**
@@ -414,68 +419,56 @@ define([
 	 *
 	 * @private
 	 * @param  {Boundary} boundary
-	 * @return {Object}
+	 * @param  {Object}   steps
+	 * @return {Boundary}
 	 */
 	function stepVisualBoundary(boundary, steps) {
 		// Inside of text node
-		//
+		//    < >
 		// <#te|xt>
 		if (Boundaries.isTextBoundary(boundary)) {
-			return steps.nextCharacter(boundary)
-			    || stepVisualBoundary(steps.stepBoundary(boundary), steps);
+			var next = steps.nextCharacter(boundary);
+			if (next) {
+				return next;
+			}
 		}
 
-		var move = nextVisiblePosition(
-			boundary,
-			steps.nodeAt,
-			steps.stepBoundary
-		);
+		var node = steps.nodeAt(boundary);
 
-		var next = move.boundary;
-		var crossedVisualBreak = move.crossedVisualBreak;
-		var node = steps.adjacentNode(next);
-
-		// At start or end of block
-		//
+		// At start or end of editable
 		//       <    >
 		// <host>| or |</host>
-		//    <p>| or |</p>
-		if (!node) {
-			return next;
+		if (Dom.isEditingHost(node)) {
+			return boundary;
 		}
 
-		// Before void element
-		//
-		//   .------- node -------.
-		//   |                    |
-		//   v  <              >  v
-		//  <br>|<b>   or   <b>|<br>
-		//
-		//   .------- node -------.
-		//   |                    |
-		//   v  <              >  v
-		// <img>|<div> or <div>|<img>
-		if (Elements.isVoidType(node)) {
-			return Boundaries.stepWhile(steps.stepBoundary(next), function (pos) {
-				var node = steps.nodeAt(pos);
-				return canPassThrough(node) && !Dom.isEditingHost(node);
-			}, steps.stepBoundary);
+		if (Dom.isTextNode(node) || Elements.isUnrendered(node)) {
+			return stepVisualBoundary(steps.stepBoundary(boundary), steps);
 		}
 
-		// If crossedVisualBreak
-		//
-		//    .-------- node --------.
-		//    |                      |
-		//    v   <              >   v
-		// <#text>|<div> or <div>|<#text>
-		//
-		// else
-		//
-		//    .-------- node --------.
-		//    |                      |
-		//    v   <              >   v
-		// <#text>|<b>   or   <b>|<#text>
-		return crossedVisualBreak ? next : steps.stepVisualBoundary(node);
+		if (Styles.hasLinebreakingStyle(node)) {
+			return steps.expand(steps.stepBoundary(boundary));
+		}
+
+		while (true) {
+			// At space consuming tag
+			// >               <
+			// |<#text> or <br>|
+			if (Elements.isRendered(node)) {
+				if (Dom.isTextNode(node)
+						|| Styles.hasLinebreakingStyle(node)
+							|| Dom.isEditingHost(node)) {
+					break;
+				}
+			}
+			// At inline nodes
+			//    >             <
+			// <p>|<i>  or  </b>|<br>
+			boundary = steps.stepBoundary(boundary);
+			node = steps.nodeAt(boundary);
+		}
+
+		return stepVisualBoundary(boundary, steps);
 	}
 
 	/**
@@ -492,7 +485,7 @@ define([
 				return Boundaries.jumpOver(boundary);
 			}
 		}
-		return Boundaries.next(boundary);
+		return Boundaries.nextRawBoundary(boundary);
 	}
 
 	/**
@@ -509,31 +502,33 @@ define([
 				return Boundaries.fromNode(node);
 			}
 		}
-		return Boundaries.prev(boundary);
+		return Boundaries.prevRawBoundary(boundary);
 	}
 
 	var forwardSteps = {
-		nextCharacter : nextCharacterBoundary,
-		stepBoundary  : stepForward,
-		adjacentNode  : Boundaries.nodeAfter,
-		nodeAt        : Boundaries.nextNode,
-		followingSibling: function followingSibling(node) {
+		nextCharacter      : nextCharacterBoundary,
+		stepBoundary       : stepForward,
+		expand             : expandForward,
+		adjacentNode       : Boundaries.nodeAfter,
+		nodeAt             : Boundaries.nextNode,
+		followingSibling   : function followingSibling(node) {
 			return node.nextSibling;
 		},
-		stepVisualBoundary: function stepVisualBoundary(node) {
+		stepVisualBoundary : function stepVisualBoundary(node) {
 			return nextVisualBoundary(Boundaries.raw(node, 0));
 		}
 	};
 
 	var backwardSteps = {
-		nextCharacter : prevCharacterBoundary,
-		stepBoundary  : stepBackward,
-		adjacentNode  : Boundaries.nodeBefore,
-		nodeAt        : Boundaries.prevNode,
-		followingSibling: function followingSibling(node) {
+		nextCharacter      : prevCharacterBoundary,
+		stepBoundary       : stepBackward,
+		expand             : expandBackward,
+		adjacentNode       : Boundaries.nodeBefore,
+		nodeAt             : Boundaries.prevNode,
+		followingSibling   : function followingSibling(node) {
 			return node.previousSibling;
 		},
-		stepVisualBoundary: function stepVisualBoundary(node) {
+		stepVisualBoundary : function stepVisualBoundary(node) {
 			return prevVisualBoundary(Boundaries.raw(node, Dom.nodeLength(node)));
 		}
 	};
@@ -543,7 +538,7 @@ define([
 	 *
 	 * @private
 	 * @param  {Node} node
-	 * @return {Boolean}
+	 * @return {boolean}
 	 */
 	function isWordbreakingNode(node) {
 		return !IN_WORD_TAGS[node.nodeName];
@@ -586,6 +581,7 @@ define([
 	 */
 	function skipInsignificantPositions(boundary) {
 		var next = boundary;
+		var node;
 
 		if (Boundaries.isTextBoundary(next)) {
 			var offset = nextSignificantOffset(next);
@@ -593,12 +589,21 @@ define([
 			// Because there may be no visible characters following the node
 			// boundary in its container.
 			//
-			// "foo| "</p> or "foo| "" bar"
+			// "foo| "</p> or "foo| "" bar" or "foo|"<br>
 			//      .              .  .
 			if (-1 === offset) {
+				node = Boundaries.nodeAfter(next);
+				if (node && Elements.isUnrendered(node)) {
+					return skipInsignificantPositions(Boundaries.jumpOver(next));
+				}
+				if (node && Elements.isVoidType(node)) {
+					return next;
+				}
 				return skipInsignificantPositions(Boundaries.next(next));
 			}
 
+			// Because the boundary may already be at a significant offset.
+			//
 			// "|foo"
 			if (Boundaries.offset(next) === offset) {
 				return next;
@@ -610,7 +615,7 @@ define([
 			return skipInsignificantPositions(next);
 		}
 
-		var node = Boundaries.nextNode(next);
+		node = Boundaries.nextNode(next);
 
 		// |"foo" or <p>|" foo"
 		//                .
@@ -621,10 +626,6 @@ define([
 		while (!Dom.isEditingHost(node) && Elements.isUnrendered(node)) {
 			next = Boundaries.next(next);
 			node = Boundaries.nextNode(next);
-		}
-
-		if (Styles.hasLinebreakingStyle(node)) {
-			return next;
 		}
 
 		return next;
@@ -679,17 +680,19 @@ define([
 	 */
 	function skipPrevInsignificantPositions(boundary) {
 		var next = boundary;
+		var node;
 
 		if (Boundaries.isTextBoundary(next)) {
 			var offset = prevSignificantOffset(next);
 
 			// Because there may be no visible characters following the node
-			// boundary in its container.
+			// boundary in its container
 			//
 			// <p>" |foo"</p>
 			//     .
 			if (-1 === offset) {
 				var after = Boundaries.prev(next);
+
 				//     ,-----+-- equal
 				//     |     |
 				//     v     v
@@ -716,7 +719,7 @@ define([
 			return skipPrevInsignificantPositions(next);
 		}
 
-		var node = Boundaries.prevNode(next);
+		node = Boundaries.prevNode(next);
 
 		// <b>"foo"|</b>
 		if (Dom.isTextNode(node)) {
@@ -905,12 +908,15 @@ define([
 	 * "node" -- Move in front of the next visible node.
 	 *
 	 * @param  {Boundary} boundary
-	 * @param  {unit=}    unit Defaults to "offset"
+	 * @param  {string=}  unit Defaults to "offset"
 	 * @return {Boundary}
 	 */
 	function next(boundary, unit) {
-		boundary = skipInsignificantPositions(boundary);
-		var nextBoundary = boundary;
+		if ('node' === unit) {
+			return Boundaries.next(boundary);
+		}
+		boundary = skipInsignificantPositions(Boundaries.normalize(boundary));
+		var nextBoundary;
 		switch (unit) {
 		case 'char':
 			nextBoundary = nextCharacterBoundary(boundary);
@@ -930,7 +936,6 @@ define([
 			break;
 		}
 		return nextBoundary;
-		//return skipInsignificantPositions(nextBoundary);
 	}
 
 	/**
@@ -956,12 +961,17 @@ define([
 	 *		A visual offset is the smallest unit of consumed space.  This can
 	 *		be a line break, or a visible character.
 	 *
+	 * "node" -- Move in front of the previous visible node.
+	 *
 	 * @param  {Boundary} boundary
 	 * @param  {string=}  unit Defaults to "offset"
 	 * @return {Boundary}
 	 */
 	function prev(boundary, unit) {
-		boundary = skipPrevInsignificantPositions(boundary);
+		if ('node' === unit) {
+			return Boundaries.prev(boundary);
+		}
+		boundary = skipPrevInsignificantPositions(Boundaries.normalize(boundary));
 		var prevBoundary;
 		switch (unit) {
 		case 'char':
@@ -1003,12 +1013,13 @@ define([
 		}
 		if (Boundaries.isTextBoundary(boundary)) {
 			// "fo|o" or "foo| "
-			return !NOT_WSP.test(Boundaries.container(boundary).data.substr(Boundaries.offset(boundary)));
+			return !NOT_WSP.test(Boundaries.container(boundary).data.substr(
+				Boundaries.offset(boundary)
+			));
 		}
 		var node = Boundaries.nodeAfter(boundary);
-		var next = Dom.nextWhile(node, Elements.isUnrendered);
 		// foo|<br></p> or foo|<i>bar</i>
-		return !next || next === node;
+		return !Dom.nextWhile(node, Elements.isUnrendered);
 	}
 
 	/**
@@ -1028,11 +1039,13 @@ define([
 			return true;
 		}
 		if (Boundaries.isTextBoundary(boundary)) {
-			return !NOT_WSP.test(Boundaries.container(boundary).data.substr(0, Boundaries.offset(boundary)));
+			return !NOT_WSP.test(Boundaries.container(boundary).data.substr(
+				0,
+				Boundaries.offset(boundary)
+			));
 		}
 		var node = Boundaries.nodeBefore(boundary);
-		var next = Dom.prevWhile(node, Elements.isUnrendered);
-		return !next || next === node;
+		return !Dom.prevWhile(node, Elements.isUnrendered);
 	}
 
 	/**
@@ -1044,8 +1057,9 @@ define([
 	 * @return {Node}
 	 */
 	function nextNode(boundary) {
-		var node = Boundaries.nextNode(boundary);
-		return isAtEnd(boundary) ? node.parentNode : node;
+		return isAtEnd(boundary)
+		     ? Boundaries.container(boundary)
+		     : Boundaries.nodeAfter(boundary);
 	}
 
 	/**
@@ -1057,8 +1071,9 @@ define([
 	 * @return {Node}
 	 */
 	function prevNode(boundary) {
-		var node = Boundaries.prevNode(boundary);
-		return isAtStart(boundary) ? node.parentNode : node;
+		return isAtEnd(boundary)
+		     ? Boundaries.container(boundary)
+		     : Boundaries.nodeBefore(boundary);
 	}
 
 	return {
@@ -1069,6 +1084,9 @@ define([
 		prevSignificantOffset : prevSignificantOffset,
 		nextSignificantOffset : nextSignificantOffset,
 		stepForward           : stepForward,
-		stepBackward          : stepBackward
+		stepBackward          : stepBackward,
+		isAtStart             : isAtStart,
+		isAtEnd               : isAtEnd,
+		expandForward         : expandForward
 	};
 });

@@ -9,9 +9,9 @@ define([
 	'html/elements',
 	'html/styles',
 	'html/traversing',
+	'html/predicates',
 	'dom',
 	'mutation',
-	'predicates',
 	'arrays',
 	'content',
 	'boundaries',
@@ -22,9 +22,9 @@ define([
 	Elements,
 	Styles,
 	Traversing,
+	Predicates,
 	Dom,
 	Mutation,
-	Predicates,
 	Arrays,
 	Content,
 	Boundaries,
@@ -75,52 +75,6 @@ define([
 		if (!elem.firstChild || !Dom.nextWhile(elem.firstChild, Elements.isUnrenderedWhitespace)) {
 			Dom.insert(elem.ownerDocument.createElement('br'), elem, true);
 		}
-	}
-
-	/**
-	 * Creates a function that will insert the nodes that are passed to it at
-	 * the given boundary, if it is valid to do so.
-	 *
-	 * Returns true unless insertion fails because it is deemed invalid.
-	 *
-	 * @private
-	 * @param  {Boundary} boundary
-	 * @return {function(Node, OutParameter):boolean}
-	 */
-	function createTransferFunction(boundary) {
-		var ref = Boundaries.nextNode(boundary);
-		var atEnd = Boundaries.isAtEnd(boundary);
-		if (Dom.isTextNode(ref)) {
-			ref = ref.parentNode;
-		}
-		return function insert(node, out_inserted) {
-			if (ref === node) {
-				return out_inserted(true);
-			}
-			if (ref.nodeName === node.nodeName) {
-				Dom.merge(ref, node);
-				return out_inserted(true);
-			}
-			var parent = atEnd ? ref : ref.parentNode;
-			if (Content.allowsNesting(parent.nodeName, node.nodeName)) {
-				Dom.insert(node, ref, atEnd);
-				Dom.merge(node.previousSibling, node);
-				return out_inserted(true);
-			}
-			return out_inserted(false);
-		};
-	}
-
-	/**
-	 * Whether the given node can be removed.
-	 *
-	 * @private
-	 * @param  {Node} node
-	 * @param  {OutParameter(boolean):boolean} out_continueMoving
-	 * @return {boolean}
-	 */
-	function cannotMove(node, out_continueMoving) {
-		return !out_continueMoving() || !Styles.hasLinebreakingStyle(node);
 	}
 
 	/**
@@ -191,9 +145,13 @@ define([
 			return Elements.isRendered(node);
 		}
 		var children = Dom.children(node).filter(function (node) {
-			return Elements.isListItem(node) || Elements.isRendered(node);
+			return Predicates.isListItem(node) || Elements.isRendered(node);
 		});
 		return children.length > 0;
+	}
+
+	function insertNodeBeforeBoundary(node, boundary) {
+		return Mutation.insertNodeAtBoundary(node, boundary, true);
 	}
 
 	/**
@@ -202,128 +160,96 @@ define([
 	 *
 	 * @param  {Boundary} above
 	 * @param  {Boundary} below
-	 * @return {Arrays.<Array.<string, boolean|string>>} Overrides
+	 * @return {Array.<Boundary>}
 	 */
 	function removeBreak(above, below) {
-		var right = Boundaries.nextNode(below);
-		var overrides = Overrides.harvest(right);
 		if (!isVisuallyAdjacent(above, below)) {
-			return overrides;
+			return [above, below];
 		}
-		var linebreak = nextLineBreak(above, below);
+		var right         = Boundaries.nextNode(below);
+		var container     = Boundaries.container(above);
+		var linebreak     = nextLineBreak(above, below);
 		var isVisibleNode = function (node) {
-			return Boundaries.container(above) === node || hasRenderedContent(node);
+			return container === node || hasRenderedContent(node);
 		};
 		if (Boundaries.equals(linebreak, below)) {
 			Dom.climbUntil(right, Dom.remove, isVisibleNode);
-			return overrides;
+			return [above, above];
 		}
-		var moveNodeBeforeBoundary = function (boundary, node) {
-			return Mutation.insertNodeAtBoundary(node, boundary, true);
-		};
 		var parent = right.parentNode;
-		var nodes = Dom.nextSiblings(right, Styles.hasLinebreakingStyle);
-		if (0 === nodes.length) {
+		var siblings = Dom.nextSiblings(right, Styles.hasLinebreakingStyle);
+		if (0 === siblings.length) {
 			parent = right;
 		}
-		var boundary = nodes.reduce(moveNodeBeforeBoundary, linebreak);
+		siblings.reduce(function (boundary, node) {
+			return Mutation.insertNodeAtBoundary(node, boundary);
+		}, linebreak);
 		if (parent) {
 			Dom.climbUntil(parent, Dom.remove, isVisibleNode);
 		}
-		return overrides;
-	}
-
-	function determineBreakingNode(context, container) {
-		var name;
-		if (context && context.settings && context.settings.defaultBlockNodeName) {
-		    name = context.settings.defaultBlockNodeName;
-		} else {
-			name = 'div';
-		}
-		return Content.allowsNesting(container.nodeName, name) ? name : null;
+		return [above, above];
 	}
 
 	/**
-	 * Checks whether that the given node is a line breaking node.
+	 * Checks whether or not the given node is a significant BR element.
 	 *
-	 * @private
 	 * @param  {Node} node
 	 * @return {boolean}
 	 */
-	function isBreakingContainer(node) {
-		return !Predicates.isVoidNode(node)
-		    && (Styles.hasLinebreakingStyle(node) || Dom.isEditingHost(node));
-	}
-
-	/**
-	 * Checks whether the given node is an unrendered text node.
-	 *
-	 * @private
-	 * @param {Node} node
-	 * @return {boolean}
-	 */
-	function isUnrenderedTextNode(node) {
-		return Dom.isTextNode(node) && Elements.isUnrendered(node);
-	}
-
-	/**
-	 * Wraps `ref` into `wrapper` element.
-	 *
-	 * @private
-	 * @param {Node}    node
-	 * @param {Element} wrapper
-	 */
-	function wrapWithBreakingNode(ref, wrapper, context) {
-		var first = Dom.prevWhile(ref, function (node) {
-			return node.previousSibling
-			    && Styles.hasInlineStyle(node.previousSibling);
-		});
-		if (first) {
-			Dom.wrap(first, wrapper);
-			var siblings = Dom.nextSiblings(first.nextSibling, function (node) {
-				return node === ref;
-			});
-			Dom.move(siblings, wrapper);
-			Dom.append(ref, wrapper);
-		} else {
-			Dom.wrap(ref, wrapper);
+	function isRenderedBr(node) {
+		if ('BR' !== node.nodeName) {
+			return false;
 		}
-	}
 
-	/**
-	 * Checks whether or not the given BR element is significant or not.
-	 *
-	 * @private
-	 * @param  {Element} br
-	 * @return {boolean}
-	 */
-	function isSignificantBr(br) {
 		var ignorable = function (node) {
 			return 'BR' !== node.nodeName && Elements.isUnrendered(node);
 		};
 
-		var prev = br.previousSibling
-		        && Dom.prevWhile(br.previousSibling, ignorable);
+		var prev = node.previousSibling
+		        && Dom.prevWhile(node.previousSibling, ignorable);
 
-		var next = br.nextSibling
-		        && Dom.nextWhile(br.nextSibling, ignorable);
+		var next = node.nextSibling
+		        && Dom.nextWhile(node.nextSibling, ignorable);
 
-		var significant = !prev
-		               || ((prev && next) && Predicates.isInlineNode(br.parentNode));
+		// Because a br between two visible siblings in an inline node is
+		// rendered
+		if (prev && next && Predicates.isInlineNode(node.parentNode)) {
+			return true;
+		}
 
-		significant = significant || (
-			(prev && ('BR' === prev.nodeName || !Styles.hasLinebreakingStyle(prev)))
-			&&
-			(next && ('BR' === next.nodeName || !Styles.hasLinebreakingStyle(next)))
-		);
+		// Because a br between two br or inline nodes is rendered
+		if ((prev && ('BR' === prev.nodeName || !Styles.hasLinebreakingStyle(prev)))
+				&&
+				(next && ('BR' === next.nodeName || !Styles.hasLinebreakingStyle(next)))) {
+			return true;
+		}
 
-		significant = significant || (
-			(prev && ('BR' === prev.nodeName))
-			||
-			(next && ('BR' === next.nodeName))
-		);
+		// Because a br next to another br will mean that both are rendered
+		if ((prev && ('BR' === prev.nodeName))
+				||
+				(next && ('BR' === next.nodeName))) {
+			return true;
+		}
 
-		return significant || (!prev && !next);
+		// Because a br is the first space-consuming *tag* inside of a
+		// line-breaking element is rendered
+		var boundary = Boundaries.fromNode(node);
+		while (Traversing.isAtStart(boundary)) {
+			if (Styles.hasLinebreakingStyle(Boundaries.container(boundary))) {
+				return true;
+			}
+			boundary = Boundaries.prev(boundary);
+		}
+
+		boundary = Boundaries.jumpOver(Boundaries.fromNode(node));
+		while (Traversing.isAtEnd(boundary)) {
+			if (Styles.hasLinebreakingStyle(Boundaries.container(boundary))) {
+				return false;
+			}
+			boundary = Boundaries.next(boundary);
+		}
+
+		return !Styles.hasLinebreakingStyle(Traversing.nextNode(boundary));
 	}
 
 	/**
@@ -333,13 +259,13 @@ define([
 	 * @param  {object}
 	 * @return {Boundary}
 	 */
-	function insertLineBreak(boundary, context) {
+	function insertLineBreak(boundary) {
 		var container = Boundaries.container(boundary);
 		var doc = container.ownerDocument;
 		var br = doc.createElement('br');
-		boundary = Mutation.insertNodeAtBoundary(br, boundary, true);
-		if (!isSignificantBr(br)) {
-			return Mutation.insertNodeAtBoundary(doc.createElement('br'), boundary, true);
+		boundary = insertNodeBeforeBoundary(br, boundary);
+		if (!isRenderedBr(br)) {
+			return insertNodeBeforeBoundary(doc.createElement('br'), boundary);
 		}
 		return boundary;
 	}
@@ -351,148 +277,171 @@ define([
 	 * @param  {Boundary} boundary
 	 * @return {Boundary}
 	 */
-	function insertBreakingNodeBeforeBoundary(boundary, context) {
-		var next = Boundaries.nextNode(boundary);
-		var name = determineBreakingNode(context, next.parentNode);
-		if (!name) {
-			return insertLineBreak(boundary, context);
+	function insertBreakAtBoundary(boundary, defaultBreakingElement) {
+		var container = Boundaries.container(boundary);
+		var name = defaultBreakingElement || 'div';
+		if (!Content.allowsNesting(container.nodeName, name)) {
+			return insertLineBreak(boundary);
 		}
-		var node = next.ownerDocument.createElement(name);
-		Mutation.insertNodeAtBoundary(node, boundary);
-		return Boundaries.create(node, 0);
+		var breaker = container.ownerDocument.createElement(name);
+		Mutation.insertNodeAtBoundary(breaker, boundary);
+		return Boundaries.create(breaker, 0);
 	}
 
-	function splitBoundaryUntil(boundary, until) {
-		if (until && until(boundary)) {
-			return boundary;
+	/**
+	 * Checks whether that the given node is a line breaking node.
+	 *
+	 * @private
+	 * @param  {Node} node
+	 * @return {boolean}
+	 */
+	function isBreakingContainer(node) {
+		return !Elements.isVoidType(node)
+		    && (Styles.hasLinebreakingStyle(node) || Dom.isEditingHost(node));
+	}
+
+	/**
+	 * Splits the given boundary's ancestors up to the first linebreaking
+	 * element which will not be split.
+	 *
+	 * @example
+	 * <div><p><b>one<i><u>t¦wo</u></i></b></p></div>
+	 * will be split to...
+	 * <div><p><b>one<i><u>t</u></i></b>|<b><i><u>wo</u></i></b></p></div>
+	 *
+	 * @private
+	 * @param  {Boundary} boundary
+	 * @return {Boundary}
+	 */
+	function splitToBreakingContainer(boundary) {
+		return Mutation.splitBoundaryUntil(boundary, function (boundary) {
+			var node = Boundaries.container(boundary);
+			return !node || isBreakingContainer(node);
+		});
+	}
+
+	/**
+	 * Recursively removes the given boundary's invisible containers.
+	 *
+	 * @private
+	 * @param  {Boundary} boundary
+	 * @return {Array.<Boundary>}
+	 */
+	function removeInvisibleContainers(boundary, boundaries) {
+		Dom.climbUntil(
+			Boundaries.container(boundary),
+			function (node) {
+				boundaries = Mutation.removeNode(node, boundaries);
+			},
+			function (node) {
+				return Styles.hasLinebreakingStyle(node)
+				    || Dom.isEditingHost(node)
+				    || Elements.isRendered(node);
+			}
+		);
+		return boundaries;
+	}
+
+	function adjacentBr(boundary) {
+		var before = Boundaries.nodeBefore(boundary);
+		var after = Boundaries.nodeAfter(boundary);
+		if (before && isRenderedBr(before)) {
+			return before;
 		}
-		boundary = Boundaries.normalize(boundary);
-		if (Boundaries.isTextBoundary(boundary)) {
-			return splitBoundaryUntil(Mutation.splitBoundary(boundary), until);
+		if (after && isRenderedBr(after)) {
+			return after;
 		}
-		var container = Boundaries.container(boundary);
-		var duplicate = Dom.cloneShallow(container);
-		var node = Boundaries.nodeAfter(boundary);
-		if (node) {
-			Dom.move(Dom.nextSiblings(node), duplicate);
-		}
-		Dom.insertAfter(duplicate, container);
-		return splitBoundaryUntil(Traversing.stepForward(boundary), until);
+		return null;
 	}
 
 	/**
 	 * Inserts a visual line break after the given boundary position.
 	 *
-	 * Returns the "forward position".  This is the deepest node that is
-	 * visually adjacent to the newly created line.
-	 *
 	 * @param  {Boundary} boundary
-	 * @param  {Object}   context
+	 * @param  {string}   defaultBreakingElement
 	 * @return {Boundary}
 	 */
-	function insertBreak(boundary, context) {
-		boundary = splitBoundaryUntil(boundary, function (boundary) {
-			var node = Boundaries.container(boundary).parentNode;
-			return !node
-			    || Styles.hasLinebreakingStyle(node)
-			    || Dom.isEditingHost(node);
+	function insertBreak(boundary, defaultBreakingElement) {
+		var br = adjacentBr(boundary);
+		if (br) {
+			boundary = insertNodeBeforeBoundary(
+				br.ownerDocument.createElement('br'),
+				boundary
+			);
+		}
+
+		var split     = splitToBreakingContainer(boundary);
+		var container = Boundaries.container(split);
+		var next      = Boundaries.nodeAfter(split);
+		var children  = next ? Dom.nextSiblings(next) : [];
+
+		// ...foo</p>|<h1>bar...
+		if (next && isBreakingContainer(next)) {
+			split = insertBreakAtBoundary(split, defaultBreakingElement);
+
+		// <host>foo|bar</host>
+		} else if (Dom.isEditingHost(container)) {
+			split = insertBreakAtBoundary(split, defaultBreakingElement);
+			var breaker = Boundaries.container(split);
+			var remainder = Dom.move(children, breaker, isBreakingContainer);
+			Dom.moveAfter(remainder, breaker);
+
+		// <host><p>foo|bar</p></host>
+		} else {
+			split = Mutation.splitBoundaryUntil(split, function (boundary) {
+				return Boundaries.container(boundary) === container.parentNode;
+			});
+		}
+
+		var left = Boundaries.prevWhile(split, function (boundary) {
+			var node = Boundaries.prevNode(boundary);
+			return !(Boundaries.isAtStart(boundary)
+			    || Elements.isVoidType(node)
+			    || Dom.isTextNode(node));
 		});
 
-		boundary = Mutation.splitBoundary(boundary);
+		var right = Boundaries.nextWhile(split, function (boundary) {
+			var node = Boundaries.nextNode(boundary);
+			return !(Boundaries.isAtEnd(boundary)
+			    || Elements.isVoidType(node)
+			    || Dom.isTextNode(node));
+		});
 
-		var start = Boundaries.nextNode(boundary);
+		//             split
+		//       left    |   right
+		//          |    |   |
+		//          v    v   v
+		// <p><b>one|</b>|<b>|two</b></p>
+		var boundaries = [left, right];
 
-		// Because any nodes which are entirely after the boundary position
-		// don't need to be copied but can be completely moved: "}<b>"
-		var movable = Boundaries.isAtEnd(boundary) ? null : start;
+		boundaries = removeInvisibleContainers(boundaries[0], boundaries);
+		boundaries = removeInvisibleContainers(boundaries[1], boundaries);
+		prop(Boundaries.container(boundaries[0]));
+		prop(Boundaries.container(boundaries[1]));
 
-		// Because if the boundary is right before a breaking container, The
-		// the default new breaking element should be inserted right before it.
-		if (movable && isBreakingContainer(movable)) {
-			return insertBreakingNodeBeforeBoundary(boundary, context);
+		var node = Boundaries.nodeAfter(boundaries[1]);
+		var visible = node && Dom.nextWhile(node, function (node) {
+			return !isRenderedBr(node) && Elements.isUnrendered(node);
+		});
+
+		// <li>|<ul>...
+		if (visible && isBreakingContainer(visible)) {
+			return Mutation.insertNodeAtBoundary(
+				visible.ownerDocument.createElement('br'),
+				boundaries[1]
+			);
 		}
 
-		var ascend = Dom.childAndParentsUntilIncl(start, isBreakingContainer);
-		var anchor = ascend.pop();
-
-		// Because if there are no breaking containers below the editing host,
-		// then we need to wrap the inline nodes adjacent to the boundary with
-		// the default breaking container before attempting to split it.
-		if (Dom.isEditingHost(anchor)) {
-			var name = determineBreakingNode(context, anchor);
-			if (!name) {
-				return insertLineBreak(boundary, context);
-			}
-			anchor = anchor.ownerDocument.createElement(name);
-			var ref = Arrays.last(ascend);
-			if (ref) {
-				wrapWithBreakingNode(ref, anchor, context);
-			} else {
-				Mutation.insertNodeAtBoundary(anchor, boundary, true);
-			}
-		}
-
-		var heirarchy;
-		var parent;
-		var copy;
-		var node;
-		var next;
-		var len;
-		var i;
-
-		for (i = 0, len = ascend.length; i < len; i++) {
-			node = ascend[i];
-			parent = Dom.cloneShallow(node.parentNode);
-			copy = (node === movable) ? node : Dom.cloneShallow(node);
-			next = node.nextSibling;
-			Dom.append(heirarchy || copy, parent);
-			if (next) {
-				Dom.move(Dom.nextSiblings(next), parent);
-			}
-			heirarchy = parent;
-		}
-
-		if (!heirarchy) {
-			heirarchy = Dom.cloneShallow(anchor);
-		}
-
-		Dom.insertAfter(heirarchy, anchor);
-		prop(anchor);
-
-		while (heirarchy && heirarchy.firstChild) {
-			heirarchy = Dom.nextWhile(
-				heirarchy.firstChild,
-				isUnrenderedTextNode
-			) || heirarchy.firstChild;
-		}
-
-		var isVisibleOrHasBreakingStyle = function (node) {
-			return Styles.hasLinebreakingStyle(node) || Elements.isRendered(node);
-		};
-
-		context.overrides = context.overrides.concat(
-			Overrides.harvest(heirarchy, isVisibleOrHasBreakingStyle)
-		);
-
-		var nodesToRemove = Dom.childAndParentsUntil(
-			heirarchy,
-			isVisibleOrHasBreakingStyle
-		);
-
-		if (nodesToRemove.length) {
-			heirarchy = Arrays.last(nodesToRemove).parentNode;
-			nodesToRemove.forEach(Dom.remove);
-		}
-
-		return Predicates.isVoidNode(heirarchy)
-		     ? Boundaries.fromNode(heirarchy)
-		     : Boundaries.create(heirarchy, 0);
+		return boundaries[1];
 	}
 
 	return {
-		prop            : prop,
-		removeBreak     : removeBreak,
-		insertBreak     : insertBreak,
-		insertLineBreak : insertLineBreak
+		prop               : prop,
+		removeBreak        : removeBreak,
+		insertBreak        : insertBreak,
+		insertLineBreak    : insertLineBreak,
+		nextLineBreak      : nextLineBreak,
+		isRenderedBr       : isRenderedBr,
+		isVisuallyAdjacent : isVisuallyAdjacent
 	};
 });

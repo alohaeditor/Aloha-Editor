@@ -12,15 +12,13 @@ define([
 	'editing',
 	'html',
 	'list-util',
-	'predicates'
 ], function (
 	Arrays,
 	Dom,
 	Ranges,
 	Editing,
 	Html,
-	ListUtil,
-    Predicates
+	ListUtil
 ) {
 	'use strict';
 
@@ -88,7 +86,7 @@ define([
 			brs.forEach(Dom.remove);
 		}
 
-		if (Predicates.isBlockNode(node)) {
+		if (Html.isBlockNode(node)) {
 			Dom.removeShallow(node);
 		} else if (node.nodeName === 'BR') {
 			Dom.remove(node);

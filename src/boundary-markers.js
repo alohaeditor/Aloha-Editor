@@ -27,39 +27,62 @@ define([
 	'use strict';
 
 	/**
-	 * Insert boundary markers at the given range.
+	 * Insert boundary markers at the given boundaries.
 	 *
-	 * @param {Range} range
+	 * @param  {Boundary} start
+	 * @param  {Boundary} end
+	 * @return {Array.<Boundary>}
 	 */
-	function insert(range) {
-		var doc = range.commonAncestorContainer.ownerDocument;
-		var startMarker = doc.createTextNode(Dom.isTextNode(range.endContainer) ? ']' : '}');
-		var endMarker = doc.createTextNode(Dom.isTextNode(range.startContainer) ? '[' : '{');
-		var start = Mutation.splitBoundary(Boundaries.fromRangeStart(range), [range]);
-		var end = Mutation.splitBoundary(Boundaries.fromRangeEnd(range));
+	function insert(start, end) {
+		var startContainer = Boundaries.container(start);
+		var endContainer = Boundaries.container(end);
+		var doc = startContainer.ownerDocument;
+		var startMarker = doc.createTextNode(Dom.isTextNode(endContainer) ? ']' : '}');
+		var endMarker = doc.createTextNode(Dom.isTextNode(startContainer) ? '[' : '{');
+		var range = Ranges.fromBoundaries(start, end);
+		start = Mutation.splitBoundary(Boundaries.fromRangeStart(range), [range]);
+		end = Mutation.splitBoundary(Boundaries.fromRangeEnd(range));
 		Dom.insert(startMarker, Boundaries.nextNode(end), Boundaries.isAtEnd(end));
 		Dom.insert(endMarker, Boundaries.nextNode(start), Boundaries.isAtEnd(start));
+		return [start, end];
+	}
+
+	/**
+	 * Insert a single boundary marker at the given boundary.
+	 *
+	 * @param  {Boundary} boundary
+	 * @return {Boundary}
+	 */
+	function insertSingle(boundary) {
+		var container = Boundaries.container(boundary);
+		var marker = container.ownerDocument.createTextNode(
+			Boundaries.isTextBoundary(boundary) ? '¦' : '|'
+		);
+		boundary = Mutation.splitBoundary(boundary);
+		Dom.insert(marker, Boundaries.nextNode(boundary), Boundaries.isAtEnd(boundary));
+		return boundary;
 	}
 
 	/**
 	 * Set the selection based on selection markers found in the content inside
 	 * of `rootElem`.
 	 *
-	 * @param {Element} rootElem
-	 * @param {Range}   range
+	 * @param  {Element} rootElem
+	 * @return {Array.<Boundary>}
 	 */
-	function extract(rootElem, range) {
+	function extract(rootElem) {
 		var markers = ['[', '{', '}', ']'];
 		var markersFound = 0;
+		var boundaries = [];
 		function setBoundaryPoint(marker, node) {
-			var setFn;
+			var whichBoundary;
 			if (0 === markersFound) {
-				setFn = 'setStart';
+				whichBoundary = 0;
 				if (marker !== '[' && marker !== '{') {
 					throw 'end marker before start marker';
 				}
 			} else if (1 === markersFound) {
-				setFn = 'setEnd';
+				whichBoundary = 1;
 				if (marker !== ']' && marker !== '}') {
 					throw 'start marker before end marker';
 				}
@@ -70,14 +93,14 @@ define([
 			if (marker === '[' || marker === ']') {
 				var previousSibling = node.previousSibling;
 				if (!previousSibling || !Dom.isTextNode(previousSibling)) {
-					previousSibling = document.createTextNode('');
+					previousSibling = node.ownerDocument.createTextNode('');
 					node.parentNode.insertBefore(previousSibling, node);
 				}
-				range[setFn].call(range, previousSibling, previousSibling.length);
+				boundaries[whichBoundary] = [previousSibling, previousSibling.length];
 				// Because we have set a text offset.
 				return false;
 			}
-			range[setFn].call(range, node.parentNode, Dom.nodeIndex(node));
+			boundaries[whichBoundary] = [node.parentNode, Dom.nodeIndex(node)];
 			// Because we have set a non-text offset.
 			return true;
 		}
@@ -88,14 +111,14 @@ define([
 			var text = node.nodeValue;
 			var parts = Strings.splitIncl(text, /[\[\{\}\]]/g);
 			// Because modifying every text node when there can be only two
-			// markers seems like too much overhead.
+			// markers seems like too much overhead
 			if (!Arrays.contains(markers, parts[0]) && parts.length < 2) {
 				return;
 			}
-			// Because non-text boundary positions must not be joined again.
+			// Because non-text boundary positions must not be joined again
 			var forceNextSplit = false;
 			parts.forEach(function (part, i) {
-				// Because we don't want to join text nodes we haven't split.
+				// Because we don't want to join text nodes we haven't split
 				forceNextSplit = forceNextSplit || (i === 0);
 				if (Arrays.contains(markers, part)) {
 					forceNextSplit = setBoundaryPoint(part, node);
@@ -108,7 +131,7 @@ define([
 					);
 				} else {
 					node.parentNode.insertBefore(
-						document.createTextNode(part),
+						node.ownerDocument.createTextNode(part),
 						node
 					);
 				}
@@ -119,6 +142,7 @@ define([
 		if (2 !== markersFound) {
 			throw 'Missing one or both markers';
 		}
+		return boundaries;
 	}
 
 	/**
@@ -126,19 +150,23 @@ define([
 	 * of the DOM to indicate the span of the given range.
 	 *
 	 * @private
-	 * @param  {Range} range
+	 * @param  {Boundary} start
+	 * @param  {Boundary} end
 	 * @return {string}
 	 */
-	function showRange(range) {
-		var cac = range.commonAncestorContainer;
-		var start = Paths.fromBoundary(
-			cac,
-			Boundaries.raw(range.startContainer, range.startOffset)
-		);
-		var end = Paths.fromBoundary(
-			cac,
-			Boundaries.raw(range.endContainer, range.endOffset)
-		);
+	function show(start, end) {
+		var single = !end;
+
+		end = end || start;
+
+		var cac = Boundaries.commonContainer(start, end);
+
+		var doc = Dom.Nodes.DOCUMENT === cac.nodeType
+		        ? cac
+		        : cac.ownerDocument;
+
+		var startPath = Paths.fromBoundary(cac, start);
+		var endPath = Paths.fromBoundary(cac, end);
 		var clone;
 		var root;
 
@@ -149,51 +177,39 @@ define([
 			);
 		} else {
 			clone = cac.cloneNode(true);
-			var one = cac.ownerDocument.createDocumentFragment();
-			var two = cac.ownerDocument.createDocumentFragment();
+			var one = doc.createDocumentFragment();
+			var two = doc.createDocumentFragment();
 			Dom.append(clone, two);
 			Dom.append(two, one);
+			root = [];
 		}
 
-		start = root.concat(start);
-		end = root.concat(end);
+		startPath = root.concat(startPath);
+		endPath = root.concat(endPath);
 
-		var copy = Ranges.fromBoundaries(
-			Paths.toBoundary(clone, start),
-			Paths.toBoundary(clone, end)
-		);
-
-		insert(copy);
+		if (single) {
+			insertSingle(Paths.toBoundary(clone, startPath));
+		} else {
+			insert(
+				Paths.toBoundary(clone, startPath),
+				Paths.toBoundary(clone, endPath)
+			);
+		}
 
 		if (Dom.Nodes.DOCUMENT_FRAGMENT !== clone.nodeType) {
 			return clone.outerHTML;
 		}
 
-		var node = cac.ownerDocument.createElement('div');
+		var node = doc.createElement('div');
 		Dom.append(clone, node);
 		return node.innerHTML;
 	}
 
-	/**
-	 * Show a single boundary.
-	 *
-	 * @private
-	 * @param  {Boundary} boundary
-	 * @return {string}
-	 */
-	function showBoundary(boundary) {
-		return showRange(Ranges.fromBoundaries(boundary, boundary));
-	}
-
-	/**
-	 * Show start/end boundary tuple.
-	 *
-	 * @private
-	 * @param  {Array.<Boundary>} boundaries
-	 * @return {string}
-	 */
-	function showBoundaries(boundaries) {
-		return showRange(Ranges.fromBoundaries(boundaries[0], boundaries[1]));
+	function rawBoundariesFromRange(range) {
+		return [
+			Boundaries.raw(range.startContainer, range.startOffset),
+			Boundaries.raw(range.endContainer, range.endOffset)
+		];
 	}
 
 	/**
@@ -204,11 +220,13 @@ define([
 	 * @return {string}
 	 */
 	function hint(selection) {
-		return (!Misc.defined(selection.length))
-		     ? showRange(selection)
-		     : ('string' === typeof selection[0].nodeName)
-		     ? showBoundary(selection)
-		     : showBoundaries(selection);
+		if (Misc.defined(selection.length)) {
+			return ('string' === typeof selection[0].nodeName)
+			     ? show(selection)
+			     : show(selection[0], selection[1]);
+		}
+		var boundaries = rawBoundariesFromRange(selection);
+		return show(boundaries[0], boundaries[1]);
 	}
 
 	return {

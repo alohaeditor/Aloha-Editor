@@ -346,15 +346,26 @@ define([
 		return node.cloneNode(false);
 	}
 
-	function fragmentHtml(fragment) {
-		var div = fragment.ownerDocument.createElement('div');
-		div.appendChild(fragment);
+	/**
+	 * Retrieve the HTML of the entire given node.
+	 * This is equivalent as outerHTML for element nodes.
+	 * This function is an alternative for outerHTML with for document
+	 * fragments.
+	 *
+	 * @param  {Node}
+	 * @return {string}
+	 */
+	function outerHtml(node) {
+		var div = node.ownerDocument.createElement('div');
+		// Because if node is a document fragment, appending it will cause it to
+		// be emptied of its child nodes
+		div.appendChild(node.cloneNode(true));
 		return div.innerHTML;
 	}
 
 	return {
-		Nodes : Nodes,
-		offset : offset,
+		Nodes    : Nodes,
+		offset   : offset,
 		children : children,
 
 		nodeAtOffset : nodeAtOffset,
@@ -375,7 +386,7 @@ define([
 		isEmptyTextNode : isEmptyTextNode,
 		isSameNode      : isSameNode,
 
-		text : text,
+		text    : text,
 		hasText : hasText,
 
 		equals     : equals,
@@ -385,6 +396,6 @@ define([
 		clone        : clone,
 		cloneShallow : cloneShallow,
 
-		fragmentHtml : fragmentHtml
+		outerHtml    : outerHtml
 	};
 });

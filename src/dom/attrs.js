@@ -7,75 +7,38 @@
  */
 define([
 	'arrays',
+	'maps',
 	'strings',
 	'functions'
 ], function DomAttributes(
 	Arrays,
+	Maps,
 	Strings,
 	Fn
 ) {
 	'use strict';
 
-	var ATTRIBUTE = /\s([^\/<>\s=]+)(?:=(?:"[^"]*"|'[^']*'|[^>\/\s]+))?/g;
-
 	/**
-	 * Retrieves the names of all attributes from the given elmenet.
+	 * Gets the attributes of the given element.
 	 *
 	 * Correctly handles the case that IE7 and IE8 have approx 70-90
 	 * default attributes on each and every element.
 	 *
-	 * This implementation does not iterate over the elem.attributes
-	 * property since that is much slower on IE7 (even when
-	 * checking the attrNode.specified property). Instead it parses the
-	 * HTML of the element. For elements with few attributes the
-	 * performance on IE7 is improved by an order of magnitued.
-	 *
-	 * On IE7, when you clone a <button disabled="disabled"/> or an
-	 * <input checked="checked"/> element the boolean properties will
-	 * not be set on the cloned node. We choose the speed optimization
-	 * over correctness in this case. The dom-to-xhtml plugin has a
-	 * workaround for this case.
-	 *
-	 * @param  {Element}        elem
-	 * @return {Array.<string>} List of attribute names
-	 */
-	function attrNames(elem) {
-		var names = [];
-		var html = elem.cloneNode(false).outerHTML;
-		var match;
-		while (null != (match = ATTRIBUTE.exec(html))) {
-			names.push(match[1]);
-		}
-		return names;
-	}
-
-	/**
-	 * Gets the attributes of the given element.
-	 *
-	 * See attrNames() for an edge case on IE7.
-	 *
-	 * Returns an array containing [name, value] tuples for each attribute.
 	 * Attribute values will always be strings, but possibly empty Strings.
 	 *
 	 * @param  {Element}        elem
-	 * @return {Array.<string>}
+	 * @return {Map.<string,string>}
 	 */
 	function attrs(elem) {
-		var as = [];
-		var names = attrNames(elem);
-		var i;
-		var len;
-		for (i = 0, len = names.length; i < len; i++) {
-			var name = names[i];
-			var value = elem.getAttribute(name);
-			if (null == value) {
-				value = '';
-			} else {
-				value = value.toString();
+		var attrs = {};
+		var attributes = elem.attributes;
+		for (var i = 0, len = attributes.length; i < len; i++) {
+			var attr = attributes[i];
+			if (typeof attr.specified === "undefined" || attr.specified) {
+				attrs[attr.name] = attr.value;
 			}
-			as.push([name, value]);
 		}
-		return as;
+		return attrs;
 	}
 
 	function remove(elem, name) {
@@ -88,7 +51,7 @@ define([
 	 * @param {Element} element
 	 */
 	function removeAll(element) {
-		attrNames(element).forEach(Fn.partial(remove, element));
+		Maps.keys(attrs(element)).forEach(Fn.partial(remove, element));
 	}
 
 	function set(elem, name, value) {
@@ -135,18 +98,18 @@ define([
 	}
 
 	/**
-	 * Checks whether or not the given node contains one or more attributes.
+	 * Checks whether or not the given node contains one or more
+	 * attributes non-empty attributes.
 	 *
 	 * @param  {Node}    node
 	 * @return {boolean}
 	 */
 	function has(node) {
-		return !attrs(node).map(Arrays.second).every(Strings.isEmpty);
+		return !Maps.vals(attrs(node)).every(Strings.isEmpty);
 	}
 
 	return {
 		attrs     : attrs,
-		attrNames : attrNames,
 		has       : has,
 		set       : set,
 		setNS     : setNS,

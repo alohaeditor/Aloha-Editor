@@ -13,15 +13,14 @@ define(['dom'], function (Dom) {
 	 *
 	 * @private
 	 * @param  {Array.<Node>} nodes
-	 * @pram   {Document}     doc
 	 * @return {Array.<Node>}
 	 */
-	function createTableHeadings(nodes, doc) {
+	function createTableHeadings(nodes) {
 		var list = [];
 		nodes.forEach(function (node) {
 			if ('TD' === node.nodeName) {
 				var children = Dom.children(node);
-				node = doc.createElement('th');
+				node = node.ownerDocument.createElement('th');
 				Dom.copy(children, node);
 			}
 			return list.push(node);
@@ -46,22 +45,21 @@ define(['dom'], function (Dom) {
 	 * Normalizes tables in the given DOM structure.
 	 *
 	 * @param  {node}     element
-	 * @param  {Document} doc
 	 * @return {Element} A normalized copy of `element`
 	 */
-	function transform(element, doc) {
+	function transform(element) {
 		var children = Dom.children(element);
 		var processed = [];
 		var node;
 		var tds;
 		var i;
 		for (i = 0; i < children.length; i++) {
-			node = transform(children[i], doc);
+			node = transform(children[i]);
 			if (isTableHeading(node)) {
 				node = Dom.clone(node);
 				tds = Dom.children(node);
 				tds.forEach(Dom.remove);
-				Dom.move(createTableHeadings(tds, doc), node);
+				Dom.move(createTableHeadings(tds), node);
 			}
 			processed.push(node);
 		}

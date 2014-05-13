@@ -3,22 +3,12 @@
 	<head>
 		<title>Aloha Editor</title>
 		<meta charset="UTF-8">
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300,700' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" type="text/css" href="../src/aloha.css">
 		<style>
-			@font-face {
-			  font-family: 'Open Sans';
-			  font-style: normal;
-			  font-weight: 300;
-			  src: local('Open Sans Light'), local('OpenSans-Light'), url(open-sans.woff) format('woff');
-			}
-			@font-face {
-			  font-family: 'Open Sans';
-			  font-style: normal;
-			  font-weight: 700;
-			  src: local('Open Sans Bold'), local('OpenSans-Bold'), url(open-sans-bold.woff) format('woff');
-			}
 			body {
 				font-family: 'Open Sans', sans-serif;
+				font-size: 16px;
 			}
 			.aloha-block {
 				width: 100px;
@@ -33,29 +23,25 @@
 				cursor: -moz-grab;
 				box-shadow: 2px 2px 10px rgba(0,0,0,0.2) inset;
 			}
-			.aloha-block:hover {
-				background: #df215a;
-			}
+			.aloha-block:hover { background: #df215a; }
 			img.aloha-block {
 				width: auto;
 				height: auto;
 				display: block;
 				padding: 0;
 			}
-			/*
 			ol {
-			  counter-reset: section;
+			  counter-reset: counter;
 			  list-style-type: none;
 			}
-			li:before {
-			  counter-increment: section;
-			  content: counters(section, ".") " ";
+			ol>li:before {
+				counter-increment: counter;
+				content: counters(counter, ".") ") ";
+				margin-left: -1em;
 			}
-			*/
 		</style>
 
-		<style id="metaview">
-			/* metaview */
+		<!-- style id="metaview">
 			ul,ol,li,td,th,p,b,i,u,div,h1,h2,h3,h4,h5,h6 {
 				padding: 2px 4px;
 				margin: 2px;
@@ -79,19 +65,11 @@
 			font {
 				background: red;
 			}
-		</style>
+		</style -->
 	</head>
 	<body>
+
 		<div class="aloha-editable">
-			<ul><li>abc<ol><li></li></ol></li></ul>
-
-			<br/>
-			<br/>
-			<br/>
-			<br/>
-			<br/>
-			<br/>
-
 			<h1>Aloha Editor</h1>
 			<p>
 				<img draggable="true"
@@ -115,11 +93,11 @@
 				<li>one</li>
 				<li>two</li>
 				<li>three
-					<ul>
+					<ol>
 						<li>four</li>
 						<li>five</li>
-						<li>six</li>
-					</ul>
+						<li class="bold"><u><i>six</i></u></li>
+					</ol>
 				</li>
 			</ul>
 			<p>
@@ -131,7 +109,6 @@
 		</div>
 		<script src="../src/require-pronto.js"></script>
 		<script src="../src/require-pronto.dev.js"></script>
-		<script src="../build/aloha.js"></script>
 		<script>
 			(function () {
 				'use strict';
@@ -149,7 +126,7 @@
 					require(['../src/aloha'], main);
 				} else {
 					setVersion('build');
-					main(aloha)
+					main(aloha);
 				}
 			}());
 		</script>

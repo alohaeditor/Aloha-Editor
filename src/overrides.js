@@ -21,23 +21,15 @@
  * http://www.w3.org/TR/CSS2/propidx.html
  */
 define([
-	'dom/nodes',
-	'dom/style',
-	'dom/mutation',
 	'dom',
 	'misc',
 	'maps',
-	'mutation',
-	'dom/traversing'
+	'mutation'
 ], function Overrides(
-	Nodes,
-	Style,
-	DomMutation,
 	Dom,
 	Misc,
 	Maps,
-	Mutation,
-	Traversing
+	Mutation
 ) {
 	'use strict';
 
@@ -123,7 +115,7 @@ define([
 	function statesFromStyles(elem) {
 		var states = [];
 		Maps.forEach(stateToStyle, function (style, state) {
-			var value = Style.get(elem, style[0]);
+			var value = Dom.getStyle(elem, style[0]);
 			if (value) {
 				if (style[2]) {
 					if (value === style[2]) {
@@ -140,7 +132,7 @@ define([
 	}
 
 	function getStates(elem) {
-		if (Nodes.isTextNode(elem)) {
+		if (Dom.isTextNode(elem)) {
 			return [];
 		}
 		var state = nodeToState[elem.nodeName];
@@ -150,7 +142,7 @@ define([
 	function valuesFromStyles(elem) {
 		var values = [];
 		styles.forEach(function (style) {
-			var value = Style.get(elem, style);
+			var value = Dom.getStyle(elem, style);
 			if (value) {
 				values.push([style, value]);
 			}
@@ -159,15 +151,12 @@ define([
 	}
 
 	function getValues(elem) {
-		return Nodes.isTextNode(elem) ? [] : valuesFromStyles(elem);
+		return Dom.isTextNode(elem) ? [] : valuesFromStyles(elem);
 	}
 
 	function harvest(node, until) {
 		var stack = [];
-		var nodes = Traversing.childAndParentsUntil(
-			node,
-			until || Dom.isEditingHost
-		);
+		var nodes = Dom.childAndParentsUntil(node, until || Dom.isEditingHost);
 		var map = {};
 		var i = nodes.length;
 		var j;
@@ -205,7 +194,7 @@ define([
 				// TODO: implement handling for false overrides states
 				wrapper = document.createElement(overrideToNode[override[0]]);
 				if (node) {
-					DomMutation.wrap(node, wrapper);
+					Dom.wrap(node, wrapper);
 				} else {
 					Mutation.insertNodeAtBoundary(wrapper, boundary);
 					boundary = [wrapper, 0];
@@ -217,7 +206,7 @@ define([
 					Mutation.insertNodeAtBoundary(node, boundary);
 					boundary = [node, 0];
 				}
-				Style.set(node, override[0], override[1]);
+				Dom.setStyle(node, override[0], override[1]);
 			}
 			override = overrides.pop();
 		}

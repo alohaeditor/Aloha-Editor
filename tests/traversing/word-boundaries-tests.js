@@ -11,19 +11,93 @@
 (function (aloha) {
 	'use strict';
 
-	var OUTPUT = document.getElementById('test-console');
-	var CONTROL = 'she stopped.  she said, "hello there," and then went on.';
-	var EXPECTED = 'she| |stopped|.| | she| |said|,| |"|hello| |there|,|"| |and| |then| |went| |on|.';
-	var INLINE = ['i', 'b', 'u', 'span', 'del', '#text'];
-	var EDITABLE = document.createElement('div');
-	EDITABLE.contentEditable = true;
+	module('traversing');
 
 	var Html = aloha.html;
 	var Boundaries = aloha.boundaries;
+	var Traversing = aloha.traversing;
 	var Mutation = aloha.mutation;
 	var Dom = aloha.dom;
 	var Paths = aloha.paths;
 	var Arrays = aloha.arrays;
+
+	var CONTROL    = 'she stopped.  she said, "hello there," and then went on.';
+	var EXPECTED   = 'she| |stopped|.| | she| |said|,| |"|hello| |there|,|"| |and| |then| |went| |on|.';
+	var ACCEPTABLE = 'she| |stopped|.| | |she| |said|,| |"|hello| |there|,|"| |and| |then| |went| |on|.';
+	//                she| |stopped|.| | |she| |said|,| |"|hello| |there|,|"| |and| |then| |went| |on|.
+
+	function isEqual(actual, source) {
+		if (actual === EXPECTED) {
+			equal(actual, EXPECTED, source);
+		} else if (actual === ACCEPTABLE) {
+			equal(actual, ACCEPTABLE, source);
+		} else {
+			equal(actual, EXPECTED, source);
+		}
+	}
+
+	test('next("word")', function () {
+		var dom = $('<div>foo<b>bar</b>s baz</div>')[0];
+		var boundary = Traversing.next(Boundaries.fromNode(dom.firstChild), 'word');
+		equal(Boundaries.container(boundary), dom.lastChild);
+		equal(Boundaries.offset(boundary), 1);
+
+		var control = CONTROL;
+		var index = 0;
+
+		dom = $('<div contenteditable="true">' + control + '</div>')[0];
+
+		Boundaries.walkWhile(
+			Boundaries.fromNode(dom.firstChild),
+			function (boundary) {
+				return !Dom.isEditingHost(Boundaries.nextNode(boundary));
+			},
+			function (boundary) {
+				return Traversing.next(boundary, 'word');
+			},
+			function (boundary) {
+				if (Boundaries.isTextBoundary(boundary)) {
+					var offset = Boundaries.offset(boundary) + (index++);
+					control = control.substr(0, offset) + '|' + control.substr(offset);
+				}
+			}
+		);
+
+		isEqual(control, dom.innerHTML);
+	});
+
+	test('prev("word")', function () {
+		var dom = $('<div>foo <b>bar</b>s baz</div>')[0];
+		var boundary = Traversing.prev(Boundaries.create(dom.firstChild.nextSibling, 0), 'word');
+		equal(Boundaries.container(boundary), dom.firstChild);
+		equal(Boundaries.offset(boundary), 4);
+
+		var control = CONTROL;
+
+		dom = $('<div contenteditable="true">' + control + '</div>')[0];
+
+		Boundaries.walkWhile(
+			Boundaries.fromEndOfNode(dom),
+			function (boundary) {
+				return !Dom.isEditingHost(Boundaries.prevNode(boundary));
+			},
+			function (boundary) {
+				return Traversing.prev(boundary, 'word');
+			},
+			function (boundary) {
+				if (!Boundaries.isNodeBoundary(boundary)) {
+					var offset = Boundaries.offset(boundary);
+					control = control.substr(0, offset) + '|' + control.substr(offset);
+				}
+			}
+		);
+
+		isEqual(control, dom.innerHTML);
+	});
+
+	var INLINE = ['i', 'b', 'u', 'span', 'del', '#text'];
+	var EDITABLE = document.createElement('div');
+	EDITABLE.contentEditable = true;
 
 	/**
 	 * Chooses a random element in the given list.
@@ -128,27 +202,13 @@
 		}, '');
 	}
 
-	function assert(actual, expected, elem, mark) {
-		var stripped = actual.replace(/^\||\|$/, '');
-		if (expected === stripped) {
-			OUTPUT.innerHTML = print(elem);
-		} else {
-			var result = '\n"' + expected + '"\n!==\n"' + stripped + '"';
-			console.error(result, elem);
-			//debugger;
-			//mark(elem);
-			//throw '!';
-		}
-	}
-
 	/**
 	 * Tests one traversal through the given element's DOM structure.
 	 *
-	 * @param  {Element}                  elem
-	 * @param  {Function(Element):string} mark
-	 * @param  {string}                   expected
+	 * @param {Element}                  elem
+	 * @param {Function(Element):string} mark
 	 */
-	function test(elem, mark, expected) {
+	function run(elem, mark) {
 		var control = elem.textContent;
 		var snapshots = mark(elem).reduce(function (snaps, path) {
 			var clone = Dom.clone(elem);
@@ -159,15 +219,17 @@
 			var index = snap.indexOf('|') + i;
 			return result.substr(0, index) + '|' + result.substr(index);
 		}, control);
-		assert(result, expected, elem, mark);
+		var actual = result.replace(/^\||\|$/, '');
+		isEqual(actual, elem.innerHTML);
+		//console.log(print(elem));
 	}
 
-	function run() {
-		generate(EDITABLE, CONTROL, INLINE, 0);
-		test(EDITABLE, markForward, EXPECTED);
-		test(EDITABLE, markBackward, EXPECTED);
-	}
-
-	setInterval(run, 10);
+	test('randomized word traversing', function () {
+		for (var i = 0; i < 100; i++) {
+			generate(EDITABLE, CONTROL, INLINE, 1);
+			run(EDITABLE, markForward);
+			run(EDITABLE, markBackward);
+		}
+	});
 
 }(window.aloha));

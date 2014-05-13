@@ -62,7 +62,7 @@ define([
 				}
 			},
 			setSelection,
-			// Selections.handle,
+			Selections.handle,
 			Typing.handle,
 			Blocks.handle,
 			DragDrop.handle,
@@ -83,6 +83,7 @@ define([
 
 	Events.setup(editor, document);
 
+	/*
 	SelectionChange.addHandler(document, SelectionChange.handler(
 		Fn.partial(Boundaries.get, document),
 		Boundaries.fromEndOfNode(document),
@@ -90,6 +91,7 @@ define([
 			editor(event);
 		}
 	));
+	*/
 
 	/**
 	 * The Aloha Editor namespace root.
@@ -103,7 +105,7 @@ define([
 			defaultBlockNodeName: 'div'
 		};
 		Editables.assocIntoEditor(editor, editable);
-		elem.setAttribute('contentEditable', 'true');
+		//elem.setAttribute('contentEditable', 'true');
 		Undo.enter(editable.undoContext, {
 			meta: {type: 'external'},
 			partitionRecords: true

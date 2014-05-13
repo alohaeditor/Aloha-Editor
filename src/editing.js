@@ -28,6 +28,7 @@ define([
 	'strings',
 	'functions',
 	'html',
+	'html/elements',
 	'ranges',
 	'stable-range',
 	'cursors',
@@ -41,6 +42,7 @@ define([
 	Strings,
 	Fn,
 	Html,
+	HtmlElements,
 	Ranges,
 	StableRange,
 	Cursors,
@@ -793,6 +795,12 @@ define([
 	wrapperProperties['bold'] = wrapperProperties.bold;
 	wrapperProperties['italic'] = wrapperProperties.italic;
 
+	function getStyleSafely(node, name) {
+		return (Dom.isElementNode(node)
+		        ? Dom.getStyle(node, name)
+		        : null);
+	}
+
 	function makeStyleFormatter(styleName, styleValue, leftPoint, rightPoint, opts) {
 		var isStyleEqual = opts.isStyleEqual || isStyleEqual_default;
 		var nodeNames = [];
@@ -814,7 +822,7 @@ define([
 			if (Arrays.contains(nodeNames, node.nodeName)) {
 				return wrapperProps.value;
 			}
-			var override = Dom.getStyle(node, styleName);
+			var override = getStyleSafely(node, styleName);
 			return !Strings.isEmpty(override) ? override : null;
 		}
 		function getInheritableOverride(node) {
@@ -834,20 +842,20 @@ define([
 			if (Arrays.contains(nodeNames, node.nodeName)) {
 				return true;
 			}
-			return !Strings.isEmpty(Dom.getStyle(node, styleName));
+			return !Strings.isEmpty(getStyleSafely(node, styleName));
 		}
 		function hasContextValue(node, value) {
 			value = normalizeStyleValue(value);
 			if (Arrays.contains(nodeNames, node.nodeName) && isStyleEqual(wrapperProps.value, value)) {
 				return true;
 			}
-			return isStyleEqual(Dom.getStyle(node, styleName), value);
+			return isStyleEqual(getStyleSafely(node, styleName), value);
 		}
 		function hasContext(node) {
 			if (!unformat && Arrays.contains(nodeNames, node.nodeName)) {
 				return true;
 			}
-			return isContextStyle(Dom.getStyle(node, styleName));
+			return isContextStyle(getStyleSafely(node, styleName));
 		}
 		function hasInheritableContext(node) {
 			if (!unformat && Arrays.contains(nodeNames, node.nodeName)) {
@@ -862,7 +870,7 @@ define([
 			// style to the default value, for example
 			// "text-decoration: none" to be ignored.
 			if (unformat && Html.isStyleInherited(styleName)) {
-				return isContextStyle(Dom.getStyle(node, styleName));
+				return isContextStyle(getStyleSafely(node, styleName));
 			}
 			return isContextStyle(Dom.getComputedStyle(node, styleName));
 		}
@@ -995,7 +1003,7 @@ define([
 	 * @param {Range} liveRange The range of the current selection.
 	 * @param {String} nodeName The name of the tag that should serve as the
 	 *                          wrapping node.
-	 * @param {Boolean} remove Optional flag, which when set to false will cause
+	 * @param {boolean} remove Optional flag, which when set to false will cause
 	 *                         the given markup to be removed (unwrapped) rather
 	 *                         then set.
 	 * @param {Object} opts A map of options (all optional):
@@ -1119,26 +1127,63 @@ define([
 		return unsplitParent;
 	}
 
+	/**
+	 * Tries to move the given boundary to the start of line, skipping over any
+	 * unrendered nodes, or if that fails to the end of line (after a br
+	 * element if present), and for the last line in a block, to the very end
+	 * of the block.
+	 *
+	 * If the selection is inside a block with only a single empty line (empty
+	 * except for unrendered nodes), and both boundary points are normalized,
+	 * the selection will be collapsed to the start of the block.
+	 *
+	 * For some operations it's useful to think of a block as a number of
+	 * lines, each including its respective br and any preceding unrendered
+	 * whitespace and in case of the last line, also any following unrendered
+	 * whitespace.
+	 *
+	 * @param  {Cursor}  point
+	 * @return {Boolean} True if the cursor is moved.
+	 */
+	function normalizeBoundary(point) {
+		if (HtmlElements.skipUnrenderedToStartOfLine(point)) {
+			return true;
+		}
+		if (!HtmlElements.skipUnrenderedToEndOfLine(point)) {
+			return false;
+		}
+		if ('BR' === point.node.nodeName) {
+			point.skipNext();
+			// Because, if this is the last line in a block, any unrendered
+			// whitespace after the last br will not constitute an independent
+			// line, and as such we must include it in the last line.
+			var endOfBlock = point.clone();
+			if (HtmlElements.skipUnrenderedToEndOfLine(endOfBlock) && endOfBlock.atEnd) {
+				point.setFrom(endOfBlock);
+			}
+		}
+		return true;
+	}
+
 	function splitRangeAtBoundaries(range, left, right, opts) {
 		var normalizeLeft = opts.normalizeRange ? left : left.clone();
 		var normalizeRight = opts.normalizeRange ? right : right.clone();
+		normalizeBoundary(normalizeLeft);
+		normalizeBoundary(normalizeRight);
 
 		Cursors.setToRange(range, normalizeLeft, normalizeRight);
 
 		var removeEmpty = [];
-
 		var start = Dom.nodeAtOffset(range.startContainer, range.startOffset);
 		var end = Dom.nodeAtOffset(range.endContainer, range.endOffset);
-
 		var startAtEnd = Boundaries.isAtEnd(Boundaries.raw(range.startContainer, range.startOffset));
 		var endAtEnd = Boundaries.isAtEnd(Boundaries.raw(range.endContainer, range.endOffset));
-
 		var unsplitParentStart = splitBoundaryPoint(start, startAtEnd, left, right, removeEmpty, opts);
 		var unsplitParentEnd = splitBoundaryPoint(end, endAtEnd, left, right, removeEmpty, opts);
 
 		removeEmpty.forEach(function (elem) {
-			// Because we may end up cloning the same node twice (by
-			// splitting both start and end points).
+			// Because we may end up cloning the same node twice (by splitting
+			// both start and end points)
 			if (!elem.firstChild && elem.parentNode) {
 				Mutation.removeShallowPreservingCursors(elem, [left, right]);
 			}
@@ -1229,7 +1274,7 @@ define([
 	 * @see https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#deleting-the-selection
 	 *
 	 * @param  {Range} range
-	 * @return {Range}
+	 * @return {Array.<Boundary>}
 	 */
 	function delete_(range) {
 		fixupRange(range, function delete_(range, left, right) {
@@ -1266,18 +1311,20 @@ define([
 			return {
 				postprocessTextNodes: Fn.noop,
 				postprocess: function () {
-					var above = Boundaries.fromRangeStart(range);
-					var below = Boundaries.fromRangeEnd(range);
-					var overrides = Html.removeBreak(above, below);
-					var pos = Cursors.createFromBoundary(
-						Boundaries.container(above),
-						Boundaries.offset(above)
+					var split = Html.removeBreak(
+						Boundaries.fromRangeStart(range),
+						Boundaries.fromRangeEnd(range)
+					)[0];
+					var cursor = Cursors.createFromBoundary(
+						Boundaries.container(split),
+						Boundaries.offset(split)
 					);
-					left.setFrom(pos);
-					right.setFrom(pos);
+					left.setFrom(cursor);
+					right.setFrom(cursor);
 				}
 			};
 		}, false);
+		return Boundaries.fromRange(range);
 	}
 
 	/**
@@ -1287,16 +1334,17 @@ define([
 	 * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#splitting-a-node-list's-parent
 	 * http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031700.html
 	 *
-	 * @param {Range}   liveRange
-	 * @param {object}  context
-	 * @param {boolean} linebreak
+	 * @param  {Range}   liveRange
+	 * @param  {string}  breaker
+	 * @param  {boolean} linebreak
+	 * @return {Array.<Boundary>}
 	 */
-	function break_(liveRange, context, linebreak) {
+	function break_(liveRange, breaker, linebreak) {
 		var range = Ranges.collapseToEnd(StableRange(liveRange));
 		var op = linebreak ? Html.insertLineBreak : Html.insertBreak;
-		var boundary = op(Boundaries.fromRangeStart(range), context);
+		var boundary = op(Boundaries.fromRangeStart(range), breaker);
 		Boundaries.setRange(liveRange, boundary, boundary);
-		return boundary;
+		return [boundary, boundary];
 	}
 
 	function insert(liveRange, insertion) {

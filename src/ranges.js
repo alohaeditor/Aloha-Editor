@@ -9,20 +9,16 @@
  * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#deleting-the-selection
  */
 define([
-	'dom/nodes',
-	'dom/style',
 	'dom',
 	'mutation',
 	'arrays',
 	'stable-range',
 	'html',
-	'dom/traversing',
+	'traversing',
 	'functions',
 	'cursors',
 	'boundaries'
 ], function Ranges(
-	Nodes,
-	Style,
 	Dom,
 	Mutation,
 	Arrays,
@@ -50,24 +46,22 @@ define([
 	}
 
 	/**
-	 * Sets the given range to the browser selection.  This will cause the
+	 * Sets the given range to the browser selection. This will cause the
 	 * selection to be visually rendered by the user agent.
 	 *
 	 * @param  {Range} range
-	 * @param  {!Document} doc
 	 * @return {Selection} Browser selection to which the range was set
 	 */
-	function select(range, doc) {
-		doc = doc || range.startContainer.ownerDocument;
-		var selection = doc.getSelection();
+	function select(range) {
+		var selection = range.startContainer.ownerDocument.getSelection();
 		selection.removeAllRanges();
 		selection.addRange(range);
 		return selection;
 	}
 
 	/**
-	 * Creates a range object with boundaries defined by containers, and
-	 * offsets in those containers.
+	 * Creates a range object with boundaries defined by containers, and offsets
+	 * in those containers.
 	 *
 	 * @param  {Element} startContainer
 	 * @param  {number}  startOffset
@@ -115,8 +109,8 @@ define([
 	 * http://lists.w3.org/Archives/Public/public-webapps/2009OctDec/0113.html
 	 *
 	 * @private
-	 * @param  {number} x
-	 * @param  {number} y
+	 * @param  {number}    x
+	 * @param  {number}    y
 	 * @param  {!Document} doc
 	 * @return {?Range}
 	 */
@@ -124,7 +118,6 @@ define([
 		if (x < 0 || y < 0) {
 			return null;
 		}
-
 		if (doc.caretRangeFromPoint) {
 			return doc.caretRangeFromPoint(x, y);
 		}
@@ -140,25 +133,26 @@ define([
 	/**
 	 * Gets the given node's nearest non-editable parent.
 	 *
+	 * @private
 	 * @param  {Element} node
-	 * @return {Element|null}
+	 * @return {?Element}
 	 */
 	function parentBlock(node) {
 		var block = Dom.isEditable(node) ? Dom.editingHost(node) : node;
-		var parent = Traversing.upWhile(block, function (node) {
+		var parent = Dom.upWhile(block, function (node) {
 			return node.parentNode && !Dom.isEditable(node.parentNode);
 		});
-		return (Nodes.Nodes.DOCUMENT === parent.nodeType) ? null : parent;
+		return (Dom.Nodes.DOCUMENT === parent.nodeType) ? null : parent;
 	}
 
 	/**
 	 * Creates a range from the horizontal and vertical offset pixel positions
-	 * relative to upper-left corner the document body.
+	 * relative to upper-left corner of the document body.
 	 *
 	 * Will ensure that the range is contained in a content editable node.
 	 *
-	 * @param  {number} x
-	 * @param  {number} y
+	 * @param  {number}    x
+	 * @param  {number}    y
 	 * @param  {!Document} doc
 	 * @return {?Range} Null if no suitable range can be determined
 	 */
@@ -175,8 +169,8 @@ define([
 			return null;
 		}
 		var body = block.ownerDocument.body;
-		var offsets = Nodes.offset(block);
-		var offset = Nodes.nodeIndex(block);
+		var offsets = Dom.offset(block);
+		var offset = Dom.nodeIndex(block);
 		var pointX = x + body.scrollLeft;
 		var blockX = offsets.left + body.scrollLeft + block.offsetWidth;
 		if (pointX > blockX) {
@@ -213,7 +207,7 @@ define([
 		// cursor starts before the node, which is what
 		// cursorFromBoundaryPoint() does automatically.
 		if (backwards
-				&& Nodes.isTextNode(container)
+				&& Dom.isTextNode(container)
 					&& offset > 0
 						&& offset < container.length) {
 			if (cursor.next()) {
@@ -257,9 +251,9 @@ define([
 	 *
 	 * @todo: Implement in terms of boundaries
 	 *
-	 * @param  {Range} range
-	 * @param  {Function=} ignoreLeft
-	 * @param  {Function=} ignoreRight
+	 * @param  {Range}     range
+	 * @param  {function=} ignoreLeft
+	 * @param  {function=} ignoreRight
 	 * @return {Range}
 	 */
 	function trim(range, ignoreLeft, ignoreRight) {
@@ -317,16 +311,9 @@ define([
 	 */
 	function expandToWord(start, end) {
 		return [
-			Html.prev(start, 'word') || start,
-			Html.next(end,   'word') || end
+			Traversing.prev(start, 'word') || start,
+			Traversing.next(end,   'word') || end
 		];
-	}
-
-	/**
-	 * TODO: Do this by climing the boundary containers' ancestors instead.
-	 */
-	function commonContainer(a, b) {
-		return fromBoundaries(a, b).commonAncestorContainer;
 	}
 
 	/**
@@ -340,7 +327,7 @@ define([
 	 *  +-------+     [ +-------+
 	 *  | block |       | block |
 	 *  |       |  ==>  |       |
-	 *  | []    |       |       |
+	 *  | [ ]   |       |       |
 	 *  +-------+       +-------+ ]
 	 *
 	 * @private
@@ -349,14 +336,14 @@ define([
 	 * @return {Array.<Boundary>}
 	 */
 	function expandToBlock(start, end) {
-		var cac = commonContainer(start, end);
-		var ancestors = Traversing.childAndParentsUntilIncl(cac, function (node) {
+		var cac = Boundaries.commonContainer(start, end);
+		var ancestors = Dom.childAndParentsUntilIncl(cac, function (node) {
 			return Html.hasLinebreakingStyle(node) || Dom.isEditingHost(node);
 		});
 		var node = Arrays.last(ancestors);
-		var len = Nodes.nodeLength(node);
+		var len = Dom.nodeLength(node);
 		var prev = Boundaries.create(node, 0);
-		var next = Html.next(Boundaries.create(node, len));
+		var next = Traversing.next(Boundaries.create(node, len));
 		return [prev, next];
 	}
 
@@ -414,7 +401,7 @@ define([
 		if (Boundaries.isTextBoundary(end)) {
 			var offset = Html.nextSignificantOffset(end);
 			if (-1 === offset) {
-				range.setEnd(range.endContainer, Nodes.nodeLength(range.endContainer));
+				range.setEnd(range.endContainer, Dom.nodeLength(range.endContainer));
 			} else {
 				range.setEnd(Boundaries.container(end), offset);
 			}
@@ -426,9 +413,9 @@ define([
 	 * Like trim() but ignores closing (to the left) and opening positions (to
 	 * the right).
 	 *
-	 * @param {Range} range
-	 * @param {Function=} ignoreLeft
-	 * @param {Function=} ignoreRight
+	 * @param  {Range}     range
+	 * @param  {function=} ignoreLeft
+	 * @param  {function=} ignoreRight
 	 * @return {Range}
 	 */
 	function trimClosingOpening(range, ignoreLeft, ignoreRight) {
@@ -450,10 +437,10 @@ define([
 	 *
 	 * @param {Cusor} start
 	 * @param {Cusor} end
-	 * @param {Function:boolean} until
+	 * @param {function:boolean} until
 	 *        Optional predicate.  May be used to stop the trimming process from
 	 *        moving the Cursor from within an element outside of it.
-	 * @param {Function:boolean} ignore
+	 * @param {function:boolean} ignore
 	 *        Optional predicate.  May be used to ignore (skip)
 	 *        following/preceding siblings which otherwise would stop the
 	 *        trimming process, like for example underendered whitespace.
@@ -482,10 +469,10 @@ define([
 	 *
 	 * @param {Cusor} start
 	 * @param {Cusor} end
-	 * @param {Function:boolean} until
+	 * @param {function:boolean} until
 	 *        Optional predicate.  May be used to stop the trimming process from
 	 *        moving the Cursor from within an element outside of it.
-	 * @param {Function:boolean} ignore
+	 * @param {function:boolean} ignore
 	 *        Optional predicate.  May be used to ignore (skip)
 	 *        following/preceding siblings which otherwise would stop the
 	 *        trimming process, like for example underendered whitespace.
@@ -539,59 +526,95 @@ define([
 	}
 
 	/**
-	 * Inserts `text` behind the start boundary of the given range.
 	 *
-	 * @param {Ranges} range
-	 * @param {string} text
+	 * @private
+	 * @param  {Range} range
+	 * @return {?Range}
 	 */
-	function insertTextBehind(range, text) {
-		var boundary = Boundaries.create(range.startContainer, range.startOffset);
-		boundary = Mutation.insertTextAtBoundary(text, boundary, true, [range]);
-		collapseToStart(range);
-		select(range);
+	function expandLeft(range) {
+		var boundary = trimPreceedingNodes(Boundaries.fromRangeStart(range));
+		if (Boundaries.isAtStart(boundary)) {
+			return null;
+		}
+		if (Html.hasLinebreakingStyle(Boundaries.prevNode(boundary))) {
+			return null;
+		}
+		var clone = range.cloneRange();
+		Boundaries.setRangeStart(clone, Traversing.prev(boundary));
+		return clone;
 	}
 
 	/**
-	 * Gets the bounding rectangle offsets for the given range from is start or
-	 * end container.
-	 *
-	 * This function is a hack to work around the problems that user agents
-	 * have in determining the bounding client rect for collapsed ranges.
 	 *
 	 * @private
-	 * @param  {Range}   range
-	 * @param  {boolean} isStart
-	 * @return {Object.<string, number>}
+	 * @param  {Range} range
+	 * @return {?Range}
 	 */
-	function bounds(range, isStart) {
+	function expandRight(range) {
+		var boundary = Boundaries.fromRangeEnd(range);
+		if (Boundaries.isAtEnd(boundary)) {
+			return null;
+		}
+		if (Html.hasLinebreakingStyle(Boundaries.nextNode(boundary))) {
+			return null;
+		}
+		// Petro: I still don't understand this check :(
+		if (!Html.isAtStart(boundary)) {
+			return null;
+		}
 		var clone = range.cloneRange();
-		var boundary;
+		Boundaries.setRangeEnd(clone, Traversing.next(boundary));
+		return clone;
+	}
 
-		if (isStart && clone.startOffset > 0) {
-			boundary = Boundaries.fromRangeStart(clone);
-			if (Html.hasLinebreakingStyle(Html.prevNode(boundary))) {
-				return {};
-			}
-			Boundaries.setRangeStart(clone, Html.prev(boundary));
-		}
-
-		var len = Nodes.nodeLength(clone.endContainer);
-
-		if (!isStart && clone.endOffset < len) {
-			boundary = Boundaries.fromRangeEnd(clone);
-			if (Html.hasLinebreakingStyle(Html.nextNode(boundary))) {
-				return {};
-			}
-			Boundaries.setRangeEnd(clone, Html.next(boundary));
-		}
-
-		var rect = clone.getBoundingClientRect();
-
+	/**
+	 * Returns a mutable bounding client rectangle for the given range.
+	 *
+	 * @private
+	 * @param  {Range} range
+	 * @return {Object<string, number>}
+	 */
+	function boundingRect(range) {
+		var rect = range.getBoundingClientRect();
 		return {
 			top    : rect.top,
 			left   : rect.left,
 			width  : rect.width,
 			height : rect.height
+		};
+	}
+
+	/**
+	 * Attempts to calculates the bounding rectangle offsets for the given
+	 * range.
+	 *
+	 * This function is a hack to work around the problems that user agents have
+	 * in determining the bounding client rect for collapsed ranges.
+	 *
+	 * @private
+	 * @param  {Range} range
+	 * @return {Object.<string, number>}
+	 */
+	function bounds(range) {
+		var rect;
+		var expanded = expandRight(range);
+		if (expanded) {
+			 rect = boundingRect(expanded);
+			 if (rect.width > 0) {
+				return rect;
+			 }
+		}
+		expanded = expandLeft(range);
+		if (expanded) {
+			rect = boundingRect(expanded);
+			rect.left += rect.width;
+			return rect;
+		}
+		return {
+			top    : 0,
+			left   : 0,
+			width  : 0,
+			height : 0
 		};
 	}
 
@@ -602,33 +625,27 @@ define([
 	 * @return {Object.<string, number>}
 	 */
 	function box(range) {
-		var rect = bounds(range, false);
+		var rect = bounds(range);
+		// Because `rect` should be the box of an expanded range and must
+		// therefore have a non-zero width if valid
 		if (rect.width > 0) {
 			return rect;
 		}
-		rect = bounds(range, true);
-		if (rect.width > 0) {
-			rect.left += rect.width;
+		var boundary = Boundaries.fromRangeStart(range);
+		if (Boundaries.isAtEnd(boundary)) {
+			return box(fromBoundaries(Traversing.prev(boundary), boundary));
+		}
+		var node = Boundaries.nodeAfter(boundary);
+		if (!node) {
 			return rect;
 		}
-
-		var len = Nodes.nodeLength(range.startContainer);
-		if (range.startOffset === len) {
-			var boundary = Html.prev(Boundaries.fromRangeStart(range));
-			return box(fromBoundaries(boundary, boundary));
-		}
-
-		var node = Nodes.isTextNode(range.startContainer)
-		         ? range.startContainer
-		         : Nodes.nthChild(range.startContainer, range.startOffset);
-
-		var element = node.ownerDocument.documentElement;
-
+		var scrollTop = Dom.scrollTop(node.ownerDocument);
+		var scrollLeft = Dom.scrollLeft(node.ownerDocument);
 		return {
-			top    : node.parentNode.offsetTop - element.scrollTop,
-			left   : node.parentNode.offsetLeft - element.scrollLeft,
+			top    : node.parentNode.offsetTop - scrollTop,
+			left   : node.parentNode.offsetLeft - scrollLeft,
 			width  : node.offsetWidth,
-			height : parseInt(Style.getComputedStyle(node, 'line-height'), 10)
+			height : parseInt(Dom.getComputedStyle(node, 'line-height'), 10)
 		};
 	}
 
@@ -652,30 +669,58 @@ define([
 		return Dom.editingHost(stable.startContainer);
 	}
 
+	/**
+	 * Trims away unrendered nodes that preceed the given boundary. This
+	 * trimming is done to fix a bug in Chrome which causes
+	 * getBoundingClientRect() to return 0s.
+	 *
+	 * @private
+	 * @param  {Boundary} boundary
+	 * @return {Boundary}
+	 */
+	function trimPreceedingNodes(boundary) {
+		if (Boundaries.isTextBoundary(boundary) || Boundaries.isAtStart(boundary)) {
+			return boundary;
+		}
+		var cloned = Boundaries.create(
+			Dom.clone(Boundaries.container(boundary), true),
+			Boundaries.offset(boundary)
+		);
+		var node = Boundaries.nodeBefore(cloned);
+		var range = node.ownerDocument.createRange();
+		var newBoundary = cloned;
+		var prev;
+		while (node && Html.isUnrendered(node)) {
+			newBoundary = Boundaries.fromNode(node);
+			prev = node.previousSibling;
+			Dom.remove(node);
+			node = prev;
+		}
+		return newBoundary;
+	}
+
 	return {
-		box                             : box,
+		box                         : box,
 
-		get                             : get,
-		select                          : select,
-		create                          : create,
-		equals                          : equals,
+		get                         : get,
+		select                      : select,
+		create                      : create,
+		equals                      : equals,
 
-		collapseToEnd                   : collapseToEnd,
-		collapseToStart                 : collapseToStart,
+		collapseToEnd               : collapseToEnd,
+		collapseToStart             : collapseToStart,
 
-		insertTextBehind                : insertTextBehind,
+		trim                        : trim,
+		trimClosingOpening          : trimClosingOpening,
+		trimBoundaries              : trimBoundaries,
+		expandBoundaries            : expandBoundaries,
 
-		trim                            : trim,
-		trimClosingOpening              : trimClosingOpening,
-		trimBoundaries                  : trimBoundaries,
-		expandBoundaries                : expandBoundaries,
+		nearestEditingHost          : nearestEditingHost,
 
-		nearestEditingHost              : nearestEditingHost,
+		expand                      : expand,
+		envelopeInvisibleCharacters : envelopeInvisibleCharacters,
 
-		expand                          : expand,
-		envelopeInvisibleCharacters     : envelopeInvisibleCharacters,
-
-		fromPosition                    : fromPosition,
-		fromBoundaries                  : fromBoundaries
+		fromPosition                : fromPosition,
+		fromBoundaries              : fromBoundaries
 	};
 });

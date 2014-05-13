@@ -9,9 +9,11 @@
  */
 define([
 	'dom',
+	'maps',
 	'ephemera'
 ], function Xhtml(
 	Dom,
+	Maps,
 	ephemera
 ) {
 	'use strict';
@@ -88,9 +90,8 @@ define([
 	 * Encodes a string meant to be used wherever parsable character data occurs
 	 * in XML.
 	 *
-	 * @param {String} str
-	 *        An unencoded piece of character data.
-	 * @return {String}
+	 * @param {string} str An unencoded piece of character data.
+	 * @return {string}
 	 *        The given string with & and < characters replaced with the
 	 *        corresponding HTML entity references.
 	 */
@@ -103,9 +104,8 @@ define([
 	/**
 	 * Encodes a string meant to be used between double-quoted attribute values.
 	 *
-	 * @param {String} str
-	 *        An unencoded attribute value.
-	 * @return {String}
+	 * @param  {string} str An unencoded attribute value.
+	 * @return {string}
 	 *        The given string with & < and " characters replaced with the
 	 *        corresponding HTML entity references.
 	 */
@@ -119,24 +119,20 @@ define([
 	 * Attributes that have the empty string as value will not appear in the
 	 * string at all.
 	 *
-	 * @param {DOMObject} element
+	 * @param {Element} element
 	 *        An element to serialize the attributes of.
 	 * @param {Object} ephemera
 	 *        Describes attributes that should be skipped.
 	 *        See Ehpemera.ephemera().
-	 * @return {String}
+	 * @return {string}
 	 *        A string made up of name="value" for each attribute of the given
 	 *        element, separated by space. The string will have a leading space.
 	 */
 	function makeAttrString(element, ephemera) {
-		var attrs = Dom.attrs(element);
 		var str = '';
-		var i, len;
-		for (i = 0, len = attrs.length; i < len; i++) {
+		Maps.forEach(Dom.attrs(element), function (value, name) {
 			// The XHTML spec says attributes are lowercase
-			var attr  = attrs[i];
-			var name  = attr[0].toLowerCase();
-			var value = attr[1];
+			name = name.toLowerCase();
 
 			if (ephemera && ephemera.isAttrEphemeral(
 				element,
@@ -144,7 +140,7 @@ define([
 				ephemera.attrMap || {},
 				ephemera.attrRxs || {}
 			)) {
-				continue;
+				return;
 			}
 
 			//TODO: it's only a boolean attribute if the element is in an HTML
@@ -154,14 +150,14 @@ define([
 			if (!isBool && '' === value) {
 				// I don't think it is ever an error to make an attribute not
 				// appear if its string value is empty.
-				continue;
+				return;
 			}
 
 			// For boolean attributes, the mere existence of the attribute means
 			// it is true.
 			str += ' ' + name + '="'
 			    + encodeDqAttrValue((isBool ? name : value)) + '"';
-		}
+		});
 		return str;
 	}
 
@@ -172,9 +168,8 @@ define([
 	 * <book id="x"></book>{content}</book><//book>
 	 * This seems to occur with any element IE doesn't recognize.
 	 *
-	 * @param {DOMObject} element
-	 *        An element node.
-	 * @return {Boolean}
+	 * @param {Element} element An element node.
+	 * @return {boolean}
 	 *        True if the given element isn't recognized by IE and causes a
 	 *        broken DOM structure as outlined above.
 	 */
@@ -239,7 +234,7 @@ define([
 	 *        The first child of the given element. This will usually be
 	 *        element.firstChild. On IE this may be element.nextSibling because
 	 *        of the broken DOM structure IE sometimes generates.
-	 * @param {Boolean} unrecognized
+	 * @param {boolean} unrecognized
 	 *        Whether the given element is unrecognized on IE. If IE doesn't
 	 *        recognize the element, it will create a broken DOM structure which
 	 *        has to be compensated for. See isUnrecognized() for more.
@@ -289,7 +284,7 @@ define([
 	/**
 	 * Serializes a DOM node into a XHTML string.
 	 *
-	 * @param {DOMObject} node
+	 * @param {DomEvents} node
 	 *        A DOM node to serialize.
 	 * @param {Object} ephemera
 	 *        Describes content that should not be serialized.
@@ -329,14 +324,14 @@ define([
 	 * The XHTML of the nodes in the given array-like object will be
 	 * concatenated.
 	 *
-	 * @param {Array[DOMObject]} nodes
+	 * @param {Array.<Node>} nodes
 	 *        An array or jQuery object or another array-like object to
 	 *        serialize.
 	 * @param {Object} ephemera
 	 *        Describes content that should not be serialized.
 	 *        Only attrMap and attrRxs are supported at the moment.
 	 *        See ephemera.ephemera().
-	 * @return {String}
+	 * @return {string}
 	 *         The serialized XHTML String representing the given DOM nodes in
 	 *         the given array-like object.  The result may look like an XML
 	 *         fragment with multiple top-level elements and text nodes.
@@ -404,13 +399,13 @@ define([
 	 * namespace. Don't use default namespaces, use prefixes (except for an HTML
 	 * namespace).
 	 *
-	 * @param {DOMObject} node
+	 * @param {Node} node
 	 *        A DOM node to serialize.
 	 * @param {Object} ephemera
 	 *        Describes content that should not be serialized.
 	 *        Only attrMap and attrRxs are supported at the moment.
 	 *        See ephemera.ephemera().
-	 * @return {String}
+	 * @return {string}
 	 *         The serialized XHTML string represnting the given DOM node.
 	 */
 	function nodeToXhtml(node, ephemera) {

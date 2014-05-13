@@ -33,7 +33,7 @@ define(['misc', 'assert'], function Events(Misc, Assert) {
 		} else if (obj.attachEvent) {
 			obj.attachEvent('on' + event, handler);
 		} else {
-			Assert.assertError();
+			Assert.error();
 		}
 	}
 
@@ -58,7 +58,7 @@ define(['misc', 'assert'], function Events(Misc, Assert) {
 		} else if (obj.detachEvent) {
 			obj.detachEvent('on' + event, handler);
 		} else {
-			Assert.assertError();
+			Assert.error();
 		}
 	}
 
@@ -77,7 +77,7 @@ define(['misc', 'assert'], function Events(Misc, Assert) {
 			eventObj['type'] = event;
 			obj.fireEvent('on' + event, eventObj);
 		} else {
-			Assert.assertError();
+			Assert.error();
 		}
 	}
 

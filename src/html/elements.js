@@ -7,160 +7,18 @@
  */
 define([
 	'html/styles',
-	'dom/style',
-	'dom/traversing',
-	'dom/nodes',
+	'html/predicates',
 	'dom',
-	'predicates',
 	'cursors',
 	'strings'
 ], function HtmlElements(
-	HtmlStyles,
-	DomStyle,
-	Traversing,
-	Nodes,
-	Dom,
+	Styles,
 	Predicates,
+	Dom,
 	Cursors,
 	Strings
 ) {
 	'use strict';
-
-	/**
-	 * Tags representing non-block-level elements which are nevertheless line
-	 * breaking.
-	 *
-	 * @private
-	 * @type {Object.<string, boolean>}
-	 */
-	var LINE_BREAKING_VOID_ELEMENTS = {
-		'BR'  : true,
-		'HR'  : true,
-		'IMG' : true
-	};
-
-	/**
-	 * Tags representing list container elements.
-	 *
-	 * @private
-	 * @type {Object.<string, boolean>}
-	 */
-	var LIST_CONTAINERS = {
-		'OL'   : true,
-		'UL'   : true,
-		'DL'   : true,
-		'MENU' : true
-	};
-
-	/**
-	 * Tags representing list item elements.
-	 *
-	 * @private
-	 * @type {Object.<string, boolean>}
-	 */
-	var LIST_ITEMS = {
-		'LI' : true,
-		'DT' : true,
-		'DD' : true
-	};
-
-	/**
-	 * These element's cannot be simply unwrapped because they have dependent
-	 * children.
-	 *
-	 * @see   GROUPED_CONTAINERS
-	 * @param {<string, boolean>}
-	 */
-	var GROUP_CONTAINERS = {
-		'FIELDSET' : true,
-		'OBJECT'   : true,
-		'FIGURE'   : true,
-		'AUDIO'    : true,
-		'SELECT'   : true,
-		'COLGROUP' : true,
-		'HGROUP'   : true,
-		'TABLE'    : true,
-		'TBODY'    : true,
-		'TR'       : true,
-		'OL'       : true,
-		'UL'       : true,
-		'DL'       : true,
-		'MENU'     : true
-	};
-
-	/**
-	 * These element's cannot be simply unwrapped because they parents only
-	 * allows these as their immediate child nodes.
-	 *
-	 * @see   GROUP_CONTAINERS
-	 * @param {<string, Array.<string>}
-	 */
-	var GROUPED_ELEMENTS = {
-		'LI'    : ['OL', 'UL', 'DL'],
-		'DT'    : ['DL'],
-		'DD'    : ['DL'],
-		'TBODY' : ['TABLE'],
-		'TR'    : ['TABLE', 'TBODY'],
-		'TH'    : ['TABLE', 'TBODY'],
-		'TD'    : ['TR', 'TH']
-	};
-
-	/**
-	 * Checks if the given node is grouping container.
-	 *
-	 * Grouping containers include TABLE, FIELDSET, SELECT.  
-	 *
-	 * @see    GROUP_CONTAINERS
-	 * @param  {Node} node
-	 * @return {boolean}
-	 */
-	function isGroupContainer(node) {
-		return GROUP_CONTAINERS[node.nodeName];
-	}
-
-	/**
-	 * Checks if the given node an element that can only be a child of a group
-	 * container.
-	 *
-	 * LI, TD are the classic cases.
-	 *
-	 * @see    GROUPED_CONTAINER
-	 * @param  {Node} node
-	 * @return {boolean}
-	 */
-	function isGroupedElement(node) {
-		return GROUPED_ELEMENTS[node.nodeName];
-	}
-
-	/**
-	 * Checks if the given node is one of the 4 list item elements.
-	 *
-	 * @param  {Node} node
-	 * @return {boolean}
-	 */
-	function isListItem(node) {
-		return LIST_ITEMS[node.nodeName];
-	}
-
-	/**
-	 * Checks if the given node is one of the 4 list grouping containers.
-	 *
-	 * @param  {Node} node
-	 * @return {boolean}
-	 */
-	function isListContainer(node) {
-		return LIST_CONTAINERS[node.nodeName];
-	}
-
-	/**
-	 * Checks whether `node` is the TABLE element.
-	 *
-	 * @param  {Node} node
-	 * @return {boolean}
-	 */
-	function isTableContainer(node) {
-		return node.nodeName === 'TABLE';
-	}
 
 	/**
 	 * Checks whether the given node should be treated like a void element.
@@ -191,19 +49,20 @@ define([
 	 * @return {boolean}
 	 */
 	function isUnrenderedWhitespaceNoBlockCheck(node) {
-		if (!Nodes.isTextNode(node)) {
+		if (!Dom.isTextNode(node)) {
 			return false;
 		}
 		if (!node.length) {
 			return true;
 		}
-		if (Strings.NOT_SPACE.test(node.nodeValue)) {
+		if (Strings.NOT_SPACE.test(node.nodeValue)
+				|| Strings.NON_BREAKING_SPACE.test(node.nodeValue)) {
 			return false;
 		}
 		var cssWhiteSpace;
 		if (node.parentNode) {
-			cssWhiteSpace = DomStyle.getComputedStyle(node.parentNode, 'white-space');
-			if (HtmlStyles.isWhiteSpacePreserveStyle(cssWhiteSpace)) {
+			cssWhiteSpace = Dom.getComputedStyle(node.parentNode, 'white-space');
+			if (Styles.isWhiteSpacePreserveStyle(cssWhiteSpace)) {
 				return false;
 			}
 		}
@@ -216,6 +75,19 @@ define([
 	}
 
 	/**
+	 * Tags representing non-block-level elements which are nevertheless line
+	 * breaking.
+	 *
+	 * @private
+	 * @type {Object.<string, boolean>}
+	 */
+	var LINE_BREAKING_VOID_ELEMENTS = {
+		'BR'  : true,
+		'HR'  : true,
+		'IMG' : true
+	};
+
+	/**
 	 * Returns true if the node at point is unrendered, with the caveat that it
 	 * only examines the node at point and not any siblings.  An additional
 	 * check is necessary to determine whether the whitespace occurrs
@@ -225,8 +97,8 @@ define([
 	 */
 	function isUnrenderedAtPoint(point) {
 		return (isUnrenderedWhitespaceNoBlockCheck(point.node)
-				|| (Nodes.isElementNode(point.node)
-					&& HtmlStyles.hasInlineStyle(point.node)
+				|| (Dom.isElementNode(point.node)
+					&& Styles.hasInlineStyle(point.node)
 					&& !LINE_BREAKING_VOID_ELEMENTS[point.node]));
 	}
 
@@ -244,7 +116,7 @@ define([
 	function skipUnrenderedToEndOfLine(point) {
 		var cursor = point.clone();
 		cursor.nextWhile(isUnrenderedAtPoint);
-		if (!HtmlStyles.hasLinebreakingStyle(cursor.node)) {
+		if (!Styles.hasLinebreakingStyle(cursor.node)) {
 			return false;
 		}
 		point.setFrom(cursor);
@@ -266,7 +138,7 @@ define([
 		var cursor = point.clone();
 		cursor.prev();
 		cursor.prevWhile(isUnrenderedAtPoint);
-		if (!HtmlStyles.hasLinebreakingStyle(cursor.node)) {
+		if (!Styles.hasLinebreakingStyle(cursor.node)) {
 			return false;
 		}
 		var isBr = ('BR' === cursor.node.nodeName);
@@ -278,7 +150,7 @@ define([
 			if (skipUnrenderedToEndOfLine(endOfBlock) && endOfBlock.atEnd) {
 				cursor.skipPrev(); // before the br
 				cursor.prevWhile(isUnrenderedAtPoint);
-				if (!HtmlStyles.hasLinebreakingStyle(cursor.node)) {
+				if (!Styles.hasLinebreakingStyle(cursor.node)) {
 					return false;
 				}
 				cursor.next(); // after/out of the linebreaking node
@@ -337,56 +209,51 @@ define([
 	function isUnrendered(node) {
 		if (!Predicates.isVoidNode(node)
 				// Because empty list elements are rendered
-				&& !LIST_ITEMS[node.nodeName]
-				&& 0 === Nodes.nodeLength(node)) {
+				&& !Predicates.isListItem(node)
+				&& 0 === Dom.nodeLength(node)) {
 			return true;
 		}
 
-		if (node.firstChild && !Traversing.nextWhile(node.firstChild, isUnrendered)) {
+		if (node.firstChild && !Dom.nextWhile(node.firstChild, isUnrendered)) {
 			return true;
 		}
 
 		// Because isUnrenderedWhiteSpaceNoBlockCheck() will give us false
 		// positives but never false negatives, the algorithm that will follow
-		// will make certain, and will also consider unrendered <br>s.
+		// will make certain, and will also consider unrendered <br>s
 		var maybeUnrenderedNode = isUnrenderedWhitespaceNoBlockCheck(node);
 
 		// Because a <br> element that is a child node adjacent to its parent's
-		// end tag (terminal sibling) must not be rendered.
-		if (!maybeUnrenderedNode
-				&& 'BR' === node.nodeName
-				&& isTerminalNode(node)
-				&& HtmlStyles.hasLinebreakingStyle(node.parentNode)) {
-			if (node.nextSibling && 'BR' === node.nextSibling.nodeName) {
-				return true;
-			}
-			if (node.previousSibling && 'BR' === node.previousSibling.nodeName) {
-				return true;
-			}
-			if (node.nextSibling && Traversing.nextWhile(node.nextSibling, isUnrendered)) {
-				return true;
-			}
-			if (node.previousSibling && Traversing.prevWhile(node.previousSibling, isUnrendered)) {
-				return true;
-			}
-			return false;
-		}
-
+		// end tag (terminal sibling) must not be rendered
 		if (!maybeUnrenderedNode) {
+			if ('BR' === node.nodeName
+				&& isTerminalNode(node)
+				&& Styles.hasLinebreakingStyle(node.parentNode)) {
+				if (node.nextSibling && 'BR' === node.nextSibling.nodeName) {
+					return true;
+				}
+				if (node.previousSibling && 'BR' === node.previousSibling.nodeName) {
+					return true;
+				}
+				if (node.nextSibling && Dom.nextWhile(node.nextSibling, isUnrendered)) {
+					return true;
+				}
+				if (node.previousSibling && Dom.prevWhile(node.previousSibling, isUnrendered)) {
+					return true;
+				}
+			}
 			return false;
 		}
 
 		if (isTerminalNode(node)) {
-			if (!Nodes.isTextNode(node)) {
+			if (!Dom.isTextNode(node)) {
 				return false;
 			}
-
-			var inlineNode = Traversing.nextNonAncestor(node, false, function (node) {
+			var inlineNode = Dom.nextNonAncestor(node, false, function (node) {
 				return Predicates.isInlineNode(node) && !isUnrendered(node);
 			}, function (node) {
-				return HtmlStyles.hasLinebreakingStyle(node) || Dom.isEditingHost(node);
+				return Styles.hasLinebreakingStyle(node) || Dom.isEditingHost(node);
 			});
-
 			return !inlineNode;
 		}
 
@@ -425,11 +292,8 @@ define([
 		isRendered                         : isRendered,
 		isUnrendered                       : isUnrendered,
 		isUnrenderedWhitespace             : isUnrenderedWhitespace,
-		isListItem                         : isListItem,
-		isListContainer                    : isListContainer,
-		isTableContainer                   : isTableContainer,
-		isGroupContainer                   : isGroupContainer,
-		isGroupedElement                   : isGroupedElement,
-		isUnrenderedWhitespaceNoBlockCheck : isUnrenderedWhitespaceNoBlockCheck
+		isUnrenderedWhitespaceNoBlockCheck : isUnrenderedWhitespaceNoBlockCheck,
+		skipUnrenderedToEndOfLine          : skipUnrenderedToEndOfLine,
+		skipUnrenderedToStartOfLine        : skipUnrenderedToStartOfLine
 	};
 });

@@ -8,11 +8,13 @@
 define([
 	'dom',
 	'arrays',
-	'boundaries'
+	'boundaries',
+	'html/traversing'
 ], function Mutation(
 	Dom,
 	Arrays,
-	Boundaries
+	Boundaries,
+	Traversing
 ) {
 	'use strict';
 
@@ -185,6 +187,33 @@ define([
 	}
 
 	/**
+	 * Splits the given boundary's ancestors until the boundary position
+	 * returns true when applyied to the given predicate.
+	 *
+	 * @private
+	 * @param  {Boundary}                    boundary
+	 * @param  {function(Boundary):Boundary} predicate
+	 * @return {Boundary}
+	 */
+	function splitBoundaryUntil(boundary, predicate) {
+		boundary = Boundaries.normalize(boundary);
+		if (predicate && predicate(boundary)) {
+			return boundary;
+		}
+		if (Boundaries.isTextBoundary(boundary)) {
+			return splitBoundaryUntil(splitBoundary(boundary), predicate);
+		}
+		var container = Boundaries.container(boundary);
+		var duplicate = Dom.cloneShallow(container);
+		var node = Boundaries.nodeAfter(boundary);
+		if (node) {
+			Dom.move(Dom.nextSiblings(node), duplicate);
+		}
+		Dom.insertAfter(duplicate, container);
+		return splitBoundaryUntil(Traversing.stepForward(boundary), predicate);
+	}
+
+	/**
 	 * Splits text containers in the given range.
 	 *
 	 * @param {!Range} range
@@ -336,6 +365,25 @@ define([
 		removePreservingRanges(node, [range]);
 	}
 
+	function boundaryToRange(boundary) {
+		var container = Boundaries.container(boundary);
+		var range = container.ownerDocument.createRange();
+		var offset = Boundaries.offset(boundary);
+		range.setStart(container, offset);
+		range.setEnd(container, offset);
+		return range;
+	}
+
+	function rangeFromBoundary(range) {
+		return Boundaries.fromRange(range)[0];
+	}
+
+	function removeNode(node, boundaries) {
+		var ranges = boundaries.map(boundaryToRange);
+		removePreservingRanges(node, ranges);
+		return ranges.map(rangeFromBoundary);
+	}
+
 	function preserveCursorForShallowRemove(node, cursor) {
 		if (cursor.node === node) {
 			if (cursor.node.firstChild) {
@@ -361,6 +409,7 @@ define([
 	}
 
 	return {
+		removeNode                     : removeNode,
 		removeShallowPreservingCursors : removeShallowPreservingCursors,
 		removePreservingRange          : removePreservingRange,
 		removePreservingRanges         : removePreservingRanges,
@@ -370,6 +419,7 @@ define([
 		splitTextContainers            : splitTextContainers,
 		joinTextNodeAdjustRange        : joinTextNodeAdjustRange,
 		joinTextNode                   : joinTextNode,
-		splitBoundary                  : splitBoundary
+		splitBoundary                  : splitBoundary,
+		splitBoundaryUntil             : splitBoundaryUntil
 	};
 });
