@@ -194,6 +194,7 @@ define([
 		type         : null,
 		name         : null,
 		text         : null,
+		classes      : {},
 		children     : null,
 		affinity     : AFFINITY_DEFAULT
 	}, function (node, domNodeOrProps) {
@@ -207,6 +208,7 @@ define([
 		node = unchangedField.set(node, node);
 		return node;
 	});
+	var classesField       = Boromir.prototype.classes;
 	var unchangedField     = Boromir.addField();
 	var idField            = Boromir.addField();
 	var delayedAttrsField  = Boromir.addField();
@@ -287,10 +289,18 @@ define([
 		return getChangedOrDelayed(changedAttrsField, delayedAttrsField, node, name);
 	}
 
+	function parseClasses(classStr) {
+		return Maps.fillKeys({}, Strings.words(classStr), true);
+	}
+
 	function setAttr(node, name, value) {
 		assertElement(node);
 		Assert.assert('style' !== name, Assert.STYLE_NOT_AS_ATTR);
-		return setChanged(changedAttrsField, CHANGED_ATTRS, node, name, value);
+		node = setChanged(changedAttrsField, CHANGED_ATTRS, node, name, value);
+		if ('class' === name) {
+			node = updateClassesFromAttr(node);
+		}
+		return node;
 	}
 
 	/**
@@ -656,6 +666,44 @@ define([
 		return domNode;
 	}
 
+	function classesFromNodeAttrs(node) {
+		var cls = node.get(node.attrs)['class'];
+		return Fn.isNou(cls) ? {} : parseClasses(cls);
+	}
+
+	function updateClassesFromAttr(node) {
+		return node.set(directClassField, classesFromNodeAttrs(node));
+	}
+
+	function updateAttrFromClasses(node) {
+		var classStr = Maps.keys(node.get(node.classes)).join(' ');
+		return setChanged(changedAttrsField, CHANGED_ATTRS, node, 'class', classStr);
+	}
+
+	function hasClass(node, cls) {
+		return node.get(node.classes)[cls];
+	}
+
+	function addClass(node, cls) {
+		var classMap = node.get(node.classes);
+		if (classMap[cls]) {
+			return node;
+		}
+		classMap = Maps.cloneSet(classMap, cls, true);
+		node = node.set(node.classes, classMap);
+		return node;
+	}
+
+	function removeClass(node, cls) {
+		var classMap = node.get(node.classes);
+		if (!classMap[cls]) {
+			return node;
+		}
+		classMap = Maps.cloneDelete(classMap, cls);
+		node = node.set(node.classes, classMap);
+		return node;
+	}
+
 	var hookedName     = hookUpdateChanged(Boromir.prototype.name, CHANGED_NAME);
 	var hookedText     = hookUpdateChanged(Boromir.prototype.text, CHANGED_TEXT);
 	var hookedChildren = hookUpdateChanged(Boromir.prototype.children, CHANGED_CHILDREN);
@@ -671,8 +719,23 @@ define([
 		style        : Accessor.asMethod(Accessor(getStyle, setStyle)),
 		updateDom    : Fn.asMethod(updateDom),
 		asDom        : Fn.asMethod(asDom),
-		create       : Boromir
+		create       : Boromir,
+		hasClass     : Fn.asMethod(hasClass),
+		addClass     : Fn.asMethod(addClass),
+		removeClass  : Fn.asMethod(removeClass)
 	});
+
+	Boromir.prototype.attrs = Accessor.asMethod(
+		Record.hookSetterRecompute(Boromir.prototype.attrs,
+		                           classesField,
+		                           classesFromNodeAttrs,
+		                           classesFromNodeAttrs)
+	);
+	Boromir.prototype.classes = Accessor.asMethod(
+		Record.hookSetter(classesField,
+		                  updateAttrFromClasses,
+		                  updateAttrFromClasses)
+	);
 
 	Boromir.CHANGE_INSERT    = CHANGE_INSERT;
 	Boromir.CHANGE_REMOVE    = CHANGE_REMOVE;
