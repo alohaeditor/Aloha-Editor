@@ -53,6 +53,15 @@
 		ok(null == Boromir(node2.domNode()).attr('id'));
 	});
 
+	test('reading classes', function () {
+		var domNode = setupDomNode();
+		domNode.setAttribute('class', 'one two');
+		var node = Boromir(domNode);
+		deepEqual(node.classes(), {'one': true, 'two': true});
+		ok(node.hasClass('one'));
+		ok(node.hasClass('two'));
+	});
+
 	test('add/remove a class', function () {
 		var domNode = setupDomNode();
 		var node = Boromir(domNode);
