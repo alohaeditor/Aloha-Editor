@@ -53,6 +53,41 @@
 		ok(null == Boromir(node2.domNode()).attr('id'));
 	});
 
+	test('add/remove a class', function () {
+		var domNode = setupDomNode();
+		var node = Boromir(domNode);
+		equal(node.attr('class'), null);
+		deepEqual(node.classes(), {});
+
+		node = node.addClass('some-class');
+		ok(node.hasClass('some-class'));
+		equal(node.attr('class'), 'some-class');
+		deepEqual(node.classes(), {'some-class': true})
+
+		node = node.updateDom();
+		equal(domNode.getAttribute('class'), 'some-class');
+
+		node = node.addClass('another-class');
+		node = node.updateDom();
+		ok(domNode.getAttribute('class') === 'some-class another-class'
+		   || domNode.getAttribute('class') === 'another-class some-class');
+
+		ok(node.hasClass('some-class'));
+		ok(node.hasClass('another-class'));
+		ok(node.attr('class') === 'some-class another-class'
+		   || node.attr('class') === 'another-class some-class');
+		deepEqual(node.classes(), {'some-class': true, 'another-class': true});
+
+		node = node.removeClass('some-class');
+		node = node.updateDom();
+		equal(domNode.getAttribute('class'), 'another-class');
+		
+		ok(!node.hasClass('some-class'));
+		ok(node.hasClass('another-class'));
+		equal(node.attr('class'), 'another-class');
+		deepEqual(node.classes(), {'another-class': true});
+	});
+
 	test('set a style', function () {
 		var domNode = setupDomNode();
 		var node = Boromir(domNode);
