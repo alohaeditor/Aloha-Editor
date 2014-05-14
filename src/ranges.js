@@ -17,7 +17,8 @@ define([
 	'traversing',
 	'functions',
 	'cursors',
-	'boundaries'
+	'boundaries',
+	'paths'
 ], function Ranges(
 	Dom,
 	Mutation,
@@ -27,7 +28,8 @@ define([
 	Traversing,
 	Fn,
 	Cursors,
-	Boundaries
+	Boundaries,
+	Paths
 ) {
 	'use strict';
 
@@ -526,45 +528,109 @@ define([
 	}
 
 	/**
+	 * Removes an unrendered (empty text-) node infront of the given boundary.
+	 *
+	 * @private
+	 * @param  {Boundary} boundary
+	 * @return {Boundary}
+	 */
+	function trimPreceedingNode(boundary) {
+		if (Boundaries.isTextBoundary(boundary)) {
+			return boundary;
+		}
+		if (Boundaries.isAtStart(boundary)) {
+			return boundary;
+		}
+		if (Html.isRendered(Boundaries.nodeBefore(boundary))) {
+			return boundary;
+		}
+		var clone = Dom.clone(Boundaries.container(boundary), true);
+		var offset = Boundaries.offset(boundary) - 1;
+		Dom.remove(clone.childNodes[offset]);
+		return Boundaries.create(clone, offset);
+	}
+
+	/**
+	 * Steps the given boundary one visual step left or until in behind of a
+	 * line break position.
+	 *
+	 * @private
+	 * @param  {Boundary} boundary
+	 * @return {Boundary}
+	 */
+	function stepLeft(boundary) {
+		var prev = Traversing.prev(boundary, 'char');
+		if (prev) {
+			return prev;
+		}
+		if (Html.hasLinebreakingStyle(Boundaries.prevNode(boundary))) {
+			return boundary;
+		}
+		return stepLeft(Traversing.prev(boundary, 'boundary'));
+	}
+
+	/**
+	 * Steps the given boundary one visual step right or until in front of a
+	 * line break position.
+	 *
+	 * @private
+	 * @param  {Boundary} boundary
+	 * @return {Boundary}
+	 */
+	function stepRight(boundary) {
+		var next = Traversing.next(boundary, 'char');
+		if (next) {
+			return next;
+		}
+		if (Html.hasLinebreakingStyle(Boundaries.nextNode(boundary))) {
+			return boundary;
+		}
+		return stepRight(Traversing.next(boundary, 'boundary'));
+	}
+
+	/**
+	 * Expands the range one visual step to the left if possible, returns null
+	 * otherwise.
 	 *
 	 * @private
 	 * @param  {Range} range
 	 * @return {?Range}
 	 */
 	function expandLeft(range) {
-		var boundary = trimPreceedingNodes(Boundaries.fromRangeStart(range));
-		if (Boundaries.isAtStart(boundary)) {
-			return null;
-		}
-		if (Html.hasLinebreakingStyle(Boundaries.prevNode(boundary))) {
-			return null;
-		}
 		var clone = range.cloneRange();
-		Boundaries.setRangeStart(clone, Traversing.prev(boundary));
-		return clone;
+		var start = trimPreceedingNode(Boundaries.fromRangeStart(clone));
+		var end = Boundaries.fromRangeEnd(clone);
+		if (Boundaries.isAtStart(start)) {
+			return null;
+		}
+		if (Html.hasLinebreakingStyle(Boundaries.prevNode(start))) {
+			return null;
+		}
+		return fromBoundaries(stepLeft(start), end);
 	}
 
 	/**
+	 * Expands the range one visual step to the right if possible, returns null
+	 * otherwise.
 	 *
 	 * @private
 	 * @param  {Range} range
 	 * @return {?Range}
 	 */
 	function expandRight(range) {
-		var boundary = Boundaries.fromRangeEnd(range);
-		if (Boundaries.isAtEnd(boundary)) {
+		var start = Boundaries.fromRangeStart(range);
+		var end = Boundaries.fromRangeEnd(range);
+		if (Boundaries.isAtEnd(end)) {
 			return null;
 		}
-		if (Html.hasLinebreakingStyle(Boundaries.nextNode(boundary))) {
+		if (Html.hasLinebreakingStyle(Boundaries.nextNode(end))) {
 			return null;
 		}
 		// Petro: I still don't understand this check :(
-		if (!Html.isAtStart(boundary)) {
+		if (!Html.isAtStart(end)) {
 			return null;
 		}
-		var clone = range.cloneRange();
-		Boundaries.setRangeEnd(clone, Traversing.next(boundary));
-		return clone;
+		return fromBoundaries(start, stepRight(end));
 	}
 
 	/**
@@ -667,36 +733,6 @@ define([
 		var stable = StableRange(range);
 		trim(stable, isNotEditingHost, isNotEditingHost);
 		return Dom.editingHost(stable.startContainer);
-	}
-
-	/**
-	 * Trims away unrendered nodes that preceed the given boundary. This
-	 * trimming is done to fix a bug in Chrome which causes
-	 * getBoundingClientRect() to return 0s.
-	 *
-	 * @private
-	 * @param  {Boundary} boundary
-	 * @return {Boundary}
-	 */
-	function trimPreceedingNodes(boundary) {
-		if (Boundaries.isTextBoundary(boundary) || Boundaries.isAtStart(boundary)) {
-			return boundary;
-		}
-		var cloned = Boundaries.create(
-			Dom.clone(Boundaries.container(boundary), true),
-			Boundaries.offset(boundary)
-		);
-		var node = Boundaries.nodeBefore(cloned);
-		var range = node.ownerDocument.createRange();
-		var newBoundary = cloned;
-		var prev;
-		while (node && Html.isUnrendered(node)) {
-			newBoundary = Boundaries.fromNode(node);
-			prev = node.previousSibling;
-			Dom.remove(node);
-			node = prev;
-		}
-		return newBoundary;
 	}
 
 	return {
