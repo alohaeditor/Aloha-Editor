@@ -56,6 +56,11 @@ define([
 		var alohaEvent = custom || {'nativeEvent' : nativeEvent};
 		alohaEvent.editor = editor;
 		Fn.comp(
+			function (alohaEvent) {
+				if (typeof alohaCB !== 'undefined') {
+					alohaCB(alohaEvent);
+				}
+			},
 			setSelection,
 			Selections.handle,
 			Typing.handle,
@@ -124,6 +129,7 @@ define([
 
 	Api['aloha'] = aloha;
 	Api['mahalo'] = mahalo;
+	Api['editor'] = editor;
 
 	aloha = Maps.extend(aloha, Api);
 
