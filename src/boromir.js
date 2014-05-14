@@ -64,6 +64,7 @@ define([
 	'record',
 	'delayed-map',
 	'dom',
+	'strings',
 	'assert'
 ], function (
 	Fn,
@@ -72,6 +73,7 @@ define([
 	Record,
 	DelayedMap,
 	Dom,
+	Strings,
 	Assert
 ) {
 	'use strict';
@@ -140,6 +142,8 @@ define([
 		nodeT = nodeT.delayT(nodeT.children, childrenFromDomNode, domNode);
 		nodeT = nodeT.setT(delayedAttrsField, delayedAttrs);
 		nodeT = nodeT.setT(delayedStylesField, delayedStyles);
+		var node = nodeT.asPersistent();
+		nodeT = node.asTransient().delayT(classesField, classesFromNodeAttrs, node);
 		return nodeT;
 	}
 
@@ -667,12 +671,12 @@ define([
 	}
 
 	function classesFromNodeAttrs(node) {
-		var cls = node.get(node.attrs)['class'];
+		var cls = getAttr(node, 'class');
 		return Fn.isNou(cls) ? {} : parseClasses(cls);
 	}
 
 	function updateClassesFromAttr(node) {
-		return node.set(directClassField, classesFromNodeAttrs(node));
+		return node.set(classesField, classesFromNodeAttrs(node));
 	}
 
 	function updateAttrFromClasses(node) {
