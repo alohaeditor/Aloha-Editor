@@ -676,12 +676,7 @@ define([
 			rect.left += rect.width;
 			return rect;
 		}
-		return {
-			top    : 0,
-			left   : 0,
-			width  : 0,
-			height : 0
-		};
+		return boundingRect(range);
 	}
 
 	/**
@@ -697,11 +692,7 @@ define([
 		if (rect.width > 0) {
 			return rect;
 		}
-		var boundary = Boundaries.fromRangeStart(range);
-		if (Boundaries.isAtEnd(boundary)) {
-			return box(fromBoundaries(Traversing.prev(boundary), boundary));
-		}
-		var node = Boundaries.nodeAfter(boundary);
+		var node = Boundaries.nodeAfter(Boundaries.fromRangeStart(range));
 		if (!node) {
 			return rect;
 		}
