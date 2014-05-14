@@ -668,7 +668,7 @@ define([
 
 	function classesFromNodeAttrs(node) {
 		var cls = node.get(node.attrs)['class'];
-		return Fn.isNou(cls) ? null : parseClasses(cls);
+		return Fn.isNou(cls) ? {} : parseClasses(cls);
 	}
 
 	function updateClassesFromAttr(node) {
