@@ -1,11 +1,13 @@
 require([
 	'../../src/aloha',
 	'../../src/arrays',
+	'../../src/boromir',
 	'../../src/boundaries',
 	'../../src/dom'
 ], function (
 	aloha,
 	Arrays,
+	Boromir,
 	Boundaries,
 	Dom
 ) {
@@ -19,11 +21,11 @@ require([
   	var ACTIONS = {
   		'bold': aloha.typing.actions.formatBold,
   		'italic': aloha.typing.actions.formatItalic,
-  		'orderedList': aloha.list.toUnorderedList,
+  		'orderedList': aloha.list.toOrderedList,
   		'unorderedList': aloha.list.toUnorderedList,
   		'undo': aloha.undo.undo,
   		'redo': aloha.undo.redo,
-  		'h2': { replace: 'h2' },
+  		'h2': { replace: 'h2' }, // put these in formatting.js
   		'h3': { replace: 'h3' },
   		'h4': { replace: 'h4' },
   		'p': { replace: 'p' },
@@ -90,11 +92,27 @@ require([
 	 */
 	function updateUi() {
 		var overrides = aloha.overrides.harvest(Boundaries.container(Boundaries.get()[0]));
-		// TODO simple, stateless, but slow
-		$('.aloha-ui-toolbar .active').removeClass('active');
-		overrides.forEach(function (override) {
-			$('.' + CLASS_PREFIX + override[0]).addClass('active');
-		});
+		var node = Boromir(document.querySelector('.aloha-ui-toolbar'));
+
+		/**
+		 * set ui toolbar elements to active that match the current overrides
+		 * 
+		 * @param {Boromir} node to be updated
+		 * @return {Boromir} node that has been updated
+		 */
+		function walk(node) {
+			if (node.type() === Boromir.ELEMENT) {
+				node = node.removeClass('active');
+				overrides.forEach(function (override) {
+					if (node.hasClass(CLASS_PREFIX + override[0])) {
+						node = node.addClass('active');
+					}
+				});
+			}
+			return node.children(node.children().map(walk));
+		}
+		node = walk(node);
+		node.updateDom();
 	}
 
 	var lastValidRange;
