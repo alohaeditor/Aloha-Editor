@@ -21,7 +21,7 @@ define([], function Browsers() {
 	var i;
 	for (i = 0; i < prefixes.length; i++) {
 		if (style.hasOwnProperty(prefixes[i] + '-transform')) {
-			VENDOR_PREFIX = prefixes[i];
+			VENDOR_PREFIX = prefixes[i] + '-';
 		}
 	}
 

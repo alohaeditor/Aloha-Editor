@@ -123,7 +123,7 @@ define([
 	function stylesFromOverrides(overrides) {
 		var style = {};
 		style['padding'] = overrides['bold'] ? '1px' : '0px';
-		style[Browsers.VENDOR_PREFIX + '-transform']
+		style[Browsers.VENDOR_PREFIX + 'transform']
 				= overrides['italic'] ? 'rotate(8deg)' : '';
 		style['background'] = overrides['color'] || '';
 		return style;

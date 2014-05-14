@@ -201,13 +201,13 @@ define([
 
 	function enableSelection(elem) {
 		elem.removeAttribute('unselectable', 'on');
-		Style.set(elem, Browsers.VENDOR_PREFIX + '-user-select', 'all');
+		Style.set(elem, Browsers.VENDOR_PREFIX + 'user-select', 'all');
 		elem.onselectstart = null;
 	}
 
 	function disableSelection(elem) {
 		elem.removeAttribute('unselectable', 'on');
-		Style.set(elem, Browsers.VENDOR_PREFIX + '-user-select', 'none');
+		Style.set(elem, Browsers.VENDOR_PREFIX + 'user-select', 'none');
 		elem.onselectstart = Fn.returnFalse;
 	}
 
