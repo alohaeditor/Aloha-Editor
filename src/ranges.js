@@ -692,15 +692,23 @@ define([
 		if (rect.width > 0) {
 			return rect;
 		}
+		var doc = range.commonAncestorContainer.ownerDocument;
+		var scrollTop = Dom.scrollTop(doc);
+		var scrollLeft = Dom.scrollLeft(doc);
 		var node = Boundaries.nodeAfter(Boundaries.fromRangeStart(range));
-		if (!node) {
-			return rect;
+		if (node) {
+			return {
+				top    : node.parentNode.offsetTop - scrollTop,
+				left   : node.parentNode.offsetLeft - scrollLeft,
+				width  : node.offsetWidth,
+				height : parseInt(Dom.getComputedStyle(node, 'line-height'), 10)
+			};
 		}
-		var scrollTop = Dom.scrollTop(node.ownerDocument);
-		var scrollLeft = Dom.scrollLeft(node.ownerDocument);
+		// <li>{}</li>
+		node = Boundaries.container(Boundaries.fromRangeStart(range));
 		return {
-			top    : node.parentNode.offsetTop - scrollTop,
-			left   : node.parentNode.offsetLeft - scrollLeft,
+			top    : node.offsetTop - scrollTop,
+			left   : node.offsetLeft - scrollLeft,
 			width  : node.offsetWidth,
 			height : parseInt(Dom.getComputedStyle(node, 'line-height'), 10)
 		};
