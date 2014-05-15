@@ -58,7 +58,7 @@ define([
 			delete configurations[message.editable.getId()];
 		});
 
-		PubSub.sub('aloha.selection.context-changed', function (message) {
+		PubSub.sub('aloha.selection.context-change', function (message) {
 			if (!Aloha.activeEditable) {
 				return;
 			}
