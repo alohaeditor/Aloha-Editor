@@ -687,19 +687,28 @@ define([
 	 */
 	function box(range) {
 		var rect = bounds(range);
+		var doc = range.commonAncestorContainer.ownerDocument;
+		var win = Dom.documentWindow(doc);
+		var topOffset = win.pageYOffset - doc.body.clientTop;
+		var leftOffset = win.pageXOffset - doc.body.clientLeft;
+
 		// Because `rect` should be the box of an expanded range and must
 		// therefore have a non-zero width if valid
 		if (rect.width > 0) {
-			return rect;
+			return {
+				top    : rect.top + topOffset,
+				left   : rect.left + leftOffset,
+				width  : rect.width,
+				height : rect.height
+			};
 		}
-		var doc = range.commonAncestorContainer.ownerDocument;
 		var scrollTop = Dom.scrollTop(doc);
 		var scrollLeft = Dom.scrollLeft(doc);
 		var node = Boundaries.nodeAfter(Boundaries.fromRangeStart(range));
 		if (node) {
 			return {
-				top    : node.parentNode.offsetTop - scrollTop,
-				left   : node.parentNode.offsetLeft - scrollLeft,
+				top    : node.parentNode.offsetTop - scrollTop + topOffset,
+				left   : node.parentNode.offsetLeft - scrollLeft + leftOffset,
 				width  : node.offsetWidth,
 				height : parseInt(Dom.getComputedStyle(node, 'line-height'), 10)
 			};
@@ -707,8 +716,8 @@ define([
 		// <li>{}</li>
 		node = Boundaries.container(Boundaries.fromRangeStart(range));
 		return {
-			top    : node.offsetTop - scrollTop,
-			left   : node.offsetLeft - scrollLeft,
+			top    : node.offsetTop - scrollTop + topOffset,
+			left   : node.offsetLeft - scrollLeft + leftOffset,
 			width  : node.offsetWidth,
 			height : parseInt(Dom.getComputedStyle(node, 'line-height'), 10)
 		};

@@ -75,13 +75,9 @@ define([
 	 */
 	function show(caret, boundary) {
 		var box = Ranges.box(Ranges.fromBoundaries(boundary, boundary));
-		var doc = caret.ownerDocument;
-		var win = Dom.documentWindow(doc);
-		var topOffset = win.pageYOffset - doc.body.clientTop;
-		var leftOffset = win.pageXOffset - doc.body.clientLeft;
 		Maps.extend(caret.style, {
-			'top': box.top + topOffset + 'px',
-			'left': box.left + leftOffset + 'px',
+			'top': box.top + 'px',
+			'left': box.left + 'px',
 			'height': box.height + 'px',
 			'width': '2px',
 			'display': 'block'
