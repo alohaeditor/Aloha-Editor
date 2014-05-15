@@ -502,10 +502,10 @@ define([
 
 			var insideLinkScope = false;
 
-			PubSub.sub('aloha.selection.context-changed', function (message) {
+			PubSub.sub('aloha.selection.context-change', function (message) {
 				var enteredLinkScope = false;
-				var editable = message.editable;
-				if (configurations[editable.getId()]) {
+				var editable = Aloha.activeEditable;
+				if (editable && configurations[editable.getId()]) {
 					enteredLinkScope = selectionChangeHandler(plugin, message.range);
 					// Only foreground the tab containing the href field the
 					// first time the user enters the link scope to avoid
