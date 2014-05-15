@@ -55,43 +55,29 @@ define([
 	function editor(nativeEvent, custom) {
 		var alohaEvent = custom || {'nativeEvent' : nativeEvent};
 		alohaEvent.editor = editor;
-		Fn.comp(
-			function (alohaEvent) {
-				if (typeof alohaCB !== 'undefined') {
-					alohaCB(alohaEvent);
-				}
-			},
-			setSelection,
-			Selections.handle,
-			Typing.handle,
-			Blocks.handle,
-			DragDrop.handle,
-			Paste.handle,
-			function (alohaEvent) {
-				alohaEvent.editable = alohaEvent.editor.editables[1];
-				return alohaEvent;
-			},
-			Mouse.handle,
-			Keys.handle
-		)(alohaEvent);
+		alohaEvent = Fn.comp.apply(editor.stack, editor.stack)(alohaEvent);
+		setSelection(alohaEvent);
 	}
 
 	editor.editables = {};
 	editor.BLOCK_CLASS = 'aloha-block';
 	editor.CARET_CLASS = 'aloha-caret';
 	editor.selectionContext = Selections.Context();
+	editor.stack = [
+		Selections.handle,
+		Typing.handle,
+		Blocks.handle,
+		DragDrop.handle,
+		Paste.handle,
+		function (alohaEvent) {
+			alohaEvent.editable = alohaEvent.editor.editables[1];
+			return alohaEvent;
+		},
+		Mouse.handle,
+		Keys.handle
+	];
 
 	Events.setup(editor, document);
-
-	/*
-	SelectionChange.addHandler(document, SelectionChange.handler(
-		Fn.partial(Boundaries.get, document),
-		Boundaries.fromEndOfNode(document),
-		function (boundaries, event) {
-			editor(event);
-		}
-	));
-	*/
 
 	/**
 	 * The Aloha Editor namespace root.
