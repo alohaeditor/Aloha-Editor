@@ -14,14 +14,12 @@
 define([
 	'dom',
 	'maps',
-	'arrays',
 	'ranges',
 	'editing',
 	'selections'
 ], function DragDrop(
 	Dom,
 	Maps,
-	Arrays,
 	Ranges,
 	Editing,
 	Selections
@@ -29,8 +27,11 @@ define([
 	'use strict';
 
 	/**
-	 * The pixel distance from the pointer of where the caret should be
-	 * rendered when dragging.
+	 * The pixel distance between the mouse pointer and where the caret should
+	 * be rendered when dragging.
+	 *
+	 * @const
+	 * @type {number}
 	 */
 	var DRAGGING_CARET_OFFSET = -10;
 
@@ -40,6 +41,7 @@ define([
 	 * These are the default attributes from which drag and drop contexts will
 	 * be created.
 	 *
+	 * @const
 	 * @type {Object.<string, *>}
 	 */
 	var DEFAULTS = {
@@ -57,24 +59,22 @@ define([
 	 *
 	 *	`dropEffect`
 	 *		The dropEffect attribute controls the drag-and-drop feedback that
-	 *		the user is given during a drag-and-drop operation.  If the
-	 *		`dropEffect` value is set to "copy", for example, the user agent
-	 *		may rendered the drag icon with a "+" (plus) sign.
-	 *		The supported values are "none", "copy", "link", or "move".  All
-	 *		other values will be ignored.
+	 *		the user is given during a drag-and-drop operation. If the
+	 *		`dropEffect` value is set to "copy", for example, the user agent may
+	 *		rendered the drag icon with a "+" (plus) sign. The supported values
+	 *		are "none", "copy", "link", or "move". All other values are ignored.
 	 *
 	 *	`element`
-	 *		The element on which dragging was initiated on.  If the drag and
-	 *		drop operation is a moving operation, this element will be
-	 *		relocated into the range boundary at the point at which the drop
-	 *		event is fired.
+	 *		The element on which dragging was initiated on. If the drag and drop
+	 *		operation is a moving operation, this element will be relocated into
+	 *		the range boundary at the point at which the drop event is fired.
 	 *		If the drag and drop operation is a copying operation, then this
-	 *		attribute should a reference to a deep clone of the element on
-	 *		which dragging was initiated.
+	 *		attribute should a reference to a deep clone of the element on which
+	 *		dragging was initiated.
 	 *
 	 *	`data`
-	 *		A tuple describing the data that will be set to the drag data
-	 *		store.  See:
+	 *		A tuple describing the data that will be set to the drag data store.
+	 *		See:
 	 *		http://www.whatwg.org/specs/web-apps/current-work/multipage/dnd.html#drag-data-store
 	 *
 	 * @param  {Object} options
@@ -98,26 +98,21 @@ define([
 		if (!Dom.isElementNode(node)) {
 			return false;
 		}
-
 		var attr = node.getAttribute('draggable');
-
 		if ('false' === attr) {
 			return false;
 		}
-
 		if ('true' === attr) {
 			return true;
 		}
-
 		if ('IMG' === node.nodeName) {
 			return true;
 		}
-
 		return ('A' === node.nodeName) && node.getAttribute('href');
 	}
 
 	/**
-	 * Moves the given node, into the given range.
+	 * Moves the given node into the given range.
 	 *
 	 * @param {Range}   range
 	 * @param {Element} node
@@ -132,30 +127,29 @@ define([
 	}
 
 	/**
-	 * Processes drag and drop events operations.
+	 * Processes drag and drop events.
 	 *
-	 * @param  {Object} alohaEvent
-	 * @return {Object}
+	 * @param  {AlohaEvent} alohaEvent
+	 * @return {AlohaEvent}
 	 */
 	function handle(alohaEvent) {
-		var context = alohaEvent.editor.dndContext;
-		var event = alohaEvent.nativeEvent;
-		var x, y;
-		var carets;
-
-		if (!context) {
+		if (!alohaEvent.editor.dndContext) {
 			return alohaEvent;
 		}
 
+		var context = alohaEvent.editor.dndContext;
+		var event = alohaEvent.nativeEvent;
 		var doc = event.target.ownerDocument;
+		var x, y;
+		var carets;
 
 		switch (alohaEvent.type) {
 
 		case 'dragstart':
 
-			// Because this is required for FF for dragging to start on
+			// Because this is required in Firefox for dragging to start on
 			// elements other than IMG elements or anchor elements with href
-			// values.
+			// values
 			event.dataTransfer.setData(context.data[0], context.data[1]);
 
 			break;
@@ -168,31 +162,30 @@ define([
 			alohaEvent.range = Ranges.fromPosition(x, y, doc);
 			Selections.unhideCarets(carets);
 
-			// Because this is necessary to enable dropping to work
+			// Because this is necessary for dropping to work
 			event.preventDefault();
 
 			break;
 
 		case 'drop':
 
-			x = event.clientX + DRAGGING_CARET_OFFSET;
+			// +8 because, for some reason the range is always calculated a
+			// character behind of where it should be...
+			x = event.clientX + DRAGGING_CARET_OFFSET + 8;
 			y = event.clientY + DRAGGING_CARET_OFFSET;
 			carets = Selections.hideCarets(doc);
 			alohaEvent.range = Ranges.fromPosition(x, y, doc);
 			Selections.unhideCarets(carets);
 
 			if (alohaEvent.range) {
-				moveNode(
-					alohaEvent.range,
-					alohaEvent.editor.dndContext.element
-				);
+				moveNode(alohaEvent.range, context.element);
 			}
 
 			if (event.stopPropagation) {
 				event.stopPropagation();
 			}
 
-			// Because some browsers will redirect otherwise
+			// Because some browsers will otherwise redirect
 			event.preventDefault();
 
 			break;

@@ -149,14 +149,15 @@ define([
 
 	/**
 	 * Creates a range from the horizontal and vertical offset pixel positions
-	 * relative to upper-left corner of the document body.
+	 * relative to upper-left corner of the document body. Returns null if no
+	 * suitable range can be determined.
 	 *
 	 * Will ensure that the range is contained in a content editable node.
 	 *
 	 * @param  {number}    x
 	 * @param  {number}    y
 	 * @param  {!Document} doc
-	 * @return {?Range} Null if no suitable range can be determined
+	 * @return {?Range}
 	 */
 	function fromPosition(x, y, doc) {
 		var range = fromPoint(x, y, doc);
