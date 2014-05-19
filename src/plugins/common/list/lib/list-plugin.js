@@ -132,7 +132,6 @@ define([
 		var $dlIcon = $('.aloha-icon-definitionlist').parent('.aloha-ui-menubutton-container');
 		var $olIcon = $('.aloha-icon-orderedlist').parent('.aloha-ui-menubutton-container');
 		var $ulIcon = $('.aloha-icon-unorderedlist').parent('.aloha-ui-menubutton-container');
-		var $templates = $('div.aloha-list-templates ul')
 
 		PubSub.sub('aloha.selection.context-change', function (message) {
 			$dlIcon.removeClass('aloha-button-active');
@@ -167,7 +166,7 @@ define([
 			}
 
 			// Remove jQuery UI menu classes/attributes from list-templates in submenus
-			$templates.removeClass('ui-menu ui-widget ui-widget-content ui-corner-all')
+			$('div.aloha-list-templates ul').removeClass('ui-menu ui-widget ui-widget-content ui-corner-all')
 			          .attr('role', '')
 			          .attr('aria-hidden', '')
 			          .attr('aria-expanded', '')
