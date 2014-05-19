@@ -1,0 +1,4 @@
+language: javascript
+branches:
+  only:
+    - howling-mad
