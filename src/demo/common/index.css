@@ -84,8 +84,8 @@ table th, table td
   margin:0 1.5em 1.5em 1.5em;
 }
 #main ul li {
-  list-style-type:disc;
+  /*list-style-type:disc;*/
 }
 #main ol li {
-  list-style-type:decimal;
+  /*list-style-type:decimal;*/
 }

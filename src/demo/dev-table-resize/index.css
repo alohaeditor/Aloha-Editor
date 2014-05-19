@@ -118,11 +118,11 @@ table caption
 }
 
 #main ol {
-	list-style-type: decimal;
+	/*list-style-type: decimal;*/
 }
 
 #main ul {
-	list-style-type: disc;
+	/*list-style-type: disc;*/
 }
 
 /**
