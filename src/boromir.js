@@ -184,7 +184,7 @@ define([
 		if (domNodeOrProps.nodeType) {
 			nodeT = setPropsFromDomNodeT(nodeT, domNodeOrProps);
 		} else if (!Fn.isNou(domNodeOrProps.text)) {
-			nodeT = setTextPropsT(nodeT, domNodeOrProps)
+			nodeT = setTextPropsT(nodeT, domNodeOrProps);
 		} else if (!Fn.isNou(domNodeOrProps.name)) {
 			nodeT = setElementPropsT(nodeT, domNodeOrProps);
 		} else {
@@ -233,7 +233,7 @@ define([
 
 	function hookUpdateChanged(field, changedMask) {
 		var getChanged = changedField.get;
-		var setChanged = changedField.set
+		var setChanged = changedField.set;
 		var setChangedT = setChanged.setT;
 		return Record.hookSetter(field, function (node) {
 			return updateMask(node, changedMask, changedField.set);
@@ -265,7 +265,7 @@ define([
 		node = node.asTransient();
 		node = node.setT(changedMapField, changedMap);
 		node = updateMask(node, changedMask, changedField.set.setT);
-		return node.asPersistent()
+		return node.asPersistent();
 	}
 
 	/**
@@ -416,7 +416,7 @@ define([
 		} else if (TEXT === type) {
 			return createTextNode(node, doc);
 		} else {
-			Assert.notImplemented()
+			Assert.notImplemented();
 		}
 	}
 
@@ -531,7 +531,7 @@ define([
 	 * @private
 	 */
 	function updateChildren(node, doc, insertIndex) {
-		var newChildren = node.children.get(node)
+		var newChildren = node.children.get(node);
 		var oldChildren = getInUnchanged(node, node.children);
 		var changedInParent = childrenChangedInParent(oldChildren, newChildren);
 		if (!changedInParent) {
@@ -568,7 +568,7 @@ define([
 					child = insertChild(domNode, childNodes, child, domI, doc, insertIndex);
 					domI += 1;
 				} else if (change & CHANGE_REMOVE) {
-					removeChild(domNode, childNodes, domI)
+					removeChild(domNode, childNodes, domI);
 				} else {
 					if (change & CHANGE_REF) {
 						child = updateDomRec(child, doc, insertIndex);
