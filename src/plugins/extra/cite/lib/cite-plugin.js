@@ -365,7 +365,7 @@ define([
 				Aloha.activeEditable.obj.click();
 			}
 			var markup = $('<blockquote class="aloha-cite-wrapper aloha-cite-'
-			           + (++uid) + '" ' + 'data-cite-id="aloha-cite-'
+			           + (++uid) + '" ' + 'data-cite-id="'
 			           + uid + '"></blockquote>');
 			Aloha.Selection.changeMarkupOnSelection(markup);
 			if (this.referenceContainer) {
@@ -385,7 +385,7 @@ define([
 			}
 
 			var markup = $('<q class="aloha-cite-wrapper aloha-cite-'
-			           + (++uid) + '" ' + 'data-cite-id="aloha-cite-'
+			           + (++uid) + '" ' + 'data-cite-id="'
 			           + uid + '"></q>');
 
 			var range = Aloha.Selection.rangeObject;
