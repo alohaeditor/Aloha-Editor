@@ -83,7 +83,7 @@ define([
 	            uniqueId += '-' + uniquifier;
 	        }
 	        var conflict = $('#' + uniqueId);
-	        if (!conflict || (typeof elemOrText === 'object' && conflict === elemOrText)) {
+	        if (conflict.length === 0 || (typeof elemOrText === 'object' && conflict === elemOrText)) {
 				return uniqueId;
 	        }
 	    }
