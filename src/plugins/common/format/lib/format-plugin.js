@@ -1,8 +1,8 @@
 /* format-plugin.js is part of the Aloha Editor project http://aloha-editor.org
  *
- * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://aloha-editor.org/contribution.php
+ * Contributors http://aloha-editor.org/contribution.php 
  * License http://aloha-editor.org/license.php
  */
 define('format/format-plugin', [
@@ -17,12 +17,13 @@ define('format/format-plugin', [
 	'util/arrays',
 	'util/html',
 	'util/dom',
+	'util/maps',
 	'ui/ui',
 	'ui/toggleButton',
 	'ui/port-helper-multi-split',
 	'i18n!format/nls/i18n'
 ], function (
-	$,
+	jQuery,
 	Aloha,
 	PubSub,
 	Plugin,
@@ -33,6 +34,7 @@ define('format/format-plugin', [
 	Arrays,
 	Html,
 	Dom,
+	Maps,
 	Ui,
 	ToggleButton,
 	MultiSplitButton,
@@ -255,7 +257,7 @@ define('format/format-plugin', [
 					cellMarkup.contents().unwrap();
 					cellMarkupCounter++;
 				}
-				cellContent.contents().wrap('<' + button + '></' + button + '>');
+				cellContent.contents().wrap('<'+button+'></'+button+'>');
 			});
 
 			// remove all markup if all cells have markup
@@ -271,7 +273,7 @@ define('format/format-plugin', [
 		if (formatInsideTableWorkaround(button)) {
 			return false;
 		}
-		formatPlugin.addMarkup(button); 
+		formatPlugin.addMarkup( button ); 
 		return false;
 	}
 
@@ -280,16 +282,16 @@ define('format/format-plugin', [
 			return false;
 		}
 
-		formatPlugin.changeMarkup(button);
+		formatPlugin.changeMarkup( button );
 
 		// setting the focus is needed for mozilla to have a working rangeObject.select()
 		if (Aloha.activeEditable && jQuery.browser.mozilla) {
 			Aloha.activeEditable.obj.focus();
 		}
-
+		
 		// triggered for numerated-headers plugin
 		if (Aloha.activeEditable) {
-			Aloha.trigger('aloha-format-block');
+			Aloha.trigger( 'aloha-format-block' );
 		}
 	}
 
@@ -304,7 +306,7 @@ define('format/format-plugin', [
 			icon: 'aloha-icon aloha-icon-' + componentName,
 			scope: 'Aloha.continuoustext',
 			click: function () {
-				return textLevelButtonClickHandler(formatPlugin, button);
+				return textLevelButtonClickHandler(formatPlugin, button); 
 			}
 		});
 		return component;
@@ -317,7 +319,7 @@ define('format/format-plugin', [
 			iconClass: 'aloha-icon ' + i18n.t('aloha-large-icon-' + button),
 			markup: jQuery('<' + button + '>'),
 			click: function () { 
-				return blockLevelButtonClickHandler(formatPlugin, button);
+				return blockLevelButtonClickHandler(formatPlugin, button); 
 			}
 		};
 	}
@@ -443,7 +445,7 @@ define('format/format-plugin', [
 
 		// check whether the markup is found in the range (at the start of the range)
 		var nodeNames = interchangeableNodeNames[markup[0].nodeName] || [markup[0].nodeName];
-		var foundMarkup = rangeObject.findMarkup(function () {
+		var foundMarkup = rangeObject.findMarkup(function() {
 			return -1 !== Arrays.indexOf(nodeNames, this.nodeName);
 		}, Aloha.activeEditable.obj);
 
@@ -550,8 +552,6 @@ define('format/format-plugin', [
 			formatBold:      'ctrl+b meta+b',
 			formatItalic:    'ctrl+i meta+i',
 			formatUnderline: 'ctrl+u meta+u',
-			formatPre:       'ctrl+p meta+p',
-			formatDel:       'ctrl+d meta+d',
 			formatParagraph: 'alt+ctrl+0 alt+meta+0',
 			formatH1:        'alt+ctrl+1 alt+meta+1',
 			formatH2:        'alt+ctrl+2 alt+meta+2',
@@ -559,6 +559,8 @@ define('format/format-plugin', [
 			formatH4:        'alt+ctrl+4 alt+meta+4',
 			formatH5:        'alt+ctrl+5 alt+meta+5',
 			formatH6:        'alt+ctrl+6 alt+meta+6',
+			formatPre:       'ctrl+p meta+p',
+			formatDel:       'ctrl+d meta+d',
 			formatSub:       'alt+shift+s',
 			formatSup:       'ctrl+shift+s'
 		},
@@ -659,15 +661,15 @@ define('format/format-plugin', [
 			var config = this.getEditableConfig($editable),
 			    button, i, len;
 
-			if (typeof config === 'object') {
+			if ( typeof config === 'object' ) {
 				var config_old = [];
-				jQuery.each(config, function (j, button) {
-					if (!(typeof j === 'number' && typeof button === 'string')) {
+				jQuery.each(config, function(j, button) {
+					if ( !(typeof j === 'number' && typeof button === 'string') ) {
 						config_old.push(j);
 					}
 				});
-
-				if (config_old.length > 0) {
+				
+				if ( config_old.length > 0 ) {
 					config = config_old;
 				}
 			}
@@ -676,7 +678,7 @@ define('format/format-plugin', [
 			var editable = $editable[0];
 
 			// now iterate all buttons and show/hide them according to the config
-			for (button in this.buttons) {
+			for ( button in this.buttons) {
 				if (this.buttons.hasOwnProperty(button)) {
 					if (!ContentRules.isAllowed(editable, button)) {
 						this.buttons[button].handle.hide();
@@ -713,7 +715,7 @@ define('format/format-plugin', [
 			this.buttons = {};
 			this.multiSplitItems = [];
 
-			jQuery.each(this.availableButtons, function (j, button) {
+			$.each(this.availableButtons, function(j, button) {
 				var button_config = false;
 
 				if (typeof j !== 'number' && typeof button !== 'string') {
@@ -724,7 +726,7 @@ define('format/format-plugin', [
 				if (textLevelSemantics[button]) {
 					that.buttons[button] = {
 						handle: makeTextLevelButton(that, button),
-						markup: jQuery('<' + button + '>', {'class': button_config || ''})
+						markup: jQuery('<'+button+'>', {'class': button_config || ''})
 					};
 				} else if (blockLevelSemantics[button]) {
 					that.multiSplitItems.push(makeBlockLevelButton(that, button));
@@ -742,18 +744,18 @@ define('format/format-plugin', [
 				scope: 'Aloha.continuoustext'
 			});
 
-			PubSub.sub('aloha.selection.context-change', function (message) {
+			PubSub.sub('aloha.selection.context-change', function(message) {
 				onSelectionChanged(that, message.range);
 			});
 		},
 
-		initSidebar: function (sidebar) {
+		initSidebar: function ( sidebar ) {
 			var pl = this;
 			pl.sidebar = sidebar;
-			sidebar.addPanel({
+			sidebar.addPanel( {
 
-				id       : pl.nsClass('sidebar-panel-class'),
-				title    : i18n.t('floatingmenu.tab.format'),
+				id       : pl.nsClass( 'sidebar-panel-class' ),
+				title    : i18n.t( 'floatingmenu.tab.format' ),
 				content  : '',
 				expanded : true,
 				activeOn : this.formatOptions || false,
@@ -761,67 +763,64 @@ define('format/format-plugin', [
 				onInit: function () {
 				},
 
-				onActivate: function (effective) {
+				onActivate: function ( effective ) {
 					var that = this;
 					that.effective = effective;
 					
-					if (!effective[0]) {
+					if ( !effective[0] ) {
 						return;
 					}
 					that.format = effective[0].nodeName.toLowerCase();
 
-					var dom = jQuery('<div>').attr('class', pl.nsClass('target-container'));
+					var dom = jQuery('<div>').attr('class', pl.nsClass( 'target-container' ));
 					var fieldset = jQuery('<fieldset>');
-
-					fieldset.append(jQuery('<legend>' + that.format + ' ' + i18n.t('format.class.legend')).append(jQuery('<select>')));
-
+					fieldset.append(jQuery('<legend>' + that.format + ' ' + i18n.t( 'format.class.legend' )).append(jQuery('<select>')));
+					
 					dom.append(fieldset);
-
+					
 					var html = 
-						'<div class="' + pl.nsClass('target-container') + '"><fieldset><legend>' + i18n.t('format.class.legend') + '</legend><select name="targetGroup" class="' + pl.nsClass('radioTarget') + '">' + 
-						'<option value="">' + i18n.t('format.class.none') + '</option>';
+						'<div class="' + pl.nsClass( 'target-container' ) + '"><fieldset><legend>' + i18n.t( 'format.class.legend' ) + '</legend><select name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '">' + 
+						'<option value="">' + i18n.t( 'format.class.none' ) + '</option>';
 
-					if (pl.config[that.format] && pl.config[that.format]['class']) {
-						jQuery.each(pl.config[that.format]['class'], function (i, v) {
+					if ( pl.config[that.format] && pl.config[that.format]['class'] ) {
+						jQuery.each(pl.config[that.format]['class'], function(i ,v) {
 							html += '<option value="' + i + '" >' + v + '</option>';
 						});
 					}
 
 					html += '</select></fieldset></div>';
 
-
 					var content = this.setContent(html).content;
 
-
-					jQuery(pl.nsSel('framename')).live( 'keyup', function () {
-						jQuery(that.effective).attr('target', jQuery(this).val().replace('\"', '&quot;').replace("'", "&#39;"));
-					});
+					jQuery( pl.nsSel( 'framename' ) ).live( 'keyup', function () {
+						jQuery( that.effective ).attr( 'target', jQuery( this ).val().replace( '\"', '&quot;' ).replace( "'", "&#39;" ) );
+					} );
 
 					that.effective = effective;
-					jQuery(pl.nsSel('linkTitle')).val(jQuery(that.effective).attr('title'));
+					jQuery( pl.nsSel( 'linkTitle' ) ).val( jQuery( that.effective ).attr( 'title' ) );
 				}
 
-			});
+			} );
 
 			sidebar.show();
 		},
 
 		// duplicated code from link-plugin
-		// Creates string with this component's namepsace prefixed the each classname
+		//Creates string with this component's namepsace prefixed the each classname
 		nsClass: function () {
 			var stringBuilder = [], prefix = pluginNamespace;
-			jQuery.each(arguments, function () {
-				stringBuilder.push(this == '' ? prefix : prefix + '-' + this);
-			});
+			jQuery.each( arguments, function () {
+				stringBuilder.push( this == '' ? prefix : prefix + '-' + this );
+			} );
 			return jQuery.trim(stringBuilder.join(' '));
 		},
 
 		// duplicated code from link-plugin
 		nsSel: function () {
 			var stringBuilder = [], prefix = pluginNamespace;
-			jQuery.each(arguments, function () {
-				stringBuilder.push('.' + (this == '' ? prefix : prefix + '-' + this));
-			});
+			jQuery.each( arguments, function () {
+				stringBuilder.push( '.' + ( this == '' ? prefix : prefix + '-' + this ) );
+			} );
 			return jQuery.trim(stringBuilder.join(' '));
 		},
 
@@ -842,7 +841,6 @@ define('format/format-plugin', [
 			    i;
 
 			// formats to be removed by the removeFormat button may now be configured using Aloha.settings.plugins.format.removeFormats = ['b', 'strong', ...]
-
 			if (this.settings.removeFormats) {
 				formats = this.settings.removeFormats;
 			}
@@ -854,7 +852,6 @@ define('format/format-plugin', [
 			for (i = 0; i < formats.length; i++) {
 				Dom.removeMarkup(rangeObject, jQuery('<' + formats[i] + '>'), Aloha.activeEditable.obj);
 			}
-
 			unformatList(rangeObject);
 
 			// select the modified range

@@ -20,7 +20,7 @@ define([
 	'i18n!aloha/nls/i18n'
 ], function (
 	Aloha,
-	$,
+	jQuery,
 	PubSub,
 	Plugin,
 	ContentRules,

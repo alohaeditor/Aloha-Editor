@@ -28,7 +28,7 @@ define([
 	ToggleButton,
 	Format,
 	Dom,
-    i18n
+	i18n
 ) {
 	'use strict';
 
@@ -173,9 +173,9 @@ define([
 						effective.addClass([nsClass('wrapper')].join(' '));
 						effective.attr('data-cite-id', activeUid);
 					}
-					var index = panel.getIndexOfCitation(activeUid);
+					var index = plugin.getIndexOfCitation(activeUid);
 					if (-1 === index) {
-						index = panel.citations.push({
+						index = plugin.citations.push({
 							uid   : activeUid,
 							link  : null,
 							notes : null
@@ -185,7 +185,7 @@ define([
 					this.content.find(nsSel('link-field input'))
 					    .val(effective.attr('cite'));
 					this.content.find(nsSel('note-field textarea'))
-					    .val(panel.citations[index].note);
+					    .val(plugin.citations[index].note);
 				}
 			});
 		});
@@ -372,7 +372,7 @@ define([
 				this.addCiteToReferences(uid);
 			}
 			if (this.sidebar && this.settings && this.settings.sidebar && this.settings.sidebar.open) {
-				this.sidebar.open();
+				this.sidebar.sidebar.open();
 			}
 		},
 
@@ -425,7 +425,7 @@ define([
 			}
 
 			if (this.sidebar && this.settings && this.settings.sidebar && this.settings.sidebar.open) {
-				this.sidebar.open();
+				this.sidebar.sidebar.open();
 			}
 
 			return false;
