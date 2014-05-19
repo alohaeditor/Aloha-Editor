@@ -137,7 +137,7 @@ define([
 	exports['selectionchange'] = SelectionChange;
 	exports['selections'] = Selections;
 	exports['strings'] = Strings;
-	exports['transform'] = Transform
+	exports['transform'] = Transform;
 	exports['traversing'] = Traversing;
 	exports['trees'] = Trees;
 	exports['typing'] = Typing;
