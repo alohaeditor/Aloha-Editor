@@ -9,38 +9,69 @@ define([
 	'PubSub',
 	'aloha/core',
 	'util/dom2',
+	'util/arrays',
 	'aloha/jquery'
 ], function (
 	PubSub,
 	Aloha,
 	Dom,
+	Arrays,
 	$
 ) {
 	'use strict';
 
 	/**
+	 * White list node names for list elements.
+	 * @type {Array.<string>}
+	 */
+	var LIST_WHITELIST_NODE_NAMES = ['li'];
+
+	/**
+	 * White list node names for table elements.
+	 * @type {Array.<string>}
+	 */
+	var TABLE_WHITELIST_NODE_NAMES = ['caption', 'colgroup', 'col', 'thead', 'tbody', 'tfoot', 'td', 'th'];
+
+	/**
+	 * Add default rules for some elements.
+	 * @returns {Object.<string, Array.<string>>}
+	 */
+	function addDefaultRules(mapRules) {
+		var selector;
+		for (selector in mapRules) {
+			if (mapRules.hasOwnProperty(selector)) {
+				if (Arrays.contains(mapRules[selector], 'ol') || Arrays.contains(mapRules[selector], 'ul')) {
+					mapRules[selector] = Arrays.concat(mapRules[selector], LIST_WHITELIST_NODE_NAMES);
+				} else if (Arrays.contains(mapRules[selector], 'table')) {
+					mapRules[selector] = Arrays.concat(mapRules[selector], TABLE_WHITELIST_NODE_NAMES);
+				}
+			}
+		}
+	}
+
+	/**
 	 * Whitelist rules.
 	 *
 	 * @private
-	 * @type {Array.<Array.<string>>}
+	 * @type {Object.<string, Array.<string>>}
 	 */
-	var whitelist = (
+	var whitelist = addDefaultRules((
 		Aloha.settings &&
 		Aloha.settings.contentRules &&
 		Aloha.settings.contentRules.whitelist
-	) || [];
+	) || {});
 
 	/**
 	 * Blacklist rules.
 	 *
 	 * @private
-	 * @type {Array.<Array.<string>>}
+	 * @type {Object.<string, Array.<string>>}
 	 */
 	var blacklist = (
 		Aloha.settings &&
 		Aloha.settings.contentRules &&
 		Aloha.settings.contentRules.blacklist
-	) || [];
+	) || {};
 
 	/**
 	 * Translation rules.
@@ -72,18 +103,6 @@ define([
 			}
 		}
 		return rules;
-	}
-
-	/**
-	 * Checks whether `x` is contained in the set `xs`.
-	 *
-	 * @private
-	 * @param  {Array.<*>} xs
-	 * @param  {*}         x
-	 * @return {boolean}
-	 */
-	function contains(xs, x) {
-		return -1 !== $.inArray(x, xs);
 	}
 
 	/**
@@ -159,13 +178,13 @@ define([
 		if (white.length > 0) {
 			// Because textnode are always to be permitted by default. They
 			// must be explicitly blacklisted if undesired
-			if (!contains(setcat(['#text'].concat(white)), nodeName.toLowerCase())) {
+			if (!Arrays.contains(setcat(['#text'].concat(white)), nodeName.toLowerCase())) {
 				return false;
 			}
 		}
 		var black = getRules(editable, blacklist);
 		if (black.length > 0) {
-			return !contains(setcat(black), nodeName.toLowerCase());
+			return !Arrays.contains(setcat(black), nodeName.toLowerCase());
 		}
 		return true;
 	}

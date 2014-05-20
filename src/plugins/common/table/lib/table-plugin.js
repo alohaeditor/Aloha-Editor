@@ -404,12 +404,17 @@ define([
 			}
 		});
 
-		PubSub.sub('aloha.selection.changed', function (message) {
-			var range = message.range;
-			var editable = message.editable;
+		//		PubSub.sub('aloha.selection.context-change', function (message) {
+		// Problem with this PubSub.sub event:
+		// This event is only thrown if the context has changed. (selection.js:126:triggerSelectionContextChanged)
+		// This makes that the scope changes to Aloha.continuoustext (scopes.js:43).
+		// This is because selection is called a least twice (selection.js:525). The second time the context has not changed.
+		Aloha.bind('aloha-selection-changed', function (event, rangeObject) {
+			var range = rangeObject;
+			var editable = Aloha.activeEditable;
 
 			// this case probably occurs when the selection is empty?
-			if (!range.startContainer) {
+			if (!range.startContainer || !editable) {
 				return;
 			}
 
