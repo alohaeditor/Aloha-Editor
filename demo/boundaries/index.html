@@ -56,6 +56,17 @@
 				content: counters(counter, ".") ") ";
 				margin-left: -1em;
 			}
+			button {
+				cursor: pointer;
+				border: 0;
+				border-radius: 4px;
+				color: white;
+				background: #428bca;
+				padding: 5px 10px;
+			}
+			button:hover {
+				box-shadow: 0px 0px 10px rgba(0,0,0,0.2) inset;
+			}
 		</style>
 	</head>
 	<body>
@@ -156,14 +167,77 @@ aloha.selections.show(caret, boundary);
 			</div>
 
 
+			<h2>Inserting text at a boudary position</h2>
+
+			<p>
+				At this point you will most likely want to insert some text at
+				a boundary position. Use the insertTextAtBoundary method to achieve
+				this.
+			</p>
+
+			<textarea class="example">var textNode = document.querySelector('#example-insert-text p').firstChild;
+var boundary = [ textNode, 0 ];
+
+aloha.mutation.insertTextAtBoundary('!INSERTED TEXT!', boundary);
+</textarea>
+
+			<button onclick="executeExample()">Execute Example</button>
+
+			<div id="example-insert-text" class="example aloha-editable">
+				<p>This is my <b>first</b> paragraph.</p>
+			</div>
+
+			
+			<h2>Inserting nodes at a boudary position</h2>
+
+			<p>
+				Inserting nodes works similar to inserting text.
+			</p>
+
+			<textarea class="example">var textNode = document.querySelector('#example-insert-node p').firstChild;
+var boundary = [ textNode, 0 ];
+var newNode = document.createElement('b');
+newNode.innertext = '!A NEW NODE!';
+
+aloha.mutation.insertNodeAtBoundary(newNode, boundary);
+</textarea>
+
+			<button onclick="executeExample()">Execute Example</button>
+
+			<div id="example-insert-node" class="example aloha-editable">
+				<p>This is my <b>first</b> paragraph.</p>
+			</div>
+
 			<h2>Paths</h2>
 
 			<p>
-				
+				Paths allow you to convert Aloha Editor boundaries into plain
+				JavaScript Arrays. This way bondaries can be stored in a
+				database for later retrieval, or even passed to other scripts
+				and applications.
 			</p>
 
+			<p>
+				The example will convert the boundary passed as the second parameter
+				into an array of offsets relative to the object passed as the first
+				parameter - in this case the document itself.
+			</p>
 
-			<h2>insertText/Node at boundary</h2>
+			<p>
+				<b>Note:</b> paths are only valid for the DOM that they are created for.
+				If you change the DOM, the paths created before may become invalid as
+				nodes are inserted and removed.
+			</p>
+
+			<textarea class="example">aloha.paths.fromBoundary(document, boundary);
+// example result could be
+[1, 2, 1, 3, 1, 0, 12]</textarea>
+
+			<p>
+				By using the toBoundary method you can convert a path back into a boundary.
+			</p>
+
+			<textarea class="example">var boundary = aloha.paths.toBoundary(document, [1, 2, 1, 3, 1, 0, 12]);</textarea>
 		</div>
 		<script src="../../src/require-pronto.js"></script>
 		<script src="../../src/require-pronto.dev.js"></script>
