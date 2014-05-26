@@ -290,7 +290,7 @@ define([
 
 	function close(context) {
 		if (context.frame) {
-			context.observer.disconnect()
+			context.observer.disconnect();
 			context.frame = null;
 		}
 	}
@@ -342,7 +342,7 @@ define([
 	function leave(context, result) {
 		var frame = context.frame;
 		var observer = context.observer;
-		var upperFrame = context.stack.pop();;
+		var upperFrame = context.stack.pop();
 		if (upperFrame) {
 			partitionRecords(context, frame, frame, upperFrame);
 		} else {
@@ -1141,9 +1141,9 @@ define([
 		}
 		var combinedNode = Dom.clone(oldChange.content[0]);
 		combinedNode.insertData(Dom.nodeLength(combinedNode), newChange.content[0].data);
-		var insertChange = makeInsertChange(oldPath, [combinedNode])
+		var insertChange = makeInsertChange(oldPath, [combinedNode]);
 		var oldRange = oldChangeSet.selection.oldRange;
-		var newRange = newChangeSet.selection.newRange
+		var newRange = newChangeSet.selection.newRange;
 		var rangeUpdateChange = makeRangeUpdateChange(oldRange, newRange);
 		return makeChangeSet(oldChangeSet.meta, [insertChange], rangeUpdateChange);
 	}
