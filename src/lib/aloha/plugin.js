@@ -40,6 +40,19 @@ define([
 	"use strict";
 
 	/**
+	 * Gets the original object from the editable. If the editable is an input or textarea,
+	 * aloha creates a editable div, but sometimes we need the original object and not the div
+	 * created by aloha.
+	 * @param {jQuery} editableElement
+	 * @returns {jQuery}
+	 */
+	function getEditableOriginalObj(editableElement) {
+		var editable = Aloha.getEditableById(editableElement.attr('id'));
+
+		return editable ? editable.originalObj : editableElement;
+	}
+
+	/**
 	 * Abstract Plugin Object
 	 * @namespace Aloha
 	 * @class Plugin
@@ -175,6 +188,9 @@ define([
 				that = this;
 
 			if (this.settings.editables) {
+				// When editable is an input or textarea we need the original object.
+				obj = getEditableOriginalObj(obj);
+
 				// check if the editable's selector matches and if so add its configuration to object configuration
 				jQuery.each(this.settings.editables, function (selector, selectorConfig) {
 					var k;
