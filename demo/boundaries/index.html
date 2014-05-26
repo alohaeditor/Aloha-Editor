@@ -5,69 +5,7 @@
 		<meta charset="UTF-8">
 		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300,700' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" type="text/css" href="../../src/aloha.css">
-		<style>
-			body, button {
-				font-family: 'Open Sans', sans-serif;
-				font-size: 16px;
-			}
-			.aloha-block {
-				width: 100px;
-				height: 100px;
-				padding: 10px;
-				background: #999;
-				color: #fff;
-				text-align: center;
-				display: table-cell;
-				vertical-align: middle;
-				cursor: -webkit-grab;
-				cursor: -moz-grab;
-				box-shadow: 2px 2px 10px rgba(0,0,0,0.2) inset;
-			}
-			textarea {
-				font-family: monospace;
-				font-size: 16px;
-				width: 100%;
-			}
-			.example {
-				padding: 10px;
-				margin: 10px 0px 10px 0px;
-				background: #999;
-				color: #fff;
-				box-shadow: 2px 2px 10px rgba(0,0,0,0.2) inset;
-				display: block;
-			}
-			div.example {
-				background: white;
-				color: black;
-			}
-			.aloha-block:hover { background: #df215a; }
-			img.aloha-block {
-				width: auto;
-				height: auto;
-				display: block;
-				padding: 0;
-			}
-			ol {
-			  counter-reset: counter;
-			  list-style-type: none;
-			}
-			ol>li:before {
-				counter-increment: counter;
-				content: counters(counter, ".") ") ";
-				margin-left: -1em;
-			}
-			button {
-				cursor: pointer;
-				border: 0;
-				border-radius: 4px;
-				color: white;
-				background: #428bca;
-				padding: 5px 10px;
-			}
-			button:hover {
-				box-shadow: 0px 0px 10px rgba(0,0,0,0.2) inset;
-			}
-		</style>
+		<link rel="stylesheet" type="text/css" href="../demo.css">
 	</head>
 	<body>
 		<div>
@@ -241,36 +179,7 @@ aloha.mutation.insertNodeAtBoundary(newNode, boundary);
 		</div>
 		<script src="../../src/require-pronto.js"></script>
 		<script src="../../src/require-pronto.dev.js"></script>
-		<script>
-require([
-	'../../src/aloha',
-	'../../src/boundaries'
-], function (
-	aloha,
-	Arrays,
-	Boromir,
-	Boundaries,
-	Dom
-) {
-	'use strict';
-	
-	var caret = document.querySelector('.aloha-caret');
-
-	[].forEach.call(document.querySelectorAll('.aloha-editable'), aloha);
-	
-	window.executeExample = function () {
-		var code = window.event.target.previousElementSibling.innerHTML;
-		window.event.target.blur();
-		eval(code);
-	};
-
-	// properly size the height of all textareas
-	[].forEach.call(document.querySelectorAll('textarea'), function (textarea) {
-		var lines = textarea.innerHTML.split('\n').length;
-		textarea.rows = lines;
-	});
-});
-		</script>
+		<script src="../demo.js"></script>
 	</body>
 </html>
 
