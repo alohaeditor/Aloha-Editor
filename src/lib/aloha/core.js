@@ -593,7 +593,7 @@ define([
 		 */
 		getPluginManager: function () {
 			return PluginManager;
-		}
+		},
 
 		/**
 		 * Disable object resizing by executing command 'enableObjectResizing',
