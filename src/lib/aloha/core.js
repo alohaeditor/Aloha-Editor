@@ -587,6 +587,15 @@ define([
 		},
 
 		/**
+		 * Gets the Aloha plugin manager.
+		 *
+		 * @return {PluginManager} The plugin manager object used by Aloha.
+		 */
+		getPluginManager: function () {
+			return PluginManager;
+		}
+
+		/**
 		 * Disable object resizing by executing command 'enableObjectResizing',
 		 * if the browser supports this.
 		 */
