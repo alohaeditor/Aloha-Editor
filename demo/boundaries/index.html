@@ -6,7 +6,7 @@
 		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300,700' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" type="text/css" href="../../src/aloha.css">
 		<style>
-			body {
+			body, button {
 				font-family: 'Open Sans', sans-serif;
 				font-size: 16px;
 			}
@@ -67,13 +67,17 @@
 				are represented by an array which contains the start node and an offset.
 			</p>
 
-			<textarea class="example">var boundary = [ domNode, 0 ];</textarea>
+			<textarea class="example">// a single boundary
+var boundary = [ domNode, 0 ];</textarea>
 
 			<p>
+				Boundaries are Aloha Editor's way to handle selections transparently across
+				browsers.
 				If you just want to place the caret, you'll only need a single boundary.
 				If you want to select text you will need to create two boundaries - one
 				for the start and one for the end position of the selection.
 			</p>
+
 
 			<h2>Placing the caret</h2>
 			
@@ -81,7 +85,7 @@
 
 			<textarea class="example">var boundary = [
 	// select the text node from the example
-	document.querySelector('#example-basic-1 p').firstChild,
+	document.querySelector('#example-place-caret p').firstChild,
 	// put the cursor before the first character
 	0 ];
 // move the browsers selection to the boundary
@@ -91,16 +95,19 @@ aloha.selections.show(caret, boundary);</textarea>
 
 			<button onclick="executeExample()">Execute Example</button>
 			
-			<div id="example-basic-1" class="example aloha-editable">
+			<div id="example-place-caret" class="example aloha-editable">
 				<p>This is my <b>first</b> paragraph.</p>
 			</div>
+
 
 			<h2>Selecting some text</h2>
 
 			<p>Select "This is" from the text.</p>
 			
-			<textarea class="example">var textNode = document.querySelector('#example-basic-2 p').firstChild;
+			<textarea class="example">var textNode = document.querySelector('#example-select-text p').firstChild;
 var startBoundary = [ textNode,	0 ];
+// an end offset of "7" will place the end boundary
+// right after the seven letters of "This is"
 var endBoundary = [ textNode, 7 ];
 
 aloha.boundaries.select(startBoundary, endBoundary);
@@ -108,18 +115,53 @@ aloha.selections.show(caret, endBoundary);</textarea>
 
 			<button onclick="executeExample()">Execute Example</button>
 			
-			<div id="example-basic-2" class="example aloha-editable">
+			<div id="example-select-text" class="example aloha-editable">
 				<p>This is my <b>first</b> paragraph.</p>
 			</div>
 
 
+			<h2>Retrieving the current boundaries</h2>
+
+			<p>
+				The API allows you to retrieve the currently active boundaries.
+				Keep in mind that you need to have clicked somewhere first to
+				have an active selection.
+			</p>
+
+			<textarea class="example">// retrieve current boundaries
+aloha.boundaries.get();</textarea>
+
+			
+			<h2>Boundary traversal</h2>
+
+			<p>
+				The API also allows you to use traversal algorithms to simplify
+				boundary placement.
+			</p>
+
+			<textarea class="example">var textNode = document.querySelector('#example-boundary-traversal p').firstChild;
+var boundary = [ textNode, 0 ];
+
+// move the boundary to the end of the word
+boundary = aloha.traversing.next(boundary, 'word');
+
+aloha.boundaries.select(boundary);
+aloha.selections.show(caret, boundary);
+</textarea>
+
+			<button onclick="executeExample()">Execute Example</button>
+
+			<div id="example-boundary-traversal" class="example aloha-editable">
+				<p>This is my <b>first</b> paragraph.</p>
+			</div>
 
 
-			<h2>hint</h2>
+			<h2>Paths</h2>
 
-			<h2>traversal</h2>
+			<p>
+				
+			</p>
 
-			<h2>paths</h2>
 
 			<h2>insertText/Node at boundary</h2>
 		</div>
