@@ -499,7 +499,7 @@ define([], function Content() {
 
 	var ATTRIBUTES_WHITELIST = {
 		'IMG' : ['alt', 'src'],
-		'A'   : ['href', '_target'],
+		'A'   : ['href', 'name', '_target'],
 		'TD'  : ['colspan', 'rowspan'],
 		'TH'  : ['colspan', 'rowspan'],
 		'OL'  : ['start', 'type'],

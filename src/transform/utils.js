@@ -11,7 +11,7 @@ define([
 	'html',
 	'arrays',
 	'content'
-], function (
+], function Utils(
 	Dom,
 	Fn,
 	Html,
@@ -67,6 +67,21 @@ define([
 	}
 
 	/**
+	 * Checks whether this node should is visible.
+	 *
+	 * @private
+	 * @param  {Node} node
+	 * @return {boolean}
+	 */
+	function isRendered(node) {
+		if (Html.isRendered(node)) {
+			return !Dom.isElementNode(node)
+			    || Dom.getStyle(node, 'display') !== 'none';
+		}
+		return false;
+	}
+
+	/**
 	 * Reduces the given list of nodes into a list of cleaned nodes.
 	 *
 	 * @private
@@ -77,7 +92,7 @@ define([
 	 */
 	function cleanNodes(nodes, clean, normalize) {
 		var allowed = nodes.filter(Fn.complement(isBlacklisted));
-		var rendered = allowed.filter(Html.isRendered);
+		var rendered = allowed.filter(isRendered);
 		return rendered.reduce(function (nodes, node) {
 			clean(node).forEach(function (node) {
 				nodes = nodes.concat(normalize(node, clean));
@@ -141,6 +156,20 @@ define([
 	}
 
 	/**
+	 * Creates a rewrapped copy of `element`. Will create a an element based on
+	 * `nodeName`, and copies the content of the given element into it.
+	 *
+	 * @param  {Element} element
+	 * @param  {String}  nodeName
+	 * @return {Element}
+	 */
+	function rewrap(element, nodeName) {
+		var wrapper = element.ownerDocument.createElement(nodeName);
+		Dom.move(Dom.children(Dom.clone(element)), wrapper);
+		return wrapper;
+	}
+
+	/**
 	 * Normalizes the given node tree and returns a fragment.
 	 *
 	 * @param  {Element}             element
@@ -179,6 +208,7 @@ define([
 
 	return {
 		normalize : normalize,
-		extract   : extract
+		extract   : extract,
+		rewrap    : rewrap
 	};
 });

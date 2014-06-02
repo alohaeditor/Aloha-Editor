@@ -5,7 +5,7 @@
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define(['dom'], function (Dom) {
+define(['dom'], function Tables(Dom) {
 	'use strict';
 
 	/**

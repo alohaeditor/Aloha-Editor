@@ -13,7 +13,7 @@ define([
 	'html',
 	'content',
 	'./utils'
-], function (
+], function Html(
 	Dom,
 	Arrays,
 	Maps,
@@ -25,6 +25,23 @@ define([
 	'use strict';
 
 	/**
+	 * Conversion of font size number into point size unit of width values (em).
+	 * Font size numbers range from 1 to 7.
+	 *
+	 * @const
+	 * @type {Object<string, string>}
+	 */
+	var FONT_SIZES = {
+		'1': '0.63em',
+		'2': '0.82em',
+		'3': '1em',
+		'4': '1.13em',
+		'5': '1.5em',
+		'6': '2em',
+		'7': '3em'
+	};
+
+	/**
 	 * Unwraps or replaces the given font element while preserving the styles it
 	 * effected.
 	 *
@@ -33,9 +50,9 @@ define([
 	 */
 	function normalizeFont(font) {
 		var children = Dom.children(font);
-		var color = Dom.getStyle(font, 'color')      || Dom.getAttr(font, 'color');
-		var size = Dom.getStyle(font, 'font-size')   || Dom.getAttr(font, 'font-size');
-		var face = Dom.getStyle(font, 'font-family') || Dom.getAttr(font, 'font-family');
+		var color = Dom.getStyle(font, 'color')       || Dom.getAttr(font, 'color');
+		var size  = Dom.getStyle(font, 'font-size')   || FONT_SIZES[Dom.getAttr(font, 'size')];
+		var face  = Dom.getStyle(font, 'font-family') || Dom.getAttr(font, 'face');
 		var child;
 		if (1 === children.length && Dom.isElementNode(children[0])) {
 			child = children[0];
@@ -148,21 +165,18 @@ define([
 
 	/**
 	 * Runs the appropriate cleaning processes on the given node based on its
-	 * type.  The returned node will not necessarily be of the same type as
-	 * that of the given (eg: <font> => <span>).
+	 * type. The returned node will not necessarily be of the same type as that
+	 * of the given (eg: <font> => <span>).
 	 *
 	 * @param  {Node} node
 	 * @return {Array.<Node>}
 	 */
 	function clean(node) {
 		node = Dom.clone(node);
-
 		if (Dom.isTextNode(node)) {
 			return [node];
 		}
-
 		var cleaned;
-
 		switch (node.nodeName) {
 		case 'IMG':
 			cleaned = normalizeImage(node);
@@ -180,18 +194,14 @@ define([
 		default:
 			cleaned = node;
 		}
-
 		if (Dom.isFragmentNode(cleaned)) {
 			return [cleaned];
 		}
-
 		normalizeAttributes(cleaned);
 		normalizeStyles(cleaned);
-
 		if ('SPAN' === cleaned.nodeName) {
 			cleaned = normalizeSpan(cleaned);
 		}
-
 		var kids = Dom.children(cleaned);
 		var i;
 		for (i = 0; i < kids.length; i++) {
@@ -199,7 +209,6 @@ define([
 				return kids;
 			}
 		}
-
 		return [cleaned];
 	}
 

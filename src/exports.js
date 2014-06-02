@@ -49,7 +49,6 @@ define([
 	'trees',
 	'typing',
 	'undo',
-	'transform/ms-word/utils',
 	'transform',
 	'record',
 	'delayed-map',
@@ -94,7 +93,6 @@ define([
 	Trees,
 	Typing,
 	Undo,
-	WordTransformUtils,
 	Transform,
 	Record,
 	DelayedMap,
@@ -142,7 +140,6 @@ define([
 	exports['trees'] = Trees;
 	exports['typing'] = Typing;
 	exports['undo'] = Undo;
-	exports['wordTransformUtils'] = WordTransformUtils;
 	exports['xhtml'] = Xhtml;
 	exports['Record'] = Record;
 	exports['DelayedMap'] = DelayedMap;
