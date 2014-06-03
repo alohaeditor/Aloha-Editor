@@ -533,13 +533,14 @@ define([
 	 * @return {number}
 	 */
 	function precedingTextLength(boundary) {
-		var node, len;
+		var node;
+		var len;
 		boundary = normalize(boundary);
 		if (isNodeBoundary(boundary)) {
 			len = 0;
 			node = nodeBefore(boundary);
 		} else {
-			len += offset(boundary);
+			len = offset(boundary);
 			node = container(boundary).previousSibling;
 		}
 		while (node && Dom.isTextNode(node)) {

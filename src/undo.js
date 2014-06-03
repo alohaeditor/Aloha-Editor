@@ -212,7 +212,8 @@ define([
 		var path;
 		var textOff = Boundaries.precedingTextLength(boundary);
 		if (textOff) {
-			var node = Boundaries.nodeBefore(boundary);
+			var node = Boundaries.prevNode(boundary);
+
 			// Because nodePath() would use the normalizedNodeIndex
 			// which would translate an empty text node after a
 			// non-empty text node to the normalized offset after the
@@ -983,7 +984,7 @@ define([
 							node = next;
 						} else {
 							boundary = Mutation.splitBoundary([node, removedLen], ranges);
-							var nodeBeforeSplit = Boundaries.nodeBefore(boundary);
+							var nodeBeforeSplit = Boundaries.prevNode(boundary);
 							var nodeAfterSplit = Boundaries.nodeAfter(boundary);
 							Mutation.removePreservingRanges(nodeBeforeSplit, ranges);
 							removedLen = 0;
