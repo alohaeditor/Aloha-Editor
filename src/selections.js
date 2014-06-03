@@ -536,13 +536,14 @@ define([
 	 * Will create a DOM element at the end of the document body to be used to
 	 * represent the caret position.
 	 *
+	 * @param  {Document} doc
 	 * @return {Object}
 	 */
-	function Context() {
-		var caret = document.createElement('div');
+	function Context(doc) {
+		var caret = doc.createElement('div');
 		caret.style.display = 'none';
 		Dom.addClass(caret, 'aloha-caret');
-		Dom.insert(caret, caret.ownerDocument.body, true);
+		Dom.insert(caret, doc.body, true);
 		return {
 			caret          : caret,
 			range          : null,
@@ -588,14 +589,18 @@ define([
 	 * @return {?Range}
 	 */
 	function fromEvent(alohaEvent) {
+		var event = alohaEvent.nativeEvent;
 		if (isMouseEvent(alohaEvent)) {
 			return Ranges.fromPosition(
-				alohaEvent.nativeEvent.clientX,
-				alohaEvent.nativeEvent.clientY,
-				alohaEvent.nativeEvent.target.ownerDocument
+				event.clientX,
+				event.clientY,
+				(event.target || event.srcElement).ownerDocument
 			);
 		}
-		return alohaEvent.range || Ranges.get();
+		if (alohaEvent.range) {
+			return alohaEvent.range;
+		}
+		return Ranges.get((event.target || event.srcElement).ownerDocument);
 	}
 
 	/**

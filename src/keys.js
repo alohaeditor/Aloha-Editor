@@ -104,7 +104,8 @@ define([
 		if (!event) {
 			return alohaEvent;
 		}
-		var range = (event instanceof KeyboardEvent) ? Ranges.get() : null;
+		var src = event.target || event.srcElement;
+		var range = src ? Ranges.get(src.ownerDocument) : null;
 		if (range) {
 			alohaEvent.range = range;
 			var editable = Editables.fromBoundary(

@@ -60,9 +60,7 @@ define([
 	 * @param {Document} doc
 	 */
 	function addRangeParameter(fn, doc) {
-		doc = doc || document;
-		var range = Ranges.get(doc);
-		fn(range);
+		fn(Ranges.get(doc));
 	}
 
 	/**

@@ -215,7 +215,8 @@ define([
 		var event = alohaEvent.nativeEvent;
 		if (event && isPasteEvent(event)) {
 			Events.suppress(event);
-			var boundary = Boundaries.get();
+			var src = event.target || event.srcElement;
+			var boundary = Boundaries.get(src.ownerDocument);
 			if (!boundary) {
 				return alohaEvent;
 			}

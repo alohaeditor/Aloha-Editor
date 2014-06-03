@@ -554,14 +554,11 @@ define([
 	 * Gets the boundaries of the currently selected range from the given
 	 * document element.
 	 *
-	 * If no document element is given, the document element of the calling
-	 * frame's window will be used.
-	 *
-	 * @param  {Document=} doc
+	 * @param  {Document} doc
 	 * @return {?Array<Boundary>}
 	 */
 	function get(doc) {
-		var selection = (doc || document).getSelection();
+		var selection = doc.getSelection();
 		return (selection.rangeCount > 0)
 		     ? fromRange(selection.getRangeAt(0))
 		     : null;

@@ -39,11 +39,11 @@ define([
 	 * If no document element is given, the document element of the calling
 	 * frame's window will be used.
 	 *
-	 * @param  {!Document} doc
+	 * @param  {Document} doc
 	 * @return {?Range} Browser's selected range or null if not selection exists
 	 */
 	function get(doc) {
-		var selection = (doc || document).getSelection();
+		var selection = doc.getSelection();
 		return selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
 	}
 
@@ -154,9 +154,9 @@ define([
 	 *
 	 * Will ensure that the range is contained in a content editable node.
 	 *
-	 * @param  {number}    x
-	 * @param  {number}    y
-	 * @param  {!Document} doc
+	 * @param  {number}   x
+	 * @param  {number}   y
+	 * @param  {Document} doc
 	 * @return {?Range}
 	 */
 	function fromPosition(x, y, doc) {
@@ -171,7 +171,7 @@ define([
 		if (!block || !block.parentNode) {
 			return null;
 		}
-		var body = block.ownerDocument.body;
+		var body = doc.body;
 		var offsets = Dom.offset(block);
 		var offset = Dom.nodeIndex(block);
 		var pointX = x + body.scrollLeft;
@@ -628,7 +628,7 @@ define([
 			return null;
 		}
 		// Petro: I still don't understand this check :(
-		if (!Html.isAtStart(end)) {
+		if (!Html.isAtEnd(end)) {
 			return null;
 		}
 		return fromBoundaries(start, stepRight(end));
