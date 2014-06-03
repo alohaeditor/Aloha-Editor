@@ -2665,12 +2665,13 @@ $.fn.layout = function (opts) {
 		if (o.resizerDblClickToggle)
 			$R.bind("dblclick", toggle );
 		removeHover( 0, $R ); // remove hover classes
-		if (o.resizable && typeof $.fn.draggable == "function")
+		if (o.resizable && typeof $.fn.draggable == "function") {
 			$R
 				.draggable("enable")
 				.css("cursor", o.resizerCursor)
 				.attr("title", o.resizerTip)
 			;
+		}
 		else if (!s.isSliding)
 			$R.css("cursor", "default"); // n-resize, s-resize, etc
 

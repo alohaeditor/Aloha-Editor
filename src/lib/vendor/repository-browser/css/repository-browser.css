@@ -134,6 +134,17 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 	background: #303539;
 }
 
+.repository-browser-list {
+	border-collapse: separate;
+}
+
+.ui-pg-button {
+	-moz-border-radius: 0px;
+	-webkit-border-radius: 0px;
+	-khtml-border-radius: 0px;
+	border-radius: 0px;
+}
+
 /* Repository browser resizing icons */
 .repository-browser-modal-window .ui-resizable-n, .repository-browser-modal-window .ui-resizable-s,
 .repository-browser-modal-window .ui-resizable-e, .repository-browser-modal-window .ui-resizable-w {
