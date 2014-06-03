@@ -10,6 +10,30 @@
 	<script src="../src/require-pronto.dev.js"></script>
 	<script>define.amd = {jQuery:true};</script>
 	<!-- script src="../build/aloha.js"></script -->
+	<style>
+		#aloha_instance {
+			padding: 0;
+			margin: 0;
+			width: 100px;
+			height: 100px;
+			position: relative;
+			display: inline-block;
+			opacity: 1;
+			top: 0;
+			right: 0;
+			background: white;
+			outline: 1px solid red;
+		}
+
+		.aloha-caret {
+			position: absolute;
+			z-index: 1;
+			margin: 0;
+			padding: 0;
+			background: #333;
+			outline: 3px solid rgba(255,0,0,0.5);
+		}
+	</style>
 </head>
 <body>
 	<h1 id="qunit-header">Aloha Editor Test Suite</h1>
@@ -20,6 +44,7 @@
 	<div id="qunit-fixture">
 		<div id="test-editable" contentEditable="true"></div>
 	</div>
+	<div class="aloha-editable" id="aloha_instance" contentEditable="true"></div>
 	<script>
 		var isBuild = false;
 
@@ -55,6 +80,8 @@
 
 				'boundary-markers-tests',
 				'boundaries-tests',
+
+				'caret-tests',
 
 				'content-tests',
 
