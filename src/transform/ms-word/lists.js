@@ -10,7 +10,7 @@ define([
 	'misc',
 	'arrays',
 	'functions'
-], function Lists(
+], function (
 	Dom,
 	Misc,
 	Arrays,

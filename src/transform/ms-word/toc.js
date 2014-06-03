@@ -10,7 +10,7 @@ define([
 	'dom',
 	'arrays',
 	'../utils'
-], function Toc(
+], function (
 	Fn,
 	Dom,
 	Arrays,

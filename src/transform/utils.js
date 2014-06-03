@@ -11,7 +11,7 @@ define([
 	'html',
 	'arrays',
 	'content'
-], function Utils(
+], function (
 	Dom,
 	Fn,
 	Html,

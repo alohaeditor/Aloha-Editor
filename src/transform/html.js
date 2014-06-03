@@ -13,7 +13,7 @@ define([
 	'html',
 	'content',
 	'./utils'
-], function Html(
+], function (
 	Dom,
 	Arrays,
 	Maps,

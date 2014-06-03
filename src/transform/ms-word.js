@@ -16,7 +16,7 @@ define([
 	'./ms-word/tables',
 	'./ms-word/toc',
 	'./utils'
-], function MsWord(
+], function (
 	Dom,
 	Html,
 	Arrays,
