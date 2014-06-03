@@ -628,7 +628,7 @@ define([
 			return null;
 		}
 		// Petro: I still don't understand this check :(
-		if (!Html.isAtEnd(end)) {
+		if (!Html.isAtStart(end)) {
 			return null;
 		}
 		return fromBoundaries(start, stepRight(end));
