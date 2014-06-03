@@ -119,7 +119,7 @@ define([
 					items  : []
 				};
 				list[marker] = true;
-			} if (level > list.level) {
+			} else if (level > list.level) {
 				for (j = list.level; j < level; j++) {
 					list = {
 						parent : list,
