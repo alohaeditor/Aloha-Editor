@@ -18,14 +18,22 @@
 			Events.dispatch(document, editor, 'keypress');
 
 			var tp = document.querySelector('.aloha-caret');
-			equal(tp.offsetLeft - editor.offsetLeft, left, name + " left");
-			equal(tp.offsetTop - editor.offsetTop, top, name + " top");
+			equal(tp.offsetLeft - editor.offsetLeft, left, "left");
+			equal(tp.offsetTop - editor.offsetTop, top, "top");
         });
     }
 
-	t('<p>[]one</p>', 16, 0);
+	t('<p>[]one</p>', 9, 0);
+	t('<p>one[]      </p>', 9, 18);
+	t('<p>one     []   </p>', 9, 18);
 
-	//testCoverage(test, tested, content);
+	t('<p><br/>[]</p>', 9, 0);
+	t('<p style="padding: 10px;">[]one</p>', 19, 10);
+	t('<p style="padding: 10px;">[]<br/></p>', 19, 10);
+
+	t('<p>multiline []paragraph test</p>', 19, 0)
+
+	t('<p>one <br/><br/>[]<br/>last</p>', 29, 0)
 
 }(window.aloha));
 
