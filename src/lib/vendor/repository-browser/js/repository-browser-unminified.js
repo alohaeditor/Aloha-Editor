@@ -272,7 +272,7 @@
 					data: function (node, callback) {
 						if (browser.manager) {
 							browser.jstree_callback = callback;
-							browser.fetchSubnodes.call(browser, node, callback);
+							browser._fetchSubnodes.call(browser, node, callback);
 						} else {
 							callback();
 						}
@@ -323,13 +323,13 @@
 			$title.addClass('repository-browser-grab-handle').append(html);
 
 			$title.find('.repository-browser-search-btn').click(function () {
-				browser.triggerSearch();
+				browser._triggerSearch();
 			});
 
 			var $search = $title.find('.repository-browser-search-field').keypress(function (event) {
 				// ENTER ←┘
 				if (13 === event.keyCode) {
-					browser.triggerSearch();
+					browser._triggerSearch();
 				}
 			});
 
@@ -373,7 +373,7 @@
 		 * @return {jQuery.<Element>}
 		 */
 		function list(browser, $container, height) {
-			var $list = $('<table id="jqgrid-list-' + unique() + '" class="repository-browser-list"></table>');
+			var $list = $('<table id="list-' + unique() + '" class="repository-browser-list"></table>');
 
 			// Because we need a hidden utility column to help us with auto
 			// sorting
@@ -444,7 +444,7 @@
 					browser._pagingBtns[dir] = $icons;
 					$icons.addClass('ui-state-disabled').click(function () {
 						if (!$(this).hasClass('ui-state-disabled')) {
-							browser.doPaging(dir);
+							browser._doPaging(dir);
 						}
 					});
 				});
@@ -459,7 +459,7 @@
 					$(this).css('cursor', 'pointer');
 					$(this).unbind().click(function (event) {
 						event.stopPropagation();
-						browser.sortList(listProps.colModel[i], this);
+						browser._sortList(listProps.colModel[i], this);
 					});
 				}
 			});
@@ -587,7 +587,7 @@
 				));
 
 				if (this._adaptPageSize() && this._currentFolder) {
-					this.fetchItems(this._currentFolder);
+					this._fetchItems(this._currentFolder);
 				}
 			},
 
@@ -741,7 +741,7 @@
 
 				if (browser.manager) {
 					browser._currentFolder = browser.getSelectedFolder();
-					browser.fetchRepoRoot(browser.jstree_callback);
+					browser._fetchRepoRoot(browser.jstree_callback);
 				}
 
 				instances.push(this);
@@ -832,7 +832,7 @@
 			 * @param {Object}   metainfo
 			 * @param {function} callback
 			 */
-			processRepoResponse: function (items, metainfo, callback) {
+			_processRepoResponse: function (items, metainfo, callback) {
 				var browser = this;
 				var folderId = browser._currentFolder && browser._currentFolder.id;
 				var data = [];
@@ -869,7 +869,7 @@
 			 * @return {!Object} The cached repository object or null if none is
 			 *                   found in the cache.
 			 */
-			getObjectFromCache: function ($node) {
+			_getObjectFromCache: function ($node) {
 				if ('object' === typeof $node) {
 					var uid = $node.find('a:first').attr('data-rep-oobj');
 					return this._objs[uid];
@@ -886,7 +886,7 @@
 				var browser = this;
 				browser.manager.query(params, function (response) {
 					var items = (response.results > 0) ? response.items : [];
-					browser.processRepoResponse(items, {
+					browser._processRepoResponse(items, {
 						timeout      : response.timeout,
 						numItems     : response.numItems,
 						hasMoreItems : response.hasMoreItems
@@ -899,7 +899,7 @@
 			 *
 			 * @param {Array} items
 			 */
-			listItems: function (items) {
+			_listItems: function (items) {
 				var browser = this;
 				var $list = this.list.clearGridData();
 				$.each(items, function () {
@@ -917,7 +917,7 @@
 			 * @param {Object} data
 			 * @param {Object} metainfo
 			 */
-			processItems: function (data, metainfo) {
+			_processItems: function (data, metainfo) {
 				var $btns = this._pagingBtns;
 				var disabled = 'ui-state-disabled';
 
@@ -930,7 +930,7 @@
 
 				this.grid.find('.loading').hide();
 				this.list.show();
-				this.listItems(data);
+				this._listItems(data);
 
 				if (this._pagingOffset <= 0) {
 					$btns.first.add($btns.prev).addClass(disabled);
@@ -981,13 +981,13 @@
 			 * @param {jQuery.<Element>} $nodes
 			 * @param {function}         callback
 			 */
-			fetchSubnodes: function ($nodes, callback) {
+			_fetchSubnodes: function ($nodes, callback) {
 				var browser = this;
 				if (-1 === $nodes) {
-					browser.fetchRepoRoot(callback);
+					browser._fetchRepoRoot(callback);
 				} else {
 					$nodes.each(function () {
-						var obj = browser.getObjectFromCache($(this));
+						var obj = browser._getObjectFromCache($(this));
 						if ('object' === typeof obj) {
 							browser.fetchChildren(obj, callback);
 						}
@@ -1000,7 +1000,7 @@
 			 *
 			 * @param {function} callback
 			 */
-			fetchRepoRoot: function (callback) {
+			_fetchRepoRoot: function (callback) {
 				this.getRepoChildren({
 					inFolderId       : this.rootFolderId,
 					repositoryFilter : this.repositoryFilter
@@ -1016,7 +1016,7 @@
 			 *
 			 * @param {Object} folder
 			 */
-			fetchItems: function (folder) {
+			_fetchItems: function (folder) {
 				if (!folder) {
 					return;
 				}
@@ -1049,7 +1049,7 @@
 					filter           : browser.filter,
 					recursive		 : recursive
 				}, function (data, metainfo) {
-					browser.processItems(data, metainfo);
+					browser._processItems(data, metainfo);
 				});
 			},
 
@@ -1084,7 +1084,7 @@
 			getRepoChildren: function (params, callback) {
 				var browser = this;
 				browser.manager.getChildren(params, function (items) {
-					browser.processRepoResponse(items, callback);
+					browser._processRepoResponse(items, callback);
 				});
 			},
 
@@ -1093,7 +1093,7 @@
 			 *
 			 * @param {string} dir
 			 */
-			doPaging: function (dir) {
+			_doPaging: function (dir) {
 				switch (dir) {
 				case 'first':
 					this._pagingOffset = 0;
@@ -1117,7 +1117,7 @@
 					}
 					break;
 				}
-				this.fetchItems(this._currentFolder);
+				this._fetchItems(this._currentFolder);
 			},
 
 			/**
@@ -1151,7 +1151,7 @@
 			 * @param {Object}  colModel
 			 * @param {Element} elem
 			 */
-			sortList: function (colModel, elem) {
+			_sortList: function (colModel, elem) {
 				// reset sort properties in all column headers
 				this.grid.find('span.ui-grid-ico-sort').addClass('ui-state-disabled');
 
@@ -1161,8 +1161,8 @@
 				       .find('.ui-icon-' + colModel.sortorder)
 				       .removeClass('ui-state-disabled');
 
-				this.setSortOrder(colModel.name, colModel.sortorder)
-				    .fetchItems(this._currentFolder);
+				this._setSortOrder(colModel.name, colModel.sortorder)
+				    ._fetchItems(this._currentFolder);
 			},
 
 			/**
@@ -1173,7 +1173,7 @@
 			 * @param {string} by
 			 * @param {string} order
 			 */
-			setSortOrder: function (by, order) {
+			_setSortOrder: function (by, order) {
 				var orderBy = this._orderBy || [];
 				var field;
 				var orderItem;
@@ -1226,12 +1226,12 @@
 			 * @param {jQuery.<Element>} $node List item
 			 */
 			treeNodeSelected: function ($node) {
-				var folder = this.getObjectFromCache($node);
+				var folder = this._getObjectFromCache($node);
 				if (folder) {
 					this._pagingOffset = 0;
 					this._clearSearch();
 					this._currentFolder = folder;
-					this.fetchItems(folder);
+					this._fetchItems(folder);
 					this.folderSelected(folder);
 				}
 			},
@@ -1239,7 +1239,7 @@
 			/**
 			 * Sends the search query to the server.
 			 */
-			triggerSearch: function () {
+			_triggerSearch: function () {
 				var $search = this.grid.find('input.repository-browser-search-field');
 				var value = $search.val();
 				if ('' === value || $search.hasClass('repository-browser-search-field-empty')) {
@@ -1249,7 +1249,7 @@
 				}
 				this._pagingOffset = 0;
 				this._searchQuery = value;
-				this.fetchItems(this._currentFolder);
+				this._fetchItems(this._currentFolder);
 			},
 
 			/**
@@ -1353,7 +1353,7 @@
 			 */
 			refresh: function () {
 				if (this._currentFolder) {
-					this.fetchItems(this._currentFolder);
+					this._fetchItems(this._currentFolder);
 				}
 			},
 
@@ -1363,7 +1363,7 @@
 			 * @param {Object} obj Folder data object
 			 */
 			folderOpened: function (obj) {
-				var folder = this.getObjectFromCache(obj);
+				var folder = this._getObjectFromCache(obj);
 				if (folder) {
 					this.manager.folderOpened(folder);
 				}
@@ -1375,7 +1375,7 @@
 			 * @param {Object} obj Folder data object
 			 */
 			folderClosed: function (obj) {
-				var folder = this.getObjectFromCache(obj);
+				var folder = this._getObjectFromCache(obj);
 				if (folder) {
 					this.manager.folderClosed(folder);
 				}
