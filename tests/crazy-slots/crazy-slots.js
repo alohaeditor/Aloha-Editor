@@ -12,7 +12,7 @@ define([
 	'../../src/ranges',
 	'../../src/boundaries',
 	'../../src/undo',
-	'../../src/functions'
+	'../../src/functions',
 ], function CrazySlots(
 	aloha,
 	Dom,
