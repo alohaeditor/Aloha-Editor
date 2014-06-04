@@ -3,10 +3,7 @@ require([
 	'../../src/boundaries'
 ], function (
 	aloha,
-	Arrays,
-	Boromir,
-	Boundaries,
-	Dom
+	Boundaries
 ) {
 	'use strict';
 	
@@ -22,7 +19,10 @@ require([
 
 	// properly size the height of all textareas
 	[].forEach.call(document.querySelectorAll('textarea'), function (textarea) {
-		var lines = textarea.innerHTML.split('\n').length;
-		textarea.rows = lines;
+		//var lines = textarea.innerHTML.split('\n').length;
+		//textarea.rows = lines;
+		CodeMirror.fromTextArea(textarea);
 	});
+
+
 });

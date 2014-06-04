@@ -86,6 +86,25 @@ record.updateDom();
 				<p>This is my <b>first</b> paragraph.</p>
 			</div>
 
+
+			<h2>Modifying a DOM node's children</h2>
+
+			<textarea class="example">var record = aloha.Boromir(document.querySelector('#example-children p'));
+// we need to clone the array using slice()
+// otherwise the original array would be modified
+// preventing Boromir to detect the changes
+var children = record.children().slice(0);
+children.push(children.shift());
+record = record.children(children);
+record.updateDom();
+</textarea>
+
+			<button onclick="executeExample()">Execute Example</button>
+			
+			<div id="example-children" class="example aloha-editable">
+				<p>This is my <b>first</b> paragraph.</p>
+			</div>
+
 		</div>
 		<script src="../../src/require-pronto.js"></script>
 		<script src="../../src/require-pronto.dev.js"></script>
