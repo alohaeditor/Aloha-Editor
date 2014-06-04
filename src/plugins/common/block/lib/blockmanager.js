@@ -34,8 +34,7 @@ define([
 	'util/class',
 	'util/strings',
 	'util/maps',
-    'block/block-utils',
-    'table/table-plugin'
+	'block/block-utils'
 ], function (
 	Aloha,
 	$,
@@ -45,8 +44,7 @@ define([
 	Class,
 	Strings,
 	Maps,
-    BlockUitls,
-    Table
+    BlockUtils
 ) {
 	'use strict';
 
@@ -311,7 +309,7 @@ define([
 				// table has its own selection methods.
 				if (that._activeBlock
 					&& (e.ctrlKey || e.metaKey)
-					&& !BlockUitls.isTable(that._activeBlock.$element)) {
+					&& !BlockUtils.isTable(that._activeBlock.$element)) {
 
 					// IF: Ctrl/Command C pressed -- COPY
 					if (e.which === 67) {
