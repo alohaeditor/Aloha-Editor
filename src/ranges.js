@@ -627,8 +627,9 @@ define([
 		if (Html.hasLinebreakingStyle(Boundaries.nextNode(end))) {
 			return null;
 		}
-		// Petro: I still don't understand this check :(
-		if (!Html.isAtStart(end)) {
+		// Because this means that we cannot expand any further right inside the
+		// container
+		if (Html.isAtEnd(start)) {
 			return null;
 		}
 		return fromBoundaries(start, stepRight(end));
