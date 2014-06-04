@@ -4,14 +4,16 @@ define([
 	'util/maps',
 	'util/html',
 	'util/dom',
-	'jquery'
+	'jquery',
+	'PubSub'
 ], function (
 	Aloha,
 	$_,
 	Maps,
 	Html,
 	Dom,
-	jQuery
+	jQuery,
+	PubSub
 ) {
 	"use strict";
 
@@ -7516,6 +7518,28 @@ define([
 		}
 	};
 
+	/**
+	 * Publish a message for the links that will be inserted at paste.
+	 * @param {DocumentFragment} frag
+	 */
+	function publishPastedLinks(frag) {
+		var children = frag.children;
+		var links;
+		var c;
+		var i;
+		var len;
+
+		for (c = 0; c < children.length; c++) {
+			links = jQuery(children[c]).find('a');
+			for (i = 0, len = links.length; i < len; i++) {
+				PubSub.pub('aloha.link.pasted', {
+					href: links[i].getAttribute('href'),
+					element: links[i]
+				});
+			}
+		}
+	}
+
 	//@}
 	///// The insertHTML command /////
 	//@{
@@ -7535,6 +7559,8 @@ define([
 			// "Let frag be the result of calling createContextualFragment(value)
 			// on the active range."
 			var frag = range.createContextualFragment(value);
+
+			publishPastedLinks(frag);
 
 			// "Let last child be the lastChild of frag."
 			var lastChild = frag.lastChild;
