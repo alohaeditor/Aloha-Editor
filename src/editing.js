@@ -548,7 +548,7 @@ define([
 			// Because the node itself may be a wrapper.
 			pruneContext(node);
 		} else if (!isWrapper(node)) {
-			var wrapper = createWrapper();
+			var wrapper = createWrapper(node.ownerDocument);
 			if (wrap(node, wrapper, leftPoint, rightPoint)) {
 				// Because we are just making sure (probably not
 				// necessary since the node isn't a wrapper).
@@ -604,8 +604,8 @@ define([
 			Mutation.removeShallowPreservingCursors(node, [leftPoint, rightPoint]);
 		}
 
-		function createContextWrapper(value) {
-			var wrapper = createWrapper(value);
+		function createContextWrapper(value, doc) {
+			var wrapper = createWrapper(value, doc);
 			var key = ':' + value;
 			var wrappers = wrappersByContextValue[key] = wrappersByContextValue[key] || [];
 			wrappers.push(wrapper);
@@ -899,12 +899,12 @@ define([
 		function isPrunable(node) {
 			return isReusable(node) && !Dom.hasAttrs(node);
 		}
-		function createWrapper(value) {
+		function createWrapper(value, doc) {
 			value = normalizeStyleValue(value);
 			if (wrapperProps && isStyleEqual(wrapperProps.value, value)) {
-				return document.createElement(wrapperProps.name);
+				return doc.createElement(wrapperProps.name);
 			}
-			var wrapper = document.createElement('SPAN');
+			var wrapper = doc.createElement('SPAN');
 			Dom.setStyle(wrapper, styleName, value);
 			return wrapper;
 		}
@@ -932,8 +932,8 @@ define([
 		// Because we assume nodeNames are always uppercase, but don't
 		// want the user to remember this detail.
 		nodeName = nodeName.toUpperCase();
-		function createWrapper() {
-			return document.createElement(nodeName);
+		function createWrapper(doc) {
+			return doc.createElement(nodeName);
 		}
 		function getOverride(node) {
 			return nodeName === node.nodeName || null;

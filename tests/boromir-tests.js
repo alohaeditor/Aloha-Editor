@@ -143,4 +143,18 @@
 		equal(node.children()[2].text(), 'insert');
 	});
 
+	test('move children', function () {
+		var domNode = document.getElementById('test-editable');
+		domNode.innerHTML = 'This is my <b>first</b> paragraph.';
+		var node = Boromir(domNode);
+		var newChildren = node.children().slice(0);
+		newChildren.push(newChildren.shift());
+		node = node.children(newChildren);
+		node = node.updateDom();
+		equal(node.domNode().innerHTML, '<b>first</b> paragraph.This is my ');
+		equal(node.children()[0].name(), 'B');
+		equal(node.children()[1].text(), ' paragraph.');
+		equal(node.children()[2].text(), 'This is my ');
+	});
+
 }(window.aloha));

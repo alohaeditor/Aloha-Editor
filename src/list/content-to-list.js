@@ -95,15 +95,14 @@ define([
 
 	/**
 	 * Creates a li item which contains `node`.
-	 * @param {Node} node
+	 * @param  {Document} doc
+	 * @param  {Node}     node
 	 * @return {LiElement}
 	 */
 	function createLiItem(node) {
-		var listItem = document.createElement('li');
-
+		var listItem = node.ownerDocument.createElement('li');
 		Dom.wrap(node, listItem);
 		cleanLiContent(node);
-
 		return listItem;
 	}
 

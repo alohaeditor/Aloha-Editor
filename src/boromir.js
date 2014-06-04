@@ -436,6 +436,7 @@ define([
 		child = child.setT(child.domNode, childDomNode);
 		child = child.setT(idField, allocateId());
 		child = updateInUnchanged(child, child.children, [], unchangedField.set.setT);
+		child = child.setT(changedField, changedField.get(child) | CHANGED_CHILDREN);
 		child = child.asPersistent();
 		child = updateDomRec(child, doc, insertIndex);
 		return child;

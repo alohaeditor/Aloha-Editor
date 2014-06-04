@@ -135,9 +135,8 @@ define([
 		return ancestor;
 	}
 
-	var parser = document.createElement('DIV');
-
-	function parseNode(html) {
+	function parseNode(html, doc) {
+		var parser = doc.createElement('DIV');
 		parser.innerHTML = html;
 		var node = parser.firstChild;
 		parser.removeChild(node);
@@ -169,11 +168,11 @@ define([
 		return (/^\[object (Text|Comment|HTML\w*Element)\]$/).test(str);
 	}
 
-	function parseReviver(key, value) {
+	function parseReviver(key, value, doc) {
 		if (value && value['type'] === 'Node') {
 			var str = value['value'];
 			if (null != str) {
-				value = parseNode(str);
+				value = parseNode(str, doc);
 			}
 		}
 		return value;

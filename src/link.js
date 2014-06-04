@@ -26,7 +26,7 @@ define([
 	 * @param {Document} doc
 	 */
 	function createLink(href, doc) {
-		createLinkFromRange(href, Ranges.get(), doc);
+		createLinkFromRange(href, Ranges.get(doc), doc);
 	}
 
 	/**
@@ -62,7 +62,7 @@ define([
 	 * @param {Document} doc
 	 */
 	function removeLink(doc) {
-		removeLinkFromRange(Ranges.get(), doc);
+		removeLinkFromRange(Ranges.get(doc), doc);
 	}
 
 	/**

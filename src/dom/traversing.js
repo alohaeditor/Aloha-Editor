@@ -530,7 +530,7 @@ define([
 
 	/**
 	 * Returns a non-live list of the given node and all it's subsequent
-	 * siblings until the predicate returns true.
+	 * siblings until the predicate returns true, inclusively.
 	 *
 	 * @param  {Node}                   node
 	 * @param  {function(Node):boolean} until
@@ -546,7 +546,7 @@ define([
 
 	/**
 	 * Returns a non-live list of the given node and all it's preceeding
-	 * siblings until the predicate returns true.
+	 * siblings until the predicate returns true, inclusively.
 	 *
 	 * @param  {Node}                   node
 	 * @param  {function(Node):boolean} until

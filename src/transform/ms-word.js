@@ -12,9 +12,9 @@ define([
 	'dom',
 	'html',
 	'arrays',
-	'ms-word/lists',
-	'ms-word/tables',
-	//'ms-word/toc',
+	'./ms-word/lists',
+	'./ms-word/tables',
+	'./ms-word/toc',
 	'./utils'
 ], function (
 	Dom,
@@ -22,7 +22,7 @@ define([
 	Arrays,
 	Lists,
 	Tables,
-	//TOC,
+	Toc,
 	Utils
 ) {
 	'use strict';
@@ -63,21 +63,6 @@ define([
 	}
 
 	/**
-	 * Creates a rewrapped copy of `element`.  Will create a an element based
-	 * on `nodeName`, and copies the content of the given element into it.
-	 *
-	 * @private
-	 * @param  {Element}  element
-	 * @param  {String}   nodeName
-	 * @return {Element}
-	 */
-	function rewrap(element, nodeName) {
-		var node = element.ownerDocument.createElement(nodeName);
-		Dom.copy(Dom.children(element), node);
-		return node;
-	}
-
-	/**
 	 * Returns the the non-namespaced version of the given node's nodeName.
 	 * If the node is not namespaced, will return null.
 	 *
@@ -105,14 +90,14 @@ define([
 			return [Dom.clone(node)];
 		}
 		if (Dom.hasClass(node, 'MsoTitle')) {
-			return [rewrap(node, 'h1')];
+			return [Utils.rewrap(node, 'h1')];
 		}
 		if (Dom.hasClass(node, 'MsoSubtitle')) {
-			return [rewrap(node, 'h2')];
+			return [Utils.rewrap(node, 'h2')];
 		}
 		var nodeName = namespacedNodeName(node);
 		if (nodeName) {
-			return [rewrap(node, nodeName)];
+			return [Utils.rewrap(node, nodeName)];
 		}
 		return [Dom.clone(node)];
 	}
@@ -143,8 +128,10 @@ define([
 		var raw = Html.parse(Utils.extract(markup), doc);
 		var fragment = Utils.normalize(raw, clean) || raw;
 		fragment = Lists.transform(fragment);
+		fragment = Toc.transform(fragment);
 		fragment = Tables.transform(fragment);
-		return Dom.children(fragment)[0].innerHTML;
+		var children = Dom.children(fragment);
+		return 0 === children.length ? '' : children[0].innerHTML;
 	}
 
 	return {

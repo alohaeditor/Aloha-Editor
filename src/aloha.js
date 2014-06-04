@@ -62,7 +62,7 @@ define([
 	editor.editables = {};
 	editor.BLOCK_CLASS = 'aloha-block';
 	editor.CARET_CLASS = 'aloha-caret';
-	editor.selectionContext = Selections.Context();
+	editor.selectionContext = Selections.Context(document);
 	editor.stack = [
 		Selections.handle,
 		Typing.handle,
