@@ -21,7 +21,7 @@ define([
 	'overrides',
 	'boundaries',
 	'traversing'
-], function Selection(
+], function (
 	Fn,
 	Dom,
 	Keys,
@@ -82,15 +82,6 @@ define([
 			'width': '2px',
 			'display': 'block'
 		});
-	}
-
-	/**
-	 * Hides the given element.
-	 *
-	 * @param {Element} elem
-	 */
-	function hide(elem) {
-		elem.style.display = 'none';
 	}
 
 	/**

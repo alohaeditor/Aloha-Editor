@@ -16,7 +16,7 @@ define([
 	'strings',
 	'editables',
 	'boundaries'
-], function Keys(
+], function (
 	Ranges,
 	Strings,
 	Editables,

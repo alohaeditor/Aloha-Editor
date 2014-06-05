@@ -10,7 +10,7 @@ define([
 	'arrays',
 	'boundaries',
 	'html/traversing'
-], function Mutation(
+], function (
 	Dom,
 	Arrays,
 	Boundaries,
@@ -272,7 +272,14 @@ define([
 
 	function adjustRangesAfterTextInsert(node, off, len, insertBefore, boundaries, ranges) {
 		boundaries.push([node, off]);
-		boundaries = adjustBoundaries(adjustBoundaryAfterTextInsert, boundaries, node, off, len, insertBefore);
+		boundaries = adjustBoundaries(
+			adjustBoundaryAfterTextInsert,
+			boundaries,
+			node,
+			off,
+			len,
+			insertBefore
+		);
 		var boundary = boundaries.pop();
 		Boundaries.setRanges(ranges, boundaries);
 		return boundary;
@@ -297,7 +304,14 @@ define([
 		var offset = boundary[1];
 		if (Dom.isTextNode(container) && offset < Dom.nodeLength(container)) {
 			container.insertData(offset, text);
-			return adjustRangesAfterTextInsert(container, offset, text.length, insertBefore, boundaries, ranges);
+			return adjustRangesAfterTextInsert(
+				container,
+				offset,
+				text.length,
+				insertBefore,
+				boundaries,
+				ranges
+			);
 		}
 		var node = Dom.nodeAtOffset(container, offset);
 		var atEnd = Boundaries.isAtEnd(Boundaries.raw(container, offset));
@@ -338,7 +352,6 @@ define([
 	 * @param {!Array.<!Range>} ranges
 	 */
 	function removePreservingRanges(node, ranges) {
-		var range;
 		// Because the range may change due to the DOM modification
 		// (automatically by the browser).
 		var boundaries = Boundaries.fromRanges(ranges);

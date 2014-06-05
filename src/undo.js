@@ -14,7 +14,7 @@ define([
 	'ranges',
 	'content', // Hack for require-proto
 	'traversing' // Hack for require-proto
-], function Undo(
+], function (
 	Arrays,
 	Maps,
 	Dom,

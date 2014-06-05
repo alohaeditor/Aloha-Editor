@@ -34,7 +34,7 @@ define([
 	 */
 	var ANCHOR_NODE_NAME = 'A';
 
-	var LINE_BREAKING_NODES_TAGS = ["LI", "TD", "TR", "TBODY", "DD", "DT"];
+	var LINE_BREAKING_NODES_TAGS = ['LI', 'TD', 'TR', 'TBODY', 'DD', 'DT'];
 
 	/**
 	 * Checks if `node` could be inserted inside a Anchor element.

@@ -9,7 +9,7 @@ define([
 	'dom',
 	'ranges',
 	'editing'
-], function Colors(
+], function (
 	Dom,
 	Ranges,
 	Editing

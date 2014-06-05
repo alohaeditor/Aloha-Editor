@@ -30,15 +30,15 @@ define([
 	 * @return {Map.<string,string>}
 	 */
 	function attrs(elem) {
-		var attrs = {};
+		var attrsMap = {};
 		var attributes = elem.attributes;
 		for (var i = 0, len = attributes.length; i < len; i++) {
 			var attr = attributes[i];
-			if (typeof attr.specified === "undefined" || attr.specified) {
-				attrs[attr.name] = attr.value;
+			if (typeof attr.specified === 'undefined' || attr.specified) {
+				attrsMap[attr.name] = attr.value;
 			}
 		}
-		return attrs;
+		return attrsMap;
 	}
 
 	function remove(elem, name) {

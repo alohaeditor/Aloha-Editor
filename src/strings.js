@@ -8,7 +8,7 @@
  * Reference:
  * http://www.w3.org/TR/html401/struct/text.html
  */
-define([], function Strings() {
+define([], function () {
 	'use strict';
 
 	/**

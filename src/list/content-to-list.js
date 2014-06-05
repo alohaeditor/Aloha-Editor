@@ -71,7 +71,9 @@ define([
 		if (list.nextSibling && ListUtil.isList(list.nextSibling) && isEqualRoot(list.nextSibling, list)) {
 			ListUtil.moveToList(list.nextSibling, list);
 		}
-		if (list.previousSibling && ListUtil.isList(list.previousSibling) && isEqualRoot(list.previousSibling, list)) {
+		if (list.previousSibling
+				&& ListUtil.isList(list.previousSibling)
+				&& isEqualRoot(list.previousSibling, list)) {
 			ListUtil.moveToList(list, list.previousSibling);
 		}
 	}

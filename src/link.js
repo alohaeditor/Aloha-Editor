@@ -11,7 +11,7 @@ define([
 	'link/link-remove',
 	'link/link-util',
 	'ranges'
-], function(
+], function (
 	Dom,
 	LinkSelection,
 	LinkRemove,
@@ -53,7 +53,7 @@ define([
 		var anchors = LinkSelection.createAnchorsInRange(range, doc);
 
 		anchors.forEach(function(anchor) {
-			Dom.setAttr(anchor, "href", href);
+			Dom.setAttr(anchor, 'href', href);
 		});
 	}
 
@@ -73,7 +73,6 @@ define([
 	function removeLinkFromRange(range, doc) {
 		LinkRemove.removeLinkFromRange(range, doc);
 	}
-
 
 	return {
 		createLink: createLink,

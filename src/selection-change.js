@@ -11,7 +11,7 @@ define([
 	'boundaries',
 	'browsers',
 	'events'
-], function SelectionChange(
+], function (
 	Fn,
 	Arrays,
 	Boundaries,

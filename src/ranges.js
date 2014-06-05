@@ -19,7 +19,7 @@ define([
 	'cursors',
 	'boundaries',
 	'paths'
-], function Ranges(
+], function (
 	Dom,
 	Mutation,
 	Arrays,
@@ -740,7 +740,7 @@ define([
 			return editable;
 		}
 		var isNotEditingHost = Fn.complement(Dom.isEditingHost);
-		var stable = StableRange(range);
+		var stable = new StableRange(range);
 		trim(stable, isNotEditingHost, isNotEditingHost);
 		return Dom.editingHost(stable.startContainer);
 	}

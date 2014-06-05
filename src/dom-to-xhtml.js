@@ -11,7 +11,7 @@ define([
 	'dom',
 	'maps',
 	'ephemera'
-], function Xhtml(
+], function (
 	Dom,
 	Maps,
 	ephemera
