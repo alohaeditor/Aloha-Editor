@@ -6,7 +6,6 @@ define(['functions', 'maps', 'assert'], function (Fn, Maps, Assert) {
 	var REALIZED_KEYS_VALUES = 2;
 	var NOT_REALIZED_PLACEHOLDER = {};
 	var NOT_PRESENT_PLACEHOLDER = {};
-	var DATA_DEFAULT = {};
 	var SPECIAL_PRIVATE_VALUE = {};
 
 	/**
@@ -108,19 +107,19 @@ define(['functions', 'maps', 'assert'], function (Fn, Maps, Assert) {
 			});
 		}
 		var opts = map._map_opts;
-		var keys;
+		var optsKeys;
 		if (opts.keys) {
-			keys = opts.keys(map._map_source);
-			keys.forEach(function (key) {
+			optsKeys = opts.keys(map._map_source);
+			optsKeys.forEach(function (key) {
 				if (!data.hasOwnProperty(key)) {
 					data[key] = NOT_REALIZED_PLACEHOLDER;
 				}
 			});
 			map._map_realized = realized | REALIZED_KEYS;
 		} else {
-			keys = Maps.keys(realize(map));
+			optsKeys = Maps.keys(realize(map));
 		}
-		return keys;
+		return optsKeys;
 	}
 
 	/**

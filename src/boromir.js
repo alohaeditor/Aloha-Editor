@@ -86,7 +86,6 @@ define([
 	var AFFINITY_DOM = 1;
 	var AFFINITY_MODEL = 2;
 	var AFFINITY_DEFAULT = AFFINITY_DOM | AFFINITY_MODEL;
-	var SPECIAL_PRIVATE_VALUE = {};
 	var CHANGED_INIT = 1;
 	var CHANGED_NAME = 2;
 	var CHANGED_TEXT = 4;
@@ -232,9 +231,6 @@ define([
 	}
 
 	function hookUpdateChanged(field, changedMask) {
-		var getChanged = changedField.get;
-		var setChanged = changedField.set;
-		var setChangedT = setChanged.setT;
 		return Record.hookSetter(field, function (node) {
 			return updateMask(node, changedMask, changedField.set);
 		} , function (node) {
@@ -244,10 +240,6 @@ define([
 
 	function assertElement(node) {
 		Assert.assert(ELEMENT === node.type.get(node), Assert.EXPECT_ELEMENT);
-	}
-
-	function assertTextNode(node) {
-		Assert.assert(TEXT === node.type.get(node), Assert.EXPECT_TEXT_NODE);
 	}
 
 	function getChangedOrDelayed(changedMapField, delayedField, node, name) {
@@ -474,6 +466,8 @@ define([
 		if (newChildren === oldChildren) {
 			return null;
 		}
+		var oldChild;
+		var newChild;
 		var newIndex = null;
 		var i = 0;
 		var j = 0;
@@ -482,8 +476,8 @@ define([
 		var changedInParent = [];
 		var changed = false;
 		while (i < oldLen && j < newLen) {
-			var oldChild = oldChildren[i];
-			var newChild = newChildren[j];
+			oldChild = oldChildren[i];
+			newChild = newChildren[j];
 			var oldId = idField.get(oldChild);
 			var newId = idField.get(newChild);
 			var change;
@@ -511,12 +505,12 @@ define([
 			changedInParent.push(change);
 		}
 		for (; i < oldLen; i++) {
-			var oldChild = oldChildren[i];
+			oldChild = oldChildren[i];
 			changed = true;
 			changedInParent.push(CHANGE_REMOVE);
 		}
 		for (; j < newLen; j++) {
-			var newChild = newChildren[j];
+			newChild = newChildren[j];
 			changed = true;
 			changedInParent.push(CHANGE_INSERT);
 		}
@@ -666,7 +660,7 @@ define([
 		} else if (TEXT === node.type()) {
 			domNode = createTextNode(node, doc);
 		} else {
-			Asssert.notImplemented();
+			Assert.notImplemented();
 		}
 		return domNode;
 	}
