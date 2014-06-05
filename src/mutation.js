@@ -187,6 +187,35 @@ define([
 	}
 
 	/**
+	 * List of nodes that must not be split.
+	 *
+	 * @private
+	 * @type {Object.<string, boolean>}
+	 */
+	var UNSPLITTABLE = {
+		'BODY'    : true,
+		'HTML'    : true,
+		'STYLE'   : true,
+		'SCRIPT'  : true,
+		'AREA'    : true,
+		'BASE'    : true,
+		'BR'      : true,
+		'COL'     : true,
+		'COMMAND' : true,
+		'EMBED'   : true,
+		'HR'      : true,
+		'IMG'     : true,
+		'INPUT'   : true,
+		'KEYGEN'  : true,
+		'LINK'    : true,
+		'META'    : true,
+		'PARAM'   : true,
+		'SOURCE'  : true,
+		'TRACK'   : true,
+		'WBR'     : true
+	};
+
+	/**
 	 * Splits the given boundary's ancestors until the boundary position
 	 * returns true when applyied to the given predicate.
 	 *
@@ -204,6 +233,9 @@ define([
 			return splitBoundaryUntil(splitBoundary(boundary), predicate);
 		}
 		var container = Boundaries.container(boundary);
+		if (UNSPLITTABLE[container.nodeName]) {
+			return boundary;
+		}
 		var duplicate = Dom.cloneShallow(container);
 		var node = Boundaries.nodeAfter(boundary);
 		if (node) {

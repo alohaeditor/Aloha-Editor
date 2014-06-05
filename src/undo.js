@@ -177,7 +177,7 @@ define([
 		while (node && container !== node) {
 			var parent = node.parentNode;
 			if (!parent) {
-				return null;
+				return [];
 			}
 			stepDownPath(path, parent.nodeName, Dom.normalizedNodeIndex(node));
 			node = parent;
