@@ -92,16 +92,6 @@ define([
 		alohaEvent.editor = editor;
 		alohaEvent = Fn.comp.apply(editor.stack, editor.stack)(alohaEvent);
 		setSelection(alohaEvent);
-		Fn.comp(
-			Selections.handle,
-			Typing.handle,
-			Blocks.handle,
-			DragDrop.handle,
-			Paste.handle,
-			associateEditable,
-			Mouse.handle,
-			Keys.handle
-		)(alohaEvent);
 	}
 
 	editor.editables = {};
