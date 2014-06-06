@@ -70,10 +70,7 @@ define([
 	 * @return {AlohaEvent}
 	 */
 	function associateEditable(alohaEvent) {
-		if (!alohaEvent.nativeEvent) {
-			return alohaEvent;
-		}
-		if ('mousemove' === alohaEvent.nativeEvent.type) {
+		if ('mousemove' === alohaEvent.type) {
 			return alohaEvent;
 		}
 		if (!alohaEvent.range) {
