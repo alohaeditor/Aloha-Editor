@@ -12,6 +12,7 @@ define([
 	'exports',
 	'boundaries',
 	'blocks',
+	'dom',
 	'dragdrop',
 	'editables',
 	'events',
@@ -29,6 +30,7 @@ define([
 	Api,
 	Boundaries,
 	Blocks,
+	Dom,
 	DragDrop,
 	Editables,
 	Events,
@@ -45,11 +47,44 @@ define([
 ) {
 	'use strict';
 
-	function setSelection(event) {
-		if (event.range) {
-			Ranges.select(event.range);
+	/**
+	 * Sets the given AlohaEvent's range to the document.
+	 *
+	 * @private
+	 * @param  {AlohaEvent} alohaEvent
+	 * @return {AlohaEvent}
+	 */
+	function setSelection(alohaEvent) {
+		if (alohaEvent.range && alohaEvent.editable) {
+			Ranges.select(alohaEvent.range);
 		}
-		return event;
+		return alohaEvent;
+	}
+
+	/**
+	 * Associates an editable to the given AlohaEvent.
+	 *
+	 * @private
+	 * @param  {Editor}     editor
+	 * @param  {AlohaEvent} alohaEvent
+	 * @return {AlohaEvent}
+	 */
+	function associateEditable(alohaEvent) {
+		if (!alohaEvent.nativeEvent) {
+			return alohaEvent;
+		}
+		if ('mousemove' === alohaEvent.nativeEvent.type) {
+			return alohaEvent;
+		}
+		if (!alohaEvent.range) {
+			return alohaEvent;
+		}
+		var host = Dom.editingHost(alohaEvent.range.commonAncestorContainer);
+		if (!host) {
+			return alohaEvent;
+		}
+		alohaEvent.editable = Editables.fromElem(alohaEvent.editor, host);
+		return alohaEvent;
 	}
 
 	function editor(nativeEvent, custom) {
@@ -57,6 +92,16 @@ define([
 		alohaEvent.editor = editor;
 		alohaEvent = Fn.comp.apply(editor.stack, editor.stack)(alohaEvent);
 		setSelection(alohaEvent);
+		Fn.comp(
+			Selections.handle,
+			Typing.handle,
+			Blocks.handle,
+			DragDrop.handle,
+			Paste.handle,
+			associateEditable,
+			Mouse.handle,
+			Keys.handle
+		)(alohaEvent);
 	}
 
 	editor.editables = {};
