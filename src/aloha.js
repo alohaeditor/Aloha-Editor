@@ -104,10 +104,7 @@ define([
 		Blocks.handle,
 		DragDrop.handle,
 		Paste.handle,
-		function (alohaEvent) {
-			alohaEvent.editable = alohaEvent.editor.editables[1];
-			return alohaEvent;
-		},
+		associateEditable,
 		Mouse.handle,
 		Keys.handle
 	];
