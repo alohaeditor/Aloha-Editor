@@ -11,7 +11,7 @@ define([
 	'arrays',
 	'assert',
 	'strings'
-], function Boundaries(
+], function (
 	Dom,
 	Misc,
 	Arrays,

@@ -13,14 +13,16 @@ define([
 	'dom/nodes',
 	'dom/style',
 	'dom/traversing',
-], function Dom(
+	'browsers'
+], function (
 	Fn,
 	Attrs,
 	Classes,
 	Mutation,
 	Nodes,
 	Style,
-	Traversing
+	Traversing,
+	Browsers
 ) {
 	'use strict';
 
