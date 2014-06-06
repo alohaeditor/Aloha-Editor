@@ -12,6 +12,7 @@ define([
 	'exports',
 	'boundaries',
 	'blocks',
+	'dom',
 	'dragdrop',
 	'editables',
 	'events',
@@ -29,6 +30,7 @@ define([
 	Api,
 	Boundaries,
 	Blocks,
+	Dom,
 	DragDrop,
 	Editables,
 	Events,
@@ -52,25 +54,42 @@ define([
 		return event;
 	}
 
+	/**
+	 * Associates an editable to the given AlohaEvent.
+	 *
+	 * @param  {Editor}     editor
+	 * @param  {AlohaEvent} alohaEvent
+	 * @return {?Editable}
+	 */
+	function associateEditable(alohaEvent) {
+		if (!alohaEvent.nativeEvent) {
+			return alohaEvent;
+		}
+		if ('mousemove' === alohaEvent.nativeEvent.type) {
+			return alohaEvent;
+		}
+		if (!alohaEvent.range) {
+			return alohaEvent;
+		}
+		var host = Dom.editingHost(alohaEvent.range.commonAncestorContainer);
+		if (!host) {
+			return alohaEvent;
+		}
+		alohaEvent.editable = Editables.fromElem(alohaEvent.editor, host);
+		return alohaEvent;
+	}
+
 	function editor(nativeEvent, custom) {
 		var alohaEvent = custom || {'nativeEvent' : nativeEvent};
 		alohaEvent.editor = editor;
 		Fn.comp(
-			function (alohaEvent) {
-				if (typeof alohaCB !== 'undefined') {
-					alohaCB(alohaEvent);
-				}
-			},
 			setSelection,
 			Selections.handle,
 			Typing.handle,
 			Blocks.handle,
 			DragDrop.handle,
 			Paste.handle,
-			function (alohaEvent) {
-				alohaEvent.editable = alohaEvent.editor.editables[1];
-				return alohaEvent;
-			},
+			associateEditable,
 			Mouse.handle,
 			Keys.handle
 		)(alohaEvent);
