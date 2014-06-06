@@ -11,8 +11,7 @@ require([
 	var codeEditors = {};
 
 	function getExampleName (textarea) {
-		console.log(textarea.className);
-		for (var i=textarea.classList.length; i>=0; i++) {
+		for (var i=textarea.classList.length - 1; i>=0; i--) {
 			if (textarea.classList[i] !== 'example') {
 				return textarea.classList[i];
 			}
@@ -22,7 +21,7 @@ require([
 	[].forEach.call(document.querySelectorAll('.aloha-editable'), aloha);
 	
 	window.executeExample = function (example) {
-		var code = codeEditors[example + '-code'].getValue();
+		var code = codeEditors[example].getValue();
 		window.event.target.blur();
 		eval(code);
 	};
