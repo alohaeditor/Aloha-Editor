@@ -18,7 +18,8 @@ define([
 	'functions',
 	'cursors',
 	'boundaries',
-	'paths'
+	'paths',
+	'maps'
 ], function (
 	Dom,
 	Mutation,
@@ -29,7 +30,8 @@ define([
 	Fn,
 	Cursors,
 	Boundaries,
-	Paths
+	Paths,
+	Maps
 ) {
 	'use strict';
 
@@ -640,7 +642,7 @@ define([
 	 *
 	 * @private
 	 * @param  {Range} range
-	 * @return {Object<string, number>}
+	 * @return {Object.<string, number>}
 	 */
 	function boundingRect(range) {
 		var rect = range.getBoundingClientRect();
@@ -745,6 +747,47 @@ define([
 		return Dom.editingHost(stable.startContainer);
 	}
 
+	/**
+	 * Shows a box element according to the dimensions and orientation of `box`.
+	 *
+	 * @param  {Object.<string, number>} box
+	 * @param  {Document}                doc
+	 * @return {Element}
+	 */
+	function showHint(box, doc) {
+		var elem = doc.querySelector('.aloha-meta-caret-box');
+		if (!elem) {
+			elem = doc.createElement('div');
+		}
+		Maps.extend(elem.style, {
+			'top'        : box.top + 'px',
+			'left'       : box.left + 'px',
+			'height'     : box.height + 'px',
+			'width'      : box.width + 'px',
+			'position'   : 'absolute',
+			'background' : 'red',
+			'opacity'    : 0.2
+		});
+		Dom.addClass(elem, 'aloha-meta-caret-box');
+		Dom.append(elem, doc.body);
+		return elem;
+	}
+
+	/**
+	 * Removes any ".aloha-meta-caret-box" elements in the body of the given
+	 * document and returns it.
+	 *
+	 * @param  {Document} doc
+	 * @return {?Element}
+	 */
+	function hideHint(doc) {
+		var box = doc.querySelector('.aloha-meta-caret-box');
+		if (box) {
+			Dom.remove(box);
+		}
+		return box || null;
+	}
+
 	return {
 		box                         : box,
 
@@ -767,6 +810,9 @@ define([
 		envelopeInvisibleCharacters : envelopeInvisibleCharacters,
 
 		fromPosition                : fromPosition,
-		fromBoundaries              : fromBoundaries
+		fromBoundaries              : fromBoundaries,
+
+		showHint                    : showHint,
+		hideHint                    : hideHint
 	};
 });
