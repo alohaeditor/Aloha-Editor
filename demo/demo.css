@@ -59,3 +59,7 @@ button {
 button:hover {
 	box-shadow: 0px 0px 10px rgba(0,0,0,0.2) inset;
 }
+div.CodeMirror {
+	height: auto;
+	margin: 20px 0;
+}

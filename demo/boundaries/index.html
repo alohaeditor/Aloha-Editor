@@ -36,7 +36,7 @@ var boundary = [ domNode, 0 ];</textarea>
 			
 			<p>Placing the caret at the first position of a text is quite straightforward.</p>
 
-			<textarea class="example">var boundary = [
+			<textarea class="example place-caret">var boundary = [
 	// select the text node from the example
 	document.querySelector('#example-place-caret p').firstChild,
 	// put the cursor before the first character
@@ -46,7 +46,7 @@ aloha.boundaries.select(boundary);
 // put Aloha Editor's caret there too
 aloha.selections.show(caret, boundary);</textarea>
 
-			<button onclick="executeExample()">Execute Example</button>
+			<button onclick="executeExample('place-caret')">Execute Example</button>
 			
 			<div id="example-place-caret" class="example aloha-editable">
 				<p>This is my <b>first</b> paragraph.</p>
@@ -57,7 +57,7 @@ aloha.selections.show(caret, boundary);</textarea>
 
 			<p>Select "This is" from the text.</p>
 			
-			<textarea class="example">var textNode = document.querySelector('#example-select-text p').firstChild;
+			<textarea class="example select-text-code">var textNode = document.querySelector('#example-select-text p').firstChild;
 var startBoundary = [ textNode,	0 ];
 // an end offset of "7" will place the end boundary
 // right after the seven letters of "This is"
@@ -66,7 +66,7 @@ var endBoundary = [ textNode, 7 ];
 aloha.boundaries.select(startBoundary, endBoundary);
 aloha.selections.show(caret, endBoundary);</textarea>
 
-			<button onclick="executeExample()">Execute Example</button>
+			<button onclick="executeExample('select-text-code')">Execute Example</button>
 			
 			<div id="example-select-text" class="example aloha-editable">
 				<p>This is my <b>first</b> paragraph.</p>
@@ -92,7 +92,7 @@ aloha.boundaries.get();</textarea>
 				boundary placement.
 			</p>
 
-			<textarea class="example">var textNode = document.querySelector('#example-boundary-traversal p').firstChild;
+			<textarea class="example boundary-traversal">var textNode = document.querySelector('#example-boundary-traversal p').firstChild;
 var boundary = [ textNode, 0 ];
 
 // move the boundary to the end of the word
@@ -102,7 +102,7 @@ aloha.boundaries.select(boundary);
 aloha.selections.show(caret, boundary);
 </textarea>
 
-			<button onclick="executeExample()">Execute Example</button>
+			<button onclick="executeExample('boundary-traversal')">Execute Example</button>
 
 			<div id="example-boundary-traversal" class="example aloha-editable">
 				<p>This is my <b>first</b> paragraph.</p>
@@ -117,13 +117,13 @@ aloha.selections.show(caret, boundary);
 				this.
 			</p>
 
-			<textarea class="example">var textNode = document.querySelector('#example-insert-text p').firstChild;
+			<textarea class="example insert-text-code">var textNode = document.querySelector('#example-insert-text p').firstChild;
 var boundary = [ textNode, 0 ];
 
 aloha.mutation.insertTextAtBoundary('!INSERTED TEXT!', boundary);
 </textarea>
 
-			<button onclick="executeExample()">Execute Example</button>
+			<button onclick="executeExample('insert-text-code')">Execute Example</button>
 
 			<div id="example-insert-text" class="example aloha-editable">
 				<p>This is my <b>first</b> paragraph.</p>
@@ -136,7 +136,7 @@ aloha.mutation.insertTextAtBoundary('!INSERTED TEXT!', boundary);
 				Inserting nodes works similar to inserting text.
 			</p>
 
-			<textarea class="example">var textNode = document.querySelector('#example-insert-node p').firstChild;
+			<textarea class="example insert-node">var textNode = document.querySelector('#example-insert-node p').firstChild;
 var boundary = [ textNode, 0 ];
 var newNode = document.createElement('b');
 newNode.innerText = '!INSERTED NODE!';
@@ -144,7 +144,7 @@ newNode.innerText = '!INSERTED NODE!';
 aloha.mutation.insertNodeAtBoundary(newNode, boundary);
 </textarea>
 
-			<button onclick="executeExample()">Execute Example</button>
+			<button onclick="executeExample('insert-node')">Execute Example</button>
 
 			<div id="example-insert-node" class="example aloha-editable">
 				<p>This is my <b>first</b> paragraph.</p>
