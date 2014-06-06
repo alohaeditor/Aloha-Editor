@@ -41,6 +41,8 @@ var boundary = [ domNode, 0 ];</textarea>
 	document.querySelector('#example-place-caret p').firstChild,
 	// put the cursor before the first character
 	0 ];
+// aloha editor's caret is just a dom element
+var caret = document.querySelector('.aloha-caret');
 // move the browsers selection to the boundary
 aloha.boundaries.select(boundary);
 // put Aloha Editor's caret there too
@@ -62,6 +64,7 @@ var startBoundary = [ textNode,	0 ];
 // an end offset of "7" will place the end boundary
 // right after the seven letters of "This is"
 var endBoundary = [ textNode, 7 ];
+var caret = document.querySelector('.aloha-caret');
 
 aloha.boundaries.select(startBoundary, endBoundary);
 aloha.selections.show(caret, endBoundary);</textarea>
@@ -94,6 +97,7 @@ aloha.boundaries.get();</textarea>
 
 			<textarea class="example boundary-traversal">var textNode = document.querySelector('#example-boundary-traversal p').firstChild;
 var boundary = [ textNode, 0 ];
+var caret = document.querySelector('.aloha-caret');
 
 // move the boundary to the end of the word
 boundary = aloha.traversing.next(boundary, 'word');
@@ -119,6 +123,7 @@ aloha.selections.show(caret, boundary);
 
 			<textarea class="example insert-text-code">var textNode = document.querySelector('#example-insert-text p').firstChild;
 var boundary = [ textNode, 0 ];
+var caret = document.querySelector('.aloha-caret');
 
 aloha.mutation.insertTextAtBoundary('!INSERTED TEXT!', boundary);
 </textarea>

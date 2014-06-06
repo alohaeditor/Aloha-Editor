@@ -7,7 +7,6 @@ require([
 ) {
 	'use strict';
 	
-	var caret = document.querySelector('.aloha-caret');
 	var codeEditors = {};
 
 	function getExampleName (textarea) {
