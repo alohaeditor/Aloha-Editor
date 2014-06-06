@@ -47,19 +47,27 @@ define([
 ) {
 	'use strict';
 
-	function setSelection(event) {
-		if (event.range) {
-			Ranges.select(event.range);
+	/**
+	 * Sets the given AlohaEvent's range to the document.
+	 *
+	 * @private
+	 * @param  {AlohaEvent} alohaEvent
+	 * @return {AlohaEvent}
+	 */
+	function setSelection(alohaEvent) {
+		if (alohaEvent.range && alohaEvent.editable) {
+			Ranges.select(alohaEvent.range);
 		}
-		return event;
+		return alohaEvent;
 	}
 
 	/**
 	 * Associates an editable to the given AlohaEvent.
 	 *
+	 * @private
 	 * @param  {Editor}     editor
 	 * @param  {AlohaEvent} alohaEvent
-	 * @return {?Editable}
+	 * @return {AlohaEvent}
 	 */
 	function associateEditable(alohaEvent) {
 		if (!alohaEvent.nativeEvent) {

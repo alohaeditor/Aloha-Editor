@@ -12,11 +12,11 @@ define([], function () {
 	 * Generates an error message with a link to corresponding helpful resource
 	 * on the Aloha Editor website.
 	 *
-	 * @param  {String} type
-	 * @return {String}
+	 * @param  {string} type
+	 * @return {string}
 	 */
 	function errorLink(type) {
-		return 'Error (' + type + '). See http://www.aloha-editor.org/docs/errors/' + type;
+		return '✘ Error (' + type + '). See http://www.aloha-editor.org/docs/errors/' + type;
 	}
 
 	var NOT_IMPLEMENTED = 0;
