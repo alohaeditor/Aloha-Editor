@@ -30,6 +30,7 @@
 	t('<p>{}<br/></p>', 9, 0);
 	t('<p style="padding: 10px;">[]one</p>', 19, 10);
 	t('<p style="padding: 10px;">{}<br/></p>', 19, 10);
+	t('<p style="border:20px solid red">{}<br/></p>', 29, 20)
 
 	t('<p>multiline []paragraph test</p>', 19, 0)
 
