@@ -33,7 +33,8 @@
 
 	t('<p>multiline []paragraph test</p>', 19, 0)
 
-	t('<p>one <br/><br/>[]<br/>last</p>', 29, 0)
+	t('<p>4 brs next<br/><br/>[]<br/><br/>two brs next<br><br>last line</p>', 29, 0)
+	t('<ul><li>foo</li><li><b>{}<i></i></b></li></ul> bar', 0, 0)
 
 }(window.aloha));
 

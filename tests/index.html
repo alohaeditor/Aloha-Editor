@@ -37,6 +37,15 @@
 			background: #333;
 			outline: 3px solid rgba(255,0,0,0.5);
 		}
+
+		br {
+			content: "\A";
+		}
+
+		br:after {
+			content: "\A";
+			white-space: pre-line;
+		}
 	</style>
 </head>
 <body>
@@ -48,7 +57,7 @@
 	<div id="qunit-fixture">
 		<div id="test-editable" contentEditable="true"></div>
 	</div>
-	<div class="aloha-editable" id="aloha_instance" contentEditable="true"></div>
+	<div class="aloha-editable" id="aloha_instance"></div>
 	<script>
 		var isBuild = false;
 

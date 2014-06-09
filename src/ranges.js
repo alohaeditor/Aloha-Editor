@@ -642,7 +642,7 @@ define([
 	 * @param  {Range} range
 	 * @return {Object<string, number>}
 	 */
-	function boundingRect(range) {
+	function rangeBoundingRect(range) {
 		var rect = range.getBoundingClientRect();
 		return {
 			top    : rect.top,
@@ -650,6 +650,27 @@ define([
 			width  : rect.width,
 			height : rect.height
 		};
+	}
+
+	/**
+	 * Returns a mutable bounding client rectangle for the given node if possible.
+	 *
+	 * @private
+	 * @param  {Node} node
+	 * @return {Object<string, number>}
+	 */
+	function nodeBoundingRect(node) {
+		var rect = null;
+		if (node.getBoundingClientRect) {
+			rect = node.getBoundingClientRect();
+			return {
+				top    : rect.top,
+				left   : rect.left,
+				width  : rect.width,
+				height : rect.height
+			};
+		}
+		return rect;
 	}
 
 	/**
@@ -667,18 +688,18 @@ define([
 		var rect;
 		var expanded = expandRight(range);
 		if (expanded) {
-			 rect = boundingRect(expanded);
+			 rect = rangeBoundingRect(expanded);
 			 if (rect.width > 0) {
 				return rect;
 			 }
 		}
 		expanded = expandLeft(range);
 		if (expanded) {
-			rect = boundingRect(expanded);
+			rect = rangeBoundingRect(expanded);
 			rect.left += rect.width;
 			return rect;
 		}
-		return boundingRect(range);
+		return rangeBoundingRect(range);
 	}
 
 	/**
@@ -708,9 +729,18 @@ define([
 		var scrollLeft = Dom.scrollLeft(doc);
 		var node = Boundaries.nodeAfter(Boundaries.fromRangeStart(range));
 		if (node) {
+			var rect = nodeBoundingRect(node);
+			if (rect) {
+				return {
+					top    : rect.top + topOffset,
+					left   : rect.left + leftOffset,
+					width  : rect.width,
+					height : rect.height
+				};
+			}
 			return {
-				top    : node.parentNode.offsetTop - scrollTop + topOffset,
-				left   : node.parentNode.offsetLeft - scrollLeft + leftOffset,
+				top    : node.parentNode.offsetTop - scrollTop + topOffset,// + node.parentNode.style.paddingTop,
+				left   : node.parentNode.offsetLeft - scrollLeft + leftOffset,// + node.parentNode.style.paddingLeft,
 				width  : node.offsetWidth,
 				height : parseInt(Dom.getComputedStyle(node, 'line-height'), 10)
 			};

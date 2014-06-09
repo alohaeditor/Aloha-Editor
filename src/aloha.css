@@ -67,3 +67,12 @@ p:last-child { margin-bottom: 0; }
 	  0% {opacity: 1}
 	100% {opacity: 0}
 }
+
+.aloha-editable br {
+	content: "\A";
+}
+
+.aloha-editable br:after {
+	content: "\A";
+	white-space: pre-line;
+}
