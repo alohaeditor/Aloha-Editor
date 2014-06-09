@@ -9,7 +9,7 @@ define([
 	'arrays',
 	'maps',
 	'functions'
-], function Trees(
+], function (
 	Arrays,
 	Maps,
 	Fn

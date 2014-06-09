@@ -7,7 +7,7 @@
  *
  * Contains miscellaneous utility functions that don't fit anywhere else.
  */
-define([], function Misc() {
+define([], function () {
 	'use strict';
 
 	/**

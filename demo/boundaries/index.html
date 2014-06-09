@@ -1,0 +1,194 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Aloha Editor</title>
+		<meta charset="UTF-8">
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300,700' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" type="text/css" href="../../src/aloha.css">
+		<link rel="stylesheet" type="text/css" href="../demo.css">
+
+		<script src="../codemirror-4.2/lib/codemirror.js"></script>
+		<link rel="stylesheet" href="../codemirror-4.2/lib/codemirror.css">
+		<script src="../codemirror-4.2/mode/javascript/javascript.js"></script>
+	</head>
+	<body>
+		<div>
+			<h1>Aloha Editor Boundaries</h1>
+			
+			<p>
+				Boundaries represent a location in the DOM that can be selected. They 
+				are represented by an array which contains the start node and an offset.
+			</p>
+
+			<textarea class="example">// a single boundary
+var boundary = [ domNode, 0 ];</textarea>
+
+			<p>
+				Boundaries are Aloha Editor's way to handle selections transparently across
+				browsers.
+				If you just want to place the caret, you'll only need a single boundary.
+				If you want to select text you will need to create two boundaries - one
+				for the start and one for the end position of the selection.
+			</p>
+
+
+			<h2>Placing the caret</h2>
+			
+			<p>Placing the caret at the first position of a text is quite straightforward.</p>
+
+			<textarea class="example place-caret">var boundary = [
+	// select the text node from the example
+	document.querySelector('#example-place-caret p').firstChild,
+	// put the cursor before the first character
+	0 ];
+// aloha editor's caret is just a dom element
+var caret = document.querySelector('.aloha-caret');
+// move the browsers selection to the boundary
+aloha.boundaries.select(boundary);
+// put Aloha Editor's caret there too
+aloha.selections.show(caret, boundary);</textarea>
+
+			<button onclick="executeExample('place-caret')">Execute Example</button>
+			
+			<div id="example-place-caret" class="example aloha-editable">
+				<p>This is my <b>first</b> paragraph.</p>
+			</div>
+
+
+			<h2>Selecting some text</h2>
+
+			<p>Select "This is" from the text.</p>
+			
+			<textarea class="example select-text-code">var textNode = document.querySelector('#example-select-text p').firstChild;
+var startBoundary = [ textNode,	0 ];
+// an end offset of "7" will place the end boundary
+// right after the seven letters of "This is"
+var endBoundary = [ textNode, 7 ];
+var caret = document.querySelector('.aloha-caret');
+
+aloha.boundaries.select(startBoundary, endBoundary);
+aloha.selections.show(caret, endBoundary);</textarea>
+
+			<button onclick="executeExample('select-text-code')">Execute Example</button>
+			
+			<div id="example-select-text" class="example aloha-editable">
+				<p>This is my <b>first</b> paragraph.</p>
+			</div>
+
+
+			<h2>Retrieving the current boundaries</h2>
+
+			<p>
+				The API allows you to retrieve the currently active boundaries.
+				Keep in mind that you need to have clicked somewhere first to
+				have an active selection.
+			</p>
+
+			<textarea class="example">// retrieve current boundaries
+aloha.boundaries.get();</textarea>
+
+			
+			<h2>Boundary traversal</h2>
+
+			<p>
+				The API also allows you to use traversal algorithms to simplify
+				boundary placement.
+			</p>
+
+			<textarea class="example boundary-traversal">var textNode = document.querySelector('#example-boundary-traversal p').firstChild;
+var boundary = [ textNode, 0 ];
+var caret = document.querySelector('.aloha-caret');
+
+// move the boundary to the end of the word
+boundary = aloha.traversing.next(boundary, 'word');
+
+aloha.boundaries.select(boundary);
+aloha.selections.show(caret, boundary);
+</textarea>
+
+			<button onclick="executeExample('boundary-traversal')">Execute Example</button>
+
+			<div id="example-boundary-traversal" class="example aloha-editable">
+				<p>This is my <b>first</b> paragraph.</p>
+			</div>
+
+
+			<h2>Inserting text at a boudary position</h2>
+
+			<p>
+				At this point you will most likely want to insert some text at
+				a boundary position. Use the insertTextAtBoundary method to achieve
+				this.
+			</p>
+
+			<textarea class="example insert-text-code">var textNode = document.querySelector('#example-insert-text p').firstChild;
+var boundary = [ textNode, 0 ];
+var caret = document.querySelector('.aloha-caret');
+
+aloha.mutation.insertTextAtBoundary('!INSERTED TEXT!', boundary);
+</textarea>
+
+			<button onclick="executeExample('insert-text-code')">Execute Example</button>
+
+			<div id="example-insert-text" class="example aloha-editable">
+				<p>This is my <b>first</b> paragraph.</p>
+			</div>
+
+			
+			<h2>Inserting nodes at a boudary position</h2>
+
+			<p>
+				Inserting nodes works similar to inserting text.
+			</p>
+
+			<textarea class="example insert-node">var textNode = document.querySelector('#example-insert-node p').firstChild;
+var boundary = [ textNode, 0 ];
+var newNode = document.createElement('b');
+newNode.innerText = '!INSERTED NODE!';
+
+aloha.mutation.insertNodeAtBoundary(newNode, boundary);
+</textarea>
+
+			<button onclick="executeExample('insert-node')">Execute Example</button>
+
+			<div id="example-insert-node" class="example aloha-editable">
+				<p>This is my <b>first</b> paragraph.</p>
+			</div>
+
+			<h2>Paths</h2>
+
+			<p>
+				Paths allow you to convert Aloha Editor boundaries into plain
+				JavaScript Arrays. This way bondaries can be stored in a
+				database for later retrieval, or even passed to other scripts
+				and applications.
+			</p>
+
+			<p>
+				The example will convert the boundary passed as the second parameter
+				into an array of offsets relative to the object passed as the first
+				parameter - in this case the document itself.
+			</p>
+
+			<p>
+				<b>Note:</b> paths are only valid for the DOM that they are created for.
+				If you change the DOM, the paths created before may become invalid as
+				nodes are inserted and removed.
+			</p>
+
+			<textarea class="example">aloha.paths.fromBoundary(document, boundary);
+// example result could be
+[1, 2, 1, 3, 1, 0, 12]</textarea>
+
+			<p>
+				By using the toBoundary method you can convert a path back into a boundary.
+			</p>
+
+			<textarea class="example">var boundary = aloha.paths.toBoundary(document, [1, 2, 1, 3, 1, 0, 12]);</textarea>
+		</div>
+		<script src="../../src/require-pronto.js"></script>
+		<script src="../../src/require-pronto.dev.js"></script>
+		<script src="../demo.js"></script>
+	</body>
+</html>
+

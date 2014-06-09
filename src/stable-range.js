@@ -9,7 +9,7 @@ define([
 	'dom',
 	'arrays',
 	'functions'
-], function StableRange(
+], function (
 	Dom,
 	Arrays,
 	Fn

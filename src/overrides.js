@@ -26,7 +26,7 @@ define([
 	'maps',
 	'mutation',
 	'boundaries'
-], function Overrides(
+], function (
 	Dom,
 	Misc,
 	Maps,

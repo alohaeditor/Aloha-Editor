@@ -116,12 +116,10 @@ require([
 	}
 
 	var lastValidRange;
-
-	// will be invoked after each aloha event
-	function alohaCB(event) {
+	aloha.editor.stack.unshift(function handleUi(event) {
 		if (event.type !== 'keyup' &&
 			event.type !== 'click') {
-			return;
+			return event;
 		}
 		
 		if (!event.range) {
@@ -140,6 +138,6 @@ require([
 		}
 
 		updateUi();
-	}
-	window.alohaCB = alohaCB;
+		return event;
+	});
 });

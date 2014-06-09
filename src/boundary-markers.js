@@ -14,7 +14,7 @@ define([
 	'ranges',
 	'paths',
 	'boundaries'
-], function BoundaryMarkers(
+], function (
 	Dom,
 	Misc,
 	Mutation,

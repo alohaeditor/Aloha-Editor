@@ -1,12 +1,26 @@
 {
-	"eqnull": true,
-	"smarttabs": true,
-	"laxbreak": true,
-	"evil": true,
-	"strict": true,
-	"globals": {
-		"console": true,
-		"module": true,
-		"document": true
+	"sub"       : true,
+	"browser"   : true,
+	"camelcase" : false,
+	"curly"     : true,
+	"devel"     : true,
+	"eqnull"    : true,
+	"freeze"    : true,
+	"immed"     : true,
+	"jquery"    : true,
+	"latedef"   : true,
+	"laxbreak"  : true,
+	"maxlen"    : 110,
+	"noarg"     : true,
+	"nonew"     : false,
+	"newcap"    : false,
+	"quotmark"  : true,
+	"smarttabs" : true,
+	"strict"    : true,
+	"trailing"  : true,
+	"undef"     : true,
+	"unused"    : "vars",
+	"globals"   : {
+		"define" : true
 	}
 }

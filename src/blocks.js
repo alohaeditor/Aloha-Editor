@@ -9,7 +9,7 @@ define([
 	'dom',
 	'events',
 	'dragdrop'
-], function Blocks(
+], function (
 	Dom,
 	Events,
 	DragDrop

@@ -53,7 +53,7 @@ define([
 	'record',
 	'delayed-map',
 	'boromir'
-], function Exports(
+], function (
 	Arrays,
 	Blocks,
 	Boundaries,

@@ -21,7 +21,7 @@ define([
 	'overrides',
 	'boundaries',
 	'traversing'
-], function Selection(
+], function (
 	Fn,
 	Dom,
 	Keys,
@@ -76,21 +76,12 @@ define([
 	function show(caret, boundary) {
 		var box = Ranges.box(Ranges.fromBoundaries(boundary, boundary));
 		Maps.extend(caret.style, {
-			'top': box.top + 'px',
-			'left': box.left + 'px',
-			'height': box.height + 'px',
-			'width': '2px',
-			'display': 'block'
+			'top'     : box.top + 'px',
+			'left'    : box.left + 'px',
+			'height'  : box.height + 'px',
+			'width'   : '2px',
+			'display' : 'block'
 		});
-	}
-
-	/**
-	 * Hides the given element.
-	 *
-	 * @param {Element} elem
-	 */
-	function hide(elem) {
-		elem.style.display = 'none';
 	}
 
 	/**
@@ -163,9 +154,9 @@ define([
 	/**
 	 * Creates a range that is `stride` pixels above the given offset bounds.
 	 *
-	 * @param  {Object}   box
-	 * @param  {number}   stride
-	 * @param  {Document} doc
+	 * @param  {Object.<string, number>} box
+	 * @param  {number}                  stride
+	 * @param  {Document}                doc
 	 * @return {Range}
 	 */
 	function up(box, stride, doc) {
@@ -175,13 +166,14 @@ define([
 	/**
 	 * Creates a range that is `stride` pixels below the given offset bounds.
 	 *
-	 * @param  {Object} box
-	 * @param  {number} stride
+	 * @param  {Object.<string, number>} box
+	 * @param  {number}                  stride
 	 * @return {Range}
 	 */
 	function down(box, stride, doc) {
 		return Ranges.fromPosition(box.left, box.top + box.height + stride, doc);
 	}
+
 	function left(boundary, stride) {
 		return Traversing.prev(boundary, stride);
 	}
@@ -238,16 +230,23 @@ define([
 		          : Ranges.collapseToEnd(range.cloneRange());
 
 		var box = Ranges.box(clone);
-		var half = box.height / 2;
-		var offset = half;
-		var move = ('up' === direction) ? up : down;
 		var doc = range.commonAncestorContainer.ownerDocument;
-		var next = move(box, offset, doc);
+		var win = Dom.documentWindow(doc);
+		var topOffset = win.pageYOffset - doc.body.clientTop;
+		var leftOffset = win.pageXOffset - doc.body.clientLeft;
+
+		box.top -= topOffset;
+		box.left -= leftOffset;
+
+		var half = box.height / 2;
+		var stride = half;
+		var move = ('up' === direction) ? up : down;
+		var next = move(box, stride, doc);
 
 		// TODO: also check if `next` and `clone` are *visually* adjacent
 		while (next && Ranges.equals(next, clone)) {
-			offset += half;
-			next = move(box, offset, doc);
+			stride += half;
+			next = move(box, stride, doc);
 		}
 		if (!next) {
 			return;

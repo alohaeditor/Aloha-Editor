@@ -14,7 +14,7 @@ define([
 	'ranges',
 	'content', // Hack for require-proto
 	'traversing' // Hack for require-proto
-], function Undo(
+], function (
 	Arrays,
 	Maps,
 	Dom,
@@ -177,7 +177,7 @@ define([
 		while (node && container !== node) {
 			var parent = node.parentNode;
 			if (!parent) {
-				return null;
+				return [];
 			}
 			stepDownPath(path, parent.nodeName, Dom.normalizedNodeIndex(node));
 			node = parent;
@@ -407,7 +407,6 @@ define([
 	 */
 	function leave(context, result) {
 		var frame = context.frame;
-		var observer = context.observer;
 		var upperFrame = context.stack.pop();
 		if (upperFrame) {
 			partitionRecords(context, frame, frame, upperFrame);
@@ -548,14 +547,6 @@ define([
 
 	function makeUpdateText(node, oldValue) {
 		return {type: UPDATE_TEXT, node: node, oldValue: oldValue};
-	}
-
-	function anchorNode(record) {
-		if (DELETE_FLAG & record.type) {
-			return record.prevSibling || record.target;
-		} else {
-			return record.node;
-		}
 	}
 
 	// NB: All insert-delete sequences in this table are no-ops:
@@ -783,15 +774,16 @@ define([
 	function delPath(container, delRecord, incomplete) {
 		var prevSibling = delRecord.prevSibling;
 		var path;
+		var boundary;
 		if (prevSibling) {
 			var off = Dom.nodeIndex(prevSibling) + 1;
-			var boundary = [prevSibling.parentNode, off];
+			boundary = [prevSibling.parentNode, off];
 			path = (incomplete
 			        ? incompletePathFromBoundary(container, boundary)
 			        : pathFromBoundary(container, boundary));
 		} else {
 			var target = delRecord.target;
-			var boundary = [target, 0];
+			boundary = [target, 0];
 			path = (incomplete
 			        ? incompletePathFromBoundary(container, boundary)
 			        : pathFromBoundary(container, boundary));
@@ -826,9 +818,11 @@ define([
 		var lastInsertNode = null;
 		recordTree.forEach(function (record) {
 			var type = record.type;
+			var path;
+			var node;
 			if (COMPOUND_DELETE === type) {
 				lastInsertNode = null;
-				var path = containerPath.concat(delPath(container, record));
+				path = containerPath.concat(delPath(container, record));
 				var parentPath = containerPath.concat(delPath(container, record, true));
 				var lastDeleteContent = null;
 				record.records.forEach(function (record) {
@@ -846,8 +840,8 @@ define([
 					}
 				});
 			} else if (INSERT === type) {
-				var node = record.node;
-				var path = containerPath.concat(pathBeforeNode(container, node));
+				node = record.node;
+				path = containerPath.concat(pathBeforeNode(container, node));
 				if (lastInsertNode && lastInsertNode === node.previousSibling) {
 					lastInsertContent.push(Dom.clone(node));
 				} else {
@@ -857,13 +851,13 @@ define([
 				lastInsertNode = node;
 			} else if (UPDATE_ATTR === type) {
 				lastInsertNode = null;
-				var node = record.node;
-				var path = containerPath.concat(pathBeforeNode(container, node));
+				node = record.node;
+				path = containerPath.concat(pathBeforeNode(container, node));
 				changes.push(makeUpdateAttrChange(path, node, record.attrs));
 			} else if (UPDATE_TEXT === type) {
 				lastInsertNode = null;
-				var node = record.node;
-				var path = containerPath.concat(pathBeforeNode(container, node));
+				node = record.node;
+				path = containerPath.concat(pathBeforeNode(container, node));
 				changes.push(makeDeleteChange(path, [node.ownerDocument.createTextNode(record.oldValue)]));
 				changes.push(makeInsertChange(path, [Dom.clone(node)]));
 			} else {
@@ -882,17 +876,18 @@ define([
 			var target = record.target;
 			var oldValue = record.oldValue;
 			var type = record.type;
+			var id;
 			if ('attributes' === type) {
 				var name = record.attributeName;
 				var ns = record.attributeNamespace;
-				var id = Dom.ensureExpandoId(target);
+				id = Dom.ensureExpandoId(target);
 				var updateAttrRecord = updateAttr[id] = updateAttr[id] || makeUpdateAttr(target, {});
 				var attrs = updateAttrRecord.attrs;
 				var attr = {oldValue: oldValue, name: name, ns: ns};
 				var key = name + ' ' + ns;
 				attrs[key] = attrs[key] || attr;
 			} else if ('characterData' === type) {
-				var id = Dom.ensureExpandoId(target);
+				id = Dom.ensureExpandoId(target);
 				updateText[id] = updateText[id] || makeUpdateText(target, oldValue);
 			} else if ('childList' === type) {
 				var prevSibling = record.previousSibling;
@@ -1008,9 +1003,12 @@ define([
 
 	function applyChange(container, change, range, ranges, textNodes) {
 		var type = change.type;
+		var boundary;
+		var node;
+		var parent;
 		if ('update-attr' === type) {
-			var boundary = boundaryFromPath(container, change.path);
-			var node = nodeAfterBoundary(boundary);
+			boundary = boundaryFromPath(container, change.path);
+			node = nodeAfterBoundary(boundary);
 			change.attrs.forEach(function (attr) {
 				Dom.setAttrNS(node, attr.ns, attr.name, attr.newValue);
 			});
@@ -1022,7 +1020,7 @@ define([
 				Boundaries.setRange(range, startBoundary, endBoundary);
 			}
 		} else if ('insert' === type) {
-			var boundary = boundaryFromPath(container, change.path);
+			boundary = boundaryFromPath(container, change.path);
 			change.content.forEach(function (node) {
 				var insertNode = Dom.clone(node);
 				if (Dom.isTextNode(insertNode)) {
@@ -1031,10 +1029,10 @@ define([
 				boundary = Mutation.insertNodeAtBoundary(insertNode, boundary, true, ranges);
 			});
 		} else if ('delete' === type) {
-			var boundary = boundaryFromPath(container, change.path);
+			boundary = boundaryFromPath(container, change.path);
 			boundary = Mutation.splitBoundary(boundary, ranges);
-			var node = nodeAtBoundary(boundary);
-			var parent = node.parentNode;
+			node = nodeAtBoundary(boundary);
+			parent = node.parentNode;
 			change.content.forEach(function (removedNode) {
 				var next;
 				if (Dom.isTextNode(removedNode)) {
@@ -1212,19 +1210,6 @@ define([
 		var newRange = newChangeSet.selection.newRange;
 		var rangeUpdateChange = makeRangeUpdateChange(oldRange, newRange);
 		return makeChangeSet(oldChangeSet.meta, [insertChange], rangeUpdateChange);
-	}
-
-	/**
-	 * Sets the interrupted flag in the given undo context.
-	 *
-	 * The interrupted flag specifies that the next change should not be
-	 * combined with the last change.
-	 *
-	 * @param context {Undo}
-	 * @return {void}
-	 */
-	function interruptTyping(context) {
-		context.interrupted = true;
 	}
 
 	/**

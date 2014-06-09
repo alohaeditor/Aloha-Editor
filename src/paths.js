@@ -9,7 +9,7 @@ define([
 	'dom',
 	'arrays',
 	'boundaries'
-], function Paths(
+], function (
 	Dom,
 	Arrays,
 	Boundaries
