@@ -18,8 +18,8 @@
 			Events.dispatch(document, editor, 'keypress');
 
 			var tp = document.querySelector('.aloha-caret');
-			equal(tp.offsetLeft - editor.offsetLeft, left, "left");
 			equal(tp.offsetTop - editor.offsetTop, top, "top");
+			equal(tp.offsetLeft - editor.offsetLeft, left, "left");
         });
     }
 
