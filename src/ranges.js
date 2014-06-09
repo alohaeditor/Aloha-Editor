@@ -725,8 +725,7 @@ define([
 				height : rect.height
 			};
 		}
-		var scrollTop = Dom.scrollTop(doc);
-		var scrollLeft = Dom.scrollLeft(doc);
+
 		var node = Boundaries.nodeAfter(Boundaries.fromRangeStart(range));
 		if (node) {
 			var rect = nodeBoundingRect(node);
@@ -738,14 +737,11 @@ define([
 					height : rect.height
 				};
 			}
-			return {
-				top    : node.parentNode.offsetTop - scrollTop + topOffset,// + node.parentNode.style.paddingTop,
-				left   : node.parentNode.offsetLeft - scrollLeft + leftOffset,// + node.parentNode.style.paddingLeft,
-				width  : node.offsetWidth,
-				height : parseInt(Dom.getComputedStyle(node, 'line-height'), 10)
-			};
 		}
+
 		// <li>{}</li>
+		var scrollTop = Dom.scrollTop(doc);
+		var scrollLeft = Dom.scrollLeft(doc);
 		node = Boundaries.container(Boundaries.fromRangeStart(range));
 		return {
 			top    : node.offsetTop - scrollTop + topOffset,
