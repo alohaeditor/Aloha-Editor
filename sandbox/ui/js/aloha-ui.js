@@ -3,13 +3,15 @@ require([
 	'../../src/arrays',
 	'../../src/boromir',
 	'../../src/boundaries',
-	'../../src/dom'
+	'../../src/dom',
+	'../../src/format'
 ], function (
 	aloha,
 	Arrays,
 	Boromir,
 	Boundaries,
-	Dom
+	Dom,
+	Format
 ) {
 	'use strict';
 
@@ -46,6 +48,13 @@ require([
 			return;
 		}
 
+		var bounds = aloha.boundaries.get(document);
+
+		// cheap shortcut to test refactoring
+		if (actionName === 'bold') {
+			Format.applyFormat('bold', bounds[0], bounds[1]);
+		}
+
 		if (action.mutate) {
 			action.mutate(alohaEvent);
 		} else if (action.replace) {
@@ -53,7 +62,6 @@ require([
 			// to a layer between the core api and the ui
 			// an algorithm needs to be provided that knows when to split
 			// or just wrap
-			var bounds = aloha.boundaries.get();
 			var cac = Boundaries.commonContainer(bounds[0], bounds[1]);
 			if (Dom.isTextNode(cac)) {
 				cac = cac.parentNode;
@@ -91,7 +99,7 @@ require([
 	 * update the ui according to current state overrides
 	 */
 	function updateUi() {
-		var overrides = aloha.overrides.harvest(Boundaries.container(Boundaries.get()[0]));
+		var overrides = aloha.overrides.harvest(Boundaries.container(Boundaries.get(document)[0]));
 		var node = Boromir(document.querySelector('.aloha-ui-toolbar'));
 
 		/**

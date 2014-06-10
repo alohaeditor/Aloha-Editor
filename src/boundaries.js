@@ -161,10 +161,24 @@ define([
 	 * @param {Range}    range Range to modify.
 	 * @param {Boundary} start Boundary to set the start position to
 	 * @param {Boundary} end   Boundary to set the end position to
+	 * @return {Range}   the updated range
 	 */
 	function setRange(range, start, end) {
 		setRangeStart(range, start);
 		setRangeEnd(range, end);
+		return range;
+	}
+
+	/**
+	 * creates a new range from a start and end boundary
+	 *
+	 * @param {Boundary} start Boundary to set the start position to
+	 * @param {Boundary} end   Boundary to set the end position to
+	 * @return {Range}   the range that has been created
+	 */
+	function toRange(start, end) {
+		var doc = container(start).ownerDocument;
+		return setRange(doc.createRange(), start, end);
 	}
 
 	/**
@@ -633,6 +647,7 @@ define([
 		setRanges           : setRanges,
 		setRangeStart       : setRangeStart,
 		setRangeEnd         : setRangeEnd,
+		toRange             : toRange,
 
 		isAtStart           : isAtStart,
 		isAtEnd             : isAtEnd,
