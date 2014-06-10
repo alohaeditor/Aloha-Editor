@@ -3,7 +3,8 @@
 <head>
 	<meta charset="UTF-8" />
 	<title>Aloha Editor Test Suite</title>
-	<link href="qunit/qunit-1.12.0.css" rel="stylesheet" type="text/css"/>
+	<link href="../src/aloha.css" rel="stylesheet" type="text/css" />
+	<link href="qunit/qunit-1.12.0.css" rel="stylesheet" type="text/css" />
 	<script src="qunit/qunit-1.12.0.js"></script>
 	<script src="qunit/jquery-1.10.2.js"></script>
 	<script src="../src/require-pronto.js"></script>
@@ -27,24 +28,6 @@
 			font-family: monospace;
 			line-height: 10px;
 			margin-top: 10px;
-		}
-
-		.aloha-caret {
-			position: absolute;
-			z-index: 1;
-			margin: 0;
-			padding: 0;
-			background: #333;
-			outline: 3px solid rgba(255,0,0,0.5);
-		}
-
-		br {
-			content: "\A";
-		}
-
-		br:after {
-			content: "\A";
-			white-space: pre-line;
 		}
 	</style>
 </head>

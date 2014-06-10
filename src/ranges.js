@@ -638,41 +638,21 @@ define([
 	}
 
 	/**
-	 * Returns a mutable bounding client rectangle for the given range.
+	 * Returns a mutable bounding client rectangle from the reference range or
+	 * element.
 	 *
 	 * @private
-	 * @param  {Range} range
-	 * @return {Object.<string, number>}
+	 * @param  {Element|Range} reference
+	 * @return {?Object.<string, number>}
 	 */
-	function rangeBoundingRect(range) {
-		var rect = range.getBoundingClientRect();
+	function boundingRect(reference) {
+		var rect = reference.getBoundingClientRect();
 		return {
 			top    : rect.top,
 			left   : rect.left,
 			width  : rect.width,
 			height : rect.height
 		};
-	}
-
-	/**
-	 * Returns a mutable bounding client rectangle for the given node if possible.
-	 *
-	 * @private
-	 * @param  {Node} node
-	 * @return {Object<string, number>}
-	 */
-	function nodeBoundingRect(node) {
-		var rect = null;
-		if (node.getBoundingClientRect) {
-			rect = node.getBoundingClientRect();
-			return {
-				top    : rect.top,
-				left   : rect.left,
-				width  : rect.width,
-				height : rect.height
-			};
-		}
-		return rect;
 	}
 
 	/**
@@ -690,18 +670,18 @@ define([
 		var rect;
 		var expanded = expandRight(range);
 		if (expanded) {
-			 rect = rangeBoundingRect(expanded);
+			 rect = boundingRect(expanded);
 			 if (rect.width > 0) {
 				return rect;
 			 }
 		}
 		expanded = expandLeft(range);
 		if (expanded) {
-			rect = rangeBoundingRect(expanded);
+			rect = boundingRect(expanded);
 			rect.left += rect.width;
 			return rect;
 		}
-		return rangeBoundingRect(range);
+		return boundingRect(range);
 	}
 
 	/**
@@ -729,8 +709,8 @@ define([
 		}
 
 		var node = Boundaries.nodeAfter(Boundaries.fromRangeStart(range));
-		if (node) {
-			var rect = nodeBoundingRect(node);
+		if (node && !Dom.isTextNode(node)) {
+			rect = boundingRect(node);
 			if (rect) {
 				return {
 					top    : rect.top + topOffset,
