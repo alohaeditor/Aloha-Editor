@@ -21,17 +21,17 @@ require([
   	 * wires aloha-action-* classes on buttons to function calls
   	 */
   	var ACTIONS = {
-  		'bold': aloha.typing.actions.formatBold,
-  		'italic': aloha.typing.actions.formatItalic,
+  		'bold': { format: 'bold' },
+  		'italic': { format: 'italic' },
   		'orderedList': aloha.list.toOrderedList,
   		'unorderedList': aloha.list.toUnorderedList,
   		'undo': aloha.undo.undo,
   		'redo': aloha.undo.redo,
-  		'h2': { replace: 'h2' }, // put these in formatting.js
-  		'h3': { replace: 'h3' },
-  		'h4': { replace: 'h4' },
-  		'p': { replace: 'p' },
-  		'pre': { replace: 'pre' }
+  		'h2': { blockFormat: 'h2' }, // put these in formatting.js
+  		'h3': { blockFormat: 'h3' },
+  		'h4': { blockFormat: 'h4' },
+  		'p': { blockFormat: 'p' },
+  		'pre': { blockFormat: 'pre' }
   	};
   	var CLASS_PREFIX = 'aloha-action-';
 	
@@ -50,12 +50,13 @@ require([
 
 		var bounds = aloha.boundaries.get(document);
 
-		// cheap shortcut to test refactoring
-		if (actionName === 'bold') {
-			Formatting.format('bold', bounds[0], bounds[1]);
+		if (action.format) {
+			Formatting.format(actionName, bounds[0], bounds[1]);
+		} else if (action.blockFormat) {
+			Formatting.blockFormat(actionName, bounds[0], bounds[1]);
 		}
 
-		if (action.mutate) {
+		/*if (action.mutate) {
 			action.mutate(alohaEvent);
 		} else if (action.replace) {
 			// TODO this is too much implementation and should be moved 
@@ -73,7 +74,7 @@ require([
 			action(alohaEvent.editable.undoContext, event.range);
 		} else {
 			action();
-		}
+		}*/
 	}
 
 	/**

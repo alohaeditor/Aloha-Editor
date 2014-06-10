@@ -42,6 +42,15 @@ define([
 	}
 
 	/**
+	 * Returns the document associated with a boundary
+	 * @param {!Boundary} boundary
+	 * @return {Document} the dom document
+	 */
+	function document(boundary) {
+		return container(boundary).ownerDocument;
+	}
+
+	/**
 	 * Returns a boundary's offset.
 	 *
 	 * @param  {Boundary} boundary
@@ -622,6 +631,7 @@ define([
 
 		container           : container,
 		offset              : offset,
+		document            : document,
 
 		fromRange           : fromRange,
 		fromRanges          : fromRanges,
