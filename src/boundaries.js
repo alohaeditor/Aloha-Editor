@@ -170,18 +170,6 @@ define([
 	}
 
 	/**
-	 * creates a new range from a start and end boundary
-	 *
-	 * @param {Boundary} start Boundary to set the start position to
-	 * @param {Boundary} end   Boundary to set the end position to
-	 * @return {Range}   the range that has been created
-	 */
-	function toRange(start, end) {
-		var doc = container(start).ownerDocument;
-		return setRange(doc.createRange(), start, end);
-	}
-
-	/**
 	 * Sets the start and end position of a list of ranges from the given list
 	 * of boundaries.
 	 *
@@ -647,7 +635,6 @@ define([
 		setRanges           : setRanges,
 		setRangeStart       : setRangeStart,
 		setRangeEnd         : setRangeEnd,
-		toRange             : toRange,
 
 		isAtStart           : isAtStart,
 		isAtEnd             : isAtEnd,

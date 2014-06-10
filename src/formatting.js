@@ -6,31 +6,31 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'boundaries',
-	'editing'
+	'editing',
+	'ranges'
 ], function (
-	Boundaries,
-	Editing
+	Editing,
+	Ranges
 ) {
 	'use strict';
 
 	/**
 	 * apply formatting to contents enclosed by start and end boundary
 	 *
-	 * @param {!String}   format the format to be applied, eg. bold, italic
-	 * @param {!Boundary} start  Boundary to set the start position to
-	 * @param {Boundary} end    Boundary to set the end position to
+	 * @param {!String}   formatting the format to be applied, eg. bold, italic
+	 * @param {!Boundary} start      Boundary to set the start position to
+	 * @param {Boundary}  end        Boundary to set the end position to
 	 */
-	function applyFormat(format, start, end) {
+	function format(formatting, start, end) {
 		end = end || start;
 		Editing.format(
-			Boundaries.toRange(start, end),
-			format,
+			Ranges.fromBoundaries(start, end),
+			formatting,
 			true
 		);
 	}
 
 	return {
-		applyFormat: applyFormat
+		format: format
 	};
 });

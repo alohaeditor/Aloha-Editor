@@ -4,14 +4,14 @@ require([
 	'../../src/boromir',
 	'../../src/boundaries',
 	'../../src/dom',
-	'../../src/format'
+	'../../src/formatting'
 ], function (
 	aloha,
 	Arrays,
 	Boromir,
 	Boundaries,
 	Dom,
-	Format
+	Formatting
 ) {
 	'use strict';
 
@@ -52,7 +52,7 @@ require([
 
 		// cheap shortcut to test refactoring
 		if (actionName === 'bold') {
-			Format.applyFormat('bold', bounds[0], bounds[1]);
+			Formatting.format('bold', bounds[0], bounds[1]);
 		}
 
 		if (action.mutate) {
