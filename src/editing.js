@@ -1440,7 +1440,7 @@ define([
 	/**
 	 * Creates a visual line break at the end position of the given range.
 	 *
-	 * @reference
+	 * @see
 	 * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#splitting-a-node-list's-parent
 	 * http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031700.html
 	 *

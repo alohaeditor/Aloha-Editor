@@ -5,7 +5,7 @@
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  *
- * @reference
+ * @see
  * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#deleting-the-selection
  */
 define([
@@ -106,7 +106,7 @@ define([
 	 * Returns a collapsed range for the position where the text insertion
 	 * indicator would be rendered.
 	 *
-	 * @reference:
+	 * @see:
 	 * http://dev.w3.org/csswg/cssom-view/#dom-document-caretpositionfrompoint
 	 * http://stackoverflow.com/questions/3189812/creating-a-collapsed-range-from-a-pixel-position-in-ff-webkit
 	 * http://jsfiddle.net/timdown/ABjQP/8/
