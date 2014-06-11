@@ -6,10 +6,34 @@
 		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300,700' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" type="text/css" href="../src/aloha.css">
 		<style>
+			html {
+				height: 100%;
+				background: #fefdfd;
+			}
+
 			body {
+				margin: 0;
+				padding: 5% 20%;
+				color: #565452;
+				line-height: 1.6em;
+				min-height: 100%;
+				box-shadow: 0 0 100px rgba(0,0,0,0.2) inset;
 				font-family: 'Open Sans', sans-serif;
 				font-size: 16px;
 			}
+
+			::selection {
+				background: #4285f4;
+				color: #fff;
+			}
+			::-moz-selection {
+				background: #4285f4;
+				color: #fff;
+			}
+
+			p { margin: 0 0 0.5em; }
+			p:last-child { margin-bottom: 0; }
+
 			.aloha-caret {
 				outline: 1px solid rgba(255,0,0,0.5);
 			}
@@ -69,6 +93,9 @@
 		</style -->
 	</head>
 	<body>
+		<div class="aloha-editable">one<b>two</b></div>
+
+		~~~
 
 		<div class="aloha-editable">
 			<h1>Aloha Editor</h1>
@@ -107,6 +134,7 @@
 				Nam tincidunt congue enim, u porta lorem lacinia consectetur.
 				Donec ut libero sed arc vehicula ultricies a non tortor
 			</p>
+			<p>one<br><br><br>two<br>three</p>
 		</div>
 		<script src="../src/require-pronto.js"></script>
 		<script src="../src/require-pronto.dev.js"></script>

@@ -638,14 +638,15 @@ define([
 	}
 
 	/**
-	 * Returns a mutable bounding client rectangle for the given range.
+	 * Returns a mutable bounding client rectangle from the reference range or
+	 * element.
 	 *
 	 * @private
-	 * @param  {Range} range
-	 * @return {Object.<string, number>}
+	 * @param  {Element|Range} reference
+	 * @return {?Object.<string, number>}
 	 */
-	function boundingRect(range) {
-		var rect = range.getBoundingClientRect();
+	function boundingRect(reference) {
+		var rect = reference.getBoundingClientRect();
 		return {
 			top    : rect.top,
 			left   : rect.left,
@@ -706,18 +707,23 @@ define([
 				height : rect.height
 			};
 		}
+
+		var node = Boundaries.nodeAfter(Boundaries.fromRangeStart(range));
+		if (node && !Dom.isTextNode(node)) {
+			rect = boundingRect(node);
+			if (rect) {
+				return {
+					top    : rect.top + topOffset,
+					left   : rect.left + leftOffset,
+					width  : rect.width,
+					height : rect.height
+				};
+			}
+		}
+
+		// <li>{}</li>
 		var scrollTop = Dom.scrollTop(doc);
 		var scrollLeft = Dom.scrollLeft(doc);
-		var node = Boundaries.nodeAfter(Boundaries.fromRangeStart(range));
-		if (node) {
-			return {
-				top    : node.parentNode.offsetTop - scrollTop + topOffset,
-				left   : node.parentNode.offsetLeft - scrollLeft + leftOffset,
-				width  : node.offsetWidth,
-				height : parseInt(Dom.getComputedStyle(node, 'line-height'), 10)
-			};
-		}
-		// <li>{}</li>
 		node = Boundaries.container(Boundaries.fromRangeStart(range));
 		return {
 			top    : node.offsetTop - scrollTop + topOffset,

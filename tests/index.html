@@ -3,13 +3,33 @@
 <head>
 	<meta charset="UTF-8" />
 	<title>Aloha Editor Test Suite</title>
-	<link href="qunit/qunit-1.12.0.css" rel="stylesheet" type="text/css"/>
+	<link href="../src/aloha.css" rel="stylesheet" type="text/css" />
+	<link href="qunit/qunit-1.12.0.css" rel="stylesheet" type="text/css" />
 	<script src="qunit/qunit-1.12.0.js"></script>
 	<script src="qunit/jquery-1.10.2.js"></script>
 	<script src="../src/require-pronto.js"></script>
 	<script src="../src/require-pronto.dev.js"></script>
 	<script>define.amd = {jQuery:true};</script>
 	<!-- script src="../build/aloha.js"></script -->
+	<style>
+		#aloha_instance {
+			padding: 0;
+			margin: 0;
+			width: 100px;
+			height: 100px;
+			position: relative;
+			display: inline-block;
+			opacity: 1;
+			top: 0;
+			right: 0;
+			background: white;
+			outline: 1px solid red;
+			font-size: 10px;
+			font-family: monospace;
+			line-height: 10px;
+			margin-top: 10px;
+		}
+	</style>
 </head>
 <body>
 	<h1 id="qunit-header">Aloha Editor Test Suite</h1>
@@ -20,6 +40,7 @@
 	<div id="qunit-fixture">
 		<div id="test-editable" contentEditable="true"></div>
 	</div>
+	<div class="aloha-editable" id="aloha_instance"></div>
 	<script>
 		var isBuild = false;
 
@@ -55,6 +76,8 @@
 
 				'boundary-markers-tests',
 				'boundaries-tests',
+
+				'caret-tests',
 
 				'content-tests',
 
