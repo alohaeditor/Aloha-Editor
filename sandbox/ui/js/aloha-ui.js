@@ -27,13 +27,14 @@ require([
   		'unorderedList': aloha.list.toUnorderedList,
   		'undo': aloha.undo.undo,
   		'redo': aloha.undo.redo,
-  		'h2': { blockFormat: 'h2' }, // put these in formatting.js
-  		'h3': { blockFormat: 'h3' },
-  		'h4': { blockFormat: 'h4' },
-  		'p': { blockFormat: 'p' },
-  		'pre': { blockFormat: 'pre' }
+  		'h2': { format: 'h2' }, // put these in formatting.js
+  		'h3': { format: 'h3' },
+  		'h4': { format: 'h4' },
+  		'p': { format: 'p' },
+  		'pre': { format: 'pre' }
   	};
   	var CLASS_PREFIX = 'aloha-action-';
+  	var caret = document.querySelector('.aloha-caret');
 	
 	/**
 	 * executes an action identified by it's name
@@ -48,13 +49,14 @@ require([
 			return;
 		}
 
-		var bounds = aloha.boundaries.get(document);
+		var boundaries = aloha.boundaries.get(document);
 
 		if (action.format) {
-			Formatting.format(actionName, bounds[0], bounds[1]);
-		} else if (action.blockFormat) {
-			Formatting.blockFormat(actionName, bounds[0], bounds[1]);
+			boundaries = Formatting.format(actionName, boundaries);
 		}
+
+		Boundaries.select(boundaries[0], boundaries[1]);
+		aloha.selections.show(caret, boundaries[1]);
 
 		/*if (action.mutate) {
 			action.mutate(alohaEvent);
