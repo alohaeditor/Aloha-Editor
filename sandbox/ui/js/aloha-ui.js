@@ -52,31 +52,15 @@ require([
 		var boundaries = aloha.boundaries.get(document);
 
 		if (action.format) {
-			boundaries = Formatting.format(actionName, boundaries);
+			boundaries = Formatting.format(action.format, boundaries[0], boundaries[1]);
 		}
+
+
+		//Formatting.style('background', 'red', start, end);
+		//Formatting.classes('important', start, end);
 
 		Boundaries.select(boundaries[0], boundaries[1]);
 		aloha.selections.show(caret, boundaries[1]);
-
-		/*if (action.mutate) {
-			action.mutate(alohaEvent);
-		} else if (action.replace) {
-			// TODO this is too much implementation and should be moved 
-			// to a layer between the core api and the ui
-			// an algorithm needs to be provided that knows when to split
-			// or just wrap
-			var cac = Boundaries.commonContainer(bounds[0], bounds[1]);
-			if (Dom.isTextNode(cac)) {
-				cac = cac.parentNode;
-			}
-			Dom.replaceShallow(
-				cac, 
-				document.createElement(action.replace));
-		} else if (actionName === 'undo' || actionName === 'redo') {
-			action(alohaEvent.editable.undoContext, event.range);
-		} else {
-			action();
-		}*/
 	}
 
 	/**

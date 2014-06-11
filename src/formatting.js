@@ -19,14 +19,17 @@ define([
 	'use strict';
 
 	/**
-	 * apply formatting to contents enclosed by start and end boundary
+	 * Applies inline formatting to contents enclosed by start and end boundary.
+	 * Will return updated array of boundaries after the operation.
 	 *
-	 * @param {!String}     formatting the format to be applied, eg. bold, italic
-	 * @param {!Boundaries} boundaries Boundary that enclose contents to be formatted
-	 * @return {Boundaries} the updated boundaries after the formatting has been applied
+	 * @private
+	 * @param {!String}     formatting
+	 * @param {!Boundary}   start
+	 * @param {!Boundary}   end
+	 * @return {Array.<Boundary>}
 	 */
-	function inlineFormat(formatting, boundaries) {
-		var range = Ranges.fromBoundaries(boundaries[0], boundaries[1]);
+	function inlineFormat(formatting, start, end) {
+		var range = Ranges.fromBoundaries(start, end);
 		Editing.format(
 			range,
 			formatting,
@@ -36,41 +39,47 @@ define([
 	}
 
 	/**
-	 * apply a block format like h1, p or pre from start to end boundary
+	 * Applies block formatting to contents enclosed by start and end boundary.
+	 * Will return updated array of boundaries after the operation.
 	 *
-	 * @param {!String}     formatting the block format to be applied, eg. p or h1
-	 * @param {!Boundaries} boundaries Boundary that enclose contents to be formatted
-	 * @return {Boundaries} the updated boundaries after the formatting has been applied
+	 * @private
+	 * @param {!String}     formatting
+	 * @param {!Boundary}   start
+	 * @param {!Boundary}   end
+	 * @return {Array.<Boundary>}
 	 */
-	function blockFormat(formatting, boundaries) {
-		var cac = Boundaries.commonContainer(boundaries[0], boundaries[1]);
+	function blockFormat(formatting, start, end) {
+		var cac = Boundaries.commonContainer(start, end);
 		if (Dom.isTextNode(cac)) {
 			cac = cac.parentNode;
 		}
 		Dom.replaceShallow(
 			cac, 
-			Boundaries.document(boundaries[0]).createElement(formatting)
+			Boundaries.document(start).createElement(formatting)
 		);
 
 		return [Boundaries.fromNode(cac), Boundaries.fromEndOfNode(cac)];
 	}
 
 	/**
-	 * apply an inline or block format like b, h1, p, pre or em to the contents selected
-	 * by the boundaries
+	 * Applies block and inline formatting (eg. 'bold', 'italic', 'h2', '') 
+	 * to contents enclosed by start and end.
+	 * boundary. Will return updated array of boundaries after the operation.
 	 *
-	 * @param {!String}     formatting the block format to be applied
-	 * @param {!Boundaries} boundaries Boundary that enclose contents to be formatted
-	 * @return {Boundaries} the updated boundaries after the formatting has been applied
+	 * @private
+	 * @param {!String}     formatting
+	 * @param {!Boundary}   start
+	 * @param {!Boundary}   end
+	 * @return {Array.<Boundary>}
 	 */
-	function format (formatting, boundaries) {
+	function format (formatting, start, end) {
 		switch (formatting) {
 			case 'bold':
 			case 'italic':
 			case 'underline':
-				return inlineFormat(formatting, boundaries);
+				return inlineFormat(formatting, start, end);
 			default:
-				return blockFormat(formatting, boundaries);
+				return blockFormat(formatting, start, end);
 		}
 	}
 
