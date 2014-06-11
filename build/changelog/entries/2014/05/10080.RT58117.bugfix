@@ -1,0 +1,1 @@
+Pasting content with links will now cause 'aloha.link.pasted' messages to be published for each.
