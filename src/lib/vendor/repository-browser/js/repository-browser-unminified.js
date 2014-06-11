@@ -104,7 +104,7 @@
 			$elem.removeAttr('unselectable');
 			$elem.css({
 				'-webkit-user-select' : 'all',
-				'-moz-user-select'    : 'all',
+//				'-moz-user-select'    : 'all',  // Because this feature is broken in Firefox
 				'user-select'         : 'all'
 			});
 			$elem.onselectstart = null;
@@ -119,7 +119,7 @@
 			$elem.attr('unselectable', 'on');
 			$elem.css({
 				'-webkit-user-select' : 'none',
-				'-moz-user-select'    : 'none',
+//				'-moz-user-select'    : 'none', // Because this feature is broken in Firefox
 				'user-select'         : 'none'
 			});
 			$elem.onselectstart = function () {
