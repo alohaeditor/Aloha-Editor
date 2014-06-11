@@ -177,7 +177,7 @@ define([
 			return [above, above];
 		}
 		var parent = right.parentNode;
-		var siblings = Dom.nextSiblings(right, Styles.hasLinebreakingStyle);
+		var siblings = Dom.nodeAndNextSiblings(right, Styles.hasLinebreakingStyle);
 		if (0 === siblings.length) {
 			parent = right;
 		}
@@ -373,7 +373,7 @@ define([
 		var split     = splitToBreakingContainer(boundary);
 		var container = Boundaries.container(split);
 		var next      = Boundaries.nodeAfter(split);
-		var children  = next ? Dom.nextSiblings(next) : [];
+		var children  = next ? Dom.nodeAndNextSiblings(next) : [];
 
 		// ...foo</p>|<h1>bar...
 		if (next && isBreakingContainer(next)) {

@@ -6,133 +6,210 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'boundaries',
+	'functions',
 	'dom',
-	'list/content-to-list',
-	'list/list-to-content',
-	'list/list-selection',
-	'list/list-util',
-	'list/list-range',
-	'ranges'
+	'html',
+	'arrays',
+	'assert',
+	'content',
+	'mutation',
+	'boundaries'
 ], function (
-	Boundaries,
+	Fn,
 	Dom,
-	ContentToList,
-    ListToContent,
-    ListSelection,
-    ListUtil,
-    ListRange,
-    Ranges
+	Html,
+	Arrays,
+	Assert,
+	Content,
+	Mutation,
+	Boundaries
 ) {
 	'use strict';
 
-	var ORDERED_LIST_TAG = 'OL';
-	var UNORDERED_LIST_TAG = 'UL';
-
-
 	/**
-	 * Transforms `range` selection to ordered list.
-	 * @param {Range} range
-	 */
-	function toOrderedListFromRange(range) {
-		ListRange.toListFromRange(range, ORDERED_LIST_TAG);
-	}
-
-	/**
-	 * Transforms `range` selection to unordered list.
-	 * @param {Range} range
-	 */
-	function toUnorderedListFromRange(range) {
-		ListRange.toListFromRange(range, UNORDERED_LIST_TAG);
-	}
-
-	/**
-	 * Transforms `range` selection to paragraph.
-	 * @param {Range} range
-	 */
-	function toParagraphsFromRange(range) {
-		ListRange.toParagraphsFromRange(range);
-	}
-
-	/**
-	 * Executes `fn` with range as parameter.
-	 * @param {function} fn
-	 * @param {Document} doc
-	 */
-	function addRangeParameter(fn, doc) {
-		fn(Ranges.get(doc));
-	}
-
-	/**
-	 * Transforms to ordered list.
-	 * @param {Document} doc.
-	 */
-	function toOrderedList(doc) {
-		addRangeParameter(toOrderedListFromRange, doc);
-	}
-
-	/**
-	 * Transforms to unordered list.
-	 * @param {Document} doc.
-	 */
-	function toUnorderedList(doc) {
-		addRangeParameter(toUnorderedListFromRange, doc);
-	}
-
-	/**
-	 * Transforms to paragraphs.
-	 * @param {Document} doc.
-	 */
-	function toParagraphs(doc) {
-		addRangeParameter(toParagraphsFromRange, doc);
-	}
-
-	/**
-	 * Transforms the content between the given boundaries into an ordered
-	 * list.
+	 * Whether the given node is an inline node and is not right below the
+	 * editing host.
 	 *
-	 * @param  {Boundary} start
-	 * @param  {Boundary} end
+	 * @private
+	 * @param  {Node} node
+	 * @return {boolean}
+	 */
+	function isInlineNode(node) {
+		return !Html.hasLinebreakingStyle(node)
+		    && !(node.parentNode && Dom.isEditingHost(node.parentNode));
+	}
+
+	/**
+	 * Reduces a list of nodes into an LI element among a list of LI elements.
+	 *
+	 * @see build
+	 * @private
+	 * @param  {Array.<Element>} list collection of list items
+	 * @param  {Array.<Node>}    children
+	 * @return {Array.<Element>}
+	 */
+	function reduceGroup(list, children) {
+		var visible = children.filter(Html.isRendered);
+		if (visible.length > 0) {
+			var li = visible[0].ownerDocument.createElement('li');
+			Dom.move(visible, li);
+			return list.concat(li);
+		}
+		return list;
+	}
+
+	/**
+	 * Recursively removes the given node and its ancestors if they are
+	 * invisible.
+	 *
+	 * @see build
+	 * @private
+	 * @param  {Node} node
+	 */
+	function removeInvisibleNodes(node) {
+		var boundaries = [];
+		Dom.climbUntil(
+			node,
+			function (node) {
+				boundaries = Mutation.removeNode(node, boundaries);
+			},
+			function (node) {
+				return !node.parentNode
+				    || Dom.isEditingHost(node)
+				    || Html.isRendered(node);
+			}
+		);
+	}
+
+	/**
+	 * Collects siblings between `start` and `end` and any adjacent inline nodes
+	 * next to each.
+	 *
+	 * @see createList
+	 * @private
+	 * @param  {Node} start
+	 * @param  {Node} end
+	 * @return {Array.<Node>}
+	 */
+	function collectSiblings(start, end) {
+		var nodes = Dom.prevSiblings(start, Html.hasLinebreakingStyle).concat(start);
+		if (start !== end) {
+			nodes = nodes.concat(Dom.nextSiblings(start, function (node) {
+				return node === end;
+			}), end);
+		}
+		return nodes.concat(Dom.nextSiblings(end, Html.hasLinebreakingStyle));
+	}
+
+	/**
+	 * Given a list of nodes, will process the list to create a groups of nodes
+	 * that should be placed to gether in LI's.
+	 *
+	 * A `junk` arrays will also be created of nodes that should be removed once
+	 * the grouped elements have been moved into their respective destinations.
+	 * This is required because we need to later remove any elements which will
+	 * become empty once their children are moved into list elements.
+	 *
+	 * @see build
+	 * @private
+	 * @param  {Array.<Node>} nodes
+	 * @return {Object.<string, Array.<Node>>}
+	 */
+	function groupNodes(nodes) {
+		var junk = [];
+		var groups = [];
+		var collection = [];
+		var split;
+		var node;
+		while (nodes.length > 0) {
+			node = nodes.shift();
+			if (Html.hasLinebreakingStyle(node) && !Html.isGroupContainer(node)) {
+				collection = Dom.children(node);
+				junk.push(node);
+			} else {
+				collection = [node];
+				if (!node.previousSibling && !node.nextSibling) {
+					junk.push(node.parentNode);
+				}
+			}
+			split = Arrays.split(nodes, Html.hasLinebreakingStyle);
+			collection = collection.concat(split[0]);
+			nodes = split[1];
+			if (collection.length > 0) {
+				groups.push(collection);
+			}
+		}
+		return {
+			groups : groups,
+			junk   : junk
+		};
+	}
+
+	/**
+	 * Builds a list of type `type` using the given list of nodes.
+	 *
+	 * @private
+	 * @param  {string}           type
+	 * @param  {Array.<Node>}     nodes
+	 * @param  {Array.<Boundary>} boundaries
 	 * @return {Array.<Boundary>}
 	 */
-	function orderedList(start, end) {
-
+	function build(type, nodes, boundaries) {
+		if (0 === nodes.length) {
+			return boundaries;
+		}
+		var node = Dom.upWhile(nodes[0], isInlineNode);
+		Assert.assert(
+			Content.allowsNesting(node.parentNode.nodeName, type),
+			'createList#Cannot insert ' + type + ' inside of a ' + node.parentNode.nodeName
+		);
+		var list = node.ownerDocument.createElement(type);
+		var grouping = groupNodes(nodes);
+		Dom.insert(list, node);
+		Dom.move(grouping.groups.reduce(reduceGroup, []), list);
+		grouping.junk.forEach(removeInvisibleNodes);
+		return boundaries;
 	}
 
 	/**
-	 * Transforms the content between the given boundaries into an unordered
-	 * list.
+	 * Creates a list of the given type.
 	 *
-	 * @param  {Boundary} start
-	 * @param  {Boundary} end
+	 * problem with collectSiblings(startNode, endNode):
+	 * "<div>
+	 *	<p>tw[o}</p>
+	 *	<p>three</p>
+	 * </div>"
+	 *
+	 * @param  {string}           type Either 'ul' or 'ol'
+	 * @param  {Array.<Boundary>} boundaries
 	 * @return {Array.<Boundary>}
 	 */
-	function unorderedList(start, end) {
-
-	}
-
-	/**
-	 * Transforms the content between the given boundaries into paragraphs.
-	 *
-	 * @param  {Boundary} start
-	 * @param  {Boundary} end
-	 * @return {Array.<Boundary>}
-	 */
-	function paragraphs(start, end) {
-
+	function createList(type, boundaries) {
+		Assert.assert(
+			Html.LIST_CONTAINERS[type.toUpperCase()],
+			'createList#' + type + ' is not a valid list container'
+		);
+		var start = boundaries[0];
+		var end = boundaries[1];
+		var cac = Boundaries.commonContainer(start, end);
+		console.warn(cac.outerHTML);
+		if (!Html.hasLinebreakingStyle(cac)) {
+			var node = Dom.upWhile(cac, function (node) {
+				return node.parentNode
+				    && !Html.hasLinebreakingStyle(node.parentNode)
+				    && !Dom.isEditingHost(node.parentNode);
+			});
+			return build(type, collectSiblings(node, node), boundaries);
+		}
+		var isLimit = function (node) {
+			return node !== cac && (node.parentNode && node.parentNode !== cac);
+		};
+		var startNode = Dom.upWhile(Boundaries.container(start), isLimit);
+		var endNode = Dom.upWhile(Boundaries.container(end), isLimit);
+		return build(type, collectSiblings(startNode, endNode), boundaries);
 	}
 
 	return {
-		toOrderedListFromRange: toOrderedListFromRange,
-		toUnorderedListFromRange: toUnorderedListFromRange,
-		toParagraphsFromRange: toParagraphsFromRange,
-
-		toOrderedList: toOrderedList,
-		toUnorderedList: toUnorderedList,
-		toParagraph: toParagraphs,
-
-		paragraphs    : paragraphs,
-		orderedList   : orderedList,
-		unorderedList : unorderedList
+		createList: createList
 	};
 });

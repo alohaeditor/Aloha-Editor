@@ -68,12 +68,14 @@
 			}
 		</style>
 
-		<!-- style id="metaview">
+		<style id="metaview">
 			ul,ol,li,td,th,p,b,i,u,div,h1,h2,h3,h4,h5,h6 {
 				padding: 2px 4px;
 				margin: 2px;
 				border: 1px solid rgba(0,0,0,0.2);
 			}
+			ul,ol { border: 3px solid green; }
+			li { border: 1px solid green; }
 			p { border-color: rgba(200,0,0,0.5); }
 			span { border-color: rgba(200,200,0,0.5); }
 			b    { border-color: rgba(0,200,0,0.5) }
@@ -90,10 +92,24 @@
 				min-height: 20px;
 			}
 			font { background: red; }
-		</style -->
+		</style>
 	</head>
 	<body>
-		<div class="aloha-editable">one<b>two</b></div>
+		<div class="aloha-editable"><b>one</b><i>two</i><u>three</u></div>
+
+		~~~
+
+		<div class="aloha-editable">
+			one
+			<div>
+				<p>two</p>
+				<p>three</p>
+			</div>
+			<div>
+				<h2>four</h2>
+				<p>five</p>
+			</div>
+		</div>
 
 		~~~
 

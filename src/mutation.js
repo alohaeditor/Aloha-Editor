@@ -239,7 +239,7 @@ define([
 		var duplicate = Dom.cloneShallow(container);
 		var node = Boundaries.nodeAfter(boundary);
 		if (node) {
-			Dom.move(Dom.nextSiblings(node), duplicate);
+			Dom.move(Dom.nodeAndNextSiblings(node), duplicate);
 		}
 		Dom.insertAfter(duplicate, container);
 		return splitBoundaryUntil(Traversing.stepForward(boundary), predicate);

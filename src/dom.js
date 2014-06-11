@@ -342,6 +342,8 @@ define([
 		prevUntil                    : Traversing.prevUntil,
 		prevSibling                  : Traversing.prevSibling,
 		prevSiblings                 : Traversing.prevSiblings,
+		nodeAndNextSiblings          : Traversing.nodeAndNextSiblings,
+		nodeAndPrevSiblings          : Traversing.nodeAndPrevSiblings,
 		walk                         : Traversing.walk,
 		walkRec                      : Traversing.walkRec,
 		walkUntilNode                : Traversing.walkUntilNode,
