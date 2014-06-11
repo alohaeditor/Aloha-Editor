@@ -150,20 +150,26 @@ define([
 
 	window['aloha'] = aloha;
 
-	var teaser = '       _       _                      _ _ _              \n'
-	           + '  __ _| | ___ | |__   __ _    ___  __| (_) |_ ___  _ __  \n'
-	           + ' / _` | |/ _ \\| \'_ \\ / _` |  / _ \\/ _` | | __/ _ \\| \'__| \n'
-	           + '| (_| | | (_) | | | | (_| | |  __/ (_| | | || (_) | |    \n'
-	           + ' \\__,_|_|\\___/|_| |_|\\__,_|  \\___|\\__,_|_|\\__\\___/|_|.org\n'
-	           + '\n'
-	           + 'Aloha, there!\n'
-	           + '\n'
-	           + 'Would you like to contribute to shaping the future of '
-	           + 'content editing on the web?\n'
-	           + '\n'
-	           + 'Join the team at http://github.com/alohaeditor!';
+	var egg = '%c'
+	        + '       _       _                      _ _ _\n'
+	        + '  __ _| | ___ | |__   __ _    ___  __| (_) |_ ___  _ __\n'
+	        + ' / _` | |/ _ \\| \'_ \\ / _` |  / _ \\/ _` | | __/ _ \\| \'__|\n'
+	        + '| (_| | | (_) | | | | (_| | |  __/ (_| | | || (_) | |\n'
+	        + ' \\__,_|_|\\___/|_| |_|\\__,_|  \\___|\\__,_|_|\\__\\___/|_|.org\n'
+	        + '\n'
+			+ '%c'
+	        + ' Aloha! '
+	        + '\n'
+	        + ' Help us shape the future of content editing on the web! '
+	        + '\n'
+	        + ' Join the team at %c http://github.com/alohaeditor ♥ ';
 
-	console.log(teaser);
+	console.log(
+		egg,
+		'color: #09d;',
+		'font-size: 14px; background: #09d; color: #fff; padding: 0.5em 0; line-height: 2em;',
+		'font-size: 14px; background: #fe7; color: #111; padding: 0.5em 0; line-height: 2em;'
+	);
 
 	return aloha;
 });
