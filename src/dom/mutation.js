@@ -172,7 +172,7 @@ define([
 	 */
 	function replaceShallow(element, replacement) {
 		move(Nodes.children(element), replacement);
-		replace(element, replacement);
+		return replace(element, replacement);
 	}
 
 	/**

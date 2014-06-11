@@ -16,45 +16,27 @@ require([
 	'use strict';
 
   	[].forEach.call(document.querySelectorAll('.aloha-editable'), aloha);
-
-  	/**
-  	 * wires aloha-action-* classes on buttons to function calls
-  	 */
-  	var ACTIONS = {
-  		'bold': { format: 'bold' },
-  		'italic': { format: 'italic' },
-  		'orderedList': aloha.list.toOrderedList,
-  		'unorderedList': aloha.list.toUnorderedList,
-  		'undo': aloha.undo.undo,
-  		'redo': aloha.undo.redo,
-  		'h2': { format: 'h2' }, // put these in formatting.js
-  		'h3': { format: 'h3' },
-  		'h4': { format: 'h4' },
-  		'p': { format: 'p' },
-  		'pre': { format: 'pre' }
-  	};
-  	var CLASS_PREFIX = 'aloha-action-';
-  	var caret = document.querySelector('.aloha-caret');
 	
+	var CLASS_PREFIX = 'aloha-action-';
+	var caret = document.querySelector('.aloha-caret');
+
 	/**
-	 * executes an action identified by it's name
-	 * 
-	 * @param {String} actionName the name of the action to be executed
-	 * @param {Object} alohaEvent alohaEvent object
+	 * executes an action which looks like
+	 * {
+	 *    format: true, // it's an action to format sth...
+	 *    node: 'b'     // as <b>
+	 * }
+	 * the alohaEvent will be needed to execute the actions 
+	 *
+	 * @param {Object.<string,?>} action 
+	 * @param {Object}            alohaEvent
 	 */
-	function execute(actionName, alohaEvent) {
-		var action = ACTIONS[actionName];
-
-		if (!action) {
-			return;
-		}
-
+	function execute(action, alohaEvent) {
 		var boundaries = aloha.boundaries.get(document);
 
 		if (action.format) {
-			boundaries = Formatting.format(action.format, boundaries[0], boundaries[1]);
+			boundaries = Formatting.format(action.node, boundaries[0], boundaries[1]);
 		}
-
 
 		//Formatting.style('background', 'red', start, end);
 		//Formatting.classes('important', start, end);
@@ -71,12 +53,21 @@ require([
 	 * @return {String} action name
 	 */
 	function getAction(element) {
-		var className,
+		var action = {},
+			actionArr,
+			className,
 			classes = Arrays.coerce(element.classList).concat(Arrays.coerce(element.parentNode.classList));
+		// transform an action string, which is a class name applied to an element
+		// into an action object like
+		// { format: true, node: 'b' }
+		// which would tell you its an action to format sth. with <b>
 		for (var i = 0; i < classes.length; i++) {
 			className = classes[i];
 			if (className.indexOf(CLASS_PREFIX) === 0) {
-				return className.substr(CLASS_PREFIX.length);
+				actionArr = className.substr(CLASS_PREFIX.length).split('-');
+				action[actionArr[0]] = true;
+				action.node = actionArr[1].toUpperCase();
+				return action;
 			}
 		}
 		return false;
@@ -110,23 +101,12 @@ require([
 		node.updateDom();
 	}
 
-	var lastValidRange;
 	aloha.editor.stack.unshift(function handleUi(event) {
 		if (event.type !== 'keyup' &&
 			event.type !== 'click') {
 			return event;
 		}
 		
-		if (!event.range) {
-			// TODO it should not be neccessary to add missing values to the event
-			var range = aloha.ranges.get(0);
-			if (range) {
-				lastValidRange = event.range = range;
-			} else {
-				range = lastValidRange;
-			}
-		}
-
 		var action = getAction(event.nativeEvent.target);
 		if (action) {
 			execute(action, event);

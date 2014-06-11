@@ -9,11 +9,13 @@ define([
 	'boundaries',
 	'dom',
 	'editing',
+	'html/predicates',
 	'ranges'
 ], function (
 	Boundaries,
 	Dom,
 	Editing,
+	Predicates,
 	Ranges
 ) {
 	'use strict';
@@ -53,7 +55,7 @@ define([
 		if (Dom.isTextNode(cac)) {
 			cac = cac.parentNode;
 		}
-		Dom.replaceShallow(
+		cac = Dom.replaceShallow(
 			cac, 
 			Boundaries.document(start).createElement(formatting)
 		);
@@ -62,9 +64,10 @@ define([
 	}
 
 	/**
-	 * Applies block and inline formatting (eg. 'bold', 'italic', 'h2', '') 
-	 * to contents enclosed by start and end.
-	 * boundary. Will return updated array of boundaries after the operation.
+	 * Applies block and inline formattings (eg. 'B', 'I', 'H2' - be
+	 * sure to use UPPERCASE node names here) to contents enclosed 
+	 * by start and end boundary. 
+	 * Will return updated array of boundaries after the operation.
 	 *
 	 * @private
 	 * @param {!String}     formatting
@@ -73,14 +76,15 @@ define([
 	 * @return {Array.<Boundary>}
 	 */
 	function format (formatting, start, end) {
-		switch (formatting) {
-			case 'bold':
-			case 'italic':
-			case 'underline':
-				return inlineFormat(formatting, start, end);
-			default:
-				return blockFormat(formatting, start, end);
+		var node = {
+			nodeName : formatting
+		};
+		if (Predicates.isTextLevelSemanticNode(node)) {
+			return inlineFormat(formatting, start, end);
+		} else if (Predicates.isBlockNode(node)) {
+			return blockFormat(formatting, start, end);
 		}
+		return [start, end];
 	}
 
 	return {

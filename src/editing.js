@@ -1144,7 +1144,7 @@ define([
 	 * Ensures the given range is wrapped by elements that have a given
 	 * CSS style set.
 	 *
-	 * @param styleName a CSS style name.
+	 * @param styleNode an inline formatting node name like 'B' or 'I'.
 	 *        Please note that not-inherited styles currently may (or
 	 *        may not) cause undesirable results.  See also
 	 *        Html.isStyleInherited().
@@ -1169,7 +1169,13 @@ define([
 	 *             we should implement for each supported style it's own
 	 *             equals function.
 	 */
-	function format(liveRange, styleName, styleValue, opts) {
+	function format(liveRange, styleNode, styleValue, opts) {
+		var styleName = resolveStyleName(styleNode);
+
+		if (styleName === false) {
+			return;
+		}
+
 		opts = opts || {};
 
 		// Because we should avoid splitTextContainers() if this call is a noop.
@@ -1182,6 +1188,24 @@ define([
 			mutate(range, formatter);
 			return formatter;
 		});
+	}
+
+	/**
+	 * Resolves the according CSS style name for an uppercase (!) node name
+	 * passed in styleNode. Will return the CSS name of the style (eg. 'bold') 
+	 * or false.
+	 * So 'B' will eg. be resolved to 'bold'
+	 *
+	 * @param {string} styleNode
+	 * @return {string|false}
+	 */
+	function resolveStyleName(styleNode) {
+		for (var styleName in wrapperProperties) {
+			if (wrapperProperties[styleName].nodes.indexOf(styleNode) !== -1) {
+				return styleName;
+			}
+		}
+		return false;
 	}
 
 	/**
