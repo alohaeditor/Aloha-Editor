@@ -216,8 +216,8 @@ define([
 		if (event && isPasteEvent(event)) {
 			Events.suppress(event);
 			var src = event.target || event.srcElement;
-			var boundary = Boundaries.get(src.ownerDocument);
-			if (!boundary) {
+			var boundaries = Boundaries.get(src.ownerDocument);
+			if (!boundaries) {
 				return alohaEvent;
 			}
 			var content = extractContent(
@@ -230,7 +230,7 @@ define([
 			Undo.capture(alohaEvent.editable.undoContext, {
 				meta: {type: 'paste'}
 			}, function () {
-				boundary = insert(boundary, content);
+				var boundary = insert(boundaries, content);
 				Selections.scrollTo(boundary);
 				alohaEvent.range = Ranges.fromBoundaries(boundary, boundary);
 			});
