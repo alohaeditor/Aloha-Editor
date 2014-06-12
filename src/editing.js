@@ -513,6 +513,12 @@ define([
 		Dom.insert(node, ref, atEnd);
 	}
 
+	/**
+	 * TODO documentation
+	 * will return updated boundaries
+	 *
+	 * @return {Boundaries}
+	 */
 	function fixupRange(liveRange, mutate, trim) {
 		// Because we are mutating the range several times and don't want the
 		// caller to see the in-between updates, and because we are using
@@ -582,6 +588,7 @@ define([
 
 		var boundaries = Boundaries.fromRange(range);
 		Boundaries.setRange(liveRange, boundaries[0], boundaries[1]);
+		return boundaries;
 	}
 
 	function restackRec(node, hasContext, ignoreHorizontal, ignoreVertical) {
@@ -1144,7 +1151,7 @@ define([
 	 * Ensures the given range is wrapped by elements that have a given
 	 * CSS style set.
 	 *
-	 * @param styleNode an inline formatting node name like 'B' or 'I'.
+	 * @param styleName a CSS style name
 	 *        Please note that not-inherited styles currently may (or
 	 *        may not) cause undesirable results.  See also
 	 *        Html.isStyleInherited().
@@ -1168,13 +1175,10 @@ define([
 	 *        TODO currently we just use strict equals by default, but
 	 *             we should implement for each supported style it's own
 	 *             equals function.
+	 * @return {Array.<Boundary>}
 	 */
-	function format(liveRange, styleNode, styleValue, opts) {
-		var styleName = resolveStyleName(styleNode);
-
-		if (styleName === false) {
-			return;
-		}
+	function style(styleName, styleValue, start, end, opts) {
+		var liveRange = Ranges.fromBoundaries(start, end);
 
 		opts = opts || {};
 
@@ -1183,11 +1187,29 @@ define([
 			return;
 		}
 
-		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
+		return fixupRange(liveRange, function (range, leftPoint, rightPoint) {
 			var formatter = makeStyleFormatter(styleName, styleValue, leftPoint, rightPoint, opts);
 			mutate(range, formatter);
 			return formatter;
 		});
+	}
+
+	/**
+	 * Format the selection defined by start and end boundary,
+	 * by wrapping it within a node (eg. 'b', 'i', 'em')
+	 * Returns an array with updated boundaries.
+	 *
+	 * @param {!Boundary} start
+	 * @param {!Boundary} end
+	 * @param {!string}   node
+	 * @return {Array.<Boundary>}
+	 */
+	function format(node, start, end) {
+		var styleName = resolveStyleName(node);
+		if (styleName === false) {
+			return [start, end];
+		}
+		return style(styleName, true, start, end);
 	}
 
 	/**
@@ -1502,6 +1524,7 @@ define([
 	return {
 		wrap   : wrapElem,
 		format : format,
+		style  : style,
 		split  : split,
 		delete : delete_,
 		break  : break_,

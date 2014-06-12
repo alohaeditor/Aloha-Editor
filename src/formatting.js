@@ -31,13 +31,7 @@ define([
 	 * @return {Array.<Boundary>}
 	 */
 	function inlineFormat(formatting, start, end) {
-		var range = Ranges.fromBoundaries(start, end);
-		Editing.format(
-			range,
-			formatting,
-			true
-		);
-		return Boundaries.fromRange(range);
+		return Editing.format(formatting, start, end);
 	}
 
 	/**
@@ -75,7 +69,7 @@ define([
 	 * @param {!Boundary}   end
 	 * @return {Array.<Boundary>}
 	 */
-	function format (formatting, start, end) {
+	function format(formatting, start, end) {
 		var node = {
 			nodeName : formatting
 		};
