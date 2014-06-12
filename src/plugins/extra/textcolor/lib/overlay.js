@@ -147,9 +147,10 @@ define(['aloha/jquery'], function ($) {
 		var table = ['<tr>'];
 		var i = 0;
 		var item = items[i];
+		// add new rows depending on the number of items
+		var newRowAtItems = items.length <= 37 ? 6 : items.length <= 145 ? 12 : 18;
 		while (item) {
-			// New row every 12 items
-			if (0 !== i && (0 === (i % 18))) {
+			if (0 !== i && (0 === (i % newRowAtItems))) {
 				table.push('</tr><tr>');
 			}
 			table.push('<td unselectable="on">' + item + '</td>');

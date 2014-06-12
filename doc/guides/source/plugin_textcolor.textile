@@ -1,12 +1,12 @@
 h2. TextColor Plugin
 
-The TextColor Plugin allows you to apply colors to your text. Select a portion of text, click the icon and choose the color you'd like to apply from the overlay menu.
+The TextColor Plugin allows you to apply colors and background-colors to your text. Select a portion of text, click the icon and choose the color you'd like to apply from the overlay menu.
 
 endprologue.
 
 h3. Functional Description
 
-In order to apply a color select the text to be highlighted and move the cursor to the "Format" tab in the Aloha Editor. Now click on the textcolor button and choose a color from the list. To remove an applied color click on the "x" icon.
+In order to apply a color select the text and move the cursor to the "Format" tab in the Aloha Editor. Now click on the textcolor or the background-color button and choose a color from the list. To remove an applied color click on the "x" icon.
 
 When color is applied to a selection, textual contents will be wrapped in span-tags with a style setting for colors, or a class in case a class was picked.
 
@@ -24,29 +24,42 @@ h4. Components
 
 * colorpicker - brings up the overlay to select a color
 
+The color picker palette is rendered depending on how many items are configured for the textcolor or background-color
+
+* 36 or less colors => new row every 6 colors
+* 144 or less colors => new row every 12 colors
+* more than 144 colors => new row every 18 colors
+
 h4. Configuration settings
 
-The textcolor plugin will by default offer the following colors:
+The textcolor plugin will by default offer all web-safe colors - see: "Wikipedia - Web colors":http://en.wikipedia.org/wiki/Web_colors#Color_table
 
-* #FFFFFF 
-* #000000 
-* #000FFF 
-* #FFF000
 
 It is possible to configure the global color palette and to configure color palettes for specific editables (identified by jQuery selectors):
-You can specify the colors as hex (#FF0000), RGB (rgb(255,0,0)) values or CSS class names (`redcolor`).
+You can specify the colors as hex (#FF0000) or RGB (rgb(255,0,0)) values.
 
 <javascript>
 Aloha.settings = {
 	plugins: {
 		textcolor: {
-			// this is the global setting
-			config: ['#FFEE00', 'rgb(255,0,0)', '#FFFF00', '#FFFFFF', 'greenborder'],
+			// if the config property is ommitted the default color palette is used
+			config : {
+				// these are the global settings which render the color palette for the text-color and text background
+				// deactivate globally using an empty array
+				"color": ['#FFEE00', 'rgb(255,0,0)', '#FFFF00', '#FFFFFF'],
+				"background-color": ['#FFEE00', 'rgb(255,0,0)']
+			},
 			editables: {
-				// this will disable the textcolor for the header
-				'#header': [],
-				// show only these colors for editables with class 'article'
-				'.article': [ '#FFEEEE', 'rgb(255,255,0)', '#FFFFFF' ] 
+				// this will disable textcolors and overwrite the background-colors for the element with the id "top-text"
+				'#top-text': {
+					"color": [],
+					"background-color": ['#FFEE00']
+				},
+				// show only these textcolors and disable background-colors for editables with class 'article'
+				'.article': {
+					"color": [ '#FFEEEE', 'rgb(255,255,0)', '#FFFFFF' ],
+					"background-color": []
+				}
 			}
 		}
 	}

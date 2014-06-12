@@ -1,3 +1,11 @@
+/*
+Reset the width of the table in the textcolor plugin to overwrite "width:100%" styles for tables
+ */
+table.aloha-ui-textcolor-picker-overlay {
+	width: auto;
+    min-width: 0;
+}
+
 .aloha-ui-textcolor-picker-overlay {
 	display: none;
 	position: fixed;
@@ -36,4 +44,12 @@
 
 .aloha .ui-icon.aloha-icon-textcolor{
 	background-image: none;
+}
+
+.aloha .ui-icon.aloha-icon-textcolor-color{
+	background-image: url("../img/textcolor.png");
+}
+
+.aloha .ui-icon.aloha-icon-textcolor-background-color{
+	background-image: url("../img/textbackground.png");
 }

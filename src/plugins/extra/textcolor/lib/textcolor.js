@@ -44,7 +44,28 @@ define([
 
 	var COLOR_PREFIX = /^(#|rgba?|hsl)\(?([^\(\)]+)/i;
 	var COMMA = /\s*,\s*/;
-
+	var PLUGIN_SUPPORTED_STYLES = { "color": true, "background-color": true };
+	var DEFAULT_STYLE = "color";
+	/**
+	 * checks if the style-property is supported by the textcolor plugin
+	 * @param  {String}  style the name of the style property
+	 * @return {Boolean} true if the property is supported
+	 */
+	function isPluginSupportedStyle(style) {
+		if(PLUGIN_SUPPORTED_STYLES.hasOwnProperty(style)) {
+			return PLUGIN_SUPPORTED_STYLES[style];
+		}
+		return false;
+	}
+	/**
+	 * returns the name of the default style property used by this
+	 * plugin when no other is configured
+	 *
+	 * @return {String} the name of the default style property
+	 */
+	function getDefaultStyle() {
+		return DEFAULT_STYLE;
+	}
 	/**
 	 * Normalizes hexidecimal colors from
 	 * #f34 to #ff3344
@@ -109,11 +130,11 @@ define([
 	 * @param {Range} range
 	 * @return {String} Style color string
 	 */
-	function getColor(range) {
+	function getColor(style, range) {
 		var node = Dom.nodeAtOffset(range.startContainer, range.startOffset);
 		return Dom.getComputedStyle(
 			3 === node.nodeType ? node.parentNode : node,
-			'color'
+			isPluginSupportedStyle(style) ? style : getDefaultStyle()
 		);
 	}
 
@@ -141,8 +162,8 @@ define([
 	 * @param {Range} range
 	 * @param {String} color
 	 */
-	function setColor(range, color) {
-		RangeContext.formatStyle(range, 'color', color, null, isColorEqual);
+	function setColor(style, range, color) {
+		RangeContext.formatStyle(range, isPluginSupportedStyle(style) ? style : getDefaultStyle(), color, null, isColorEqual);
 	}
 
 	/**
@@ -172,10 +193,11 @@ define([
 	 *
 	 * @param {Range} range
 	 */
-	function unsetColor(range) {
+	function unsetColor(style, range) {
 		setColor(
+			style,
 			range,
-			Dom.getComputedStyle(getNearestEditingHost(range), 'color')
+			Dom.getComputedStyle(getNearestEditingHost(range), isPluginSupportedStyle(style) ? style : getDefaultStyle())
 		);
 	}
 
@@ -184,6 +206,8 @@ define([
 		getColor: getColor,
 		setColor: setColor,
 		unsetColor: unsetColor,
+		isPluginSupportedStyle: isPluginSupportedStyle,
+		getDefaultStyle: getDefaultStyle,
 		getNearestEditingHost: getNearestEditingHost
 	};
 

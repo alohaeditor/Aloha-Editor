@@ -1,14 +1,39 @@
 Aloha Editor Text Color Plugin
 ------------------------------
 
-The text color plugin provides means to color text inside of editables.
+The text color plugin provides means to color text and text background inside of editables.
 
 To override the palette of allowed colors, simply specify a new array of
-hexidecimal or rgb color codes in Aloha.settings.plugins.textcolor:
+hexidecimal or rgb color codes in Aloha.settings.plugins.textcolor.config:
 
-Aloha.settings.plugins.textcolor: [
-	'#548',
-	'#f34',
-	'#09f',
-	'rgb(255,90,20)'
-]
+Aloha.settings = {
+	plugins: {
+		textcolor: {
+			// omit the config property to use the default palette
+			config : {
+				// these are the global settings for the palette of colors for the text-color and text background
+				// deactivate globally using an empty array
+				"color": ['#FFEE00', 'rgb(255,0,0)', '#FFFF00', '#FFFFFF'],
+				"background-color": ['#FFEE00', 'rgb(255,0,0)']
+			},
+			editables: {
+				// this will disable the text-color and overwrite the background-colors for the element with the id "top-text"
+				'#top-text': {
+					"color": [],
+					"background-color": ['#FFEE00']
+				},
+				// show only these textcolors and disable background-colors for editables with class 'article'
+				'.article': {
+					"color": [ '#FFEEEE', 'rgb(255,255,0)', '#FFFFFF' ],
+					"background-color": []
+				}
+			}
+		}
+	}
+}
+
+The color picker palette in the floating menu is rendered depending on how many items are configured for a style.
+
+* 36 or less colors => new row every 6 colors
+* 144 or less colors => new row every 12 colors
+* more than 144 colors => new row every 18 colors
