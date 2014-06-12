@@ -5,7 +5,7 @@
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  *
- * @reference
+ * @see
  * https://en.wikipedia.org/wiki/HTML_element#Content_vs._presentation
  * https://developer.mozilla.org/en-US/docs/Web/HTML/Content_categories
  * http://www.whatwg.org/specs/web-apps/2007-10-26/multipage/section-contenteditable.html

@@ -157,7 +157,7 @@ define([
 	        + '| (_| | | (_) | | | | (_| | |  __/ (_| | | || (_) | |\n'
 	        + ' \\__,_|_|\\___/|_| |_|\\__,_|  \\___|\\__,_|_|\\__\\___/|_|.org\n'
 	        + '\n'
-			+ '%c'
+	        + '%c'
 	        + ' Aloha! '
 	        + '\n'
 	        + ' Help us shape the future of content editing on the web! '

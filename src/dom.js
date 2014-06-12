@@ -71,7 +71,7 @@ define([
 	 *
 	 * An element with the class "aloha-editable" is considered editable.
 	 *
-	 * @reference:
+	 * @see:
 	 * http://www.whatwg.org/specs/web-apps/current-work/multipage/editing.html#contenteditable
 	 * http://www.whatwg.org/specs/web-apps/current-work/multipage/editing.html#designMode
 	 *

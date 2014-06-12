@@ -5,7 +5,7 @@
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  *
- * @reference
+ * @see
  * http://www.whatwg.org/specs/web-apps/current-work/#dnd
  * http://www.html5rocks.com/en/tutorials/dnd/basics/
  * https://developer.mozilla.org/en-US/docs/Drag_and_drop_events

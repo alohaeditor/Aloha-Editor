@@ -82,6 +82,10 @@ define([], function Predicates() {
 	/**
 	 * Elements which don't constitue a word boundaries limit.
 	 *
+	 * @see
+	 * http://www.w3.org/TR/html5/text-level-semantics.html
+	 * https://developer.mozilla.org/en/docs/Web/Guide/HTML/HTML5/HTML5_element_list#Text-level_semantics
+	 *
 	 * @private
 	 * @type {object.<string, true>}
 	 */
