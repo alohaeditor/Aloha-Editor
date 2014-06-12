@@ -7523,7 +7523,7 @@ define([
 	 * @param {DocumentFragment} frag
 	 */
 	function publishPastedLinks(frag) {
-		var children = frag.children;
+		var children = frag.childNodes;
 		var links;
 		var c;
 		var i;
