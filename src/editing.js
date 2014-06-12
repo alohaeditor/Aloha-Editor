@@ -517,7 +517,7 @@ define([
 	 * TODO documentation
 	 * will return updated boundaries
 	 *
-	 * @return {Boundaries}
+	 * @return {Array.<Boundary>}
 	 */
 	function fixupRange(liveRange, mutate, trim) {
 		// Because we are mutating the range several times and don't want the
@@ -1150,8 +1150,8 @@ define([
 	}
 
 	/**
-	 * Ensures the given range is wrapped by elements that have a given
-	 * CSS style set.
+	 * Ensures the contents between start and end are wrapped by elements 
+	 * that have a given CSS style set. Returns the updated boundaries.
 	 *
 	 * @param styleName a CSS style name
 	 *        Please note that not-inherited styles currently may (or
@@ -1394,6 +1394,7 @@ define([
 	 *        may not become children of the topmost unsplit node. Also,
 	 *        if splitUntil() returns true, the selection may be moved
 	 *        out of an unsplit node which may be unexpected.
+	 * @return {Array.<Boundary>}
 	 */
 	function split(liveRange, opts) {
 		opts = opts || {};
