@@ -40,5 +40,8 @@
 	t('<p>one<br>{}<br></p>', 19, 0);
 	t('<p>one<b>two<br>{}<br></b></p>', 19, 0);
 
+	// Shift + Enter
+	t('<p>one<br><br>{}</p>', 19, 0);
+	t('<p>one<b>two<br><br>{}</b></p>', 19, 0);
 }(window.aloha));
 
