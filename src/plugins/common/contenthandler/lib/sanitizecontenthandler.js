@@ -163,10 +163,12 @@ function ( Aloha, jQuery, ContentHandlerManager, Plugin, console ) {
 					contentHandlerConfig = Aloha.settings.contentHandler.handler.sanitize;
 				}
 				var containerId = contentHandlerConfig['#' + editable.getId()];
+				var containerClassAttr = editable.obj.attr('class');
+
 				if (typeof containerId !== 'undefined') {
 					sanitizeConfig = contentHandlerConfig;
-				} else {
-					var containerClasses = editable.obj.attr('class').split(' ');
+				} else if (typeof containerClassAttr !== 'undefined') {
+					var containerClasses = containerClassAttr.split(' ');
 					for (var i = 0; i < containerClasses.length; i++) {
 						if (typeof contentHandlerConfig['.' + containerClasses[i]] !== 'undefined') {
 							sanitizeConfig = contentHandlerConfig['.' + containerClasses[i]];
