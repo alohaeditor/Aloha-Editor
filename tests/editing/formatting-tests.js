@@ -247,7 +247,7 @@
 				 });
 
 	t = function (title, before, after) {
-		testFormat(title, before, after, 'font-family', 'arial');
+		testStyle(title, before, after, 'font-family', 'arial');
 	};
 
 	t('format some text',
@@ -390,7 +390,7 @@
 		}
 		for (var i = 0; i < formats.length; i++) {
 			var format = formats[i];
-			testFormat(format.name + ' - ' + title, replace(format, before), replace(format, after), format.name, styleValue);
+			testStyle(format.name + ' - ' + title, replace(format, before), replace(format, after), format.name, styleValue);
 		}
 	};
 
@@ -424,25 +424,25 @@
 	  '<p>So<b>m</b>{e t}<b>e</b>xt</p>',
 	  false);
 
-	testFormat('italic - pushing down through alternative wrapper',
+	testStyle('italic - pushing down through alternative wrapper',
 			   '<p>So<em>m{e t}e</em>xt</p>',
 			   '<p>So<i>m</i>{e t}<i>e</i>xt</p>',
 			   'italic',
 			   false);
 
-	testFormat('bold - pushing down through alternative wrapper',
+	testStyle('bold - pushing down through alternative wrapper',
 			   '<p>So<strong>m{e t}e</strong>xt</p>',
 			   '<p>So<b>m</b>{e t}<b>e</b>xt</p>',
 			   'bold',
 			   false);
 
-	testFormat('italic - clear alternative wrapper',
+	testStyle('italic - clear alternative wrapper',
 			   '<p>S{o<em>me te</em>x}t</p>',
 			   '<p>S[ome tex]t</p>',
 			   'italic',
 			   false);
 
-	testFormat('italic - clear alternative wrapper',
+	testStyle('italic - clear alternative wrapper',
 			   '<p>S{o<strong>me te</strong>x}t</p>',
 			   '<p>S[ome tex]t</p>',
 			   'bold',
