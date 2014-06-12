@@ -1132,15 +1132,17 @@ define([
 	 *        instead of creating a new wrapper node. May be merged with
 	 *        other reusable or newly created wrapper nodes.
 	 */
-	function wrapElem(liveRange, nodeName, remove, opts) {
+	function wrapElem(nodeName, start, end, remove, opts) {
 		opts = opts || {};
+
+		var liveRange = Ranges.fromBoundaries(start, end);
 
 		// Because we should avoid splitTextContainers() if this call is a noop.
 		if (liveRange.collapsed) {
-			return;
+			return [start, end];
 		}
 
-		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
+		return fixupRange(liveRange, function (range, leftPoint, rightPoint) {
 			var formatter = makeElemFormatter(nodeName, remove, leftPoint, rightPoint, opts);
 			mutate(range, formatter);
 			return formatter;
@@ -1184,7 +1186,7 @@ define([
 
 		// Because we should avoid splitTextContainers() if this call is a noop.
 		if (liveRange.collapsed) {
-			return;
+			return [start, end];
 		}
 
 		return fixupRange(liveRange, function (range, leftPoint, rightPoint) {
@@ -1403,7 +1405,7 @@ define([
 			normalizeRange: true
 		}, opts);
 
-		fixupRange(liveRange, function (range, left, right) {
+		return fixupRange(liveRange, function (range, left, right) {
 			splitRangeAtBoundaries(range, left, right, opts);
 			return null;
 		});

@@ -16,9 +16,7 @@
 			$('#test-editable').empty().html(before);
 			var dom = $('#test-editable')[0].firstChild;
 			var boundaries = BoundaryMarkers.extract(dom);
-			var range = Ranges.fromBoundaries(boundaries[0], boundaries[1]);
-			dom = mutate(dom, range) || dom;
-			boundaries = Boundaries.fromRange(range);
+			boundaries = mutate(dom, boundaries[0], boundaries[1]);
 			BoundaryMarkers.insert(boundaries[0], boundaries[1]);
 			var actual = Xhtml.nodeToXhtml(dom);
 			if ($.type(expected) === 'function') {
@@ -30,18 +28,18 @@
 	}
 
 	function testWrap(title, before, after) {
-		testMutation(title, before, after, function (dom, range) {
-			Editing.wrap(range, 'B');
+		testMutation(title, before, after, function (dom, start, end) {
+			return Editing.wrap('B', start, end);
 		});
 	}
 
 	function testUnformat(title, before, after) {
-		testMutation(title, before, after, function (dom, range) {
-			Editing.wrap(range, 'B', true);
+		testMutation(title, before, after, function (dom, start, end) {
+			return Editing.wrap('B', start, end, true);
 		});
 	}
 
-	function testFormat(title, before, after, styleName, styleValue) {
+	function testFormat(title, before, after, styleNode, styleValue) {
 		// Because different browsers render style attributes differently we
 		// have to normalize them
 		function expected(actual) {
@@ -57,8 +55,29 @@
 			return !Html.hasInlineStyle(node) || 'CODE' === node.nodeName;
 		}
 		var opts = {isObstruction: isObstruction};
-		testMutation('editing.format - ' + title, before, expected, function (dom, range) {
-			Editing.format(range, styleName, styleValue, opts);
+		testMutation('editing.format - ' + title, before, expected, function (dom, start, end) {
+			return Editing.format(styleNode, start, end);
+		});
+	}
+
+	function testStyle(title, before, after, styleName, styleValue) {
+		// Because different browsers render style attributes differently we
+		// have to normalize them
+		function expected(actual) {
+			actual = actual
+				.replace(/;"/g, '"')
+				.replace(/; font-family: "/g, '"')
+				.replace(/font-family: ; /g, '')
+				.replace(/font-size: 18px; font-family: arial/g, 'font-family: arial; font-size: 18px');
+			after = after.replace(/;"/g, '"');
+			equal(actual, after, before + ' ⇒  ' + after);
+		}
+		function isObstruction(node) {
+			return !Html.hasInlineStyle(node) || 'CODE' === node.nodeName;
+		}
+		var opts = {isObstruction: isObstruction};
+		testMutation('editing.format - ' + title, before, expected, function (dom, start, end) {
+			return Editing.style(styleName, styleValue, start, end, opts);
 		});
 	}
 
@@ -222,8 +241,9 @@
 	testMutation('don\'t split if opts.below returns false',
 				 '<div><i>a[b</i>c<b>d]e</b></div>',
 				 '<div><i>a[b</i>c<b>d]e</b></div>',
-				 function (dom, range) {
-					 Editing.split(range, {below: Fn.returnFalse});
+				 function (dom, start, end) {
+				 	var range = Ranges.fromBoundaries(start, end);
+					return Editing.split(range, {below: Fn.returnFalse});
 				 });
 
 	t = function (title, before, after) {
