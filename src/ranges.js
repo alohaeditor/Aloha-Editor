@@ -708,7 +708,8 @@ define([
 			};
 		}
 
-		var node = Boundaries.nodeAfter(Boundaries.fromRangeStart(range));
+		var node = Boundaries.nodeAfter(Boundaries.fromRangeStart(range)) ||
+					Boundaries.nodeBefore(Boundaries.fromRangeStart(range));
 		if (node && !Dom.isTextNode(node)) {
 			rect = boundingRect(node);
 			if (rect) {
