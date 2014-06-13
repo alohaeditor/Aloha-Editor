@@ -86,6 +86,7 @@ Plugins in the @extra@ directory:
 * "extra/cite":plugin_cite.html - provides the possibility to add references to content quoted from another source
 * "extra/comments°":plugin_comments.html - add inline comments which are stored in the DOM
 * "extra/draganddropfiles":plugin_draganddropfiles.html - use Drag and Drop to upload files
+* "extra/emptylink":plugin_emptylink.html - highlights links elements with no href attribute
 * "extra/formatlesspaste":plugin_formatlesspaste.html - the formatless paste plugin can be used to strip HTML tags from pasted content
 * "extra/googletranslate°":plugin_googletranslate.html - translate content with Google Translate
 * "extra/headerids":plugin_headerids.html - insert jump labels for internal hyperlinks

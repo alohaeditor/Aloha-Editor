@@ -1,2 +1,1 @@
-SVG elements no longer cause the ephemera plugin to sometimes throw errors when
-attempting to operate on the element's className property.
+ephemera-plugin: SVG elements no longer cause the ephemera plugin to sometimes throw errors when attempting to operate on the element's className property.
