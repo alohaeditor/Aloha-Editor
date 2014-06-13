@@ -1,0 +1,15 @@
+{
+  "version": "0.26.0",
+  "date": "13.06.2014",
+  "changeLogEntryFileNames": [
+    "10070.enhancement",
+    "10069.KB1479.feature",
+    "10079.RT57971.bugfix",
+    "10066.bugfix",
+    "10082.RT58117.bugfix",
+    "10065.RM12613.feature",
+    "10062.enhancement",
+    "10074.KB1480.feature"
+  ],
+  "genericProperties": {}
+}
