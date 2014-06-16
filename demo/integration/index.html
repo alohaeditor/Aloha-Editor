@@ -66,7 +66,7 @@
 			<h2>Integrating Aloha Editor with your application</h2>
 
 			<p>
-				To integrate Aloha Editor with your application you will need to modify the editor stack: a collection of functions, that are invoked in order for every browser event.
+				To integrate Aloha Editor with your application you will need to define the editor stack: a collection of functions, that are invoked in order for every browser event. The default stack for Aloha Editor currently looks like this:
 			</p>
 
 			<textarea class="example">aloha.editor.stack = [
@@ -75,23 +75,59 @@
 	Blocks.handle,
 	DragDrop.handle,
 	Paste.handle,
-	associateEditable,
+	Editables.handle,
 	Mouse.handle,
 	Keys.handle
 ];</textarea>
 
 			<p>
-				Events will pass through the stack from bottom to top. Key and mouse event handling will be completed first, all the way through until the selection is handled in the last step. If you want to integrate with Aloha Editor you just push your own function on the stack.
+				Events will pass through the stack from bottom to top. Key and mouse event handling will be completed first, all the way through until the selection is handled in the last step. If you want to integrate with Aloha Editor just your own function on the stack:
 			</p>
 
-		<textarea class="example">aloha.editor.stack.unshift(function (alohaEvent) {
-	// magic goes here
+			<textarea class="example">define([
+	'aloha',
+	'blocks',
+	'dragdrop',
+	'editables',
+	'keys',
+	'mouse',
+	'paste',
+	'selections',
+	'typing'
+], function (
+	aloha,
+	Blocks,
+	DragDrop,
+	Editables,
+	Keys,
+	Mouse,
+	Paste,
+	Selections,
+	Typing
+) {
+	aloha.editor.stack = [
+		function myHandler(alohaEvent) {
+			// magic
+		},
+		Selections.handle,
+		Typing.handle,
+		Blocks.handle,
+		DragDrop.handle,
+		Paste.handle,
+		Editables.handle,
+		Mouse.handle,
+		Keys.handle
+	];
 });</textarea>
 
 			<p>
 				In the example above a new function was put on the first position of the stack array, which means that it will be executed <b>after</b> all the other functions. Use this to
 				add handling for UI or the like. The function will receive an alohaEvent object,
 				which contains the currently active editable as well as the browser event.
+			</p>
+			<p>
+				The important thing here is to make sure that the editor stack is <b>defined once</b>
+				at initialization, as subsequent, dynamic modifications will make it harder to understand and maintain your application.
 			</p>
 
 		</div>

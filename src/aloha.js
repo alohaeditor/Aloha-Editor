@@ -61,29 +61,6 @@ define([
 		return alohaEvent;
 	}
 
-	/**
-	 * Associates an editable to the given AlohaEvent.
-	 *
-	 * @private
-	 * @param  {Editor}     editor
-	 * @param  {AlohaEvent} alohaEvent
-	 * @return {AlohaEvent}
-	 */
-	function associateEditable(alohaEvent) {
-		if ('mousemove' === alohaEvent.type) {
-			return alohaEvent;
-		}
-		if (!alohaEvent.range) {
-			return alohaEvent;
-		}
-		var host = Dom.editingHost(alohaEvent.range.commonAncestorContainer);
-		if (!host) {
-			return alohaEvent;
-		}
-		alohaEvent.editable = Editables.fromElem(alohaEvent.editor, host);
-		return alohaEvent;
-	}
-
 	function editor(nativeEvent, custom) {
 		var alohaEvent = custom || {'nativeEvent' : nativeEvent};
 		alohaEvent.editor = editor;
@@ -101,7 +78,7 @@ define([
 		Blocks.handle,
 		DragDrop.handle,
 		Paste.handle,
-		associateEditable,
+		Editables.handle,
 		Mouse.handle,
 		Keys.handle
 	];
