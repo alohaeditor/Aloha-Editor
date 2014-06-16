@@ -40,9 +40,11 @@ define([
 	}
 
 	/**
-	 * Reduces a list of nodes into an LI element among a list of LI elements.
+	 * Reduces a list of nodes (if any are visible) into an LI element among the
+	 * given list.
 	 *
-	 * @see build
+	 * This function is to be used in a reduce() call.
+	 *
 	 * @private
 	 * @param  {Array.<Element>} list collection of list items
 	 * @param  {Array.<Node>}    children
@@ -53,7 +55,7 @@ define([
 		if (visible.length > 0) {
 			var li = visible[0].ownerDocument.createElement('li');
 			Dom.move(visible, li);
-			return list.concat(li);
+			list.push(li);
 		}
 		return list;
 	}
@@ -105,32 +107,32 @@ define([
 	 * Given a list of nodes, will process the list to create a groups of nodes
 	 * that should be placed to gether in LI's.
 	 *
-	 * A `junk` arrays will also be created of nodes that should be removed once
-	 * the grouped elements have been moved into their respective destinations.
-	 * This is required because we need to later remove any elements which will
-	 * become empty once their children are moved into list elements.
+	 * A `parents` arrays will also be created of nodes that may need be removed
+	 * once the grouped elements have been moved into their respective
+	 * destinations. This is required because we need to later remove any
+	 * elements which will become empty once their children are moved into list
+	 * elements.
 	 *
 	 * @see build
 	 * @private
-	 * @param  {Array.<Node>} nodes
+	 * @param  {Array.<Node>} siblings
 	 * @return {Object.<string, Array.<Node>>}
 	 */
-	function groupNodes(nodes) {
-		var junk = [];
+	function groupNodes(siblings) {
 		var groups = [];
-		var collection = [];
+		var parents = [];
+		var nodes = siblings.concat();
+		var collection;
 		var split;
 		var node;
 		while (nodes.length > 0) {
 			node = nodes.shift();
 			if (Html.hasLinebreakingStyle(node) && !Html.isGroupContainer(node)) {
 				collection = Dom.children(node);
-				junk.push(node);
+				parents.push(node);
 			} else {
 				collection = [node];
-				if (!node.previousSibling && !node.nextSibling) {
-					junk.push(node.parentNode);
-				}
+				parents.push(node.parentNode);
 			}
 			split = Arrays.split(nodes, Html.hasLinebreakingStyle);
 			collection = collection.concat(split[0]);
@@ -140,8 +142,8 @@ define([
 			}
 		}
 		return {
-			groups : groups,
-			junk   : junk
+			groups  : groups,
+			parents : parents
 		};
 	}
 
@@ -167,18 +169,12 @@ define([
 		var grouping = groupNodes(nodes);
 		Dom.insert(list, node);
 		Dom.move(grouping.groups.reduce(reduceGroup, []), list);
-		grouping.junk.forEach(removeInvisibleNodes);
+		grouping.parents.forEach(removeInvisibleNodes);
 		return boundaries;
 	}
 
 	/**
 	 * Creates a list of the given type.
-	 *
-	 * problem with collectSiblings(startNode, endNode):
-	 * "<div>
-	 *	<p>tw[o}</p>
-	 *	<p>three</p>
-	 * </div>"
 	 *
 	 * @param  {string}           type Either 'ul' or 'ol'
 	 * @param  {Array.<Boundary>} boundaries
@@ -192,7 +188,6 @@ define([
 		var start = boundaries[0];
 		var end = boundaries[1];
 		var cac = Boundaries.commonContainer(start, end);
-		console.warn(cac.outerHTML);
 		if (!Html.hasLinebreakingStyle(cac)) {
 			var node = Dom.upWhile(cac, function (node) {
 				return node.parentNode
@@ -206,6 +201,24 @@ define([
 		};
 		var startNode = Dom.upWhile(Boundaries.container(start), isLimit);
 		var endNode = Dom.upWhile(Boundaries.container(end), isLimit);
+
+		// <div>
+		//  <p>tw[o}</p>
+		//  <p>three</p>
+		// </div>
+		//
+		// ... or ...
+		//
+		// <div>
+		//  <p>{t]wo</p>
+		//  <p>three</p>
+		// </div>
+		if (startNode === cac) {
+			startNode = endNode;
+		} else if (endNode === cac) {
+			endNode = startNode;
+		}
+
 		return build(type, collectSiblings(startNode, endNode), boundaries);
 	}
 
