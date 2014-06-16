@@ -169,6 +169,7 @@ define([
 	 *
 	 * @param  {Element} element
 	 * @param  {Element} replacement
+	 * @return {Element}
 	 */
 	function replaceShallow(element, replacement) {
 		move(Nodes.children(element), replacement);

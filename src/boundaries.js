@@ -42,9 +42,10 @@ define([
 	}
 
 	/**
-	 * Returns the document associated with a boundary
-	 * @param {!Boundary} boundary
-	 * @return {Document} the dom document
+	 * Returns the document associated with the given boundary.
+	 *
+	 * @param  {!Boundary} boundary
+	 * @return {Document}
 	 */
 	function document(boundary) {
 		return container(boundary).ownerDocument;

@@ -1,5 +1,5 @@
 /**
- * typing.js is part of Aloha Editor project http://aloha-editor.org
+ * formatting.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
@@ -9,14 +9,12 @@ define([
 	'boundaries',
 	'dom',
 	'editing',
-	'html/predicates',
-	'ranges'
+	'html/predicates'
 ], function (
 	Boundaries,
 	Dom,
 	Editing,
-	Predicates,
-	Ranges
+	Html
 ) {
 	'use strict';
 
@@ -25,9 +23,9 @@ define([
 	 * Will return updated array of boundaries after the operation.
 	 *
 	 * @private
-	 * @param {!String}     formatting
-	 * @param {!Boundary}   start
-	 * @param {!Boundary}   end
+	 * @param  {!string}   formatting
+	 * @param  {!Boundary} start
+	 * @param  {!Boundary} end
 	 * @return {Array.<Boundary>}
 	 */
 	function inlineFormat(formatting, start, end) {
@@ -39,9 +37,9 @@ define([
 	 * Will return updated array of boundaries after the operation.
 	 *
 	 * @private
-	 * @param {!String}     formatting
-	 * @param {!Boundary}   start
-	 * @param {!Boundary}   end
+	 * @param  {!string}   formatting
+	 * @param  {!Boundary} start
+	 * @param  {!Boundary} end
 	 * @return {Array.<Boundary>}
 	 */
 	function blockFormat(formatting, start, end) {
@@ -50,32 +48,32 @@ define([
 			cac = cac.parentNode;
 		}
 		cac = Dom.replaceShallow(
-			cac, 
+			cac,
 			Boundaries.document(start).createElement(formatting)
 		);
-
 		return [Boundaries.fromNode(cac), Boundaries.fromEndOfNode(cac)];
 	}
 
 	/**
-	 * Applies block and inline formattings (eg. 'B', 'I', 'H2' - be
-	 * sure to use UPPERCASE node names here) to contents enclosed 
-	 * by start and end boundary. 
+	 * Applies block and inline formattings (eg. 'B', 'I', 'H2' - be sure to use
+	 * UPPERCASE node names here) to contents enclosed by start and end
+	 * boundary.
+	 *
 	 * Will return updated array of boundaries after the operation.
 	 *
-	 * @private
-	 * @param {!String}     formatting
-	 * @param {!Boundary}   start
-	 * @param {!Boundary}   end
+	 * @param  {!string}   formatting
+	 * @param  {!Boundary} start
+	 * @param  {!Boundary} end
 	 * @return {Array.<Boundary>}
 	 */
 	function format(formatting, start, end) {
 		var node = {
 			nodeName : formatting
 		};
-		if (Predicates.isTextLevelSemanticNode(node)) {
+		if (Html.isTextLevelSemanticNode(node)) {
 			return inlineFormat(formatting, start, end);
-		} else if (Predicates.isBlockNode(node)) {
+		}
+		if (Html.isBlockNode(node)) {
 			return blockFormat(formatting, start, end);
 		}
 		return [start, end];

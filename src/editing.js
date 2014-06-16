@@ -515,8 +515,10 @@ define([
 
 	/**
 	 * TODO documentation
-	 * will return updated boundaries
 	 *
+	 * @param  {Range}    liveRange
+	 * @param  {Function} mutate
+	 * @param  {Function} trim
 	 * @return {Array.<Boundary>}
 	 */
 	function fixupRange(liveRange, mutate, trim) {
