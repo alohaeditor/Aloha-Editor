@@ -9,7 +9,6 @@
 
 	function initialize($, Class, PubSub, i18n) {
 		var $window = $(window);
-		var $body = $('body');
 
 		/**
 		 * A count of the number of opened repository browsers instances.
@@ -147,7 +146,7 @@
 		 */
 		function modal(close) {
 			var $modal = $('<div class="repository-browser-modal-window" style="z-index: ' + BASE_ZINDEX + ';"></div>');
-			$body.append($modal);
+			$('body').append($modal);
 			return $modal;
 		}
 
@@ -157,7 +156,7 @@
 		 */
 		function createOverlay() {
 			var $overlay = $('<div class="repository-browser-modal-overlay" style="z-index: ' + BASE_ZINDEX + ';"></div>');
-			$body.append($overlay);
+			$('body').append($overlay);
 			$overlay.click(function () {
 				$.each(instances, function (i, browser) {
 					browser.close();
@@ -169,7 +168,7 @@
 		 * Shows the overlay element.
 		 */
 		function showOverlay() {
-			disableSelection($body);
+			disableSelection($('body'));
 			$('.repository-browser-modal-overlay')
 				.stop().css({top: 0, left: 0}).show();
 		}
@@ -178,7 +177,7 @@
 		 * Hides the overlay element.
 		 */
 		function hideOverlay() {
-			enableSelection($body);
+			enableSelection($('body'));
 			$('.repository-browser-modal-overlay').hide();
 		}
 
@@ -689,7 +688,7 @@
 			 */
 			init: function (config) {
 				if (!config.repositoryManager) {
-					$body.trigger(
+					$('body').trigger(
 						'repository-browser-error',
 						'Repository Manager not configured'
 					);
