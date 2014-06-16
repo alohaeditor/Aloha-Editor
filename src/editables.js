@@ -57,12 +57,34 @@ define([
 		Undo.close(editable.undoContext);
 	}
 
+	/**
+	 * Associates an editable to the given AlohaEvent.
+	 *
+	 * @param  {AlohaEvent} alohaEvent
+	 * @return {AlohaEvent}
+	 */
+	function handle(alohaEvent) {
+		if ('mousemove' === alohaEvent.type) {
+			return alohaEvent;
+		}
+		if (!alohaEvent.range) {
+			return alohaEvent;
+		}
+		var host = Dom.editingHost(alohaEvent.range.commonAncestorContainer);
+		if (!host) {
+			return alohaEvent;
+		}
+		alohaEvent.editable = fromElem(alohaEvent.editor, host);
+		return alohaEvent;
+	}
+
 	return {
 		Editable         : Editable,
 		fromElem         : fromElem,
 		fromBoundary     : fromBoundary,
 		assocIntoEditor  : assocIntoEditor,
 		dissocFromEditor : dissocFromEditor,
-		close            : close
+		close            : close,
+		handle           : handle
 	};
 });

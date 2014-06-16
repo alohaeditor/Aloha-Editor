@@ -513,6 +513,12 @@ define([
 		Dom.insert(node, ref, atEnd);
 	}
 
+	/**
+	 * TODO documentation
+	 * will return updated boundaries
+	 *
+	 * @return {Array.<Boundary>}
+	 */
 	function fixupRange(liveRange, mutate, trim) {
 		// Because we are mutating the range several times and don't want the
 		// caller to see the in-between updates, and because we are using
@@ -582,6 +588,7 @@ define([
 
 		var boundaries = Boundaries.fromRange(range);
 		Boundaries.setRange(liveRange, boundaries[0], boundaries[1]);
+		return boundaries;
 	}
 
 	function restackRec(node, hasContext, ignoreHorizontal, ignoreVertical) {
@@ -1125,15 +1132,17 @@ define([
 	 *        instead of creating a new wrapper node. May be merged with
 	 *        other reusable or newly created wrapper nodes.
 	 */
-	function wrapElem(liveRange, nodeName, remove, opts) {
+	function wrapElem(nodeName, start, end, remove, opts) {
 		opts = opts || {};
+
+		var liveRange = Ranges.fromBoundaries(start, end);
 
 		// Because we should avoid splitTextContainers() if this call is a noop.
 		if (liveRange.collapsed) {
-			return;
+			return [start, end];
 		}
 
-		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
+		return fixupRange(liveRange, function (range, leftPoint, rightPoint) {
 			var formatter = makeElemFormatter(nodeName, remove, leftPoint, rightPoint, opts);
 			mutate(range, formatter);
 			return formatter;
@@ -1141,10 +1150,10 @@ define([
 	}
 
 	/**
-	 * Ensures the given range is wrapped by elements that have a given
-	 * CSS style set.
+	 * Ensures the contents between start and end are wrapped by elements 
+	 * that have a given CSS style set. Returns the updated boundaries.
 	 *
-	 * @param styleName a CSS style name.
+	 * @param styleName a CSS style name
 	 *        Please note that not-inherited styles currently may (or
 	 *        may not) cause undesirable results.  See also
 	 *        Html.isStyleInherited().
@@ -1168,20 +1177,59 @@ define([
 	 *        TODO currently we just use strict equals by default, but
 	 *             we should implement for each supported style it's own
 	 *             equals function.
+	 * @return {Array.<Boundary>}
 	 */
-	function format(liveRange, styleName, styleValue, opts) {
+	function style(styleName, styleValue, start, end, opts) {
+		var liveRange = Ranges.fromBoundaries(start, end);
+
 		opts = opts || {};
 
 		// Because we should avoid splitTextContainers() if this call is a noop.
 		if (liveRange.collapsed) {
-			return;
+			return [start, end];
 		}
 
-		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
+		return fixupRange(liveRange, function (range, leftPoint, rightPoint) {
 			var formatter = makeStyleFormatter(styleName, styleValue, leftPoint, rightPoint, opts);
 			mutate(range, formatter);
 			return formatter;
 		});
+	}
+
+	/**
+	 * Format the selection defined by start and end boundary,
+	 * by wrapping it within a node (eg. 'b', 'i', 'em')
+	 * Returns an array with updated boundaries.
+	 *
+	 * @param {!Boundary} start
+	 * @param {!Boundary} end
+	 * @param {!string}   node
+	 * @return {Array.<Boundary>}
+	 */
+	function format(node, start, end) {
+		var styleName = resolveStyleName(node);
+		if (styleName === false) {
+			return [start, end];
+		}
+		return style(styleName, true, start, end);
+	}
+
+	/**
+	 * Resolves the according CSS style name for an uppercase (!) node name
+	 * passed in styleNode. Will return the CSS name of the style (eg. 'bold') 
+	 * or false.
+	 * So 'B' will eg. be resolved to 'bold'
+	 *
+	 * @param {string} styleNode
+	 * @return {string|false}
+	 */
+	function resolveStyleName(styleNode) {
+		for (var styleName in wrapperProperties) {
+			if (wrapperProperties[styleName].nodes.indexOf(styleNode) !== -1) {
+				return styleName;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -1346,6 +1394,7 @@ define([
 	 *        may not become children of the topmost unsplit node. Also,
 	 *        if splitUntil() returns true, the selection may be moved
 	 *        out of an unsplit node which may be unexpected.
+	 * @return {Array.<Boundary>}
 	 */
 	function split(liveRange, opts) {
 		opts = opts || {};
@@ -1357,7 +1406,7 @@ define([
 			normalizeRange: true
 		}, opts);
 
-		fixupRange(liveRange, function (range, left, right) {
+		return fixupRange(liveRange, function (range, left, right) {
 			splitRangeAtBoundaries(range, left, right, opts);
 			return null;
 		});
@@ -1478,6 +1527,7 @@ define([
 	return {
 		wrap   : wrapElem,
 		format : format,
+		style  : style,
 		split  : split,
 		delete : delete_,
 		break  : break_,

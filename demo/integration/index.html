@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Aloha Editor</title>
+		<meta charset="UTF-8">
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300,700' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" type="text/css" href="../../src/aloha.css">
+		<link rel="stylesheet" type="text/css" href="../demo.css">
+
+		<script src="../codemirror-4.2/lib/codemirror.js"></script>
+		<link rel="stylesheet" href="../codemirror-4.2/lib/codemirror.css">
+		<script src="../codemirror-4.2/mode/javascript/javascript.js"></script>
+	</head>
+	<body>
+		<div>
+			<h1>Aloha Editor Integration</h1>
+			
+			<p>
+				Integrating Aloha Editor in your Application is a matter of three major steps:
+			</p>
+
+			<ol>
+				<li>Loading Aloha Editor</li>
+				<li>Aloha-fying editables</li>
+				<li>Integrating Aloha Editor with your application</li>
+			</ol>
+
+			<h2>Loading Aloha Editor</h2>
+
+			<p>
+				Loading the pre-buildt version of Aloha Editor is achieved by just loading the resulting
+				aloha.js file using a script tag.
+			</p>
+
+			<textarea class="example"><script src="aloha.js"></script></textarea>
+
+			<p>
+				Loading the development version currently requires you to use require-pronto, a
+				synchronous drop-in replacement for requirejs.
+			</p>
+
+			<textarea class="example"><script src="src/require-pronto.js"></script>
+<script src="src/require-pronto.dev.js"></script>
+<script src="src/aloha.js"></script></textarea>
+
+			
+			<h2>Aloha-fying editables</h2>
+
+			<p>
+				Aloha needs to know which parts of the page should be editable. This can be achieved using the aloha() function.
+			</p>
+
+			<textarea class="example">aloha(document.querySelector('.aloha-editable'));</textarea>
+
+			<p>
+				This first example will turn the first element with the aloha-editable class applied into an Aloha editable. Preferably use divs as editing host.
+			</p>
+
+			<p>
+				If you want to turn all elements that have the aloha-editable class assigned into editables, you can use the following snippet.
+			</p>
+
+			<textarea class="example">[].forEach.call(document.querySelectorAll('.aloha-editable'), aloha);</textarea>
+
+
+			<h2>Integrating Aloha Editor with your application</h2>
+
+			<p>
+				To integrate Aloha Editor with your application you will need to define the editor stack: a collection of functions, that are invoked in order for every browser event. The default stack for Aloha Editor currently looks like this:
+			</p>
+
+			<textarea class="example">aloha.editor.stack = [
+	Selections.handle,
+	Typing.handle,
+	Blocks.handle,
+	DragDrop.handle,
+	Paste.handle,
+	Editables.handle,
+	Mouse.handle,
+	Keys.handle
+];</textarea>
+
+			<p>
+				Events will pass through the stack from bottom to top. Key and mouse event handling will be completed first, all the way through until the selection is handled in the last step. If you want to integrate with Aloha Editor just your own function on the stack:
+			</p>
+
+			<textarea class="example">define([
+	'aloha',
+	'blocks',
+	'dragdrop',
+	'editables',
+	'keys',
+	'mouse',
+	'paste',
+	'selections',
+	'typing'
+], function (
+	aloha,
+	Blocks,
+	DragDrop,
+	Editables,
+	Keys,
+	Mouse,
+	Paste,
+	Selections,
+	Typing
+) {
+	aloha.editor.stack = [
+		function myHandler(alohaEvent) {
+			// magic
+		},
+		Selections.handle,
+		Typing.handle,
+		Blocks.handle,
+		DragDrop.handle,
+		Paste.handle,
+		Editables.handle,
+		Mouse.handle,
+		Keys.handle
+	];
+});</textarea>
+
+			<p>
+				In the example above a new function was put on the first position of the stack array, which means that it will be executed <b>after</b> all the other functions. Use this to
+				add handling for UI or the like. The function will receive an alohaEvent object,
+				which contains the currently active editable as well as the browser event.
+			</p>
+			<p>
+				The important thing here is to make sure that the editor stack is <b>defined once</b>
+				at initialization, as subsequent, dynamic modifications will make it harder to understand and maintain your application.
+			</p>
+
+		</div>
+		<script src="../../src/require-pronto.js"></script>
+		<script src="../../src/require-pronto.dev.js"></script>
+		<script src="../demo.js"></script>
+	</body>
+</html>
