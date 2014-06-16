@@ -170,12 +170,10 @@ define([
 	 * @param {Range}    range Range to modify.
 	 * @param {Boundary} start Boundary to set the start position to
 	 * @param {Boundary} end   Boundary to set the end position to
-	 * @return {Range}   the updated range
 	 */
 	function setRange(range, start, end) {
 		setRangeStart(range, start);
 		setRangeEnd(range, end);
-		return range;
 	}
 
 	/**

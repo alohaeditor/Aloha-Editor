@@ -60,8 +60,6 @@ define([
 	/**
 	 * Associates an editable to the given AlohaEvent.
 	 *
-	 * @private
-	 * @param  {Editor}     editor
 	 * @param  {AlohaEvent} alohaEvent
 	 * @return {AlohaEvent}
 	 */
