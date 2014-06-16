@@ -161,9 +161,12 @@ define([
 			return boundaries;
 		}
 		var node = Dom.upWhile(nodes[0], isInlineNode);
+		if (Html.isListContainer(node)) {
+			return boundaries;
+		}
 		Assert.assert(
 			Content.allowsNesting(node.parentNode.nodeName, type),
-			'createList#Cannot insert ' + type + ' inside of a ' + node.parentNode.nodeName
+			'createList#Cannot create ' + type + ' inside of a ' + node.parentNode.nodeName
 		);
 		var list = node.ownerDocument.createElement(type);
 		var grouping = groupNodes(nodes);
