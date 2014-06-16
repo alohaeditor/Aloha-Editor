@@ -124,7 +124,6 @@ define([], function Predicates() {
 	/**
 	 * Tags representing list container elements.
 	 *
-	 * @private
 	 * @type {Object.<string, boolean>}
 	 */
 	var LIST_CONTAINERS = {
@@ -303,6 +302,7 @@ define([], function Predicates() {
 		isListContainer          : isListContainer,
 		isTableContainer         : isTableContainer,
 		isGroupContainer         : isGroupContainer,
-		isGroupedElement         : isGroupedElement
+		isGroupedElement         : isGroupedElement,
+		LIST_CONTAINERS          : LIST_CONTAINERS
 	};
 });

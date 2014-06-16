@@ -167,7 +167,7 @@ define([
 			if (isTocHeading(node)) {
 				processed.push(Utils.rewrap(node, 'h1'));
 			} else if (isTocItem(node)) {
-				nodes = Arrays.split(Dom.nextSiblings(node), notTocItem)[0];
+				nodes = Arrays.split(Dom.nodeAndNextSiblings(node), notTocItem)[0];
 				list = createList(nodes, transform);
 				if (list) {
 					processed.push(list);

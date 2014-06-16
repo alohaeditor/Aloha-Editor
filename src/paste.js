@@ -172,7 +172,7 @@ define([
 			var next = Boundaries.nextNode(boundary);
 			if (Html.hasInlineStyle(next)) {
 				// Move the next inline nodes into the last element
-				Dom.move(Dom.nextSiblings(next, Html.hasLinebreakingStyle), last);
+				Dom.move(Dom.nodeAndNextSiblings(next, Html.hasLinebreakingStyle), last);
 			} else if (!Html.isVoidType(next) && !Html.isGroupContainer(next)) {
 				// Move the children of the last element into the beginning of
 				// the next block element

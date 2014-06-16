@@ -389,7 +389,7 @@ define([
 			} else if (!isFirstListParagraph(node)) {
 				processed.push(transform(node));
 			} else {
-				nodes =  Dom.nextSiblings(node, isLastListParagraph);
+				nodes = Dom.nodeAndNextSiblings(node, isLastListParagraph);
 				// Becuase Dom.nextSibling() excludes the predicative node
 				last = Arrays.last(nodes).nextSibling;
 				if (last) {
