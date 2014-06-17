@@ -17,6 +17,7 @@ define([
 	'aloha/console',
 	'aloha/block-jump',
 	'aloha/ephemera',
+	'util/dom',
 	'util/dom2',
 	'PubSub',
 	'aloha/copypaste',
@@ -34,6 +35,7 @@ define([
 	console,
 	BlockJump,
 	Ephemera,
+	DomLegacy,
 	Dom,
 	PubSub,
 	CopyPaste,
@@ -197,6 +199,21 @@ define([
 			if (event.keyCode === 27) {
 				Aloha.deactivateEditable();
 				return false;
+			}
+
+			// Fix a problem with mozilla. When inserting a space at the end of a block element,
+			// a BR element is automatically inserted
+			if (Aloha.browser.mozilla && event.keyCode === 32) {
+				var rangeObject = Aloha.getSelection().getRangeAt(0);
+				var elem = rangeObject.startContainer;
+
+				while (elem && DomLegacy.isBlockLevelElement(elem)) {
+					elem = elem.parentNode;
+				}
+
+				if (elem.lastElementChild.tagName === 'BR') {
+					$(elem.lastElementChild).addClass('aloha-ephemera');
+				}
 			}
 		});
 
