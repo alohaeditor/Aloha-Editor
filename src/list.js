@@ -185,7 +185,7 @@ define([
 	 */
 	function createList(type, boundaries) {
 		Assert.assert(
-			Html.LIST_CONTAINERS[type.toUpperCase()],
+			Html.isListContainer({nodeName: type.toUpperCase()}),
 			'createList#' + type + ' is not a valid list container'
 		);
 		var start = boundaries[0];

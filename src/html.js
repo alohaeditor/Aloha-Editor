@@ -67,7 +67,6 @@ define([
 		isTableContainer          : Predicates.isTableContainer,
 		isGroupContainer          : Predicates.isGroupContainer,
 		isGroupedElement          : Predicates.isGroupedElement,
-		LIST_CONTAINERS           : Predicates.LIST_CONTAINERS,
 
 		__ : {
 			isRenderedBr       : Mutation.isRenderedBr,

@@ -294,15 +294,14 @@ define([], function Predicates() {
 	}
 
 	return {
-		isVoidNode               : isVoidNode,
-		isBlockNode              : isBlockNode,
-		isInlineNode             : isInlineNode,
-		isTextLevelSemanticNode  : isTextLevelSemanticNode,
-		isListItem               : isListItem,
-		isListContainer          : isListContainer,
-		isTableContainer         : isTableContainer,
-		isGroupContainer         : isGroupContainer,
-		isGroupedElement         : isGroupedElement,
-		LIST_CONTAINERS          : LIST_CONTAINERS
+		isVoidNode              : isVoidNode,
+		isBlockNode             : isBlockNode,
+		isInlineNode            : isInlineNode,
+		isTextLevelSemanticNode : isTextLevelSemanticNode,
+		isListItem              : isListItem,
+		isListContainer         : isListContainer,
+		isTableContainer        : isTableContainer,
+		isGroupContainer        : isGroupContainer,
+		isGroupedElement        : isGroupedElement
 	};
 });
