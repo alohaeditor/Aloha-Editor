@@ -38,6 +38,7 @@ require([
 	 *    styleValue : 'red'
 	 * }
 	 *
+	 * @private
 	 * @param  {Object.<string,?>} action
 	 * @param  {Array.<Boundary>}  boundaries
 	 * @param  {Editor}            editor
@@ -46,7 +47,7 @@ require([
 	function execute(action, boundaries, editor) {
 		if (action.format) {
 			boundaries = Formatting.format(
-				action.node,
+				action.format,
 				boundaries[0],
 				boundaries[1]
 			);
@@ -72,26 +73,27 @@ require([
 	}
 
 	/**
+	 * TODO not finished. this is a simplified implementation
+	 * as not all actions are formatting actions
+	 *
 	 * Extracts the intended aloha action from a dom element.
 	 * Will look through the classes to find an aloha-action-* class,
 	 * which is then transformed into an action object that looks like
 	 * { format: true, node: 'b' }
 	 *
+	 * @private
 	 * @param  {Element} element
 	 * @return {?Object}
 	 */
 	function getAction(element) {
 		var action = {},
-		    actionArr,
 		    className,
 		    classes = Arrays.coerce(element.classList).concat(Arrays.coerce(element.parentNode.classList));
 
 		for (var i = 0; i < classes.length; i++) {
 			className = classes[i];
 			if (className.indexOf(CLASS_PREFIX) === 0) {
-				actionArr = className.substr(CLASS_PREFIX.length).split('-');
-				action[actionArr[0]] = true;
-				action.node = actionArr[1].toUpperCase();
+				action.format = className.substr(CLASS_PREFIX.length);
 				return action;
 			}
 		}
@@ -100,20 +102,55 @@ require([
 	}
 
 	/**
+	 * Transforms an array of dom nodes into an array of node names
+	 * for faster iteration, eg:
+	 *
+	 * [text, h1, text, p] // array contains DOM nodes
+	 *
+	 * will return:
+	 * 
+	 * ['P', '#text', 'H1']
+	 *
+	 * Duplicate entries will be removed, as displayed in the example
+	 * above.
+	 *
+	 * @private
+	 * @param {Array.<Element>} nodes
+	 * @return {Object.<string,true>}
+	 */
+	function toNodeArray(nodes) {
+		var i = nodes.length,
+			arr = [],
+			added = {};
+		while (i--) {
+			if (!added[nodes[i].nodeName]) {
+				arr.push(nodes[i].nodeName);
+				added[nodes[i].nodeName] = true;
+			}
+		}
+		return arr;
+	}
+
+	/**
 	 * Updates the ui according to current state overrides.
 	 *
 	 * Sets to active all ui toolbar elements that match the current overrides.
 	 *
+	 * @private
 	 * @param {Array.<Boundary>} boundries
 	 */
 	function updateUi(boundaries) {
-		var overrides = aloha.overrides.harvest(Boundaries.container(boundaries[0]));
+		var nodeArray = toNodeArray(Dom.childAndParentsUntilIncl(boundaries[0][0], 
+			function (node) {
+				return node.parentNode && Dom.isEditingHost(node.parentNode);
+			}));
+
 		var node = Boromir(document.querySelector('.aloha-ui-toolbar'));
 		var walk = function (node) {
 			if (node.type() === Boromir.ELEMENT) {
 				node = node.removeClass('active');
-				overrides.forEach(function (override) {
-					if (node.hasClass(CLASS_PREFIX + override[0])) {
+				nodeArray.forEach(function (nodeName) {
+					if (node.hasClass(CLASS_PREFIX + nodeName)) {
 						node = node.addClass('active');
 					}
 				});
