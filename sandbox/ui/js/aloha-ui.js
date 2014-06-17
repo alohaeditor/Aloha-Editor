@@ -33,8 +33,6 @@ require([
 ) {
 	'use strict';
 
-  	[].forEach.call(document.querySelectorAll('.aloha-editable'), aloha);
-
 	var CLASS_PREFIX = 'aloha-action-';
 
 	/**
@@ -57,9 +55,9 @@ require([
 	 * }
 	 *
 	 * @private
-	 * @param  {Object.<string,?>} action
-	 * @param  {Array.<Boundary>}  boundaries
-	 * @param  {Editor}            editor
+	 * @param  {!Object.<string,?>} action
+	 * @param  {!Array.<Boundary>}  boundaries
+	 * @param  {!Editor}            editor
 	 * @return {Array.<Boundaries>}
 	 */
 	function execute(action, boundaries, editor) {
@@ -100,13 +98,13 @@ require([
 	 * { format: true, node: 'b' }
 	 *
 	 * @private
-	 * @param  {Element} element
+	 * @param  {!Element} element
 	 * @return {?Object}
 	 */
 	function parseAction(element) {
-		var action = {},
-		    className,
-		    classes = Arrays.coerce(element.classList).concat(Arrays.coerce(element.parentNode.classList));
+		var action = {};
+		var className;
+		var classes = Arrays.coerce(element.classList).concat(Arrays.coerce(element.parentNode.classList));
 
 		for (var i = 0; i < classes.length; i++) {
 			className = classes[i];
@@ -133,13 +131,13 @@ require([
 	 * above.
 	 *
 	 * @private
-	 * @param {Array.<Element>} nodes
-	 * @return {Object.<string,true>}
+	 * @param {!Array.<Element>} nodes
+	 * @return {Array.<string>}
 	 */
-	function toNodeArray(nodes) {
-		var i = nodes.length,
-			arr = [],
-			added = {};
+	function uniqueNodeNames(nodes) {
+		var i = nodes.length;
+		var arr = [];
+		var added = {};
 		while (i--) {
 			if (!added[nodes[i].nodeName]) {
 				arr.push(nodes[i].nodeName);
@@ -155,10 +153,12 @@ require([
 	 * Sets to active all ui toolbar elements that match the current overrides.
 	 *
 	 * @private
-	 * @param {Array.<Boundary>} boundries
+	 * @param {!Array.<Boundary>} boundries
 	 */
 	function updateUi(boundaries) {
-		var formatNodes = toNodeArray(Dom.childAndParentsUntilIncl(boundaries[0][0], 
+		var startContainer = Boundaries.container(boundaries[0]);
+		var document = startContainer.ownerDocument;
+		var formatNodes = uniqueNodeNames(Dom.childAndParentsUntilIncl(startContainer, 
 			function (node) {
 				return node.parentNode && Dom.isEditingHost(node.parentNode);
 			}));
@@ -170,8 +170,8 @@ require([
 		 * be used with Dom.upWhile().
 		 *
 		 * @private
-		 * @param {Node} node
-		 * @return {Boolean}
+		 * @param {!Node} node
+		 * @return {boolean}
 		 */
 		function isDropdownUl(node) {
 			return [].indexOf.call(node.classList, 'dropdown-menu') === -1;
@@ -205,7 +205,7 @@ require([
 	/**
 	 * Handles UI updates invoked by event
 	 *
-	 * @param {AlohaEvent} event
+	 * @param {!AlohaEvent} event
 	 * @return {AlohaEvent}
 	 */
 	function handle(event) {
