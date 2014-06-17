@@ -162,27 +162,6 @@ require([
 			function (node) {
 				return node.parentNode && Dom.isEditingHost(node.parentNode);
 			}));
-			
-		/**
-		 * Generates a string that contains all the classes
-		 * of the DOM node, except the removeClassName. The
-		 * string can then be used to update node.className:
-		 *
-		 * node.className = removeClass(node, 'active');
-		 *
-		 * @param  {DOMNode} node
-		 * @param  {string}  removeClassName
-		 * @return {string}
-		 */
-		function removeClass(node, removeClassName) {
-		    var classes = [];
-		    [].forEach.call(node.classList, function(className) {
-		    	if (className !== removeClassName) {
-		    		classes.push(className); 
-		    	}
-		    });
-		    return classes.join(' ');
-		}
 
 		/**
 		 * Finds the root ul of a bootstrap dropdown menu
@@ -199,7 +178,7 @@ require([
 		}
 
 		[].forEach.call(document.querySelectorAll('.aloha-ui-toolbar .active'), function (node) {
-			node.className = removeClass(node, 'active');
+			Dom.removeClass(node, 'active');
 		});
 
 		formatNodes.forEach(function (format) {
