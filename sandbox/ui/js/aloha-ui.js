@@ -1,17 +1,36 @@
 require([
 	'../../src/aloha',
+	'../../src/dom',
 	'../../src/arrays',
+	'../../src/ranges',
 	'../../src/boromir',
 	'../../src/boundaries',
-	'../../src/dom',
-	'../../src/formatting'
+	'../../src/formatting',
+
+	'../../src/blocks',
+	'../../src/dragdrop',
+	'../../src/editables',
+	'../../src/keys',
+	'../../src/mouse',
+	'../../src/paste',
+	'../../src/selections',
+	'../../src/typing'
 ], function (
 	aloha,
+	Dom,
 	Arrays,
+	Ranges,
 	Boromir,
 	Boundaries,
-	Dom,
-	Formatting
+	Formatting,
+	Blocks,
+	DragDrop,
+	Editables,
+	Keys,
+	Mouse,
+	Paste,
+	Selections,
+	Typing
 ) {
 	'use strict';
 
@@ -123,20 +142,29 @@ require([
 		walk(node).updateDom();
 	}
 
-	aloha.editor.stack.unshift(function handleUi(event) {
-		if (event.type !== 'keyup' && event.type !== 'click') {
+	function handle(event) {
+		if (!event.range || (event.type !== 'keyup' && event.type !== 'click')) {
 			return event;
 		}
-		var target = event.nativeEvent.target || event.nativeEvent.srcElement;
-		var boundaries = aloha.boundaries.get(target.ownerDocument);
-		if (!boundaries) {
-			return;
-		}
-		var action = getAction(target);
+		var boundaries = Boundaries.fromRange(event.range);
+		var action = getAction(event.nativeEvent.target || event.nativeEvent.srcElement);
 		if (action) {
 			boundaries = execute(action, boundaries, event.editor);
 		}
 		updateUi(boundaries);
+		event.range = Ranges.fromBoundaries(boundaries[0], boundaries[1]);
 		return event;
-	});
+	}
+
+	aloha.editor.stack = [
+		handle,
+		Selections.handle,
+		Typing.handle,
+		Blocks.handle,
+		DragDrop.handle,
+		Paste.handle,
+		Editables.handle,
+		Mouse.handle,
+		Keys.handle
+	];
 });
