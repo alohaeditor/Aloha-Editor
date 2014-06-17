@@ -708,8 +708,10 @@ define([
 			};
 		}
 
-		var node = Boundaries.nodeAfter(Boundaries.fromRangeStart(range)) ||
-					Boundaries.nodeBefore(Boundaries.fromRangeStart(range));
+		var boundary = Boundaries.fromRangeStart(range);
+		var node = Boundaries.nodeAfter(boundary)
+		        || Boundaries.nodeBefore(boundary);
+
 		if (node && !Dom.isTextNode(node)) {
 			rect = boundingRect(node);
 			if (rect) {
@@ -725,7 +727,7 @@ define([
 		// <li>{}</li>
 		var scrollTop = Dom.scrollTop(doc);
 		var scrollLeft = Dom.scrollLeft(doc);
-		node = Boundaries.container(Boundaries.fromRangeStart(range));
+		node = Boundaries.container(boundary);
 		return {
 			top    : node.offsetTop - scrollTop + topOffset,
 			left   : node.offsetLeft - scrollLeft + leftOffset,

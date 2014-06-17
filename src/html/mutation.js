@@ -150,10 +150,6 @@ define([
 		return children.length > 0;
 	}
 
-	function insertNodeBeforeOrAfterBoundary(node, boundary, before) {
-		return Mutation.insertNodeAtBoundary(node, boundary, before);
-	}
-
 	/**
 	 * Removes the visual line break between the adjacent boundaries `above`
 	 * and `below` by moving the nodes after `below` over to before `above`.
@@ -256,18 +252,15 @@ define([
 	 * Inserts a <br> element behind the given boundary position.
 	 *
 	 * @param  {Boundary} boundary
-	 * @param  {object}
 	 * @return {Boundary}
 	 */
 	function insertLineBreak(boundary) {
-		var container = Boundaries.container(boundary);
-		var doc = container.ownerDocument;
+		var doc = Boundaries.container(boundary).ownerDocument;
 		var br = doc.createElement('br');
-		boundary = insertNodeBeforeOrAfterBoundary(br, boundary, true);
-		if (!isRenderedBr(br)) {
-			return insertNodeBeforeOrAfterBoundary(doc.createElement('br'), boundary, false);
-		}
-		return boundary;
+		boundary = Mutation.insertNodeAtBoundary(br, boundary, true);
+		return isRenderedBr(br)
+		     ? boundary
+		     : Mutation.insertNodeAtBoundary(doc.createElement('br'), boundary);
 	}
 
 	/**
@@ -364,7 +357,7 @@ define([
 	function insertBreak(boundary, defaultBreakingElement) {
 		var br = adjacentBr(boundary);
 		if (br) {
-			boundary = insertNodeBeforeOrAfterBoundary(
+			boundary = Mutation.insertNodeAtBoundary(
 				br.ownerDocument.createElement('br'),
 				boundary,
 				true
