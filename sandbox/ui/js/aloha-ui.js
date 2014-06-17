@@ -146,7 +146,7 @@ require([
 			return event;
 		}
 		var target = event.nativeEvent.target || event.nativeEvent.srcElement;
-		if (target === event.editor.selectionContext.caret) {
+		if (Dom.hasClass(target, 'aloha-ephemera')) {
 			return event;
 		}
 		var boundaries = Boundaries.fromRange(event.range);
