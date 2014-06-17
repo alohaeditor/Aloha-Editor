@@ -541,7 +541,7 @@ define([
 	function Context(doc) {
 		var caret = doc.createElement('div');
 		caret.style.display = 'none';
-		Dom.addClass(caret, 'aloha-caret');
+		Dom.addClass(caret, 'aloha-caret aloha-ephemera');
 		Dom.insert(caret, doc.body, true);
 		return {
 			caret          : caret,
