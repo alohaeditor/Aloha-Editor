@@ -150,8 +150,8 @@ define([
 		return children.length > 0;
 	}
 
-	function insertNodeBeforeBoundary(node, boundary) {
-		return Mutation.insertNodeAtBoundary(node, boundary, true);
+	function insertNodeBeforeOrAfterBoundary(node, boundary, before) {
+		return Mutation.insertNodeAtBoundary(node, boundary, before);
 	}
 
 	/**
@@ -263,9 +263,9 @@ define([
 		var container = Boundaries.container(boundary);
 		var doc = container.ownerDocument;
 		var br = doc.createElement('br');
-		boundary = insertNodeBeforeBoundary(br, boundary);
+		boundary = insertNodeBeforeOrAfterBoundary(br, boundary, true);
 		if (!isRenderedBr(br)) {
-			return insertNodeBeforeBoundary(doc.createElement('br'), boundary);
+			return insertNodeBeforeOrAfterBoundary(doc.createElement('br'), boundary, false);
 		}
 		return boundary;
 	}
@@ -364,9 +364,10 @@ define([
 	function insertBreak(boundary, defaultBreakingElement) {
 		var br = adjacentBr(boundary);
 		if (br) {
-			boundary = insertNodeBeforeBoundary(
+			boundary = insertNodeBeforeOrAfterBoundary(
 				br.ownerDocument.createElement('br'),
-				boundary
+				boundary,
+				true
 			);
 		}
 
