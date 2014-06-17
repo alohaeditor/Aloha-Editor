@@ -47,11 +47,12 @@ define([
 		if (Dom.isTextNode(cac)) {
 			cac = cac.parentNode;
 		}
-		cac = Dom.replaceShallow(
-			cac,
-			Boundaries.document(start).createElement(formatting)
-		);
-		return [Boundaries.fromNode(cac), Boundaries.fromEndOfNode(cac)];
+		var replacement = Boundaries.document(start).createElement(formatting);
+		Dom.replaceShallow(cac, replacement);
+		return [
+			Boundaries.fromNode(replacement),
+			Boundaries.fromEndOfNode(replacement)
+		];
 	}
 
 	/**
