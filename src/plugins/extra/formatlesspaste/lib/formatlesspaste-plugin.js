@@ -165,17 +165,13 @@ define([
 		 */
 		init: function () {
 			var plugin = this;
-			var config = plugin.settings.config || plugin.settings;
-			var parsedConfig = parseConfiguration(config);
+			var defaultConfig = parseConfiguration(plugin.settings.config || plugin.settings);
 
-			applyConfiguration(plugin, parsedConfig);
-			registerFormatlessPasteHandler(plugin, parsedConfig);
+			applyConfiguration(plugin, defaultConfig);
+			registerFormatlessPasteHandler(plugin, defaultConfig);
 
 			Aloha.bind('aloha-editable-activated', function ($event, data) {
-				var config = getEditableConfig(plugin, data.editable);
-				if (!config) {
-					return;
-				}
+				var config = getEditableConfig(plugin, data.editable) || defaultConfig;
 
 				var pasteButton = plugin._toggleFormatlessPasteButton;
 

@@ -1,0 +1,2 @@
+formatlesspaste-plugin: A configuration issue when switching editables has been resolved.
+When switching between editables, where one editable has a custom configuration, the default configuration was not reloaded when switching back.
