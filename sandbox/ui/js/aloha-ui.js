@@ -159,26 +159,77 @@ require([
 	 * @param {Array.<Boundary>} boundries
 	 */
 	function updateUi(boundaries) {
-		var nodeArray = toNodeArray(Dom.childAndParentsUntilIncl(boundaries[0][0], 
+		var formatNodes = toNodeArray(Dom.childAndParentsUntilIncl(boundaries[0][0], 
 			function (node) {
 				return node.parentNode && Dom.isEditingHost(node.parentNode);
 			}));
+			
+		/**
+		 * Generates a string that contains all the classes
+		 * of the DOM node, except the removeClassName. The
+		 * string can then be used to update node.className:
+		 *
+		 * node.className = removeClass(node, 'active');
+		 *
+		 * @param  {DOMNode} node
+		 * @param  {string}  removeClassName
+		 * @return {string}
+		 */
+		function removeClass(node, removeClassName) {
+		    var classes = [];
+		    [].forEach.call(node.classList, function(className) {
+		    	if (className !== removeClassName) {
+		    		classes.push(className); 
+		    	}
+		    });
+		    return classes.join(' ');
+		}
 
-		var node = Boromir(document.querySelector('.aloha-ui-toolbar'));
-		var walk = function (node) {
-			if (node.type() === Boromir.ELEMENT) {
-				node = node.removeClass('active');
-				nodeArray.forEach(function (nodeName) {
-					if (node.hasClass(CLASS_PREFIX + nodeName)) {
-						node = node.addClass('active');
-					}
-				});
+		/**
+		 * Finds the root ul of a bootstrap dropdown menu
+		 * starting from an entry node within the menu.
+		 * Returns true until the node is found. Meant to
+		 * be used with Dom.upWhile().
+		 *
+		 * @private
+		 * @param {Node} node
+		 * @return {Boolean}
+		 */
+		function isDropdownUl(node) {
+			return [].indexOf.call(node.classList, 'dropdown-menu') === -1;
+		}
+
+		[].forEach.call(document.querySelectorAll('.aloha-ui-toolbar .active'), function (node) {
+			node.className = removeClass(node, 'active');
+		});
+
+		formatNodes.forEach(function (format) {
+			// update buttons
+			var buttons = document.querySelectorAll('.aloha-ui-toolbar .' + CLASS_PREFIX + format),
+				i = buttons.length;
+			while (i--) {
+				buttons[i].className += ' active';
 			}
-			return node.children(node.children().map(walk));
-		};
-		walk(node).updateDom();
+
+			// update dropdowns
+			var dropdownEntries = document
+				.querySelectorAll('.aloha-ui-toolbar .dropdown-menu .' + CLASS_PREFIX + format),
+				dropdownRoot;
+			i = dropdownEntries.length;
+			while (i--) {
+				dropdownRoot = Dom.upWhile(dropdownEntries[i], isDropdownUl).parentNode;
+				dropdownRoot.querySelector('.dropdown-toggle').firstChild.data = 
+					dropdownEntries[i].innerText + ' ';
+			}
+		});
 	}
 
+	/**
+	 * Handles UI updates invoked by event
+	 *
+	 * @param {AlohaEvent} event
+	 * @return {AlohaEvent}
+	 */
 	function handle(event) {
 		if (!event.range || (event.type !== 'keyup' && event.type !== 'click')) {
 			return event;
