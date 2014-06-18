@@ -777,7 +777,7 @@ define([
 			'background' : 'red',
 			'opacity'    : 0.2
 		});
-		Dom.addClass(elem, 'aloha-caret-box-hint aloha-ephemera');
+		Dom.addClass(elem, 'aloha-caret-box-hint', 'aloha-ephemera');
 		Dom.append(elem, doc.body);
 		return elem;
 	}
