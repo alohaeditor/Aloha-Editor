@@ -8,7 +8,7 @@
  * Reference:
  * http://www.w3.org/TR/html401/struct/text.html
  */
-define([], function () {
+define(['arrays'], function (Arrays) {
 	'use strict';
 
 	/**
@@ -209,6 +209,13 @@ define([], function () {
 	var WHITE_SPACE = new RegExp('[' + WHITE_SPACE_CHARACTERS.join('') + ']');
 
 	/**
+	 * Regular expression that matches one or more white space characters.
+	 *
+	 * @type {RegExp}
+	 */
+	var WHITE_SPACES = new RegExp('[' + WHITE_SPACE_CHARACTERS.join('') + ']+');
+
+	/**
 	 * Regular expression that matches a zero width character.
 	 *
 	 * @type {RegExp}
@@ -399,7 +406,75 @@ define([], function () {
 		return CONTROL_CHARACTER.test(chr);
 	}
 
+	/**
+	 * Adds one or more entries to a space-delimited list.
+	 * Will return a new space delimited list with the new
+	 * entries added to the end.
+	 *
+	 * The function is designed to deal with shoddy
+	 * whitespace separations such as multiple spaces or
+	 * even newlines, that may be used on a DOM Element's
+	 * class attribute.
+	 *
+	 * @param  {!string}    list
+	 * @param  {...!string} entry
+	 * @return {string}
+	 */
+	function addToList(list) {
+		var listEntries = list.split(WHITE_SPACES);
+		var newEntries = Arrays.coerce(arguments).slice(1);
+		var newList = [];
+
+		for (var i=0; i<listEntries.length; i++) {
+			if (listEntries[i]) {
+				newList.push(listEntries[i]);
+			}
+		}
+		for (i=0; i<newEntries.length; i++) {
+			if (newEntries[i]) {
+				newList.push(newEntries[i]);
+			}
+		}
+		return newList.join(' ');
+	}
+
+	/**
+	 * Removes one or more entries from a space-delimited list.
+	 * Will return a new space delimited list with the specified
+	 * entries removed.
+	 *
+	 * The function is designed to deal with shoddy
+	 * whitespace separations such as multiple spaces or
+	 * even newlines, that may be used on a DOM Element's
+	 * class attribute.
+	 *
+	 * @param  {!string}    list
+	 * @param  {...!string} entry
+	 * @return {string}
+	 */
+	function removeFromList(list) {
+		var listArray = list.split(WHITE_SPACES);
+		var removeEntries = Arrays.coerce(arguments).slice(1);
+		return Arrays.difference(listArray, removeEntries).join(' ');
+	}
+
+	/**
+	 * Produces a space-delimited list with unique entries from
+	 * the provided list. Example:
+	 * 'one two three two four two four five' => 'one two three four five'
+	 *
+	 * @param  {!string} list
+	 * @return {string}
+	 */
+	function uniqueList(list) {
+		return Arrays.unique(list.split(WHITE_SPACES)).join(' ');
+	}
+
 	return {
+		addToList                     : addToList,
+		removeFromList                : removeFromList,
+		uniqueList                    : uniqueList,
+
 		words                         : words,
 		splitIncl                     : splitIncl,
 
@@ -413,6 +488,7 @@ define([], function () {
 		SPACE                         : SPACE,
 		NOT_SPACE                     : NOT_SPACE,
 		WHITE_SPACE                   : WHITE_SPACE,
+		WHITE_SPACES                  : WHITE_SPACES,
 		ZERO_WIDTH_SPACE              : ZERO_WIDTH_SPACE,
 		NON_BREAKING_SPACE            : NON_BREAKING_SPACE,
 		WORD_BOUNDARY                 : WORD_BOUNDARY,
