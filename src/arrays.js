@@ -228,13 +228,13 @@ define(['functions'], function (Fn) {
 	 * @return {Array.<*>}
 	 */
 	function unique(arr) {
-		var uniqueArray = [];
+		var set = [];
 		arr.forEach(function (entry) {
-			if (uniqueArray.indexOf(entry) === -1) {
-				uniqueArray.push(entry);
+			if (set.indexOf(entry) === -1) {
+				set.push(entry);
 			}
 		});
-		return uniqueArray;
+		return set;
 	}
 
 	return {
