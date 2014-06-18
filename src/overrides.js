@@ -24,12 +24,14 @@ define([
 	'dom',
 	'misc',
 	'maps',
-	'mutation'
-], function Overrides(
+	'mutation',
+	'boundaries'
+], function (
 	Dom,
 	Misc,
 	Maps,
-	Mutation
+	Mutation,
+	Boundaries
 ) {
 	'use strict';
 
@@ -186,13 +188,14 @@ define([
 	}
 
 	function consume(boundary, overrides) {
+		var doc = Boundaries.container(boundary).ownerDocument;
 		var override = overrides.pop();
 		var node;
 		var wrapper;
 		while (override) {
 			if (overrideToNode[override[0]]) {
 				// TODO: implement handling for false overrides states
-				wrapper = document.createElement(overrideToNode[override[0]]);
+				wrapper = doc.createElement(overrideToNode[override[0]]);
 				if (node) {
 					Dom.wrap(node, wrapper);
 				} else {
@@ -202,7 +205,7 @@ define([
 				node = wrapper;
 			} else {
 				if (!node) {
-					node = document.createElement('span');
+					node = doc.createElement('span');
 					Mutation.insertNodeAtBoundary(node, boundary);
 					boundary = [node, 0];
 				}

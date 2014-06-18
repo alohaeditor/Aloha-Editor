@@ -60,7 +60,10 @@ define([
 		var before = Mutation.splitTextNode(node, offset);
 		var after = before.nextSibling;
 
-		if (after && !after.nextSibling && LinkUtil.isLinkable(after.parentNode) && !Dom.isSameNode(node, reachParent)) {
+		if (after
+				&& !after.nextSibling
+				&& LinkUtil.isLinkable(after.parentNode)
+				&& !Dom.isSameNode(node, reachParent)) {
 			var parentNode = before.parentNode;
 			do {
 				after = cloneAndAppend(parentNode, after);
@@ -69,7 +72,9 @@ define([
 				Dom.removeShallow(parentNode);
 
 				parentNode = before.parentNode;
-			} while (parentNode && !Dom.isSameNode(parentNode, reachParent) && LinkUtil.isLinkable(parentNode));
+			} while (parentNode
+					&& !Dom.isSameNode(parentNode, reachParent)
+					&& LinkUtil.isLinkable(parentNode));
 		} else if (!after) {
 			after = before;
 			while (after.parentNode && !after.nextSibling && !Dom.isSameNode(after.parentNode, reachParent)) {
@@ -320,7 +325,8 @@ define([
 		var startOffset = Boundaries.offset(startBoundary);
 		var endOffset = Boundaries.offset(endBoundary);
 
-		var isSelectionInSameTextNode = Dom.isTextNode(startContainer) && Dom.isSameNode(startContainer, endContainer);
+		var isSelectionInSameTextNode = Dom.isTextNode(startContainer)
+				&& Dom.isSameNode(startContainer, endContainer);
 
 		var first = firstLinkableNode(startBoundary, commonContainer);
 

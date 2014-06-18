@@ -5,7 +5,7 @@
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  *
- * @reference:
+ * @see:
  * https://lists.webkit.org/pipermail/webkit-dev/2007-December/002992.html
  *
  * @todo:
@@ -16,7 +16,7 @@ define([
 	'strings',
 	'editables',
 	'boundaries'
-], function Keys(
+], function (
 	Ranges,
 	Strings,
 	Editables,
@@ -68,7 +68,7 @@ define([
 	/**
 	 * Whether or not the given event represents a text input.
 	 *
-	 * @reference
+	 * @see
 	 * https://lists.webkit.org/pipermail/webkit-dev/2007-December/002992.html
 	 *
 	 * @param {Event} event Native event object
@@ -104,7 +104,8 @@ define([
 		if (!event) {
 			return alohaEvent;
 		}
-		var range = (event instanceof KeyboardEvent) ? Ranges.get() : null;
+		var src = event.target || event.srcElement;
+		var range = src ? Ranges.get(src.ownerDocument) : null;
 		if (range) {
 			alohaEvent.range = range;
 			var editable = Editables.fromBoundary(

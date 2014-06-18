@@ -6,9 +6,36 @@
 		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300,700' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" type="text/css" href="../src/aloha.css">
 		<style>
+			html {
+				height: 100%;
+				background: #fefdfd;
+			}
+
 			body {
+				margin: 0;
+				padding: 5% 20%;
+				color: #565452;
+				line-height: 1.6em;
+				min-height: 100%;
+				box-shadow: 0 0 100px rgba(0,0,0,0.2) inset;
 				font-family: 'Open Sans', sans-serif;
 				font-size: 16px;
+			}
+
+			::selection {
+				background: #4285f4;
+				color: #fff;
+			}
+			::-moz-selection {
+				background: #4285f4;
+				color: #fff;
+			}
+
+			p { margin: 0 0 0.5em; }
+			p:last-child { margin-bottom: 0; }
+
+			.aloha-caret {
+				outline: 1px solid rgba(255,0,0,0.5);
 			}
 			.aloha-block {
 				width: 100px;
@@ -40,13 +67,14 @@
 				margin-left: -1em;
 			}
 		</style>
-
 		<!-- style id="metaview">
 			ul,ol,li,td,th,p,b,i,u,div,h1,h2,h3,h4,h5,h6 {
 				padding: 2px 4px;
 				margin: 2px;
 				border: 1px solid rgba(0,0,0,0.2);
 			}
+			ul,ol { border: 3px solid green; }
+			li { border: 1px solid green; }
 			p { border-color: rgba(200,0,0,0.5); }
 			span { border-color: rgba(200,200,0,0.5); }
 			b    { border-color: rgba(0,200,0,0.5) }
@@ -62,12 +90,27 @@
 				background: white;
 				min-height: 20px;
 			}
-			font {
-				background: red;
-			}
+			font { background: red; }
 		</style -->
 	</head>
 	<body>
+		<div class="aloha-editable"><b>one</b><i>two</i><u>three</u></div>
+
+		~~~
+
+		<div class="aloha-editable">
+			one
+			<div>
+				<p>two</p>
+				<p>three</p>
+			</div>
+			<div>
+				<h2>four</h2>
+				<p>five</p>
+			</div>
+		</div>
+
+		~~~
 
 		<div class="aloha-editable">
 			<h1>Aloha Editor</h1>
@@ -75,8 +118,8 @@
 				<img draggable="true"
 				     class="aloha-block"
 				     src="demo.jpg"
-					 alt=""
-					 style="float:left; margin: 0 20px 20px 0" />
+					 alt="Some Rights Reserved. Andrea O, Connell"
+					 style="float:left; width: 300px; margin: 0 20px 20px 0" />
 				Lorem    ipsum &nbsp;dolor sit amet, <b>consec<i>tet</i>ur</b> adipiscin
 				elit. Donec a diam lectus. Sed sit amet ipsum mauris.  Maecen
 				congue ligula ac quam viverra nec consectetur ante hendrerit
@@ -106,6 +149,7 @@
 				Nam tincidunt congue enim, u porta lorem lacinia consectetur.
 				Donec ut libero sed arc vehicula ultricies a non tortor
 			</p>
+			<p>one<br><br><br>two<br>three</p>
 		</div>
 		<script src="../src/require-pronto.js"></script>
 		<script src="../src/require-pronto.dev.js"></script>
@@ -119,7 +163,7 @@
 					}
 				}
 				function main(aloha) {
-					[].forEach.call(document.querySelectorAll('.aloha-editable'), aloha);
+					aloha.arrays.coerce(document.querySelectorAll('.aloha-editable')).forEach(aloha);
 				}
 				if ('undefined' === typeof aloha) {
 					setVersion('src');

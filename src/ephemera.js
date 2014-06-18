@@ -22,7 +22,7 @@ define([
 	'dom',
 	'misc',
 	'browsers'
-], function Ephemera(
+], function (
 	strings,
 	arrays,
 	maps,
@@ -67,7 +67,11 @@ define([
 		var i, len;
 		for (i = 0, len = clss.length; i < len; i++) {
 			if (-1 === clss[i].indexOf(commonClsSubstr)) {
-				console.warn('Class "' + clss[i] + '" was set to be ephemeral,' + 'which hurts peformance.' + ' Add the common substring "' + commonClsSubstr + '" to the class to fix this problem.');
+				console.warn(
+					'Class "' + clss[i] + '" was set to be ephemeral,'
+					+ 'which hurts peformance. Add the common substring "'
+					+ commonClsSubstr + '" to the class to fix this problem.'
+				);
 				commonClsSubstr = '';
 			}
 		}
@@ -308,7 +312,7 @@ define([
 	 * See ephemera().
 	 */
 	function pruneEmapAttrs(elem, emap) {
-		Maps.forEach(dom.attrs(elem), function (value, name) {
+		maps.forEach(dom.attrs(elem), function (value, name) {
 			if (isAttrEphemeral(elem, name, emap.attrMap, emap.attrRxs)) {
 				elem.removeAttribute(name);
 			}
@@ -336,7 +340,8 @@ define([
 			}
 
 			// Ephemera.markWrapper() and Ephemera.markFiller()
-			if (-1 !== classes.indexOf('aloha-ephemera-wrapper') || -1 !== classes.indexOf('aloha-ephemera-filler')) {
+			if (-1 !== classes.indexOf('aloha-ephemera-wrapper')
+					|| -1 !== classes.indexOf('aloha-ephemera-filler')) {
 				dom.moveNextAll(elem.parentNode, elem.firstChild, elem.nextSibling);
 				return false;
 			}

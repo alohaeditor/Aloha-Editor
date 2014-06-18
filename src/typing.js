@@ -17,7 +17,7 @@ define([
 	'functions',
 	'undo',
 	'overrides'
-], function Typing(
+], function (
 	Dom,
 	Mutation,
 	Keys,
@@ -246,7 +246,7 @@ define([
 		    || (alohaEvent.isTextInput && handlers.keypress.input);
 	}
 
-	function handle(alohaEvent) {
+	function doHandling(alohaEvent) {
 		if (!alohaEvent.editable) {
 			return alohaEvent;
 		}
@@ -278,7 +278,7 @@ define([
 	}
 
 	return {
-		handle  : handle,
+		handle  : doHandling,
 		actions : actions
 	};
 });

@@ -5,7 +5,7 @@
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define(['functions'], function Arrays(Fn) {
+define(['functions'], function (Fn) {
 	'use strict';
 
 	/**
@@ -219,6 +219,24 @@ define(['functions'], function Arrays(Fn) {
 		return [xs.slice(0, end), xs.slice(end)];
 	}
 
+	/**
+	 * Creates a new array that contains a unique list of entries
+	 * created from the old array. Example:
+	 * [1, 2, 2, 3, 2, 4] => [1, 2, 3, 4]
+	 *
+	 * @param  {Array.<*>} arr
+	 * @return {Array.<*>}
+	 */
+	function unique(arr) {
+		var uniqueArray = [];
+		arr.forEach(function (entry) {
+			if (uniqueArray.indexOf(entry) === -1) {
+				uniqueArray.push(entry);
+			}
+		});
+		return uniqueArray;
+	}
+
 	return {
 		contains   : contains,
 		difference : difference,
@@ -231,6 +249,7 @@ define(['functions'], function Arrays(Fn) {
 		partition  : partition,
 		some       : some,
 		someIndex  : someIndex,
-		split      : split
+		split      : split,
+		unique     : unique
 	};
 });

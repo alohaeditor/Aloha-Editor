@@ -13,14 +13,16 @@ define([
 	'dom/nodes',
 	'dom/style',
 	'dom/traversing',
-], function Dom(
+	'browsers'
+], function (
 	Fn,
 	Attrs,
 	Classes,
 	Mutation,
 	Nodes,
 	Style,
-	Traversing
+	Traversing,
+	Browsers
 ) {
 	'use strict';
 
@@ -30,8 +32,7 @@ define([
 	 * the true state, or the Element child of a Document whose designMode is
 	 * enabled.
 	 *
-	 * An element with the class "aloha-editable" is considered an editing
-	 * host.
+	 * An element with the class "aloha-editable" is considered an editing host.
 	 *
 	 * @param {!Node} node
 	 * @return {boolean} True if `node` is content editable.
@@ -70,7 +71,7 @@ define([
 	 *
 	 * An element with the class "aloha-editable" is considered editable.
 	 *
-	 * @reference:
+	 * @see:
 	 * http://www.whatwg.org/specs/web-apps/current-work/multipage/editing.html#contenteditable
 	 * http://www.whatwg.org/specs/web-apps/current-work/multipage/editing.html#designMode
 	 *
@@ -108,16 +109,16 @@ define([
 	}
 
 	/**
-	 * Checks whether the given element is an editing host.
+	 * Gets the given node's editing host.
 	 *
-	 * @param {!Node} node
+	 * @param  {Node} node
 	 * @return {boolean}
 	 */
 	function editingHost(node) {
 		if (isEditingHost(node)) {
 			return node;
 		}
-		if (!isEditable(node)) {
+		if (!isEditableNode(node)) {
 			return null;
 		}
 		var ancestor = node.parentNode;
@@ -127,6 +128,12 @@ define([
 		return ancestor;
 	}
 
+	/**
+	 * Finds the nearest editable ancestor of the given node.
+	 *
+	 * @param  {Node} node
+	 * @return {Element}
+	 */
 	function editableParent(node) {
 		var ancestor = node.parentNode;
 		while (ancestor && !isEditable(ancestor)) {
@@ -135,9 +142,15 @@ define([
 		return ancestor;
 	}
 
-	var parser = document.createElement('DIV');
-
-	function parseNode(html) {
+	/**
+	 * Parses the given HTML markup into a node.
+	 *
+	 * @param  {Node}     node
+	 * @param  {Document} doc
+	 * @return {Element}
+	 */
+	function parseNode(html, doc) {
+		var parser = doc.createElement('DIV');
 		parser.innerHTML = html;
 		var node = parser.firstChild;
 		parser.removeChild(node);
@@ -169,11 +182,11 @@ define([
 		return (/^\[object (Text|Comment|HTML\w*Element)\]$/).test(str);
 	}
 
-	function parseReviver(key, value) {
+	function parseReviver(key, value, doc) {
 		if (value && value['type'] === 'Node') {
 			var str = value['value'];
 			if (null != str) {
-				value = parseNode(str);
+				value = parseNode(str, doc);
 			}
 		}
 		return value;
@@ -329,6 +342,8 @@ define([
 		prevUntil                    : Traversing.prevUntil,
 		prevSibling                  : Traversing.prevSibling,
 		prevSiblings                 : Traversing.prevSiblings,
+		nodeAndNextSiblings          : Traversing.nodeAndNextSiblings,
+		nodeAndPrevSiblings          : Traversing.nodeAndPrevSiblings,
 		walk                         : Traversing.walk,
 		walkRec                      : Traversing.walkRec,
 		walkUntilNode                : Traversing.walkUntilNode,

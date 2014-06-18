@@ -169,10 +169,11 @@ define([
 	 *
 	 * @param  {Element} element
 	 * @param  {Element} replacement
+	 * @return {Element} Replaced element
 	 */
 	function replaceShallow(element, replacement) {
 		move(Nodes.children(element), replacement);
-		replace(element, replacement);
+		return replace(element, replacement);
 	}
 
 	/**
@@ -207,8 +208,9 @@ define([
 	/**
 	 * Wrap the node with a `nodeName` element.
 	 *
-	 * @param {Element} node
-	 * @param {string}  nodeName
+	 * @param  {Element} node
+	 * @param  {string}  nodeName
+	 * @return {Element} The wrapper element
 	 */
 	function wrapWith(node, nodeName) {
 		var wrapper = node.ownerDocument.createElement(nodeName);

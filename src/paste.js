@@ -172,7 +172,7 @@ define([
 			var next = Boundaries.nextNode(boundary);
 			if (Html.hasInlineStyle(next)) {
 				// Move the next inline nodes into the last element
-				Dom.move(Dom.nextSiblings(next, Html.hasLinebreakingStyle), last);
+				Dom.move(Dom.nodeAndNextSiblings(next, Html.hasLinebreakingStyle), last);
 			} else if (!Html.isVoidType(next) && !Html.isGroupContainer(next)) {
 				// Move the children of the last element into the beginning of
 				// the next block element
@@ -215,8 +215,9 @@ define([
 		var event = alohaEvent.nativeEvent;
 		if (event && isPasteEvent(event)) {
 			Events.suppress(event);
-			var boundary = Boundaries.get();
-			if (!boundary) {
+			var src = event.target || event.srcElement;
+			var boundaries = Boundaries.get(src.ownerDocument);
+			if (!boundaries) {
 				return alohaEvent;
 			}
 			var content = extractContent(
@@ -229,7 +230,7 @@ define([
 			Undo.capture(alohaEvent.editable.undoContext, {
 				meta: {type: 'paste'}
 			}, function () {
-				boundary = insert(boundary, content);
+				var boundary = insert(boundaries, content);
 				Selections.scrollTo(boundary);
 				alohaEvent.range = Ranges.fromBoundaries(boundary, boundary);
 			});

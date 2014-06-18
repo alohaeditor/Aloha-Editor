@@ -5,10 +5,10 @@
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  *
- * @reference
+ * @see
  * http://www.w3.org/TR/DOM-Level-3-Events/#idl-interface-MouseEvent-initializers
  */
-define(['misc', 'assert'], function Events(Misc, Assert) {
+define(['misc', 'assert'], function (Misc, Assert) {
 	'use strict';
 
 	/**
@@ -120,7 +120,7 @@ define(['misc', 'assert'], function Events(Misc, Assert) {
 	 * Sets up all editing browser events to call `editor` on the given
 	 * document.
 	 *
-	 * @reference
+	 * @see
 	 * https://en.wikipedia.org/wiki/DOM_Events
 	 * http://www.w3.org/TR/DOM-Level-3-Events
 	 *

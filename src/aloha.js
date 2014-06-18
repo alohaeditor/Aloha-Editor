@@ -12,6 +12,7 @@ define([
 	'exports',
 	'boundaries',
 	'blocks',
+	'dom',
 	'dragdrop',
 	'editables',
 	'events',
@@ -25,10 +26,11 @@ define([
 	'selection-change',
 	'typing',
 	'undo'
-], function Aloha(
+], function (
 	Api,
 	Boundaries,
 	Blocks,
+	Dom,
 	DragDrop,
 	Editables,
 	Events,
@@ -45,53 +47,43 @@ define([
 ) {
 	'use strict';
 
-	function setSelection(event) {
-		if (event.range) {
-			Ranges.select(event.range);
+	/**
+	 * Sets the given AlohaEvent's range to the document.
+	 *
+	 * @private
+	 * @param  {AlohaEvent} alohaEvent
+	 * @return {AlohaEvent}
+	 */
+	function setSelection(alohaEvent) {
+		if (alohaEvent.range && alohaEvent.editable) {
+			Ranges.select(alohaEvent.range);
 		}
-		return event;
+		return alohaEvent;
 	}
 
 	function editor(nativeEvent, custom) {
 		var alohaEvent = custom || {'nativeEvent' : nativeEvent};
 		alohaEvent.editor = editor;
-		Fn.comp(
-			function (alohaEvent) {
-				if (typeof alohaCB !== 'undefined') {
-					alohaCB(alohaEvent);
-				}
-			},
-			setSelection,
-			Selections.handle,
-			Typing.handle,
-			Blocks.handle,
-			DragDrop.handle,
-			Paste.handle,
-			function (alohaEvent) {
-				alohaEvent.editable = alohaEvent.editor.editables[1];
-				return alohaEvent;
-			},
-			Mouse.handle,
-			Keys.handle
-		)(alohaEvent);
+		alohaEvent = Fn.comp.apply(editor.stack, editor.stack)(alohaEvent);
+		setSelection(alohaEvent);
 	}
 
 	editor.editables = {};
 	editor.BLOCK_CLASS = 'aloha-block';
 	editor.CARET_CLASS = 'aloha-caret';
-	editor.selectionContext = Selections.Context();
+	editor.selectionContext = Selections.Context(document);
+	editor.stack = [
+		Selections.handle,
+		Typing.handle,
+		Blocks.handle,
+		DragDrop.handle,
+		Paste.handle,
+		Editables.handle,
+		Mouse.handle,
+		Keys.handle
+	];
 
 	Events.setup(editor, document);
-
-	/*
-	SelectionChange.addHandler(document, SelectionChange.handler(
-		Fn.partial(Boundaries.get, document),
-		Boundaries.fromEndOfNode(document),
-		function (boundaries, event) {
-			editor(event);
-		}
-	));
-	*/
 
 	/**
 	 * The Aloha Editor namespace root.
@@ -135,20 +127,26 @@ define([
 
 	window['aloha'] = aloha;
 
-	var teaser = "       _       _                      _ _ _              \n"
-	           + "  __ _| | ___ | |__   __ _    ___  __| (_) |_ ___  _ __  \n"
-	           + " / _` | |/ _ \\| '_ \\ / _` |  / _ \\/ _` | | __/ _ \\| '__| \n"
-	           + "| (_| | | (_) | | | | (_| | |  __/ (_| | | || (_) | |    \n"
-	           + " \\__,_|_|\\___/|_| |_|\\__,_|  \\___|\\__,_|_|\\__\\___/|_|.org\n"
-	           + "\n"
-	           + "Aloha, there!\n"
-	           + "\n"
-	           + "Would you like to contribute to shaping the future of "
-	           + "content editing on the web?\n"
-	           + "\n"
-	           + "Join the team at http://github.com/alohaeditor!";
+	var egg = '%c'
+	        + '       _       _                      _ _ _\n'
+	        + '  __ _| | ___ | |__   __ _    ___  __| (_) |_ ___  _ __\n'
+	        + ' / _` | |/ _ \\| \'_ \\ / _` |  / _ \\/ _` | | __/ _ \\| \'__|\n'
+	        + '| (_| | | (_) | | | | (_| | |  __/ (_| | | || (_) | |\n'
+	        + ' \\__,_|_|\\___/|_| |_|\\__,_|  \\___|\\__,_|_|\\__\\___/|_|.org\n'
+	        + '\n'
+	        + '%c'
+	        + ' Aloha! '
+	        + '\n'
+	        + ' Help us shape the future of content editing on the web! '
+	        + '\n'
+	        + ' Join the team at %c http://github.com/alohaeditor ♥ ';
 
-	//console.log(teaser);
+	console.log(
+		egg,
+		'color: #09d;',
+		'font-size: 14px; background: #09d; color: #fff; padding: 0.5em 0; line-height: 2em;',
+		'font-size: 14px; background: #fe7; color: #111; padding: 0.5em 0; line-height: 2em;'
+	);
 
 	return aloha;
 });

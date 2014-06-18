@@ -5,18 +5,18 @@
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define([], function Assert() {
+define([], function () {
 	'use strict';
 
 	/**
 	 * Generates an error message with a link to corresponding helpful resource
 	 * on the Aloha Editor website.
 	 *
-	 * @param  {String} type
-	 * @return {String}
+	 * @param  {string} type
+	 * @return {string}
 	 */
 	function errorLink(type) {
-		return 'Error (' + type + '). See http://www.aloha-editor.org/docs/errors/' + type;
+		return '✘ Error (' + type + '). See http://www.aloha-editor.org/docs/errors/' + type;
 	}
 
 	var NOT_IMPLEMENTED = 0;

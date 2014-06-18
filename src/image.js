@@ -11,7 +11,7 @@ define([
 	'image/image-selection',
 	'paste',
 	'ranges'
-], function(
+], function (
 	Boundaries,
 	Dom,
 	ImageSelection,
@@ -71,7 +71,6 @@ define([
 	 * @param {Document} doc
 	 */
 	function insert(attributes, doc) {
-		doc = doc || document;
 		var range = Ranges.get(doc);
 		if (range) {
 			insertFromRange(range, attributes);
@@ -99,7 +98,6 @@ define([
 	 * @param {Document} doc
 	 */
 	function setAttributes(attributes, doc) {
-		doc = doc || document;
 		var range = Ranges.get(doc);
 		if (range) {
 			setAttributesFromRange(range, attributes);

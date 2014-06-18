@@ -6,163 +6,180 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
+	'functions',
 	'dom',
-	'transform/ms-word/utils'
+	'arrays',
+	'../utils'
 ], function (
+	Fn,
 	Dom,
-    WordUtils
+	Arrays,
+	Utils
 ) {
 	'use strict';
 
 	/**
-	 * @const
+	 * Match MsoToc.
+	 *
+	 * @private
 	 * @type {RegExp}
-	 * */
+	 */
 	var TOC_CLASS_NAME = /MsoToc(\d+)/;
 
 	/**
-	 * Gets the TOC element level number.
+	 * Extracts the TOC element level number, otherwise returns null.
 	 *
+	 * @private
 	 * @param  {Element} element
-	 * @return {?number} TOC number or null if not exists
+	 * @return {?number}
 	 */
-	function getTocLevel(element) {
+	function extractLevel(element) {
 		var match = TOC_CLASS_NAME.exec(Dom.getAttr(element, 'class'));
 		return (match && match[1]) ? parseInt(match[1], 10) : null;
 	}
 
 	/**
-	 * Creates list item containing the contents of the given element.
+	 * Checks whether the given node is a TOC header paragraph.
+	 *
+	 * @private
+	 * @param  {Node}
+	 * @return {boolean}
+	 */
+	function isTocHeading(node) {
+		return 'P' === node.nodeName && Dom.hasClass(node, 'MsoTocHeading');
+	}
+
+	/**
+	 * Checks whether the given node is a TOC list item.
+	 *
+	 * @private
+	 * @param  {Node}
+	 * @return {boolean}
+	 */
+	function isTocItem(node) {
+		if (!Dom.isElementNode(node)) {
+			return false;
+		}
+		var match = TOC_CLASS_NAME.exec(Dom.getAttr(node, 'class'));
+		return match ? match.length > 0 : false;
+	}
+
+	/**
+	 * Creates a list DOM structure based on the given `list` data structure
+	 * (created from createList()).
+	 *
+	 * @private
+	 * @param  {Object} list
+	 * @param  {string} marker
+	 * @return {Element}
+	 */
+	function constructList(list, marker) {
+		var container = list.node.ownerDocument.createElement('ul');
+		var items = list.items.reduce(function (items, item) {
+			var children = item.reduce(function (children, contents) {
+				return children.concat(
+					contents[marker] ? constructList(contents, marker)
+					                 : contents
+				);
+			}, []);
+			var li = list.node.ownerDocument.createElement('li');
+			Dom.copy(children, li);
+			return items.concat(li);
+		}, []);
+		Dom.move(items, container);
+		return container;
+	}
+
+	/**
+	 * Takes a flat list of nodes, which consitutes a (multi-level) list in
+	 * MS-Word and generates a standard HTML list DOM structure from it.
+	 *
+	 * This function requires that the given list of nodes must begin with a
+	 * list-paragraph, and must end with a list-paragraph since this is the only
+	 * valid way that lists are represented in MS-Word.
+	 *
+	 * @private
+	 * @param  {Array.<Node>}              nodes
+	 * @param  {function(Element):Element} transform
+	 * @return {?Element}
+	 */
+	function createList(nodes, transform) {
+		var i, j, l, node, list, first, last, level;
+		var marker = '_aloha' + (new Date().getTime());
+
+		for (i = 0; i < nodes.length; i++) {
+			node = transform(nodes[i]);
+			level = extractLevel(node);
+
+			if (!list) {
+				first = list = {
+					parent : null,
+					level  : 1,
+					node   : node,
+					items  : []
+				};
+				list[marker] = true;
+			} else if (level > list.level) {
+				for (j = list.level; j < level; j++) {
+					list = {
+						parent : list,
+						level  : j + 1,
+						node   : node,
+						items  : []
+					};
+					list[marker] = true;
+					last = Arrays.last(list.parent.items);
+					if (!last) {
+						last = [];
+						list.parent.items.push(last);
+					}
+					last.push(list);
+				}
+			} else if (level < list.level) {
+				for (j = level, l = list.level; j < l && list.parent; j++) {
+					list = list.parent;
+				}
+			}
+
+			list.items.push(Dom.children(node));
+		}
+
+		return first && constructList(first, marker);
+	}
+
+	/**
+	 * Transforms MS Office table of contents into a normalized HTML list.
 	 *
 	 * @param  {Element} element
-	 * @return {Element} An LI element
-	 */
-	function createListItem(element) {
-		var li = element.ownerDocument.createElement('li');
-		//li.innerHTML = Dom.textContent(element);
-		Dom.move(Dom.children(Dom.clone(element)), li);
-		return li;
-	}
-
-	/**
-	 * Creates an unordered list.
-	 *
-	 * @param  {Element} doc
-	 * @return {Element}
-	 */
-	function createUnorderedList(doc) {
-		var ul = doc.createElement('ul');
-		Dom.setAttr(ul, 'style', 'list-style: none;');
-		return ul;
-	}
-
-	/**
-	 * Creates a nested list.
-	 *
-	 * @param  {number}  actualTocNumber Number of TOC level
-	 * @param  {number}  lastTocNumber   Number of the last TOC level
-	 * @param  {Element} listElement
-	 * @return {Element} List element
-	 */
-	function createNestedList(actualTocNumber, lastTocNumber, listElement) {
-		var list;
-		var doc = listElement.ownerDocument;
-		    createListFn = function() {
-		        var list = doc.createElement('ul');
-		        Dom.setAttr(list, 'style', 'list-style: none;');
-		        return list;
-		    };
-		return WordUtils.createNestedList(actualTocNumber, lastTocNumber, listElement, createListFn);
-
-	}
-
-	/**
-	 * Transforms table of contents.
-	 *
-	 * @param {!Element} tocElement
-	 * @param {!Element} parentNode Parent node of the tocElement
-	 * @return {Element}
-	 */
-	function transformTocHeading(tocElement, parentNode) {
-		var doc = tocElement.ownerDocument,
-		    nextSibling = tocElement,
-		    listElement = createUnorderedList(doc),
-		    lastTocNumber = 1,
-		    actualTocNumber;
-
-		while (nextSibling && (actualTocNumber = getTocLevel(nextSibling))) {
-			if (actualTocNumber !== lastTocNumber) {
-				listElement = createNestedList(actualTocNumber, lastTocNumber, listElement);
-				lastTocNumber = actualTocNumber;
-			}
-			listElement.appendChild(createListItem(nextSibling));
-			nextSibling = WordUtils.nextSiblingAndRemoves(nextSibling, parentNode);
-		}
-
-		// Get the first list
-		while (listElement.parentNode) {
-			listElement = listElement.parentNode;
-		}
-		return listElement;
-	}
-
-
-	/**
-	 * Remove useless TOC elements.
-	 * 
-	 * @param {Element} element
-	 */
-	function removeUselessElements(element) {
-		var i,
-		    len,
-		    msoHideSpans = element.querySelectorAll('span[style*="mso-hide"]'),
-		    tocRefs = element.querySelectorAll('a[name^="_Toc"]');
-
-		for (i = 0, len = tocRefs.length; i < len; i++) {
-			Dom.removeShallow(tocRefs[i]);
-		}
-
-		for (i = 0, len = msoHideSpans.length; i < len; i++) {
-			msoHideSpans[i].parentNode.removeChild(msoHideSpans[i]);
-		}
-	}
-
-	/**
-	 * Replaces Table of Contents headings by headers 'h1'.
-	 * 
-	 * @param {Element} element
-	 */
-	function replaceTocHeadings(element) {
-		var headingH1,
-			tocHeadings = element.querySelectorAll('p[class^="MsoTocHeading"]'),
-		    doc = element.ownerDocument;
-
-		for (var i = 0, len = tocHeadings.length; i < len; i++) {
-			headingH1 = doc.createElement('h1');
-			headingH1.appendChild(doc.createTextNode(tocHeadings[i].textContent));
-			tocHeadings[i].parentNode.replaceChild(headingH1, tocHeadings[i]);
-		}
-	}
-
-	/**
-	 * Transforms MS Office table of contents.
-	 *
-	 * @param {Element} element
+	 * @return {Element} A normalized copy of `element`
 	 */
 	function transform(element) {
-		var msoToc;
-		var anchorSpan;
-		var listElement;
-
-		removeUselessElements(element);
-		replaceTocHeadings(element);
-
-		while ((msoToc = element.querySelector('p[class^="MsoToc"]')) !== null) {
-			anchorSpan = msoToc.ownerDocument.createElement('span');
-			msoToc.parentNode.insertBefore(anchorSpan, msoToc);
-			listElement = transformTocHeading(msoToc, anchorSpan.parentNode);
-			anchorSpan.parentNode.replaceChild(listElement, anchorSpan);
+		var notTocItem = Fn.complement(isTocItem);
+		var children = Dom.children(element);
+		var processed = [];
+		var l = children.length;
+		var i;
+		var list;
+		var node;
+		var nodes;
+		for (i = 0; i < l; i++) {
+			node = children[i];
+			if (isTocHeading(node)) {
+				processed.push(Utils.rewrap(node, 'h1'));
+			} else if (isTocItem(node)) {
+				nodes = Arrays.split(Dom.nodeAndNextSiblings(node), notTocItem)[0];
+				list = createList(nodes, transform);
+				if (list) {
+					processed.push(list);
+					i += nodes.length - 1;
+				}
+			} else {
+				processed.push(transform(node));
+			}
 		}
+		var clone = Dom.clone(element, false);
+		Dom.move(processed, clone);
+		return clone;
 	}
 
 	return {

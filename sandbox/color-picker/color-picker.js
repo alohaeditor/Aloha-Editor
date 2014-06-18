@@ -2,7 +2,7 @@ define([
 	'dom',
 	'ranges',
 	'colors',
-	'sandbox/color-picker/overlay'
+	'./overlay'
 ], function ColorPicker(
 	dom,
 	ranges,
@@ -17,7 +17,7 @@ define([
 
 	function pick(picked, range, setColor, unsetColor) {
 		if (range.collapsed) {
-			ranges.extendToWord(range);
+			ranges.expand(range, 'word');
 		}
 		if (dom.hasClass(picked.firstChild, 'clear')) {
 			unsetColor(range, picked.firstChild);
@@ -30,7 +30,7 @@ define([
 	var rangeAtOpen;
 
 	function show(anchor, overlay, getSwatchClass, getColor) {
-		rangeAtOpen = ranges.get();
+		rangeAtOpen = ranges.get(overlay.$element[0].ownerDocument);
 		if (rangeAtOpen) {
 			var swatchClass = getSwatchClass(getColor(rangeAtOpen));
 			if (swatchClass) {

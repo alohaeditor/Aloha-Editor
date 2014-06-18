@@ -1,5 +1,5 @@
 /**
- * transform/ms-word-transform-list.js is part of Aloha Editor project http://aloha-editor.org
+ * transform/ms-word/list.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
@@ -46,8 +46,17 @@ define([
 	var LIST_IGNORE_STYLE = /mso-list:\s*Ignore/i;
 
 	/**
+	 * Matches mso-list level.
+	 *
+	 * @private
+	 * @type {RegExp}
+	 */
+	var MSO_LIST_LEVEL = /mso-list:.*?level(\d+)/i;
+
+	/**
 	 * Extracts the number from an ordered list item.
 	 *
+	 * @private
 	 * @param  {Element} element
 	 * @return {?String}
 	 */
@@ -70,6 +79,7 @@ define([
 	 * numbering type for the list is, and a property "start" that indicates
 	 * the start value of the numbering.
 	 *
+	 * @private
 	 * @param  {Element} p
 	 * @return {Object}
 	 */
@@ -98,6 +108,7 @@ define([
 	 * Checks whether the given list-paragraph contains a leading span that
 	 * denotes it as an ordered list.
 	 *
+	 * @private
 	 * @param  {Element} p
 	 * @return {boolean}
 	 */
@@ -130,6 +141,7 @@ define([
 	 *     <span>List item</span>
 	 * </p>
 	 *
+	 * @private
 	 * @param  {Node} node
 	 * @return {boolean}
 	 */
@@ -144,6 +156,7 @@ define([
 	/**
 	 * Checks whether the given node is a msword list-paragraph.
 	 *
+	 * @private
 	 * @param  {Node} node
 	 * @return {boolean}
 	 */
@@ -161,6 +174,7 @@ define([
 	 * Checks whether the given node is a list-paragraph that denotes the start
 	 * of a new list.
 	 *
+	 * @private
 	 * @param  {Node} node
 	 * @return {boolean}
 	 */
@@ -173,6 +187,7 @@ define([
 	 * Checks whether the given node is a list-paragraph that denotes a one
 	 * item list.
 	 *
+	 * @private
 	 * @param  {Node} node
 	 * @return {boolean}
 	 */
@@ -185,6 +200,7 @@ define([
 	 * Checks whether the given element is a paragraph the demarks last item in
 	 * a list.
 	 *
+	 * @private
 	 * @param  {Element} node
 	 * @return {boolean}
 	 */
@@ -197,6 +213,7 @@ define([
 	 * Checks whether the given node is a list-paragraph that denotes the start
 	 * of a list item (as opposed to a continuation of a list element).
 	 *
+	 * @private
 	 * @param  {Node} node
 	 * @return {boolean}
 	 */
@@ -210,6 +227,7 @@ define([
 	/**
 	 * Creates an a list container from the given list-paragraph.
 	 *
+	 * @private
 	 * @param  {Element} p
 	 * @return {Element}
 	 */
@@ -232,11 +250,12 @@ define([
 	/**
 	 * Extracts the list item level from the given list-paragraph.
 	 *
+	 * @private
 	 * @param  {Element} p
 	 * @return {number}
 	 */
 	function extractLevel(p) {
-		var match = /mso-list:.*?level(\d+)/i.exec(Dom.getAttr(p, 'style'));
+		var match = MSO_LIST_LEVEL.exec(Dom.getAttr(p, 'style'));
 		return (match && match[1]) ? parseInt(match[1], 10) : 1;
 	}
 
@@ -244,8 +263,9 @@ define([
 	 * Creates a list DOM structure based on the given `list` data structure
 	 * (created from createList()).
 	 *
+	 * @private
 	 * @param  {Object} list
-	 * @param  {String} marker
+	 * @param  {string} marker
 	 * @return {Element}
 	 */
 	function constructList(list, marker) {
@@ -270,9 +290,10 @@ define([
 	 * MS-Word and generates a standard HTML list DOM structure from it.
 	 *
 	 * This function requires that the given list of nodes must begin with a
-	 * list-paragraph, and must end with a list-paragraph since this is the
-	 * only valid way that lists are represented in MS-Word.
+	 * list-paragraph, and must end with a list-paragraph since this is the only
+	 * valid way that lists are represented in MS-Word.
 	 *
+	 * @private
 	 * @param  {Array.<Node>}              nodes
 	 * @param  {function(Element):Element} transform
 	 * @return {?Element}
@@ -330,8 +351,9 @@ define([
 				last.push(node);
 			} else {
 				// Because `node` is a new list item
-				var li = Dom.children(node).filter(Fn.complement(isIgnorableSpan));
-				list.items.push(li);
+				list.items.push(
+					Dom.children(node).filter(Fn.complement(isIgnorableSpan))
+				);
 			}
 		}
 
@@ -367,7 +389,7 @@ define([
 			} else if (!isFirstListParagraph(node)) {
 				processed.push(transform(node));
 			} else {
-				nodes =  Dom.nextSiblings(node, isLastListParagraph);
+				nodes = Dom.nodeAndNextSiblings(node, isLastListParagraph);
 				// Becuase Dom.nextSibling() excludes the predicative node
 				last = Arrays.last(nodes).nextSibling;
 				if (last) {

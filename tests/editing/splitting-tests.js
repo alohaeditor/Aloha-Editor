@@ -15,9 +15,7 @@
 			$('#test-editable').empty().html(before);
 			var dom = $('#test-editable')[0].firstChild;
 			var boundaries = BoundaryMarkers.extract(dom);
-			var range = Ranges.fromBoundaries(boundaries[0], boundaries[1]);
-			dom = mutate(dom, range) || dom;
-			boundaries = Boundaries.fromRange(range);
+			boundaries = mutate(dom, boundaries[0], boundaries[1]);
 			BoundaryMarkers.insert(boundaries[0], boundaries[1]);
 			var actual = Xhtml.nodeToXhtml(dom);
 			if ($.type(expected) === 'function') {
@@ -29,11 +27,12 @@
 	}
 
 	var t = function (title, before, after) {
-		testMutation('editing.split ' + title, before, after, function (dom, range) {
+		testMutation('editing.split ' + title, before, after, function (dom, start, end) {
+			var range = Ranges.fromBoundaries(start, end);
 			function below(node) {
 				return node.nodeName === 'DIV';
 			}
-			Editing.split(range, {below: below});
+			return Editing.split(range, {below: below});
 		});
 	};
 
@@ -95,7 +94,8 @@
 	  '<div>{<i><u><sub></sub></u>a</i>b<i>c<u><sub></sub></u></i>}</div>');
 
 	t = function (title, before, after) {
-		testMutation('editing.split+format - ' + title, before, after, function (dom, range) {
+		testMutation('editing.split+format - ' + title, before, after, function (dom, start, end) {
+			var range = Ranges.fromBoundaries(start, end);
 			var cac = range.commonAncestorContainer;
 			function until(node) {
 				return node.nodeName === 'CODE';
@@ -103,8 +103,8 @@
 			function below(node) {
 				return cac === node;
 			}
-			Editing.split(range, {below: below, until: until});
-			Editing.wrap(range, 'B');
+			var boundaries = Editing.split(range, {below: below, until: until});
+			return Editing.wrap('B', boundaries[0], boundaries[1]);
 		});
 	};
 

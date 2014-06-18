@@ -59,4 +59,30 @@
 		equal(Strings.isControlCharacter('a'), false);
 	});
 
+	test('addToList', function () {
+		equal(Strings.addToList('one two', 'three'), 'one two three');
+		equal(Strings.addToList('one two', 'three', 'four'), 'one two three four');
+		equal(Strings.addToList('', 'one'), 'one');
+		equal(Strings.addToList('one', ''), 'one');
+		equal(Strings.addToList('one', '', 'two', '', 'three'), 'one two three');
+		equal(Strings.addToList('one\n  two\t three\n\n\t\tfour', 'five'), 'one two three four five');
+	});
+
+	test('removeFromList', function () {
+		equal(Strings.removeFromList('one two three', 'one'), 'two three');
+		equal(Strings.removeFromList('one two three', 'two'), 'one three');
+		equal(Strings.removeFromList('one two three', 'three'), 'one two');
+		equal(Strings.removeFromList('one two three', 'bla'), 'one two three');
+		equal(Strings.removeFromList('one two three', ''), 'one two three');
+		equal(Strings.removeFromList('', 'one'), '');
+		equal(Strings.removeFromList('one\n  two\t three\n\n\t\tfour', 'three'), 'one two four');
+	});
+
+	test('uniqueList', function () {
+		equal(Strings.uniqueList('one two two'), 'one two');
+		equal(Strings.uniqueList('one two two three'), 'one two three');
+		equal(Strings.uniqueList('one two two three four four four three five'), 'one two three four five');
+		equal(Strings.uniqueList('one\n two\t\t two three\n\n\t one\tfour'), 'one two three four');
+	});
+
 }(window.aloha));

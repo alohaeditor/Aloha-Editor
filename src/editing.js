@@ -33,7 +33,7 @@ define([
 	'stable-range',
 	'cursors',
 	'content'
-], function Editing(
+], function (
 	Dom,
 	Mutation,
 	Boundaries,
@@ -134,7 +134,15 @@ define([
 	 * Requires range's boundary points to be between nodes
 	 * (Mutation.splitTextContainers).
 	 */
-	function walkBoundaryLeftRightInbetween(liveRange, carryDown, stepLeftStart, stepRightStart, stepLeftEnd, stepRightEnd, stepPartial, stepInbetween, arg) {
+	function walkBoundaryLeftRightInbetween(liveRange,
+	                                        carryDown,
+	                                        stepLeftStart,
+	                                        stepRightStart,
+	                                        stepLeftEnd,
+	                                        stepRightEnd,
+	                                        stepPartial,
+	                                        stepInbetween,
+	                                        arg) {
 		// Because range may be mutated during traversal, we must only
 		// refer to it before traversal.
 		var cac = liveRange.commonAncestorContainer;
@@ -187,8 +195,23 @@ define([
 	 * Requires range's boundary points to be between nodes
 	 * (Mutation.splitTextContainers).
 	 */
-	function walkBoundaryInsideOutside(liveRange, carryDown, stepOutside, stepPartial, stepInside, arg) {
-		walkBoundaryLeftRightInbetween(liveRange, carryDown, stepOutside, stepInside, stepInside, stepOutside, stepPartial, stepInside, arg);
+	function walkBoundaryInsideOutside(liveRange,
+	                                   carryDown,
+	                                   stepOutside,
+	                                   stepPartial,
+	                                   stepInside,
+	                                   arg) {
+		walkBoundaryLeftRightInbetween(
+			liveRange,
+			carryDown,
+			stepOutside,
+			stepInside,
+			stepInside,
+			stepOutside,
+			stepPartial,
+			stepInside,
+			arg
+		);
 	}
 
 	/**
@@ -202,20 +225,46 @@ define([
 	 * Requires range's boundary points to be between nodes
 	 * (Mutation.splitTextContainers).
 	 */
-	function pushDownContext(liveRange, pushDownFrom, cacOverride, getOverride, clearOverride, clearOverrideRec, pushDownOverride) {
+	function pushDownContext(liveRange,
+	                         pushDownFrom,
+	                         cacOverride,
+	                         getOverride,
+	                         clearOverride,
+	                         clearOverrideRec,
+	                         pushDownOverride) {
 		// Because range may be mutated during traversal, we must only
 		// refer to it before traversal.
 		var cac = liveRange.commonAncestorContainer;
-		walkBoundaryInsideOutside(liveRange, getOverride, pushDownOverride, clearOverride, clearOverrideRec, cacOverride);
+		walkBoundaryInsideOutside(
+			liveRange,
+			getOverride,
+			pushDownOverride,
+			clearOverride,
+			clearOverrideRec,
+			cacOverride
+		);
 		var fromCacToTop = Dom.childAndParentsUntilInclNode(
 			cac,
 			pushDownFrom
 		);
-		ascendWalkSiblings(fromCacToTop, false, getOverride, pushDownOverride, clearOverride, pushDownOverride, null);
+		ascendWalkSiblings(
+			fromCacToTop,
+			false,
+			getOverride,
+			pushDownOverride,
+			clearOverride,
+			pushDownOverride,
+			null
+		);
 		clearOverride(pushDownFrom);
 	}
 
-	function findReusableAncestor(range, hasContext, getOverride, isUpperBoundary, isReusable, isObstruction) {
+	function findReusableAncestor(range,
+	                              hasContext,
+	                              getOverride,
+	                              isUpperBoundary,
+	                              isReusable,
+	                              isObstruction) {
 		var obstruction = null;
 		function beforeAfter(node) {
 			obstruction = (obstruction
@@ -373,7 +422,9 @@ define([
 			var override = getInheritableOverride(node);
 			if (null != override && !isContextOverride(override)) {
 				topmostOverrideNode = node;
-				isNonClearableOverride = isNonClearableOverride || upperBoundaryAndAbove || !isClearable(node);
+				isNonClearableOverride = isNonClearableOverride
+				                      || upperBoundaryAndAbove
+				                      || !isClearable(node);
 				if (null == cacOverride) {
 					cacOverride = override;
 				}
@@ -387,20 +438,47 @@ define([
 			if (!topmostOverrideNode) {
 				// Because, if there is no override in the way, we only
 				// need to clear the overrides contained in the range.
-				walkBoundaryInsideOutside(liveRange, getOverride, pushDownOverride, clearOverride, clearOverrideRec);
+				walkBoundaryInsideOutside(
+					liveRange,
+					getOverride,
+					pushDownOverride,
+					clearOverride,
+					clearOverrideRec
+				);
 			} else {
 				var pushDownFrom = topmostOverrideNode;
-				pushDownContext(liveRange, pushDownFrom, cacOverride, getOverride, clearOverride, clearOverrideRec, pushDownOverride);
+				pushDownContext(
+					liveRange,
+					pushDownFrom,
+					cacOverride,
+					getOverride,
+					clearOverride,
+					clearOverrideRec,
+					pushDownOverride
+				);
 			}
 		} else {
 			var mySetContext = function (node, override) {
 				setContext(node, override, isNonClearableOverride);
 			};
-			var reusableAncestor = findReusableAncestor(liveRange, hasContext, getOverride, isUpperBoundary, isReusable, isObstruction);
+			var reusableAncestor = findReusableAncestor(
+				liveRange,
+				hasContext,
+				getOverride,
+				isUpperBoundary,
+				isReusable,
+				isObstruction
+			);
 			if (reusableAncestor) {
 				mySetContext(reusableAncestor);
 			} else {
-				walkBoundaryInsideOutside(liveRange, getOverride, pushDownOverride, clearOverride, mySetContext);
+				walkBoundaryInsideOutside(
+					liveRange,
+					getOverride,
+					pushDownOverride,
+					clearOverride,
+					mySetContext
+				);
 			}
 		}
 	}
@@ -435,6 +513,14 @@ define([
 		Dom.insert(node, ref, atEnd);
 	}
 
+	/**
+	 * TODO documentation
+	 *
+	 * @param  {Range}    liveRange
+	 * @param  {Function} mutate
+	 * @param  {Function} trim
+	 * @return {Array.<Boundary>}
+	 */
 	function fixupRange(liveRange, mutate, trim) {
 		// Because we are mutating the range several times and don't want the
 		// caller to see the in-between updates, and because we are using
@@ -504,6 +590,7 @@ define([
 
 		var boundaries = Boundaries.fromRange(range);
 		Boundaries.setRange(liveRange, boundaries[0], boundaries[1]);
+		return boundaries;
 	}
 
 	function restackRec(node, hasContext, ignoreHorizontal, ignoreVertical) {
@@ -541,14 +628,21 @@ define([
 		return context;
 	}
 
-	function ensureWrapper(node, createWrapper, isWrapper, isMergable, pruneContext, addContextValue, leftPoint, rightPoint) {
+	function ensureWrapper(node,
+	                       createWrapper,
+	                       isWrapper,
+	                       isMergable,
+	                       pruneContext,
+	                       addContextValue,
+	                       leftPoint,
+	                       rightPoint) {
 		var sibling = node.previousSibling;
 		if (sibling && isMergable(sibling) && isMergable(node)) {
 			moveBackIntoWrapper(node, sibling, true, leftPoint, rightPoint);
 			// Because the node itself may be a wrapper.
 			pruneContext(node);
 		} else if (!isWrapper(node)) {
-			var wrapper = createWrapper();
+			var wrapper = createWrapper(node.ownerDocument);
 			if (wrap(node, wrapper, leftPoint, rightPoint)) {
 				// Because we are just making sure (probably not
 				// necessary since the node isn't a wrapper).
@@ -557,7 +651,16 @@ define([
 				// Because if wrapping is not successful, we try again
 				// one level down.
 				Dom.walk(node.firstChild, function (node) {
-					ensureWrapper(node, createWrapper, isWrapper, isMergable, pruneContext, addContextValue, leftPoint, rightPoint);
+					ensureWrapper(
+						node,
+						createWrapper,
+						isWrapper,
+						isMergable,
+						pruneContext,
+						addContextValue,
+						leftPoint,
+						rightPoint
+					);
 				});
 			}
 		} else {
@@ -604,8 +707,8 @@ define([
 			Mutation.removeShallowPreservingCursors(node, [leftPoint, rightPoint]);
 		}
 
-		function createContextWrapper(value) {
-			var wrapper = createWrapper(value);
+		function createContextWrapper(value, doc) {
+			var wrapper = createWrapper(value, doc);
 			var key = ':' + value;
 			var wrappers = wrappersByContextValue[key] = wrappersByContextValue[key] || [];
 			wrappers.push(wrapper);
@@ -698,7 +801,14 @@ define([
 			function isGivenContextValue(node) {
 				return hasContextValue(node, contextValue);
 			}
-			sibling = restack(sibling, isGivenContextValue, Html.isUnrenderedWhitespace, Html.hasInlineStyle, leftPoint, rightPoint);
+			sibling = restack(
+				sibling,
+				isGivenContextValue,
+				Html.isUnrenderedWhitespace,
+				Html.hasInlineStyle,
+				leftPoint,
+				rightPoint
+			);
 			if (!sibling) {
 				return;
 			}
@@ -706,7 +816,16 @@ define([
 			var createWrapper = Fn.partial(createContextWrapper, contextValue);
 			var addValue = Fn.partial(addContextValue, contextValue);
 			var mergeNode = mergeNext ? sibling : wrapper;
-			ensureWrapper(mergeNode, createWrapper, isReusable, isMergable, pruneContext, addValue, leftPoint, rightPoint);
+			ensureWrapper(
+				mergeNode,
+				createWrapper,
+				isReusable,
+				isMergable,
+				pruneContext,
+				addValue,
+				leftPoint,
+				rightPoint
+			);
 		}
 
 		function mergeWrapper(wrapper, contextValue) {
@@ -899,12 +1018,12 @@ define([
 		function isPrunable(node) {
 			return isReusable(node) && !Dom.hasAttrs(node);
 		}
-		function createWrapper(value) {
+		function createWrapper(value, doc) {
 			value = normalizeStyleValue(value);
 			if (wrapperProps && isStyleEqual(wrapperProps.value, value)) {
-				return document.createElement(wrapperProps.name);
+				return doc.createElement(wrapperProps.name);
 			}
-			var wrapper = document.createElement('SPAN');
+			var wrapper = doc.createElement('SPAN');
 			Dom.setStyle(wrapper, styleName, value);
 			return wrapper;
 		}
@@ -932,8 +1051,8 @@ define([
 		// Because we assume nodeNames are always uppercase, but don't
 		// want the user to remember this detail.
 		nodeName = nodeName.toUpperCase();
-		function createWrapper() {
-			return document.createElement(nodeName);
+		function createWrapper(wrapper, doc) {
+			return doc.createElement(nodeName);
 		}
 		function getOverride(node) {
 			return nodeName === node.nodeName || null;
@@ -1015,15 +1134,17 @@ define([
 	 *        instead of creating a new wrapper node. May be merged with
 	 *        other reusable or newly created wrapper nodes.
 	 */
-	function wrapElem(liveRange, nodeName, remove, opts) {
+	function wrapElem(nodeName, start, end, remove, opts) {
 		opts = opts || {};
+
+		var liveRange = Ranges.fromBoundaries(start, end);
 
 		// Because we should avoid splitTextContainers() if this call is a noop.
 		if (liveRange.collapsed) {
-			return;
+			return [start, end];
 		}
 
-		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
+		return fixupRange(liveRange, function (range, leftPoint, rightPoint) {
 			var formatter = makeElemFormatter(nodeName, remove, leftPoint, rightPoint, opts);
 			mutate(range, formatter);
 			return formatter;
@@ -1031,10 +1152,10 @@ define([
 	}
 
 	/**
-	 * Ensures the given range is wrapped by elements that have a given
-	 * CSS style set.
+	 * Ensures the contents between start and end are wrapped by elements 
+	 * that have a given CSS style set. Returns the updated boundaries.
 	 *
-	 * @param styleName a CSS style name.
+	 * @param styleName a CSS style name
 	 *        Please note that not-inherited styles currently may (or
 	 *        may not) cause undesirable results.  See also
 	 *        Html.isStyleInherited().
@@ -1058,20 +1179,59 @@ define([
 	 *        TODO currently we just use strict equals by default, but
 	 *             we should implement for each supported style it's own
 	 *             equals function.
+	 * @return {Array.<Boundary>}
 	 */
-	function format(liveRange, styleName, styleValue, opts) {
+	function style(styleName, styleValue, start, end, opts) {
+		var liveRange = Ranges.fromBoundaries(start, end);
+
 		opts = opts || {};
 
 		// Because we should avoid splitTextContainers() if this call is a noop.
 		if (liveRange.collapsed) {
-			return;
+			return [start, end];
 		}
 
-		fixupRange(liveRange, function (range, leftPoint, rightPoint) {
+		return fixupRange(liveRange, function (range, leftPoint, rightPoint) {
 			var formatter = makeStyleFormatter(styleName, styleValue, leftPoint, rightPoint, opts);
 			mutate(range, formatter);
 			return formatter;
 		});
+	}
+
+	/**
+	 * Format the selection defined by start and end boundary,
+	 * by wrapping it within a node (eg. 'b', 'i', 'em')
+	 * Returns an array with updated boundaries.
+	 *
+	 * @param {!Boundary} start
+	 * @param {!Boundary} end
+	 * @param {!string}   node
+	 * @return {Array.<Boundary>}
+	 */
+	function format(node, start, end) {
+		var styleName = resolveStyleName(node);
+		if (styleName === false) {
+			return [start, end];
+		}
+		return style(styleName, true, start, end);
+	}
+
+	/**
+	 * Resolves the according CSS style name for an uppercase (!) node name
+	 * passed in styleNode. Will return the CSS name of the style (eg. 'bold') 
+	 * or false.
+	 * So 'B' will eg. be resolved to 'bold'
+	 *
+	 * @param {string} styleNode
+	 * @return {string|false}
+	 */
+	function resolveStyleName(styleNode) {
+		for (var styleName in wrapperProperties) {
+			if (wrapperProperties[styleName].nodes.indexOf(styleNode) !== -1) {
+				return styleName;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -1236,6 +1396,7 @@ define([
 	 *        may not become children of the topmost unsplit node. Also,
 	 *        if splitUntil() returns true, the selection may be moved
 	 *        out of an unsplit node which may be unexpected.
+	 * @return {Array.<Boundary>}
 	 */
 	function split(liveRange, opts) {
 		opts = opts || {};
@@ -1247,7 +1408,7 @@ define([
 			normalizeRange: true
 		}, opts);
 
-		fixupRange(liveRange, function (range, left, right) {
+		return fixupRange(liveRange, function (range, left, right) {
 			splitRangeAtBoundaries(range, left, right, opts);
 			return null;
 		});
@@ -1330,7 +1491,7 @@ define([
 	/**
 	 * Creates a visual line break at the end position of the given range.
 	 *
-	 * @reference
+	 * @see
 	 * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#splitting-a-node-list's-parent
 	 * http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031700.html
 	 *
@@ -1368,6 +1529,7 @@ define([
 	return {
 		wrap   : wrapElem,
 		format : format,
+		style  : style,
 		split  : split,
 		delete : delete_,
 		break  : break_,

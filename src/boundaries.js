@@ -11,7 +11,7 @@ define([
 	'arrays',
 	'assert',
 	'strings'
-], function Boundaries(
+], function (
 	Dom,
 	Misc,
 	Arrays,
@@ -39,6 +39,16 @@ define([
 	 */
 	function container(boundary) {
 		return boundary[0];
+	}
+
+	/**
+	 * Returns the document associated with the given boundary.
+	 *
+	 * @param  {!Boundary} boundary
+	 * @return {Document}
+	 */
+	function document(boundary) {
+		return container(boundary).ownerDocument;
 	}
 
 	/**
@@ -533,13 +543,14 @@ define([
 	 * @return {number}
 	 */
 	function precedingTextLength(boundary) {
-		var node, len;
+		var node;
+		var len;
 		boundary = normalize(boundary);
 		if (isNodeBoundary(boundary)) {
 			len = 0;
 			node = nodeBefore(boundary);
 		} else {
-			len += offset(boundary);
+			len = offset(boundary);
 			node = container(boundary).previousSibling;
 		}
 		while (node && Dom.isTextNode(node)) {
@@ -553,14 +564,11 @@ define([
 	 * Gets the boundaries of the currently selected range from the given
 	 * document element.
 	 *
-	 * If no document element is given, the document element of the calling
-	 * frame's window will be used.
-	 *
-	 * @param  {Document=} doc
+	 * @param  {Document} doc
 	 * @return {?Array<Boundary>}
 	 */
 	function get(doc) {
-		var selection = (doc || document).getSelection();
+		var selection = doc.getSelection();
 		return (selection.rangeCount > 0)
 		     ? fromRange(selection.getRangeAt(0))
 		     : null;
@@ -622,6 +630,7 @@ define([
 
 		container           : container,
 		offset              : offset,
+		document            : document,
 
 		fromRange           : fromRange,
 		fromRanges          : fromRanges,

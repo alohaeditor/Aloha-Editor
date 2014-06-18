@@ -88,4 +88,15 @@
 		deepEqual(lists[1], [10, 8, 9], list.join() + ' ⇒ ' + lists[1].join());
 	});
 
+	test('unique', function () {
+		var obj = {};
+		deepEqual(Arrays.unique([1, 2, 2]), [1, 2]);
+		deepEqual(Arrays.unique([1, 2, 2, 3]), [1, 2, 3]);
+		deepEqual(Arrays.unique([1, 2, 2, 3, 2, 4, 3, 2, 1, 5]), [1, 2, 3, 4, 5]);
+		deepEqual(Arrays.unique([1, 'hello', 2]), [1, 'hello', 2]);
+		deepEqual(Arrays.unique([1, 'hello', 2, 'hello']), [1, 'hello', 2]);
+		deepEqual(Arrays.unique([1, 'hello', 2, obj]), [1, 'hello', 2, obj]);
+		deepEqual(Arrays.unique([1, 'hello', 2, 2, obj, obj]), [1, 'hello', 2, obj]);
+	});
+
 }(window.aloha));

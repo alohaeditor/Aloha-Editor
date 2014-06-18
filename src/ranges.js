@@ -5,7 +5,7 @@
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  *
- * @reference
+ * @see
  * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#deleting-the-selection
  */
 define([
@@ -18,8 +18,9 @@ define([
 	'functions',
 	'cursors',
 	'boundaries',
-	'paths'
-], function Ranges(
+	'paths',
+	'maps'
+], function (
 	Dom,
 	Mutation,
 	Arrays,
@@ -29,7 +30,8 @@ define([
 	Fn,
 	Cursors,
 	Boundaries,
-	Paths
+	Paths,
+	Maps
 ) {
 	'use strict';
 
@@ -39,11 +41,11 @@ define([
 	 * If no document element is given, the document element of the calling
 	 * frame's window will be used.
 	 *
-	 * @param  {!Document} doc
+	 * @param  {Document} doc
 	 * @return {?Range} Browser's selected range or null if not selection exists
 	 */
 	function get(doc) {
-		var selection = (doc || document).getSelection();
+		var selection = doc.getSelection();
 		return selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
 	}
 
@@ -104,7 +106,7 @@ define([
 	 * Returns a collapsed range for the position where the text insertion
 	 * indicator would be rendered.
 	 *
-	 * @reference:
+	 * @see:
 	 * http://dev.w3.org/csswg/cssom-view/#dom-document-caretpositionfrompoint
 	 * http://stackoverflow.com/questions/3189812/creating-a-collapsed-range-from-a-pixel-position-in-ff-webkit
 	 * http://jsfiddle.net/timdown/ABjQP/8/
@@ -154,9 +156,9 @@ define([
 	 *
 	 * Will ensure that the range is contained in a content editable node.
 	 *
-	 * @param  {number}    x
-	 * @param  {number}    y
-	 * @param  {!Document} doc
+	 * @param  {number}   x
+	 * @param  {number}   y
+	 * @param  {Document} doc
 	 * @return {?Range}
 	 */
 	function fromPosition(x, y, doc) {
@@ -171,7 +173,7 @@ define([
 		if (!block || !block.parentNode) {
 			return null;
 		}
-		var body = block.ownerDocument.body;
+		var body = doc.body;
 		var offsets = Dom.offset(block);
 		var offset = Dom.nodeIndex(block);
 		var pointX = x + body.scrollLeft;
@@ -627,22 +629,24 @@ define([
 		if (Html.hasLinebreakingStyle(Boundaries.nextNode(end))) {
 			return null;
 		}
-		// Petro: I still don't understand this check :(
-		if (!Html.isAtStart(end)) {
+		// Because this means that we cannot expand any further right inside the
+		// container
+		if (Html.isAtEnd(start)) {
 			return null;
 		}
 		return fromBoundaries(start, stepRight(end));
 	}
 
 	/**
-	 * Returns a mutable bounding client rectangle for the given range.
+	 * Returns a mutable bounding client rectangle from the reference range or
+	 * element.
 	 *
 	 * @private
-	 * @param  {Range} range
-	 * @return {Object<string, number>}
+	 * @param  {Element|Range} reference
+	 * @return {?Object.<string, number>}
 	 */
-	function boundingRect(range) {
-		var rect = range.getBoundingClientRect();
+	function boundingRect(reference) {
+		var rect = reference.getBoundingClientRect();
 		return {
 			top    : rect.top,
 			left   : rect.left,
@@ -703,19 +707,27 @@ define([
 				height : rect.height
 			};
 		}
+
+		var boundary = Boundaries.fromRangeStart(range);
+		var node = Boundaries.nodeAfter(boundary)
+		        || Boundaries.nodeBefore(boundary);
+
+		if (node && !Dom.isTextNode(node)) {
+			rect = boundingRect(node);
+			if (rect) {
+				return {
+					top    : rect.top + topOffset,
+					left   : rect.left + leftOffset,
+					width  : rect.width,
+					height : rect.height
+				};
+			}
+		}
+
+		// <li>{}</li>
 		var scrollTop = Dom.scrollTop(doc);
 		var scrollLeft = Dom.scrollLeft(doc);
-		var node = Boundaries.nodeAfter(Boundaries.fromRangeStart(range));
-		if (node) {
-			return {
-				top    : node.parentNode.offsetTop - scrollTop + topOffset,
-				left   : node.parentNode.offsetLeft - scrollLeft + leftOffset,
-				width  : node.offsetWidth,
-				height : parseInt(Dom.getComputedStyle(node, 'line-height'), 10)
-			};
-		}
-		// <li>{}</li>
-		node = Boundaries.container(Boundaries.fromRangeStart(range));
+		node = Boundaries.container(boundary);
 		return {
 			top    : node.offsetTop - scrollTop + topOffset,
 			left   : node.offsetLeft - scrollLeft + leftOffset,
@@ -739,9 +751,50 @@ define([
 			return editable;
 		}
 		var isNotEditingHost = Fn.complement(Dom.isEditingHost);
-		var stable = StableRange(range);
+		var stable = new StableRange(range);
 		trim(stable, isNotEditingHost, isNotEditingHost);
 		return Dom.editingHost(stable.startContainer);
+	}
+
+	/**
+	 * Shows a box element according to the dimensions and orientation of `box`.
+	 *
+	 * @param  {Object.<string, number>} box
+	 * @param  {Document}                doc
+	 * @return {Element}
+	 */
+	function showHint(box, doc) {
+		var elem = doc.querySelector('.aloha-caret-box-hint');
+		if (!elem) {
+			elem = doc.createElement('div');
+		}
+		Maps.extend(elem.style, {
+			'top'        : box.top + 'px',
+			'left'       : box.left + 'px',
+			'height'     : box.height + 'px',
+			'width'      : box.width + 'px',
+			'position'   : 'absolute',
+			'background' : 'red',
+			'opacity'    : 0.2
+		});
+		Dom.addClass(elem, 'aloha-caret-box-hint', 'aloha-ephemera');
+		Dom.append(elem, doc.body);
+		return elem;
+	}
+
+	/**
+	 * Removes any ".aloha-caret-box-hint" elements in the body of the given
+	 * document and returns it.
+	 *
+	 * @param  {Document} doc
+	 * @return {?Element}
+	 */
+	function hideHint(doc) {
+		var box = doc.querySelector('.aloha-caret-box-hint');
+		if (box) {
+			Dom.remove(box);
+		}
+		return box || null;
 	}
 
 	return {
@@ -766,6 +819,9 @@ define([
 		envelopeInvisibleCharacters : envelopeInvisibleCharacters,
 
 		fromPosition                : fromPosition,
-		fromBoundaries              : fromBoundaries
+		fromBoundaries              : fromBoundaries,
+
+		showHint                    : showHint,
+		hideHint                    : hideHint
 	};
 });

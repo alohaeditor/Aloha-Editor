@@ -150,10 +150,6 @@ define([
 		return children.length > 0;
 	}
 
-	function insertNodeBeforeBoundary(node, boundary) {
-		return Mutation.insertNodeAtBoundary(node, boundary, true);
-	}
-
 	/**
 	 * Removes the visual line break between the adjacent boundaries `above`
 	 * and `below` by moving the nodes after `below` over to before `above`.
@@ -177,7 +173,7 @@ define([
 			return [above, above];
 		}
 		var parent = right.parentNode;
-		var siblings = Dom.nextSiblings(right, Styles.hasLinebreakingStyle);
+		var siblings = Dom.nodeAndNextSiblings(right, Styles.hasLinebreakingStyle);
 		if (0 === siblings.length) {
 			parent = right;
 		}
@@ -256,18 +252,15 @@ define([
 	 * Inserts a <br> element behind the given boundary position.
 	 *
 	 * @param  {Boundary} boundary
-	 * @param  {object}
 	 * @return {Boundary}
 	 */
 	function insertLineBreak(boundary) {
-		var container = Boundaries.container(boundary);
-		var doc = container.ownerDocument;
+		var doc = Boundaries.container(boundary).ownerDocument;
 		var br = doc.createElement('br');
-		boundary = insertNodeBeforeBoundary(br, boundary);
-		if (!isRenderedBr(br)) {
-			return insertNodeBeforeBoundary(doc.createElement('br'), boundary);
-		}
-		return boundary;
+		boundary = Mutation.insertNodeAtBoundary(br, boundary, true);
+		return isRenderedBr(br)
+		     ? boundary
+		     : Mutation.insertNodeAtBoundary(doc.createElement('br'), boundary);
 	}
 
 	/**
@@ -364,16 +357,17 @@ define([
 	function insertBreak(boundary, defaultBreakingElement) {
 		var br = adjacentBr(boundary);
 		if (br) {
-			boundary = insertNodeBeforeBoundary(
+			boundary = Mutation.insertNodeAtBoundary(
 				br.ownerDocument.createElement('br'),
-				boundary
+				boundary,
+				true
 			);
 		}
 
 		var split     = splitToBreakingContainer(boundary);
 		var container = Boundaries.container(split);
 		var next      = Boundaries.nodeAfter(split);
-		var children  = next ? Dom.nextSiblings(next) : [];
+		var children  = next ? Dom.nodeAndNextSiblings(next) : [];
 
 		// ...foo</p>|<h1>bar...
 		if (next && isBreakingContainer(next)) {

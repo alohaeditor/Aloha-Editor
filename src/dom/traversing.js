@@ -529,35 +529,69 @@ define([
 	}
 
 	/**
-	 * Returns a non-live list of the given node and all it's subsequent
-	 * siblings until the predicate returns true.
-	 *
-	 * @param  {Node}                   node
-	 * @param  {function(Node):boolean} until
-	 * @return {Array.<Node>}
-	 */
-	function nextSiblings(node, until) {
-		var nodes = [];
-		nextUntil(node, function (next) {
-			nodes.push(next);
-		}, until || Fn.returnFalse);
-		return nodes;
-	}
-
-	/**
-	 * Returns a non-live list of the given node and all it's preceeding
-	 * siblings until the predicate returns true.
+	 * Returns a non-live list of the given node's preceeding siblings until the
+	 * predicate returns true. The node one which `until` terminates is not
+	 * included.
 	 *
 	 * @param  {Node}                   node
 	 * @param  {function(Node):boolean} until
 	 * @return {Array.<Node>}
 	 */
 	function prevSiblings(node, until) {
+		if (!node.previousSibling) {
+			return [];
+		}
 		var nodes = [];
-		prevUntil(node, function (next) {
+		prevUntil(node.previousSibling, function (next) {
+			nodes.push(next);
+		}, until || Fn.returnFalse);
+		return nodes.reverse();
+	}
+
+	/**
+	 * Returns a non-live list of the given node's subsequent siblings until the
+	 * predicate returns true. The node one which `until` terminates is not
+	 * included.
+	 *
+	 * @param  {Node}                   node
+	 * @param  {function(Node):boolean} until
+	 * @return {Array.<Node>}
+	 */
+	function nextSiblings(node, until) {
+		if (!node.nextSibling) {
+			return [];
+		}
+		var nodes = [];
+		nextUntil(node.nextSibling, function (next) {
 			nodes.push(next);
 		}, until || Fn.returnFalse);
 		return nodes;
+	}
+
+	/**
+	 * Returns a non-live list of any of the given node and it's preceeding
+	 * siblings until the predicate returns true. The node one which `until`
+	 * terminates is not included.
+	 *
+	 * @param  {Node}                   node
+	 * @param  {function(Node):boolean} until
+	 * @return {Array.<Node>}
+	 */
+	function nodeAndPrevSiblings(node, until) {
+		return (until && until(node)) ? [] : [node].concat(prevSiblings(node, until));
+	}
+
+	/**
+	 * Returns a non-live list of any of the given node and it's subsequent
+	 * siblings until the predicate returns true. The node one which `until`
+	 * terminates is not included.
+	 *
+	 * @param  {Node}                   node
+	 * @param  {function(Node):boolean} until
+	 * @return {Array.<Node>}
+	 */
+	function nodeAndNextSiblings(node, until) {
+		return (until && until(node)) ? [] : [node].concat(nextSiblings(node, until));
 	}
 
 	return {
@@ -574,6 +608,9 @@ define([
 		prevWhile                    : prevWhile,
 		prevSibling                  : prevSibling,
 		prevSiblings                 : prevSiblings,
+
+		nodeAndPrevSiblings          : nodeAndPrevSiblings,
+		nodeAndNextSiblings          : nodeAndNextSiblings,
 
 		walk                         : walk,
 		walkRec                      : walkRec,
