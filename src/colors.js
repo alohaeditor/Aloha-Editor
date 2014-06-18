@@ -45,7 +45,7 @@ define([
 	 * @return {boolean}
 	 */
 	function equals(a, b) {
-		return (null === a || null === b) ? (a === b) : (hex(a) === hex(b));
+		return hex(a) === hex(b);
 	}
 
 	/**

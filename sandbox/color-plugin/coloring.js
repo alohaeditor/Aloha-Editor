@@ -9,12 +9,14 @@ define([
 	'dom',
 	'ranges',
 	'colors',
-	'editing'
+	'editing',
+	'boundaries'
 ], function (
 	Dom,
 	Ranges,
 	Colors,
-	Editing
+	Editing,
+	Boundaries
 ) {
 	'use strict';
 
@@ -44,6 +46,10 @@ define([
 		return getStyle(range, 'color');
 	}
 
+	var isStyleEqual = { isStyleEqual: function (a, b) {
+		return (!a || !b) ? (a === b) : Colors.equals(a, b);
+	}};
+
 	/**
 	 * Sets the text color at the given range.
 	 *
@@ -51,7 +57,8 @@ define([
 	 * @param {string} color
 	 */
 	function setTextColor(range, color) {
-		Editing.format(range, 'color', color, Colors.equals);
+		var boundaries = Boundaries.fromRange(range);
+		Editing.style('color', color, boundaries[0], boundaries[1], isStyleEqual);
 	}
 
 	/**
@@ -83,7 +90,8 @@ define([
 	 * @param {string} color
 	 */
 	function setBackgroundColor(range, color) {
-		Editing.format(range, 'background-color', color, Colors.equals);
+		var boundaries = Boundaries.fromRange(range);
+		Editing.style('background-color', color, boundaries[0], boundaries[1], isStyleEqual);
 	}
 
 	/**
