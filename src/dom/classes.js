@@ -25,12 +25,12 @@ define([
 	 * modify the classList of an element
 	 *
 	 * @private
-	 * @param {Element}        elem
-	 * @param {Function}       func
+	 * @param {Element}                    elem
+	 * @param {Function(...string):string} modify
 	 * @param {Array.<string>} classes
 	 */
-	function modifyClassList(elem, func, classes) {
-		elem.className = Strings.uniqueList(func.apply(
+	function modifyClassList(elem, modify, classes) {
+		elem.className = Strings.uniqueList(modify.apply(
 			null,
 			[elem.className].concat(classes)
 		));
