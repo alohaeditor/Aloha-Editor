@@ -1,0 +1,1 @@
+Change attribute 'element.children' to 'element.childNodes'. 'element.children' is not available in IE.
