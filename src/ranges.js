@@ -764,7 +764,7 @@ define([
 	 * @return {Element}
 	 */
 	function showHint(box, doc) {
-		var elem = doc.querySelector('.aloha-meta-caret-box');
+		var elem = doc.querySelector('.aloha-caret-box-hint');
 		if (!elem) {
 			elem = doc.createElement('div');
 		}
@@ -777,20 +777,20 @@ define([
 			'background' : 'red',
 			'opacity'    : 0.2
 		});
-		Dom.addClass(elem, 'aloha-meta-caret-box');
+		Dom.addClass(elem, 'aloha-caret-box-hint aloha-ephemera');
 		Dom.append(elem, doc.body);
 		return elem;
 	}
 
 	/**
-	 * Removes any ".aloha-meta-caret-box" elements in the body of the given
+	 * Removes any ".aloha-caret-box-hint" elements in the body of the given
 	 * document and returns it.
 	 *
 	 * @param  {Document} doc
 	 * @return {?Element}
 	 */
 	function hideHint(doc) {
-		var box = doc.querySelector('.aloha-meta-caret-box');
+		var box = doc.querySelector('.aloha-caret-box-hint');
 		if (box) {
 			Dom.remove(box);
 		}

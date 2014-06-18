@@ -20,46 +20,87 @@ define([
 	var COMMA = /\s*,\s*/;
 
 	/**
-	 * Normalizes hexidecimal colors from
-	 * #f34 to #ff3344
+	 * Returns a human readable representation of the given color.
 	 *
-	 * @param  {string} color
-	 * @return {string} Long version of hexidecimal color value
-	 */
-	function normalizeHex(color) {
-		if (7 === color.length) {
-			return color;
-		}
-		var r = color.substr(1, 1);
-		var g = color.substr(2, 1);
-		var b = color.substr(3, 1);
-		return '#' + r + r + g + g + b + b;
-	}
-
-	/**
-	 * Converts rgb color array to a hex color string.
-	 *
-	 * @param  {Array.<string>} rgb
+	 * @param  {Array.<number>} color
 	 * @return {string}
 	 */
-	function rgb2hex(rgb) {
-		var r = parseInt(rgb[0], 10).toString(16);
-		var g = parseInt(rgb[1], 10).toString(16);
-		var b = parseInt(rgb[2], 10).toString(16);
-		if (1 === r.length) {
-			r += r;
+	function toString(color) {
+		if ('string' === typeof color[0]) {
+			return '#' + color.join('');
 		}
-		if (1 === g.length) {
-			g += g;
-		}
-		if (1 === b.length) {
-			b += b;
-		}
-		return '#' + r + g + b;
+		return (4 === color.length)
+		     ? 'rgba(' + color.join(',') + ')'
+		     : 'rgb('  + color.join(',') + ')';
 	}
 
 	/**
-	 * Given a color string will normalize it to a hex color string.
+	 * Checks whether the two given colors are equal in value (if not in
+	 * representation).
+	 *
+	 * equals('#f00', 'rgb(255,0,0)') == true
+	 *
+	 * @param  {string} a
+	 * @param  {string} b
+	 * @return {boolean}
+	 */
+	function equals(a, b) {
+		return hex(a) === hex(b);
+	}
+
+	/**
+	 * Normalizes hexidecimal colors from #f34 to #ff3344.
+	 *
+	 * @private
+	 * @param  {string} hex
+	 * @return {string} Long version of hexidecimal color value
+	 */
+	function normalizeHex(hex) {
+		var r, g, b;
+		if (4 === hex.length) {
+			r = hex.substr(1, 1);
+			g = hex.substr(2, 1);
+			b = hex.substr(3, 1);
+			r += r;
+			g += g;
+			b += b;
+		} else {
+			r = hex.substr(1, 2);
+			g = hex.substr(3, 4);
+			b = hex.substr(5, 6);
+		}
+		return [r, g, b];
+	}
+
+	/**
+	 * Converts the RGB color representation into hexidecimal.
+	 *
+	 * @private
+	 * @param  {Array.<string>} rgb
+	 * @return {Array.<string>}
+	 */
+	function rgb2hex(rgb) {
+		return rgb.reduce(function (values, value) {
+			var color = parseInt(value, 10).toString(16);
+			return values.concat(1 === color.length ? color + color : color);
+		}, []);
+	}
+
+	/**
+	 * Converts the hexidecimal color representation into RGB.
+	 *
+	 * @private
+	 * @param  {Array.<string>} hex
+	 * @return {Array.<string>}
+	 */
+	function hex2rgb(hex) {
+		return normalizeHex(hex).reduce(function (values, value) {
+			return values.concat(parseInt(value, 16));
+		}, []);
+	}
+
+	/**
+	 * Given a color string will normalize it to a hexidecimal color string.
 	 *
 	 * @param  {string} value
 	 * @return {string}
@@ -72,115 +113,52 @@ define([
 		case 'rgb':
 		case 'rgba':
 			return rgb2hex(color[2].split(COMMA));
-		default:
-			return null;
 		}
 	}
 
 	/**
-	 * Checks whether the two given colors are equal in value (if not in
-	 * representation).
+	 * Given a color string will normalize it to a RGB color string.
 	 *
-	 * isColorEqual('#f00', 'rgb(255,0,0)') === true
-	 *
-	 * @param  {string} colorA
-	 * @param  {string} colorB
-	 * @return {boolean}
+	 * @param  {string} value
+	 * @return {string}
 	 */
-	function isColorEqual(colorA, colorB) {
-		return (
-			(null == colorA || null == colorB)
-				? colorA === colorB
-				: hex(colorA) === hex(colorB)
-		);
-	}
-
-	/**
-	 * Gets the style of the start container of the given range.
-	 *
-	 * @param  {Range}  range
-	 * @param  {string} property
-	 * @return {string} Style value
-	 */
-	function getStyle(range, property) {
-		var node = Dom.nodeAtOffset(range.startContainer, range.startOffset);
-		return Dom.getComputedStyle(
-			Dom.isTextNode(node) ? node.parentNode : node,
-			property
-		);
-	}
-
-	/**
-	 * Gets the text color at the given range.
-	 *
-	 * @param  {Range}  range
-	 * @return {string} Style color string
-	 */
-	function getTextColor(range) {
-		return getStyle(range, 'color');
-	}
-
-	/**
-	 * Sets the text color at the given range.
-	 *
-	 * @param {Range}  range
-	 * @param {string} color
-	 */
-	function setTextColor(range, color) {
-		Editing.format(range, 'color', color, isColorEqual);
-	}
-
-	/**
-	 * Removes the text color at the given range.
-	 *
-	 * @param {Range} range
-	 */
-	function unsetTextColor(range) {
-		var editable = Ranges.nearestEditingHost(range);
-		if (editable) {
-			setTextColor(range, Dom.getComputedStyle(editable, 'color'));
+	function rgb(value) {
+		var color = value.match(COLOR_PREFIX);
+		switch (color && color[1]) {
+		case '#':
+			return hex2rgb(color[0]);
+		case 'rgb':
+		case 'rgba':
+			return color[2].split(COMMA).reduce(function (values, value) {
+				return values.concat(parseInt(value, 10));
+			}, []);
 		}
 	}
 
 	/**
-	 * Gets the background color at the given range.
+	 * Cross fades RGBA color `from` to RBG color `to` by a given percent.
 	 *
-	 * @param  {Range}  range
-	 * @return {string} Style color string
+	 * @param  {Array.<number>} from
+	 * @param  {Array.<number>} to
+	 * @param  {number}         percent
+	 * @return {Array.<number>}
 	 */
-	function getBackgroundColor(range) {
-		return getStyle(range, 'background-color');
-	}
-
-	/**
-	 * Sets the background color at the given range.
-	 *
-	 * @param {Range}  range
-	 * @param {string} color
-	 */
-	function setBackgroundColor(range, color) {
-		Editing.format(range, 'background-color', color, isColorEqual);
-	}
-
-	/**
-	 * Removes the background color at the given range.
-	 *
-	 * @param {Range} range
-	 */
-	function unsetBackgroundColor(range) {
-		var editable = Ranges.nearestEditingHost(range);
-		if (editable) {
-			setBackgroundColor(range, Dom.getComputedStyle(editable, 'background-color'));
-		}
+	function cross(from, to, percent) {
+		var r = to[0] - from[0];
+		var g = to[1] - from[1];
+		var b = to[2] - from[2];
+		return [
+			from[0] + Math.round(r * percent),
+			from[1] + Math.round(g * percent),
+			from[2] + Math.round(b * percent)
+		];
 	}
 
 	return {
-		hex                  : hex,
-		getTextColor         : getTextColor,
-		setTextColor         : setTextColor,
-		unsetTextColor       : unsetTextColor,
-		getBackgroundColor   : getBackgroundColor,
-		setBackgroundColor   : setBackgroundColor,
-		unsetBackgroundColor : unsetBackgroundColor
+		hex      : hex,
+		rgb      : rgb,
+		cross    : cross,
+		equals   : equals,
+		toString : toString
 	};
 });

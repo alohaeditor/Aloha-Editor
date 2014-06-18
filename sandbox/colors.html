@@ -17,7 +17,7 @@
 		</style>
 	</head>
 	<body>
-		<div class="aloha-editable" contentEditable="true">
+		<div class="aloha-editable">
 			<h1>Aloha Editor</h1>
 			<p>
 				Lorem ipsum dolor sit amet, <b>consec<i>tet</i>ur</b> adipiscing
@@ -31,15 +31,10 @@
 				vehicula ultricies a non tortor.
 			</p>
 		</div>
-		<!--
-		<script src="../sandbox/mandox.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 		<script src="../src/require-pronto.js"></script>
 		<script src="../src/require-pronto.dev.js"></script>
-		-->
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-		<script src="../build/aloha.js"></script>
 		<script>
-			/*
 			require.urlPrefix = '../src/';
 			require([
 				'aloha',
@@ -47,9 +42,8 @@
 				'../sandbox/color-plugin/background-color'
 			], function (aloha) {
 				'use strict';
-				window.aloha = aloha;
+				aloha.arrays.coerce(document.querySelectorAll('.aloha-editable')).forEach(aloha);
 			});
-			*/
 		</script>
 	</body>
 </html>

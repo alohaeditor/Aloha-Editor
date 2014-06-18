@@ -1,35 +1,34 @@
 define([
 	'dom',
-	'colors',
 	'events',
-	'sandbox/color-picker/color-picker',
-	'sandbox/color-picker/palette'
-], function Plugin(
-	dom,
-	colors,
-	events,
-	picker,
-	palette
+	'./coloring',
+	'../color-picker/color-picker',
+	'../color-picker/palette'
+], function (
+	Dom,
+	Events,
+	Coloring,
+	Picker,
+	Palette
 ) {
 	'use strict';
 
-	var show = picker.overlay(
-		palette,
-		colors.getTextColor,
+	var show = Picker.overlay(
+		Palette,
+		Coloring.getTextColor,
 		function (range, node) {
-			if (dom.isEditable(range.startContainer)) {
-				colors.setTextColor(
+			if (Dom.isEditableNode(range.startContainer)) {
+				Coloring.setTextColor(
 					range,
-					dom.getComputedStyle(node, 'background-color')
+					Dom.getComputedStyle(node, 'background-color')
 				);
 			}
 		},
-		colors.unsetTextColor
+		Coloring.unsetTextColor
 	);
 
 	var button = document.createElement('button');
-	button.appendChild(document.createTextNode('Change Text Color'));
-	document.getElementsByTagName('body')[0].appendChild(button);
-
-	events.add(button, 'click', show);
+	button.innerHTML = 'Change Text Color';
+	Dom.append(button, document.querySelector('body'));
+	Events.add(button, 'click', show);
 });
