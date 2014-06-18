@@ -407,13 +407,14 @@ define(['arrays'], function (Arrays) {
 	}
 
 	/**
-	 * Adds one or more entries to a space-delimited list.
-	 * Will return a new space delimited list with the new
-	 * entries added to the end.
+	 * Adds one or more entries to a space-delimited list except those entries
+	 * that already exist in the list.
 	 *
-	 * The function is designed to deal with shoddy
-	 * whitespace separations such as multiple spaces or
-	 * even newlines, that may be used on a DOM Element's
+	 * Will return a new space delimited list with the new entries added to the
+	 * end.
+	 *
+	 * The function is designed to deal with shoddy whitespace separations such
+	 * as multiple spaces or even newlines, that may be used on a DOM Element's
 	 * class attribute.
 	 *
 	 * @param  {!string}    list
@@ -421,21 +422,13 @@ define(['arrays'], function (Arrays) {
 	 * @return {string}
 	 */
 	function addToList(list) {
-		var listEntries = list.split(WHITE_SPACES);
-		var newEntries = Arrays.coerce(arguments).slice(1);
-		var newList = [];
-
-		for (var i=0; i<listEntries.length; i++) {
-			if (listEntries[i]) {
-				newList.push(listEntries[i]);
+		var strs = list.split(WHITE_SPACES);
+		Arrays.coerce(arguments).slice(1).forEach(function (str) {
+			if (strs.indexOf(str) === -1) {
+				strs.push(str);
 			}
-		}
-		for (i=0; i<newEntries.length; i++) {
-			if (newEntries[i]) {
-				newList.push(newEntries[i]);
-			}
-		}
-		return newList.join(' ');
+		});
+		return strs.filter(function (str) { return !!str; }).join(' ');
 	}
 
 	/**
