@@ -551,12 +551,9 @@ define([], function () {
 	 * http://www.w3.org/html/wg/drafts/html/master/index.html#elements-1
 	 * http://www.whatwg.org/specs/web-apps/current-work/#elements-1
 	 *
-	 * @param {String} outer
-	 *        The node which would contain the other.
-	 * @param {String} inner
-	 *        The node to be nested a child of `outer`.
+	 * @param  {string} outer
+	 * @param  {string} inner
 	 * @return {boolean}
-	 *        True if `inner` is allowed a direct child of `outer`.
 	 */
 	function allowsNesting(outer, inner) {
 		var categories;

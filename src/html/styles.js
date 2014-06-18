@@ -143,7 +143,7 @@ define([
 	 *
 	 * TODO complete the list of inherited/notInheritedStyles
 	 *
-	 * @param  {String} styleName
+	 * @param  {string} styleName
 	 * @return {boolean}
 	 */
 	function isStyleInherited(styleName) {

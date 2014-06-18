@@ -39,7 +39,7 @@ define([
 	 * `pred` into a `wrapper` nodes.
 	 *
 	 * @private
-	 * @param  {Arrays.<Nodes>}         nodes
+	 * @param  {Array.<Nodes>}          nodes
 	 * @param  {function(Node):boolean} pred
 	 * @param  {string}                 wrapper
 	 * @return {Array.<Nodes>}
@@ -70,7 +70,7 @@ define([
 	 * Checks whether this node should is visible.
 	 *
 	 * @private
-	 * @param  {Node} node
+	 * @param  {!Node} node
 	 * @return {boolean}
 	 */
 	function isRendered(node) {
@@ -135,7 +135,7 @@ define([
 	 * given clean function.
 	 *
 	 * @private
-	 * @param  {Node}                        node
+	 * @param  {!Node}                       node
 	 * @param  {function(Node):Array.<Node>} clean
 	 * @return {Array.<Node>}
 	 */
@@ -159,8 +159,8 @@ define([
 	 * Creates a rewrapped copy of `element`. Will create a an element based on
 	 * `nodeName`, and copies the content of the given element into it.
 	 *
-	 * @param  {Element} element
-	 * @param  {String}  nodeName
+	 * @param  {!Element} element
+	 * @param  {string}   nodeName
 	 * @return {Element}
 	 */
 	function rewrap(element, nodeName) {
@@ -172,7 +172,7 @@ define([
 	/**
 	 * Normalizes the given node tree and returns a fragment.
 	 *
-	 * @param  {Element}             element
+	 * @param  {!Element}            element
 	 * @param  {function(Node):Node} clean
 	 * @return {Fragment}
 	 */

@@ -305,7 +305,7 @@ define([
 	/**
 	 * Caret movement operations mapped against cursor key keycodes.
 	 *
-	 * @type {Object.<String, function(Event, Range, string):Object>}
+	 * @type {Object.<string, function(Event, Range, string):Object>}
 	 */
 	var movements = {};
 

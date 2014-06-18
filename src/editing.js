@@ -516,9 +516,9 @@ define([
 	/**
 	 * TODO documentation
 	 *
-	 * @param  {Range}    liveRange
-	 * @param  {Function} mutate
-	 * @param  {Function} trim
+	 * @param  {!Range}   liveRange
+	 * @param  {function} mutate
+	 * @param  {function} trim
 	 * @return {Array.<Boundary>}
 	 */
 	function fixupRange(liveRange, mutate, trim) {
@@ -1119,13 +1119,13 @@ define([
 	/**
 	 * Ensures the given range is wrapped by elements with a given nodeName.
 	 *
-	 * @param {Range} liveRange The range of the current selection.
-	 * @param {String} nodeName The name of the tag that should serve as the
+	 * @param {!Range} liveRange The range of the current selection.
+	 * @param {string} nodeName The name of the tag that should serve as the
 	 *                          wrapping node.
 	 * @param {boolean} remove Optional flag, which when set to false will cause
 	 *                         the given markup to be removed (unwrapped) rather
 	 *                         then set.
-	 * @param {Object} opts A map of options (all optional):
+	 * @param {?Object} opts A map of options (all optional):
 	 *        createWrapper - a function that returns a new empty
 	 *        wrapper node to use.
 	 *
@@ -1203,9 +1203,9 @@ define([
 	 * by wrapping it within a node (eg. 'b', 'i', 'em')
 	 * Returns an array with updated boundaries.
 	 *
-	 * @param {!Boundary} start
-	 * @param {!Boundary} end
-	 * @param {!string}   node
+	 * @param  {!Boundary} start
+	 * @param  {!Boundary} end
+	 * @param  {string}    node
 	 * @return {Array.<Boundary>}
 	 */
 	function format(node, start, end) {
@@ -1222,7 +1222,7 @@ define([
 	 * or false.
 	 * So 'B' will eg. be resolved to 'bold'
 	 *
-	 * @param {string} styleNode
+	 * @param  {string} styleNode
 	 * @return {string|false}
 	 */
 	function resolveStyleName(styleNode) {
@@ -1302,8 +1302,8 @@ define([
 	 * whitespace and in case of the last line, also any following unrendered
 	 * whitespace.
 	 *
-	 * @param  {Cursor}  point
-	 * @return {Boolean} True if the cursor is moved.
+	 * @param  {!Cursor} point
+	 * @return {boolean} True if the cursor is moved.
 	 */
 	function normalizeBoundary(point) {
 		if (HtmlElements.skipUnrenderedToStartOfLine(point)) {
@@ -1434,7 +1434,7 @@ define([
 	 *
 	 * @see https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#deleting-the-selection
 	 *
-	 * @param  {Range} range
+	 * @param  {!Range} range
 	 * @return {Array.<Boundary>}
 	 */
 	function delete_(range) {
@@ -1495,7 +1495,7 @@ define([
 	 * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#splitting-a-node-list's-parent
 	 * http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031700.html
 	 *
-	 * @param  {Range}   liveRange
+	 * @param  {!Range}  liveRange
 	 * @param  {string}  breaker
 	 * @param  {boolean} linebreak
 	 * @return {Array.<Boundary>}

@@ -54,7 +54,7 @@ define([
 	 * to the visual presentation of the content).
 	 *
 	 * @private
-	 * @param  {Node} node
+	 * @param  {!Node} node
 	 * @return {boolean}
 	 */
 	function isSuperfluous(node) {
@@ -67,8 +67,8 @@ define([
 	 * If the node is not namespaced, will return null.
 	 *
 	 * @private
-	 * @param  {Node} node
-	 * @return {String}
+	 * @param  {!Node} node
+	 * @return {string}
 	 */
 	function namespacedNodeName(node) {
 		var match = node.nodeName.match(NAMESPACED_NODENAME);
@@ -79,7 +79,7 @@ define([
 	 * Returns a clean copy of the given node.
 	 *
 	 * @private
-	 * @param  {Node} node
+	 * @param  {!Node} node
 	 * @return {Array.<Node>}
 	 */
 	function clean(node) {
@@ -108,8 +108,8 @@ define([
 	 * TODO: use <meta name="Generator" content="WORD|OPENOFFICE|ETC">
 	 *       this is more formally correct
 	 *
-	 * @param  {string}   markup
-	 * @param  {Document} doc
+	 * @param  {string}    markup
+	 * @param  {!Document} doc
 	 * @return {boolean}
 	 */
 	function isMSWordContent(markup, doc) {
@@ -120,8 +120,8 @@ define([
 	/**
 	 * Transforms markup to normalized HTML.
 	 *
-	 * @param  {string}   markup
-	 * @param  {Document} doc
+	 * @param  {string}    markup
+	 * @param  {!Document} doc
 	 * @return {string}
 	 */
 	function transform(markup, doc) {

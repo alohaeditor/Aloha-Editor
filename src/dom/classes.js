@@ -25,8 +25,8 @@ define([
 	 * modify the classList of an element
 	 *
 	 * @private
-	 * @param {Element}                    elem
-	 * @param {Function(...string):string} modify
+	 * @param {!Element}                   elem
+	 * @param {function(...string):string} modify
 	 * @param {Array.<string>} classes
 	 */
 	function modifyClassList(elem, modify, classes) {
@@ -39,8 +39,8 @@ define([
 	/**
 	 * Adds one or more classes to current classes of the given Element.
 	 *
-	 * @param {!Element}   elem
-	 * @param {...!string} className
+	 * @param {!Element}  elem
+	 * @param {...string} className
 	 */
 	function add(elem) {
 		modifyClassList(elem, Strings.addToList, Arrays.coerce(arguments).slice(1));
@@ -50,8 +50,8 @@ define([
 	 * Removes one or more class names from the given element's
 	 * classList.
 	 *
-	 * @param  {!Element}   elem
-	 * @param  {...!string} className
+	 * @param  {!Element}  elem
+	 * @param  {...string} className
 	 */
 	function remove(elem) {
 		modifyClassList(elem, Strings.removeFromList, Arrays.coerce(arguments).slice(1));
