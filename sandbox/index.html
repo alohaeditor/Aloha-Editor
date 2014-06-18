@@ -67,8 +67,7 @@
 				margin-left: -1em;
 			}
 		</style>
-
-		<style id="metaview">
+		<!-- style id="metaview">
 			ul,ol,li,td,th,p,b,i,u,div,h1,h2,h3,h4,h5,h6 {
 				padding: 2px 4px;
 				margin: 2px;
@@ -92,7 +91,7 @@
 				min-height: 20px;
 			}
 			font { background: red; }
-		</style>
+		</style -->
 	</head>
 	<body>
 		<div class="aloha-editable"><b>one</b><i>two</i><u>three</u></div>
@@ -164,7 +163,7 @@
 					}
 				}
 				function main(aloha) {
-					[].forEach.call(document.querySelectorAll('.aloha-editable'), aloha);
+					aloha.arrays.coerce(document.querySelectorAll('.aloha-editable')).forEach(aloha);
 				}
 				if ('undefined' === typeof aloha) {
 					setVersion('src');

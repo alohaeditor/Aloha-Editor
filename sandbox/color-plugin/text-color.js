@@ -1,13 +1,13 @@
 define([
 	'dom',
-	'colors',
 	'events',
-	'sandbox/color-picker/color-picker',
-	'sandbox/color-picker/palette'
+	'./coloring',
+	'../color-picker/color-picker',
+	'../color-picker/palette'
 ], function Plugin(
 	dom,
-	colors,
 	events,
+	coloring,
 	picker,
 	palette
 ) {
@@ -15,16 +15,16 @@ define([
 
 	var show = picker.overlay(
 		palette,
-		colors.getTextColor,
+		coloring.getTextColor,
 		function (range, node) {
-			if (dom.isEditable(range.startContainer)) {
-				colors.setTextColor(
+			if (dom.isEditableNode(range.startContainer)) {
+				coloring.setTextColor(
 					range,
 					dom.getComputedStyle(node, 'background-color')
 				);
 			}
 		},
-		colors.unsetTextColor
+		coloring.unsetTextColor
 	);
 
 	var button = document.createElement('button');
