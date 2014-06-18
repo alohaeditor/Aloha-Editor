@@ -6,5 +6,6 @@ branches:
     - howling-mad
 before_install: npm install -g grunt-cli
 install: npm install
-before_script: grunt
-
+before_script:
+  - npm update -g npm
+  - grunt
