@@ -4,32 +4,31 @@ define([
 	'./coloring',
 	'../color-picker/color-picker',
 	'../color-picker/palette'
-], function Plugin(
-	dom,
-	events,
-	coloring,
-	picker,
-	palette
+], function (
+	Dom,
+	Events,
+	Coloring,
+	Picker,
+	Palette
 ) {
 	'use strict';
 
-	var show = picker.overlay(
-		palette,
-		coloring.getBackgroundColor,
+	var show = Picker.overlay(
+		Palette,
+		Coloring.getBackgroundColor,
 		function (range, node) {
-			if (dom.isEditableNode(range.startContainer)) {
-				coloring.setBackgroundColor(
+			if (Dom.isEditableNode(range.startContainer)) {
+				Coloring.setBackgroundColor(
 					range,
-					dom.getComputedStyle(node, 'background-color')
+					Dom.getComputedStyle(node, 'background-color')
 				);
 			}
 		},
-		coloring.unsetBackgroundColor
+		Coloring.unsetBackgroundColor
 	);
 
 	var button = document.createElement('button');
-	button.appendChild(document.createTextNode('Change Background Color'));
-	document.getElementsByTagName('body')[0].appendChild(button);
-
-	events.add(button, 'click', show);
+	button.innerHTML = 'Change Background Color';
+	Dom.append(button, document.querySelector('body'));
+	Events.add(button, 'click', show);
 });
