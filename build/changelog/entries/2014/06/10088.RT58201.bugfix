@@ -1,0 +1,2 @@
+When coping and pasting tables which its cells contained paragraphs with BR elements inside, it produced an error in the
+pasted cells and were shown as empty. This issue has been solved.
