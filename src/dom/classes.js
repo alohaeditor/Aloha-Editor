@@ -20,59 +20,41 @@ define([
 ) {
 	'use strict';
 
-	var WORD_BOUNDARY = /\S+/g;
-	var WHITESPACES = /\s/;
-
-	function addToList(list, element, index) {
-		if (-1 === index) {
-			list.push(element);
-		}
-		return list;
-	}
-
-	function removeFromList(list, element, index) {
-		if (-1 < index) {
-			list.splice(index, 1);
-		}
-		return list;
-	}
-
-	function changeClassNames(elem, value, change) {
-		var names = (value || '').match(WORD_BOUNDARY) || [];
-		var classes;
-		if (Nodes.isElementNode(elem)) {
-			var className = elem.className.trim();
-			classes = ('' === className) ? [] : className.split(WHITESPACES);
-		} else {
-			classes = [];
-		}
-		var i;
-		var len = names.length;
-		for (i = 0; i < len; i++) {
-			classes = change(classes, names[i], classes.indexOf(names[i]));
-		}
-		elem.className = classes.join(' ');
-		return elem;
+	/**
+	 * Uses a string modifier function such as Strings.addToList to
+	 * modify the classList of an element
+	 *
+	 * @private
+	 * @param {Element}        elem
+	 * @param {Function}       func
+	 * @param {Array.<string>} classes
+	 */
+	function modifyClassList(elem, func, classes) {
+		elem.className = Strings.uniqueList(func.apply(
+			null,
+			[elem.className].concat(classes)
+		));
 	}
 
 	/**
-	 * Adds one or more class names from the give node.
+	 * Adds one or more classes to current classes of the given Element.
 	 *
-	 * @param {Element} elem
-	 * @param {string}  value
+	 * @param {!Element}   elem
+	 * @param {...!string} className
 	 */
-	function add(elem, value) {
-		changeClassNames(elem, value, addToList);
+	function add(elem) {
+		modifyClassList(elem, Strings.addToList, Arrays.coerce(arguments).slice(1));
 	}
 
 	/**
-	 * Remove one or more class names from the given node.
+	 * Removes one or more class names from the given element's
+	 * classList.
 	 *
-	 * @param {Element} elem
-	 * @param {string}  value
+	 * @param  {!Element}   elem
+	 * @param  {...!string} className
 	 */
-	function remove(elem, value) {
-		changeClassNames(elem, value, removeFromList);
+	function remove(elem) {
+		modifyClassList(elem, Strings.removeFromList, Arrays.coerce(arguments).slice(1));
 	}
 
 	/**
@@ -84,7 +66,7 @@ define([
 	 */
 	function has(node, value) {
 		return Nodes.isElementNode(node)
-		    && node.className.trim().split(WHITESPACES).indexOf(value) >= 0;
+		    && node.className.trim().split(Strings.WHITE_SPACES).indexOf(value) >= 0;
 	}
 
 	return {
