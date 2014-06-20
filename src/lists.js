@@ -87,7 +87,7 @@ define([
 	 * Collects siblings between `start` and `end` and any adjacent inline nodes
 	 * next to each.
 	 *
-	 * @see createList
+	 * @see format
 	 * @private
 	 * @param  {Node} start
 	 * @param  {Node} end
@@ -127,7 +127,7 @@ define([
 		var node;
 		while (nodes.length > 0) {
 			node = nodes.shift();
-			if (Html.hasLinebreakingStyle(node) && !Html.isGroupContainer(node)) {
+			if (Html.hasLinebreakingStyle(node) && !Html.isGroupContainer(node) && !Html.isVoidType(node)) {
 				collection = Dom.children(node);
 				parents.push(node);
 			} else {
@@ -166,7 +166,7 @@ define([
 		}
 		Assert.assert(
 			Content.allowsNesting(node.parentNode.nodeName, type),
-			'createList#Cannot create ' + type + ' inside of a ' + node.parentNode.nodeName
+			'Lists.format#Cannot create ' + type + ' inside of a ' + node.parentNode.nodeName
 		);
 		var list = node.ownerDocument.createElement(type);
 		var grouping = groupNodes(nodes);
@@ -183,13 +183,21 @@ define([
 	 * @param  {Array.<Boundary>} boundaries
 	 * @return {Array.<Boundary>}
 	 */
-	function createList(type, boundaries) {
+	function format(type, boundaries) {
 		Assert.assert(
 			Html.isListContainer({nodeName: type.toUpperCase()}),
-			'createList#' + type + ' is not a valid list container'
+			'Lists.format#' + type + ' is not a valid list container'
 		);
 		var start = boundaries[0];
 		var end = boundaries[1];
+		if (Boundaries.equals(start, end)) {
+			var node = Dom.upWhile(Boundaries.nextNode(start), function (node) {
+				return node
+				    && !Html.hasLinebreakingStyle(node)
+				    && !Dom.isEditingHost(node.parentNode);
+			});
+			return build(type, [node], boundaries);
+		}
 		var cac = Boundaries.commonContainer(start, end);
 		if (!Html.hasLinebreakingStyle(cac)) {
 			var node = Dom.upWhile(cac, function (node) {
@@ -202,8 +210,8 @@ define([
 		var isLimit = function (node) {
 			return node !== cac && (node.parentNode && node.parentNode !== cac);
 		};
-		var startNode = Dom.upWhile(Boundaries.container(start), isLimit);
-		var endNode = Dom.upWhile(Boundaries.container(end), isLimit);
+		var startNode = Dom.upWhile(Boundaries.nextNode(start), isLimit);
+		var endNode = Dom.upWhile(Boundaries.prevNode(end), isLimit);
 
 		// <div>
 		//  <p>tw[o}</p>
@@ -221,11 +229,24 @@ define([
 		} else if (endNode === cac) {
 			endNode = startNode;
 		}
-
 		return build(type, collectSiblings(startNode, endNode), boundaries);
 	}
 
+	/**
+	 * Removes list formatting around the given boundaries.
+	 *
+	 * @param  {Array.<Boundary>} boundaries
+	 * @return {Array.<Boundary>}
+	 */
+	function unformat(boundaries) {
+		var start = boundaries[0];
+		var end = boundaries[1];
+		var cac = Boundaries.commonContainer(start, end);
+		return boundaries;
+	}
+
 	return {
-		createList: createList
+		format   : format,
+		unformat : unformat
 	};
 });
