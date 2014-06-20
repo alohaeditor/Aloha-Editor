@@ -229,6 +229,8 @@ define(['arrays'], function (Arrays) {
 	 */
 	var NON_BREAKING_SPACE = new RegExp('[' + NON_BREAKING_SPACE_CHARACTERS.join('') + ']');
 
+	var joinedWhiteSpaces = WHITE_SPACE_CHARACTERS.join('');
+
 	/**
 	 * Matches space characters.
 	 *
@@ -238,7 +240,7 @@ define(['arrays'], function (Arrays) {
 	 * @type {RegExp}
 	 */
 	var SPACE = new RegExp('['
-	          + WHITE_SPACE_CHARACTERS.join('')
+	          + joinedWhiteSpaces
 	          + ZERO_WIDTH_CHARACTERS.join('')
 	          + NON_BREAKING_SPACE_CHARACTERS.join('')
 	          + ']');
@@ -249,7 +251,7 @@ define(['arrays'], function (Arrays) {
 	 * @type {RegExp}
 	 */
 	var NOT_SPACE = new RegExp('[^'
-	              + WHITE_SPACE_CHARACTERS.join('')
+	              + joinedWhiteSpaces
 	              + ZERO_WIDTH_CHARACTERS.join('')
 	              + NON_BREAKING_SPACE_CHARACTERS.join('')
 	              + ']');
@@ -287,6 +289,15 @@ define(['arrays'], function (Arrays) {
 	var CONTROL_CHARACTER = /[\x00-\x1f\x7f-\x9f]/;
 
 	/**
+	 * Matches white spaces at the beginning or ending of a string.
+	 *
+	 * @type {RegExp}
+	 */
+	var TERMINAL_WHITE_SPACES = new RegExp(
+		'^[' + joinedWhiteSpaces + ']+|[' + joinedWhiteSpaces + ']+$'
+	);
+
+	/**
 	 * Splits a string into a list of individual words.
 	 *
 	 * Words are non-empty sequences of non-space characaters.
@@ -295,7 +306,7 @@ define(['arrays'], function (Arrays) {
 	 * @return {Array.<string>}
 	 */
 	function words(str) {
-		str = str.trim();
+		str = str.trim().replace(TERMINAL_WHITE_SPACES, '');
 		if (isEmpty(str)) {
 			return [];
 		}
@@ -487,6 +498,7 @@ define(['arrays'], function (Arrays) {
 		WORD_BOUNDARY                 : WORD_BOUNDARY,
 		WORD_BOUNDARY_FROM_END        : WORD_BOUNDARY_FROM_END,
 		WORD_BREAKING_CHARACTER       : WORD_BREAKING_CHARACTER,
+		TERMINAL_WHITE_SPACES         : TERMINAL_WHITE_SPACES,
 
 		ZERO_WIDTH_CHARACTERS         : ZERO_WIDTH_CHARACTERS,
 		WHITE_SPACE_CHARACTERS        : WHITE_SPACE_CHARACTERS,
