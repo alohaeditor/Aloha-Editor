@@ -1,0 +1,3 @@
+When selecting and coping a text contained inside a block inside an editable element, the selection
+was changed to select the whole block. With this fix when an user selects a text inside the block the range
+is kept and the whole block select event is stopped.
