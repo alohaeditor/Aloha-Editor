@@ -87,7 +87,7 @@
 			true
 		)(
 			'<div contenteditable="true"><i>foo{}</i></div></div>',
-			'<div contenteditable="true"><i>foo<br><br>{}</i></div>',
+			'<div contenteditable="true"><i>foo<br>{}<br></i></div>',
 			true
 		)(
 			'<div contenteditable="true"><i>foo{}<br></i></div>',
@@ -123,7 +123,7 @@
 			true
 		)(
 			'<div contenteditable="true"><p>foo<i>bar[]</i></p></div>',
-			'<p>foo<i>bar<br><br>{}</i></p>',
+			'<p>foo<i>bar<br>{}<br></i></p>',
 			true
 		)
 
