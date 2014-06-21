@@ -1,5 +1,5 @@
 /** Aloha Editor | Version 1.0 | github.com/alohaeditor */
-
+alert('123test?!')
 // ==ClosureCompiler==
 // @compilation_level ADVANCED_OPTIMIZATIONS
 // @warning_level VERBOSE
