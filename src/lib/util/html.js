@@ -374,6 +374,15 @@ define([
 		return isWSPorZWSPNode(node);
 	}
 
+	/**
+	 * Checks is `node` is rendered.
+	 * @param {Node} node
+	 * @return {boolean}
+	 */
+	function isRenderedNode(node) {
+		return !isUnrenderedNode(node);
+	}
+
 	return {
 		BLOCKLEVEL_ELEMENTS: BLOCKLEVEL_ELEMENTS,
 		VOID_ELEMENTS: VOID_ELEMENTS,
@@ -390,6 +399,7 @@ define([
 		isWSPorZWSPNode: isWSPorZWSPNode,
 		isWSPorZWSPText: isWSPorZWSPText,
 		isUnrenderedNode: isUnrenderedNode,
+		isRenderedNode: isRenderedNode,
 		hasOnlyWhiteSpaceChildren: hasOnlyWhiteSpaceChildren
 	};
 });
