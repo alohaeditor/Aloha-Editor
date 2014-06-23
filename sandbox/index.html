@@ -5,12 +5,12 @@
 		<meta charset="UTF-8">
 		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300,700' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" type="text/css" href="../src/aloha.css">
+		<!-- Image from: https://www.flickr.com/photos/lovingjazz/6737863743 -->
 		<style>
 			html {
 				height: 100%;
 				background: #fefdfd;
 			}
-
 			body {
 				margin: 0;
 				padding: 5% 20%;
@@ -21,7 +21,6 @@
 				font-family: 'Open Sans', sans-serif;
 				font-size: 16px;
 			}
-
 			::selection {
 				background: #4285f4;
 				color: #fff;
@@ -30,10 +29,8 @@
 				background: #4285f4;
 				color: #fff;
 			}
-
 			p { margin: 0 0 0.5em; }
 			p:last-child { margin-bottom: 0; }
-
 			.aloha-caret {
 				outline: 1px solid rgba(255,0,0,0.5);
 			}
@@ -94,32 +91,25 @@
 		</style -->
 	</head>
 	<body>
-		<div class="aloha-editable"><b>one</b><i>two</i><u>three</u></div>
-
-		~~~
+		<!-- div class="aloha-editable"><b>one</b><i>two</i><u>three</u></div -->
 
 		<div class="aloha-editable">
 			one
+			<div draggable="true" class="aloha-block">Aloha Block</div>
 			<div>
 				<p>two</p>
 				<p>three</p>
 			</div>
-			<div>
-				<h2>four</h2>
-				<p>five</p>
-			</div>
 		</div>
-
-		~~~
 
 		<div class="aloha-editable">
 			<h1>Aloha Editor</h1>
 			<p>
-				<img draggable="true"
+				<!-- img draggable="true"
 				     class="aloha-block"
 				     src="demo.jpg"
 					 alt="Some Rights Reserved. Andrea O, Connell"
-					 style="float:left; width: 300px; margin: 0 20px 20px 0" />
+					 style="float:left; width: 300px; margin: 0 20px 20px 0" / -->
 				Lorem    ipsum &nbsp;dolor sit amet, <b>consec<i>tet</i>ur</b> adipiscin
 				elit. Donec a diam lectus. Sed sit amet ipsum mauris.  Maecen
 				congue ligula ac quam viverra nec consectetur ante hendrerit
@@ -141,6 +131,7 @@
 						<li>five</li>
 						<li class="bold"><u><i>six</i></u></li>
 					</ol>
+					<p>seven</p>
 				</li>
 			</ul>
 			<p>
@@ -149,6 +140,14 @@
 				Nam tincidunt congue enim, u porta lorem lacinia consectetur.
 				Donec ut libero sed arc vehicula ultricies a non tortor
 			</p>
+			<p>
+				Donec ut libero sed arc vehicula ultricies a non tortor
+			</p>
+			<ul>
+				<li>one</li>
+				<li>two</li>
+				<li>three</li>
+			</ul>
 			<p>one<br><br><br>two<br>three</p>
 		</div>
 		<script src="../src/require-pronto.js"></script>

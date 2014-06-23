@@ -190,8 +190,9 @@ define([
 		);
 		var start = boundaries[0];
 		var end = boundaries[1];
+		var node;
 		if (Boundaries.equals(start, end)) {
-			var node = Dom.upWhile(Boundaries.nextNode(start), function (node) {
+			node = Dom.upWhile(Boundaries.nextNode(start), function (node) {
 				return node
 				    && !Html.hasLinebreakingStyle(node)
 				    && !Dom.isEditingHost(node.parentNode);
@@ -200,7 +201,7 @@ define([
 		}
 		var cac = Boundaries.commonContainer(start, end);
 		if (!Html.hasLinebreakingStyle(cac)) {
-			var node = Dom.upWhile(cac, function (node) {
+			node = Dom.upWhile(cac, function (node) {
 				return node.parentNode
 				    && !Html.hasLinebreakingStyle(node.parentNode)
 				    && !Dom.isEditingHost(node.parentNode);
@@ -233,15 +234,79 @@ define([
 	}
 
 	/**
+	 * Splits the list at the given list element.
+	 *
+	 * @private
+	 * @param {Element} li
+	 */
+	function splitList(li) {
+		var prev = Dom.prevSiblings(li).filter(Html.isListItem);
+		var next = Dom.nextSiblings(li).filter(Html.isListItem);
+		var list = li.parentNode;
+		if (prev.length > 0) {
+			var prevList = Dom.cloneShallow(list);
+			Dom.moveBefore([prevList], list);
+			Dom.move(prev, prevList);
+		}
+		if (next.length > 0) {
+			var nextList = Dom.cloneShallow(list);
+			Dom.moveAfter([nextList], list);
+			Dom.move(next, nextList);
+		}
+	}
+
+	/**
+	 * Unwraps the given list item.
+	 *
+	 * @private
+	 * @param  {Element} li
+	 */
+	function unwrapItem(li) {
+		splitList(li);
+		Dom.removeShallow(li.parentNode);
+		var doc = li.ownerDocument;
+		var nodes = Dom.children(li).filter(Html.isRendered);
+		var split;
+		var container;
+		var lines = [];
+		while (nodes.length > 0) {
+			if (Html.hasLinebreakingStyle(nodes[0])) {
+				lines.push(nodes.shift());
+			} else {
+				split = Arrays.split(nodes, Html.hasLinebreakingStyle);
+				container = doc.createElement('p');
+				Dom.move(split[0], container);
+				lines.push(container);
+				nodes = split[1];
+			}
+		}
+		Dom.moveAfter(lines, li);
+		Dom.remove(li);
+	}
+
+	/**
 	 * Removes list formatting around the given boundaries.
 	 *
 	 * @param  {Array.<Boundary>} boundaries
 	 * @return {Array.<Boundary>}
 	 */
 	function unformat(boundaries) {
-		var start = boundaries[0];
-		var end = boundaries[1];
-		var cac = Boundaries.commonContainer(start, end);
+		var nearestItem = function (node) {
+			return !Html.isListItem(node) && !Dom.isEditingHost(node.parentNode);
+		};
+		var sc = Boundaries.container(boundaries[0]);
+		var ec = Boundaries.container(boundaries[1]);
+		var start = Dom.upWhile(sc, nearestItem);
+		if (Html.isListItem(start)) {
+			Dom.nodeAndNextSiblings(start).filter(Html.isListItem).forEach(unwrapItem);
+		}
+		if (sc === ec) {
+			return boundaries;
+		}
+		var end = Dom.upWhile(ec, nearestItem);
+		if (Html.isListItem(end)) {
+			Dom.nodeAndPrevSiblings(end).filter(Html.isListItem).forEach(unwrapItem);
+		}
 		return boundaries;
 	}
 
