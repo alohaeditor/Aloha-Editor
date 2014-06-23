@@ -36,26 +36,16 @@ define([
 		if (!trimmed) {
 			return false;
 		}
-		var $node = $('<div>' + trimmed + '</div>');
-		var node = $node[0];
-		var $brs = $node.find('br');
-		var containsSingleP = node.firstChild === node.lastChild
-		                   && 'P' === node.firstChild.nodeName;
-
-		if (containsSingleP && $brs.length === 1) {
-			var kids = node.firstChild.childNodes;
-			var i;
-			var len;
-
-			for (i = 0, len = kids.length; i < len; i++) {
-				if (Html.isRenderedNode(kids[i]) && kids[i].nodeName !== 'BR') {
-					return false;
-				}
-			}
-
-			return true;
+		var div = $('<div>' + trimmed + '</div>')[0];
+		var first = div.firstChild;
+		var containsSingleP = first === div.lastChild && 'P' === first.nodeName;
+		if (!containsSingleP) {
+			return false;
 		}
-		return false;
+		var $visible = $(p.childNodes).filter(function (i, node) {
+			return Html.isRenderedNode(node);
+		});
+		return $visible.length === 1 && $visible[0].nodeName === 'BR';
 	}
 
 	function wrapContent(content) {
