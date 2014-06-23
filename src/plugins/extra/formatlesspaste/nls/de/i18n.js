@@ -1,3 +1,3 @@
 define({
-	"button.formatlessPaste.tooltip": "Ohne Format einfügen de-/aktivieren"
+	"button.formatlessPaste.tooltip": "Formatierung übernehmen/nicht übernehmen"
 });

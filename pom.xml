@@ -3,7 +3,7 @@
 
 	<groupId>org.alohaeditor</groupId>
 	<artifactId>alohaeditor</artifactId>
-	<version>0.25.6-SNAPSHOT</version>
+	<version>0.26.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Aloha Editor</name>
 	<url>http://aloha-editor.org</url>
@@ -248,32 +248,8 @@
 							<executable>${project.basedir}/bin/build-guide.sh</executable>
 						</configuration>
 					</execution>
-					<execution>
-						<phase>package</phase>
-						<id>build-api</id>
-						<goals>
-							<goal>exec</goal>
-						</goals>
-						<configuration>
-							<skip>${bareMode}</skip>
-							<executable>${project.basedir}/bin/build-api.sh</executable>
-						</configuration>
-					</execution>
-					<!-- Alternative rhino r.js optimization -->
-					<!-- <execution> <phase>package</phase> <goals> <goal>java</goal> </goals> 
-						<configuration> <classpathScope>runtime</classpathScope> <mainClass>org.mozilla.javascript.tools.shell.Main</mainClass> 
-						<arguments> <argument>${project.basedir}/build/r.js</argument> <argument>-o</argument> 
-						<argument>${project.basedir}/build/aloha/build.js</argument> </arguments> 
-						</configuration> </execution> -->
 				</executions>
 			</plugin>
-			<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>lesscss-maven-plugin</artifactId> 
-				<version>1.0-beta-3</version> <executions> <execution> <phase>generate-sources</phase> 
-				<goals> <goal>compile</goal> </goals> <configuration> <sourceDirectory>${project.basedir}/src/css</sourceDirectory> 
-				<outputDirectory>${project.basedir}/src/css</outputDirectory> <includes> 
-				<include>aloha.less</include> </includes> <compress>true</compress> <force>true</force> 
-				</configuration> </execution> </executions> </plugin> -->
-
 			<plugin>
 				<groupId>ro.isdc.wro4j</groupId>
 				<artifactId>wro4j-maven-plugin</artifactId>

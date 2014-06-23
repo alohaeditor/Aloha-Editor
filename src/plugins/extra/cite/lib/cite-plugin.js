@@ -1,50 +1,51 @@
-/*global window: true define: true */
-/*!
-* Aloha Editor
-* Author & Copyright (c) 2010 Gentics Software GmbH
-* aloha-sales@gentics.com
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
-*/
-
+/* cite-plugin.js is part of the Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
+ * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php
+ * License http://aloha-editor.org/license.php
+ */
 define([
     'aloha',
 	'jquery',
+	'PubSub',
 	'aloha/plugin',
+	'aloha/content-rules',
+	'aloha/sidebar',
 	'ui/ui',
 	'ui/toggleButton',
 	'format/format-plugin',
 	'util/dom',
-	'PubSub',
-	'i18n!cite/nls/i18n',
-	'i18n!aloha/nls/i18n'
+	'i18n!cite/nls/i18n'
 ], function (
 	Aloha,
-	jQuery,
+	$,
+	PubSub,
 	Plugin,
+	ContentRules,
+	Sidebars,
 	Ui,
 	ToggleButton,
 	Format,
-	domUtils,
-	PubSub,
-    i18n,
-	i18nCore
+	Dom,
+	i18n
 ) {
 	'use strict';
 
-	var $ = jQuery,
-		ns  = 'aloha-cite',
-		uid = (new Date()).getTime();
+	var configurations = {};
+	var ns  = 'aloha-cite';
+	var uid = (new Date()).getTime();
 
 	// namespaced classnames
 	var nsClasses = {
-		quote         : nsClass('quote'),
-		blockquote    : nsClass('blockquote'),
+		'quote'       : nsClass('quote'),
+		'blockquote'  : nsClass('blockquote'),
 		'panel-label' : nsClass('panel-label'),
 		'panel-field' : nsClass('panel-field'),
 		'panel-btns'  : nsClass('panel-btns'),
 		'link-field'  : nsClass('link-field'),
 		'note-field'  : nsClass('note-field'),
-		references    : nsClass('references')
+		'references'  : nsClass('references')
 	};
 
 	/**
@@ -90,10 +91,10 @@ define([
 	 */
 	function nsSel() {
 		var strBldr = [], prx = ns;
-		jQuery.each(arguments, function () {
+		$.each(arguments, function () {
 			strBldr.push('.' + ('' === this ? prx : prx + '-' + this));
 		});
-		return jQuery.trim(strBldr.join(' '));
+		return $.trim(strBldr.join(' '));
 	}
 
 	/**
@@ -109,32 +110,85 @@ define([
 	 */
 	function nsClass() {
 		var strBldr = [], prx = ns;
-		jQuery.each(arguments, function () {
+		$.each(arguments, function () {
 			strBldr.push('' === this ? prx : prx + '-' + this);
 		});
-		return jQuery.trim(strBldr.join(' '));
+		return $.trim(strBldr.join(' '));
 	}
 
 	/**
-	 * Coverts hexidecimal string #00ffcc into rgb array [0, 255, 127]
+	 * Initializes the sidebar.
 	 *
-	 * @param {string} hex Hexidecimal string representing color. In the form
-	 *					   #ff3344 or #f34 or f34.
-	 * @return {Array.<number>} RGB representation of hexidecimal color.
+	 * Note that if the sidebar is not loaded, aloha-sidebar-initialized will
+	 * not fire and this listener will not be called, which is what we would
+	 * want if there are no sidebars
+	 *
+	 * @param {Plugin} plugin
 	 */
-	function hex2rgb(hex) {
-		hex = hex.replace('#', '').split('');
-		if (3 === hex.length) {
-			hex[5] = hex[4] = hex[2];
-			hex[3] = hex[2] = hex[1];
-			hex[1] = hex[0];
-		}
-		var rgb = [];
-		var i;
-		for (i = 0; i < 3; ++i) {
-			rgb[i] = parseInt('0x' + hex[i * 2] + hex[i * 2 + 1], 16);
-		}
-		return rgb;
+	function setupSidebar(plugin) {
+		Aloha.ready(function () {
+			plugin.sidebar = Sidebars.right.show().addPanel({
+				id       : nsClass('sidebar-panel'),
+				title    : 'Citation',
+				content  : '',
+				expanded : true,
+				activeOn : 'q, blockquote',
+
+				onInit: function () {
+					var panel = this;
+
+					var additionalReferenceContainer = plugin.referenceContainer
+							? '<label class="{panel-label}" for="{note-field}-textarea">Note</label>'
+							+ '<div class="{panel-field} {note-field}" style="margin: 5px;">'
+							+ '<textarea id="{note-field}-textarea"></textarea></div>'
+							: '';
+
+					var content = this.setContent(renderTemplate(
+						'<label class="{panel-label}" for="{link-field}-input">Link</label>' +
+						'<div class="{panel-field} {link-field}" ' + 
+						'style="margin: 5px;"><input type="text" id="{link-field}-input" /></div>' +
+						additionalReferenceContainer
+					)).content;
+
+					content.find('input, textarea').bind('keypress change', function () {
+						plugin.addCiteDetails(
+							panel.content.attr('data-cite-id'),
+							panel.content.find(nsSel('link-field input')).val(),
+							panel.content.find(nsSel('note-field textarea')).val()
+						);
+					});
+				},
+
+				/**
+				 * Invoked during aloha-selection-changed, if activeOn function
+				 * returns true for the current selection. Will populate panel
+				 * fields with the details of the selected citation if they are
+				 * already available.  If no citation exists for the selected
+				 * quotation, then one will be created for it first.
+				 */
+				onActivate: function (effective) {
+					var activeUid = effective.attr('data-cite-id');
+					if (!activeUid) {
+						activeUid = ++uid;
+						effective.addClass([nsClass('wrapper')].join(' '));
+						effective.attr('data-cite-id', activeUid);
+					}
+					var index = plugin.getIndexOfCitation(activeUid);
+					if (-1 === index) {
+						index = plugin.citations.push({
+							uid   : activeUid,
+							link  : null,
+							notes : null
+						}) - 1;
+					}
+					this.content.attr('data-cite-id', activeUid);
+					this.content.find(nsSel('link-field input'))
+					    .val(effective.attr('cite'));
+					this.content.find(nsSel('note-field textarea'))
+					    .val(plugin.citations[index].note);
+				}
+			});
+		});
 	}
 
 	return Plugin.create('cite', {
@@ -146,40 +200,34 @@ define([
 		config: ['quote', 'blockquote'],
 
 		init: function () {
-			var that = this;
+			var plugin = this;
 
-			// Harverst configuration options that may be defined outside of
-			// the plugin.
+			// Harverst configuration options that may be defined outside of the
+			// plugin
 			if (Aloha.settings && Aloha.settings.plugins && Aloha.settings.plugins.cite) {
 
-				var referenceContainer = jQuery(Aloha.settings.plugins.cite.referenceContainer);
+				var referenceContainer = $(Aloha.settings.plugins.cite.referenceContainer);
 
 				if (referenceContainer.length) {
-					that.referenceContainer = referenceContainer;
+					plugin.referenceContainer = referenceContainer;
 				}
 
 				if (typeof Aloha.settings.plugins.cite !== 'undefined') {
-					that.settings = Aloha.settings.plugins.cite;
+					plugin.settings = Aloha.settings.plugins.cite;
 				}
 
-				if (typeof that.settings.sidebar === 'undefined') {
-					that.settings.sidebar = {};
+				if (typeof plugin.settings.sidebar === 'undefined') {
+					plugin.settings.sidebar = {};
 				}
 
-				if (typeof that.settings.sidebar.open === 'undefined') {
-					that.settings.sidebar.open = true;
+				var sidebar = plugin.settings.sidebar;
+
+				if (typeof sidebar.open === 'undefined') {
+					sidebar.open = true;
 				}
 
-				// be tolerant about the setting: 'false' and '0' (as strings) will be interpreted as false (boolean)
-				if (typeof that.settings.sidebar.open === 'string') {
-					that.settings.sidebar.open = that.settings.sidebar.open.toLowerCase();
-					if (that.settings.sidebar.open === 'false' || that.settings.sidebar.open === '0') {
-						// disable button only if 'false' or '0' is specified
-						that.settings.sidebar.open = false;
-					} else {
-						// otherwise the button will always be shown
-						that.settings.sidebar.open = true;
-					}
+				if (typeof sidebar.open === 'string') {
+					sidebar.open = !(sidebar.open === '0' || sidebar.open.toLowerCase() === 'false');
 				}
 			}
 
@@ -188,136 +236,64 @@ define([
 				icon: nsClass('button', 'inline-button'),
 				scope: 'Aloha.continuoustext',
 				click: function () {
-					that.addInlineQuote();
+					plugin.addInlineQuote();
 				}
 			});
 
+			setupSidebar(this);
+
 			// We brute-forcishly push our button settings into the
-			// multiSplitButton. The multiSplitButton will pick it up
-			// and render it.
+			// multiSplitButton. The multiSplitButton will pick it up and render
+			// it.
 			Format.multiSplitButton.pushItem({
 				name: 'blockquote',
 				tooltip: i18n.t('cite.button.add.blockquote'),
 				icon: nsClass('button', 'block-button'),
 				click: function () {
-					that.addBlockQuote();
+					plugin.addBlockQuote();
 				}
 			});
 
-			var citePlugin = this;
+			PubSub.sub('aloha.editable.created', function (message) {
+				var editable = message.editable;
+				var config = plugin.getEditableConfig(editable.obj);
 
-			// Note that if the sidebar is not loaded,
-			// aloha-sidebar-initialized will not fire and this listener will
-			// not be called, which is what we would want if there are no
-			// sidebars
-			Aloha.ready(function (ev) {
-				citePlugin.sidebar = Aloha.Sidebar.right.show();
-				// citePlugin.sidebar.settings.overlayPage = false;
-				citePlugin.sidebar.addPanel({
-					id       : nsClass('sidebar-panel'),
-					title    : 'Citation',
-					content  : '',
-					expanded : true,
-					activeOn : 'q, blockquote',
+				var isQuoteEnabled = config
+					&& ($.inArray('quote', config) > -1)
+					&& ContentRules.isAllowed(editable.obj[0], 'q');
 
-					// Executed once, when this panel object is instantialized
-					onInit   : function () {
-						var that = this;
-						var additionalReferenceContainer = '';
-						
-						if (citePlugin.referenceContainer) {
-							additionalReferenceContainer = '<label class="{panel-label}" for="{note-field}-textarea">Note</label> ' +
-															'<div class="{panel-field} {note-field}" ' +
-															'style="margin: 5px;">' +
-															'<textarea id="{note-field}-textarea"></textarea></div>';
-						}
-						
-						var content = this.setContent(renderTemplate(
-								'<label class="{panel-label}" for="{link-field}-input">Link</label>' +
-								'<div class="{panel-field} {link-field}" ' + 
-								'style="margin: 5px;"><input type="text" id="{link-field}-input" /></div>' +
-								additionalReferenceContainer
-							)).content;
+				var isBlockQuoteEnabled = config
+					&& ($.inArray('blockquote', config) > -1)
+					&& ContentRules.isAllowed(editable.obj[0], 'blockquote');
 
-						content.find('input, textarea')
-							.bind('keypress change', function () {
-								citePlugin.addCiteDetails(
-									that.content.attr('data-cite-id'),
-									that.content.find(nsSel('link-field input')).val(),
-									that.content.find(nsSel('note-field textarea')).val()
-								);
-							});
-					},
-
-					/**
-					 * Invoked during aloha-selection-changed, if activeOn
-					 * function returns true for the current selection.  Will
-					 * populate panel fields with the details of the selected
-					 * citation if they are already available.  If no citation
-					 * exists for the selected quotation, then one will be
-					 * created for it first.
-					 */
-					onActivate: function (effective) {
-						var activeUid = effective.attr('data-cite-id');
-						if (!activeUid) {
-							activeUid = ++uid;
-							var classes = [nsClass('wrapper')].join(' ');
-							effective.addClass(classes);
-							effective.attr('data-cite-id', activeUid);
-						}
-						var index = that.getIndexOfCitation(activeUid);
-
-						if (-1 === index) {
-							index = that.citations.push({
-								uid   : activeUid,
-								link  : null,
-								notes : null
-							}) - 1;
-						}
-
-						this.content.attr('data-cite-id', activeUid);
-						this.content.find(nsSel('link-field input'))
-						    .val(effective.attr('cite'));
-						this.content.find(nsSel('note-field textarea'))
-						    .val(that.citations[index].note);
-					}
-
-				});
+				configurations[editable.getId()] = {
+					quote: isQuoteEnabled,
+					blockquote: isBlockQuoteEnabled
+				};
 			});
 
-			Aloha.bind('aloha-editable-activated', function (event, params) {
-				var config = that.getEditableConfig(params.editable.obj);
-
-				if (!config) {
-					return;
-				}
-				
-				if ( jQuery.inArray('quote', config ) !== -1 ) {
-					that._quoteButton.show(true);
-				} else {
-					that._quoteButton.show(false);
-				}
-				
-				if ( jQuery.inArray( 'blockquote', config ) !== -1 ) {
+			PubSub.sub('aloha.editable.activated', function (message) {
+				var config = configurations[message.editable.getId()];
+				plugin._quoteButton.show(!!config.quote);
+				if (config.blockquote) {
 					Format.multiSplitButton.showItem('blockquote');
 				} else {
 					Format.multiSplitButton.hideItem('blockquote');
 				}
-				
+			});
+
+			PubSub.sub('aloha.editable.destroyed', function (message) {
+				delete configurations[message.editable.getId()];
 			});
 
 			PubSub.sub('aloha.selection.context-change', function (message) {
-				var rangeObject = message.range;
-
-				// Set to false to prevent multiple buttons being active
-				// when they should not.
-				var quoteFound = false, blockquoteFound = false;
+				var quoteFound = false;
+				var blockquoteFound = false;
 				var nodeName;
-				var effective = rangeObject.markupEffectiveAtStart;
+				var effective = message.range.markupEffectiveAtStart;
 				var i = effective.length;
 
-				// Check whether any of the effective items are citation
-				// tags.
+				// Check whether any of the effective items are citation tags
 				while (i) {
 					nodeName = effective[--i].nodeName;
 					if (nodeName === 'Q') {
@@ -327,29 +303,21 @@ define([
 					}
 				}
 
-				// set the toggle status for the quote button
-				that._quoteButton.setState(quoteFound);
+				plugin._quoteButton.setState(quoteFound);
 
-				// activate the blockquote multisplit item
 				if (blockquoteFound) {
 					Format.multiSplitButton.setActiveItem('blockquote');
 				}
-				
-				// switch item visibility according to config
-				var config = [];
-				if (Aloha.activeEditable) {
-					config = that.getEditableConfig(Aloha.activeEditable.obj);
+
+				if (!Aloha.activeEditable) {
+					return;
 				}
 
-				// quote
-				if (jQuery.inArray('quote', config) !== -1) {
-					that._quoteButton.show(true);
-				} else {
-					that._quoteButton.show(false);
-				}
+				var config = configurations[Aloha.activeEditable.getId()];
 
-				// blockquote
-				if (jQuery.inArray('blockquote', config) !== -1) {
+				plugin._quoteButton.show(!!config.quote);
+
+				if (config.blockquote) {
 					Format.multiSplitButton.showItem('blockquote');
 				} else {
 					Format.multiSplitButton.hideItem('blockquote');
@@ -373,121 +341,92 @@ define([
 			var min = 0;
 			var mid;
 			var cuid;
-
-			// Infinite loop guard for debugging...  So your tab/browser
-			// doesn't freeze up like a Christmas turkey ;-)
-			// var __guard = 1000;
-
-			while (min < max /* && --__guard */ ) {
+			while (min < max) {
 				mid = (min + max) >> 1; // Math.floor(i) / 2 == i >> 1 == ~~(i / 2)
 				cuid = c[mid].uid;
-
 				// Don't do strict comparison here or you'll get an endless loop
 				if (cuid == uid) {
 					return mid;
 				}
-				
 				if (cuid > uid) {
 					max = mid;
 				} else if (cuid < uid) {
 					min = mid + 1;
 				}
 			}
-
 			return -1;
 		},
 
+		/**
+		 * Formats the current selection with blockquote.
+		 */
 		addBlockQuote: function () {
-			var classes = [nsClass('wrapper'), nsClass(++uid)].join(' ');
-
-			var markup = jQuery(supplant(
-					'<blockquote class="{classes}" data-cite-id="{uid}"></blockquote>',
-					{uid: uid, classes: classes}
-			));
-
-			// Now re-enable the editable...
 			if (Aloha.activeEditable) {
-				jQuery(Aloha.activeEditable.obj[0]).click();
+				Aloha.activeEditable.obj.click();
 			}
-
+			var markup = $('<blockquote class="aloha-cite-wrapper aloha-cite-'
+			           + (++uid) + '" ' + 'data-cite-id="'
+			           + uid + '"></blockquote>');
 			Aloha.Selection.changeMarkupOnSelection(markup);
-
 			if (this.referenceContainer) {
 				this.addCiteToReferences(uid);
 			}
-
-			if (this.sidebar && this.settings && this.settings.sidebar &&
-			     this.settings.sidebar.open) {
-				this.sidebar.open();
+			if (this.sidebar && this.settings && this.settings.sidebar && this.settings.sidebar.open) {
+				this.sidebar.sidebar.open();
 			}
-			//	.activatePanel(nsClass('sidebar-panel'), markup);
 		},
 
+		/**
+		 * Formats the current selection with q.
+		 */
 		addInlineQuote: function () {
-			var classes = [nsClass('wrapper'), nsClass(++uid)].join(' ');
-			
-			var markup = jQuery(supplant(
-					'<q class="{classes}" data-cite-id="{uid}"></q>',
-					{ uid: uid, classes: classes }
-			));
-
-			var rangeObject = Aloha.Selection.rangeObject;
-			var foundMarkup;
-
 			if (Aloha.activeEditable) {
-				jQuery(Aloha.activeEditable.obj[0]).click();
+				Aloha.activeEditable.obj.click();
 			}
 
-			// Check whether the markup is found in the range (at the start of
-			// the range).
-			foundMarkup = rangeObject.findMarkup(function () {
-				if (this.nodeName && markup.length &&
-					(typeof this.nodeName === 'string') &&
-					(typeof markup[0].nodeName === 'string')) {
-					return this.nodeName.toLowerCase() ===
-						markup[0].nodeName.toLowerCase();
-				}
+			var markup = $('<q class="aloha-cite-wrapper aloha-cite-'
+			           + (++uid) + '" ' + 'data-cite-id="'
+			           + uid + '"></q>');
 
+			var range = Aloha.Selection.rangeObject;
+
+			var $editable = Aloha.activeEditable.obj;
+
+			var foundMarkup = range.findMarkup(function () {
+				if (this.nodeName && markup.length
+					&& (typeof this.nodeName === 'string')
+					&& (typeof markup[0].nodeName === 'string')) {
+					return this.nodeName === markup[0].nodeName;
+				}
 				return false;
-			}, Aloha.activeEditable.obj);
+			}, $editable);
 
 			// If the we click the quote button on a range that contains quote
 			// markup, then we will remove the quote markup, otherwise we will
-			// wrap the selection in a quote.
-
+			// wrap the selection in a quote
 			if (foundMarkup) {
-				if (rangeObject.isCollapsed()) {
-					// The range is collapsed; remove exactly the one DOM
-					// element.
-					domUtils.removeFromDOM(foundMarkup, rangeObject, true);
+				if (range.isCollapsed()) {
+					Dom.removeFromDOM(foundMarkup, range, true);
 				} else {
-					// The range is not collapsed; remove the markup from the
-					// range.
-					domUtils.removeMarkup(rangeObject, markup,
-						Aloha.activeEditable.obj);
+					Dom.removeMarkup(range, markup, $editable);
 				}
 			} else {
-				// When the range is collapsed, extend it to a word.
-				if (rangeObject.isCollapsed()) {
-					domUtils.extendToWord(rangeObject);
+				if (range.isCollapsed()) {
+					Dom.extendToWord(range);
 				}
-
-				domUtils.addMarkup(rangeObject, markup);
+				Dom.addMarkup(range, markup);
 			}
 
-			// select the modified range
-			rangeObject.select();
+			// Because the range may have changed
+			range.select();
 
 			if (this.referenceContainer) {
 				this.addCiteToReferences(uid);
 			}
 
-			if (this.sidebar && this.settings && this.settings.sidebar &&
-			     this.settings.sidebar.open) {
-				this.sidebar.open();
+			if (this.sidebar && this.settings && this.settings.sidebar && this.settings.sidebar.open) {
+				this.sidebar.sidebar.open();
 			}
-
-			//	.activatePanel(nsClass('sidebar-panel'), markup);
 
 			return false;
 		},
@@ -502,40 +441,29 @@ define([
 		 */
 		addCiteToReferences: function (uid) {
 			var index = this.getIndexOfCitation(uid);
-
 			if (-1 === index) {
 				return;
 			}
-
-			var wrapper = jQuery('.aloha-editable-active ' + nsSel(uid));
-			var note = 'cite-note-' + uid;
-			var ref = 'cite-ref-'  + uid;
-
-			wrapper.append(
-				supplant(
-					'<sup id="{ref}" contenteditable="false"><a href="#{note}">[{count}]</a></sup>',
-					{ ref   : ref, note  : note, count : index + 1 }
-				)
+			$('.aloha-editable-active .aloha-cite-' + uid).append(
+				'<sup id="cite-ref-' + uid + '" contenteditable="false">' +
+				'<a href="#cite-note-' + uid + '">[' + (index + 1) + ']</a>' +
+				'</sup>'
 			);
-
 			if (0 === this.referenceContainer.find('ol.references').length) {
 				this.referenceContainer
 				    .append('<h2>References</h2>')
 				    .append('<ol class="references"></ol>');
 			}
-
 			this.referenceContainer.find('ol.references').append(
-				supplant(
-					'<li id="{note}"><a href="#{ref}">^</a> &nbsp; <span></span></li>',
-					{ ref  : ref, note : note }
-				)
+				'<li id="cite-note-' + uid + '">' +
+				'<a href="#cite-ref-' + uid + '">^</a> &nbsp; <span></span>' +
+				'</li>'
 			);
 		},
 
 		/**
-		 * Responsible for updating the citation reference in memory, and in
-		 * the references list when a user adds or changes information for a
-		 * given citation.
+		 * Updates the citation reference in memory, and in the references list
+		 * when a user adds or changes information for a given citation.
 		 *
 		 * @param {string} uid
 		 * @param {string} link
@@ -547,58 +475,45 @@ define([
 				link : link,
 				note : note
 			};
-
 			if (link) {
-				// Update link attribute
-				var el = jQuery(nsSel(uid)).attr('cite', link);
+				$('.aloha-cite-' + uid).attr('cite', link);
 			}
-
-			// Update information in references list for this citation.
 			if (this.referenceContainer) {
-				jQuery('li#cite-note-' + uid + ' span').html(
-					supplant(
-						link ? '<a class="external" target="_blank" href="{url}">{url}</a>' : '',
-						{ url: link }
-					) + (note ? '. ' + note : '')
-				);
+				$('li#cite-note-' + uid + ' span').html((
+					link ? '<a class="external" target="_blank" href="' + link + '">' + link + '</a>'
+					     : ''
+				) + (note ? '. ' + note : ''));
 			}
 		},
 
-		toString: function () {
-			return 'aloha-citiation-plugin';
-		},
-		
 		/**
-		 * Make the given jQuery object (representing an editable) clean for saving
-		 * Find all quotes and remove editing objects
-		 * @param obj jQuery object to make clean
-		 * @return void
+		 * Makes the given jQuery object (representing an editable) clean for
+		 * saving Find all quotes and remove editing objects.
+		 *
+		 * @param {jQuery.<Element>} $element
 		 */
-		makeClean: function (obj) {
-
-			// find all quotes
-			obj.find('q, blockquote').each(function () {
+		makeClean: function ($element) {
+			var plugin = this;
+			$element.find('q,blockquote').each(function () {
+				var $elem = $(this);
 				// Remove empty class attributes
-				if (jQuery.trim(jQuery(this).attr('class')) === '') {
-					jQuery(this).removeAttr('class');
+				if ($.trim($elem.attr('class')) === '') {
+					$elem.removeAttr('class');
 				}
-				// Only remove the data cite attribute when no reference container was set
-				if (!this.referenceContainer) {
-					jQuery(this).removeClass('aloha-cite-' + jQuery(this).attr('data-cite-id'));
+				// Only remove the data cite attribute when no reference
+				// container was set
+				if (!plugin.referenceContainer) {
+					$elem.removeClass('aloha-cite-' + $elem.attr('data-cite-id'));
 			
-					// We need to read this attribute for IE7. Otherwise it will
-					// crash when the attribute gets removed. In IE7 this removal 
-					// does not work at all. (no wonders here.. :.( )
-					if (jQuery(this).attr('data-cite-id') != null) {
-						jQuery(this).removeAttr('data-cite-id');
+					// We need to read this attribute for IE7 otherwise it will
+					// crash when the attribute gets removed. In IE7 this
+					// removal does not work at all. (no wonders here.. :.( )
+					if ($elem.attr('data-cite-id') != null) {
+						$elem.removeAttr('data-cite-id');
 					}
 				}
-				
-				jQuery(this).removeClass('aloha-cite-wrapper');
-				
+				$elem.removeClass('aloha-cite-wrapper');
 			});
 		}
-
 	});
-
 });

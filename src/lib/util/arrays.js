@@ -246,6 +246,16 @@ define(['util/functions'], function (Fn) {
 	}
 
 	/**
+	 * Returns concatenation of two arrays.
+	 * @param {Array} xs
+	 * @param {Array} zx
+	 * @returns {Array}
+	 */
+	function concat(xs, zx) {
+		return xs.concat(zx);
+	}
+
+	/**
 	 * Returns all items in xs that are also contained in zs.
 	 */
 	function intersect(xs, zs) {
@@ -320,6 +330,7 @@ define(['util/functions'], function (Fn) {
 		second: second,
 		last: last,
 		coerce: coerce,
-		isEmpty: isEmpty
+		isEmpty: isEmpty,
+		concat: concat
 	};
 });

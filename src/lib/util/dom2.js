@@ -359,6 +359,17 @@ define([
 		parent.removeChild(node);
 	}
 
+	/**
+	 * Removes `node`.
+	 * @param {Node} node
+	 */
+	function remove(node) {
+		var parent = node.parentNode;
+		if (parent) {
+			parent.removeChild(node);
+		}
+	}
+
 	function wrap(node, wrapper) {
 		node.parentNode.replaceChild(wrapper, node);
 		wrapper.appendChild(node);
@@ -982,6 +993,7 @@ define([
 		indexByClassHaveList: indexByClassHaveList,
 		outerHtml: outerHtml,
 		removeShallow: removeShallow,
+		remove: remove,
 		wrap: wrap,
 		insert: insert,
 		cursor: cursor,

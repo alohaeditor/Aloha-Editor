@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>Heading hierarchy checking</title>
+	<link rel="stylesheet" href="index.css" type="text/css">
+	<link rel="stylesheet" href="../../css/aloha.css" type="text/css">
+	<script src="../../lib/require.js"></script>
+	<script src="../../lib/vendor/jquery-1.7.2.js"></script>
+	<script src="../../lib/aloha.js" data-aloha-plugins="common/ui,common/format,common/highlighteditables,common/link"></script>
+</head>
+<body>
+<div id="main">
+	
+	<div id="content">
+		<p>This is a test page for the "check headings hierarchy" feature of the format plugin. <br>
+			See the guide for the <a href="http://aloha-editor.org/guides/plugin_format.html" hreflang="">format plugin</a> for a description.
+			Look into the html and css source for using the feature.
+		</p>
+		<h1>not in config heading one </h1><br>
+		<p>(Tip: see the config in the html source)</p><br>
+		<h2>very correct heading two</h2><br>
+		<h6>super wrong heading six</h6><br>
+		<h3>correct heading three</h3><br>
+		<h4>great heading four</h4><br>
+		<h2>good heading two</h2><br>
+		<h4>stupid heading four</h4><br>
+		<h5>still stupid five</h5></br>
+		<h3>cool heading three</h3><br>
+	</div>
+	
+	<p>Tip: the markup is only visible in the editor. Feel free to call Aloha.getEditableById("content").getContents(); in your JavaScript console.</p>
+
+</div>
+<script type="text/javascript">
+			Aloha.settings = {
+				plugins: {
+					format: {
+						// all elements with no specific configuration get this configuration
+						// Note that there is no 'h1' in there, so 'h1' violates the hierarchy check
+						config: [ 'b', 'i', 'sub', 'sup', 'p', 'h2', 'h3', 'h4', 'h5', 'h6', 'removeFormat'],
+						editables: {
+							// no formatting allowed for title
+							'#title': [],
+							// just bold and italic for the teaser
+							'#teaser': [ 'b', 'i' ]
+						},
+						//enable the heading hierarchy check
+						checkHeadingHierarchy: true
+					}
+				}
+			}
+			Aloha.ready( function() {
+				Aloha.jQuery('#content').aloha();
+			});
+</script>
+</body>
+</html>

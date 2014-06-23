@@ -1,30 +1,9 @@
-/*global define: true */
-
-/* autoparagraph-plugin.js is part of Aloha Editor project http://aloha-editor.org
+/* autoparagraph-plugin.js is part of the Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
- * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php 
- * 
- * Aloha Editor is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or any later version.
- *
- * Aloha Editor is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- * 
- * As an additional permission to the GNU GPL version 2, you may distribute
- * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
- * source code without the copy of the GNU GPL normally required,
- * provided you include this license notice and a URL through which
- * recipients can access the Corresponding Source.
+ * License http://aloha-editor.org/license.php
  */
 /**
  * @name autoparagraph
@@ -32,14 +11,18 @@
  */
 define([
 	'jquery',
+	'PubSub',
 	'aloha/plugin',
 	'aloha/core',
+	'aloha/content-rules',
 	'util/html',
 	'util/dom'
 ], function (
 	$,
+	PubSub,
 	Plugin,
 	Aloha,
+	ContentRules,
 	Html,
 	Dom
 ) {
@@ -49,6 +32,8 @@ define([
 	 * Name of this plugin
 	 */
 	var pluginName = 'autoparagraph';
+
+	var configurations = {};
 
 	/**
 	 * Auto-generate missing paragraphs in the given editable, when the editable allows insertion of paragraphs.
@@ -104,12 +89,12 @@ define([
 			var range = nonBlockRanges[i];
 			var indexStart = Dom.getIndexInParent(range.objs[0]);
 			var indexEnd = Dom.getIndexInParent(range.objs[range.objs.length - 1]);
-			var p = $("<p></p>");
+			var $p = $('<p></p>');
 
 			// correct the start of the selection range, if necessary
 			if (selectionRange.startContainer === obj) {
 				if (selectionRange.startOffset > indexStart && selectionRange.startOffset <= indexEnd) {
-					selectionRange.startContainer = p[0];
+					selectionRange.startContainer = $p[0];
 					selectionRange.startOffset -= indexStart;
 				} else if (selectionRange.startOffset > indexEnd) {
 					selectionRange.startOffset -= (indexEnd - indexStart);
@@ -118,7 +103,7 @@ define([
 			// correct the end of the selection range, if necessary
 			if (selectionRange.endContainer === obj) {
 				if (selectionRange.endOffset > indexStart && selectionRange.endOffset <= indexEnd) {
-					selectionRange.endContainer = p[0];
+					selectionRange.endContainer = $p[0];
 					selectionRange.endOffset -= indexStart;
 				} else if (selectionRange.endOffset > indexEnd) {
 					selectionRange.endOffset -= (indexEnd - indexStart);
@@ -126,10 +111,10 @@ define([
 			}
 
 			// insert the paragraph right before the old dom elements
-			$(range.objs[0]).before(p);
+			$(range.objs[0]).before($p);
 			// move all old dom elements into the paragraph
 			for (j = 0; j < range.objs.length; j++) {
-				p[0].appendChild(range.objs[j]);
+				$p[0].appendChild(range.objs[j]);
 			}
 			contentChanged = true;
 		}
@@ -167,18 +152,23 @@ define([
 		 */
 		init: function () {
 			var plugin = this;
+
 			// autogenerate paragraphs when a new editable is created
-			Aloha.bind('aloha-editable-created', function (event, editable) {
+			PubSub.sub('aloha.editable.created', function (message) {
+				var editable = message.editable;
 				var config = plugin.getEditableConfig(editable.obj);
-				if (isPluginActivated(config)) {
+				var enabled = config
+				           && ($.inArray(pluginName, config) > -1)
+				           && ContentRules.isAllowed(editable.obj[0], 'p');
+				configurations[editable.getId()] = !!enabled;
+				if (enabled) {
 					autogenerateParagraphs(editable);
 				}
 			});
 
 			// autogenerate paragraphs upon smart content change
 			Aloha.bind('aloha-smart-content-changed', function (event, data) {
-				var config = plugin.getEditableConfig(data.editable.obj);
-				if (isPluginActivated(config)) {
+				if (configurations[data.editable.obj]) {
 					autogenerateParagraphs(data.editable);
 				}
 			});

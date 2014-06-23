@@ -38,7 +38,7 @@ pre, code, kbd, samp { font-family: monospace, sans-serif; }
 html { overflow-y: scroll; }
 a:hover, a:active { outline: none; }
 ul, ol { margin-left: 2em; }
-ol { list-style-type: decimal; }
+ol { /*list-style-type: decimal;*/ }
 nav ul, nav li { margin: 0; list-style:none; list-style-image: none; }
 small { font-size: 85%; }
 strong, th { font-weight: bold; }
@@ -201,13 +201,13 @@ h6,
 	font-size: 90%;
 	line-height: 1.3em;
 }
-#content ol { 
-	list-style-type: lower-alpha;
+#content ol {
+	/*list-style-type: lower-alpha;*/
 	padding-left: 1.45em;
 }
 #content ul { 
 	padding-left: 1.15em;
-	list-style-type: circle;
+	/*list-style-type: circle;*/
 }
 
 #whole-site {

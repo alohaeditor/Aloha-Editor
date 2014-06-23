@@ -1,0 +1,5 @@
+format-plugin: Check the hierarchy of headings
+
+It is now possible to check the hierarchy of all headings in an editable. If the hierarchy is violated, a class "aloha-heading-hierarchy-violated" is added to the heading. 
+It is also checked if the hierarchy of a heading is lower than the highest allowed hierarchy in the configuration.
+See "Aloha Editor guides":http://aloha-editor.org/guides/plugin_format.html#paragraph-headline-preformatted-or-remove-formatting for further details.

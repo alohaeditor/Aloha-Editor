@@ -1,0 +1,1 @@
+format-plugin: Formatting content text as source code is now possible with the format plugin. The selected text will be wrapped in a 'code' element tag.

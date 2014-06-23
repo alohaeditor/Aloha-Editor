@@ -1,0 +1,2 @@
+Image-plugin: hide the button in the UI when plugin is deactivated for an editable
+The problem was that an empty config for an editable did not deactivate the image-plugin as described in the guides.

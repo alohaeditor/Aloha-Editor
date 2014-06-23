@@ -1,60 +1,48 @@
-/* format-plugin.js is part of Aloha Editor project http://aloha-editor.org
+/* format-plugin.js is part of the Aloha Editor project http://aloha-editor.org
  *
- * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://aloha-editor.org/contribution.php
- *
- * Aloha Editor is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or any later version.
- *
- * Aloha Editor is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- *
- * As an additional permission to the GNU GPL version 2, you may distribute
- * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
- * source code without the copy of the GNU GPL normally required,
- * provided you include this license notice and a URL through which
- * recipients can access the Corresponding Source.
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php 
+ * License http://aloha-editor.org/license.php
  */
 define('format/format-plugin', [
+	'jquery',
 	'aloha',
+	'PubSub',
 	'aloha/plugin',
 	'aloha/state-override',
-	'jquery',
+	'aloha/content-rules',
+	'aloha/ephemera',
+	'aloha/selection',
 	'util/arrays',
 	'util/html',
 	'util/dom',
+	'util/maps',
 	'ui/ui',
 	'ui/toggleButton',
 	'ui/port-helper-multi-split',
-	'PubSub',
-	'i18n!format/nls/i18n',
-	'i18n!aloha/nls/i18n',
-	'aloha/selection'
+	'i18n!format/nls/i18n'
 ], function (
+	jQuery,
 	Aloha,
+	PubSub,
 	Plugin,
 	StateOverride,
-	jQuery,
+	ContentRules,
+	Ephemera,
+	Selection,
 	Arrays,
 	Html,
 	Dom,
+	Maps,
 	Ui,
 	ToggleButton,
 	MultiSplitButton,
-	PubSub,
 	i18n
 ) {
 	'use strict';
 
+	var $ = jQuery;
 	var pluginNamespace = 'aloha-format';
 	var commandsByElement = {
 		'b': 'bold',
@@ -171,6 +159,15 @@ define('format/format-plugin', [
 	}
 
 	/**
+	 * Determines if a markup is a heading
+	 * @param string markup
+	 * @returns {boolean}
+	 */
+	function isHeading(markup){
+		return jQuery.inArray(markup,['h1', 'h2', 'h3', 'h4', 'h5', 'h6']) >= 0;
+	}
+
+	/**
 	 * Checks whether range spans multiple lists
 	 * @param Range range
 	 * @return {boolean}
@@ -260,7 +257,7 @@ define('format/format-plugin', [
 					cellMarkup.contents().unwrap();
 					cellMarkupCounter++;
 				}
-				cellContent.contents().wrap('<' + button + '></' + button + '>');
+				cellContent.contents().wrap('<'+button+'></'+button+'>');
 			});
 
 			// remove all markup if all cells have markup
@@ -276,7 +273,7 @@ define('format/format-plugin', [
 		if (formatInsideTableWorkaround(button)) {
 			return false;
 		}
-		formatPlugin.addMarkup(button); 
+		formatPlugin.addMarkup( button ); 
 		return false;
 	}
 
@@ -285,16 +282,16 @@ define('format/format-plugin', [
 			return false;
 		}
 
-		formatPlugin.changeMarkup(button);
+		formatPlugin.changeMarkup( button );
 
 		// setting the focus is needed for mozilla to have a working rangeObject.select()
 		if (Aloha.activeEditable && jQuery.browser.mozilla) {
 			Aloha.activeEditable.obj.focus();
 		}
-
+		
 		// triggered for numerated-headers plugin
 		if (Aloha.activeEditable) {
-			Aloha.trigger('aloha-format-block');
+			Aloha.trigger( 'aloha-format-block' );
 		}
 	}
 
@@ -309,7 +306,7 @@ define('format/format-plugin', [
 			icon: 'aloha-icon aloha-icon-' + componentName,
 			scope: 'Aloha.continuoustext',
 			click: function () {
-				return textLevelButtonClickHandler(formatPlugin, button);
+				return textLevelButtonClickHandler(formatPlugin, button); 
 			}
 		});
 		return component;
@@ -322,7 +319,7 @@ define('format/format-plugin', [
 			iconClass: 'aloha-icon ' + i18n.t('aloha-large-icon-' + button),
 			markup: jQuery('<' + button + '>'),
 			click: function () { 
-				return blockLevelButtonClickHandler(formatPlugin, button);
+				return blockLevelButtonClickHandler(formatPlugin, button); 
 			}
 		};
 	}
@@ -340,16 +337,88 @@ define('format/format-plugin', [
 		};
 	}
 
+	/**
+	 * Checks the hierarchy of headings (h1, h2, ..., h6) and adds a class
+	 * "aloha-heading-hierarchy-violated" if the hierarchy is violated.
+	 * The hierarchy is violated if a heading is more than one hierarchy lower
+	 * than the previous heading.
+	 * It is also checked, if the hierarchy is higher than the highest hierarchy
+	 * found in the plugin configuration.
+	 * For example if the plugin configuration contains the possible headings:
+	 * 'h2', 'h3', 'h4', 'h5', 'h6', then all occurrences of 'h1' will be marked.
+	 * @param {config} the plugin config
+	 * @returns {undefined}
+	 */
+	function checkHeadingHierarchy(config) {
+		var parent = Aloha.activeEditable.obj,
+			startHeading,
+			lastCorrectHeading,
+			currentHeading;
+
+		if (config.length === 0) {
+			return;
+		}
+
+		//set startheading to heading with smallest number available in the config
+		for (var i = 0; i < config.length; i++){
+			if (isHeading(config[i])) {
+				if (typeof startHeading !== 'undefined') {
+					if (parseInt(config[i].charAt(1),10) < startHeading) {
+						startHeading = parseInt(config[i].charAt(1),10);
+					}
+				} else {
+					//first heading found in config
+					startHeading = parseInt(config[i].charAt(1),10);
+				}
+			}
+		}
+
+		//check the heading hierarchy of every heading
+		if (typeof startHeading !== 'undefined') {
+			//this find() returns all headings in tree order
+			parent.find("h1,h2,h3,h4,h5,h6").each(function (){
+				currentHeading = parseInt(this.nodeName.charAt(1),10);
+				if (typeof lastCorrectHeading !== 'undefined') {
+					//the current heading hierarchy must be lower than the startHeading hierarchy
+					if (currentHeading < startHeading) {
+						$(this).addClass("aloha-heading-hierarchy-violated");
+					} else {
+						//heading hierarchy is violated if a heading is more
+						//than one hierarchy lower than the last correct heading
+						if (currentHeading > (lastCorrectHeading+1)) {
+							$(this).addClass("aloha-heading-hierarchy-violated");
+						} else {
+							//only set the last heading if the hierarchy is not violated
+							lastCorrectHeading = currentHeading;
+							$(this).removeClass("aloha-heading-hierarchy-violated");
+						}
+					}
+				} else {
+					//first heading! see if it starts with correct heading
+					if (currentHeading === startHeading) {
+						lastCorrectHeading = currentHeading;
+						$(this).removeClass("aloha-heading-hierarchy-violated");
+					} else {
+						$(this).addClass("aloha-heading-hierarchy-violated");
+					}
+				}
+			});
+		}
+	}
+
 	function changeMarkup(button) {
-		Aloha.Selection.changeMarkupOnSelection(jQuery('<' + button + '>'));
+		Selection.changeMarkupOnSelection(jQuery('<' + button + '>'));
+		if (Aloha.settings.plugins.format && Aloha.settings.plugins.format.checkHeadingHierarchy === true) {
+			checkHeadingHierarchy(this.formatOptions);
+		}
 	}
 
 	function updateUiAfterMutation(formatPlugin, rangeObject) {
 		// select the modified range
 		rangeObject.select();
-		// update Button toggle state. We take 'Aloha.Selection.getRangeObject()'
+		// update Button toggle state. We take Selection.getRangeObject()
 		// because rangeObject is not up-to-date
-		onSelectionChanged(formatPlugin, Aloha.Selection.getRangeObject());
+		onSelectionChanged(formatPlugin, Selection.getRangeObject());
 	}
 
 	function format(formatPlugin, rangeObject, markup) {
@@ -358,14 +427,17 @@ define('format/format-plugin', [
 	}
 
 	function isFormatAllowed(tagname, plugin, editable) {
+		if (!ContentRules.isAllowed(editable.obj[0], tagname)) {
+			return false;
+		}
 		var config = plugin.getEditableConfig(editable.obj);
-		return jQuery.inArray(tagname, config) > -1;
+		return config ? $.inArray(tagname, config) > -1 : false;
 	}
 
 	function addMarkup(button) {
 		var formatPlugin = this,
 			markup = jQuery('<'+button+'>'),
-			rangeObject = Aloha.Selection.rangeObject;
+			rangeObject = Selection.rangeObject;
 
 		if ( typeof button === "undefined" || button == "" ) {
 			return;
@@ -373,7 +445,7 @@ define('format/format-plugin', [
 
 		// check whether the markup is found in the range (at the start of the range)
 		var nodeNames = interchangeableNodeNames[markup[0].nodeName] || [markup[0].nodeName];
-		var foundMarkup = rangeObject.findMarkup(function () {
+		var foundMarkup = rangeObject.findMarkup(function() {
 			return -1 !== Arrays.indexOf(nodeNames, this.nodeName);
 		}, Aloha.activeEditable.obj);
 
@@ -418,7 +490,7 @@ define('format/format-plugin', [
 			for (i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 				effectiveMarkup = rangeObject.markupEffectiveAtStart[i];
 				for (j = 0; j < nodeNames.length; j++) {
-					if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, jQuery('<' + nodeNames[j] + '>'))) {
+					if (Selection.standardTextLevelSemanticsComparator(effectiveMarkup, jQuery('<' + nodeNames[j] + '>'))) {
 						button.handle.setState(true);
 						statusWasSet = true;
 					}
@@ -444,7 +516,7 @@ define('format/format-plugin', [
 					}
 
 					// now check whether one of the multiSplitItems fits to the effective markup
-					if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, multiSplitItem.markup)) {
+					if (Selection.standardTextLevelSemanticsComparator(effectiveMarkup, multiSplitItem.markup)) {
 						formatPlugin.multiSplitButton.setActiveItem(multiSplitItem.name);
 						foundMultiSplit = true;
 					}
@@ -477,27 +549,29 @@ define('format/format-plugin', [
 		 * HotKeys used for special actions
 		 */
 		hotKey: {
-			formatBold: 'ctrl+b',
-			formatItalic: 'ctrl+i',
-			formatParagraph: 'alt+ctrl+0',
-			formatH1: 'alt+ctrl+1',
-			formatH2: 'alt+ctrl+2',
-			formatH3: 'alt+ctrl+3',
-			formatH4: 'alt+ctrl+4',
-			formatH5: 'alt+ctrl+5',
-			formatH6: 'alt+ctrl+6',
-			formatPre: 'ctrl+p',
-			formatDel: 'ctrl+d',
-			formatSub: 'alt+shift+s',
-			formatSup: 'ctrl+shift+s'
+			formatBold:      'ctrl+b meta+b',
+			formatItalic:    'ctrl+i meta+i',
+			formatUnderline: 'ctrl+u meta+u',
+			formatParagraph: 'alt+ctrl+0 alt+meta+0',
+			formatH1:        'alt+ctrl+1 alt+meta+1',
+			formatH2:        'alt+ctrl+2 alt+meta+2',
+			formatH3:        'alt+ctrl+3 alt+meta+3',
+			formatH4:        'alt+ctrl+4 alt+meta+4',
+			formatH5:        'alt+ctrl+5 alt+meta+5',
+			formatH6:        'alt+ctrl+6 alt+meta+6',
+			formatPre:       'ctrl+p meta+p',
+			formatDel:       'ctrl+d meta+d',
+			formatSub:       'alt+shift+s',
+			formatSup:       'ctrl+shift+s'
 		},
 
 		/**
 		 * Initialize the plugin and set initialize flag on true
 		 */
 		init: function () {
-			// Prepare
 			var me = this;
+
+			Ephemera.classes('aloha-heading-hierarchy-violated');
 
 			if (typeof this.settings.hotKey !== 'undefined') {
 				jQuery.extend(true, this.hotKey, this.settings.hotKey);
@@ -510,47 +584,71 @@ define('format/format-plugin', [
 				me.initSidebar(Aloha.Sidebar.right);
 			});
 
+			var shouldCheckHeadingHierarchy = (true === this.settings.checkHeadingHierarchy);
+
+			var checkHeadings = function () {
+				checkHeadingHierarchy(me.formatOptions);
+			};
+
+			if (shouldCheckHeadingHierarchy) {
+				Aloha.bind('aloha-smart-content-changed', checkHeadings);
+				Aloha.bind('aloha-markup-change', checkHeadings);
+			}
+
 			// apply specific configuration if an editable has been activated
-			Aloha.bind('aloha-editable-activated', function (e, params) {
-				me.applyButtonConfig(params.editable.obj);
+			PubSub.sub('aloha.editable.activated', function (message) {
+				var editable = message.editable;
+				me.applyButtonConfig(editable.obj);
+
+				if (shouldCheckHeadingHierarchy) {
+					checkHeadings();
+				}
 
 				var createAdder = function (tagname) {
-					return function () {
-						if (isFormatAllowed(tagname, me, params.editable)) {
+					if (isFormatAllowed(tagname, me, editable)) {
+						return function addFormat() {
+							console.warn(tagname);
 							me.addMarkup(tagname);
-						}
+							return false;
+						};
+					}
+					return function () {
 						return false;
 					};
 				};
 
 				var createChanger = function (tagname) {
-					return function () {
-						if (isFormatAllowed(tagname, me, params.editable)) {
+					if (isFormatAllowed(tagname, me, editable)) {
+						return function changeFormat() {
 							me.changeMarkup(tagname);
-						}
+							return false;
+						};
+					}
+					return function () {
 						return false;
 					};
 				};
 
-				params.editable.obj.bind('keydown.aloha.format',  me.hotKey.formatBold,     createAdder('b'));
-				params.editable.obj.bind('keydown.aloha.format',  me.hotKey.formatItalic,   createAdder('i'));
-				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatDel,       createAdder('del'));
-				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatSub,       createAdder('sub'));
-				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatSup,       createAdder('sup'));
-				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatParagraph, createChanger('p'));
-				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatH1,        createChanger('h1'));
-				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatH2,        createChanger('h2'));
-				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatH3,        createChanger('h3'));
-				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatH4,        createChanger('h4'));
-				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatH5,        createChanger('h5'));
-				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatH6,        createChanger('h6'));
-				params.editable.obj.bind('keydown.aloha.format', me.hotKey.formatPre,       createChanger('pre'));
+				var $editable = editable.obj;
+				$editable.bind('keydown.aloha.format',  me.hotKey.formatBold,      createAdder('b'));
+				$editable.bind('keydown.aloha.format',  me.hotKey.formatItalic,    createAdder('i'));
+				$editable.bind('keydown.aloha.format',  me.hotKey.formatUnderline, createAdder('u'));
+				$editable.bind('keydown.aloha.format',  me.hotKey.formatDel,       createAdder('del'));
+				$editable.bind('keydown.aloha.format',  me.hotKey.formatSub,       createAdder('sub'));
+				$editable.bind('keydown.aloha.format',  me.hotKey.formatSup,       createAdder('sup'));
+				$editable.bind('keydown.aloha.format',  me.hotKey.formatParagraph, createChanger('p'));
+				$editable.bind('keydown.aloha.format',  me.hotKey.formatH1,        createChanger('h1'));
+				$editable.bind('keydown.aloha.format',  me.hotKey.formatH2,        createChanger('h2'));
+				$editable.bind('keydown.aloha.format',  me.hotKey.formatH3,        createChanger('h3'));
+				$editable.bind('keydown.aloha.format',  me.hotKey.formatH4,        createChanger('h4'));
+				$editable.bind('keydown.aloha.format',  me.hotKey.formatH5,        createChanger('h5'));
+				$editable.bind('keydown.aloha.format',  me.hotKey.formatH6,        createChanger('h6'));
+				$editable.bind('keydown.aloha.format',  me.hotKey.formatPre,       createChanger('pre'));
 			});
 
-			Aloha.bind('aloha-editable-deactivated', function (e, params) {
-				params.editable.obj.unbind('keydown.aloha.format');
+			PubSub.sub('aloha.editable.deactivated', function (message) {
+				message.editable.obj.unbind('keydown.aloha.format');
 			});
-
 		},
 
 		/**
@@ -559,28 +657,32 @@ define('format/format-plugin', [
 		 * @param {Object} id of the activated editable
 		 * @return void
 		 */
-		applyButtonConfig: function (obj) {
-			var config = this.getEditableConfig(obj),
+		applyButtonConfig: function ($editable) {
+			var config = this.getEditableConfig($editable),
 			    button, i, len;
 
-			if (typeof config === 'object') {
+			if ( typeof config === 'object' ) {
 				var config_old = [];
-				jQuery.each(config, function (j, button) {
-					if (!(typeof j === 'number' && typeof button === 'string')) {
+				jQuery.each(config, function(j, button) {
+					if ( !(typeof j === 'number' && typeof button === 'string') ) {
 						config_old.push(j);
 					}
 				});
-
-				if (config_old.length > 0) {
+				
+				if ( config_old.length > 0 ) {
 					config = config_old;
 				}
 			}
 			this.formatOptions = config;
 
+			var editable = $editable[0];
+
 			// now iterate all buttons and show/hide them according to the config
-			for (button in this.buttons) {
+			for ( button in this.buttons) {
 				if (this.buttons.hasOwnProperty(button)) {
-					if (jQuery.inArray(button, config) !== -1) {
+					if (!ContentRules.isAllowed(editable, button)) {
+						this.buttons[button].handle.hide();
+					} else if (jQuery.inArray(button, config) !== -1) {
 						this.buttons[button].handle.show();
 					} else {
 						this.buttons[button].handle.hide();
@@ -591,10 +693,13 @@ define('format/format-plugin', [
 			// and the same for multisplit items
 			len = this.multiSplitItems.length;
 			for (i = 0; i < len; i++) {
-				if (jQuery.inArray(this.multiSplitItems[i].name, config) !== -1) {
-					this.multiSplitButton.showItem(this.multiSplitItems[i].name);
+				var name = this.multiSplitItems[i].name;
+				if (!ContentRules.isAllowed(editable, name)) {
+					this.multiSplitButton.hideItem(name);
+				} else if (jQuery.inArray(name, config) !== -1) {
+					this.multiSplitButton.showItem(name);
 				} else {
-					this.multiSplitButton.hideItem(this.multiSplitItems[i].name);
+					this.multiSplitButton.hideItem(name);
 				}
 			}
 		},
@@ -610,7 +715,7 @@ define('format/format-plugin', [
 			this.buttons = {};
 			this.multiSplitItems = [];
 
-			jQuery.each(this.availableButtons, function (j, button) {
+			$.each(this.availableButtons, function(j, button) {
 				var button_config = false;
 
 				if (typeof j !== 'number' && typeof button !== 'string') {
@@ -621,7 +726,7 @@ define('format/format-plugin', [
 				if (textLevelSemantics[button]) {
 					that.buttons[button] = {
 						handle: makeTextLevelButton(that, button),
-						markup: jQuery('<' + button + '>', {'class': button_config || ''})
+						markup: jQuery('<'+button+'>', {'class': button_config || ''})
 					};
 				} else if (blockLevelSemantics[button]) {
 					that.multiSplitItems.push(makeBlockLevelButton(that, button));
@@ -639,18 +744,18 @@ define('format/format-plugin', [
 				scope: 'Aloha.continuoustext'
 			});
 
-			PubSub.sub('aloha.selection.context-change', function (message) {
+			PubSub.sub('aloha.selection.context-change', function(message) {
 				onSelectionChanged(that, message.range);
 			});
 		},
 
-		initSidebar: function (sidebar) {
+		initSidebar: function ( sidebar ) {
 			var pl = this;
 			pl.sidebar = sidebar;
-			sidebar.addPanel({
+			sidebar.addPanel( {
 
-				id       : pl.nsClass('sidebar-panel-class'),
-				title    : i18n.t('floatingmenu.tab.format'),
+				id       : pl.nsClass( 'sidebar-panel-class' ),
+				title    : i18n.t( 'floatingmenu.tab.format' ),
 				content  : '',
 				expanded : true,
 				activeOn : this.formatOptions || false,
@@ -658,67 +763,64 @@ define('format/format-plugin', [
 				onInit: function () {
 				},
 
-				onActivate: function (effective) {
+				onActivate: function ( effective ) {
 					var that = this;
 					that.effective = effective;
 					
-					if (!effective[0]) {
+					if ( !effective[0] ) {
 						return;
 					}
 					that.format = effective[0].nodeName.toLowerCase();
 
-					var dom = jQuery('<div>').attr('class', pl.nsClass('target-container'));
+					var dom = jQuery('<div>').attr('class', pl.nsClass( 'target-container' ));
 					var fieldset = jQuery('<fieldset>');
-
-					fieldset.append(jQuery('<legend>' + that.format + ' ' + i18n.t('format.class.legend')).append(jQuery('<select>')));
-
+					fieldset.append(jQuery('<legend>' + that.format + ' ' + i18n.t( 'format.class.legend' )).append(jQuery('<select>')));
+					
 					dom.append(fieldset);
-
+					
 					var html = 
-						'<div class="' + pl.nsClass('target-container') + '"><fieldset><legend>' + i18n.t('format.class.legend') + '</legend><select name="targetGroup" class="' + pl.nsClass('radioTarget') + '">' + 
-						'<option value="">' + i18n.t('format.class.none') + '</option>';
+						'<div class="' + pl.nsClass( 'target-container' ) + '"><fieldset><legend>' + i18n.t( 'format.class.legend' ) + '</legend><select name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '">' + 
+						'<option value="">' + i18n.t( 'format.class.none' ) + '</option>';
 
-					if (pl.config[that.format] && pl.config[that.format]['class']) {
-						jQuery.each(pl.config[that.format]['class'], function (i, v) {
+					if ( pl.config[that.format] && pl.config[that.format]['class'] ) {
+						jQuery.each(pl.config[that.format]['class'], function(i ,v) {
 							html += '<option value="' + i + '" >' + v + '</option>';
 						});
 					}
 
 					html += '</select></fieldset></div>';
 
-
 					var content = this.setContent(html).content;
 
-
-					jQuery(pl.nsSel('framename')).live( 'keyup', function () {
-						jQuery(that.effective).attr('target', jQuery(this).val().replace('\"', '&quot;').replace("'", "&#39;"));
-					});
+					jQuery( pl.nsSel( 'framename' ) ).live( 'keyup', function () {
+						jQuery( that.effective ).attr( 'target', jQuery( this ).val().replace( '\"', '&quot;' ).replace( "'", "&#39;" ) );
+					} );
 
 					that.effective = effective;
-					jQuery(pl.nsSel('linkTitle')).val(jQuery(that.effective).attr('title'));
+					jQuery( pl.nsSel( 'linkTitle' ) ).val( jQuery( that.effective ).attr( 'title' ) );
 				}
 
-			});
+			} );
 
 			sidebar.show();
 		},
 
 		// duplicated code from link-plugin
-		// Creates string with this component's namepsace prefixed the each classname
+		//Creates string with this component's namepsace prefixed the each classname
 		nsClass: function () {
 			var stringBuilder = [], prefix = pluginNamespace;
-			jQuery.each(arguments, function () {
-				stringBuilder.push(this == '' ? prefix : prefix + '-' + this);
-			});
+			jQuery.each( arguments, function () {
+				stringBuilder.push( this == '' ? prefix : prefix + '-' + this );
+			} );
 			return jQuery.trim(stringBuilder.join(' '));
 		},
 
 		// duplicated code from link-plugin
 		nsSel: function () {
 			var stringBuilder = [], prefix = pluginNamespace;
-			jQuery.each(arguments, function () {
-				stringBuilder.push('.' + (this == '' ? prefix : prefix + '-' + this));
-			});
+			jQuery.each( arguments, function () {
+				stringBuilder.push( '.' + ( this == '' ? prefix : prefix + '-' + this ) );
+			} );
 			return jQuery.trim(stringBuilder.join(' '));
 		},
 
@@ -735,11 +837,10 @@ define('format/format-plugin', [
 				'section', 'article', 'aside', 'header', 'footer', 'address', 'main', 'hr', 'figure', 'figcaption', 'div', 'small', 'cite', 'dfn',
 				'abbr', 'data', 'time', 'var', 'samp', 'kbd', 'mark', 'span', 'wbr', 'ins'
 				],
-			    rangeObject = Aloha.Selection.rangeObject,
+			    rangeObject = Selection.rangeObject,
 			    i;
 
 			// formats to be removed by the removeFormat button may now be configured using Aloha.settings.plugins.format.removeFormats = ['b', 'strong', ...]
-
 			if (this.settings.removeFormats) {
 				formats = this.settings.removeFormats;
 			}
@@ -751,7 +852,6 @@ define('format/format-plugin', [
 			for (i = 0; i < formats.length; i++) {
 				Dom.removeMarkup(rangeObject, jQuery('<' + formats[i] + '>'), Aloha.activeEditable.obj);
 			}
-
 			unformatList(rangeObject);
 
 			// select the modified range

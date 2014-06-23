@@ -1,28 +1,9 @@
-/* link-plugin.js is part of Aloha Editor project http://aloha-editor.org
+/* link-plugin.js is part of the Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
- * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php 
- * 
- * Aloha Editor is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or any later version.
- *
- * Aloha Editor is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- * 
- * As an additional permission to the GNU GPL version 2, you may distribute
- * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
- * source code without the copy of the GNU GPL normally required,
- * provided you include this license notice and a URL through which
- * recipients can access the Corresponding Source.
+ * License http://aloha-editor.org/license.php
  */
 /* Aloha Link Plugin
  * -----------------
@@ -33,47 +14,46 @@
  * floating menu scope.
  */
 define([
+	'jquery',
 	'aloha',
 	'aloha/plugin',
 	'aloha/ephemera',
-	'jquery',
+	'aloha/content-rules',
+	'util/dom',
 	'ui/port-helper-attribute-field',
 	'ui/ui',
 	'ui/scopes',
-	'ui/surface',
 	'ui/button',
 	'ui/toggleButton',
 	'i18n!link/nls/i18n',
-	'i18n!aloha/nls/i18n',
-	'aloha/console',
 	'PubSub',
 	'util/keys',
 	'../../../shared/languages/languages'
 ], function (
+	$,
 	Aloha,
 	Plugin,
 	Ephemera,
-	jQuery,
+	ContentRules,
+	Dom,
 	AttributeField,
 	Ui,
 	Scopes,
-	Surface,
 	Button,
 	ToggleButton,
 	i18n,
-	i18nCore,
-	console,
 	PubSub,
 	Keys,
 	LanguageRepository
 ) {
 	'use strict';
-	
-	var GENTICS = window.GENTICS,
-	    pluginNamespace = 'aloha-link',
-	    oldValue = '',
-	    newValue;
-	
+
+	var configurations = {};
+	var jQuery = $;
+	var pluginNamespace = 'aloha-link';
+	var oldValue = '';
+	var newValue;
+
 	/**
 	 * Regular expression that matches if an URL is an external link.
 	 */
@@ -466,36 +446,35 @@ define([
 		 * Subscribe for events
 		 */
 		subscribeEvents: function () {
-			var that = this,
-			    isEnabled = {};
-
+			var plugin = this;
 			var editablesCreated = 0;
 
-			// add the event handler for creation of editables
-			Aloha.bind('aloha-editable-created', function (event, editable) {
-				var config = that.getEditableConfig(editable.obj),
-				    enabled = (jQuery.inArray('a', config) !== -1);
+			PubSub.sub('aloha.editable.created', function (message) {
+				var editable = message.editable;
+				var config = plugin.getEditableConfig(editable.obj);
+				var enabled = config
+				           && (jQuery.inArray('a', config) > -1)
+				           && ContentRules.isAllowed(editable.obj[0], 'a');
 
-				isEnabled[editable.getId()] = enabled;
+				configurations[editable.getId()] = !!enabled;
 
 				if (!enabled) {
 					return;
 				}
 
 				// enable hotkey for inserting links
-				editable.obj.bind('keydown.aloha-link', that.hotKey.insertLink, function() {
-					if ( that.findLinkMarkup() ) {
-						// open the tab containing the href
-						that.hrefField.foreground();
-						that.hrefField.focus();
+				editable.obj.bind('keydown.aloha-link', plugin.hotKey.insertLink, function () {
+					if (plugin.findLinkMarkup()) {
+						plugin.hrefField.foreground();
+						plugin.hrefField.focus();
 					} else {
-						that.insertLink(true);
+						plugin.insertLink(true);
 					}
 					return false;
-				} );
+				});
 
 				editable.obj.find('a').each(function() {
-					that.addLinkEventHandlers(this);
+					plugin.addLinkEventHandlers(this);
 				});
 
 				if (0 === editablesCreated++) {
@@ -503,57 +482,58 @@ define([
 				}
 			});
 
-			Aloha.bind('aloha-editable-destroyed', function (event, editable) {
-				editable.obj.unbind('.aloha-link');
+			PubSub.sub('aloha.editable.destroyed', function (message) {
+				message.editable.obj.unbind('.aloha-link');
 				if (0 === --editablesCreated) {
 					teardownMousePointerFix();
 				}
 			});
 
-			Aloha.bind('aloha-editable-activated', function(event, props) {
-				if (isEnabled[Aloha.activeEditable.getId()]) {
-					that._formatLinkButton.show();
-					that._insertLinkButton.show();
+			PubSub.sub('aloha.editable.activated', function (message) {
+				if (configurations[message.editable.getId()]) {
+					plugin._formatLinkButton.show();
+					plugin._insertLinkButton.show();
 				} else {
-					that._formatLinkButton.hide();
-					that._insertLinkButton.hide();
+					plugin._formatLinkButton.hide();
+					plugin._insertLinkButton.hide();
 				}
-				setupMetaClickLink(props.editable);
+				setupMetaClickLink(message.editable);
 			});
 
 			var insideLinkScope = false;
 
-			Aloha.bind('aloha-selection-changed', function(event, rangeObject){
+			PubSub.sub('aloha.selection.context-change', function (message) {
+				if (!Aloha.activeEditable) {
+					return;
+				}
 				var enteredLinkScope = false;
-				if (Aloha.activeEditable && isEnabled[Aloha.activeEditable.getId()]) {
-					enteredLinkScope = selectionChangeHandler(that, rangeObject);
-					// Only foreground the tab containing the href field
-					// the first time the user enters the link scope to
-					// avoid intefering with the user's manual tab
-					// selection.
+				if (configurations[Aloha.activeEditable.getId()]) {
+					enteredLinkScope = selectionChangeHandler(plugin, message.range);
+					// Only foreground the tab containing the href field the
+					// first time the user enters the link scope to avoid
+					// intefering with the user's manual tab selection
 					if (enteredLinkScope && insideLinkScope !== enteredLinkScope) {
-						that.hrefField.foreground();
+						plugin.hrefField.foreground();
 					}
 				}
 				insideLinkScope = enteredLinkScope;
 			});
 
-			// Fixes problem: if one clicks from inside an aloha link
-			// outside the editable and thereby deactivates the
-			// editable, the link scope will remain active.
-			var linkPlugin = this;
-			Aloha.bind('aloha-editable-deactivated', function (event, props) {
+			// Fixes problem: if one clicks from inside an aloha link outside
+			// the editable and thereby deactivates the editable, the link scope
+			// will remain active
+			PubSub.sub('aloha.editable.deactivated', function (message) {
 				if (insideLinkScope) {
-					// Leave the link scope lazily to avoid flickering
-					// when switching between anchor element editables.
+					// Leave the link scope lazily to avoid flickering when
+					// switching between anchor element editables
 					setTimeout(function () {
 						if (!insideLinkScope) {
-							linkPlugin.toggleLinkScope(false);
+							plugin.toggleLinkScope(false);
 						}
 					}, 100);
 					insideLinkScope = false;
 				}
-				teardownMetaClickLink(props.editable);
+				teardownMetaClickLink(message.editable);
 			});
 		},
 
@@ -793,7 +773,7 @@ define([
 
 		/**
 		 * Check whether inside a link tag
-		 * @param {GENTICS.Utils.RangeObject} range range where to insert the
+		 * @param {RangeObject} range range where to insert the
 		 *			object (at start or end)
 		 * @return markup
 		 * @hide
@@ -858,20 +838,20 @@ define([
 			
 			// if selection is collapsed then extend to the word.
 			if ( range.isCollapsed() && extendToWord !== false ) {
-				GENTICS.Utils.Dom.extendToWord( range );
+				Dom.extendToWord( range );
 			}
 			if ( range.isCollapsed() ) {
 				// insert a link with text here
 				linkText = i18n.t( 'newlink.defaulttext' );
 				newLink = jQuery( '<a href="' + that.hrefValue + '" class="aloha-new-link">' + linkText + '</a>' );
-				GENTICS.Utils.Dom.insertIntoDOM( newLink, range, jQuery( Aloha.activeEditable.obj ) );
+				Dom.insertIntoDOM( newLink, range, jQuery( Aloha.activeEditable.obj ) );
 				range.startContainer = range.endContainer = newLink.contents().get( 0 );
 				range.startOffset = 0;
 				range.endOffset = linkText.length;
 			} else {
 				newLink = jQuery( '<a href="' + that.hrefValue + '" class="aloha-new-link"></a>' );
-				GENTICS.Utils.Dom.addMarkup( range, newLink, false );
-				GENTICS.Utils.Dom.doCleanup(insertLinkPostCleanup, range);
+				Dom.addMarkup( range, newLink, false );
+				Dom.doCleanup(insertLinkPostCleanup, range);
 			}
 
 			Aloha.activeEditable.obj.find( 'a.aloha-new-link' ).each( function ( i ) {
@@ -914,7 +894,7 @@ define([
 			if ( foundMarkup ) {
 				linkText = jQuery(foundMarkup).text();
 				// remove the link
-				GENTICS.Utils.Dom.removeFromDOM( foundMarkup, range, true );
+				Dom.removeFromDOM( foundMarkup, range, true );
 
 				range.startContainer = range.endContainer;
 				range.startOffset = range.endOffset;

@@ -1,424 +1,193 @@
 /*!
- * Aloha Editor
- * Author & Copyright (c) 2012 Gentics Software GmbH
+ * Repository Browser (https://github.com/gentics/Repository-Browser)
+ * Author & Copyright (c) 2012-2014 Gentics Software GmbH
  * aloha-sales@gentics.com
  * Licensed under the terms of http://www.aloha-editor.com/license.html
  */
-define('RepositoryBrowser', [
-	'jquery',
-	'Class',
-	'PubSub',
-	'repository-browser-i18n-' + (
-		(window && window.__DEPS__ && window.__DEPS__.lang) || 'en'
-	),
-	'jstree',
-	'jqgrid',
-	'jquery-layout'
-], function (
-	$,
-	Class,
-	PubSub,
-	i18n
-) {
+(function () {
 	'use strict';
 
-	var jQuery = $;
-	var browserInstances = [];
-	var numOpenedBrowsers = 0;
-	var uid = (new Date()).getTime();
-	var DEFAULTS = {
-		repositoryManager: null,
-		repositoryFilter: [],
-		objectTypeFilter: [],
-		renditionFilter: ['cmis:none'], // ['*']
-		filter: ['url'],
-		element: null,
-		isFloating: false,
-		verticalPadding: 100,
-		horizontalPadding: 50,
-		maxHeight: 1000,
-		minHeight: 400,
-		minWidth: 400,
-		maxWidth: 1200,
-		treeWidth: 300,
-		listWidth: 'auto',
-		pageSize: 8,
-		adaptPageSize: false,
-		rowHeight: 32,
-		rootPath: '',
-		rootFolderId: 'aloha',
-		columns: {
-			icon:    {title: '',        width: 30,  sortable: false, resizable: false},
-			name:    {title: 'Name',    width: 200, sorttype: 'text'},
-			url:     {title: 'URL',     width: 220, sorttype: 'text'},
-			preview: {title: 'Preview', width: 150, sorttype: 'text'}
-		},
-		i18n: {
-			'Browsing': 'Browsing',
-			'Close': 'Close',
-			'in': 'in',
-			'Input search text...': 'Input search text...',
-			'numerous': 'numerous',
-			'of': 'of',
-			'Repository Browser': 'Repository Browser',
-			'Search': 'Search',
-			'Searching for': 'Searching for',
-			'Viewing': 'Viewing'
-		}
-	};
+	function initialize($, Class, PubSub, i18n) {
+		var $window = $(window);
 
-	/**
-	 * Prevents native browser selection on the given element.
-	 *
-	 * @param {jQuery.<HTMLElement>} element An element on which to prevent
-	 *                                       selection.
-	 */
-	function disableSelection($element) {
-		$element.each(function () {
-			jQuery(this)
-				.attr('unselectable', 'on')
-				.css({
-				   '-moz-user-select': 'none',
-				   '-webkit-user-select': 'none',
-				   'user-select': 'none'
-				})
-				.each(function () {
-				   this.onselectstart = function () { return false; };
-				});
-		});
-	}
+		/**
+		 * A count of the number of opened repository browsers instances.
+		 *
+		 * @type {number}
+		 */
+		var numOpenedBrowsers = 0;
 
-	/**
-	 * Get icon name from given resource type.
-	 *
-	 * @param {string} type Resource type.
-	 * @return {string} Icon name.
-	 */
-	function getIcon(type) {
-		switch (type) {
-		case 'folder':
-			return 'folder';
-		case 'document':
-			return 'document';
-		default:
-			return '';
-		}
-	}
+		/**
+		 * A list of repository browser instances.
+		 *
+		 * @type {Array.<Browser>}
+		 */
+		var instances = [];
 
-	/**
-	 * Return unique id.
-	 *
-	 * @return {number}
-	 */
-	function uniqueId() {
-		return ++uid;
-	}
+		/**
+		 * The lowest CSS z-index on for the repository browser overlay and
+		 * modals.
+		 *
+		 * @type {number}
+		 */
+		var BASE_ZINDEX = 99999;
 
-	/**
-	 * FIXME: free cache
-	 *
-	 * @param {RepositoryBrowser} browser
-	 * @param {object} obj
-	 */
-	function cacheWrite(browser, obj) {
-		browser._cachedRepositoryObjects[obj.uid] = obj;
-	}
-
-	/**
-	 * @param {RepositoryBrowser} browser
-	 * @param {object} obj
-	 * @return {object}
-	 */
-	function cacheRead(browser, uid) {
-		return browser._cachedRepositoryObjects[uid];
-	}
-
-	/**
-	 * @param {jQuery.<HTMLElement>} $node
-	 * @return {string} Id of repository object tethered to the given DOM
-	 *                  element.
-	 */
-	function getIdFromTreeNode($node) {
-		return $node.find('a:first').attr('data-repo-obj');
-	}
-
-	/**
-	 * Composite for jqGrid and jsTree
-	 *
-	 * Convert a repository object into an object that can be used with our tree
-	 * component.  Also add a reference to this object in the cache.  According
-	 * to the Repository specification, each object will at least have the
-	 * following properties: id, name, url, and type.  Any and all other
-	 * attributes are optional.
-	 */
-	function createComposite(props, browser) {
-		var uid = uniqueId();
-
-		var state =
-				(false === props.hasMoreItems || 'folder' !== props.baseType)
-				  ? null
-				  : 'closed';
-
-		// Initialize as array instead? will jstree accept empty list?
-		var children = null;
-
-		if (props.children) {
-			state = 'open';
-			children = [];
-			var i;
-			var child;
-			for (i = 0; i < props.children.length; i++) {
-				child = createComposite(props.children[i], browser);
-				children.push(child);
-				cacheWrite(browser, child.resource);
-			}
-		}
-
-		var treeResource = $.extend(props, {
-			uid: uid,
-			loaded: false
-		});
-
-		return {
-			state: state,
-			resource: treeResource,
-			children: children,
-			// jsTreee <li> attributes
-			attr: {
-				rel: props.type,
-				'data-repo-obj': uid
+		/**
+		 * Default values from which each repository browser instance will be
+		 * created.
+		 *
+		 * @type {Object}
+		 */
+		var DEFAULTS = {
+			repositoryManager : null,
+			repositoryFilter  : [],
+			objectTypeFilter  : [],
+			renditionFilter   : ['cmis:none'], // ['*']
+			filter            : ['url'],
+			element           : null,
+			isFloating        : false,
+			padding           : 50,
+			maxHeight         : 1000,
+			minHeight         : 400,
+			minWidth          : 660,
+			maxWidth          : 2000,
+			treeWidth         : 300,
+			listWidth         : 'auto',
+			pageSize          : 10,
+			adaptPageSize     : false,
+			rowHeight         : 24,
+			rootPath          : '',
+			rootFolderId      : 'aloha',
+			columns : {
+				icon    : {title: '',        width: 30,  sortable: false, resizable: false},
+				name    : {title: 'Name',    width: 200, sorttype: 'text'},
+				url     : {title: 'URL',     width: 220, sorttype: 'text'},
+				preview : {title: 'Preview', width: 150, sorttype: 'text'}
 			},
-			data: {
-				title: props.name,
-				icon: getIcon(props.baseType),
-				attr: {
-					'data-repo-obj': uid
-				}
+			i18n: {
+				'Browsing'             : 'Browsing',
+				'Close'                : 'Close',
+				'in'                   : 'in',
+				'Input search text...' : 'Input search text...',
+				'numerous'             : 'numerous',
+				'of'                   : 'of',
+				'Repository Browser'   : 'Repository Browser',
+				'Search'               : 'Search',
+				'Searching for'        : 'Searching for',
+				'Viewing'              : 'Viewing'
 			}
 		};
-	}
-
-	var RepositoryBrowser = Class.extend({
 
 		/**
-		 * @private
-		 * @type <object> The repository objects queried through this browser.
-		 */
-		_cachedRepositoryObjects: {},
-
-		/**
-		 * @private
-		 * @type <string> The last search query.
-		 */
-		_searchQuery: null,
-
-		/**
-		 * @private
-		 * @type <?>
-		 */
-		_orderBy: null,
-
-		/**
-		 * @private
-		 * @type <string> prefilled value of the search field
-		 */
-		_prefilledValue: null,
-
-		/**
-		 * @type {jsGrid<HTMLElement>}
-		 */
-		$_grid: null,
-
-		/**
-		 * @type {jsTree<HTMLElement>}
-		 */
-		$_tree: null,
-
-		/**
-		 * @type {jQuery.<HTMLElement>} The layout of the browser panels.
-		 */
-		$_list: null,
-
-		/**
-		 * @type {boolean} Whether or not the browser is visibly opened.  This
-		 *                 flag is set to true when the show() function is
-		 *                 called.
-		 */
-		_isOpened: true,
-
-		/**
-		 * @constructor
-		 */
-		_constructor: function () {
-			this.init.apply(this, arguments);
-		},
-
-		/**
-		 * Process the given browser configurations, and renders a hidden
-		 * instance of this browser.
+		 * Unique identifier counter.
 		 *
-		 * @param {object} options User defined custom browser configurations.
+		 * @type {number}
 		 */
-		init: function (options) {
-			options = jQuery.extend({}, DEFAULTS, options, {i18n: i18n});
+		var uid = (new Date()).getTime();
 
-			// If no element was specified on which to render the browser, then
-			// we will create an overlay and render the browser on it.
-			if (!options.element || 0 === options.element.length) {
-				options.isFloating = true;
-				options.element = this._createOverlay();
-			}
+		/**
+		 * Returns a unique ID
+		 *
+		 * @return {number}
+		 */
+		function unique() {
+			return ++uid;
+		}
 
-			if (options.maxWidth < options.minWidth) {
-				options.maxWidth = options.minWidth;
-			}
+		/**
+		 * Enables selection on the given element.
+		 *
+		 * @param {jQuery.<Element>} $elem
+		 */
+		function enableSelection($elem) {
+			$elem.removeAttr('unselectable');
+			$elem.css({
+				'-webkit-user-select' : 'all',
+//				'-moz-user-select'    : 'all',  // Because this feature is broken in Firefox
+				'user-select'         : 'all'
+			});
+			$elem.onselectstart = null;
+		}
 
-			jQuery.extend(this, options);
-
-			this._prefilledValue = this._i18n('Input search text...');
-			this._cachedRepositoryObjects = {};
-			this._searchQuery = null;
-			this._orderBy = null;
-			this._pagingCount = null;
-			this._pagingOffset = 0;
-			this._pagingBtns = {
-				first: null,
-				end: null,
-				next: null,
-				prev: null
+		/**
+		 * Disables selection on the given element.
+		 *
+		 * @param {jQuery.<Element>} $elem
+		 */
+		function disableSelection($elem) {
+			$elem.attr('unselectable', 'on');
+			$elem.css({
+				'-webkit-user-select' : 'none',
+//				'-moz-user-select'    : 'none', // Because this feature is broken in Firefox
+				'user-select'         : 'none'
+			});
+			$elem.onselectstart = function () {
+				return false;
 			};
-
-			this._initializeUI();
-			browserInstances.push(this);
-			PubSub.pub('repository-browser.initialized', {data: this});
-		},
+		}
 
 		/**
-		 * Retrieves the corresponding internationalization string for the
-		 * given keyword.
+		 * Brings the given browser to the top of the z-index.
 		 *
-		 * @param {string} key The key for which a full i18n string is
-		 *                     retrieved.
-		 * @return {string} The return value is either the i18n value matched
-		 *                  by the given key, or else the key.
+		 * @param {Browser} browser
 		 */
-		_i18n: function (key) {
-			return this.i18n[key] || key;
-		},
+		function bringToFront(browser) {
+			$.each(instances, function (index) {
+				this.element.css('z-index', BASE_ZINDEX + index);
+			});
+			browser.element.css('z-index', BASE_ZINDEX + 1 + instances.length);
+		}
 
 		/**
-		 * Prepares the browser UI.
+		 * Creates a modal for a repository browser instance.
+		 *
+		 * @param  {Function}         close
+		 * @return {jQuery.<Element>}
 		 */
-		_initializeUI: function () {
-			this.element.attr('data-repository-browser', ++uid); //.html('');
-			this.element.width(this.maxWidth);
+		function modal(close) {
+			var $modal = $('<div class="repository-browser-modal-window" style="z-index: ' + BASE_ZINDEX + ';"></div>');
+			$('body').append($modal);
+			return $modal;
+		}
 
-			this.$_grid = this._createGrid(this.element).resize();
-			this._setInitialHeight();
-			this.$_tree = this._createTree(this.$_grid.find('.ui-layout-west'));
-			this.$_list = this._createList(this.$_grid.find('.ui-layout-center'));
-
-			var that = this;
-			var give = this.treeWidth / 5;
-
-			this.$_grid.layout({
-				// Disable cursor hot keys since they interfere with text
-				// editing.  For example, CTRL+left (wordwise left) and
-				// CTRL+SHIFT+left (select wordwise left) would stop working.
-				enableCursorHotkey: false,
-				west__size: this.treeWidth - 1,
-				west__minSize: this.treeWidth - give,
-				west__maxSize: this.treeWidth + give,
-				center__size: 'auto',
-				paneClass: 'ui-layout-pane',
-				resizerClass: 'ui-layout-resizer',
-				togglerClass: 'ui-layout-toggler',
-				onresize: function (name, $element) {
-					if ('center' === name) {
-						that.$_list.setGridWidth($element.width());
-					}
-				}
-				// , applyDefaultStyles: true
-			}).sizePane('west', this.treeWidth); // Fix for a ui-layout bug in
-			                                     // chrome.
-			disableSelection(this.$_grid);
-			this._preloadImages();
-
-			jQuery(function () {
-				jQuery(window).resize(function () {
-					that._onWindowResized();
+		/**
+		 * Creates an overlay element which when clicked will closes all opened
+		 * browser instances.
+		 */
+		function createOverlay() {
+			var $overlay = $('<div class="repository-browser-modal-overlay" style="z-index: ' + BASE_ZINDEX + ';"></div>');
+			$('body').append($overlay);
+			$overlay.click(function () {
+				$.each(instances, function (i, browser) {
+					browser.close();
 				});
 			});
-
-			this.element.mousedown(function () {
-				jQuery.each(browserInstances, function (index) {
-					this.element.css('z-index', 99999 + index);
-				});
-				jQuery(this).css('z-index',
-					99999 + browserInstances.length + 1);
-			});
-
-			// IE7 Work-around: Otherwise tree will not be displayed correctly.
-			jQuery('.repository-browser-grid').css('width', this.maxWidth);
-
-			this.close();
-
-			// adapt the page size
-			this._adaptPageSize();
-		},
+		}
 
 		/**
-		 * Sets the initial height of the repository browser using the minHeight maxHeight setting.
+		 * Shows the overlay element.
 		 */
-		_setInitialHeight: function () {
-
-			var overflow = this.maxHeight - jQuery(window).height() + this.verticalPadding;
-			var targetHeight = overflow > 0 ? Math.max(this.minHeight, this.maxHeight - overflow) : this.maxHeight;
-
-			this.$_grid.height(targetHeight);
-		},
+		function showOverlay() {
+			disableSelection($('body'));
+			$('.repository-browser-modal-overlay')
+				.stop().css({top: 0, left: 0}).show();
+		}
 
 		/**
-		 * Automatically resize the browser modal, constraining its dimensions
-		 * between minWidth and maxWidth.
+		 * Hides the overlay element.
 		 */
-		_onWindowResized: function () {
-			var overflow = this.maxWidth - jQuery(window).width() + this.horizontalPadding, $header, $container;
-			var target = overflow > 0
-			           ? Math.max(this.minWidth, this.maxWidth - overflow)
-					   : this.maxWidth;
-			this.element.width(target);
-			this.$_grid.width(target);
-
-			this._setInitialHeight();
-
-			// adapt tree
-			$header = this.$_grid.find('.repository-browser-tree-header');
-			this.$_tree.height(this.$_grid.height() - $header.outerHeight(true));
-
-			// adapt list
-			$container = this.$_grid.find('.ui-layout-center');
-			$container.find('.ui-jqgrid-bdiv').height(this.$_grid.height() - (
-				$container.find('.ui-jqgrid-titlebar').height() +
-				$container.find('.ui-jqgrid-hdiv').height() +
-				$container.find('.ui-jqgrid-pager').height()
-			));
-
-			// adapt paging
-			if (this._adaptPageSize()) {
-				// if the pagesize changed, we need to refresh the list
-				if (this._currentFolder) {
-					this._fetchItems(this._currentFolder);
-				}
-			}
-		},
+		function hideOverlay() {
+			enableSelection($('body'));
+			$('.repository-browser-modal-overlay').hide();
+		}
 
 		/**
-		 * Preload images used by the browser UI.
+		 * Preloads repository browser images.
+		 *
+		 * @param {string} path
 		 */
-		_preloadImages: function () {
-			var path = this.rootPath + 'img/';
-			var imgs = [
+		function preload(path) {
+			$.each([
 				'arrow-000-medium.png',
 				'arrow-180.png',
 				'arrow-315-medium.png',
@@ -433,1018 +202,1271 @@ define('RepositoryBrowser', [
 				'picture.png',
 				'sort-alphabet-descending.png',
 				'sort-alphabet.png'
-			];
-			var j = imgs.length;
-			while (j) {
-				var img = document.createElement('img');
-				img.src = path + imgs[--j];
-			}
-		},
+			], function () {
+				document.createElement('img').src = path + 'img/' + this;
+			});
+		}
 
 		/**
-		 * Process the received repository items.
+		 * Creates the tree list view of a browser instance.
 		 *
-		 * @param {Array.<object>} items List objects retrieved by repository
-		 *                               manager.
-		 * @param {TODO} metainfo
-		 * @param {function} callback Function to receive the processed items.
+		 * @param  {Browser}          browser
+		 * @param  {jQuery.<Element>} $container
+		 * @param  {number}           height
+		 * @return {jQuery.<Element>}
 		 */
-		_processRepoResponse: function (items, metainfo, callback) {
-			// If the second parameter is a function, it is the callback;
-			if (typeof metainfo === 'function') {
-				callback = metainfo;
-				metainfo = undefined;
-			}
+		function tree(browser, $container, height) {
+			var $header = $('<div class="repository-browser-tree-header repository-browser-grab-handle">'
+			            + browser._i18n('Repository Browser')
+			            + '</div>');
 
-			var repobrowser = this;
-			var collection = [];
-			var currentFolder = repobrowser._currentFolder
-			                 && repobrowser._currentFolder.id;
-			var open = null;
-			var composite;
-			var i;
-
-			for (i = 0; i < items.length; i++) {
-				composite = createComposite(items[i], repobrowser);
-				collection.push(composite);
-				cacheWrite(repobrowser, composite.resource);
-
-				if (currentFolder === composite.resource.id) {
-					open = composite.resource;
-				}
-			}
-
-			callback(collection, metainfo);
-
-			if (open) {
-				window.setTimeout(function () {
-					repobrowser.$_tree.jstree(
-						'select_node',
-						'li[data-repo-obj="' + open.uid + '"]'
-					);
-				}, 0); // Is this timeout still necessary
-			}
-		},
-
-		/**
-		 * Retrieve the root node, and its children.
-		 *
-		 * @param {function(object)} callback A function to receive the
-		 *                                    retrieved folder structure.
-		 */
-		_fetchRepoRoot: function (callback) {
-			if (!this._currentFolder) {
-				// get the selected folder
-				this._currentFolder = this.getSelectedFolder();
-			}
-
-			if (this.repositoryManager) {
-				this.getRepoChildren({
-					inFolderId: this.rootFolderId,
-					repositoryFilter: this.repositoryFilter
-				}, callback);
-			}
-		},
-
-		/**
-		 * Retrieves a cached repository object that is associated with the
-		 * given node element.
-		 *
-		 * @param {jQuery.<HTMLElement> $node The element whose corresponding
-		 *                                    repository object is to be
-		 *                                    retreived.
-		 * @return {!Object} The cached repository object or null if none is
-		 *                   found in the cache.
-		 */
-		_getObjectFromCache: function ($node) {
-			if ($node && $node.length) {
-				var id = $node.find('a:first').attr('data-repo-obj');
-				return this._cachedRepositoryObjects[id];
-			}
-			return null;
-		},
-
-		/**
-		 * Queries the repository manager for items contained in folder that
-		 * was clicked.
-		 *
-		 * @param {jQuery.<Event>} $event jQuery event object.  Unused.
-		 * @param {object} data An object containing information about the
-		 *                      jstree node that was clicked.
-		 */
-		_onTreeNodeSelected: function ($event, data) {
-			// Suppress a bug in jsTree.
-			if (data.args[0].context) {
-				return;
-			}
-
-			var repobrowser = this;
-			var folder = cacheRead(repobrowser,
-			                       getIdFromTreeNode(data.rslt.obj));
-
-			if (folder) {
-				// Reset paging and search
-				repobrowser._pagingOffset = 0;
-				repobrowser._currentFolder = folder;
-				repobrowser._clearSearch();
-				repobrowser._fetchItems(folder);
-				repobrowser.folderSelected(folder);
-			}
-		},
-
-		/**
-		 * Render and initialize a jstree instance for the given container
-		 * element.
-		 *
-		 * @param {jQuery.<HTMLElement>} $container The element in which the
-		 *                                          jstree instance will be
-		 *                                          rendered.
-		 * @return {jQuery.<HTMLElement>} $tree Element which has been
-		 *                                      initialized for jstree.
-		 */
-		_createTree: function ($container) {
-			var $tree = jQuery('<div class="repository-browser-tree">');
-			var $header = jQuery('<div class="repository-browser-tree-header' +
-				' repository-browser-grab-handle">' +
-				this._i18n('Repository Browser') + '</div>');
+			var $tree = $('<div class="repository-browser-tree"></div>');
 
 			$container.append($header, $tree);
 
-			$tree.height(this.$_grid.height() - $header.outerHeight(true));
+			$tree.height(height - $header.outerHeight(true));
 
-			$tree.bind('loaded.jstree', function ($event, data) {
+			$tree.bind('loaded.jstree', function (event, data) {
 				$(this).find('>ul>li:first').css('padding-top', 5);
 				// Because jstree `open_node' will add substree items to every
 				// item matched by the selector, we need to ensure that
 				// `open_node' is invoked for one item at a time.
-				$(this).find('li[rel="repository"]:first').each(
-					function (i, li) {
-						$tree.jstree('open_node', li);
-					});
-			});
-
-			var that = this;
-
-			// Bind the jsree select node event
-			$tree.bind('select_node.jstree', function ($event, data) {
-				that._onTreeNodeSelected($event, data);
-			});
-
-			// Bind the jsree open node event
-			$tree.bind('open_node.jstree', function ($event, data) {
-				that.folderOpened(data.rslt.obj);
-			});
-
-			// Bind the jsree close node event
-			$tree.bind('close_node.jstree', function ($event, data) {
-				that.folderClosed(data.rslt.obj);
-			});
-
-			$tree.jstree({
-				types: this.types,
-				rootFolderId: this.rootFolderId,
-				plugins: ['themes', 'json_data', 'ui', 'types'],
-				core: {animation: 250},
-				themes: {
-					url: this.rootPath + 'css/jstree.css',
-					dots: true,
-					icons: true,
-					theme: 'browser'
-				},
-				json_data: {
-					data: function (nodes, callback) {
-						if (that.repositoryManager) {
-							that.jstree_callback = callback;
-							that._fetchSubnodes(nodes, callback);
-						} else {
-							callback();
-						}
-					},
-					correct_state: true
-				},
-				ui: {select_limit: 1}
-			});
-
-			return $tree;
-		},
-
-		/**
-		 * Creates a grid inside the given element.  The grid provides panels
-		 * in which we render the folder list tree, and a the folder items
-		 * list.
-		 *
-		 * @param {jQuery.<HTMLElement>} $container A DOM element in which to
-		 *                                          render the grid.
-		 * @return {jQuery.<HTMLElement} The grid element.
-		 */
-		_createGrid: function ($container) {
-			var $grid = jQuery(
-				'<div class="repository-browser-grid\
-				             repository-browser-shadow\
-							 repository-browser-rounded-top">\
-					<div class="ui-layout-west"></div>\
-					<div class="ui-layout-center"></div>\
-				</div>'
-			);
-			$container.append($grid);
-			return $grid;
-		},
-
-		/**
-		 * Creates a table inwhich to render repository items.
-		 *
-		 * @param {jQuery.<HTMLElement>} $container A DOM element in which to
-		 *                                          render the list.
-		 * @return {jQuery.<HTMLElement} The list element.
-		 */
-		_createList: function ($container) {
-			var $list = jQuery('<table id="repository-browser-list-' + (++uid)
-			          + '" class="repository-browser-list"></table>');
-
-			// This is a hidden utility column to help us with auto sorting.
-			var model = [{
-				name: 'id',
-				sorttype: 'int',
-				firstsortorder: 'asc',
-				hidden: true
-			}];
-
-			var names = [''];
-
-			jQuery.each(this.columns, function (key, value) {
-				names.push(value.title || '&nbsp;');
-				model.push({
-					name: key,
-					width: value.width,
-					sortable: value.sortable,
-					sorttype: value.sorttype,
-					resizable: value.resizable,
-					fixed: value.fixed
+				$(this).find('li[rel="repository"]:first').each(function (i, li) {
+					$tree.jstree('open_node', li);
 				});
 			});
 
-			/*
-			 * jqGrid requires that we use an id, despite what the
-			 * documentation says
-			 * (http://www.trirand.com/jqgridwiki/doku.php?id=wiki:pager&s[]=pager).
+			$tree.bind('select_node.jstree', function (event, data) {
+				// Suppresses a bug in jsTree
+				if (data.args[0].context) {
+					return;
+				}
+				browser.treeNodeSelected(data.rslt.obj);
+			});
+
+			$tree.bind('open_node.jstree', function ($event, data) {
+				browser.folderOpened(data.rslt.obj);
+			});
+
+			$tree.bind('close_node.jstree', function ($event, data) {
+				browser.folderClosed(data.rslt.obj);
+			});
+
+			$tree.jstree({
+				types        : browser.types,
+				rootFolderId : browser.rootFolderId,
+				plugins      : ['themes', 'json_data', 'ui', 'types'],
+				core         : {animation: 250},
+				ui           : {select_limit: 1},
+
+				themes: {
+					theme : 'browser',
+					url   : browser.rootPath + 'css/jstree.css',
+					dots  : true,
+					icons : true
+				},
+
+				json_data: {
+					correct_state: true,
+					data: function (node, callback) {
+						if (browser.manager) {
+							browser.jstree_callback = callback;
+							browser._fetchSubnodes.call(browser, node, callback);
+						} else {
+							callback();
+						}
+					}
+				}
+			});
+
+			return $tree;
+		}
+
+		/**
+		 * Creates the grid view of a browser instance.
+		 *
+		 * @param  {Browser}          browser
+		 * @param  {jQuery.<Element>} $container
+		 * @return {jQuery.<Element>}
+		 */
+		function grid(browser, $container) {
+			var $grid = $('<div class="repository-browser-grid repository-browser-shadow repository-browser-top">'
+			          + '<div class="ui-layout-west"></div>'
+			          + '<div class="ui-layout-center"></div>'
+			          + '</div>');
+			$container.append($grid);
+			return $grid;
+		}
+
+		/**
+		 * Creates the title bar of a browser instance.
+		 *
+		 * @param  {Browser}          browser
+		 * @param  {jQuery.<Element>} $container
+		 * @return {jQuery.<Element>}
+		 */
+		function titlebar(browser, $container) {
+			var $title  = $container.find('.ui-jqgrid-titlebar');
+
+			var html = '<div class="repository-browser-btns">'
+			         +		'<input type="text" class="repository-browser-search-field" />'
+			         +		'<span class="repository-browser-btn repository-browser-search-btn">'
+			         +			'<span class="repository-browser-search-icon"></span>'
+			         +		'</span>'
+			         +		'<span class="repository-browser-btn repository-browser-close-btn">'
+			         +			browser._i18n('Close')
+			         +		'</span>'
+			         +		'<div class="repository-browser-clear"></div>'
+			         + '</div>';
+
+			$title.addClass('repository-browser-grab-handle').append(html);
+
+			$title.find('.repository-browser-search-btn').click(function () {
+				browser._triggerSearch();
+			});
+
+			var $search = $title.find('.repository-browser-search-field').keypress(function (event) {
+				// ENTER ←┘
+				if (13 === event.keyCode) {
+					browser._triggerSearch();
+				}
+			});
+
+			$search.val(browser._i18n('Input search text...'))
+			       .addClass('repository-browser-search-field-empty');
+
+			$search.focus(function () {
+				if ($search.val() === browser._i18n('Input search text...')) {
+					$search.val('').removeClass('repository-browser-search-field-empty');
+				}
+			});
+
+			$search.blur(function () {
+				if ('' === $search.val()) {
+					$search.val(browser._i18n('Input search text...'))
+					       .addClass('repository-browser-search-field-empty');
+				}
+			});
+
+			$title.find('.repository-browser-close-btn').click(function () {
+				browser.close();
+			});
+
+			$title.find('.repository-browser-btn')
+				.mousedown(function () {
+					$(this).addClass('repository-browser-pressed');
+				})
+				.mouseup(function () {
+					$(this).removeClass('repository-browser-pressed');
+				});
+
+			return $title;
+		}
+
+		/**
+		 * Creates the list view of a browser instance.
+		 *
+		 * @param  {Browser}          browser
+		 * @param  {jQuery.<Element>} $container
+		 * @param  {number}           height
+		 * @return {jQuery.<Element>}
+		 */
+		function list(browser, $container, height) {
+			var $list = $('<table id="list-' + unique() + '" class="repository-browser-list"></table>');
+
+			// Because we need a hidden utility column to help us with auto
+			// sorting
+			var names = [''];
+			var model = [{
+				name	       : 'id',
+				sorttype       : 'int',
+				firstsortorder : 'asc',
+				hidden	       : true
+			}];
+
+			$.each(browser.columns, function (key, value) {
+				names.push(value.title || '&nbsp;');
+				model.push({
+					name      : key,
+					width     : value.width,
+					sortable  : value.sortable,
+					sorttype  : value.sorttype,
+					resizable : value.resizable,
+					fixed     : value.fixed
+				});
+			});
+
+			/**
+			 * jqGrid requires that we use an id, despite what the documentation says
+			 * (http://www.trirand.com/jqgridwiki/doku.php?id=wiki:pager&s[]=pager):
 			 * We need a unique id, however, in order to distinguish pager
 			 * elements for each browser instance.
 			 */
-			var pagerUID = 'repository-browser-list-page-' + (++uid);
-			$container.append($list, jQuery('<div id="' + pagerUID + '">'));
+			var pagerId = 'repository-browser-list-page-' + unique();
+			$container.append($list, '<div id="' + pagerId + '" class="repository-browser-grab-handle"></div>');
 
 			$list.jqGrid({
-				datatype: 'local',
-				width: $container.width(),
-				shrinkToFit: true,
-				colNames: names,
-				colModel: model,
-				caption: '&nbsp;',
-				altRows: true,
-				altclass: 'repository-browser-list-altrow',
-				resizeclass: 'repository-browser-list-resizable',
-
-				// http://www.trirand.com/jqgridwiki/doku.php?id=wiki:pager&s[]=pager
-				pager: '#' + pagerUID,
-
-				// # of records to view in the grid.  Passed as parameter to url
-				// when retrieving data from server.
-				//rowNum: this.pageSize,
-				viewrecords: true,
-
-				// Event handlers:
-				// http://www.trirand.com/jqgridwiki/doku.php?id=wiki:events
-				// Fires after click on [page button] and before populating the
-				// data.
-				onPaging: function (button) {},
-
-				// Called if the request fails.
-				loadError: function (xhr, status, error) {},
-
-				// Raised immediately after row was double clicked.
-				ondblClickRow: function (rowid, iRow, iCol, e) {},
-
-				// Fires after all the data is loaded into the grid and all
-				// other processes are complete.
-				gridComplete: function () {},
-
-				// Executed immediately after every server request.
-				loadComplete: function (data) {}
+				datatype      : 'local',
+				width         : $container.width(),
+				shrinkToFit   : true,
+				colNames      : names,
+				colModel      : model,
+				caption       : '&nbsp;',
+				altRows       : true,
+				altclass      : 'repository-browser-list-altrow',
+				resizeclass   : 'repository-browser-list-resizable',
+				pager         : pagerId,
+				viewrecords   : true,
+				onPaging      : function (button) {},
+				loadError     : function (xhr, status, error) {},
+				ondblClickRow : function (rowid, iRow, iCol, e) {},
+				gridComplete  : function () {},
+				loadComplete  : function (data) {}
 			});
 
-			$container.find('.ui-jqgrid-bdiv').height(this.$_grid.height() - (
+			$container.find('.ui-jqgrid-bdiv').height(height - (
 				$container.find('.ui-jqgrid-titlebar').height() +
 				$container.find('.ui-jqgrid-hdiv').height() +
 				$container.find('.ui-jqgrid-pager').height()
 			));
 
-			var that = this;
-
 			$list.click(function () {
-				that.rowClicked.apply(that, arguments);
+				browser.rowClicked.apply(browser, arguments);
 			});
 
-			// Override jqGrid paging.
+			// Override jqGrid paging
 			$container
 				.find('.ui-pg-button').unbind()
 				.find('>span.ui-icon').each(function () {
+					var $icons = $(this).parent();
 					var dir = this.className.match(/ui\-icon\-seek\-([a-z]+)/)[1];
-					that._pagingBtns[dir] =
-						jQuery(this)
-							.parent()
-							.addClass('ui-state-disabled')
-							.click(function () {
-								if (!jQuery(this).hasClass('ui-state-disabled')) {
-									that._doPaging(dir);
-								}
-							});
+					browser._pagingBtns[dir] = $icons;
+					$icons.addClass('ui-state-disabled').click(function () {
+						if (!$(this).hasClass('ui-state-disabled')) {
+							browser._doPaging(dir);
+						}
 					});
+				});
 
-			// TODO: Implement this once repositories can handle it; hiding it
-			// for now.
 			$container.find('.ui-pg-input').parent().hide();
 			$container.find('.ui-separator').parent().css('opacity', 0).first().hide();
-			//$container.find('#repository-browser-list-pager-left').hide();
 
-			this._createTitlebar($container);
-
-			//this.$_grid.find('.loading').html('Loading...');
-
-			// Override jqGrid sorting.
+			// Override jqGrid sorting
 			var listProps = $list[0].p;
 			$container.find('.ui-jqgrid-view tr:first th div').each(function (i) {
 				if (false !== listProps.colModel[i].sortable) {
-					jQuery(this).css('cursor', 'pointer');
-					jQuery(this).unbind().click(function (event) {
+					$(this).css('cursor', 'pointer');
+					$(this).unbind().click(function (event) {
 						event.stopPropagation();
-						that._sortList(listProps.colModel[i], this);
+						browser._sortList(listProps.colModel[i], this);
 					});
 				}
 			});
 
+			titlebar(browser, $container);
+
 			return $list;
-		},
+		}
 
 		/**
-		 * Clear the search
+		 * Builds the UI elements for the given browser instance.
+		 *
+		 * @param  {Browser} browser
+		 * @param  {!Object} opts
+		 * @return {Object.<string, jQuery.<Element>>}
 		 */
-		_clearSearch: function () {
-			var $searchField = this.$_grid.find('.repository-browser-search-field');
-			$searchField.val(this._prefilledValue).addClass('repository-browser-search-field-empty');
-			this._searchQuery = null;
-		},
+		function ui(browser, opts) {
+			var $elem = browser.element.attr('data-repository-browser', unique());
+			var $grid = grid(browser, $elem);
 
-		_createTitlebar: function ($container) {
-			var $bar = $container.find('.ui-jqgrid-titlebar');
+			$grid.resize();
+			$elem.css('width', opts.maxWidth);
+			$grid.css('width', opts.maxWidth); // Fix for IE7
 
-			var $btns = jQuery(
-				'<div class="repository-browser-btns">\
-					<input type="text" class="repository-browser-search-field" />\
-					<span class="repository-browser-btn repository-browser-search-btn">\
-						<span class="repository-browser-search-icon"></span>\
-					</span>\
-					<span class="repository-browser-btn repository-browser-close-btn">' +
-						this._i18n('Close') +
-					'</span>\
-					<div class="repository-browser-clear"></div>\
-				</div>'
-			);
-
-			var that = this;
-
-			$bar.addClass('repository-browser-grab-handle').append($btns);
-
-			$bar.find('.repository-browser-search-btn')
-			    .html(this._i18n('Search'))
-			    .click(function () {
-					that._triggerSearch();
-				});
-
-			var $searchField = $bar.find('.repository-browser-search-field');
-
-			this._clearSearch();
-
-			$searchField.keypress(function (event) {
-				// On ENTER.
-				if (13 === event.keyCode) {
-					that._triggerSearch();
-				}
-			});
-
-			$searchField.focus(function () {
-				if (jQuery(this).val() === that._prefilledValue) {
-					jQuery(this)
-						.val('')
-						.removeClass('repository-browser-search-field-empty');
-				}
-			});
-
-			$searchField.blur(function () {
-				if (jQuery(this).val() === '') {
-					that._clearSearch();
-				}
-			});
-
-			$bar.find('.repository-browser-close-btn')
-			    .click(function () {
-					that.close();
-				});
-
-			$bar.find('.repository-browser-btn')
-			    .mousedown(function () {
-					jQuery(this).addClass('repository-browser-pressed');
-				})
-			    .mouseup(function () {
-					jQuery(this).removeClass('repository-browser-pressed');
-				});
-		},
-
-		_triggerSearch: function () {
-			var $searchField = this.$_grid.find('input.repository-browser-search-field');
-			var searchValue = $searchField.val();
-
-			if (jQuery($searchField).hasClass('aloha-browser-search-field-empty') ||
-			    '' === searchValue) {
-				searchValue = null;
-			}
-			this._pagingOffset = 0;
-			this._searchQuery = searchValue;
-			this._fetchItems(this._currentFolder);
-		},
-
-		/**
-		 * TODO: Fix this so that sorting does toggle between desc and asc when
-		 *       you click on a column on which we were not sorting.
-		 */
-		_sortList: function (columnModel, element){
-			// Reset sort properties in all column headers.
-			this.$_grid.find('span.ui-grid-ico-sort').addClass('ui-state-disabled');
-
-			columnModel.sortorder = ('asc' === columnModel.sortorder)
-			                      ? 'desc'
-								  : 'asc';
-
-			jQuery(element)
-				.find('span.s-ico').show()
-				.find('.ui-icon-' + columnModel.sortorder)
-				.removeClass('ui-state-disabled');
-
-			this._setSortOrder(columnModel.name, columnModel.sortorder);
-			this._fetchItems(this._currentFolder);
-		},
-
-		_doPaging: function (dir) {
-			switch (dir) {
-			case 'first':
-				this._pagingOffset = 0;
-				break;
-			case 'end':
-				if ((this._pagingCount % this.pageSize) === 0) {
-					// item count is exactly divisible by page size
-					this._pagingOffset = this._pagingCount - this.pageSize;
-				} else {
-					this._pagingOffset = this._pagingCount - (this._pagingCount % this.pageSize);
-				}
-				break;
-			case 'next':
-				this._pagingOffset += this.pageSize;
-				break;
-			case 'prev':
-				this._pagingOffset -= this.pageSize;
-				// avoid "ot of bounds" situation
-				if (this._pagingOffset < 0) {
-					this._pagingOffset = 0;
-				}
-				break;
-			}
-			this._fetchItems(this._currentFolder);
-		},
-
-		/**
-		 * Adds new sort fields into the _orderBy array.  If a field already
-		 * exists, it will be spliced from where it is and unshifted to the end
-		 * of the array.
-		 */
-		_setSortOrder: function (by, order) {
-			var sortItem = {};
-			var isFound = false;
-			var orderBy = this._orderBy || [];
-			var orderItem;
-			var field;
-			var i;
-			sortItem[by] = order || 'asc';
-
-			for (i = 0; i < orderBy.length; ++i) {
-				orderItem = orderBy[i];
-
-				for (field in orderItem) {
-					if (orderItem.hasOwnProperty(field)) {
-						if (field === by) {
-							orderBy.splice(i, 1);
-							orderBy.unshift(sortItem);
-							isFound = true;
-							break;
-						}
+			var $tree = tree(browser, $grid.find('.ui-layout-west'), $grid.height());
+			var $list = list(browser, $grid.find('.ui-layout-center'), $grid.height());
+			var $layout = $grid.layout({
+				west__size    : opts.treeWidth - 1,
+				west__minSize : 0,
+				west__maxSize : opts.maxWidth,
+				center__size  : 'auto',
+				paneClass     : 'ui-layout-pane',
+				resizerClass  : 'ui-layout-resizer',
+				togglerClass  : 'ui-layout-toggler',
+				onresize      : function (name, elem) {
+					if ('center' === name) {
+						$list.setGridWidth(elem.width());
 					}
 				}
+			});
 
-				if (isFound) {
+			// Because otherwise IE scrolls the page to the right
+			$elem.hide();
+			hideOverlay();
+
+			$layout.sizePane('west', opts.treeWidth); // Fix for a ui-layout bug in chrome
+
+			$elem.resizable({
+				autoHide  : true,
+				minWidth  : opts.minWidth,
+				minHeight : opts.minHeight,
+				maxWidth  : opts.maxWidth,
+				maxHeight : opts.maxHeight,
+				handles   : 'all',
+				resize    : function (e, ui) {
+					browser._resizeHorizontal(opts.maxWidth - ui.size.width);
+					browser._resizeVertical(opts.maxHeight - ui.size.height);
+					browser._resizeInnerComponents();
+				}
+			});
+
+			disableSelection($grid);
+
+			$elem.mousedown(function () {
+				bringToFront(browser);
+			});
+
+			return {
+				$elem: $elem,
+				$grid: $grid,
+				$tree: $tree,
+				$list: $list
+			};
+		}
+
+		/**
+		 * Repository Browser.
+		 *
+		 * Must be initialized with a configured repository manager.
+		 *
+		 * @class   Browser
+		 * @extends Class
+		 */
+		var Browser = Class.extend({
+
+			opened         : false,
+
+			grid           : null,
+			tree           : null,
+			list           : null,
+
+			_searchQuery   : null,
+			_orderBy       : null,
+			_currentFolder : null,
+
+			/**
+			 * A cache of repository objects that were queried through any of
+			 * the repositories.
+			 *
+			 * This objec is shared between all instances of the repository
+			 * browser! (TODO: we should change this)
+			 *
+			 * @type <Object.<string, Object>>
+			 */
+			_objs: {},
+
+			/**
+			 * Resize the components of the repository browser:
+			 * <ul>
+			 *     <li>jsTree</li>
+			 *     <li>jqGrid</li>
+			 *     <li>List of items inside of jqGrid</li>
+			 * </ul>
+			 */
+			_resizeInnerComponents: function () {
+				var $header = this.grid.find('.repository-browser-tree-header');
+				var $container = this.grid.find('.ui-layout-center');
+
+				this.tree.height(this.grid.height() - $header.outerHeight(true));
+
+				$container.find('.ui-jqgrid-bdiv').height(this.grid.height() - (
+					$container.find('.ui-jqgrid-titlebar').height() +
+					$container.find('.ui-jqgrid-hdiv').height() +
+					$container.find('.ui-jqgrid-pager').height()
+				));
+
+				if (this._adaptPageSize() && this._currentFolder) {
+					this._fetchItems(this._currentFolder);
+				}
+			},
+
+			/**
+			 * Resizes the browser element vertically.
+			 *
+			 * @param {number} overflow Vertical pixel overflow
+			 */
+			_resizeVertical: function (overflow) {
+				var height = (overflow > 0)
+				           ? Math.max(this.minHeight, this.maxHeight - overflow)
+				           : this.maxHeight;
+				this.element.height(height);
+				this.grid.height(height);
+			},
+
+			/**
+			 * Resizes the browser element horizontally.
+			 *
+			 * @param {number} overflow Horizantal pixel overflow
+			 */
+			_resizeHorizontal: function (overflow) {
+				var width = (overflow > 0)
+						  ? Math.max(this.minWidth, this.maxWidth - overflow)
+						  : this.maxWidth;
+				this.element.width(width);
+				this.grid.width(width);
+			},
+
+			/**
+			 * Automatically resizes the browser modal, constraining its
+			 * dimensions between minWidth and maxWidth.
+			 */
+			_onWindowResized: function () {
+				this._resizeHorizontal(this.maxWidth - $window.width() + this.padding);
+				this._resizeVertical(this.maxHeight - $window.height() + this.padding);
+				this._resizeInnerComponents();
+			},
+
+			/**
+			 * Clears the search field.
+			 */
+			_clearSearch: function () {
+				var $search = this.grid.find('.repository-browser-search-field');
+				$search.val(this._i18n('Input search text...'))
+				       .addClass('repository-browser-search-field-empty');
+				this._searchQuery = null;
+			},
+
+			/**
+			 * Retrieves the corresponding internationalization string for the
+			 * given keyword.
+			 *
+			 * @param  {string} key The key for which a full i18n string is
+			 *                      retrieved
+			 * @return {string} The return value is either the i18n value matched
+			 *                  by the given key, or else the key
+			 */
+			_i18n: function (key) {
+				return this.i18n[key] || key;
+			},
+
+			/**
+			 * Adapt the page size.
+			 *
+			 * @return {boolean} True if the page size was actually changed, false
+			 *                   if not
+			 */
+			_adaptPageSize: function () {
+				// if this is off, don't do anything
+				if (!this.adaptPageSize || !this.list || !this.rowHeight) {
+					return false;
+				}
+				var $container = this.grid.find('.ui-jqgrid-bdiv');
+				// reduce by 20 px to leave place for a scrollbar
+				var height = $container.innerHeight() - 20;
+				if (height) {
+					var newPageSize = Math.floor(height / this.rowHeight);
+					if (newPageSize <= 0) {
+						newPageSize = 1;
+					}
+					if (newPageSize !== this.pageSize) {
+						this.pageSize = newPageSize;
+						return true;
+					}
+					return false;
+				}
+				return false;
+			},
+
+			_constructor: function () {
+				this.init.apply(this, arguments);
+			},
+
+			/**
+			 * Initializes the browser instance based on the given configuration.
+			 *
+			 * @param {!Object} config
+			 */
+			init: function (config) {
+				if (!config.repositoryManager) {
+					$('body').trigger(
+						'repository-browser-error',
+						'Repository Manager not configured'
+					);
+				}
+
+				var browser = this;
+				var options = $.extend({}, DEFAULTS, config, {i18n: i18n});
+
+				if (!options.element || 0 === options.element.length) {
+					options.isFloating = true;
+					options.element = modal();
+				}
+
+				browser.manager       = options.repositoryManager;
+				browser._objs         = {};
+				browser._searchQuery  = null;
+				browser._orderBy      = null;
+				browser._pagingOffset = 0;
+				browser._pagingCount  = undefined; // Because isNaN(null) == false ! *sigh*
+				browser._pagingBtns   = {
+					first : null,
+					end   : null,
+					next  : null,
+					prev  : null
+				};
+
+				$.extend(browser, options);
+
+				preload(options.rootPath);
+
+				var elements = ui(browser, options);
+
+				browser.grid    = elements.$grid;
+				browser.list    = elements.$list;
+				browser.tree    = elements.$tree;
+				browser.element = elements.$elem;
+
+				// Because of legacy support
+				browser.$_grid = browser.grid;
+				browser.$_list = browser.list;
+				browser._cachedRepositoryObjects = browser._objs;
+
+				browser._adaptPageSize();
+				browser.close();
+
+				$window.resize(function () {
+					browser._onWindowResized();
+				});
+
+				if (browser.manager) {
+					browser._currentFolder = browser.getSelectedFolder();
+					browser._fetchRepoRoot(browser.jstree_callback);
+				}
+
+				instances.push(this);
+
+				PubSub.pub('repository-browser.initialized', {data: this});
+			},
+
+			/**
+			 * Convert a repository object into an object that can be used with
+			 * our tree component. Also add a reference to this object in our
+			 * objs hash. According to the Repository specification, each object
+			 * will at least have the following properties at least: id, name,
+			 * url, and type. Any and all other attributes are optional.
+			 *
+			 * @param  {!Object} obj
+			 * @return {Object}
+			 */
+			harvestRepoObject: function (obj) {
+				var uid = unique();
+				var resource = this._objs[uid] = $.extend(obj, {
+					uid    : uid,
+					loaded : false
+				});
+				return this.processRepoObject(resource);
+			},
+
+			/**
+			 * Returns an object that is usable with your tree component.
+			 *
+			 * @param  {!Object} obj
+			 * @return {Object}
+			 */
+			processRepoObject: function (obj) {
+				var icon = '', attr, state, children, browser = this;
+
+				switch (obj.baseType) {
+				case 'folder':
+					icon = 'folder';
+					break;
+				case 'document':
+					icon = 'document';
 					break;
 				}
-			}
 
-			if (isFound) {
-				orderBy.unshift(sortItem);
-			}
-
-			this._orderBy = orderBy;
-		},
-
-		_listItems: function (items) {
-			var $list = this.$_list.clearGridData();
-			var i;
-			var obj;
-			for (i = 0; i < items.length; i++) {
-				obj = items[i].resource;
-				$list.addRowData(
-					obj.uid,
-					jQuery.extend({id: obj.id}, this.renderRowCols(obj))
-				);
-			}
-		},
-
-		/**
-		 * Handle repository timeouts
-		 */
-		handleTimeout: function () {
-		},
-
-		_processItems: function (data, metainfo) {
-			// If the total number of items is known, we can calculate the
-			// number of pages.
-			this._pagingCount = (metainfo && jQuery.isNumeric(metainfo.numItems))
-			                  ? metainfo.numItems
-							  : null; // TODO: should we use undefined?
-
-			this.$_grid.find('.loading').hide();
-			this.$_list.show();
-			this._listItems(data);
-
-			var CSS_DISABLED = 'ui-state-disabled';
-			var $btns = this._pagingBtns;
-
-			if (this._pagingOffset <= 0) {
-				$btns.first.add($btns.prev).addClass(CSS_DISABLED);
-			} else {
-				$btns.first.add($btns.prev).removeClass(CSS_DISABLED);
-			}
-
-			if (!jQuery.isNumeric(this._pagingCount)) {
-				$btns.end.addClass(CSS_DISABLED);
-
-				if (data.length <= this.pageSize) {
-					$btns.next.addClass(CSS_DISABLED);
-				} else {
-					$btns.next.removeClass(CSS_DISABLED);
+				// if the object has a type set, we set it as type to the node
+				if (obj.type) {
+					attr = {rel: obj.type, 'data-rep-oobj': obj.uid};
 				}
-			} else if (this._pagingOffset + this.pageSize >= this._pagingCount) {
-				$btns.end.add($btns.next).addClass(CSS_DISABLED);
-			} else {
-				$btns.end.add($btns.next).removeClass(CSS_DISABLED);
-			}
 
-			var from;
-			var to;
+				// set the node state
+				state = (obj.hasMoreItems || 'folder' === obj.baseType) ? 'closed' : null;
+				if (false === obj.hasMoreItems) {
+					state = null;
+				}
 
-			if (0 === data.length && 0 === this._pagingOffset) {
-				from = 0;
-				to = 0;
-			} else {
-				from = this._pagingOffset + 1;
-				to = from + data.length - 1;
-			}
+				// process children (if any)
+				if (obj.children) {
+					children = [];
+					$.each(obj.children, function () {
+						children.push(browser.harvestRepoObject(this));
+						state = 'open';
+					});
+				}
 
-			this.$_grid.find('.ui-paging-info').html(
-				this._i18n('Viewing') + ' ' +
-				(from) + ' - '  +
-				(to) + ' ' + this._i18n('of') + ' ' +
-				(jQuery.isNumeric(this._pagingCount)
-					? this._pagingCount : this._i18n('numerous'))
-			);
+				if (this._currentFolder && this._currentFolder.id === obj.id) {
+					window.setTimeout(function () {
+						browser.tree.jstree('select_node', 'li[data-rep-oobj="' + obj.uid + '"]');
+					}, 0);
+				}
 
-			// when the repository manager reports a timeout, we handle it
-			if (metainfo && metainfo.timeout) {
-				this.handleTimeout();
-			}
-		},
+				return {
+					data: {
+						title : obj.name,
+						attr  : {'data-rep-oobj': obj.uid},
+						icon  : icon
+					},
+					attr     : attr,
+					state    : state,
+					resource : obj,
+					children : children
+				};
+			},
 
-		_createOverlay: function () {
-			// We only want one overlay element.
-			if (0 === jQuery('.repository-browser-modal-overlay').length) {
-				jQuery('body').append(
-					'<div class="repository-browser-modal-overlay" ' +
-						'style="top: -99999px; z-index: 99999;"></div>');
-			}
-
-			var that = this;
-
-			// Register a close procedure for each browser instance.
-			jQuery('.repository-browser-modal-overlay').click(function () {
-				that.close();
-			});
-
-			var $container = jQuery(
-				'<div class="repository-browser-modal-window"' +
-				' style="top: -99999px; z-index: 99999;">');
-
-			jQuery('body').append($container);
-
-			return $container;
-		},
-
-		_fetchSubnodes: function (nodes, callback) {
-			if (-1 === nodes) {
-				this._fetchRepoRoot(callback);
-			} else {
-				var i;
-				for (i = 0; i < nodes.length; i++) {
-					var obj = this._getObjectFromCache(nodes.eq(i));
-					if (obj) {
-						this.fetchChildren(obj, callback);
+			/**
+			 * Processes the repostiory manager response.
+			 *
+			 * @param {Array}    items
+			 * @param {Object}   metainfo
+			 * @param {function} callback
+			 */
+			_processRepoResponse: function (items, metainfo, callback) {
+				var browser = this;
+				var folderId = browser._currentFolder && browser._currentFolder.id;
+				var data = [];
+				var openedResource = null;
+				// if the second parameter is a function, it is the callback
+				if ('function' === typeof metainfo) {
+					callback = metainfo;
+					metainfo = undefined;
+				}
+				$.each(items, function () {
+					data.push(browser.harvestRepoObject(this));
+					if (folderId === this.id) {
+						openedResource = this;
 					}
-				}
-			}
-		},
-
-		// ====================================================================
-		// API Methods
-		// ====================================================================
-
-		/**
-		 * Get child folders of a specified repository node.
-		 *
-		 * @param {object} params An object containing parameters with which to
-		 *                        fetch the objects.
-		 * @param {function} callback Function to receive fetched items.
-		 */
-		getRepoChildren: function (params, callback) {
-			if (this.repositoryManager) {
-				var that = this;
-				this.repositoryManager.getChildren(params, function (items) {
-					that._processRepoResponse(items, callback);
 				});
-			}
-		},
+				if ('function' === typeof callback) {
+					callback.call(browser, data, metainfo);
+				}
+				if (openedResource) {
+					window.setTimeout(function () {
+						browser.tree.jstree(
+							'select_node',
+							'li[data-repo-obj="' + openedResource.uid + '"]'
+						);
+					}, 0); // Is this timeout still necessary
+				}
+			},
 
-		/**
-		 * Query repositories for items matching the given parameters.
-		 *
-		 * @param {object} params An object containing parameters with which to
-		 *                        fetch the objects.
-		 * @param {function} callback Function to receive fetched items.
-		 */
-		queryRepository: function (params, callback) {
-			if (this.repositoryManager) {
-				var that = this;
-				this.repositoryManager.query(params, function (response) {
-					that._processRepoResponse(
-						(response.results > 0) ? response.items : [], {
-							numItems: response.numItems,
-							hasMoreItems: response.hasMoreItems,
-							timeout: response.timeout
-						}, callback
+			/**
+			 * Retrieves a cached repository object that is associated with the
+			 * given node element.
+			 *
+			 * @param  {jQuery.<Element>} $node
+			 * @return {!Object} The cached repository object or null if none is
+			 *                   found in the cache.
+			 */
+			_getObjectFromCache: function ($node) {
+				if ('object' === typeof $node) {
+					var uid = $node.find('a:first').attr('data-rep-oobj');
+					return this._objs[uid];
+				}
+			},
+
+			/**
+			 * Queries repositories for items matching the given parameters.
+			 *
+			 * @param {Object}   params   Parameters for repository manager
+			 * @param {function} callback Receives fetch results
+			 */
+			queryRepository: function (params, callback) {
+				var browser = this;
+				browser.manager.query(params, function (response) {
+					var items = (response.results > 0) ? response.items : [];
+					browser._processRepoResponse(items, {
+						timeout      : response.timeout,
+						numItems     : response.numItems,
+						hasMoreItems : response.hasMoreItems
+					}, callback);
+				});
+			},
+
+			/**
+			 * Lists the given items in the browser list view.
+			 *
+			 * @param {Array} items
+			 */
+			_listItems: function (items) {
+				var browser = this;
+				var $list = this.list.clearGridData();
+				$.each(items, function () {
+					var obj = this.resource;
+					$list.addRowData(
+						obj.uid,
+						$.extend({id: obj.id}, browser.renderRowCols(obj))
 					);
 				});
-			}
-		},
+			},
 
-		/**
-		 * Builds a row that an be rendered in the grid layout from the given
-		 * repository item.
-		 *
-		 * @param {object} item The repository resource to render.
-		 * @returns {object} An object representing the rendered row such that
-		 *                   it can be used to populate the grid layout.
-		 */
-		renderRowCols: function (item) {
-			var row = {};
+			/**
+			 * Processes the items in the given data object.
+			 *
+			 * @param {Object} data
+			 * @param {Object} metainfo
+			 */
+			_processItems: function (data, metainfo) {
+				var $btns = this._pagingBtns;
+				var disabled = 'ui-state-disabled';
 
-			jQuery.each(this.columns, function (name, value) {
-				switch (name) {
-				case 'icon':
-					row.icon = '<div class="repository-browser-icon '
-							 + 'repository-browser-icon-' + item.type
-							 + '"></div>';
-					break;
-				default:
-					row[name] = item[name] || '--';
+				// if the total number of items is known, we can calculate the number of pages
+				if (metainfo && ('number' === typeof metainfo.numItems)) {
+					this._pagingCount = metainfo.numItems;
+				} else {
+					this._pagingCount = undefined;
 				}
-			});
 
-			return row;
-		},
+				this.grid.find('.loading').hide();
+				this.list.show();
+				this._listItems(data);
 
-		/**
-		 * User should implement this according to their needs.
-		 *
-		 * @param {object} item Repository resource for a row.
-		 */
-		onSelect: function (item) {},
+				if (this._pagingOffset <= 0) {
+					$btns.first.add($btns.prev).addClass(disabled);
+				} else {
+					$btns.first.add($btns.prev).removeClass(disabled);
+				}
 
-		/**
-		 * Fetch an object's children if we haven't already done so.
-		 *
-		 * @param {object} obj
-		 * @param {function} callback A function to receive the fetched
-		 *                            children object.
-		 */
-		fetchChildren: function (obj, callback) {
-			if (true === obj.hasMoreItems || 'folder' === obj.baseType) {
-				if (false === obj.loaded) {
-					var that = this;
-					this.getRepoChildren({
-						inFolderId: obj.id,
-						repositoryId: obj.repositoryId
+				if (isNaN(this._pagingCount)) {
+					$btns.end.addClass(disabled);
+					if (data.length <= this.pageSize) {
+						$btns.next.addClass(disabled);
+					} else {
+						$btns.next.removeClass(disabled);
+					}
+				} else if (this._pagingOffset + this.pageSize >= this._pagingCount) {
+					$btns.end.add($btns.next).addClass(disabled);
+				} else {
+					$btns.end.add($btns.next).removeClass(disabled);
+				}
+
+				var from, to;
+
+				if (0 === data.length && 0 === this._pagingOffset) {
+					from = 0;
+					to = 0;
+				} else {
+					from = this._pagingOffset + 1;
+					to = from + data.length - 1;
+				}
+
+				var count = ('number' === typeof this._pagingCount)
+				          ? this._pagingCount
+				          : this._i18n('numerous');
+
+				this.grid.find('.ui-paging-info')
+				    .html(this._i18n('Viewing') + ' ' + from + ' - ' + to + ' '
+							+ this._i18n('of') + ' ' + count);
+
+				// when the repository manager reports a timeout, we handle it
+				if (metainfo && metainfo.timeout) {
+					this.handleTimeout();
+				}
+			},
+
+			/**
+			 * Fetches the sub nodes of the given nodes.
+			 *
+			 * @param {jQuery.<Element>} $nodes
+			 * @param {function}         callback
+			 */
+			_fetchSubnodes: function ($nodes, callback) {
+				var browser = this;
+				if (-1 === $nodes) {
+					browser._fetchRepoRoot(callback);
+				} else {
+					$nodes.each(function () {
+						var obj = browser._getObjectFromCache($(this));
+						if ('object' === typeof obj) {
+							browser.fetchChildren(obj, callback);
+						}
+					});
+				}
+			},
+
+			/**
+			 * Fetches the root node.
+			 *
+			 * @param {function} callback
+			 */
+			_fetchRepoRoot: function (callback) {
+				this.getRepoChildren({
+					inFolderId       : this.rootFolderId,
+					repositoryFilter : this.repositoryFilter
+				}, function (data) {
+					if ('function' === typeof callback) {
+						callback(data);
+					}
+				});
+			},
+
+			/**
+			 * Fetches items in the given folder.
+			 *
+			 * @param {Object} folder
+			 */
+			_fetchItems: function (folder) {
+				if (!folder) {
+					return;
+				}
+
+				var browser = this;
+				var isSearching = 'string' === typeof this._searchQuery;
+
+				// Because searching is should always be done recursively
+				var recursive = isSearching;
+
+				browser.list.setCaption(isSearching
+					? browser._i18n('Searching for')
+							+ ' ' + browser._searchQuery
+							+ ' ' + browser._i18n('in')
+							+ ' ' + folder.name
+					: browser._i18n('Browsing') + ': ' + folder.name);
+
+				browser.list.hide();
+				browser.grid.find('.loading').show();
+
+				browser.queryRepository({
+					repositoryId     : folder.repositoryId,
+					inFolderId       : folder.id,
+					queryString      : browser._searchQuery,
+					orderBy          : browser._orderBy,
+					skipCount        : browser._pagingOffset,
+					maxItems         : browser.pageSize,
+					objectTypeFilter : browser.objectTypeFilter,
+					renditionFilter  : browser.renditionFilter,
+					filter           : browser.filter,
+					recursive		 : recursive
+				}, function (data, metainfo) {
+					browser._processItems(data, metainfo);
+				});
+			},
+
+			/**
+			 * Fetches an object's children if we haven't already done so.
+			 *
+			 * @param {Object}   obj      A jsTree list item
+			 * @param {function} callback Receives the fetched children
+			 */
+			fetchChildren: function (obj, callback) {
+				var browser = this;
+				var hasChildren = true === obj.hasMoreItems || 'folder' === obj.baseType;
+				if (hasChildren && false === obj.loaded) {
+					browser.getRepoChildren({
+						inFolderId   : obj.id,
+						repositoryId : obj.repositoryId
 					}, function (data) {
-						that._cachedRepositoryObjects[obj.uid].loaded = true;
-						if (typeof callback === 'function') {
+						browser._objs[obj.uid].loaded = true;
+						if ('function' === typeof callback) {
 							callback(data);
 						}
 					});
 				}
-			}
-		},
+			},
 
-		/**
-		 * Handles click events on rows.
-		 *
-		 * @param {jQuery.<Event>} jQuery event object.
-		 * @return {jQuery.<HTMLElement>} The clicked row of null.
-		 */
-		rowClicked: function ($event) {
-			var row = jQuery($event.target).parent('tr');
-
-			if (row.length) {
-				var uid = row.attr('id');
-				var item = this._cachedRepositoryObjects[uid];
-				this.onSelect(item);
-				return item;
-			}
-
-			return null;
-		},
-
-		getFieldOfHeader: function ($th) {
-			return $th.find('div.ui-jqgrid-sortable').attr('id').replace('jqgh_', '');
-		},
-
-		_fetchItems: function (folder) {
-			if (!folder) {
-				return;
-			}
-
-			// When searching, we do this recursively.
-			var recursive = (typeof this._searchQuery === 'string');
-
-			this.$_list.setCaption((typeof this._searchQuery === 'string')
-				? this._i18n('Searching for') + ' "' + this._searchQuery + '" ' +
-				  this._i18n('in') + ' ' + folder.name
-				: this._i18n('Browsing') + ': ' + folder.name);
-
-			this.$_list.hide();
-			this.$_grid.find('.loading').show();
-
-			var that = this;
-
-			this.queryRepository({
-				repositoryId: folder.repositoryId,
-				inFolderId: folder.id,
-				queryString: this._searchQuery,
-				orderBy: this._orderBy,
-				skipCount: this._pagingOffset,
-				maxItems: this.pageSize,
-				objectTypeFilter: this.objectTypeFilter,
-				renditionFilter: this.renditionFilter,
-				filter: this.filter,
-				recursive: recursive
-			}, function (data, metainfo) {
-				that._processItems(data, metainfo);
-			});
-		},
-
-		setObjectTypeFilter: function (otf) {
-			this.objectTypeFilter = (typeof otf === 'string') ? [otf] : otf;
-		},
-
-		getObjectTypeFilter: function () {
-			return this.objectTypeFilter;
-		},
-
-		show: function () {
-			this.open();
-		},
-
-		open: function () {
-			if (this._isOpened) {
-				return;
-			}
-
-			this._isOpened = true;
-			var $element = this.element;
-
-			if (this.isFloating) {
-				//$element.find('.repository-browser-close-btn').show();
-				jQuery('.repository-browser-modal-overlay')
-					.stop()
-					.css({top: 0, left: 0})
-					.show();
-
-				$element.stop().show();
-
-				// recalculate sizes
-				this._onWindowResized();
-				this.$_grid.resize();
-
-				var win	= jQuery(window);
-
-				$element.css({
-					left: this.horizontalPadding / 2,
-					top: this.verticalPadding / 2
-				}).draggable({
-					handle: $element.find('.repository-browser-grab-handle')
+			/**
+			 * Gets child folders of a specified repository node.
+			 *
+			 * @param {Object}   params   Parameters for repository manager
+			 * @param {function} callback Receives fetch results
+			 */
+			getRepoChildren: function (params, callback) {
+				var browser = this;
+				browser.manager.getChildren(params, function (items) {
+					browser._processRepoResponse(items, callback);
 				});
+			},
 
-				// Wake-up animation.
-				this.$_grid.css({
-					marginTop: 0,
-					opacity: 0
-				}).animate({
-					marginTop: 0,
-					opacity: 1
-				}, 1500, 'easeOutExpo', function () {
-					// Disable filter to prevent IE<=8 filter bug.
-					if (Aloha.browser.msie) {
-						jQuery(this).add($element).css(
-							'filter',
-							'progid:DXImageTransform.Microsoft.gradient(enabled=false)'
-						);
+			/**
+			 * Pages the list according to the given direction.
+			 *
+			 * @param {string} dir
+			 */
+			_doPaging: function (dir) {
+				switch (dir) {
+				case 'first':
+					this._pagingOffset = 0;
+					break;
+				case 'end':
+					if ((this._pagingCount % this.pageSize) === 0) {
+						// item count is exactly divisible by page size
+						this._pagingOffset = this._pagingCount - this.pageSize;
+					} else {
+						this._pagingOffset = this._pagingCount - (this._pagingCount % this.pageSize);
+					}
+					break;
+				case 'next':
+					this._pagingOffset += this.pageSize;
+					break;
+				case 'prev':
+					this._pagingOffset -= this.pageSize;
+					// avoid "out of bounds" situation
+					if (this._pagingOffset < 0) {
+						this._pagingOffset = 0;
+					}
+					break;
+				}
+				this._fetchItems(this._currentFolder);
+			},
+
+			/**
+			 * Builds a row that an be rendered in the grid layout from the
+			 * given repository item.
+			 *
+			 * @param   {Object} resource Repository resource to render
+			 * @returns {Object} Object representing the rendered row such that
+			 *                   it can be used to populate the grid layout
+			 */
+			renderRowCols: function (resource) {
+				var row = {};
+				$.each(this.columns, function (colName) {
+					switch (colName) {
+					case 'icon':
+						row.icon = '<div class="repository-browser-icon repository-browser-icon-' + resource.type + '"></div>';
+						break;
+					default:
+						row[colName] = resource[colName] || '--';
 					}
 				});
-			} else {
-				$element.stop().show().css({
-					opacity: 1,
-					filter: 'progid:DXImageTransform.Microsoft.gradient(enabled=false)'
-				});
-				this._onWindowResized();
-				this.$_grid.resize();
-			}
+				return row;
+			},
 
-			++numOpenedBrowsers;
-		},
+			/**
+			 * Sorts the browser item list.
+			 *
+			 * TODO: Fix this so that sorting does toggle between desc and asc
+			 *		 when you click on a column on which we were not sorting.
+			 *
+			 * @param {Object}  colModel
+			 * @param {Element} elem
+			 */
+			_sortList: function (colModel, elem) {
+				// reset sort properties in all column headers
+				this.grid.find('span.ui-grid-ico-sort').addClass('ui-state-disabled');
 
-		close: function () {
-			if (!this._isOpened) {
-				return;
-			}
+				colModel.sortorder = ('asc' === colModel.sortorder) ? 'desc' : 'asc';
 
-			this._isOpened = false;
+				$(elem).find('span.s-ico').show()
+				       .find('.ui-icon-' + colModel.sortorder)
+				       .removeClass('ui-state-disabled');
 
-			this.element.fadeOut(250, function () {
-				jQuery(this).css('top', 0).hide();
-				if (0 === numOpenedBrowsers || 0 === --numOpenedBrowsers) {
-					jQuery('.repository-browser-modal-overlay').hide();
+				this._setSortOrder(colModel.name, colModel.sortorder)
+				    ._fetchItems(this._currentFolder);
+			},
+
+			/**
+			 * Adds new sort fields into the _orderBy array. If a field already
+			 * exists, it will be spliced from where it is and unshifted to the
+			 * end of the array.
+			 *
+			 * @param {string} by
+			 * @param {string} order
+			 */
+			_setSortOrder: function (by, order) {
+				var orderBy = this._orderBy || [];
+				var field;
+				var orderItem;
+				var found = false;
+				var i, j;
+				var sortItem = {};
+				sortItem[by] = order || 'asc';
+				for (i = 0, j = orderBy.length; i < j; i++) {
+					orderItem = orderBy[i];
+					for (field in orderItem) {
+						if (orderItem.hasOwnProperty(field) && field === by) {
+							orderBy.splice(i, 1);
+							orderBy.unshift(sortItem);
+							found = true;
+							break;
+						}
+					}
+					if (found) {
+						break;
+					}
 				}
-			});
-		},
+				if (found) {
+					orderBy.unshift(sortItem);
+				}
+				this._orderBy = orderBy;
+				return this;
+			},
 
-		/**
-		 * Refreshes the browser.
-		 * TODO: Should we also refresh the tree?
-		 */
-		refresh: function () {
-			// Refresh the list, if we have a current folder.
-			if (this._currentFolder) {
+			/**
+			 * Calls `onSelect()` when a list row is clicked.
+			 *
+			 * @param  {jQuery.<Event>}   event
+			 * @return {jQuery.<Element>} Element at clicked row of null
+			 */
+			rowClicked: function (event) {
+				var row = $(event.target).parent('tr');
+				var item = null;
+				if (row.length > 0) {
+					var uid = row.attr('id');
+					item = this._objs[uid];
+					this.onSelect(item);
+				}
+				return item;
+			},
+
+			/**
+			 * Queries the repository manager for items contained in folder that
+			 * was clicked.
+			 *
+			 * @param {jQuery.<Element>} $node List item
+			 */
+			treeNodeSelected: function ($node) {
+				var folder = this._getObjectFromCache($node);
+				if (folder) {
+					this._pagingOffset = 0;
+					this._clearSearch();
+					this._currentFolder = folder;
+					this._fetchItems(folder);
+					this.folderSelected(folder);
+				}
+			},
+
+			/**
+			 * Sends the search query to the server.
+			 */
+			_triggerSearch: function () {
+				var $search = this.grid.find('input.repository-browser-search-field');
+				var value = $search.val();
+				if ('' === value || $search.hasClass('repository-browser-search-field-empty')) {
+					value = null;
+				} else if ('' === value) {
+					value = null;
+				}
+				this._pagingOffset = 0;
+				this._searchQuery = value;
 				this._fetchItems(this._currentFolder);
-			}
-		},
+			},
 
-		/**
-		 * Gets called when a folder in the tree is opened.
-		 *
-		 * @param {jQuery.<HTMLElement>} $node Tree node.
-		 */
-		folderOpened: function($node) {
-			var repobrowser = this;
-			var folder = cacheRead(repobrowser, getIdFromTreeNode($node));
-			if (folder) {
-				repobrowser.repositoryManager.folderOpened(folder);
-			}
-		},
+			/**
+			 * Updates the object type filter option.
+			 *
+			 * @Obsolete?
+			 * @param {Element} th
+			 */
+			getFieldOfHeader: function (th) {
+				return th.find('div.ui-jqgrid-sortable').attr('id').replace('jqgh_', '');
+			},
 
-		/**
-		 * This function gets called when a folder in the tree is closed
-		 *
-		 * @param {object} obj	folder data object
-		 */
-		folderClosed: function(obj) {
-			var folder = this._getObjectFromCache(obj);
+			/**
+			 * Updates the object type filter option.
+			 *
+			 * @param {string} otf
+			 */
+			setObjectTypeFilter: function (otf) {
+				this.objectTypeFilter = ('string' === typeof otf) ? [otf] : otf;
+			},
 
-			if (folder) {
-				if (this.repositoryManager) {
-					this.repositoryManager.folderClosed(folder);
+			/**
+			 * Returns the value of the object type filter.
+			 */
+			getObjectTypeFilter: function () {
+				return this.objectTypeFilter;
+			},
+
+			/**
+			 * Shows this repository browwser instance.
+			 */
+			show: function () {
+				if (this.opened) {
+					return;
 				}
-			}
-		},
+				this.opened = true;
 
-		/**
-		 * This function gets called when a folder in the tree is selected
-		 *
-		 * @param {object} obj	folder data object
-		 */
-		folderSelected: function(obj) {
-			if (this.repositoryManager) {
-				this.repositoryManager.folderSelected(obj);
-			}
-		},
+				var browser = this;
+				var $elem = browser.element;
 
-		/**
-		 * Get the selected folder
-		 * @return {object} selected folder or undefined
-		 */
-		getSelectedFolder: function () {
-			if (this.repositoryManager) {
-				if (typeof this.repositoryManager.getSelectedFolder === 'function') {
-					return this.repositoryManager.getSelectedFolder();
-				}
-			}
-		},
+				if (browser.isFloating) {
+					showOverlay();
 
-		/**
-		 * Adapt the page size.
-		 * @return true if the page size was actually changed, false if not
-		 */
-		_adaptPageSize: function () {
-			var listHeight, newPageSize, container;
+					$elem.stop().show().css({
+						left : $window.scrollLeft() + (browser.padding / 2),
+						top  : $window.scrollTop()  + (browser.padding / 2)
+					}).draggable({
+						handle : $elem.find('.repository-browser-grab-handle')
+					});
 
-			// if this is off, don't do anything
-			if (!this.adaptPageSize || !this.$_list || !this.rowHeight) {
-				return false;
-			}
-
-			// get the current height of the container
-			container = this.$_grid.find('.ui-jqgrid-bdiv');
-			// reduce by 20 px to leave place for a scrollbar
-			listHeight = container.innerHeight() - 20;
-
-			// do the math
-			if (listHeight) {
-				newPageSize = Math.floor(listHeight / this.rowHeight);
-				if (newPageSize <= 0) {
-					newPageSize = 1;
-				}
-				if (newPageSize !== this.pageSize) {
-					this.pageSize = newPageSize;
-					return true;
+					// Wake-up animation
+					browser.grid.css({
+						marginTop : 0,
+						opacity   : 0
+					}).animate({
+						marginTop : 0,
+						opacity   : 1
+					}, 1500, 'easeOutExpo', function () {
+						// Disable filter to prevent IE<=8 filter bug
+						if ($.browser.msie) {
+							$(this).add($elem).css(
+								'filter',
+								'progid:DXImageTransform.Microsoft.gradient(enabled = false)'
+							);
+						}
+					});
 				} else {
-					return false;
+					$elem.stop().show().css({
+						opacity : 1,
+						filter  : 'progid:DXImageTransform.Microsoft.gradient(enabled = false)'
+					});
 				}
-			} else {
-				return false;
-			}
-		}
-	});
+				browser._onWindowResized();
+				browser.element.resize();
+				numOpenedBrowsers++;
+			},
 
-	return RepositoryBrowser;
-});
-define('repository-browser-i18n-de', [], function () {
-	'use strict';
-	return {
-		'Browsing': 'Durchsuchen',
-		'Close': 'Schließen',
-		'in': 'in',
-		'Input search text...': 'Suchtext einfügen...',
-		'numerous': 'zahlreiche',
-		'of': 'von',
-		'Repository Browser': 'Repository Browser',
-		'Search': 'Suchen',
-		'Searching for': 'Suche nach',
-		'Viewing': 'Anzeige',
-		'button.switch-metaview.tooltip': 'Zwischen Metaansicht und normaler Ansicht umschalten'
-	};
-});
-define('repository-browser-i18n-en', [], function () {
-	'use strict';
-	return {
-		'Browsing': 'Browsing',
-		'Close': 'Close',
-		'in': 'in',
-		'Input search text...': 'Input search text...',
-		'numerous': 'numerous',
-		'of': 'of',
-		'Repository Browser': 'Repository Browser',
-		'Search': 'Search',
-		'Searching for': 'Searching for',
-		'Viewing': 'Viewing',
-		'button.switch-metaview.tooltip': 'Switch between meta and normal view'
-	};
-});
+			open: function () {
+				this.show();
+			},
+
+			/**
+			 * Hides this repository browser instance.
+			 */
+			close: function () {
+				if (!this.opened) {
+					return;
+				}
+				this.opened = false;
+				this.element.fadeOut(250, function () {
+					$(this).css('top', 0).hide();
+					if (0 === numOpenedBrowsers || 0 === --numOpenedBrowsers) {
+						hideOverlay();
+					}
+				});
+			},
+
+			/**
+			 * Refreshes the browser's list by refetching the items of the
+			 * current folder.
+			 */
+			refresh: function () {
+				if (this._currentFolder) {
+					this._fetchItems(this._currentFolder);
+				}
+			},
+
+			/**
+			 * This function gets called when a folder in the tree is opened.
+			 *
+			 * @param {Object} obj Folder data object
+			 */
+			folderOpened: function (obj) {
+				var folder = this._getObjectFromCache(obj);
+				if (folder) {
+					this.manager.folderOpened(folder);
+				}
+			},
+
+			/**
+			 * This function gets called when a folder in the tree is closed.
+			 *
+			 * @param {Object} obj Folder data object
+			 */
+			folderClosed: function (obj) {
+				var folder = this._getObjectFromCache(obj);
+				if (folder) {
+					this.manager.folderClosed(folder);
+				}
+			},
+
+			/**
+			 * This function gets called when a folder in the tree is selected.
+			 *
+			 * @param {object} obj Folder data object
+			 */
+			folderSelected: function (obj) {
+				this.manager.folderSelected(obj);
+			},
+
+			/**
+			 * Gets the selected folder.
+			 *
+			 * @return {object} selected Folder or undefined
+			 */
+			getSelectedFolder: function () {
+				if ('function' === typeof this.manager.getSelectedFolder) {
+					return this.manager.getSelectedFolder();
+				}
+			},
+
+			destroy: function () {},
+
+			/**
+			 * User should implement this according to their needs
+			 *
+			 * @param {Object} item Repository resource for a row
+			 */
+			onSelect: function (item) {},
+
+			/**
+			 * Handle repository timeouts
+			 */
+			handleTimeout: function () {}
+		});
+
+		$(createOverlay);
+
+		return Browser;
+	}
+
+	if ('function' === typeof define) {
+		define('repository-browser-i18n-de', [], function () {
+			return {
+				'Browsing'                       : 'Durchsuchen',
+				'Close'                          : 'Schließen',
+				'in'                             : 'in',
+				'Input search text...'           : 'Suchtext einfügen...',
+				'numerous'                       : 'zahlreiche',
+				'of'                             : 'von',
+				'Repository Browser'             : 'Repository Browser',
+				'Search'                         : 'Suchen',
+				'Searching for'                  : 'Suche nach',
+				'Viewing'                        : 'Anzeige',
+				'button.switch-metaview.tooltip' : 'Zwischen Metaansicht und normaler Ansicht umschalten'
+			};
+		});
+		define('repository-browser-i18n-en', [], function () {
+			return {
+				'Browsing'                       : 'Browsing',
+				'Close'                          : 'Close',
+				'in'                             : 'in',
+				'Input search text...'           : 'Input search text...',
+				'numerous'                       : 'numerous',
+				'of'                             : 'of',
+				'Repository Browser'             : 'Repository Browser',
+				'Search'                         : 'Search',
+				'Searching for'                  : 'Searching for',
+				'Viewing'                        : 'Viewing',
+				'button.switch-metaview.tooltip' : 'Switch between meta and normal view'
+			};
+		});
+		define('RepositoryBrowser', [
+			'jquery',
+			'Class',
+			'PubSub',
+			'repository-browser-i18n-' + (
+				(window && window.__DEPS__ && window.__DEPS__.lang) || 'en'
+			),
+			'jstree',
+			'jqgrid',
+			'jquery-layout'
+		], initialize);
+	} else {
+		window.Browser = initialize(
+			window.jQuery,
+			window.Class,
+			{pub: function () {}} // PubSub noop interface
+		);
+	}
+}());

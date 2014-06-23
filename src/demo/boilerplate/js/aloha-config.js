@@ -135,16 +135,9 @@
 						'oneTab': true
 					}
 				},
-				'fixedAspectRatio' : false,
-				'maxWidth'         : 600,
-				'minWidth'         : 20,
-				'maxHeight'        : 600,
-				'minHeight'        : 20,
-				'globalselector'   : '.global',
-				'ui': {
-					'oneTab' : true,
-					'align'  : false,
-					'margin' : false
+				editables: {
+					// deactivae image plugin for editable with id #top-text
+					'#top-text' : []
 				}
 			},
 			cite: {

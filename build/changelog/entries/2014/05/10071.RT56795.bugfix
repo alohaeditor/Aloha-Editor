@@ -1,0 +1,1 @@
+characterpicker-plugin: On screens with lower resolutions the list for picking special characters was cut off at the window borders. This has been fixed.

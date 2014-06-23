@@ -1,0 +1,9 @@
+{
+  "version": "0.25.7",
+  "date": "12.05.2014",
+  "changeLogEntryFileNames": [
+    "10067.bugfix",
+    "10071.RT56795.bugfix"
+  ],
+  "genericProperties": {}
+}
