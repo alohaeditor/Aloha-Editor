@@ -1,0 +1,3 @@
+Editable configuration was not applied if a editable was an input or a textarea.
+
+Block plugin had a dependency to Table plugin and this made a javascript exception thrown if the Table plugin was not included. This dependency has been removed.

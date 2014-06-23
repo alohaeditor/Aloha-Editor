@@ -408,7 +408,7 @@ define('format/format-plugin', [
 
 	function changeMarkup(button) {
 		Selection.changeMarkupOnSelection(jQuery('<' + button + '>'));
-		if (Aloha.settings.plugins.format.checkHeadingHierarchy === true) {
+		if (Aloha.settings.plugins.format && Aloha.settings.plugins.format.checkHeadingHierarchy === true) {
 			checkHeadingHierarchy(this.formatOptions);
 		}
 	}
