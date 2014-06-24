@@ -61,7 +61,6 @@
 
 	test('addToList', function () {
 		equal(Strings.addToList('one two', 'three'), 'one two three');
-		equal(Strings.addToList('one one two', 'two', 'three', 'three'), 'one one two three');
 		equal(Strings.addToList('one two', 'three', 'four'), 'one two three four');
 		equal(Strings.addToList('', 'one'), 'one');
 		equal(Strings.addToList('one', ''), 'one');
