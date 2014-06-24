@@ -219,7 +219,6 @@ define([
 	 * Splits the given boundary's ancestors until the boundary position
 	 * returns true when applyied to the given predicate.
 	 *
-	 * @private
 	 * @param  {Boundary}                    boundary
 	 * @param  {function(Boundary):Boundary} predicate
 	 * @return {Boundary}
