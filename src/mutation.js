@@ -220,7 +220,7 @@ define([
 	 * returns true when applyied to the given predicate.
 	 *
 	 * @param  {Boundary}                    boundary
-	 * @param  {function(Boundary):Boundary} predicate
+	 * @param  {function(Boundary):boolean} predicate
 	 * @return {Boundary}
 	 */
 	function splitBoundaryUntil(boundary, predicate) {
