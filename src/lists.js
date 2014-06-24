@@ -282,6 +282,7 @@ define([
 		}
 		Dom.moveAfter(lines, li);
 		Dom.remove(li);
+		return lines;
 	}
 
 	/**
@@ -295,19 +296,37 @@ define([
 			return !Html.isListItem(node) && !Dom.isEditingHost(node.parentNode);
 		};
 		var sc = Boundaries.container(boundaries[0]);
+		var so = Boundaries.offset(boundaries[0]);
 		var ec = Boundaries.container(boundaries[1]);
+		var eo = Boundaries.offset(boundaries[1]);
 		var start = Dom.upWhile(sc, nearestItem);
+		var end = Dom.upWhile(ec, nearestItem);
+		var items;
+		var lines;
 		if (Html.isListItem(start)) {
-			Dom.nodeAndNextSiblings(start).filter(Html.isListItem).forEach(unwrapItem);
+			items = Dom.nodeAndNextSiblings(start).filter(Html.isListItem);
+			lines = items.reduce(function (lines, node) {
+				return lines.concat(unwrapItem(node));
+			}, []);
+			if (Html.isListItem(sc)) {
+				sc = lines[0];
+				so = 0;
+			}
 		}
 		if (sc === ec) {
 			return boundaries;
 		}
-		var end = Dom.upWhile(ec, nearestItem);
 		if (Html.isListItem(end)) {
-			Dom.nodeAndPrevSiblings(end).filter(Html.isListItem).forEach(unwrapItem);
+			items = Dom.nodeAndNextSiblings(end).filter(Html.isListItem);
+			lines = items.reduce(function (lines, node) {
+				return lines.concat(unwrapItem(node));
+			}, []);
+			if (Html.isListItem(ec)) {
+				ec = lines[0];
+				eo = 0;
+			}
 		}
-		return boundaries;
+		return [Boundaries.create(sc, so), Boundaries.create(ec, eo)];
 	}
 
 	return {
