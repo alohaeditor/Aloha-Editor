@@ -308,8 +308,7 @@ define([
 	 */
 	function splitToBreakingContainer(boundary) {
 		return Mutation.splitBoundaryUntil(boundary, function (boundary) {
-			var node = Boundaries.container(boundary);
-			return !node || isBreakingContainer(node);
+			return isBreakingContainer(Boundaries.container(boundary));
 		});
 	}
 
