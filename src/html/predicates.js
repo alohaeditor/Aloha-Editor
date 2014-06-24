@@ -293,15 +293,41 @@ define([], function Predicates() {
 		return !!TEXT_LEVEL_SEMANTIC_ELEMENTS[node.nodeName];
 	}
 
+	/**
+	 * Heading tag names.
+	 *
+	 * @private
+	 * @type {Object.<string, boolean>}
+	 */
+	var HEADINGS = {
+		'H1' : true,
+		'H2' : true,
+		'H3' : true,
+		'H4' : true,
+		'H5' : true,
+		'H6' : true
+	};
+
+	/**
+	 * Whether the given node is a heading element.
+	 *
+	 * @param  {Node} node
+	 * @return {boolean}
+	 */
+	function isHeading(node) {
+		return !!HEADINGS[node.nodeName];
+	}
+
 	return {
-		isVoidNode              : isVoidNode,
 		isBlockNode             : isBlockNode,
-		isInlineNode            : isInlineNode,
-		isTextLevelSemanticNode : isTextLevelSemanticNode,
-		isListItem              : isListItem,
-		isListContainer         : isListContainer,
-		isTableContainer        : isTableContainer,
 		isGroupContainer        : isGroupContainer,
-		isGroupedElement        : isGroupedElement
+		isGroupedElement        : isGroupedElement,
+		isHeading               : isHeading,
+		isInlineNode            : isInlineNode,
+		isListContainer         : isListContainer,
+		isListItem              : isListItem,
+		isTableContainer        : isTableContainer,
+		isTextLevelSemanticNode : isTextLevelSemanticNode,
+		isVoidNode              : isVoidNode
 	};
 });

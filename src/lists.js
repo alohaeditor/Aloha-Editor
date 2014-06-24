@@ -34,14 +34,14 @@ define([
 	 * @param  {Node} node
 	 * @return {boolean}
 	 */
-	function isInlineNode(node) {
+	function hasInlineStyle(node) {
 		return !Html.hasLinebreakingStyle(node)
 		    && !(node.parentNode && Dom.isEditingHost(node.parentNode));
 	}
 
 	/**
 	 * Reduces a list of nodes (if any are visible) into an LI element among the
-	 * given list.
+	 * given list by moving nodes into LI elements.
 	 *
 	 * This function is to be used in a reduce() call.
 	 *
@@ -51,6 +51,7 @@ define([
 	 * @return {Array.<Element>}
 	 */
 	function reduceGroup(list, children) {
+		list = list.concat();
 		var visible = children.filter(Html.isRendered);
 		if (visible.length > 0) {
 			var li = visible[0].ownerDocument.createElement('li');
@@ -64,6 +65,9 @@ define([
 	 * Recursively removes the given node and its ancestors if they are
 	 * invisible.
 	 *
+	 * Empty list items will be removed even though it would be considered
+	 * visible in general cases.
+	 *
 	 * @see build
 	 * @private
 	 * @param  {Node} node
@@ -76,11 +80,18 @@ define([
 				boundaries = Mutation.removeNode(node, boundaries);
 			},
 			function (node) {
+				if (Html.isListItem(node) && 0 === Dom.children(node).length) {
+					return false;
+				}
 				return !node.parentNode
 				    || Dom.isEditingHost(node)
 				    || Html.isRendered(node);
 			}
 		);
+	}
+
+	function isCollectLimit(node) {
+		return !Html.isListItem(node) && Html.hasLinebreakingStyle(node);
 	}
 
 	/**
@@ -94,13 +105,13 @@ define([
 	 * @return {Array.<Node>}
 	 */
 	function collectSiblings(start, end) {
-		var nodes = Dom.prevSiblings(start, Html.hasLinebreakingStyle).concat(start);
+		var nodes = Dom.prevSiblings(start, isCollectLimit).concat(start);
 		if (start !== end) {
 			nodes = nodes.concat(Dom.nextSiblings(start, function (node) {
 				return node === end;
 			}), end);
 		}
-		return nodes.concat(Dom.nextSiblings(end, Html.hasLinebreakingStyle));
+		return nodes.concat(Dom.nextSiblings(end, isCollectLimit));
 	}
 
 	/**
@@ -127,7 +138,10 @@ define([
 		var node;
 		while (nodes.length > 0) {
 			node = nodes.shift();
-			if (Html.hasLinebreakingStyle(node) && !Html.isGroupContainer(node) && !Html.isVoidType(node)) {
+			var canUnwrap = !Html.isGroupContainer(node)
+			             && !Html.isVoidType(node)
+			             && !Html.isHeading(node);
+			if (Html.hasLinebreakingStyle(node) && canUnwrap) {
 				collection = Dom.children(node);
 				parents.push(node);
 			} else {
@@ -151,18 +165,17 @@ define([
 	 * Builds a list of type `type` using the given list of nodes.
 	 *
 	 * @private
-	 * @param  {string}           type
-	 * @param  {Array.<Node>}     nodes
-	 * @param  {Array.<Boundary>} boundaries
-	 * @return {Array.<Boundary>}
+	 * @param  {string}       type
+	 * @param  {Array.<Node>} nodes
 	 */
-	function build(type, nodes, boundaries) {
+	function build(type, nodes) {
+		console.log(nodes);
 		if (0 === nodes.length) {
-			return boundaries;
+			return;
 		}
-		var node = Dom.upWhile(nodes[0], isInlineNode);
-		if (Html.isListContainer(node)) {
-			return boundaries;
+		var node = Dom.upWhile(nodes[0], hasInlineStyle);
+		if (Html.isListItem(node) && !Dom.prevSibling(node)) {
+			node = node.parentNode;
 		}
 		Assert.assert(
 			Content.allowsNesting(node.parentNode.nodeName, type),
@@ -173,23 +186,21 @@ define([
 		Dom.insert(list, node);
 		Dom.move(grouping.groups.reduce(reduceGroup, []), list);
 		grouping.parents.forEach(removeInvisibleNodes);
-		return boundaries;
 	}
 
 	/**
 	 * Creates a list of the given type.
 	 *
-	 * @param  {string}           type Either 'ul' or 'ol'
-	 * @param  {Array.<Boundary>} boundaries
+	 * @param  {string}   type Either 'ul' or 'ol'
+	 * @param  {Boundary} start
+	 * @param  {Boundary} end
 	 * @return {Array.<Boundary>}
 	 */
-	function format(type, boundaries) {
+	function format(type, start, end) {
 		Assert.assert(
 			Html.isListContainer({nodeName: type.toUpperCase()}),
 			'Lists.format#' + type + ' is not a valid list container'
 		);
-		var start = boundaries[0];
-		var end = boundaries[1];
 		var node;
 		if (Boundaries.equals(start, end)) {
 			node = Dom.upWhile(Boundaries.nextNode(start), function (node) {
@@ -197,7 +208,8 @@ define([
 				    && !Html.hasLinebreakingStyle(node)
 				    && !Dom.isEditingHost(node.parentNode);
 			});
-			return build(type, [node], boundaries);
+			build(type, collectSiblings(node, node));
+			return [start, end];
 		}
 		var cac = Boundaries.commonContainer(start, end);
 		if (!Html.hasLinebreakingStyle(cac)) {
@@ -206,7 +218,8 @@ define([
 				    && !Html.hasLinebreakingStyle(node.parentNode)
 				    && !Dom.isEditingHost(node.parentNode);
 			});
-			return build(type, collectSiblings(node, node), boundaries);
+			build(type, collectSiblings(node, node));
+			return [start, end];
 		}
 		var isLimit = function (node) {
 			return node !== cac && (node.parentNode && node.parentNode !== cac);
@@ -230,7 +243,8 @@ define([
 		} else if (endNode === cac) {
 			endNode = startNode;
 		}
-		return build(type, collectSiblings(startNode, endNode), boundaries);
+		build(type, collectSiblings(startNode, endNode));
+		return [start, end];
 	}
 
 	/**
@@ -286,41 +300,48 @@ define([
 	}
 
 	/**
+	 * Unwraps all LI elements in the given collection of siblings.
+	 *
+	 * @private
+	 * @param  {Array.<Node>} nodes
+	 * @return {Array.<Node>} List of unwrapped nodes
+	 */
+	function unwrapItems(nodes) {
+		return nodes.filter(Html.isListItem).reduce(function (lines, node) {
+			return lines.concat(unwrapItem(node));
+		}, []);
+	}
+
+	/**
 	 * Removes list formatting around the given boundaries.
 	 *
-	 * @param  {Array.<Boundary>} boundaries
+	 * @param  {Boundary} start
+	 * @param  {Boundary} end
 	 * @return {Array.<Boundary>}
 	 */
-	function unformat(boundaries) {
+	function unformat(start, end) {
 		var nearestItem = function (node) {
 			return !Html.isListItem(node) && !Dom.isEditingHost(node.parentNode);
 		};
-		var sc = Boundaries.container(boundaries[0]);
-		var so = Boundaries.offset(boundaries[0]);
-		var ec = Boundaries.container(boundaries[1]);
-		var eo = Boundaries.offset(boundaries[1]);
-		var start = Dom.upWhile(sc, nearestItem);
-		var end = Dom.upWhile(ec, nearestItem);
-		var items;
+		var sc = Boundaries.container(start);
+		var so = Boundaries.offset(start);
+		var ec = Boundaries.container(end);
+		var eo = Boundaries.offset(end);
+		var startLi = Dom.upWhile(sc, nearestItem);
+		var endLi = Dom.upWhile(ec, nearestItem);
 		var lines;
-		if (Html.isListItem(start)) {
-			items = Dom.nodeAndNextSiblings(start).filter(Html.isListItem);
-			lines = items.reduce(function (lines, node) {
-				return lines.concat(unwrapItem(node));
-			}, []);
+		if (Html.isListItem(startLi)) {
+			lines = unwrapItems(Dom.nodeAndNextSiblings(startLi));
 			if (Html.isListItem(sc)) {
 				sc = lines[0];
 				so = 0;
 			}
 		}
 		if (sc === ec) {
-			return boundaries;
+			return [Boundaries.create(sc, so), end];
 		}
-		if (Html.isListItem(end)) {
-			items = Dom.nodeAndNextSiblings(end).filter(Html.isListItem);
-			lines = items.reduce(function (lines, node) {
-				return lines.concat(unwrapItem(node));
-			}, []);
+		if (Html.isListItem(endLi)) {
+			lines = unwrapItems(Dom.nodeAndNextSiblings(endLi));
 			if (Html.isListItem(ec)) {
 				ec = lines[0];
 				eo = 0;

@@ -58,15 +58,16 @@ define([
 		isAtStart                 : Traversing.isAtStart,
 		isAtEnd                   : Traversing.isAtEnd,
 
-		isVoidNode                : Predicates.isVoidNode,
 		isBlockNode               : Predicates.isBlockNode,
-		isInlineNode              : Predicates.isInlineNode,
-		isTextLevelSemanticNode   : Predicates.isTextLevelSemanticNode,
-		isListItem                : Predicates.isListItem,
-		isListContainer           : Predicates.isListContainer,
-		isTableContainer          : Predicates.isTableContainer,
 		isGroupContainer          : Predicates.isGroupContainer,
 		isGroupedElement          : Predicates.isGroupedElement,
+		isHeading                 : Predicates.isHeading,
+		isInlineNode              : Predicates.isInlineNode,
+		isListContainer           : Predicates.isListContainer,
+		isListItem                : Predicates.isListItem,
+		isTableContainer          : Predicates.isTableContainer,
+		isTextLevelSemanticNode   : Predicates.isTextLevelSemanticNode,
+		isVoidNode                : Predicates.isVoidNode,
 
 		__ : {
 			isRenderedBr       : Mutation.isRenderedBr,
