@@ -1,5 +1,5 @@
 /**
- * link.js is part of Aloha Editor project http://aloha-editor.org
+ * links.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
@@ -7,78 +7,215 @@
  */
 define([
 	'dom',
-	'link/link-selection',
-	'link/link-remove',
+	'html',
+	'ranges',
+	'arrays',
+	'mutation',
+	'boundaries',
 	'link/link-util',
-	'ranges'
+	'link/link-selection'
 ], function (
 	Dom,
-	LinkSelection,
-	LinkRemove,
+	Html,
+	Ranges,
+	Arrays,
+	Mutation,
+	Boundaries,
 	LinkUtil,
-	Ranges
+	LinkSelection
 ) {
 	'use strict';
 
 	/**
-	 * Creates a link in the actual selection.
-	 * @param {string} href
-	 * @param {Document} doc
-	 */
-	function createLink(href, doc) {
-		createLinkFromRange(href, Ranges.get(doc), doc);
-	}
-
-	/**
 	 * Checks if the range is valid for create a link.
-	 * @param {Range} range
-	 * @returns {boolean}
+	 *
+	 * @param  {!Range} range
+	 * @return {boolean}
 	 */
 	function isValidRangeForCreateLink(range) {
 		return !range.collapsed && (!range.textContent || range.textContent.trim().length === 0);
 	}
 
 	/**
-	 * Creates a link in the selection in the range. If there is no selection,
-	 * the link will no be created.
-	 * @param {string} href
-	 * @param {Range} range
-	 * @param {Document} doc
+	 * Creates anchor elements between the given boundaries.
+	 *
+	 * @private
+	 * @param  {!Boundary} start
+	 * @param  {!Boundary} end
+	 * @return {Array.<Element>}
 	 */
-	function createLinkFromRange(href, range, doc) {
-		if (!isValidRangeForCreateLink(range)) {
-			return;
+	function createAnchors(start, end) {
+		var doc = Boundaries.document(start);
+		var groups = LinkSelection.collectLinkableNodeGroups(start, end);
+		return groups.reduce(function (anchors, group) {
+			var anchor = doc.createElement('a');
+			Dom.insert(anchor, group[0]);
+			Dom.move(group, anchor);
+			return anchors.concat(anchor);
+		}, []);
+	}
+
+	/**
+	 * Creates links from the content between the given boundaries.
+	 *
+	 * If the boundaries represent a collapsed selection (visually equal), then
+	 * the a link will be created at the boundary position with href as both the
+	 * anchor text and the value of the href attribute.
+	 *
+	 * @todo
+	 * - This function should return a list of newly created anchor elements.
+	 * - This function also needs to return the modified boundaries.
+	 *
+	 * @param  {string}    href
+	 * @param  {!Boundary} start
+	 * @param  {!Boundary} end
+	 * @return {Array.<Element>}
+	 */
+	function create(href, start, end) {
+		var anchors;
+		if (Html.isBoundariesEqual(start, end)) {
+			var a = Boundaries.document(start).createElement('a');
+			a.innerHTML = href;
+			Mutation.insertNodeAtBoundary(a, start, true);
+			anchors = [a];
+		} else {
+			anchors = createAnchors(start, end);
 		}
-
-		var anchors = LinkSelection.createAnchorsInRange(range, doc);
-
-		anchors.forEach(function(anchor) {
+		anchors.forEach(function (anchor) {
 			Dom.setAttr(anchor, 'href', href);
 		});
+		return anchors;
 	}
 
 	/**
-	 * Removes links from selection.
-	 * @param {Document} doc
+	 * Checks whether the given nodes are equal according to their type and
+	 * attributes.
+	 *
+	 * @private
+	 * @see    http://www.w3.org/TR/DOM-Level-3-Core/core.html#Node3-isEqualNode
+	 * @param  {!Node} src
+	 * @param  {!Node} dst
+	 * @return {boolean}
 	 */
-	function removeLink(doc) {
-		removeLinkFromRange(Ranges.get(doc), doc);
+	function isEqualNodeShallow(src, dst) {
+		return Dom.cloneShallow(src).isEqualNode(Dom.cloneShallow(dst));
 	}
 
 	/**
-	 * Removes links from `range`.
-	 * @param {Range} range
-	 * @param {Document} doc
+	 * Checks two nodes are are compatible to be joined.
+	 *
+	 * @private
+	 * @param  {!Node} src
+	 * @param  {!Node} dst
+	 * @return {boolean}
 	 */
-	function removeLinkFromRange(range, doc) {
-		LinkRemove.removeLinkFromRange(range, doc);
+	function areJoinable(src, dst) {
+		return !Dom.isTextNode(src) && isEqualNodeShallow(src, dst);
+	}
+
+	/**
+	 * Joins two nodes if they are compatible.
+	 *
+	 * @private
+	 * @param {!Node} src
+	 * @param {!Node} dst
+	 */
+	function joinNodes(src, dst) {
+		var last;
+		while (src && dst && areJoinable(src, dst)) {
+			last = LinkUtil.nextRenderedNode(src.firstChild);
+			dst.appendChild(last);
+			Dom.remove(src);
+			src = last;
+			dst = dst.firstChild;
+		}
+	}
+
+	/**
+	 * Removes link anchor.
+	 *
+	 * @private
+	 * @param {!Node} anchor
+	 */
+	function removeIfLink(anchor) {
+		if (!LinkUtil.isAnchorNode(anchor)) {
+			return;
+		}
+		var firstChild = LinkUtil.nextRenderedNode(anchor.firstChild);
+		var prevAnchorSibling = LinkUtil.prevRenderedNode(anchor.previousSibling);
+		joinNodes(firstChild, prevAnchorSibling);
+		var lastChild = LinkUtil.prevRenderedNode(anchor.lastChild);
+		var nextAnchorSibling = LinkUtil.nextRenderedNode(anchor.nextSibling);
+		joinNodes(nextAnchorSibling, lastChild);
+		Dom.removeShallow(anchor);
+	}
+
+	/**
+	 * Removes children links if exists inside `node`.
+	 *
+	 * @private
+	 * @param {!Node} node
+	 */
+	function removeChildrenLinks(node) {
+		if (Dom.isElementNode(node)) {
+			Arrays.coerce(node.querySelectorAll('a')).forEach(removeIfLink);
+		}
+	}
+
+	/**
+	 * Removes parent links if exists and returns the next node which should be
+	 * analyze.
+	 *
+	 * @private
+	 * @param  {Node} next
+	 * @return {Node}
+	 */
+	function removeParentLinksAndGetNext(next) {
+		var parent;
+		while (!next.nextSibling && next.parentNode) {
+			parent = next.parentNode;
+			removeIfLink(next);
+			next = parent;
+		}
+		var nextSibling = next.nextSibling;
+		removeIfLink(next);
+		return nextSibling;
+	}
+
+	/**
+	 * Removes any links in the content between the given boundaries.
+	 *
+	 * @param {!Boundary} start
+	 * @param {!Boundary} end
+	 */
+	function remove(start, end) {
+		var startBoundary = LinkUtil.boundaryLinkable(
+			Boundaries.container(start),
+			Boundaries.offset(start)
+		);
+		var endBoundary = LinkUtil.boundaryLinkable(
+			Boundaries.container(end),
+			Boundaries.offset(end)
+		);
+		var sc = Boundaries.container(startBoundary);
+		var ec = Boundaries.container(endBoundary);
+		removeChildrenLinks(sc);
+		removeChildrenLinks(ec);
+		var next = sc;
+		while (next && !Dom.isSameNode(next, ec)) {
+			next = removeParentLinksAndGetNext(next);
+			if (next) {
+				removeChildrenLinks(next);
+			}
+		}
+		while (ec && ec.parentNode && LinkUtil.isLinkable(ec)) {
+			removeIfLink(ec);
+			ec = ec.parentNode;
+		}
 	}
 
 	return {
-		createLink: createLink,
-		createLinkFromRange: createLinkFromRange,
-
-		removeLink: removeLink,
-		removeLinkFromRange: removeLinkFromRange
+		create: create,
+		remove: remove
 	};
 });

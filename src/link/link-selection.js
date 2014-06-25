@@ -9,6 +9,7 @@ define([
 	'arrays',
 	'boundaries',
 	'dom',
+	'ranges',
 	'editing',
 	'html',
 	'mutation',
@@ -17,6 +18,7 @@ define([
 	Arrays,
 	Boundaries,
 	Dom,
+	Ranges,
 	Editing,
     Html,
     Mutation,
@@ -26,27 +28,27 @@ define([
 
 	/**
 	 * Clones `node` and append `child`.
-	 * @param node
-	 * @param child
-	 * @return {Node|*}
+	 *
+	 * @priviate
+	 * @param  {!Node} node
+	 * @param  {!Node} child
+	 * @return {Node}
 	 */
 	function cloneAndAppend(node, child) {
-		var clonedNode = Dom.cloneShallow(node);
-
-		node.insertBefore(clonedNode, child);
-
-		clonedNode.appendChild(child);
-
-		return clonedNode;
+		var clone = Dom.cloneShallow(node);
+		node.insertBefore(clone, child);
+		clone.appendChild(child);
+		return clone;
 	}
 
 	/**
 	 * Splits `node` by 'offset' and wraps to match unbalance node.
 	 *
-	 * @param node
-	 * @param offset
-	 * @param reachParent
-	 * @return {{after: Node, before: !Node}}
+	 * @private
+	 * @param  {!Node}    node
+	 * @param  {string}   offset
+	 * @param  {!Element} reachParent
+	 * @return {Object.<string, Node>} {after: Node, before: Node}
 	 */
 	function splitTextNode(node, offset, reachParent) {
 		if (LinkUtil.isTextNodeSelectionAtEnd(node, offset)) {
@@ -88,44 +90,41 @@ define([
 
 	/**
 	 * Splits node, append `child` and insert `node` before `ref`.
-	 * @param {Node} node
-	 * @param {Node} child
-	 * @param {Node} ref
+	 *
+	 * @private
+	 * @param   {!Node} node
+	 * @param   {!Node} child
+	 * @param   {!Node} ref
 	 * @returns {Node}
 	 */
 	function splitElement(node, child, ref) {
-		var clonedNode = Dom.cloneShallow(node);
-
-		node.parentNode.insertBefore(clonedNode, ref);
-
-		clonedNode.appendChild(child);
-		return clonedNode;
+		var clone = Dom.cloneShallow(node);
+		node.parentNode.insertBefore(clone, ref);
+		clone.appendChild(child);
+		return clone;
 	}
 
 	/**
 	 * Gets first node and splits is necessary.
-	 * @param {Node} container
-	 * @param {Node} reachParent
+	 *
+	 * @private
+	 * @param  {!Node} container
+	 * @param  {!Node} reachParent
 	 * @return {Node}
 	 */
 	function firstNodeAndSplit(container, reachParent) {
 		if (Html.hasBlockStyle(container.parentNode)) {
 			return container;
 		}
-
 		container = container.parentNode;
-
-		var clonedNode = container;
-		var parentNode = container.parentNode;
-
-		while (parentNode && !Dom.isSameNode(parentNode, reachParent) && LinkUtil.isLinkable(parentNode)) {
-			clonedNode = splitElement(parentNode, container, parentNode.nextSibling);
-
-			container = parentNode;
-			parentNode = parentNode.parentNode;
+		var clone = container;
+		var parent = container.parentNode;
+		while (parent && !Dom.isSameNode(parent, reachParent) && LinkUtil.isLinkable(parent)) {
+			clone = splitElement(parent, container, parent.nextSibling);
+			container = parent;
+			parent = parent.parentNode;
 		}
-
-		return clonedNode;
+		return clone;
 	}
 
 
@@ -371,55 +370,38 @@ define([
 	}
 
 	/**
-	 * Get Linkable elements
-	 * @param {Range} range
+	 * Collects a list of groups of nodes that can be wrapped into anchor tags.
+	 *
+	 * @param  {!Boundary} start
+	 * @param  {!Boundary} end
 	 * @return {Array.<Array.<Element>>}
 	 */
-	function linkableNodesInsideRange(range) {
-		var startBoundary = LinkUtil.boundaryLinkable(range.startContainer, range.startOffset);
-		var endBoundary = LinkUtil.boundaryLinkable(range.endContainer, range.endOffset);
-
+	function collectLinkableNodeGroups(start, end) {
+		var startBoundary = LinkUtil.boundaryLinkable(
+			Boundaries.container(start),
+			Boundaries.offset(start)
+		);
+		var endBoundary = LinkUtil.boundaryLinkable(
+			Boundaries.container(end),
+			Boundaries.offset(end)
+		);
 		if (isSelectionInWholeTextNode(startBoundary, endBoundary)) {
 			// The selection is in the whole Text Node
 			return [[Boundaries.container(startBoundary)]];
 		}
-
-		var limitNodes = firstAndLastNode(startBoundary, endBoundary, range.commonAncestorContainer);
-
+		var limitNodes = firstAndLastNode(
+			startBoundary,
+			endBoundary,
+			Boundaries.commonContainer(start, end)
+		);
 		if (rangeInSameTextNode(startBoundary, endBoundary)) {
 			// endElement is the element selected.
 			return [[limitNodes.endNode]];
 		}
-
 		return linkableNodesBetween(limitNodes.startNode, limitNodes.endNode);
 	}
 
-	/**
-	 * Places anchors in `range`.
-	 * @param {Range} range
-	 * @param {Document} doc
-	 * @return {Array.<Element>}
-	 */
-	function createAnchorsInRange(range, doc) {
-		var anchors = [];
-
-		linkableNodesInsideRange(range).forEach(function (link) {
-			var anchor = doc.createElement('a');
-
-			Dom.insert(anchor, link[0]);
-
-			link.forEach(function (item) {
-				anchor.appendChild(item);
-			});
-
-			anchors.push(anchor);
-		});
-
-		return anchors;
-	}
-
 	return {
-		createAnchorsInRange: createAnchorsInRange,
-		linkableNodesInsideRange: linkableNodesInsideRange
+		collectLinkableNodeGroups : collectLinkableNodeGroups
 	};
 });

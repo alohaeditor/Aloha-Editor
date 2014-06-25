@@ -34,8 +34,6 @@ define([
 	'mouse',
 	'mutation',
 	'link',
-	'link/link-remove',
-	'link/link-selection',
 	'overrides',
 	'paths',
 	'paste',
@@ -76,9 +74,7 @@ define([
 	Maps,
 	Mouse,
 	Mutation,
-	Link,
-	LinkRemove,
-	LinkSelection,
+	Links,
 	Overrides,
 	Paths,
 	Paste,
@@ -122,9 +118,7 @@ define([
 	exports['maps'] = Maps;
 	exports['mouse'] = Mouse;
 	exports['mutation'] = Mutation;
-	exports['link'] = Link;
-	exports['linkremove'] = LinkRemove;
-	exports['linkselection'] = LinkSelection;
+	exports['links'] = Links;
 	exports['overrides'] = Overrides;
 	exports['paths'] = Paths;
 	exports['paste'] = Paste;

@@ -57,6 +57,7 @@ define([
 		nextSignificantBoundary   : Traversing.nextSignificantBoundary,
 		isAtStart                 : Traversing.isAtStart,
 		isAtEnd                   : Traversing.isAtEnd,
+		isBoundariesEqual         : Traversing.isBoundariesEqual,
 
 		isBlockNode               : Predicates.isBlockNode,
 		isGroupContainer          : Predicates.isGroupContainer,

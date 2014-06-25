@@ -635,15 +635,14 @@ define([
 	 * Checks whether the left boundary is at the same visual position as the
 	 * right boundary.
 	 *
-	 * Take note that the order of the boundary is important.
-	 * equals(left, right) is not necessarily the same as equals(right, left)
+	 * Take note that the order of the boundary is important:
+	 * (left, right) is not necessarily the same as (right, left).
 	 *
-	 * @private
 	 * @param  {Boundary} left
 	 * @param  {Boundary} right
 	 * @return {boolean}
 	 */
-	function equals(left, right) {
+	function isBoundariesEqual(left, right) {
 		var node, consumesOffset;
 
 		left = nextSignificantBoundary(Boundaries.normalize(left));
@@ -697,7 +696,7 @@ define([
 				//     v     v
 				// "foo "</p> </div>..
 				//     .     .
-				while (equals(after, next)) {
+				while (isBoundariesEqual(after, next)) {
 					// Because linebreaks are significant positions
 					if (Styles.hasLinebreakingStyle(Boundaries.prevNode(after))) {
 						break;
@@ -923,7 +922,7 @@ define([
 		case 'word':
 			nextBoundary = nextWordBoundary(boundary);
 			// "| foo" or |</p>
-			if (equals(boundary, nextBoundary)) {
+			if (isBoundariesEqual(boundary, nextBoundary)) {
 				nextBoundary = nextVisualBoundary(boundary);
 			}
 			break;
@@ -979,7 +978,7 @@ define([
 		case 'word':
 			prevBoundary = prevWordBoundary(boundary);
 			// "foo |" or <p>|
-			if (equals(prevBoundary, boundary)) {
+			if (isBoundariesEqual(prevBoundary, boundary)) {
 				prevBoundary = prevVisualBoundary(boundary);
 			}
 			break;
@@ -1087,6 +1086,7 @@ define([
 		stepForward             : stepForward,
 		stepBackward            : stepBackward,
 		isAtStart               : isAtStart,
-		isAtEnd                 : isAtEnd
+		isAtEnd                 : isAtEnd,
+		isBoundariesEqual       : isBoundariesEqual
 	};
 });
