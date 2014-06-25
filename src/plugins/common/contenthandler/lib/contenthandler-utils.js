@@ -7,7 +7,13 @@
 * @overview
 * Utility functions for content handling.
 */
-define(['jquery'], function ($) {
+define([
+	'jquery',
+	'util/html'
+], function (
+	$,
+	Html
+) {
 	'use strict';
 
 	/**
@@ -30,15 +36,16 @@ define(['jquery'], function ($) {
 		if (!trimmed) {
 			return false;
 		}
-		var node = $('<div>' + trimmed + '</div>')[0];
-		var containsSingleP = node.firstChild === node.lastChild &&
-			'p' === node.firstChild.nodeName.toLowerCase();
-		if (containsSingleP) {
-			var kids = node.firstChild.children;
-			return (kids && 1 === kids.length &&
-					'br' === kids[0].nodeName.toLowerCase());
+		var div = $('<div>' + trimmed + '</div>')[0];
+		var first = div.firstChild;
+		var containsSingleP = first === div.lastChild && 'P' === first.nodeName;
+		if (!containsSingleP) {
+			return false;
 		}
-		return false;
+		var $visible = $(p.childNodes).filter(function (i, node) {
+			return Html.isRenderedNode(node);
+		});
+		return $visible.length === 1 && $visible[0].nodeName === 'BR';
 	}
 
 	function wrapContent(content) {
