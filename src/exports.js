@@ -33,7 +33,7 @@ define([
 	'maps',
 	'mouse',
 	'mutation',
-	'link',
+	'links',
 	'overrides',
 	'paths',
 	'paste',

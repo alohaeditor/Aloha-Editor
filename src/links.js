@@ -12,8 +12,8 @@ define([
 	'arrays',
 	'mutation',
 	'boundaries',
-	'link/link-util',
-	'link/link-selection'
+	'links/link-util',
+	'links/link-selection'
 ], function (
 	Dom,
 	Html,
