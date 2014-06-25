@@ -33,6 +33,8 @@ define([
 	'util/strings',
 	'util/dom',
 	'util/dom2',
+	'util/browser',
+	'util/html',
 	'aloha/console',
 	'PubSub',
 	'aloha/engine',
@@ -47,6 +49,8 @@ define([
 	Strings,
 	Dom,
 	Dom2,
+	Browser,
+	Html,
 	console,
 	PubSub,
 	Engine,
@@ -145,6 +149,102 @@ define([
 			range: rangeObject,
 			event: event
 		});
+	}
+
+	/**
+	 * Gets parent block element
+	 *
+	 * @param {Element} element
+	 * @return {*}
+	 */
+	function getBlockElement(element) {
+		while (element && !Html.isBlock(element)) {
+			element = element.parentNode;
+		}
+		return element;
+	}
+
+	/**
+	 * Checks if `rangeObject` ends at the beginning of a text Node.
+	 *
+	 * @param {RangeObject} rangeObject
+	 * @return {boolean}
+	 */
+	function isEndContainerAtBeginTexNode(rangeObject) {
+		var endContainer = rangeObject.endContainer;
+		var endOffset = rangeObject.endOffset;
+		var i;
+
+		if (!Dom2.isTextNode(endContainer)) {
+			return false;
+		}
+
+		for (i = endOffset - 1; i >= 0; i--) {
+			if (jQuery.trim(endContainer.textContent[i]).length !== 0) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Checks if ranges ends in the beginning of a block element.
+	 *
+	 * @param {RangeObejct} rangeObejct
+	 * @return {boolean}
+	 */
+	function rangeEndsInBeginningBlockElement(rangeObejct) {
+		var endContainer = rangeObejct.endContainer;
+		var node = endContainer;
+
+		var blockElement = getBlockElement(rangeObejct.endContainer);
+
+		if (!isEndContainerAtBeginTexNode(rangeObejct)) {
+			return false;
+		}
+
+		node = node.previousSibling || node.parentNode;
+
+		while (node !== blockElement) {
+			if (node.previousSibling) {
+				node = node.previousSibling;
+				if (Html.isRenderedNode(node)) {
+					return false;
+				}
+			} else {
+				node = node.parentNode;
+			}
+		}
+
+		return node === blockElement;
+	}
+
+	/**
+	 * Sets the end of `range` before `element`.
+	 * @param {Range} range
+	 * @param {Element} element
+	 */
+	function setEndRangeBeforeElement(range, element) {
+		range.setEndBefore(element);
+
+		Aloha.getSelection().removeAllRanges();
+		Aloha.getSelection().addRange(range);
+	}
+
+	/**
+	 * Corrects the range if the range is expanded and it ends in the beginning of a
+	 * block element.
+	 *
+	 * @param {RangeObject} rangeObject
+	 */
+	function correctFirefoxRangeIssue(rangeObject) {
+		if (!rangeObject.isCollapsed() && rangeEndsInBeginningBlockElement(rangeObject)) {
+			var blockElement = getBlockElement(rangeObject.endContainer);
+			var range = Aloha.getSelection().getRangeAt(0);
+
+			setEndRangeBeforeElement(range, blockElement);
+		}
 	}
 
 	/**
@@ -1463,12 +1563,26 @@ define([
 		},
 
 		/**
+		 * Checks for Firefox incorrect range. When selecting a paragraph with the
+		 * command 'shift+keydown', the selection ends in the start of the next paragraph
+		 * instead of at the end of the selected paragraph. This produces an unexpected
+		 * behaviour when formatting the selected text to a heading or a list, because the
+		 * result included one extra paragraph.
+		 */
+		checkForFirefoxIncorrectRange: function () {
+			if (Browser.mozilla && Aloha.getSelection().getRangeCount() !== 0) {
+				correctFirefoxRangeIssue(this.getRangeObject());
+			}
+		},
+
+		/**
 		 * apply a certain markup to the current selection
 		 * @param markupObject jQuery object of the markup to be applied (e.g. created with obj = jQuery('<b></b>'); )
 		 * @return void
 		 * @hide
 		 */
 		changeMarkupOnSelection: function (markupObject) {
+			this.checkForFirefoxIncorrectRange();
 			var rangeObject = this.getRangeObject();
 
 			// change the markup
