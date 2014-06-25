@@ -31,7 +31,7 @@ define([
 	 * editing host.
 	 *
 	 * @private
-	 * @param  {Node} node
+	 * @param  {!Node} node
 	 * @return {boolean}
 	 */
 	function hasInlineStyle(node) {
@@ -70,7 +70,7 @@ define([
 	 *
 	 * @see build
 	 * @private
-	 * @param  {Node} node
+	 * @param {!Node} node
 	 */
 	function removeInvisibleNodes(node) {
 		var boundaries = [];
@@ -100,8 +100,8 @@ define([
 	 *
 	 * @see format
 	 * @private
-	 * @param  {Node} start
-	 * @param  {Node} end
+	 * @param  {!Node} start
+	 * @param  {!Node} end
 	 * @return {Array.<Node>}
 	 */
 	function collectSiblings(start, end) {
@@ -169,7 +169,7 @@ define([
 	 * @param  {Array.<Node>} nodes
 	 */
 	function build(type, nodes) {
-		console.log(nodes);
+		console.warn(nodes);
 		if (0 === nodes.length) {
 			return;
 		}
@@ -191,9 +191,9 @@ define([
 	/**
 	 * Creates a list of the given type.
 	 *
-	 * @param  {string}   type Either 'ul' or 'ol'
-	 * @param  {Boundary} start
-	 * @param  {Boundary} end
+	 * @param  {string}    type Either 'ul' or 'ol'
+	 * @param  {!Boundary} start
+	 * @param  {!Boundary} end
 	 * @return {Array.<Boundary>}
 	 */
 	function format(type, start, end) {
@@ -202,10 +202,9 @@ define([
 			'Lists.format#' + type + ' is not a valid list container'
 		);
 		var node;
-		if (Boundaries.equals(start, end)) {
+		if (Html.isBoundariesEqual(start, end)) {
 			node = Dom.upWhile(Boundaries.nextNode(start), function (node) {
-				return node
-				    && !Html.hasLinebreakingStyle(node)
+				return !Html.hasLinebreakingStyle(node)
 				    && !Dom.isEditingHost(node.parentNode);
 			});
 			build(type, collectSiblings(node, node));
@@ -215,17 +214,20 @@ define([
 		if (!Html.hasLinebreakingStyle(cac)) {
 			node = Dom.upWhile(cac, function (node) {
 				return node.parentNode
-				    && !Html.hasLinebreakingStyle(node.parentNode)
+				    && !isCollectLimit(node.parentNode)
 				    && !Dom.isEditingHost(node.parentNode);
 			});
 			build(type, collectSiblings(node, node));
 			return [start, end];
 		}
-		var isLimit = function (node) {
-			return node !== cac && (node.parentNode && node.parentNode !== cac);
-		};
-		var startNode = Dom.upWhile(Boundaries.nextNode(start), isLimit);
-		var endNode = Dom.upWhile(Boundaries.prevNode(end), isLimit);
+		var startNode = Dom.upWhile(Boundaries.nextNode(start), function (node) {
+			return !isCollectLimit(node)
+				&& !Dom.isEditingHost(node.parentNode);
+		});
+		var endNode = Dom.upWhile(Boundaries.prevNode(end), function (node) {
+			return !isCollectLimit(node.parentNode)
+				&& !Dom.isEditingHost(node.parentNode);
+		});
 
 		// <div>
 		//  <p>tw[o}</p>
@@ -238,11 +240,13 @@ define([
 		//  <p>{t]wo</p>
 		//  <p>three</p>
 		// </div>
+		/*
 		if (startNode === cac) {
 			startNode = endNode;
 		} else if (endNode === cac) {
 			endNode = startNode;
 		}
+		*/
 		build(type, collectSiblings(startNode, endNode));
 		return [start, end];
 	}
@@ -251,7 +255,7 @@ define([
 	 * Splits the list at the given list element.
 	 *
 	 * @private
-	 * @param {Element} li
+	 * @param {!Element} li
 	 */
 	function splitList(li) {
 		var prev = Dom.prevSiblings(li).filter(Html.isListItem);
@@ -273,7 +277,7 @@ define([
 	 * Unwraps the given list item.
 	 *
 	 * @private
-	 * @param  {Element} li
+	 * @param {!Element} li
 	 */
 	function unwrapItem(li) {
 		splitList(li);
@@ -315,8 +319,8 @@ define([
 	/**
 	 * Removes list formatting around the given boundaries.
 	 *
-	 * @param  {Boundary} start
-	 * @param  {Boundary} end
+	 * @param  {!Boundary} start
+	 * @param  {!Boundary} end
 	 * @return {Array.<Boundary>}
 	 */
 	function unformat(start, end) {
@@ -350,8 +354,32 @@ define([
 		return [Boundaries.create(sc, so), Boundaries.create(ec, eo)];
 	}
 
+	/**
+	 * Formats the content between the given boundaries into a list.
+	 * If the content is already a list, it will either unformat the content or
+	 * reformat the content into the given list type.
+	 *
+	 * @param  {string}   type Either 'ul' or 'ol'
+	 * @param  {!Boundary} start
+	 * @param  {!Boundary} end
+	 * @return {Array.<Boundary>}
+	 */
+	function toggle(type, start, end) {
+		var sc = Boundaries.container(start);
+		var ec = Boundaries.container(end);
+		var si = Dom.upWhile(sc, Html.isListItem);
+		var ei = Dom.upWhile(ec, Html.isListItem);
+		if (Html.isListItem(si) && Html.isListItem(ei) && si.parentNode === ei.parentNode) {
+			if (si.parentNode.nodeName.toLowerCase() === type) {
+				return unformat(start, end);
+			}
+		}
+		return format(type, start, end);
+	}
+
 	return {
 		format   : format,
-		unformat : unformat
+		unformat : unformat,
+		toggle   : toggle
 	};
 });

@@ -153,13 +153,19 @@ define([], function () {
 		};
 	}
 
+	/**
+	 * Composes a predicate function made up of a chain of the given predicate
+	 * arguments.
+	 *
+	 * @param  {function():boolean...}
+	 * @return {function():boolean}
+	 */
 	function and() {
-		var fns = arguments;
-		var len = fns.length;
-
+		var predicates = arguments;
+		var len = predicates.length;
 		return function () {
 			for (var i = 0; i < len; i++) {
-				if (!(fns[i].apply(this, arguments))) {
+				if (!predicates[i].apply(this, arguments)) {
 					return false;
 				}
 			}

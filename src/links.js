@@ -62,16 +62,19 @@ define([
 	 * the a link will be created at the boundary position with href as both the
 	 * anchor text and the value of the href attribute.
 	 *
+	 * Will pass newly created anchor elements to optional `created` array.
+	 *
 	 * @todo
 	 * - This function should return a list of newly created anchor elements.
 	 * - This function also needs to return the modified boundaries.
 	 *
-	 * @param  {string}    href
-	 * @param  {!Boundary} start
-	 * @param  {!Boundary} end
-	 * @return {Array.<Element>}
+	 * @param  {string}           href
+	 * @param  {!Boundary}        start
+	 * @param  {!Boundary}        end
+	 * @param  {Array.<Element>=} created
+	 * @return {Array.<Boundary>}
 	 */
-	function create(href, start, end) {
+	function create(href, start, end, created) {
 		var anchors;
 		if (Html.isBoundariesEqual(start, end)) {
 			var a = Boundaries.document(start).createElement('a');
@@ -81,10 +84,14 @@ define([
 		} else {
 			anchors = createAnchors(start, end);
 		}
-		anchors.forEach(function (anchor) {
-			Dom.setAttr(anchor, 'href', href);
-		});
-		return anchors;
+		anchors.forEach(function (anchor) {Dom.setAttr(anchor, 'href', href);});
+		if (created) {
+			anchors.reduce(function (list, a) {list.push(a); return list;}, created);
+		}
+		return [
+			Boundaries.fromNode(anchors[0]),
+			Boundaries.jumpOver(Boundaries.fromNode(Arrays.last(anchors)))
+		];
 	}
 
 	/**

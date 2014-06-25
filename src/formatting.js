@@ -6,14 +6,18 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'boundaries',
 	'dom',
+	'lists',
+	'links',
 	'editing',
+	'boundaries',
 	'html/predicates'
 ], function (
-	Boundaries,
 	Dom,
+	Lists,
+	Links,
 	Editing,
+	Boundaries,
 	Html
 ) {
 	'use strict';
@@ -74,11 +78,17 @@ define([
 	 * @return {Array.<Boundary>}
 	 */
 	function format(formatting, start, end) {
+		if (formatting.toLowerCase() === 'a') {
+			return Links.create('', start, end);
+		}
 		var node = {
 			nodeName : formatting
 		};
 		if (Html.isTextLevelSemanticNode(node)) {
 			return inlineFormat(formatting, start, end);
+		}
+		if (Html.isListContainer(node)) {
+			return Lists.toggle(formatting, start, end);
 		}
 		if (Html.isBlockNode(node)) {
 			return blockFormat(formatting, start, end);

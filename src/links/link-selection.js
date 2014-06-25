@@ -6,22 +6,18 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'arrays',
-	'boundaries',
 	'dom',
-	'ranges',
-	'editing',
 	'html',
+	'arrays',
 	'mutation',
+	'boundaries',
 	'link-util'
 ], function(
-	Arrays,
-	Boundaries,
 	Dom,
-	Ranges,
-	Editing,
     Html,
+	Arrays,
     Mutation,
+	Boundaries,
     LinkUtil
 ) {
 	'use strict';
@@ -51,11 +47,11 @@ define([
 	 * @return {Object.<string, Node>} {after: Node, before: Node}
 	 */
 	function splitTextNode(node, offset, reachParent) {
-		if (LinkUtil.isTextNodeSelectionAtEnd(node, offset)) {
+		if (isTextNodeSelectionAtEnd(node, offset)) {
 			return {after: node.nextSibling, before: node};
 		}
 
-		if (LinkUtil.isTextNodeSelectionAtStart(node, offset)) {
+		if (isTextNodeSelectionAtStart(node, offset)) {
 			return {after: node, before: node.previousSibling};
 		}
 
@@ -159,7 +155,7 @@ define([
 			parentNode = parentNode.parentNode;
 		}
 
-		if (!LinkUtil.isRendered(clonedNode)) {
+		if (!isRendered(clonedNode)) {
 			var previousSibling = LinkUtil.prevRenderedNode(clonedNode);
 			Dom.remove(clonedNode);
 			clonedNode = prevLinkableNode(previousSibling);
@@ -177,7 +173,6 @@ define([
 	function firstLinkableNode(boundary, commonContainer) {
 		var container = Boundaries.container(boundary);
 		var offset = Boundaries.offset(boundary);
-
 		if (Dom.isTextNode(container)) {
 			return splitTextNode(container, offset, commonContainer).after;
 		}
@@ -190,6 +185,36 @@ define([
 	}
 
 	/**
+	 * Checks if text node `node` has some text selected.
+	 * @param {Node} node
+	 * @param {integer} offset
+	 * @return {boolean}
+	 */
+	function isTextNodeSelectionAtMiddle(node, offset) {
+		return Dom.isTextNode(node) && offset > 0;
+	}
+
+	/**
+	 * Checks if the text node `node` NOT has some text selected inside.
+	 * @param {Node} node
+	 * @param {integer} offset
+	 * @return {boolean}
+	 */
+	function isTextNodeSelectionAtStart(node, offset) {
+		return Dom.isTextNode(node) && offset === 0;
+	}
+
+	/**
+	 * Checks if the text node `node` NOT has some text selected inside.
+	 * @param {Node} node
+	 * @param {integer} offset
+	 * @return {boolean}
+	 */
+	function isTextNodeSelectionAtEnd(node, offset) {
+		return Dom.isTextNode(node) && node.length === offset;
+	}
+
+	/**
 	 * Gets last linkable node.
 	 * @param boundary
 	 * @param commonContainer
@@ -199,10 +224,10 @@ define([
 		var container = Boundaries.container(boundary);
 		var offset = Boundaries.offset(boundary);
 
-		if (LinkUtil.isTextNodeSelectionAtMiddle(container, offset)) {
+		if (isTextNodeSelectionAtMiddle(container, offset)) {
 			return splitTextNode(container, offset, commonContainer).before;
 		}
-		if (LinkUtil.isTextNodeSelectionAtStart(container, offset) && container.previousSibling) {
+		if (isTextNodeSelectionAtStart(container, offset) && container.previousSibling) {
 			return prevLinkableNode(container.previousSibling);
 		}
 		if (!LinkUtil.isLinkable(container.parentNode)) {
@@ -210,6 +235,46 @@ define([
 		}
 
 		return endNodeAndSplit(container, commonContainer);
+	}
+
+	var LINE_BREAKING_NODES_TAGS = ['LI', 'TD', 'TR', 'TBODY', 'DD', 'DT'];
+
+	/**
+	 * Checks if `node` is a line breaking node.
+	 * @param {Node} node
+	 * @returns {boolean}
+	 */
+	function isLineBreakingNode(node) {
+		return LINE_BREAKING_NODES_TAGS.indexOf(node.nodeName) >= 0;
+	}
+
+	/**
+	 * Checks for spaces between line-breaking nodes <li>one</li>  <li>two</li>
+	 *
+	 * @param   {!Node} node
+	 * @returns {boolean}
+	 */
+	function isWhitSpaceBetweenLineBreakingNodes(node) {
+		if (!Dom.isTextNode(node) || node.textContent.trim().length > 0) {
+			return false;
+		}
+		if (node.previousElementSibling && (isLineBreakingNode(node.previousElementSibling)) &&
+				node.nextElementSibling && (isLineBreakingNode(node.nextElementSibling))) {
+			return true;
+		}
+		if (node.previousElementSibling && (isLineBreakingNode(node.previousElementSibling)) &&
+				!node.nextElementSibling) {
+			return true;
+		}
+		if (!node.previousElementSibling &&
+				node.nextElementSibling && (isLineBreakingNode(node.nextElementSibling))) {
+			return true;
+		}
+		return false;
+	}
+
+	function isRendered(node) {
+		return Html.isRendered(node) && !isWhitSpaceBetweenLineBreakingNodes(node);
 	}
 
 	/**
@@ -220,11 +285,11 @@ define([
 	 * @return {Node}
 	 */
 	function removeAnchorElement(anchorNode, linkable) {
-		if (!LinkUtil.isRendered(anchorNode)) {
+		if (!isRendered(anchorNode)) {
 			return anchorNode;
 		}
 
-		if (LinkUtil.isAnchorNode(anchorNode)) {
+		if ('A' === anchorNode.nodeName) {
 			var firstChild = anchorNode.firstChild;
 
 			Dom.children(anchorNode).forEach(function (item) {
@@ -280,7 +345,6 @@ define([
 	function linkableNodesBetween(first, last) {
 		var linkableNodes = [];
 		var linkable = [];            // Array of consecutive nodes that belong to a single link
-
 		while (first && !Dom.isSameNode(first, last)) {
 			if (LinkUtil.isLinkable(first)) {
 				first = removeAnchorElement(first, linkable);
@@ -317,56 +381,49 @@ define([
 	 * @param {Element} commonContainer
 	 * @return {{startElement: Element, endElement: Element}}
 	 */
-	function firstAndLastNode(startBoundary, endBoundary, commonContainer) {
-		var startContainer = Boundaries.container(startBoundary);
-		var endContainer =  Boundaries.container(endBoundary);
-
-		var startOffset = Boundaries.offset(startBoundary);
-		var endOffset = Boundaries.offset(endBoundary);
-
-		var isSelectionInSameTextNode = Dom.isTextNode(startContainer)
-				&& Dom.isSameNode(startContainer, endContainer);
-
-		var first = firstLinkableNode(startBoundary, commonContainer);
-
+	function firstAndLastNode(start, end, cac) {
+		var sc = Boundaries.container(start);
+		var ec = Boundaries.container(end);
+		var so = Boundaries.offset(start);
+		var eo = Boundaries.offset(end);
+		var isSelectionInSameTextNode = Dom.isTextNode(sc) && Dom.isSameNode(sc, ec);
+		var first = firstLinkableNode(start, cac);
 		if (isSelectionInSameTextNode) {
 			// If the first elements was split, we have to take precaution.
-			endBoundary = Boundaries.raw(first, endOffset - startOffset);
-			commonContainer = first;
+			end = Boundaries.raw(first, eo - so);
+			cac = first;
 		}
-
-		var last = lastLinkableNode(endBoundary, commonContainer);
-
-		return {startNode: first, endNode: last};
+		return {
+			startNode: first,
+			endNode: lastLinkableNode(end, cac)
+		};
 	}
 
 	/**
 	 * Checks if the range is in the same Text Node.
-	 * @param {Boundary} startBoundary
-	 * @param {Boundary} endBoundary
+	 *
+	 * @param  {!Boundary} start
+	 * @param  {!Boundary} end
 	 * @return {boolean}
 	 */
-	function rangeInSameTextNode (startBoundary, endBoundary) {
-		var startContainer = Boundaries.container(startBoundary);
-		var endContainer = Boundaries.container(endBoundary);
-
-		return Dom.isTextNode(startContainer) && Dom.isSameNode(startContainer, endContainer);
+	function rangeInSameTextNode (start, end) {
+		var sc = Boundaries.container(start);
+		var ec = Boundaries.container(end);
+		return Dom.isTextNode(sc) && Dom.isSameNode(sc, ec);
 	}
 
 	/**
 	 * Checks if the selection completely wrap a Text Node.
-	 * @param {Boundary} startBoundary
-	 * @param {Boundary} endBoundary
+	 *
+	 * @param  {!Boundary} start
+	 * @param  {!Boundary} end
 	 * @return {boolean}
 	 */
-	function isSelectionInWholeTextNode(startBoundary, endBoundary) {
-		var startContainer = Boundaries.container(startBoundary);
-		var startOffset = Boundaries.offset(startBoundary);
-		var endOffset = Boundaries.offset(endBoundary);
-
-		return rangeInSameTextNode(startBoundary, endBoundary)
-		    && startOffset === 0
-		    && startContainer.length === endOffset;
+	function isSelectionInWholeTextNode(start, end) {
+		var sc = Boundaries.container(start);
+		var so = Boundaries.offset(start);
+		var eo = Boundaries.offset(end);
+		return rangeInSameTextNode(start, end) && so === 0 && sc.length === eo;
 	}
 
 	/**
@@ -377,16 +434,11 @@ define([
 	 * @return {Array.<Array.<Element>>}
 	 */
 	function collectLinkableNodeGroups(start, end) {
-		var startBoundary = LinkUtil.boundaryLinkable(
-			Boundaries.container(start),
-			Boundaries.offset(start)
-		);
-		var endBoundary = LinkUtil.boundaryLinkable(
-			Boundaries.container(end),
-			Boundaries.offset(end)
-		);
+		var startBoundary = LinkUtil.linkableBoundary(start);
+		var endBoundary = LinkUtil.linkableBoundary(end);
 		if (isSelectionInWholeTextNode(startBoundary, endBoundary)) {
 			// The selection is in the whole Text Node
+			// <b>[one]</b>
 			return [[Boundaries.container(startBoundary)]];
 		}
 		var limitNodes = firstAndLastNode(
@@ -400,6 +452,20 @@ define([
 		}
 		return linkableNodesBetween(limitNodes.startNode, limitNodes.endNode);
 	}
+
+
+
+	function collectLinkable(start, end) {
+		var startSplit = Mutation.splitBoundaryUntil(start, Boundaries.isNodeBoundary);
+		var endSplit = Mutation.splitBoundaryUntil(end, Boundaries.isNodeBoundary);
+		var first = Boundaries.nextNode(startSplit);
+		var last = Boundaries.prevNode(endSplit);
+		var groups = collectGroups(first, last);
+		console.log(groups);
+		return [startSplit, endSplit];
+	}
+
+	window.collectLinkable = collectLinkable;
 
 	return {
 		collectLinkableNodeGroups : collectLinkableNodeGroups
