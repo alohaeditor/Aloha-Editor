@@ -15,7 +15,7 @@ public class SimpleTest {
 		settings.put("browser", "chrome");
 		settings.put("platform", "LINUX");
 		settings.put("basePath", "/src/test/unit");
-		settings.put("webdriver.chrome.driver", "/opt/selenium/chromedriver_linux64_2.3");
+		settings.put("webdriver.chrome.driver", "/opt/selenium/chromedriver");
 		SeleniumQUnitTestSuite suite = new SeleniumQUnitTestSuite(settings);
 
 		suite.addQunitModule("applymarkup");
