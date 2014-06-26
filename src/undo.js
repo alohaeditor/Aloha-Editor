@@ -21,7 +21,9 @@ define([
 	Mutation,
 	Boundaries,
 	Fn,
-	Ranges
+	Ranges,
+	__hack1__,
+	__hack2__
 ) {
 	'use strict';
 

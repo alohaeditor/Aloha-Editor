@@ -232,6 +232,6 @@ define([
 	return {
 		hint    : hint,
 		insert  : insert,
-		extract : extract,
+		extract : extract
 	};
 });

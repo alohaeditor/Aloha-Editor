@@ -25,7 +25,8 @@ define([
 	Elements,
 	Mutation,
 	Traversing,
-	Predicates
+	Predicates,
+	__hack__
 ) {
 	'use strict';
 

@@ -155,6 +155,6 @@ define([
 		isWhiteSpacePreserveStyle : isWhiteSpacePreserveStyle,
 		hasBlockStyle             : hasBlockStyle,
 		hasInlineStyle            : hasInlineStyle,
-		hasLinebreakingStyle      : hasLinebreakingStyle,
+		hasLinebreakingStyle      : hasLinebreakingStyle
 	};
 });

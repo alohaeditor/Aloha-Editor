@@ -117,6 +117,6 @@ define([
 		getNS     : getNS,
 		remove    : remove,
 		removeNS  : removeNS,
-		removeAll : removeAll,
+		removeAll : removeAll
 	};
 });

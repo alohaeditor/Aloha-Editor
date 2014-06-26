@@ -1,18 +1,8 @@
 /** Aloha Editor | Version 1.0 | github.com/alohaeditor */
-
-// ==ClosureCompiler==
-// @compilation_level ADVANCED_OPTIMIZATIONS
-// @warning_level VERBOSE
-// @jscomp_warning missingProperties
-// @output_file_name aloha.min.js
-// @check_types
-// ==/ClosureCompiler==
-
 define([
-	'exports',
+	'api',
 	'boundaries',
 	'blocks',
-	'dom',
 	'dragdrop',
 	'editables',
 	'events',
@@ -21,16 +11,13 @@ define([
 	'maps',
 	'mouse',
 	'paste',
-	'ranges',
 	'selections',
-	'selection-change',
 	'typing',
 	'undo'
 ], function (
 	Api,
 	Boundaries,
 	Blocks,
-	Dom,
 	DragDrop,
 	Editables,
 	Events,
@@ -39,9 +26,7 @@ define([
 	Maps,
 	Mouse,
 	Paste,
-	Ranges,
 	Selections,
-	SelectionChange,
 	Typing,
 	Undo
 ) {
@@ -56,7 +41,8 @@ define([
 	 */
 	function setSelection(alohaEvent) {
 		if (alohaEvent.range && alohaEvent.editable) {
-			Ranges.select(alohaEvent.range);
+			var boundaries = Boundaries.fromRange(alohaEvent.range);
+			Boundaries.select(boundaries[0], boundaries[1]);
 		}
 		return alohaEvent;
 	}
@@ -123,9 +109,7 @@ define([
 	Api['mahalo'] = mahalo;
 	Api['editor'] = editor;
 
-	aloha = Maps.extend(aloha, Api);
-
-	window['aloha'] = aloha;
+	window['aloha'] = aloha = Maps.extend(aloha, Api);
 
 	var egg = '%c'
 	        + '       _       _                      _ _ _\n'

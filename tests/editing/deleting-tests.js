@@ -1,22 +1,18 @@
-(function (aloha) {
+(function (aloha, module, test, equal) {
 	'use strict';
-
-	var Ranges = aloha.ranges;
-	var Editing = aloha.editing;
-	var BoundaryMarkers = aloha.boundarymarkers;
 
 	module('editing');
 
 	function runTest(before, after, op, context) {
-		var boundaries = BoundaryMarkers.extract($(before)[0]);
-		var actual = BoundaryMarkers.hint(op(boundaries));
+		var boundaries = aloha.boundarymarkers.extract($(before)[0]);
+		var actual = aloha.boundarymarkers.hint(op(boundaries));
 		equal(actual, after, before + ' ⇒ ' + after);
 	}
 
-	test('delete()', function () {
+	test('remove()', function () {
 		(function t(before, after) {
 			runTest(before, after, function (boundaries) {
-				return Editing.delete(Ranges.fromBoundaries(
+				return aloha.editing.remove(aloha.ranges.fromBoundaries(
 					boundaries[0],
 					boundaries[1]
 				));
@@ -97,4 +93,4 @@
 		('<ul><li>fo[o<ol><li>}</li></ol></li></ul>', '<ul><li>fo{}</li></ul>');
 	});
 
-}(window.aloha));
+}(window.aloha, window.module, window.test, window.equal));

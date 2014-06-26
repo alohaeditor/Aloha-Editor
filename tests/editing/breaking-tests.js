@@ -1,27 +1,22 @@
-(function (aloha) {
+(function (aloha, module, test, equal) {
 	'use strict';
-
-	var Ranges = aloha.ranges;
-	var Editing = aloha.editing;
-	var BoundaryMarkers = aloha.boundarymarkers;
 
 	module('editing');
 
 	function runTest(before, after, op, context) {
-		var boundaries = BoundaryMarkers.extract($(before)[0]);
-		var actual = BoundaryMarkers.hint(op(boundaries));
+		var boundaries = aloha.boundarymarkers.extract($(before)[0]);
+		var actual = aloha.boundarymarkers.hint(op(boundaries));
 		equal(actual, after, before + ' ⇒ ' + after);
 	}
 
-	test('break()', function () {
+	test('breakline()', function () {
 		(function t(before, after, linebreak) {
 			runTest(before, after, function (boundaries) {
-				return Editing.break(
-					Ranges.fromBoundaries(boundaries[0], boundaries[1]),
+				return aloha.editing.breakline(
+					aloha.ranges.fromBoundaries(boundaries[0], boundaries[1]),
 					'h1',
 					linebreak
 				);
-				return [next, next];
 			});
 			return t;
 		})(
@@ -59,7 +54,8 @@
 			'<h1><u style="text-decoration: none">{}foo</u></h1>'
 		)(
 			'<div contenteditable="true">'
-				+ '<strike><b style="text-decoration: underline"><i style="font-weight: normal">[]</i>foo</b></strike>'
+				+ '<strike><b style="text-decoration: underline">'
+				+ '<i style="font-weight: normal">[]</i>foo</b></strike>'
 				+ '</div>',
 			'<strike><b style="text-decoration: underline">{}foo</b></strike>'
 		)(
@@ -285,4 +281,4 @@
 		);
 	});
 
-}(window.aloha));
+}(window.aloha, window.module, window.test, window.equal));

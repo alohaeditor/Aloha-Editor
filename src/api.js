@@ -1,5 +1,5 @@
 /**
- * exports.js is part of Aloha Editor project http://aloha-editor.org
+ * api.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
@@ -12,12 +12,13 @@
 define([
 	'arrays',
 	'blocks',
+	'boromir',
 	'boundaries',
 	'boundary-markers',
 	'browsers',
 	'colors',
 	'content',
-	'cursors',
+	'delayed-map',
 	'dom',
 	'dom-to-xhtml',
 	'dragdrop',
@@ -29,38 +30,35 @@ define([
 	'html',
 	'image',
 	'keys',
+	'links',
 	'lists',
 	'maps',
 	'mouse',
 	'mutation',
-	'links',
 	'overrides',
-	'paths',
 	'paste',
+	'paths',
 	'ranges',
+	'record',
 	'selection-change',
 	'selections',
-	'stable-range',
 	'strings',
-	'traversing',
-	'trees',
-	'typing',
-	'undo',
 	'transform',
-	'record',
-	'delayed-map',
-	'boromir'
+	'traversing',
+	'typing',
+	'undo'
 ], function (
 	Arrays,
 	Blocks,
+	Boromir,
 	Boundaries,
 	Boundarymarkers,
 	Browsers,
 	Colors,
 	Content,
-	Cursors,
+	DelayedMap,
 	Dom,
-	Xhtml,
+	DomXhtml,
 	DragDrop,
 	Editables,
 	Editing,
@@ -68,34 +66,34 @@ define([
 	Events,
 	Fn,
 	Html,
-	Image,
+	Images,
 	Keys,
+	Links,
 	Lists,
 	Maps,
 	Mouse,
 	Mutation,
-	Links,
 	Overrides,
-	Paths,
 	Paste,
+	Paths,
 	Ranges,
+	Record,
 	SelectionChange,
 	Selections,
-	StableRange,
 	Strings,
+	Transform,
 	Traversing,
 	Trees,
 	Typing,
-	Undo,
-	Transform,
-	Record,
-	DelayedMap,
-	Boromir
+	Undo
 ) {
 	'use strict';
 
 	var exports = {};
 
+	exports['Boromir'] = Boromir;
+	exports['DelayedMap'] = DelayedMap;
+	exports['Record'] = Record;
 	exports['arrays'] = Arrays;
 	exports['blocks'] = Blocks;
 	exports['boundaries'] = Boundaries;
@@ -103,7 +101,6 @@ define([
 	exports['browsers'] = Browsers;
 	exports['colors'] = Colors;
 	exports['content'] = Content;
-	exports['cursors'] = Cursors;
 	exports['dom'] = Dom;
 	exports['dragdrop'] = DragDrop;
 	exports['editables'] = Editables;
@@ -112,29 +109,25 @@ define([
 	exports['events'] = Events;
 	exports['fn'] = Fn;
 	exports['html'] = Html;
-	exports['image'] = Image;
+	exports['images'] = Images;
 	exports['keys'] = Keys;
+	exports['links'] = Links;
 	exports['lists'] = Lists;
 	exports['maps'] = Maps;
 	exports['mouse'] = Mouse;
 	exports['mutation'] = Mutation;
-	exports['links'] = Links;
 	exports['overrides'] = Overrides;
-	exports['paths'] = Paths;
 	exports['paste'] = Paste;
+	exports['paths'] = Paths;
 	exports['ranges'] = Ranges;
 	exports['selectionchange'] = SelectionChange;
 	exports['selections'] = Selections;
 	exports['strings'] = Strings;
 	exports['transform'] = Transform;
 	exports['traversing'] = Traversing;
-	exports['trees'] = Trees;
 	exports['typing'] = Typing;
 	exports['undo'] = Undo;
-	exports['xhtml'] = Xhtml;
-	exports['Record'] = Record;
-	exports['DelayedMap'] = DelayedMap;
-	exports['Boromir'] = Boromir;
+	exports['xhtml'] = DomXhtml;
 
 	return exports;
 });

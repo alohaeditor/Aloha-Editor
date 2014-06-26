@@ -1437,8 +1437,8 @@ define([
 	 * @param  {!Range} range
 	 * @return {Array.<Boundary>}
 	 */
-	function delete_(range) {
-		fixupRange(range, function delete_(range, left, right) {
+	function remove(range) {
+		fixupRange(range, function remove(range, left, right) {
 			var remove = function (node) {
 				Mutation.removePreservingRange(node, range);
 			};
@@ -1500,7 +1500,7 @@ define([
 	 * @param  {boolean} linebreak
 	 * @return {Array.<Boundary>}
 	 */
-	function break_(liveRange, breaker, linebreak) {
+	function breakline(liveRange, breaker, linebreak) {
 		var range = Ranges.collapseToEnd(StableRange(liveRange));
 		var op = linebreak ? Html.insertLineBreak : Html.insertBreak;
 		var boundary = op(Boundaries.fromRangeStart(range), breaker);
@@ -1527,12 +1527,12 @@ define([
 	}
 
 	return {
-		wrap   : wrapElem,
-		format : format,
-		style  : style,
-		split  : split,
-		delete : delete_,
-		break  : break_,
-		insert : insert
+		wrap      : wrapElem,
+		format    : format,
+		style     : style,
+		split     : split,
+		remove    : remove,
+		breakline : breakline,
+		insert    : insert
 	};
 });

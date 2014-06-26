@@ -92,7 +92,7 @@ define([
 
 	function delete_(boundaries) {
 		var range = Ranges.fromBoundaries(boundaries[0], boundaries[1]);
-		Editing.delete(range, {overrides: []});
+		Editing.remove(range, {overrides: []});
 		return Boundaries.fromRangeStart(range);
 	}
 

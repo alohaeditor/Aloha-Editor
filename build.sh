@@ -10,13 +10,15 @@ function help {
 \tor
 
 \t--advanced
+
+\tMake sure to include an .env file in the same directory as this script.
+\tYour .env file should define ClOSURE_PATH=$CLOSURE_PATH.
 	"
 }
 
 function build {
 	cd $src
 	find ./ -name "*.js" | \
-		grep -v mandox.js | \
 		grep -v require-pronto.js | \
 		grep -v require-pronto.dev.js | \
 		xargs java -jar $CLOSURE_PATH/compiler.jar \

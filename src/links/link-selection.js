@@ -11,7 +11,7 @@ define([
 	'arrays',
 	'mutation',
 	'boundaries',
-	'link-util'
+	'./link-util'
 ], function(
 	Dom,
     Html,
@@ -453,7 +453,8 @@ define([
 		return linkableNodesBetween(limitNodes.startNode, limitNodes.endNode);
 	}
 
-
+	function collectGroups(first, last) {
+	}
 
 	function collectLinkable(start, end) {
 		var startSplit = Mutation.splitBoundaryUntil(start, Boundaries.isNodeBoundary);

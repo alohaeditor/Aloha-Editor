@@ -57,7 +57,7 @@ define([
 				Boundaries.setRangeStart(range, Traversing.prev(boundary));
 			}
 		}
-		Editing.delete(
+		Editing.remove(
 			Ranges.envelopeInvisibleCharacters(range),
 			alohaEvent.editable
 		);
@@ -71,7 +71,7 @@ define([
 	}
 
 	function break_(isLinebreak, alohaEvent) {
-		Editing.break(
+		Editing.breakline(
 			alohaEvent.range,
 			alohaEvent.editable.defaultBlockNodeName,
 			isLinebreak
@@ -225,7 +225,7 @@ define([
 		handlers.keydown[Keys.CODES.left] =
 		handlers.keydown[Keys.CODES.right] = {clearOverrides: true};
 
-	handlers.keydown[Keys.CODES.delete] = deleteForward;
+	handlers.keydown[Keys.CODES['delete']] = deleteForward;
 	handlers.keydown[Keys.CODES.backspace] = deleteBackward;
 	handlers.keydown[Keys.CODES.enter] = breakBlock;
 	handlers.keydown['shift+' + Keys.CODES.enter] = breakLine;
