@@ -43,12 +43,18 @@ define([
 	 * @return {Array.<Boundary>}
 	 */
 	function blockFormat(formatting, start, end) {
-		var cac = Boundaries.commonContainer(start, end);
-		if (Dom.isTextNode(cac)) {
-			cac = cac.parentNode;
+		var node = Boundaries.container(start);
+		if (Html.isBlockNode(node)) {
+			node = Boundaries.nextNode(start);
+		}
+		if (Dom.isTextNode(node)) {
+			node = node.parentNode;
+		}
+		if (Html.isGroupContainer(node) || Html.isGroupedElement(node) || Dom.isEditingHost(node)) {
+			return [start, end];
 		}
 		var replacement = Boundaries.document(start).createElement(formatting);
-		Dom.replaceShallow(cac, replacement);
+		Dom.replaceShallow(node, replacement);
 		return [
 			Boundaries.fromNode(replacement),
 			Boundaries.fromEndOfNode(replacement)
