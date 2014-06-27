@@ -68,6 +68,16 @@ define([
 
 	function format(style, alohaEvent) {
 		var boundaries = Boundaries.fromRange(alohaEvent.range);
+		if (Html.isBoundariesEqual(boundaries[0], boundaries[1])) {
+			var override = Overrides.nodeToState[style];
+			if (override) {
+				alohaEvent.editable.overrides = Overrides.toggle(
+					alohaEvent.editable.overrides,
+					[override, true]
+				);
+			}
+			return alohaEvent.range;
+		}
 		boundaries = Formatting.format(style, boundaries[0], boundaries[1]);
 		return Ranges.fromBoundaries(boundaries[0], boundaries[1]);
 	}

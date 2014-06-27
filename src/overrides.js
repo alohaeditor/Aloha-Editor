@@ -24,12 +24,14 @@ define([
 	'dom',
 	'misc',
 	'maps',
+	'arrays',
 	'mutation',
 	'boundaries'
 ], function (
 	Dom,
 	Misc,
 	Maps,
+	Arrays,
 	Mutation,
 	Boundaries
 ) {
@@ -216,30 +218,44 @@ define([
 		return boundary;
 	}
 
-	function lookup(name, overrides) {
-		var i;
-		var len = overrides.length;
-		for (i = 0; i < len; i++) {
+	function lookup(overrides, name) {
+		for (var i = 0; i < overrides.length; i++) {
 			if (name === overrides[i][0]) {
 				return overrides[i][1];
 			}
 		}
+		return null;
+	}
+
+	function find(overrides, name) {
+		for (var i = 0; i < overrides.length; i++) {
+			if (name === overrides[i][0]) {
+				return overrides[i];
+			}
+		}
+		return null;
 	}
 
 	function map(overrides) {
 		var ret = {};
-		var i;
-		var len = overrides.length;
-		for (i = 0; i < len; i++) {
+		for (var i = 0; i < overrides.length; i++) {
 			ret[overrides[i][0]] = overrides[i][1];
 		}
 		return ret;
 	}
 
+	function toggle(overrides, override) {
+		var found = find(overrides, override[0]);
+		return found ? Arrays.difference(overrides, [found])
+		             : overrides.concat([override]);
+	}
+
 	return {
-		map     : map,
-		lookup  : lookup,
-		harvest : harvest,
-		consume : consume
+		map         : map,
+		toggle      : toggle,
+		lookup      : lookup,
+		harvest     : harvest,
+		consume     : consume,
+		nodeToState : nodeToState
 	};
 });
