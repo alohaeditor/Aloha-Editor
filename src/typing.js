@@ -12,7 +12,6 @@ define([
 	'html',
 	'ranges',
 	'editing',
-	'formatting',
 	'traversing',
 	'boundaries',
 	'functions',
@@ -25,7 +24,6 @@ define([
 	Html,
 	Ranges,
 	Editing,
-	Formatting,
 	Traversing,
 	Boundaries,
 	Fn,
@@ -78,7 +76,7 @@ define([
 			}
 			return alohaEvent.range;
 		}
-		boundaries = Formatting.format(style, boundaries[0], boundaries[1]);
+		boundaries = Editing.format(style, boundaries[0], boundaries[1]);
 		return Ranges.fromBoundaries(boundaries[0], boundaries[1]);
 	}
 

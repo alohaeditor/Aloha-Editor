@@ -1,8 +1,9 @@
-(function (aloha) {
+(function (aloha, require, module, test, equal, deepEqual) {
 	'use strict';
 
-	var Trees = aloha.trees;
 	var Maps = aloha.maps;
+	var Trees;
+	require('../src/trees', function (Module) { Trees = Module; });
 
 	module('trees');
 
@@ -71,4 +72,5 @@
 		equal(Trees.deepEqual(incTree, tree), false);
 		equal(Trees.deepEqual(0, 1), false);
 	});
-}(aloha));
+
+}(window.aloha, window.require, window.module, window.test, window.equal, window.deepEqual));

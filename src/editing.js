@@ -878,7 +878,7 @@ define([
 	}
 
 	var wrapperProperties = {
-		'underline': {
+		underline: {
 			name: 'U',
 			nodes: ['U'],
 			style: 'text-decoration',
@@ -886,7 +886,7 @@ define([
 			normal: 'none',
 			normalize: {}
 		},
-		'bold': {
+		bold: {
 			name: 'B',
 			nodes: ['B', 'STRONG'],
 			style: 'font-weight',
@@ -898,7 +898,7 @@ define([
 				'400': 'normal'
 			}
 		},
-		'italic': {
+		italic: {
 			name: 'I',
 			nodes: ['I', 'EM'],
 			style: 'font-style',
@@ -909,7 +909,6 @@ define([
 	};
 	wrapperProperties['emphasis'] = Maps.merge(wrapperProperties.italic, {name: 'EM'});
 	wrapperProperties['strong'] = Maps.merge(wrapperProperties.bold, {name: 'STRONG'});
-
 	wrapperProperties['underline'] = wrapperProperties.underline;
 	wrapperProperties['bold'] = wrapperProperties.bold;
 	wrapperProperties['italic'] = wrapperProperties.italic;

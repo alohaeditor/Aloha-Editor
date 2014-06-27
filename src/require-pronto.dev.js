@@ -83,6 +83,9 @@ var require = (function (wrappedRequire) {
 	}
 
 	function require (modules, fn) {
+		if ('string' === typeof modules) {
+			modules = [modules];
+		}
 		if (!fn) {
 			return wrappedRequire(modules);
 		}

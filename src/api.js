@@ -302,7 +302,7 @@ define([
 	exports['editables']['handle']           = Editables.handle;
 
 	exports['editing'] = Editing;
-	exports['editing']['wrap']      = Editing.wrapElem;
+	exports['editing']['wrap']      = Editing.wrap;
 	exports['editing']['format']    = Editing.format;
 	exports['editing']['style']     = Editing.style;
 	exports['editing']['split']     = Editing.split;

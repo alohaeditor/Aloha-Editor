@@ -1,9 +1,9 @@
-(function (aloha) {
+(function (aloha, require, module, test, equal, deepEqual) {
 	'use strict';
 
-	var Xhtml = aloha.xhtml;
 	var Boundaries = aloha.boundaries;
 	var BoundaryMarkers = aloha.boundarymarkers;
+	var Xhtml; require('../src/dom-to-xhtml', function (Module) { Xhtml = Module; });
 
 	module('boundarymarkers');
 
@@ -78,4 +78,4 @@
 		('<p>1234{<b>Some text.</b>}5678</p>');
 	});
 
-}(window.aloha));
+}(window.aloha, window.require, window.module, window.test, window.equal, window.deepEqual));

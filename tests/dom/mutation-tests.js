@@ -1,8 +1,9 @@
-(function (aloha) {
+(function (aloha, require, module, test, equal, deepEqual) {
 	'use strict';
 
 	var Dom = aloha.dom;
 	var Mutation = aloha.mutation;
+	var Cursors; require('../src/cursors', function (Module) { Cursors = Module; });
 
 	module('dom');
 
@@ -55,8 +56,8 @@
 	test('removeShallowPreservingBoundariesCursors', function () {
 		var node = $('<div><span><b>foo</b></span></div>')[0];
 		var points = [
-			aloha.cursors.cursorFromBoundaryPoint(node, 0),
-			aloha.cursors.cursorFromBoundaryPoint(node.firstChild, 1)
+			Cursors.cursorFromBoundaryPoint(node, 0),
+			Cursors.cursorFromBoundaryPoint(node.firstChild, 1)
 		];
 		Mutation.removeShallowPreservingCursors(node.firstChild, points);
 		equal(node.outerHTML, '<div><b>foo</b></div>');
@@ -85,4 +86,4 @@
 		equal(range.endOffset, 0);
 	});
 
-}(window.aloha));
+}(window.aloha, window.require, window.module, window.test, window.equal, window.deepEqual));

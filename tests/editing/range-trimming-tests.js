@@ -1,13 +1,10 @@
-(function (aloha) {
+(function (aloha, require, module, test, equal, deepEqual) {
 	'use strict';
 
 	module('editing');
 
-	var Html = aloha.html;
-	var Xhtml = aloha.xhtml;
 	var Ranges = aloha.ranges;
-	var Boundaries = aloha.boundaries;
-	var BoundaryMarkers = aloha.boundarymarkers;
+	var Xhtml; require('../src/dom-to-xhtml', function (Module) { Xhtml = Module; });
 
 	function switchElemTextSelection(html) {
 		return html.replace(/[\{\}\[\]]/g, function (match) {
@@ -20,19 +17,19 @@
 
 	function rawBoundariesFromRange(range) {
 		return [
-			Boundaries.raw(range.startContainer, range.startOffset),
-			Boundaries.raw(range.endContainer, range.endOffset)
+			aloha.boundaries.raw(range.startContainer, range.startOffset),
+			aloha.boundaries.raw(range.endContainer, range.endOffset)
 		];
 	}
 
 	function testMutation(before, expected, mutate) {
 		$('#test-editable').html(before);
 		var dom = $('#test-editable')[0].firstChild;
-		var boundaries = BoundaryMarkers.extract(dom);
+		var boundaries = aloha.boundarymarkers.extract(dom);
 		var range = Ranges.fromBoundaries(boundaries[0], boundaries[1]);
 		dom = mutate(dom, range) || dom;
 		boundaries = rawBoundariesFromRange(range);
-		BoundaryMarkers.insert(boundaries[0], boundaries[1]);
+		aloha.boundarymarkers.insert(boundaries[0], boundaries[1]);
 		var actual = Xhtml.nodeToXhtml(dom);
 		if ($.type(expected) === 'function') {
 			expected(actual);
@@ -67,8 +64,8 @@
 					function (dom, range) {
 						Ranges.trimClosingOpening(
 							range,
-							Html.isUnrenderedWhitespace,
-							Html.isUnrenderedWhitespace
+							aloha.html.isUnrenderedWhitespace,
+							aloha.html.isUnrenderedWhitespace
 						);
 					}
 				);
@@ -106,4 +103,4 @@
 		);
 	});
 
-}(window.aloha));
+}(window.aloha, window.require, window.module, window.test, window.equal, window.deepEqual));

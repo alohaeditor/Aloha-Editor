@@ -48,7 +48,13 @@ if [[ $args =~ "--advanced" ]]; then
 	src=src
 	entry="--common_js_entry_module=aloha"
 	target=build/aloha.js
-	#optimization=ADVANCED_OPTIMIZATIONS
+	optimization=ADVANCED_OPTIMIZATIONS
+	build
+	exit
+elif [[ $args =~ "--simple" ]]; then
+	src=src
+	entry="--common_js_entry_module=aloha"
+	target=build/aloha.js
 	optimization=SIMPLE_OPTIMIZATIONS
 	build
 	exit

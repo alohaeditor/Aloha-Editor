@@ -57,7 +57,12 @@ opts.partitionRecords = true;
 opts.noObserve = true;
 opts.meta = {};
 
+var MutationObserver = {
+	takeRecords: null
+};
+
 var alohaEvent = {
+	chr: '',
 	type: '',
 	meta: '',
 	which: '',

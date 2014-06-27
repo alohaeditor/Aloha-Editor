@@ -1,14 +1,13 @@
-(function (aloha) {
+(function (aloha, require, module, test, equal, deepEqual) {
 	'use strict';
 
 	module('editing');
 
-	var Xhtml = aloha.xhtml;
 	var Ranges = aloha.ranges;
 	var Editing = aloha.editing;
 	var Browsers = aloha.browsers;
-	var Boundaries = aloha.boundaries;
 	var BoundaryMarkers = aloha.boundarymarkers;
+	var Xhtml; require('../src/dom-to-xhtml', function (Module) { Xhtml = Module; });
 
 	function testMutation(title, before, expected, mutate) {
 		test(title, function () {
@@ -124,4 +123,4 @@
 	  '<p><i><em>-</em><code>Some<em>-{-</em>text</code></i>-<i><em>-</em><em>-</em>}<em>-</em><em>-</em></i></p>',
 	  '<p><i><em>-</em></i><i><code>Some<em>-{<b>-</b></em><b>text</b></code></i><b>-<i><em>-</em><em>-</em></i></b>}<i><em>-</em><em>-</em></i></p>');
 
-}(window.aloha));
+}(window.aloha, window.require, window.module, window.test, window.equal, window.deepEqual));

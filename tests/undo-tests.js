@@ -1,19 +1,13 @@
-(function (aloha) {
+(function (aloha, require, module, test, equal, deepEqual) {
 	'use strict';
 
-	var Arrays = aloha.arrays;
-	var Undo = aloha.undo;
 	var Dom = aloha.dom;
-	var Editing = aloha.editing;
-	var Ranges = aloha.ranges;
-	var Typing = aloha.typing;
-	var Editables = aloha.editables;
-	var Boundaries = aloha.boundaries;
+	var Undo = aloha.undo;
 
 	module('undo');
 
 	function content(html) {
-		return Arrays.coerce($('<div>' + html + '</div>').contents());
+		return aloha.arrays.coerce($('<div>' + html + '</div>').contents());
 	}
 
 	test('applyChangeSet', function () {
@@ -95,9 +89,9 @@
 		var controlEditable = Dom.clone(editable);
 		var context = Undo.Context(editable);
 		var capturedFrame = Undo.capture(context, {meta: true}, function () {
-			var range = Ranges.fromBoundaries([editable.firstChild, 2], [editable.firstChild, 3]);
+			var range = aloha.ranges.fromBoundaries([editable.firstChild, 2], [editable.firstChild, 3]);
 			var haveToPassEmptyOverridesOtherwiseError = {overrides: []};
-			Editing.delete(range, haveToPassEmptyOverridesOtherwiseError);
+			aloha.editing.remove(range, haveToPassEmptyOverridesOtherwiseError);
 		});
 		var modifiedEditable = Dom.clone(editable);
 		var capturedChangeSet = Undo.changeSetFromFrame(context, capturedFrame);
@@ -352,4 +346,4 @@
 		equal(editable.innerHTML, controlEditable.innerHTML);
 	});
 
-}(window.aloha));
+}(window.aloha, window.require, window.module, window.test, window.equal, window.deepEqual));
