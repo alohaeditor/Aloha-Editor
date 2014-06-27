@@ -12,6 +12,7 @@ define([
 	'html',
 	'ranges',
 	'editing',
+	'formatting',
 	'traversing',
 	'boundaries',
 	'functions',
@@ -24,6 +25,7 @@ define([
 	Html,
 	Ranges,
 	Editing,
+	Formatting,
 	Traversing,
 	Boundaries,
 	Fn,
@@ -34,13 +36,12 @@ define([
 
 	function undoable(type, alohaEvent, fn) {
 		var range = alohaEvent.range;
-		var undoContext = alohaEvent.editable.undoContext;
-		Undo.capture(undoContext, {
-			meta: {type: type},
-			oldRange: range
+		Undo.capture(alohaEvent.editable['undoContext'], {
+			'meta': {type: type},
+			'oldRange': range
 		}, function () {
 			range = fn();
-			return {newRange: range};
+			return {'newRange': range};
 		});
 		return range;
 	}
@@ -66,8 +67,9 @@ define([
 	}
 
 	function format(style, alohaEvent) {
-		Editing.format(alohaEvent.range, style, true, alohaEvent.editable);
-		return alohaEvent.range;
+		var boundaries = Boundaries.fromRange(alohaEvent.range);
+		boundaries = Formatting.format(style, boundaries[0], boundaries[1]);
+		return Ranges.fromBoundaries(boundaries[0], boundaries[1]);
 	}
 
 	function break_(isLinebreak, alohaEvent) {
@@ -99,11 +101,11 @@ define([
 		boundary = Overrides.consume(boundary, editable.overrides);
 		Boundaries.setRange(range, boundary, boundary);
 
-		var insertPath = Undo.pathFromBoundary(editable.elem, boundary);
-		var insertContent = [editable.elem.ownerDocument.createTextNode(text)];
+		var insertPath = Undo.pathFromBoundary(editable['elem'], boundary);
+		var insertContent = [editable['elem'].ownerDocument.createTextNode(text)];
 		var change = Undo.makeInsertChange(insertPath, insertContent);
 
-		Undo.capture(editable.undoContext, {noObserve: true}, function () {
+		Undo.capture(editable['undoContext'], {noObserve: true}, function () {
 			Mutation.insertTextAtBoundary(text, boundary, true, [range]);
 			return {changes: [change]};
 		});
@@ -112,8 +114,7 @@ define([
 	}
 
 	function toggleUndo(op, alohaEvent) {
-		var undoContext = alohaEvent.editable.undoContext;
-		op(undoContext, alohaEvent.range, [alohaEvent.range]);
+		op(alohaEvent.editable['undoContext'], alohaEvent.range, [alohaEvent.range]);
 		return alohaEvent.range;
 	}
 
@@ -162,19 +163,19 @@ define([
 	var formatBold = {
 		preventDefault : true,
 		undo           : 'bold',
-		mutate         : Fn.partial(format, 'bold')
+		mutate         : Fn.partial(format, 'B')
 	};
 
 	var formatItalic = {
 		preventDefault : true,
 		undo           : 'italic',
-		mutate         : Fn.partial(format, 'italic')
+		mutate         : Fn.partial(format, 'I')
 	};
 
 	var formatUnderline = {
 		preventDefault : true,
 		undo           : 'underline',
-		mutate         : Fn.partial(format, 'underline')
+		mutate         : Fn.partial(format, 'U')
 	};
 
 	var inputText = {
@@ -202,48 +203,53 @@ define([
 		mutate         : Fn.partial(toggleUndo, Undo.redo)
 	};
 
-	var handlers = {
-		keyup    : {},
-		keydown  : {},
-		keypress : {}
-	};
-
 	var actions = {
-		deleteBackward: deleteBackward,
-		deleteForward: deleteForward,
-		breakBlock: breakBlock,
-		breakLine: breakLine,
-		formatBold: formatBold,
-		formatItalic: formatItalic,
-		inputText: inputText,
-		undo: undo,
-		redo: redo
+		'deleteBackward' : deleteBackward,
+		'deleteForward'  : deleteForward,
+		'breakBlock'     : breakBlock,
+		'breakLine'      : breakLine,
+		'formatBold'     : formatBold,
+		'formatItalic'   : formatItalic,
+		'inputText'      : inputText,
+		'undo'           : undo,
+		'redo'           : redo
 	};
 
-	handlers.keydown[Keys.CODES.up] =
-		handlers.keydown[Keys.CODES.down] =
-		handlers.keydown[Keys.CODES.left] =
-		handlers.keydown[Keys.CODES.right] = {clearOverrides: true};
+	var handlers = {
+		'keyup'    : {},
+		'keydown'  : {},
+		'keypress' : {}
+	};
 
-	handlers.keydown[Keys.CODES['delete']] = deleteForward;
-	handlers.keydown[Keys.CODES.backspace] = deleteBackward;
-	handlers.keydown[Keys.CODES.enter] = breakBlock;
-	handlers.keydown['shift+' + Keys.CODES.enter] = breakLine;
-	handlers.keydown['ctrl+' + Keys.CODES.bold] = formatBold;
-	handlers.keydown['ctrl+' + Keys.CODES.italic] = formatItalic;
-	handlers.keydown['ctrl+' + Keys.CODES.underline] = formatUnderline;
-	handlers.keydown['ctrl+' + Keys.CODES.selectAll] = selectAll;
+	handlers['keydown'][Keys.CODES['up']] =
+	handlers['keydown'][Keys.CODES['down']] =
+	handlers['keydown'][Keys.CODES['left']] =
+	handlers['keydown'][Keys.CODES['right']] = {clearOverrides: true};
 
-	handlers.keypress.input = inputText;
+	handlers['keydown'][Keys.CODES['delete']] = deleteForward;
+	handlers['keydown'][Keys.CODES['backspace']] = deleteBackward;
+	handlers['keydown'][Keys.CODES['enter']] = breakBlock;
+	handlers['keydown']['shift+' + Keys.CODES['enter']] = breakLine;
+	handlers['keydown']['ctrl+'  + Keys.CODES['bold']] =
+	handlers['keydown']['meta+'  + Keys.CODES['bold']] = formatBold;
+	handlers['keydown']['ctrl+'  + Keys.CODES['italic']] =
+	handlers['keydown']['meta+'  + Keys.CODES['italic']] = formatItalic;
+	handlers['keydown']['ctrl+'  + Keys.CODES['underline']] =
+	handlers['keydown']['meta+'  + Keys.CODES['underline']] = formatUnderline;
+	handlers['keydown']['ctrl+'  + Keys.CODES['selectAll']] =
+	handlers['keydown']['meta+'  + Keys.CODES['selectAll']] = selectAll;
+	handlers['keydown']['ctrl+'  + Keys.CODES['undo']] =
+	handlers['keydown']['meta+'  + Keys.CODES['undo']] = undo;
+	handlers['keydown']['ctrl+shift+' + Keys.CODES['undo']] =
+	handlers['keydown']['meta+shift+' + Keys.CODES['undo']] = redo;
 
-	handlers.keyup['ctrl+' + Keys.CODES.undo] = undo;
-	handlers.keyup['ctrl+shift+' + Keys.CODES.undo] = redo;
+	handlers['keypress']['input'] = inputText;
 
 	function handler(alohaEvent) {
 		var modifier = alohaEvent.meta ? alohaEvent.meta + '+' : '';
 		return (handlers[alohaEvent.type]
 		    && handlers[alohaEvent.type][modifier + alohaEvent.which])
-		    || (alohaEvent.isTextInput && handlers.keypress.input);
+		    || (alohaEvent.isTextInput && handlers['keypress']['input']);
 	}
 
 	function doHandling(alohaEvent) {

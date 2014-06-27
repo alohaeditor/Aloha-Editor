@@ -88,7 +88,7 @@ define([
 		var context;
 		switch (event.type) {
 		case 'aloha':
-			var blocks = event.editable.elem.querySelectorAll('.aloha-block');
+			var blocks = event.editable['elem'].querySelectorAll('.aloha-block');
 			[].forEach.call(blocks, function (block) {
 				block.setAttribute('contentEditable', 'false');
 			});

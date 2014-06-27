@@ -71,7 +71,8 @@ define([
 	 * @see
 	 * https://lists.webkit.org/pipermail/webkit-dev/2007-December/002992.html
 	 *
-	 * @param {Event} event Native event object
+	 * @private
+	 * @param  {Event} event Native event object
 	 * @return {boolean}
 	 */
 	function isTextInput(event) {
@@ -82,18 +83,22 @@ define([
 	/**
 	 * Returns a string of all meta keys for the given event.
 	 *
+	 * @private
 	 * @param  {Event} event
 	 * @return {string}
 	 */
 	function metaKeys(event) {
 		var meta = [];
-		if (event.ctrlKey && (CODES.ctrl !== event.which)) {
+		if (event.metaKey) {
+			meta.push('meta');
+		}
+		if (event.ctrlKey && (CODES['ctrl'] !== event.which)) {
 			meta.push('ctrl');
 		}
-		if (event.altKey && (CODES.alt !== event.which)) {
+		if (event.altKey && (CODES['alt'] !== event.which)) {
 			meta.push('alt');
 		}
-		if (event.shiftKey && (CODES.shift !== event.which)) {
+		if (event.shiftKey && (CODES['shift'] !== event.which)) {
 			meta.push('shift');
 		}
 		return meta.join('+');

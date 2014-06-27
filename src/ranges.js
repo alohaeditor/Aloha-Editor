@@ -122,8 +122,8 @@ define([
 		if (x < 0 || y < 0) {
 			return null;
 		}
-		if (doc.caretRangeFromPoint) {
-			return doc.caretRangeFromPoint(x, y);
+		if (doc['caretRangeFromPoint']) {
+			return doc['caretRangeFromPoint'](x, y);
 		}
 		if (doc.caretPositionFromPoint) {
 			var pos = doc.caretPositionFromPoint(x, y);

@@ -222,12 +222,12 @@ define([
 			}
 			var content = extractContent(
 				event,
-				alohaEvent.editable.elem.ownerDocument
+				alohaEvent.editable['elem'].ownerDocument
 			);
 			if (!content) {
 				return alohaEvent;
 			}
-			Undo.capture(alohaEvent.editable.undoContext, {
+			Undo.capture(alohaEvent.editable['undoContext'], {
 				meta: {type: 'paste'}
 			}, function () {
 				var boundary = insert(boundaries, content);

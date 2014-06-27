@@ -110,13 +110,13 @@ define([
 
 	return {
 		attrs     : attrs,
-		has       : has,
-		set       : set,
-		setNS     : setNS,
 		get       : get,
 		getNS     : getNS,
+		has       : has,
 		remove    : remove,
+		removeAll : removeAll,
 		removeNS  : removeNS,
-		removeAll : removeAll
+		set       : set,
+		setNS     : setNS
 	};
 });

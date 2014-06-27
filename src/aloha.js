@@ -50,8 +50,7 @@ define([
 	function editor(nativeEvent, custom) {
 		var alohaEvent = custom || {'nativeEvent' : nativeEvent};
 		alohaEvent.editor = editor;
-		alohaEvent = Fn.comp.apply(editor.stack, editor.stack)(alohaEvent);
-		setSelection(alohaEvent);
+		setSelection(Fn.comp.apply(editor.stack, editor.stack)(alohaEvent));
 	}
 
 	editor.editables = {};
@@ -84,7 +83,7 @@ define([
 		};
 		Editables.assocIntoEditor(editor, editable);
 		//elem.setAttribute('contentEditable', 'true');
-		Undo.enter(editable.undoContext, {
+		Undo.enter(editable['undoContext'], {
 			meta: {type: 'external'},
 			partitionRecords: true
 		});

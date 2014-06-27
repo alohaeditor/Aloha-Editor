@@ -215,19 +215,19 @@ define(['arrays', 'assert'], function (Arrays, Assert) {
 	}
 
 	return {
-		isEmpty    : isEmpty,
-		fillKeys   : fillKeys,
-		keys       : keys,
-		vals       : vals,
-		selectVals : selectVals,
-		filter     : filter,
-		forEach    : forEach,
-		extend     : extend,
-		merge      : merge,
-		isMap      : isMap,
-		clone      : clone,
-		cloneSet   : cloneSet,
-		cloneDelete: cloneDelete,
-		create     : create
+		isEmpty     : isEmpty,
+		fillKeys    : fillKeys,
+		keys        : keys,
+		vals        : vals,
+		selectVals  : selectVals,
+		filter      : filter,
+		forEach     : forEach,
+		extend      : extend,
+		merge       : merge,
+		isMap       : isMap,
+		clone       : clone,
+		cloneSet    : cloneSet,
+		cloneDelete : cloneDelete,
+		create      : create
 	};
 });

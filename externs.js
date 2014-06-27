@@ -56,3 +56,28 @@ opts.combineCharsMax = 20;
 opts.partitionRecords = true;
 opts.noObserve = true;
 opts.meta = {};
+
+var alohaEvent = {
+	type: '',
+	meta: '',
+	which: '',
+	range: null,
+	editor: null,
+	editable: null,
+	nativeEvent: null,
+	isTextInput: false
+};
+
+var editable = {
+	overrides: [],
+	dndContext: null,
+	undoContext: null
+};
+
+var editor = {
+	stack: [],
+	editables: {},
+	BLOCK_CLASS: '',
+	CARET_CLASS: '',
+	selectionContext: null
+};

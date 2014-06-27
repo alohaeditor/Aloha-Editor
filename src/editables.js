@@ -38,9 +38,9 @@ define([
 		var undoContext = Undo.Context(elem);
 		var id = Dom.ensureExpandoId(elem);
 		var editable = {
-			id: id,
-			elem: elem,
-			undoContext: undoContext
+			'id': id,
+			'elem': elem,
+			'undoContext': undoContext
 		};
 		return editable;
 	}
@@ -54,7 +54,7 @@ define([
 	}
 
 	function close(editable) {
-		Undo.close(editable.undoContext);
+		Undo.close(editable['undoContext']);
 	}
 
 	/**

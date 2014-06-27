@@ -248,9 +248,9 @@ define([], function () {
 		comp         : comp,
 		and          : and,
 		constantly   : constantly,
-		is: is,
-		isNou: isNou,
-		asMethod: asMethod,
-		extendType: extendType
+		is           : is,
+		isNou        : isNou,
+		asMethod     : asMethod,
+		extendType   : extendType
 	};
 });
