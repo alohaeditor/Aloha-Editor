@@ -95,6 +95,10 @@ define([
 		var range = alohaEvent.range;
 		var boundary = Boundaries.fromRangeStart(range);
 
+		if ('\t' === text) {
+			text = '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0';
+		}
+
 		if (' ' === text) {
 			var elem = Dom.upWhile(
 				Boundaries.container(boundary),
@@ -249,12 +253,12 @@ define([
 	handlers['keydown']['meta+'  + Keys.CODES['undo']] = undo;
 	handlers['keydown']['ctrl+shift+' + Keys.CODES['undo']] =
 	handlers['keydown']['meta+shift+' + Keys.CODES['undo']] = redo;
+	handlers['keydown'][Keys.CODES['tab']] = inputText;
 
 	handlers['keypress']['input'] = inputText;
 
 	function handler(alohaEvent) {
 		var modifier = alohaEvent.meta ? alohaEvent.meta + '+' : '';
-		if ('ctrl+65' === modifier + alohaEvent.which) debugger;
 		return (handlers[alohaEvent.type]
 		    && handlers[alohaEvent.type][modifier + alohaEvent.which])
 		    || (alohaEvent.isTextInput && handlers['keypress']['input']);
