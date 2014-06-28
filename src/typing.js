@@ -129,13 +129,12 @@ define([
 	function selectEditable(alohaEvent) {
 		var editable = Dom.editingHost(alohaEvent.range.commonAncestorContainer);
 		if (editable) {
-			alohaEvent.range = Ranges.create(
-				editable,
-				0,
-				editable,
-				Dom.nodeLength(editable)
+			alohaEvent.range = Ranges.fromBoundaries(
+				Boundaries.create(editable, 0),
+				Boundaries.fromEndOfNode(editable)
 			);
 		}
+		return alohaEvent.range;
 	}
 
 	var deleteBackward = {
@@ -255,6 +254,7 @@ define([
 
 	function handler(alohaEvent) {
 		var modifier = alohaEvent.meta ? alohaEvent.meta + '+' : '';
+		if ('ctrl+65' === modifier + alohaEvent.which) debugger;
 		return (handlers[alohaEvent.type]
 		    && handlers[alohaEvent.type][modifier + alohaEvent.which])
 		    || (alohaEvent.isTextInput && handlers['keypress']['input']);
