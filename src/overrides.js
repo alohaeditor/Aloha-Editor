@@ -37,8 +37,15 @@ define([
 ) {
 	'use strict';
 
+	/**
+	 * A table of node names that correlate to override commands.
+	 *
+	 * @private
+	 * @type {Object.<string, string>}
+	 * @see  stateToNode
+	 */
 	var nodeToState = {
-		'A'      : 'createLink',
+		'A'      : 'link',
 		'U'      : 'underline',
 		'B'      : 'bold',
 		'STRONG' : 'bold',
@@ -50,21 +57,14 @@ define([
 	};
 
 	/**
-	 * Any element whose node name corresponds with the given command states
-	 * ("bold", "italic", "underline", "strikethrough"), must also have the
-	 * associated style property match the expected value, otherwise that
-	 * element's state is considered nullified by the CSS styles that has been
-	 * applied to it.
+	 * A table of overrides an node names that correlate to them.
+	 *
+	 * @private
+	 * @type {Object.<string, string>}
+	 * @see  nodeToState
 	 */
-	var stateToStyle = {
-		'bold'          : ['fontWeight', 'bold', null],
-		'italic'        : ['fontStyle', 'italic', null],
-		'underline'     : ['textDecoration', 'underline', 'none'],
-		'strikethrough' : ['textDecoration', 'line-through', 'none']
-	};
-
-	var overrideToNode = {
-		'createLink'    : 'A',
+	var stateToNode = {
+		'link'          : 'A',
 		'underline'     : 'U',
 		'bold'          : 'B',
 		'italic'        : 'I',
@@ -73,7 +73,30 @@ define([
 		'superscript'   : 'SUP'
 	};
 
-	var overrideToValue = {
+	/**
+	 * Any element whose node name corresponds with the given command states
+	 * ("bold", "italic", "underline", "strikethrough"), must also have the
+	 * associated style property match the expected value, otherwise that
+	 * element's state is considered nullified by the CSS styles that has been
+	 * applied to it.
+	 *
+	 * @private
+	 * @type {Object.<string, Array.<string|null>>}
+	 */
+	var stateToStyle = {
+		'bold'          : ['fontWeight', 'bold', null],
+		'italic'        : ['fontStyle', 'italic', null],
+		'underline'     : ['textDecoration', 'underline', 'none'],
+		'strikethrough' : ['textDecoration', 'line-through', 'none']
+	};
+
+	/**
+	 * Translation of override values to styles.
+	 *
+	 * @private
+	 * @type {Object.<string, string>}
+	 */
+	var valueToStyle = {
 		'hilitecolor' : 'background-color',
 		'backcolor'   : 'background-color',
 		'fontname'    : 'font-family',
@@ -81,6 +104,12 @@ define([
 		'fontcolor'   : 'color'
 	};
 
+	/**
+	 * List of styles that can be affected through overrides.
+	 *
+	 * @private
+	 * @type {Object.<string, string>}
+	 */
 	var styles = [
 		'textTransform',
 
@@ -116,48 +145,72 @@ define([
 		'borderRightWidth'
 	];
 
-	function statesFromStyles(elem) {
-		var states = [];
+	/**
+	 * Creates a list of overrides from the given element node.
+	 *
+	 * @private
+	 * @param  {Element} elem
+	 * @return {Array.<Override>}
+	 */
+	function fromStyles(elem) {
+		var overrides = [];
 		Maps.forEach(stateToStyle, function (style, state) {
 			var value = Dom.getStyle(elem, style[0]);
 			if (value) {
 				if (style[2]) {
 					if (value === style[2]) {
-						states.push([state, false]);
+						overrides.push([state, false]);
 					} else if (value === style[1]) {
-						states.push([state, true]);
+						overrides.push([state, true]);
 					}
 				} else {
-					states.push([state, value === style[1]]);
+					overrides.push([state, value === style[1]]);
 				}
 			}
 		});
-		return states;
+		return overrides;
 	}
 
-	function getStates(elem) {
-		if (Dom.isTextNode(elem)) {
+	/**
+	 * Creates a list of overrides from the given node.
+	 *
+	 * @private
+	 * @param  {Node} node
+	 * @return {Array.<Override>}
+	 */
+	function fromNode(node) {
+		if (Dom.isTextNode(node)) {
 			return [];
 		}
-		var state = nodeToState[elem.nodeName];
-		return (state ? [[state, true]] : []).concat(statesFromStyles(elem));
+		var state = nodeToState[node.nodeName];
+		return (state ? [[state, true]] : []).concat(fromStyles(node));
 	}
 
-	function valuesFromStyles(elem) {
-		var values = [];
-		styles.forEach(function (style) {
-			var value = Dom.getStyle(elem, style);
-			if (value) {
-				values.push([style, value]);
-			}
-		});
-		return values;
+	/**
+	 * Creates a list of overrides
+	 *
+	 * @private
+	 * @param  {Node} node
+	 * @return {Array.<Override>}
+	 */
+	function valuesFromNode(node) {
+		if (Dom.isTextNode(node)) {
+			return [];
+		}
+		return styles.reduce(function (values, style) {
+			var value = Dom.getStyle(node, style);
+			return value ? values.concat([[style, value]]) : values;
+		}, []);
 	}
 
-	function getValues(elem) {
-		return Dom.isTextNode(elem) ? [] : valuesFromStyles(elem);
-	}
-
+	/**
+	 * Creates a list of overrides from the given node and all ancestors until
+	 * the given predicate or the editing host.
+	 *
+	 * @param  {Node}                   node
+	 * @param  {function(Node):boolean} until
+	 * @return {Array.<Override>}
+	 */
 	function harvest(node, until) {
 		var stack = [];
 		var nodes = Dom.childAndParentsUntil(node, until || Dom.isEditingHost);
@@ -169,7 +222,7 @@ define([
 		var state;
 		var index;
 		while (i--) {
-			states = getStates(nodes[i]);
+			states = fromNode(nodes[i]);
 			for (j = 0, len = states.length; j < len; j++) {
 				state = states[j];
 				index = map[state[0]];
@@ -178,26 +231,30 @@ define([
 				}
 				map[state[0]] = stack.push(state);
 			}
-			stack = stack.concat(getValues(nodes[i]));
+			stack = stack.concat(valuesFromNode(nodes[i]));
 		}
-		var overrides = [];
-		for (i = 0, len = stack.length; i < len; i++) {
-			if (stack[i]) {
-				overrides.push(stack[i]);
-			}
-		}
-		return overrides;
+		return stack.reduce(function (overrides, override) {
+			return override ? overrides.concat([override]) : overrides;
+		}, []);
 	}
 
+	/**
+	 * Inserts a DOM nodes at the given boundary to reflect the list of
+	 * overrides.
+	 *
+	 * @param  {Boundary}         boundary
+	 * @param  {Array.<Override>} overrides
+	 * @return {Boundary}
+	 */
 	function consume(boundary, overrides) {
-		var doc = Boundaries.container(boundary).ownerDocument;
+		var doc = Boundaries.document(boundary);
 		var override = overrides.pop();
 		var node;
 		var wrapper;
 		while (override) {
-			if (overrideToNode[override[0]]) {
+			if (stateToNode[override[0]]) {
 				// TODO: implement handling for false overrides states
-				wrapper = doc.createElement(overrideToNode[override[0]]);
+				wrapper = doc.createElement(stateToNode[override[0]]);
 				if (node) {
 					Dom.wrap(node, wrapper);
 				} else {
@@ -218,15 +275,14 @@ define([
 		return boundary;
 	}
 
-	function lookup(overrides, name) {
-		for (var i = 0; i < overrides.length; i++) {
-			if (name === overrides[i][0]) {
-				return overrides[i][1];
-			}
-		}
-		return null;
-	}
-
+	/**
+	 * Looks for an override with the given command or state name from the given
+	 * list of overrides.
+	 *
+	 * @param  {Array.<Override>} overrides
+	 * @param  {string}           name
+	 * @return {Override}
+	 */
 	function find(overrides, name) {
 		for (var i = 0; i < overrides.length; i++) {
 			if (name === overrides[i][0]) {
@@ -236,24 +292,39 @@ define([
 		return null;
 	}
 
+	/**
+	 * Converts a list of overrides represented in array tuples into a hash map
+	 * key-value pair.
+	 *
+	 * @param  {Array.<Override>} overrides
+	 * @return {Override}
+	 */
 	function map(overrides) {
-		var ret = {};
-		for (var i = 0; i < overrides.length; i++) {
-			ret[overrides[i][0]] = overrides[i][1];
-		}
-		return ret;
+		var table = {};
+		overrides.forEach(function (override) {
+			table[override[0]] = override[1];
+		});
+		return table;
 	}
 
-	function toggle(overrides, override) {
-		var found = find(overrides, override[0]);
+	/**
+	 * Toggles the value of the override matching the given name from among the
+	 * list of overrides.
+	 *
+	 * @param  {Array.<Override>} overrides
+	 * @param  {string}           name
+	 * @param  {string}           value
+	 * @return {Override}
+	 */
+	function toggle(overrides, name, value) {
+		var found = find(overrides, name);
 		return found ? Arrays.difference(overrides, [found])
-		             : overrides.concat([override]);
+		             : overrides.concat([[name, value]]);
 	}
 
 	return {
 		map         : map,
 		toggle      : toggle,
-		lookup      : lookup,
 		harvest     : harvest,
 		consume     : consume,
 		nodeToState : nodeToState

@@ -71,7 +71,8 @@ define([
 			if (override) {
 				alohaEvent.editable.overrides = Overrides.toggle(
 					alohaEvent.editable.overrides,
-					[override, true]
+					override,
+					true
 				);
 			}
 			return alohaEvent.range;

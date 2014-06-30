@@ -431,7 +431,6 @@ define([
 
 	exports['overrides'] = Overrides;
 	exports['overrides']['map']     = Overrides.map;
-	exports['overrides']['lookup']  = Overrides.lookup;
 	exports['overrides']['harvest'] = Overrides.harvest;
 	exports['overrides']['consume'] = Overrides.consume;
 
