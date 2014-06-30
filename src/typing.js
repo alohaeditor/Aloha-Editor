@@ -35,11 +35,11 @@ define([
 	function undoable(type, alohaEvent, fn) {
 		var range = alohaEvent.range;
 		Undo.capture(alohaEvent.editable['undoContext'], {
-			'meta': {type: type},
-			'oldRange': range
+			meta: {type: type},
+			oldRange: range
 		}, function () {
 			range = fn();
-			return {'newRange': range};
+			return {newRange: range};
 		});
 		return range;
 	}

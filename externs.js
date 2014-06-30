@@ -1,88 +1,125 @@
-var pos = {
-	// Because of traversing.prevNodeBoundary()
-	container: null, 
-
+var cursor = {
 	// Because of cursor.js
-	node: null, 
-	atEnd: false
+	node  : null,
+	atEnd : false
 };
 
-var opts = {};
-// Editing.split()
-opts.clone = function () {};
-opts.until = function () {};
-opts.below = function () {};
-opts.normalizeRange = true;
-// Editing.format()
-opts.createWrapper = function () {};
-opts.isPrunable = function () {};
-opts.isStyleEqual = function () {};
-opts.isObstruction = function () {};
-// Editing.wrap()
-opts.createWrapper = function () {};
-opts.isReusable = function () {};
+var opts = {
+	// Editing.split()
+	clone          : function () {},
+	until          : function () {},
+	below          : function () {},
+	normalizeRange : true,
+	// Editing.format()
+	createWrapper  : function () {},
+	isPrunable     : function () {},
+	isStyleEqual   : function () {},
+	isObstruction  : function () {},
+	// Editing.wrap()
+	isReusable     : function () {}
+};
 
 // Undo
-var change = {};
-change.type = 'insert';
-change.path = [];
-change.content = [];
-change.attrs = [{}];
-change.attrs[0].name = 'name';
-change.attrs[0].ns = 'namespace';
-change.attrs[0].oldValue = 'value';
-change.attrs[0].newValue = 'value';
-var changeSet = {};
-changeSet.changes = [];
-changeSet.meta = {};
-changeSet.selection = {};
-changeSet.selection.type = 'update-range';
-changeSet.selection.newRange = {};
-changeSet.selection.newRange.start = {};
-changeSet.selection.newRange.end = {};
-changeSet.selection.oldRange = {};
-changeSet.selection.oldRange.start = {};
-changeSet.selection.oldRange.end = {};
+var change = {
+	type    : '',
+	path    : [],
+	content : [],
+	attrs   : [{
+		name     : '',
+		ns       : '',
+		oldValue : '',
+		newValue : ''
+	}]
+};
+
+var changeSet = {
+	changes   : [],
+	meta      : {},
+	selection : {
+		type    :'',
+		newRange : {
+			start : {},
+			end   : {}
+		},
+		oldRange : {}
+	}
+};
 
 // Undo
-var changeSet = {};
-changeSet.changes = [];
+var changeSet = { changes: [] };
 
-var opts = {};
-// Undo.createContext()
-opts.noMutationObserver = true;
-opts.combineCharsMax = 20;
-// Undo.enter() / Undo.capture()
-opts.partitionRecords = true;
-opts.noObserve = true;
-opts.meta = {};
+var opts = {
+	// Undo.createContext()
+	noMutationObserver : true,
+	combineCharsMax    : 20,
+	// Undo.enter() / Undo.capture()
+	partitionRecords   : true,
+	noObserve          : true,
+	meta               : {}
+};
 
 var MutationObserver = {
 	takeRecords: null
 };
 
 var alohaEvent = {
-	chr: '',
-	type: '',
-	meta: '',
-	which: '',
-	range: null,
-	editor: null,
-	editable: null,
-	nativeEvent: null,
-	isTextInput: false
+	chr         : '',
+	type        : '',
+	meta        : '',
+	which       : '',
+	range       : null,
+	editor      : null,
+	editable    : null,
+	nativeEvent : null,
+	isTextInput : false
 };
 
 var editable = {
-	overrides: [],
-	dndContext: null,
-	undoContext: null
+	selectContext : null,
+	undoContext   : null,
+	overrides     : [],
+	dndContext    : {
+		observer     : null,
+		frame        : {
+			opts     : {},
+			records  : [],
+			oldRange : null,
+			newRange : null
+		},
+		elem         : null,
+		stack        : [],
+		history      : [],
+		historyIndex : 0,
+		opts         : {
+			disconnect     : function () {},
+			observeAll     : function () {},
+			takeChanges    : function () {},
+			discardChanges : function () {}
+		}
+	}
+};
+
+var SelectionContext = {
+	caret          : null,
+	range          : null,
+	focus          : '',
+	dragging       : false,
+	mousedown      : false,
+	doubleclicking : false,
+	tripleclicking : false
 };
 
 var editor = {
-	stack: [],
-	editables: {},
-	BLOCK_CLASS: '',
-	CARET_CLASS: '',
-	selectionContext: null
+	stack            : [],
+	editables        : {},
+	BLOCK_CLASS      : '',
+	CARET_CLASS      : '',
+	selectionContext : null
+};
+
+var action = {
+	clearOverrides : true,
+	preventDefault : true,
+	undo           : '',
+	mutate         : function () {}
 };
