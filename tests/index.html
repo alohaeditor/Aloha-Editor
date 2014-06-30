@@ -10,7 +10,6 @@
 	<script src="../src/require-pronto.js"></script>
 	<script src="../src/require-pronto.dev.js"></script>
 	<script>define.amd = {jQuery:true};</script>
-	<script src="../build/aloha.js"></script>
 	<style>
 		#aloha_instance {
 			padding: 0;
@@ -41,6 +40,7 @@
 		<div id="test-editable" contentEditable="true"></div>
 	</div>
 	<div class="aloha-editable" id="aloha_instance"></div>
+	<script src="../build/aloha.js"></script>
 	<script>
 		var isBuild = false;
 
@@ -128,19 +128,15 @@
 			], function () {});
 		}
 
-		if (typeof aloha !== 'undefined') {
+		if (aloha) {
 			isBuild = true;
 			run();
 		} else {
 			isBuild = false;
-			require(['../src/aloha'], run);
+			require('../src/aloha', run);
 		}
 
-		$('h1').append(
-			': <b style="color: #C6E746">'
-				+ (isBuild ? 'build' : 'dev')
-				+ '</b>'
-		);
+		$('h1').append(': <b style="color: #C6E746">' + (isBuild ? 'build' : 'dev') + '</b>');
 	</script>
 </body>
 </html>

@@ -165,9 +165,9 @@
 				function main(aloha) {
 					aloha.arrays.coerce(document.querySelectorAll('.aloha-editable')).forEach(aloha);
 				}
-				if ('undefined' === typeof aloha) {
+				if (aloha) {
 					setVersion('src');
-					require(['../src/aloha'], main);
+					require('../src/aloha', main);
 				} else {
 					setVersion('build');
 					main(aloha);

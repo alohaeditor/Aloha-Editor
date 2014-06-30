@@ -32,6 +32,13 @@ var change = {
 	}]
 };
 
+var Frame = {
+	opts     : {},
+	records  : [],
+	oldRange : null,
+	newRange : null
+};
+
 var changeSet = {
 	changes   : [],
 	meta      : {},
@@ -74,18 +81,62 @@ var alohaEvent = {
 	isTextInput : false
 };
 
+var Boromir = {
+	name         : function () {},
+	text         : function () {},
+	children     : function () {},
+	affinity     : function () {},
+	attrs        : function () {},
+	attr         : function () {},
+	style        : function () {},
+	updateDom    : function () {},
+	asDom        : function () {},
+	create       : function () {},
+	hasClass     : function () {},
+	addClass     : function () {},
+	removeClass  : function () {}
+};
+
+var Record = {
+	domNode             : null,
+	type                : null,
+	name                : null,
+	text                : null,
+	children            : null,
+	affinity            : false,
+	classes             : {},
+	define              : function () {},
+	hookSetter          : function () {},
+	hookSetterRecompute : function () {},
+	asTransient         : function () {},
+	asPersistent        : function () {},
+	get                 : function () {},
+	set                 : function () {},
+	setT                : function () {},
+	delay               : function () {},
+	delayT              : function () {},
+	realize             : function () {},
+	obj                 : {}
+};
+
+var DelayedMap = {
+	keys          : [],
+	has           : function () {},
+	isRealized    : function () {},
+	mergeObject   : {},
+	_map_opts     : {},
+	_map_data     : null,
+	_map_source   : null,
+	_map_realized : null
+};
+
 var editable = {
 	selectContext : null,
 	undoContext   : null,
 	overrides     : [],
 	dndContext    : {
 		observer     : null,
-		frame        : {
-			opts     : {},
-			records  : [],
-			oldRange : null,
-			newRange : null
-		},
+		frame        : {},
 		elem         : null,
 		stack        : [],
 		history      : [],
@@ -122,4 +173,19 @@ var action = {
 	preventDefault : true,
 	undo           : '',
 	mutate         : function () {}
+};
+
+var Nodes = {
+	ELEMENT                : 0,
+	ATTR                   : 0,
+	TEXT                   : 0,
+	CDATA_SECTION          : 0,
+	ENTITY_REFERENCE       : 0,
+	ENTITY                 : 0,
+	PROCESSING_INSTRUCTION : 0,
+	COMMENT                : 0,
+	DOCUMENT               : 0,
+	DOCUMENTTYPE           : 0,
+	DOCUMENT_FRAGMENT      : 0,
+	NOTATION               : 0
 };

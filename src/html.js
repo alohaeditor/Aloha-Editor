@@ -71,10 +71,10 @@ define([
 		isTextLevelSemanticNode   : Predicates.isTextLevelSemanticNode,
 		isVoidNode                : Predicates.isVoidNode,
 
-		__ : {
-			isRenderedBr       : Mutation.isRenderedBr,
-			nextLineBreak      : Mutation.nextLineBreak,
-			isVisuallyAdjacent : Mutation.isVisuallyAdjacent
+		'__' : {
+			'isRenderedBr'       : Mutation.isRenderedBr,
+			'nextLineBreak'      : Mutation.nextLineBreak,
+			'isVisuallyAdjacent' : Mutation.isVisuallyAdjacent
 		}
 	};
 });

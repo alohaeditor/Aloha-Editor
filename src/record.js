@@ -444,8 +444,8 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	}
 
 	return {
-		define    : define,
-		hookSetter: hookSetter,
-		hookSetterRecompute: hookSetterRecompute
+		'define'              : define,
+		'hookSetter'          : hookSetter,
+		'hookSetterRecompute' : hookSetterRecompute
 	};
 });
