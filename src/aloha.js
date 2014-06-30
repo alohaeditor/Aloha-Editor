@@ -48,7 +48,7 @@ define([
 	}
 
 	function editor(nativeEvent, custom) {
-		var alohaEvent = custom || {'nativeEvent' : nativeEvent};
+		var alohaEvent = custom || {nativeEvent : nativeEvent};
 		alohaEvent.editor = editor;
 		setSelection(Fn.comp.apply(editor.stack, editor.stack)(alohaEvent));
 	}
@@ -88,8 +88,8 @@ define([
 			partitionRecords: true
 		});
 		editor(null, {
-			'type'     : 'aloha',
-			'editable' : editable
+			type     : 'aloha',
+			editable : editable
 		});
 	}
 
@@ -99,8 +99,8 @@ define([
 		Editables.dissocFromEditor(editor, editable);
 		elem.removeAttribute('contentEditable');
 		editor(null, {
-			'type'     : 'mahalo',
-			'editable' : editable
+			type     : 'mahalo',
+			editable : editable
 		});
 	}
 

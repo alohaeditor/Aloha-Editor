@@ -87,18 +87,15 @@ define([
 	/**
 	 * Calculates the override values at the given boundary container.
 	 *
-	 * @param  {Object}  event
-	 * @param  {Element} container
-	 * @return {Object}  An object with overrides mapped against their names
+	 * @param  {Array.<Overrides>} overrides
+	 * @param  {Element}           container
+	 * @return {Object}            An object with overrides mapped against their names
 	 */
-	function overrides(event, container) {
-		if (event.editable) {
-			return Maps.merge(
-				Overrides.map(Overrides.harvest(container)),
-				Overrides.map(event.editable.overrides)
-			);
-		}
-		return Overrides.map(Overrides.harvest(container));
+	function overrides(overrides, container) {
+		return Maps.merge(
+			Overrides.map(Overrides.harvest(container)),
+			Overrides.map(overrides)
+		);
 	}
 
 	/**
@@ -619,11 +616,11 @@ define([
 	/**
 	 * Renders a caret element to show the user selection.
 	 *
-	 * @param  {Object} event
-	 * @return {Object}
+	 * @param  {AlohaEvent} event
+	 * @return {AlohaEvent}
 	 */
 	function handle(event) {
-		if (!handlers[event.type]) {
+		if (!event.editable || !handlers[event.type]) {
 			return event;
 		}
 
@@ -700,7 +697,7 @@ define([
 
 		Maps.extend(
 			context.caret.style,
-			stylesFromOverrides(overrides(event, container))
+			stylesFromOverrides(overrides(event.editable.overrides, container))
 		);
 
 		var preventDefault = ('keydown' === type && movements[event.which])
