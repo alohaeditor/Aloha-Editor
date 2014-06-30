@@ -128,12 +128,12 @@
 			], function () {});
 		}
 
-		if (aloha) {
-			isBuild = true;
-			run();
-		} else {
+		if ('undefine' == typeof aloha) {
 			isBuild = false;
 			require('../src/aloha', run);
+		} else {
+			isBuild = true;
+			run();
 		}
 
 		$('h1').append(': <b style="color: #C6E746">' + (isBuild ? 'build' : 'dev') + '</b>');
