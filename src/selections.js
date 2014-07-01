@@ -538,6 +538,9 @@ define([
 	function Context(doc) {
 		var caret = doc.createElement('div');
 		caret.style.display = 'none';
+		caret.style.position = 'absolute';
+		caret.style.zIndex = '9999';
+		caret.style.backgroundColor = 'black';
 		Dom.addClass(caret, 'aloha-caret aloha-ephemera');
 		Dom.insert(caret, doc.body, true);
 		return {
