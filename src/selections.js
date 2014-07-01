@@ -82,18 +82,26 @@ define([
 	}
 
 	/**
-	 * Calculates the override values at the given boundary container.
+	 * Computes a table of the given override and those collected at the given
+	 * node.
 	 *
 	 * @private
 	 * @param  {Array.<Overrides>} overrides
-	 * @param  {Element}           container
+	 * @param  {Node}              node
 	 * @return {Object}            An object with overrides mapped against their names
 	 */
-	function overrides(overrides, container) {
-		return Maps.merge(
-			Overrides.map(Overrides.harvest(container)),
+	function collectOverrides(overrides, node) {
+		var table = Maps.merge(
+			Overrides.map(Overrides.harvest(node)),
 			Overrides.map(overrides)
 		);
+		if (!table['color']) {
+			table['color'] = Dom.getComputedStyle(
+				Dom.isTextNode(node) ? node.parentNode : node,
+				'color'
+			);
+		}
+		return table;
 	}
 
 	/**
@@ -711,10 +719,9 @@ define([
 
 		show(context.caret, boundary);
 
-		Maps.extend(
-			context.caret.style,
-			stylesFromOverrides(overrides(event.editable.overrides, container))
-		);
+		Maps.extend(context.caret.style, stylesFromOverrides(
+			collectOverrides(event.editable.overrides, container)
+		));
 
 		var preventDefault = ('keydown' === type && movements[event.which])
 				|| (event.editor.CARET_CLASS === event.nativeEvent.target.className);

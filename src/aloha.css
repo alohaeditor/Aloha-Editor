@@ -17,31 +17,6 @@
 	     -o-transform: scale(0.9);
 }
 
-.aloha-caret {
-	position: absolute;
-	z-index: 1;
-	margin: 0;
-	padding: 0;
-	background: #333;
-}
-
-.xaloha-caret-blink {
-	-webkit-animation: blink .5s ease-out infinite alternate;
-	   -moz-animation: blink .5s ease-out infinite alternate;
-	    -ms-animation: blink .5s ease-out infinite alternate;
-	     -o-animation: blink .5s ease-out infinite alternate;
-	        animation: blink .5s ease-out infinite alternate;
-}
-
-@-moz-keyframes blink {
-	  0% {opacity: 1}
-	100% {opacity: 0}
-}
-@-webkit-keyframes blink {
-	  0% {opacity: 1}
-	100% {opacity: 0}
-}
-
 /* IMPORTANT: This style hack is required for aloha.ranges.box() to work
  * properly (https://github.com/alohaeditor/Aloha-Editor/issues/1138) */
 .aloha-editable br, .aloha-editable br:after { content: "\A"; white-space: pre-line; }

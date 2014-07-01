@@ -687,6 +687,9 @@ define([
 	/**
 	 * Gets the bounding box of offets for the given range.
 	 *
+	 * This function requires the following css:
+	 * .aloha-editable br, .aloha-editable br:after { content: "\A"; white-space: pre-line; }
+	 *
 	 * @param  {Range} range
 	 * @return {Object.<string, number>}
 	 */
