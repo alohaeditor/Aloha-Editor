@@ -940,24 +940,24 @@ define([
 	 * Moves the boundary backwards by a unit measure.
 	 *
 	 * The second parameter `unit` specifies the unit with which to move the
-	 * boundary.  This value may be one of the following strings:
+	 * boundary. This value may be one of the following strings:
 	 *
 	 * "char" -- Move behind the previous visible character.
 	 *
 	 * "word" -- Move behind the previous word.
 	 *
-	 *		A word is the smallest semantic unit.  It is a contigious sequence
-	 *		of visible characters terminated by a space or puncuation character
-	 *		or a word-breaker (in languages that do not use space to delimit
-	 *		word boundaries).
+	 *		A word is the smallest semantic unit. It is a contigious sequence of
+	 *		visible characters terminated by a space or puncuation character or
+	 *		a word-breaker (in languages that do not use space to delimit word
+	 *		boundaries).
 	 *
 	 * "boundary" -- Move in behind of the previous boundary and skip over void
 	 *               elements.
 	 *
 	 * "offset" -- Move behind the previous visual offset.
 	 *
-	 *		A visual offset is the smallest unit of consumed space.  This can
-	 *		be a line break, or a visible character.
+	 *		A visual offset is the smallest unit of consumed space. This can be
+	 *		a line break, or a visible character.
 	 *
 	 * "node" -- Move in front of the previous visible node.
 	 *
