@@ -108,7 +108,7 @@ define([
 		style['padding'] = overrides['bold'] ? '1px' : '0px';
 		style[Browsers.VENDOR_PREFIX + 'transform']
 				= overrides['italic'] ? 'rotate(16deg)' : '';
-		style['background'] = overrides['color'] || '';
+		style['background'] = overrides['color'] || 'black';
 		return style;
 	}
 
@@ -549,6 +549,8 @@ define([
 	function Context(doc) {
 		var caret = doc.createElement('div');
 		caret.style.display = 'none';
+		caret.style.position = 'absolute';
+		caret.style.zIndex = '9999';
 		Dom.addClass(caret, 'aloha-caret aloha-ephemera');
 		Dom.insert(caret, doc.body, true);
 		return {
