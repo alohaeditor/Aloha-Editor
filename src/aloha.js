@@ -79,7 +79,7 @@ define([
 		var editable = Editables.Editable(elem);
 		editable.overrides = [];
 		editable.settings = {
-			defaultBlockNodeName: 'div'
+			defaultBlockNodeName: 'p'
 		};
 		Editables.assocIntoEditor(editor, editable);
 		//elem.setAttribute('contentEditable', 'true');
