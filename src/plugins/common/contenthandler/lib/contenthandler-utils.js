@@ -42,7 +42,7 @@ define([
 		if (!containsSingleP) {
 			return false;
 		}
-		var $visible = $(p.childNodes).filter(function (i, node) {
+		var $visible = $(first.childNodes).filter(function (i, node) {
 			return Html.isRenderedNode(node);
 		});
 		return $visible.length === 1 && $visible[0].nodeName === 'BR';
