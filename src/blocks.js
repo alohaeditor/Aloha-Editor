@@ -96,7 +96,7 @@ define([
 		case 'mousedown':
 			var block = event.nativeEvent.target;
 			if (isBlockEvent(event) && DragDrop.isDraggable(block)) {
-				event.editor.dndContext = Events.isWithCtrl(event)
+				event.editor.dndContext = Events.hasKeyModifier(event, 'ctrl')
 				                        ? copyContext(block)
 				                        : moveContext(block);
 			}

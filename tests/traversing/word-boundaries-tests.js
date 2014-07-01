@@ -15,7 +15,6 @@
 
 	var Html = aloha.html;
 	var Boundaries = aloha.boundaries;
-	var Traversing = aloha.traversing;
 	var Mutation = aloha.mutation;
 	var Dom = aloha.dom;
 	var Paths = aloha.paths;
@@ -38,7 +37,7 @@
 
 	test('next("word")', function () {
 		var dom = $('<div>foo<b>bar</b>s baz</div>')[0];
-		var boundary = Traversing.next(Boundaries.fromNode(dom.firstChild), 'word');
+		var boundary = Html.next(Boundaries.fromNode(dom.firstChild), 'word');
 		equal(Boundaries.container(boundary), dom.lastChild);
 		equal(Boundaries.offset(boundary), 1);
 
@@ -53,7 +52,7 @@
 				return !Dom.isEditingHost(Boundaries.nextNode(boundary));
 			},
 			function (boundary) {
-				return Traversing.next(boundary, 'word');
+				return Html.next(boundary, 'word');
 			},
 			function (boundary) {
 				if (Boundaries.isTextBoundary(boundary)) {
@@ -68,7 +67,7 @@
 
 	test('prev("word")', function () {
 		var dom = $('<div>foo <b>bar</b>s baz</div>')[0];
-		var boundary = Traversing.prev(Boundaries.create(dom.firstChild.nextSibling, 0), 'word');
+		var boundary = Html.prev(Boundaries.create(dom.firstChild.nextSibling, 0), 'word');
 		equal(Boundaries.container(boundary), dom.firstChild);
 		equal(Boundaries.offset(boundary), 4);
 
@@ -82,7 +81,7 @@
 				return !Dom.isEditingHost(Boundaries.prevNode(boundary));
 			},
 			function (boundary) {
-				return Traversing.prev(boundary, 'word');
+				return Html.prev(boundary, 'word');
 			},
 			function (boundary) {
 				if (!Boundaries.isNodeBoundary(boundary)) {

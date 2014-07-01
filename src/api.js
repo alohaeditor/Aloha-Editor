@@ -317,8 +317,7 @@ define([
 	exports['events']['add']             = Events.add;
 	exports['events']['remove']          = Events.remove;
 	exports['events']['setup']           = Events.setup;
-	exports['events']['isWithCtrl']      = Events.isWithCtrl;
-	exports['events']['isWithShift']     = Events.isWithShift;
+	exports['events']['hasKeyModifier']  = Events.hasKeyModifier;
 	exports['events']['dispatch']        = Events.dispatch;
 	exports['events']['nextTick']        = Events.nextTick;
 	exports['events']['preventDefault']  = Events.preventDefault;

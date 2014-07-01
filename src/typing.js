@@ -81,7 +81,7 @@ define([
 		return Ranges.fromBoundaries(boundaries[0], boundaries[1]);
 	}
 
-	function break_(isLinebreak, alohaEvent) {
+	function breakline(isLinebreak, alohaEvent) {
 		Editing.breakline(
 			alohaEvent.range,
 			alohaEvent.editable.defaultBlockNodeName,
@@ -161,7 +161,7 @@ define([
 		clearOverrides : true,
 		preventDefault : true,
 		undo           : 'enter',
-		mutate         : Fn.partial(break_, false)
+		mutate         : Fn.partial(breakline, false)
 	};
 
 	var breakLine = {
@@ -169,7 +169,7 @@ define([
 		clearOverrides : true,
 		preventDefault : true,
 		undo           : 'enter',
-		mutate         : Fn.partial(break_, true)
+		mutate         : Fn.partial(breakline, true)
 	};
 
 	var formatBold = {

@@ -87,18 +87,8 @@ define(['misc', 'assert'], function (Misc, Assert) {
 	 * @param  {Object}  event
 	 * @return {boolean}
 	 */
-	function isWithCtrl(event) {
-		return event.meta.indexOf('ctrl') > -1;
-	}
-
-	/**
-	 * Given an event object, checks whether the shift key is depressed.
-	 *
-	 * @param  {Object}  event
-	 * @return {boolean}
-	 */
-	function isWithShift(event) {
-		return event.meta.indexOf('shift') > -1;
+	function hasKeyModifier(event, modifier) {
+		return event.meta.indexOf(modifier) > -1;
 	}
 
 	/**
@@ -192,8 +182,7 @@ define(['misc', 'assert'], function (Misc, Assert) {
 		add             : add,
 		remove          : remove,
 		setup           : setup,
-		isWithCtrl      : isWithCtrl,
-		isWithShift     : isWithShift,
+		hasKeyModifier  : hasKeyModifier,
 		dispatch        : dispatch,
 		nextTick        : nextTick,
 		preventDefault  : preventDefault,

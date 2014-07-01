@@ -6,7 +6,6 @@
  * Contributors http://aloha-editor.org/contribution.php
  *
  * @TODO: better climbing
- *        <br>|<br> in chrome
  *        ie support
  */
 define([
@@ -16,7 +15,6 @@ define([
 	'maps',
 	'events',
 	'ranges',
-	'strings',
 	'browsers',
 	'overrides',
 	'boundaries',
@@ -28,7 +26,6 @@ define([
 	Maps,
 	Events,
 	Ranges,
-	Strings,
 	Browsers,
 	Overrides,
 	Boundaries,
@@ -87,6 +84,7 @@ define([
 	/**
 	 * Calculates the override values at the given boundary container.
 	 *
+	 * @private
 	 * @param  {Array.<Overrides>} overrides
 	 * @param  {Element}           container
 	 * @return {Object}            An object with overrides mapped against their names
@@ -101,6 +99,7 @@ define([
 	/**
 	 * Determines how to style a caret element based on the given overrides.
 	 *
+	 * @private
 	 * @param  {Object} overrides
 	 * @return {Object} A map of style properties and their values
 	 */
@@ -108,7 +107,7 @@ define([
 		var style = {};
 		style['padding'] = overrides['bold'] ? '1px' : '0px';
 		style[Browsers.VENDOR_PREFIX + 'transform']
-				= overrides['italic'] ? 'rotate(8deg)' : '';
+				= overrides['italic'] ? 'rotate(16deg)' : '';
 		style['background'] = overrides['color'] || '';
 		return style;
 	}
@@ -118,6 +117,7 @@ define([
 	 * checks whether the end boundary preceeds the start boundary in document
 	 * order.
 	 *
+	 * @private
 	 * @param  {Element} sc Start container
 	 * @param  {string}  so Start offset
 	 * @param  {Element} ec End container
@@ -132,6 +132,7 @@ define([
 	/**
 	 * Checks whether or not the given event is a mouse event.
 	 *
+	 * @private
 	 * @param  {Event|AlohaEvent} event
 	 * @return {boolean}
 	 */
@@ -151,6 +152,7 @@ define([
 	/**
 	 * Creates a range that is `stride` pixels above the given offset bounds.
 	 *
+	 * @private
 	 * @param  {Object.<string, number>} box
 	 * @param  {number}                  stride
 	 * @param  {Document}                doc
@@ -163,6 +165,7 @@ define([
 	/**
 	 * Creates a range that is `stride` pixels below the given offset bounds.
 	 *
+	 * @private
 	 * @param  {Object.<string, number>} box
 	 * @param  {number}                  stride
 	 * @return {Range}
@@ -171,16 +174,10 @@ define([
 		return Ranges.fromPosition(box.left, box.top + box.height + stride, doc);
 	}
 
-	function left(boundary, stride) {
-		return Traversing.prev(boundary, stride);
-	}
-	function right(boundary, stride) {
-		return Traversing.next(boundary, stride);
-	}
-
 	/**
 	 * Given two ranges, creates a range that is between the two.
 	 *
+	 * @private
 	 * @param  {Range}  a
 	 * @param  {Range}  b
 	 * @param  {string} focus Either "start" or "end"
@@ -215,6 +212,7 @@ define([
 	 * Determines the closest visual caret position above or below the given
 	 * range.
 	 *
+	 * @private
 	 * @param  {Event}  event
 	 * @param  {Range}  range
 	 * @param  {string} focus
@@ -248,7 +246,7 @@ define([
 		if (!next) {
 			return;
 		}
-		if (!Events.isWithShift(event)) {
+		if (!Events.hasKeyModifier(event, 'shift')) {
 			return {
 				range: next,
 				focus: focus
@@ -261,6 +259,7 @@ define([
 	 * Determines the next visual caret position before or after the given
 	 * range.
 	 *
+	 * @private
 	 * @param  {Event}  event
 	 * @param  {Range}  range
 	 * @param  {string} focus
@@ -269,9 +268,9 @@ define([
 	 */
 	function step(event, range, focus, direction) {
 		var get, set, collapse;
-		var shift = Events.isWithShift(event);
+		var shift = Events.hasKeyModifier(event, 'shift');
 		var clone = range.cloneRange();
-		var move = ('left' === direction) ? left : right;
+		var move = ('left' === direction) ? Traversing.prev : Traversing.next;
 		if (range.collapsed || !shift) {
 			focus = ('left' === direction) ? 'start' : 'end';
 		}
@@ -286,7 +285,9 @@ define([
 		}
 		if (range.collapsed || shift) {
 			Ranges.envelopeInvisibleCharacters(range);
-			var stride = Events.isWithCtrl(event) ? 'word' : 'visual';
+			var stride = (Events.hasKeyModifier(event, 'ctrl') || Events.hasKeyModifier(event, 'alt'))
+			           ? 'word'
+			           : 'visual';
 			var boundary = get(range);
 			set(clone, move(boundary, stride) || boundary);
 		}
@@ -302,6 +303,7 @@ define([
 	/**
 	 * Caret movement operations mapped against cursor key keycodes.
 	 *
+	 * @private
 	 * @type {Object.<string, function(Event, Range, string):Object>}
 	 */
 	var movements = {};
@@ -325,6 +327,7 @@ define([
 	/**
 	 * Processes a keypress event.
 	 *
+	 * @private
 	 * @param  {Event}  event
 	 * @param  {Range}  range
 	 * @param  {string} focus
@@ -340,6 +343,7 @@ define([
 	/**
 	 * Processes a keydown event.
 	 *
+	 * @private
 	 * @param  {Event}  event
 	 * @param  {Range}  range
 	 * @param  {string} focus
@@ -352,6 +356,7 @@ define([
 	/**
 	 * Processes a double-click event.
 	 *
+	 * @private
 	 * @param  {Event}  event
 	 * @param  {Range}  range
 	 * @param  {string} focus
@@ -367,6 +372,7 @@ define([
 	/**
 	 * Processes a triple click event.
 	 *
+	 * @private
 	 * @param  {Event}  event
 	 * @param  {Range}  range
 	 * @param  {string} focus
@@ -382,6 +388,7 @@ define([
 	/**
 	 * Processes a mouseup event.
 	 *
+	 * @private
 	 * @param  {Event}  event
 	 * @param  {Range}  range
 	 * @param  {string} focus
@@ -400,6 +407,7 @@ define([
 	/**
 	 * Processes a mousedown event.
 	 *
+	 * @private
 	 * @param  {Event}  event
 	 * @param  {Range}  range
 	 * @param  {string} focus
@@ -445,6 +453,7 @@ define([
 	/**
 	 * Event handlers.
 	 *
+	 * @private
 	 * @type {Object.<string, function>}
 	 */
 	var handlers = {
@@ -469,6 +478,7 @@ define([
 	 * Furthermore, browsers do not send triple click events to JavaScript; this
 	 * function will make it possible to detect them.
 	 *
+	 * @private
 	 * @param  {Event}   event
 	 * @param  {Range}   current
 	 * @param  {Range}   previous
@@ -509,6 +519,7 @@ define([
 	/**
 	 * Processes an event in relation to how it affects the selection.
 	 *
+	 * @private
 	 * @param  {Event}   event
 	 * @param  {string}  type      Normalized event type
 	 * @param  {Range}   range
@@ -555,6 +566,7 @@ define([
 	 * Returns a new selection context as a function of the given event, the
 	 * previous state, and changes to the state.
 	 *
+	 * @private
 	 * @param  {Event}  event
 	 * @param  {Object} old    context
 	 * @param  {Object} change context
@@ -581,6 +593,7 @@ define([
 	/**
 	 * Returns a range based on the given event object.
 	 *
+	 * @private
 	 * @param  {AlohaEvent} alohaEvent An Aloha Editor event
 	 * @return {?Range}
 	 */
@@ -602,6 +615,7 @@ define([
 	/**
 	 * Scrolls the viewport to the position of the given boundary.
 	 *
+	 * @private
 	 * @param {Boundary}
 	 */
 	function scrollTo(boundary) {
@@ -646,9 +660,9 @@ define([
 			Dom.addClass(old.caret, 'aloha-caret-blink');
 		}
 
-		// Because otherwise, if, in the process of a click, the user's cursor
-		// is over the caret, fromEvent() will compute the range to be inside
-		// the absolutely positioned caret element
+		// Because otherwise, if, in the process of a click, and the user's
+		// cursor is over the caret, fromEvent() will compute the range to be
+		// inside the absolutely positioned caret element
 		Dom.setStyle(old.caret, 'display', 'none');
 
 		var range = fromEvent(event);
@@ -673,7 +687,7 @@ define([
 			range,
 			old.focus,
 			old.range,
-			old.dragging || Events.isWithShift(event)
+			old.dragging || Events.hasKeyModifier(event, 'shift')
 		));
 
 		event.editor.selectionContext = context;
@@ -711,7 +725,7 @@ define([
 		// selections when holding down the shift key.  We therefore "trick" the
 		// browser by setting the selection to a range which will cause the the
 		// expansion to be done in the way that the user expects
-		if (!preventDefault && 'mousedown' === type && Events.isWithShift(event)) {
+		if (!preventDefault && 'mousedown' === type && Events.hasKeyModifier(event, 'shift')) {
 			if ('start' === context.focus) {
 				range = Ranges.collapseToEnd(range);
 			} else {
