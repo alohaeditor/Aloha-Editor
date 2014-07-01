@@ -87,15 +87,18 @@ define([
 	/**
 	 * Calculates the override values at the given boundary container.
 	 *
-	 * @param  {Array.<Overrides>} overrides
-	 * @param  {Element}           container
-	 * @return {Object}            An object with overrides mapped against their names
+	 * @param  {Object}  event
+	 * @param  {Element} container
+	 * @return {Object}  An object with overrides mapped against their names
 	 */
-	function overrides(overrides, container) {
-		return Maps.merge(
-			Overrides.map(Overrides.harvest(container)),
-			Overrides.map(overrides)
-		);
+	function overrides(event, container) {
+		if (event.editable) {
+			return Maps.merge(
+				Overrides.map(Overrides.harvest(container)),
+				Overrides.map(event.editable.overrides)
+			);
+		}
+		return Overrides.map(Overrides.harvest(container));
 	}
 
 	/**
@@ -109,7 +112,7 @@ define([
 		style['padding'] = overrides['bold'] ? '1px' : '0px';
 		style[Browsers.VENDOR_PREFIX + 'transform']
 				= overrides['italic'] ? 'rotate(8deg)' : '';
-		style['background'] = overrides['color'] || '';
+		style['background'] = overrides['color'] || 'black';
 		return style;
 	}
 
@@ -540,7 +543,6 @@ define([
 		caret.style.display = 'none';
 		caret.style.position = 'absolute';
 		caret.style.zIndex = '9999';
-		caret.style.backgroundColor = 'black';
 		Dom.addClass(caret, 'aloha-caret aloha-ephemera');
 		Dom.insert(caret, doc.body, true);
 		return {
@@ -619,11 +621,11 @@ define([
 	/**
 	 * Renders a caret element to show the user selection.
 	 *
-	 * @param  {AlohaEvent} event
-	 * @return {AlohaEvent}
+	 * @param  {Object} event
+	 * @return {Object}
 	 */
 	function handle(event) {
-		if (!event.editable || !handlers[event.type]) {
+		if (!handlers[event.type]) {
 			return event;
 		}
 
@@ -700,7 +702,7 @@ define([
 
 		Maps.extend(
 			context.caret.style,
-			stylesFromOverrides(overrides(event.editable.overrides, container))
+			stylesFromOverrides(overrides(event, container))
 		);
 
 		var preventDefault = ('keydown' === type && movements[event.which])
