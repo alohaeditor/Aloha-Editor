@@ -215,7 +215,7 @@ define([
 	 * Determines the closest visual caret position above or below the given
 	 * range.
 	 *
-	 * @param  {Object} event
+	 * @param  {Event}  event
 	 * @param  {Range}  range
 	 * @param  {string} focus
 	 * @param  {string} direction "up" or "down"
@@ -261,7 +261,7 @@ define([
 	 * Determines the next visual caret position before or after the given
 	 * range.
 	 *
-	 * @param  {Object} event
+	 * @param  {Event}  event
 	 * @param  {Range}  range
 	 * @param  {string} focus
 	 * @param  {string} direction "left" or "right"
@@ -306,19 +306,19 @@ define([
 	 */
 	var movements = {};
 
-	movements[Keys.CODES.up] = function climbUp(event, range, focus) {
+	movements[Keys.CODES['up']] = function climbUp(event, range, focus) {
 		return climb(event, range, focus, 'up');
 	};
 
-	movements[Keys.CODES.down] = function climbDown(event, range, focus) {
+	movements[Keys.CODES['down']] = function climbDown(event, range, focus) {
 		return climb(event, range, focus, 'down');
 	};
 
-	movements[Keys.CODES.left] = function stepLeft(event, range, focus) {
+	movements[Keys.CODES['left']] = function stepLeft(event, range, focus) {
 		return step(event, range, focus, 'left');
 	};
 
-	movements[Keys.CODES.right] = function stepRight(event, range, focus) {
+	movements[Keys.CODES['right']] = function stepRight(event, range, focus) {
 		return step(event, range, focus, 'right');
 	};
 
@@ -469,7 +469,7 @@ define([
 	 * Furthermore, browsers do not send triple click events to JavaScript; this
 	 * function will make it possible to detect them.
 	 *
-	 * @param  {Object}  event
+	 * @param  {Event}   event
 	 * @param  {Range}   current
 	 * @param  {Range}   previous
 	 * @param  {string}  focus
@@ -509,7 +509,7 @@ define([
 	/**
 	 * Processes an event in relation to how it affects the selection.
 	 *
-	 * @param  {Object}  event
+	 * @param  {Event}   event
 	 * @param  {string}  type      Normalized event type
 	 * @param  {Range}   range
 	 * @param  {string}  focus
@@ -555,7 +555,7 @@ define([
 	 * Returns a new selection context as a function of the given event, the
 	 * previous state, and changes to the state.
 	 *
-	 * @param  {Object} event
+	 * @param  {Event}  event
 	 * @param  {Object} old    context
 	 * @param  {Object} change context
 	 * @return {Object}
