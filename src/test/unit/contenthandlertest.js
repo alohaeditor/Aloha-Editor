@@ -30,6 +30,8 @@ function( TestUtils ) {
 	"use strict";
 	
 	var aQuery = Aloha.jQuery;
+
+	module('ContentHandler Tests');
 	
 	// Test whether Aloha is properly initialized
 	asyncTest( 'Aloha Startup Test', function() {

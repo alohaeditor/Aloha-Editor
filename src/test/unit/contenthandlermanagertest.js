@@ -30,6 +30,8 @@ define(
 function (TestUtils) {
 	"use strict";
 
+	module('ContentHandlerManager Tests');
+
 	// Test whether Aloha is properly initialized
 	asyncTest('Aloha Startup Test', function () {
 		var timeout = window.setTimeout(function () {

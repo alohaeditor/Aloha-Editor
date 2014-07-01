@@ -308,12 +308,12 @@
 						stateStart: false,
 					   	execResult: '<p><b>[foo</b></p><p><b>bar]</b></p><b><p>baz</p></b>', 
 						indetermResult: false,
-						stateResult: true   
+						stateResult: true
 					},
 					{  	start: 'foo [bar <b>baz] bam</b> bom',
 						indetermStart: true,
 						stateStart: false,
-					   	execResult: 'foo <b>[bar baz] bam</b> bom', 
+					   	execResult: 'foo [<b>bar baz] bam</b> bom',
 						indetermResult: false,
 						stateResult: true,
 					   	execToggle: 'foo [bar baz]<b> bam</b> bom', 
