@@ -338,11 +338,11 @@
 						execResult: '<p>{}<br></p><dl class="alohafocus"><dd>bar</dd></dl>'
 					},
 					{  	start: '<dl><dt>foo</dt><dd>bar<dl><dt>{}<br></dt><dd>baz</dd></dl></dd></dl>',
-						execResult: '<dl><dt>foo</dt><dd>bar</dd><dt>{}<br></dt><dd><dl class="alohafocus"><dd>baz</dd></dl></dd></dl>'
+						execResult: '<dl class="alohafocus"><dt>foo</dt><dd>bar</dd><dt>{}<br></dt><dd><dl class="alohafocus"><dd>baz</dd></dl></dd></dl>'
 					},
 					{  	exclude: ['msie'],
 						start: '<dl><dt>foo</dt><dd>bar<dl><dt>baz</dt><dd>{}<br></dd></dl></dd></dl>',
-						execResult: '<dl><dt>foo</dt><dd>bar<dl class="alohafocus"><dt>baz</dt></dl></dd><dd>{}<br></dd></dl>'
+						execResult: '<dl class="alohafocus"><dt>foo</dt><dd>bar<dl class="alohafocus"><dt>baz</dt></dl></dd><dd>{}<br></dd></dl>'
 					},
 					{  	include: ['msie'],
 						start: '<dl><dt>foo</dt><dd>bar<dl><dt>baz</dt><dd>{}<br></dd></dl></dd></dl>',

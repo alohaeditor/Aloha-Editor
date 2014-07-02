@@ -355,7 +355,7 @@
 					},
 					{  	exclude: ['msie'],
 						start: '<dl><dt>foo</dt><dd>bar<dl><dt>{}<br></dt><dd>baz</dd></dl></dd></dl>',
-						execResult: '<dl><dt>foo</dt><dd>bar<dl class="alohafocus"><dt><br/>{}<br></dt><dd>baz</dd></dl></dd></dl>'
+						execResult: '<dl class="alohafocus"><dt>foo</dt><dd>bar<dl class="alohafocus"><dt><br/>{}<br></dt><dd>baz</dd></dl></dd></dl>'
 					},
 					{  	include: ['msie'],
 						start: '<dl><dt>foo</dt><dd>bar<dl><dt>{}<br></dt><dd>baz</dd></dl></dd></dl>',
@@ -364,7 +364,7 @@
 					// command 60
 					{  	exclude: ['msie'],
 						start: '<dl><dt>foo</dt><dd>bar<dl><dt>baz</dt><dd>{}<br></dd></dl></dd></dl>',
-						execResult: '<dl><dt>foo</dt><dd>bar<dl class="alohafocus"><dt>baz</dt><dd><br/>{}<br></dd></dl></dd></dl>'
+						execResult: '<dl class="alohafocus"><dt>foo</dt><dd>bar<dl class="alohafocus"><dt>baz</dt><dd><br/>{}<br></dd></dl></dd></dl>'
 					},
 					{  	include: ['msie'],
 						start: '<dl><dt>foo</dt><dd>bar<dl><dt>baz</dt><dd>{}<br></dd></dl></dd></dl>',
