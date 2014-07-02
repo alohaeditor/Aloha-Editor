@@ -392,8 +392,9 @@ define([
 	exports['links']['remove'] = Links.remove;
 
 	exports['lists'] = Lists;
-	exports['lists']['create'] = Lists.create;
-	exports['lists']['remove'] = Lists.remove;
+	exports['lists']['format'] = Lists.format;
+	exports['lists']['unformat'] = Lists.unformat;
+	exports['lists']['toggle'] = Lists.toggle;
 
 	exports['maps'] = Maps;
 	exports['maps']['isEmpty']     = Maps.isEmpty;

@@ -6,19 +6,13 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'arrays',
-	'maps',
 	'dom',
-	'boundaries',
-	'functions',
-	'undo'
+	'undo',
+	'boundaries'
 ], function (
-	Arrays,
-	Maps,
 	Dom,
-	Boundaries,
-	Fn,
-	Undo
+	Undo,
+	Boundaries
 ) {
 	'use strict';
 

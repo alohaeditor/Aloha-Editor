@@ -1,6 +1,7 @@
 /** Aloha Editor | Version 1.0 | github.com/alohaeditor */
 define([
 	'api',
+	'dom',
 	'boundaries',
 	'blocks',
 	'dragdrop',
@@ -16,6 +17,7 @@ define([
 	'undo'
 ], function (
 	Api,
+	Dom,
 	Boundaries,
 	Blocks,
 	DragDrop,
@@ -77,14 +79,15 @@ define([
 	 */
 	function aloha(elem) {
 		var editable = Editables.Editable(elem);
+		Dom.setStyle(elem, 'cursor', 'text');
 		editable.overrides = [];
 		editable.settings = {
 			defaultBlockNodeName: 'p'
 		};
 		Editables.assocIntoEditor(editor, editable);
 		Undo.enter(editable['undoContext'], {
-			meta: {type: 'external'},
-			partitionRecords: true
+			meta             : {type: 'external'},
+			partitionRecords : true
 		});
 		editor(null, {
 			type     : 'aloha',

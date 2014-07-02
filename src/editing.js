@@ -1437,7 +1437,7 @@ define([
 	 * @return {Array.<Boundary>}
 	 */
 	function remove(range) {
-		fixupRange(range, function remove(range, left, right) {
+		fixupRange(range, function (range, left, right) {
 			var remove = function (node) {
 				Mutation.removePreservingRange(node, range);
 			};
