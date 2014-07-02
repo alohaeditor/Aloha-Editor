@@ -144,15 +144,7 @@ define([
 			$node = $nodes.eq(i);
 			nodeName = $node[0].nodeName.toLowerCase();
 
-			if ('a' === nodeName) {
-
-				// Because when a href starts with #, it's the link to an
-				// anchor and should be removed.
-				href = $node.attr('href');
-				if (href && HASH_HREF.test($.trim(href))) {
-					$node.contents().unwrap();
-				}
-			} else if ('div' === nodeName || 'span' === nodeName) {
+			if ('div' === nodeName || 'span' === nodeName) {
 
 				// Because footnotes for example are wrapped in divs and should
 				// be unwrap.
