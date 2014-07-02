@@ -62,6 +62,17 @@ define([
 	}
 
 	/**
+	 * Checks if actual range is collapsed.
+	 * @return {boolean}
+	 */
+	function isRangeExpanded() {
+		if (!Aloha.getSelection().getRangeCount()) {
+			return false;
+		}
+		return !Aloha.getSelection().getRangeAt(0).collapsed;
+	}
+
+	/**
 	 * This is the block manager, which is the central entity for maintaining the lifecycle of blocks.
 	 *
 	 * @name block.blockmanager
@@ -309,6 +320,7 @@ define([
 				// table has its own selection methods.
 				if (that._activeBlock
 					&& (e.ctrlKey || e.metaKey)
+					&& !isRangeExpanded()
 					&& !BlockUtils.isTable(that._activeBlock.$element)) {
 
 					// IF: Ctrl/Command C pressed -- COPY
