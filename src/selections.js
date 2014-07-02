@@ -556,10 +556,12 @@ define([
 	 */
 	function Context(doc) {
 		var caret = doc.createElement('div');
-		caret.style.display = 'none';
-		caret.style.position = 'absolute';
-		caret.style.zIndex = '9999';
-		Dom.addClass(caret, 'aloha-caret aloha-ephemera');
+		Maps.extend(caret.style, {
+			'zIndex'   : '9999',
+			'display'  : 'none',
+			'position' : 'absolute'
+		});
+		Dom.addClass(caret, 'aloha-caret', 'aloha-ephemera');
 		Dom.insert(caret, doc.body, true);
 		return {
 			caret          : caret,
