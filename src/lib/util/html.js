@@ -277,34 +277,6 @@ define([
 		return inlineFormattableMap[node.nodeName];
 	}
 
-	/**
-	 * Checks whether the given element is a block that contains a "propping"
-	 * <br> element.
-	 *
-	 * A propping <br> is one which is inserted into block element to ensure
-	 * that the otherwise empty element will be rendered visibly.
-	 *
-	 * @param {HTMLElement} node
-	 * @return {boolean} True if node contains a propping <br>
-	 */
-	function isProppedBlock(node) {
-		if (!blocksTagnameMap[node.nodeName]) {
-			return false;
-		}
-		var found = false;
-		var kids = node.children;
-		var len = kids.length;
-		var i;
-		for (i = 0; i < len; i++) {
-			if (!found && 'br' === kids[i].nodeName.toLowerCase()) {
-				found = true;
-			} else if (!isIgnorableWhitespace(kids[i])) {
-				return false;
-			}
-		}
-		return found;
-	}
-
 	function isEditingHost(node) {
 		return 1 === node.nodeType && "true" === node.contentEditable;
 	}
@@ -366,6 +338,8 @@ define([
 		if (3 === node.nodeType && 0 === node.data.length) {
 			return true;
 		}
+		// What happens if before of after there are empty child text nodes
+		// if it's the only child.
 		if ((node === node.parentNode.lastChild)
 				&& isBlock(node.parentNode)
 					&& 'BR' === node.nodeName) {
@@ -381,6 +355,90 @@ define([
 	 */
 	function isRenderedNode(node) {
 		return !isUnrenderedNode(node);
+	}
+
+	/**
+	 * Checks if `node` is a block node.
+	 * @param {Node} node
+	 * @return {boolean}
+	 */
+	function isBlockNode(node) {
+		return blocksTagnameMap[node.nodeName];
+	}
+
+	/**
+	 * Checks whether the given element is a block that contains a "propping"
+	 * <br> element.
+	 *
+	 * A propping <br> is one which is inserted into block element to ensure
+	 * that the otherwise empty element will be rendered visibly.
+	 *
+	 * @param {HTMLElement} node
+	 * @return {boolean} True if node contains a propping <br>
+	 */
+	function isProppedBlock(node) {
+		if (!isBlockNode(node)) {
+			return false;
+		}
+
+		var brs = jQuery(node).find('br');
+
+		if (brs.length !== 1) {
+			return false;
+		}
+
+		var children = node.childNodes;
+		var i, len;
+
+		for (i = 0, len = children.length; i < len; i++) {
+			if (children[i].nodeName !== 'BR' && isRenderedNode(children[i])) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Finds previous node.
+	 * @param {Node} node
+	 * @param {Function} condition
+	 * @return {*}
+	 */
+	function findPrevRendered(node, condition) {
+		while (node && condition(node) && !isRenderedNode(node)) {
+			node = node.previousSibling;
+		}
+
+		if (node.nodeType === 1 && condition(node)) {
+			return findPrevRendered(node.lastChild, condition);
+		}
+		return node;
+	}
+
+	/**
+	 * Removes useless Line Breaks from the block element `node`.
+	 * @param {Node} node
+	 * @return {*}
+	 */
+	function removeUselessLineBreaks(node) {
+		if (!isBlockNode(node) || isProppedBlock(node)) {
+			return node;
+		}
+
+		var isBr = function (node) {
+			return node.nodeName !== 'BR';
+		};
+
+		var lastChild = findPrevRendered(node.lastChild, isBr);
+
+		if (lastChild && lastChild.nodeName === 'BR') {
+			var prevChild = findPrevRendered(lastChild.previousSibling, isBr);
+			if (isBr(prevChild)) {
+				lastChild.parentNode.removeChild(lastChild);
+			}
+		}
+
+		return node;
 	}
 
 	return {
@@ -400,6 +458,7 @@ define([
 		isWSPorZWSPText: isWSPorZWSPText,
 		isUnrenderedNode: isUnrenderedNode,
 		isRenderedNode: isRenderedNode,
-		hasOnlyWhiteSpaceChildren: hasOnlyWhiteSpaceChildren
+		hasOnlyWhiteSpaceChildren: hasOnlyWhiteSpaceChildren,
+		removeUselessLineBreaks: removeUselessLineBreaks
 	};
 });
