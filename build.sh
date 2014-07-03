@@ -9,6 +9,7 @@ function help {
 
 \tor
 
+\t--simple
 \t--advanced
 \t--source-map creates a source-mapped output in build
 
