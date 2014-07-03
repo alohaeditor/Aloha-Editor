@@ -10,6 +10,7 @@ function help {
 \tor
 
 \t--advanced
+\t--source-map creates a source-mapped output in build
 
 \tMake sure to include an .env file in the same directory as this script.
 \tYour .env file should define ClOSURE_PATH=$CLOSURE_PATH.
@@ -30,7 +31,13 @@ function build {
 			--output_wrapper="(function () {%output%}())" \
 			--only_closure_dependencies \
 			--externs ../externs.js \
+			$sourcemap \
 		> $wd/$target
+
+	if [[ -n $sourcemap ]]; then
+		echo "\\n//# sourceMappingURL=aloha.js.map" >> $wd/$target
+		cp -r $wd/src/* $wd/build
+	fi
 }
 
 if [ -f .env ]; then
@@ -44,17 +51,23 @@ fi
 
 wd=$(pwd)
 
+if [[ $args =~ "--source-map" ]]; then
+	sourcemap="--create_source_map ../build/aloha.js.map --source_map_format=V3"
+else
+	sourcemap=""
+fi
+
 if [[ $args =~ "--advanced" ]]; then
 	src=src
 	entry="--common_js_entry_module=aloha"
-	target=build/aloha.js
+	target=build/aloha.min.js
 	optimization=ADVANCED_OPTIMIZATIONS
 	build
 	exit
 elif [[ $args =~ "--simple" ]]; then
 	src=src
 	entry="--common_js_entry_module=aloha"
-	target=build/aloha.js
+	target=build/aloha.min.js
 	optimization=SIMPLE_OPTIMIZATIONS
 	build
 	exit
