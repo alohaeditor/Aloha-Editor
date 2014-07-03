@@ -17,8 +17,10 @@ define([
 	'ranges',
 	'browsers',
 	'overrides',
+	'animation',
 	'boundaries',
-	'traversing'
+	'traversing',
+	'colors'
 ], function (
 	Fn,
 	Dom,
@@ -28,8 +30,10 @@ define([
 	Ranges,
 	Browsers,
 	Overrides,
+	Animation,
 	Boundaries,
-	Traversing
+	Traversing,
+	Colors
 ) {
 	'use strict';
 
@@ -76,7 +80,7 @@ define([
 			'top'     : box.top + 'px',
 			'left'    : box.left + 'px',
 			'height'  : box.height + 'px',
-			'width'   : '2px',
+			'width'   : '1px',
 			'display' : 'block'
 		});
 	}
@@ -546,6 +550,64 @@ define([
 	}
 
 	/**
+	 * Initialize blinking using the given element.
+	 *
+	 * @param  {Element} caret
+	 * @return {Object}
+	 */
+	function blinking(caret) {
+		var timers = [];
+		var blink = true;
+		function fade(start, end, duration) {
+			Animation.animate(
+				start,
+				end,
+				Animation.easeLinear,
+				duration,
+				function (value, percent, state) {
+					if (!blink) {
+						return true;
+					}
+					Dom.setStyle(caret, 'opacity', value);
+					if (percent < 1) {
+						return;
+					}
+					if (0 === value) {
+						timers.push(setTimeout(function () {
+							fade(0, 1, 100);
+						}, 300));
+					} else if (1 === value){
+						timers.push(setTimeout(function () {
+							fade(1, 0, 200);
+						}, 300));
+					}
+				}
+			);
+		}
+		function stop() {
+			blink = false;
+			timers.forEach(function (timer) {
+				clearTimeout(timer);
+			});
+			Dom.setStyle(caret, 'opacity', 1);
+		}
+		function start() {
+			stop();
+			blink = true;
+			fade(1, 0, 300);
+		}
+		function restart() {
+			stop();
+			timers.push(setTimeout(start, 300));
+		}
+		return {
+			stop    : stop,
+			start   : start,
+			restart : restart
+		};
+	}
+
+	/**
 	 * Creates a new selection context.
 	 *
 	 * Will create a DOM element at the end of the document body to be used to
@@ -565,6 +627,8 @@ define([
 		Dom.addClass(caret, 'aloha-caret', 'aloha-ephemera');
 		Dom.insert(caret, doc.body, true);
 		return {
+			caretOpacity   : 0,
+			blinking       : blinking(caret),
 			caret          : caret,
 			range          : null,
 			focus          : 'end',
@@ -663,14 +727,18 @@ define([
 			// starts creating an expanded selection by dragging
 			if (!old.dragging && context.dragging) {
 				Dom.setStyle(context.caret, 'display', 'none');
-				Dom.removeClass(context.caret, 'aloha-caret-blink');
+				context.blinking.stop();
 			}
 
 			return event;
 		}
 
 		if ('mousedown' === event.type) {
-			Dom.addClass(old.caret, 'aloha-caret-blink');
+			old.blinking.stop();
+		} else if ('mouseup' === event.type) {
+			old.blinking.start();
+		} else if ('keydown' === event.type) {
+			old.blinking.restart();
 		}
 
 		// Because otherwise, if, in the process of a click, and the user's

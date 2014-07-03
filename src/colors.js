@@ -5,15 +5,7 @@
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define([
-	'dom',
-	'ranges',
-	'editing'
-], function (
-	Dom,
-	Ranges,
-	Editing
-) {
+define([], function () {
 	'use strict';
 
 	var COLOR_PREFIX = /^(#|rgba?|hsl)\(?([^\(\)]+)/i;
@@ -53,7 +45,7 @@ define([
 	 *
 	 * @private
 	 * @param  {string} hex
-	 * @return {string} Long version of hexidecimal color value
+	 * @return {Array.<string>} Long version of hexidecimal color value
 	 */
 	function normalizeHex(hex) {
 		var r, g, b;
@@ -66,8 +58,8 @@ define([
 			b += b;
 		} else {
 			r = hex.substr(1, 2);
-			g = hex.substr(3, 4);
-			b = hex.substr(5, 6);
+			g = hex.substr(3, 2);
+			b = hex.substr(5, 2);
 		}
 		return [r, g, b];
 	}
@@ -109,10 +101,10 @@ define([
 		var color = value.match(COLOR_PREFIX);
 		switch (color && color[1]) {
 		case '#':
-			return normalizeHex(color[0]);
+			return '#' + normalizeHex(color[0]).join('');
 		case 'rgb':
 		case 'rgba':
-			return rgb2hex(color[2].split(COMMA));
+			return '#' + rgb2hex(color[2].split(COMMA)).join('');
 		}
 	}
 
@@ -120,7 +112,7 @@ define([
 	 * Given a color string will normalize it to a RGB color string.
 	 *
 	 * @param  {string} value
-	 * @return {string}
+	 * @return {Array.<number>}
 	 */
 	function rgb(value) {
 		var color = value.match(COLOR_PREFIX);
@@ -140,7 +132,7 @@ define([
 	 *
 	 * @param  {Array.<number>} from
 	 * @param  {Array.<number>} to
-	 * @param  {number}         percent
+	 * @param  {number}         percent Range from 0 - 1
 	 * @return {Array.<number>}
 	 */
 	function cross(from, to, percent) {
