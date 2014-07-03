@@ -44,7 +44,7 @@ define([
 		return range;
 	}
 
-	function delete_(direction, alohaEvent) {
+	function remove(direction, alohaEvent) {
 		var range = alohaEvent.range;
 		var boundary;
 		if (range.collapsed) {
@@ -146,14 +146,14 @@ define([
 		clearOverrides : true,
 		preventDefault : true,
 		undo           : 'delete',
-		mutate         : Fn.partial(delete_, false)
+		mutate         : Fn.partial(remove, false)
 	};
 
 	var deleteForward = {
 		clearOverrides : true,
 		preventDefault : true,
 		undo           : 'delete',
-		mutate         : Fn.partial(delete_, true)
+		mutate         : Fn.partial(remove, true)
 	};
 
 	var breakBlock = {
@@ -284,7 +284,7 @@ define([
 			if (handle.undo) {
 				undoable(handle.undo, alohaEvent, function () {
 					if (handle.deleteRange && !range.collapsed) {
-						delete_(false, alohaEvent);
+						remove(false, alohaEvent);
 					}
 					alohaEvent.range = handle.mutate(alohaEvent);
 					Html.prop(range.commonAncestorContainer);
