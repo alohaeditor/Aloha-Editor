@@ -4,7 +4,6 @@
 		<title>Aloha Editor</title>
 		<meta charset="UTF-8">
 		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300,700' rel='stylesheet' type='text/css'>
-		<link rel="stylesheet" type="text/css" href="../src/aloha.css">
 		<!-- Image from: https://www.flickr.com/photos/lovingjazz/6737863743 -->
 		<style>
 			html {
@@ -35,30 +34,12 @@
 				width: 100px;
 				height: 100px;
 				padding: 10px;
-				background: #999;
 				color: #fff;
 				text-align: center;
 				display: table-cell;
 				vertical-align: middle;
-				cursor: -webkit-grab;
-				cursor: -moz-grab;
-				box-shadow: 2px 2px 10px rgba(0,0,0,0.2) inset;
-			}
-			.aloha-block:hover { background: #df215a; }
-			img.aloha-block {
-				width: auto;
-				height: auto;
-				display: block;
-				padding: 0;
-			}
-			ol {
-			  counter-reset: counter;
-			  list-style-type: none;
-			}
-			ol>li:before {
-				counter-increment: counter;
-				content: counters(counter, ".") ") ";
-				margin-left: -1em;
+				background-image: -webkit-linear-gradient(50deg, #8aeae2 0%, #dcc23a 30%, #ee5577 100%);
+				background-image: -moz-linear-gradient(50deg, #8aeae2 0%, #dcc23a 30%, #ee5577 100%);
 			}
 		</style>
 		<!-- style id="metaview">
@@ -90,10 +71,9 @@
 	</head>
 	<body>
 		<!-- div class="aloha-editable"><b>one</b><i>two</i><u>three</u></div -->
-
-		<div class="xaloha-editable">
+		<!-- div draggable="true" class="aloha-block">Aloha Block</div -->
+		<div class="aloha-editable">
 			one
-			<div draggable="true" class="aloha-block">Aloha Block</div>
 			<div>
 				<p>two</p>
 				<p>three</p>
@@ -104,10 +84,9 @@
 			<h1>Aloha Editor</h1>
 			<p>
 				<img draggable="true"
-				     class="aloha-block"
 				     src="demo.jpg"
-					 alt="Some Rights Reserved. Andrea O, Connell"
-					 style="float:left; width: 300px; margin: 0 20px 20px 0" />
+				     alt="Some Rights Reserved. Andrea O, Connell"
+				     style="float:left; width: 300px; margin: 0 20px 20px 0" />
 				Lorem    ipsum &nbsp;dolor sit amet, <b>consec<i>tet</i>ur</b> adipiscin
 				elit. Donec a diam lectus. Sed sit amet ipsum mauris.  Maecen
 				congue ligula ac quam viverra nec consectetur ante hendrerit

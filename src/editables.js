@@ -16,10 +16,24 @@ define([
 ) {
 	'use strict';
 
+	/**
+	 * Returns an editable object for the given editable DOM element.
+	 *
+	 * @param  {Editor}  editor
+	 * @param  {Element} elem
+	 * @return {?Editable}
+	 */
 	function fromElem(editor, elem) {
 		return editor.editables[Dom.ensureExpandoId(elem)];
 	}
 
+	/**
+	 * Returns an editable object for the given boundary.
+	 *
+	 * @param  {Editor}    editor
+	 * @param  {Boundary} boundary
+	 * @return {?Editable}
+	 */
 	function fromBoundary(editor, boundary) {
 		var container = Boundaries.container(boundary);
 		var elem = Dom.upWhile(container, function (node) {

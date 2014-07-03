@@ -237,9 +237,9 @@ define([
 		var offset = Boundaries.offset(boundary);
 		var text = textnode.data.substr(0, offset);
 
-		// "" ==> return -1
+		// "" → return -1
 		//
-		// " "  or "  " or "   " ==> return 1
+		// " "  or "  " or "   " → return 1
 		//  .       ..      ...
 		if (!NOT_WSP.test(text)) {
 			// Because `text` may be a sequence of white spaces so we need to
@@ -249,15 +249,15 @@ define([
 			     : -1;
 		}
 
-		// "a"    ==> spaces=0 ==> return offset - 0
+		// "a"    → spaces=0 → return offset - 0
 		//
-		// "a "   ==> spaces=1 ==> return offset - 0
+		// "a "   → spaces=1 → return offset - 0
 		//   .
 		//
-		// "a  "  ==> spaces=2 ==> return offset - 1
+		// "a  "  → spaces=2 → return offset - 1
 		//   ..
 		//
-		// "a   " ==> spaces=3 ==> return offset - 2
+		// "a   " → spaces=3 → return offset - 2
 		//   ...
 		var spaces = text.match(NOT_WSP_FROM_END)[0].length - 1;
 

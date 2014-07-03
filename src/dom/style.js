@@ -27,7 +27,6 @@ define([
 		name = Strings.dashesToCamelCase(name);
 		var styles = elem.style;
 		if (name in styles) {
-			// @ignore jslint warning
 			styles[name] = value;
 		}
 	}

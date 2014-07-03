@@ -36,6 +36,31 @@ define([
 	'use strict';
 
 	/**
+	 * Adds a style tag to the head of the given document if one does not
+	 * already exist.
+	 *
+	 * Each document in which box() is called requires some special br css
+	 * styling in order for box() to return calculate correct range bounding
+	 * offsets near br elements.
+	 *
+	 * @see https://github.com/alohaeditor/Aloha-Editor/issues/1138
+	 * @private
+	 * @param {Document} doc
+	 */
+	function ensureBrStyleFix(doc) {
+		if (doc['!aloha-br-style-fix']) {
+			return;
+		}
+		var style = doc.createElement('style');
+		var text = doc.createTextNode(
+			'.aloha-editable br,.aloha-editable br:after{content:"\\A";white-space:pre-line;}'
+		);
+		Dom.append(text, style);
+		Dom.append(style, doc.head);
+		doc['!aloha-br-style-fix'] = true;
+	}
+
+	/**
 	 * Gets the currently selected range from the given document element.
 	 *
 	 * If no document element is given, the document element of the calling
@@ -307,7 +332,7 @@ define([
 	 * punctuation character or a word-breaker (in languages that do not use
 	 * space to delimit word boundaries).
 	 *
-	 * foo b[a]r baz ==> foo [bar] baz
+	 * foo b[a]r baz → foo [bar] baz
 	 *
 	 * @private
 	 * @param  {Boundary} start
@@ -331,7 +356,7 @@ define([
 	 *
 	 *  +-------+     [ +-------+
 	 *  | block |       | block |
-	 *  |       |  ==>  |       |
+	 *  |       |   →   |       |
 	 *  | [ ]   |       |       |
 	 *  +-------+       +-------+ ]
 	 *
@@ -699,6 +724,8 @@ define([
 		var win = Dom.documentWindow(doc);
 		var topOffset = win.pageYOffset - doc.body.clientTop;
 		var leftOffset = win.pageXOffset - doc.body.clientLeft;
+
+		ensureBrStyleFix(doc);
 
 		// Because `rect` should be the box of an expanded range and must
 		// therefore have a non-zero width if valid
