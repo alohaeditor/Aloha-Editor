@@ -462,6 +462,13 @@ define([
 		};
 	}
 
+	function resize(event, range, focus) {
+		return {
+			range: range,
+			focus: focus
+		};
+	}
+
 	/**
 	 * Event handlers.
 	 *
@@ -477,7 +484,8 @@ define([
 		'mousedown' : mousedown,
 		'mousemove' : Fn.returnFalse,
 		'dragover'  : dragndrop,
-		'drop'      : dragndrop
+		'drop'      : dragndrop,
+		'resize'    : resize
 	};
 
 	/**
@@ -703,6 +711,16 @@ define([
 		var leftDelta = win.pageXOffset - doc.body.clientLeft;
 		win.scrollTo(box.left + leftDelta, box.top + topDelta);
 	}
+
+	var delay = (function () {
+		var timer = null;
+		return function (callback) {
+			if (timer) {
+				clearTimeout(timer);
+			}
+			timer = setTimeout(callback, 200);
+		};
+	}());
 
 	/**
 	 * Renders a caret element to show the user selection.

@@ -12,6 +12,7 @@ define([
 	'maps',
 	'mouse',
 	'paste',
+	'ranges',
 	'selections',
 	'typing',
 	'undo'
@@ -28,6 +29,7 @@ define([
 	Maps,
 	Mouse,
 	Paste,
+	Ranges,
 	Selections,
 	Typing,
 	Undo
@@ -49,10 +51,45 @@ define([
 		return alohaEvent;
 	}
 
+	/**
+	 * Adds 'type', 'range', and 'editable' to the given Aloha Event now, if
+	 * possible.
+	 *
+	 * @private
+	 * @param  {AlohaEvent} event
+	 * @return {AlohaEvent}
+	 */
+	function handle(event) {
+		if (!event.nativeEvent) {
+			return event;
+		}
+		event['type'] = event.nativeEvent.type;
+		var src = event.nativeEvent.target || event.nativeEvent.srcElement;
+		var doc = src && (src.ownerDocument || src.document);
+		if (!doc) {
+			return event;
+		}
+		var range = Ranges.get(doc);
+		if (!range) {
+			return event;
+		}
+		event.range = range;
+		var editable = Editables.fromBoundary(
+			event.editor,
+			Boundaries.fromRangeStart(range)
+		);
+		if (editable) {
+			event.editable = editable;
+		}
+		return event;
+	}
+
 	function editor(nativeEvent, custom) {
 		var alohaEvent = custom || {nativeEvent : nativeEvent};
 		alohaEvent.editor = editor;
-		setSelection(Fn.comp.apply(editor.stack, editor.stack)(alohaEvent));
+		setSelection(Fn.comp.apply(editor.stack, editor.stack)(handle(
+			alohaEvent
+		)));
 	}
 
 	editor.editables = {};
@@ -70,7 +107,8 @@ define([
 		Keys.handle
 	];
 
-	Events.setup(editor, document);
+	Events.setup(document, editor);
+	Events.add(window, 'resize', editor);
 
 	/**
 	 * The Aloha Editor namespace root.

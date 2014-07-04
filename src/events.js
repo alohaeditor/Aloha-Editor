@@ -84,7 +84,7 @@ define(['misc', 'assert'], function (Misc, Assert) {
 	/**
 	 * Given an event object, checks whether the ctrl key is depressed.
 	 *
-	 * @param  {Object}  event
+	 * @param  {Event} event
 	 * @return {boolean}
 	 */
 	function hasKeyModifier(event, modifier) {
@@ -114,10 +114,12 @@ define(['misc', 'assert'], function (Misc, Assert) {
 	 * https://en.wikipedia.org/wiki/DOM_Events
 	 * http://www.w3.org/TR/DOM-Level-3-Events
 	 *
-	 * @param {function(Object)} editor
-	 * @param {Element}          document
+	 * @param {function} editor
+	 * @param {Document} doc
 	 */
-	function setup(editor, doc) {
+	function setup(doc, editor) {
+		add(doc, 'resize',    editor);
+
 		add(doc, 'keyup',     editor);
 		add(doc, 'keydown',   editor);
 		add(doc, 'keypress',  editor);

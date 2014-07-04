@@ -265,39 +265,39 @@ define([
 		    || (alohaEvent.isTextInput && handlers['keypress']['input']);
 	}
 
-	function doHandling(alohaEvent) {
+	function handle(alohaEvent) {
 		if (!alohaEvent.editable) {
 			return alohaEvent;
 		}
-		var handle = handler(alohaEvent);
-		if (!handle) {
+		var handling = handler(alohaEvent);
+		if (!handling) {
 			return alohaEvent;
 		}
 		var range = alohaEvent.range;
-		if (handle.preventDefault) {
+		if (handling.preventDefault) {
 			alohaEvent.nativeEvent.preventDefault();
 		}
-		if (handle.clearOverrides) {
+		if (handling.clearOverrides) {
 			alohaEvent.editable.overrides = [];
 		}
-		if (range && handle.mutate) {
-			if (handle.undo) {
-				undoable(handle.undo, alohaEvent, function () {
-					if (handle.deleteRange && !range.collapsed) {
+		if (range && handling.mutate) {
+			if (handling.undo) {
+				undoable(handling.undo, alohaEvent, function () {
+					if (handling.deleteRange && !range.collapsed) {
 						remove(false, alohaEvent);
 					}
-					alohaEvent.range = handle.mutate(alohaEvent);
+					alohaEvent.range = handling.mutate(alohaEvent);
 					Html.prop(range.commonAncestorContainer);
 				});
 			} else {
-				alohaEvent.range = handle.mutate(alohaEvent);
+				alohaEvent.range = handling.mutate(alohaEvent);
 			}
 		}
 		return alohaEvent;
 	}
 
 	return {
-		handle  : doHandling,
+		handle  : handle,
 		actions : actions
 	};
 });

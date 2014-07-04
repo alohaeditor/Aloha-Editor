@@ -114,8 +114,9 @@ define([
 	/**
 	 * Moves the given node into the given range.
 	 *
-	 * @param {Range}   range
-	 * @param {Element} node
+	 * @private
+	 * @param {Range} range
+	 * @param {Node}  node
 	 */
 	function moveNode(range, node) {
 		var prev = node.previousSibling;
@@ -126,72 +127,75 @@ define([
 		Ranges.collapseToEnd(range);
 	}
 
+	function handleDragStart(alohaEvent) {
+		var context = alohaEvent.editor.dndContext;
+
+		// Because this is required in Firefox for dragging to start on elements
+		// other than IMG elements or anchor elements with href values
+		alohaEvent.nativeEvent.dataTransfer.setData(
+			context.data[0],
+			context.data[1]
+		);
+	}
+
+	function handleDragOver(alohaEvent) {
+		var event = alohaEvent.nativeEvent;
+		var doc = event.target.ownerDocument;
+		var x = event.clientX + DRAGGING_CARET_OFFSET;
+		var y = event.clientY + DRAGGING_CARET_OFFSET;
+		var carets = Selections.hideCarets(doc);
+
+		alohaEvent.range = Ranges.fromPosition(x, y, doc);
+
+		Selections.unhideCarets(carets);
+
+		// Because this is necessary for dropping to work
+		event.preventDefault();
+	}
+
+	function handleDrop(alohaEvent) {
+		var event = alohaEvent.nativeEvent;
+		var doc = event.target.ownerDocument;
+
+		// +8 because, for some reason the range is always calculated a
+		// character behind of where it should be...
+		var x = event.clientX + DRAGGING_CARET_OFFSET + 8;
+		var y = event.clientY + DRAGGING_CARET_OFFSET;
+		var carets = Selections.hideCarets(doc);
+
+		alohaEvent.range = Ranges.fromPosition(x, y, doc);
+
+		Selections.unhideCarets(carets);
+
+		if (alohaEvent.range) {
+			moveNode(alohaEvent.range, alohaEvent.editor.dndContext.element);
+		}
+
+		if (event.stopPropagation) {
+			event.stopPropagation();
+		}
+
+		// Because some browsers will otherwise redirect
+		event.preventDefault();
+	}
+
+	var handlers = {
+		'dragstart' : handleDragStart,
+		'dragover'  : handleDragOver,
+		'drop'      : handleDrop
+	};
+
 	/**
 	 * Processes drag and drop events.
 	 *
-	 * @param  {AlohaEvent} alohaEvent
+	 * @param  {AlohaEvent} event
 	 * @return {AlohaEvent}
 	 */
-	function handle(alohaEvent) {
-		if (!alohaEvent.editor.dndContext) {
-			return alohaEvent;
+	function handle(event) {
+		if (event.editor.dndContext && handlers[event.type]) {
+			handlers[event.type](event);
 		}
-
-		var context = alohaEvent.editor.dndContext;
-		var event = alohaEvent.nativeEvent;
-		var doc = event.target.ownerDocument;
-		var x, y;
-		var carets;
-
-		switch (alohaEvent.type) {
-
-		case 'dragstart':
-
-			// Because this is required in Firefox for dragging to start on
-			// elements other than IMG elements or anchor elements with href
-			// values
-			event.dataTransfer.setData(context.data[0], context.data[1]);
-
-			break;
-
-		case 'dragover':
-
-			x = event.clientX + DRAGGING_CARET_OFFSET;
-			y = event.clientY + DRAGGING_CARET_OFFSET;
-			carets = Selections.hideCarets(doc);
-			alohaEvent.range = Ranges.fromPosition(x, y, doc);
-			Selections.unhideCarets(carets);
-
-			// Because this is necessary for dropping to work
-			event.preventDefault();
-
-			break;
-
-		case 'drop':
-
-			// +8 because, for some reason the range is always calculated a
-			// character behind of where it should be...
-			x = event.clientX + DRAGGING_CARET_OFFSET + 8;
-			y = event.clientY + DRAGGING_CARET_OFFSET;
-			carets = Selections.hideCarets(doc);
-			alohaEvent.range = Ranges.fromPosition(x, y, doc);
-			Selections.unhideCarets(carets);
-
-			if (alohaEvent.range) {
-				moveNode(alohaEvent.range, context.element);
-			}
-
-			if (event.stopPropagation) {
-				event.stopPropagation();
-			}
-
-			// Because some browsers will otherwise redirect
-			event.preventDefault();
-
-			break;
-		}
-
-		return alohaEvent;
+		return event;
 	}
 
 	return {

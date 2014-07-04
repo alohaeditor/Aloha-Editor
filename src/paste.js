@@ -213,28 +213,29 @@ define([
 	 */
 	function handle(alohaEvent) {
 		var event = alohaEvent.nativeEvent;
-		if (event && isPasteEvent(event)) {
-			Events.suppress(event);
-			var src = event.target || event.srcElement;
-			var boundaries = Boundaries.get(src.ownerDocument);
-			if (!boundaries) {
-				return alohaEvent;
-			}
-			var content = extractContent(
-				event,
-				alohaEvent.editable['elem'].ownerDocument
-			);
-			if (!content) {
-				return alohaEvent;
-			}
-			Undo.capture(alohaEvent.editable['undoContext'], {
-				meta: {type: 'paste'}
-			}, function () {
-				var boundary = insert(boundaries, content);
-				Selections.scrollTo(boundary);
-				alohaEvent.range = Ranges.fromBoundaries(boundary, boundary);
-			});
+		if (!event || !isPasteEvent(event)) {
+			return alohaEvent;
 		}
+		Events.suppress(event);
+		var src = event.target || event.srcElement;
+		var boundaries = Boundaries.get(src.ownerDocument);
+		if (!boundaries) {
+			return alohaEvent;
+		}
+		var content = extractContent(
+			event,
+			alohaEvent.editable['elem'].ownerDocument
+		);
+		if (!content) {
+			return alohaEvent;
+		}
+		Undo.capture(alohaEvent.editable['undoContext'], {
+			meta: {type: 'paste'}
+		}, function () {
+			var boundary = insert(boundaries, content);
+			Selections.scrollTo(boundary);
+			alohaEvent.range = Ranges.fromBoundaries(boundary, boundary);
+		});
 		return alohaEvent;
 	}
 

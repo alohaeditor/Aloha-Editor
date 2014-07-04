@@ -58,6 +58,7 @@ define([
 	/**
 	 * Creates a drag and drop context for copying.
 	 *
+	 * @private
 	 * @param  {Element} block
 	 * @return {Context}
 	 */
@@ -73,6 +74,7 @@ define([
 	/**
 	 * Creates a drag and drop context for moving.
 	 *
+	 * @private
 	 * @param  {Element} block
 	 * @return {Context}
 	 */
@@ -97,52 +99,65 @@ define([
 		    || Dom.hasClass(event.nativeEvent.target, event.editor.BLOCK_CLASS);
 	}
 
+	function handleAloha (event) {
+		var blocks = event.editable['elem'].querySelectorAll('.aloha-block,img');
+		[].forEach.call(blocks, function (block) {
+			block.setAttribute('contentEditable', 'false');
+			Dom.setStyle(block, 'cursor', Browsers.VENDOR_PREFIX + 'grab');
+		});
+	}
+
+	function handleMouseDown(event) {
+		var block = event.nativeEvent.target;
+		if (isBlockEvent(event) && DragDrop.isDraggable(block)) {
+			event.editor.dndContext = Events.hasKeyModifier(event, 'ctrl')
+			                        ? copyContext(block)
+			                        : moveContext(block);
+		}
+	}
+
+	function handleDragStart(event) {
+		if (isBlockEvent(event)) {
+			var context = event.editor.dndContext;
+			draggingStyles.forEach(function (style) {
+				Dom.setStyle(context.target, style[0], style[1]);
+				Dom.setStyle(context.element, style[0], style[1]);
+			});
+		}
+	}
+
+	function handleDragEnd(event) {
+		if (isBlockEvent(event)) {
+			var context = event.editor.dndContext;
+			draggingStyles.forEach(function (style) {
+				Dom.setStyle(context.target, style[0], '');
+				Dom.setStyle(context.element, style[0], '');
+			});
+		}
+	}
+
+	function handleDragOver(event) {
+		var host = Dom.editingHost(event.editor.dndContext.element.parentNode);
+		event.editable = host && Editables.fromElem(event.editor, host);
+	}
+
+	var handlers = {
+		'aloha'     : handleAloha,
+		'mousedown' : handleMouseDown,
+		'dragstart' : handleDragStart,
+		'dragend'   : handleDragEnd,
+		'dragover'  : handleDragOver
+	};
+
 	/**
 	 * Process events on Aloha Blocks.
 	 *
-	 * @param  {Event} event
+	 * @param  {AlohaEvent} event
 	 * @return {Event}
 	 */
 	function handle(event) {
-		var context;
-		switch (event.type) {
-		case 'aloha':
-			var blocks = event.editable['elem'].querySelectorAll('.aloha-block,img');
-			[].forEach.call(blocks, function (block) {
-				block.setAttribute('contentEditable', 'false');
-				Dom.setStyle(block, 'cursor', Browsers.VENDOR_PREFIX + 'grab');
-			});
-			break;
-		case 'mousedown':
-			var block = event.nativeEvent.target;
-			if (isBlockEvent(event) && DragDrop.isDraggable(block)) {
-				event.editor.dndContext = Events.hasKeyModifier(event, 'ctrl')
-				                        ? copyContext(block)
-				                        : moveContext(block);
-			}
-			break;
-		case 'dragstart':
-			if (isBlockEvent(event)) {
-				context = event.editor.dndContext;
-				draggingStyles.forEach(function (style) {
-					Dom.setStyle(context.target, style[0], style[1]);
-					Dom.setStyle(context.element, style[0], style[1]);
-				});
-			}
-			break;
-		case 'dragend':
-			if (isBlockEvent(event)) {
-				context = event.editor.dndContext;
-				draggingStyles.forEach(function (style) {
-					Dom.setStyle(context.target, style[0], '');
-					Dom.setStyle(context.element, style[0], '');
-				});
-			}
-			break;
-		case 'dragover':
-			var host = Dom.editingHost(event.editor.dndContext.element.parentNode);
-			event.editable = host && Editables.fromElem(event.editor, host);
-			break;
+		if (handlers[event.type]) {
+			handlers[event.type](event);
 		}
 		return event;
 	}

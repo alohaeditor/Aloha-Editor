@@ -104,28 +104,23 @@ define([
 		return meta.join('+');
 	}
 
+	var keyEvents = {
+		'keyup'    : true,
+		'keydown'  : true,
+		'keypress' : true
+	};
+
 	function handle(alohaEvent) {
 		var event = alohaEvent.nativeEvent;
 		if (!event) {
 			return alohaEvent;
 		}
-		var src = event.target || event.srcElement;
-		var range = src ? Ranges.get(src.ownerDocument) : null;
-		if (range) {
-			alohaEvent.range = range;
-			var editable = Editables.fromBoundary(
-				alohaEvent.editor,
-				Boundaries.fromRangeStart(range)
-			);
-			if (editable) {
-				alohaEvent.editable = editable;
-			}
-		}
-		alohaEvent['type'] = event.type;
-		alohaEvent['which'] = event.which;
 		alohaEvent['meta'] = metaKeys(event);
-		alohaEvent['isTextInput'] = isTextInput(event);
-		alohaEvent['chr'] = String.fromCharCode(event.which);
+		if (keyEvents[alohaEvent.type]) {
+			alohaEvent['which'] = event.which;
+			alohaEvent['isTextInput'] = isTextInput(event);
+			alohaEvent['chr'] = String.fromCharCode(event.which);
+		}
 		return alohaEvent;
 	}
 
