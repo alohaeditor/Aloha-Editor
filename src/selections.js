@@ -552,6 +552,7 @@ define([
 	/**
 	 * Initialize blinking using the given element.
 	 *
+	 * @private
 	 * @param  {Element} caret
 	 * @return {Object}
 	 */
@@ -586,10 +587,9 @@ define([
 		}
 		function stop() {
 			blink = false;
-			timers.forEach(function (timer) {
-				clearTimeout(timer);
-			});
 			Dom.setStyle(caret, 'opacity', 1);
+			timers.forEach(clearTimeout);
+			timers = [];
 		}
 		function start() {
 			stop();
@@ -671,7 +671,7 @@ define([
 	 * Returns a range based on the given event object.
 	 *
 	 * @private
-	 * @param  {AlohaEvent} alohaEvent An Aloha Editor event
+	 * @param  {AlohaEvent} alohaEvent
 	 * @return {?Range}
 	 */
 	function fromEvent(alohaEvent) {
