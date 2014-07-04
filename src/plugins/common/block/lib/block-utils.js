@@ -138,6 +138,16 @@ define([
         return $block.parents('.aloha-editable').filter(':first');
     }
 
+	/**
+	 * Check if a block element is a table.
+	 *
+	 * @param {jQuery Element} $blockElement
+	 * @returns {Boolean} true if it is a table, false otherwise
+	 */
+	function isTable($blockElement) {
+		return $blockElement.hasClass('aloha-table-wrapper');
+	}
+
     /**
      * Get table inside the block or null if this block is not for a table
      *
@@ -149,22 +159,148 @@ define([
         return isTable($block)? $block.find('table').filter(':first') : null;
     }
 
-    /**
-     * Check if a block element is a table.
-     *
-     * @param {jQuery Element} $blockElement
-     * @returns {Boolean} true if it is a table, false otherwise
-     */
-    function isTable($blockElement) {
-        return $blockElement.hasClass('aloha-table-wrapper');
-    }
+	/**
+	 * Checks if `$blockElement` is an inline block element.
+	 * @param {Element} $blockElement
+	 * @return {boolean}
+	 */
+	function isInlineBlock($blockElement) {
+		return $blockElement[0].nodeName === 'SPAN';
+	}
+
+	/**
+	 * Helper which traverses the DOM tree starting from el and wraps all non-empty texts with spans,
+	 * such that they can act as drop target.
+	 *
+	 * @param {DomElement} el
+	 */
+	function traverseDomTreeAndWrapCharactersWithSpans(el) {
+		var child;
+		var i, l;
+		for(i=0, l=el.childNodes.length; i < l; i++) {
+			child = el.childNodes[i];
+			if (child.nodeType === 1) { // DOM Nodes
+				if (!~child.className.indexOf('aloha-block') && child.attributes['data-i'] === undefined) {
+					// We only recurse if child does NOT have the class "aloha-block", and is NOT data-i
+					traverseDomTreeAndWrapCharactersWithSpans(child);
+				} else if (child.attributes['data-i']) {
+					// data-i set -> we have converted this hierarchy level already --> early return!
+					return;
+				}
+			} else if (child.nodeType === 3) { // Text Nodes
+				var numberOfSpansInserted = insertSpans(child);
+				i += numberOfSpansInserted;
+				l += numberOfSpansInserted;
+			}
+		}
+	}
+
+	/**
+	 * Helper which splits text on word boundaries, adding whitespaces to the following element.
+	 * Examples:
+	 * - "Hello world" -> ["Hello", " world"]
+	 * - " Hello world" -> [" Hello", " world"]
+	 * --> see the unit tests for the specification
+	 */
+	function splitText(text) {
+		var textParts = text.split(/(?=\b)/);
+		var cleanedTextParts = [];
+
+		var isWhitespace = false;
+		var i,l;
+
+		for (i=0,l=textParts.length; i<l; i++) {
+			if (!/[^\t\n\r ]/.test(textParts[i])) {
+				// if the current text part is just whitespace, we add a flag...
+				isWhitespace = true;
+			} else {
+				if (isWhitespace) {
+					// we have a whitespace to add
+					cleanedTextParts.push(' ' + textParts[i]);
+					isWhitespace = false;
+				} else {
+					cleanedTextParts.push(textParts[i]);
+				}
+			}
+		}
+		if (isWhitespace) {
+			cleanedTextParts[cleanedTextParts.length - 1] += ' ';
+		}
+		return cleanedTextParts;
+	}
+
+
+	/**
+	 * This is a helper for traverseDomTreeAndWrapCharactersWithSpans,
+	 * performing the actual conversion.
+	 *
+	 * This function returns the number of additional DOM elements inserted.
+	 * This is "numberOfSpansCreated - 1" (because one text node has been initially there)
+	 */
+	function insertSpans(el) {
+		var text = el.nodeValue;
+
+		// If node just contains empty strings, we do not do anything.
+		// Use ECMA-262 Edition 3 String and RegExp features
+		if (!/[^\t\n\r ]/.test(text)) {
+			return 0;
+		}
+		var newNodes = document.createDocumentFragment();
+
+		var splittedText = splitText(text);
+
+		var l = splittedText.length;
+		var x, word, leftWordPartLength, t;
+		var numberOfSpansInserted = 0;
+		var i;
+
+		for (i=0; i<l; i++) {
+			// left half of word
+			word = splittedText[i];
+			if (word.length === 0) {
+				continue;
+			}
+			// We use "floor" here such that sentence delimiters like "!" can have a block placed afterwards
+			leftWordPartLength = Math.floor(word.length/2);
+
+			// For Internet Explorer, we only make dropping AFTER words possible to improve performance
+			var browserMajorVersion = parseInt(jQuery.browser.version, 10);
+			if (jQuery.browser.msie && (7 === browserMajorVersion || 8 === browserMajorVersion)) {
+				leftWordPartLength = 0;
+			}
+
+			if (leftWordPartLength > 0) {
+				x = document.createElement('span');
+				x.appendChild(document.createTextNode(word.substr(0, leftWordPartLength)));
+				x.setAttribute('data-i', i);
+
+				newNodes.appendChild(x);
+				numberOfSpansInserted++;
+			}
+
+			// right half of word
+			x = document.createElement('span');
+			t = word.substr(leftWordPartLength);
+			x.appendChild(document.createTextNode(t));
+			x.setAttribute('data-i', i);
+			x.setAttribute('class', 'aloha-block-droppable-right');
+
+			newNodes.appendChild(x);
+			numberOfSpansInserted++;
+		}
+		el.parentNode.replaceChild(newNodes, el);
+		return numberOfSpansInserted-1;
+	}
 
 	return {
 		pad: pad,
 		unpad: unpad,
 		isDragdropEnabledForElement: isDragdropEnabledForElement,
-        isTable: isTable,
-        getEditableByBlock: getEditableByBlock,
-        getTableByBlock: getTableByBlock
+		isTable: isTable,
+		getEditableByBlock: getEditableByBlock,
+		getTableByBlock: getTableByBlock,
+		isInlineBlock: isInlineBlock,
+		traverseDomTreeAndWrapCharactersWithSpans: traverseDomTreeAndWrapCharactersWithSpans,
+		splitText: splitText
 	};
 });

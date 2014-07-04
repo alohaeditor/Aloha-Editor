@@ -206,6 +206,10 @@ define([
 	 */
 	DragBehavior.prototype.setDraggable = function () {
 		var dragBehavior = this;
+		if (BlockUtils.isInlineBlock(this.$element)) {
+			this.setupDragDropForInlineElements();
+			return;
+		}
 		var $handle = $('>.aloha-block-draghandle', this.$element);
 		var element = this.$element.get(0);
 
@@ -257,6 +261,186 @@ define([
 				ui.helper.remove();
 				IESelectionState.restore();
 				return true;
+			}
+		});
+	};
+	/**************************
+	 * SECTION: Drag&Drop for INLINE elements
+	 **************************/
+	DragBehavior.prototype.setupDragDropForInlineElements = function () {
+		var blockObject = this.blockObject;
+		// Here, we store the character DOM element which has been hovered upon recently.
+		// This is needed as somehow, the "drop" event on the character is not fired.
+		// Furthermore, we use it to know whether we need to "revert" the draggable to the original state or not.
+		var lastHoveredCharacter = null;
+
+		// Unless this flag is set to true, drag operation should be reverted.
+		// Firing of "drop" event will set this to true.
+		var blockDroppedProperly = false;
+
+		// HACK for IE7: Internet Explorer 7 has a very weird behavior in
+		// not always firing the "drop" callback of the inner droppable... However,
+		// the "over" and "out" callbacks are fired correctly.
+		// Because of this, we handle the "drop" inside the "stop" callback in IE7
+		// instead of the "drop" callback (where it is handled in all other browsers)
+
+		// This $currentDraggable is also needed as part of the IE 7 hack.
+		// $currentDraggable contains a reference to the current draggable, but
+		// only makes sense to read when lastHoveredCharacter !== NULL.
+		var $currentDraggable = null;
+
+		// We need to store the droppables created at the start of the drag,
+		// they should be destroyed when the drag stops.
+		var $createdDroppables = null;
+
+		// This dropFn is the callback which handles the actual moving of
+		// nodes. We created a separate function for it, as it is called inside the "stop" callback
+		// in IE7 and inside the "drop" callback in all other browsers.
+		var dropFn = function() {
+			if (lastHoveredCharacter) {
+				// the user recently hovered over a character
+				var $dropReferenceNode = jQuery(lastHoveredCharacter);
+
+				if ($dropReferenceNode.is('.aloha-block-dropInlineElementIntoEmptyBlock')) {
+					// the user wanted to drop INTO an empty block!
+					$dropReferenceNode.children().remove();
+					$dropReferenceNode.append($currentDraggable);
+				} else if ($dropReferenceNode.is('.aloha-block-droppable-right')) {
+					$dropReferenceNode.html($dropReferenceNode.html() + ' ');
+
+					// Move draggable after drop reference node
+					$dropReferenceNode.after($currentDraggable);
+				} else {
+					// Insert space in the beginning of the drop reference node
+					if ($dropReferenceNode.prev('[data-i]').length > 0) {
+						// If not the last element, insert space in front of next element (i.e. after the moved block)
+						$dropReferenceNode.prev('[data-i]').html($dropReferenceNode.prev('[data-i]').html() + ' ');
+					}
+					$dropReferenceNode.html(' ' + $dropReferenceNode.html());
+
+					// Move draggable before drop reference node
+					$dropReferenceNode.before($currentDraggable);
+				}
+
+				$currentDraggable.removeClass('ui-draggable').css({'left': 0, 'top': 0}); // Remove "draggable" options... somehow "Destroy" does not work
+				blockObject._fixScrollPositionBugsInIE();
+			}
+			jQuery('.aloha-block-dropInlineElementIntoEmptyBlock').removeClass('aloha-block-dropInlineElementIntoEmptyBlock');
+
+			// clear the created droppables
+			$createdDroppables.droppable( "destroy" );
+			$createdDroppables = null;
+
+			blockDroppedProperly = true;
+		};
+		var editablesWhichNeedToBeCleaned = [];
+		blockObject.$element.draggable({
+			handle: '.aloha-block-draghandle',
+			scope: 'aloha-block-inlinedragdrop',
+			disabled: !blockObject._dd_isDragdropEnabled(),
+			revert: function() {
+				return (lastHoveredCharacter === null || !blockDroppedProperly);
+			},
+			revertDuration: 250,
+			stop: function() {
+				if (jQuery.browser.msie && 7 === parseInt(jQuery.browser.version, 10)) {
+					dropFn();
+				}
+				jQuery.each(editablesWhichNeedToBeCleaned, function() {
+					blockObject._dd_traverseDomTreeAndRemoveSpans(this);
+				});
+				$currentDraggable = null;
+
+				editablesWhichNeedToBeCleaned = [];
+			},
+			start: function() {
+				blockDroppedProperly = false;
+				editablesWhichNeedToBeCleaned = [];
+
+				// In order to make Inline Blocks droppable into empty paragraphs, we insert a &nbsp; manually before the placeholder-br.
+				// -> for IE
+				jQuery('.aloha-editable').children('p:empty').html('&nbsp;');
+
+
+				// Make **ALL** editables on the page droppable, such that it is possible
+				// to drag/drop *across* editable boundaries
+				var droppableCfg = {
+					// make block elements droppable
+					tolerance: 'pointer',
+					addClasses: false, // performance optimization
+					scope: 'aloha-block-inlinedragdrop',
+
+					/**
+					 * When hovering over a paragraph, we make convert its contents into spans, to make
+					 * them droppable.
+					 */
+					over: function(event, ui) {
+						if (jQuery.inArray(this, editablesWhichNeedToBeCleaned) === -1) {
+							editablesWhichNeedToBeCleaned.push(this);
+						}
+
+						var hasOnlyProppingBr = (
+							1 === jQuery(this).contents().length &&
+							1 === jQuery(this).children('br').length
+							);
+						$currentDraggable = ui.draggable;
+
+						if (jQuery(this).is(':empty') ||
+							hasOnlyProppingBr ||
+							jQuery(this).html() === '&nbsp;') {
+							// The user is hovering over an empty
+							// container; simply highlight the container.
+							jQuery(this).addClass(
+								'aloha-block-dropInlineElementIntoEmptyBlock');
+							lastHoveredCharacter = this;
+							return;
+						}
+
+						BlockUtils.traverseDomTreeAndWrapCharactersWithSpans(this);
+						jQuery('span[data-i]', this).droppable({
+							tolerance: 'pointer',
+							addClasses: false,
+							scope: 'aloha-block-inlinedragdrop',
+							over: function() {
+								if (lastHoveredCharacter) {
+									// Just to be sure, we remove the css class of the last hovered character.
+									// This is needed such that spans are deselected which contain multiple
+									// lines.
+									jQuery(lastHoveredCharacter).removeClass('aloha-block-droppable');
+								}
+								lastHoveredCharacter = this;
+								jQuery(this).addClass('aloha-block-droppable');
+							},
+							out: function() {
+								jQuery(this).removeClass('aloha-block-droppable');
+								if (lastHoveredCharacter === this) {
+									lastHoveredCharacter = null;
+								}
+							}
+						});
+						// Now that we updated the droppables in the system, we need to recalculate
+						// the Drag Drop offsets.
+						jQuery.ui.ddmanager.prepareOffsets(ui.draggable.data('draggable'), event);
+					},
+					out: function() {
+						jQuery(this).removeClass('aloha-block-dropInlineElementIntoEmptyBlock');
+					},
+
+					/**
+					 * When dropping over a paragraph, we use the "lastHoveredCharacter"
+					 * as drop target.
+					 */
+					drop: function() {
+						if (!(jQuery.browser.msie && 7 === parseInt(jQuery.browser.version, 10))) {
+							dropFn();
+						}
+					}
+				};
+
+				$createdDroppables = jQuery( ".aloha-editable.aloha-block-dropzone" ).children( ":not(.aloha-block)" );
+				$createdDroppables.droppable( droppableCfg );
+				// Small HACK: Also make table cells droppable
+				jQuery('.aloha-table-cell-editable').droppable(droppableCfg);
 			}
 		});
 	};

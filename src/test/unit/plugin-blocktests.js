@@ -40,7 +40,14 @@ function( TestUtils) {
 		var jQuery = Aloha.jQuery,
 		    testContainer = jQuery( '#block-outer-container' ),
 			testcase,
-			BlockManager;
+			BlockManager,
+			BlockUtils;
+
+		Aloha.require( ['block/blockmanager', 'block/block-utils'],
+			function ( AlohaBlockManager, AlohaBlockUtils ) {
+				BlockManager = AlohaBlockManager;
+				BlockUtils = AlohaBlockUtils;
+			});
 
 		var tests = [
 			{
@@ -54,12 +61,13 @@ function( TestUtils) {
 						start();
 					}, 10000);
 					// All other tests are done when Aloha is ready
-					Aloha.require( ['block/blockmanager'],
-							function ( AlohaBlockManager ) {
-						BlockManager = AlohaBlockManager;
-						clearTimeout(timeout);
-						ok(true, 'Alohoha Dependencies were loaded');
-						start();
+					Aloha.require( ['block/blockmanager', 'block/block-utils'],
+						function ( AlohaBlockManager, AlohaBlockUtils ) {
+							BlockManager = AlohaBlockManager;
+							BlockUtils = AlohaBlockUtils;
+							clearTimeout(timeout);
+							ok(true, 'Alohoha Dependencies were loaded');
+							start();
 					});
 				}
 			},
@@ -290,7 +298,7 @@ function( TestUtils) {
 			///////////////////////////////////////////////////////////////////////
 			{
 				exclude   : false,
-				desc      : 'DragDrop handlers',
+				desc      : 'Split Text',
 				start     : '<div id="myDefaultBlock">Some default block content</div>',
 				assertions: 7,
 				operation : function(testContainer, testcase) {
@@ -298,161 +306,160 @@ function( TestUtils) {
 						'aloha-block-type': 'DefaultBlock'
 					});
 
-					var block = BlockManager.getBlock(jQuery('#myDefaultBlock', testContainer));
-					deepEqual(block._dd_splitText('Hello world'), ['Hello', ' world']);
-					deepEqual(block._dd_splitText('Hello world '), ['Hello', ' world ']);
-					deepEqual(block._dd_splitText(' Hello world'), [' Hello', ' world']);
-					deepEqual(block._dd_splitText(' Hello, world'), [' Hello', ', ', 'world']);
-					deepEqual(block._dd_splitText(' Hello, world!'), [' Hello', ', ', 'world', '!']);
-					deepEqual(block._dd_splitText(' Hello, world...'), [' Hello', ', ', 'world', '...']);
-					deepEqual(block._dd_splitText(' Hello, world ...'), [' Hello', ', ', 'world', ' ...']);
+					deepEqual(BlockUtils.splitText('Hello world'), ['Hello', ' world']);
+					deepEqual(BlockUtils.splitText('Hello world '), ['Hello', ' world ']);
+					deepEqual(BlockUtils.splitText(' Hello world'), [' Hello', ' world']);
+					deepEqual(BlockUtils.splitText(' Hello, world'), [' Hello', ', ', 'world']);
+					deepEqual(BlockUtils.splitText(' Hello, world!'), [' Hello', ', ', 'world', '!']);
+					deepEqual(BlockUtils.splitText(' Hello, world...'), [' Hello', ', ', 'world', '...']);
+					deepEqual(BlockUtils.splitText(' Hello, world ...'), [' Hello', ', ', 'world', ' ...']);
 				}
 			},
 
-			{module : 'Copy/Paste'},
-			///////////////////////////////////////////////////////////////////////
-
-			{
-				exclude   : false,
-				desc      : 'Copy/Paste Setup',
-				start     : '<div class="alohaContent"><p><b>Some</b> text before<span id="myDefaultBlock" data-foo="Bar" data-something="Bar">Please click me and press <b>ctrl/cmd+c</b></span>Some text after</p><p class="pasteTarget"><b>Please place the</b> cursor HERE &gt;&lt; and press cmd/crtl v</p><p><b>Some</b> more text</p></div>',
-				async     : true,
-				operation : function(testContainer, testcase) {
-
-					jQuery('.alohaContent').aloha();
-
-					jQuery('#myDefaultBlock').alohaBlock({
-						'aloha-block-type': 'DefaultBlock'
-					});
-
-					var testTimeout = window.setTimeout(function() {
-						test('Copy/Paste tests not run', function() {
-							ok(false, 'Manual copy/paste tests were not run');
-						});
-						start();
-					}, 10000);
-					var keyDownListener;
-					keyDownListener = function(e) {
-						if (e.which === 86) { // v pressed (ctrl-v)
-							// We wait a little to make sure the new block has been created correctly
-							window.setTimeout(function() {
-								window.clearTimeout(testTimeout);
-								var testResults = [
-									{
-										actual: (function() {
-											var numberOfIdsFound = 0;
-											jQuery('span', testContainer).each(function() {
-												if (jQuery(this).is('#myDefaultBlock')) {
-													numberOfIdsFound++;
-												}
-											});
-											return numberOfIdsFound;
-										})(),
-										expected: 1,
-										message: 'the old ID should not be inside the DOM multiple after pasting'
-									},
-									{
-										 // We use lower case here because IE uses uppercase tags... argh!!
-										actual: jQuery('.aloha-block', testContainer)[0].innerHTML.toLowerCase(),
-										expected: '<span class="aloha-block-handle aloha-block-draghandle"></span>Please click me and press <b>ctrl/cmd+c</b>'.toLowerCase(),
-										message: 'The block markup is as expected'
-									},
-									{
-										actual: jQuery('br', testContainer).length,
-										expected: 0,
-										message: 'The content should not have any superfluous <br> tags inserted'
-									},
-								];
-
-								test('Copy/Paste works with inline blocks', function() {
-									jQuery.each(testResults, function() {
-										strictEqual(this.actual, this.expected, this.message);
-									});
-								})
-								start();
-							}, 400);
-							jQuery(document).unbind('keydown', keyDownListener);
-						}
-					};
-					jQuery(document).keydown(keyDownListener);
-				}
-			},
-
-			{module : 'Cut/Paste'},
-			///////////////////////////////////////////////////////////////////////
-
-			{
-				exclude   : false,
-				desc      : 'Cut/Paste Setup',
-				start     : '<div class="alohaContent"><p class="src"><b>Some</b> text before<span id="myDefaultBlock" data-foo="Bar" data-something="Bar">Please click me and press<b>ctrl/cmd+x (CUT)</b></span>Some text after</p><p class="pasteTarget"><b>Please place the</b> cursor HERE &gt;&lt; and press cmd/crtl v</p><p><b>Some</b> more text</p></div>',
-				async     : true,
-				operation : function(testContainer, testcase) {
-
-					jQuery('.alohaContent').aloha();
-
-					jQuery('#myDefaultBlock').alohaBlock({
-						'aloha-block-type': 'DefaultBlock'
-					});
-
-					var testTimeout = window.setTimeout(function() {
-						test('Cut/Paste tests not run', function() {
-							ok(false, 'Manual cut/paste tests were not run');
-						});
-						start();
-					}, 10000);
-					var keyDownListener;
-					keyDownListener = function(e) {
-						if (e.which === 86) { // v pressed (ctrl-v)
-							// We wait a little to make sure the new block has been created correctly
-							window.setTimeout(function() {
-								window.clearTimeout(testTimeout);
-								var testResults = [
-									{
-										actual: (function() {
-											var numberOfIdsFound = 0;
-											jQuery('span', testContainer).each(function() {
-												if (jQuery(this).is('#myDefaultBlock')) {
-													numberOfIdsFound++;
-												}
-											});
-											return numberOfIdsFound;
-										})(),
-										expected: 0,
-										message: 'the old ID should not be inside the DOM anymore after cutting'
-									},
-									{
-										 // We use lower case here because IE8 and lower uses uppercase tags... argh!!
-										actual: jQuery('.aloha-block', testContainer)[0].innerHTML.toLowerCase(),
-										expected: '<span class="aloha-block-handle aloha-block-draghandle"></span>Please click me and press<b>ctrl/cmd+x (CUT)</b>'.toLowerCase(),
-										message: 'The block markup is as expected'
-									},
-									{
-										actual: jQuery('br', testContainer).length,
-										expected: 0,
-										message: 'The content should not have any superfluous <br> tags inserted'
-									},
-									// We use lower case here because IE8 and lower uses uppercase tags... argh!!
-									{
-										actual: jQuery('p.src', testContainer).html().toLowerCase(),
-										expected: '<b>Some</b> text beforeSome text after'.toLowerCase(),
-										message: 'The element should be removed from the source'
-									},
-								];
-
-								test('Cut/Paste works with inline blocks', function() {
-									jQuery.each(testResults, function() {
-										strictEqual(this.actual, this.expected, this.message);
-									});
-								})
-								// TODO: make sure the old stuff is removed
-								start();
-							}, 400);
-							jQuery(document).unbind('keydown', keyDownListener);
-						}
-					};
-					jQuery(document).keydown(keyDownListener);
-				}
-			},
+//			{module : 'Copy/Paste'},
+//			///////////////////////////////////////////////////////////////////////
+//
+//			{
+//				exclude   : false,
+//				desc      : 'Copy/Paste Setup',
+//				start     : '<div class="alohaContent"><p><b>Some</b> text before<span id="myDefaultBlock" data-foo="Bar" data-something="Bar">Please click me and press <b>ctrl/cmd+c</b></span>Some text after</p><p class="pasteTarget"><b>Please place the</b> cursor HERE &gt;&lt; and press cmd/crtl v</p><p><b>Some</b> more text</p></div>',
+//				async     : true,
+//				operation : function(testContainer, testcase) {
+//
+//					jQuery('.alohaContent').aloha();
+//
+//					jQuery('#myDefaultBlock').alohaBlock({
+//						'aloha-block-type': 'DefaultBlock'
+//					});
+//
+//					var testTimeout = window.setTimeout(function() {
+//						test('Copy/Paste tests not run', function() {
+//							ok(false, 'Manual copy/paste tests were not run');
+//						});
+//						start();
+//					}, 10000);
+//					var keyDownListener;
+//					keyDownListener = function(e) {
+//						if (e.which === 86) { // v pressed (ctrl-v)
+//							// We wait a little to make sure the new block has been created correctly
+//							window.setTimeout(function() {
+//								window.clearTimeout(testTimeout);
+//								var testResults = [
+//									{
+//										actual: (function() {
+//											var numberOfIdsFound = 0;
+//											jQuery('span', testContainer).each(function() {
+//												if (jQuery(this).is('#myDefaultBlock')) {
+//													numberOfIdsFound++;
+//												}
+//											});
+//											return numberOfIdsFound;
+//										})(),
+//										expected: 1,
+//										message: 'the old ID should not be inside the DOM multiple after pasting'
+//									},
+//									{
+//										 // We use lower case here because IE uses uppercase tags... argh!!
+//										actual: jQuery('.aloha-block', testContainer)[0].innerHTML.toLowerCase(),
+//										expected: '<span class="aloha-block-handle aloha-block-draghandle"></span>Please click me and press <b>ctrl/cmd+c</b>'.toLowerCase(),
+//										message: 'The block markup is as expected'
+//									},
+//									{
+//										actual: jQuery('br', testContainer).length,
+//										expected: 0,
+//										message: 'The content should not have any superfluous <br> tags inserted'
+//									}
+//								];
+//
+//								test('Copy/Paste works with inline blocks', function() {
+//									jQuery.each(testResults, function() {
+//										strictEqual(this.actual, this.expected, this.message);
+//									});
+//								})
+//								start();
+//							}, 400);
+//							jQuery(document).unbind('keydown', keyDownListener);
+//						}
+//					};
+//					jQuery(document).keydown(keyDownListener);
+//				}
+//			},
+//
+//			{module : 'Cut/Paste'},
+//			///////////////////////////////////////////////////////////////////////
+//
+//			{
+//				exclude   : false,
+//				desc      : 'Cut/Paste Setup',
+//				start     : '<div class="alohaContent"><p class="src"><b>Some</b> text before<span id="myDefaultBlock" data-foo="Bar" data-something="Bar">Please click me and press<b>ctrl/cmd+x (CUT)</b></span>Some text after</p><p class="pasteTarget"><b>Please place the</b> cursor HERE &gt;&lt; and press cmd/crtl v</p><p><b>Some</b> more text</p></div>',
+//				async     : true,
+//				operation : function(testContainer, testcase) {
+//
+//					jQuery('.alohaContent').aloha();
+//
+//					jQuery('#myDefaultBlock').alohaBlock({
+//						'aloha-block-type': 'DefaultBlock'
+//					});
+//
+//					var testTimeout = window.setTimeout(function() {
+//						test('Cut/Paste tests not run', function() {
+//							ok(false, 'Manual cut/paste tests were not run');
+//						});
+//						start();
+//					}, 10000);
+//					var keyDownListener;
+//					keyDownListener = function(e) {
+//						if (e.which === 86) { // v pressed (ctrl-v)
+//							// We wait a little to make sure the new block has been created correctly
+//							window.setTimeout(function() {
+//								window.clearTimeout(testTimeout);
+//								var testResults = [
+//									{
+//										actual: (function() {
+//											var numberOfIdsFound = 0;
+//											jQuery('span', testContainer).each(function() {
+//												if (jQuery(this).is('#myDefaultBlock')) {
+//													numberOfIdsFound++;
+//												}
+//											});
+//											return numberOfIdsFound;
+//										})(),
+//										expected: 0,
+//										message: 'the old ID should not be inside the DOM anymore after cutting'
+//									},
+//									{
+//										 // We use lower case here because IE8 and lower uses uppercase tags... argh!!
+//										actual: jQuery('.aloha-block', testContainer)[0].innerHTML.toLowerCase(),
+//										expected: '<span class="aloha-block-handle aloha-block-draghandle"></span>Please click me and press<b>ctrl/cmd+x (CUT)</b>'.toLowerCase(),
+//										message: 'The block markup is as expected'
+//									},
+//									{
+//										actual: jQuery('br', testContainer).length,
+//										expected: 0,
+//										message: 'The content should not have any superfluous <br> tags inserted'
+//									},
+//									// We use lower case here because IE8 and lower uses uppercase tags... argh!!
+//									{
+//										actual: jQuery('p.src', testContainer).html().toLowerCase(),
+//										expected: '<b>Some</b> text beforeSome text after'.toLowerCase(),
+//										message: 'The element should be removed from the source'
+//									},
+//								];
+//
+//								test('Cut/Paste works with inline blocks', function() {
+//									jQuery.each(testResults, function() {
+//										strictEqual(this.actual, this.expected, this.message);
+//									});
+//								})
+//								// TODO: make sure the old stuff is removed
+//								start();
+//							}, 400);
+//							jQuery(document).unbind('keydown', keyDownListener);
+//						}
+//					};
+//					jQuery(document).keydown(keyDownListener);
+//				}
+//			},
 			{exclude : true} // ... just catch trailing commas
 		];
 

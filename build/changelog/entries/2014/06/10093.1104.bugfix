@@ -1,0 +1,2 @@
+block-plugin: inline draggable elements were not able to be drop between text, only after or before block level elements.
+With this fix, inline draggable elements can be placed between text.
