@@ -104,7 +104,7 @@ define([
 		return meta.join('+');
 	}
 
-	var keyEvents = {
+	var EVENTS = {
 		'keyup'    : true,
 		'keydown'  : true,
 		'keypress' : true
@@ -116,7 +116,7 @@ define([
 			return alohaEvent;
 		}
 		alohaEvent['meta'] = metaKeys(event);
-		if (keyEvents[alohaEvent.type]) {
+		if (EVENTS[alohaEvent.type]) {
 			alohaEvent['which'] = event.which;
 			alohaEvent['isTextInput'] = isTextInput(event);
 			alohaEvent['chr'] = String.fromCharCode(event.which);
@@ -125,8 +125,9 @@ define([
 	}
 
 	return {
-		handle : handle,
+		CODES  : CODES,
+		EVENTS : EVENTS,
 		ARROWS : ARROWS,
-		CODES  : CODES
+		handle : handle
 	};
 });

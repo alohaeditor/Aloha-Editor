@@ -700,27 +700,13 @@ define([
 	/**
 	 * Scrolls the viewport to the position of the given boundary.
 	 *
-	 * @private
 	 * @param {Boundary}
 	 */
 	function scrollTo(boundary) {
 		var box = Ranges.box(Ranges.fromBoundaries(boundary, boundary));
-		var doc = Boundaries.container(boundary).ownerDocument;
-		var win = Dom.documentWindow(doc);
-		var topDelta = win.pageYOffset - doc.body.clientTop;
-		var leftDelta = win.pageXOffset - doc.body.clientLeft;
-		win.scrollTo(box.left + leftDelta, box.top + topDelta);
+		var win = Dom.documentWindow(Boundaries.document(boundary));
+		win.scrollTo(box.left, box.top);
 	}
-
-	var delay = (function () {
-		var timer = null;
-		return function (callback) {
-			if (timer) {
-				clearTimeout(timer);
-			}
-			timer = setTimeout(callback, 200);
-		};
-	}());
 
 	/**
 	 * Renders a caret element to show the user selection.
@@ -829,6 +815,42 @@ define([
 			} else {
 				range = Ranges.collapseToStart(range);
 			}
+		}
+
+		/**
+		 * Enures that the given boundary is visible inside of the viewport by
+		 * scolling the view port if necessary.
+		 *
+		 * @private
+		 * @param {Boundary} boundary
+		 */
+		function ensureInViewport(boundary) {
+			var box = Ranges.box(Ranges.fromBoundaries(boundary, boundary));
+			var doc = Boundaries.document(boundary);
+			var win = Dom.documentWindow(doc);
+			var top = win.pageYOffset - doc.body.clientTop;
+			var left = win.pageXOffset - doc.body.clientLeft;
+			var height = win.innerHeight;
+			var width = win.innerWidth;
+			var caretTop = box.top;
+			var caretLeft = box.left;
+			var correctTop = 0;
+			var correctLeft = 0;
+			if (caretTop < top || caretTop > top + height) {
+				correctTop = caretTop - height / 2;
+			}
+			if (caretLeft < left || caretLeft > left + width) {
+				correctLeft = caretLeft - width / 2;
+			}
+			if (correctTop || correctLeft) {
+				win.scrollTo(correctLeft || left, correctTop || top);
+			}
+		}
+
+		if (Keys.EVENTS[type]) {
+			ensureInViewport(('start' === context.focus)
+				? Boundaries.fromRangeStart(range)
+				: Boundaries.fromRangeEnd(range));
 		}
 
 		event.range = range;
