@@ -81,13 +81,18 @@ define([
 		return Ranges.fromBoundaries(boundaries[0], boundaries[1]);
 	}
 
-	function breakline(isLinebreak, alohaEvent) {
+	function breakline(isLinebreak, event) {
+		if (!isLinebreak) {
+			event.editable.overrides = event.editable.overrides.concat(
+				Overrides.harvest(event.range.startContainer)
+			);
+		}
 		Editing.breakline(
-			alohaEvent.range,
-			alohaEvent.editable.defaultBlockNodeName,
+			event.range,
+			event.editable.settings.defaultBlockNodeName,
 			isLinebreak
 		);
-		return alohaEvent.range;
+		return event.range;
 	}
 
 	function insertText(alohaEvent) {
@@ -286,9 +291,6 @@ define([
 					if (handling.deleteRange && !range.collapsed) {
 						remove(false, event);
 					}
-					event.editable.overrides = event.editable.overrides.concat(
-						Overrides.harvest(range.startContainer)
-					);
 					event.range = handling.mutate(event);
 					Html.prop(range.commonAncestorContainer);
 				});
