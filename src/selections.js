@@ -832,15 +832,24 @@ define([
 			var left = win.pageXOffset - doc.body.clientLeft;
 			var height = win.innerHeight;
 			var width = win.innerWidth;
+			var buffer = box.height;
 			var caretTop = box.top;
 			var caretLeft = box.left;
 			var correctTop = 0;
 			var correctLeft = 0;
-			if (caretTop < top || caretTop > top + height) {
-				correctTop = caretTop - height / 2;
+			if (caretTop < top) {
+				// Because we want to caret to be near the top
+				correctTop = caretTop - buffer;
+			} else if (caretTop > top + height) {
+				// Because we want to caret to be near the bottom
+				correctTop = caretTop - height + buffer + buffer;
 			}
-			if (caretLeft < left || caretLeft > left + width) {
-				correctLeft = caretLeft - width / 2;
+			if (caretLeft < left) {
+				// Because we want to caret to be near the left
+				correctLeft = caretLeft - buffer;
+			} else if (caretLeft > left + width) {
+				// Because we want to caret to be near the right
+				correctLeft = caretLeft - width + buffer + buffer;
 			}
 			if (correctTop || correctLeft) {
 				win.scrollTo(correctLeft || left, correctTop || top);
