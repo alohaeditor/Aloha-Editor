@@ -411,6 +411,7 @@ define([
 	exports['maps']['cloneSet']    = Maps.cloneSet;
 	exports['maps']['cloneDelete'] = Maps.cloneDelete;
 	exports['maps']['create']      = Maps.create;
+	exports['maps']['mapTuples']   = Maps.mapTuples;
 
 	exports['mouse'] = Mouse;
 	exports['mouse']['handle'] = Mouse.handle;
@@ -430,9 +431,11 @@ define([
 	exports['mutation']['splitBoundaryUntil']             = Mutation.splitBoundaryUntil;
 
 	exports['overrides'] = Overrides;
-	exports['overrides']['map']     = Overrides.map;
-	exports['overrides']['harvest'] = Overrides.harvest;
-	exports['overrides']['consume'] = Overrides.consume;
+	exports['overrides']['toggle']      = Overrides.toggle;
+	exports['overrides']['harvest']     = Overrides.harvest;
+	exports['overrides']['consume']     = Overrides.consume;
+	exports['overrides']['nodeToState'] = Overrides.nodeToState;
+	exports['overrides']['map']         = Overrides.map;
 
 	exports['paste'] = Paste;
 	exports['handle'] = Paste.handle;

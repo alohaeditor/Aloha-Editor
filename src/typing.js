@@ -216,21 +216,21 @@ define([
 	};
 
 	var actions = {
-		'deleteBackward' : deleteBackward,
-		'deleteForward'  : deleteForward,
 		'breakBlock'     : breakBlock,
 		'breakLine'      : breakLine,
+		'deleteBackward' : deleteBackward,
+		'deleteForward'  : deleteForward,
 		'formatBold'     : formatBold,
 		'formatItalic'   : formatItalic,
 		'inputText'      : inputText,
-		'undo'           : undo,
-		'redo'           : redo
+		'redo'           : redo,
+		'undo'           : undo
 	};
 
 	var handlers = {
-		'keyup'    : {},
 		'keydown'  : {},
-		'keypress' : {}
+		'keypress' : {},
+		'keyup'    : {}
 	};
 
 	handlers['keydown'][Keys.CODES['up']] =
@@ -258,42 +258,45 @@ define([
 
 	handlers['keypress']['input'] = inputText;
 
-	function handler(alohaEvent) {
-		var modifier = alohaEvent.meta ? alohaEvent.meta + '+' : '';
-		return (handlers[alohaEvent.type]
-		    && handlers[alohaEvent.type][modifier + alohaEvent.which])
-		    || (alohaEvent.isTextInput && handlers['keypress']['input']);
+	function handler(event) {
+		var modifier = event.meta ? event.meta + '+' : '';
+		return (handlers[event.type]
+		    && handlers[event.type][modifier + event.which])
+		    || (event.isTextInput && handlers['keypress']['input']);
 	}
 
-	function handle(alohaEvent) {
-		if (!alohaEvent.editable) {
-			return alohaEvent;
+	function handle(event) {
+		if (!event.editable) {
+			return event;
 		}
-		var handling = handler(alohaEvent);
+		var handling = handler(event);
 		if (!handling) {
-			return alohaEvent;
+			return event;
 		}
-		var range = alohaEvent.range;
+		var range = event.range;
 		if (handling.preventDefault) {
-			alohaEvent.nativeEvent.preventDefault();
+			event.nativeEvent.preventDefault();
 		}
 		if (handling.clearOverrides) {
-			alohaEvent.editable.overrides = [];
+			event.editable.overrides = [];
 		}
 		if (range && handling.mutate) {
 			if (handling.undo) {
-				undoable(handling.undo, alohaEvent, function () {
+				undoable(handling.undo, event, function () {
 					if (handling.deleteRange && !range.collapsed) {
-						remove(false, alohaEvent);
+						remove(false, event);
 					}
-					alohaEvent.range = handling.mutate(alohaEvent);
+					event.editable.overrides = event.editable.overrides.concat(
+						Overrides.harvest(range.startContainer)
+					);
+					event.range = handling.mutate(event);
 					Html.prop(range.commonAncestorContainer);
 				});
 			} else {
-				alohaEvent.range = handling.mutate(alohaEvent);
+				event.range = handling.mutate(event);
 			}
 		}
-		return alohaEvent;
+		return event;
 	}
 
 	return {

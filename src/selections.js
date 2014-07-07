@@ -86,29 +86,6 @@ define([
 	}
 
 	/**
-	 * Computes a table of the given override and those collected at the given
-	 * node.
-	 *
-	 * @private
-	 * @param  {Array.<Overrides>} overrides
-	 * @param  {Node}              node
-	 * @return {Object}            An object with overrides mapped against their names
-	 */
-	function collectOverrides(overrides, node) {
-		var table = Maps.merge(
-			Overrides.map(Overrides.harvest(node)),
-			Overrides.map(overrides)
-		);
-		if (!table['color']) {
-			table['color'] = Dom.getComputedStyle(
-				Dom.isTextNode(node) ? node.parentNode : node,
-				'color'
-			);
-		}
-		return table;
-	}
-
-	/**
 	 * Determines how to style a caret element based on the given overrides.
 	 *
 	 * @private
@@ -795,7 +772,7 @@ define([
 		show(context.caret, boundary);
 
 		Maps.extend(context.caret.style, stylesFromOverrides(
-			collectOverrides(event.editable.overrides, container)
+			Overrides.map(event.editable.overrides, container)
 		));
 
 		var preventDefault = ('keydown' === type && movements[event.which])

@@ -214,6 +214,20 @@ define(['arrays', 'assert'], function (Arrays, Assert) {
 		return Object.create(null);
 	}
 
+	/**
+	 * Converts a list of tuples into a hash map key-value pair.
+	 *
+	 * @param  {Array.<Array.<string, *>>} tuples
+	 * @return {Object.<string, *>}
+	 */
+	function mapTuples(tuples) {
+		var map = {};
+		tuples.forEach(function (tuple) {
+			map[tuple[0]] = tuple[1];
+		});
+		return map;
+	}
+
 	return {
 		isEmpty     : isEmpty,
 		fillKeys    : fillKeys,
@@ -228,6 +242,7 @@ define(['arrays', 'assert'], function (Arrays, Assert) {
 		clone       : clone,
 		cloneSet    : cloneSet,
 		cloneDelete : cloneDelete,
-		create      : create
+		create      : create,
+		mapTuples   : mapTuples
 	};
 });

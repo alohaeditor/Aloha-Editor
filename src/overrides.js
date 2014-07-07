@@ -293,21 +293,6 @@ define([
 	}
 
 	/**
-	 * Converts a list of overrides represented in array tuples into a hash map
-	 * key-value pair.
-	 *
-	 * @param  {Array.<Override>} overrides
-	 * @return {Override}
-	 */
-	function map(overrides) {
-		var table = {};
-		overrides.forEach(function (override) {
-			table[override[0]] = override[1];
-		});
-		return table;
-	}
-
-	/**
 	 * Toggles the value of the override matching the given name from among the
 	 * list of overrides.
 	 *
@@ -322,11 +307,33 @@ define([
 		             : overrides.concat([[name, value]]);
 	}
 
+	/**
+	 * Computes a table of the given override and those collected at the given
+	 * node.
+	 *
+	 * @param  {Array.<Override>} overrides
+	 * @param  {Node}             node
+	 * @return {Object}           An object with overrides mapped against their names
+	 */
+	function map(overrides, node) {
+		var table = Maps.merge(
+			Maps.mapTuples(overrides),
+			Maps.mapTuples(harvest(node))
+		);
+		if (!table['color']) {
+			table['color'] = Dom.getComputedStyle(
+				Dom.isTextNode(node) ? node.parentNode : node,
+				'color'
+			);
+		}
+		return table;
+	}
+
 	return {
-		map         : map,
-		toggle      : toggle,
-		harvest     : harvest,
 		consume     : consume,
-		nodeToState : nodeToState
+		harvest     : harvest,
+		map         : map,
+		nodeToState : nodeToState,
+		toggle      : toggle
 	};
 });
