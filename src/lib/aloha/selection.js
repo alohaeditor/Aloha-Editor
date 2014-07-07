@@ -148,6 +148,17 @@ define([
 	}
 
 	/**
+	 * Checks if `range` is contained inside an Aloha-Block
+	 * @param {Range} range
+	 * @return {*}
+	 */
+	function rangeStartInBlock(range) {
+		return jQuery(range.startContainer).closest('.aloha-editable,.aloha-block,.aloha-table-cell-editable,.aloha-table-cell_active')
+		                   .first()
+			               .hasClass('aloha-block');
+	}
+
+	/**
 	 * @namespace Aloha
 	 * @class Selection
 	 * This singleton class always represents the current user selection
@@ -620,7 +631,7 @@ define([
 						jQuery(range.commonAncestorContainer)
 							.closest('.aloha-editable').length > 0;
 
-				if (inEditable) {
+				if (inEditable && !rangeStartInBlock(range)) {
 					var validStartPosition = this._validEditablePosition(range.startContainer);
 					var validEndPosition = this._validEditablePosition(range.endContainer);
 					var newPos;
