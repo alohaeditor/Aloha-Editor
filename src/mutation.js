@@ -452,18 +452,28 @@ define([
 		Dom.removeShallow(node);
 	}
 
+	function replaceShallowPreservingBoundaries(node, replacement, boundaries) {
+		var replaced = Dom.replaceShallow(node, replacement);
+		return boundaries.reduce(function (list, boundary) {
+			return list.concat((replaced === Boundaries.container(boundary))
+			     ? [Boundaries.create(replacement, Boundaries.offset(boundary))]
+			     : [boundary]);
+		}, []);
+	}
+
 	return {
-		removeNode                     : removeNode,
-		removeShallowPreservingCursors : removeShallowPreservingCursors,
-		removePreservingRange          : removePreservingRange,
-		removePreservingRanges         : removePreservingRanges,
-		insertTextAtBoundary           : insertTextAtBoundary,
-		insertNodeAtBoundary           : insertNodeAtBoundary,
-		splitTextNode                  : splitTextNode,
-		splitTextContainers            : splitTextContainers,
-		joinTextNodeAdjustRange        : joinTextNodeAdjustRange,
-		joinTextNode                   : joinTextNode,
-		splitBoundary                  : splitBoundary,
-		splitBoundaryUntil             : splitBoundaryUntil
+		removeNode                         : removeNode,
+		removePreservingRange              : removePreservingRange,
+		removePreservingRanges             : removePreservingRanges,
+		removeShallowPreservingCursors     : removeShallowPreservingCursors,
+		replaceShallowPreservingBoundaries : replaceShallowPreservingBoundaries,
+		insertTextAtBoundary               : insertTextAtBoundary,
+		insertNodeAtBoundary               : insertNodeAtBoundary,
+		splitTextNode                      : splitTextNode,
+		splitTextContainers                : splitTextContainers,
+		joinTextNodeAdjustRange            : joinTextNodeAdjustRange,
+		joinTextNode                       : joinTextNode,
+		splitBoundary                      : splitBoundary,
+		splitBoundaryUntil                 : splitBoundaryUntil
 	};
 });

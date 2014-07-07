@@ -409,10 +409,23 @@ define([
 
 		boundaries = removeInvisibleContainers(boundaries[0], boundaries);
 		boundaries = removeInvisibleContainers(boundaries[1], boundaries);
-		prop(Boundaries.container(boundaries[0]));
-		prop(Boundaries.container(boundaries[1]));
+		container = Boundaries.container(boundaries[1]);
 
-		var node = Boundaries.nodeAfter(boundaries[1]);
+		if (!container.firstChild && Predicates.isHeading(container)) {
+			boundaries = Mutation.replaceShallowPreservingBoundaries(
+				container,
+				container.ownerDocument.createElement(defaultBreakingElement),
+				boundaries
+			);
+		}
+
+		left = boundaries[0];
+		right = boundaries[1];
+
+		prop(Boundaries.container(left));
+		prop(Boundaries.container(right));
+
+		var node = Boundaries.nodeAfter(right);
 		var visible = node && Dom.nextWhile(node, function (node) {
 			return !isRenderedBr(node) && Elements.isUnrendered(node);
 		});
@@ -421,11 +434,11 @@ define([
 		if (visible && isBreakingContainer(visible)) {
 			return Mutation.insertNodeAtBoundary(
 				visible.ownerDocument.createElement('br'),
-				boundaries[1]
+				right
 			);
 		}
 
-		return boundaries[1];
+		return right;
 	}
 
 	return {
