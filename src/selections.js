@@ -564,8 +564,8 @@ define([
 						}, 300));
 					} else if (1 === value){
 						timers.push(setTimeout(function () {
-							fade(1, 0, 200);
-						}, 300));
+							fade(1, 0, 100);
+						}, 500));
 					}
 				}
 			);
@@ -579,7 +579,9 @@ define([
 		function start() {
 			stop();
 			blink = true;
-			fade(1, 0, 300);
+			timers.push(setTimeout(function () {
+				fade(1, 0, 100);
+			}, 500));
 		}
 		function restart() {
 			stop();
