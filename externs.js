@@ -157,7 +157,10 @@ var SelectionContext = {
 	dragging       : false,
 	mousedown      : false,
 	doubleclicking : false,
-	tripleclicking : false
+	tripleclicking : false,
+	selectionBox   : {},
+	formatting     : [],
+	overrides      : []
 };
 
 var editor = {
