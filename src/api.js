@@ -435,7 +435,6 @@ define([
 	exports['overrides']['harvest']     = Overrides.harvest;
 	exports['overrides']['consume']     = Overrides.consume;
 	exports['overrides']['nodeToState'] = Overrides.nodeToState;
-	exports['overrides']['map']         = Overrides.map;
 
 	exports['paste'] = Paste;
 	exports['handle'] = Paste.handle;

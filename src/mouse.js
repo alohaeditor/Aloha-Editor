@@ -11,9 +11,8 @@ define(['maps'], function (Maps) {
 	function handle(alohaEvent) {
 		var event = alohaEvent.nativeEvent;
 		if (event && 'mousedown' === event.type) {
-			Maps.forEach(alohaEvent.editor.editables, function (editable) {
-				editable.overrides = [];
-			});
+			alohaEvent.editor.selectionContext.formatting = [];
+			alohaEvent.editor.selectionContext.overrides = [];
 			alohaEvent.target = event.target;
 		}
 		return alohaEvent;

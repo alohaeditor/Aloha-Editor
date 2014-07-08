@@ -7,34 +7,36 @@
  */
 define([
 	'dom',
-	'mutation',
 	'keys',
 	'html',
+	'maps',
+	'undo',
 	'ranges',
 	'editing',
+	'mutation',
 	'traversing',
 	'boundaries',
-	'functions',
-	'undo',
-	'overrides'
+	'overrides',
+	'functions'
 ], function (
 	Dom,
-	Mutation,
 	Keys,
 	Html,
+	Maps,
+	Undo,
 	Ranges,
 	Editing,
+	Mutation,
 	Traversing,
 	Boundaries,
-	Fn,
-	Undo,
-	Overrides
+	Overrides,
+	Fn
 ) {
 	'use strict';
 
-	function undoable(type, alohaEvent, fn) {
-		var range = alohaEvent.range;
-		Undo.capture(alohaEvent.editable['undoContext'], {
+	function undoable(type, event, fn) {
+		var range = event.range;
+		Undo.capture(event.editable['undoContext'], {
 			meta: {type: type},
 			oldRange: range
 		}, function () {
@@ -44,8 +46,8 @@ define([
 		return range;
 	}
 
-	function remove(direction, alohaEvent) {
-		var range = alohaEvent.range;
+	function remove(direction, event) {
+		var range = event.range;
 		var boundary;
 		if (range.collapsed) {
 			if (direction) {
@@ -58,24 +60,27 @@ define([
 		}
 		Editing.remove(
 			Ranges.envelopeInvisibleCharacters(range),
-			alohaEvent.editable
+			event.editable
 		);
 		Html.prop(range.commonAncestorContainer);
 		return range;
 	}
 
-	function format(style, alohaEvent) {
-		var boundaries = Boundaries.fromRange(alohaEvent.range);
+	function format(style, event) {
+		var boundaries = Boundaries.fromRange(event.range);
 		if (Html.isBoundariesEqual(boundaries[0], boundaries[1])) {
 			var override = Overrides.nodeToState[style];
 			if (override) {
-				alohaEvent.editable.overrides = Overrides.toggle(
-					alohaEvent.editable.overrides,
-					override,
-					true
-				);
+				var context = event.editor.selectionContext;
+				context.overrides = context.overrides.concat([
+					Overrides.toggle(
+						Overrides.harvest(Boundaries.container(boundaries[0])),
+						override,
+						true
+					)
+				]);
 			}
-			return alohaEvent.range;
+			return event.range;
 		}
 		boundaries = Editing.format(style, boundaries[0], boundaries[1]);
 		return Ranges.fromBoundaries(boundaries[0], boundaries[1]);
@@ -83,7 +88,7 @@ define([
 
 	function breakline(isLinebreak, event) {
 		if (!isLinebreak) {
-			event.editable.overrides = event.editable.overrides.concat(
+			event.editor.selectionContext.formatting = event.editor.selectionContext.formatting.concat(
 				Overrides.harvest(event.range.startContainer)
 			);
 		}
@@ -95,10 +100,10 @@ define([
 		return event.range;
 	}
 
-	function insertText(alohaEvent) {
-		var editable = alohaEvent.editable;
-		var text = alohaEvent.chr;
-		var range = alohaEvent.range;
+	function insertText(event) {
+		var editable = event.editable;
+		var range = event.range;
+		var text = event.chr;
 		var boundary = Boundaries.fromRangeStart(range);
 
 		if ('\t' === text) {
@@ -116,7 +121,15 @@ define([
 			}
 		}
 
-		boundary = Overrides.consume(boundary, editable.overrides);
+		boundary = Overrides.consume(
+			boundary,
+			event.editor.selectionContext.formatting.concat(
+				event.editor.selectionContext.overrides
+			)
+		);
+		event.editor.selectionContext.overrides = [];
+		event.editor.selectionContext.formatting = [];
+
 		Boundaries.setRange(range, boundary, boundary);
 
 		var insertPath = Undo.pathFromBoundary(editable['elem'], boundary);
@@ -131,20 +144,20 @@ define([
 		return range;
 	}
 
-	function toggleUndo(op, alohaEvent) {
-		op(alohaEvent.editable['undoContext'], alohaEvent.range, [alohaEvent.range]);
-		return alohaEvent.range;
+	function toggleUndo(op, event) {
+		op(event.editable['undoContext'], event.range, [event.range]);
+		return event.range;
 	}
 
-	function selectEditable(alohaEvent) {
-		var editable = Dom.editingHost(alohaEvent.range.commonAncestorContainer);
+	function selectEditable(event) {
+		var editable = Dom.editingHost(event.range.commonAncestorContainer);
 		if (editable) {
-			alohaEvent.range = Ranges.fromBoundaries(
+			event.range = Ranges.fromBoundaries(
 				Boundaries.create(editable, 0),
 				Boundaries.fromEndOfNode(editable)
 			);
 		}
-		return alohaEvent.range;
+		return event.range;
 	}
 
 	var deleteBackward = {
@@ -163,7 +176,6 @@ define([
 
 	var breakBlock = {
 		deleteRange    : true,
-		clearOverrides : true,
 		preventDefault : true,
 		undo           : 'enter',
 		mutate         : Fn.partial(breakline, false)
@@ -171,7 +183,6 @@ define([
 
 	var breakLine = {
 		deleteRange    : true,
-		clearOverrides : true,
 		preventDefault : true,
 		undo           : 'enter',
 		mutate         : Fn.partial(breakline, true)
@@ -283,7 +294,8 @@ define([
 			event.nativeEvent.preventDefault();
 		}
 		if (handling.clearOverrides) {
-			event.editable.overrides = [];
+			event.editor.selectionContext.overrides = [];
+			event.editor.selectionContext.formatting = [];
 		}
 		if (range && handling.mutate) {
 			if (handling.undo) {

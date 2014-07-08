@@ -36,19 +36,22 @@ define([
 ) {
 	'use strict';
 
+	var doc = document;
+	var win = Dom.documentWindow(doc);
+
 	/**
 	 * Sets the given AlohaEvent's range to the document.
 	 *
 	 * @private
-	 * @param  {AlohaEvent} alohaEvent
+	 * @param  {AlohaEvent} event
 	 * @return {AlohaEvent}
 	 */
-	function setSelection(alohaEvent) {
-		if (alohaEvent.range && alohaEvent.editable) {
-			var boundaries = Boundaries.fromRange(alohaEvent.range);
+	function setSelection(event) {
+		if (event.range && event.editable) {
+			var boundaries = Boundaries.fromRange(event.range);
 			Boundaries.select(boundaries[0], boundaries[1]);
 		}
-		return alohaEvent;
+		return event;
 	}
 
 	/**
@@ -95,7 +98,7 @@ define([
 	editor.editables = {};
 	editor.BLOCK_CLASS = 'aloha-block';
 	editor.CARET_CLASS = 'aloha-caret';
-	editor.selectionContext = Selections.Context(document);
+	editor.selectionContext = Selections.Context(doc);
 	editor.stack = [
 		Selections.handle,
 		Typing.handle,
@@ -107,8 +110,8 @@ define([
 		Keys.handle
 	];
 
-	Events.setup(document, editor);
-	Events.add(window, 'resize', editor);
+	Events.setup(doc, editor);
+	Events.add(win, 'resize', editor);
 
 	/**
 	 * The Aloha Editor namespace root.
@@ -118,7 +121,6 @@ define([
 	function aloha(elem) {
 		var editable = Editables.Editable(elem);
 		Dom.setStyle(elem, 'cursor', 'text');
-		editable.overrides = [];
 		editable.settings = {
 			defaultBlockNodeName: 'p'
 		};
@@ -148,7 +150,7 @@ define([
 	Api['mahalo'] = mahalo;
 	Api['editor'] = editor;
 
-	window['aloha'] = aloha = Maps.extend(aloha, Api);
+	win['aloha'] = aloha = Maps.extend(aloha, Api);
 
 	var egg = '%c'
 	        + '       _       _                      _ _ _\n'

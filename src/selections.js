@@ -622,7 +622,9 @@ define([
 			dragging       : false,
 			mousedown      : false,
 			doubleclicking : false,
-			tripleclicking : false
+			tripleclicking : false,
+			formatting     : [],
+			overrides      : []
 		};
 	}
 
@@ -726,6 +728,31 @@ define([
 	}
 
 	/**
+	 * Computes a table of the given override and those collected at the given
+	 * node.
+	 *
+	 * @private
+	 * @param  {Array.<Override>} formatting
+	 * @param  {Array.<Override>} overrides
+	 * @param  {Node}             node
+	 * @return {Object}           An object with overrides mapped against their names
+	 */
+	function mapOverrides(formatting, overrides, node) {
+		var table = Maps.merge(
+			Maps.mapTuples(formatting),
+			Maps.mapTuples(Overrides.harvest(node)),
+			Maps.mapTuples(overrides)
+		);
+		if (!table['color']) {
+			table['color'] = Dom.getComputedStyle(
+				Dom.isTextNode(node) ? node.parentNode : node,
+				'color'
+			);
+		}
+		return table;
+	}
+
+	/**
 	 * Renders a caret element to show the user selection.
 	 *
 	 * @param  {AlohaEvent} event
@@ -812,7 +839,7 @@ define([
 		show(context.caret, boundary);
 
 		Maps.extend(context.caret.style, stylesFromOverrides(
-			Overrides.map(event.editable.overrides, container)
+			mapOverrides(context.formatting, context.overrides, container)
 		));
 
 		var preventDefault = ('keydown' === type && movements[event.which])

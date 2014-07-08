@@ -24,14 +24,14 @@ define([
 	'dom',
 	'misc',
 	'maps',
-	'arrays',
+	'boromir',
 	'mutation',
 	'boundaries'
 ], function (
 	Dom,
 	Misc,
 	Maps,
-	Arrays,
+	Boromir,
 	Mutation,
 	Boundaries
 ) {
@@ -239,6 +239,48 @@ define([
 	}
 
 	/**
+	 * Remove any node/formatting that corresponds to `state` at the given
+	 * boundary.
+	 *
+	 * @private
+	 * @param  {string}   state
+	 * @param  {Boundary} boundary
+	 * @return {Boundary}
+	 */
+	function purgeFormat(state, boundary) {
+		var container = Boundaries.container(boundary);
+		var nodes = Dom.childAndParentsUntil(container, Dom.isEditingHost);
+		var nodeName = stateToNode[state];
+		var style = stateToStyle[state];
+		var styleName = style[0];
+		var styleValue = style[1];
+		var count = nodes.length;
+		var limit;
+		var node;
+		while (count--) {
+			node = nodes[count];
+			if (Dom.isElementNode(node)
+					&& (nodeName === node.nodeName
+						|| Dom.getStyle(node, styleName) === styleValue)) {
+				limit = node.parentNode;
+				break;
+			}
+		}
+		if (!limit) {
+			return boundary;
+		}
+		var overrides = harvest(container, function (node) {
+			return node == limit;
+		}).reduce(function (list, override) {
+			return state === override[0] ? list : list.concat([override]);
+		}, []);
+		boundary = Mutation.splitBoundaryUntil(boundary, function (boundary) {
+			return Boundaries.container(boundary) === limit;
+		});
+		return consume(boundary, overrides);
+	}
+
+	/**
 	 * Inserts a DOM nodes at the given boundary to reflect the list of
 	 * overrides.
 	 *
@@ -248,30 +290,30 @@ define([
 	 */
 	function consume(boundary, overrides) {
 		var doc = Boundaries.document(boundary);
-		var override = overrides.pop();
 		var node;
-		var wrapper;
-		while (override) {
-			if (stateToNode[override[0]]) {
-				// TODO: implement handling for false overrides states
-				wrapper = doc.createElement(stateToNode[override[0]]);
-				if (node) {
-					Dom.wrap(node, wrapper);
+		Maps.forEach(Maps.mapTuples(overrides), function (value, state) {
+			if (stateToNode[state]) {
+				if (value) {
+					var wrapper = doc.createElement(stateToNode[state]);
+					if (node) {
+						Dom.wrap(node, wrapper);
+					} else {
+						Mutation.insertNodeAtBoundary(wrapper, boundary);
+						boundary = Boundaries.create(wrapper, 0);
+					}
+					node = wrapper;
 				} else {
-					Mutation.insertNodeAtBoundary(wrapper, boundary);
-					boundary = [wrapper, 0];
+					boundary = purgeFormat(state, boundary);
 				}
-				node = wrapper;
-			} else {
-				if (!node) {
-					node = doc.createElement('span');
-					Mutation.insertNodeAtBoundary(node, boundary);
-					boundary = [node, 0];
-				}
-				Dom.setStyle(node, override[0], override[1]);
+				return;
 			}
-			override = overrides.pop();
-		}
+			if (!node) {
+				node = doc.createElement('span');
+				Mutation.insertNodeAtBoundary(node, boundary);
+				boundary = Boundaries.create(node, 0);
+			}
+			Dom.setStyle(node, state, value);
+		});
 		return boundary;
 	}
 
@@ -296,43 +338,23 @@ define([
 	 * Toggles the value of the override matching the given name from among the
 	 * list of overrides.
 	 *
+	 * Returns an override that represents the new toggle state/value.
+	 *
 	 * @param  {Array.<Override>} overrides
 	 * @param  {string}           name
-	 * @param  {string}           value
+	 * @param  {string|boolean}   value
 	 * @return {Override}
 	 */
 	function toggle(overrides, name, value) {
 		var found = find(overrides, name);
-		return found ? Arrays.difference(overrides, [found])
-		             : overrides.concat([[name, value]]);
-	}
-
-	/**
-	 * Computes a table of the given override and those collected at the given
-	 * node.
-	 *
-	 * @param  {Array.<Override>} overrides
-	 * @param  {Node}             node
-	 * @return {Object}           An object with overrides mapped against their names
-	 */
-	function map(overrides, node) {
-		var table = Maps.merge(
-			Maps.mapTuples(overrides),
-			Maps.mapTuples(harvest(node))
-		);
-		if (!table['color']) {
-			table['color'] = Dom.getComputedStyle(
-				Dom.isTextNode(node) ? node.parentNode : node,
-				'color'
-			);
-		}
-		return table;
+		return found
+		     ? [name, 'boolean' === typeof found[1] ? !found[1] : value]
+		     : [name, value];
 	}
 
 	return {
 		consume     : consume,
 		harvest     : harvest,
-		map         : map,
 		nodeToState : nodeToState,
 		toggle      : toggle
 	};
