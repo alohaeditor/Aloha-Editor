@@ -252,58 +252,6 @@ define([
 	}
 
 	/**
-	 * Splits the list at the given list element.
-	 *
-	 * @private
-	 * @param {!Element} li
-	 */
-	function splitList(li) {
-		var prev = Dom.prevSiblings(li).filter(Html.isListItem);
-		var next = Dom.nextSiblings(li).filter(Html.isListItem);
-		var list = li.parentNode;
-		if (prev.length > 0) {
-			var prevList = Dom.cloneShallow(list);
-			Dom.moveBefore([prevList], list);
-			Dom.move(prev, prevList);
-		}
-		if (next.length > 0) {
-			var nextList = Dom.cloneShallow(list);
-			Dom.moveAfter([nextList], list);
-			Dom.move(next, nextList);
-		}
-	}
-
-	/**
-	 * Unwraps the given list item.
-	 *
-	 * @private
-	 * @param {!Element} li
-	 */
-	function unwrapItem(li) {
-		splitList(li);
-		Dom.removeShallow(li.parentNode);
-		var doc = li.ownerDocument;
-		var nodes = Dom.children(li).filter(Html.isRendered);
-		var split;
-		var container;
-		var lines = [];
-		while (nodes.length > 0) {
-			if (Html.hasLinebreakingStyle(nodes[0])) {
-				lines.push(nodes.shift());
-			} else {
-				split = Arrays.split(nodes, Html.hasLinebreakingStyle);
-				container = doc.createElement('p');
-				Dom.move(split[0], container);
-				lines.push(container);
-				nodes = split[1];
-			}
-		}
-		Dom.moveAfter(lines, li);
-		Dom.remove(li);
-		return lines;
-	}
-
-	/**
 	 * Unwraps all LI elements in the given collection of siblings.
 	 *
 	 * @private
@@ -312,7 +260,7 @@ define([
 	 */
 	function unwrapItems(nodes) {
 		return nodes.filter(Html.isListItem).reduce(function (lines, node) {
-			return lines.concat(unwrapItem(node));
+			return lines.concat(Html.unwrapListItem(node));
 		}, []);
 	}
 

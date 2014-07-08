@@ -272,11 +272,10 @@ define([
 	 */
 	function insertBreakAtBoundary(boundary, defaultBreakingElement) {
 		var container = Boundaries.container(boundary);
-		var name = defaultBreakingElement || 'div';
-		if (!Content.allowsNesting(container.nodeName, name)) {
+		if (!Content.allowsNesting(container.nodeName, defaultBreakingElement)) {
 			return insertLineBreak(boundary);
 		}
-		var breaker = container.ownerDocument.createElement(name);
+		var breaker = container.ownerDocument.createElement(defaultBreakingElement);
 		Mutation.insertNodeAtBoundary(breaker, boundary);
 		return Boundaries.create(breaker, 0);
 	}
@@ -347,6 +346,57 @@ define([
 	}
 
 	/**
+	 * Splits the list at the given list element.
+	 *
+	 * @param {Element} li
+	 */
+	function separateListItem(li) {
+		var prev = Dom.prevSiblings(li).filter(Predicates.isListItem);
+		var next = Dom.nextSiblings(li).filter(Predicates.isListItem);
+		var list = li.parentNode;
+		if (prev.length > 0) {
+			var prevList = Dom.cloneShallow(list);
+			Dom.moveBefore([prevList], list);
+			Dom.move(prev, prevList);
+		}
+		if (next.length > 0) {
+			var nextList = Dom.cloneShallow(list);
+			Dom.moveAfter([nextList], list);
+			Dom.move(next, nextList);
+		}
+	}
+
+	/**
+	 * Unwraps the given list item.
+	 *
+	 * @param  {Element} li
+	 * @return {Array.<Element>}
+	 */
+	function unwrapListItem(li) {
+		separateListItem(li);
+		Dom.removeShallow(li.parentNode);
+		var doc = li.ownerDocument;
+		var nodes = Dom.children(li).filter(Elements.isRendered);
+		var split;
+		var container;
+		var lines = [];
+		while (nodes.length > 0) {
+			if (Styles.hasLinebreakingStyle(nodes[0])) {
+				lines.push(nodes.shift());
+			} else {
+				split = Arrays.split(nodes, Styles.hasLinebreakingStyle);
+				container = doc.createElement('p');
+				Dom.move(split[0], container);
+				lines.push(container);
+				nodes = split[1];
+			}
+		}
+		Dom.moveAfter(lines, li);
+		Dom.remove(li);
+		return lines;
+	}
+
+	/**
 	 * Inserts a visual line break after the given boundary position.
 	 *
 	 * @param  {Boundary} boundary
@@ -363,10 +413,22 @@ define([
 			);
 		}
 
-		var split     = splitToBreakingContainer(boundary);
-		var container = Boundaries.container(split);
-		var next      = Boundaries.nodeAfter(split);
-		var children  = next ? Dom.nodeAndNextSiblings(next) : [];
+		var container = Boundaries.container(boundary);
+
+		// ...<li>|</li>...
+		if (Predicates.isListItem(container) && !container.firstChild) {
+			separateListItem(container);
+			Dom.removeShallow(container.parentNode);
+			var replacement = container.ownerDocument.createElement(defaultBreakingElement);
+			Dom.replaceShallow(container, replacement);
+			prop(replacement);
+			return Boundaries.create(replacement, 0);
+		}
+
+		var split = splitToBreakingContainer(boundary);
+		var next = Boundaries.nodeAfter(split);
+		var children = next ? Dom.nodeAndNextSiblings(next) : [];
+		container = Boundaries.container(split);
 
 		// ...foo</p>|<h1>bar...
 		if (next && isBreakingContainer(next)) {
@@ -448,6 +510,8 @@ define([
 		insertLineBreak    : insertLineBreak,
 		nextLineBreak      : nextLineBreak,
 		isRenderedBr       : isRenderedBr,
-		isVisuallyAdjacent : isVisuallyAdjacent
+		isVisuallyAdjacent : isVisuallyAdjacent,
+		unwrapListItem     : unwrapListItem,
+		separateListItem   : separateListItem
 	};
 });
