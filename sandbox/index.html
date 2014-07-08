@@ -140,6 +140,38 @@
 					}
 				}
 				function main(aloha) {
+					aloha.editor.stack.unshift(function (event) {
+						if ('dragend' === event.type && event.range) {
+							aloha.dom.setStyle(
+								event.range.commonAncestorContainer.ownerDocument.body,
+								'background-image',
+								''
+							);
+						}
+						if ('dragover' !== event.type) {
+							return event;
+						}
+						var box = event.selectionBox;
+						if (!box) {
+							return event;
+						}
+						var doc = event.range.commonAncestorContainer.ownerDocument;
+						var win = aloha.dom.documentWindow(doc);
+						var radius = Math.min(win.innerHeight, win.innerWidth);
+						var focal = 80;
+						//console.log(aloha.dom.getStyle(doc.body, 'background-image'));
+						aloha.dom.setStyle(
+							doc.body,
+							'background-image',
+							'radial-gradient(' + [
+								radius + 'px at ' + (box.left - 25) + 'px ' + (box.top + 10) + 'px',
+								'rgba(0,0,0,0.0) 0',
+								'rgba(0,0,0,0.2) ' + focal + 'px',
+								'rgba(0,0,0,0.3) 100%'
+							].join(',') + ')'
+						);
+						return event;
+					});
 					aloha.arrays.coerce(document.querySelectorAll('.aloha-editable')).forEach(aloha);
 				}
 				if ('undefined' === typeof aloha) {
