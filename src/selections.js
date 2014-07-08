@@ -688,6 +688,44 @@ define([
 	}
 
 	/**
+	 * Enures that the given boundary box is visible inside of the viewport by
+	 * scolling the view port if necessary.
+	 *
+	 * @private
+	 * @param {Object.<string, number>} box
+	 * @param {Document}                doc
+	 */
+	function ensureInViewport(box, doc) {
+		var win = Dom.documentWindow(doc);
+		var top = win.pageYOffset - doc.body.clientTop;
+		var left = win.pageXOffset - doc.body.clientLeft;
+		var height = win.innerHeight;
+		var width = win.innerWidth;
+		var buffer = box.height;
+		var caretTop = box.top;
+		var caretLeft = box.left;
+		var correctTop = 0;
+		var correctLeft = 0;
+		if (caretTop < top) {
+			// Because we want to caret to be near the top
+			correctTop = caretTop - buffer;
+		} else if (caretTop > top + height) {
+			// Because we want to caret to be near the bottom
+			correctTop = caretTop - height + buffer + buffer;
+		}
+		if (caretLeft < left) {
+			// Because we want to caret to be near the left
+			correctLeft = caretLeft - buffer;
+		} else if (caretLeft > left + width) {
+			// Because we want to caret to be near the right
+			correctLeft = caretLeft - width + buffer + buffer;
+		}
+		if (correctTop || correctLeft) {
+			win.scrollTo(correctLeft || left, correctTop || top);
+		}
+	}
+
+	/**
 	 * Renders a caret element to show the user selection.
 	 *
 	 * @param  {AlohaEvent} event
@@ -796,52 +834,15 @@ define([
 			}
 		}
 
-		/**
-		 * Enures that the given boundary is visible inside of the viewport by
-		 * scolling the view port if necessary.
-		 *
-		 * @private
-		 * @param {Boundary} boundary
-		 */
-		function ensureInViewport(boundary) {
-			var box = Ranges.box(Ranges.fromBoundaries(boundary, boundary));
-			var doc = Boundaries.document(boundary);
-			var win = Dom.documentWindow(doc);
-			var top = win.pageYOffset - doc.body.clientTop;
-			var left = win.pageXOffset - doc.body.clientLeft;
-			var height = win.innerHeight;
-			var width = win.innerWidth;
-			var buffer = box.height;
-			var caretTop = box.top;
-			var caretLeft = box.left;
-			var correctTop = 0;
-			var correctLeft = 0;
-			if (caretTop < top) {
-				// Because we want to caret to be near the top
-				correctTop = caretTop - buffer;
-			} else if (caretTop > top + height) {
-				// Because we want to caret to be near the bottom
-				correctTop = caretTop - height + buffer + buffer;
-			}
-			if (caretLeft < left) {
-				// Because we want to caret to be near the left
-				correctLeft = caretLeft - buffer;
-			} else if (caretLeft > left + width) {
-				// Because we want to caret to be near the right
-				correctLeft = caretLeft - width + buffer + buffer;
-			}
-			if (correctTop || correctLeft) {
-				win.scrollTo(correctLeft || left, correctTop || top);
-			}
-		}
+		event.range = range;
+		event.selectionBox = Ranges.box(range);
 
 		if (Keys.EVENTS[type]) {
-			ensureInViewport(('start' === context.focus)
-				? Boundaries.fromRangeStart(range)
-				: Boundaries.fromRangeEnd(range));
+			ensureInViewport(
+				event.selectionBox,
+				range.commonAncestorContainer.ownerDocument
+			);
 		}
-
-		event.range = range;
 
 		return event;
 	}
