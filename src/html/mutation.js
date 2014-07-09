@@ -397,6 +397,46 @@ define([
 	}
 
 	/**
+	 * Break out of the list at the given empty li element.
+	 *
+	 * @private
+	 * @param  {Element} li
+	 * @param  {string}  defaultBreakingElement
+	 * @return {Boundary}
+	 */
+	function breakOutOfList(li, defaultBreakingElement) {
+		separateListItem(li);
+		var doc = li.ownerDocument;
+		//           ,-- ul   ,-- li
+		//           |        |
+		// ...</ul><ul><li></li></ul><ul>...
+		var ul = li.parentNode;
+		if (!Predicates.isListItem(ul.parentNode)) {
+			var replacement = doc.createElement(defaultBreakingElement);
+			Dom.removeShallow(ul);
+			Dom.replaceShallow(li, replacement);
+			prop(replacement);
+			return Boundaries.create(replacement, 0);
+		}
+		// Because we are in a nested list ...
+		var boundary = Mutation.splitBoundaryUntil(
+			Boundaries.fromNode(ul),
+			function (boundary) {
+				return Predicates.isListContainer(Boundaries.container(boundary));
+			}
+		);
+		Dom.remove(ul);
+		var next = Boundaries.nextNode(boundary);
+		if (Dom.children(next).filter(Elements.isRendered).length) {
+			li = doc.createElement('li');
+			prop(li);
+			Mutation.insertNodeAtBoundary(li, boundary, true);
+			return Boundaries.create(li, 0);
+		}
+		return Boundaries.create(next, 0);
+	}
+
+	/**
 	 * Inserts a visual line break after the given boundary position.
 	 *
 	 * @param  {Boundary} boundary
@@ -417,12 +457,7 @@ define([
 
 		// ...<li>|</li>...
 		if (Predicates.isListItem(container) && !container.firstChild) {
-			separateListItem(container);
-			Dom.removeShallow(container.parentNode);
-			var replacement = container.ownerDocument.createElement(defaultBreakingElement);
-			Dom.replaceShallow(container, replacement);
-			prop(replacement);
-			return Boundaries.create(replacement, 0);
+			return breakOutOfList(container, defaultBreakingElement);
 		}
 
 		var split = splitToBreakingContainer(boundary);
