@@ -36,6 +36,14 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function($, Arrays,
 				showOn: { scope: 'link' },
 				components: [ 'editLink', 'removeLink', 'linkBrowser' ]
 			},
+			// Cite Tab
+			{
+				label: 'tab.cite.label',
+				showOn: { scope: 'cite' },
+				components: [ 'editCite', 'removeCite', '\n',
+				              'editNote'
+				]
+			},
             // Image Tab
             {
                 label: "tab.img.label",

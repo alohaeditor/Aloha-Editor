@@ -55,7 +55,8 @@ Aloha.settings.plugins: {
 		editables: {
 			'#one': [ 'quote' ],
 			'#two': [ ]
-		}
+		},
+		showOnToolbar: true   // will display cite form inputs (link, note) inside the Aloha-editor toolbar. (Default false)
 	}
 };
 </javascript>

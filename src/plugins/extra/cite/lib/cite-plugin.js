@@ -12,6 +12,8 @@ define([
 	'aloha/plugin',
 	'ui/ui',
 	'ui/toggleButton',
+	'ui/scopes',
+	'ui/port-helper-attribute-field',
 	'format/format-plugin',
 	'util/dom',
 	'PubSub',
@@ -23,6 +25,8 @@ define([
 	Plugin,
 	Ui,
 	ToggleButton,
+	Scopes,
+	AttributeField,
 	Format,
 	domUtils,
 	PubSub,
@@ -137,10 +141,109 @@ define([
 		return rgb;
 	}
 
+
+
+	/**
+	 * Sets cites inputs
+	 * @param citePlugin
+	 */
+	function updateCiteInputs(citePlugin) {
+		var citeAnchorValue = citePlugin.effective.attr('cite');
+
+		if (citeAnchorValue) {
+			citePlugin.citeHrefField.setValue(citeAnchorValue);
+		} else {
+			citePlugin.citeHrefField.setPlaceholder();
+		}
+
+		var index = citePlugin.getIndexOfCitation(citePlugin.effective.attr('data-cite-id'));
+		var note = citePlugin.citations[index].note;
+
+		if (note) {
+			citePlugin.citeNoteField.setValue(note);
+		} else {
+			citePlugin.citeNoteField.setPlaceholder();
+		}
+	}
+
+	/**
+	 * Updates de inputs text of the sidebar and also the cite details.
+	 * @param citePlugin
+	 */
+	var saveCiteDetails = function (citePlugin) {
+		var citeHrefFieldValue = citePlugin.citeHrefField.getValue();
+		var citeNoteValue = null;
+
+		if (citePlugin.referenceContainer) {
+			citeNoteValue = citePlugin.citeNoteField.getValue();
+		}
+
+		if (typeof citePlugin.sideBarPanel !== 'undefined') {
+			citePlugin.sideBarPanel.content.find(nsSel('link-field input')).val(citeHrefFieldValue);
+			citePlugin.sideBarPanel.content.find(nsSel('note-field textarea')).val(citeNoteValue);
+		}
+
+		citePlugin.effective.attr('cite', citeHrefFieldValue);
+
+		citePlugin.addCiteDetails(
+			citePlugin.effective.attr('data-cite-id'),
+			citeHrefFieldValue,
+			citeNoteValue
+		);
+	};
+
+	/**
+	 * Initialization to show the required inputs in the Aloha toolbar.
+	 * @param citePlugin
+	 */
+	function initShowOnToolbar(citePlugin) {
+		citePlugin.removeCiteButton = Ui.adopt("removeCite", ToggleButton, {
+			tooltip: i18n.t("button.removeCite.tooltip"),
+			icon: "aloha-icon aloha-icon-unlink",
+			scope: 'Aloha.continuoustext',
+			click: function () {
+				citePlugin.removeQuote();
+			}
+		});
+
+		citePlugin.citeHrefField = AttributeField({
+			name: 'editCite',
+			width: 320,
+			placeholder: 'Link',
+			cls: 'aloha-cite-href-field',
+			scope: 'Aloha.continuoustext',
+			noTargetHighlight: false,
+			targetHighlightClass: 'aloha-focus'
+		});
+
+		citePlugin.citeNoteField = AttributeField({
+			name: 'editNote',
+			width: 320,
+			placeholder: 'Note',
+			cls: 'aloha-cite-note-href-field',
+			scope: 'Aloha.continuoustext',
+			noTargetHighlight: false,
+			targetHighlightClass: 'aloha-focus'
+		});
+
+		if (!citePlugin.referenceContainer) {
+			citePlugin.citeNoteField.setValue('');
+			citePlugin.citeNoteField.hide();
+		}
+
+		var onSaveInputs = function () {
+			saveCiteDetails(citePlugin);
+		}
+
+		citePlugin.citeHrefField.getInputJQuery().bind('keyup change', onSaveInputs);
+		citePlugin.citeNoteField.getInputJQuery().bind('keyup change', onSaveInputs);
+	}
+
 	return Plugin.create('cite', {
 
 		citations: [],
 		referenceContainer: null,
+		showOnToolbar: false,
 		settings: null,
 		sidebar: null,
 		config: ['quote', 'blockquote'],
@@ -153,6 +256,8 @@ define([
 			if (Aloha.settings && Aloha.settings.plugins && Aloha.settings.plugins.cite) {
 
 				var referenceContainer = jQuery(Aloha.settings.plugins.cite.referenceContainer);
+
+				that.showOnToolbar = !!Aloha.settings.plugins.cite.showOnToolbar;
 
 				if (referenceContainer.length) {
 					that.referenceContainer = referenceContainer;
@@ -188,7 +293,9 @@ define([
 				icon: nsClass('button', 'inline-button'),
 				scope: 'Aloha.continuoustext',
 				click: function () {
-					that.addInlineQuote();
+					if (!citePlugin.removeQuote()) {
+						citePlugin.addInlineQuote();
+					}
 				}
 			});
 
@@ -200,7 +307,9 @@ define([
 				tooltip: i18n.t('cite.button.add.blockquote'),
 				icon: nsClass('button', 'block-button'),
 				click: function () {
-					that.addBlockQuote();
+					if (!citePlugin.removeQuote()) {
+						that.addBlockQuote();
+					}
 				}
 			});
 
@@ -240,11 +349,19 @@ define([
 							)).content;
 
 						content.find('input, textarea')
-							.bind('keypress change', function () {
+							.bind('keyup change', function () {
+								var noteValue = that.content.find(nsSel('note-field textarea')).val();
+								var linkValue = that.content.find(nsSel('link-field input')).val();
+
+								if (citePlugin.showOnToolbar) {
+									citePlugin.citeNoteField.setValue(noteValue);
+									citePlugin.citeHrefField.setValue(linkValue);
+								}
+
 								citePlugin.addCiteDetails(
 									that.content.attr('data-cite-id'),
-									that.content.find(nsSel('link-field input')).val(),
-									that.content.find(nsSel('note-field textarea')).val()
+									linkValue,
+									noteValue
 								);
 							});
 					},
@@ -267,14 +384,6 @@ define([
 						}
 						var index = that.getIndexOfCitation(activeUid);
 
-						if (-1 === index) {
-							index = that.citations.push({
-								uid   : activeUid,
-								link  : null,
-								notes : null
-							}) - 1;
-						}
-
 						this.content.attr('data-cite-id', activeUid);
 						this.content.find(nsSel('link-field input'))
 						    .val(effective.attr('cite'));
@@ -283,6 +392,7 @@ define([
 					}
 
 				});
+				citePlugin.sideBarPanel = citePlugin.sidebar.getPanelById(nsClass('sidebar-panel'));
 			});
 
 			Aloha.bind('aloha-editable-activated', function (event, params) {
@@ -306,6 +416,10 @@ define([
 				
 			});
 
+			if (citePlugin.showOnToolbar) {
+				initShowOnToolbar(citePlugin);
+			}
+
 			PubSub.sub('aloha.selection.context-change', function (message) {
 				var rangeObject = message.range;
 
@@ -315,6 +429,7 @@ define([
 				var nodeName;
 				var effective = rangeObject.markupEffectiveAtStart;
 				var i = effective.length;
+				citePlugin.effective = $();
 
 				// Check whether any of the effective items are citation
 				// tags.
@@ -322,8 +437,28 @@ define([
 					nodeName = effective[--i].nodeName;
 					if (nodeName === 'Q') {
 						quoteFound = true;
+						$.merge(citePlugin.effective, $(effective[i]));
 					} else if (nodeName === 'BLOCKQUOTE') {
 						blockquoteFound = true;
+						$.merge(citePlugin.effective, $(effective[i]));
+					}
+				}
+
+				if (citePlugin.showOnToolbar) {
+					if (quoteFound || blockquoteFound) {
+						citePlugin.citeHrefField.show();
+						citePlugin.removeCiteButton.show();
+
+						updateCiteInputs(citePlugin);
+						Scopes.enterScope(citePlugin.name, 'cite');
+
+						citePlugin.citeHrefField.foreground();
+					} else {
+						citePlugin.citeHrefField.hide();
+						citePlugin.removeCiteButton.hide();
+						citePlugin.removeCiteButton.setState(false);
+
+						Scopes.leaveScope(citePlugin.name, 'cite', true);
 					}
 				}
 
@@ -394,7 +529,11 @@ define([
 				}
 			}
 
-			return -1;
+			return this.citations.push({
+				uid   : uid,
+				link  : null,
+				notes : null
+			}) - 1;
 		},
 
 		addBlockQuote: function () {
@@ -423,6 +562,59 @@ define([
 			//	.activatePanel(nsClass('sidebar-panel'), markup);
 		},
 
+		/**
+		 * Removes quote. Returns true if a quote was found and removed.
+		 * @param {Range} rangeObject
+		 * @param {jQueryElement} $markup
+		 * @return {boolean}
+		 */
+		removeQuote: function () {
+			var foundMarkup;
+			var rangeObject = Aloha.Selection.rangeObject;
+
+			if (Aloha.activeEditable) {
+				jQuery(Aloha.activeEditable.obj[0]).click();
+			}
+
+			// Check whether the markup is found in the range (at the start of
+			// the range).
+			foundMarkup = rangeObject.findMarkup(function () {
+				if (this.nodeName &&
+					(typeof this.nodeName === 'string')) {
+
+					return this.nodeName === 'Q'
+						|| this.nodeName === 'BLOCKQUOTE';
+				}
+
+				return false;
+			}, Aloha.activeEditable.obj);
+
+			// If the we click the quote button on a range that contains quote
+			// markup, then we will remove the quote markup, otherwise we will
+			// wrap the selection in a quote.
+			if (foundMarkup) {
+				var citUid = $(foundMarkup).attr('data-cite-id');
+				this.removeCiteFromReferences(citUid);
+
+				var $quotes = $('q[data-cite-id=' + citUid + '],blockquote[data-cite-id=' + citUid + ']');
+
+				$quotes.each(function () {
+					if (this.nodeName === 'BLOCKQUOTE') {
+						var $newBlock = $('<p></p>');
+						$newBlock.append(this.childNodes);
+						this.parentNode.replaceChild($newBlock[0], this);
+					} else  {
+						domUtils.removeFromDOM(this, rangeObject, true);
+					}
+				});
+
+				rangeObject.select();
+
+				return true;
+			}
+			return false;
+		},
+
 		addInlineQuote: function () {
 			var classes = [nsClass('wrapper'), nsClass(++uid)].join(' ');
 			
@@ -432,47 +624,18 @@ define([
 			));
 
 			var rangeObject = Aloha.Selection.rangeObject;
-			var foundMarkup;
 
-			if (Aloha.activeEditable) {
-				jQuery(Aloha.activeEditable.obj[0]).click();
+			// When the range is collapsed, extend it to a word.
+			if (rangeObject.isCollapsed()) {
+				domUtils.extendToWord(rangeObject);
 			}
 
-			// Check whether the markup is found in the range (at the start of
-			// the range).
-			foundMarkup = rangeObject.findMarkup(function () {
-				if (this.nodeName && markup.length &&
-					(typeof this.nodeName === 'string') &&
-					(typeof markup[0].nodeName === 'string')) {
-					return this.nodeName.toLowerCase() ===
-						markup[0].nodeName.toLowerCase();
-				}
+			domUtils.addMarkup(rangeObject, markup);
 
-				return false;
-			}, Aloha.activeEditable.obj);
-
-			// If the we click the quote button on a range that contains quote
-			// markup, then we will remove the quote markup, otherwise we will
-			// wrap the selection in a quote.
-
-			if (foundMarkup) {
-				if (rangeObject.isCollapsed()) {
-					// The range is collapsed; remove exactly the one DOM
-					// element.
-					domUtils.removeFromDOM(foundMarkup, rangeObject, true);
-				} else {
-					// The range is not collapsed; remove the markup from the
-					// range.
-					domUtils.removeMarkup(rangeObject, markup,
-						Aloha.activeEditable.obj);
-				}
-			} else {
-				// When the range is collapsed, extend it to a word.
-				if (rangeObject.isCollapsed()) {
-					domUtils.extendToWord(rangeObject);
-				}
-
-				domUtils.addMarkup(rangeObject, markup);
+			// If the cite is not found, it was not created. Probably for
+			// a incorrect caret position.
+			if ($('[data-cite-id=' + uid + ']').length === 0) {
+				return;
 			}
 
 			// select the modified range
@@ -493,6 +656,53 @@ define([
 		},
 
 		/**
+		 * Removes cite from references
+		 * @param uid
+		 */
+		removeCiteFromReferences: function (uid) {
+			var index = this.getIndexOfCitation(uid);
+			var wrapper = jQuery('.aloha-editable-active ' + nsSel(uid));
+			var note = 'cite-note-' + uid;
+			var ref = 'cite-ref-'  + uid;
+
+			this.citations.splice(index, 1);
+			wrapper.find('sup#' + ref).remove();
+			this.createCiteAnchor(ref, note, index);
+
+			if (this.referenceContainer) {
+				this.referenceContainer.find('ol.references li#' + note).remove();
+
+				if (0 === this.referenceContainer.find('ol.references li').length) {
+					this.referenceContainer.find('h2').remove();
+					this.referenceContainer.find('ol.references').remove();
+				} else {
+					for (var i = index; i < this.citations.length; i++) {
+						var $cite = jQuery('.aloha-editable-active ' + nsSel(this.citations[i].uid));
+						note = 'cite-note-' + this.citations[i].uid;
+						ref = 'cite-ref-'  + this.citations[i].uid;
+
+						$cite.find('sup#cite-ref-' + this.citations[i].uid).remove();
+						$cite.append(this.createCiteAnchor(ref, note, i));
+					}
+				}
+			}
+		},
+
+		/**
+		 * Creates the 'sup' element and 'a' anchor added at the end of the cite.
+		 * @param {String} ref
+		 * @param {String} note
+		 * @param {String} index
+		 * @return {String}
+		 */
+		createCiteAnchor: function (ref, note, index) {
+			return supplant(
+				'<sup id="{ref}" contenteditable="false"><a href="#{note}">[{count}]</a></sup>',
+				{ ref: ref, note: note, count: index + 1 }
+			);
+		},
+
+		/**
 		 * Adds an item for the citation matching the given uid to the
 		 * references list. If no OL list for references exist, we create one.
 		 * This method will assume that this.referenceContainer is a jQuery
@@ -503,20 +713,11 @@ define([
 		addCiteToReferences: function (uid) {
 			var index = this.getIndexOfCitation(uid);
 
-			if (-1 === index) {
-				return;
-			}
-
 			var wrapper = jQuery('.aloha-editable-active ' + nsSel(uid));
 			var note = 'cite-note-' + uid;
 			var ref = 'cite-ref-'  + uid;
 
-			wrapper.append(
-				supplant(
-					'<sup id="{ref}" contenteditable="false"><a href="#{note}">[{count}]</a></sup>',
-					{ ref   : ref, note  : note, count : index + 1 }
-				)
-			);
+			wrapper.append(this.createCiteAnchor(ref, note, index));
 
 			if (0 === this.referenceContainer.find('ol.references').length) {
 				this.referenceContainer
