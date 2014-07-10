@@ -151,15 +151,11 @@
 						if ('dragover' !== event.type) {
 							return event;
 						}
-						var box = event.selectionBox;
-						if (!box) {
-							return event;
-						}
+						var box = aloha.ranges.box(event.range);
 						var doc = event.range.commonAncestorContainer.ownerDocument;
 						var win = aloha.dom.documentWindow(doc);
 						var radius = Math.min(win.innerHeight, win.innerWidth);
 						var focal = 80;
-						//console.log(aloha.dom.getStyle(doc.body, 'background-image'));
 						aloha.dom.setStyle(
 							doc.body,
 							'background-image',
