@@ -5,8 +5,24 @@
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define(['maps'], function (Maps) {
+define([], function () {
 	'use strict';
+
+	/**
+	 * Native mouse events.
+	 *
+	 * @private
+	 * @type {Object.<string, boolean>}
+	 */
+	var EVENTS = {
+		'mouseup'   : true,
+		'mousedown' : true,
+		'mousemove' : true,
+		'dblclick'  : true,
+		'dragstart' : true,
+		'dragover'  : true,
+		'dragend'   : true
+	};
 
 	function handle(alohaEvent) {
 		var event = alohaEvent.nativeEvent;
@@ -19,6 +35,7 @@ define(['maps'], function (Maps) {
 	}
 
 	return {
-		handle : handle
+		handle : handle,
+		EVENTS : EVENTS
 	};
 });

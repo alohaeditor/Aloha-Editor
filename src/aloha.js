@@ -40,21 +40,6 @@ define([
 	var win = Dom.documentWindow(doc);
 
 	/**
-	 * Sets the given AlohaEvent's range to the document.
-	 *
-	 * @private
-	 * @param  {AlohaEvent} event
-	 * @return {AlohaEvent}
-	 */
-	function setSelection(event) {
-		if (event.range && event.editable) {
-			var boundaries = Boundaries.fromRange(event.range);
-			Boundaries.select(boundaries[0], boundaries[1]);
-		}
-		return event;
-	}
-
-	/**
 	 * Adds 'type', 'range', and 'editable' to the given Aloha Event now, if
 	 * possible.
 	 *
@@ -88,11 +73,9 @@ define([
 	}
 
 	function editor(nativeEvent, custom) {
-		var alohaEvent = custom || {nativeEvent : nativeEvent};
-		alohaEvent.editor = editor;
-		setSelection(Fn.comp.apply(editor.stack, editor.stack)(handle(
-			alohaEvent
-		)));
+		var event = custom || {nativeEvent : nativeEvent};
+		event.editor = editor;
+		Selections.select(Fn.comp.apply(editor.stack, editor.stack)(handle(event)));
 	}
 
 	editor.editables = {};

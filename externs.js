@@ -158,7 +158,6 @@ var SelectionContext = {
 	mousedown      : false,
 	doubleclicking : false,
 	tripleclicking : false,
-	selectionBox   : {},
 	formatting     : [],
 	overrides      : []
 };
