@@ -23,17 +23,17 @@ define([
 ], function (
 	Dom,
 	Html,
-    Undo,
+	Undo,
 	Arrays,
 	Events,
-    Ranges,
+	Ranges,
 	Content,
 	Editing,
 	Mutation,
-    Transform,
+	Transform,
 	Boundaries,
 	Selections,
-    WordTransform,
+	WordTransform,
 	Fn
 ) {
 	'use strict';
