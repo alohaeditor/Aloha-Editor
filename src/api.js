@@ -415,6 +415,7 @@ define([
 
 	exports['mouse'] = Mouse;
 	exports['mouse']['handle'] = Mouse.handle;
+	exports['mouse']['EVENTS'] = Mouse.EVENTS;
 
 	exports['mutation'] = Mutation;
 	exports['mutation']['removeNode']                     = Mutation.removeNode;
@@ -446,7 +447,6 @@ define([
 	exports['ranges'] = Ranges;
 	exports['ranges']['box']                         = Ranges.box;
 	exports['ranges']['get']                         = Ranges.get;
-	exports['ranges']['select']                      = Ranges.select;
 	exports['ranges']['create']                      = Ranges.create;
 	exports['ranges']['equals']                      = Ranges.equals;
 	exports['ranges']['collapseToEnd']               = Ranges.collapseToEnd;

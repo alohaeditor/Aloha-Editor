@@ -13,6 +13,7 @@ define([
 	'dom',
 	'keys',
 	'maps',
+	'mouse',
 	'events',
 	'ranges',
 	'browsers',
@@ -26,6 +27,7 @@ define([
 	Dom,
 	Keys,
 	Maps,
+	Mouse,
 	Events,
 	Ranges,
 	Browsers,
@@ -116,26 +118,6 @@ define([
 	 */
 	function isReversed(sc, so, ec, eo) {
 		return (sc === ec && so > eo) || Dom.followedBy(ec, sc);
-	}
-
-	/**
-	 * Checks whether or not the given event is a mouse event.
-	 *
-	 * @private
-	 * @param  {Event|AlohaEvent} event
-	 * @return {boolean}
-	 */
-	function isMouseEvent(event) {
-		switch (event.type) {
-		case 'mouseup':
-		case 'mousedown':
-		case 'mousemove':
-		case 'dblclick':
-		case 'dragover':
-			return true;
-		default:
-			return false;
-		}
 	}
 
 	/**
@@ -446,6 +428,13 @@ define([
 		};
 	}
 
+	function paste(event, range, focus) {
+		return {
+			range: event.range,
+			focus: 'end'
+		};
+	}
+
 	/**
 	 * Event handlers.
 	 *
@@ -462,7 +451,8 @@ define([
 		'mousemove' : Fn.returnFalse,
 		'dragover'  : dragndrop,
 		'drop'      : dragndrop,
-		'resize'    : resize
+		'resize'    : resize,
+		'paste'     : paste
 	};
 
 	/**
@@ -487,7 +477,7 @@ define([
 	 */
 	function normalizeEventType(event, current, previous, focus, then,
 	                            doubleclicking, tripleclicking) {
-		if (!isMouseEvent(event)) {
+		if (!Mouse.EVENTS[event.type]) {
 			return event.type;
 		}
 		var isMouseDown = 'mousedown' === event.type;
@@ -665,7 +655,7 @@ define([
 	 */
 	function fromEvent(alohaEvent) {
 		var event = alohaEvent.nativeEvent;
-		if (isMouseEvent(alohaEvent)) {
+		if (Mouse.EVENTS[alohaEvent.type]) {
 			return Ranges.fromPosition(
 				event.clientX,
 				event.clientY,
@@ -690,14 +680,15 @@ define([
 	}
 
 	/**
-	 * Enures that the given boundary box is visible inside of the viewport by
+	 * Enures that the given boundary is visible inside of the viewport by
 	 * scolling the view port if necessary.
 	 *
 	 * @private
-	 * @param {Object.<string, number>} box
-	 * @param {Document}                doc
+	 * @param {Boundary} boundary
 	 */
-	function ensureInViewport(box, doc) {
+	function ensureInViewport(boundary) {
+		var box = Ranges.box(Ranges.fromBoundaries(boundary, boundary));
+		var doc = Boundaries.document(boundary);
 		var win = Dom.documentWindow(doc);
 		var top = win.pageYOffset - doc.body.clientTop;
 		var left = win.pageXOffset - doc.body.clientLeft;
@@ -827,21 +818,6 @@ define([
 			return event;
 		}
 
-		var boundary, container;
-		if ('start' === context.focus) {
-			boundary = Boundaries.fromRangeStart(range);
-			container = range.startContainer;
-		} else {
-			boundary = Boundaries.fromRangeEnd(range);
-			container = range.endContainer;
-		}
-
-		show(context.caret, boundary);
-
-		Maps.extend(context.caret.style, stylesFromOverrides(
-			mapOverrides(context.formatting, context.overrides, container)
-		));
-
 		var preventDefault = ('keydown' === type && movements[event.which])
 				|| (event.editor.CARET_CLASS === event.nativeEvent.target.className);
 
@@ -850,7 +826,7 @@ define([
 		}
 
 		// Because browsers have a non-intuitive way of handling expanding of
-		// selections when holding down the shift key.  We therefore "trick" the
+		// selections when holding down the shift key. We therefore "trick" the
 		// browser by setting the selection to a range which will cause the the
 		// expansion to be done in the way that the user expects
 		if (!preventDefault && 'mousedown' === type && Events.hasKeyModifier(event, 'shift')) {
@@ -862,20 +838,63 @@ define([
 		}
 
 		event.range = range;
-		event.selectionBox = Ranges.box(range);
-
-		if (Keys.EVENTS[type]) {
-			ensureInViewport(
-				event.selectionBox,
-				range.commonAncestorContainer.ownerDocument
-			);
-		}
 
 		return event;
 	}
 
+	/**
+	 * Whether the given event will cause the position of the selection to
+	 * move.
+	 *
+	 * @private
+	 * @param  {Event} event
+	 * @return {boolean}
+	 */
+	function isCaretMovingEvent(event) {
+		if ('keypress' === event.type) {
+			return true;
+		}
+		if ('paste' === event.type) {
+			return true;
+		}
+		if (Keys.ARROWS[event.which]) {
+			return true;
+		}
+		if (Keys.CODES['undo'] == event.which) {
+			if ('meta' === event.meta || 'ctrl' === event.meta || 'shift' === event.meta) {
+				return true;
+			}
+		}
+	}
+
+	/**
+	 * Causes the selection that is held in the given selection context to be
+	 * set to the browser and the caret position to be visualized.
+	 *
+	 * @param {AlohaEvent} event
+	 */
+	function select(event) {
+		var context = event.editor.selectionContext;
+		if (!context.range || 'mousemove' === event.type) {
+			return;
+		}
+		var boundaries = Boundaries.fromRange(context.range);
+		var focus = boundaries[('start' === context.focus) ? 0 : 1];
+		show(context.caret, focus);
+		Maps.extend(context.caret.style, stylesFromOverrides(mapOverrides(
+			context.formatting,
+			context.overrides,
+			Boundaries.container(focus)
+		)));
+		Boundaries.select(boundaries[0], boundaries[1]);
+		if (isCaretMovingEvent(event)) {
+			ensureInViewport(focus);
+		}
+	}
+
 	return {
 		show         : show,
+		select       : select,
 		handle       : handle,
 		Context      : Context,
 		hideCarets   : hideCarets,

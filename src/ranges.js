@@ -75,20 +75,6 @@ define([
 	}
 
 	/**
-	 * Sets the given range to the browser selection. This will cause the
-	 * selection to be visually rendered by the user agent.
-	 *
-	 * @param  {Range} range
-	 * @return {Selection} Browser selection to which the range was set
-	 */
-	function select(range) {
-		var selection = range.startContainer.ownerDocument.getSelection();
-		selection.removeAllRanges();
-		selection.addRange(range);
-		return selection;
-	}
-
-	/**
 	 * Creates a range object with boundaries defined by containers, and offsets
 	 * in those containers.
 	 *
@@ -831,7 +817,6 @@ define([
 		box                         : box,
 
 		get                         : get,
-		select                      : select,
 		create                      : create,
 		equals                      : equals,
 

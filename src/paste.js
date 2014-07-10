@@ -6,35 +6,35 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'editing',
+	'dom',
+	'html',
+	'undo',
 	'arrays',
 	'events',
-	'boundaries',
-	'dom',
-	'content',
-	'functions',
-	'html',
-	'mutation',
 	'ranges',
-	'undo',
-	'transform/ms-word',
+	'content',
+	'editing',
+	'mutation',
 	'transform',
-	'selections'
+	'boundaries',
+	'selections',
+	'transform/ms-word',
+	'functions'
 ], function (
-	Editing,
+	Dom,
+	Html,
+    Undo,
 	Arrays,
 	Events,
-	Boundaries,
-	Dom,
-	Content,
-	Fn,
-	Html,
-	Mutation,
     Ranges,
-    Undo,
-    WordTransform,
+	Content,
+	Editing,
+	Mutation,
     Transform,
-	Selections
+	Boundaries,
+	Selections,
+    WordTransform,
+	Fn
 ) {
 	'use strict';
 
@@ -84,31 +84,6 @@ define([
 		return event.clipboardData.getData(type);
 	}
 
-	function split(boundary, until) {
-		var range = Ranges.fromBoundaries(boundary, boundary);
-		Editing.split(range);
-		return Boundaries.fromRangeStart(range);
-	}
-
-	function delete_(boundaries) {
-		var range = Ranges.fromBoundaries(boundaries[0], boundaries[1]);
-		Editing.remove(range, {overrides: []});
-		return Boundaries.fromRangeStart(range);
-	}
-
-	/**
-	 * Checks whether the inner node is allowed to be nested as the immediate
-	 * child of `outer`.
-	 *
-	 * @private
-	 * @param  {Node} outer
-	 * @param  {Node} inner
-	 * @return {boolean}
-	 */
-	function allowsNesting(outer, inner) {
-		return Content.allowsNesting(outer.nodeName, inner.nodeName);
-	}
-
 	/**
 	 * Moves the given node before the given boundary.
 	 *
@@ -125,13 +100,14 @@ define([
 	 * Pastes the markup at the given boundary range.
 	 *
 	 * @private
-	 * @param  {Array.<Boundary>} boundaries
-	 * @param  {string}           markup
+	 * @param  {Boundary} start
+	 * @param  {Boundary} end
+	 * @param  {string}   markup
 	 * @return {Boundary} Boundary position after the inserted content
 	 */
-	function insert(boundaries, markup) {
-		var doc = Boundaries.container(boundaries[0]).ownerDocument;
-		var boundary = delete_(boundaries);
+	function insert(start, end, markup) {
+		var doc = Boundaries.document(start);
+		var boundary = Editing.remove(Ranges.fromBoundaries(start, end))[0];
 		var element = Html.parse(markup, doc);
 		var children = Dom.children(element);
 
@@ -139,16 +115,16 @@ define([
 			return boundary;
 		}
 
-		// Because we can only detect "void type" (non-content editable nodes)
-		// if is contained within a editing host
+		// Because we are only able to detect "void type" (non-content editable
+		// nodes) if is contained within a editing host
 		Dom.setAttr(element, 'contentEditable', true);
 
 		var first = children[0];
 
 		// Because (unlike plain-text), pasted html will contain an unintended
 		// linebreak caused by the wrapper inwhich the pasted content is placed
-		// (P in most cases).  We therefore unfold this wrapper whenever is
-		// valid to do so (ie: we cannot unfold 'ul', 'table', etc)
+		// (P in most cases). We therefore unfold this wrapper whenever is valid
+		// to do so (ie: we cannot unfold 'ul', 'table', etc)
 		if (!Dom.isTextNode(first) && !Html.isVoidType(first) && !Html.isGroupContainer(first)) {
 			children = Dom.children(first).concat(children.slice(1));
 		}
@@ -159,7 +135,11 @@ define([
 
 		children.forEach(function (node) {
 			if (Html.hasLinebreakingStyle(node)) {
-				boundary = split(boundary, Fn.partial(allowsNesting, node));
+				boundary = Mutation.splitBoundaryUntil(boundary, function (boundary) {
+					var container = Boundaries.container(boundary);
+					return Dom.isEditingHost(container.parentNode)
+					    || Content.allowsNesting(container.nodeName, node.nodeName);
+				});
 			}
 			boundary = Mutation.insertNodeAtBoundary(node, boundary, true);
 		});
@@ -232,8 +212,7 @@ define([
 		Undo.capture(alohaEvent.editable['undoContext'], {
 			meta: {type: 'paste'}
 		}, function () {
-			var boundary = insert(boundaries, content);
-			Selections.scrollTo(boundary);
+			var boundary = insert(boundaries[0], boundaries[1], content);
 			alohaEvent.range = Ranges.fromBoundaries(boundary, boundary);
 		});
 		return alohaEvent;
