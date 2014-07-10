@@ -43,6 +43,7 @@ define([
 	}
 
 	function Editable(elem) {
+		Dom.addClass(elem, 'aloha-editable');
 		var undoContext = Undo.Context(elem);
 		var id = Dom.ensureExpandoId(elem);
 		var editable = {
