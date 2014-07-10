@@ -49,22 +49,22 @@ define([
 	/**
 	 * "Props up" the given element if needed.
 	 *
-	 * The HTML specification specifies that empty block-level elements be not
-	 * rendered.  This becomes a problem if an editing operation results in one
-	 * of these elements being emptied of all its child nodes.  If this were to
-	 * happen, standard conformant browsers will no longer render that empty
-	 * block element even though it will remain in the document.  Because the
-	 * element is invisible, it will no longer be possible for the caret to be
-	 * placed into it.
+	 * The HTML specification stipulates that empty block-level elements should
+	 * not be rendered. This becomes a problem if an editing operation results
+	 * in one of these elements being emptied of all its child nodes. If this
+	 * were to happen, standard conformant browsers will no longer render that
+	 * empty block element even though it will remain in the document. Because
+	 * the element is invisible, it will no longer be possible for the caret to
+	 * be placed into it.
 	 *
 	 * In order to prevent littering the editable with invisible block-level
 	 * elements, we prop them up by ensuring the empty block-level elements are
 	 * given a <br> child node to force them to be rendered with one line
 	 * height.
 	 *
-	 * The notable exception to this rule are the Microsoft's non-standard
-	 * conformant Trident engines which render empty editable block level
-	 * elements with one line height.
+	 * The notable exception to this rule is the Microsoft's non-standard
+	 * conformant Trident engine which automatically renders empty editable
+	 * block level elements with one line height.
 	 *
 	 * @param {Element} elem
 	 */
@@ -333,6 +333,13 @@ define([
 		return boundaries;
 	}
 
+	/**
+	 * Returns any br that is adjacent to the given boundary.
+	 *
+	 * @private
+	 * @param  {Boundary}
+	 * @return {?Element}
+	 */
 	function adjacentBr(boundary) {
 		var before = Boundaries.nodeBefore(boundary);
 		var after = Boundaries.nodeAfter(boundary);

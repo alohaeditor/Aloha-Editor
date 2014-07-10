@@ -116,7 +116,7 @@ define([
 		}
 
 		// Because we are only able to detect "void type" (non-content editable
-		// nodes) if is contained within a editing host
+		// nodes) when they are contained within a editing host
 		Dom.setAttr(element, 'contentEditable', true);
 
 		var first = children[0];
@@ -124,7 +124,8 @@ define([
 		// Because (unlike plain-text), pasted html will contain an unintended
 		// linebreak caused by the wrapper inwhich the pasted content is placed
 		// (P in most cases). We therefore unfold this wrapper whenever is valid
-		// to do so (ie: we cannot unfold 'ul', 'table', etc)
+		// to do so (ie: we cannot unfold grouping elements like 'ul', 'table',
+		// etc)
 		if (!Dom.isTextNode(first) && !Html.isVoidType(first) && !Html.isGroupContainer(first)) {
 			children = Dom.children(first).concat(children.slice(1));
 		}
