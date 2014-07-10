@@ -36,7 +36,7 @@ function build {
 		> $wd/$target
 
 	if [[ -n $sourcemap ]]; then
-		echo "\\n//# sourceMappingURL=aloha.js.map" >> $wd/$target
+		echo -e "\n//# sourceMappingURL=aloha.js.map" >> $wd/$target
 		cp -r $wd/src/* $wd/build
 	fi
 }
