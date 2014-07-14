@@ -22,7 +22,7 @@ define([
 	 */
 	var TableCell = function (originalTd, tableObj) {
 		if (null == originalTd) {
-			originalTd = '<td>&nbsp;</td>';
+			originalTd = '<td></td>';
 		}
 
 		//original Td must be a DOM node so that the this.obj.context property is available
@@ -528,7 +528,7 @@ define([
 
 		// if empty insert a blank space and blur and focus the wrapper
 		if (text === '') {
-			this.wrapper.text('\u00a0');
+			this.wrapper.text('');
 			this.wrapper.get(0).blur();
 			this.wrapper.get(0).focus();
 		}

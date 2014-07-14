@@ -1,0 +1,2 @@
+When a table was created, empty spaces were inserted in the empty cells so the caret could be placed in.
+With these changes we don't need these empty space anymore.
