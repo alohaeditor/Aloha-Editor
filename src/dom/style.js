@@ -5,15 +5,7 @@
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define([
-	'dom/nodes',
-	'dom/attrs',
-	'strings'
-], function DomStyles(
-	Nodes,
-	Attrs,
-	Strings
-) {
+define(['strings'], function (Strings) {
 	'use strict';
 
 	/**

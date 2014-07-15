@@ -7,16 +7,12 @@
  */
 define([
 	'dom',
-	'misc',
 	'arrays',
-	'assert',
-	'strings'
+	'assert'
 ], function (
 	Dom,
-	Misc,
 	Arrays,
-	Assert,
-	Strings
+	Assert
 ) {
 	'use strict';
 

@@ -1,6 +1,8 @@
 (function (aloha, module, test, equal) {
 	'use strict';
 
+	return;
+
 	module('editing');
 
 	function runTest(before, after, op, context) {

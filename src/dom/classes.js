@@ -7,16 +7,12 @@
  */
 define([
 	'dom/nodes',
-	'maps',
 	'arrays',
-	'strings',
-	'browsers'
-], function DomClasses(
+	'strings'
+], function (
 	Nodes,
-	Maps,
 	Arrays,
-	Strings,
-	Browsers
+	Strings
 ) {
 	'use strict';
 

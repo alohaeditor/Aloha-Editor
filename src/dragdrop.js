@@ -14,12 +14,14 @@
 define([
 	'dom',
 	'maps',
+	'events',
 	'ranges',
 	'editing',
 	'selections'
 ], function (
 	Dom,
 	Maps,
+	Events,
 	Ranges,
 	Editing,
 	Selections
@@ -47,7 +49,7 @@ define([
 	var DEFAULTS = {
 		'dropEffect' : 'none',
 		'element'    : null,
-		'target '    : null,
+		'target'     : null,
 		'data'       : ['text/plain', '']
 	};
 
@@ -138,45 +140,41 @@ define([
 		);
 	}
 
+	function calculateRange(x, y, doc) {
+		var carets = Selections.hideCarets(doc);
+		var range = Ranges.fromPosition(x, y, doc);
+		Selections.unhideCarets(carets);
+		return range;
+	}
+
 	function handleDragOver(alohaEvent) {
 		var event = alohaEvent.nativeEvent;
-		var doc = event.target.ownerDocument;
-		var x = event.clientX + DRAGGING_CARET_OFFSET;
-		var y = event.clientY + DRAGGING_CARET_OFFSET;
-		var carets = Selections.hideCarets(doc);
-
-		alohaEvent.range = Ranges.fromPosition(x, y, doc);
-
-		Selections.unhideCarets(carets);
-
+		alohaEvent.range = calculateRange(
+			event.clientX + DRAGGING_CARET_OFFSET,
+			event.clientY + DRAGGING_CARET_OFFSET,
+			event.target.ownerDocument
+		);
 		// Because this is necessary for dropping to work
-		event.preventDefault();
+		Events.preventDefault(event);
 	}
 
 	function handleDrop(alohaEvent) {
 		var event = alohaEvent.nativeEvent;
-		var doc = event.target.ownerDocument;
-
-		// +8 because, for some reason the range is always calculated a
-		// character behind of where it should be...
-		var x = event.clientX + DRAGGING_CARET_OFFSET + 8;
-		var y = event.clientY + DRAGGING_CARET_OFFSET;
-		var carets = Selections.hideCarets(doc);
-
-		alohaEvent.range = Ranges.fromPosition(x, y, doc);
-
-		Selections.unhideCarets(carets);
-
+		alohaEvent.range = calculateRange(
+			// +8 because, for some reason the range is always calculated a
+			// character behind of where it should be...
+			event.clientX + DRAGGING_CARET_OFFSET + 8,
+			event.clientY + DRAGGING_CARET_OFFSET,
+			event.target.ownerDocument
+		);
 		if (alohaEvent.range) {
 			moveNode(alohaEvent.range, alohaEvent.editor.dndContext.element);
 		}
-
 		if (event.stopPropagation) {
 			event.stopPropagation();
 		}
-
 		// Because some browsers will otherwise redirect
-		event.preventDefault();
+		Events.preventDefault(event);
 	}
 
 	var handlers = {
@@ -187,6 +185,13 @@ define([
 
 	/**
 	 * Processes drag and drop events.
+	 *
+	 * Requires:
+	 * 		editor
+	 * 		target
+	 * Updates:
+	 * 		editor.dndContext
+	 * 		nativeEvent
 	 *
 	 * @param  {AlohaEvent} event
 	 * @return {AlohaEvent}

@@ -10,7 +10,7 @@ define([
 	'dom/nodes',
 	'functions',
 	'arrays'
-], function DomTraversing(
+], function (
 	Nodes,
 	Fn,
 	Arrays

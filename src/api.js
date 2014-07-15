@@ -300,6 +300,7 @@ define([
 	exports['editables']['dissocFromEditor'] = Editables.dissocFromEditor;
 	exports['editables']['close']            = Editables.close;
 	exports['editables']['handle']           = Editables.handle;
+	exports['editables']['create']           = Editables.create;
 
 	exports['editing'] = Editing;
 	exports['editing']['wrap']      = Editing.wrap;
@@ -470,6 +471,7 @@ define([
 
 	exports['selections'] = Selections;
 	exports['selections']['show']         = Selections.show;
+	exports['selections']['select']       = Selections.select;
 	exports['selections']['handle']       = Selections.handle;
 	exports['selections']['Context']      = Selections.Context;
 	exports['selections']['hideCarets']   = Selections.hideCarets;

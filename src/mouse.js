@@ -5,7 +5,7 @@
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define([], function () {
+define(['ranges'], function (Ranges) {
 	'use strict';
 
 	/**
@@ -24,14 +24,42 @@ define([], function () {
 		'dragend'   : true
 	};
 
-	function handle(alohaEvent) {
-		var event = alohaEvent.nativeEvent;
-		if (event && 'mousedown' === event.type) {
-			alohaEvent.editor.selectionContext.formatting = [];
-			alohaEvent.editor.selectionContext.overrides = [];
-			alohaEvent.target = event.target;
+	/**
+	 * Requires:
+	 * 		type
+	 * 		editor
+	 * Provides:
+	 *		target
+	 *		range
+	 * Updates:
+	 * 		editor.selectionContext
+	 *
+	 * @param  {AlohaEvent} event
+	 * @return {AlohaEVent}
+	 */
+	function handle(event) {
+		var nativeEvent = event.nativeEvent;
+		if (!nativeEvent) {
+			return event;
 		}
-		return alohaEvent;
+		event.target = nativeEvent.target || nativeEvent.srcElement;
+		if ('mousedown' === event.type) {
+			event.editor.selectionContext.formatting = [];
+			event.editor.selectionContext.overrides = [];
+		}
+		if (event.range || !event.target.ownerDocument) {
+			return event;
+		}
+		if ('mousedown' === event.type || 'click' === event.type) {
+			event.range = Ranges.fromPosition(
+				nativeEvent.clientX,
+				nativeEvent.clientY,
+				event.target.ownerDocument
+			);
+		} else if ('mousemove' !== event.type) {
+			event.range = Ranges.get(event.target.ownerDocument);
+		}
+		return event;
 	}
 
 	return {

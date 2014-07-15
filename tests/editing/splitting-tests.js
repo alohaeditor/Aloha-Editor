@@ -1,5 +1,7 @@
 (function (aloha, require, module, test, equal, deepEqual) {
 	'use strict';
+	
+	return;
 
 	module('editing');
 

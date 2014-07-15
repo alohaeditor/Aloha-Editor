@@ -237,6 +237,7 @@
 	  '<p><b>1<em>2<i>3<sub>4<u>{</u>Z</sub>text<sub>Z<u>}</u>5</sub>6</i>7</em>8</b></p>',
 	  '<p><b>1</b><em><b>2</b><i><b>3</b><sub><b>4<u></u></b>{Z</sub>text<sub>Z}<b><u></u>5</b></sub><b>6</b></i><b>7</b></em><b>8</b></p>');
 
+	/*
 	testMutation('don\'t split if opts.below returns false',
 				 '<div><i>a[b</i>c<b>d]e</b></div>',
 				 '<div><i>a[b</i>c<b>d]e</b></div>',
@@ -244,6 +245,8 @@
 				 	var range = Ranges.fromBoundaries(start, end);
 					return Editing.split(range, {below: Fn.returnFalse});
 				 });
+
+	*/
 
 	t = function (title, before, after) {
 		testStyle(title, before, after, 'font-family', 'arial');
@@ -375,10 +378,12 @@
 		// Because we want to write tests only against a single wrapper
 		// format (<b>), but run them against all wrapper formats.
 		var formats = [
+			/*
 			{name: 'bold', nodeName: 'b', styleOn: 'font-weight: bold', styleOff: 'font-weight: normal'},
 			{name: 'strong', nodeName: 'strong', styleOn: 'font-weight: bold', styleOff: 'font-weight: normal'},
 			{name: 'italic', nodeName: 'i', styleOn: 'font-style: italic', styleOff: 'font-style: normal'},
 			{name: 'emphasis', nodeName: 'em', styleOn: 'font-style: italic', styleOff: 'font-style: normal'},
+			*/
 			{name: 'underline', nodeName: 'u', styleOn: 'text-decoration: underline', styleOff: 'text-decoration: none'}
 		];
 		function replace(format, html) {
@@ -393,6 +398,7 @@
 		}
 	};
 
+	/*
 	t('use wrapper element instead of style',
 	  '<p>So[me t]ext</p>',
 	  '<p>So{<b>me t</b>}ext</p>',
@@ -417,11 +423,15 @@
 	  '<p>So<span style="font-weight: bold">m{e </span>te}xt</p>',
 	  '<p>So<span style="font-weight: bold">m[e te</span>}xt</p>',
 	  true);
+	*/
 
+debugger;
 	t('pushing down through wrapper',
 	  '<p>So<b>m{e t}e</b>xt</p>',
 	  '<p>So<b>m</b>{e t}<b>e</b>xt</p>',
 	  false);
+
+return;
 
 	testStyle('italic - pushing down through alternative wrapper',
 			   '<p>So<em>m{e t}e</em>xt</p>',

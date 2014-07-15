@@ -8,7 +8,7 @@
 define([
 	'dom',
 	'html/predicates'
-], function HtmlStyles(
+], function (
 	Dom,
 	Predicates
 ) {

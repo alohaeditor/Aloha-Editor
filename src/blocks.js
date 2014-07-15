@@ -99,7 +99,7 @@ define([
 		    || Dom.hasClass(event.nativeEvent.target, event.editor.BLOCK_CLASS);
 	}
 
-	function handleAloha (event) {
+	function handleAloha(event) {
 		var blocks = event.editable['elem'].querySelectorAll('.aloha-block,img');
 		[].forEach.call(blocks, function (block) {
 			block.setAttribute('contentEditable', 'false');
@@ -150,7 +150,10 @@ define([
 	};
 
 	/**
-	 * Process events on Aloha Blocks.
+	 * Requires:
+	 * 		editor
+	 * Updates:
+	 * 		editable
 	 *
 	 * @param  {AlohaEvent} event
 	 * @return {Event}

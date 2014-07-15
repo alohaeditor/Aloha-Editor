@@ -67,24 +67,51 @@ define([
 	}
 
 	/**
+	 * Initializes an editable.
+	 *
+	 * @param  {function(AlohaEvent)} editor
+	 * @param  {Element}              element
+	 * @param  {string}               defaultBlock
+	 * @return {Editable}
+	 */
+	function create(editor, element, defaultBlock) {
+		var editable = Editable(element);
+		Dom.setStyle(element, 'cursor', 'text');
+		editable.settings = {defaultBlockNodeName: defaultBlock};
+		assocIntoEditor(editor, editable);
+		Undo.enter(editable.undoContext, {
+			meta             : {type: 'external'},
+			partitionRecords : true
+		});
+		return editable;
+	}
+
+	/**
 	 * Associates an editable to the given AlohaEvent.
 	 *
-	 * @param  {AlohaEvent} alohaEvent
+	 * Require:
+	 * 		type
+	 * 		editor
+	 * Provides:
+	 * 		editable
+	 *
+	 * @param  {AlohaEvent} event
 	 * @return {AlohaEvent}
 	 */
-	function handle(alohaEvent) {
-		if ('mousemove' === alohaEvent.type) {
-			return alohaEvent;
+	function handle(event) {
+		if ('aloha' === event.type) {
+			event.editable = create(
+				event.editor,
+				event.element,
+				event.defaultBlock
+			);
+		} else if (event.range && Dom.isEditableNode(event.range.commonAncestorContainer)) {
+			event.editable = fromBoundary(
+				event.editor,
+				Boundaries.fromRangeStart(event.range)
+			);
 		}
-		if (!alohaEvent.range) {
-			return alohaEvent;
-		}
-		var host = Dom.editingHost(alohaEvent.range.commonAncestorContainer);
-		if (!host) {
-			return alohaEvent;
-		}
-		alohaEvent.editable = fromElem(alohaEvent.editor, host);
-		return alohaEvent;
+		return event;
 	}
 
 	return {
@@ -94,6 +121,7 @@ define([
 		assocIntoEditor  : assocIntoEditor,
 		dissocFromEditor : dissocFromEditor,
 		close            : close,
-		handle           : handle
+		handle           : handle,
+		create           : create
 	};
 });

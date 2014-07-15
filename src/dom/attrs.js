@@ -6,12 +6,10 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'arrays',
 	'maps',
 	'strings',
 	'functions'
-], function DomAttributes(
-	Arrays,
+], function (
 	Maps,
 	Strings,
 	Fn

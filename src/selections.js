@@ -20,8 +20,7 @@ define([
 	'overrides',
 	'animation',
 	'boundaries',
-	'traversing',
-	'colors'
+	'traversing'
 ], function (
 	Fn,
 	Dom,
@@ -34,8 +33,7 @@ define([
 	Overrides,
 	Animation,
 	Boundaries,
-	Traversing,
-	Colors
+	Traversing
 ) {
 	'use strict';
 
@@ -459,7 +457,7 @@ define([
 	 * Normalizes the event type.
 	 *
 	 * This function is necessary for us to properly determine how to treat
-	 * mouse events because we will sometime end up missing a dblclick event
+	 * mouse events because we will sometimes end up missing a dblclick event
 	 * when the user's cursor is hovering over caret element.
 	 *
 	 * Furthermore, browsers do not send triple click events to JavaScript; this
@@ -647,28 +645,6 @@ define([
 	}
 
 	/**
-	 * Returns a range based on the given event object.
-	 *
-	 * @private
-	 * @param  {AlohaEvent} alohaEvent
-	 * @return {?Range}
-	 */
-	function fromEvent(alohaEvent) {
-		var event = alohaEvent.nativeEvent;
-		if (Mouse.EVENTS[alohaEvent.type]) {
-			return Ranges.fromPosition(
-				event.clientX,
-				event.clientY,
-				(event.target || event.srcElement).ownerDocument
-			);
-		}
-		if (alohaEvent.range) {
-			return alohaEvent.range;
-		}
-		return Ranges.get((event.target || event.srcElement).ownerDocument);
-	}
-
-	/**
 	 * Scrolls the viewport to the position of the given boundary.
 	 *
 	 * @param {Boundary}
@@ -743,57 +719,86 @@ define([
 		return table;
 	}
 
+	function toggleBlinking(blinking, type) {
+		if ('mousedown' === type) {
+			blinking.stop();
+		} else if ('mouseup' === type) {
+			blinking.start();
+		} else if ('keydown' === type) {
+			blinking.restart();
+		}
+	}
+
+	function positionAtEvent(event) {
+		if (!event.target.ownerDocument) {
+			return null;
+		}
+		var range;
+		// Because drag positions are calculated with an offset
+		if (Mouse.EVENTS[event.type] && 'dragover' !== event.type) {
+			range = Ranges.fromPosition(
+				event.nativeEvent.clientX,
+				event.nativeEvent.clientY,
+				event.target.ownerDocument
+			);
+		}
+		if (!range) {
+			range = event.range || Ranges.get(event.target.ownerDocument);
+		}
+		return range;
+	}
+
 	/**
-	 * Renders a caret element to show the user selection.
+	 * Requires:
+	 * 		type
+	 * 		editor
+	 * Provides:
+	 * 		range
 	 *
 	 * @param  {AlohaEvent} event
 	 * @return {AlohaEvent}
 	 */
 	function handle(event) {
-		if (!event.editable || !handlers[event.type]) {
+		if (!handlers[event.type]) {
 			return event;
 		}
 
-		var context;
 		var old = event.editor.selectionContext;
+
+		// Because otherwise, if, if we are in the process of a click, and the
+		// user's cursor is over the caret element, Ranges.fromPosition() will
+		// compute the range to be inside the absolutely positioned caret
+		// element
+		if ('mousedown' === event.type) {
+			Dom.setStyle(old.caret, 'display', 'none');
 
 		// Because we will never update the caret position on mousemove, we
 		// avoid unncessary computation
-		if ('mousemove' === event.type) {
-			context = event.editor.selectionContext = newContext(event, old);
+		} else if ('mousemove' === event.type) {
+			event.editor.selectionContext = newContext(event, old);
 
 			// Because we want to move the caret out of the way when the user
 			// starts creating an expanded selection by dragging
-			if (!old.dragging && context.dragging) {
-				Dom.setStyle(context.caret, 'display', 'none');
-				context.blinking.stop();
+			if (!old.dragging && event.editor.selectionContext.dragging) {
+				Dom.setStyle(old.caret, 'display', 'none');
+				old.blinking.stop();
 			}
 
 			return event;
 		}
 
-		if ('mousedown' === event.type) {
+		var position = positionAtEvent(event);
+
+		if (!position) {
 			old.blinking.stop();
-		} else if ('mouseup' === event.type) {
-			old.blinking.start();
-		} else if ('keydown' === event.type) {
-			old.blinking.restart();
-		}
-
-		// Because otherwise, if, in the process of a click, and the user's
-		// cursor is over the caret, fromEvent() will compute the range to be
-		// inside the absolutely positioned caret element
-		Dom.setStyle(old.caret, 'display', 'none');
-
-		var range = fromEvent(event);
-
-		if (!range) {
 			return event;
 		}
 
+		toggleBlinking(old.blinking, event.type);
+
 		var type = normalizeEventType(
 			event,
-			range,
+			position,
 			old.range,
 			old.focus,
 			old.time,
@@ -801,10 +806,10 @@ define([
 			old.tripleclicking
 		);
 
-		context = newContext(event, old, process(
+		var context = newContext(event, old, process(
 			event,
 			type,
-			range,
+			position,
 			old.focus,
 			old.range,
 			old.dragging || Events.hasKeyModifier(event, 'shift')
@@ -812,9 +817,7 @@ define([
 
 		event.editor.selectionContext = context;
 
-		range = context.range;
-
-		if (!Dom.isEditableNode(range.commonAncestorContainer)) {
+		if (!Dom.isEditableNode(context.range.commonAncestorContainer)) {
 			return event;
 		}
 
@@ -822,7 +825,7 @@ define([
 				|| (event.editor.CARET_CLASS === event.nativeEvent.target.className);
 
 		if (preventDefault) {
-			event.nativeEvent.preventDefault();
+			Events.preventDefault(event.nativeEvent);
 		}
 
 		// Because browsers have a non-intuitive way of handling expanding of
@@ -830,14 +833,12 @@ define([
 		// browser by setting the selection to a range which will cause the the
 		// expansion to be done in the way that the user expects
 		if (!preventDefault && 'mousedown' === type && Events.hasKeyModifier(event, 'shift')) {
-			if ('start' === context.focus) {
-				range = Ranges.collapseToEnd(range);
-			} else {
-				range = Ranges.collapseToStart(range);
-			}
+			event.range = ('start' === context.focus)
+			            ? Ranges.collapseToEnd(context.range)
+			            : Ranges.collapseToStart(context.range);
+		} else {
+			event.range = context.range;
 		}
-
-		event.range = range;
 
 		return event;
 	}
@@ -860,7 +861,7 @@ define([
 		if (Keys.ARROWS[event.which]) {
 			return true;
 		}
-		if (Keys.CODES['undo'] == event.which) {
+		if (Keys.CODES['undo'] === event.which) {
 			if ('meta' === event.meta || 'ctrl' === event.meta || 'shift' === event.meta) {
 				return true;
 			}
@@ -880,6 +881,10 @@ define([
 		}
 		var boundaries = Boundaries.fromRange(context.range);
 		var focus = boundaries[('start' === context.focus) ? 0 : 1];
+		if (!Dom.isEditableNode(Boundaries.container(focus))) {
+			Dom.setStyle(context.caret, 'display', 'none');
+			return;
+		}
 		show(context.caret, focus);
 		Maps.extend(context.caret.style, stylesFromOverrides(mapOverrides(
 			context.formatting,
@@ -887,7 +892,7 @@ define([
 			Boundaries.container(focus)
 		)));
 		Boundaries.select(boundaries[0], boundaries[1]);
-		if (isCaretMovingEvent(event)) {
+		if (event.editable && isCaretMovingEvent(event)) {
 			ensureInViewport(focus);
 		}
 	}

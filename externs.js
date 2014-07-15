@@ -19,6 +19,11 @@ var opts = {
 	isReusable     : function () {}
 };
 
+var Settings = {
+	defaultBlockNodeName: ''
+	defaultBlock: ''
+};
+
 // Undo
 var change = {
 	type    : '',
@@ -70,15 +75,13 @@ var MutationObserver = {
 };
 
 var alohaEvent = {
-	chr         : '',
-	type        : '',
-	meta        : '',
-	which       : '',
-	range       : null,
+	nativeEvent : null,
 	editor      : null,
 	editable    : null,
-	nativeEvent : null,
-	isTextInput : false
+	range       : null,
+	type        : '',
+	meta        : '',
+	keycode     : ''
 };
 
 var Boromir = {
@@ -131,24 +134,24 @@ var DelayedMap = {
 };
 
 var editable = {
-	selectContext : null,
-	undoContext   : null,
-	overrides     : [],
-	dndContext    : {
-		observer     : null,
-		frame        : {},
-		elem         : null,
-		stack        : [],
-		history      : [],
-		historyIndex : 0,
-		opts         : {
-			disconnect     : function () {},
-			observeAll     : function () {},
-			takeChanges    : function () {},
-			discardChanges : function () {}
-		}
-	}
+	undoContext : null,
+	overrides   : [],
 };
+
+var undoContext = {
+	observer     : null,
+	frame        : {},
+	elem         : null,
+	stack        : [],
+	history      : [],
+	historyIndex : 0,
+	opts         : {
+		disconnect     : function () {},
+		observeAll     : function () {},
+		takeChanges    : function () {},
+		discardChanges : function () {}
+	}
+}
 
 var SelectionContext = {
 	caret          : null,
@@ -162,12 +165,20 @@ var SelectionContext = {
 	overrides      : []
 };
 
+var dndContext = {
+	dropEffect : '',
+	element    : null,
+	target     : null,
+	data       : []
+};
+
 var editor = {
 	stack            : [],
 	editables        : {},
 	BLOCK_CLASS      : '',
 	CARET_CLASS      : '',
 	selectionContext : null
+	dndContext       : null
 };
 
 var action = {

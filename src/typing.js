@@ -9,10 +9,10 @@ define([
 	'dom',
 	'keys',
 	'html',
-	'maps',
 	'undo',
 	'ranges',
 	'editing',
+	'strings',
 	'mutation',
 	'traversing',
 	'boundaries',
@@ -22,10 +22,10 @@ define([
 	Dom,
 	Keys,
 	Html,
-	Maps,
 	Undo,
 	Ranges,
 	Editing,
+	Strings,
 	Mutation,
 	Traversing,
 	Boundaries,
@@ -103,7 +103,7 @@ define([
 	function insertText(event) {
 		var editable = event.editable;
 		var range = event.range;
-		var text = event.chr;
+		var text = String.fromCharCode(event.keycode);
 		var boundary = Boundaries.fromRangeStart(range);
 
 		if ('\t' === text) {
@@ -158,6 +158,23 @@ define([
 			);
 		}
 		return event.range;
+	}
+
+	/**
+	 * Whether or not the given event represents a text input.
+	 *
+	 * @see
+	 * https://lists.webkit.org/pipermail/webkit-dev/2007-December/002992.html
+	 *
+	 * @private
+	 * @param  {AlohaEvent} event
+	 * @return {boolean}
+	 */
+	function isTextInput(event) {
+		return 'keypress' === event.type
+		    && 'alt' !== event.meta
+			&& 'ctrl' !== event.meta
+		    && !Strings.isControlCharacter(String.fromCharCode(event.keycode));
 	}
 
 	var deleteBackward = {
@@ -277,10 +294,16 @@ define([
 	function handler(event) {
 		var modifier = event.meta ? event.meta + '+' : '';
 		return (handlers[event.type]
-		    && handlers[event.type][modifier + event.which])
-		    || (event.isTextInput && handlers['keypress']['input']);
+		    && handlers[event.type][modifier + event.keycode])
+		    || (isTextInput(event) && handlers['keypress']['input']);
 	}
 
+	/**
+	 * Updates:
+	 * 		range
+	 * 		editor.selectionContext
+	 * 		nativeEvent
+	 */
 	function handle(event) {
 		if (!event.editable) {
 			return event;

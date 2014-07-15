@@ -15,10 +15,9 @@ define([
 	'arrays',
 	'content',
 	'boundaries',
-	'overrides',
 	'functions',
 	'browsers'
-], function HtmlMutation(
+], function (
 	Elements,
 	Styles,
 	Traversing,
@@ -28,7 +27,6 @@ define([
 	Arrays,
 	Content,
 	Boundaries,
-	Overrides,
 	Fn,
 	Browsers
 ) {

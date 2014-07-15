@@ -39,49 +39,30 @@ define([
 	var doc = document;
 	var win = Dom.documentWindow(doc);
 
-	/**
-	 * Adds 'type', 'range', and 'editable' to the given Aloha Event now, if
-	 * possible.
-	 *
-	 * @private
-	 * @param  {AlohaEvent} event
-	 * @return {AlohaEvent}
-	 */
-	function handle(event) {
-		if (!event.nativeEvent) {
-			return event;
-		}
-		event['type'] = event.nativeEvent.type;
-		var src = event.nativeEvent.target || event.nativeEvent.srcElement;
-		var doc = src && (src.ownerDocument || src.document);
-		if (!doc) {
-			return event;
-		}
-		var range = Ranges.get(doc);
-		if (!range) {
-			return event;
-		}
-		event.range = range;
-		var editable = Editables.fromBoundary(
-			event.editor,
-			Boundaries.fromRangeStart(range)
-		);
-		if (editable) {
-			event.editable = editable;
-		}
-		return event;
+	function AlohaEvent() {
+		return {
+			nativeEvent : null,
+			editor      : null,
+			editable    : null,
+			range       : null,
+			type        : '',
+			meta        : '',
+			keycode     : ''
+		};
 	}
 
 	function editor(nativeEvent, custom) {
 		var event = custom || {nativeEvent : nativeEvent};
 		event.editor = editor;
-		Selections.select(Fn.comp.apply(editor.stack, editor.stack)(handle(event)));
+		event.type = event.type || (nativeEvent && nativeEvent.type) || 'unknown';
+		Selections.select(Fn.comp.apply(editor.stack, editor.stack)(event));
 	}
 
-	editor.editables = {};
 	editor.BLOCK_CLASS = 'aloha-block';
 	editor.CARET_CLASS = 'aloha-caret';
 	editor.selectionContext = Selections.Context(doc);
+	editor.dndContext = null;
+	editor.editables = {};
 	editor.stack = [
 		Selections.handle,
 		Typing.handle,
@@ -100,21 +81,14 @@ define([
 	 * The Aloha Editor namespace root.
 	 *
 	 * Also serves as short aloha.aloha.
+	 *
+	 * @param  {Element} element
 	 */
-	function aloha(elem) {
-		var editable = Editables.Editable(elem);
-		Dom.setStyle(elem, 'cursor', 'text');
-		editable.settings = {
-			defaultBlockNodeName: 'p'
-		};
-		Editables.assocIntoEditor(editor, editable);
-		Undo.enter(editable['undoContext'], {
-			meta             : {type: 'external'},
-			partitionRecords : true
-		});
+	function aloha(element) {
 		editor(null, {
-			type     : 'aloha',
-			editable : editable
+			type         : 'aloha',
+			element      : element,
+			defaultBlock : 'p'
 		});
 	}
 

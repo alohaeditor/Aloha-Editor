@@ -11,7 +11,7 @@ define([
 	'dom',
 	'cursors',
 	'strings'
-], function HtmlElements(
+], function (
 	Styles,
 	Predicates,
 	Dom,

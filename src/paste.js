@@ -17,9 +17,7 @@ define([
 	'mutation',
 	'transform',
 	'boundaries',
-	'selections',
-	'transform/ms-word',
-	'functions'
+	'transform/ms-word'
 ], function (
 	Dom,
 	Html,
@@ -32,9 +30,7 @@ define([
 	Mutation,
 	Transform,
 	Boundaries,
-	Selections,
-	WordTransform,
-	Fn
+	WordTransform
 ) {
 	'use strict';
 
@@ -53,11 +49,12 @@ define([
 	 * Checks if the given event is a Paste Event.
 	 *
 	 * @private
-	 * @param  {Event} event
+	 * @param  {AlohaEvent} event
 	 * @return {boolean}
 	 */
 	function isPasteEvent(event) {
-		return event.type === 'paste' || event.clipboardData !== undefined;
+		return 'paste' === event.type
+		    || (event.nativeEvent && event.nativeEvent.clipboardData !== undefined);
 	}
 
 	/**
@@ -189,34 +186,37 @@ define([
 	/**
 	 * Handles and processes paste events.
 	 *
-	 * @param  {AlohaEvent} alohaEvent
+	 * Updates:
+	 * 		range
+	 * 		nativeEvent
+	 *
+	 * @param  {AlohaEvent} event
 	 * @return {AlohaEvent}
 	 */
-	function handle(alohaEvent) {
-		var event = alohaEvent.nativeEvent;
-		if (!event || !isPasteEvent(event)) {
-			return alohaEvent;
+	function handle(event) {
+		if (!event.editable || !isPasteEvent(event)) {
+			return event;
 		}
-		Events.suppress(event);
-		var src = event.target || event.srcElement;
+		Events.suppress(event.nativeEvent);
+		var src = event.nativeEvent.target || event.nativeEvent.srcElement;
 		var boundaries = Boundaries.get(src.ownerDocument);
 		if (!boundaries) {
-			return alohaEvent;
+			return event;
 		}
 		var content = extractContent(
-			event,
-			alohaEvent.editable['elem'].ownerDocument
+			event.nativeEvent,
+			event.editable['elem'].ownerDocument
 		);
 		if (!content) {
-			return alohaEvent;
+			return event;
 		}
-		Undo.capture(alohaEvent.editable['undoContext'], {
+		Undo.capture(event.editable['undoContext'], {
 			meta: {type: 'paste'}
 		}, function () {
 			var boundary = insert(boundaries[0], boundaries[1], content);
-			alohaEvent.range = Ranges.fromBoundaries(boundary, boundary);
+			event.range = Ranges.fromBoundaries(boundary, boundary);
 		});
-		return alohaEvent;
+		return event;
 	}
 
 	return {

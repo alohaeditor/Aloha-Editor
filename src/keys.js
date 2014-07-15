@@ -11,17 +11,7 @@
  * @todo:
  * consider https://github.com/nostrademons/keycode.js/blob/master/keycode.js
  */
-define([
-	'ranges',
-	'strings',
-	'editables',
-	'boundaries'
-], function (
-	Ranges,
-	Strings,
-	Editables,
-	Boundaries
-) {
+define(['strings', 'ranges'], function (Strings, Ranges) {
 	'use strict';
 
 	/**
@@ -66,21 +56,6 @@ define([
 	};
 
 	/**
-	 * Whether or not the given event represents a text input.
-	 *
-	 * @see
-	 * https://lists.webkit.org/pipermail/webkit-dev/2007-December/002992.html
-	 *
-	 * @private
-	 * @param  {Event} event Native event object
-	 * @return {boolean}
-	 */
-	function isTextInput(event) {
-		return 'keypress' === event.type && !event.altKey && !event.ctrlKey
-		    && !Strings.isControlCharacter(String.fromCharCode(event.which));
-	}
-
-	/**
 	 * Returns a string of all meta keys for the given event.
 	 *
 	 * @private
@@ -110,18 +85,26 @@ define([
 		'keypress' : true
 	};
 
-	function handle(alohaEvent) {
-		var event = alohaEvent.nativeEvent;
-		if (!event) {
-			return alohaEvent;
+	/**
+	 * Requires:
+	 *		type
+	 * Provides:
+	 * 		meta
+	 * 		keycode
+	 */
+	function handle(event) {
+		if (event.nativeEvent) {
+			event.meta = metaKeys(event.nativeEvent);
+			if (EVENTS[event.type]) {
+				event.keycode = event.nativeEvent.which;
+				if (!event.range) {
+					event.range = Ranges.get((
+						event.nativeEvent.target || event.nativeEvent.srcElement
+					).ownerDocument);
+				}
+			}
 		}
-		alohaEvent['meta'] = metaKeys(event);
-		if (EVENTS[alohaEvent.type]) {
-			alohaEvent['which'] = event.which;
-			alohaEvent['isTextInput'] = isTextInput(event);
-			alohaEvent['chr'] = String.fromCharCode(event.which);
-		}
-		return alohaEvent;
+		return event;
 	}
 
 	return {

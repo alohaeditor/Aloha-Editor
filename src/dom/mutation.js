@@ -9,7 +9,7 @@ define([
 	'dom/nodes',
 	'functions',
 	'arrays'
-], function DomMutation(
+], function (
 	Nodes,
 	Fn,
 	Arrays

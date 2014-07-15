@@ -6,11 +6,11 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
-	'arrays',
-	'misc'
-], function DomNodes(
-	Arrays,
-	Misc
+	'misc',
+	'arrays'
+], function (
+	Misc,
+	Arrays
 ) {
 	'use strict';
 
