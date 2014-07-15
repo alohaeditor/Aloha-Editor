@@ -1121,7 +1121,7 @@ define([
 	 * @param {!Range} liveRange The range of the current selection.
 	 * @param {string} nodeName The name of the tag that should serve as the
 	 *                          wrapping node.
-	 * @param {boolean} remove Optional flag, which when set to false will cause
+	 * @param {boolean} remove Optional flag, which when set to true will cause
 	 *                         the given markup to be removed (unwrapped) rather
 	 *                         then set.
 	 * @param {?Object} opts A map of options (all optional):
@@ -1148,6 +1148,27 @@ define([
 			mutate(range, formatter);
 			return formatter;
 		});
+	}
+
+	/**
+	 * Unformats the selection defined by start and end boundary,
+	 * by removing the wrapper node (eg. 'b', 'i', 'em').
+	 *
+	 * @see wrapElem
+	 * @param {string} nodeName
+	 * @param {Boundary} start
+	 * @param {Boundary} end
+	 * @param {?Object} opts A map of options (all optional):
+	 *        createWrapper - a function that returns a new empty
+	 *        wrapper node to use.
+	 *
+	 *        isReusable - a function that returns true if a given node,
+	 *        already in the DOM at the correct place, can be reused
+	 *        instead of creating a new wrapper node. May be merged with
+	 *        other reusable or newly created wrapper nodes.
+	 */
+	function unFormat(nodeName, start, end, opts) {
+		return wrapElem(nodeName, start, end, true, opts);
 	}
 
 	/**
@@ -1528,6 +1549,7 @@ define([
 	return {
 		wrap      : wrapElem,
 		format    : format,
+		unFormat  : unFormat,
 		style     : style,
 		split     : split,
 		remove    : remove,

@@ -82,7 +82,11 @@ define([
 			}
 			return event.range;
 		}
-		boundaries = Editing.format(style, boundaries[0], boundaries[1]);
+		if (!Boundaries.isBoundaryInsideNode(boundaries[0], style)) {
+			boundaries = Editing.format(style, boundaries[0], boundaries[1]);
+		} else {
+			boundaries = Editing.unFormat(style, boundaries[0], boundaries[1]);
+		}
 		return Ranges.fromBoundaries(boundaries[0], boundaries[1]);
 	}
 
