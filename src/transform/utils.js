@@ -141,6 +141,9 @@ define([
 	 */
 	function cleanNode(node, clean) {
 		return clean(node).reduce(function (nodes, node) {
+			if (isBlacklisted(node) || !isRendered(node)) {
+				return nodes;
+			}
 			var children = cleanNodes(Dom.children(node), clean, cleanNode);
 			if ('DIV' === node.nodeName) {
 				children = wrapSublists(

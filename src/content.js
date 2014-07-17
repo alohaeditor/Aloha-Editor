@@ -130,6 +130,7 @@ define([], function () {
 		'H4'                 : '_PHRASING_',
 		'H5'                 : '_PHRASING_',
 		'H6'                 : '_PHRASING_',
+		'HEAD'               : '_META_DATA_',
 		'HEADER'             : '_FLOW_',
 		'HGROUP'             : HGROUP_CHILDREN,
 		'HR'                 : '_EMPTY_',

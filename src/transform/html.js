@@ -220,9 +220,9 @@ define([
 	 * @return {string}
 	 */
 	function transform(markup, doc) {
-		var raw = Html.parse(Utils.extract(markup), doc);
-		var fragment = Utils.normalize(raw, clean);
-		return Dom.children(fragment)[0].innerHTML;
+		var fragment = doc.createDocumentFragment();
+		Dom.move(Dom.children(Html.parse(Utils.extract(markup), doc)),fragment);
+		return Dom.outerHtml(Utils.normalize(fragment, clean));
 	}
 
 	return {

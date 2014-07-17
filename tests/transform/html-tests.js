@@ -69,7 +69,7 @@
 		// Normalize illegal dom structure
 		t(
 			'<h1>One</h1> <strong><div><b><div><span>and</span> a half</div></b></div></strong><h2>Two</h2>Three',
-			'<h1>One</h1><p>and a half</p><h2>Two</h2><p>Three</p>'
+			'<h1>One</h1><p>and a half</p><h2>Two</h2>Three'
 		);
 
 		return;

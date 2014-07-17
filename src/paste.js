@@ -198,15 +198,12 @@ define([
 			return event;
 		}
 		Events.suppress(event.nativeEvent);
-		var src = event.nativeEvent.target || event.nativeEvent.srcElement;
-		var boundaries = Boundaries.get(src.ownerDocument);
+		var doc = event.target.ownerDocument;
+		var boundaries = Boundaries.get(doc);
 		if (!boundaries) {
 			return event;
 		}
-		var content = extractContent(
-			event.nativeEvent,
-			event.editable['elem'].ownerDocument
-		);
+		var content = extractContent(event.nativeEvent, doc);
 		if (!content) {
 			return event;
 		}
