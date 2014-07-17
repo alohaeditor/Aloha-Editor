@@ -817,7 +817,7 @@ define([
 
 		event.editor.selectionContext = context;
 
-		if (!Dom.isEditableNode(context.range.commonAncestorContainer)) {
+		if (!event.editable || !Dom.isEditableNode(context.range.commonAncestorContainer)) {
 			return event;
 		}
 
