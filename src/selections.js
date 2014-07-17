@@ -640,6 +640,9 @@ define([
 		case 'mousemove':
 			context.dragging = old.mousedown;
 			break;
+		case 'drop':
+			context.dragging = false;
+			break;
 		}
 		return context;
 	}
