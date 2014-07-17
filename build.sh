@@ -18,8 +18,22 @@ function help {
 	"
 }
 
+dot=" \e[0;32m•\e[0m"
+tick=" \e[0;32m✔\e[0m"
+
 function build {
+	if [ -d $pwd/build ]; then
+		printf "$dot Removing old $pwd/build...\n"
+		rm -r $pwd/build
+	fi
+
+	printf "$dot Creating new $pwd/build...\n"
+	mkdir $pwd/build
+
 	cd $src
+
+	printf "$dot Hang on...\n"
+
 	find ./ -name "*.js" | \
 		grep -v require-pronto.js | \
 		grep -v require-pronto.dev.js | \
@@ -33,12 +47,16 @@ function build {
 			--only_closure_dependencies \
 			--externs ../externs.js \
 			$sourcemap \
-		> $wd/$target
+		> $pwd/build/$target
 
 	if [[ -n $sourcemap ]]; then
-		echo -e "\n//# sourceMappingURL=aloha.js.map" >> $wd/$target
-		cp -r $wd/src/* $wd/build
+		echo -e "\n//# sourceMappingURL=aloha.js.map" >> $pwd/build/$target
+		cp -r $pwd/src/* $pwd/build
+		printf "$tick Source maps placed in $pwd/build.\n"
 	fi
+
+	printf "$tick Building is complete.\n"
+
 }
 
 if [ -f .env ]; then
@@ -47,10 +65,10 @@ fi
 
 if [[ $args == "" ]]; then
 	help
-	exit
+	exit 1
 fi
 
-wd=$(pwd)
+pwd=$(pwd)
 
 if [[ $args =~ "--source-map" ]]; then
 	sourcemap="--create_source_map ../build/aloha.js.map --source_map_format=V3"
@@ -61,17 +79,19 @@ fi
 if [[ $args =~ "--advanced" ]]; then
 	src=src
 	entry="--common_js_entry_module=aloha"
-	target=build/aloha.min.js
+	target=aloha.min.js
 	optimization=ADVANCED_OPTIMIZATIONS
+	printf "$dot Building with advanced optimizations...\n"
 	build
-	exit
+	exit 1
 elif [[ $args =~ "--simple" ]]; then
 	src=src
 	entry="--common_js_entry_module=aloha"
-	target=build/aloha.min.js
+	target=aloha.min.js
 	optimization=SIMPLE_OPTIMIZATIONS
+	printf "$dot Building with simple optimizations...\n"
 	build
-	exit
+	exit 1
 fi
 
 if [[ $args =~ "-s=" ]]; then
@@ -82,12 +102,12 @@ fi
 
 if [[ $args =~ "-e=" ]]; then
 	entry=$(sed 's/^.*-e=\([^ ]\+\).*$/\1/' <<<"$args")
-	if [ -f $wd"/"$src"/"$entry".js" ]; then
+	if [ -f $pwd"/"$src"/"$entry".js" ]; then
 		echo ""
 	else
-		echo -e "\n\tFile '$wd/$src/$entry.js' for entry module does not exist"
+		echo -e "\n\tFile '$pwd/$src/$entry.js' for entry module does not exist"
 		help
-		exit
+		exit 1
 	fi
 	entry="--common_js_entry_module=$entry"
 fi

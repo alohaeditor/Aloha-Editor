@@ -20,7 +20,7 @@ var opts = {
 };
 
 var Settings = {
-	defaultBlockNodeName: ''
+	defaultBlockNodeName: '',
 	defaultBlock: ''
 };
 
@@ -177,7 +177,7 @@ var editor = {
 	editables        : {},
 	BLOCK_CLASS      : '',
 	CARET_CLASS      : '',
-	selectionContext : null
+	selectionContext : null,
 	dndContext       : null
 };
 
