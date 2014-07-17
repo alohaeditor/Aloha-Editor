@@ -796,6 +796,13 @@ define([
 
 		toggleBlinking(old.blinking, event.type);
 
+		if (!event.editable) {
+			event.editor.selectionContext = newContext(event, old, {
+				range: position
+			});
+			return event;
+		}
+
 		var type = normalizeEventType(
 			event,
 			position,
@@ -817,7 +824,7 @@ define([
 
 		event.editor.selectionContext = context;
 
-		if (!event.editable || !Dom.isEditableNode(context.range.commonAncestorContainer)) {
+		if (!Dom.isEditableNode(context.range.commonAncestorContainer)) {
 			return event;
 		}
 
