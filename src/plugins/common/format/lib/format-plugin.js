@@ -607,7 +607,6 @@ define('format/format-plugin', [
 				var createAdder = function (tagname) {
 					if (isFormatAllowed(tagname, me, editable)) {
 						return function addFormat() {
-							console.warn(tagname);
 							me.addMarkup(tagname);
 							return false;
 						};
