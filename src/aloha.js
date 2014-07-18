@@ -2,7 +2,6 @@
 define([
 	'api',
 	'dom',
-	'boundaries',
 	'blocks',
 	'dragdrop',
 	'editables',
@@ -12,14 +11,11 @@ define([
 	'maps',
 	'mouse',
 	'paste',
-	'ranges',
 	'selections',
-	'typing',
-	'undo'
+	'typing'
 ], function (
 	Api,
 	Dom,
-	Boundaries,
 	Blocks,
 	DragDrop,
 	Editables,
@@ -29,27 +25,13 @@ define([
 	Maps,
 	Mouse,
 	Paste,
-	Ranges,
 	Selections,
-	Typing,
-	Undo
+	Typing
 ) {
 	'use strict';
 
 	var doc = document;
 	var win = Dom.documentWindow(doc);
-
-	function AlohaEvent() {
-		return {
-			nativeEvent : null,
-			editor      : null,
-			editable    : null,
-			range       : null,
-			type        : '',
-			meta        : '',
-			keycode     : ''
-		};
-	}
 
 	function editor(nativeEvent, custom) {
 		var event = custom || {nativeEvent : nativeEvent};
@@ -106,6 +88,7 @@ define([
 	Api['aloha'] = aloha;
 	Api['mahalo'] = mahalo;
 	Api['editor'] = editor;
+	Api['buildcommit'] = '%buildcommit%';
 
 	win['aloha'] = aloha = Maps.extend(aloha, Api);
 

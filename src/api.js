@@ -86,8 +86,6 @@ define([
 ) {
 	'use strict';
 
-	// :%s/\s\+\([a-zA-Z-0-9_]\+\)\(\s\+\)\: /\texports['__']['\1']\2= XX./g
-
 	var exports = {};
 
 	exports['Boromir'] = Boromir;

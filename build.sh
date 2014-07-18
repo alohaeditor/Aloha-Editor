@@ -1,5 +1,3 @@
-args=$*
-
 function help {
 	echo -e "
 \t--s\tSource directory
@@ -18,8 +16,11 @@ function help {
 	"
 }
 
+args=$*
+pwd=$(pwd)
 dot=" \e[0;32m•\e[0m"
 tick=" \e[0;32m✔\e[0m"
+ish=$(echo "https:\/\/github.com\/alohaeditor\/Aloha-Editor\/tree\/$(git rev-parse HEAD)")
 
 function build {
 	if [ -d $pwd/build ]; then
@@ -29,17 +30,17 @@ function build {
 
 	printf "$dot Creating new $pwd/build...\n"
 	mkdir $pwd/build
-
 	cd $src
-
 	printf "$dot Hang on...\n"
+	versioned=$entry.versioned
+	sed s/%buildcommit%/$ish/ <(cat $entry.js) > $versioned.js
 
 	find ./ -name "*.js" | \
 		grep -v require-pronto.js | \
 		grep -v require-pronto.dev.js | \
 		xargs java -jar $CLOSURE_PATH/compiler.jar \
 			--compilation_level=$optimization \
-			$entry \
+			--common_js_entry_module=$versioned \
 			--manage_closure_dependencies \
 			--process_common_js_modules \
 			--transform_amd_modules \
@@ -49,6 +50,8 @@ function build {
 			$sourcemap \
 		> $pwd/build/$target
 
+	rm $versioned.js
+
 	if [[ -n $sourcemap ]]; then
 		echo -e "\n//# sourceMappingURL=aloha.js.map" >> $pwd/build/$target
 		cp -r $pwd/src/* $pwd/build
@@ -56,7 +59,6 @@ function build {
 	fi
 
 	printf "$tick Building is complete.\n"
-
 }
 
 if [ -f .env ]; then
@@ -68,8 +70,6 @@ if [[ $args == "" ]]; then
 	exit 1
 fi
 
-pwd=$(pwd)
-
 if [[ $args =~ "--source-map" ]]; then
 	sourcemap="--create_source_map ../build/aloha.js.map --source_map_format=V3"
 else
@@ -78,7 +78,7 @@ fi
 
 if [[ $args =~ "--advanced" ]]; then
 	src=src
-	entry="--common_js_entry_module=aloha"
+	entry=aloha
 	target=aloha.min.js
 	optimization=ADVANCED_OPTIMIZATIONS
 	printf "$dot Building with advanced optimizations...\n"
@@ -86,7 +86,7 @@ if [[ $args =~ "--advanced" ]]; then
 	exit 1
 elif [[ $args =~ "--simple" ]]; then
 	src=src
-	entry="--common_js_entry_module=aloha"
+	entry=aloha
 	target=aloha.min.js
 	optimization=SIMPLE_OPTIMIZATIONS
 	printf "$dot Building with simple optimizations...\n"
@@ -102,14 +102,13 @@ fi
 
 if [[ $args =~ "-e=" ]]; then
 	entry=$(sed 's/^.*-e=\([^ ]\+\).*$/\1/' <<<"$args")
-	if [ -f $pwd"/"$src"/"$entry".js" ]; then
+	if [ -f $pwd/$src/$entry".js" ]; then
 		echo ""
 	else
 		echo -e "\n\tFile '$pwd/$src/$entry.js' for entry module does not exist"
 		help
 		exit 1
 	fi
-	entry="--common_js_entry_module=$entry"
 fi
 
 if [[ $args =~ "-t=" ]]; then
