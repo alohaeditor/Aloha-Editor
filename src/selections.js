@@ -319,7 +319,7 @@ define([
 	 * @return {Object}
 	 */
 	function keydown(event, range, focus) {
-		return (movements[event.which] || keypress)(event, range, focus);
+		return (movements[event.keycode] || keypress)(event, range, focus);
 	}
 
 	/**
@@ -831,7 +831,7 @@ define([
 			return event;
 		}
 
-		var preventDefault = ('keydown' === type && movements[event.which])
+		var preventDefault = ('keydown' === type && movements[event.keycode])
 				|| (event.editor.CARET_CLASS === event.nativeEvent.target.className);
 
 		if (preventDefault) {
@@ -868,10 +868,10 @@ define([
 		if ('paste' === event.type) {
 			return true;
 		}
-		if (Keys.ARROWS[event.which]) {
+		if (Keys.ARROWS[event.keycode]) {
 			return true;
 		}
-		if (Keys.CODES['undo'] === event.which) {
+		if (Keys.CODES['undo'] === event.keycode) {
 			if ('meta' === event.meta || 'ctrl' === event.meta || 'shift' === event.meta) {
 				return true;
 			}
