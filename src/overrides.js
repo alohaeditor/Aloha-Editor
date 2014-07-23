@@ -24,14 +24,14 @@ define([
 	'dom',
 	'misc',
 	'maps',
-	'boromir',
+	'html',
 	'mutation',
 	'boundaries'
 ], function (
 	Dom,
 	Misc,
 	Maps,
-	Boromir,
+	Html,
 	Mutation,
 	Boundaries
 ) {
@@ -95,7 +95,6 @@ define([
 	 *
 	 * @private
 	 * @type {Object.<string, string>}
-	 */
 	var valueToStyle = {
 		'hilitecolor' : 'background-color',
 		'backcolor'   : 'background-color',
@@ -103,6 +102,7 @@ define([
 		'fontsize'    : 'font-size',
 		'fontcolor'   : 'color'
 	};
+	 */
 
 	/**
 	 * List of styles that can be affected through overrides.
@@ -212,8 +212,8 @@ define([
 	 * @return {Array.<Override>}
 	 */
 	function harvest(node, until) {
-		var stack = [];
 		var nodes = Dom.childAndParentsUntil(node, until || Dom.isEditingHost);
+		var stack = [];
 		var map = {};
 		var i = nodes.length;
 		var j;
@@ -277,6 +277,10 @@ define([
 		boundary = Mutation.splitBoundaryUntil(boundary, function (boundary) {
 			return Boundaries.container(boundary) === limit;
 		});
+		var nextNode = Boundaries.nextNode(boundary);
+		if (Html.isUnrendered(nextNode)) {
+			Dom.remove(nextNode);
+		}
 		return consume(boundary, overrides);
 	}
 

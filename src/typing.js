@@ -38,7 +38,7 @@ define([
 
 	function undoable(type, event, fn) {
 		var range = event.range;
-		Undo.capture(event.editable['undoContext'], {
+		Undo.capture(event.editable.undoContext, {
 			meta: {type: type},
 			oldRange: range
 		}, function () {
@@ -103,8 +103,8 @@ define([
 	}
 
 	function insertText(event) {
-		var editable = event.editable;
 		var range = event.range;
+		var editable = event.editable;
 		var text = String.fromCharCode(event.keycode);
 		var boundary = Boundaries.fromRangeStart(range);
 
@@ -113,11 +113,10 @@ define([
 		}
 
 		if (' ' === text) {
-			var elem = Dom.upWhile(
-				Boundaries.container(boundary),
-				Dom.isTextNode
+			var whiteSpaceStyle = Dom.getComputedStyle(
+				Dom.upWhile(Boundaries.container(boundary), Dom.isTextNode),
+				'white-space'
 			);
-			var whiteSpaceStyle = Dom.getComputedStyle(elem, 'white-space');
 			if (!Html.isWhiteSpacePreserveStyle(whiteSpaceStyle)) {
 				text = '\xa0';
 			}
@@ -129,16 +128,17 @@ define([
 				event.editor.selectionContext.overrides
 			)
 		);
+
 		event.editor.selectionContext.overrides = [];
 		event.editor.selectionContext.formatting = [];
 
 		Boundaries.setRange(range, boundary, boundary);
 
-		var insertPath = Undo.pathFromBoundary(editable['elem'], boundary);
-		var insertContent = [editable['elem'].ownerDocument.createTextNode(text)];
+		var insertPath = Undo.pathFromBoundary(editable.elem, boundary);
+		var insertContent = [editable.elem.ownerDocument.createTextNode(text)];
 		var change = Undo.makeInsertChange(insertPath, insertContent);
 
-		Undo.capture(editable['undoContext'], {noObserve: true}, function () {
+		Undo.capture(editable.undoContext, {noObserve: true}, function () {
 			Mutation.insertTextAtBoundary(text, boundary, true, [range]);
 			return {changes: [change]};
 		});
@@ -147,7 +147,7 @@ define([
 	}
 
 	function toggleUndo(op, event) {
-		op(event.editable['undoContext'], event.range, [event.range]);
+		op(event.editable.undoContext, event.range, [event.range]);
 		return event.range;
 	}
 
