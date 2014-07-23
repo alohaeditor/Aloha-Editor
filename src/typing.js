@@ -13,6 +13,7 @@ define([
 	'ranges',
 	'editing',
 	'strings',
+	'metaview',
 	'mutation',
 	'traversing',
 	'boundaries',
@@ -26,6 +27,7 @@ define([
 	Ranges,
 	Editing,
 	Strings,
+	Metaview,
 	Mutation,
 	Traversing,
 	Boundaries,
@@ -288,6 +290,35 @@ define([
 	handlers['keydown']['ctrl+shift+' + Keys.CODES['undo']] =
 	handlers['keydown']['meta+shift+' + Keys.CODES['undo']] = redo;
 	handlers['keydown'][Keys.CODES['tab']] = inputText;
+
+	// alt+0
+	handlers['keydown']['alt+48'] = {mutate : function toggleUndo(event) {
+		if (event.editable) {
+			Metaview.toggle(event.editable.elem);
+		}
+		return event.range;
+	}};
+	// alt+1
+	handlers['keydown']['alt+49'] = {mutate : function toggleUndo(event) {
+		if (event.editable) {
+			Metaview.toggle(event.editable.elem, {
+				'outline': true,
+				'tagname': true
+			});
+		}
+		return event.range;
+	}};
+	// alt+2
+	handlers['keydown']['alt+50'] = {mutate : function toggleUndo(event) {
+		if (event.editable) {
+			Metaview.toggle(event.editable.elem, {
+				'outline': true,
+				'tagname': true,
+				'padding': true
+			});
+		}
+		return event.range;
+	}};
 
 	handlers['keypress']['input'] = inputText;
 

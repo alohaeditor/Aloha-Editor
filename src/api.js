@@ -32,6 +32,7 @@ define([
 	'links',
 	'lists',
 	'maps',
+	'metaview',
 	'mouse',
 	'mutation',
 	'overrides',
@@ -69,6 +70,7 @@ define([
 	Links,
 	Lists,
 	Maps,
+	Metaview,
 	Mouse,
 	Mutation,
 	Overrides,
@@ -411,6 +413,9 @@ define([
 	exports['maps']['cloneDelete'] = Maps.cloneDelete;
 	exports['maps']['create']      = Maps.create;
 	exports['maps']['mapTuples']   = Maps.mapTuples;
+
+	exports['metaview'] = Metaview;
+	exports['metaview']['toggle'] = Metaview.toggle;
 
 	exports['mouse'] = Mouse;
 	exports['mouse']['handle'] = Mouse.handle;

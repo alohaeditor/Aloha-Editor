@@ -64,14 +64,14 @@ define(['strings', 'ranges'], function (Strings, Ranges) {
 	 */
 	function metaKeys(event) {
 		var meta = [];
-		if (event.metaKey) {
-			meta.push('meta');
+		if (event.altKey && (CODES['alt'] !== event.which)) {
+			meta.push('alt');
 		}
 		if (event.ctrlKey && (CODES['ctrl'] !== event.which)) {
 			meta.push('ctrl');
 		}
-		if (event.altKey && (CODES['alt'] !== event.which)) {
-			meta.push('alt');
+		if (event.metaKey) {
+			meta.push('meta');
 		}
 		if (event.shiftKey && (CODES['shift'] !== event.which)) {
 			meta.push('shift');
