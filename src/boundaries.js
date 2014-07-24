@@ -614,6 +614,45 @@ define([
 		return range.commonAncestorContainer;
 	}
 
+	/**
+	 * Returns the parentNode which name is `nodeName`.
+	 * @param {Node} node
+	 * @param nodeName
+	 * @return {*}
+	 */
+	function closestParentWithNodeName(node, nodeName) {
+		return Dom.upWhile(node, function(n) {
+			return n.nodeName !== nodeName;
+		});
+	}
+
+	/**
+	 * Gets the node where `boundary` is pointing to.
+	 * @param {Boundary} boundary
+	 * @return {Node}
+	 */
+	function getTextNode(boundary) {
+		var cont = container(boundary);
+		var off = offset(boundary);
+
+		if (isNodeBoundary(boundary)) {
+			return cont.childNodes[off];
+		}
+		return cont;
+	}
+
+	/**
+	 * Checks if `boundary` is wrapped inside a node with nodeName equal to `nodeName`.
+	 * @param {Boundary} boundary
+	 * @param {string} nodeName
+	 * @return {boolean}
+	 */
+	function isBoundaryInsideNode(boundary, nodeName) {
+		return !!closestParentWithNodeName(
+			getTextNode(boundary),
+			nodeName);
+	}
+
 	return {
 		get                 : get,
 		select              : select,
@@ -667,6 +706,7 @@ define([
 
 		precedingTextLength : precedingTextLength,
 
-		commonContainer     : commonContainer
+		commonContainer     : commonContainer,
+		isBoundaryInsideNode: isBoundaryInsideNode
 	};
 });

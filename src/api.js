@@ -305,6 +305,7 @@ define([
 	exports['editing'] = Editing;
 	exports['editing']['wrap']      = Editing.wrap;
 	exports['editing']['format']    = Editing.format;
+	exports['editing']['unFormat']  = Editing.unFormat;
 	exports['editing']['style']     = Editing.style;
 	exports['editing']['split']     = Editing.split;
 	exports['editing']['remove']    = Editing.remove;

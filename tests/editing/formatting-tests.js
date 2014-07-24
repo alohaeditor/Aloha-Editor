@@ -34,7 +34,7 @@
 
 	function testUnformat(title, before, after) {
 		testMutation(title, before, after, function (dom, start, end) {
-			return Editing.wrap('B', start, end, true);
+			return Editing.unFormat('B', start, end);
 		});
 	}
 
