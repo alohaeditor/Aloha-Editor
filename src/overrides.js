@@ -277,11 +277,16 @@ define([
 		boundary = Mutation.splitBoundaryUntil(boundary, function (boundary) {
 			return Boundaries.container(boundary) === limit;
 		});
-		var nextNode = Boundaries.nextNode(boundary);
-		if (Html.isUnrendered(nextNode)) {
-			Dom.remove(nextNode);
+		var boundaries = [boundary];
+		var prevNode = Boundaries.prevNode(boundaries[0]);
+		if (Html.isUnrendered(prevNode)) {
+			boundaries = Mutation.removeNode(prevNode, boundaries);
 		}
-		return consume(boundary, overrides);
+		var nextNode = Boundaries.nextNode(boundaries[0]);
+		if (Html.isUnrendered(nextNode)) {
+			boundaries = Mutation.removeNode(nextNode, boundaries);
+		}
+		return consume(boundaries[0], overrides);
 	}
 
 	/**
