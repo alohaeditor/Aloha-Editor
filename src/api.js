@@ -436,6 +436,7 @@ define([
 	exports['mutation']['splitBoundaryUntil']             = Mutation.splitBoundaryUntil;
 
 	exports['overrides'] = Overrides;
+	exports['overrides']['unique']      = Overrides.unique;
 	exports['overrides']['toggle']      = Overrides.toggle;
 	exports['overrides']['harvest']     = Overrides.harvest;
 	exports['overrides']['consume']     = Overrides.consume;

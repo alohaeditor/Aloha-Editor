@@ -210,7 +210,7 @@ define(['arrays', 'assert'], function (Arrays, Assert) {
 	 *
 	 * @return {!Object}
 	 */
-	function create(map) {
+	function create() {
 		return Object.create(null);
 	}
 

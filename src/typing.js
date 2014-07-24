@@ -70,29 +70,28 @@ define([
 
 	function format(style, event) {
 		var boundaries = Boundaries.fromRange(event.range);
-		if (Html.isBoundariesEqual(boundaries[0], boundaries[1])) {
-			var override = Overrides.nodeToState[style];
-			if (override) {
-				var context = event.editor.selectionContext;
-				context.overrides = context.overrides.concat([
-					Overrides.toggle(
-						Overrides.harvest(Boundaries.container(boundaries[0])),
-						override,
-						true
-					)
-				]);
-			}
+		if (!Html.isBoundariesEqual(boundaries[0], boundaries[1])) {
+			boundaries = Editing.format(style, boundaries[0], boundaries[1]);
+			return Ranges.fromBoundaries(boundaries[0], boundaries[1]);
+		}
+		var override = Overrides.nodeToState[style];
+		if (!override) {
 			return event.range;
 		}
-		boundaries = Editing.format(style, boundaries[0], boundaries[1]);
-		return Ranges.fromBoundaries(boundaries[0], boundaries[1]);
+		var context = event.editor.selectionContext;
+		var inherited = context.formatting.concat(context.overrides);
+		var harvested = Overrides.harvest(Boundaries.container(boundaries[0]));
+		var overrides = Overrides.unique(inherited.concat(harvested));
+		context.overrides = Overrides.toggle(overrides, override, true);
+		return event.range;
 	}
 
 	function breakline(isLinebreak, event) {
 		if (!isLinebreak) {
-			event.editor.selectionContext.formatting = event.editor.selectionContext.formatting.concat(
-				Overrides.harvest(event.range.startContainer)
-			);
+			var inherited = event.editor.selectionContext.formatting;
+			var harvested = Overrides.harvest(event.range.startContainer);
+			var overrides = Overrides.unique(inherited.concat(harvested));
+			event.editor.selectionContext.formatting = overrides;
 		}
 		Editing.breakline(
 			event.range,
@@ -122,15 +121,15 @@ define([
 			}
 		}
 
+		var context = event.editor.selectionContext;
+
 		boundary = Overrides.consume(
 			boundary,
-			event.editor.selectionContext.formatting.concat(
-				event.editor.selectionContext.overrides
-			)
+			Overrides.unique(context.formatting.concat(context.overrides))
 		);
 
-		event.editor.selectionContext.overrides = [];
-		event.editor.selectionContext.formatting = [];
+		context.overrides = [];
+		context.formatting = [];
 
 		Boundaries.setRange(range, boundary, boundary);
 

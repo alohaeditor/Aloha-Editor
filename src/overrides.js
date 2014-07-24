@@ -327,44 +327,77 @@ define([
 	}
 
 	/**
-	 * Looks for an override with the given command or state name from the given
-	 * list of overrides.
+	 * Returns the index of an override with the given command or state name in
+	 * the given list of overrides.
 	 *
+	 * Returns -1 if override is not found.
+	 *
+	 * @private
 	 * @param  {Array.<Override>} overrides
 	 * @param  {string}           name
-	 * @return {Override}
+	 * @return {number}
 	 */
-	function find(overrides, name) {
+	function indexOf(overrides, name) {
 		for (var i = 0; i < overrides.length; i++) {
 			if (name === overrides[i][0]) {
-				return overrides[i];
+				return i;
 			}
 		}
-		return null;
+		return -1;
 	}
 
 	/**
 	 * Toggles the value of the override matching the given name from among the
 	 * list of overrides.
 	 *
-	 * Returns an override that represents the new toggle state/value.
+	 * Returns a copy of overrides that represents the new toggle state/value.
 	 *
 	 * @param  {Array.<Override>} overrides
 	 * @param  {string}           name
 	 * @param  {string|boolean}   value
-	 * @return {Override}
+	 * @return {Array.<Override>}
 	 */
 	function toggle(overrides, name, value) {
-		var found = find(overrides, name);
-		return found
-		     ? [name, 'boolean' === typeof found[1] ? !found[1] : value]
-		     : [name, value];
+		var index = indexOf(overrides, name);
+		if (-1 === index) {
+			return overrides.concat([[name, value]]);
+		}
+		var copy = overrides.concat();
+		copy[index][1] = ('boolean' === typeof copy[index][1])
+		               ? !copy[index][1]
+		               : value;
+		return copy;
+	}
+
+	/**
+	 * Returns a unique set from the given list of overrides.
+	 *
+	 * The last override of any given key (first element of tuple) in the list
+	 * will be the value that is included in the resultant set.
+	 *
+	 * @param  {Array.<Override>} overrides
+	 * @return {Array.<Override>}
+	 */
+	function unique(overrides) {
+		var tuple;
+		var set = [];
+		var map = Maps.create();
+		var count = overrides.length;
+		while (count--) {
+			tuple = overrides[count];
+			if (!map[tuple[0]]) {
+				map[tuple[0]] = true;
+				set.push(tuple);
+			}
+		}
+		return set.reverse();
 	}
 
 	return {
+		unique      : unique,
+		toggle      : toggle,
 		consume     : consume,
 		harvest     : harvest,
-		nodeToState : nodeToState,
-		toggle      : toggle
+		nodeToState : nodeToState
 	};
 });
