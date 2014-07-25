@@ -79,10 +79,9 @@ define([
 			return event.range;
 		}
 		var context = event.editor.selectionContext;
-		var inherited = context.formatting.concat(context.overrides);
 		var harvested = Overrides.harvest(Boundaries.container(boundaries[0]));
-		var overrides = Overrides.unique(inherited.concat(harvested));
-		context.overrides = Overrides.toggle(overrides, override, true);
+		var overrides = context.formatting.concat(harvested, context.overrides);
+		context.overrides = Overrides.toggle(Overrides.unique(overrides), override, true);
 		return event.range;
 	}
 
