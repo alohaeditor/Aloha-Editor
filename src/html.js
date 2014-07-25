@@ -19,14 +19,16 @@ define([
 	'html/mutation',
 	'html/traversing',
 	'html/predicates',
-	'browsers' // Hack for require-pronto
+	'browsers', // Hack for require-pronto
+	'cursors' // Hack for require-pronto
 ], function (
 	Styles,
 	Elements,
 	Mutation,
 	Traversing,
 	Predicates,
-	__hack__
+	__hack1__,
+	__hack2__
 ) {
 	'use strict';
 

@@ -5,6 +5,7 @@ define([
 	'blocks',
 	'dragdrop',
 	'editables',
+	'autoformat',
 	'events',
 	'functions',
 	'keys',
@@ -19,6 +20,7 @@ define([
 	Blocks,
 	DragDrop,
 	Editables,
+	AutoFormat,
 	Events,
 	Fn,
 	Keys,
@@ -48,6 +50,7 @@ define([
 	editor.stack = [
 		Selections.handle,
 		Typing.handle,
+		AutoFormat.handle,
 		Blocks.handle,
 		DragDrop.handle,
 		Paste.handle,

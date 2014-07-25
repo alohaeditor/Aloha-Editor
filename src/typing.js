@@ -60,10 +60,7 @@ define([
 				Boundaries.setRangeStart(range, Traversing.prev(boundary));
 			}
 		}
-		Editing.remove(
-			Ranges.envelopeInvisibleCharacters(range),
-			event.editable
-		);
+		Editing.remove(Ranges.envelopeInvisibleCharacters(range));
 		Html.prop(range.commonAncestorContainer);
 		return range;
 	}
