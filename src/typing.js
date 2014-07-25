@@ -290,14 +290,14 @@ define([
 	handlers['keydown'][Keys.CODES['tab']] = inputText;
 
 	// alt+0
-	handlers['keydown']['alt+48'] = {mutate : function toggleUndo(event) {
+	handlers['keydown']['ctrl+48'] = {mutate : function toggleUndo(event) {
 		if (event.editable) {
 			Metaview.toggle(event.editable.elem);
 		}
 		return event.range;
 	}};
 	// alt+1
-	handlers['keydown']['alt+49'] = {mutate : function toggleUndo(event) {
+	handlers['keydown']['ctrl+49'] = {mutate : function toggleUndo(event) {
 		if (event.editable) {
 			Metaview.toggle(event.editable.elem, {
 				'outline': true,
@@ -307,7 +307,7 @@ define([
 		return event.range;
 	}};
 	// alt+2
-	handlers['keydown']['alt+50'] = {mutate : function toggleUndo(event) {
+	handlers['keydown']['ctrl+50'] = {mutate : function toggleUndo(event) {
 		if (event.editable) {
 			Metaview.toggle(event.editable.elem, {
 				'outline': true,

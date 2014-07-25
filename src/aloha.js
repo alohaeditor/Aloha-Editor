@@ -67,7 +67,6 @@ define([
 	 * @param  {Element} element
 	 */
 	function aloha(element) {
-		Dom.addClass(element, '✪');
 		editor(null, {
 			type         : 'aloha',
 			element      : element,
