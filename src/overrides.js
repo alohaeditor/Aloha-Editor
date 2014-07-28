@@ -332,7 +332,6 @@ define([
 	 *
 	 * Returns -1 if override is not found.
 	 *
-	 * @private
 	 * @param  {Array.<Override>} overrides
 	 * @param  {string}           name
 	 * @return {number}
@@ -394,6 +393,7 @@ define([
 	}
 
 	return {
+		indexOf     : indexOf,
 		unique      : unique,
 		toggle      : toggle,
 		consume     : consume,

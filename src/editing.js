@@ -1198,13 +1198,12 @@ define([
 	}
 
 	/**
-	 * Format the selection defined by start and end boundary,
-	 * by wrapping it within a node (eg. 'b', 'i', 'em')
-	 * Returns an array with updated boundaries.
+	 * Formats the selection defined by start and end boundary, by wrapping it
+	 * within a node (eg. 'b', 'i', 'em').
 	 *
+	 * @param  {string}    node
 	 * @param  {!Boundary} start
 	 * @param  {!Boundary} end
-	 * @param  {string}    node
 	 * @return {Array.<Boundary>}
 	 */
 	function format(node, start, end) {
@@ -1213,6 +1212,23 @@ define([
 			return [start, end];
 		}
 		return style(styleName, true, start, end);
+	}
+
+	/**
+	 * Unformats the selection defined by start and end boundary, by unwrapping
+	 * text-level semantic node (eg. 'b', 'i', 'em').
+	 *
+	 * @param  {string}    node
+	 * @param  {!Boundary} start
+	 * @param  {!Boundary} end
+	 * @return {Array.<Boundary>}
+	 */
+	function unformat(node, start, end) {
+		var styleName = resolveStyleName(node);
+		if (styleName === false) {
+			return [start, end];
+		}
+		return style(styleName, false, start, end);
 	}
 
 	/**
@@ -1528,6 +1544,7 @@ define([
 	return {
 		wrap      : wrapElem,
 		format    : format,
+		unformat  : unformat,
 		style     : style,
 		split     : split,
 		remove    : remove,

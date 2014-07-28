@@ -17,8 +17,9 @@ define([
 	'mutation',
 	'traversing',
 	'boundaries',
+	'formatting',
 	'overrides',
-	'functions'
+	'functions',
 ], function (
 	Dom,
 	Keys,
@@ -31,6 +32,7 @@ define([
 	Mutation,
 	Traversing,
 	Boundaries,
+	Formatting,
 	Overrides,
 	Fn
 ) {
@@ -68,7 +70,7 @@ define([
 	function format(style, event) {
 		var boundaries = Boundaries.fromRange(event.range);
 		if (!Html.isBoundariesEqual(boundaries[0], boundaries[1])) {
-			boundaries = Editing.format(style, boundaries[0], boundaries[1]);
+			boundaries = Formatting.toggle(style, boundaries[0], boundaries[1]);
 			return Ranges.fromBoundaries(boundaries[0], boundaries[1]);
 		}
 		var override = Overrides.nodeToState[style];

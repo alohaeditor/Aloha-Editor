@@ -10,6 +10,7 @@ define([
 	'lists',
 	'links',
 	'editing',
+	'overrides',
 	'boundaries',
 	'html/predicates'
 ], function (
@@ -17,6 +18,7 @@ define([
 	Lists,
 	Links,
 	Editing,
+	Overrides,
 	Boundaries,
 	Html
 ) {
@@ -81,9 +83,7 @@ define([
 		if (formatting.toLowerCase() === 'a') {
 			return Links.create('', start, end);
 		}
-		var node = {
-			nodeName : formatting
-		};
+		var node = {nodeName: formatting};
 		if (Html.isTextLevelSemanticNode(node)) {
 			return inlineFormat(formatting, start, end);
 		}
@@ -96,7 +96,47 @@ define([
 		return [start, end];
 	}
 
+	/**
+	 * Toggles inline style round the given selection.
+	 *
+	 * @private
+	 * @param  {string}    nodeName
+	 * @param  {!Boundary} start
+	 * @param  {!Boundary} end
+	 * @return {Array.<Boundary>}
+	 */
+	function inlineToggle(nodeName, start, end) {
+		var override = Overrides.nodeToState[nodeName];
+		if (!override) {
+			return [start, end];
+		}
+		var next = Boundaries.nextNode(start);
+		var prev = Boundaries.prevNode(end);
+		var overrides = Overrides.harvest(next).concat(Overrides.harvest(prev));
+		var hasStyle = -1 < Overrides.indexOf(overrides, override);
+		var op = hasStyle ? Editing.unformat : Editing.format;
+		return op(nodeName, start, end);
+	}
+
+	/**
+	 * Toggles formatting round the given selection.
+	 *
+	 * @todo   Support block formatting
+	 * @param  {string}    formatting
+	 * @param  {!Boundary} start
+	 * @param  {!Boundary} end
+	 * @return {Array.<Boundary>}
+	 */
+	function toggle(formatting, start, end) {
+		var node = {nodeName: formatting};
+		if (Html.isTextLevelSemanticNode(node)) {
+			return inlineToggle(formatting, start, end);
+		}
+		return [start, end];
+	}
+
 	return {
-		format: format
+		format: format,
+		toggle: toggle
 	};
 });

@@ -304,6 +304,7 @@ define([
 
 	exports['editing'] = Editing;
 	exports['editing']['wrap']      = Editing.wrap;
+	exports['editing']['unformat']  = Editing.unformat;
 	exports['editing']['format']    = Editing.format;
 	exports['editing']['style']     = Editing.style;
 	exports['editing']['split']     = Editing.split;
@@ -436,6 +437,7 @@ define([
 	exports['mutation']['splitBoundaryUntil']             = Mutation.splitBoundaryUntil;
 
 	exports['overrides'] = Overrides;
+	exports['overrides']['indexOf']     = Overrides.indexOf;
 	exports['overrides']['unique']      = Overrides.unique;
 	exports['overrides']['toggle']      = Overrides.toggle;
 	exports['overrides']['harvest']     = Overrides.harvest;
