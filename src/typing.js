@@ -356,6 +356,9 @@ define([
 	handlers['keydown']['ctrl+shift+' + Keys.CODES['undo']] =
 	handlers['keydown']['meta+shift+' + Keys.CODES['undo']] = redo;
 	handlers['keydown'][Keys.CODES['tab']] = inputText;
+	handlers['keydown'][Keys.CODES['pageDown']] = pageDown;
+	handlers['keydown'][Keys.CODES['pageUp']] = pageUp;
+	handlers['keypress']['input'] = inputText;
 
 	// alt+0
 	handlers['keydown']['ctrl+48'] = {mutate : function toggleUndo(event) {
