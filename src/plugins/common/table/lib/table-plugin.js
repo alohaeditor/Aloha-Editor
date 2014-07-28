@@ -1276,7 +1276,7 @@ define([
 				var tr = document.createElement( 'tr' );
 				// create "cols"-number of columns
 				for ( var j = 0; j < cols; j++ ) {
-					var text = document.createTextNode( '\u00a0' );
+					var text = document.createTextNode('');
 					var td = document.createElement( 'td' );
 					td.appendChild( text );
 					tr.appendChild( td );
