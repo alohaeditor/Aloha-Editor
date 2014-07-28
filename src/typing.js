@@ -176,6 +176,63 @@ define([
 		    && !Strings.isControlCharacter(String.fromCharCode(event.keycode));
 	}
 
+	/**
+	 *
+	 * @param {AlohaEvent} event
+	 * @return {Range}
+	 */
+	function moveRangeToPosition(event, left, top) {
+		var doc = event.range.startContainer.ownerDocument;
+
+		return Ranges.fromPosition(
+			left,
+			top,
+			doc
+		);
+	}
+
+	/**
+	 * Moves range when scrolling.
+	 * @param {AlohaEvent} event
+	 * @param {string} moveTopOrBottom moves the range to the top or the bottom of the page.
+	 * @returns {Range}
+	 */
+	function moveRangeOnPageScroll(event, moveTopOrBottom) {
+		var doc = event.range.commonAncestorContainer.ownerDocument;
+		var win = Dom.documentWindow(doc);
+		var position = doc.querySelector('.aloha-caret').getClientRects()[0];
+		var scrollY = win.scrollY;
+
+		var top = moveTopOrBottom === 'top' ? position.top : position.bottom;
+		var range = moveRangeToPosition(event, position.left, top);
+
+		// Check if vertical scroll has not changed.
+		if (scrollY === win.scrollY) {
+			top = moveTopOrBottom === 'top' ? 0 : win.innerHeight - 1;
+			range = moveRangeToPosition(event, position.left, top);
+		}
+
+		return range;
+	}
+
+	/**
+	 * Moves range one page up.
+	 * @param {AlohaEvent} event
+	 * @returns {Range}
+	 */
+	function moveRangePageUp(event) {
+		return moveRangeOnPageScroll(event, 'top');
+	}
+
+	/**
+	 * Moves range one page down.
+	 * @param {AlohaEvent} event
+	 * @returns {Range}
+	 */
+	function moveRangePageDown(event) {
+		return moveRangeOnPageScroll(event, 'bottom');
+	}
+
 	var deleteBackward = {
 		clearOverrides : true,
 		preventDefault : true,
@@ -247,6 +304,18 @@ define([
 		mutate         : Fn.partial(toggleUndo, Undo.redo)
 	};
 
+	var pageUp = {
+		preventDefault : false,
+		clearOverrides : true,
+		mutate         : moveRangePageUp
+	};
+
+	var pageDown = {
+		preventDefault : false,
+		clearOverrides : true,
+		mutate         : moveRangePageDown
+	};
+
 	var actions = {
 		'breakBlock'     : breakBlock,
 		'breakLine'      : breakLine,
@@ -316,6 +385,9 @@ define([
 		}
 		return event.range;
 	}};
+
+	handlers['keydown'][Keys.CODES['pageDown']] = pageDown;
+	handlers['keydown'][Keys.CODES['pageUp']] = pageUp;
 
 	handlers['keypress']['input'] = inputText;
 
