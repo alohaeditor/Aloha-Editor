@@ -19,7 +19,7 @@ define([
 	'boundaries',
 	'formatting',
 	'overrides',
-	'functions',
+	'functions'
 ], function (
 	Dom,
 	Keys,
