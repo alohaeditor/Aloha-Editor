@@ -44,6 +44,9 @@ define([
 
 	function Editable(elem) {
 		Dom.addClass(elem, 'aloha-editable');
+		if (!Dom.getStyle(elem, 'min-height')) {
+			Dom.setStyle(elem, 'min-height', '1em');
+		}
 		var undoContext = Undo.Context(elem);
 		var id = Dom.ensureExpandoId(elem);
 		var editable = {
