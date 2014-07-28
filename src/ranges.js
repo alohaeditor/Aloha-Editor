@@ -657,7 +657,7 @@ define([
 	 * @return {?Object.<string, number>}
 	 */
 	function boundingRect(reference) {
-		var rect = reference.getBoundingClientRect();
+		var rect = reference.getClientRects()[0] || reference.getBoundingClientRect();
 		return {
 			top    : rect.top,
 			left   : rect.left,
