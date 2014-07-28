@@ -237,7 +237,6 @@
 	  '<p><b>1<em>2<i>3<sub>4<u>{</u>Z</sub>text<sub>Z<u>}</u>5</sub>6</i>7</em>8</b></p>',
 	  '<p><b>1</b><em><b>2</b><i><b>3</b><sub><b>4<u></u></b>{Z</sub>text<sub>Z}<b><u></u>5</b></sub><b>6</b></i><b>7</b></em><b>8</b></p>');
 
-	/*
 	testMutation('don\'t split if opts.below returns false',
 				 '<div><i>a[b</i>c<b>d]e</b></div>',
 				 '<div><i>a[b</i>c<b>d]e</b></div>',
@@ -246,30 +245,12 @@
 					return Editing.split(range, {below: Fn.returnFalse});
 				 });
 
-	*/
-
 	t = function (title, before, after) {
 		testStyle(title, before, after, 'font-family', 'arial');
 	};
 
 	t('format some text',
 	  '<p>Some [text]</p>',
-	  '<p>Some {<span style="font-family: arial;">text</span>}</p>');
-
-	t('reuse an existing span',
-	  '<p>Some {<span>text</span>}</p>',
-	  '<p>Some {<span style="font-family: arial;">text</span>}</p>');
-
-	t('alternating overrides (times,verdana); don\'t replace existing override (helvetica); element inbetween overrides (b tag)',
-	  '<p>Some <span style="font-family: times;">a<b><span style="font-family: helvetica;">b</span>c<span style="font-family: verdana;">d{e</span>f</b>g</span>}</p>',
-	  '<p>Some <span style="font-family: times;">a</span><b><span style="font-family: helvetica;">b</span><span style="font-family: times;">c</span><span style="font-family: verdana;">d</span>{<span style="font-family: arial;">ef</span></b><span style="font-family: arial;">g</span>}</p>');
-
-	t('don\'t push down the cac even if it is an override',
-	  '<p>S<span style="font-family: times;">om{e t}ex</span>t</p>',
-	  '<p>S<span style="font-family: times;">om{<span style="font-family: arial;">e t</span>}ex</span>t</p>');
-
-	t('expand style',
-	  '<p>S<span style="font-family: times;">om{one<span style="font-family: arial;">e t</span>two}ex</span>t</p>',
 	  '<p>S<span style="font-family: times;">om{<span style="font-family: arial;">onee ttwo</span>}ex</span>t</p>');
 
 	t('push down through one level',
@@ -378,12 +359,10 @@
 		// Because we want to write tests only against a single wrapper
 		// format (<b>), but run them against all wrapper formats.
 		var formats = [
-			/*
 			{name: 'bold', nodeName: 'b', styleOn: 'font-weight: bold', styleOff: 'font-weight: normal'},
 			{name: 'strong', nodeName: 'strong', styleOn: 'font-weight: bold', styleOff: 'font-weight: normal'},
 			{name: 'italic', nodeName: 'i', styleOn: 'font-style: italic', styleOff: 'font-style: normal'},
 			{name: 'emphasis', nodeName: 'em', styleOn: 'font-style: italic', styleOff: 'font-style: normal'},
-			*/
 			{name: 'underline', nodeName: 'u', styleOn: 'text-decoration: underline', styleOff: 'text-decoration: none'}
 		];
 		function replace(format, html) {
@@ -398,7 +377,6 @@
 		}
 	};
 
-	/*
 	t('use wrapper element instead of style',
 	  '<p>So[me t]ext</p>',
 	  '<p>So{<b>me t</b>}ext</p>',
@@ -423,15 +401,11 @@
 	  '<p>So<span style="font-weight: bold">m{e </span>te}xt</p>',
 	  '<p>So<span style="font-weight: bold">m[e te</span>}xt</p>',
 	  true);
-	*/
 
-debugger;
 	t('pushing down through wrapper',
 	  '<p>So<b>m{e t}e</b>xt</p>',
 	  '<p>So<b>m</b>{e t}<b>e</b>xt</p>',
 	  false);
-
-return;
 
 	testStyle('italic - pushing down through alternative wrapper',
 			   '<p>So<em>m{e t}e</em>xt</p>',

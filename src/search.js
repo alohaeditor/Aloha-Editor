@@ -8,9 +8,7 @@
  * @overview
  * Module for searching for strings of token in markup
  */
-define([
-], function (
-) {
+define([], function () {
 	'use strict';
-
+	return {};
 });

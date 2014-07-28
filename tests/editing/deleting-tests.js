@@ -1,8 +1,6 @@
 (function (aloha, module, test, equal) {
 	'use strict';
 
-	return;
-
 	module('editing');
 
 	function runTest(before, after, op, context) {
@@ -21,6 +19,8 @@
 			});
 			return t;
 		})
+
+		('<p>x{}<br>z</p>', '<p>x{}<br>z</p>')
 
 		('<p>x[y]z</p>', '<p>x[]z</p>')
 		('<p>x[]y</p>',  '<p>x[]y</p>')
@@ -92,7 +92,7 @@
 		('<ul><li>ab[c]<ol><li></li></ol></li></ul>', '<ul><li>ab{}<ol><li></li></ol></li></ul>')
 
 		('<div>foo{<ul><li>}bar</li></ul></div>',     '<div>foo[]bar</div>')
-		('<ul><li>fo[o<ol><li>}</li></ol></li></ul>', '<ul><li>fo{}</li></ul>');
+		('<ul><li>fo[o<ol><li>}</li></ol></li></ul>', '<ul><li>fo{}</li></ul>')
 	});
 
 }(window.aloha, window.module, window.test, window.equal));

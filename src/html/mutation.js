@@ -164,7 +164,13 @@ define([
 		var container     = Boundaries.container(above);
 		var linebreak     = nextLineBreak(above, below);
 		var isVisibleNode = function (node) {
-			return container === node || hasRenderedContent(node);
+			if (container === node) {
+				return true;
+			}
+			if (Predicates.isListItem(node)) {
+				return hasRenderedContent(node);
+			}
+			return Elements.isRendered(node);
 		};
 		if (Boundaries.equals(linebreak, below)) {
 			Dom.climbUntil(right, Dom.remove, isVisibleNode);
