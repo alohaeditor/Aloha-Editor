@@ -7,20 +7,20 @@
  */
 define([
 	'dom',
+	'html',
 	'lists',
 	'links',
 	'editing',
 	'overrides',
-	'boundaries',
-	'html/predicates'
+	'boundaries'
 ], function (
 	Dom,
+	Html,
 	Lists,
 	Links,
 	Editing,
 	Overrides,
-	Boundaries,
-	Html
+	Boundaries
 ) {
 	'use strict';
 
@@ -110,8 +110,8 @@ define([
 		if (!override) {
 			return [start, end];
 		}
-		var next = Boundaries.nextNode(start);
-		var prev = Boundaries.prevNode(end);
+		var next = Boundaries.nextNode(Html.expandForward(start));
+		var prev = Boundaries.prevNode(Html.expandBackward(end));
 		var overrides = Overrides.harvest(next).concat(Overrides.harvest(prev));
 		var hasStyle = -1 < Overrides.indexOf(overrides, override);
 		var op = hasStyle ? Editing.unformat : Editing.format;

@@ -369,6 +369,8 @@ define([
 	exports['html']['isAtStart']                 = Html.isAtStart;
 	exports['html']['isAtEnd']                   = Html.isAtEnd;
 	exports['html']['isBoundariesEqual']         = Html.isBoundariesEqual;
+	exports['html']['expandBackward']            = Html.expandBackward;
+	exports['html']['expandForward']             = Html.expandForward;
 	exports['html']['isBlockNode']               = Html.isBlockNode;
 	exports['html']['isGroupContainer']          = Html.isGroupContainer;
 	exports['html']['isGroupedElement']          = Html.isGroupedElement;

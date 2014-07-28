@@ -380,7 +380,6 @@ define([
 	 *
 	 * </p></li><li><b><i>|foo...
 	 *
-	 * @private
 	 * @param  {Boundary} boundary
 	 * @return {Boundary}
 	 */
@@ -396,8 +395,8 @@ define([
 
 	/**
 	 * Expands the boundary forward.
+	 * Similar to expandBackward().
 	 *
-	 * @private
 	 * @param  {Boundary} boundary
 	 * @return {Boundary}
 	 */
@@ -1087,6 +1086,8 @@ define([
 		stepBackward            : stepBackward,
 		isAtStart               : isAtStart,
 		isAtEnd                 : isAtEnd,
-		isBoundariesEqual       : isBoundariesEqual
+		isBoundariesEqual       : isBoundariesEqual,
+		expandBackward          : expandBackward,
+		expandForward           : expandForward
 	};
 });
