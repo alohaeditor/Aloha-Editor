@@ -32,7 +32,13 @@
 				color: #fff;
 			}
 			p { margin: 0 0 0.5em; }
-			p:last-child { margin-bottom: 0; }
+			.aloha-editable {
+				padding: 1em;
+				border: 1px solid #eee;
+				box-shadow: 2px 2px 100px rgba(0,0,0,0.1);
+			}
+			.aloha-editable>:first-child { margin-top: 0; }
+			.aloha-editable>:last-child { margin-bottom: 0; }
 			.aloha-block {
 				width: 100px;
 				height: 100px;
@@ -47,11 +53,9 @@
 		</style>
 	</head>
 	<body>
-		<div class="aloha-editable">one</div>
+		<input value="Not an Aloha Editor element" />
 
 		<br/><br/>
-
-		<input value="Not an Aloha Editor element" />
 
 		<div class="aloha-editable">
 			<h1>Aloha Editor</h1>

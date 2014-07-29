@@ -13,6 +13,7 @@ define([
 	'dom',
 	'keys',
 	'maps',
+	'html',
 	'mouse',
 	'events',
 	'ranges',
@@ -26,6 +27,7 @@ define([
 	Dom,
 	Keys,
 	Maps,
+	Html,
 	Mouse,
 	Events,
 	Ranges,
@@ -41,8 +43,7 @@ define([
 	 * Hides all visible caret elements and returns all those that were hidden
 	 * in this operation.
 	 *
-	 * @param  {Document} doc
-	 * @return {Array.<Element>}
+	 * @param  {Document} doc * @return {Array.<Element>}
 	 */
 	function hideCarets(doc) {
 		var carets = doc.querySelectorAll('div.aloha-caret');
@@ -178,17 +179,46 @@ define([
 	}
 
 	/**
+	 * Jumps the front or end position of the given editable.
+	 *
+	 * @private
+	 * @param  {string} direction "up" or "down"
+	 * @param  {Event}  event
+	 * @param  {Range}  range
+	 * @param  {string} focus
+	 * @return {Object}
+	 */
+	function jump(direction, event, range, focus) {
+		var boundary;
+		if ('up' === direction) {
+			boundary = Boundaries.create(event.editable.elem, 0);
+			boundary = Html.expandForward(boundary);
+		} else {
+			boundary = Boundaries.fromEndOfNode(event.editable.elem);
+			boundary = Html.expandBackward(boundary);
+		}
+		var next = Ranges.fromBoundaries(boundary, boundary);
+		if (!Events.hasKeyModifier(event, 'shift')) {
+			return {
+				range: next,
+				focus: focus
+			};
+		}
+		return mergeRanges(next, range, focus);
+	}
+
+	/**
 	 * Determines the closest visual caret position above or below the given
 	 * range.
 	 *
 	 * @private
+	 * @param  {string} direction "up" or "down"
 	 * @param  {Event}  event
 	 * @param  {Range}  range
 	 * @param  {string} focus
-	 * @param  {string} direction "up" or "down"
 	 * @return {Object}
 	 */
-	function climb(event, range, focus, direction) {
+	function climb(direction, event, range, focus) {
 		var clone = ('start' === focus)
 		          ? Ranges.collapseToStart(range.cloneRange())
 		          : Ranges.collapseToEnd(range.cloneRange());
@@ -229,13 +259,13 @@ define([
 	 * range.
 	 *
 	 * @private
+	 * @param  {string} direction "left" or "right"
 	 * @param  {Event}  event
 	 * @param  {Range}  range
 	 * @param  {string} focus
-	 * @param  {string} direction "left" or "right"
 	 * @return {Object}
 	 */
-	function step(event, range, focus, direction) {
+	function step(direction, event, range, focus) {
 		var get, set, collapse;
 		var shift = Events.hasKeyModifier(event, 'shift');
 		var clone = range.cloneRange();
@@ -276,22 +306,14 @@ define([
 	 * @type {Object.<string, function(Event, Range, string):Object>}
 	 */
 	var movements = {};
-
-	movements[Keys.CODES['up']] = function climbUp(event, range, focus) {
-		return climb(event, range, focus, 'up');
-	};
-
-	movements[Keys.CODES['down']] = function climbDown(event, range, focus) {
-		return climb(event, range, focus, 'down');
-	};
-
-	movements[Keys.CODES['left']] = function stepLeft(event, range, focus) {
-		return step(event, range, focus, 'left');
-	};
-
-	movements[Keys.CODES['right']] = function stepRight(event, range, focus) {
-		return step(event, range, focus, 'right');
-	};
+	movements[Keys.CODES['up']] = Fn.partial(climb, 'up');
+	movements[Keys.CODES['down']] = Fn.partial(climb, 'down');
+	movements[Keys.CODES['left']] = Fn.partial(step, 'left');
+	movements[Keys.CODES['right']] = Fn.partial(step, 'right');
+	movements[Keys.CODES['pageUp']] =
+	movements['meta+' + Keys.CODES['up']] = Fn.partial(jump, 'up');
+	movements[Keys.CODES['pageDown']] =
+	movements['meta+' + Keys.CODES['down']] = Fn.partial(jump, 'down');
 
 	/**
 	 * Processes a keypress event.
@@ -319,6 +341,10 @@ define([
 	 * @return {Object}
 	 */
 	function keydown(event, range, focus) {
+		var meta = event.meta.indexOf('meta') > -1;
+		if (meta && movements['meta+' + event.keycode]) {
+			return movements['meta+' + event.keycode](event, range, focus);
+		}
 		return (movements[event.keycode] || keypress)(event, range, focus);
 	}
 
