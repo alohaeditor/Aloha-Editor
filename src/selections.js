@@ -869,8 +869,7 @@ define([
 	}
 
 	/**
-	 * Whether the given event will cause the position of the selection to
-	 * move.
+	 * Whether the given event will cause the position of the selection to move.
 	 *
 	 * @private
 	 * @param  {Event} event
@@ -886,11 +885,15 @@ define([
 		if (Keys.ARROWS[event.keycode]) {
 			return true;
 		}
+		if (Keys.CODES['pageDown'] === event.keycode || Keys.CODES['pageUp'] === event.keycode) {
+			return true;
+		}
 		if (Keys.CODES['undo'] === event.keycode) {
 			if ('meta' === event.meta || 'ctrl' === event.meta || 'shift' === event.meta) {
 				return true;
 			}
 		}
+		return false;
 	}
 
 	/**
@@ -917,7 +920,7 @@ define([
 			Boundaries.container(focus)
 		)));
 		Boundaries.select(boundaries[0], boundaries[1]);
-		if (event.editable && isCaretMovingEvent(event)) {
+		if (isCaretMovingEvent(event)) {
 			ensureInViewport(focus);
 		}
 	}
