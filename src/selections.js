@@ -76,7 +76,11 @@ define([
 	 * @param {Boundary} boundary
 	 */
 	function show(caret, boundary) {
-		var box = Ranges.box(Ranges.fromBoundaries(boundary, boundary));
+		var range = Ranges.fromBoundaries(boundary, boundary);
+		var box = Ranges.box(range);
+
+		scrollIfNearTopOrBottom(range);
+
 		Maps.extend(caret.style, {
 			'top'     : box.top + 'px',
 			'left'    : box.left + 'px',
@@ -208,6 +212,40 @@ define([
 	}
 
 	/**
+	 * Scrolls the view if the range is near enough to the top or bottom of the window.
+	 * @param {Range} range
+	 */
+	function scrollIfNearTopOrBottom(range) {
+		var doc = range.commonAncestorContainer.ownerDocument;
+		var win = Dom.documentWindow(doc);
+		var topOffset = win.pageYOffset - doc.body.clientTop;
+		var box = Ranges.box(range);
+
+		box.top -= topOffset;
+		box.bottom = box.top + box.height;
+
+		var minDistance = 100;
+		var scrollDistance = 30;
+
+		if (box.top <= minDistance) {
+			win.scrollTo(win.scrollX, win.scrollY - scrollDistance);
+		} else if ((win.innerHeight - box.bottom) <= minDistance) {
+			win.scrollTo(win.scrollX, win.scrollY + scrollDistance);
+		}
+	}
+
+	/**
+	 * Checks if ranges `range1` and `range2` has the same top position
+	 *
+	 * @param {Range} range1
+	 * @param {Range} range2
+	 * @returns {boolean}
+	 */
+	function hasSameTop(range1, range2) {
+		return (Ranges.box(range1).top - Ranges.box(range2).top) === 0;
+	}
+
+	/**
 	 * Determines the closest visual caret position above or below the given
 	 * range.
 	 *
@@ -232,14 +270,14 @@ define([
 		box.top -= topOffset;
 		box.left -= leftOffset;
 
-		var half = box.height / 2;
-		var stride = half;
+		var step = 20;
+		var stride = step;
 		var move = ('up' === direction) ? up : down;
 		var next = move(box, stride, doc);
 
 		// TODO: also check if `next` and `clone` are *visually* adjacent
-		while (next && Ranges.equals(next, clone)) {
-			stride += half;
+		while (next && hasSameTop(clone, next)) {
+			stride += step;
 			next = move(box, stride, doc);
 		}
 		if (!next) {
