@@ -20,7 +20,8 @@
 /* editable wrappers in cells */
 div.aloha-table-cell-editable {
 	height: 100%;
-	min-height: 100%;
+	min-height: 1em;
+	min-width: 1em;
 	width: 100%;
 	z-index: 99999;
 }
