@@ -10,7 +10,6 @@ Your .env file should define ClOSURE_PATH=$CLOSURE_PATH.
 	"
 }
 
-args=$*
 pwd=$(pwd)
 dot=" \e[0;32m•\e[0m"
 tick=" \e[0;32m✔\e[0m"
