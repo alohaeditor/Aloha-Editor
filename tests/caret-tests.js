@@ -1,25 +1,21 @@
-(function (aloha) {
+(function (aloha, test, equal, module) {
 	'use strict';
 
-	var Boundaries = aloha.boundaries;
-	var BoundaryMarkers = aloha.boundarymarkers;
-	var Events = aloha.events;
+    module('caret');
 
 	var editor = document.getElementById('aloha_instance');
-	aloha(editor);
 
-    module('caret');
+	aloha(editor);
 
     function t(html, top, left) {
         test(html, function() {
             editor.innerHTML = html;
-            var boundaries = BoundaryMarkers.extract(editor);
-			Boundaries.select(boundaries[0], boundaries[1]);
-			Events.dispatch(document, editor, 'keypress');
-
-			var tp = document.querySelector('.aloha-caret');
-			equal(tp.offsetTop - editor.offsetTop, top, 'top');
-			equal(tp.offsetLeft - editor.offsetLeft, left, 'left');
+            var boundaries = aloha.boundarymarkers.extract(editor);
+			aloha.boundaries.select(boundaries[0], boundaries[1]);
+			aloha.events.dispatch(document, editor, 'keypress');
+			var caret = document.querySelector('.aloha-caret');
+			equal(caret.offsetTop - editor.offsetTop, top, 'top');
+			equal(caret.offsetLeft - editor.offsetLeft, left, 'left');
         });
     }
 
@@ -43,5 +39,6 @@
 	// Shift + Enter
 	t('<p>one<br><br>{}</p>', 19, 0);
 	t('<p>one<b>two<br><br>{}</b></p>', 19, 0);
-}(window.aloha));
+
+}(window.aloha, window.test, window.equal, window.module));
 
