@@ -468,7 +468,7 @@ define([
 	function nextRawBoundary(boundary) {
 		var node = container(boundary);
 		if (isAtRawEnd(boundary)) {
-			return jumpOver(boundary);
+			return raw(node.parentNode, Dom.nodeIndex(node) + 1);
 		}
 		if (isTextBoundary(boundary)) {
 			return fromEndOfNode(node);
