@@ -9,7 +9,6 @@
  *        ie support
  */
 define([
-	'functions',
 	'dom',
 	'keys',
 	'maps',
@@ -21,9 +20,9 @@ define([
 	'overrides',
 	'animation',
 	'boundaries',
-	'traversing'
+	'traversing',
+	'functions'
 ], function (
-	Fn,
 	Dom,
 	Keys,
 	Maps,
@@ -35,7 +34,8 @@ define([
 	Overrides,
 	Animation,
 	Boundaries,
-	Traversing
+	Traversing,
+	Fn
 ) {
 	'use strict';
 
@@ -674,17 +674,6 @@ define([
 	}
 
 	/**
-	 * Scrolls the viewport to the position of the given boundary.
-	 *
-	 * @param {Boundary}
-	 */
-	function scrollTo(boundary) {
-		var box = Ranges.box(Ranges.fromBoundaries(boundary, boundary));
-		var win = Dom.documentWindow(Boundaries.document(boundary));
-		win.scrollTo(box.left, box.top);
-	}
-
-	/**
 	 * Enures that the given boundary is visible inside of the viewport by
 	 * scolling the view port if necessary.
 	 *
@@ -939,7 +928,6 @@ define([
 		handle       : handle,
 		Context      : Context,
 		hideCarets   : hideCarets,
-		unhideCarets : unhideCarets,
-		scrollTo     : scrollTo
+		unhideCarets : unhideCarets
 	};
 });

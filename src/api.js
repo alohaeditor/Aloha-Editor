@@ -484,7 +484,6 @@ define([
 	exports['selections']['Context']      = Selections.Context;
 	exports['selections']['hideCarets']   = Selections.hideCarets;
 	exports['selections']['unhideCarets'] = Selections.unhideCarets;
-	exports['selections']['scrollTo']     = Selections.scrollTo;
 
 	exports['strings'] = Strings;
 	exports['strings']['addToList']                     = Strings.addToList;
