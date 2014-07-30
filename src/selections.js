@@ -288,7 +288,15 @@ define([
 			           ? 'word'
 			           : 'visual';
 			var boundary = get(range);
-			set(clone, move(boundary, stride) || boundary);
+			var next = move(boundary, stride);
+			if (Dom.isEditingHost(Boundaries.container(next))) {
+				if (Boundaries.isAtStart(boundary)) {
+					next = Html.expandForward(boundary);
+				} else if (Boundaries.isAtEnd(boundary)) {
+					next = Html.expandBackward(boundary);
+				}
+			}
+			set(clone,  next || boundary);
 		}
 		if (!shift) {
 			collapse(clone);
