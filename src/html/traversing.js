@@ -346,7 +346,7 @@ define([
 	function expand(boundary, step, nodeAt, isAtStart, isAtEnd) {
 		return step(boundary, function (boundary) {
 			var node = nodeAt(boundary);
-			if (!Elements.isRendered(node)) {
+			if (Elements.isUnrendered(node)) {
 				return true;
 			}
 			if (isAtEnd(boundary)) {
@@ -369,6 +369,31 @@ define([
 	}
 
 	/**
+	 * Steps forward (according to stepForward) while the given condition is
+	 * true.
+	 *
+	 * @private
+	 * @param  {Boundary}                   boundary
+	 * @param  {function(Boundary):boolean} cond
+	 * @return {Boundary}
+	 */
+	function nextBoundaryWhile(boundary, cond) {
+		return Boundaries.stepWhile(boundary, cond, stepForward);
+	}
+
+	/**
+	 * Steps backwards while the given condition is true.
+	 *
+	 * @private
+	 * @param  {Boundary}                   boundary
+	 * @param  {function(Boundary):boolean} cond
+	 * @return {Boundary}
+	 */
+	function prevBoundaryWhile(boundary, cond) {
+		return Boundaries.stepWhile(boundary, cond, stepBackward);
+	}
+
+	/**
 	 * Expands the boundary backward.
 	 *
 	 * Drilling through...
@@ -386,7 +411,7 @@ define([
 	function expandBackward(boundary) {
 		return expand(
 			boundary,
-			Boundaries.prevWhile,
+			prevBoundaryWhile,
 			Boundaries.prevNode,
 			Boundaries.isAtEnd,
 			Boundaries.isAtStart
@@ -403,7 +428,7 @@ define([
 	function expandForward(boundary) {
 		return expand(
 			boundary,
-			Boundaries.nextWhile,
+			nextBoundaryWhile,
 			Boundaries.nextNode,
 			Boundaries.isAtStart,
 			Boundaries.isAtEnd
