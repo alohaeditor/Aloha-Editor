@@ -111,6 +111,32 @@ define([
 	}
 
 	/**
+	 * Checks whether two ranges have the same end.  Ranges are equal if their
+	 * corresponding boundary containers and offsets are strictly equal.
+	 *
+	 * @param  {Range} a
+	 * @param  {Range} b
+	 * @return {boolean}
+	 */
+	function equalsStart(a, b) {
+		return a.startContainer === b.startContainer
+		    && a.startOffset    === b.startOffset;
+	}
+
+	/**
+	 * Checks whether two ranges have the same start.  Ranges are equal if their
+	 * corresponding boundary containers and offsets are strictly equal.
+	 *
+	 * @param  {Range} a
+	 * @param  {Range} b
+	 * @return {boolean}
+	 */
+	function equalsEnd(a, b) {
+		return a.endContainer   === b.endContainer
+		    && a.endOffset      === b.endOffset;
+	}
+
+	/**
 	 * Creates a range from the horizontal and vertical offset pixel positions
 	 * relative to upper-left corner the document body.
 	 *
@@ -819,6 +845,8 @@ define([
 		get                         : get,
 		create                      : create,
 		equals                      : equals,
+		equalsStart                 : equalsStart,
+		equalsEnd                   : equalsEnd,
 
 		collapseToEnd               : collapseToEnd,
 		collapseToStart             : collapseToStart,
