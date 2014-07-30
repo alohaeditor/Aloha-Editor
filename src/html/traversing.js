@@ -344,7 +344,7 @@ define([
 	 * @return {Boundary}
 	 */
 	function expand(boundary, step, nodeAt, isAtStart, isAtEnd) {
-		return step(boundary, function (boundary) {
+		return Boundaries.normalize(step(boundary, function (boundary) {
 			var node = nodeAt(boundary);
 			if (Elements.isUnrendered(node)) {
 				return true;
@@ -365,7 +365,7 @@ define([
 				return true;
 			}
 			return !Dom.isTextNode(node) && !Elements.isVoidType(node);
-		});
+		}));
 	}
 
 	/**

@@ -449,10 +449,10 @@ define([
 	function prevRawBoundary(boundary) {
 		var node = container(boundary);
 		if (isAtRawStart(boundary)) {
-			return fromNode(container(boundary));
+			return fromNode(node);
 		}
 		if (isTextBoundary(boundary)) {
-			return raw(container(boundary), 0);
+			return raw(node, 0);
 		}
 		node = Dom.nthChild(node, offset(boundary) - 1);
 		return fromEndOfNode(node);
