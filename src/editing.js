@@ -1118,9 +1118,10 @@ define([
 	/**
 	 * Ensures the given range is wrapped by elements with a given nodeName.
 	 *
-	 * @param {!Range} liveRange The range of the current selection.
 	 * @param {string} nodeName The name of the tag that should serve as the
 	 *                          wrapping node.
+	 * @param {!Boundary} start
+	 * @param {!Boundary} end
 	 * @param {boolean} remove Optional flag, which when set to false will cause
 	 *                         the given markup to be removed (unwrapped) rather
 	 *                         then set.
@@ -1449,10 +1450,12 @@ define([
 	 *
 	 * @see https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#deleting-the-selection
 	 *
-	 * @param  {!Range} range
+	 * @param  {!Boundary} start
+	 * @param  {!Boundary} end
 	 * @return {Array.<Boundary>}
 	 */
-	function remove(range) {
+	function remove(start, end) {
+		var range = Ranges.fromBoundaries(start, end);
 		fixupRange(range, function (range, left, right) {
 			var remove = function (node) {
 				Mutation.removePreservingRange(node, range);

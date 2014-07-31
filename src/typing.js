@@ -64,7 +64,8 @@ define([
 				Boundaries.setRangeStart(range, Traversing.prev(boundary));
 			}
 		}
-		Editing.remove(Ranges.envelopeInvisibleCharacters(range));
+		var boundaries = Boundaries.fromRange(Ranges.envelopeInvisibleCharacters(range));
+		Editing.remove(boundaries[0], boundaries[1]);
 		Html.prop(range.commonAncestorContainer);
 		return range;
 	}

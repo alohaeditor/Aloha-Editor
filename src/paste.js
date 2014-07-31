@@ -104,7 +104,7 @@ define([
 	 */
 	function insert(start, end, markup) {
 		var doc = Boundaries.document(start);
-		var boundary = Editing.remove(Ranges.fromBoundaries(start, end))[0];
+		var boundary = Editing.remove(start, end)[0];
 		var element = Html.parse(markup, doc);
 		var children = Dom.children(element);
 

@@ -42,6 +42,7 @@ define([
 	'record',
 	'selection-change',
 	'selections',
+	'searching',
 	'strings',
 	'transform',
 	'traversing',
@@ -80,6 +81,7 @@ define([
 	Record,
 	SelectionChange,
 	Selections,
+	Searching,
 	Strings,
 	Transform,
 	Traversing,
@@ -162,6 +164,8 @@ define([
 	exports['boundarymarkers']['hint']    = BoundaryMarkers.hint;
 	exports['boundarymarkers']['insert']  = BoundaryMarkers.insert;
 	exports['boundarymarkers']['extract'] = BoundaryMarkers.extract;
+
+	exports['markers'] = BoundaryMarkers;
 
 	exports['browsers'] = Browsers;
 	exports['browsers']['ie7']           = Browsers.ie7;
@@ -484,6 +488,11 @@ define([
 	exports['selections']['Context']      = Selections.Context;
 	exports['selections']['hideCarets']   = Selections.hideCarets;
 	exports['selections']['unhideCarets'] = Selections.unhideCarets;
+
+	exports['searching'] = Searching;
+	exports['searching']['search']   = Searching.search;
+	exports['searching']['forward']  = Searching.forward;
+	exports['searching']['backward'] = Searching.backward;
 
 	exports['strings'] = Strings;
 	exports['strings']['addToList']                     = Strings.addToList;

@@ -12,10 +12,7 @@
 	test('remove()', function () {
 		(function t(before, after) {
 			runTest(before, after, function (boundaries) {
-				return aloha.editing.remove(aloha.ranges.fromBoundaries(
-					boundaries[0],
-					boundaries[1]
-				));
+				return aloha.editing.remove(boundaries[0], boundaries[1]);
 			});
 			return t;
 		})

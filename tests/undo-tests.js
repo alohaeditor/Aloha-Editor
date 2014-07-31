@@ -3,6 +3,7 @@
 
 	var Dom = aloha.dom;
 	var Undo = aloha.undo;
+	var Boundaries = aloha.boundaries;
 
 	module('undo');
 
@@ -91,7 +92,8 @@
 		var capturedFrame = Undo.capture(context, {meta: true}, function () {
 			var range = aloha.ranges.fromBoundaries([editable.firstChild, 2], [editable.firstChild, 3]);
 			var haveToPassEmptyOverridesOtherwiseError = {overrides: []};
-			aloha.editing.remove(range, haveToPassEmptyOverridesOtherwiseError);
+			var boundaries = Boundaries.fromRange(range);
+			aloha.editing.remove(boundaries[0], boundaries[1], haveToPassEmptyOverridesOtherwiseError);
 		});
 		var modifiedEditable = Dom.clone(editable);
 		var capturedChangeSet = Undo.changeSetFromFrame(context, capturedFrame);

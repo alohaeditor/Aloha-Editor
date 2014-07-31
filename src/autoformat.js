@@ -13,6 +13,7 @@ define([
 	'ranges',
 	'editing',
 	'mutation',
+	'searching',
 	'traversing',
 	'boundaries'
 ], function (
@@ -23,25 +24,61 @@ define([
 	Ranges,
 	Editing,
 	Mutation,
+	Searching,
 	Traversing,
 	Boundaries
 ) {
 	'use strict';
 
+	/**
+	 * Transforms ```foo("bar")``` into <code>foo("bar")</code>.
+	 *
+	 * @private
+	 * @param  {Boundary} start
+	 * @param  {Boundary} end
+	 * @return {!Boundary}
+	 */
 	function code(start, end) {
-		console.error('create CODE');
-		return end;
+		//  marker / front
+		//    |
+		//    |   ,--- pos1
+		//    |   |
+		//    |   |   ,--- start / pos2
+		//    |   |   |
+		//    |   |   |   ,--- end
+		//    |   |   |   |
+		//    v   v   v   v
+		//     ``` foo ```
+		//    .   .   .  .
+		var marker = Searching.backward(start, '```');
+		if (!marker) {
+			return end;
+		}
+		var pos2 = Editing.remove(start, end)[1];
+		var front = Searching.backward(pos2, '```');
+		if (!front) {
+			return pos2;
+		}
+		var behind = Searching.search(front, /[^`]|$/);
+		if (!behind) {
+			return pos2;
+		}
+		var pos1 = Editing.remove(front, behind)[0];
+		return Editing.wrap('code', pos1, pos2)[1];
 	}
 
 	function ascii(symbol, start, end) {
-		var boundaries = Editing.remove(Ranges.envelopeInvisibleCharacters(
-			Ranges.fromBoundaries(start, end)
-		));
-		return Mutation.insertTextAtBoundary(symbol, boundaries[0], true);
+		var range = Ranges.fromBoundaries(start, end);
+		var boundaries = Boundaries.fromRange(
+			Ranges.envelopeInvisibleCharacters(range)
+		);
+		var boundary = Editing.remove(boundaries[0], boundaries[1])[0];
+		return Mutation.insertTextAtBoundary(symbol, boundary, true);
 	}
 
 	var triggers = {
 		'```' : code,
+
 		'(:'  : Fn.partial(ascii, '☺'),
 		':)'  : Fn.partial(ascii, '☺'),
 
@@ -58,10 +95,16 @@ define([
 		'==>' : Fn.partial(ascii, '⇒'),
 		'<==' : Fn.partial(ascii, '⇐'),
 
-		'|>' : Fn.partial(ascii, '►'),
-		'<|' : Fn.partial(ascii, '◄')
+		'|>'  : Fn.partial(ascii, '►'),
+		'<|'  : Fn.partial(ascii, '◄')
 	};
 
+	/**
+	 * A trie constructde from the trigger keys.
+	 *
+	 * @private
+	 * @type {Object.<String, Object|function>}
+	 */
 	var dictionary = {};
 
 	Maps.forEach(triggers, function(handler, trigger) {
