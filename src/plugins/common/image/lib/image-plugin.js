@@ -352,7 +352,7 @@ define([
 				var enabled = false;
 				var config = plugin.getEditableConfig(message.editable.obj);
 
-				if (config && config.indexOf('img') > -1 && ContentRules.isAllowed(message.editable.obj[0], 'img')) {
+				if (config && jQuery.inArray('img', config) > -1 && ContentRules.isAllowed(message.editable.obj[0], 'img')) {
 					enabled = true;
 				}
 				
