@@ -349,12 +349,17 @@ define([
 			});
 
 			PubSub.sub('aloha.editable.created', function (message) {
-				var enabled = plugin.getEditableConfig(message.editable.obj)
-				           && ContentRules.isAllowed(message.editable.obj[0], 'img');
+				var enabled = false;
+				var config = plugin.getEditableConfig(message.editable.obj);
+
+				if (config && config.indexOf('img') > -1 && ContentRules.isAllowed(message.editable.obj[0], 'img')) {
+					enabled = true;
+				}
+				
 				configurations[message.editable.getId()] = enabled;
 			});
 
-			PubSub.sub('aloha.editable.destoryed', function (message) {
+			PubSub.sub('aloha.editable.destroyed', function (message) {
 				delete configurations[message.editable.getId()];
 			});
 

@@ -1,0 +1,2 @@
+The image plugin would not accept disabling the "insert image" button by configuration. This has been fixed. Also, a small bug that prevented internal configuration cleanup when destroying an editable was fixed.
+
