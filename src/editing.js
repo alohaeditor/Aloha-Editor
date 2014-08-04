@@ -1456,7 +1456,7 @@ define([
 	 */
 	function remove(start, end) {
 		var range = Ranges.fromBoundaries(start, end);
-		fixupRange(range, function (range, left, right) {
+		return fixupRange(range, function (range, left, right) {
 			var remove = function (node) {
 				Mutation.removePreservingRange(node, range);
 			};
@@ -1503,7 +1503,6 @@ define([
 				}
 			};
 		}, false);
-		return Boundaries.fromRange(range);
 	}
 
 	/**

@@ -182,7 +182,7 @@ define([
 			parent = right;
 		}
 		siblings.reduce(function (boundary, node) {
-			return Mutation.insertNodeAtBoundary(node, boundary);
+			return Mutation.insertNodeAtBoundary(node, boundary, true);
 		}, linebreak);
 		if (parent) {
 			Dom.climbUntil(parent, Dom.remove, isVisibleNode);

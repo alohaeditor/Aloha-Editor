@@ -65,9 +65,9 @@ define([
 			}
 		}
 		var boundaries = Boundaries.fromRange(Ranges.envelopeInvisibleCharacters(range));
-		Editing.remove(boundaries[0], boundaries[1]);
-		Html.prop(range.commonAncestorContainer);
-		return range;
+		boundaries = Editing.remove(boundaries[0], boundaries[1]);
+		Html.prop(Boundaries.commonContainer(boundaries[0], boundaries[1]));
+		return Ranges.fromBoundaries(boundaries[0], boundaries[1]);
 	}
 
 	function format(style, event) {
