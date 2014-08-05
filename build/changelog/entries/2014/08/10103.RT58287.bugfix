@@ -1,0 +1,2 @@
+Button sets in a ribbon toolbar where falsely displayed. The list plugin forced a maximum width of 60px for all button sets. This has been repaired.
+Now only the button set in the aloha toolbar have a width of 60px.
