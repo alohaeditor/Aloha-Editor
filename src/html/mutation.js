@@ -167,6 +167,9 @@ define([
 			if (container === node) {
 				return true;
 			}
+			if (Elements.isProppingBr(node)) {
+				return false;
+			}
 			if (Predicates.isListItem(node)) {
 				return hasRenderedContent(node);
 			}

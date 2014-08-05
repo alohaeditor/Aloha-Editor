@@ -286,6 +286,26 @@ define([
 		return div;
 	}
 
+	/**
+	 * Checks whether the given node is a BR element that is placed within an
+	 * otherwise empty line-breaking element to ensure that the line-breaking
+	 * element it will be rendered (with one line-height).
+	 *
+	 * @param  {Node} node
+	 * @return {boolean}
+	 */
+	function isProppingBr(node) {
+		var parent = node.parentNode;
+		if ('BR' !== node.nodeName || !parent) {
+			return false;
+		}
+		if (!Styles.hasLinebreakingStyle(parent)) {
+			return false;
+		}
+		var rendered = Dom.children(parent).filter(isRendered);
+		return 1 === rendered.length && node === rendered[0];
+	}
+
 	return {
 		parse                              : parse,
 		isVoidType                         : isVoidType,
@@ -293,6 +313,7 @@ define([
 		isUnrendered                       : isUnrendered,
 		isUnrenderedWhitespace             : isUnrenderedWhitespace,
 		isUnrenderedWhitespaceNoBlockCheck : isUnrenderedWhitespaceNoBlockCheck,
+		isProppingBr                       : isProppingBr,
 		skipUnrenderedToEndOfLine          : skipUnrenderedToEndOfLine,
 		skipUnrenderedToStartOfLine        : skipUnrenderedToStartOfLine
 	};
