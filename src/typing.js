@@ -66,6 +66,18 @@ define([
 		}
 		var boundaries = Boundaries.fromRange(Ranges.envelopeInvisibleCharacters(range));
 		boundaries = Editing.remove(boundaries[0], boundaries[1]);
+
+		var node = Boundaries.container(boundaries[0]);
+
+		var inherited = event.editor.selectionContext.formatting;
+		var harvested = Overrides.harvest(node);
+		var overrides = Overrides.unique(inherited.concat(harvested));
+		event.editor.selectionContext.formatting = overrides;
+
+		Dom.climbUntil(node, function (node) {
+			boundaries = Mutation.removeNode(node, boundaries);
+		}, Html.isRendered);
+
 		Html.prop(Boundaries.commonContainer(boundaries[0], boundaries[1]));
 		return Ranges.fromBoundaries(boundaries[0], boundaries[1]);
 	}

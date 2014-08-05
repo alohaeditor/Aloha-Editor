@@ -7,12 +7,10 @@
  */
 define([
 	'dom',
-	'arrays',
 	'boundaries',
 	'html/traversing'
 ], function (
 	Dom,
-	Arrays,
 	Boundaries,
 	Traversing
 ) {
@@ -418,14 +416,14 @@ define([
 		return range;
 	}
 
-	function rangeFromBoundary(range) {
+	function boundaryFromRange(range) {
 		return Boundaries.fromRange(range)[0];
 	}
 
 	function removeNode(node, boundaries) {
 		var ranges = boundaries.map(boundaryToRange);
 		removePreservingRanges(node, ranges);
-		return ranges.map(rangeFromBoundary);
+		return ranges.map(boundaryFromRange);
 	}
 
 	function preserveCursorForShallowRemove(node, cursor) {

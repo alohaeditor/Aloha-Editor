@@ -160,10 +160,10 @@ define([
 		if (!isVisuallyAdjacent(above, below)) {
 			return [above, below];
 		}
-		var right         = Boundaries.nextNode(below);
-		var container     = Boundaries.container(above);
-		var linebreak     = nextLineBreak(above, below);
-		var isVisibleNode = function (node) {
+		var right        = Boundaries.nextNode(below);
+		var container    = Boundaries.container(above);
+		var linebreak    = nextLineBreak(above, below);
+		var cannotRemove = function (node) {
 			if (container === node) {
 				return true;
 			}
@@ -176,7 +176,7 @@ define([
 			return Elements.isRendered(node);
 		};
 		if (Boundaries.equals(linebreak, below)) {
-			Dom.climbUntil(right, Dom.remove, isVisibleNode);
+			Dom.climbUntil(right, Dom.remove, cannotRemove);
 			return [above, above];
 		}
 		var parent = right.parentNode;
@@ -188,7 +188,7 @@ define([
 			return Mutation.insertNodeAtBoundary(node, boundary, true);
 		}, linebreak);
 		if (parent) {
-			Dom.climbUntil(parent, Dom.remove, isVisibleNode);
+			Dom.climbUntil(parent, Dom.remove, cannotRemove);
 		}
 		return [above, above];
 	}
