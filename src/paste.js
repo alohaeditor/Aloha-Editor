@@ -143,12 +143,13 @@ define([
 		});
 
 		var last = Arrays.last(children);
+		var next = Boundaries.nodeAfter(boundary);
 
 		// Because we want to remove the unintentional line added at the end of
 		// the pasted content
-		if ('P' === last.nodeName || 'DIV' === last.nodeName) {
-			var next = Boundaries.nextNode(boundary);
+		if (next && ('P' === last.nodeName || 'DIV' === last.nodeName)) {
 			if (Html.hasInlineStyle(next)) {
+				boundary = Boundaries.fromEndOfNode(last);
 				// Move the next inline nodes into the last element
 				Dom.move(Dom.nodeAndNextSiblings(next, Html.hasLinebreakingStyle), last);
 			} else if (!Html.isVoidType(next) && !Html.isGroupContainer(next)) {
