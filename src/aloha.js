@@ -39,7 +39,7 @@ define([
 		var event = custom || {nativeEvent : nativeEvent};
 		event.editor = editor;
 		event.type = event.type || (nativeEvent && nativeEvent.type) || 'unknown';
-		Selections.select(Fn.comp.apply(editor.stack, editor.stack)(event));
+		Selections.handleSelection(Fn.comp.apply(editor.stack, editor.stack)(event));
 	}
 
 	editor.BLOCK_CLASS = 'aloha-block';

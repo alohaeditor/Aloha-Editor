@@ -482,12 +482,14 @@ define([
 	exports['selectionchange']['removeHandler'] = SelectionChange.removeHandler;
 
 	exports['selections'] = Selections;
-	exports['selections']['show']         = Selections.show;
-	exports['selections']['select']       = Selections.select;
-	exports['selections']['handle']       = Selections.handle;
-	exports['selections']['Context']      = Selections.Context;
-	exports['selections']['hideCarets']   = Selections.hideCarets;
-	exports['selections']['unhideCarets'] = Selections.unhideCarets;
+	exports['selections']['show']             = Selections.show;
+	exports['selections']['focus']            = Selections.focus;
+	exports['selections']['select']           = Selections.select;
+	exports['selections']['handle']           = Selections.handle;
+	exports['selections']['Context']          = Selections.Context;
+	exports['selections']['hideCarets']       = Selections.hideCarets;
+	exports['selections']['unhideCarets']     = Selections.unhideCarets;
+	exports['selections']['handleSelections'] = Selections.handleSelections;
 
 	exports['searching'] = Searching;
 	exports['searching']['search']   = Searching.search;

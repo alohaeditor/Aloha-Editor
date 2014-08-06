@@ -15,6 +15,7 @@ define([
 	'html',
 	'mouse',
 	'events',
+	'arrays',
 	'ranges',
 	'browsers',
 	'overrides',
@@ -29,6 +30,7 @@ define([
 	Html,
 	Mouse,
 	Events,
+	Arrays,
 	Ranges,
 	Browsers,
 	Overrides,
@@ -688,7 +690,7 @@ define([
 	 * @private
 	 * @param {Boundary} boundary
 	 */
-	function ensureInViewport(boundary) {
+	function focus(boundary) {
 		var box = Ranges.box(Ranges.fromBoundaries(boundary, boundary));
 		var doc = Boundaries.document(boundary);
 		var win = Dom.documentWindow(doc);
@@ -721,28 +723,43 @@ define([
 	}
 
 	/**
+	 * Joins a variable list of overrides-lists into a single unique set.
+	 *
+	 * @private
+	 * @param  {Array.<Override>...}
+	 * @param  {Array.<Override>}
+	 */
+	function joinToSet() {
+		return Overrides.unique(
+			Array.prototype.concat.apply([], Arrays.coerce(arguments))
+		);
+	}
+
+	/**
 	 * Computes a table of the given override and those collected at the given
 	 * node.
 	 *
+	 * An object with overrides mapped against their names
+	 *
 	 * @private
-	 * @param  {Array.<Override>} formatting
-	 * @param  {Array.<Override>} overrides
 	 * @param  {Node}             node
-	 * @return {Object}           An object with overrides mapped against their names
+	 * @param  {SelectionContext} context
+	 * @return {Object}
 	 */
-	function mapOverrides(formatting, overrides, node) {
-		var table = Maps.merge(
-			Maps.mapTuples(formatting),
-			Maps.mapTuples(Overrides.harvest(node)),
-			Maps.mapTuples(overrides)
+	function mapOverrides(node, context) {
+		var overrides = joinToSet(
+			context.formatting,
+			Overrides.harvest(node),
+			context.overrides
 		);
-		if (!table['color']) {
-			table['color'] = Dom.getComputedStyle(
+		var map = Maps.merge(Maps.mapTuples(overrides));
+		if (!map['color']) {
+			map['color'] = Dom.getComputedStyle(
 				Dom.isTextNode(node) ? node.parentNode : node,
 				'color'
 			);
 		}
-		return table;
+		return map;
 	}
 
 	function toggleBlinking(blinking, type) {
@@ -905,40 +922,65 @@ define([
 	}
 
 	/**
-	 * Causes the selection that is held in the given selection context to be
-	 * set to the browser and the caret position to be visualized.
+	 * Causes the selection for the given event to be set to the browser and the
+	 * caret position to be visualized.
 	 *
 	 * @param {AlohaEvent} event
 	 */
-	function select(event) {
+	function handleSelection(event) {
 		var context = event.editor.selectionContext;
 		if (!context.range || 'mousemove' === event.type) {
 			return;
 		}
 		var boundaries = Boundaries.fromRange(context.range);
-		var focus = boundaries[('start' === context.focus) ? 0 : 1];
-		if (!Dom.isEditableNode(Boundaries.container(focus))) {
-			Dom.setStyle(context.caret, 'display', 'none');
-			return;
-		}
-		show(context.caret, focus);
-		Maps.extend(context.caret.style, stylesFromOverrides(mapOverrides(
-			context.formatting,
-			context.overrides,
-			Boundaries.container(focus)
-		)));
-		Boundaries.select(boundaries[0], boundaries[1]);
+		var boundary = select(
+			boundaries[0],
+			boundaries[1],
+			event.editor,
+			event.editor.selectionContext.focus
+		);
+		// Because we don't want the screen to jump when the editor hits "shift"
 		if (isCaretMovingEvent(event)) {
-			ensureInViewport(focus);
+			focus(boundary);
 		}
 	}
 
+	/**
+	 * Selects the given boundaries and visualizes the caret position.
+	 *
+	 * Returns the focus boundary so that one can do focus(select(...)).
+	 *
+	 * @param  {Boundary} start
+	 * @param  {Boundary} end
+	 * @param  {Editor}   editor
+	 * @param  {string=}  focus optional. "start" or "end". Defaults to "end"
+	 * @return {Boundary} The focus boundary
+	 */
+	function select(start, end, editor, focus) {
+		var context = editor.selectionContext;
+		var boundary = 'start' === focus ? start : end;
+		var node = Boundaries.container(boundary);
+		if (!Dom.isEditableNode(node)) {
+			Dom.setStyle(context.caret, 'display', 'none');
+			return;
+		}
+		show(context.caret, boundary);
+		Maps.extend(
+			context.caret.style,
+			stylesFromOverrides(mapOverrides(node, context))
+		);
+		Boundaries.select(start, end);
+		return boundary;
+	}
+
 	return {
-		show         : show,
-		select       : select,
-		handle       : handle,
-		Context      : Context,
-		hideCarets   : hideCarets,
-		unhideCarets : unhideCarets
+		show            : show,
+		select          : select,
+		focus           : focus,
+		handleSelection : handleSelection,
+		handle          : handle,
+		Context         : Context,
+		hideCarets      : hideCarets,
+		unhideCarets    : unhideCarets,
 	};
 });
