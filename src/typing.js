@@ -10,6 +10,7 @@ define([
 	'keys',
 	'html',
 	'undo',
+	'arrays',
 	'ranges',
 	'editing',
 	'strings',
@@ -26,6 +27,7 @@ define([
 	Keys,
 	Html,
 	Undo,
+	Arrays,
 	Ranges,
 	Editing,
 	Strings,
@@ -52,6 +54,41 @@ define([
 		return range;
 	}
 
+	/**
+	 * Joins a variable list of overrides-lists into a single unique set.
+	 *
+	 * @private
+	 * @param  {Array.<Override>...}
+	 * @param  {Array.<Override>}
+	 */
+	function joinToSet() {
+		return Overrides.unique(
+			Array.prototype.concat.apply([], Arrays.coerce(arguments))
+		);
+	}
+
+	/**
+	 * Removes unrendered containers from each of the given boundaries while
+	 * preserving the correct position of all.
+	 *
+	 * Returns a new set of boundaries that represent the corrected positions
+	 * following node-removal. The order of the returned list corresponds with
+	 * the list of boundaries that was given.
+	 *
+	 * @private
+	 * @param  {Array.<Boundary>} boundaries
+	 * @return {Array.<Boundary>}
+	 */
+	function removeUnrenderedContainers(boundaries) {
+		function remove (node) {
+			boundaries = Mutation.removeNode(node, boundaries);
+		}
+		for (var i = 0; i < boundaries.length; i++) {
+			Dom.climbUntil(Boundaries.container(boundaries[i]), remove, Html.isRendered);
+		}
+		return boundaries;
+	}
+
 	function remove(direction, event) {
 		var range = event.range;
 		var boundary;
@@ -66,18 +103,11 @@ define([
 		}
 		var boundaries = Boundaries.fromRange(Ranges.envelopeInvisibleCharacters(range));
 		boundaries = Editing.remove(boundaries[0], boundaries[1]);
-
-		var node = Boundaries.container(boundaries[0]);
-
-		var inherited = event.editor.selectionContext.formatting;
-		var harvested = Overrides.harvest(node);
-		var overrides = Overrides.unique(inherited.concat(harvested));
-		event.editor.selectionContext.formatting = overrides;
-
-		Dom.climbUntil(node, function (node) {
-			boundaries = Mutation.removeNode(node, boundaries);
-		}, Html.isRendered);
-
+		event.editor.selectionContext.formatting = joinToSet(
+			event.editor.selectionContext.formatting,
+			Overrides.harvest(Boundaries.container(boundaries[0]))
+		);
+		boundaries = removeUnrenderedContainers(boundaries);
 		Html.prop(Boundaries.commonContainer(boundaries[0], boundaries[1]));
 		return Ranges.fromBoundaries(boundaries[0], boundaries[1]);
 	}
@@ -93,18 +123,21 @@ define([
 			return event.range;
 		}
 		var context = event.editor.selectionContext;
-		var harvested = Overrides.harvest(Boundaries.container(boundaries[0]));
-		var overrides = context.formatting.concat(harvested, context.overrides);
-		context.overrides = Overrides.toggle(Overrides.unique(overrides), override, true);
+		var overrides = joinToSet(
+			context.formatting,
+			Overrides.harvest(Boundaries.container(boundaries[0])),
+			context.overrides
+		);
+		context.overrides = Overrides.toggle(overrides, override, true);
 		return event.range;
 	}
 
 	function breakline(isLinebreak, event) {
 		if (!isLinebreak) {
-			var inherited = event.editor.selectionContext.formatting;
-			var harvested = Overrides.harvest(event.range.startContainer);
-			var overrides = Overrides.unique(inherited.concat(harvested));
-			event.editor.selectionContext.formatting = overrides;
+			event.editor.selectionContext.formatting = joinToSet(
+				event.editor.selectionContext.formatting,
+				Overrides.harvest(event.range.startContainer)
+			);
 		}
 		Editing.breakline(
 			event.range,
@@ -135,12 +168,10 @@ define([
 		}
 
 		var context = event.editor.selectionContext;
-
 		boundary = Overrides.consume(
 			boundary,
-			Overrides.unique(context.formatting.concat(context.overrides))
+			joinToSet(context.formatting, context.overrides)
 		);
-
 		context.overrides = [];
 		context.formatting = [];
 
