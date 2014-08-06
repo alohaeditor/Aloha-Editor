@@ -981,6 +981,6 @@ define([
 		handle          : handle,
 		Context         : Context,
 		hideCarets      : hideCarets,
-		unhideCarets    : unhideCarets,
+		unhideCarets    : unhideCarets
 	};
 });
