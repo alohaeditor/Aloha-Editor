@@ -4,13 +4,13 @@
 	var Dom = aloha.dom;
 	var Traversing = aloha.traversing;
 	var Boundaries = aloha.boundaries;
-	var BoundaryMarkers = aloha.boundarymarkers;
+	var Markers = aloha.markers;
 
     module('traversing');
 
 	function runTest(before, after, op) {
-		var boundaries = BoundaryMarkers.extract($(before)[0]);
-		var actual = BoundaryMarkers.hint(op(boundaries));
+		var boundaries = Markers.extract($(before)[0]);
+		var actual = Markers.hint(op(boundaries));
 		equal(actual, after, before + ' ⇒ ' + after);
 	}
 

@@ -2,13 +2,13 @@
 	'use strict';
 
 	var Links = aloha.links;
-	var BoundaryMarkers = aloha.boundarymarkers;
+	var Markers = aloha.markers;
 
 	module('links');
 
 	function run(href, before, after) {
 		var dom = $('<div>' + before + '</div>')[0];
-		var boundaries = BoundaryMarkers.extract(dom);
+		var boundaries = Markers.extract(dom);
 		Links.create(href, boundaries[0], boundaries[1]);
 		equal(dom.innerHTML, after, before, before + ' ⇒ ' + after);
 	}

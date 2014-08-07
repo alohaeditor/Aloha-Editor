@@ -5,13 +5,13 @@
 	var Html = aloha.html;
 	var Ranges = aloha.ranges;
 	var Boundaries = aloha.boundaries;
-	var BoundaryMarkers = aloha.boundarymarkers;
+	var Markers = aloha.markers;
 
     module('html');
 
 	test('isVisuallyAdjacent', function () {
 		var t = function (markup, expected) {
-			var boundaries = BoundaryMarkers.extract($(markup)[0]);
+			var boundaries = Markers.extract($(markup)[0]);
 			equal(
 				Html.__.isVisuallyAdjacent(boundaries[0], boundaries[1]),
 				expected,
@@ -46,10 +46,10 @@
 
 	test('nextLineBreak', function () {
 		var t = function (before, after) {
-			var boundaries = BoundaryMarkers.extract($(before)[0]);
+			var boundaries = Markers.extract($(before)[0]);
 			var linebreak = Html.__.nextLineBreak(boundaries[0], boundaries[1]);
 			equal(
-				BoundaryMarkers.hint([linebreak || boundaries[0], boundaries[1]]),
+				Markers.hint([linebreak || boundaries[0], boundaries[1]]),
 				after,
 				before + ' ⇒ ' + after
 			);

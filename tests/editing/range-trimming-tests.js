@@ -25,11 +25,11 @@
 	function testMutation(before, expected, mutate) {
 		$('#test-editable').html(before);
 		var dom = $('#test-editable')[0].firstChild;
-		var boundaries = aloha.boundarymarkers.extract(dom);
+		var boundaries = aloha.markers.extract(dom);
 		var range = Ranges.fromBoundaries(boundaries[0], boundaries[1]);
 		dom = mutate(dom, range) || dom;
 		boundaries = rawBoundariesFromRange(range);
-		aloha.boundarymarkers.insert(boundaries[0], boundaries[1]);
+		aloha.markers.insert(boundaries[0], boundaries[1]);
 		var actual = Xhtml.nodeToXhtml(dom);
 		if ($.type(expected) === 'function') {
 			expected(actual);

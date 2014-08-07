@@ -5,8 +5,8 @@
 
 	function runTest(before, after, op) {
 		var $dom = $(before);
-		var boundaries = aloha.boundarymarkers.extract($dom[0]);
-		var actual = aloha.boundarymarkers.hint(op($dom.find('u')[0], boundaries));
+		var boundaries = aloha.markers.extract($dom[0]);
+		var actual = aloha.markers.hint(op($dom.find('u')[0], boundaries));
 		equal(actual, after, before + ' ⇒ ' + after);
 	}
 

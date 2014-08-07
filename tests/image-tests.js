@@ -3,7 +3,7 @@
 	'use strict';
 
 	var Image = aloha.image;
-	var BoundaryMarkers = aloha.boundarymarkers;
+	var Markers = aloha.markers;
 
 	module('Image');
 
@@ -13,7 +13,7 @@
 			div.innerHTML = cases[i][0];
 
 			var range = document.createRange();
-			BoundaryMarkers.extract(div, range);
+			Markers.extract(div, range);
 
 			fn(range, attrs);
 

@@ -4,8 +4,8 @@
 	module('editing');
 
 	function runTest(before, after, op, context) {
-		var boundaries = aloha.boundarymarkers.extract($(before)[0]);
-		var actual = aloha.boundarymarkers.hint(op(boundaries));
+		var boundaries = aloha.markers.extract($(before)[0]);
+		var actual = aloha.markers.hint(op(boundaries));
 		equal(actual, after, before + ' ⇒ ' + after);
 	}
 

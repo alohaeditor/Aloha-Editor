@@ -2,7 +2,7 @@
 	'use strict';
 
 	var ranges = aloha.ranges;
-	var boundarymarkers = aloha.boundarymarkers;
+	var markers = aloha.markers;
 	var tested = [];
 
 	module('ranges');
@@ -10,9 +10,9 @@
 	function runTest(before, after, op) {
 		var dom = $(before)[0];
 		var range = ranges.create(dom, 0);
-		boundarymarkers.extract(dom, range);
+		markers.extract(dom, range);
 		op(range);
-		boundarymarkers.insert(range);
+		markers.insert(range);
 		equal(dom.outerHTML, after, before + ' ⇒ ' + after);
 	}
 

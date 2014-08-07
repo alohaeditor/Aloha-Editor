@@ -10,7 +10,7 @@
     function t(html, top, left) {
         test(html, function() {
             editor.innerHTML = html;
-            var boundaries = aloha.boundarymarkers.extract(editor);
+            var boundaries = aloha.markers.extract(editor);
 			aloha.boundaries.select(boundaries[0], boundaries[1]);
 			aloha.events.dispatch(document, editor, 'keypress');
 			var caret = document.querySelector('.aloha-caret');

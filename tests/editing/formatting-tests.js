@@ -7,16 +7,16 @@
 	var Html = aloha.html;
 	var Ranges = aloha.ranges;
 	var Editing = aloha.editing;
-	var BoundaryMarkers = aloha.boundarymarkers;
+	var Markers = aloha.markers;
 	var Xhtml; require('../src/dom-to-xhtml', function (Module) { Xhtml = Module; });
 
 	function testMutation(title, before, expected, mutate) {
 		test(title, function () {
 			$('#test-editable').empty().html(before);
 			var dom = $('#test-editable')[0].firstChild;
-			var boundaries = BoundaryMarkers.extract(dom);
+			var boundaries = Markers.extract(dom);
 			boundaries = mutate(dom, boundaries[0], boundaries[1]);
-			BoundaryMarkers.insert(boundaries[0], boundaries[1]);
+			Markers.insert(boundaries[0], boundaries[1]);
 			var actual = Xhtml.nodeToXhtml(dom);
 			if ($.type(expected) === 'function') {
 				expected(actual);

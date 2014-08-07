@@ -3,7 +3,7 @@
 
 	var LinkSelection = aloha.linkselection;
 	var Ranges = aloha.ranges;
-	var BoundaryMarkers = aloha.boundarymarkers;
+	var Markers = aloha.markers;
 
 	module('Link');
 
@@ -13,7 +13,7 @@
 
 		var range = Ranges.create(document.documentElement, 0);
 
-		BoundaryMarkers.extract(result, range);
+		Markers.extract(result, range);
 
 		LinkSelection.createAnchorsInRange(range, document);
 
@@ -25,7 +25,7 @@
 
 		var range = Ranges.create(document.documentElement, 0);
 
-		BoundaryMarkers.extract(result, range);
+		Markers.extract(result, range);
 
 		var resultArray = LinkSelection.linkableNodesInsideRange(range);
 		var div = document.createElement('div');

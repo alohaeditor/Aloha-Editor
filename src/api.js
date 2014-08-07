@@ -14,7 +14,6 @@ define([
 	'blocks',
 	'boromir',
 	'boundaries',
-	'boundary-markers',
 	'browsers',
 	'colors',
 	'content',
@@ -32,6 +31,7 @@ define([
 	'links',
 	'lists',
 	'maps',
+	'markers',
 	'metaview',
 	'mouse',
 	'mutation',
@@ -53,7 +53,6 @@ define([
 	Blocks,
 	Boromir,
 	Boundaries,
-	BoundaryMarkers,
 	Browsers,
 	Colors,
 	Content,
@@ -71,6 +70,7 @@ define([
 	Links,
 	Lists,
 	Maps,
+	Markers,
 	Metaview,
 	Mouse,
 	Mutation,
@@ -160,12 +160,10 @@ define([
 	exports['boundaries']['precedingTextLength'] = Boundaries.precedingTextLength;
 	exports['boundaries']['commonContainer']     = Boundaries.commonContainer;
 
-	exports['boundarymarkers'] = new Object();
-	exports['boundarymarkers']['hint']    = BoundaryMarkers.hint;
-	exports['boundarymarkers']['insert']  = BoundaryMarkers.insert;
-	exports['boundarymarkers']['extract'] = BoundaryMarkers.extract;
-
-	exports['markers'] = exports['boundarymarkers'];
+	exports['markers'] = new Object();
+	exports['markers']['hint']    = Markers.hint;
+	exports['markers']['insert']  = Markers.insert;
+	exports['markers']['extract'] = Markers.extract;
 
 	exports['browsers'] = new Object();
 	exports['browsers']['ie7']           = Browsers.ie7;

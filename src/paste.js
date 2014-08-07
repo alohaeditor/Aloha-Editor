@@ -212,6 +212,7 @@ define([
 			meta: {type: 'paste'}
 		}, function () {
 			var boundary = insert(boundaries[0], boundaries[1], content);
+			console.warn(boundaries[0], boundary);
 			event.range = Ranges.fromBoundaries(boundary, boundary);
 		});
 		return event;

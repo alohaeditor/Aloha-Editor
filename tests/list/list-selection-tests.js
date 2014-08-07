@@ -2,7 +2,7 @@
 	'use strict';
 
 	var ListSelection  = aloha.listselection;
-	var BoundaryMarkers    = aloha.boundarymarkers;
+	var Markers    = aloha.markers;
 	var Boundaries = aloha.boundaries;
 
 	module('List');
@@ -18,7 +18,7 @@
 			div.innerHTML = cases[i][0];
 
 			var range = document.createRange();
-			BoundaryMarkers.extract(div, range);
+			Markers.extract(div, range);
 
 			var startBoundary = Boundaries.raw(range.startContainer, range.startOffset);
 			var endBoundary = Boundaries.raw(range.endContainer, range.endOffset);
