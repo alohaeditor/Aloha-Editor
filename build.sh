@@ -5,7 +5,8 @@ Aloha Editor build script
 --simple      build with simple optimization - default is advanced
 --source-map  creates a source-mapped output in build directory
 
-Make sure to include an .env file in the same directory as this script.
+Make sure to run this script from within the directory in which is located (ie: ./build.sh).
+Also make sure to include an .env file in the same directory as this script.
 Your .env file should define ClOSURE_PATH=$CLOSURE_PATH.
 	"
 }
