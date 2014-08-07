@@ -278,11 +278,17 @@ define('format/format-plugin', [
 	}
 
 	function blockLevelButtonClickHandler(formatPlugin, button) {
+		// preserve default behaviour
+		return blockLevelButtonClickHandler(formatPlugin, button, null);
+	}
+
+	function blockLevelButtonClickHandler(formatPlugin, button, cssClass) {
 		if (formatInsideTableWorkaround(button)) {
 			return false;
 		}
 
-		formatPlugin.changeMarkup( button );
+		// forward css-class to changeMarkup()
+		formatPlugin.changeMarkup( button, cssClass );
 
 		// setting the focus is needed for mozilla to have a working rangeObject.select()
 		if (Aloha.activeEditable && jQuery.browser.mozilla) {
@@ -313,13 +319,81 @@ define('format/format-plugin', [
 	}
 
 	function makeBlockLevelButton(formatPlugin, button) {
+		// preserve default behaviour
+		return makeBlockLevelButton(formatPlugin, button, null);
+	}
+
+	function makeBlockLevelButton(formatPlugin, button, cssClass) {
+		var markup = jQuery('<' + button + '>');
+		var tooltip = i18n.t('button.' + button + '.tooltip');
+		var iconClass = 'aloha-icon ' + i18n.t('aloha-large-icon-' + button);
+		var name = button;
+
+		// handle custom css-classes
+		if(cssClass !== null) {
+			// add css-class to new element
+			markup.addClass(cssClass);
+
+			// add css-class to the tooltip
+			tooltip += ' ' + cssClass;
+
+			// change the button's css-class
+			iconClass += '-' + cssClass;
+
+			// change the button's name
+			name += '.' + cssClass;
+
+			// create new canvas and set its dimensions
+			var canvas = $('<canvas />')[0];
+			var context = canvas.getContext('2d');
+			context.canvas.width = 54;
+			context.canvas.height = 44;
+
+			// prepare to write the css-class name into the canvas
+			var text = cssClass;
+			context.fillStyle = '#000000';
+			context.font = '12px Arial';
+			context.textAlign = 'center';
+
+			// make sure the text fits into the canvas (strip characters that don't fit)
+			while(context.measureText(text).width > 50) {
+				text = text.substring(0, text.length - 1);
+			}
+
+			// write the css-class into the canvas, slightly above the vertical middle
+			context.fillText(text, canvas.width / 2, canvas.height / 2 - 2);
+
+			// prepare to write the tag-name into the canvas
+			text = i18n.t('button.' + button + '.tooltip');
+			context.fillStyle = '#666666'
+			context.font = '9px Arial';
+
+			// make sure the text fits into the canvas (strip characters that don't fit)
+			while(context.measureText(text).width > 50) {
+				text = text.substring(0, text.length - 1);
+			}
+
+			// write the tag-name into the canvas, a little below the css-class name
+			context.fillText(text, canvas.width / 2, canvas.height / 2 + 12);
+
+			// add a custom css-class for the new button that has a white background as well as the base64-coded data of the cavas as the background-image
+			var css = $('<style />');
+			css.attr('type', 'text/css');
+			css.html('.aloha-large-icon-' + button + '-' + cssClass + '{background-image: url(' + context.canvas.toDataURL() + ') !important;background-color: #FFFFFF !important;}');
+			$('body').append(css);
+
+			// remove the canvas from the DOM
+			canvas.remove();
+		}
+
 		return {
-			name: button,
-			tooltip: i18n.t('button.' + button + '.tooltip'),
-			iconClass: 'aloha-icon ' + i18n.t('aloha-large-icon-' + button),
-			markup: jQuery('<' + button + '>'),
+			name: name,
+			tooltip: tooltip,
+			iconClass: iconClass,
+			markup: markup,
 			click: function () { 
-				return blockLevelButtonClickHandler(formatPlugin, button); 
+				// forward css-class to blockLevelButtonClickHandler()
+				return blockLevelButtonClickHandler(formatPlugin, button, cssClass);
 			}
 		};
 	}
@@ -407,7 +481,19 @@ define('format/format-plugin', [
 	}
 
 	function changeMarkup(button) {
-		Selection.changeMarkupOnSelection(jQuery('<' + button + '>'));
+		// preserve default behaviour
+		changeMarkup(button, null);
+	}
+
+	function changeMarkup(button, cssClass) {
+        var markup = jQuery('<' + button + '>');
+
+		// handle custom css-classes
+		if(cssClass !== null) {
+			markup.addClass(cssClass);
+		}
+
+		Selection.changeMarkupOnSelection(markup);
 		if (Aloha.settings.plugins.format && Aloha.settings.plugins.format.checkHeadingHierarchy === true) {
 			checkHeadingHierarchy(this.formatOptions);
 		}
@@ -693,7 +779,9 @@ define('format/format-plugin', [
 			// and the same for multisplit items
 			len = this.multiSplitItems.length;
 			for (i = 0; i < len; i++) {
-				var name = this.multiSplitItems[i].name;
+				// strip custom css-classes in order to use the css-less handling of the button
+				var name = this.multiSplitItems[i].name.split('.')[0];
+
 				if (!ContentRules.isAllowed(editable, name)) {
 					this.multiSplitButton.hideItem(name);
 				} else if (jQuery.inArray(name, config) !== -1) {
@@ -718,6 +806,15 @@ define('format/format-plugin', [
 			$.each(this.availableButtons, function(j, button) {
 				var button_config = false;
 
+				// check for custom-css classes
+				var buttonParts = button.split('.');
+				var button = buttonParts[0];
+				var cssClass = null;
+
+				if(typeof buttonParts[1] !== 'undefined') {
+					cssClass = buttonParts[1];
+				}
+
 				if (typeof j !== 'number' && typeof button !== 'string') {
 					button_config = button;
 					button = j;
@@ -729,7 +826,8 @@ define('format/format-plugin', [
 						markup: jQuery('<'+button+'>', {'class': button_config || ''})
 					};
 				} else if (blockLevelSemantics[button]) {
-					that.multiSplitItems.push(makeBlockLevelButton(that, button));
+					// forward cssClass to makeBlockLevelButton()
+					that.multiSplitItems.push(makeBlockLevelButton(that, button, cssClass));
 				} else if ('removeFormat' === button) {
 					that.multiSplitItems.push(makeRemoveFormatButton(that, button));
 				} else {
