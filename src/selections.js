@@ -567,7 +567,7 @@ define([
 	 */
 	function blinking(caret) {
 		var timers = [];
-		var blink = true;
+		var blinking = true;
 		function fade(start, end, duration) {
 			Animation.animate(
 				start,
@@ -575,7 +575,7 @@ define([
 				Animation.easeLinear,
 				duration,
 				function (value, percent, state) {
-					if (!blink) {
+					if (!blinking) {
 						return true;
 					}
 					Dom.setStyle(caret, 'opacity', value);
@@ -595,26 +595,25 @@ define([
 			);
 		}
 		function stop() {
-			blink = false;
+			blinking = false;
 			Dom.setStyle(caret, 'opacity', 1);
 			timers.forEach(clearTimeout);
 			timers = [];
 		}
-		function start() {
+		function blink() {
 			stop();
-			blink = true;
+			blinking = true;
 			timers.push(setTimeout(function () {
 				fade(1, 0, 100);
 			}, 500));
 		}
-		function restart() {
+		function start() {
 			stop();
-			timers.push(setTimeout(start, 300));
+			timers.push(setTimeout(blink, 50));
 		}
 		return {
-			stop    : stop,
-			start   : start,
-			restart : restart
+			start : start,
+			stop  : stop
 		};
 	}
 
@@ -762,16 +761,6 @@ define([
 		return map;
 	}
 
-	function toggleBlinking(blinking, type) {
-		if ('mousedown' === type) {
-			blinking.stop();
-		} else if ('mouseup' === type) {
-			blinking.start();
-		} else if ('keydown' === type) {
-			blinking.restart();
-		}
-	}
-
 	function positionAtEvent(event) {
 		if (!event.target.ownerDocument) {
 			return null;
@@ -824,7 +813,6 @@ define([
 			// starts creating an expanded selection by dragging
 			if (!old.dragging && event.editor.selectionContext.dragging) {
 				Dom.setStyle(old.caret, 'display', 'none');
-				old.blinking.stop();
 			}
 
 			return event;
@@ -836,8 +824,6 @@ define([
 			old.blinking.stop();
 			return event;
 		}
-
-		toggleBlinking(old.blinking, event.type);
 
 		if (!event.editable) {
 			event.editor.selectionContext = newContext(event, old, {
@@ -948,13 +934,13 @@ define([
 	/**
 	 * Selects the given boundaries and visualizes the caret position.
 	 *
-	 * Returns the focus boundary so that one can do focus(select(...)).
+	 * Returns the focus boundary so that one can do focus(select(...))
 	 *
 	 * @param  {Boundary} start
 	 * @param  {Boundary} end
 	 * @param  {Editor}   editor
 	 * @param  {string=}  focus optional. "start" or "end". Defaults to "end"
-	 * @return {Boundary} The focus boundary
+	 * @return {Boundary}
 	 */
 	function select(start, end, editor, focus) {
 		var context = editor.selectionContext;
@@ -962,7 +948,7 @@ define([
 		var node = Boundaries.container(boundary);
 		if (!Dom.isEditableNode(node)) {
 			Dom.setStyle(context.caret, 'display', 'none');
-			return;
+			return boundary;
 		}
 		show(context.caret, boundary);
 		Maps.extend(
@@ -970,6 +956,7 @@ define([
 			stylesFromOverrides(mapOverrides(node, context))
 		);
 		Boundaries.select(start, end);
+		context.blinking.start();
 		return boundary;
 	}
 
