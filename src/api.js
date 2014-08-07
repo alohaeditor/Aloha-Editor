@@ -92,7 +92,7 @@ define([
 
 	var exports = {};
 
-	exports['Boromir'] = new Object();
+	exports['Boromir'] = Boromir;
 	exports['DelayedMap'] = DelayedMap;
 	exports['Record'] = Record;
 
@@ -116,7 +116,6 @@ define([
 	exports['blocks']['read']   = Blocks.read;
 	exports['blocks']['write']  = Blocks.write;
 	exports['blocks']['handle'] = Blocks.handle;
-
 
 	exports['boundaries'] = new Object();
 	exports['boundaries']['get']                 = Boundaries.get;
@@ -346,6 +345,8 @@ define([
 	exports['fn']['extendType']   = Fn.extendType;
 
 	exports['html'] = new Object();
+	exports['html']['__']                        = Html.__;
+	exports['html']['isRenderedBr']              = Html.isRenderedBr;
 	exports['html']['isRendered']                = Html.isRendered;
 	exports['html']['isUnrendered']              = Html.isUnrendered;
 	exports['html']['isUnrenderedWhitespace']    = Html.isUnrenderedWhitespace;
@@ -427,18 +428,19 @@ define([
 	exports['mouse']['EVENTS'] = Mouse.EVENTS;
 
 	exports['mutation'] = new Object();
-	exports['mutation']['removeNode']                     = Mutation.removeNode;
-	exports['mutation']['removeShallowPreservingCursors'] = Mutation.removeShallowPreservingCursors;
-	exports['mutation']['removePreservingRange']          = Mutation.removePreservingRange;
-	exports['mutation']['removePreservingRanges']         = Mutation.removePreservingRanges;
-	exports['mutation']['insertTextAtBoundary']           = Mutation.insertTextAtBoundary;
-	exports['mutation']['insertNodeAtBoundary']           = Mutation.insertNodeAtBoundary;
-	exports['mutation']['splitTextNode']                  = Mutation.splitTextNode;
-	exports['mutation']['splitTextContainers']            = Mutation.splitTextContainers;
-	exports['mutation']['joinTextNodeAdjustRange']        = Mutation.joinTextNodeAdjustRange;
-	exports['mutation']['joinTextNode']                   = Mutation.joinTextNode;
-	exports['mutation']['splitBoundary']                  = Mutation.splitBoundary;
-	exports['mutation']['splitBoundaryUntil']             = Mutation.splitBoundaryUntil;
+	exports['mutation']['replaceShallowPreservingBoundaries'] = Mutation.replaceShallowPreservingBoundaries;
+	exports['mutation']['removeShallowPreservingCursors']     = Mutation.removeShallowPreservingCursors;
+	exports['mutation']['removePreservingRange']              = Mutation.removePreservingRange;
+	exports['mutation']['removePreservingRanges']             = Mutation.removePreservingRanges;
+	exports['mutation']['removeNode']                         = Mutation.removeNode;
+	exports['mutation']['insertTextAtBoundary']               = Mutation.insertTextAtBoundary;
+	exports['mutation']['insertNodeAtBoundary']               = Mutation.insertNodeAtBoundary;
+	exports['mutation']['splitTextNode']                      = Mutation.splitTextNode;
+	exports['mutation']['splitTextContainers']                = Mutation.splitTextContainers;
+	exports['mutation']['joinTextNodeAdjustRange']            = Mutation.joinTextNodeAdjustRange;
+	exports['mutation']['joinTextNode']                       = Mutation.joinTextNode;
+	exports['mutation']['splitBoundary']                      = Mutation.splitBoundary;
+	exports['mutation']['splitBoundaryUntil']                 = Mutation.splitBoundaryUntil;
 
 	exports['overrides'] = new Object();
 	exports['overrides']['indexOf']     = Overrides.indexOf;
