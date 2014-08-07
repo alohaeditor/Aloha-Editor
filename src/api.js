@@ -92,11 +92,11 @@ define([
 
 	var exports = {};
 
-	exports['Boromir'] = Boromir;
+	exports['Boromir'] = new Object();
 	exports['DelayedMap'] = DelayedMap;
 	exports['Record'] = Record;
 
-	exports['arrays'] = Arrays;
+	exports['arrays'] = new Object();
 	exports['arrays']['contains']   = Arrays.contains;
 	exports['arrays']['difference'] = Arrays.difference;
 	exports['arrays']['equal']      = Arrays.equal;
@@ -112,13 +112,13 @@ define([
 	exports['arrays']['unique']     = Arrays.unique;
 
 
-	exports['blocks'] = Blocks;
+	exports['blocks'] = new Object();
 	exports['blocks']['read']   = Blocks.read;
 	exports['blocks']['write']  = Blocks.write;
 	exports['blocks']['handle'] = Blocks.handle;
 
 
-	exports['boundaries'] = Boundaries;
+	exports['boundaries'] = new Object();
 	exports['boundaries']['get']                 = Boundaries.get;
 	exports['boundaries']['select']              = Boundaries.select;
 	exports['boundaries']['raw']                 = Boundaries.raw;
@@ -160,14 +160,14 @@ define([
 	exports['boundaries']['precedingTextLength'] = Boundaries.precedingTextLength;
 	exports['boundaries']['commonContainer']     = Boundaries.commonContainer;
 
-	exports['boundarymarkers'] = BoundaryMarkers;
+	exports['boundarymarkers'] = new Object();
 	exports['boundarymarkers']['hint']    = BoundaryMarkers.hint;
 	exports['boundarymarkers']['insert']  = BoundaryMarkers.insert;
 	exports['boundarymarkers']['extract'] = BoundaryMarkers.extract;
 
-	exports['markers'] = BoundaryMarkers;
+	exports['markers'] = exports['boundarymarkers'];
 
-	exports['browsers'] = Browsers;
+	exports['browsers'] = new Object();
 	exports['browsers']['ie7']           = Browsers.ie7;
 	exports['browsers']['chrome']        = Browsers.chrome;
 	exports['browsers']['webkit']        = Browsers.webkit;
@@ -176,20 +176,20 @@ define([
 	exports['browsers']['version']       = Browsers.version;
 	exports['browsers']['VENDOR_PREFIX'] = Browsers.VENDOR_PREFIX;
 
-	exports['colors'] = Colors;
+	exports['colors'] = new Object();
 	exports['colors']['hex']      = Colors.hex;
 	exports['colors']['rgb']      = Colors.rgb;
 	exports['colors']['cross']    = Colors.cross;
 	exports['colors']['equals']   = Colors.equals;
 	exports['colors']['toString'] = Colors.toString;
 
-	exports['content'] = Content;
+	exports['content'] = new Object();
 	exports['content']['allowsNesting']        = Content.allowsNesting;
 	exports['content']['NODES_BLACKLIST']      = Content.NODES_BLACKLIST;
 	exports['content']['STYLES_WHITELIST']     = Content.STYLES_WHITELIST;
 	exports['content']['ATTRIBUTES_WHITELIST'] = Content.ATTRIBUTES_WHITELIST;
 
-	exports['dom'] = Dom;
+	exports['dom'] = new Object();
 	exports['dom']['Nodes']                        = Dom.Nodes;
 	exports['dom']['offset']                       = Dom.offset;
 	exports['dom']['cloneShallow']                 = Dom.cloneShallow;
@@ -291,12 +291,12 @@ define([
 	exports['dom']['scrollTop']                    = Dom.scrollTop;
 	exports['dom']['scrollLeft']                   = Dom.scrollLeft;
 
-	exports['dragdrop'] = DragDrop;
+	exports['dragdrop'] = new Object();
 	exports['dragdrop']['handle']      = DragDrop.handle;
 	exports['dragdrop']['Context']     = DragDrop.Context;
 	exports['dragdrop']['isDraggable'] = DragDrop.isDraggable;
 
-	exports['editables'] = Editables;
+	exports['editables'] = new Object();
 	exports['editables']['Editable']         = Editables.Editable;
 	exports['editables']['fromElem']         = Editables.fromElem;
 	exports['editables']['fromBoundary']     = Editables.fromBoundary;
@@ -306,7 +306,7 @@ define([
 	exports['editables']['handle']           = Editables.handle;
 	exports['editables']['create']           = Editables.create;
 
-	exports['editing'] = Editing;
+	exports['editing'] = new Object();
 	exports['editing']['wrap']      = Editing.wrap;
 	exports['editing']['unformat']  = Editing.unformat;
 	exports['editing']['format']    = Editing.format;
@@ -316,10 +316,10 @@ define([
 	exports['editing']['breakline'] = Editing.breakline;
 	exports['editing']['insert']    = Editing.insert;
 
-	exports['formatting'] = Formatting;
+	exports['formatting'] = new Object();
 	exports['formatting']['format'] = Formatting.format;
 
-	exports['events'] = Events;
+	exports['events'] = new Object();
 	exports['events']['add']             = Events.add;
 	exports['events']['remove']          = Events.remove;
 	exports['events']['setup']           = Events.setup;
@@ -330,7 +330,7 @@ define([
 	exports['events']['stopPropagation'] = Events.stopPropagation;
 	exports['events']['suppress']        = Events.suppress;
 
-	exports['fn'] = Fn;
+	exports['fn'] = new Object();
 	exports['fn']['identity']     = Fn.identity;
 	exports['fn']['noop']         = Fn.noop;
 	exports['fn']['returnTrue']   = Fn.returnTrue;
@@ -347,7 +347,7 @@ define([
 	exports['fn']['asMethod']     = Fn.asMethod;
 	exports['fn']['extendType']   = Fn.extendType;
 
-	exports['html'] = Html;
+	exports['html'] = new Object();
 	exports['html']['isRendered']                = Html.isRendered;
 	exports['html']['isUnrendered']              = Html.isUnrendered;
 	exports['html']['isUnrenderedWhitespace']    = Html.isUnrenderedWhitespace;
@@ -386,25 +386,25 @@ define([
 	exports['html']['isTextLevelSemanticNode']   = Html.isTextLevelSemanticNode;
 	exports['html']['isVoidNode']                = Html.isVoidNode;
 
-	exports['images'] = Images;
+	exports['images'] = new Object();
 	exports['images']['insert'] = Images.insert;
 	exports['images']['setAttributes'] = Images.setAttributes;
 
-	exports['keys'] = Keys;
+	exports['keys'] = new Object();
 	exports['keys']['handle'] = Keys.handle;
 	exports['keys']['ARROWS'] = Keys.ARROWS;
 	exports['keys']['CODES']  = Keys.CODES;
 
-	exports['links'] = Links;
+	exports['links'] = new Object();
 	exports['links']['create'] = Links.create;
 	exports['links']['remove'] = Links.remove;
 
-	exports['lists'] = Lists;
+	exports['lists'] = new Object();
 	exports['lists']['format'] = Lists.format;
 	exports['lists']['unformat'] = Lists.unformat;
 	exports['lists']['toggle'] = Lists.toggle;
 
-	exports['maps'] = Maps;
+	exports['maps'] = new Object();
 	exports['maps']['isEmpty']     = Maps.isEmpty;
 	exports['maps']['fillKeys']    = Maps.fillKeys;
 	exports['maps']['keys']        = Maps.keys;
@@ -421,14 +421,14 @@ define([
 	exports['maps']['create']      = Maps.create;
 	exports['maps']['mapTuples']   = Maps.mapTuples;
 
-	exports['metaview'] = Metaview;
+	exports['metaview'] = new Object();
 	exports['metaview']['toggle'] = Metaview.toggle;
 
-	exports['mouse'] = Mouse;
+	exports['mouse'] = new Object();
 	exports['mouse']['handle'] = Mouse.handle;
 	exports['mouse']['EVENTS'] = Mouse.EVENTS;
 
-	exports['mutation'] = Mutation;
+	exports['mutation'] = new Object();
 	exports['mutation']['removeNode']                     = Mutation.removeNode;
 	exports['mutation']['removeShallowPreservingCursors'] = Mutation.removeShallowPreservingCursors;
 	exports['mutation']['removePreservingRange']          = Mutation.removePreservingRange;
@@ -442,7 +442,7 @@ define([
 	exports['mutation']['splitBoundary']                  = Mutation.splitBoundary;
 	exports['mutation']['splitBoundaryUntil']             = Mutation.splitBoundaryUntil;
 
-	exports['overrides'] = Overrides;
+	exports['overrides'] = new Object();
 	exports['overrides']['indexOf']     = Overrides.indexOf;
 	exports['overrides']['unique']      = Overrides.unique;
 	exports['overrides']['toggle']      = Overrides.toggle;
@@ -450,14 +450,14 @@ define([
 	exports['overrides']['consume']     = Overrides.consume;
 	exports['overrides']['nodeToState'] = Overrides.nodeToState;
 
-	exports['paste'] = Paste;
+	exports['paste'] = new Object();
 	exports['handle'] = Paste.handle;
 
-	exports['paths'] = Paths;
+	exports['paths'] = new Object();
 	exports['paths']['toBoundary']   = Paths.toBoundary;
 	exports['paths']['fromBoundary'] = Paths.fromBoundary;
 
-	exports['ranges'] = Ranges;
+	exports['ranges'] = new Object();
 	exports['ranges']['box']                         = Ranges.box;
 	exports['ranges']['get']                         = Ranges.get;
 	exports['ranges']['create']                      = Ranges.create;
@@ -476,12 +476,12 @@ define([
 	exports['ranges']['showHint']                    = Ranges.showHint;
 	exports['ranges']['hideHint']                    = Ranges.hideHint;
 
-	exports['selectionchange'] = SelectionChange;
+	exports['selectionchange'] = new Object();
 	exports['selectionchange']['handler']       = SelectionChange.handler;
 	exports['selectionchange']['addHandler']    = SelectionChange.addHandler;
 	exports['selectionchange']['removeHandler'] = SelectionChange.removeHandler;
 
-	exports['selections'] = Selections;
+	exports['selections'] = new Object();
 	exports['selections']['show']             = Selections.show;
 	exports['selections']['focus']            = Selections.focus;
 	exports['selections']['select']           = Selections.select;
@@ -491,12 +491,12 @@ define([
 	exports['selections']['unhideCarets']     = Selections.unhideCarets;
 	exports['selections']['handleSelections'] = Selections.handleSelections;
 
-	exports['searching'] = Searching;
+	exports['searching'] = new Object();
 	exports['searching']['search']   = Searching.search;
 	exports['searching']['forward']  = Searching.forward;
 	exports['searching']['backward'] = Searching.backward;
 
-	exports['strings'] = Strings;
+	exports['strings'] = new Object();
 	exports['strings']['addToList']                     = Strings.addToList;
 	exports['strings']['removeFromList']                = Strings.removeFromList;
 	exports['strings']['uniqueList']                    = Strings.uniqueList;
@@ -522,20 +522,20 @@ define([
 	exports['strings']['WORD_BREAKING_CHARACTERS']      = Strings.WORD_BREAKING_CHARACTERS;
 	exports['strings']['NON_BREAKING_SPACE_CHARACTERS'] = Strings.NON_BREAKING_SPACE_CHARACTERS;
 
-	exports['transform'] = Transform;
+	exports['transform'] = new Object();
 	exports['transform']['html']   = Transform.html;
 	exports['transform']['plain']  = Transform.plain;
 	exports['transform']['msword'] = Transform.msword;
 
-	exports['traversing'] = Traversing;
+	exports['traversing'] = new Object();
 	exports['traversing']['next'] = Traversing.next;
 	exports['traversing']['prev'] = Traversing.prev;
 
-	exports['typing'] = Typing;
+	exports['typing'] = new Object();
 	exports['typing']['handle']  = Typing.handle;
 	exports['typing']['actions'] = Typing.actions;
 
-	exports['undo'] = Undo;
+	exports['undo'] = new Object();
 	exports['undo']['Context']            = Undo.Context;
 	exports['undo']['enter']              = Undo.enter;
 	exports['undo']['close']              = Undo.close;
