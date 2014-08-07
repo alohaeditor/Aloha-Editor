@@ -1,6 +1,6 @@
 require([
-	'../../src/aloha',
-	'../../src/boundaries'
+	'../src/aloha',
+	'../src/boundaries'
 ], function (
 	aloha,
 	Boundaries
