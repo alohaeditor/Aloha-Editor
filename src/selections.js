@@ -268,6 +268,12 @@ define([
 	 * @return {Object}
 	 */
 	function step(direction, event, range, focus) {
+		if (event.nativeEvent.metaKey || event.nativeEvent.ctrlKey) {
+			return {
+				range: range,
+				focus: focus
+			};
+		}
 		var get, set, collapse;
 		var shift = Events.hasKeyModifier(event, 'shift');
 		var clone = range.cloneRange();

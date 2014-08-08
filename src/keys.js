@@ -41,6 +41,8 @@ define(['strings', 'ranges'], function (Strings, Ranges) {
 		'right'     : 39,
 		'down'      : 40,
 		'selectAll' : 65,
+		'home'      : 36,
+		'end'       : 35,
 		'pageUp'    : 33,
 		'pageDown'  : 34
 	};

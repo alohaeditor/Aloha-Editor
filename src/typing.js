@@ -222,6 +222,94 @@ define([
 		    && !Strings.isControlCharacter(String.fromCharCode(event.keycode));
 	}
 
+	/**
+	 * Makes `fn` a handler
+	 *
+	 * @param {Function} fn
+	 */
+	function makeHandler(fn) {
+		fn.preventDefault = true;
+		fn.clearOverrides = true;
+		fn.mutate = fn;
+	}
+
+	/**
+	 * Moves range to `left` position. The `top` position remains the same.
+	 * @param {AlohaEvent} event
+	 * @param {Number} left
+	 * @return {Range}
+	 */
+	function moveToLeft(event, left) {
+		var doc = event.range.startContainer.ownerDocument;
+		var position = doc.querySelector('.aloha-caret').getBoundingClientRect();
+
+		return Ranges.fromPosition(
+			left,
+			position.top + (position.height/2),
+			doc
+		);
+	}
+
+	/**
+	 * Moves range to the end of the line.
+	 * @param {AlohaEvent} event
+	 * @return {Range}
+	 */
+	function caretEndLine(event) {
+		var firstParentElement = Dom.upWhile(event.range.commonAncestorContainer, Dom.isTextNode);
+		var maxRight = firstParentElement.getBoundingClientRect().right;
+
+		return moveToLeft(event, maxRight);
+	}
+
+	/**
+	 * Moves range to the beginning of the line
+	 * @param {AlohaEvent} event
+	 * @return {Range}
+	 */
+	function caretBeginLine(event) {
+		return moveToLeft(event, 0);
+	}
+
+	/**
+	 * Selects range until the beginning of the line
+	 * @param {AlohaEvent} event
+	 * @return {Range}
+	 */
+	function selectToBeginLine(event) {
+		var beginRange = caretBeginLine(event);
+		var range = event.range;
+
+		if (Ranges.equalsStart(beginRange, range)) {
+			return range;
+		}
+
+		range.setEnd(range.startContainer, range.startOffset);
+		range.setStart(beginRange.startContainer, beginRange.startOffset);
+
+		return range;
+	}
+
+	/**
+	 * Selects range until the end of the line.
+	 * @param {AlohaEvent} event
+	 * @return {Range}
+	 */
+	function selectToEndLine(event) {
+		var endRange = caretEndLine(event);
+		var range = event.range;
+
+		if (Ranges.equalsEnd(range, endRange)) {
+			return range;
+		}
+
+		range.setStart(range.endContainer, range.endOffset);
+		range.setEnd(endRange.endContainer, endRange.endOffset);
+
+		return range;
+	}
+
+
 	var deleteBackward = {
 		clearOverrides : true,
 		preventDefault : true,
@@ -293,6 +381,11 @@ define([
 		mutate         : Fn.partial(toggleUndo, Undo.redo)
 	};
 
+	makeHandler(caretBeginLine);
+	makeHandler(caretEndLine);
+	makeHandler(selectToBeginLine);
+	makeHandler(selectToEndLine);
+
 	var actions = {
 		'breakBlock'     : breakBlock,
 		'breakLine'      : breakLine,
@@ -333,6 +426,19 @@ define([
 	handlers['keydown']['ctrl+shift+' + Keys.CODES['undo']] =
 	handlers['keydown']['meta+shift+' + Keys.CODES['undo']] = redo;
 	handlers['keydown'][Keys.CODES['tab']] = inputText;
+
+	handlers['keydown']['ctrl+'  + Keys.CODES['left']] =
+	handlers['keydown'][Keys.CODES['home']] =
+	handlers['keydown']['meta+'  + Keys.CODES['left']] = caretBeginLine;
+	handlers['keydown']['ctrl+'  + Keys.CODES['right']] =
+	handlers['keydown'][Keys.CODES['end']] =
+	handlers['keydown']['meta+'  + Keys.CODES['right']] = caretEndLine;
+	handlers['keydown']['ctrl+shift+'  + Keys.CODES['left']] =
+	handlers['keydown']['shift+'  + Keys.CODES['home']] =
+	handlers['keydown']['meta+shift+'  + Keys.CODES['left']] = selectToBeginLine;
+	handlers['keydown']['ctrl+shift+'  + Keys.CODES['right']] =
+	handlers['keydown']['shift+'  + Keys.CODES['end']] =
+	handlers['keydown']['meta+shift+'  + Keys.CODES['right']] = selectToEndLine;
 
 	handlers['keypress']['input'] = inputText;
 
