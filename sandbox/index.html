@@ -59,7 +59,10 @@
 		</style>
 	</head>
 	<body>
-		<div class="aloha-editable"><p>one <b>two</b> three</p></div>
+		<div class="aloha-editable">starting<i>foobar</i><p
+			><span>one</span> <u><b>two</b> <i>three</i></u></p> <h6
+			>four</h6
+		></div>
 
 		<br/>
 
@@ -128,6 +131,44 @@
 				}
 				function main(aloha) {
 					aloha.arrays.coerce(document.querySelectorAll('.aloha-editable')).forEach(aloha);
+					aloha.metaview.toggle(document.querySelector('.aloha-editable'),{outline:true,padding: true});
+
+					/*
+					var boundaries = [
+						aloha.boundaries.create(document.querySelector('.aloha-editable'), 0),
+						aloha.boundaries.create(document.querySelector('.aloha-editable'), 1),
+						aloha.boundaries.create(document.querySelector('.aloha-editable'), 2),
+						aloha.boundaries.create(document.querySelector('.aloha-editable'), 1),
+						aloha.boundaries.create(document.querySelector('i').firstChild, 1),
+						aloha.boundaries.create(document.querySelector('i').firstChild, 2),
+						aloha.boundaries.create(document.querySelector('i').firstChild, 2),
+						aloha.boundaries.fromEndOfNode(document.querySelector('i')),
+						aloha.boundaries.fromNode(document.querySelector('i')),
+						aloha.boundaries.create(document.querySelector('span').firstChild, 2),
+						aloha.boundaries.create(document.querySelector('i').firstChild, 3),
+						aloha.boundaries.create(document.querySelector('h6').firstChild, 3)
+					];
+					*/
+
+					var editable = document.querySelector('.aloha-editable');
+					var boundaries = [
+						aloha.boundaries.create(editable.querySelector('h6').firstChild, 2),
+						aloha.boundaries.create(document.querySelector('b').firstChild, 0),
+						aloha.boundaries.create(document.querySelector('b').firstChild, 1),
+						aloha.boundaries.create(document.querySelector('b').firstChild, 2),
+						aloha.boundaries.create(document.querySelector('b').firstChild, 3),
+						aloha.boundaries.create(document.querySelector('b'), 1),
+						aloha.boundaries.create(document.querySelector('b'), 1),
+						aloha.boundaries.fromNode(document.querySelector('b')),
+						aloha.boundaries.create(document.querySelector('b').firstChild, 2)
+					];
+					var limit = editable; //.querySelector('b').parentNode.parentNode;
+					var splitBoundary = aloha.boundaries.create(limit.querySelector('b').firstChild, 1);
+					var path = aloha.paths.fromBoundary(limit, splitBoundary);
+					var tree = aloha.MutationTrees.create(limit, boundaries);
+					var result = aloha.MutationTrees.split(tree, path)
+					var updated = aloha.MutationTrees.update(result[0]);
+					console.log(updated.domNode(), aloha.markers.hint(aloha.paths.toBoundary(updated.domNode(), result[1])));
 				}
 				if ('undefined' === typeof aloha) {
 					setVersion('src');

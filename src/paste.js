@@ -15,6 +15,7 @@ define([
 	'content',
 	'editing',
 	'mutation',
+	'mutation-trees',
 	'transform',
 	'boundaries',
 	'transform/ms-word'
@@ -28,6 +29,7 @@ define([
 	Content,
 	Editing,
 	Mutation,
+	MutationTrees,
 	Transform,
 	Boundaries,
 	WordTransform
@@ -103,13 +105,12 @@ define([
 	 * @return {Boundary} Boundary position after the inserted content
 	 */
 	function insert(start, end, markup) {
-		var doc = Boundaries.document(start);
-		var boundary = Editing.remove(start, end)[0];
-		var element = Html.parse(markup, doc);
+		var element = Html.parse(markup, Boundaries.document(start));
+		var boundaries = Editing.remove(start, end);
 		var children = Dom.children(element);
 
 		if (0 === children.length) {
-			return boundary;
+			return boundaries;
 		}
 
 		// Because we are only able to detect "void type" (non-content editable
@@ -128,39 +129,36 @@ define([
 		}
 
 		if (0 === children.length) {
-			return boundary;
+			return boundaries;
 		}
 
-		children.forEach(function (node) {
-			if (Html.hasLinebreakingStyle(node)) {
-				boundary = Mutation.splitBoundaryUntil(boundary, function (boundary) {
-					var container = Boundaries.container(boundary);
-					return Dom.isEditingHost(container.parentNode)
-					    || Content.allowsNesting(container.nodeName, node.nodeName);
-				});
-			}
-			boundary = Mutation.insertNodeAtBoundary(node, boundary, true);
+		children.forEach(function (child) {
+			boundaries = MutationTrees.split(boundaries[0], function (container) {
+				return Dom.isEditingHost(container)
+					|| Content.allowsNesting(container.nodeName, child.nodeName);
+			}, boundaries);
+			boundaries = MutationTrees.insert(boundaries[0], child, boundaries);
 		});
 
 		var last = Arrays.last(children);
-		var next = Boundaries.nodeAfter(boundary);
+		var next = Boundaries.nodeAfter(boundaries[1]);
 
 		// Because we want to remove the unintentional line added at the end of
 		// the pasted content
 		if (next && ('P' === last.nodeName || 'DIV' === last.nodeName)) {
 			if (Html.hasInlineStyle(next)) {
-				boundary = Boundaries.fromEndOfNode(last);
+				boundaries[1] = Boundaries.fromEndOfNode(last);
 				// Move the next inline nodes into the last element
 				Dom.move(Dom.nodeAndNextSiblings(next, Html.hasLinebreakingStyle), last);
 			} else if (!Html.isVoidType(next) && !Html.isGroupContainer(next)) {
 				// Move the children of the last element into the beginning of
 				// the next block element
-				boundary = Dom.children(last).reduce(moveBeforeBoundary, Boundaries.create(next, 0));
+				boundaries[1] = Dom.children(last).reduce(moveBeforeBoundary, Boundaries.create(next, 0));
 				Dom.remove(last);
 			}
 		}
 
-		return boundary;
+		return boundaries;
 	}
 
 	/**
@@ -211,9 +209,9 @@ define([
 		Undo.capture(event.editable['undoContext'], {
 			meta: {type: 'paste'}
 		}, function () {
-			var boundary = insert(boundaries[0], boundaries[1], content);
-			console.warn(boundaries[0], boundary);
-			event.range = Ranges.fromBoundaries(boundary, boundary);
+			boundaries = insert(boundaries[0], boundaries[1], content);
+			console.warn(aloha.markers.hint(boundaries));
+			event.range = Ranges.fromBoundaries(boundaries[0], boundaries[1]);
 		});
 		return event;
 	}

@@ -621,7 +621,7 @@ define([
 	 * boromir nodes, otherwise the behviour is undefined and may cause
 	 * errors to be thrown. The assumption that the tree wasn't modified
 	 * is necessary so that the DOM can be updated in the most efficient
-	 * manner possible, without perorming any redundant read operations
+	 * manner possible, without peforming any redundant read operations
 	 * on the DOM.
 	 *
 	 * For the reason above, after the DOM has been updated, the boromir

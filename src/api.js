@@ -47,7 +47,8 @@ define([
 	'transform',
 	'traversing',
 	'typing',
-	'undo'
+	'undo',
+	'mutation-trees'
 ], function (
 	Arrays,
 	Blocks,
@@ -86,7 +87,8 @@ define([
 	Transform,
 	Traversing,
 	Typing,
-	Undo
+	Undo,
+	MutationTrees
 ) {
 	'use strict';
 
@@ -549,6 +551,11 @@ define([
 	exports['undo']['makeInsertChange']   = Undo.makeInsertChange;
 	exports['undo']['undo']               = Undo.undo;
 	exports['undo']['redo']               = Undo.redo;
+
+	exports['MutationTrees'] = new Object();
+	exports['MutationTrees'].split  = MutationTrees.split;
+	exports['MutationTrees'].create = MutationTrees.create;
+	exports['MutationTrees'].update = MutationTrees.update;
 
 	return exports;
 });

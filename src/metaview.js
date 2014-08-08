@@ -14,7 +14,7 @@ define(['dom'], function (Dom) {
 
 		// outlines
 		= '.✪{outline:5px solid #fce05e;}'
-		+ '.✪ td,.✪ th,.✪ b,.✪ i,.✪ u,.✪ p,.✪ ul,.✪ ol,.✪ li,.✪ h1,.✪ h2,.✪ h3,.✪ h4,.✪ h5,.✪ h6,.✪ div{border:1px solid rgba(0,0,0,0.1)}'
+		+ '.✪ td,.✪ th,.✪ b,.✪ i,.✪ u,.✪ p,.✪ ul,.✪ ol,.✪ li,.✪ h1,.✪ h2,.✪ h3,.✪ h4,.✪ h5,.✪ h6,.✪ div,.✪ span{border:1px solid rgba(0,0,0,0.1)}'
 		+ '.✪ p,.✪ ul,.✪ ol,.✪ h1,.✪ h2,.✪ h3,.✪ h4,.✪ h5,.✪ h6,.✪ div{border-width:2px}'
 		+ '.✪ b{border-color:#f47d43}'
 		+ '.✪ i{border-color:#82b5e0}'
