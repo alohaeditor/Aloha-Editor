@@ -1,3 +1,9 @@
+body {
+	max-width: 900px;
+	margin: auto;
+	padding: 50px 30px;
+}
+
 body, button {
 	font-family: 'Open Sans', sans-serif;
 	font-size: 16px;
@@ -15,15 +21,18 @@ body, button {
 	cursor: -moz-grab;
 	box-shadow: 2px 2px 10px rgba(0,0,0,0.2) inset;
 }
+.aloha-editable {
+	padding: 20px;
+	outline: 5px solid #80b5f2;
+}
 textarea {
 	font-family: monospace;
 	font-size: 16px;
 	width: 100%;
 }
-.example {
+.example, .CodeMirror {
 	padding: 10px;
 	margin: 10px 0px 10px 0px;
-	background: #999;
 	color: #fff;
 	box-shadow: 2px 2px 10px rgba(0,0,0,0.2) inset;
 	display: block;

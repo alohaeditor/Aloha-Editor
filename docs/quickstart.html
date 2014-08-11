@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Aloha Editor</title>
+		<meta charset="UTF-8">
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300,700' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" type="text/css" href="demo.css">
+
+		<script src="codemirror-4.2/lib/codemirror.js"></script>
+		<link rel="stylesheet" href="codemirror-4.2/lib/codemirror.css">
+		<script src="codemirror-4.2/mode/javascript/javascript.js"></script>
+	</head>
+	<body>
+		<div>
+			<h1>Aloha Editor Quickstart</h1>
+			
+			<p>
+				The easiest way to get started is to use the pre-built version of Aloha Editor. You will just need to:
+			</p>
+
+			<p>
+				load <code>aloha.js</code>
+			</p>
+
+			<textarea class="example"><script src="aloha.js"></script></textarea>
+
+			<p>
+				and create editable regions (editables) on the page, by using the <code>aloha()</code> function
+			</p>
+
+			<textarea class="example">aloha(document.querySelector('.aloha-editable'));</textarea>
+
+			<p>
+				<a href="quickstart-example.html">See this example in action!</a>
+			</p>
+
+
+		</div>
+		<script src="../src/require-pronto.js"></script>
+		<script src="../src/require-pronto.dev.js"></script>
+		<script src="demo.js"></script>
+	</body>
+</html>
