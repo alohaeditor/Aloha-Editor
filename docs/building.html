@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Aloha Editor</title>
+		<meta charset="UTF-8">
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300,700' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" type="text/css" href="demo.css">
+
+	</head>
+	<body>
+		<div>
+			<h1>Building Aloha Editor</h1>
+			
+			<p>
+				Use the build script <code>build.sh</code> to build Aloha Editor. You don't need to add any
+				parameters. The optimized and minified <code>aloha.min.js</code> file can be found in the
+				<code>build</code> directory after building.
+			</p>
+
+			<p>
+				<b>NOTE:</b> Executing the build script will wipe all contents of the <code>build</code>
+				directory.
+			</p>
+
+			<h2>Build options</h2>
+
+			<p>
+				The build script currently takes two options
+			</p>
+
+			<ul>
+				<li><code>--simple</code> build with simple optimizations. Quicker, but less reduction in size. Not suggested.</li>
+				<li><code>--source-map</code> will also create a working source map and place all the source files in the <code>build</code> folder.</li>
+			</ul>
+
+		</div>
+	</body>
+</html>

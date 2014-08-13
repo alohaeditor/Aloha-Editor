@@ -4,16 +4,17 @@
 		<title>Aloha Editor</title>
 		<meta charset="UTF-8">
 		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300,700' rel='stylesheet' type='text/css'>
-		<link rel="stylesheet" type="text/css" href="../../src/aloha.css">
-		<link rel="stylesheet" type="text/css" href="../demo.css">
+		<link rel="stylesheet" type="text/css" href="demo.css">
 
-		<script src="../codemirror-4.2/lib/codemirror.js"></script>
-		<link rel="stylesheet" href="../codemirror-4.2/lib/codemirror.css">
-		<script src="../codemirror-4.2/mode/javascript/javascript.js"></script>
+		<script src="codemirror-4.2/lib/codemirror.js"></script>
+		<link rel="stylesheet" href="codemirror-4.2/lib/codemirror.css">
+		<script src="codemirror-4.2/mode/javascript/javascript.js"></script>
 	</head>
 	<body>
 		<div>
-			<h1>Aloha Editor Boundaries</h1>
+			<h1>Aloha Editor API Introduction</h1>
+
+			<h2>Boundaries</h2>
 			
 			<p>
 				Boundaries represent a location in the DOM that can be selected. They 
@@ -32,7 +33,7 @@ var boundary = [ domNode, 0 ];</textarea>
 			</p>
 
 
-			<h2>Placing the caret</h2>
+			<h3>Placing the caret</h3>
 			
 			<p>Placing the caret at the first position of a text is quite straightforward.</p>
 
@@ -55,7 +56,7 @@ aloha.selections.show(caret, boundary);</textarea>
 			</div>
 
 
-			<h2>Selecting some text</h2>
+			<h3>Selecting some text</h3>
 
 			<p>Select "This is" from the text.</p>
 			
@@ -76,7 +77,7 @@ aloha.selections.show(caret, endBoundary);</textarea>
 			</div>
 
 
-			<h2>Retrieving the current boundaries</h2>
+			<h3>Retrieving the current boundaries</h3>
 
 			<p>
 				The API allows you to retrieve the currently active boundaries.
@@ -88,7 +89,7 @@ aloha.selections.show(caret, endBoundary);</textarea>
 aloha.boundaries.get();</textarea>
 
 			
-			<h2>Boundary traversal</h2>
+			<h3>Boundary traversal</h3>
 
 			<p>
 				The API also allows you to use traversal algorithms to simplify
@@ -113,7 +114,7 @@ aloha.selections.show(caret, boundary);
 			</div>
 
 
-			<h2>Inserting text at a boudary position</h2>
+			<h3>Inserting text at a boudary position</h3>
 
 			<p>
 				At this point you will most likely want to insert some text at
@@ -135,7 +136,7 @@ aloha.mutation.insertTextAtBoundary('!INSERTED TEXT!', boundary);
 			</div>
 
 			
-			<h2>Inserting nodes at a boudary position</h2>
+			<h3>Inserting nodes at a boudary position</h3>
 
 			<p>
 				Inserting nodes works similar to inserting text.
@@ -155,7 +156,7 @@ aloha.mutation.insertNodeAtBoundary(newNode, boundary);
 				<p>This is my <b>first</b> paragraph.</p>
 			</div>
 
-			<h2>Paths</h2>
+			<h3>Paths</h3>
 
 			<p>
 				Paths allow you to convert Aloha Editor boundaries into plain
@@ -186,9 +187,9 @@ aloha.mutation.insertNodeAtBoundary(newNode, boundary);
 
 			<textarea class="example">var boundary = aloha.paths.toBoundary(document, [1, 2, 1, 3, 1, 0, 12]);</textarea>
 		</div>
-		<script src="../../src/require-pronto.js"></script>
-		<script src="../../src/require-pronto.dev.js"></script>
-		<script src="../demo.js"></script>
+		<script src="../src/require-pronto.js"></script>
+		<script src="../src/require-pronto.dev.js"></script>
+		<script src="demo.js"></script>
 	</body>
 </html>
 
