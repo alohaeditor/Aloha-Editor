@@ -26,18 +26,22 @@
  */
 define([
 	'aloha/core',
+	'aloha/ephemera',
 	'jquery',
 	'aloha/plugin',
 	'ui/ui',
 	'ui/toggleButton',
+	'util/browser',
 	'i18n!numerated-headers/nls/i18n',
 	'i18n!aloha/nls/i18n'
 ], function (
 	Aloha,
+	Ephemera,
 	$,
 	Plugin,
 	Ui,
 	ToggleButton,
+	Browser,
 	i18n,
 	i18nCore
 ) {
@@ -188,14 +192,15 @@ define([
 			if (!active_editable_obj) {
 				return;
 			}
-			this._saveRemoveAnnotations($(active_editable_obj).find('span[role=annotation]'));
+			$('div.aloha-numerated-headers-annotation-wrapper>span[role=annotation]').unwrap();
+			this._safeRemoveAnnotations($(active_editable_obj).find('span[role=annotation]'));
 		},
 		
 		/**
-		 * Savely removes a jQuery collection of annotations.
+		 * Safely removes a jQuery collection of annotations.
 		 * @param annotationcollection the collection of annotations.
 		 */
-		_saveRemoveAnnotations: function (annotationcollection) {
+		_safeRemoveAnnotations: function (annotationcollection) {
 			var that = this;
 			var range = Aloha.Selection.getRangeObject();
 			var rangemod = false;
@@ -241,8 +246,12 @@ define([
 				range.endOffset ++;
 				rangemod = true;
 			}
-			$(prependElem).prepend('<span role="annotation">' +
+			var annotation = $('<span role="annotation">' +
 					annotationcontent + '</span>');
+			var displayStyle = Browser.ie7 ? 'inline' : 'inline-block';
+			var wrappedannotation=$('<div class="aloha-numerated-headers-annotation-wrapper" style="display: '+ displayStyle +';" contenteditable="false"></div>').append(annotation);
+			Ephemera.markWrapper(wrappedannotation)
+			$(prependElem).prepend(wrappedannotation);
 			if (rangemod === true) {
 				range.update();
 				range.select();
@@ -360,7 +369,7 @@ define([
 					if (prev_rank === null && current_rank !== base_rank) {
 						// when the first found header has a rank
 						// different from the base rank, we omit it
-						that._saveRemoveAnnotations($(this).find('span[role=annotation]'));
+						that._safeRemoveAnnotations($(this).find('span[role=annotation]'));
 						return;
 					} else if (prev_rank === null) {
 						// increment the main annotation
@@ -404,15 +413,13 @@ define([
 					//to separate the annotation from the heading's text.
 					annotation_result += '&nbsp;';
 					if (that.hasNote(this)) {
-						$(this).find('span[role=annotation]').html(annotation_result);
-					} else {
-						
-						that._prependAnnotation(annotation_result, this);
+						that._safeRemoveAnnotations($(this).find('span[role=annotation]'));
 					}
+					that._prependAnnotation(annotation_result, this);
 				} else {
 					// no Content, so remove the Note, if there is one
 					if (that.hasNote(this)) {
-						that._saveRemoveAnnotations($(this).find('span[role=annotation]'));
+						that._safeRemoveAnnotations($(this).find('span[role=annotation]'));
 					}
 				}
 			});
