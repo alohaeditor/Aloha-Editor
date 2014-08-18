@@ -413,15 +413,15 @@ define([
 			if (paragraphs.length > 0) {
 				paragraphs.each(function() {
 					var jqElem = jQuery(this),
-						spans = jqElem.find('span'),
+//						spans = jqElem.find('span'),
 						links = jqElem.find('a');
 				
-					// remove TOC numbering
-					spans.each(function() {
-						if ( jQuery.trim(jQuery(this).text()).match(/^([\.\(]?[\d\D][\.\(]?){1,4}$/) ) {
-							jQuery(this).remove();
-						}
-					});
+					// remove TOC numbering. This could lead to wrong content. How do we know is a TOC or a content text?
+//					spans.each(function() {
+//						if ( jQuery.trim(jQuery(this).text()).match(/^([\.\(]?[\d\D][\.\(]?){1,4}$/) ) {
+//							jQuery(this).remove();
+//						}
+//					});
 				
 					// remove TOC anchor links
 					links.each(function() {
