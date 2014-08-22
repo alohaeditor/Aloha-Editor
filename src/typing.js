@@ -398,7 +398,7 @@ define([
 			if (handling.undo) {
 				undoable(handling.undo, event, function () {
 					if (handling.deleteRange && !range.collapsed) {
-						remove(false, event);
+						event.range = remove(false, event);
 					}
 					event.range = handling.mutate(event);
 					Html.prop(range.commonAncestorContainer);
