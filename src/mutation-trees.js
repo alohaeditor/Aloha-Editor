@@ -167,44 +167,45 @@ define([
 		return index;
 	}
 
-	function insertPath(record, offset) {
-		var records;
+	function insertRecords(record, offset, records) {
 		if (isTextRecord(record)) {
-			records = spliceContent(offset, 0, record, Marker());
-			return FragmentedText(record, records);
+			return spliceContent(offset, 0, record, records);
 		}
 		if (isFragmentedText(record)) {
 			var offsets = fragmentedOffset(record, offset);
 			offset = offsets[0];
 			if (2 === offsets.length) {
 				var text = record.children()[offset];
-				var fragments = spliceContent(offsets[1], 0, text, Marker());
-				records = spliceContent(offset, 1, record, fragments);
-				return record.children(records);
+				var fragments = spliceContent(offsets[1], 0, text, records);
+				return record.children(spliceContent(offset, 1, record, fragments));
 			}
 		} else {
 			offset = normalizeOffset(record, offset);
 		}
-		records = spliceContent(offset, 0, record, Marker());
-		return record.children(records);
+		return record.children(spliceContent(offset, 0, record, records));
 	}
 
-	function insertPathInTree(record, path) {
+	function insertRec(record, path, insertAt) {
 		var trail = path.slice(1);
 		var offset = path[0];
 		// Because we are at end of the trail: <a/>|<b/> or <#text "foo|bar">
 		if (0 === trail.length) {
-			return insertPath(record, offset);
+			return insertAt(record, offset);
 		}
 		offset = normalizeOffset(record, offset);
 		var unchanged = record.children()[offset];
-		var changed = insertPathInTree(unchanged, trail);
+		var changed = insertRec(unchanged, trail, insertAt);
 		var children = spliceContent(offset, 1, record, changed);
 		return record.children(children);
 	}
 
-	function insertPathsInTree(record, paths) {
-		return paths.reduce(insertPathInTree, record);
+	function insertPath(record, offset) {
+		var records = insertRecords(record, offset, Marker());
+		return isTextRecord(record) ? FragmentedText(record, records) : record;
+	}
+
+	function insertPathInTree(record, path) {
+		return insertRec(record, path, insertPath);
 	}
 
 	function boundaryIndexInFragment(fragments, offset) {
@@ -229,6 +230,7 @@ define([
 		var text = fragments.reduce(function (strings, string) {
 			return strings.concat(string.text());
 		}, []).join('');
+		console.log(text);
 		//var doc = record.original.domNode().ownerDocument;
 		var doc = document;
 		return (record.original && record.original.text() === text)
@@ -315,7 +317,7 @@ define([
 		var clipped = paths.map(Fn.partial(clipCommonRoot, root)).filter(function (arr) {
 			return arr.length > 0;
 		});
-		return insertPathsInTree(Boromir(element), clipped);
+		return clipped.reduce(insertPathInTree, Boromir(element));
 	}
 
 	/**
@@ -337,26 +339,16 @@ define([
 		];
 	}
 
-	function insert(tree, content) {
-		/*
-		var node = Boromir(
-			('string' === typeof content)
-				? Boundaries.document(boundary).createTextNode(content)
-				: content
-		);
-		var container = Boundaries.container(boundary);
-		var editable = Dom.editingHost(container);
-		var path = Paths.fromBoundary(editable, boundary);
-		var unpreserved = boundaries.map(Fn.partial(Paths.fromBoundary, editable));
-		var unchanged = Boromir(container);
-		var offset = Boundaries.offset(boundary);
-		var children = unchanged.children();
-		unchanged.children(
-			children.slice(0, offset).concat(node).concat(children.slice(offset))
-		).updateDom();
-		var preserved = adjustForInsertBefore(path, unpreserved);
-		return preserved.map(Fn.partial(Paths.toBoundary, editable));
-		*/
+	function insert(tree, path, content) {
+		if (0 === content.length) {
+			return tree;
+		}
+		var records = content.map(function (item) {
+			return item instanceof Boromir ? item : Boromir(item);
+		});
+		return insertRec(tree, path, function (record, offset) {
+			return insertRecords(record, offset, records);
+		});
 	}
 
 	return {

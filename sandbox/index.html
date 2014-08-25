@@ -152,23 +152,35 @@
 
 					var editable = document.querySelector('.aloha-editable');
 					var boundaries = [
+						/*
 						aloha.boundaries.create(editable.querySelector('h6').firstChild, 2),
 						aloha.boundaries.create(document.querySelector('b').firstChild, 0),
+						*/
 						aloha.boundaries.create(document.querySelector('b').firstChild, 1),
+						/*
 						aloha.boundaries.create(document.querySelector('b').firstChild, 2),
 						aloha.boundaries.create(document.querySelector('b').firstChild, 3),
 						aloha.boundaries.create(document.querySelector('b'), 1),
 						aloha.boundaries.create(document.querySelector('b'), 1),
 						aloha.boundaries.fromNode(document.querySelector('b')),
 						aloha.boundaries.create(document.querySelector('b').firstChild, 2)
+						*/
 					];
 					var limit = editable; //.querySelector('b').parentNode.parentNode;
 					var splitBoundary = aloha.boundaries.create(limit.querySelector('b').firstChild, 1);
 					var path = aloha.paths.fromBoundary(limit, splitBoundary);
 					var tree = aloha.MutationTrees.create(limit, boundaries);
 					var result = aloha.MutationTrees.split(tree, path)
-					var updated = aloha.MutationTrees.update(result[0]);
-					console.log(updated.domNode(), aloha.markers.hint(aloha.paths.toBoundary(updated.domNode(), result[1])));
+					tree = result[0];
+					path = result[1];
+					tree = aloha.MutationTrees.insert(tree, path, [
+						document.createTextNode('apple'),
+						document.createTextNode('orange')
+					]);
+					//tree.updateDom();
+					var updated = aloha.MutationTrees.update(tree);
+
+					//console.log(updated.domNode(), aloha.markers.hint(aloha.paths.toBoundary(updated.domNode(), result[1])));
 				}
 				if ('undefined' === typeof aloha) {
 					setVersion('src');

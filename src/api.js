@@ -554,6 +554,7 @@ define([
 
 	exports['MutationTrees'] = new Object();
 	exports['MutationTrees'].split  = MutationTrees.split;
+	exports['MutationTrees'].insert = MutationTrees.insert;
 	exports['MutationTrees'].create = MutationTrees.create;
 	exports['MutationTrees'].update = MutationTrees.update;
 
