@@ -5,7 +5,7 @@
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  */
-define(['ranges'], function (Ranges) {
+define(['ranges', 'boundaries'], function (Ranges, Boundaries) {
 	'use strict';
 
 	/**
@@ -57,7 +57,8 @@ define(['ranges'], function (Ranges) {
 				event.target.ownerDocument
 			);
 		} else if ('mousemove' !== event.type) {
-			event.range = Ranges.get(event.target.ownerDocument);
+			var boundaries = Boundaries.get(event.target.ownerDocument);
+			event.range = Boundaries.range(boundaries[0], boundaries[1]);
 		}
 		return event;
 	}

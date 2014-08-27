@@ -210,8 +210,7 @@ define([
 			meta: {type: 'paste'}
 		}, function () {
 			boundaries = insert(boundaries[0], boundaries[1], content);
-			console.warn(aloha.markers.hint(boundaries));
-			event.range = Ranges.fromBoundaries(boundaries[0], boundaries[1]);
+			event.range = Boundaries.range(boundaries[0], boundaries[1]);
 		});
 		return event;
 	}

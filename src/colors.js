@@ -92,7 +92,7 @@ define([], function () {
 	}
 
 	/**
-	 * Given a color string will normalize it to a hexidecimal color string.
+	 * Given a color string, will normalize it to a hexidecimal color string.
 	 *
 	 * @param  {string} value
 	 * @return {string}
@@ -109,7 +109,7 @@ define([], function () {
 	}
 
 	/**
-	 * Given a color string will normalize it to a RGB color string.
+	 * Given a color string, will normalize it to a RGB color string.
 	 *
 	 * @param  {string} value
 	 * @return {Array.<number>}

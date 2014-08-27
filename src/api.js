@@ -15,6 +15,7 @@ define([
 	'boromir',
 	'boundaries',
 	'browsers',
+	'carets',
 	'colors',
 	'content',
 	'delayed-map',
@@ -38,7 +39,6 @@ define([
 	'overrides',
 	'paste',
 	'paths',
-	'ranges',
 	'record',
 	'selection-change',
 	'selections',
@@ -55,6 +55,7 @@ define([
 	Boromir,
 	Boundaries,
 	Browsers,
+	Carets,
 	Colors,
 	Content,
 	DelayedMap,
@@ -78,7 +79,6 @@ define([
 	Overrides,
 	Paste,
 	Paths,
-	Ranges,
 	Record,
 	SelectionChange,
 	Selections,
@@ -135,6 +135,7 @@ define([
 	exports['boundaries']['fromRangeEnd']        = Boundaries.fromRangeEnd;
 	exports['boundaries']['fromNode']            = Boundaries.fromNode;
 	exports['boundaries']['fromEndOfNode']       = Boundaries.fromEndOfNode;
+	exports['boundaries']['fromPosition']        = Boundaries.fromPosition;
 	exports['boundaries']['setRange']            = Boundaries.setRange;
 	exports['boundaries']['setRanges']           = Boundaries.setRanges;
 	exports['boundaries']['setRangeStart']       = Boundaries.setRangeStart;
@@ -158,8 +159,8 @@ define([
 	exports['boundaries']['prevNode']            = Boundaries.prevNode;
 	exports['boundaries']['nodeAfter']           = Boundaries.nodeAfter;
 	exports['boundaries']['nodeBefore']          = Boundaries.nodeBefore;
-	exports['boundaries']['precedingTextLength'] = Boundaries.precedingTextLength;
 	exports['boundaries']['commonContainer']     = Boundaries.commonContainer;
+	exports['boundaries']['range']               = Boundaries.range;
 
 	exports['markers'] = new Object();
 	exports['markers']['hint']    = Markers.hint;
@@ -453,30 +454,16 @@ define([
 	exports['overrides']['nodeToState'] = Overrides.nodeToState;
 
 	exports['paste'] = new Object();
-	exports['handle'] = Paste.handle;
+	exports['paste']['handle'] = Paste.handle;
 
 	exports['paths'] = new Object();
 	exports['paths']['toBoundary']   = Paths.toBoundary;
 	exports['paths']['fromBoundary'] = Paths.fromBoundary;
 
-	exports['ranges'] = new Object();
-	exports['ranges']['box']                         = Ranges.box;
-	exports['ranges']['get']                         = Ranges.get;
-	exports['ranges']['create']                      = Ranges.create;
-	exports['ranges']['equals']                      = Ranges.equals;
-	exports['ranges']['collapseToEnd']               = Ranges.collapseToEnd;
-	exports['ranges']['collapseToStart']             = Ranges.collapseToStart;
-	exports['ranges']['trim']                        = Ranges.trim;
-	exports['ranges']['trimClosingOpening']          = Ranges.trimClosingOpening;
-	exports['ranges']['trimBoundaries']              = Ranges.trimBoundaries;
-	exports['ranges']['expandBoundaries']            = Ranges.expandBoundaries;
-	exports['ranges']['nearestEditingHost']          = Ranges.nearestEditingHost;
-	exports['ranges']['expand']                      = Ranges.expand;
-	exports['ranges']['envelopeInvisibleCharacters'] = Ranges.envelopeInvisibleCharacters;
-	exports['ranges']['fromPosition']                = Ranges.fromPosition;
-	exports['ranges']['fromBoundaries']              = Ranges.fromBoundaries;
-	exports['ranges']['showHint']                    = Ranges.showHint;
-	exports['ranges']['hideHint']                    = Ranges.hideHint;
+	exports['carets'] = new Object();
+	exports['carets']['box']      = Carets.box;
+	exports['carets']['showHint'] = Carets.showHint;
+	exports['carets']['hideHint'] = Carets.hideHint;
 
 	exports['selectionchange'] = new Object();
 	exports['selectionchange']['handler']       = SelectionChange.handler;
@@ -530,8 +517,9 @@ define([
 	exports['transform']['msword'] = Transform.msword;
 
 	exports['traversing'] = new Object();
-	exports['traversing']['next'] = Traversing.next;
-	exports['traversing']['prev'] = Traversing.prev;
+	exports['traversing']['next']   = Traversing.next;
+	exports['traversing']['prev']   = Traversing.prev;
+	exports['traversing']['expand'] = Traversing.expand;
 
 	exports['typing'] = new Object();
 	exports['typing']['handle']  = Typing.handle;

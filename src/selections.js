@@ -17,6 +17,7 @@ define([
 	'events',
 	'arrays',
 	'ranges',
+	'carets',
 	'browsers',
 	'overrides',
 	'animation',
@@ -32,6 +33,7 @@ define([
 	Events,
 	Arrays,
 	Ranges,
+	Carets,
 	Browsers,
 	Overrides,
 	Animation,
@@ -78,7 +80,7 @@ define([
 	 * @param {Boundary} boundary
 	 */
 	function show(caret, boundary) {
-		var box = Ranges.box(Ranges.fromBoundaries(boundary, boundary));
+		var box = Carets.box(Boundaries.range(boundary, boundary));
 		Maps.extend(caret.style, {
 			'top'     : box.top + 'px',
 			'left'    : box.left + 'px',
@@ -199,7 +201,7 @@ define([
 			boundary = Boundaries.fromEndOfNode(event.editable.elem);
 			boundary = Html.expandBackward(boundary);
 		}
-		var next = Ranges.fromBoundaries(boundary, boundary);
+		var next = Boundaries.range(boundary, boundary);
 		if (!Events.hasKeyModifier(event, 'shift')) {
 			return {
 				range: next,
@@ -221,11 +223,11 @@ define([
 	 * @return {Object}
 	 */
 	function climb(direction, event, range, focus) {
-		var clone = ('start' === focus)
-		          ? Ranges.collapseToStart(range.cloneRange())
-		          : Ranges.collapseToEnd(range.cloneRange());
-
-		var box = Ranges.box(clone);
+		var boundary = ('start' === focus)
+		             ? Boundaries.fromRangeStart(range)
+		             : Boundaries.fromRangeEnd(range);
+		var clone = Boundaries.range(boundary, boundary);
+		var box = Carets.box(clone);
 		var doc = range.commonAncestorContainer.ownerDocument;
 		var win = Dom.documentWindow(doc);
 		var topOffset = win.pageYOffset - doc.body.clientTop;
@@ -268,29 +270,24 @@ define([
 	 * @return {Object}
 	 */
 	function step(direction, event, range, focus) {
-		var get, set, collapse;
 		var shift = Events.hasKeyModifier(event, 'shift');
-		var clone = range.cloneRange();
-		var move = ('left' === direction) ? Traversing.prev : Traversing.next;
-		if (range.collapsed || !shift) {
+		var start = Boundaries.fromRangeStart(range);
+		var end = Boundaries.fromRangeEnd(range);
+		var collapsed = Boundaries.equals(start, end);
+		if (collapsed || !shift) {
 			focus = ('left' === direction) ? 'start' : 'end';
 		}
-		if ('start' === focus) {
-			get = Boundaries.fromRangeStart;
-			set = Boundaries.setRangeStart;
-			collapse = Ranges.collapseToStart;
-		} else {
-			get = Boundaries.fromRangeEnd;
-			set = Boundaries.setRangeEnd;
-			collapse = Ranges.collapseToEnd;
-		}
-		if (range.collapsed || shift) {
-			Ranges.envelopeInvisibleCharacters(range);
-			var stride = (Events.hasKeyModifier(event, 'ctrl') || Events.hasKeyModifier(event, 'alt'))
+		var boundary = ('start' === focus)
+		             ? start
+		             : Traversing.envelopeInvisibleCharacters(end);
+		if (collapsed || shift) {
+			var stride = (Events.hasKeyModifier(event, 'ctrl')
+			           || Events.hasKeyModifier(event, 'alt'))
 			           ? 'word'
 			           : 'visual';
-			var boundary = get(range);
-			var next = move(boundary, stride);
+			var next = ('left' === direction)
+			         ? Traversing.prev(boundary, stride)
+			         : Traversing.next(boundary, stride);
 			if (Dom.isEditingHost(Boundaries.container(next))) {
 				if (Boundaries.isAtStart(boundary)) {
 					next = Html.expandForward(boundary);
@@ -298,10 +295,17 @@ define([
 					next = Html.expandBackward(boundary);
 				}
 			}
-			set(clone,  next || boundary);
+			if (next) {
+				boundary = next;
+			}
 		}
+		var clone;
 		if (!shift) {
-			collapse(clone);
+			clone = Boundaries.range(boundary, boundary);
+		} else {
+			clone = ('start' === focus)
+			      ? Boundaries.range(boundary, end)
+			      : Boundaries.range(start, boundary);
 		}
 		return {
 			range: clone,
@@ -368,8 +372,9 @@ define([
 	 * @return {Object}
 	 */
 	function dblclick(event, range, focus, previous, expanding) {
+		var boundaries = Boundaries.fromRange(range);
 		return {
-			range: Ranges.expand(range, 'word'),
+			range: Traversing.expand(boundaries[0], boundaries[1], 'word'),
 			focus: 'end'
 		};
 	}
@@ -384,8 +389,9 @@ define([
 	 * @return {Object}
 	 */
 	function tplclick(event, range, focus, previous, expanding) {
+		var boundaries = Boundaries.fromRange(range);
 		return {
-			range: Ranges.expand(range, 'block'),
+			range: Traversing.expand(boundaries[0], boundaries[1], 'block'),
 			focus: 'end'
 		};
 	}
@@ -531,9 +537,10 @@ define([
 		if (!isMouseDown) {
 			return event.type;
 		}
+		var boundaries = Boundaries.fromRange(previous);
 		var ref = ('start' === focus)
-		        ? Ranges.collapseToStart(previous.cloneRange())
-		        : Ranges.collapseToEnd(previous.cloneRange());
+		        ? Boundaries.range(boundaries[0], boundaries[0])
+		        : Boundaries.range(boundaries[1], boundaries[1]);
 		return Ranges.equals(current, ref) ? 'dblclick' : event.type;
 	}
 
@@ -683,14 +690,13 @@ define([
 	}
 
 	/**
-	 * Enures that the given boundary is visible inside of the viewport by
+	 * Ensures that the given boundary is visible inside of the viewport by
 	 * scolling the view port if necessary.
 	 *
-	 * @private
-	 * @param {Boundary} boundary
+	 * @param {!Boundary} boundary
 	 */
 	function focus(boundary) {
-		var box = Ranges.box(Ranges.fromBoundaries(boundary, boundary));
+		var box = Carets.box(Boundaries.range(boundary, boundary));
 		var doc = Boundaries.document(boundary);
 		var win = Dom.documentWindow(doc);
 		var top = win.pageYOffset - doc.body.clientTop;
@@ -774,10 +780,14 @@ define([
 				event.target.ownerDocument
 			);
 		}
-		if (!range) {
-			range = event.range || Ranges.get(event.target.ownerDocument);
+		if (range) {
+			return range;
 		}
-		return range;
+		if (event.range) {
+			return event.range;
+		}
+		var boundaries = Boundaries.get(event.target.ownerDocument);
+		return Boundaries.range(boundaries[0], boundaries[1]);
 	}
 
 	/**
@@ -869,9 +879,10 @@ define([
 		// browser by setting the selection to a range which will cause the the
 		// expansion to be done in the way that the user expects
 		if (!preventDefault && 'mousedown' === type && Events.hasKeyModifier(event, 'shift')) {
+			var boundaries = Boundaries.fromrange(context.range);
 			event.range = ('start' === context.focus)
-			            ? Ranges.collapseToEnd(context.range)
-			            : Ranges.collapseToStart(context.range);
+			            ? Boundaries.range(boundaries[1], boundaries[1])
+			            : Boundaries.range(boundaries[0], boundaries[0]);
 		} else {
 			event.range = context.range;
 		}

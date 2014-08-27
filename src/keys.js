@@ -11,7 +11,7 @@
  * @todo:
  * consider https://github.com/nostrademons/keycode.js/blob/master/keycode.js
  */
-define(['strings', 'ranges'], function (Strings, Ranges) {
+define(['strings', 'boundaries'], function (Strings, Boundaries) {
 	'use strict';
 
 	/**
@@ -100,9 +100,9 @@ define(['strings', 'ranges'], function (Strings, Ranges) {
 			if (EVENTS[event.type]) {
 				event.keycode = event.nativeEvent.which;
 				if (!event.range) {
-					event.range = Ranges.get((
-						event.nativeEvent.target || event.nativeEvent.srcElement
-					).ownerDocument);
+					var node = event.nativeEvent.target || event.nativeEvent.srcElement;
+					var boundaries = Boundaries.get(node.ownerDocument);
+					event.range = Boundaries.range(boundaries[0], boundaries[1]);
 				}
 			}
 		}

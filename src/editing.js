@@ -504,7 +504,7 @@ define([
 		return true;
 	}
 
-	// NB: depends on fixupRange to use Ranges.trimClosingOpening() to move the
+	// NB: depends on fixupRange to use trimClosingOpening() to move the
 	// leftPoint out of an cursor.atEnd position to the first node that is to be
 	// moved.
 	function moveBackIntoWrapper(node, ref, atEnd, leftPoint, rightPoint) {
@@ -553,7 +553,7 @@ define([
 		// Also, because moveBackIntoWrapper() requires the
 		// left boundary point to be next to a non-ignorable node.
 		if (false !== trim) {
-			Ranges.trimClosingOpening(
+			trimClosingOpening(
 				range,
 				Html.isUnrenderedWhitespace,
 				Html.isUnrenderedWhitespace
@@ -1118,8 +1118,7 @@ define([
 	/**
 	 * Ensures the given range is wrapped by elements with a given nodeName.
 	 *
-	 * @param {string} nodeName The name of the tag that should serve as the
-	 *                          wrapping node.
+	 * @param {string}    nodeName
 	 * @param {!Boundary} start
 	 * @param {!Boundary} end
 	 * @param {boolean} remove Optional flag, which when set to false will cause
@@ -1137,7 +1136,7 @@ define([
 	function wrapElem(nodeName, start, end, remove, opts) {
 		opts = opts || {};
 
-		var liveRange = Ranges.fromBoundaries(start, end);
+		var liveRange = Boundaries.range(start, end);
 
 		// Because we should avoid splitTextContainers() if this call is a noop.
 		if (liveRange.collapsed) {
@@ -1182,7 +1181,7 @@ define([
 	 * @return {Array.<Boundary>}
 	 */
 	function style(styleName, styleValue, start, end, opts) {
-		var liveRange = Ranges.fromBoundaries(start, end);
+		var liveRange = Boundaries.range(start, end);
 
 		opts = opts || {};
 
@@ -1251,6 +1250,80 @@ define([
 	}
 
 	/**
+	 * Ensures that the given start point Cursor is not at a "start position"
+	 * and the given end point Cursor is not at an "end position" by moving the
+	 * points to the left and right respectively.  This is effectively the
+	 * opposite of trimBoundaries().
+	 *
+	 * @param {Cusor} start
+	 * @param {Cusor} end
+	 * @param {function:boolean} until
+	 *        Optional predicate.  May be used to stop the trimming process from
+	 *        moving the Cursor from within an element outside of it.
+	 * @param {function:boolean} ignore
+	 *        Optional predicate.  May be used to ignore (skip)
+	 *        following/preceding siblings which otherwise would stop the
+	 *        trimming process, like for example underendered whitespace.
+	 */
+	function expandBoundaries(start, end, until, ignore) {
+		until = until || Fn.returnFalse;
+		ignore = ignore || Fn.returnFalse;
+		start.prevWhile(function (start) {
+			var prevSibling = start.prevSibling();
+			return prevSibling ? ignore(prevSibling) : !until(start.parent());
+		});
+		end.nextWhile(function (end) {
+			return !end.atEnd ? ignore(end.node) : !until(end.parent());
+		});
+	}
+
+	/**
+	 * Ensures that the given start point Cursor is not at an "start position"
+	 * and the given end point Cursor is not at an "end position" by moving the
+	 * points to the left and right respectively.  This is effectively the
+	 * opposite of expandBoundaries().
+	 *
+	 * If the boundaries are equal (collapsed), or become equal during this
+	 * operation, or if until() returns true for either point, they may remain
+	 * in start and end position respectively.
+	 *
+	 * @param {Cusor} start
+	 * @param {Cusor} end
+	 * @param {function:boolean} until
+	 *        Optional predicate.  May be used to stop the trimming process from
+	 *        moving the Cursor from within an element outside of it.
+	 * @param {function:boolean} ignore
+	 *        Optional predicate.  May be used to ignore (skip)
+	 *        following/preceding siblings which otherwise would stop the
+	 *        trimming process, like for example underendered whitespace.
+	 */
+	function trimBoundaries(start, end, until, ignore) {
+		until = until || Fn.returnFalse;
+		ignore = ignore || Fn.returnFalse;
+		start.nextWhile(function (start) {
+			return (
+				!start.equals(end)
+					&& (
+						!start.atEnd
+							? ignore(start.node)
+							: !until(start.parent())
+					)
+			);
+		});
+		end.prevWhile(function (end) {
+			var prevSibling = end.prevSibling();
+			return (
+				!start.equals(end)
+					&& (
+						prevSibling
+							? ignore(prevSibling)
+							: !until(end.parent())
+					)
+			);
+		});
+	}
+
+	/**
 	 * Ensures that the given boundaries are neither in start nor end positions.
 	 * In other words, after this operation, both will have preceding and
 	 * following siblings.
@@ -1261,11 +1334,130 @@ define([
 	 */
 	function trimExpandBoundaries(startPoint, endPoint, trimUntil, expandUntil, ignore) {
 		var collapsed = startPoint.equals(endPoint);
-		Ranges.trimBoundaries(startPoint, endPoint, trimUntil, ignore);
-		Ranges.expandBoundaries(startPoint, endPoint, expandUntil, ignore);
+		trimBoundaries(startPoint, endPoint, trimUntil, ignore);
+		expandBoundaries(startPoint, endPoint, expandUntil, ignore);
 		if (collapsed) {
 			endPoint.setFrom(startPoint);
 		}
+	}
+
+	/**
+	 * @private
+	 */
+	function seekBoundaryPoint(range, container, offset, oppositeContainer,
+	                           oppositeOffset, setFn, ignore, backwards) {
+		var cursor = Cursors.cursorFromBoundaryPoint(container, offset);
+
+		// Because when seeking backwards, if the boundary point is inside a
+		// text node, trimming starts after it. When seeking forwards, the
+		// cursor starts before the node, which is what
+		// cursorFromBoundaryPoint() does automatically.
+		if (backwards
+				&& Dom.isTextNode(container)
+					&& offset > 0
+						&& offset < container.length) {
+			if (cursor.next()) {
+				if (!ignore(cursor)) {
+					return range;
+				}
+				// Bacause the text node can be ignored, we go back to the
+				// initial position.
+				cursor.prev();
+			}
+		}
+		var opposite = Cursors.cursorFromBoundaryPoint(
+			oppositeContainer,
+			oppositeOffset
+		);
+		var changed = false;
+		while (!cursor.equals(opposite)
+		           && ignore(cursor)
+		           && (backwards ? cursor.prev() : cursor.next())) {
+			changed = true;
+		}
+		if (changed) {
+			setFn(range, cursor);
+		}
+		return range;
+	}
+
+
+	/**
+	 * Starting with the given range's start and end boundary points, seek
+	 * inward using a cursor, passing the cursor to ignoreLeft and ignoreRight,
+	 * stopping when either of these returns true, adjusting the given range to
+	 * the end positions of both cursors.
+	 *
+	 * The dom cursor passed to ignoreLeft and ignoreRight does not traverse
+	 * positions inside text nodes. The exact rules for when text node
+	 * containers are passed are as follows: If the left boundary point is
+	 * inside a text node, trimming will start before it. If the right boundary
+	 * point is inside a text node, trimming will start after it.
+	 * ignoreLeft/ignoreRight() are invoked with the cursor before/after the
+	 * text node that contains the boundary point.
+	 *
+	 * @todo: Implement in terms of boundaries
+	 *
+	 * @param  {Range}     range
+	 * @param  {function=} ignoreLeft
+	 * @param  {function=} ignoreRight
+	 * @return {Range}
+	 */
+	function trim(range, ignoreLeft, ignoreRight) {
+		ignoreLeft = ignoreLeft || Fn.returnFalse;
+		ignoreRight = ignoreRight || Fn.returnFalse;
+		if (range.collapsed) {
+			return range;
+		}
+		// Because range may be mutated, we must store its properties before
+		// doing anything else.
+		var sc = range.startContainer;
+		var so = range.startOffset;
+		var ec = range.endContainer;
+		var eo = range.endOffset;
+		seekBoundaryPoint(
+			range,
+			sc,
+			so,
+			ec,
+			eo,
+			Cursors.setRangeStart,
+			ignoreLeft,
+			false
+		);
+		sc = range.startContainer;
+		so = range.startOffset;
+		seekBoundaryPoint(
+			range,
+			ec,
+			eo,
+			sc,
+			so,
+			Cursors.setRangeEnd,
+			ignoreRight,
+			true
+		);
+		return range;
+	}
+
+	/**
+	 * Like trim() but ignores closing (to the left) and opening positions (to
+	 * the right).
+	 *
+	 * @param  {Range}     range
+	 * @param  {function=} ignoreLeft
+	 * @param  {function=} ignoreRight
+	 * @return {Range}
+	 */
+	function trimClosingOpening(range, ignoreLeft, ignoreRight) {
+		ignoreLeft = ignoreLeft || Fn.returnFalse;
+		ignoreRight = ignoreRight || Fn.returnFalse;
+		trim(range, function (cursor) {
+			return cursor.atEnd || ignoreLeft(cursor.node);
+		}, function (cursor) {
+			return !cursor.prevSibling() || ignoreRight(cursor.prevSibling());
+		});
+		return range;
 	}
 
 	function splitBoundaryPoint(node, atEnd, leftPoint, rightPoint, removeEmpty, opts) {
@@ -1446,7 +1638,7 @@ define([
 	 *
 	 * TODO:
 	 * put &nbsp; at beginning and end position in order to preserve spaces at
-	 * these locations when deleting. also consider propping <p></p>'s
+	 * these locations when deleting.
 	 *
 	 * @see https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#deleting-the-selection
 	 *
@@ -1455,7 +1647,7 @@ define([
 	 * @return {Array.<Boundary>}
 	 */
 	function remove(start, end) {
-		var range = Ranges.fromBoundaries(start, end);
+		var range = Boundaries.range(start, end);
 		return fixupRange(range, function (range, left, right) {
 			var remove = function (node) {
 				Mutation.removePreservingRange(node, range);
@@ -1518,15 +1710,15 @@ define([
 	 * @return {Array.<Boundary>}
 	 */
 	function breakline(liveRange, breaker, linebreak) {
-		var range = Ranges.collapseToEnd(StableRange(liveRange));
 		var op = linebreak ? Html.insertLineBreak : Html.insertBreak;
-		var boundary = op(Boundaries.fromRangeStart(range), breaker);
+		var boundary = op(Boundaries.fromRangeEnd(liveRange), breaker);
 		Boundaries.setRange(liveRange, boundary, boundary);
 		return [boundary, boundary];
 	}
 
 	function insert(liveRange, insertion) {
-		var range = Ranges.collapseToEnd(StableRange(liveRange));
+		var boundaries = Boundaries.fromRange(StableRange(liveRange));
+		var range = Boundaries.range(boundaries[1], boundaries[1]);
 		split(range, {
 			below: function (node) {
 				return Content.allowsNesting(node.nodeName, insertion.nodeName);

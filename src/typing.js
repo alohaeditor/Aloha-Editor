@@ -11,7 +11,6 @@ define([
 	'html',
 	'undo',
 	'arrays',
-	'ranges',
 	'editing',
 	'strings',
 	'metaview',
@@ -28,7 +27,6 @@ define([
 	Html,
 	Undo,
 	Arrays,
-	Ranges,
 	Editing,
 	Strings,
 	Metaview,
@@ -101,22 +99,25 @@ define([
 				Boundaries.setRangeStart(range, Traversing.prev(boundary));
 			}
 		}
-		var boundaries = Boundaries.fromRange(Ranges.envelopeInvisibleCharacters(range));
-		boundaries = Editing.remove(boundaries[0], boundaries[1]);
+		var boundaries = Boundaries.fromRange(range);
+		boundaries = Editing.remove(
+			boundaries[0],
+			Traversing.envelopeInvisibleCharacters(boundaries[1])
+		);
 		event.editor.selectionContext.formatting = joinToSet(
 			event.editor.selectionContext.formatting,
 			Overrides.harvest(Boundaries.container(boundaries[0]))
 		);
 		boundaries = removeUnrenderedContainers(boundaries);
 		Html.prop(Boundaries.commonContainer(boundaries[0], boundaries[1]));
-		return Ranges.fromBoundaries(boundaries[0], boundaries[1]);
+		return Boundaries.range(boundaries[0], boundaries[1]);
 	}
 
 	function format(style, event) {
 		var boundaries = Boundaries.fromRange(event.range);
 		if (!Html.isBoundariesEqual(boundaries[0], boundaries[1])) {
 			boundaries = Formatting.toggle(style, boundaries[0], boundaries[1]);
-			return Ranges.fromBoundaries(boundaries[0], boundaries[1]);
+			return Boundaries.range(boundaries[0], boundaries[1]);
 		}
 		var override = Overrides.nodeToState[style];
 		if (!override) {
@@ -197,7 +198,7 @@ define([
 	function selectEditable(event) {
 		var editable = Dom.editingHost(event.range.commonAncestorContainer);
 		if (editable) {
-			event.range = Ranges.fromBoundaries(
+			event.range = Boundaries.range(
 				Boundaries.create(editable, 0),
 				Boundaries.fromEndOfNode(editable)
 			);

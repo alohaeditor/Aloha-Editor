@@ -10,7 +10,6 @@ define([
 	'dom',
 	'maps',
 	'keys',
-	'ranges',
 	'editing',
 	'mutation',
 	'searching',
@@ -21,7 +20,6 @@ define([
 	Dom,
 	Maps,
 	Keys,
-	Ranges,
 	Editing,
 	Mutation,
 	Searching,
@@ -68,11 +66,8 @@ define([
 	}
 
 	function ascii(symbol, start, end) {
-		var range = Ranges.fromBoundaries(start, end);
-		var boundaries = Boundaries.fromRange(
-			Ranges.envelopeInvisibleCharacters(range)
-		);
-		var boundary = Editing.remove(boundaries[0], boundaries[1])[0];
+		end = Traversing.envelopeInvisibleCharacters(end);
+		var boundary = Editing.remove(start, end)[0];
 		return Mutation.insertTextAtBoundary(symbol, boundary, true);
 	}
 
@@ -163,7 +158,7 @@ define([
 		}
 		if (handler) {
 			boundary = handler(start, boundary);
-			event.range = Ranges.fromBoundaries(boundary, boundary);
+			event.range = Boundaries.range(boundary, boundary);
 		}
 		return event;
 	}

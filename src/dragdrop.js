@@ -17,6 +17,7 @@ define([
 	'events',
 	'ranges',
 	'editing',
+	'boundaries',
 	'selections'
 ], function (
 	Dom,
@@ -24,6 +25,7 @@ define([
 	Events,
 	Ranges,
 	Editing,
+	Boundaries,
 	Selections
 ) {
 	'use strict';
@@ -117,8 +119,9 @@ define([
 	 * Moves the given node into the given range.
 	 *
 	 * @private
-	 * @param {Range} range
-	 * @param {Node}  node
+	 * @param  {Range} range
+	 * @param  {Node}  node
+	 * @return {Range}
 	 */
 	function moveNode(range, node) {
 		var prev = node.previousSibling;
@@ -126,7 +129,8 @@ define([
 		if (prev && prev.nextSibling) {
 			Dom.merge(prev, prev.nextSibling);
 		}
-		Ranges.collapseToEnd(range);
+		var boundaries = Boundaries.fromRange(range);
+		return Boundaries.range(boundaries[1], boundaries[1]);
 	}
 
 	function handleDragStart(alohaEvent) {
@@ -168,7 +172,10 @@ define([
 			event.target.ownerDocument
 		);
 		if (alohaEvent.range) {
-			moveNode(alohaEvent.range, alohaEvent.editor.dndContext.element);
+			alohaEvent.range = moveNode(
+				alohaEvent.range,
+				alohaEvent.editor.dndContext.element
+			);
 		}
 		if (event.stopPropagation) {
 			event.stopPropagation();

@@ -546,7 +546,7 @@ define([], function () {
 	];
 
 	/**
-	 * Checks whether the node name `outer` is allowed to contain in a node with
+	 * Checks whether the node name `outer` is allowed to contain a node with
 	 * the node name `inner` as a direct descendant based on the HTML5
 	 * specification.
 	 *

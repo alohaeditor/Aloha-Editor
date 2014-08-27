@@ -30,7 +30,7 @@ define([
 	/**
 	 * Returns an editable object for the given boundary.
 	 *
-	 * @param  {Editor}    editor
+	 * @param  {Editor}   editor
 	 * @param  {Boundary} boundary
 	 * @return {?Editable}
 	 */

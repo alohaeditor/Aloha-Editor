@@ -7,10 +7,12 @@
  */
 define([
 	'dom',
+	'ranges',
 	'arrays',
 	'assert'
 ], function (
 	Dom,
+	Ranges,
 	Arrays,
 	Assert
 ) {
@@ -532,31 +534,6 @@ define([
 	}
 
 	/**
-	 * Calculates the cumulative length of contiguous text nodes immediately
-	 * preceding the given boundary.
-	 *
-	 * @param  {Boundary} boundary
-	 * @return {number}
-	 */
-	function precedingTextLength(boundary) {
-		var node;
-		var len;
-		boundary = normalize(boundary);
-		if (isNodeBoundary(boundary)) {
-			len = 0;
-			node = nodeBefore(boundary);
-		} else {
-			len = offset(boundary);
-			node = container(boundary).previousSibling;
-		}
-		while (node && Dom.isTextNode(node)) {
-			len += Dom.nodeLength(node);
-			node = node.previousSibling;
-		}
-		return len;
-	}
-
-	/**
 	 * Gets the boundaries of the currently selected range from the given
 	 * document element.
 	 *
@@ -571,6 +548,22 @@ define([
 	}
 
 	/**
+	 * Creates a range based on the given start and end boundaries.
+	 *
+	 * @param  {Boundary} start
+	 * @param  {Boundary} end
+	 * @return {Range}
+	 */
+	function toRange(start, end) {
+		return Ranges.create(
+			container(start),
+			offset(start),
+			container(end),
+			offset(end)
+		);
+	}
+
+	/**
 	 * Sets the a range to the browser selection according to the given start
 	 * and end boundaries.  This operation will cause the selection to be
 	 * visually rendered by the user agent.
@@ -582,15 +575,9 @@ define([
 		if (!end) {
 			end = start;
 		}
-		var sc = container(start);
-		var so = offset(start);
-		var ec = container(end);
-		var eo = offset(end);
-		var doc = sc.ownerDocument;
+		var range = toRange(start, end);
+		var doc = range.commonAncestorContainer.ownerDocument;
 		var selection = doc.getSelection();
-		var range = doc.createRange();
-		range.setStart(sc, so);
-		range.setEnd(ec, eo);
 		selection.removeAllRanges();
 		selection.addRange(range);
 	}
@@ -603,15 +590,12 @@ define([
 	 * @return {Node}
 	 */
 	function commonContainer(start, end) {
-		var sc = container(start);
-		var so = offset(start);
-		var ec = container(end);
-		var eo = offset(end);
-		var doc = Dom.Nodes.DOCUMENT === sc.nodeType ? sc : sc.ownerDocument;
-		var range = doc.createRange();
-		range.setStart(sc, so);
-		range.setEnd(ec, eo);
-		return range.commonAncestorContainer;
+		return toRange(start, end).commonAncestorContainer;
+	}
+
+	function fromPosition(x, y, doc) {
+		var range = Ranges.fromPosition(x, y, doc);
+		return range || fromRange(range);
 	}
 
 	return {
@@ -628,12 +612,15 @@ define([
 		offset              : offset,
 		document            : document,
 
+		range               : toRange,
+
 		fromRange           : fromRange,
 		fromRanges          : fromRanges,
 		fromRangeStart      : fromRangeStart,
 		fromRangeEnd        : fromRangeEnd,
 		fromNode            : fromNode,
 		fromEndOfNode       : fromEndOfNode,
+		fromPosition        : fromPosition,
 
 		/* these functions should be in ranges.js */
 		setRange            : setRange,
@@ -664,8 +651,6 @@ define([
 		prevNode            : prevNode,
 		nodeAfter           : nodeAfter,
 		nodeBefore          : nodeBefore,
-
-		precedingTextLength : precedingTextLength,
 
 		commonContainer     : commonContainer
 	};

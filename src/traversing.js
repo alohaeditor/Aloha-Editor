@@ -6,15 +6,45 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
+	'dom',
 	'html',
+	'arrays',
 	'strings',
 	'boundaries'
 ], function (
+	Dom,
 	Html,
+	Arrays,
 	Strings,
 	Boundaries
 ) {
 	'use strict';
+
+	/**
+	 * Moves the given boundary forward (if needed) to encapsulate all adjacent
+	 * unrendered characters.
+	 *
+	 * This operation should therefore never cause the visual representation of
+	 * the boundary to change.
+	 *
+	 * Since it is impossible to place a boundary immediately behind an
+	 * invisible character, this function will only ever need to expand a
+	 * range's end position.
+	 *
+	 * @param  {!Boundary} boundary
+	 * @return {Boundary}
+	 */
+	function envelopeInvisibleCharacters(boundary) {
+		if (Boundaries.isNodeBoundary(boundary)) {
+			return boundary;
+		}
+		var offset = Html.nextSignificantOffset(boundary);
+		var container = Boundaries.container(boundary);
+		return (-1 === offset)
+		     ? Boundaries.fromEndOfNode(container)
+		     : Boundaries.create(container, offset);
+	}
+
 
 	/**
 	 * Return the character immediately following the given boundary.
@@ -111,8 +141,95 @@ define([
 		return Html.next(boundary, unit);
 	}
 
+	/**
+	 * Expands two boundaries to contain a word.
+	 *
+	 * The boundaries represent the start and end containers of a range.
+	 *
+	 * A word is a collection of visible characters terminated by a space or
+	 * punctuation character or a word-breaker (in languages that do not use
+	 * space to delimit word boundaries).
+	 *
+	 * foo b[a]r baz → foo [bar] baz
+	 *
+	 * @private
+	 * @param  {Boundary} start
+	 * @param  {Boundary} end
+	 * @return {Array.<Boundary>}
+	 */
+	function expandToWord(start, end) {
+		return [
+			prev(start, 'word') || start,
+			next(end,   'word') || end
+		];
+	}
+
+	/**
+	 * Expands two boundaries to contain a block.
+	 *
+	 * The boundaries represent the start and end containers of a range.
+	 *
+	 *
+	 * [,] = start,end boundary
+	 *
+	 *  +-------+     [ +-------+
+	 *  | block |       | block |
+	 *  |       |   →   |       |
+	 *  | [ ]   |       |       |
+	 *  +-------+       +-------+ ]
+	 *
+	 * @private
+	 * @param  {Boundary} start
+	 * @param  {Boundary} end
+	 * @return {Array.<Boundary>}
+	 */
+	function expandToBlock(start, end) {
+		var cac = Boundaries.commonContainer(start, end);
+		var ancestors = Dom.childAndParentsUntilIncl(cac, function (node) {
+			return Html.hasLinebreakingStyle(node) || Dom.isEditingHost(node);
+		});
+		var node = Arrays.last(ancestors);
+		var len = Dom.nodeLength(node);
+		var prev = Boundaries.create(node, 0);
+		var next = next(Boundaries.create(node, len));
+		return [prev, next];
+	}
+
+	/**
+	 * Expands the given boundaries to contain the given unit.
+	 *
+	 * The second parameter `unit` specifies the unit with which to expand.
+	 * This value may be one of the following strings:
+	 *
+	 * "word" -- Expand to completely contain a word.
+	 *
+	 *		A word is the smallest semantic unit.  It is a contigious sequence
+	 *		of characters terminated by a space or puncuation character or a
+	 *		word-breaker (in languages that do not use space to delimit word
+	 *		boundaries).
+	 *
+	 * "block" -- Expand to completely contain the a block.
+	 *
+	 * @param  {Boundary} start
+	 * @param  {Boundary} end
+	 * @param  {unit}     unit
+	 * @return {Range}
+	 */
+	function expand(start, end, unit) {
+		switch (unit) {
+		case 'word':
+			return expandToWord(start, end);
+		case 'block':
+			return expandToBlock(start, end);
+		default:
+			throw '"' + unit + '"? what\'s that?';
+		}
+	}
+
 	return {
-		next : next,
-		prev : prev
+		next                        : next,
+		prev                        : prev,
+		expand                      : expand,
+		envelopeInvisibleCharacters : envelopeInvisibleCharacters
 	};
 });

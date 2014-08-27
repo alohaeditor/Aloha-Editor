@@ -39,7 +39,7 @@ define([
 		var doc = startContainer.ownerDocument;
 		var startMarker = doc.createTextNode(Dom.isTextNode(endContainer) ? ']' : '}');
 		var endMarker = doc.createTextNode(Dom.isTextNode(startContainer) ? '[' : '{');
-		var range = Ranges.fromBoundaries(start, end);
+		var range = Boundaries.range(start, end);
 		start = Mutation.splitBoundary(Boundaries.fromRangeStart(range), [range]);
 		end = Mutation.splitBoundary(Boundaries.fromRangeEnd(range));
 		Dom.insert(startMarker, Boundaries.nextNode(end), Boundaries.isAtEnd(end));

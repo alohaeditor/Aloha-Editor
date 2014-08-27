@@ -9,14 +9,12 @@ define([
 	'boundaries',
 	'dom',
 	'image/image-selection',
-	'paste',
-	'ranges'
+	'paste'
 ], function (
 	Boundaries,
 	Dom,
 	ImageSelection,
-	Paste,
-	Ranges
+	Paste
 ) {
 	'use strict';
 
@@ -71,10 +69,14 @@ define([
 	 * @param {Document} doc
 	 */
 	function insert(attributes, doc) {
-		var range = Ranges.get(doc);
-		if (range) {
-			insertFromRange(range, attributes);
+		var boundaries = Boundaries.get(doc);
+		if (!boundaries) {
+			return;
 		}
+		insertFromRange(
+			Boundaries.range(boundaries[0], boundaries[1]),
+			attributes
+		);
 	}
 
 	/**
@@ -98,10 +100,14 @@ define([
 	 * @param {Document} doc
 	 */
 	function setAttributes(attributes, doc) {
-		var range = Ranges.get(doc);
-		if (range) {
-			setAttributesFromRange(range, attributes);
+		var boundaries = Boundaries.get(doc);
+		if (!boundaries) {
+			return;
 		}
+		setAttributesFromRange(
+			Boundaries.range(boundaries[0], boundaries[1]),
+			attributes
+		);
 	}
 
 	return {
