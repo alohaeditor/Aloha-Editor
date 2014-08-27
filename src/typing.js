@@ -148,6 +148,44 @@ define([
 		return event.range;
 	}
 
+	/**
+	 * Checks for sequence of whitespace and alternate whitespaces with
+	 * non-breaking-spaces
+	 *
+	 * @param {Boundary} boundary
+	 * @returns {string}
+	 */
+	function sequenceWhiteSpaces(boundary) {
+		var node = Boundaries.container(boundary);
+		var offset = Boundaries.offset(boundary);
+		var text = ' ';
+
+		if (offset === 0) {
+			return '\xa0';
+		}
+
+		if (!Dom.isTextNode(node)) {
+			node = node.childNodes[offset - 1];
+			offset = node.length - 1;
+			text = '\xa0';
+		}
+
+		if (node.textContent[offset - 1] === ' ' || node.textContent[offset] === ' ') {
+			return '\xa0';
+		}
+
+		if (node.textContent[offset] === '\xa0' && node.textContent[offset - 1] === undefined) {
+			return '\xa0';
+		}
+
+		if (node.textContent[offset] === '\xa0' && node.textContent[offset - 1] === '\xa0') {
+			node.replaceData(offset, 1, '');
+			return ' \xa0';
+		}
+
+		return text;
+	}
+
 	function insertText(event) {
 		var range = event.range;
 		var editable = event.editable;
@@ -164,7 +202,7 @@ define([
 				'white-space'
 			);
 			if (!Html.isWhiteSpacePreserveStyle(whiteSpaceStyle)) {
-				text = '\xa0';
+				text = sequenceWhiteSpaces(boundary);
 			}
 		}
 

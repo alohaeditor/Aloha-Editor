@@ -3,8 +3,8 @@
 
 	module('editing');
 
-	var Ranges = aloha.ranges;
 	var Xhtml; require('../src/dom-to-xhtml', function (Module) { Xhtml = Module; });
+	var Editing; require('../src/editing', function (Module) { Editing = Module; });
 
 	function switchElemTextSelection(html) {
 		return html.replace(/[\{\}\[\]]/g, function (match) {
@@ -26,7 +26,7 @@
 		$('#test-editable').html(before);
 		var dom = $('#test-editable')[0].firstChild;
 		var boundaries = aloha.markers.extract(dom);
-		var range = Ranges.fromBoundaries(boundaries[0], boundaries[1]);
+		var range = aloha.boundaries.range(boundaries[0], boundaries[1]);
 		dom = mutate(dom, range) || dom;
 		boundaries = rawBoundariesFromRange(range);
 		aloha.markers.insert(boundaries[0], boundaries[1]);
@@ -62,7 +62,7 @@
 					unit[0], // input
 					unit[1], // expected
 					function (dom, range) {
-						Ranges.trimClosingOpening(
+						Editing.trimClosingOpening(
 							range,
 							aloha.html.isUnrenderedWhitespace,
 							aloha.html.isUnrenderedWhitespace

@@ -1743,6 +1743,7 @@ define([
 		split     : split,
 		remove    : remove,
 		breakline : breakline,
-		insert    : insert
+		insert    : insert,
+		trimClosingOpening: trimClosingOpening
 	};
 });

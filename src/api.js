@@ -337,7 +337,6 @@ define([
 	exports['fn']['returnFalse']  = Fn.returnFalse;
 	exports['fn']['complement']   = Fn.complement;
 	exports['fn']['partial']      = Fn.partial;
-	exports['fn']['outparameter'] = Fn.outparameter;
 	exports['fn']['strictEquals'] = Fn.strictEquals;
 	exports['fn']['comp']         = Fn.comp;
 	exports['fn']['and']          = Fn.and;
@@ -526,19 +525,13 @@ define([
 	exports['typing']['actions'] = Typing.actions;
 
 	exports['undo'] = new Object();
-	exports['undo']['Context']            = Undo.Context;
-	exports['undo']['enter']              = Undo.enter;
-	exports['undo']['close']              = Undo.close;
-	exports['undo']['leave']              = Undo.leave;
-	exports['undo']['capture']            = Undo.capture;
-	exports['undo']['pathFromBoundary']   = Undo.pathFromBoundary;
-	exports['undo']['changeSetFromFrame'] = Undo.changeSetFromFrame;
-	exports['undo']['inverseChangeSet']   = Undo.inverseChangeSet;
-	exports['undo']['applyChangeSet']     = Undo.applyChangeSet;
-	exports['undo']['advanceHistory']     = Undo.advanceHistory;
-	exports['undo']['makeInsertChange']   = Undo.makeInsertChange;
-	exports['undo']['undo']               = Undo.undo;
-	exports['undo']['redo']               = Undo.redo;
+	exports['undo']['Context'] = Undo.Context;
+	exports['undo']['enter']   = Undo.enter;
+	exports['undo']['close']   = Undo.close;
+	exports['undo']['leave']   = Undo.leave;
+	exports['undo']['capture'] = Undo.capture;
+	exports['undo']['undo']    = Undo.undo;
+	exports['undo']['redo']    = Undo.redo;
 
 	exports['MutationTrees'] = new Object();
 	exports['MutationTrees'].split  = MutationTrees.split;
