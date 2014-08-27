@@ -787,7 +787,10 @@ define([
 			return event.range;
 		}
 		var boundaries = Boundaries.get(event.target.ownerDocument);
-		return Boundaries.range(boundaries[0], boundaries[1]);
+		if (boundaries) {
+			return Boundaries.range(boundaries[0], boundaries[1]);
+		}
+		return null;
 	}
 
 	/**

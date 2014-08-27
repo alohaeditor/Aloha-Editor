@@ -595,7 +595,7 @@ define([
 
 	function fromPosition(x, y, doc) {
 		var range = Ranges.fromPosition(x, y, doc);
-		return range || fromRange(range);
+		return range && fromRange(range);
 	}
 
 	return {

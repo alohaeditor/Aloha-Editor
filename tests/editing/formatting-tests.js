@@ -5,7 +5,6 @@
 
 	var Fn = aloha.fn;
 	var Html = aloha.html;
-	var Ranges = aloha.ranges;
 	var Editing = aloha.editing;
 	var Markers = aloha.markers;
 	var Xhtml; require('../src/dom-to-xhtml', function (Module) { Xhtml = Module; });
@@ -241,7 +240,7 @@
 				 '<div><i>a[b</i>c<b>d]e</b></div>',
 				 '<div><i>a[b</i>c<b>d]e</b></div>',
 				 function (dom, start, end) {
-				 	var range = Ranges.fromBoundaries(start, end);
+				 	var range = aloha.boundaries.range(start, end);
 					return Editing.split(range, {below: Fn.returnFalse});
 				 });
 

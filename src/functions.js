@@ -93,30 +93,6 @@ define([], function () {
 	}
 
 	/**
-	 * Creates a bound variable and returns the closure which can be use to get
-	 * and set the value of it as a free variable.
-	 *
-	 * This construct can be used as a convenient way to simulate
-	 * generic out parameters in JavaScript.
-	 *
-	 * Calling the closure with an argument changes the value of the enclosed
-	 * variable.  Calling the closure without any arguments will return the
-	 * value of the enclosed variable.
-	 *
-	 * @param {*} value The initial value that the enclosed variable should hold.
-	 * @return {function(*):*}
-	 */
-	function outparameter(value) {
-		var variable = value;
-		return function OutParameter() {
-			if (arguments.length) {
-				variable = arguments[0];
-			}
-			return variable;
-		};
-	}
-
-	/**
 	 * Compare the given arguments using the strict equals operator.
 	 *
 	 * Useful to pass as an arguments to other functions.
@@ -243,7 +219,6 @@ define([], function () {
 		returnFalse  : returnFalse,
 		complement   : complement,
 		partial      : partial,
-		outparameter : outparameter,
 		strictEquals : strictEquals,
 		comp         : comp,
 		and          : and,

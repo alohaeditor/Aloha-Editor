@@ -3,13 +3,21 @@
 
 	var Dom = aloha.dom;
 	var Mutation = aloha.mutation;
+	var Boundaries = aloha.boundaries;
 	var Cursors; require('../src/cursors', function (Module) { Cursors = Module; });
+
+	function createRange(sc, so, ec, eo) {
+		return Boundaries.range(
+			Boundaries.raw(sc, so),
+			Boundaries.raw(ec, eo)
+		);
+	}
 
 	module('dom');
 
 	test('splitTextNode', function () {
 		var node = $('<div>foo<b>bar</b></div>')[0];
-		var range = aloha.ranges.create(
+		var range = createRange(
 			node.firstChild,
 			1,
 			node.lastChild.lastChild,
@@ -24,7 +32,7 @@
 
 	test('splitBoundary', function () {
 		var node = $('<div>foo<b>bar</b></div>')[0];
-		var range = aloha.ranges.create(
+		var range = createRange(
 			node.firstChild,
 			2,
 			node.lastChild.lastChild,
@@ -40,7 +48,7 @@
 	test('joinTextNodeAdjustRange', function () {
 		var node = $('<div>foo<b>bar</b></div>')[0];
 		Mutation.splitTextNode(node.firstChild, 2);
-		var range = aloha.ranges.create(
+		var range = createRange(
 			node.childNodes[1],
 			0,
 			node.lastChild.lastChild,
@@ -69,7 +77,7 @@
 
 	test('removePreservingRange', function () {
 		var node = $('<div><span>foo<b>bar</b></span></div>')[0];
-		var range = aloha.ranges.create(node, 0, node.firstChild.lastChild, 1);
+		var range = createRange(node, 0, node.firstChild.lastChild, 1);
 
 		Mutation.removePreservingRange(node.firstChild.lastChild, range);
 		equal(node.outerHTML, '<div><span>foo</span></div>');

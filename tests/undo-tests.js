@@ -2,8 +2,8 @@
 	'use strict';
 
 	var Dom = aloha.dom;
-	var Undo = aloha.undo;
 	var Boundaries = aloha.boundaries;
+	var Undo; require('../src/undo', function (Module) { Undo = Module; });
 
 	module('undo');
 
@@ -90,7 +90,10 @@
 		var controlEditable = Dom.clone(editable);
 		var context = Undo.Context(editable);
 		var capturedFrame = Undo.capture(context, {meta: true}, function () {
-			var range = aloha.ranges.fromBoundaries([editable.firstChild, 2], [editable.firstChild, 3]);
+			var range = Boundaries.range(
+				Boundaries.raw(editable.firstChild, 2),
+				Boundaries.raw(editable.firstChild, 3)
+			);
 			var haveToPassEmptyOverridesOtherwiseError = {overrides: []};
 			var boundaries = Boundaries.fromRange(range);
 			aloha.editing.remove(boundaries[0], boundaries[1], haveToPassEmptyOverridesOtherwiseError);

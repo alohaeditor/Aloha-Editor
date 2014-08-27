@@ -46,12 +46,6 @@
 		}, {foo: 'foo'})(), 'foo');
 	});
 
-	test('outparameter', function() {
-		tested.push('outparameter');
-		equal(fn.outparameter(true)(), true);
-		equal(fn.outparameter('hello')(), 'hello');
-	});
-
 	test('strictEquals', function() {
 		tested.push('strictEquals');
 
