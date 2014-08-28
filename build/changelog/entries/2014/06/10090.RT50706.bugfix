@@ -1,0 +1,4 @@
+(Only for Firefox browsers) When selecting a paragraph with the command 'shift+keydown', the selection
+ends in the start of the next paragraph  instead of at the end of the selected paragraph. This produces
+an unexpected behaviour when formatting the selected text to a heading or a list, because the  result
+included one extra paragraph. This issue has bee fixed.
