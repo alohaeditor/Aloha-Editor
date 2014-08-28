@@ -16,8 +16,8 @@ define([
 	'editing',
 	'mutation',
 	'mutation-trees',
-	'transform',
 	'boundaries',
+	'transform',
 	'transform/ms-word'
 ], function (
 	Dom,
@@ -30,8 +30,8 @@ define([
 	Editing,
 	Mutation,
 	MutationTrees,
-	Transform,
 	Boundaries,
+	Transform,
 	WordTransform
 ) {
 	'use strict';
@@ -169,12 +169,12 @@ define([
 	 * @param  {Document} doc
 	 * @return {string}
 	 */
-	function extractContent(event, doc) {
+	function extractContent(event, doc, rules) {
 		if (holds(event, Mime.html)) {
 			var content = getData(event, Mime.html);
 			return WordTransform.isMSWordContent(content, doc)
-			     ? Transform.html(Transform.msword(content, doc), doc)
-			     : Transform.html(content, doc);
+			     ? Transform.html(Transform.msword(content, doc), doc, rules)
+			     : Transform.html(content, doc, rules);
 		}
 		if (holds(event, Mime.plain)) {
 			return Transform.plain(getData(event, Mime.plain), doc);
@@ -202,7 +202,11 @@ define([
 		if (!boundaries) {
 			return event;
 		}
-		var content = extractContent(event.nativeEvent, doc);
+		var content = extractContent(
+			event.nativeEvent,
+			doc,
+			event.editable.settings
+		);
 		if (!content) {
 			return event;
 		}

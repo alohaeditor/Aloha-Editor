@@ -7,7 +7,7 @@
  *
  * @todo consider moving this into html/
  */
-define([], function () {
+define(['maps', 'arrays'], function (Maps, Arrays) {
 	'use strict';
 
 	var TABLE_CHILDREN = {
@@ -500,7 +500,11 @@ define([], function () {
 		'#TEXT'      : FLOW_PHRASING_CATEGORY
 	};
 
-	var ATTRIBUTES_WHITELIST = {
+	/**
+	 * @private
+	 * @type {Object.<string, Array.<string>>}
+	 */
+	var DEFAULT_ATTRIBUTES_WHITELIST = {
 		'IMG' : ['alt', 'src'],
 		'A'   : ['href', 'name', '_target'],
 		'TD'  : ['colspan', 'rowspan'],
@@ -509,7 +513,11 @@ define([], function () {
 		'*'   : ['xstyle']
 	};
 
-	var STYLES_WHITELIST = {
+	/**
+	 * @private
+	 * @type {Object.<string, Array.<string>>}
+	 */
+	var DEFAULT_STYLES_WHITELIST = {
 		'TABLE' : ['width'],
 		'IMG'   : ['width', 'height'],
 		'*'     : [
@@ -520,6 +528,10 @@ define([], function () {
 		]
 	};
 
+	/**
+	 * @private
+	 * @type {Array.<string>}
+	 */
 	var NODES_BLACKLIST = [
 		'AUDIO',
 		'COMMAND',
@@ -544,6 +556,30 @@ define([], function () {
 		'TITLE',
 		'WBR'
 	];
+
+	/**
+	 * @private
+	 * @type {Object.<string, string>}
+	 */
+	var DEFAULT_TRANSLATION = {
+		'FONT': 'SPAN'
+	};
+
+	function allowedStyles(overrides) {
+		return Maps.merge({}, DEFAULT_STYLES_WHITELIST, overrides);
+	}
+
+	function allowedAttributes(overrides) {
+		return Maps.merge({}, DEFAULT_ATTRIBUTES_WHITELIST, overrides);
+	}
+
+	function disallowedNodes(overrides) {
+		return Arrays.unique(NODES_BLACKLIST.concat(overrides));
+	}
+
+	function nodeTranslations(overrides) {
+		return Maps.merge({}, DEFAULT_TRANSLATION, overrides);
+	}
 
 	/**
 	 * Checks whether the node name `outer` is allowed to contain a node with
@@ -592,9 +628,10 @@ define([], function () {
 	}
 
 	return {
-		allowsNesting        : allowsNesting,
-		NODES_BLACKLIST      : NODES_BLACKLIST,
-		STYLES_WHITELIST     : STYLES_WHITELIST,
-		ATTRIBUTES_WHITELIST : ATTRIBUTES_WHITELIST
+		allowsNesting     : allowsNesting,
+		allowedStyles     : allowedStyles,
+		allowedAttributes : allowedAttributes,
+		disallowedNodes   : disallowedNodes,
+		nodeTranslations  : nodeTranslations
 	};
 });

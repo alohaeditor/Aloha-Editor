@@ -29,6 +29,7 @@ define([
 	 * Font size numbers range from 1 to 7.
 	 *
 	 * @const
+	 * @private
 	 * @type {Object<string, string>}
 	 */
 	var FONT_SIZES = {
@@ -45,6 +46,7 @@ define([
 	 * Unwraps or replaces the given font element while preserving the styles it
 	 * effected.
 	 *
+	 * @private
 	 * @param  {Element} font Must be a font element
 	 * @return {Element}
 	 */
@@ -81,6 +83,7 @@ define([
 	 * 3) add alignment styling to new paragraph
 	 *
 	 * @todo
+	 * @private
 	 * @param  {Element} node
 	 * @return {Element}
 	 */
@@ -92,6 +95,7 @@ define([
 	 * Extracts width and height attributes from the given element, and applies
 	 * them as styles instead.
 	 *
+	 * @private
 	 * @param  {Element} img Must be an image
 	 * @return {Element}
 	 */
@@ -107,16 +111,20 @@ define([
 		return img;
 	}
 
+	function generateWhitelist(whitelist, nodeName) {
+		return (whitelist['*'] || []).concat(whitelist[nodeName] || []);
+	}
+
 	/**
 	 * Removes all disallowed attributes from the given node.
 	 *
-	 * @param  {Node} node
+	 * @private
+	 * @param  {Editable} editable
+	 * @param  {Node}     node
 	 * @return {Node}
 	 */
-	function normalizeAttributes(node) {
-		var permitted = (Content.ATTRIBUTES_WHITELIST['*'] || []).concat(
-			Content.ATTRIBUTES_WHITELIST[node.nodeName] || []
-		);
+	function normalizeAttributes(allowedAttributes, node) {
+		var permitted = generateWhitelist(allowedAttributes, node.nodeName);
 		var attrs = Maps.keys(Dom.attrs(node));
 		var allowed = Arrays.intersect(permitted, attrs);
 		var disallowed = Arrays.difference(attrs, allowed);
@@ -126,12 +134,12 @@ define([
 	/**
 	 * Removes all disallowed styles from the given node.
 	 *
-	 * @param {Node} node
+	 * @private
+	 * @param  {Editable} editable
+	 * @param  {Node} node
 	 */
-	function normalizeStyles(node) {
-		var permitted = (Content.STYLES_WHITELIST['*'] || []).concat(
-			Content.STYLES_WHITELIST[node.nodeName] || []
-		);
+	function normalizeStyles(allowedStyles, node) {
+		var permitted = generateWhitelist(allowedStyles, node.nodeName);
 		// Because '*' means that all styles are permitted
 		if (Arrays.contains(permitted, '*')) {
 			return;
@@ -151,6 +159,7 @@ define([
 	/**
 	 * Unwrap spans that have not attributes.
 	 *
+	 * @private
 	 * @param  {Node} node
 	 * @return {Node|Fragment}
 	 */
@@ -168,10 +177,12 @@ define([
 	 * type. The returned node will not necessarily be of the same type as that
 	 * of the given (eg: <font> => <span>).
 	 *
-	 * @param  {Node} node
+	 * @private
+	 * @param  {Editable} editable
+	 * @param  {Node}     node
 	 * @return {Array.<Node>}
 	 */
-	function clean(node) {
+	function clean(rules, node) {
 		node = Dom.clone(node);
 		if (Dom.isTextNode(node)) {
 			return [node];
@@ -197,8 +208,8 @@ define([
 		if (Dom.isFragmentNode(cleaned)) {
 			return [cleaned];
 		}
-		normalizeAttributes(cleaned);
-		normalizeStyles(cleaned);
+		normalizeAttributes(rules.allowedAttributes, cleaned);
+		normalizeStyles(rules.allowedStyles, cleaned);
 		if ('SPAN' === cleaned.nodeName) {
 			cleaned = normalizeSpan(cleaned);
 		}
@@ -215,14 +226,16 @@ define([
 	/**
 	 * Transforms markup to normalized HTML.
 	 *
+	 * @private
 	 * @param  {string}   markup
-	 * @param  {Document} doc
+	 * @param  {Document} document
+	 * @param  {Object}   rules
 	 * @return {string}
 	 */
-	function transform(markup, doc) {
+	function transform(markup, doc, rules) {
 		var fragment = doc.createDocumentFragment();
-		Dom.move(Dom.children(Html.parse(Utils.extract(markup), doc)),fragment);
-		return Dom.outerHtml(Utils.normalize(fragment, clean));
+		Dom.move(Dom.children(Html.parse(Utils.extract(markup), doc)), fragment);
+		return Dom.outerHtml(Utils.normalize(rules, fragment, clean));
 	}
 
 	return {

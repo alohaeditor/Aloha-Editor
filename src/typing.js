@@ -142,7 +142,7 @@ define([
 		}
 		Editing.breakline(
 			event.range,
-			event.editable.settings.defaultBlockNodeName,
+			event.editable.settings.defaultBlock,
 			isLinebreak
 		);
 		return event.range;

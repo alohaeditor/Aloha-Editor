@@ -81,7 +81,8 @@ var alohaEvent = {
 	range       : null,
 	type        : '',
 	meta        : '',
-	keycode     : ''
+	keycode     : '',
+	options     : {}
 };
 
 var Boromir = {

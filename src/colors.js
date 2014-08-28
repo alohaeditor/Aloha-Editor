@@ -14,10 +14,10 @@ define([], function () {
 	/**
 	 * Returns a human readable representation of the given color.
 	 *
-	 * @param  {Array.<number>} color
+	 * @param  {Array.<number|string>} color
 	 * @return {string}
 	 */
-	function toString(color) {
+	function serialize(color) {
 		if ('string' === typeof color[0]) {
 			return '#' + color.join('');
 		}
@@ -147,10 +147,10 @@ define([], function () {
 	}
 
 	return {
-		hex      : hex,
-		rgb      : rgb,
-		cross    : cross,
-		equals   : equals,
-		toString : toString
+		hex       : hex,
+		rgb       : rgb,
+		cross     : cross,
+		equals    : equals,
+		serialize : serialize
 	};
 });

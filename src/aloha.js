@@ -67,21 +67,21 @@ define([
 	 *
 	 * Also serves as short aloha.aloha.
 	 *
-	 * @param  {Element} element
+	 * @param {Element} element
+	 * @parma {Object}  options
 	 */
-	function aloha(element) {
+	function aloha(element, options) {
 		editor(null, {
-			type         : 'aloha',
-			element      : element,
-			defaultBlock : 'p'
+			type    : 'aloha',
+			element : element,
+			options : options
 		});
 	}
 
-	function mahalo(elem) {
-		var editable = Editables.fromElem(editor, elem);
+	function mahalo(element) {
+		var editable = Editables.fromElem(editor, element);
 		Editables.close(editable);
 		Editables.dissocFromEditor(editor, editable);
-		elem.removeAttribute('contentEditable');
 		editor(null, {
 			type     : 'mahalo',
 			editable : editable

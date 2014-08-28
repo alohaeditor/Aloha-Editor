@@ -7,11 +7,15 @@
  */
 define([
 	'dom',
+	'maps',
 	'undo',
+	'content',
 	'boundaries'
 ], function (
 	Dom,
+	Maps,
 	Undo,
+	Content,
 	Boundaries
 ) {
 	'use strict';
@@ -69,18 +73,31 @@ define([
 		Undo.close(editable['undoContext']);
 	}
 
+	var DEFAULTS = {
+		defaultBlock      : 'p',
+		allowedStyles     : Content.allowedStyles(),
+		allowedAttributes : Content.allowedAttributes(),
+		disallowedNodes   : Content.disallowedNodes(),
+		nodeTranslations  : Content.nodeTranslations()
+	};
+
 	/**
 	 * Initializes an editable.
 	 *
 	 * @param  {function(AlohaEvent)} editor
 	 * @param  {Element}              element
-	 * @param  {string}               defaultBlock
+	 * @param  {Object}               options
 	 * @return {Editable}
 	 */
-	function create(editor, element, defaultBlock) {
+	function create(editor, element, options) {
 		var editable = Editable(element);
 		Dom.setStyle(element, 'cursor', 'text');
-		editable.settings = {defaultBlockNodeName: defaultBlock};
+		editable.settings = Maps.merge({}, DEFAULTS, options);
+		editable.settings.disallowedNodes = Maps.fillKeys(
+			{},
+			editable.settings.disallowedNodes,
+			true
+		);
 		assocIntoEditor(editor, editable);
 		Undo.enter(editable.undoContext, {
 			meta             : {type: 'external'},
@@ -106,7 +123,7 @@ define([
 			event.editable = create(
 				event.editor,
 				event.element,
-				event.defaultBlock
+				event.options
 			);
 		} else if (event.range && Dom.isEditableNode(event.range.commonAncestorContainer)) {
 			event.editable = fromBoundary(

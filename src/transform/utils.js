@@ -20,17 +20,7 @@ define([
 ) {
 	'use strict';
 
-	/**
-	 * @TODO Use editable configuration.
-	 */
-	var DEFAULT_BLOCK_ELEMENT = 'p';
-
-	var blacklist = Content.NODES_BLACKLIST.reduce(function (map, item) {
-		map[item] = true;
-		return map;
-	}, {});
-
-	function isBlacklisted(node) {
+	function isBlacklisted(blacklist, node) {
 		return blacklist[node.nodeName];
 	}
 
@@ -90,12 +80,15 @@ define([
 	 * @param  {function():Node}             normalize
 	 * @return {Array.<Node>}
 	 */
-	function cleanNodes(nodes, clean, normalize) {
-		var allowed = nodes.filter(Fn.complement(isBlacklisted));
+	function cleanNodes(rules, nodes, clean, normalize) {
+		var allowed = nodes.filter(Fn.partial(
+			Fn.complement(isBlacklisted),
+			rules.dissallowedNodes
+		));
 		var rendered = allowed.filter(isRendered);
 		return rendered.reduce(function (nodes, node) {
-			clean(node).forEach(function (node) {
-				nodes = nodes.concat(normalize(node, clean));
+			clean(rules, node).forEach(function (node) {
+				nodes = nodes.concat(normalize(rules, node, clean));
 			});
 			return nodes;
 		}, []);
@@ -139,17 +132,17 @@ define([
 	 * @param  {function(Node):Array.<Node>} clean
 	 * @return {Array.<Node>}
 	 */
-	function cleanNode(node, clean) {
-		return clean(node).reduce(function (nodes, node) {
-			if (isBlacklisted(node) || !isRendered(node)) {
+	function cleanNode(rules, node, clean) {
+		return clean(rules, node).reduce(function (nodes, node) {
+			if (isBlacklisted(rules.dissallowedNodes, node) || !isRendered(node)) {
 				return nodes;
 			}
-			var children = cleanNodes(Dom.children(node), clean, cleanNode);
+			var children = cleanNodes(rules, Dom.children(node), clean, cleanNode);
 			if ('DIV' === node.nodeName) {
 				children = wrapSublists(
 					children,
 					Html.isInlineNode,
-					DEFAULT_BLOCK_ELEMENT
+					rules.defaultBlock
 				);
 			}
 			var copy = Dom.cloneShallow(node);
@@ -179,9 +172,9 @@ define([
 	 * @param  {function(Node):Node} clean
 	 * @return {Fragment}
 	 */
-	function normalize(element, clean) {
+	function normalize(rules, element, clean) {
 		var fragment = element.ownerDocument.createDocumentFragment();
-		Dom.move(cleanNode(element, clean), fragment);
+		Dom.move(cleanNode(rules, element, clean), fragment);
 		return fragment;
 	}
 
