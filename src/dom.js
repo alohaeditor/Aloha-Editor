@@ -7,7 +7,7 @@
  */
 define([
 	'functions',
-	'dom/attrs',
+	'dom/attributes',
 	'dom/classes',
 	'dom/mutation',
 	'dom/nodes',
@@ -16,7 +16,7 @@ define([
 	'browsers'
 ], function (
 	Fn,
-	Attrs,
+	Attributes,
 	Classes,
 	Mutation,
 	Nodes,
@@ -280,15 +280,15 @@ define([
 		removeClass  : Classes.remove,
 		hasClass     : Classes.has,
 
-		attrs        : Attrs.attrs,
-		getAttr      : Attrs.get,
-		getAttrNS    : Attrs.getNS,
-		hasAttrs     : Attrs.has,
-		removeAttr   : Attrs.remove,
-		removeAttrNS : Attrs.removeNS,
-		removeAttrs  : Attrs.removeAll,
-		setAttr      : Attrs.set,
-		setAttrNS    : Attrs.setNS,
+		attrs        : Attributes.attrs,
+		getAttr      : Attributes.get,
+		getAttrNS    : Attributes.getNS,
+		hasAttrs     : Attributes.has,
+		removeAttr   : Attributes.remove,
+		removeAttrNS : Attributes.removeNS,
+		removeAttrs  : Attributes.removeAll,
+		setAttr      : Attributes.set,
+		setAttrNS    : Attributes.setNS,
 
 		removeStyle       : Style.remove,
 		setStyle          : Style.set,
