@@ -10,7 +10,7 @@ define([
 	'html',
 	'arrays',
 	'strings',
-	'boundaries'
+	'boundaries',
 ], function (
 	Dom,
 	Html,
@@ -230,6 +230,9 @@ define([
 		next                        : next,
 		prev                        : prev,
 		expand                      : expand,
+		isAtStart                   : Html.isAtStart,
+		isAtEnd                     : Html.isAtEnd,
+		isBoundaryEqual             : Html.isBoundaryEqual,
 		envelopeInvisibleCharacters : envelopeInvisibleCharacters
 	};
 });

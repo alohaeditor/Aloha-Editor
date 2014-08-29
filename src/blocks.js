@@ -36,26 +36,6 @@ define([
 	];
 
 	/**
-	 * Reads the given block's data.
-	 *
-	 * @param  {Element} block
-	 * @return {Object}
-	 */
-	function read(block) {
-		return JSON.parse(block.getAttribute('data-aloha'));
-	}
-
-	/**
-	 * Writes the given block's data.
-	 *
-	 * @param {Element} block
-	 * @param {Object}  data
-	 */
-	function write(block, data) {
-		block.setAttribute('data-aloha', JSON.stringify(data));
-	}
-
-	/**
 	 * Creates a drag and drop context for copying.
 	 *
 	 * @private
@@ -166,8 +146,6 @@ define([
 	}
 
 	return {
-		read   : read,
-		write  : write,
 		handle : handle
 	};
 });

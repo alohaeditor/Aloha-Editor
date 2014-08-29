@@ -1,9 +1,9 @@
-(function (aloha) {
+(function (aloha, module, equal, test, require) {
 	'use strict';
 
-	var Boundaries = aloha.boundaries;
 	var Mutation = aloha.mutation;
 	var Markers = aloha.markers;
+	var Boundaries; require('../src/boundaries', function (Module) { Boundaries = Module; });
 
     module('boundaries');
 
@@ -129,4 +129,4 @@
 		t('<p><i>{foo</i>b<u>a}<u>r</p>', ['I', 'U']);
 	});
 
-}(window.aloha));
+}(window.aloha, window.module, window.equal, window.test, window.require));

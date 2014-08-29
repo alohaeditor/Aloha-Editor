@@ -51,13 +51,13 @@ define([], function () {
 	}
 
 	var exports = {
-		ie7               : ie7,
-		chrome            : chrome,
-		webkit            : webkit,
-		safari            : safari,
-		vendor            : vendor,
-		version           : version,
-		VENDOR_PREFIX     : VENDOR_PREFIX
+		ie7           : ie7,
+		chrome        : chrome,
+		webkit        : webkit,
+		safari        : safari,
+		vendor        : vendor,
+		version       : version,
+		VENDOR_PREFIX : VENDOR_PREFIX
 	};
 
 	if (info) {

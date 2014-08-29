@@ -1,7 +1,9 @@
-(function (aloha) {
+(function (aloha, require, equal, module, test) {
 	'use strict';
 
     module('html');
+
+	var Html; require('../src/html', function (Module) { Html = Module; });
 
 	test('isRenderedBr', function () {
 		var div = document.createElement('div');
@@ -35,7 +37,7 @@
 		              + '<br>'; // 9. false
 
 		var brs = $('br', div);
-		var t = aloha.html.__.isRenderedBr;
+		var t = Html.isRenderedBr;
 
 		equal(t(brs[0]), false);
 		equal(t(brs[1]), true);
@@ -48,4 +50,4 @@
 		equal(t(brs[8]), false);
 		equal(t(brs[9]), false);
 	});
-}(window.aloha));
+}(window.aloha, window.require, window.equal, window.module, window.test));

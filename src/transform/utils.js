@@ -83,7 +83,7 @@ define([
 	function cleanNodes(rules, nodes, clean, normalize) {
 		var allowed = nodes.filter(Fn.partial(
 			Fn.complement(isBlacklisted),
-			rules.dissallowedNodes
+			rules.disallowedNodes
 		));
 		var rendered = allowed.filter(isRendered);
 		return rendered.reduce(function (nodes, node) {
@@ -134,7 +134,7 @@ define([
 	 */
 	function cleanNode(rules, node, clean) {
 		return clean(rules, node).reduce(function (nodes, node) {
-			if (isBlacklisted(rules.dissallowedNodes, node) || !isRendered(node)) {
+			if (isBlacklisted(rules.disallowedNodes, node) || !isRendered(node)) {
 				return nodes;
 			}
 			var children = cleanNodes(rules, Dom.children(node), clean, cleanNode);
@@ -202,9 +202,18 @@ define([
 		return markup;
 	}
 
+	var DEFAULT_RULES = {
+		defaultBlock      : 'p',
+		allowedStyles     : Content.allowedStyles(),
+		allowedAttributes : Content.allowedAttributes(),
+		disallowedNodes   : Content.disallowedNodes(),
+		nodeTranslations  : Content.nodeTranslations()
+	};
+
 	return {
-		normalize : normalize,
-		extract   : extract,
-		rewrap    : rewrap
+		DEFAULT_RULES : DEFAULT_RULES,
+		normalize     : normalize,
+		extract       : extract,
+		rewrap        : rewrap
 	};
 });

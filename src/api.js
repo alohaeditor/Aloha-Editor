@@ -18,7 +18,6 @@ define([
 	'carets',
 	'colors',
 	'content',
-	'delayed-map',
 	'dom',
 	'dragdrop',
 	'editables',
@@ -58,7 +57,6 @@ define([
 	Carets,
 	Colors,
 	Content,
-	DelayedMap,
 	Dom,
 	DragDrop,
 	Editables,
@@ -95,7 +93,6 @@ define([
 	var exports = {};
 
 	exports['Boromir'] = Boromir;
-	exports['DelayedMap'] = DelayedMap;
 	exports['Record'] = Record;
 
 	exports['arrays'] = {};
@@ -103,7 +100,6 @@ define([
 	exports['arrays']['difference'] = Arrays.difference;
 	exports['arrays']['equal']      = Arrays.equal;
 	exports['arrays']['intersect']  = Arrays.intersect;
-	exports['arrays']['second']     = Arrays.second;
 	exports['arrays']['last']       = Arrays.last;
 	exports['arrays']['coerce']     = Arrays.coerce;
 	exports['arrays']['mapcat']     = Arrays.mapcat;
@@ -112,7 +108,7 @@ define([
 	exports['arrays']['someIndex']  = Arrays.someIndex;
 	exports['arrays']['split']      = Arrays.split;
 	exports['arrays']['unique']     = Arrays.unique;
-
+	exports['arrays']['refill']     = Arrays.refill;
 
 	exports['blocks'] = {};
 	exports['blocks']['read']   = Blocks.read;
@@ -142,14 +138,10 @@ define([
 	exports['boundaries']['setRangeEnd']         = Boundaries.setRangeEnd;
 	exports['boundaries']['isAtStart']           = Boundaries.isAtStart;
 	exports['boundaries']['isAtEnd']             = Boundaries.isAtEnd;
-	exports['boundaries']['isAtRawStart']        = Boundaries.isAtRawStart;
-	exports['boundaries']['isAtRawEnd']          = Boundaries.isAtRawEnd;
 	exports['boundaries']['isTextBoundary']      = Boundaries.isTextBoundary;
 	exports['boundaries']['isNodeBoundary']      = Boundaries.isNodeBoundary;
 	exports['boundaries']['next']                = Boundaries.next;
 	exports['boundaries']['prev']                = Boundaries.prev;
-	exports['boundaries']['nextRawBoundary']     = Boundaries.nextRawBoundary;
-	exports['boundaries']['prevRawBoundary']     = Boundaries.prevRawBoundary;
 	exports['boundaries']['jumpOver']            = Boundaries.jumpOver;
 	exports['boundaries']['nextWhile']           = Boundaries.nextWhile;
 	exports['boundaries']['prevWhile']           = Boundaries.prevWhile;
@@ -168,7 +160,6 @@ define([
 	exports['markers']['extract'] = Markers.extract;
 
 	exports['browsers'] = {};
-	exports['browsers']['ie7']           = Browsers.ie7;
 	exports['browsers']['chrome']        = Browsers.chrome;
 	exports['browsers']['webkit']        = Browsers.webkit;
 	exports['browsers']['safari']        = Browsers.safari;
@@ -345,45 +336,24 @@ define([
 	exports['fn']['extendType']   = Fn.extendType;
 
 	exports['html'] = {};
-	exports['html']['__']                        = Html.__;
-	exports['html']['isRenderedBr']              = Html.isRenderedBr;
-	exports['html']['isRendered']                = Html.isRendered;
-	exports['html']['isUnrendered']              = Html.isUnrendered;
-	exports['html']['isUnrenderedWhitespace']    = Html.isUnrenderedWhitespace;
-	exports['html']['parse']                     = Html.parse;
-	exports['html']['isVoidType']                = Html.isVoidType;
-	exports['html']['isStyleInherited']          = Html.isStyleInherited;
-	exports['html']['isWhiteSpacePreserveStyle'] = Html.isWhiteSpacePreserveStyle;
-	exports['html']['hasBlockStyle']             = Html.hasBlockStyle;
-	exports['html']['hasInlineStyle']            = Html.hasInlineStyle;
-	exports['html']['hasLinebreakingStyle']      = Html.hasLinebreakingStyle;
-	exports['html']['prop']                      = Html.prop;
-	exports['html']['insertBreak']               = Html.insertBreak;
-	exports['html']['removeBreak']               = Html.removeBreak;
-	exports['html']['insertLineBreak']           = Html.insertLineBreak;
-	exports['html']['prev']                      = Html.prev;
-	exports['html']['next']                      = Html.next;
-	exports['html']['prevNode']                  = Html.prevNode;
-	exports['html']['nextNode']                  = Html.nextNode;
-	exports['html']['prevSignificantOffset']     = Html.prevSignificantOffset;
-	exports['html']['nextSignificantOffset']     = Html.nextSignificantOffset;
-	exports['html']['prevSignificantBoundary']   = Html.prevSignificantBoundary;
-	exports['html']['nextSignificantBoundary']   = Html.nextSignificantBoundary;
-	exports['html']['isAtStart']                 = Html.isAtStart;
-	exports['html']['isAtEnd']                   = Html.isAtEnd;
-	exports['html']['isBoundariesEqual']         = Html.isBoundariesEqual;
-	exports['html']['expandBackward']            = Html.expandBackward;
-	exports['html']['expandForward']             = Html.expandForward;
-	exports['html']['isBlockNode']               = Html.isBlockNode;
-	exports['html']['isGroupContainer']          = Html.isGroupContainer;
-	exports['html']['isGroupedElement']          = Html.isGroupedElement;
-	exports['html']['isHeading']                 = Html.isHeading;
-	exports['html']['isInlineNode']              = Html.isInlineNode;
-	exports['html']['isListContainer']           = Html.isListContainer;
-	exports['html']['isListItem']                = Html.isListItem;
-	exports['html']['isTableContainer']          = Html.isTableContainer;
-	exports['html']['isTextLevelSemanticNode']   = Html.isTextLevelSemanticNode;
-	exports['html']['isVoidNode']                = Html.isVoidNode;
+	exports['html']['parse']                   = Html.parse;
+	exports['html']['hasBlockStyle']           = Html.hasBlockStyle;
+	exports['html']['hasInlineStyle']          = Html.hasInlineStyle;
+	exports['html']['hasLinebreakingStyle']    = Html.hasLinebreakingStyle;
+	exports['html']['prop']                    = Html.prop;
+	exports['html']['isVoidType']              = Html.isVoidType;
+	exports['html']['isRendered']              = Html.isRendered;
+	exports['html']['isUnrendered']            = Html.isUnrendered;
+	exports['html']['isBlockNode']             = Html.isBlockNode;
+	exports['html']['isInlineNode']            = Html.isInlineNode;
+	exports['html']['isListContainer']         = Html.isListContainer;
+	exports['html']['isTableContainer']        = Html.isTableContainer;
+	exports['html']['isGroupContainer']        = Html.isGroupContainer;
+	exports['html']['isGroupedElement']        = Html.isGroupedElement;
+	exports['html']['isListItem']              = Html.isListItem;
+	exports['html']['isHeading']               = Html.isHeading;
+	exports['html']['isTextLevelSemanticNode'] = Html.isTextLevelSemanticNode;
+	exports['html']['isVoidNode']              = Html.isVoidNode;
 
 	exports['images'] = {};
 	exports['images']['insert'] = Images.insert;
@@ -511,9 +481,12 @@ define([
 	exports['transform']['msword'] = Transform.msword;
 
 	exports['traversing'] = {};
-	exports['traversing']['next']   = Traversing.next;
-	exports['traversing']['prev']   = Traversing.prev;
-	exports['traversing']['expand'] = Traversing.expand;
+	exports['traversing']['next']              = Traversing.next;
+	exports['traversing']['prev']              = Traversing.prev;
+	exports['traversing']['expand']            = Traversing.expand;
+	exports['traversing']['isAtStart']         = Traversing.isAtStart;
+	exports['traversing']['isAtEnd']           = Traversing.isAtEnd;
+	exports['traversing']['isBoundariesEqual'] = Traversing.isBoundariesEqual;
 
 	exports['typing'] = {};
 	exports['typing']['handle']  = Typing.handle;

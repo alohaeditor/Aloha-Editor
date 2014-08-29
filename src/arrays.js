@@ -95,16 +95,6 @@ define(['functions'], function (Fn) {
 	}
 
 	/**
-	 * Returns the second item in the given array.
-	 *
-	 * @param {Array} xs
-	 * @return {*}
-	 */
-	function second(xs) {
-		return xs[1];
-	}
-
-	/**
 	 * Coerces the given object (NodeList, arguments) to an array.
 	 *
 	 * This implementation works on modern browsers and IE >= 9. For IE
@@ -115,7 +105,7 @@ define(['functions'], function (Fn) {
 	 * @return {Array.<*>}
 	 */
 	function coerce(arrayLikeObject) {
-		return Array.prototype.slice.call(arrayLikeObject, 0);
+		return Array.prototype.slice.call(arrayLikeObject);
 	}
 
 	/**
@@ -237,12 +227,22 @@ define(['functions'], function (Fn) {
 		return set;
 	}
 
+	function refill(arrays) {
+		var receivers = coerce(arguments).slice(1);
+		for (var i = 0; i < arrays.length; i++) {
+			if (!arrays[i] || !receivers[i]) {
+				return;
+			}
+			receivers[i].length = 0;
+			Array.prototype.splice.apply(receivers[i], [0, 0].concat(arrays[i]));
+		}
+	}
+
 	return {
 		contains   : contains,
 		difference : difference,
 		equal      : equal,
 		intersect  : intersect,
-		second     : second,
 		last       : last,
 		coerce     : coerce,
 		mapcat     : mapcat,
@@ -250,6 +250,7 @@ define(['functions'], function (Fn) {
 		some       : some,
 		someIndex  : someIndex,
 		split      : split,
-		unique     : unique
+		unique     : unique,
+		refill     : refill
 	};
 });

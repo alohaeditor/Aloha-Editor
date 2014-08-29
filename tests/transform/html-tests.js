@@ -1,11 +1,13 @@
-(function (aloha) {
+(function (aloha, module, test, equal) {
 	'use strict';
+
+	var editable = aloha.editables.create(aloha.editor, document.createElement('div'));
 
 	module('transform');
 
 	function t(input, expected) {
 		equal(
-			aloha.transform.html(input, document),
+			aloha.transform.html(input, document, editable.settings),
 			expected,
 			input + ' => ' + expected
 		);
@@ -188,4 +190,4 @@
 		);
 	});
 
-})(window.aloha);
+})(window.aloha, window.module, window.test, window.equal);

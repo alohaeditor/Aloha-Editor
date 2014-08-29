@@ -1,10 +1,9 @@
-(function (aloha) {
+(function (aloha, require, test, equal) {
 	'use strict';
 
-	var DelayedMap = aloha.DelayedMap;
-	var Maps   = aloha.maps;
-	var Fn     = aloha.fn;
-	var values = [{one: 'one'}, 'two', 3];
+	var Fn   = aloha.fn;
+	var Maps = aloha.maps;
+	var DelayedMap; require('../src/delayed-map', function (Module) { DelayedMap = Module; });
 
     module('delayed-map');
 
@@ -75,4 +74,4 @@
 		equal(mergedTwice._map_source.obj['five'], 5);
 	});
 
-}(window.aloha));
+}(window.aloha, window.require, window.test, window.equal));

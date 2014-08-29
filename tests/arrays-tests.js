@@ -30,13 +30,6 @@
 		equal(0, intersection.length);
 	});
 
-	test('second()', function () {
-		var intersection = Arrays.intersect([0, 1, 2, 3], [1, 3, 5]);
-		equal(1, intersection[0]);
-		equal(2, Arrays.second([1, 2]));
-		equal(null, Arrays.second([1]));
-	});
-
 	test('last()', function () {
 		equal(2, Arrays.last([1, 2]));
 		equal(null, Arrays.last([]));

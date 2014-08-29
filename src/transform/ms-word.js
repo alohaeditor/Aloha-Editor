@@ -82,7 +82,7 @@ define([
 	 * @param  {!Node} node
 	 * @return {Array.<Node>}
 	 */
-	function clean(node) {
+	function clean(rules, node) {
 		if (isSuperfluous(node)) {
 			return [];
 		}
@@ -124,9 +124,12 @@ define([
 	 * @param  {!Document} doc
 	 * @return {string}
 	 */
-	function transform(markup, doc) {
+	function transform(markup, doc, rules) {
+		if (!rules) {
+			rules = Utils.DEFAULT_RULES;
+		}
 		var raw = Html.parse(Utils.extract(markup), doc);
-		var fragment = Utils.normalize(raw, clean) || raw;
+		var fragment = Utils.normalize(rules, raw, clean) || raw;
 		fragment = Lists.transform(fragment);
 		fragment = Toc.transform(fragment);
 		fragment = Tables.transform(fragment);

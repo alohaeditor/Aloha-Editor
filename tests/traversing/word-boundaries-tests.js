@@ -8,17 +8,17 @@
  * Runs tests on a random DOM structure that contains (only) inline nodes to
  * check traversing with word-boundary stepss.
  */
-(function (aloha) {
+(function (aloha, require, module, test, equal) {
 	'use strict';
 
 	module('traversing');
 
-	var Html = aloha.html;
-	var Boundaries = aloha.boundaries;
-	var Mutation = aloha.mutation;
 	var Dom = aloha.dom;
 	var Paths = aloha.paths;
 	var Arrays = aloha.arrays;
+	var Mutation = aloha.mutation;
+	var Boundaries = aloha.boundaries;
+	var Html; require('../src/html', function (Module) { Html = Module; });
 
 	var CONTROL    = 'she stopped.  she said, "hello there," and then went on.';
 	var EXPECTED   = 'she| |stopped|.| | she| |said|,| |"|hello| |there|,|"| |and| |then| |went| |on|.';
@@ -231,4 +231,4 @@
 		}
 	});
 
-}(window.aloha));
+}(window.aloha, window.require, window.module, window.test, window.equal));

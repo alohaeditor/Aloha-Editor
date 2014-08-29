@@ -49,6 +49,9 @@ define([
 		insertBreak               : Mutation.insertBreak,
 		removeBreak               : Mutation.removeBreak,
 		insertLineBreak           : Mutation.insertLineBreak,
+		isRenderedBr              : Mutation.isRenderedBr,
+		nextLineBreak             : Mutation.nextLineBreak,
+		isVisuallyAdjacent        : Mutation.isVisuallyAdjacent,
 
 		prev                      : Traversing.prev,
 		next                      : Traversing.next,
@@ -74,11 +77,5 @@ define([
 		isTableContainer          : Predicates.isTableContainer,
 		isTextLevelSemanticNode   : Predicates.isTextLevelSemanticNode,
 		isVoidNode                : Predicates.isVoidNode,
-
-		'__' : {
-			'isRenderedBr'       : Mutation.isRenderedBr,
-			'nextLineBreak'      : Mutation.nextLineBreak,
-			'isVisuallyAdjacent' : Mutation.isVisuallyAdjacent
-		}
 	};
 });

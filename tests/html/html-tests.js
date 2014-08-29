@@ -1,19 +1,16 @@
-(function (aloha) {
+(function (aloha, require, module, test, equal) {
 	'use strict';
 
-	var Dom = aloha.dom;
-	var Html = aloha.html;
-	var Ranges = aloha.ranges;
-	var Boundaries = aloha.boundaries;
 	var Markers = aloha.markers;
+	var Html; require('../src/html', function (Module) { Html = Module; });
 
-    module('html');
+	module('html');
 
 	test('isVisuallyAdjacent', function () {
 		var t = function (markup, expected) {
 			var boundaries = Markers.extract($(markup)[0]);
 			equal(
-				Html.__.isVisuallyAdjacent(boundaries[0], boundaries[1]),
+				Html.isVisuallyAdjacent(boundaries[0], boundaries[1]),
 				expected,
 				markup
 			);
@@ -47,7 +44,7 @@
 	test('nextLineBreak', function () {
 		var t = function (before, after) {
 			var boundaries = Markers.extract($(before)[0]);
-			var linebreak = Html.__.nextLineBreak(boundaries[0], boundaries[1]);
+			var linebreak = Html.nextLineBreak(boundaries[0], boundaries[1]);
 			equal(
 				Markers.hint([linebreak || boundaries[0], boundaries[1]]),
 				after,
@@ -63,4 +60,4 @@
 		  '<div><p>foo<i>bar<b>baz</b></i>{</p>foo}</div>');
 	});
 
-}(window.aloha));
+}(window.aloha, window.require, window.module, window.test, window.equal));
