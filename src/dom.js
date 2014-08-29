@@ -143,21 +143,6 @@ define([
 	}
 
 	/**
-	 * Parses the given HTML markup into a node.
-	 *
-	 * @param  {Node}     node
-	 * @param  {Document} doc
-	 * @return {Element}
-	 */
-	function parseNode(html, doc) {
-		var parser = doc.createElement('DIV');
-		parser.innerHTML = html;
-		var node = parser.firstChild;
-		parser.removeChild(node);
-		return node;
-	}
-
-	/**
 	 * Used to serialize outerHTML of DOM elements in older (pre-HTML5) Gecko,
 	 * Safari, and Opera browsers.
 	 *
@@ -172,7 +157,7 @@ define([
 	 */
 	var Serializer = window.XMLSerializer && new window.XMLSerializer();
 
-	function stringify(node) {
+	function serialize(node) {
 		return Serializer.serializeToString(node);
 	}
 
@@ -180,26 +165,6 @@ define([
 		var str = Object.prototype.toString.call(node);
 		// TODO: is this really the best way to do it?
 		return (/^\[object (Text|Comment|HTML\w*Element)\]$/).test(str);
-	}
-
-	function parseReviver(key, value, doc) {
-		if (value && value['type'] === 'Node') {
-			var str = value['value'];
-			if (null != str) {
-				value = parseNode(str, doc);
-			}
-		}
-		return value;
-	}
-
-	function stringifyReplacer(key, value) {
-		if (value && isNode(value)) {
-			value = {
-				'type': 'Node',
-				'value': stringify(value)
-			};
-		}
-		return value;
 	}
 
 	var expandoIdCnt = 0;
@@ -357,10 +322,7 @@ define([
 		childAndParentsUntilNode     : Traversing.childAndParentsUntilNode,
 		childAndParentsUntilInclNode : Traversing.childAndParentsUntilInclNode,
 
-		stringify         : stringify,
-		stringifyReplacer : stringifyReplacer,
-		parseReviver      : parseReviver,
-
+		serialize         : serialize,
 		ensureExpandoId   : ensureExpandoId,
 
 		enableSelection   : enableSelection,

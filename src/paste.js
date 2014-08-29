@@ -105,19 +105,21 @@ define([
 	 * @return {Boundary} Boundary position after the inserted content
 	 */
 	function insert(start, end, markup) {
-		var element = Html.parse(markup, Boundaries.document(start));
+		var doc = Boundaries.document(start);
 		var boundaries = Editing.remove(start, end);
-		var children = Dom.children(element);
+		var nodes = Html.parse(markup, doc);
 
-		if (0 === children.length) {
+		if (0 === nodes.length) {
 			return boundaries;
 		}
 
 		// Because we are only able to detect "void type" (non-content editable
 		// nodes) when they are contained within a editing host
-		Dom.setAttr(element, 'contentEditable', true);
+		var container = doc.createElement('div');
+		Dom.setAttr(container, 'contentEditable', true);
+		Dom.move(nodes, container);
 
-		var first = children[0];
+		var first = nodes[0];
 
 		// Because (unlike plain-text), pasted html will contain an unintended
 		// linebreak caused by the wrapper inwhich the pasted content is placed
@@ -125,14 +127,14 @@ define([
 		// to do so (ie: we cannot unfold grouping elements like 'ul', 'table',
 		// etc)
 		if (!Dom.isTextNode(first) && !Html.isVoidType(first) && !Html.isGroupContainer(first)) {
-			children = Dom.children(first).concat(children.slice(1));
+			nodes = Dom.children(first).concat(nodes.slice(1));
 		}
 
-		if (0 === children.length) {
+		if (0 === nodes.length) {
 			return boundaries;
 		}
 
-		children.forEach(function (child) {
+		nodes.forEach(function (child) {
 			boundaries = MutationTrees.split(boundaries[0], function (container) {
 				return Dom.isEditingHost(container)
 					|| Content.allowsNesting(container.nodeName, child.nodeName);
@@ -140,7 +142,7 @@ define([
 			boundaries = MutationTrees.insert(boundaries[0], child, boundaries);
 		});
 
-		var last = Arrays.last(children);
+		var last = Arrays.last(nodes);
 		var next = Boundaries.nodeAfter(boundaries[1]);
 
 		// Because we want to remove the unintentional line added at the end of

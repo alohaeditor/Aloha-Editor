@@ -113,7 +113,8 @@ define([
 	 * @return {boolean}
 	 */
 	function isMSWordContent(markup, doc) {
-		var element = Html.parse(markup, doc);
+		var element = doc.createElement('div');
+		Dom.move(Html.parse(markup, doc), element);
 		return null !== element.querySelector('[style*="mso-"],[class^="Mso"]');
 	}
 
@@ -128,7 +129,9 @@ define([
 		if (!rules) {
 			rules = Utils.DEFAULT_RULES;
 		}
-		var raw = Html.parse(Utils.extract(markup), doc);
+		var nodes = Html.parse(Utils.extract(markup), doc);
+		var raw = doc.createElement('div');
+		Dom.move(nodes, raw);
 		var fragment = Utils.normalize(rules, raw, clean) || raw;
 		fragment = Lists.transform(fragment);
 		fragment = Toc.transform(fragment);

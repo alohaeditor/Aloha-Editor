@@ -237,7 +237,7 @@ define([
 			rules = Utils.DEFAULT_RULES;
 		}
 		var fragment = doc.createDocumentFragment();
-		Dom.move(Dom.children(Html.parse(Utils.extract(markup), doc)), fragment);
+		Dom.move(Html.parse(Utils.extract(markup), doc), fragment);
 		return Dom.outerHtml(Utils.normalize(rules, fragment, clean));
 	}
 

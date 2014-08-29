@@ -267,10 +267,7 @@ define([
 	exports['dom']['childAndParentsUntilIncl']     = Dom.childAndParentsUntilIncl;
 	exports['dom']['childAndParentsUntilNode']     = Dom.childAndParentsUntilNode;
 	exports['dom']['childAndParentsUntilInclNode'] = Dom.childAndParentsUntilInclNode;
-	exports['dom']['stringify']                    = Dom.stringify;
-	exports['dom']['stringifyReplacer']            = Dom.stringifyReplacer;
-	exports['dom']['parseReviver']                 = Dom.parseReviver;
-	exports['dom']['ensureExpandoId']              = Dom.ensureExpandoId;
+	exports['dom']['serialize']                    = Dom.serialize;
 	exports['dom']['enableSelection']              = Dom.enableSelection;
 	exports['dom']['disableSelection']             = Dom.disableSelection;
 	exports['dom']['isEditable']                   = Dom.isEditable;

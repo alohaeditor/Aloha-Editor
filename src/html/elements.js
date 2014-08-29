@@ -9,12 +9,14 @@ define([
 	'html/styles',
 	'html/predicates',
 	'dom',
+	'arrays',
 	'cursors',
 	'strings'
 ], function (
 	Styles,
 	Predicates,
 	Dom,
+	Arrays,
 	Cursors,
 	Strings
 ) {
@@ -273,17 +275,19 @@ define([
 	}
 
 	/**
-	 * Parses the given markup string into a DOM tree inside of a detached div
-	 * element.
+	 * Parses the given markup string and returns an array of detached top-level
+	 * elements.
 	 *
 	 * @param  {string}   html
 	 * @param  {Document} doc
-	 * @return {Element}
+	 * @return {Array.<Node>}
 	 */
 	function parse(html, doc) {
-		var div = doc.createElement('div');
-		div.innerHTML = html;
-		return div;
+		var parser = doc.createElement('DIV');
+		parser.innerHTML = html;
+		var nodes = Arrays.coerce(parser.childNodes);
+		nodes.forEach(Dom.remove);
+		return nodes;
 	}
 
 	/**
