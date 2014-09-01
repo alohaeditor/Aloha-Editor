@@ -19,7 +19,7 @@
 				['<p>fo[o<u>bar}</u></p>', '<p>fo[o<i>bar}</i></p>']
 			].forEach(function (testCase) {
 				runTest(testCase[0], testCase[1], function (node, boundaries) {
-					return aloha.mutation.replaceShallowPreservingBoundaries(
+					return Mutation.replaceShallowPreservingBoundaries(
 						node,
 						node.ownerDocument.createElement('i'),
 						boundaries
@@ -30,4 +30,4 @@
 
 	});
 
-}(window.aloha, .window.require, window.module, window.equal, window.test));
+}(window.aloha, window.require, window.module, window.equal, window.test));

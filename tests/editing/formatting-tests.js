@@ -54,7 +54,7 @@
 		}
 		var opts = {isObstruction: isObstruction};
 		testMutation('editing.format - ' + title, before, expected, function (dom, start, end) {
-			return Editing.format(styleNode, start, end);
+			return Editing.format(start, end, styleNode);
 		});
 	}
 
@@ -75,7 +75,7 @@
 		}
 		var opts = {isObstruction: isObstruction};
 		testMutation('editing.format - ' + title, before, expected, function (dom, start, end) {
-			return Editing.style(styleName, styleValue, start, end, opts);
+			return Editing.style(start, end, styleName, styleValue, opts);
 		});
 	}
 

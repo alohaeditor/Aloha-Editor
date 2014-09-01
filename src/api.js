@@ -23,7 +23,6 @@ define([
 	'editables',
 	'editing',
 	'events',
-	'formatting',
 	'functions',
 	'html',
 	'image',
@@ -61,7 +60,6 @@ define([
 	Editables,
 	Editing,
 	Events,
-	Formatting,
 	Fn,
 	Html,
 	Images,
@@ -292,16 +290,14 @@ define([
 
 	exports['editing'] = {};
 	exports['editing']['wrap']      = Editing.wrap;
-	exports['editing']['unformat']  = Editing.unformat;
-	exports['editing']['format']    = Editing.format;
-	exports['editing']['style']     = Editing.style;
 	exports['editing']['split']     = Editing.split;
+
+	exports['editing']['format']    = Editing.format;
+	exports['editing']['unformat']  = Editing.unformat;
+	exports['editing']['style']     = Editing.style;
 	exports['editing']['remove']    = Editing.remove;
 	exports['editing']['breakline'] = Editing.breakline;
 	exports['editing']['insert']    = Editing.insert;
-
-	exports['formatting'] = {};
-	exports['formatting']['format'] = Formatting.format;
 
 	exports['events'] = {};
 	exports['events']['add']             = Events.add;
