@@ -29,10 +29,12 @@ define([
 	'functions',
 	'html',
 	'html/elements',
-	'ranges',
 	'stable-range',
 	'cursors',
-	'content'
+	'content',
+	'lists',
+	'links',
+	'overrides'
 ], function (
 	Dom,
 	Mutation,
@@ -43,10 +45,12 @@ define([
 	Fn,
 	Html,
 	HtmlElements,
-	Ranges,
 	StableRange,
 	Cursors,
-	Content
+	Content,
+	Lists,
+	Links,
+	Overrides
 ) {
 	'use strict';
 
@@ -877,7 +881,7 @@ define([
 		return styleValueA === styleValueB;
 	}
 
-	var wrapperProperties = {
+	var inlineWrapperProperties = {
 		underline: {
 			name: 'U',
 			nodes: ['U'],
@@ -907,11 +911,11 @@ define([
 			normalize: {}
 		}
 	};
-	wrapperProperties['emphasis'] = Maps.merge(wrapperProperties.italic, {name: 'EM'});
-	wrapperProperties['strong'] = Maps.merge(wrapperProperties.bold, {name: 'STRONG'});
-	wrapperProperties['underline'] = wrapperProperties.underline;
-	wrapperProperties['bold'] = wrapperProperties.bold;
-	wrapperProperties['italic'] = wrapperProperties.italic;
+	inlineWrapperProperties['emphasis']  = Maps.merge(inlineWrapperProperties.italic, {name: 'EM'});
+	inlineWrapperProperties['strong']    = Maps.merge(inlineWrapperProperties.bold, {name: 'STRONG'});
+	inlineWrapperProperties['bold']      = inlineWrapperProperties.bold;
+	inlineWrapperProperties['italic']    = inlineWrapperProperties.italic;
+	inlineWrapperProperties['underline'] = inlineWrapperProperties.underline;
 
 	function getStyleSafely(node, name) {
 		return (Dom.isElementNode(node)
@@ -923,7 +927,7 @@ define([
 		var isStyleEqual = opts.isStyleEqual || isStyleEqual_default;
 		var nodeNames = [];
 		var unformat = false;
-		var wrapperProps = wrapperProperties[styleName];
+		var wrapperProps = inlineWrapperProperties[styleName];
 		if (wrapperProps) {
 			nodeNames = wrapperProps.nodes;
 			styleName = wrapperProps.style;
@@ -1180,55 +1184,35 @@ define([
 	 *             equals function.
 	 * @return {Array.<Boundary>}
 	 */
-	function style(styleName, styleValue, start, end, opts) {
-		var liveRange = Boundaries.range(start, end);
-
-		opts = opts || {};
-
+	function style(start, end, name, value, opts) {
+		var range = Boundaries.range(start, end);
 		// Because we should avoid splitTextContainers() if this call is a noop.
-		if (liveRange.collapsed) {
+		if (range.collapsed) {
 			return [start, end];
 		}
-
-		return fixupRange(liveRange, function (range, leftPoint, rightPoint) {
-			var formatter = makeStyleFormatter(styleName, styleValue, leftPoint, rightPoint, opts);
+		return fixupRange(range, function (range, leftPoint, rightPoint) {
+			var formatter = makeStyleFormatter(name, value, leftPoint, rightPoint, opts || {});
 			mutate(range, formatter);
 			return formatter;
 		});
 	}
 
 	/**
-	 * Formats the selection defined by start and end boundary, by wrapping it
-	 * within a node (eg. 'b', 'i', 'em').
+	 * Applies inline formatting to contents enclosed by start and end boundary.
+	 * Will return updated array of boundaries after the operation.
 	 *
+	 * @private
 	 * @param  {string}    node
 	 * @param  {!Boundary} start
 	 * @param  {!Boundary} end
+	 * @param  {boolean}   isWrapping
 	 * @return {Array.<Boundary>}
 	 */
-	function format(node, start, end) {
+	function formatInline(node, start, end, isWrapping) {
 		var styleName = resolveStyleName(node);
-		if (styleName === false) {
-			return [start, end];
-		}
-		return style(styleName, true, start, end);
-	}
-
-	/**
-	 * Unformats the selection defined by start and end boundary, by unwrapping
-	 * text-level semantic node (eg. 'b', 'i', 'em').
-	 *
-	 * @param  {string}    node
-	 * @param  {!Boundary} start
-	 * @param  {!Boundary} end
-	 * @return {Array.<Boundary>}
-	 */
-	function unformat(node, start, end) {
-		var styleName = resolveStyleName(node);
-		if (styleName === false) {
-			return [start, end];
-		}
-		return style(styleName, false, start, end);
+		return (styleName === false)
+		     ? [start, end]
+		     : style(start, end, styleName, isWrapping);
 	}
 
 	/**
@@ -1241,8 +1225,8 @@ define([
 	 * @return {string|false}
 	 */
 	function resolveStyleName(styleNode) {
-		for (var styleName in wrapperProperties) {
-			if (wrapperProperties[styleName].nodes.indexOf(styleNode) !== -1) {
+		for (var styleName in inlineWrapperProperties) {
+			if (inlineWrapperProperties[styleName].nodes.indexOf(styleNode) !== -1) {
 				return styleName;
 			}
 		}
@@ -1698,21 +1682,19 @@ define([
 	}
 
 	/**
-	 * Creates a visual line break at the end position of the given range.
+	 * Creates a visual line break at the given boundary position.
 	 *
 	 * @see
 	 * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#splitting-a-node-list's-parent
 	 * http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031700.html
 	 *
-	 * @param  {!Range}  liveRange
-	 * @param  {string}  breaker
-	 * @param  {boolean} linebreak
+	 * @param  {!Boundary} boundary
+	 * @param  {string}    breaker
 	 * @return {Array.<Boundary>}
 	 */
-	function breakline(liveRange, breaker, linebreak) {
-		var op = linebreak ? Html.insertLineBreak : Html.insertBreak;
-		var boundary = op(Boundaries.fromRangeEnd(liveRange), breaker);
-		Boundaries.setRange(liveRange, boundary, boundary);
+	function breakline(boundary, breaker) {
+		var op = 'BR' === breaker ? Html.insertLineBreak : Html.insertBreak;
+		boundary = op(boundary, breaker);
 		return [boundary, boundary];
 	}
 
@@ -1764,16 +1746,120 @@ define([
 [boundaries, added]   = Editing.insert(start, end, content, boundaries)
 */
 
+	/**
+	 * Applies block formatting to contents enclosed by start and end boundary.
+	 * Will return updated array of boundaries after the operation.
+	 *
+	 * @private
+	 * @param  {!Boundary} start
+	 * @param  {!Boundary} end
+	 * @param  {!string}   formatting
+	 * @return {Array.<Boundary>}
+	 */
+	function blockFormat(start, end, node, boundaries) {
+		var node = Boundaries.container(start);
+		if (Html.isBlockNode(node)) {
+			node = Boundaries.nextNode(start);
+		}
+		if (Dom.isTextNode(node)) {
+			node = node.parentNode;
+		}
+		if (Html.isGroupContainer(node) || Html.isGroupedElement(node) || Dom.isEditingHost(node)) {
+			return [start, end];
+		}
+		var replacement = Boundaries.document(start).createElement(formatting);
+		Dom.replaceShallow(node, replacement);
+		return [
+			Boundaries.fromNode(replacement),
+			Boundaries.fromEndOfNode(replacement)
+		];
+	}
+
+	/**
+	 * Applies block and inline formattings (eg. 'B', 'I', 'H2' - be sure to use
+	 * UPPERCASE node names here) to contents enclosed by start and end
+	 * boundary.
+	 *
+	 * Will return updated array of boundaries after the operation.
+	 *
+	 * @param  {!Boundary} start
+	 * @param  {!Boundary} end
+	 * @param  {!string}   nodeName
+	 * @param  {Array.<Boundary>}
+	 * @return {Array.<Boundary>}
+	 */
+	function format(start, end, nodeName, boundaries) {
+		if (nodeName.toLowerCase() === 'a') {
+			return Links.create('', start, end);
+		}
+		var node = {nodeName: nodeName};
+		if (Html.isTextLevelSemanticNode(node)) {
+			return formatInline(nodeName, start, end, true);
+		}
+		if (Html.isListContainer(node)) {
+			return Lists.toggle(nodeName, start, end);
+		}
+		if (Html.isBlockNode(node)) {
+			return blockFormat(nodeName, start, end);
+		}
+		return [start, end];
+	}
+
+	function unformat(start, end, nodeName, boundaries) {
+		return formatInline(nodeName, start, end, false);
+	}
+
+	/**
+	 * Toggles inline style round the given selection.
+	 *
+	 * @private
+	 * @param  {string}    nodeName
+	 * @param  {!Boundary} start
+	 * @param  {!Boundary} end
+	 * @return {Array.<Boundary>}
+	 */
+	function toggleInline(nodeName, start, end) {
+		var override = Overrides.nodeToState[nodeName];
+		if (!override) {
+			return [start, end];
+		}
+		var next = Boundaries.nextNode(Html.expandForward(start));
+		var prev = Boundaries.prevNode(Html.expandBackward(end));
+		var overrides = Overrides.harvest(next).concat(Overrides.harvest(prev));
+		var hasStyle = -1 < Overrides.indexOf(overrides, override);
+		var op = hasStyle ? unformat : format;
+		return op(start, end, nodeName);
+	}
+
+	/**
+	 * Toggles formatting round the given selection.
+	 *
+	 * @todo   Support block formatting
+	 * @param  {!Boundary} start
+	 * @param  {!Boundary} end
+	 * @param  {string}    nodeName
+	 * @param  {Array.<Boundary>}
+	 * @return {Array.<Boundary>}
+	 */
+	function toggle(start, end, nodeName, boundaries) {
+		var node = {nodeName: nodeName};
+		if (Html.isTextLevelSemanticNode(node)) {
+			return toggleInline(nodeName, start, end);
+		}
+		return [start, end];
+	}
+
 	return {
-		format    : format,
-		unformat  : unformat,
-		style     : style,
-		className : className,
-		attribute : attribute,
-		cut       : cut,
-		copy      : copy,
-		breakline : breakline,
-		insert    : insert,
+		format     : format,
+		unformat   : unformat,
+		toggle     : toggle,
+		style      : style,
+		className  : className,
+		attribute  : attribute,
+		cut        : cut,
+		copy       : copy,
+		breakline  : breakline,
+		insert     : insert,
 
 		// obsolete
 		wrap      : wrapElem,

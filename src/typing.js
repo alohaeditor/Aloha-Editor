@@ -18,7 +18,6 @@ define([
 	'selections',
 	'traversing',
 	'boundaries',
-	'formatting',
 	'overrides',
 	'functions'
 ], function (
@@ -34,7 +33,6 @@ define([
 	Selections,
 	Traversing,
 	Boundaries,
-	Formatting,
 	Overrides,
 	Fn
 ) {
@@ -116,7 +114,7 @@ define([
 	function format(style, event) {
 		var boundaries = Boundaries.fromRange(event.range);
 		if (!Html.isBoundariesEqual(boundaries[0], boundaries[1])) {
-			boundaries = Formatting.toggle(style, boundaries[0], boundaries[1]);
+			boundaries = Editing.toggle(boundaries[0], boundaries[1], style);
 			return Boundaries.range(boundaries[0], boundaries[1]);
 		}
 		var override = Overrides.nodeToState[style];
@@ -140,12 +138,14 @@ define([
 				Overrides.harvest(event.range.startContainer)
 			);
 		}
-		Editing.breakline(
-			event.range,
-			event.editable.settings.defaultBlock,
-			isLinebreak
+		var breaker = (event.meta.indexOf('shift') > -1)
+		            ? 'BR'
+		            : event.editable.settings.defaultBlock;
+		var boundaries = Editing.breakline(
+			Boundaries.fromRangeEnd(event.range),
+			breaker
 		);
-		return event.range;
+		return Boundaries.range(boundaries[0], boundaries[1]);
 	}
 
 	function insertText(event) {
