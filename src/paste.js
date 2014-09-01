@@ -9,6 +9,7 @@ define([
 	'dom',
 	'html',
 	'undo',
+	'paths',
 	'arrays',
 	'events',
 	'ranges',
@@ -17,12 +18,14 @@ define([
 	'mutation',
 	'mutation-trees',
 	'boundaries',
+	'functions',
 	'transform',
 	'transform/ms-word'
 ], function (
 	Dom,
 	Html,
 	Undo,
+	Paths,
 	Arrays,
 	Events,
 	Ranges,
@@ -31,6 +34,7 @@ define([
 	Mutation,
 	MutationTrees,
 	Boundaries,
+	Fn,
 	Transform,
 	WordTransform
 ) {
@@ -134,13 +138,24 @@ define([
 			return boundaries;
 		}
 
+		var insertBoundary = boundaries[0];
+		var limit = Dom.editingHost(Boundaries.container(insertBoundary));
+		var tree = MutationTrees.create(limit, boundaries);
+
 		nodes.forEach(function (child) {
-			boundaries = MutationTrees.split(boundaries[0], function (container) {
-				return Dom.isEditingHost(container)
-					|| Content.allowsNesting(container.nodeName, child.nodeName);
-			}, boundaries);
-			boundaries = MutationTrees.insert(boundaries[0], child, boundaries);
+			var insertPath = Paths.fromBoundary(limit, insertBoundary);
+			var result = MutationTrees.split(tree, insertPath, boundaries);
+			tree = result[0];
+			insertPath = result[1];
+			tree = MutationTrees.insert(tree, insertPath, child, boundaries);
+			insertBoundary = Paths.toBoundary(limit, insertPath);
 		});
+
+		tree.updateDom();
+		return;
+
+		var result = MutationTrees.update(tree);
+		boundaries = result[1].map(Fn.partial(Paths.toBoundary, result[0].domNode()));
 
 		var last = Arrays.last(nodes);
 		var next = Boundaries.nodeAfter(boundaries[1]);

@@ -1,8 +1,8 @@
 (function (aloha, module, equal, test, require) {
 	'use strict';
 
-	var Mutation = aloha.mutation;
 	var Markers = aloha.markers;
+	var Mutation; require('../src/mutation', function (Module) { Mutation = Module; });
 	var Boundaries; require('../src/boundaries', function (Module) { Boundaries = Module; });
 
     module('boundaries');

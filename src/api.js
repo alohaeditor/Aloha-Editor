@@ -34,7 +34,6 @@ define([
 	'markers',
 	'metaview',
 	'mouse',
-	'mutation',
 	'overrides',
 	'paste',
 	'paths',
@@ -73,7 +72,6 @@ define([
 	Markers,
 	Metaview,
 	Mouse,
-	Mutation,
 	Overrides,
 	Paste,
 	Paths,
@@ -394,21 +392,6 @@ define([
 	exports['mouse']['handle'] = Mouse.handle;
 	exports['mouse']['EVENTS'] = Mouse.EVENTS;
 
-	exports['mutation'] = {};
-	exports['mutation']['replaceShallowPreservingBoundaries'] = Mutation.replaceShallowPreservingBoundaries;
-	exports['mutation']['removeShallowPreservingCursors']     = Mutation.removeShallowPreservingCursors;
-	exports['mutation']['removePreservingRange']              = Mutation.removePreservingRange;
-	exports['mutation']['removePreservingRanges']             = Mutation.removePreservingRanges;
-	exports['mutation']['removeNode']                         = Mutation.removeNode;
-	exports['mutation']['insertTextAtBoundary']               = Mutation.insertTextAtBoundary;
-	exports['mutation']['insertNodeAtBoundary']               = Mutation.insertNodeAtBoundary;
-	exports['mutation']['splitTextNode']                      = Mutation.splitTextNode;
-	exports['mutation']['splitTextContainers']                = Mutation.splitTextContainers;
-	exports['mutation']['joinTextNodeAdjustRange']            = Mutation.joinTextNodeAdjustRange;
-	exports['mutation']['joinTextNode']                       = Mutation.joinTextNode;
-	exports['mutation']['splitBoundary']                      = Mutation.splitBoundary;
-	exports['mutation']['splitBoundaryUntil']                 = Mutation.splitBoundaryUntil;
-
 	exports['overrides'] = {};
 	exports['overrides']['indexOf']     = Overrides.indexOf;
 	exports['overrides']['unique']      = Overrides.unique;
@@ -499,10 +482,15 @@ define([
 	exports['undo']['redo']    = Undo.redo;
 
 	exports['MutationTrees'] = {};
-	exports['MutationTrees'].split  = MutationTrees.split;
-	exports['MutationTrees'].insert = MutationTrees.insert;
-	exports['MutationTrees'].create = MutationTrees.create;
-	exports['MutationTrees'].update = MutationTrees.update;
+	exports['MutationTrees']['create']      = MutationTrees.create;
+	exports['MutationTrees']['split']       = MutationTrees.split;
+	exports['MutationTrees']['insert']      = MutationTrees.insert;
+	exports['MutationTrees']['wrap']        = MutationTrees.wrap;
+	exports['MutationTrees']['remove']      = MutationTrees.remove;
+	exports['MutationTrees']['reduce']      = MutationTrees.reduce;
+	exports['MutationTrees']['paths']       = MutationTrees.paths;
+	exports['MutationTrees']['removePaths'] = MutationTrees.removePaths;
+	exports['MutationTrees']['update']      = MutationTrees.update;
 
 	return exports;
 });

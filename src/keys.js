@@ -102,7 +102,9 @@ define(['strings', 'boundaries'], function (Strings, Boundaries) {
 				if (!event.range) {
 					var node = event.nativeEvent.target || event.nativeEvent.srcElement;
 					var boundaries = Boundaries.get(node.ownerDocument);
-					event.range = Boundaries.range(boundaries[0], boundaries[1]);
+					if (boundaries) {
+						event.range = Boundaries.range(boundaries[0], boundaries[1]);
+					}
 				}
 			}
 		}

@@ -2,9 +2,9 @@
 	'use strict';
 
 	var Dom = aloha.dom;
-	var Mutation = aloha.mutation;
 	var Boundaries = aloha.boundaries;
 	var Cursors; require('../src/cursors', function (Module) { Cursors = Module; });
+	var Mutation; require('../src/mutation', function (Module) { Mutation = Module; });
 
 	function createRange(sc, so, ec, eo) {
 		return Boundaries.range(

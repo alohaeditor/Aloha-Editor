@@ -1735,15 +1735,50 @@ define([
 		return boundary;
 	}
 
+	function className(start, end, name, value, boundaries) {
+
+	}
+
+	function attribute(start, end, name, value, boundaries) {
+
+	}
+
+	function cut(start, end, boundaries) {
+
+	}
+
+	function copy(start, end, boundaries) {
+
+	}
+
+/*
+[boundaries, added]   = Editing.format(start, end, node, boundaries)
+[boundaries, removed] = Editing.unformat(start, end, node, boundaries)
+[boundaries, touched] = Editing.style(start, end, name, value, boundaries)
+[boundaries, touched] = Editing.className(start, end, name, value, boundaries)
+[boundaries, touched] = Editing.attribute(start, end, name, value, boundaries)
+[boundaries, removed] = Editing.cut(start, end, boundaries)
+[boundaries,  copied] = Editing.copy(start, end, boundaries)
+`breaker` can be a line-breaking element like “div” or “p” or a “br”
+[boundaries, touched] = Editing.breakline(boundary, breaker, boundaries)
+[boundaries, added]   = Editing.insert(start, end, content, boundaries)
+*/
+
 	return {
-		wrap      : wrapElem,
 		format    : format,
 		unformat  : unformat,
 		style     : style,
-		split     : split,
-		remove    : remove,
+		className : className,
+		attribute : attribute,
+		cut       : cut,
+		copy      : copy,
 		breakline : breakline,
 		insert    : insert,
+
+		// obsolete
+		wrap      : wrapElem,
+		split     : split,
+		remove    : remove,
 		trimClosingOpening: trimClosingOpening
 	};
 });

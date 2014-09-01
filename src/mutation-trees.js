@@ -297,7 +297,7 @@ define([
 	function update(tree) {
 		var paths = extractPathFromTree(tree);
 		tree = paths.reduce(removePathFromTree, tree);
-		return Boromir.prototype.updateDom.call(tree);
+		return [tree.updateDom(), paths];
 	}
 
 	function clipCommonRoot(root, path) {
@@ -343,6 +343,9 @@ define([
 		if (0 === content.length) {
 			return tree;
 		}
+		if (!('map' in content)) {
+			content = [content];
+		}
 		var records = content.map(function (item) {
 			return item instanceof Boromir ? item : Boromir(item);
 		});
@@ -351,10 +354,31 @@ define([
 		});
 	}
 
+	function wrap(tree, path, num, domNode) {
+
+	}
+
+	function remove(tree, path, num) {
+
+	}
+
+	function reduce(tree, path, num, reducer) {
+
+	}
+
+	function removePaths(tree) {
+		return extractPathFromTree(tree).reduce(removePathFromTree, tree);
+	}
+
 	return {
-		split  : split,
-		insert : insert,
-		create : create,
-		update : update
+		create      : create,
+		split       : split,
+		insert      : insert,
+		wrap        : wrap,
+		remove      : remove,
+		reduce      : reduce,
+		paths       : extractPathFromTree,
+		removePaths : removePaths,
+		update      : update
 	};
 });
