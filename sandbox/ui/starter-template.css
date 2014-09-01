@@ -2,26 +2,87 @@ body {
 	padding: 5%;
 }
 
-.aloha-ui-toolbar.btn-toolbar button, .aloha-ui-toolbar .dropdown-menu a {
+.aloha-ui-toolbar.btn-toolbar, .aloha-ui-link-toolbar.btn-toolbar {
+	display: inline-block;
+}
+
+.aloha-ui-toolbar.btn-toolbar, .aloha-ui-toolbar .btn {
+	font-size: 18px;
+	-webkit-font-smoothing: antialiased;
+	-moz-font-smoothing: antialiased;
+	-font-smoothing: antialiased;
+}
+
+.aloha-ui-toolbar .btn {
+	width: 45px;
+	height: 45px;
+}
+
+.aloha-ui-toolbar * {
+	-webkit-transition: width 0.25s;
+}
+
+.aloha-ui-toolbar .btn.dropdown-toggle::before {
+	content: "";
+	position: absolute;
+	right: 0px;
+	top: 0px;
+	width: 50%;
+	height: 100%;
+	background: -moz-linear-gradient(left,  rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(0,0,0,0)), color-stop(100%,rgba(0,0,0,0.5))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(left,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.5) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(left,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.5) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(left,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.5) 100%); /* IE10+ */
+	background: linear-gradient(to right,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.5) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#000000',GradientType=1 ); /* IE6-9 */
+}
+
+.aloha-ui-toolbar .btn.dropdown-toggle:hover, .aloha-ui-toolbar .btn-group.open .btn.dropdown-toggle {
+	width: 135px;
+}
+
+.aloha-ui-toolbar .btn.dropdown-toggle:hover::before, .aloha-ui-toolbar .btn-group.open .btn.dropdown-toggle::before {
+	display: none;
+}
+
+.aloha-ui-toolbar .dropdown-menu {
+	border: 0;
+	padding: 0;
+	font-size: 16px;
+}
+
+
+
+.aloha-ui-link-toolbar {
+	height: 18px;
+	line-height: 24px;
+}
+
+.aloha-ui-link-toolbar input {
+	color: #3f3f3f;
+	border: 0;
+}
+
+.aloha-ui-link-toolbar .glyphicon {
+	color: white;
+}
+
+.aloha-ui-toolbar.btn-toolbar, .aloha-ui-link-toolbar.btn-toolbar, .aloha-ui-toolbar.btn-toolbar button, .aloha-ui-toolbar .dropdown-menu a {
 	border: 0;
 	border-radius: 0;
 	background: #3f3f3f;
 	color: white;
 }
 
-.aloha-ui-toolbar .dropdown-menu {
-	border: 0;
-	padding: 0;
-}
-
 .aloha-ui-toolbar.btn-toolbar>.btn-group {
 	margin-left: 0;
-	border-right: 1px solid transparent;
+	border-right: 1px solid white;
 }
 .aloha-ui-toolbar.btn-toolbar .btn-default:hover, 
 	.aloha-ui-toolbar .dropdown-menu a:hover, 
 	.aloha-ui-toolbar .btn-group.open .btn-default {
 	color: white;
 	background: #5DAECC;
-	text-shadow: -1px -1px 0px rgb(100,100,100);
+	text-shadow: -1px -1px 0px rgb(150,150,150);
 }
