@@ -1,3 +1,27 @@
 body {
 	padding: 5%;
 }
+
+.aloha-ui-toolbar.btn-toolbar button, .aloha-ui-toolbar .dropdown-menu a {
+	border: 0;
+	border-radius: 0;
+	background: #3f3f3f;
+	color: white;
+}
+
+.aloha-ui-toolbar .dropdown-menu {
+	border: 0;
+	padding: 0;
+}
+
+.aloha-ui-toolbar.btn-toolbar>.btn-group {
+	margin-left: 0;
+	border-right: 1px solid transparent;
+}
+.aloha-ui-toolbar.btn-toolbar .btn-default:hover, 
+	.aloha-ui-toolbar .dropdown-menu a:hover, 
+	.aloha-ui-toolbar .btn-group.open .btn-default {
+	color: white;
+	background: #5DAECC;
+	text-shadow: -1px -1px 0px rgb(100,100,100);
+}
