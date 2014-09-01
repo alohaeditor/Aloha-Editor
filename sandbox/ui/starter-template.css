@@ -6,14 +6,14 @@ body {
 	display: inline-block;
 }
 
-.aloha-ui-toolbar.btn-toolbar, .aloha-ui-toolbar .btn {
+.aloha-ui-toolbar.btn-toolbar, .aloha-ui-link-toolbar.btn-toolbar, .aloha-ui-toolbar .btn, .aloha-ui-link-toolbar .btn {
 	font-size: 18px;
 	-webkit-font-smoothing: antialiased;
 	-moz-font-smoothing: antialiased;
 	-font-smoothing: antialiased;
 }
 
-.aloha-ui-toolbar .btn {
+.aloha-ui-toolbar .btn, .aloha-ui-link-toolbar .btn {
 	width: 45px;
 	height: 45px;
 }
@@ -52,23 +52,11 @@ body {
 	font-size: 16px;
 }
 
-
-
-.aloha-ui-link-toolbar {
-	height: 18px;
-	line-height: 24px;
-}
-
-.aloha-ui-link-toolbar input {
-	color: #3f3f3f;
-	border: 0;
-}
-
-.aloha-ui-link-toolbar .glyphicon {
-	color: white;
-}
-
-.aloha-ui-toolbar.btn-toolbar, .aloha-ui-link-toolbar.btn-toolbar, .aloha-ui-toolbar.btn-toolbar button, .aloha-ui-toolbar .dropdown-menu a {
+.aloha-ui-toolbar.btn-toolbar, 
+.aloha-ui-toolbar.btn-toolbar button, 
+.aloha-ui-toolbar .dropdown-menu a,
+.aloha-ui-link-toolbar.btn-toolbar,
+.aloha-ui-link-toolbar.btn-toolbar button {
 	border: 0;
 	border-radius: 0;
 	background: #3f3f3f;
@@ -85,4 +73,19 @@ body {
 	color: white;
 	background: #5DAECC;
 	text-shadow: -1px -1px 0px rgb(150,150,150);
+}
+
+/** aloha-ui-link-toolbar **/
+.aloha-ui-link-toolbar input {
+	font-size: 18px;
+	color: white;
+	border: 0;
+	background: #3f3f3f;
+	height: 45px;
+	padding: 0 5px;
+	width: 315px;
+}
+
+.aloha-ui-link-toolbar .aloha-action-follow {
+	float: right;
 }
