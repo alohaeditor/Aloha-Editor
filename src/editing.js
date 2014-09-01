@@ -1718,19 +1718,19 @@ define([
 	}
 
 	function className(start, end, name, value, boundaries) {
-
+		throw 'Not implemented';
 	}
 
 	function attribute(start, end, name, value, boundaries) {
-
+		throw 'Not implemented';
 	}
 
 	function cut(start, end, boundaries) {
-
+		throw 'Not implemented';
 	}
 
 	function copy(start, end, boundaries) {
-
+		throw 'Not implemented';
 	}
 
 /*

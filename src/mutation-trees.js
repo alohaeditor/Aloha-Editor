@@ -355,15 +355,15 @@ define([
 	}
 
 	function wrap(tree, path, num, domNode) {
-
+		throw 'Not implemented';
 	}
 
 	function remove(tree, path, num) {
-
+		throw 'Not implemented';
 	}
 
 	function reduce(tree, path, num, reducer) {
-
+		throw 'Not implemented';
 	}
 
 	function removePaths(tree) {

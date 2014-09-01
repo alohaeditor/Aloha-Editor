@@ -130,7 +130,10 @@
 					}
 				}
 				function main(aloha) {
-					aloha.arrays.coerce(document.querySelectorAll('.aloha-editable')).forEach(aloha);
+					aloha(document.querySelector('.aloha-editable'), {
+						defaultBlock: 'h1'
+					});
+					//aloha.arrays.coerce(document.querySelectorAll('.aloha-editable')).forEach(aloha);
 					aloha.metaview.toggle(document.querySelector('.aloha-editable'),{outline:true,padding: true});
 
 					/*

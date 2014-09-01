@@ -289,15 +289,16 @@ define([
 	exports['editables']['create']           = Editables.create;
 
 	exports['editing'] = {};
-	exports['editing']['wrap']      = Editing.wrap;
-	exports['editing']['split']     = Editing.split;
-
 	exports['editing']['format']    = Editing.format;
 	exports['editing']['unformat']  = Editing.unformat;
 	exports['editing']['style']     = Editing.style;
 	exports['editing']['remove']    = Editing.remove;
 	exports['editing']['breakline'] = Editing.breakline;
 	exports['editing']['insert']    = Editing.insert;
+	exports['editing']['className'] = Editing.className;
+	exports['editing']['attribute'] = Editing.attribute;
+	exports['editing']['cut']       = Editing.cut;
+	exports['editing']['copy']      = Editing.copy;
 
 	exports['events'] = {};
 	exports['events']['add']             = Events.add;
