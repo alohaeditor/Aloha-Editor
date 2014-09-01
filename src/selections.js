@@ -133,7 +133,8 @@ define([
 	 * @return {Range}
 	 */
 	function up(box, stride, doc) {
-		return Ranges.fromPosition(box.left, box.top - stride, doc);
+		var boundaries = Boundaries.fromPosition(box.left, box.top - stride, doc);
+		return Boundaries.range(boundaries[0], boundaries[1]);
 	}
 
 	/**
@@ -145,7 +146,8 @@ define([
 	 * @return {Range}
 	 */
 	function down(box, stride, doc) {
-		return Ranges.fromPosition(box.left, box.top + box.height + stride, doc);
+		var boundaries = Boundaries.fromPosition(box.left, box.top + box.height + stride, doc);
+		return Boundaries.range(boundaries[0], boundaries[1]);
 	}
 
 	/**
@@ -373,8 +375,9 @@ define([
 	 */
 	function dblclick(event, range, focus, previous, expanding) {
 		var boundaries = Boundaries.fromRange(range);
+		boundaries = Traversing.expand(boundaries[0], boundaries[1], 'word');
 		return {
-			range: Traversing.expand(boundaries[0], boundaries[1], 'word'),
+			range: Boundaries.range(boundaries[0], boundaries[1]),
 			focus: 'end'
 		};
 	}
@@ -390,8 +393,9 @@ define([
 	 */
 	function tplclick(event, range, focus, previous, expanding) {
 		var boundaries = Boundaries.fromRange(range);
+		boundaries = Traversing.expand(boundaries[0], boundaries[1], 'block');
 		return {
-			range: Traversing.expand(boundaries[0], boundaries[1], 'block'),
+			range: Boundaries.range(boundaries[0], boundaries[1]),
 			focus: 'end'
 		};
 	}
@@ -774,11 +778,12 @@ define([
 		var range;
 		// Because drag positions are calculated with an offset
 		if (Mouse.EVENTS[event.type] && 'dragover' !== event.type) {
-			range = Ranges.fromPosition(
+			var boundaries = Boundaries.fromPosition(
 				event.nativeEvent.clientX,
 				event.nativeEvent.clientY,
 				event.target.ownerDocument
 			);
+			range = Boundaries.range(boundaries[0], boundaries[1]);
 		}
 		if (range) {
 			return range;
@@ -811,7 +816,7 @@ define([
 		var old = event.editor.selectionContext;
 
 		// Because otherwise, if, if we are in the process of a click, and the
-		// user's cursor is over the caret element, Ranges.fromPosition() will
+		// user's cursor is over the caret element, Boundaries.fromPosition() will
 		// compute the range to be inside the absolutely positioned caret
 		// element
 		if ('mousedown' === event.type) {

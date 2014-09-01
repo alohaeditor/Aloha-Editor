@@ -190,9 +190,7 @@ define([
 		});
 		var node = Arrays.last(ancestors);
 		var len = Dom.nodeLength(node);
-		var prev = Boundaries.create(node, 0);
-		var next = next(Boundaries.create(node, len));
-		return [prev, next];
+		return [Boundaries.create(node, 0), next(Boundaries.create(node, len))];
 	}
 
 	/**
@@ -213,7 +211,7 @@ define([
 	 * @param  {Boundary} start
 	 * @param  {Boundary} end
 	 * @param  {unit}     unit
-	 * @return {Range}
+	 * @return {Array.<Boundary>}
 	 */
 	function expand(start, end, unit) {
 		switch (unit) {
