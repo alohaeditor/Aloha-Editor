@@ -118,7 +118,7 @@ define([
 	 * @param  {AlohaEvent} event
 	 * @return {AlohaEvent}
 	 */
-	function handle(event) {
+	function handleEditables(event) {
 		if ('aloha' === event.type) {
 			event.editable = create(event.editor, event.element, event.options);
 		} else if (event.boundaries) {
@@ -136,7 +136,7 @@ define([
 		assocIntoEditor  : assocIntoEditor,
 		dissocFromEditor : dissocFromEditor,
 		close            : close,
-		handle           : handle,
+		handleEditables  : handleEditables,
 		create           : create
 	};
 });

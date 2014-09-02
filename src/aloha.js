@@ -42,7 +42,7 @@ define([
 		event.type = event.type || (nativeEvent && nativeEvent.type) || 'unknown';
 		event = Fn.comp.apply(editor.stack, editor.stack)(event);
 		editor.lastEditableBoundaries = event.boundaries;
-		Selections.handleSelection(event);
+		Selections.update(event);
 	}
 
 	editor.BLOCK_CLASS = 'aloha-block';
@@ -51,15 +51,15 @@ define([
 	editor.dnd = null;
 	editor.editables = {};
 	editor.stack = [
-		Selections.handle,
-		Typing.handle,
-		AutoFormat.handle,
-		Blocks.handle,
-		DragDrop.handle,
-		Paste.handle,
-		Editables.handle,
-		Keys.handle,
-		Mouse.handle
+		Selections.handleSelections,
+		Typing.handleTyping,
+		AutoFormat.handleAutoFormat,
+		Blocks.handleBlocks,
+		DragDrop.handleDragDrop,
+		Paste.handlePaste,
+		Editables.handleEditables,
+		Keys.handleKeys,
+		Mouse.handleMouse
 	];
 
 	Events.setup(doc, editor);

@@ -130,7 +130,7 @@ define([
 		return '';
 	}
 
-	function handle(event) {
+	function handleAutoFormat(event) {
 		if ('keydown' !== event.type || !event.editable || !event.boundaries) {
 			return event;
 		}
@@ -164,6 +164,6 @@ define([
 	}
 
 	return {
-		handle: handle
+		handleAutoFormat: handleAutoFormat
 	};
 });

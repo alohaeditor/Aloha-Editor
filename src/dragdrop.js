@@ -200,7 +200,7 @@ define([
 	 * @param  {AlohaEvent} event
 	 * @return {AlohaEvent}
 	 */
-	function handle(event) {
+	function handleDragDrop(event) {
 		if (event.editor.dnd && handlers[event.type]) {
 			handlers[event.type](event);
 		}
@@ -208,8 +208,8 @@ define([
 	}
 
 	return {
-		handle      : handle,
-		Context     : Context,
-		isDraggable : isDraggable
+		handleDragDrop : handleDragDrop,
+		Context        : Context,
+		isDraggable    : isDraggable
 	};
 });

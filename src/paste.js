@@ -207,7 +207,7 @@ define([
 	 * @param  {AlohaEvent} event
 	 * @return {AlohaEvent}
 	 */
-	function handle(event) {
+	function handlePaste(event) {
 		if (!event.editable || !event.boundaries || !isPasteEvent(event)) {
 			return event;
 		}
@@ -229,6 +229,6 @@ define([
 	}
 
 	return {
-		handle: handle
+		handlePaste: handlePaste
 	};
 });

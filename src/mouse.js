@@ -37,7 +37,7 @@ define(['boundaries'], function (Boundaries) {
 	 * @param  {AlohaEvent} event
 	 * @return {AlohaEVent}
 	 */
-	function handle(event) {
+	function handleMouse(event) {
 		var nativeEvent = event.nativeEvent;
 		if (!nativeEvent) {
 			return event;
@@ -63,7 +63,7 @@ define(['boundaries'], function (Boundaries) {
 	}
 
 	return {
-		handle : handle,
-		EVENTS : EVENTS
+		handleMouse : handleMouse,
+		EVENTS      : EVENTS
 	};
 });

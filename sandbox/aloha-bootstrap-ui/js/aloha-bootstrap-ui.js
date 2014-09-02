@@ -190,7 +190,7 @@
 	 * @param  {!AlohaEvent} event
 	 * @return {AlohaEvent}
 	 */
-	function handle(event) {
+	function handleBootstrapUi(event) {
 		var boundaries = event.lastEditableBoundaries;
 		if (!boundaries || !('keyup' === event.type || 'click' === event.type)) {
 			return event;
@@ -209,14 +209,14 @@
 	}
 
 	aloha.editor.stack = [
-		Selections.handle,
-		handle,
-		Typing.handle,
-		Blocks.handle,
-		DragDrop.handle,
-		Paste.handle,
-		Editables.handle,
-		Keys.handle,
-		Mouse.handle
+		Selections.handleSelections,
+		handleBootstrapUi,
+		Typing.handleTyping,
+		Blocks.handleBlocks,
+		DragDrop.handleDragDrop,
+		Paste.handlePaste,
+		Editables.handleEditables,
+		Keys.handleKeys,
+		Mouse.handleMouse
 	];
 }(aloha));

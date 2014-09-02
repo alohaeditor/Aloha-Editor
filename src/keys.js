@@ -95,7 +95,7 @@ define(['strings', 'boundaries'], function (Strings, Boundaries) {
 	 * 		meta
 	 * 		keycode
 	 */
-	function handle(event) {
+	function handleKeys(event) {
 		if (event.nativeEvent) {
 			event.meta = metaKeys(event.nativeEvent);
 			if (EVENTS[event.type]) {
@@ -109,9 +109,9 @@ define(['strings', 'boundaries'], function (Strings, Boundaries) {
 	}
 
 	return {
-		CODES  : CODES,
-		EVENTS : EVENTS,
-		ARROWS : ARROWS,
-		handle : handle
+		CODES      : CODES,
+		EVENTS     : EVENTS,
+		ARROWS     : ARROWS,
+		handleKeys : handleKeys
 	};
 });

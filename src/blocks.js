@@ -136,7 +136,7 @@ define([
 	 * @param  {AlohaEvent} event
 	 * @return {Event}
 	 */
-	function handle(event) {
+	function handleBlocks(event) {
 		if (handlers[event.type]) {
 			handlers[event.type](event);
 		}
@@ -144,6 +144,6 @@ define([
 	}
 
 	return {
-		handle : handle
+		handleBlocks : handleBlocks
 	};
 });

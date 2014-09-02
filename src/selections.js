@@ -799,7 +799,7 @@ define([
 	 * @param  {AlohaEvent} event
 	 * @return {AlohaEvent}
 	 */
-	function handle(event) {
+	function handleSelections(event) {
 		if (!handlers[event.type]) {
 			return event;
 		}
@@ -923,7 +923,9 @@ define([
 	 *
 	 * @param {AlohaEvent} event
 	 */
-	function handleSelection(event) {
+	function update(event) {
+		var context = event.editor.selection;
+		console.warn(context.range);
 		if (!event.boundaries || 'mousemove' === event.type) {
 			return;
 		}
@@ -968,13 +970,13 @@ define([
 	}
 
 	return {
-		show            : show,
-		select          : select,
-		focus           : focus,
-		handleSelection : handleSelection,
-		handle          : handle,
-		Context         : Context,
-		hideCarets      : hideCarets,
-		unhideCarets    : unhideCarets
+		show             : show,
+		select           : select,
+		focus            : focus,
+		update           : update,
+		handleSelections : handleSelections,
+		Context          : Context,
+		hideCarets       : hideCarets,
+		unhideCarets     : unhideCarets
 	};
 });

@@ -363,7 +363,7 @@ define([
 	 * 		editor.selection
 	 * 		nativeEvent
 	 */
-	function handle(event) {
+	function handleTyping(event) {
 		if (!event.editable) {
 			return event;
 		}
@@ -399,7 +399,7 @@ define([
 	}
 
 	return {
-		handle  : handle,
-		actions : actions
+		handleTyping  : handleTyping,
+		actions       : actions
 	};
 });
