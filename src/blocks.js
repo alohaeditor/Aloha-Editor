@@ -75,8 +75,8 @@ define([
 	 * @return {boolean}
 	 */
 	function isBlockEvent(event) {
-		return 'IMG' === event.nativeEvent.target.nodeName
-		    || Dom.hasClass(event.nativeEvent.target, event.editor.BLOCK_CLASS);
+		return 'IMG' === event.target.nodeName
+		    || Dom.hasClass(event.target, event.editor.BLOCK_CLASS);
 	}
 
 	function handleAloha(event) {
@@ -88,7 +88,7 @@ define([
 	}
 
 	function handleMouseDown(event) {
-		var block = event.nativeEvent.target;
+		var block = event.target;
 		if (isBlockEvent(event) && DragDrop.isDraggable(block)) {
 			event.editor.dnd = Events.hasKeyModifier(event, 'ctrl')
 			                 ? copyContext(block)

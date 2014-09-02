@@ -195,10 +195,10 @@
 		if (!boundaries || !('keyup' === event.type || 'click' === event.type)) {
 			return event;
 		}
-		if (Dom.hasClass(event.nativeEvent.target, 'aloha-ephemera')) {
+		if (Dom.hasClass(event.target, 'aloha-ephemera')) {
 			return event;
 		}
-		var action = parseAction(event.nativeEvent.target);
+		var action = parseAction(event.target);
 		if (action) {
 			event.boundaries = execute(action, boundaries, event.editor);
 		}
