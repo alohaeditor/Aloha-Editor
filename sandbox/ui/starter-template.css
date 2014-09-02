@@ -80,7 +80,7 @@ body {
 	font-size: 18px;
 	color: white;
 	border: 0;
-	background: #3f3f3f;
+	background: rgb(90,90,90); /**#3f3f3f;**/
 	height: 45px;
 	padding: 0 5px;
 	width: 315px;
