@@ -883,7 +883,7 @@ define([
 			                 ? [boundaries[1], boundaries[1]]
 			                 : [boundaries[0], boundaries[0]];
 		} else {
-			event.boundaries = context.boundaries;
+			event.boundaries = Boundaries.fromRange(context.range);
 		}
 
 		return event;
@@ -924,9 +924,7 @@ define([
 	 * @param {AlohaEvent} event
 	 */
 	function handleSelection(event) {
-		var context = event.editor.selection;
-		console.warn(context.range);
-		if (!context.range || 'mousemove' === event.type) {
+		if (!event.boundaries || 'mousemove' === event.type) {
 			return;
 		}
 		var boundary = select(
