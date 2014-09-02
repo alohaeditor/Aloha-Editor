@@ -1,106 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Aloha Editor UI Integration Demo</title>
+	<title>Aloha Editor UI Integration Demo</title>
 
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/aloha-bootstrap-ui.css" rel="stylesheet">
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="css/aloha-bootstrap-ui.css" rel="stylesheet">
 
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
+	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!--[if lt IE 9]>
+	  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
   </head>
 
   <body>
 
 	  testing
 
-    <div class="container">
+	<div class="container">
 
-      <div class="btn-toolbar aloha-ui-toolbar" role="toolbar">
-        <div class="btn-group">
-          <button type="button" class="btn btn-default aloha-action-B" data-activeon="bold" title="Bold"><b>B</b></button>
-          <button type="button" class="btn btn-default aloha-action-I" data-activeon="italic" title="Italic"><i>I</i></button>
-        </div>
+	  <div class="btn-toolbar aloha-ui-toolbar" role="toolbar">
+		<div class="btn-group">
+			<button type="button" class="btn btn-default aloha-action-B" data-activeon="bold" title="Bold"><b>B</b></button>
+			<button type="button" class="btn btn-default aloha-action-I" data-activeon="italic" title="Italic"><i>I</i></button>
+		</div>
 
-        <div class="btn-group">
-          <button type="button" class="btn btn-default aloha-action-OL" title="Ordered List"><span class="glyphicon glyphicon-list"></span></button>
-          <button type="button" class="btn btn-default aloha-action-UL" title="Unordered List"><span class="glyphicon glyphicon-list"></span></button>
-        </div>
+		<div class="btn-group">
+			<button type="button" class="btn btn-default aloha-action-OL" title="Ordered List"><span class="glyphicon glyphicon-list"></span></button>
+			<button type="button" class="btn btn-default aloha-action-UL" title="Unordered List"><span class="glyphicon glyphicon-list"></span></button>
+		</div>
 
-        <div class="btn-group">
-          <button type="button" class="btn btn-default aloha-action-undo" title="Undo"><span class="glyphicon glyphicon-step-backward"></span></button>
-          <button type="button" class="btn btn-default aloha-action-redo" title="Redo"><span class="glyphicon glyphicon-step-forward"></span></button>
-        </div>
+		<div class="btn-group">
+			<button type="button" class="btn btn-default aloha-action-undo" title="Undo"><span class="glyphicon glyphicon-step-backward"></span></button>
+			<button type="button" class="btn btn-default aloha-action-redo" title="Redo"><span class="glyphicon glyphicon-step-forward"></span></button>
+		</div>
 
-        <div class="btn-group">
-          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-            Paragraph <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu" role="menu">
-            <li><a href="#" class="aloha-action-H2">Heading 2</a></li>
-            <li><a href="#" class="aloha-action-H3">Heading 3</a></li>
-            <li><a href="#" class="aloha-action-H4">Heading 4</a></li>
-            <li><a href="#" class="aloha-action-P">Paragraph</a></li>
-            <li><a href="#" class="aloha-action-PRE">Preformatted</a></li>
-            <li><a href="#">Remove format</a></li>
-          </ul>
-        </div>
+		<div class="btn-group">
+			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+				Paragraph <span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu" role="menu">
+				<li><a href="#" class="aloha-action-H2">Heading 2</a></li>
+				<li><a href="#" class="aloha-action-H3">Heading 3</a></li>
+				<li><a href="#" class="aloha-action-H4">Heading 4</a></li>
+				<li><a href="#" class="aloha-action-P">Paragraph</a></li>
+				<li><a href="#" class="aloha-action-PRE">Preformatted</a></li>
+				<li><a href="#">Remove format</a></li>
+			</ul>
+		</div>
 
-        <div class="btn-group">
-			  <button type="button"
-			        data-activeon="a"
-			        title="Create Link"
-					class="btn btn-default aloha-action-A">
+		<div class="btn-group">
+			<button type="button" data-activeon="a" title="Create Link"	class="btn btn-default aloha-action-A">
 				<span class="glyphicon glyphicon-link"></span>
 			</button>
 		</div>
-      </div>
+	  </div>
 
-      <br/> <br/>
-      
-      <div class="btn-toolbar aloha-ui-link-toolbar" role="toolbar">
-        <input type="text" name="href" placeholder="http://www.aloha-editor.org"/><button type="button" class="btn btn-default aloha-action-follow" title="follow the link"><span class="glyphicon glyphicon-share-alt"></span></button>
-      </div>
-
-
-
-      <div class="starter-template aloha-editable">
-        <h2>Aloha Editor UI Integration Demo</h2>
-        
-        <p>Sed ut perspiciatis unde omnis iste <a href="http://www.google.com">www.google.com</a> natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
-        
-        <ul>
-          <li>Nemo</li>
-          <li>Enim</li>
-          <li>Ipsam</li>
-        </ul>
-
-        <h2>Magnam aliquam quaerat</h2>
-
-        <p>voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.</p>
-
-        <p>Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?</p>
-       </div>
-
-    </div><!-- /.container -->
+	  <br/> <br/>
+	  
+	  <div class="btn-toolbar aloha-ui-link-toolbar" role="toolbar">
+		<input type="text" name="href" placeholder="http://www.aloha-editor.org"/><button type="button" class="btn btn-default aloha-action-follow" title="follow the link"><span class="glyphicon glyphicon-share-alt"></span></button>
+	  </div>
 
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="../../build/aloha.min.js"></script>
-    <script src="js/aloha-bootstrap-ui.js"></script>
-    <script>
-[].forEach.call(document.querySelectorAll('.aloha-editable'), aloha);
-    </script>
+
+	  <div class="starter-template aloha-editable">
+		<h2>Aloha Editor UI Integration Demo</h2>
+		
+		<p>Sed ut perspiciatis unde omnis iste <a href="http://www.google.com">www.google.com</a> natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+		
+		<ul>
+		  <li>Nemo</li>
+		  <li>Enim</li>
+		  <li>Ipsam</li>
+		</ul>
+
+		<h2>Magnam aliquam quaerat</h2>
+
+		<p>voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.</p>
+
+		<p>Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?</p>
+	   </div>
+
+	</div><!-- /.container -->
+
+
+	<!-- Bootstrap core JavaScript
+	================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="../../src/require-pronto.js"></script>
+	<script src="../../src/require-pronto.dev.js"></script>
+	<!--script src="../../build/aloha.min.js"></script-->
+	<script>
+function main () {
+	[].forEach.call(document.querySelectorAll('.aloha-editable'), aloha);
+}
+if ('undefined' === typeof aloha) {
+	require('../../src/aloha', function (aloha) { 
+		window.aloha = aloha; 
+		main(aloha);
+	});
+} else {
+	main(aloha);
+}
+	</script>
+	<script src="js/aloha-bootstrap-ui.js"></script>
   </body>
 </html>
