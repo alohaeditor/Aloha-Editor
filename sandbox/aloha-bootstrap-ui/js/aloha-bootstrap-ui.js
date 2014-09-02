@@ -6,7 +6,7 @@
 	var Boundaries = aloha.boundaries;
 	var Editing = aloha.editing;
 	var Blocks = aloha.blocks;
-	var DragDrop aloha.dragDrop;
+	var DragDrop = aloha.dragdrop;
 	var Editables = aloha.editables;
 	var Keys = aloha.keys;
 	var Mouse = aloha.mouse;
