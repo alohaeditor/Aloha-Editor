@@ -12,7 +12,6 @@ define([
 	'paths',
 	'arrays',
 	'events',
-	'ranges',
 	'content',
 	'editing',
 	'mutation',
@@ -28,7 +27,6 @@ define([
 	Paths,
 	Arrays,
 	Events,
-	Ranges,
 	Content,
 	Editing,
 	Mutation,
@@ -226,7 +224,6 @@ define([
 			meta: {type: 'paste'}
 		}, function () {
 			event.boundaries = insert(event.boundaries[0], event.boundaries[1], content);
-			event.range = Boundaries.range(event.boundaries[0], event.boundaries[1]);
 		});
 		return event;
 	}

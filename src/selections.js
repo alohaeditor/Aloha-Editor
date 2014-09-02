@@ -867,7 +867,7 @@ define([
 		}
 
 		var preventDefault = ('keydown' === type && movements[event.keycode])
-				|| (event.editor.CARET_CLASS === event.nativeEvent.target.className);
+				|| (event.editor.CARET_CLASS === event.target.className);
 
 		if (preventDefault) {
 			Events.preventDefault(event.nativeEvent);
@@ -879,11 +879,11 @@ define([
 		// expansion to be done in the way that the user expects
 		if (!preventDefault && 'mousedown' === type && Events.hasKeyModifier(event, 'shift')) {
 			var boundaries = Boundaries.fromRange(context.range);
-			event.range = ('start' === context.focus)
-			            ? Boundaries.range(boundaries[1], boundaries[1])
-			            : Boundaries.range(boundaries[0], boundaries[0]);
+			event.boundaries = ('start' === context.focus)
+			                 ? [boundaries[1], boundaries[1]]
+			                 : [boundaries[0], boundaries[0]];
 		} else {
-			event.range = context.range;
+			event.boundaries = context.boundaries;
 		}
 
 		return event;
@@ -925,14 +925,14 @@ define([
 	 */
 	function handleSelection(event) {
 		var context = event.editor.selection;
+		console.warn(context.range);
 		if (!context.range || 'mousemove' === event.type) {
 			return;
 		}
-		var boundaries = Boundaries.fromRange(context.range);
 		var boundary = select(
 			event.editor.selection,
-			boundaries[0],
-			boundaries[1],
+			event.boundaries[0],
+			event.boundaries[1],
 			event.editor.selection.focus
 		);
 		// Because we don't want the screen to jump when the editor hits "shift"

@@ -39,7 +39,7 @@ define([
 	'use strict';
 
 	function undoable(type, event, fn) {
-		var range = event.range;
+		var range = Boundaries.range(event.boundaries[0], event.boundaries[1]);
 		Undo.capture(event.editable.undoContext, {
 			meta: {type: type},
 			oldRange: range
@@ -47,7 +47,6 @@ define([
 			range = fn();
 			return {newRange: range};
 		});
-		return range;
 	}
 
 	/**
@@ -86,21 +85,18 @@ define([
 	}
 
 	function remove(direction, event) {
-		var range = event.range;
-		var boundary;
-		if (range.collapsed) {
+		var start = event.boundaries[0];
+		var end = event.boundaries[1];
+		if (Boundaries.equals(start, end)) {
 			if (direction) {
-				boundary = Boundaries.fromRangeEnd(range);
-				Boundaries.setRangeEnd(range, Traversing.next(boundary));
+				end = Traversing.next(end);
 			} else {
-				boundary = Boundaries.fromRangeStart(range);
-				Boundaries.setRangeStart(range, Traversing.prev(boundary));
+				start = Traversing.prev(start);
 			}
 		}
-		var boundaries = Boundaries.fromRange(range);
-		boundaries = Editing.remove(
-			boundaries[0],
-			Traversing.envelopeInvisibleCharacters(boundaries[1])
+		var boundaries = Editing.remove(
+			start,
+			Traversing.envelopeInvisibleCharacters(end)
 		);
 		event.editor.selection.formatting = joinToSet(
 			event.editor.selection.formatting,
@@ -108,18 +104,17 @@ define([
 		);
 		boundaries = removeUnrenderedContainers(boundaries);
 		Html.prop(Boundaries.commonContainer(boundaries[0], boundaries[1]));
-		return Boundaries.range(boundaries[0], boundaries[1]);
+		return boundaries;
 	}
 
 	function format(style, event) {
-		var boundaries = Boundaries.fromRange(event.range);
+		var boundaries = event.boundaries;
 		if (!Html.isBoundariesEqual(boundaries[0], boundaries[1])) {
-			boundaries = Editing.toggle(boundaries[0], boundaries[1], style);
-			return Boundaries.range(boundaries[0], boundaries[1]);
+			return Editing.toggle(boundaries[0], boundaries[1], style);
 		}
 		var override = Overrides.nodeToState[style];
 		if (!override) {
-			return event.range;
+			return event.boundaries;
 		}
 		var context = event.editor.selection;
 		var overrides = joinToSet(
@@ -128,36 +123,29 @@ define([
 			context.overrides
 		);
 		context.overrides = Overrides.toggle(overrides, override, true);
-		return event.range;
+		return event.boundaries;
 	}
 
 	function breakline(isLinebreak, event) {
 		if (!isLinebreak) {
 			event.editor.selection.formatting = joinToSet(
 				event.editor.selection.formatting,
-				Overrides.harvest(event.range.startContainer)
+				Overrides.harvest(Boundaries.container(event.boundaries[0]))
 			);
 		}
 		var breaker = (event.meta.indexOf('shift') > -1)
 		            ? 'BR'
 		            : event.editable.settings.defaultBlock;
-		var boundaries = Editing.breakline(
-			Boundaries.fromRangeEnd(event.range),
-			breaker
-		);
-		return Boundaries.range(boundaries[0], boundaries[1]);
+		return Editing.breakline(event.boundaries[1], breaker);
 	}
 
 	function insertText(event) {
-		var range = event.range;
 		var editable = event.editable;
 		var text = String.fromCharCode(event.keycode);
-		var boundary = Boundaries.fromRangeStart(range);
-
+		var boundary = event.boundaries[0];
 		if ('\t' === text) {
 			text = '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0';
 		}
-
 		if (' ' === text) {
 			var whiteSpaceStyle = Dom.getComputedStyle(
 				Dom.upWhile(Boundaries.container(boundary), Dom.isTextNode),
@@ -167,7 +155,6 @@ define([
 				text = '\xa0';
 			}
 		}
-
 		var context = event.editor.selection;
 		boundary = Overrides.consume(
 			boundary,
@@ -175,35 +162,32 @@ define([
 		);
 		context.overrides = [];
 		context.formatting = [];
-
-		Boundaries.setRange(range, boundary, boundary);
-
+		var range = Boundaries.range(boundary, boundary);
 		var insertPath = Undo.pathFromBoundary(editable.elem, boundary);
 		var insertContent = [editable.elem.ownerDocument.createTextNode(text)];
 		var change = Undo.makeInsertChange(insertPath, insertContent);
-
 		Undo.capture(editable.undoContext, {noObserve: true}, function () {
 			Mutation.insertTextAtBoundary(text, boundary, true, [range]);
 			return {changes: [change]};
 		});
-
-		return range;
+		return Boundaries.fromRange(range);
 	}
 
 	function toggleUndo(op, event) {
-		op(event.editable.undoContext, event.range, [event.range]);
-		return event.range;
+		var range = Boundaries.range(event.boundaries[0], event.boundaries[1]);
+		op(event.editable.undoContext, range, [range]);
+		return Boundaries.fromRange(range);
 	}
 
 	function selectEditable(event) {
-		var editable = Dom.editingHost(event.range.commonAncestorContainer);
-		if (editable) {
-			event.range = Boundaries.range(
-				Boundaries.create(editable, 0),
-				Boundaries.fromEndOfNode(editable)
-			);
-		}
-		return event.range;
+		var editable = Dom.editingHost(Boundaries.commonContainer(
+			event.boundaries[0],
+			event.boundaries[1]
+		));
+		return !editable ? event.boundaries : [
+			Boundaries.create(editable, 0),
+			Boundaries.fromEndOfNode(editable)
+		];
 	}
 
 	/**
@@ -238,14 +222,14 @@ define([
 	};
 
 	var breakBlock = {
-		deleteRange    : true,
+		removeContent  : true,
 		preventDefault : true,
 		undo           : 'enter',
 		mutate         : Fn.partial(breakline, false)
 	};
 
 	var breakLine = {
-		deleteRange    : true,
+		removeContent  : true,
 		preventDefault : true,
 		undo           : 'enter',
 		mutate         : Fn.partial(breakline, true)
@@ -270,7 +254,7 @@ define([
 	};
 
 	var inputText = {
-		deleteRange    : true,
+		removeContent  : true,
 		preventDefault : true,
 		undo           : 'typing',
 		mutate         : insertText
@@ -342,7 +326,7 @@ define([
 		if (event.editable) {
 			Metaview.toggle(event.editable.elem);
 		}
-		return event.range;
+		return event.boundaries;
 	}};
 	// alt+1
 	handlers['keydown']['ctrl+49'] = {mutate : function toggleUndo(event) {
@@ -352,7 +336,7 @@ define([
 				'tagname': true
 			});
 		}
-		return event.range;
+		return event.boundaries;
 	}};
 	// alt+2
 	handlers['keydown']['ctrl+50'] = {mutate : function toggleUndo(event) {
@@ -363,7 +347,7 @@ define([
 				'padding': true
 			});
 		}
-		return event.range;
+		return event.boundaries;
 	}};
 
 	function handler(event) {
@@ -375,7 +359,7 @@ define([
 
 	/**
 	 * Updates:
-	 * 		range
+	 * 		boundaries
 	 * 		editor.selection
 	 * 		nativeEvent
 	 */
@@ -395,20 +379,20 @@ define([
 			event.editor.selection.formatting = [];
 		}
 		if (event.boundaries && handling.mutate) {
-			event.range = Boundaries.range(event.boundaries[0], event.boundaries[1]);
 			if (handling.undo) {
 				undoable(handling.undo, event, function () {
-					if (handling.deleteRange && !event.range.collapsed) {
+					if (handling.removeContent
+						&& !Boundaries.equals(event.boundaries[0], event.boundaries[1])) {
 						remove(false, event);
 					}
-					event.boundaries = Boundaries.fromRange(handling.mutate(event));
+					event.boundaries = handling.mutate(event);
 					Html.prop(Boundaries.commonContainer(
 						event.boundaries[0],
 						event.boundaries[1]
 					));
 				});
 			} else {
-				event.boundaries = Boundaries.fromRange(handling.mutate(event));
+				event.boundaries = handling.mutate(event);
 			}
 		}
 		return event;
