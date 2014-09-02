@@ -15,7 +15,6 @@ define([
 	'dom',
 	'maps',
 	'events',
-	'ranges',
 	'editing',
 	'boundaries',
 	'selections'
@@ -23,7 +22,6 @@ define([
 	Dom,
 	Maps,
 	Events,
-	Ranges,
 	Editing,
 	Boundaries,
 	Selections
@@ -71,10 +69,10 @@ define([
 	 *	`element`
 	 *		The element on which dragging was initiated on. If the drag and drop
 	 *		operation is a moving operation, this element will be relocated into
-	 *		the range boundary at the point at which the drop event is fired.
-	 *		If the drag and drop operation is a copying operation, then this
-	 *		attribute should a reference to a deep clone of the element on which
-	 *		dragging was initiated.
+	 *		the boundary at the point at which the drop event is fired. If the
+	 *		drag and drop operation is a copying operation, then this attribute
+	 *		should a reference to a deep clone of the element on which dragging
+	 *		was initiated.
 	 *
 	 *	`data`
 	 *		A tuple describing the data that will be set to the drag data store.
@@ -116,44 +114,42 @@ define([
 	}
 
 	/**
-	 * Moves the given node into the given range.
+	 * Moves the given node into the given boundary positions.
 	 *
 	 * @private
-	 * @param  {Range} range
-	 * @param  {Node}  node
-	 * @return {Range}
+	 * @param  {Boundary} start
+	 * @param  {Boundary} end
+	 * @param  {Node}     node
+	 * @return {Array.<Boundary>}
 	 */
-	function moveNode(range, node) {
+	function moveNode(start, end, node) {
 		var prev = node.previousSibling;
-		Editing.insert(range, node);
+		var boundary = Editing.insert(start, end, node);
 		if (prev && prev.nextSibling) {
 			Dom.merge(prev, prev.nextSibling);
 		}
-		var boundaries = Boundaries.fromRange(range);
-		return Boundaries.range(boundaries[1], boundaries[1]);
+		return [boundary, boundary];
 	}
 
 	function handleDragStart(alohaEvent) {
-		var context = alohaEvent.editor.dndContext;
-
 		// Because this is required in Firefox for dragging to start on elements
 		// other than IMG elements or anchor elements with href values
 		alohaEvent.nativeEvent.dataTransfer.setData(
-			context.data[0],
-			context.data[1]
+			alohaEvent.editor.dnd.data[0],
+			alohaEvent.editor.dnd.data[1]
 		);
 	}
 
-	function calculateRange(x, y, doc) {
+	function calculateBoundaries(x, y, doc) {
 		var carets = Selections.hideCarets(doc);
-		var range = Ranges.fromPosition(x, y, doc);
+		var boundaries = Boundaries.fromPosition(x, y, doc);
 		Selections.unhideCarets(carets);
-		return range;
+		return boundaries;
 	}
 
 	function handleDragOver(alohaEvent) {
 		var event = alohaEvent.nativeEvent;
-		alohaEvent.range = calculateRange(
+		alohaEvent.boundaries = calculateBoundaries(
 			event.clientX + DRAGGING_CARET_OFFSET,
 			event.clientY + DRAGGING_CARET_OFFSET,
 			event.target.ownerDocument
@@ -164,17 +160,18 @@ define([
 
 	function handleDrop(alohaEvent) {
 		var event = alohaEvent.nativeEvent;
-		alohaEvent.range = calculateRange(
-			// +8 because, for some reason the range is always calculated a
-			// character behind of where it should be...
+		alohaEvent.boundaries = calculateBoundaries(
+			// +8 because, for some reason the boundaries are always calculated
+			// a character behind of where it should be...
 			event.clientX + DRAGGING_CARET_OFFSET + 8,
 			event.clientY + DRAGGING_CARET_OFFSET,
 			event.target.ownerDocument
 		);
-		if (alohaEvent.range) {
-			alohaEvent.range = moveNode(
-				alohaEvent.range,
-				alohaEvent.editor.dndContext.element
+		if (alohaEvent.boundaries) {
+			alohaEvent.boundaries = moveNode(
+				alohaEvent.boundaries[0],
+				alohaEvent.boundaries[1],
+				alohaEvent.editor.dnd.element
 			);
 		}
 		if (event.stopPropagation) {
@@ -197,14 +194,14 @@ define([
 	 * 		editor
 	 * 		target
 	 * Updates:
-	 * 		editor.dndContext
+	 * 		editor.dnd
 	 * 		nativeEvent
 	 *
 	 * @param  {AlohaEvent} event
 	 * @return {AlohaEvent}
 	 */
 	function handle(event) {
-		if (event.editor.dndContext && handlers[event.type]) {
+		if (event.editor.dnd && handlers[event.type]) {
 			handlers[event.type](event);
 		}
 		return event;

@@ -38,14 +38,17 @@ define([
 	function editor(nativeEvent, custom) {
 		var event = custom || {nativeEvent : nativeEvent};
 		event.editor = editor;
+		event.lastEditableBoundaries = editor.lastEditableBoundaries;
 		event.type = event.type || (nativeEvent && nativeEvent.type) || 'unknown';
-		Selections.handleSelection(Fn.comp.apply(editor.stack, editor.stack)(event));
+		event = Fn.comp.apply(editor.stack, editor.stack)(event);
+		editor.lastEditableBoundaries = event.boundaries;
+		Selections.handleSelection(event);
 	}
 
 	editor.BLOCK_CLASS = 'aloha-block';
 	editor.CARET_CLASS = 'aloha-caret';
-	editor.selectionContext = Selections.Context(doc);
-	editor.dndContext = null;
+	editor.selection = Selections.Context(doc);
+	editor.dnd = null;
 	editor.editables = {};
 	editor.stack = [
 		Selections.handle,
@@ -55,8 +58,8 @@ define([
 		DragDrop.handle,
 		Paste.handle,
 		Editables.handle,
-		Mouse.handle,
-		Keys.handle
+		Keys.handle,
+		Mouse.handle
 	];
 
 	Events.setup(doc, editor);

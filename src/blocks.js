@@ -90,34 +90,32 @@ define([
 	function handleMouseDown(event) {
 		var block = event.nativeEvent.target;
 		if (isBlockEvent(event) && DragDrop.isDraggable(block)) {
-			event.editor.dndContext = Events.hasKeyModifier(event, 'ctrl')
-			                        ? copyContext(block)
-			                        : moveContext(block);
+			event.editor.dnd = Events.hasKeyModifier(event, 'ctrl')
+			                 ? copyContext(block)
+			                 : moveContext(block);
 		}
 	}
 
 	function handleDragStart(event) {
 		if (isBlockEvent(event)) {
-			var context = event.editor.dndContext;
 			draggingStyles.forEach(function (style) {
-				Dom.setStyle(context.target, style[0], style[1]);
-				Dom.setStyle(context.element, style[0], style[1]);
+				Dom.setStyle(event.editor.dnd.target, style[0], style[1]);
+				Dom.setStyle(event.editor.dnd.element, style[0], style[1]);
 			});
 		}
 	}
 
 	function handleDragEnd(event) {
 		if (isBlockEvent(event)) {
-			var context = event.editor.dndContext;
 			draggingStyles.forEach(function (style) {
-				Dom.setStyle(context.target, style[0], '');
-				Dom.setStyle(context.element, style[0], '');
+				Dom.setStyle(event.editor.dnd.target, style[0], '');
+				Dom.setStyle(event.editor.dnd.element, style[0], '');
 			});
 		}
 	}
 
 	function handleDragOver(event) {
-		var host = Dom.editingHost(event.editor.dndContext.element.parentNode);
+		var host = Dom.editingHost(event.editor.dnd.element.parentNode);
 		event.editable = host && Editables.fromElem(event.editor, host);
 	}
 

@@ -30,9 +30,9 @@ define(['boundaries'], function (Boundaries) {
 	 * 		editor
 	 * Provides:
 	 *		target
-	 *		range
+	 *		boundaries
 	 * Updates:
-	 * 		editor.selectionContext
+	 * 		editor.selection
 	 *
 	 * @param  {AlohaEvent} event
 	 * @return {AlohaEVent}
@@ -42,26 +42,22 @@ define(['boundaries'], function (Boundaries) {
 		if (!nativeEvent) {
 			return event;
 		}
-		event.target = nativeEvent.target || nativeEvent.srcElement;
+		event.target = nativeEvent.target;
 		if ('mousedown' === event.type) {
-			event.editor.selectionContext.formatting = [];
-			event.editor.selectionContext.overrides = [];
+			event.editor.selection.formatting = [];
+			event.editor.selection.overrides = [];
 		}
-		if (event.range || !event.target.ownerDocument) {
+		if (event.boundaries || !event.target.ownerDocument) {
 			return event;
 		}
-		var boundaries;
 		if ('mousedown' === event.type || 'click' === event.type) {
-			boundaries = Boundaries.fromPosition(
+			event.boundaries = Boundaries.fromPosition(
 				nativeEvent.clientX,
 				nativeEvent.clientY,
 				event.target.ownerDocument
 			);
 		} else if ('mousemove' !== event.type) {
-			boundaries = Boundaries.get(event.target.ownerDocument);
-		}
-		if (boundaries) {
-			event.range = Boundaries.range(boundaries[0], boundaries[1]);
+			event.boundaries = Boundaries.get(event.target.ownerDocument);
 		}
 		return event;
 	}

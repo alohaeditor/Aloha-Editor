@@ -102,8 +102,8 @@ define([
 			boundaries[0],
 			Traversing.envelopeInvisibleCharacters(boundaries[1])
 		);
-		event.editor.selectionContext.formatting = joinToSet(
-			event.editor.selectionContext.formatting,
+		event.editor.selection.formatting = joinToSet(
+			event.editor.selection.formatting,
 			Overrides.harvest(Boundaries.container(boundaries[0]))
 		);
 		boundaries = removeUnrenderedContainers(boundaries);
@@ -121,7 +121,7 @@ define([
 		if (!override) {
 			return event.range;
 		}
-		var context = event.editor.selectionContext;
+		var context = event.editor.selection;
 		var overrides = joinToSet(
 			context.formatting,
 			Overrides.harvest(Boundaries.container(boundaries[0])),
@@ -133,8 +133,8 @@ define([
 
 	function breakline(isLinebreak, event) {
 		if (!isLinebreak) {
-			event.editor.selectionContext.formatting = joinToSet(
-				event.editor.selectionContext.formatting,
+			event.editor.selection.formatting = joinToSet(
+				event.editor.selection.formatting,
 				Overrides.harvest(event.range.startContainer)
 			);
 		}
@@ -168,7 +168,7 @@ define([
 			}
 		}
 
-		var context = event.editor.selectionContext;
+		var context = event.editor.selection;
 		boundary = Overrides.consume(
 			boundary,
 			joinToSet(context.formatting, context.overrides)
@@ -376,7 +376,7 @@ define([
 	/**
 	 * Updates:
 	 * 		range
-	 * 		editor.selectionContext
+	 * 		editor.selection
 	 * 		nativeEvent
 	 */
 	function handle(event) {
@@ -387,25 +387,28 @@ define([
 		if (!handling) {
 			return event;
 		}
-		var range = event.range;
 		if (handling.preventDefault) {
 			event.nativeEvent.preventDefault();
 		}
 		if (handling.clearOverrides) {
-			event.editor.selectionContext.overrides = [];
-			event.editor.selectionContext.formatting = [];
+			event.editor.selection.overrides = [];
+			event.editor.selection.formatting = [];
 		}
-		if (range && handling.mutate) {
+		if (event.boundaries && handling.mutate) {
+			event.range = Boundaries.range(event.boundaries[0], event.boundaries[1]);
 			if (handling.undo) {
 				undoable(handling.undo, event, function () {
-					if (handling.deleteRange && !range.collapsed) {
+					if (handling.deleteRange && !event.range.collapsed) {
 						remove(false, event);
 					}
-					event.range = handling.mutate(event);
-					Html.prop(range.commonAncestorContainer);
+					event.boundaries = Boundaries.fromRange(handling.mutate(event));
+					Html.prop(Boundaries.commonContainer(
+						event.boundaries[0],
+						event.boundaries[1]
+					));
 				});
 			} else {
-				event.range = handling.mutate(event);
+				event.boundaries = Boundaries.fromRange(handling.mutate(event));
 			}
 		}
 		return event;

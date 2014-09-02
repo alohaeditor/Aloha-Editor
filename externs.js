@@ -135,7 +135,7 @@ var DelayedMap = {
 };
 
 var editable = {
-	undoContext : null,
+	undo        : null,
 	overrides   : [],
 };
 
@@ -174,12 +174,12 @@ var dndContext = {
 };
 
 var editor = {
-	stack            : [],
-	editables        : {},
-	BLOCK_CLASS      : '',
-	CARET_CLASS      : '',
-	selectionContext : null,
-	dndContext       : null
+	stack       : [],
+	editables   : {},
+	BLOCK_CLASS : '',
+	CARET_CLASS : '',
+	selection   : null,
+	dnd         : null
 };
 
 var action = {

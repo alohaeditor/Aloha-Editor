@@ -120,16 +120,11 @@ define([
 	 */
 	function handle(event) {
 		if ('aloha' === event.type) {
-			event.editable = create(
-				event.editor,
-				event.element,
-				event.options
-			);
-		} else if (event.range && Dom.isEditableNode(event.range.commonAncestorContainer)) {
-			event.editable = fromBoundary(
-				event.editor,
-				Boundaries.fromRangeStart(event.range)
-			);
+			event.editable = create(event.editor, event.element, event.options);
+		} else if (event.boundaries) {
+			if (Dom.isEditableNode(Boundaries.container(event.boundaries[0]))) {
+				event.editable = fromBoundary(event.editor, event.boundaries[0]);
+			}
 		}
 		return event;
 	}

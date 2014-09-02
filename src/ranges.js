@@ -83,11 +83,11 @@ define(['dom'], function (Dom) {
 	}
 
 	/**
-	 * Creates a range from the horizontal and vertical offset pixel positions
-	 * relative to upper-left corner of the document body. Returns null if no
-	 * suitable range can be determined.
+	 * Derives a range from the horizontal and vertical offset pixel positions
+	 * relative to upper-left corner of the document body.
 	 *
-	 * Will ensure that the range is contained in a content editable node.
+	 * Returns null if no suitable range can be determined from within an
+	 * editable.
 	 *
 	 * @param  {number}    x
 	 * @param  {number}    y

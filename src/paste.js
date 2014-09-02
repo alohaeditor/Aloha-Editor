@@ -210,18 +210,13 @@ define([
 	 * @return {AlohaEvent}
 	 */
 	function handle(event) {
-		if (!event.editable || !isPasteEvent(event)) {
+		if (!event.editable || !event.boundaries || !isPasteEvent(event)) {
 			return event;
 		}
 		Events.suppress(event.nativeEvent);
-		var doc = event.target.ownerDocument;
-		var boundaries = Boundaries.get(doc);
-		if (!boundaries) {
-			return event;
-		}
 		var content = extractContent(
-			event.nativeEvent,
-			doc,
+			event.target,
+			event.target.ownerDocument,
 			event.editable.settings
 		);
 		if (!content) {
@@ -230,8 +225,8 @@ define([
 		Undo.capture(event.editable['undoContext'], {
 			meta: {type: 'paste'}
 		}, function () {
-			boundaries = insert(boundaries[0], boundaries[1], content);
-			event.range = Boundaries.range(boundaries[0], boundaries[1]);
+			event.boundaries = insert(event.boundaries[0], event.boundaries[1], content);
+			event.range = Boundaries.range(event.boundaries[0], event.boundaries[1]);
 		});
 		return event;
 	}

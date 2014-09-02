@@ -1698,9 +1698,8 @@ define([
 		return [boundary, boundary];
 	}
 
-	function insert(liveRange, insertion) {
-		var boundaries = Boundaries.fromRange(StableRange(liveRange));
-		var range = Boundaries.range(boundaries[1], boundaries[1]);
+	function insert(start, end, insertion) {
+		var range = Boundaries.range(start, end);
 		split(range, {
 			below: function (node) {
 				return Content.allowsNesting(node.nodeName, insertion.nodeName);
@@ -1710,11 +1709,11 @@ define([
 			insertion,
 			Boundaries.fromRangeStart(range)
 		);
-		Boundaries.setRange(liveRange, boundary, Boundaries.create(
+		Boundaries.setRange(range, boundary, Boundaries.create(
 			Boundaries.container(boundary),
 			Boundaries.offset(boundary) + 1
 		));
-		return boundary;
+		return Boundaries.fromRangeStart(range);
 	}
 
 	function className(start, end, name, value, boundaries) {

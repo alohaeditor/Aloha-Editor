@@ -2,10 +2,8 @@ require([
 	'../../src/aloha',
 	'../../src/dom',
 	'../../src/arrays',
-	'../../src/ranges',
-	'../../src/boromir',
 	'../../src/boundaries',
-	'../../src/formatting',
+	'../../src/editing',
 	'../../src/blocks',
 	'../../src/dragdrop',
 	'../../src/editables',
@@ -18,10 +16,8 @@ require([
 	aloha,
 	Dom,
 	Arrays,
-	Ranges,
-	Boromir,
 	Boundaries,
-	Formatting,
+	Editing,
 	Blocks,
 	DragDrop,
 	Editables,
@@ -62,29 +58,28 @@ require([
 	 */
 	function execute(action, boundaries, editor) {
 		if (action.format) {
-			boundaries = Formatting.format(
-				action.format,
+			boundaries = Editing.format(
 				boundaries[0],
-				boundaries[1]
+				boundaries[1],
+				action.format
 			);
 		}
 		if (action.style) {
-			boundaries = Formatting.style(
-				action.styleName,
-				action.styleValue,
+			boundaries = Editing.style(
 				boundaries[0],
-				boundaries[1]
+				boundaries[1],
+				action.styleName,
+				action.styleValue
 			);
 		}
 		if (action.classes) {
-			boundaries = Formatting.classes(
-				action.classNames,
+			boundaries = Editing.className(
 				boundaries[0],
-				boundaries[1]
+				boundaries[1],
+				action.className
 			);
 		}
-		Boundaries.select(boundaries[0], boundaries[1]);
-		aloha.selections.show(editor.selectionContext.caret, boundaries[1]);
+		aloha.selections.select(editor.selection, boundaries[0], boundaries[1], 'end');
 		return boundaries;
 	}
 
@@ -205,36 +200,35 @@ require([
 	/**
 	 * Handles UI updates invoked by event
 	 *
-	 * @param {!AlohaEvent} event
+	 * @param  {!AlohaEvent} event
 	 * @return {AlohaEvent}
 	 */
 	function handle(event) {
-		if (!event.range || (event.type !== 'keyup' && event.type !== 'click')) {
+		var boundaries = event.lastEditableBoundaries;
+		if (!boundaries || !('keyup' === event.type || 'click' === event.type)) {
 			return event;
 		}
-		var target = event.nativeEvent.target || event.nativeEvent.srcElement;
-		if (Dom.hasClass(target, 'aloha-ephemera')) {
+		if (Dom.hasClass(event.nativeEvent.target, 'aloha-ephemera')) {
 			return event;
 		}
-		var boundaries = Boundaries.fromRange(event.range);
-		var action = parseAction(target);
+		var action = parseAction(event.nativeEvent.target);
 		if (action) {
 			boundaries = execute(action, boundaries, event.editor);
 		}
 		updateUi(boundaries);
-		event.range = Ranges.fromBoundaries(boundaries[0], boundaries[1]);
+		event.range = Boundaries.range(boundaries[0], boundaries[1]);
 		return event;
 	}
 
 	aloha.editor.stack = [
-		handle,
 		Selections.handle,
+		handle,
 		Typing.handle,
 		Blocks.handle,
 		DragDrop.handle,
 		Paste.handle,
 		Editables.handle,
-		Mouse.handle,
-		Keys.handle
+		Keys.handle,
+		Mouse.handle
 	];
 });

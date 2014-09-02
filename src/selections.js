@@ -134,7 +134,7 @@ define([
 	 */
 	function up(box, stride, doc) {
 		var boundaries = Boundaries.fromPosition(box.left, box.top - stride, doc);
-		return Boundaries.range(boundaries[0], boundaries[1]);
+		return boundaries && Boundaries.range(boundaries[0], boundaries[1]);
 	}
 
 	/**
@@ -147,7 +147,7 @@ define([
 	 */
 	function down(box, stride, doc) {
 		var boundaries = Boundaries.fromPosition(box.left, box.top + box.height + stride, doc);
-		return Boundaries.range(boundaries[0], boundaries[1]);
+		return boundaries && Boundaries.range(boundaries[0], boundaries[1]);
 	}
 
 	/**
@@ -474,7 +474,7 @@ define([
 
 	function paste(event, range, focus) {
 		return {
-			range: event.range,
+			range: Boundaries.range(event.boundaries[0], event.boundaries[1]),
 			focus: 'end'
 		};
 	}
@@ -775,27 +775,18 @@ define([
 		if (!event.target.ownerDocument) {
 			return null;
 		}
-		var range;
+		var boundaries;
 		// Because drag positions are calculated with an offset
 		if (Mouse.EVENTS[event.type] && 'dragover' !== event.type) {
-			var boundaries = Boundaries.fromPosition(
+			boundaries = Boundaries.fromPosition(
 				event.nativeEvent.clientX,
 				event.nativeEvent.clientY,
 				event.target.ownerDocument
 			);
-			range = Boundaries.range(boundaries[0], boundaries[1]);
 		}
-		if (range) {
-			return range;
-		}
-		if (event.range) {
-			return event.range;
-		}
-		var boundaries = Boundaries.get(event.target.ownerDocument);
-		if (boundaries) {
-			return Boundaries.range(boundaries[0], boundaries[1]);
-		}
-		return null;
+		return boundaries
+		    || event.boundaries
+		    || Boundaries.get(event.target.ownerDocument);
 	}
 
 	/**
@@ -813,23 +804,23 @@ define([
 			return event;
 		}
 
-		var old = event.editor.selectionContext;
+		var old = event.editor.selection;
 
 		// Because otherwise, if, if we are in the process of a click, and the
-		// user's cursor is over the caret element, Boundaries.fromPosition() will
-		// compute the range to be inside the absolutely positioned caret
-		// element
+		// user's cursor is over the caret element, Boundaries.fromPosition()
+		// will compute the boundaries to be inside the absolutely positioned
+		// caret element
 		if ('mousedown' === event.type) {
 			Dom.setStyle(old.caret, 'display', 'none');
 
 		// Because we will never update the caret position on mousemove, we
 		// avoid unncessary computation
 		} else if ('mousemove' === event.type) {
-			event.editor.selectionContext = newContext(event, old);
+			event.editor.selection = newContext(event, old);
 
 			// Because we want to move the caret out of the way when the user
 			// starts creating an expanded selection by dragging
-			if (!old.dragging && event.editor.selectionContext.dragging) {
+			if (!old.dragging && event.editor.selection.dragging) {
 				Dom.setStyle(old.caret, 'display', 'none');
 			}
 
@@ -844,11 +835,11 @@ define([
 		}
 
 		if (!event.editable) {
-			event.editor.selectionContext = newContext(event, old, {
-				range: position
-			});
+			event.editor.selection = newContext(event, old, {boundaries: position});
 			return event;
 		}
+
+		position = Boundaries.range(position[0], position[1]);
 
 		var type = normalizeEventType(
 			event,
@@ -869,7 +860,7 @@ define([
 			old.dragging || Events.hasKeyModifier(event, 'shift')
 		));
 
-		event.editor.selectionContext = context;
+		event.editor.selection = context;
 
 		if (!Dom.isEditableNode(context.range.commonAncestorContainer)) {
 			return event;
@@ -933,16 +924,16 @@ define([
 	 * @param {AlohaEvent} event
 	 */
 	function handleSelection(event) {
-		var context = event.editor.selectionContext;
+		var context = event.editor.selection;
 		if (!context.range || 'mousemove' === event.type) {
 			return;
 		}
 		var boundaries = Boundaries.fromRange(context.range);
 		var boundary = select(
+			event.editor.selection,
 			boundaries[0],
 			boundaries[1],
-			event.editor,
-			event.editor.selectionContext.focus
+			event.editor.selection.focus
 		);
 		// Because we don't want the screen to jump when the editor hits "shift"
 		if (isCaretMovingEvent(event)) {
@@ -955,14 +946,13 @@ define([
 	 *
 	 * Returns the focus boundary so that one can do focus(select(...))
 	 *
+	 * @param  {Context}  context
 	 * @param  {Boundary} start
 	 * @param  {Boundary} end
-	 * @param  {Editor}   editor
 	 * @param  {string=}  focus optional. "start" or "end". Defaults to "end"
 	 * @return {Boundary}
 	 */
-	function select(start, end, editor, focus) {
-		var context = editor.selectionContext;
+	function select(context, start, end, focus) {
 		var boundary = 'start' === focus ? start : end;
 		var node = Boundaries.container(boundary);
 		if (!Dom.isEditableNode(node)) {

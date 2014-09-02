@@ -131,7 +131,7 @@ define([
 	}
 
 	function handle(event) {
-		if ('keydown' !== event.type || !event.editable || !event.range) {
+		if ('keydown' !== event.type || !event.editable || !event.boundaries) {
 			return event;
 		}
 		if (
@@ -141,7 +141,7 @@ define([
 		) {
 			return event;
 		}
-		var boundary = Boundaries.fromRangeStart(event.range);
+		var boundary = event.boundaries[0];
 		var prev = Traversing.prev(boundary, 'visual');
 		var token = prev && nextChar(prev);
 		var level = dictionary;
@@ -158,7 +158,7 @@ define([
 		}
 		if (handler) {
 			boundary = handler(start, boundary);
-			event.range = Boundaries.range(boundary, boundary);
+			event.boundaries = [boundary, boundary];
 		}
 		return event;
 	}
