@@ -383,7 +383,7 @@ define([
 				undoable(handling.undo, event, function () {
 					if (handling.removeContent
 						&& !Boundaries.equals(event.boundaries[0], event.boundaries[1])) {
-						remove(false, event);
+						event.boundaries = remove(false, event);
 					}
 					event.boundaries = handling.mutate(event);
 					Html.prop(Boundaries.commonContainer(

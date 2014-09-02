@@ -924,9 +924,7 @@ define([
 	 * @param {AlohaEvent} event
 	 */
 	function update(event) {
-		var context = event.editor.selection;
-		console.warn(context.range);
-		if (!event.boundaries || 'mousemove' === event.type) {
+		if (!event.boundaries || 'mousemove' === event.type || 'click' === event.type) {
 			return;
 		}
 		var boundary = select(
