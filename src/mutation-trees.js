@@ -9,8 +9,8 @@ define([
 	'dom',
 	'paths',
 	'arrays',
-	'Record',
-	'Boromir',
+	'record',
+	'boromir',
 	'boundaries',
 	'functions'
 ], function (
