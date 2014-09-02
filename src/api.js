@@ -357,8 +357,9 @@ define([
 	exports['keys']['CODES']      = Keys.CODES;
 
 	exports['links'] = {};
-	exports['links']['create'] = Links.create;
-	exports['links']['remove'] = Links.remove;
+	exports['links']['create']      = Links.create;
+	exports['links']['remove']      = Links.remove;
+	exports['links']['handleLinks'] = Links.handleLinks;
 
 	exports['lists'] = {};
 	exports['lists']['format'] = Lists.format;

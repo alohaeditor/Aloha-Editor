@@ -5,15 +5,6 @@
 	var Arrays = aloha.arrays;
 	var Boundaries = aloha.boundaries;
 	var Editing = aloha.editing;
-	var Blocks = aloha.blocks;
-	var DragDrop = aloha.dragdrop;
-	var Editables = aloha.editables;
-	var Keys = aloha.keys;
-	var Mouse = aloha.mouse;
-	var Paste = aloha.paste;
-	var Selections = aloha.selections;
-	var Typing = aloha.typing;
-
 	var CLASS_PREFIX = 'aloha-action-';
 
 	/**
@@ -209,4 +200,4 @@
 	}
 
 	aloha.editor.stack.unshift(handleBootstrapUi);
-}(aloha));
+}(window.aloha));

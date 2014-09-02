@@ -2,6 +2,7 @@
 define([
 	'api',
 	'dom',
+	'links',
 	'blocks',
 	'dragdrop',
 	'editables',
@@ -17,6 +18,7 @@ define([
 ], function (
 	Api,
 	Dom,
+	Links,
 	Blocks,
 	DragDrop,
 	Editables,
@@ -48,10 +50,11 @@ define([
 	editor.BLOCK_CLASS = 'aloha-block';
 	editor.CARET_CLASS = 'aloha-caret';
 	editor.selection = Selections.Context(doc);
-	editor.dnd = null;
+	editor.dnd = DragDrop.Context();
 	editor.editables = {};
 	editor.stack = [
 		Selections.handleSelections,
+		Links.handleLinks,
 		Typing.handleTyping,
 		AutoFormat.handleAutoFormat,
 		Blocks.handleBlocks,

@@ -366,10 +366,15 @@ define([
 	 * 		nativeEvent
 	 */
 	function handleTyping(event) {
+		if (!event.boundaries) {
+			return event;
+		}
+		var start = event.boundaries[0];
+		var end = event.boundaries[1];
 		if (!event.editable) {
-			if ('keydown' === event.type && event.boundaries) {
-				if (Dom.isEditableNode(Boundaries.container(event.boundaries[0]))
-				 || Dom.isEditableNode(Boundaries.container(event.boundaries[1]))) {
+			if ('keydown' === event.type) {
+				if (Dom.isEditableNode(Boundaries.container(start))
+				 || Dom.isEditableNode(Boundaries.container(end))) {
 					Events.preventDefault(event.nativeEvent);
 				}
 			}
@@ -386,11 +391,10 @@ define([
 			event.editor.selection.overrides = [];
 			event.editor.selection.formatting = [];
 		}
-		if (event.boundaries && handling.mutate) {
+		if (handling.mutate) {
 			if (handling.undo) {
 				undoable(handling.undo, event, function () {
-					if (handling.removeContent
-						&& !Boundaries.equals(event.boundaries[0], event.boundaries[1])) {
+					if (handling.removeContent && !Boundaries.equals(start, end)) {
 						event.boundaries = remove(false, event);
 					}
 					event.boundaries = handling.mutate(event);

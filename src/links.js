@@ -8,6 +8,7 @@
 define([
 	'dom',
 	'html',
+	'events',
 	'ranges',
 	'arrays',
 	'mutation',
@@ -17,6 +18,7 @@ define([
 ], function (
 	Dom,
 	Html,
+	Events,
 	Ranges,
 	Arrays,
 	Mutation,
@@ -221,8 +223,25 @@ define([
 		}
 	}
 
+	function notAnchor(node) {
+		return 'A' !== node.nodeName;
+	}
+
+	function handleLinks(event) {
+		if (!event.boundaries || 'click' !== event.type) {
+			return event;
+		}
+		var cac = Boundaries.commonContainer(event.boundaries[0], event.boundaries[1]);
+		var link = Dom.upWhile(cac, notAnchor);
+		if (link) {
+			Events.preventDefault(event.nativeEvent);
+		}
+		return event;
+	}
+
 	return {
-		create: create,
-		remove: remove
+		handleLinks : handleLinks,
+		create      : create,
+		remove      : remove
 	};
 });
