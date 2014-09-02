@@ -208,15 +208,8 @@
 		return event;
 	}
 
-	aloha.editor.stack = [
-		Selections.handleSelections,
-		handleBootstrapUi,
-		Typing.handleTyping,
-		Blocks.handleBlocks,
-		DragDrop.handleDragDrop,
-		Paste.handlePaste,
-		Editables.handleEditables,
-		Keys.handleKeys,
-		Mouse.handleMouse
-	];
+	aloha.editor.stack = aloha.editor.stack.reduce(function (previousValue, currentValue) {
+		var arr = previousValue.concat(currentValue);
+		return (currentValue.name === 'handleSelections') ? arr.concat(handleBootstrapUi) : arr;
+	}, []);
 }(aloha));
