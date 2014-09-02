@@ -208,8 +208,5 @@
 		return event;
 	}
 
-	aloha.editor.stack = aloha.editor.stack.reduce(function (previousValue, currentValue) {
-		var arr = previousValue.concat(currentValue);
-		return (currentValue.name === 'handleSelections') ? arr.concat(handleBootstrapUi) : arr;
-	}, []);
+	aloha.editor.stack.unshift(handleBootstrapUi);
 }(aloha));
