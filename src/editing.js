@@ -1732,19 +1732,6 @@ define([
 		throw 'Not implemented';
 	}
 
-/*
-[boundaries, added]   = Editing.format(start, end, node, boundaries)
-[boundaries, removed] = Editing.unformat(start, end, node, boundaries)
-[boundaries, touched] = Editing.style(start, end, name, value, boundaries)
-[boundaries, touched] = Editing.className(start, end, name, value, boundaries)
-[boundaries, touched] = Editing.attribute(start, end, name, value, boundaries)
-[boundaries, removed] = Editing.cut(start, end, boundaries)
-[boundaries,  copied] = Editing.copy(start, end, boundaries)
-`breaker` can be a line-breaking element like “div” or “p” or a “br”
-[boundaries, touched] = Editing.breakline(boundary, breaker, boundaries)
-[boundaries, added]   = Editing.insert(start, end, content, boundaries)
-*/
-
 	/**
 	 * Applies block formatting to contents enclosed by start and end boundary.
 	 * Will return updated array of boundaries after the operation.

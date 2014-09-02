@@ -51,12 +51,11 @@ require([
 	 * }
 	 *
 	 * @private
-	 * @param  {!Object.<string,?>} action
-	 * @param  {!Array.<Boundary>}  boundaries
-	 * @param  {!Editor}            editor
+	 * @param  {!Object.<string, ?>} action
+	 * @param  {!Array.<Boundary>}   boundaries
 	 * @return {Array.<Boundaries>}
 	 */
-	function execute(action, boundaries, editor) {
+	function execute(action, boundaries) {
 		if (action.format) {
 			boundaries = Editing.format(
 				boundaries[0],
@@ -79,7 +78,6 @@ require([
 				action.className
 			);
 		}
-		aloha.selections.select(editor.selection, boundaries[0], boundaries[1], 'end');
 		return boundaries;
 	}
 
@@ -119,7 +117,7 @@ require([
 	 * [text, h1, text, p] // array contains DOM nodes
 	 *
 	 * will return:
-	 * 
+	 *
 	 * ['P', '#text', 'H1']
 	 *
 	 * Duplicate entries will be removed, as displayed in the example
@@ -151,12 +149,13 @@ require([
 	 * @param {!Array.<Boundary>} boundries
 	 */
 	function updateUi(boundaries) {
-		var startContainer = Boundaries.container(boundaries[0]);
-		var document = startContainer.ownerDocument;
-		var formatNodes = uniqueNodeNames(Dom.childAndParentsUntilIncl(startContainer, 
+		var doc = Boundaries.document(boundaries[0]);
+		var formatNodes = uniqueNodeNames(Dom.childAndParentsUntilIncl(
+			Boundaries.container(boundaries[0]),
 			function (node) {
 				return node.parentNode && Dom.isEditingHost(node.parentNode);
-			}));
+			}
+		));
 
 		/**
 		 * Finds the root ul of a bootstrap dropdown menu
@@ -169,29 +168,32 @@ require([
 		 * @return {boolean}
 		 */
 		function isDropdownUl(node) {
-			return [].indexOf.call(node.classList, 'dropdown-menu') === -1;
+			return Array.prototype.indexOf.call(node.classList, 'dropdown-menu') === -1;
 		}
 
-		[].forEach.call(document.querySelectorAll('.aloha-ui-toolbar .active'), function (node) {
-			Dom.removeClass(node, 'active');
-		});
+		Array.prototype.forEach.call(
+			doc.querySelectorAll('.aloha-ui-toolbar .active'),
+			function (node) {
+				Dom.removeClass(node, 'active');
+			}
+		);
 
 		formatNodes.forEach(function (format) {
 			// update buttons
-			var buttons = document.querySelectorAll('.aloha-ui-toolbar .' + CLASS_PREFIX + format),
+			var buttons = doc.querySelectorAll('.aloha-ui-toolbar .' + CLASS_PREFIX + format),
 				i = buttons.length;
 			while (i--) {
 				buttons[i].className += ' active';
 			}
 
 			// update dropdowns
-			var dropdownEntries = document
+			var dropdownEntries = doc
 				.querySelectorAll('.aloha-ui-toolbar .dropdown-menu .' + CLASS_PREFIX + format),
 				dropdownRoot;
 			i = dropdownEntries.length;
 			while (i--) {
 				dropdownRoot = Dom.upWhile(dropdownEntries[i], isDropdownUl).parentNode;
-				dropdownRoot.querySelector('.dropdown-toggle').firstChild.data = 
+				dropdownRoot.querySelector('.dropdown-toggle').firstChild.data =
 					dropdownEntries[i].innerText + ' ';
 			}
 		});
@@ -213,10 +215,11 @@ require([
 		}
 		var action = parseAction(event.nativeEvent.target);
 		if (action) {
-			boundaries = execute(action, boundaries, event.editor);
+			event.boundaries = execute(action, boundaries, event.editor);
 		}
-		updateUi(boundaries);
-		event.range = Boundaries.range(boundaries[0], boundaries[1]);
+		if (event.boundaries) {
+			updateUi(event.boundaries);
+		}
 		return event;
 	}
 
