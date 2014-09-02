@@ -150,7 +150,8 @@ define([
 		});
 
 		tree.updateDom();
-		return;
+
+		return boundaries;
 
 		var result = MutationTrees.update(tree);
 		boundaries = result[1].map(Fn.partial(Paths.toBoundary, result[0].domNode()));
@@ -213,7 +214,7 @@ define([
 		}
 		Events.suppress(event.nativeEvent);
 		var content = extractContent(
-			event.target,
+			event.nativeEvent,
 			event.target.ownerDocument,
 			event.editable.settings
 		);
