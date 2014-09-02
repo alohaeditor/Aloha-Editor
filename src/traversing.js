@@ -10,7 +10,7 @@ define([
 	'html',
 	'arrays',
 	'strings',
-	'boundaries',
+	'boundaries'
 ], function (
 	Dom,
 	Html,

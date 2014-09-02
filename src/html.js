@@ -76,6 +76,6 @@ define([
 		isListItem                : Predicates.isListItem,
 		isTableContainer          : Predicates.isTableContainer,
 		isTextLevelSemanticNode   : Predicates.isTextLevelSemanticNode,
-		isVoidNode                : Predicates.isVoidNode,
+		isVoidNode                : Predicates.isVoidNode
 	};
 });
