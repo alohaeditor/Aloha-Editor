@@ -10,6 +10,7 @@ define([
 	'keys',
 	'html',
 	'undo',
+	'events',
 	'arrays',
 	'editing',
 	'strings',
@@ -25,6 +26,7 @@ define([
 	Keys,
 	Html,
 	Undo,
+	Events,
 	Arrays,
 	Editing,
 	Strings,
@@ -365,6 +367,12 @@ define([
 	 */
 	function handleTyping(event) {
 		if (!event.editable) {
+			if ('keydown' === event.type && event.boundaries) {
+				if (Dom.isEditableNode(Boundaries.container(event.boundaries[0]))
+				 || Dom.isEditableNode(Boundaries.container(event.boundaries[1]))) {
+					Events.preventDefault(event.nativeEvent);
+				}
+			}
 			return event;
 		}
 		var handling = handler(event);
@@ -372,7 +380,7 @@ define([
 			return event;
 		}
 		if (handling.preventDefault) {
-			event.nativeEvent.preventDefault();
+			Events.preventDefault(event.nativeEvent);
 		}
 		if (handling.clearOverrides) {
 			event.editor.selection.overrides = [];
