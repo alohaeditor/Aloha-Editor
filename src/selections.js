@@ -878,7 +878,7 @@ define([
 		// browser by setting the selection to a range which will cause the the
 		// expansion to be done in the way that the user expects
 		if (!preventDefault && 'mousedown' === type && Events.hasKeyModifier(event, 'shift')) {
-			var boundaries = Boundaries.fromrange(context.range);
+			var boundaries = Boundaries.fromRange(context.range);
 			event.range = ('start' === context.focus)
 			            ? Boundaries.range(boundaries[1], boundaries[1])
 			            : Boundaries.range(boundaries[0], boundaries[0]);
