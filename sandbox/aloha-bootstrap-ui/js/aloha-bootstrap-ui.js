@@ -1,33 +1,18 @@
-require([
-	'../../src/aloha',
-	'../../src/dom',
-	'../../src/arrays',
-	'../../src/boundaries',
-	'../../src/editing',
-	'../../src/blocks',
-	'../../src/dragdrop',
-	'../../src/editables',
-	'../../src/keys',
-	'../../src/mouse',
-	'../../src/paste',
-	'../../src/selections',
-	'../../src/typing'
-], function (
-	aloha,
-	Dom,
-	Arrays,
-	Boundaries,
-	Editing,
-	Blocks,
-	DragDrop,
-	Editables,
-	Keys,
-	Mouse,
-	Paste,
-	Selections,
-	Typing
-) {
+(function (aloha) {
 	'use strict';
+	
+	var Dom = aloha.dom;
+	var Arrays = aloha.arrays;
+	var Boundaries = aloha.boundaries;
+	var Editing = aloha.editing;
+	var Blocks = aloha.blocks;
+	var DragDrop aloha.dragDrop;
+	var Editables = aloha.editables;
+	var Keys = aloha.keys;
+	var Mouse = aloha.mouse;
+	var Paste = aloha.paste;
+	var Selections = aloha.selections;
+	var Typing = aloha.typing;
 
 	var CLASS_PREFIX = 'aloha-action-';
 
@@ -234,4 +219,4 @@ require([
 		Keys.handle,
 		Mouse.handle
 	];
-});
+}(aloha));
