@@ -88,6 +88,13 @@
 	margin-left: 0;
 	border-right: 1px solid white;
 }
+.aloha-toolbar button,
+.aloha-toolbar a {
+	-webkit-transition: background-color 0.25s;
+	   -moz-transition: background-color 0.25s;
+	    -ms-transition: background-color 0.25s;
+	        transition: background-color 0.25s;
+}
 .aloha-toolbar button.active,
 .aloha-toolbar button:hover,
 .aloha-toolbar button:focus,
