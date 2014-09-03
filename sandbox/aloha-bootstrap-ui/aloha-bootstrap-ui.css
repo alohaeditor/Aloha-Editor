@@ -71,7 +71,9 @@
 }
 .aloha-toolbar,
 .aloha-toolbar button,
-.aloha-toolbar .dropdown-menu a {
+.aloha-toolbar button:focus,
+.aloha-toolbar .dropdown-menu a, 
+.aloha-toolbar .dropdown-menu a:focus {
 	border: 0;
 	border-radius: 0;
 	background: #3f3f3f;
@@ -90,10 +92,8 @@
 }
 .aloha-toolbar button.active,
 .aloha-toolbar button:hover,
-.aloha-toolbar button:focus,
 .aloha-toolbar .dropdown-menu .active,
 .aloha-toolbar .dropdown-menu a:hover,
-.aloha-toolbar .dropdown-menu a:focus,
 .aloha-toolbar .btn-group.open .btn {
 	color: #fff;
 	background: #5daecc;
