@@ -143,7 +143,11 @@
 	font-size: 18px;
 }
 .aloha-link-toolbar .aloha-action-follow { float: right; }
-.aloha-active-element { background: red; }
+.aloha-active-link,
+.aloha-active-link:hover {
+	background: rgba(93, 174, 204, 0.15);
+	outline: 3px solid rgba(93, 174, 204, 0.15);
+}
 
 .aloha-arrow-up {
 	width: 0;

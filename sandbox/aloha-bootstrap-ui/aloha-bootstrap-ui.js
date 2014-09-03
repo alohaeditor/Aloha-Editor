@@ -126,56 +126,71 @@
 		return Dom.hasClass(node, className);
 	}
 
-	function uiContainer(element) {
-		return Dom.upWhile(element, Fn.complement(Fn.partial(hasClass, 'aloha-toolbar')));
+	function getLinkContextToolbar(doc) {
+		var toolbar = doc.querySelector('.aloha-link-toolbar');
+		return (toolbar && Dom.hasClass(toolbar.parentNode, 'aloha-3d'))
+		     ? toolbar.parentNode
+		     : toolbar;
 	}
 
-	function positionBelowAnchor(anchor, toolbar) {
+	function findLinkContextToolbar(element) {
+		var toolbar = Dom.upWhile(element, Fn.complement(Fn.partial(hasClass, 'aloha-toolbar')));
+		return (toolbar && Dom.hasClass(toolbar.parentNode, 'aloha-3d'))
+		     ? toolbar.parentNode
+		     : toolbar;
+	}
+
+	function positionToolbar(anchor, toolbar) {
 		var box = aloha.carets.box(Boundaries.range(
 			Boundaries.create(anchor, 0),
 			Boundaries.create(anchor, 1)
 		));
 		var center = Math.round(box.left + (box.width / 2));
 		var win = Dom.documentWindow(anchor.ownerDocument);
-		var toolbarWidth = parseInt(Dom.getComputedStyle(toolbar, 'width'), 10);
 		var windowWidth = win.innerWidth;
-		var buffer = 5;
-		var x = Math.min(windowWidth - toolbarWidth, Math.max(0, center - (toolbarWidth / 2)));
+		var toolbarWidth = parseInt(Dom.getComputedStyle(toolbar, 'width'), 10);
+		var buffer = 10;
+		var xMin = buffer;
+		var xMax = (windowWidth - toolbarWidth) - buffer;
+		var x = Math.min(xMax, Math.max(xMin, center - (toolbarWidth / 2)));
 		var y = box.top + box.height + buffer;
 		Dom.setStyle(toolbar, 'left', x + 'px');
 		Dom.setStyle(toolbar, 'top', y + 'px');
 		var arrow = toolbar.querySelector('.aloha-arrow-up');
-		if (0 === x || x >= windowWidth - toolbarWidth) {
-			console.warn(x, center);
-			Dom.setStyle(arrow, 'margin-left', (center - x) + 'px');
-		} else {
-			Dom.setStyle(arrow, 'margin-left', 'auto');
-		}
+		var arrowOffset = (x <= xMin || x >= xMax)
+		                ? (center - x) + 'px'
+		                : 'auto';
+		Dom.setStyle(arrow, 'margin-left', arrowOffset);
 	}
 
-	function updateLinksUi(event) {
-		var toolbar = event.target.ownerDocument.querySelector('.aloha-link-toolbar');
-		if (!toolbar) {
-			return;
-		}
-		if (Dom.hasClass(toolbar.parentNode, 'aloha-3d')) {
-			toolbar = toolbar.parentNode;
-		}
+	function openLinkContextToolbar(anchor) {
+		var toolbar = getLinkContextToolbar(anchor.ownerDocument);
+		Dom.addClass(anchor, 'aloha-active-link');
+		Dom.addClass(toolbar, 'opened');
+		positionToolbar(anchor, toolbar);
+		toolbar.querySelector('input').value = Dom.getAttr(anchor, 'href');
+	}
+
+	function handleLinks(event) {
 		var boundaries = event.boundaries || event.lastEditableBoundaries;
 		var cac = Boundaries.commonContainer(boundaries[0], boundaries[1]);
 		var anchor = Dom.upWhile(cac, notAnchor);
 		if (anchor) {
-			Dom.addClass(anchor, 'aloha-active-element');
-			Dom.addClass(toolbar, 'opened');
-			positionBelowAnchor(anchor, toolbar);
-			var input = toolbar.querySelector('input');
-			input.value = Dom.getAttr(anchor, 'href');
-		} else {
-			var ui = uiContainer(event.target);
-			if (!ui || (ui !== toolbar && ui.parentNode !== toolbar)) {
+			$('.aloha-active-link').removeClass('aloha-active-link');
+			return openLinkContextToolbar(anchor);
+		}
+		var toolbar = getLinkContextToolbar(event.target.ownerDocument);
+		var ui = findLinkContextToolbar(event.target);
+		if (ui && ui == toolbar) {
+			if (aloha.keys.CODES.enter === event.keycode) {
+				$('.aloha-active-link').attr('href', toolbar.querySelector('input').value);
+				// select all of link
 				Dom.removeClass(toolbar, 'opened');
 			}
+			return;
 		}
+		$('.aloha-active-link').removeClass('aloha-active-link');
+		Dom.removeClass(toolbar, 'opened');
 	}
 
 	/**
@@ -268,7 +283,7 @@
 		if (action) {
 			event.boundaries = execute(action, boundaries);
 		}
-		updateLinksUi(event);
+		handleLinks(event);
 		updateUi(event.boundaries || event.lastEditableBoundaries);
 		return event;
 	}
