@@ -81,7 +81,7 @@
 	 */
 	function parseAction(element) {
 		var action = {};
-		var match = element.className.match(/aloha-action-([a-z]+)(-([a-zA-Z]+))?/);
+		var match = element.className.match(/aloha-action-(\w+)(-(\w+))?/);
 
 		if (match) {
 			action[match[1]] = match[3] || true;

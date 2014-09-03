@@ -35,7 +35,7 @@
 	width: 45px;
 	height: 45px;
 }
-.aloha-toolbar * {
+.aloha-toolbar .dropdown-toggle {
 	-webkit-transition: width 0.25s;
 	   -moz-transition: width 0.25s;
 	    -ms-transition: width 0.25s;
