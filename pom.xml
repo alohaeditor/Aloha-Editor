@@ -3,7 +3,7 @@
 
 	<groupId>org.alohaeditor</groupId>
 	<artifactId>alohaeditor</artifactId>
-	<version>0.26.5-SNAPSHOT</version>
+	<version>0.26.6-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Aloha Editor</name>
 	<url>http://aloha-editor.org</url>
@@ -499,14 +499,14 @@
     </repositories>
 	<distributionManagement>
 		<repository>
-			<id>archiva.lan.public_releases</id>
-			<name>Gentics Internal Public Repository Stage</name>
-			<url>http://archiva.office/repository/public_releases</url>
+			<id>lan.releases</id>
+			<name>Gentics Internal Repository Stage</name>
+			<url>http://artifactory.office/repository/lan.releases</url>
 		</repository>
 		<snapshotRepository>
-			<id>archiva.lan.public_snapshots</id>
-			<name>Gentics Internal Public Snapshots Repository Stage</name>
-			<url>http://archiva.office/repository/public_snapshots</url>
+			<id>lan.snapshots</id>
+			<name>Gentics Internal Snapshots Repository Stage</name>
+			<url>http://artifactory.office/repository/lan.snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 </project>
