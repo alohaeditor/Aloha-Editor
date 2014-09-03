@@ -148,7 +148,7 @@
 		}
 
 		Array.prototype.forEach.call(
-			doc.querySelectorAll('.aloha-ui-toolbar .active'),
+			doc.querySelectorAll('.aloha-toolbar .active'),
 			function (node) {
 				Dom.removeClass(node, 'active');
 			}
@@ -156,7 +156,7 @@
 
 		formatNodes.forEach(function (format) {
 			// update buttons
-			var buttons = doc.querySelectorAll('.aloha-ui-toolbar .' + CLASS_PREFIX + format),
+			var buttons = doc.querySelectorAll('.aloha-toolbar .' + CLASS_PREFIX + format),
 				i = buttons.length;
 			while (i--) {
 				buttons[i].className += ' active';
@@ -164,7 +164,7 @@
 
 			// update dropdowns
 			var dropdownEntries = doc
-				.querySelectorAll('.aloha-ui-toolbar .dropdown-menu .' + CLASS_PREFIX + format),
+				.querySelectorAll('.aloha-toolbar .dropdown-menu .' + CLASS_PREFIX + format),
 				dropdownRoot;
 			i = dropdownEntries.length;
 			while (i--) {
