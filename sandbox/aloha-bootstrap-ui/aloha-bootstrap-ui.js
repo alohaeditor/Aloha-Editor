@@ -116,6 +116,39 @@
 		return arr;
 	}
 
+	function notAnchor(node) {
+		return 'A' !== node.nodeName;
+	}
+
+	function updateLinks(boundaries) {
+		var doc = Boundaries.document(boundaries[0]);
+		var toolbar = doc.querySelector('.aloha-link-toolbar');
+		if (!toolbar) {
+			return;
+		}
+		if (Dom.hasClass(toolbar.parentNode, 'aloha-3d')) {
+			toolbar = toolbar.parentNode;
+		}
+		var cac = Boundaries.commonContainer(boundaries[0], boundaries[1]);
+		var anchor = Dom.upWhile(cac, notAnchor);
+		if (anchor) {
+			Dom.addClass(toolbar, 'opened');
+			var box = aloha.carets.box(Boundaries.range(
+				Boundaries.create(anchor, 0),
+				Boundaries.create(anchor, 1)
+			));
+			var center = box.left + (box.width / 2);
+			var toolbarWidth = parseInt(Dom.getComputedStyle(toolbar, 'width'), 10);
+			var toolbarHeight = parseInt(Dom.getComputedStyle(toolbar, 'height'), 10);
+			var x = center - (toolbarWidth / 2);
+			var y = box.top - toolbarHeight;
+			Dom.setStyle(toolbar, 'left', x + 'px');
+			Dom.setStyle(toolbar, 'top', y + 'px');
+		} else {
+			Dom.removeClass(toolbar, 'opened');
+		}
+	}
+
 	/**
 	 * Updates the ui according to current state overrides.
 	 *
@@ -125,6 +158,8 @@
 	 * @param {!Array.<Boundary>} boundries
 	 */
 	function updateUi(boundaries) {
+		updateLinks(boundaries);
+
 		var doc = Boundaries.document(boundaries[0]);
 		var formatNodes = uniqueNodeNames(Dom.childAndParentsUntilIncl(
 			Boundaries.container(boundaries[0]),
