@@ -17,16 +17,6 @@
 	   -moz-transform-style: preserve-3d;
 	    -ms-transform-style: preserve-3d;
 	        transform-style: preserve-3d;
-
-	-webkit-transition: .3s ease-out;
-	   -moz-transition: .3s ease-out;
-	    -ms-transition: .3s ease-out;
-			transition: .3s ease-out;
-
-	-webkit-transition-property: transform width height;
-	   -moz-transition-property: transform width height;
-	    -ms-transition-property: transform width height;
-	        transition-property: transform width height;
 }
 
 .aloha-toolbar { display: inline-block; }
@@ -37,6 +27,9 @@
 	 -webkit-font-smoothing: antialiased;
 	    -moz-font-smoothing: antialiased;
 	         font-smoothing: antialiased;
+}
+.aloha-toolbar input {
+	outline: 0;
 }
 .aloha-toolbar .btn {
 	width: 45px;
@@ -108,23 +101,38 @@
 }
 
 @-webkit-keyframes flip {
-	  0% { -webkit-transform: rotateX(90deg) translateY(-10px) translateZ(-30px) scale(0.8); }
-	100% { -webkit-transform: rotateX(0deg) translateY(0px) translateZ(0px) scale(0.8); }
+	0% {
+		opacity: 0.2;
+		box-shadow: 0 0 50px rgba(0,0,0,0.5);
+		-webkit-transform: rotateX(30deg) translateY(5px) translateZ(10px) scale(0.8);
+	}
+	100% {
+		opacity: 1;
+		box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+		-webkit-transform: rotateX(0deg) translateY(0px) translateZ(0px) scale(1.0);
+	}
 }
 @-moz-keyframes flip {
-	  0% { -moz-transform: rotateX(70deg) translateY(-50px) translateZ(-50px); }
-	100% { -moz-transform: rotateX(0deg) translateY(0px) translateZ(0px); }
+	0% {
+		opacity: 0.2;
+		box-shadow: 0 0 50px rgba(0,0,0,0.5);
+		-moz-transform: rotateX(30deg) translateY(5px) translateZ(10px) scale(0.8);
+	}
+	100% {
+		opacity: 1;
+		box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+		-moz-transform: rotateX(0deg) translateY(0px) translateZ(0px) scale(1.0);
+	}
 }
 
 /** links **/
 .aloha-3d .aloha-link-toolbar { display: none; }
 .aloha-3d.opened .aloha-link-toolbar {
 	display: block;
-	-webkit-animation: flip .3s ease-out forwards;
-	   -moz-animation: flip .3s ease-out forwards;
-	    -ms-animation: flip .3s ease-out forwards;
-	     -o-animation: flip .3s ease-out forwards;
-	        animation: flip .3s ease-out forwards;
+	-webkit-animation: flip .2s ease-out forwards;
+	   -moz-animation: flip .2s ease-out forwards;
+	    -ms-animation: flip .2s ease-out forwards;
+	        animation: flip .2s ease-out forwards;
 }
 .aloha-link-toolbar input {
 	color: #fff;

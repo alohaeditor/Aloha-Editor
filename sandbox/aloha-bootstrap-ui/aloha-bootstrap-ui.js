@@ -2,7 +2,7 @@
 	'use strict';
 	
 	var Dom = aloha.dom;
-	var Arrays = aloha.arrays;
+	var Fn = aloha.fn;
 	var Boundaries = aloha.boundaries;
 	var Editing = aloha.editing;
 	var CLASS_PREFIX = 'aloha-action-format-';
@@ -124,15 +124,23 @@
 		return 'A' !== node.nodeName;
 	}
 
-	function updateLinks(boundaries) {
-		var doc = Boundaries.document(boundaries[0]);
-		var toolbar = doc.querySelector('.aloha-link-toolbar');
+	function hasClass(className, node) {
+		return Dom.hasClass(node, className);
+	}
+
+	function uiContainer(element) {
+		return Dom.upWhile(element, Fn.complement(Fn.partial(hasClass, 'aloha-toolbar')));
+	}
+
+	function updateLinksUi(event) {
+		var toolbar = event.target.ownerDocument.querySelector('.aloha-link-toolbar');
 		if (!toolbar) {
 			return;
 		}
 		if (Dom.hasClass(toolbar.parentNode, 'aloha-3d')) {
 			toolbar = toolbar.parentNode;
 		}
+		var boundaries = event.boundaries || event.lastEditableBoundaries;
 		var cac = Boundaries.commonContainer(boundaries[0], boundaries[1]);
 		var anchor = Dom.upWhile(cac, notAnchor);
 		if (anchor) {
@@ -143,13 +151,19 @@
 			));
 			var center = box.left + (box.width / 2);
 			var toolbarWidth = parseInt(Dom.getComputedStyle(toolbar, 'width'), 10);
-			var toolbarHeight = parseInt(Dom.getComputedStyle(toolbar, 'height'), 10);
+			var buffer = 10;
 			var x = center - (toolbarWidth / 2);
-			var y = box.top - toolbarHeight;
+			var y = box.top + box.height + buffer;
 			Dom.setStyle(toolbar, 'left', x + 'px');
 			Dom.setStyle(toolbar, 'top', y + 'px');
+			var input = toolbar.querySelector('input');
+			input.focus();
+			input.value = Dom.getAttr(anchor, 'href');
 		} else {
-			Dom.removeClass(toolbar, 'opened');
+			var ui = uiContainer(event.target);
+			if (!ui || (ui !== toolbar && ui.parentNode !== toolbar)) {
+				Dom.removeClass(toolbar, 'opened');
+			}
 		}
 	}
 
@@ -162,8 +176,6 @@
 	 * @param {!Array.<Boundary>} boundries
 	 */
 	function updateUi(boundaries) {
-		updateLinks(boundaries);
-
 		var doc = Boundaries.document(boundaries[0]);
 		var formatNodes = uniqueNodeNames(Dom.childAndParentsUntilIncl(
 			Boundaries.container(boundaries[0]),
@@ -232,6 +244,7 @@
 		if (action) {
 			event.boundaries = execute(action, boundaries);
 		}
+		updateLinksUi(event);
 		updateUi(event.boundaries || event.lastEditableBoundaries);
 		return event;
 	}
