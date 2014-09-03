@@ -193,9 +193,7 @@
 		if (action) {
 			event.boundaries = execute(action, boundaries, event.editor);
 		}
-		if (event.boundaries) {
-			updateUi(event.boundaries);
-		}
+		updateUi(event.boundaries || event.lastEditableBoundaries);
 		return event;
 	}
 
