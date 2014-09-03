@@ -460,6 +460,7 @@ define([
 		 * @return dom object or false
 		 */
 		getStartingDomObjectToTransform: function () {
+			Aloha.Selection.checkForFirefoxIncorrectRange();
 			var rangeObject = Aloha.Selection.rangeObject,
 				i, effectiveMarkup;
 
