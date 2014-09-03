@@ -626,6 +626,8 @@ define([
 		childAndParentsUntil         : childAndParentsUntil,
 		childAndParentsUntilIncl     : childAndParentsUntilIncl,
 		childAndParentsUntilNode     : childAndParentsUntilNode,
-		childAndParentsUntilInclNode : childAndParentsUntilInclNode
+		childAndParentsUntilInclNode : childAndParentsUntilInclNode,
+		parentsUntil                 : parentsUntil,
+		parentsUntilIncl             : parentsUntilIncl
 	};
 });

@@ -12,15 +12,13 @@
 	 * one of the following:
 	 *
 	 * {
-	 *    format : true, // it's an action to format something
-	 *    node   : 'b'   // as <b>
+	 *    format : 'B'
 	 * }
 	 *
 	 * or even a compound of operations ...
 	 *
 	 * {
-	 *    format     : true,
-	 *    node       : 'b',
+	 *    format     : 'B',
 	 *    style      : true,
 	 *    styleName  : 'background',
 	 *    styleValue : 'red'
@@ -218,6 +216,19 @@
 				.querySelectorAll('.aloha-toolbar .dropdown-menu .' + CLASS_PREFIX + format),
 				dropdownRoot;
 			i = dropdownEntries.length;
+			var activeDropdowns = doc.querySelectorAll('.aloha-toolbar .dropdown-toggle .active');
+			if (activeDropdowns.length > 0) {
+				activeDropdowns.forEach(function (node) {
+					Dom.removeClass('active');
+				});
+			}
+			if (i > 0) {
+				var parents = Dom.parentsUntilIncl(dropdownEntries[0], function (node) {
+					return Dom.hasClass(node, 'btn-group');
+				});
+				var btnGroup = aloha.arrays.last(parents);
+				Dom.addClass(btnGroup.querySelector('.dropdown-toggle'), 'active');
+			}
 			while (i--) {
 				dropdownRoot = Dom.upWhile(dropdownEntries[i], isDropdownUl).parentNode;
 				dropdownRoot.querySelector('.dropdown-toggle').firstChild.data =

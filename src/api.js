@@ -263,6 +263,8 @@ define([
 	exports['dom']['childAndParentsUntilIncl']     = Dom.childAndParentsUntilIncl;
 	exports['dom']['childAndParentsUntilNode']     = Dom.childAndParentsUntilNode;
 	exports['dom']['childAndParentsUntilInclNode'] = Dom.childAndParentsUntilInclNode;
+	exports['dom']['parentsUntil']                 = Dom.parentsUntil;
+	exports['dom']['parentsUntilIncl']             = Dom.parentsUntilIncl;
 	exports['dom']['serialize']                    = Dom.serialize;
 	exports['dom']['enableSelection']              = Dom.enableSelection;
 	exports['dom']['disableSelection']             = Dom.disableSelection;

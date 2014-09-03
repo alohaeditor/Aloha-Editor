@@ -321,6 +321,8 @@ define([
 		childAndParentsUntilIncl     : Traversing.childAndParentsUntilIncl,
 		childAndParentsUntilNode     : Traversing.childAndParentsUntilNode,
 		childAndParentsUntilInclNode : Traversing.childAndParentsUntilInclNode,
+		parentsUntil                 : Traversing.parentsUntil,
+		parentsUntilIncl             : Traversing.parentsUntilIncl,
 
 		serialize         : serialize,
 		ensureExpandoId   : ensureExpandoId,
