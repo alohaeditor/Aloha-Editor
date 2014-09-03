@@ -1737,12 +1737,12 @@ define([
 	 * Will return updated array of boundaries after the operation.
 	 *
 	 * @private
+	 * @param  {!string}   formatting
 	 * @param  {!Boundary} start
 	 * @param  {!Boundary} end
-	 * @param  {!string}   formatting
 	 * @return {Array.<Boundary>}
 	 */
-	function blockFormat(start, end, node, boundaries) {
+	function blockFormat(formatting, start, end, boundaries) {
 		var node = Boundaries.container(start);
 		if (Html.isBlockNode(node)) {
 			node = Boundaries.nextNode(start);
