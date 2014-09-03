@@ -28,12 +28,11 @@
 	    -moz-font-smoothing: antialiased;
 	         font-smoothing: antialiased;
 }
-.aloha-toolbar input {
-	outline: 0;
-}
+.aloha-toolbar input { outline: 0; }
 .aloha-toolbar .btn {
 	width: 45px;
 	height: 45px;
+	margin-left: 0;
 }
 .aloha-toolbar .dropdown-toggle {
 	-webkit-transition: width 0.25s;
@@ -103,30 +102,29 @@
 @-webkit-keyframes flip {
 	0% {
 		opacity: 0.2;
-		box-shadow: 0 0 50px rgba(0,0,0,0.5);
 		-webkit-transform: rotateX(30deg) translateY(5px) translateZ(10px) scale(0.8);
 	}
 	100% {
 		opacity: 1;
-		box-shadow: 0 5px 20px rgba(0,0,0,0.2);
 		-webkit-transform: rotateX(0deg) translateY(0px) translateZ(0px) scale(1.0);
 	}
 }
 @-moz-keyframes flip {
 	0% {
 		opacity: 0.2;
-		box-shadow: 0 0 50px rgba(0,0,0,0.5);
 		-moz-transform: rotateX(30deg) translateY(5px) translateZ(10px) scale(0.8);
 	}
 	100% {
 		opacity: 1;
-		box-shadow: 0 5px 20px rgba(0,0,0,0.2);
 		-moz-transform: rotateX(0deg) translateY(0px) translateZ(0px) scale(1.0);
 	}
 }
 
 /** links **/
-.aloha-3d .aloha-link-toolbar { display: none; }
+.aloha-3d .aloha-link-toolbar {
+	display: none;
+	background: transparent;
+}
 .aloha-3d.opened .aloha-link-toolbar {
 	display: block;
 	-webkit-animation: flip .2s ease-out forwards;
@@ -144,3 +142,14 @@
 	font-size: 18px;
 }
 .aloha-link-toolbar .aloha-action-follow { float: right; }
+
+.aloha-arrow {
+	width: 0;
+	height: 0;
+	font-size: 0;
+	line-height: 0;
+	margin: -4px auto 0;
+	border-left:   8px solid transparent;
+	border-right:  8px solid transparent;
+	border-bottom: 8px solid rgb(90,90,90);
+}

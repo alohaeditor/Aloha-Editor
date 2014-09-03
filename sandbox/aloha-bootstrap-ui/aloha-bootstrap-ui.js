@@ -130,6 +130,20 @@
 		return Dom.upWhile(element, Fn.complement(Fn.partial(hasClass, 'aloha-toolbar')));
 	}
 
+	function positionBelowAnchor(anchor, toolbar) {
+		var box = aloha.carets.box(Boundaries.range(
+			Boundaries.create(anchor, 0),
+			Boundaries.create(anchor, 1)
+		));
+		var center = box.left + (box.width / 2);
+		var width = parseInt(Dom.getComputedStyle(toolbar, 'width'), 10);
+		var buffer = 5;
+		var x = center - (width / 2);
+		var y = box.top + box.height + buffer;
+		Dom.setStyle(toolbar, 'left', x + 'px');
+		Dom.setStyle(toolbar, 'top', y + 'px');
+	}
+
 	function updateLinksUi(event) {
 		var toolbar = event.target.ownerDocument.querySelector('.aloha-link-toolbar');
 		if (!toolbar) {
@@ -143,19 +157,8 @@
 		var anchor = Dom.upWhile(cac, notAnchor);
 		if (anchor) {
 			Dom.addClass(toolbar, 'opened');
-			var box = aloha.carets.box(Boundaries.range(
-				Boundaries.create(anchor, 0),
-				Boundaries.create(anchor, 1)
-			));
-			var center = box.left + (box.width / 2);
-			var toolbarWidth = parseInt(Dom.getComputedStyle(toolbar, 'width'), 10);
-			var buffer = 10;
-			var x = center - (toolbarWidth / 2);
-			var y = box.top + box.height + buffer;
-			Dom.setStyle(toolbar, 'left', x + 'px');
-			Dom.setStyle(toolbar, 'top', y + 'px');
+			positionBelowAnchor(anchor, toolbar);
 			var input = toolbar.querySelector('input');
-			input.focus();
 			input.value = Dom.getAttr(anchor, 'href');
 		} else {
 			var ui = uiContainer(event.target);
