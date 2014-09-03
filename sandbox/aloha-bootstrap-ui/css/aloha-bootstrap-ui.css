@@ -1,25 +1,25 @@
-.aloha-ui-toolbar.btn-toolbar, 
-.aloha-ui-link-toolbar.btn-toolbar {
+.aloha-toolbar.btn-toolbar, 
+.aloha-link-toolbar.btn-toolbar {
 	display: inline-block;
 }
-.aloha-ui-toolbar.btn-toolbar, 
-.aloha-ui-toolbar .btn, 
-.aloha-ui-link-toolbar.btn-toolbar, 
-.aloha-ui-link-toolbar .btn {
+.aloha-toolbar.btn-toolbar, 
+.aloha-toolbar .btn, 
+.aloha-link-toolbar.btn-toolbar, 
+.aloha-link-toolbar .btn {
 	font-size: 18px;
 	-webkit-font-smoothing: antialiased;
 	-moz-font-smoothing: antialiased;
 	-font-smoothing: antialiased;
 }
-.aloha-ui-toolbar .btn, 
-.aloha-ui-link-toolbar .btn {
+.aloha-toolbar .btn, 
+.aloha-link-toolbar .btn {
 	width: 45px;
 	height: 45px;
 }
-.aloha-ui-toolbar * {
+.aloha-toolbar * {
 	-webkit-transition: width 0.25s;
 }
-.aloha-ui-toolbar .btn.dropdown-toggle::before {
+.aloha-toolbar .btn.dropdown-toggle::before {
 	content: "";
 	position: absolute;
 	right: 0px;
@@ -34,48 +34,48 @@
 	background: linear-gradient(to right,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.5) 100%); /* W3C */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#000000',GradientType=1 ); /* IE6-9 */
 }
-.aloha-ui-toolbar .btn.dropdown-toggle:hover, 
-.aloha-ui-toolbar .btn-group.open .btn.dropdown-toggle {
+.aloha-toolbar .btn.dropdown-toggle:hover, 
+.aloha-toolbar .btn-group.open .btn.dropdown-toggle {
 	width: 135px;
 }
-.aloha-ui-toolbar .btn.dropdown-toggle:hover::before, 
-.aloha-ui-toolbar .btn-group.open .btn.dropdown-toggle::before {
+.aloha-toolbar .btn.dropdown-toggle:hover::before, 
+.aloha-toolbar .btn-group.open .btn.dropdown-toggle::before {
 	display: none;
 }
-.aloha-ui-toolbar .dropdown-menu {
+.aloha-toolbar .dropdown-menu {
 	border: 0;
 	padding: 0;
 	font-size: 16px;
 }
-.aloha-ui-toolbar, 
-.aloha-ui-toolbar button, 
-.aloha-ui-toolbar .dropdown-menu a,
-.aloha-ui-link-toolbar,
-.aloha-ui-link-toolbar button {
+.aloha-toolbar, 
+.aloha-toolbar button, 
+.aloha-toolbar .dropdown-menu a,
+.aloha-link-toolbar,
+.aloha-link-toolbar button {
 	border: 0;
 	border-radius: 0;
 	background: #3f3f3f;
 	color: white;
 }
-.aloha-ui-toolbar.btn-toolbar>.btn-group {
+.aloha-toolbar.btn-toolbar>.btn-group {
 	margin-left: 0;
 	border-right: 1px solid white;
 }
-.aloha-ui-toolbar button.active,
-.aloha-ui-toolbar button:hover,
-.aloha-ui-toolbar button:focus,
-.aloha-ui-toolbar .dropdown-menu .active, 
-.aloha-ui-toolbar .dropdown-menu a:hover, 
-.aloha-ui-toolbar .dropdown-menu a:focus, 
-.aloha-ui-toolbar .btn-group.open .btn,
-.aloha-ui-link-toolbar .active,
-.aloha-ui-link-toolbar button:hover,
-.aloha-ui-link-toolbar button:focus {
+.aloha-toolbar button.active,
+.aloha-toolbar button:hover,
+.aloha-toolbar button:focus,
+.aloha-toolbar .dropdown-menu .active, 
+.aloha-toolbar .dropdown-menu a:hover, 
+.aloha-toolbar .dropdown-menu a:focus, 
+.aloha-toolbar .btn-group.open .btn,
+.aloha-link-toolbar .active,
+.aloha-link-toolbar button:hover,
+.aloha-link-toolbar button:focus {
 	color: white;
 	background: #5DAECC;
 	text-shadow: -1px -1px 0px rgb(150,150,150);
 }
-.aloha-ui-link-toolbar input {
+.aloha-link-toolbar input {
 	color: white;
 	border: 0;
 	background: rgb(90,90,90);
@@ -84,6 +84,6 @@
 	width: 310px;
 	font-size: 18px;
 }
-.aloha-ui-link-toolbar .aloha-action-follow {
+.aloha-link-toolbar .aloha-action-follow {
 	float: right;
 }
