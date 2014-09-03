@@ -19,18 +19,19 @@
 
 	  <div class="btn-toolbar aloha-toolbar" role="toolbar">
 		<div class="btn-group">
-			<button type="button" class="btn btn-default aloha-action-B" data-activeon="bold" title="Bold"><b>B</b></button>
-			<button type="button" class="btn btn-default aloha-action-I" data-activeon="italic" title="Italic"><i>I</i></button>
+			<button type="button" class="btn btn-default aloha-action-format-B" title="Bold"><b>B</b></button>
+			<button type="button" class="btn btn-default aloha-action-format-I" title="Italic"><i>I</i></button>
+			<button type="button" class="btn btn-default aloha-action-unformat" title="Remove formatting"><span class="glyphicon glyphicon-remove"></span></button>
 		</div>
 
 		<div class="btn-group">
-			<button type="button" class="btn btn-default aloha-action-OL" title="Ordered List"><span class="glyphicon glyphicon-list"></span></button>
-			<button type="button" class="btn btn-default aloha-action-UL" title="Unordered List"><span class="glyphicon glyphicon-list"></span></button>
+			<button type="button" class="btn btn-default aloha-action-format-OL" title="Ordered List"><span class="glyphicon glyphicon-list"></span></button>
+			<button type="button" class="btn btn-default aloha-action-format-UL" title="Unordered List"><span class="glyphicon glyphicon-list"></span></button>
 		</div>
 
 		<div class="btn-group">
-			<button type="button" class="btn btn-default aloha-action-undo" title="Undo"><span class="glyphicon glyphicon-step-backward"></span></button>
-			<button type="button" class="btn btn-default aloha-action-redo" title="Redo"><span class="glyphicon glyphicon-step-forward"></span></button>
+			<button type="button" class="btn btn-default aloha-action-format-undo" title="Undo"><span class="glyphicon glyphicon-step-backward"></span></button>
+			<button type="button" class="btn btn-default aloha-action-format-redo" title="Redo"><span class="glyphicon glyphicon-step-forward"></span></button>
 		</div>
 
 		<div class="btn-group">
@@ -38,21 +39,20 @@
 				Paragraph <span class="caret"></span>
 			</button>
 			<ul class="dropdown-menu" role="menu">
-				<li><a href="#" class="aloha-action-H2">Heading 2</a></li>
-				<li><a href="#" class="aloha-action-H3">Heading 3</a></li>
-				<li><a href="#" class="aloha-action-H4">Heading 4</a></li>
-				<li><a href="#" class="aloha-action-P">Paragraph</a></li>
-				<li><a href="#" class="aloha-action-PRE">Preformatted</a></li>
-				<li><a href="#">Remove format</a></li>
+				<li><a href="#" class="aloha-action-format-H2">Heading 2</a></li>
+				<li><a href="#" class="aloha-action-format-H3">Heading 3</a></li>
+				<li><a href="#" class="aloha-action-format-H4">Heading 4</a></li>
+				<li><a href="#" class="aloha-action-format-P">Paragraph</a></li>
+				<li><a href="#" class="aloha-action-format-PRE">Preformatted</a></li>
 			</ul>
 		</div>
 
 		<div class="btn-group">
-			<button type="button" data-activeon="a" title="Create Link"	class="btn btn-default aloha-action-A">
+			<button type="button" data-activeon="a" title="Create Link"	class="btn btn-default aloha-action-format-A">
 				<span class="glyphicon glyphicon-link"></span>
 			</button>
 		</div>
-	  </div>
+	</div>
 
 	  <br/> <br/>
 	  
@@ -68,7 +68,7 @@
 	  <div class="starter-template aloha-editable">
 		<h2>Aloha Editor UI Integration Demo</h2>
 		
-		<p>Sed ut perspiciatis unde omnis iste <a href="http://www.google.com">www.google.com</a> natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+		<p>Sed ut <u><b>perspiciatis</b> <i>unde omnis</i></u> iste <a href="http://www.google.com">www.google.com</a> natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
 		
 		<ul>
 		  <li>Nemo</li>
