@@ -77,6 +77,11 @@
 	border-radius: 0;
 	background: #3f3f3f;
 	color: white;
+	text-shadow: -1px -1px 0px rgb(120,120,120);
+	-webkit-transition: text-shadow-color 0.25s;
+	   -moz-transition: text-shadow-color 0.25s;
+	    -ms-transition: text-shadow-color 0.25s;
+	        transition: text-shadow-color 0.25s;
 }
 .aloha-toolbar.btn-toolbar>.btn-group {
 	margin-left: 0;
