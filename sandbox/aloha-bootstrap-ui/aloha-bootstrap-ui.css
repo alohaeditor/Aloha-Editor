@@ -124,6 +124,7 @@
 .aloha-3d .aloha-link-toolbar {
 	display: none;
 	background: transparent;
+	white-space: nowrap;
 }
 .aloha-3d.opened .aloha-link-toolbar {
 	display: block;
@@ -142,8 +143,9 @@
 	font-size: 18px;
 }
 .aloha-link-toolbar .aloha-action-follow { float: right; }
+.aloha-active-element { background: red; }
 
-.aloha-arrow {
+.aloha-arrow-up {
 	width: 0;
 	height: 0;
 	font-size: 0;

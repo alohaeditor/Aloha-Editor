@@ -135,13 +135,22 @@
 			Boundaries.create(anchor, 0),
 			Boundaries.create(anchor, 1)
 		));
-		var center = box.left + (box.width / 2);
-		var width = parseInt(Dom.getComputedStyle(toolbar, 'width'), 10);
+		var center = Math.round(box.left + (box.width / 2));
+		var win = Dom.documentWindow(anchor.ownerDocument);
+		var toolbarWidth = parseInt(Dom.getComputedStyle(toolbar, 'width'), 10);
+		var windowWidth = win.innerWidth;
 		var buffer = 5;
-		var x = center - (width / 2);
+		var x = Math.min(windowWidth - toolbarWidth, Math.max(0, center - (toolbarWidth / 2)));
 		var y = box.top + box.height + buffer;
 		Dom.setStyle(toolbar, 'left', x + 'px');
 		Dom.setStyle(toolbar, 'top', y + 'px');
+		var arrow = toolbar.querySelector('.aloha-arrow-up');
+		if (0 === x || x >= windowWidth - toolbarWidth) {
+			console.warn(x, center);
+			Dom.setStyle(arrow, 'margin-left', (center - x) + 'px');
+		} else {
+			Dom.setStyle(arrow, 'margin-left', 'auto');
+		}
 	}
 
 	function updateLinksUi(event) {
@@ -156,6 +165,7 @@
 		var cac = Boundaries.commonContainer(boundaries[0], boundaries[1]);
 		var anchor = Dom.upWhile(cac, notAnchor);
 		if (anchor) {
+			Dom.addClass(anchor, 'aloha-active-element');
 			Dom.addClass(toolbar, 'opened');
 			positionBelowAnchor(anchor, toolbar);
 			var input = toolbar.querySelector('input');
