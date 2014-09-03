@@ -1,20 +1,32 @@
 .aloha-3d {
 	display: inline-block;
 	position: absolute;
-	-webkit-perspective: 1000;
-	   -moz-perspective: 1000;
-	    -ms-perspective: 1000;
-	        perspective: 1000;
+	-webkit-perspective: 200;
+	   -moz-perspective: 200;
+	    -ms-perspective: 200;
+	        perspective: 200;
 
-	/* Needed in Firefox <= 15 to apply perspective */
-	-moz-transform: perspective(1000px);
+	/* Needed in Firefox <= 15 to activate 3d acceleration in order to apply
+	   perspective */
 	-moz-transform-style: preserve-3d;
+	-moz-transform: perspective(200px);
 }
+/* This is the element on which to apply transformation */
 .aloha-3d>* {
-	-webkit-transform: rotateX(60deg);
-	   -moz-transform: rotateX(60deg);
-	    -ms-transform: rotateX(60deg);
-	        transform: rotateX(60deg);
+	-webkit-transform-style: preserve-3d;
+	   -moz-transform-style: preserve-3d;
+	    -ms-transform-style: preserve-3d;
+	        transform-style: preserve-3d;
+
+	-webkit-transition: .3s ease-out;
+	   -moz-transition: .3s ease-out;
+	    -ms-transition: .3s ease-out;
+			transition: .3s ease-out;
+
+	-webkit-transition-property: transform width height;
+	   -moz-transition-property: transform width height;
+	    -ms-transition-property: transform width height;
+	        transition-property: transform width height;
 }
 
 .aloha-toolbar { display: inline-block; }
@@ -88,10 +100,25 @@
 	text-shadow: -1px -1px 0px rgb(150,150,150);
 }
 
+@-webkit-keyframes flip {
+	  0% { -webkit-transform: rotateX(90deg) translateY(-10px) translateZ(-30px) scale(0.8); }
+	100% { -webkit-transform: rotateX(0deg) translateY(0px) translateZ(0px) scale(0.8); }
+}
+@-moz-keyframes flip {
+	  0% { -moz-transform: rotateX(70deg) translateY(-50px) translateZ(-50px); }
+	100% { -moz-transform: rotateX(0deg) translateY(0px) translateZ(0px); }
+}
+
 /** links **/
-.aloha-link-toolbar { display: none; }
-.aloha-link-toolbar.opened,
-.aloha-3d.opened .aloha-link-toolbar { display: inline-block; }
+.aloha-3d .aloha-link-toolbar { display: none; }
+.aloha-3d.opened .aloha-link-toolbar {
+	display: block;
+	-webkit-animation: flip .3s ease-out forwards;
+	   -moz-animation: flip .3s ease-out forwards;
+	    -ms-animation: flip .3s ease-out forwards;
+	     -o-animation: flip .3s ease-out forwards;
+	        animation: flip .3s ease-out forwards;
+}
 .aloha-link-toolbar input {
 	color: #fff;
 	border: 0;
