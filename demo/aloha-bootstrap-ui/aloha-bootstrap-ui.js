@@ -80,9 +80,21 @@
 	 */
 	function parseAction(element) {
 		var action = {};
-		var match = element.className.match(/aloha-action-(\w+)(-(\w+))?/);
+		var match;
+
+		Dom.childAndParentsUntil(element, function (element) {
+			if (element.className) {
+				match = element.className.match(/aloha-action-(\w+)(-(\w+))?/);
+			}
+			if (match || Dom.hasClass(element, 'aloha-toolbar')) {
+				return true;
+			} else {
+				return false;
+			}
+		});
 
 		if (match) {
+			console.log(match[1], match[3]);
 			action[match[1]] = match[3] || true;
 		}
 

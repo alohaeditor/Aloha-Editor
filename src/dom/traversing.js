@@ -390,7 +390,8 @@ define([
 	/**
 	 * Starting with the given node, traverses up the given node's ancestors,
 	 * collecting each parent node, until the first ancestor that causes the
-	 * given predicate function to return true.
+	 * given predicate function to return true. The given node is *not* passed
+	 * to the predicate (@see childAndParents).
 	 *
 	 * @param {Node} node
 	 * @param {function(Node):boolean} pred
