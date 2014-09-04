@@ -148,8 +148,8 @@
 	font-size: 18px;
 }
 .aloha-link-toolbar .aloha-action-follow { float: right; }
-.aloha-active-link,
-.aloha-active-link:hover {
+.aloha-active,
+.aloha-active:hover {
 	background: rgba(93, 174, 204, 0.15);
 	outline: 3px solid rgba(93, 174, 204, 0.15);
 }

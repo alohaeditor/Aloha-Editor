@@ -165,7 +165,7 @@
 
 	function openLinkContextToolbar(anchor) {
 		var toolbar = getLinkContextToolbar(anchor.ownerDocument);
-		Dom.addClass(anchor, 'aloha-active-link');
+		Dom.addClass(anchor, 'aloha-active');
 		Dom.addClass(toolbar, 'opened');
 		positionToolbar(anchor, toolbar);
 		toolbar.querySelector('input').value = Dom.getAttr(anchor, 'href');
@@ -176,20 +176,20 @@
 		var cac = Boundaries.commonContainer(boundaries[0], boundaries[1]);
 		var anchor = Dom.upWhile(cac, notAnchor);
 		if (anchor) {
-			$('.aloha-active-link').removeClass('aloha-active-link');
+			$('.aloha-active').removeClass('aloha-active');
 			return openLinkContextToolbar(anchor);
 		}
 		var toolbar = getLinkContextToolbar(event.target.ownerDocument);
 		var ui = findLinkContextToolbar(event.target);
 		if (ui && ui == toolbar) {
 			if (aloha.keys.CODES.enter === event.keycode) {
-				$('.aloha-active-link').attr('href', toolbar.querySelector('input').value);
+				$('.aloha-active').attr('href', toolbar.querySelector('input').value);
 				// select all of link
 				Dom.removeClass(toolbar, 'opened');
 			}
 			return;
 		}
-		$('.aloha-active-link').removeClass('aloha-active-link');
+		$('.aloha-active').removeClass('aloha-active');
 		Dom.removeClass(toolbar, 'opened');
 	}
 
