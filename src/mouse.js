@@ -25,39 +25,15 @@ define(['boundaries'], function (Boundaries) {
 	};
 
 	/**
-	 * Requires:
-	 * 		type
-	 * 		editor
-	 * Provides:
-	 *		target
-	 *		boundaries
-	 * Updates:
-	 * 		editor.selection
+	 * Updates event.editor.selection
 	 *
 	 * @param  {AlohaEvent} event
 	 * @return {AlohaEVent}
 	 */
 	function handleMouse(event) {
-		var nativeEvent = event.nativeEvent;
-		if (!nativeEvent) {
-			return event;
-		}
-		event.target = nativeEvent.target;
 		if ('mousedown' === event.type) {
 			event.editor.selection.formatting = [];
 			event.editor.selection.overrides = [];
-		}
-		if (event.boundaries || !event.target.ownerDocument) {
-			return event;
-		}
-		if ('mousedown' === event.type || 'click' === event.type) {
-			event.boundaries = Boundaries.fromPosition(
-				nativeEvent.clientX,
-				nativeEvent.clientY,
-				event.target.ownerDocument
-			);
-		} else if ('mousemove' !== event.type) {
-			event.boundaries = Boundaries.get(event.target.ownerDocument);
 		}
 		return event;
 	}

@@ -364,11 +364,9 @@ define([
 	 * 		nativeEvent
 	 */
 	function handleTyping(event) {
-		if (!event.boundaries) {
-			return event;
-		}
 		var start = event.boundaries[0];
 		var end = event.boundaries[1];
+		/*
 		if (!event.editable) {
 			if ('keydown' === event.type) {
 				if (Dom.isEditableNode(Boundaries.container(start))
@@ -378,6 +376,7 @@ define([
 			}
 			return event;
 		}
+		*/
 		var handling = handler(event);
 		if (!handling) {
 			return event;

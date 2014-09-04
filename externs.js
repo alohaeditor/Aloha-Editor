@@ -75,15 +75,14 @@ var MutationObserver = {
 };
 
 var alohaEvent = {
-	nativeEvent            : null,
-	editor                 : null,
-	editable               : null,
-	range                  : null,
-	type                   : '',
-	meta                   : '',
-	keycode                : '',
-	options                : {},
-	lastEditableBoundaries : []
+	type        : '',
+	target      : [],
+	editor      : null,
+	editable    : null,
+	boundaries  : null,
+	nativeEvent : null,
+	meta        : '',
+	keycode     : ''
 };
 
 var Boromir = {

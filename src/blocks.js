@@ -80,7 +80,7 @@ define([
 	}
 
 	function handleAloha(event) {
-		var blocks = event.editable['elem'].querySelectorAll('.aloha-block,img');
+		var blocks = event.editable.elem.querySelectorAll('.aloha-block,img');
 		[].forEach.call(blocks, function (block) {
 			block.setAttribute('contentEditable', 'false');
 			Dom.setStyle(block, 'cursor', Browsers.VENDOR_PREFIX + 'grab');
@@ -128,10 +128,7 @@ define([
 	};
 
 	/**
-	 * Requires:
-	 * 		editor
-	 * Updates:
-	 * 		editable
+	 * Updates editable
 	 *
 	 * @param  {AlohaEvent} event
 	 * @return {Event}

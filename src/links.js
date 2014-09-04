@@ -228,12 +228,12 @@ define([
 	}
 
 	function handleLinks(event) {
-		if (!event.boundaries || 'click' !== event.type) {
+		if ('click' !== event.type) {
 			return event;
 		}
 		var cac = Boundaries.commonContainer(event.boundaries[0], event.boundaries[1]);
-		var link = Dom.upWhile(cac, notAnchor);
-		if (link) {
+		var anchor = Dom.upWhile(cac, notAnchor);
+		if (anchor) {
 			Events.preventDefault(event.nativeEvent);
 		}
 		return event;

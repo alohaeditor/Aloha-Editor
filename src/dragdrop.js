@@ -174,9 +174,7 @@ define([
 				alohaEvent.editor.dnd.element
 			);
 		}
-		if (event.stopPropagation) {
-			event.stopPropagation();
-		}
+		Events.stopPropagation(event);
 		// Because some browsers will otherwise redirect
 		Events.preventDefault(event);
 	}
@@ -190,12 +188,7 @@ define([
 	/**
 	 * Processes drag and drop events.
 	 *
-	 * Requires:
-	 * 		editor
-	 * 		target
-	 * Updates:
-	 * 		editor.dnd
-	 * 		nativeEvent
+	 * Updates editor.dnd and nativeEvent
 	 *
 	 * @param  {AlohaEvent} event
 	 * @return {AlohaEvent}

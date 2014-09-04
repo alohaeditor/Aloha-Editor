@@ -58,7 +58,7 @@ define([
 	 */
 	function isPasteEvent(event) {
 		return 'paste' === event.type
-		    || (event.nativeEvent && event.nativeEvent.clipboardData !== undefined);
+		    || ('undefined' !== typeof event.nativeEvent.clipboardData);
 	}
 
 	/**
@@ -209,7 +209,7 @@ define([
 	 * @return {AlohaEvent}
 	 */
 	function handlePaste(event) {
-		if (!event.editable || !event.boundaries || !isPasteEvent(event)) {
+		if ('paste' !== event.type || 'undefined' !== typeof event.nativeEvent.clipboardData) {
 			return event;
 		}
 		Events.suppress(event.nativeEvent);
@@ -221,7 +221,7 @@ define([
 		if (!content) {
 			return event;
 		}
-		Undo.capture(event.editable['undoContext'], {
+		Undo.capture(event.editable.undoContext, {
 			meta: {type: 'paste'}
 		}, function () {
 			event.boundaries = insert(event.boundaries[0], event.boundaries[1], content);

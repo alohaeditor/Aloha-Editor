@@ -374,30 +374,15 @@ define([
 	 * @return {Object}
 	 */
 	function dblclick(event, range, focus, previous, expanding) {
+		return {range: range, focus: 'end'};
+		/*
 		var boundaries = Boundaries.fromRange(range);
 		boundaries = Traversing.expand(boundaries[0], boundaries[1], 'word');
 		return {
 			range: Boundaries.range(boundaries[0], boundaries[1]),
 			focus: 'end'
 		};
-	}
-
-	/**
-	 * Processes a triple click event.
-	 *
-	 * @private
-	 * @param  {Event}  event
-	 * @param  {Range}  range
-	 * @param  {string} focus
-	 * @return {Object}
-	 */
-	function tplclick(event, range, focus, previous, expanding) {
-		var boundaries = Boundaries.fromRange(range);
-		boundaries = Traversing.expand(boundaries[0], boundaries[1], 'block');
-		return {
-			range: Boundaries.range(boundaries[0], boundaries[1]),
-			focus: 'end'
-		};
+		*/
 	}
 
 	/**
@@ -489,7 +474,6 @@ define([
 		'keydown'   : keydown,
 		'keypress'  : keypress,
 		'dblclick'  : dblclick,
-		'tplclick'  : tplclick,
 		'mouseup'   : mouseup,
 		'mousedown' : mousedown,
 		'mousemove' : Fn.returnFalse,
@@ -500,76 +484,6 @@ define([
 	};
 
 	/**
-	 * Normalizes the event type.
-	 *
-	 * This function is necessary for us to properly determine how to treat
-	 * mouse events because we will sometimes end up missing a dblclick event
-	 * when the user's cursor is hovering over caret element.
-	 *
-	 * Furthermore, browsers do not send triple click events to JavaScript; this
-	 * function will make it possible to detect them.
-	 *
-	 * @private
-	 * @param  {Event}   event
-	 * @param  {Range}   current
-	 * @param  {Range}   previous
-	 * @param  {string}  focus
-	 * @param  {number}  then
-	 * @param  {boolean} doubleclicking
-	 * @param  {boolean} tripleclicking
-	 * @return {string}
-	 */
-	function normalizeEventType(event, current, previous, focus, then,
-	                            doubleclicking, tripleclicking) {
-		if (!Mouse.EVENTS[event.type]) {
-			return event.type;
-		}
-		var isMouseDown = 'mousedown' === event.type;
-		var isMulticlicking = current
-		                   && previous
-		                   && isMouseDown
-		                   && ((new Date() - then) < 500);
-		if (!isMulticlicking && isMouseDown) {
-			return event.type;
-		}
-		if (doubleclicking) {
-			return isMouseDown ? 'tplclick' : 'dblclick';
-		}
-		if (tripleclicking) {
-			return 'tplclick';
-		}
-		if (!isMouseDown) {
-			return event.type;
-		}
-		var boundaries = Boundaries.fromRange(previous);
-		var ref = ('start' === focus)
-		        ? Boundaries.range(boundaries[0], boundaries[0])
-		        : Boundaries.range(boundaries[1], boundaries[1]);
-		return Ranges.equals(current, ref) ? 'dblclick' : event.type;
-	}
-
-	/**
-	 * Processes an event in relation to how it affects the selection.
-	 *
-	 * @private
-	 * @param  {Event}   event
-	 * @param  {string}  type      Normalized event type
-	 * @param  {Range}   range
-	 * @param  {string}  focus
-	 * @param  {Range}   previous
-	 * @param  {boolean} expanding
-	 * @retrun {Object}
-	 */
-	function process(event, type, range, focus, previous, expanding) {
-		var change = handlers[type](event, range, focus, previous, expanding);
-		if (change) {
-			change.doubleclicking = 'dblclick' === type;
-			change.tripleclicking = 'tplclick' === type;
-		}
-		return change;
-	}
-
-	/**
 	 * Initialize blinking using the given element.
 	 *
 	 * @private
@@ -578,7 +492,7 @@ define([
 	 */
 	function blinking(caret) {
 		var timers = [];
-		var blinking = true;
+		var isBlinking = true;
 		function fade(start, end, duration) {
 			Animation.animate(
 				start,
@@ -586,7 +500,7 @@ define([
 				Animation.easeLinear,
 				duration,
 				function (value, percent, state) {
-					if (!blinking) {
+					if (!isBlinking) {
 						return true;
 					}
 					Dom.setStyle(caret, 'opacity', value);
@@ -606,14 +520,14 @@ define([
 			);
 		}
 		function stop() {
-			blinking = false;
+			isBlinking = false;
 			Dom.setStyle(caret, 'opacity', 1);
 			timers.forEach(clearTimeout);
 			timers = [];
 		}
 		function blink() {
 			stop();
-			blinking = true;
+			isBlinking = true;
 			timers.push(setTimeout(function () {
 				fade(1, 0, 100);
 			}, 500));
@@ -648,17 +562,13 @@ define([
 		Dom.addClass(caret, 'aloha-caret', 'aloha-ephemera');
 		Dom.insert(caret, doc.body, true);
 		return {
-			caretOpacity   : 0,
-			blinking       : blinking(caret),
-			caret          : caret,
-			range          : null,
-			focus          : 'end',
-			dragging       : false,
-			mousedown      : false,
-			doubleclicking : false,
-			tripleclicking : false,
-			formatting     : [],
-			overrides      : []
+			blinking   : blinking(caret),
+			caret      : caret,
+			range      : null,
+			focus      : 'end',
+			mousedown  : false,
+			formatting : [],
+			overrides  : []
 		};
 	}
 
@@ -667,30 +577,13 @@ define([
 	 * previous state, and changes to the state.
 	 *
 	 * @private
-	 * @param  {Event}  event
-	 * @param  {Object} old    context
-	 * @param  {Object} change context
+	 * @param  {!Event}   event
+	 * @param  {!Context} context
+	 * @param  {!Object}  change
 	 * @return {Object}
 	 */
-	function newContext(event, old, change) {
-		var context = Maps.extend({}, old, change);
-		switch (event.type) {
-		case 'mousedown':
-			context.time = new Date();
-			context.dragging = false;
-			context.mousedown = true;
-			break;
-		case 'mouseup':
-			context.mousedown = false;
-			break;
-		case 'mousemove':
-			context.dragging = old.mousedown;
-			break;
-		case 'drop':
-			context.dragging = false;
-			break;
-		}
-		return context;
+	function newContext(event, context, change) {
+		return Maps.extend({}, context, change, {event: event.type});
 	}
 
 	/**
@@ -771,30 +664,8 @@ define([
 		return map;
 	}
 
-	function positionAtEvent(event) {
-		if (!event.target.ownerDocument) {
-			return null;
-		}
-		var boundaries;
-		// Because drag positions are calculated with an offset
-		if (Mouse.EVENTS[event.type] && 'dragover' !== event.type) {
-			boundaries = Boundaries.fromPosition(
-				event.nativeEvent.clientX,
-				event.nativeEvent.clientY,
-				event.target.ownerDocument
-			);
-		}
-		return boundaries
-		    || event.boundaries
-		    || Boundaries.get(event.target.ownerDocument);
-	}
-
 	/**
-	 * Requires:
-	 * 		type
-	 * 		editor
-	 * Provides:
-	 * 		range
+	 * Updates boundaries, editor.selection
 	 *
 	 * @param  {AlohaEvent} event
 	 * @return {AlohaEvent}
@@ -803,89 +674,21 @@ define([
 		if (!handlers[event.type]) {
 			return event;
 		}
-
-		var old = event.editor.selection;
-
-		// Because otherwise, if, if we are in the process of a click, and the
-		// user's cursor is over the caret element, Boundaries.fromPosition()
-		// will compute the boundaries to be inside the absolutely positioned
-		// caret element
-		if ('mousedown' === event.type) {
-			Dom.setStyle(old.caret, 'display', 'none');
-
-		// Because we will never update the caret position on mousemove, we
-		// avoid unncessary computation
-		} else if ('mousemove' === event.type) {
-			event.editor.selection = newContext(event, old);
-
-			// Because we want to move the caret out of the way when the user
-			// starts creating an expanded selection by dragging
-			if (!old.dragging && event.editor.selection.dragging) {
-				Dom.setStyle(old.caret, 'display', 'none');
-			}
-
-			return event;
-		}
-
-		var position = positionAtEvent(event);
-
-		if (!position) {
-			old.blinking.stop();
-			return event;
-		}
-
-		if (!event.editable) {
-			event.editor.selection = newContext(event, old, {boundaries: position});
-			return event;
-		}
-
-		position = Boundaries.range(position[0], position[1]);
-
-		var type = normalizeEventType(
+		var context = event.editor.selection;
+		var change = handlers[event.type](
 			event,
-			position,
-			old.range,
-			old.focus,
-			old.time,
-			old.doubleclicking,
-			old.tripleclicking
+			Boundaries.range(event.boundaries[0], event.boundaries[1]),
+			context.focus,
+			context.range,
+			Events.hasKeyModifier(event, 'shift')
 		);
-
-		var context = newContext(event, old, process(
-			event,
-			type,
-			position,
-			old.focus,
-			old.range,
-			old.dragging || Events.hasKeyModifier(event, 'shift')
-		));
-
-		event.editor.selection = context;
-
-		if (!Dom.isEditableNode(context.range.commonAncestorContainer)) {
-			return event;
-		}
-
-		var preventDefault = ('keydown' === type && movements[event.keycode])
-				|| (event.editor.CARET_CLASS === event.target.className);
-
-		if (preventDefault) {
+		event.editor.selection = newContext(event, context, change);
+		event.boundaries = Boundaries.fromRange(event.editor.selection.range);
+		event.editor.selection.boundaries = event.boundaries;
+		// Because we don't want the page to scroll
+		if ('keydown' === event.type && movements[event.keycode]) {
 			Events.preventDefault(event.nativeEvent);
 		}
-
-		// Because browsers have a non-intuitive way of handling expanding of
-		// selections when holding down the shift key. We therefore "trick" the
-		// browser by setting the selection to a range which will cause the the
-		// expansion to be done in the way that the user expects
-		if (!preventDefault && 'mousedown' === type && Events.hasKeyModifier(event, 'shift')) {
-			var boundaries = Boundaries.fromRange(context.range);
-			event.boundaries = ('start' === context.focus)
-			                 ? [boundaries[1], boundaries[1]]
-			                 : [boundaries[0], boundaries[0]];
-		} else {
-			event.boundaries = Boundaries.fromRange(context.range);
-		}
-
 		return event;
 	}
 
@@ -924,7 +727,7 @@ define([
 	 * @param {AlohaEvent} event
 	 */
 	function update(event) {
-		if (!event.boundaries || 'mousemove' === event.type || 'click' === event.type) {
+		if ('click' === event.type) {
 			return;
 		}
 		var boundary = select(

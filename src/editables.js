@@ -106,27 +106,11 @@ define([
 		return editable;
 	}
 
-	/**
-	 * Associates an editable to the given AlohaEvent.
-	 *
-	 * Require:
-	 * 		type
-	 * 		editor
-	 * Provides:
-	 * 		editable
-	 *
-	 * @param  {AlohaEvent} event
-	 * @return {AlohaEvent}
-	 */
-	function handleEditables(event) {
-		if ('aloha' === event.type) {
-			event.editable = create(event.editor, event.element, event.options);
-		} else if (event.boundaries) {
-			if (Dom.isEditableNode(Boundaries.container(event.boundaries[0]))) {
-				event.editable = fromBoundary(event.editor, event.boundaries[0]);
-			}
-		}
-		return event;
+	function destroy(editor, element)  {
+		var editable = fromElem(editor, element);
+		close(editable);
+		dissocFromEditor(editor, editable);
+		return editable;
 	}
 
 	return {
@@ -136,7 +120,7 @@ define([
 		assocIntoEditor  : assocIntoEditor,
 		dissocFromEditor : dissocFromEditor,
 		close            : close,
-		handleEditables  : handleEditables,
-		create           : create
+		create           : create,
+		destroy          : destroy
 	};
 });

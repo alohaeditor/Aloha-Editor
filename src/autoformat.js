@@ -131,7 +131,7 @@ define([
 	}
 
 	function handleAutoFormat(event) {
-		if ('keydown' !== event.type || !event.editable || !event.boundaries) {
+		if ('keydown' !== event.type) {
 			return event;
 		}
 		if (

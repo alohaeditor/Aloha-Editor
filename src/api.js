@@ -284,11 +284,11 @@ define([
 	exports['dragdrop']['isDraggable']    = DragDrop.isDraggable;
 
 	exports['editables'] = {};
-	exports['editables']['Editable']         = Editables.Editable;
-	exports['editables']['fromElem']         = Editables.fromElem;
-	exports['editables']['fromBoundary']     = Editables.fromBoundary;
-	exports['editables']['handleEditables']  = Editables.handleEditables;
-	exports['editables']['create']           = Editables.create;
+	exports['editables']['Editable']     = Editables.Editable;
+	exports['editables']['fromElem']     = Editables.fromElem;
+	exports['editables']['fromBoundary'] = Editables.fromBoundary;
+	exports['editables']['create']       = Editables.create;
+	exports['editables']['destroy']      = Editables.destroy;
 
 	exports['editing'] = {};
 	exports['editing']['format']    = Editing.format;

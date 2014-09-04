@@ -89,23 +89,11 @@ define(['strings', 'boundaries'], function (Strings, Boundaries) {
 	};
 
 	/**
-	 * Requires:
-	 *		type
-	 *		target
-	 * Provides:
-	 * 		meta
-	 * 		keycode
+	 * Provides meta, keycode
 	 */
 	function handleKeys(event) {
-		if (event.nativeEvent) {
-			event.meta = metaKeys(event.nativeEvent);
-			if (EVENTS[event.type]) {
-				event.keycode = event.nativeEvent.which;
-				if (!event.boundaries) {
-					event.boundaries = Boundaries.get(event.target.ownerDocument);
-				}
-			}
-		}
+		event.meta = metaKeys(event.nativeEvent);
+		event.keycode = event.nativeEvent.which;
 		return event;
 	}
 

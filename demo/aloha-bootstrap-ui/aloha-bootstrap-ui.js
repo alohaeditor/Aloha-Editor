@@ -4,7 +4,9 @@
 	var Fn = aloha.fn;
 	var Dom = aloha.dom;
 	var Keys = aloha.keys;
+	var Editor = aloha.editor;
 	var Editing = aloha.editing;
+	var Selections = aloha.selections;
 	var Boundaries = aloha.boundaries;
 	var Traversing = aloha.traversing;
 	var Arrays = aloha.arrays;
@@ -83,7 +85,6 @@
 	function parseAction(element) {
 		var action = {};
 		var match;
-
 		Dom.childAndParentsUntil(element, function (element) {
 			if (element.className) {
 				match = element.className.match(/aloha-action-(\w+)(-(\w+))?/);
@@ -94,12 +95,9 @@
 				return false;
 			}
 		});
-
 		if (match) {
-			console.log(match[1], match[3]);
 			action[match[1]] = match[3] || true;
 		}
-
 		return action;
 	}
 
@@ -289,7 +287,7 @@
 	 * @private
 	 * @param {!Array.<Boundary>} boundries
 	 */
-	function updateUi(boundaries) {
+	function handleFormats(boundaries) {
 		var doc = Boundaries.document(boundaries[0]);
 		var formatNodes = uniqueNodeNames(Dom.childAndParentsUntilIncl(
 			Boundaries.container(boundaries[0]),
@@ -353,6 +351,20 @@
 		});
 	}
 
+	$('.aloha-toolbar').on('click', function ($event) {
+		var action = parseAction($event.target);
+		var boundaries = Editor.selection.boundaries;
+		if (action && boundaries) {
+			boundaries = execute(action, boundaries);
+			Selections.select(
+				Editor.selection,
+				boundaries[0],
+				boundaries[1],
+				Editor.selection.focus
+			);
+		}
+	});
+
 	var shortcutHandlers = {
 		'keydown': {
 			// meta+k
@@ -368,26 +380,17 @@
 	 * @return {AlohaEvent}
 	 */
 	function handleBootstrapUi(event) {
-		var boundaries = event.lastEditableBoundaries;
-		if (!boundaries) {
-			return event;
-		}
 		var shortcutHandler = Keys.shortcutHandler(event, shortcutHandlers);
 		if (shortcutHandler) {
 			return shortcutHandler(event);
 		}
-		if (!('keyup' === event.type || 'click' === event.type)) {
+		if ('keyup' !== event.type && 'click' !== event.type) {
 			return event;
 		}
-		if (Dom.hasClass(event.target, 'aloha-ephemera')) {
-			return event;
+		if (!Dom.hasClass(event.target, 'aloha-ephemera')) {
+			handleLinks(event);
+			handleFormats(event.boundaries);
 		}
-		var action = parseAction(event.target);
-		if (action) {
-			event.boundaries = execute(action, boundaries);
-		}
-		handleLinks(event);
-		updateUi(event.boundaries || event.lastEditableBoundaries);
 		return event;
 	}
 
