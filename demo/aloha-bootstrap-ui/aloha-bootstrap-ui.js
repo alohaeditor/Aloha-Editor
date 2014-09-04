@@ -6,6 +6,8 @@
 	var Keys = aloha.keys;
 	var Editing = aloha.editing;
 	var Boundaries = aloha.boundaries;
+	var Traversing = aloha.traversing;
+	var Arrays = aloha.arrays;
 	var ACTION_CLASS_PREFIX = 'aloha-action-format-';
 
 	/**
@@ -230,8 +232,31 @@
 			if (Keys.CODES.hash === event.keycode) {
 				// TODO dropdown menu of internal headers and anchors
 			}
-		}
+		},
 
+		/**
+		 * inserts a link at the event's boundary position
+		 *
+		 * @param {!Event} event
+		 * @return {Event} event
+		 */
+		insertLink: function (event) {
+			var boundaries = event.boundaries || event.lastEditableBoundaries;
+			if (Arrays.equal(boundaries[0], boundaries[1])) {
+				boundaries = Traversing.expand(boundaries[0], boundaries[1], 'word');
+			}
+			boundaries = Editing.wrap('A', boundaries[0], boundaries[1]);
+			boundaries[0] = Boundaries.next(boundaries[0]);
+			boundaries[1] = Boundaries.fromEndOfNode(boundaries[0])[0];
+			//var href = Dom.getAttr(Boundaries.container(boundaries[0]), 'href');
+			event.boundaries = boundaries;
+			LinksUI.open(
+				LinksUI.toolbar(event.target.ownerDocument),
+				Boundaries.container(boundaries[0])
+			);
+			$('.aloha-link-toolbar input[name=href]').get(0).focus();
+			return event;
+		}
 	};
 
 	/**
@@ -317,7 +342,7 @@
 				var parents = Dom.parentsUntilIncl(dropdownEntries[0], function (node) {
 					return Dom.hasClass(node, 'btn-group');
 				});
-				var btnGroup = aloha.arrays.last(parents);
+				var btnGroup = Arrays.last(parents);
 				Dom.addClass(btnGroup.querySelector('.dropdown-toggle'), 'active');
 			}
 			while (i--) {
@@ -328,6 +353,10 @@
 		});
 	}
 
+	var keyHandlers = [];
+	keyHandlers['meta+75'] =
+	keyHandlers['ctrl+75'] = LinksUI.insertLink;
+
 	/**
 	 * Handles UI updates invoked by event
 	 *
@@ -336,7 +365,13 @@
 	 */
 	function handleBootstrapUi(event) {
 		var boundaries = event.lastEditableBoundaries;
-		if (!boundaries || !('keyup' === event.type || 'click' === event.type)) {
+		if (!boundaries) {
+			return event;
+		}
+		if ('keydown' === event.type && event.meta && keyHandlers[event.meta + "+" + event.keycode]) {
+			return keyHandlers[event.meta + "+" + event.keycode](event);
+		}
+		if (!('keyup' === event.type || 'click' === event.type)) {
 			return event;
 		}
 		if (Dom.hasClass(event.target, 'aloha-ephemera')) {

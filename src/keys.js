@@ -24,6 +24,7 @@ define(['strings', 'boundaries'], function (Strings, Boundaries) {
 		'backspace' : 8,
 		'capslock'  : 20,
 		'ctrl'      : 17,
+		'cmd'       : 91,
 		'delete'    : 46,
 		'enter'     : 13,
 		'escape'    : 27,

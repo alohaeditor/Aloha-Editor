@@ -301,6 +301,7 @@ define([
 	exports['editing']['attribute'] = Editing.attribute;
 	exports['editing']['cut']       = Editing.cut;
 	exports['editing']['copy']      = Editing.copy;
+	exports['editing']['wrap']      = Editing.wrap;
 
 	exports['events'] = {};
 	exports['events']['add']             = Events.add;

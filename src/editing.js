@@ -1136,6 +1136,7 @@ define([
 	 *        already in the DOM at the correct place, can be reused
 	 *        instead of creating a new wrapper node. May be merged with
 	 *        other reusable or newly created wrapper nodes.
+	 * @return {Array.<Boundary>} updated boundaries
 	 */
 	function wrapElem(nodeName, start, end, remove, opts) {
 		opts = opts || {};
@@ -1846,9 +1847,9 @@ define([
 		copy       : copy,
 		breakline  : breakline,
 		insert     : insert,
+		wrap      : wrapElem,
 
 		// obsolete
-		wrap      : wrapElem,
 		split     : split,
 		remove    : remove,
 		trimClosingOpening: trimClosingOpening
