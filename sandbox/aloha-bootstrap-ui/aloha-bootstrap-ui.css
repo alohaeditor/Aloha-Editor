@@ -69,6 +69,8 @@
 	font-size: 16px;
 }
 .aloha-toolbar,
+.aloha-toolbar a,
+.aloha-toolbar a:focus,
 .aloha-toolbar button,
 .aloha-toolbar button:focus,
 .aloha-toolbar .dropdown-menu a, 
@@ -94,6 +96,8 @@
 	    -ms-transition: background-color 0.25s;
 	        transition: background-color 0.25s;
 }
+.aloha-toolbar a.active,
+.aloha-toolbar a:hover,
 .aloha-toolbar button.active,
 .aloha-toolbar button:hover,
 .aloha-toolbar .dropdown-menu .active,
@@ -164,6 +168,10 @@
 	    -ms-animation: flip-close .2s ease-out forwards;
 	        animation: flip-close .2s ease-out forwards;
 }
+.aloha-link-toolbar input, .aloha-link-toolbar a {
+	display: block;
+	float: left;
+}
 .aloha-link-toolbar input {
 	color: #fff;
 	border: 0;
@@ -172,6 +180,9 @@
 	width: 310px;
 	height: 45px;
 	font-size: 18px;
+}
+.aloha-link-toolbar a.btn {
+	padding-top: 10px;
 }
 .aloha-link-toolbar .aloha-action-follow { float: right; }
 .aloha-active,
