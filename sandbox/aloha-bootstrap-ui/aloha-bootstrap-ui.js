@@ -214,11 +214,8 @@
 		 * @param  {!Event}   event
 		 */
 		interact: function(toolbar, anchor, event) {
-			if (Keys.CODES.enter === event.keycode) {
-				$('.aloha-active').attr('href', toolbar.querySelector('input').value);
-				// TODO select all of link
-				Dom.removeClass(toolbar, 'opened');
-			} else if (Keys.CODES.hash === event.keycode) {
+			$('a.aloha-active, a.aloha-link-follow').attr('href', toolbar.querySelector('input').value);
+			if (Keys.CODES.hash === event.keycode) {
 				// TODO dropdown menu of internal headers and anchors
 			}
 		}
