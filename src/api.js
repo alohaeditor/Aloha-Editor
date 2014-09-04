@@ -355,9 +355,10 @@ define([
 	exports['images']['setAttributes'] = Images.setAttributes;
 
 	exports['keys'] = {};
-	exports['keys']['handleKeys'] = Keys.handleKeys;
-	exports['keys']['ARROWS']     = Keys.ARROWS;
-	exports['keys']['CODES']      = Keys.CODES;
+	exports['keys']['handleKeys']      = Keys.handleKeys;
+	exports['keys']['ARROWS']          = Keys.ARROWS;
+	exports['keys']['CODES']           = Keys.CODES;
+	exports['keys']['shortcutHandler'] = Keys.shortcutHandler;
 
 	exports['links'] = {};
 	exports['links']['create']      = Links.create;

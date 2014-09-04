@@ -353,9 +353,13 @@
 		});
 	}
 
-	var keyHandlers = [];
-	keyHandlers['meta+75'] =
-	keyHandlers['ctrl+75'] = LinksUI.insertLink;
+	var shortcutHandlers = {
+		'keydown': {
+			// meta+k
+			'meta+75' : LinksUI.insertLink,
+			'ctrl+75' : LinksUI.insertLink
+		}
+	};
 
 	/**
 	 * Handles UI updates invoked by event
@@ -368,8 +372,9 @@
 		if (!boundaries) {
 			return event;
 		}
-		if ('keydown' === event.type && event.meta && keyHandlers[event.meta + "+" + event.keycode]) {
-			return keyHandlers[event.meta + "+" + event.keycode](event);
+		var shortcutHandler = Keys.shortcutHandler(event, shortcutHandlers);
+		if (shortcutHandler) {
+			return shortcutHandler(event);
 		}
 		if (!('keyup' === event.type || 'click' === event.type)) {
 			return event;

@@ -109,10 +109,46 @@ define(['strings', 'boundaries'], function (Strings, Boundaries) {
 		return event;
 	}
 
+	/**
+	 * Will go through the shortcutHandlers array to
+	 * find a shortcutHandler that matches the event.
+	 * The shortcutHandler array must be structured
+	 * as follows:
+	 *
+	 * // add a shortcut handler for meta+esc on keydown
+	 * shortcutHandlers = {
+	 *     'keypress': {
+	 *         'meta+' + Keys.CODES.escape: function (event) {
+	 *             return event;
+	 *         }
+	 *     }
+	 * }
+	 *
+	 * The order of meta keys in the shortcutHandlers array
+	 * MUST be in alphabetical order, as encountered in
+	 * event.meta
+	 *
+	 * @param {!Event} event
+	 * @param {!Object} shortcutHandlers
+	 * @return {*} null if no handler could be found
+	 */
+	function shortcutHandler (event, shortcutHandlers) {
+		if (!event.keycode) {
+			return;
+		}
+		var lookupKey = event.meta + '+' + event.keycode;
+		if (shortcutHandlers[event.type] && shortcutHandlers[event.type][lookupKey]) {
+			return shortcutHandlers[event.type][lookupKey];
+		} else {
+			return null;
+		}
+	}
+
 	return {
-		CODES      : CODES,
-		EVENTS     : EVENTS,
-		ARROWS     : ARROWS,
-		handleKeys : handleKeys
+		CODES           : CODES,
+		EVENTS          : EVENTS,
+		ARROWS          : ARROWS,
+		handleKeys      : handleKeys,
+		shortcutHandler : shortcutHandler
 	};
 });
