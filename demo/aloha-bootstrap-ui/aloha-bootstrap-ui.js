@@ -351,6 +351,21 @@
 		});
 	}
 
+	$(document).on('click', function (event) {
+		var $target = $(event.target);
+		var $ui = $target.closest('aloha-toolbar');
+		if (0 === $ui.length) {
+			Editor.selection.boundaries = null;
+			Array.prototype.forEach.call(
+				document.querySelectorAll('.aloha-toolbar .active'),
+				function (node) {
+					Dom.removeClass(node, 'active');
+				}
+			);
+			return;
+		}
+	});
+
 	$('.aloha-toolbar').on('click', function ($event) {
 		var action = parseAction($event.target);
 		var boundaries = Editor.selection.boundaries;
