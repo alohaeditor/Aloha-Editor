@@ -354,9 +354,7 @@ define([
 
 	function handler(event) {
 		var modifier = event.meta ? event.meta + '+' : '';
-		return (handlers[event.type]
-		    && handlers[event.type][modifier + event.keycode])
-		    || (isTextInput(event) && handlers['keypress']['input']);
+		return Keys.shortcutHandler(event, handlers) || (isTextInput(event) && handlers['keypress']['input']);
 	}
 
 	/**

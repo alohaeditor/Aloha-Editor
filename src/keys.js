@@ -136,7 +136,10 @@ define(['strings', 'boundaries'], function (Strings, Boundaries) {
 		if (!event.keycode) {
 			return;
 		}
-		var lookupKey = event.meta + '+' + event.keycode;
+		var lookupKey = event.meta 
+			? event.meta + '+' + event.keycode
+			: event.keycode;
+
 		if (shortcutHandlers[event.type] && shortcutHandlers[event.type][lookupKey]) {
 			return shortcutHandlers[event.type][lookupKey];
 		} else {
