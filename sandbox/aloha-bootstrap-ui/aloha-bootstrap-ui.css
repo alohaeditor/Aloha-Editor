@@ -104,7 +104,7 @@
 	text-shadow: -1px -1px 0px rgb(150,150,150);
 }
 
-@-webkit-keyframes flip {
+@-webkit-keyframes flip-open {
 	0% {
 		opacity: 0.2;
 		-webkit-transform: rotateX(30deg) translateY(5px) translateZ(10px) scale(0.8);
@@ -114,7 +114,7 @@
 		-webkit-transform: rotateX(0deg) translateY(0px) translateZ(0px) scale(1.0);
 	}
 }
-@-moz-keyframes flip {
+@-moz-keyframes flip-open {
 	0% {
 		opacity: 0.2;
 		-moz-transform: rotateX(30deg) translateY(5px) translateZ(10px) scale(0.8);
@@ -122,6 +122,26 @@
 	100% {
 		opacity: 1;
 		-moz-transform: rotateX(0deg) translateY(0px) translateZ(0px) scale(1.0);
+	}
+}
+@-webkit-keyframes flip-close {
+	0% {
+		opacity: 1;
+		-webkit-transform: rotateX(0deg) translateY(0px) translateZ(0px) scale(1.0);
+	}
+	100% {
+		opacity: 0;
+		-webkit-transform: rotateX(80deg) translateY(5px) translateZ(10px) scale(0.8);
+	}
+}
+@-moz-keyframes flip-close {
+	0% {
+		opacity: 1;
+		-moz-transform: rotateX(0deg) translateY(0px) translateZ(0px) scale(1.0);
+	}
+	100% {
+		opacity: 0;
+		-moz-transform: rotateX(80deg) translateY(5px) translateZ(10px) scale(0.8);
 	}
 }
 
@@ -133,10 +153,16 @@
 }
 .aloha-3d.opened .aloha-link-toolbar {
 	display: block;
-	-webkit-animation: flip .2s ease-out forwards;
-	   -moz-animation: flip .2s ease-out forwards;
-	    -ms-animation: flip .2s ease-out forwards;
-	        animation: flip .2s ease-out forwards;
+	-webkit-animation: flip-open .2s ease-out forwards;
+	   -moz-animation: flip-open .2s ease-out forwards;
+	    -ms-animation: flip-open .2s ease-out forwards;
+	        animation: flip-open .2s ease-out forwards;
+}
+.aloha-3d.closed .aloha-link-toolbar {
+	-webkit-animation: flip-close .2s ease-out forwards;
+	   -moz-animation: flip-close .2s ease-out forwards;
+	    -ms-animation: flip-close .2s ease-out forwards;
+	        animation: flip-close .2s ease-out forwards;
 }
 .aloha-link-toolbar input {
 	color: #fff;
