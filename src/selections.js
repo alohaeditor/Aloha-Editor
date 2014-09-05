@@ -573,20 +573,6 @@ define([
 	}
 
 	/**
-	 * Returns a new selection context as a function of the given event, the
-	 * previous state, and changes to the state.
-	 *
-	 * @private
-	 * @param  {!Event}   event
-	 * @param  {!Context} context
-	 * @param  {!Object}  change
-	 * @return {Object}
-	 */
-	function newContext(event, context, change) {
-		return Maps.extend({}, context, change, {event: event.type});
-	}
-
-	/**
 	 * Ensures that the given boundary is visible inside of the viewport by
 	 * scolling the view port if necessary.
 	 *
@@ -665,7 +651,7 @@ define([
 	}
 
 	/**
-	 * Updates boundaries, selection
+	 * Updates selection
 	 *
 	 * @param  {AlohaEvent} event
 	 * @return {AlohaEvent}
@@ -682,8 +668,9 @@ define([
 			selection.range,
 			Events.hasKeyModifier(event, 'shift')
 		);
-		event.selection = newContext(event, selection, change);
-		event.selection.boundaries = Boundaries.fromRange(event.selection.range);
+		selection.type  = event.type;
+		selection.focus = change.focus;
+		selection.boundaries = Boundaries.fromRange(change.range);
 		// Because we don't want the page to scroll
 		if ('keydown' === event.type && movements[event.keycode]) {
 			Events.preventDefault(event.nativeEvent);
