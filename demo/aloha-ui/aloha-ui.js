@@ -427,10 +427,6 @@
 		}
 	});
 
-	on($('.aloha-caret'), 'mousedown', function (event) {
-		console.warn(event.target);
-	});
-
 	var shortcutHandlers = {
 		'keydown': {
 			// meta+k
@@ -450,10 +446,7 @@
 		if (shortcutHandler) {
 			return shortcutHandler(event);
 		}
-		if ('keyup' !== event.type && 'click' !== event.type) {
-			return event;
-		}
-		if (!Dom.hasClass(event.nativeEvent.target, 'aloha-ephemera')) {
+		if ('keyup' === event.type || 'click' === event.type) {
 			handleLinks(event);
 			handleFormats(event.selection.boundaries);
 		}

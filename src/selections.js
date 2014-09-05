@@ -374,15 +374,12 @@ define([
 	 * @return {Object}
 	 */
 	function dblclick(event, range, focus, previous, expanding) {
-		return {range: range, focus: 'end'};
-		/*
 		var boundaries = Boundaries.fromRange(range);
 		boundaries = Traversing.expand(boundaries[0], boundaries[1], 'word');
 		return {
 			range: Boundaries.range(boundaries[0], boundaries[1]),
 			focus: 'end'
 		};
-		*/
 	}
 
 	/**
@@ -562,13 +559,14 @@ define([
 		Dom.addClass(caret, 'aloha-caret', 'aloha-ephemera');
 		Dom.insert(caret, doc.body, true);
 		return {
-			blinking   : blinking(caret),
-			caret      : caret,
-			range      : null,
-			focus      : 'end',
-			mousedown  : false,
-			formatting : [],
-			overrides  : []
+			blinking         : blinking(caret),
+			focus            : 'end',
+			boundaries       : [],
+			caret            : caret,
+			event            : '',
+			doubleclickTimer : 0,
+			formatting       : [],
+			overrides        : []
 		};
 	}
 
@@ -650,6 +648,17 @@ define([
 		return map;
 	}
 
+	function processForDoubleclick(event) {
+		var selection = event.selection;
+		if ('mousedown' === event.type) {
+			var time = new Date();
+			if (time - selection.doubleclickTimer < 500) {
+				event.type = 'dblclick';
+			}
+			selection.doubleclickTimer = time;
+		}
+	}
+
 	/**
 	 * Updates selection
 	 *
@@ -660,6 +669,7 @@ define([
 		if (!handlers[event.type]) {
 			return event;
 		}
+		processForDoubleclick(event);
 		var selection = event.selection;
 		var change = handlers[event.type](
 			event,

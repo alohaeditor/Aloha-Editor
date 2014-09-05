@@ -58,7 +58,7 @@ define([
 		// mousemove immediately follows a mousedown
 		var isDragging = 'mousemove' === type
 		              && 'mousedown' === editor.selection.event;
-		if ('click' === type || 'mousedown' === type || isDragging) {
+		if ('dblclick' === type || 'click' === type || 'mousedown' === type || isDragging) {
 			// Because otherwise, if, if we are in the process of a click, and
 			// the user's cursor is over the caret element,
 			// Boundaries.fromPosition() will compute the boundaries to be
@@ -71,7 +71,7 @@ define([
 		}
 		var doc = nativeEvent.target.document || nativeEvent.target.ownerDocument;
 		var boundaries;
-		if ('mousedown' === type || 'click' === type) {
+		if ('mousedown' === type || 'click' === type || 'dblclick' === type) {
 			boundaries = Boundaries.fromPosition(
 				nativeEvent.clientX,
 				nativeEvent.clientY,
