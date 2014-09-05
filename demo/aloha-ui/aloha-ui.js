@@ -89,7 +89,7 @@
 			if (element.className) {
 				match = element.className.match(/aloha-action-(\w+)(-(\w+))?/);
 			}
-			if (match || Dom.hasClass(element, 'aloha-toolbar')) {
+			if (match || Dom.hasClass(element, 'aloha-ui')) {
 				return true;
 			} else {
 				return false;
@@ -205,14 +205,14 @@
 		},
 
 		/**
-		 * Returns the element or its first ancestor that has a 'aloha-toolbar'
+		 * Returns the element or its first ancestor that has a 'aloha-ui'
 		 * class, if any.
 		 *
 		 * @param  {!Element} element
 		 * @param  {?Element}
 		 */
 		closestToolbar: function (element) {
-			var toolbar = Dom.upWhile(element, Fn.complement(Fn.partial(hasClass, 'aloha-toolbar')));
+			var toolbar = Dom.upWhile(element, Fn.complement(Fn.partial(hasClass, 'aloha-ui')));
 			return (toolbar && Dom.hasClass(toolbar.parentNode, 'aloha-3d'))
 				 ? toolbar.parentNode
 				 : toolbar;
@@ -311,7 +311,7 @@
 		}
 
 		Array.prototype.forEach.call(
-			doc.querySelectorAll('.aloha-toolbar .active'),
+			doc.querySelectorAll('.aloha-ui .active'),
 			function (node) {
 				Dom.removeClass(node, 'active');
 			}
@@ -319,7 +319,7 @@
 
 		formatNodes.forEach(function (format) {
 			// update buttons
-			var buttons = doc.querySelectorAll('.aloha-toolbar .' + ACTION_CLASS_PREFIX + format),
+			var buttons = doc.querySelectorAll('.aloha-ui .' + ACTION_CLASS_PREFIX + format),
 				i = buttons.length;
 			while (i--) {
 				buttons[i].className += ' active';
@@ -327,10 +327,10 @@
 
 			// update dropdowns
 			var dropdownEntries = doc
-				.querySelectorAll('.aloha-toolbar .dropdown-menu .' + ACTION_CLASS_PREFIX + format),
+				.querySelectorAll('.aloha-ui .dropdown-menu .' + ACTION_CLASS_PREFIX + format),
 				dropdownRoot;
 			i = dropdownEntries.length;
-			var activeDropdowns = doc.querySelectorAll('.aloha-toolbar .dropdown-toggle .active');
+			var activeDropdowns = doc.querySelectorAll('.aloha-ui .dropdown-toggle .active');
 			if (activeDropdowns.length > 0) {
 				activeDropdowns.forEach(function (node) {
 					Dom.removeClass('active');
@@ -353,11 +353,11 @@
 
 	$(document).on('click', function (event) {
 		var $target = $(event.target);
-		var $ui = $target.closest('aloha-toolbar');
+		var $ui = $target.closest('aloha-ui');
 		if (0 === $ui.length) {
 			Editor.selection.boundaries = null;
 			Array.prototype.forEach.call(
-				document.querySelectorAll('.aloha-toolbar .active'),
+				document.querySelectorAll('.aloha-ui .active'),
 				function (node) {
 					Dom.removeClass(node, 'active');
 				}
@@ -365,7 +365,7 @@
 		}
 	});
 
-	$('.aloha-toolbar').on('click', function (event) {
+	$('.aloha-ui').on('click', function (event) {
 		var selection = Editor.selection;
 		var action = parseAction(event.target);
 		if (action && selection.boundaries) {

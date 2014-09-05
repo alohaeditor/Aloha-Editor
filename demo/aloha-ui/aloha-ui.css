@@ -19,28 +19,28 @@
 	        transform-style: preserve-3d;
 }
 
-.aloha-toolbar { display: inline-block; }
-.aloha-toolbar,
-.aloha-toolbar .btn {
+.aloha-ui.btn-toolbar { display: inline-block; }
+.aloha-ui.btn-toolbar,
+.aloha-ui.btn-toolbar .btn {
 	font-size: 18px;
 	-moz-osx-font-smoothing: grayscale;
 	 -webkit-font-smoothing: antialiased;
 	    -moz-font-smoothing: antialiased;
 	         font-smoothing: antialiased;
 }
-.aloha-toolbar input { outline: 0; }
-.aloha-toolbar .btn {
+.aloha-ui.btn-toolbar input { outline: 0; }
+.aloha-ui.btn-toolbar .btn {
 	width: 45px;
 	height: 45px;
 	margin-left: 0;
 }
-.aloha-toolbar .dropdown-toggle {
+.aloha-ui.btn-toolbar .dropdown-toggle {
 	-webkit-transition: width 0.25s;
 	   -moz-transition: width 0.25s;
 	    -ms-transition: width 0.25s;
 	        transition: width 0.25s;
 }
-.aloha-toolbar .btn.dropdown-toggle::before {
+.aloha-ui.btn-toolbar .btn.dropdown-toggle::before {
 	content: "";
 	position: absolute;
 	right: 0px;
@@ -55,26 +55,26 @@
 	background: linear-gradient(to right,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.5) 100%); /* W3C */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#000000',GradientType=1 ); /* IE6-9 */
 }
-.aloha-toolbar .btn.dropdown-toggle:hover,
-.aloha-toolbar .btn-group.open .btn.dropdown-toggle {
+.aloha-ui.btn-toolbar .btn.dropdown-toggle:hover,
+.aloha-ui.btn-toolbar .btn-group.open .btn.dropdown-toggle {
 	width: 135px;
 }
-.aloha-toolbar .btn.dropdown-toggle:hover::before,
-.aloha-toolbar .btn-group.open .btn.dropdown-toggle::before {
+.aloha-ui.btn-toolbar .btn.dropdown-toggle:hover::before,
+.aloha-ui.btn-toolbar .btn-group.open .btn.dropdown-toggle::before {
 	display: none;
 }
-.aloha-toolbar .dropdown-menu {
+.aloha-ui.btn-toolbar .dropdown-menu {
 	border: 0;
 	padding: 0;
 	font-size: 16px;
 }
-.aloha-toolbar,
-.aloha-toolbar a,
-.aloha-toolbar a:focus,
-.aloha-toolbar button,
-.aloha-toolbar button:focus,
-.aloha-toolbar .dropdown-menu a, 
-.aloha-toolbar .dropdown-menu a:focus {
+.aloha-ui.btn-toolbar,
+.aloha-ui.btn-toolbar a,
+.aloha-ui.btn-toolbar a:focus,
+.aloha-ui.btn-toolbar button,
+.aloha-ui.btn-toolbar button:focus,
+.aloha-ui.btn-toolbar .dropdown-menu a, 
+.aloha-ui.btn-toolbar .dropdown-menu a:focus {
 	border: 0;
 	border-radius: 0;
 	background: #3f3f3f;
@@ -85,24 +85,24 @@
 	    -ms-transition: text-shadow-color 0.25s;
 	        transition: text-shadow-color 0.25s;
 }
-.aloha-toolbar.btn-toolbar>.btn-group {
+.aloha-ui.btn-toolbar.btn-toolbar>.btn-group {
 	margin-left: 0;
 	border-right: 1px solid white;
 }
-.aloha-toolbar button,
-.aloha-toolbar a {
+.aloha-ui.btn-toolbar button,
+.aloha-ui.btn-toolbar a {
 	-webkit-transition: background-color 0.25s;
 	   -moz-transition: background-color 0.25s;
 	    -ms-transition: background-color 0.25s;
 	        transition: background-color 0.25s;
 }
-.aloha-toolbar a.active,
-.aloha-toolbar a:hover,
-.aloha-toolbar button.active,
-.aloha-toolbar button:hover,
-.aloha-toolbar .dropdown-menu .active,
-.aloha-toolbar .dropdown-menu a:hover,
-.aloha-toolbar .btn-group.open .btn {
+.aloha-ui.btn-toolbar a.active,
+.aloha-ui.btn-toolbar a:hover,
+.aloha-ui.btn-toolbar button.active,
+.aloha-ui.btn-toolbar button:hover,
+.aloha-ui.btn-toolbar .dropdown-menu .active,
+.aloha-ui.btn-toolbar .dropdown-menu a:hover,
+.aloha-ui.btn-toolbar .btn-group.open .btn {
 	color: #fff;
 	background: #5daecc;
 	text-shadow: -1px -1px 0px rgb(150,150,150);
