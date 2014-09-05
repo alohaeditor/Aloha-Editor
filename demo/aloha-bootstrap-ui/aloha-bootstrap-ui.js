@@ -239,7 +239,7 @@
 		 * @return {Event} event
 		 */
 		insertLink: function (event) {
-			var boundaries = event.boundaries || event.lastEditableBoundaries;
+			var boundaries = event.selection.boundaries;
 			if (Arrays.equal(boundaries[0], boundaries[1])) {
 				boundaries = Traversing.expand(boundaries[0], boundaries[1], 'word');
 			}
@@ -247,9 +247,9 @@
 			boundaries[0] = Boundaries.next(boundaries[0]);
 			boundaries[1] = Boundaries.fromEndOfNode(boundaries[0])[0];
 			//var href = Dom.getAttr(Boundaries.container(boundaries[0]), 'href');
-			event.boundaries = boundaries;
+			event.selection.boundaries = boundaries;
 			LinksUI.open(
-				LinksUI.toolbar(event.target.ownerDocument),
+				LinksUI.toolbar(event.nativeEvent.target.ownerDocument),
 				Boundaries.container(boundaries[0])
 			);
 			$('.aloha-link-toolbar input[name=href]').get(0).focus();
@@ -263,17 +263,17 @@
 	 * @param {!Event} event
 	 */
 	function handleLinks(event) {
-		var boundaries = event.boundaries || event.lastEditableBoundaries;
+		var boundaries = event.selection.boundaries;
 		var cac = Boundaries.commonContainer(boundaries[0], boundaries[1]);
 		var anchor = Dom.upWhile(cac, notAnchor);
-		var toolbar = LinksUI.toolbar(event.target.ownerDocument);
+		var toolbar = LinksUI.toolbar(event.nativeEvent.target.ownerDocument);
 		if (!toolbar) {
 			return;
 		}
 		if (anchor) {
 			return LinksUI.open(toolbar, anchor);
 		}
-		if (toolbar === LinksUI.closestToolbar(event.target)) {
+		if (toolbar === LinksUI.closestToolbar(event.nativeEvent.target)) {
 			return LinksUI.interact(toolbar, anchor, event);
 		}
 		return LinksUI.close(toolbar, anchor);
@@ -402,9 +402,9 @@
 		if ('keyup' !== event.type && 'click' !== event.type) {
 			return event;
 		}
-		if (!Dom.hasClass(event.target, 'aloha-ephemera')) {
+		if (!Dom.hasClass(event.nativeEvent.target, 'aloha-ephemera')) {
 			handleLinks(event);
-			handleFormats(event.boundaries);
+			handleFormats(event.selection.boundaries);
 		}
 		return event;
 	}

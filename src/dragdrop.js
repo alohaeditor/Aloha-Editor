@@ -131,12 +131,12 @@ define([
 		return [boundary, boundary];
 	}
 
-	function handleDragStart(alohaEvent) {
+	function handleDragStart(event) {
 		// Because this is required in Firefox for dragging to start on elements
 		// other than IMG elements or anchor elements with href values
-		alohaEvent.nativeEvent.dataTransfer.setData(
-			alohaEvent.editor.dnd.data[0],
-			alohaEvent.editor.dnd.data[1]
+		event.nativeEvent.dataTransfer.setData(
+			event.dnd.data[0],
+			event.dnd.data[1]
 		);
 	}
 
@@ -147,36 +147,36 @@ define([
 		return boundaries;
 	}
 
-	function handleDragOver(alohaEvent) {
-		var event = alohaEvent.nativeEvent;
-		alohaEvent.boundaries = calculateBoundaries(
-			event.clientX + DRAGGING_CARET_OFFSET,
-			event.clientY + DRAGGING_CARET_OFFSET,
-			event.target.ownerDocument
+	function handleDragOver(event) {
+		var nativeEvent = event.nativeEvent;
+		event.selection.boundaries = calculateBoundaries(
+			nativeEvent.clientX + DRAGGING_CARET_OFFSET,
+			nativeEvent.clientY + DRAGGING_CARET_OFFSET,
+			nativeEvent.target.ownerDocument
 		);
 		// Because this is necessary for dropping to work
-		Events.preventDefault(event);
+		Events.preventDefault(nativeEvent);
 	}
 
-	function handleDrop(alohaEvent) {
-		var event = alohaEvent.nativeEvent;
-		alohaEvent.boundaries = calculateBoundaries(
+	function handleDrop(event) {
+		var nativeEvent = event.nativeEvent;
+		event.selection.boundaries = calculateBoundaries(
 			// +8 because, for some reason the boundaries are always calculated
 			// a character behind of where it should be...
-			event.clientX + DRAGGING_CARET_OFFSET + 8,
-			event.clientY + DRAGGING_CARET_OFFSET,
-			event.target.ownerDocument
+			nativeEvent.clientX + DRAGGING_CARET_OFFSET + 8,
+			nativeEvent.clientY + DRAGGING_CARET_OFFSET,
+			nativeEvent.target.ownerDocument
 		);
-		if (alohaEvent.boundaries) {
-			alohaEvent.boundaries = moveNode(
-				alohaEvent.boundaries[0],
-				alohaEvent.boundaries[1],
-				alohaEvent.editor.dnd.element
+		if (event.selection.boundaries) {
+			event.selection.boundaries = moveNode(
+				event.selection.boundaries[0],
+				event.selection.boundaries[1],
+				event.dnd.element
 			);
 		}
-		Events.stopPropagation(event);
+		Events.stopPropagation(nativeEvent);
 		// Because some browsers will otherwise redirect
-		Events.preventDefault(event);
+		Events.preventDefault(nativeEvent);
 	}
 
 	var handlers = {
@@ -188,13 +188,13 @@ define([
 	/**
 	 * Processes drag and drop events.
 	 *
-	 * Updates editor.dnd and nativeEvent
+	 * Updates dnd and nativeEvent
 	 *
 	 * @param  {AlohaEvent} event
 	 * @return {AlohaEvent}
 	 */
 	function handleDragDrop(event) {
-		if (event.editor.dnd && handlers[event.type]) {
+		if (event.dnd && handlers[event.type]) {
 			handlers[event.type](event);
 		}
 		return event;

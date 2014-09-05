@@ -215,7 +215,7 @@ define([
 		Events.suppress(event.nativeEvent);
 		var content = extractContent(
 			event.nativeEvent,
-			event.target.ownerDocument,
+			event.nativeEvent.target.ownerDocument,
 			event.editable.settings
 		);
 		if (!content) {
@@ -224,7 +224,11 @@ define([
 		Undo.capture(event.editable.undoContext, {
 			meta: {type: 'paste'}
 		}, function () {
-			event.boundaries = insert(event.boundaries[0], event.boundaries[1], content);
+			event.selection.boundaries = insert(
+				event.selection.boundaries[0],
+				event.selection.boundaries[1],
+				content
+			);
 		});
 		return event;
 	}

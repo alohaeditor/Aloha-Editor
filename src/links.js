@@ -231,7 +231,10 @@ define([
 		if ('click' !== event.type) {
 			return event;
 		}
-		var cac = Boundaries.commonContainer(event.boundaries[0], event.boundaries[1]);
+		var cac = Boundaries.commonContainer(
+			event.selection.boundaries[0],
+			event.selection.boundaries[1]
+		);
 		var anchor = Dom.upWhile(cac, notAnchor);
 		if (anchor) {
 			Events.preventDefault(event.nativeEvent);

@@ -141,7 +141,7 @@ define([
 		) {
 			return event;
 		}
-		var boundary = event.boundaries[0];
+		var boundary = event.selection.boundaries[0];
 		var prev = Traversing.prev(boundary, 'visual');
 		var token = prev && nextChar(prev);
 		var level = dictionary;
@@ -158,7 +158,7 @@ define([
 		}
 		if (handler) {
 			boundary = handler(start, boundary);
-			event.boundaries = [boundary, boundary];
+			event.selection.boundaries = [boundary, boundary];
 		}
 		return event;
 	}

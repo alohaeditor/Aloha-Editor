@@ -459,7 +459,7 @@ define([
 
 	function paste(event, range, focus) {
 		return {
-			range: Boundaries.range(event.boundaries[0], event.boundaries[1]),
+			range: Boundaries.range(event.selection.boundaries[0], event.selection.boundaries[1]),
 			focus: 'end'
 		};
 	}
@@ -665,7 +665,7 @@ define([
 	}
 
 	/**
-	 * Updates boundaries, editor.selection
+	 * Updates boundaries, selection
 	 *
 	 * @param  {AlohaEvent} event
 	 * @return {AlohaEvent}
@@ -674,17 +674,16 @@ define([
 		if (!handlers[event.type]) {
 			return event;
 		}
-		var context = event.editor.selection;
+		var selection = event.selection;
 		var change = handlers[event.type](
 			event,
-			Boundaries.range(event.boundaries[0], event.boundaries[1]),
-			context.focus,
-			context.range,
+			Boundaries.range(selection.boundaries[0], selection.boundaries[1]),
+			selection.focus,
+			selection.range,
 			Events.hasKeyModifier(event, 'shift')
 		);
-		event.editor.selection = newContext(event, context, change);
-		event.boundaries = Boundaries.fromRange(event.editor.selection.range);
-		event.editor.selection.boundaries = event.boundaries;
+		event.selection = newContext(event, selection, change);
+		event.selection.boundaries = Boundaries.fromRange(event.selection.range);
 		// Because we don't want the page to scroll
 		if ('keydown' === event.type && movements[event.keycode]) {
 			Events.preventDefault(event.nativeEvent);
@@ -731,10 +730,10 @@ define([
 			return;
 		}
 		var boundary = select(
-			event.editor.selection,
-			event.boundaries[0],
-			event.boundaries[1],
-			event.editor.selection.focus
+			event.selection,
+			event.selection.boundaries[0],
+			event.selection.boundaries[1],
+			event.selection.focus
 		);
 		// Because we don't want the screen to jump when the editor hits "shift"
 		if (isCaretMovingEvent(event)) {

@@ -25,15 +25,15 @@ define(['boundaries'], function (Boundaries) {
 	};
 
 	/**
-	 * Updates event.editor.selection
+	 * Updates selection
 	 *
 	 * @param  {AlohaEvent} event
 	 * @return {AlohaEVent}
 	 */
 	function handleMouse(event) {
 		if ('mousedown' === event.type) {
-			event.editor.selection.formatting = [];
-			event.editor.selection.overrides = [];
+			event.selection.formatting = [];
+			event.selection.overrides = [];
 		}
 		return event;
 	}

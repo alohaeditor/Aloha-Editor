@@ -39,33 +39,12 @@ define([
 	var doc = document;
 	var win = Dom.documentWindow(doc);
 
-	function getBoundaries(editor, nativeEvent) {
-		var target = nativeEvent.target;
-		var doc = target.document || target.ownerDocument;
-		if ('mousedown' === nativeEvent.type) {
-			// Because otherwise, if, if we are in the process of a click, and
-			// the user's cursor is over the caret element,
-			// Boundaries.fromPosition() will compute the boundaries to be
-			// inside the absolutely positioned caret element
-			Dom.setStyle(editor.selection.caret, 'display', 'none');
-		}
-		if ('mousedown' === nativeEvent.type || 'click' === nativeEvent.type) {
-			return Boundaries.fromPosition(
-				nativeEvent.clientX,
-				nativeEvent.clientY,
-				doc
-			);
-		}
-		return Boundaries.get(doc);
-	}
-
 	/**
 	 * Creates an event object that will contain all the following properties:
+	 *		dnd
 	 *		type
-	 *		target
-	 *		editor
 	 *		editable
-	 *		boundaries
+	 *		selection
 	 *		nativeEvent
 	 *
 	 * @param  {!Editor} editor
@@ -76,20 +55,31 @@ define([
 		if (!nativeEvent) {
 			return null;
 		}
-		if ('mousemove' === nativeEvent.type) {
-			// Because we want to move the caret out of the way when the user
-			// starts creating an expanded selection by dragging.  We know that
-			// we are starting an expanded selection when a mousemove
-			// immediately follows a mousedown
-			if ('mousedown' === editor.selection.event) {
-				Dom.setStyle(editor.selection.caret, 'display', 'none');
-			}
-			return null;
-		}
-		if ('dblclick' === editor.selection.event) {
+		// Because we know that we are starting an expanded selection when a
+		// mousemove immediately follows a mousedown
+		var isDragging = 'mousemove' === nativeEvent.type
+		              && 'mousedown' === editor.selection.event;
+		if ('mousedown' === nativeEvent.type || isDragging) {
+			// Because otherwise, if, if we are in the process of a click, and
+			// the user's cursor is over the caret element,
+			// Boundaries.fromPosition() will compute the boundaries to be
+			// inside the absolutely positioned caret element
 			Dom.setStyle(editor.selection.caret, 'display', 'none');
 		}
-		var boundaries = getBoundaries(editor, nativeEvent);
+		if ('mousemove' === nativeEvent.type) {
+			return null;
+		}
+		var doc = nativeEvent.target.document || nativeEvent.target.ownerDocument;
+		var boundaries;
+		if ('mousedown' === nativeEvent.type || 'click' === nativeEvent.type) {
+			boundaries = Boundaries.fromPosition(
+				nativeEvent.clientX,
+				nativeEvent.clientY,
+				doc
+			);
+		} else {
+			boundaries = Boundaries.get(doc);
+		}
 		if (!boundaries) {
 			return null;
 		}
@@ -109,12 +99,12 @@ define([
 		if (!editable) {
 			return null;
 		}
+		editor.selection.boundaries = boundaries;
 		return {
+			dnd         : editor.dnd,
 			type        : nativeEvent.type,
-			target      : nativeEvent.target,
-			editor      : editor,
 			editable    : editable,
-			boundaries  : boundaries,
+			selection   : editor.selection,
 			nativeEvent : nativeEvent
 		};
 	}

@@ -75,8 +75,8 @@ define([
 	 * @return {boolean}
 	 */
 	function isBlockEvent(event) {
-		return 'IMG' === event.target.nodeName
-		    || Dom.hasClass(event.target, event.editor.BLOCK_CLASS);
+		return 'IMG' === event.nativeEvent.target.nodeName
+		    || Dom.hasClass(event.nativeEvent.target, event.editable.settings.BLOCK_CLASS);
 	}
 
 	function handleAloha(event) {
@@ -88,19 +88,19 @@ define([
 	}
 
 	function handleMouseDown(event) {
-		var block = event.target;
+		var block = event.nativeEvent.target;
 		if (isBlockEvent(event) && DragDrop.isDraggable(block)) {
-			event.editor.dnd = Events.hasKeyModifier(event, 'ctrl')
-			                 ? copyContext(block)
-			                 : moveContext(block);
+			event.dnd = Events.hasKeyModifier(event, 'ctrl')
+			          ? copyContext(block)
+			          : moveContext(block);
 		}
 	}
 
 	function handleDragStart(event) {
 		if (isBlockEvent(event)) {
 			draggingStyles.forEach(function (style) {
-				Dom.setStyle(event.editor.dnd.target, style[0], style[1]);
-				Dom.setStyle(event.editor.dnd.element, style[0], style[1]);
+				Dom.setStyle(event.dnd.target, style[0], style[1]);
+				Dom.setStyle(event.dnd.element, style[0], style[1]);
 			});
 		}
 	}
@@ -108,16 +108,13 @@ define([
 	function handleDragEnd(event) {
 		if (isBlockEvent(event)) {
 			draggingStyles.forEach(function (style) {
-				Dom.setStyle(event.editor.dnd.target, style[0], '');
-				Dom.setStyle(event.editor.dnd.element, style[0], '');
+				Dom.setStyle(event.dnd.target, style[0], '');
+				Dom.setStyle(event.dnd.element, style[0], '');
 			});
 		}
 	}
 
-	function handleDragOver(event) {
-		var host = Dom.editingHost(event.editor.dnd.element.parentNode);
-		event.editable = host && Editables.fromElem(event.editor, host);
-	}
+	function handleDragOver(event) {}
 
 	var handlers = {
 		'aloha'     : handleAloha,

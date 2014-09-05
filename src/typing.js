@@ -41,7 +41,10 @@ define([
 	'use strict';
 
 	function undoable(type, event, fn) {
-		var range = Boundaries.range(event.boundaries[0], event.boundaries[1]);
+		var range = Boundaries.range(
+			event.selection.boundaries[0],
+			event.selection.boundaries[1]
+		);
 		Undo.capture(event.editable.undoContext, {
 			meta: {type: type},
 			oldRange: range
@@ -87,8 +90,9 @@ define([
 	}
 
 	function remove(direction, event) {
-		var start = event.boundaries[0];
-		var end = event.boundaries[1];
+		var selection = event.selection;
+		var start = selection.boundaries[0];
+		var end = selection.boundaries[1];
 		if (Boundaries.equals(start, end)) {
 			if (direction) {
 				end = Traversing.next(end);
@@ -100,8 +104,8 @@ define([
 			start,
 			Traversing.envelopeInvisibleCharacters(end)
 		);
-		event.editor.selection.formatting = joinToSet(
-			event.editor.selection.formatting,
+		selection.formatting = joinToSet(
+			selection.formatting,
 			Overrides.harvest(Boundaries.container(boundaries[0]))
 		);
 		boundaries = removeUnrenderedContainers(boundaries);
@@ -110,41 +114,42 @@ define([
 	}
 
 	function format(style, event) {
-		var boundaries = event.boundaries;
+		var selection = event.selection;
+		var boundaries = selection.boundaries;
 		if (!Html.isBoundariesEqual(boundaries[0], boundaries[1])) {
 			return Editing.toggle(boundaries[0], boundaries[1], style);
 		}
 		var override = Overrides.nodeToState[style];
 		if (!override) {
-			return event.boundaries;
+			return boundaries;
 		}
-		var context = event.editor.selection;
 		var overrides = joinToSet(
-			context.formatting,
+			selection.formatting,
 			Overrides.harvest(Boundaries.container(boundaries[0])),
-			context.overrides
+			selection.overrides
 		);
-		context.overrides = Overrides.toggle(overrides, override, true);
-		return event.boundaries;
+		selection.overrides = Overrides.toggle(overrides, override, true);
+		return selection.boundaries;
 	}
 
 	function breakline(isLinebreak, event) {
 		if (!isLinebreak) {
-			event.editor.selection.formatting = joinToSet(
-				event.editor.selection.formatting,
-				Overrides.harvest(Boundaries.container(event.boundaries[0]))
+			event.selection.formatting = joinToSet(
+				event.selection.formatting,
+				Overrides.harvest(Boundaries.container(event.selection.boundaries[0]))
 			);
 		}
 		var breaker = (event.meta.indexOf('shift') > -1)
 		            ? 'BR'
 		            : event.editable.settings.defaultBlock;
-		return Editing.breakline(event.boundaries[1], breaker);
+		return Editing.breakline(event.selection.boundaries[1], breaker);
 	}
 
 	function insertText(event) {
 		var editable = event.editable;
+		var selection = event.selection;
 		var text = String.fromCharCode(event.keycode);
-		var boundary = event.boundaries[0];
+		var boundary = selection.boundaries[0];
 		if ('\t' === text) {
 			text = '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0';
 		}
@@ -157,13 +162,12 @@ define([
 				text = '\xa0';
 			}
 		}
-		var context = event.editor.selection;
 		boundary = Overrides.consume(
 			boundary,
-			joinToSet(context.formatting, context.overrides)
+			joinToSet(selection.formatting, selection.overrides)
 		);
-		context.overrides = [];
-		context.formatting = [];
+		selection.overrides = [];
+		selection.formatting = [];
 		var range = Boundaries.range(boundary, boundary);
 		var insertPath = Undo.pathFromBoundary(editable.elem, boundary);
 		var insertContent = [editable.elem.ownerDocument.createTextNode(text)];
@@ -176,17 +180,20 @@ define([
 	}
 
 	function toggleUndo(op, event) {
-		var range = Boundaries.range(event.boundaries[0], event.boundaries[1]);
+		var range = Boundaries.range(
+			event.selection.boundaries[0],
+			event.selection.boundaries[1]
+		);
 		op(event.editable.undoContext, range, [range]);
 		return Boundaries.fromRange(range);
 	}
 
 	function selectEditable(event) {
 		var editable = Dom.editingHost(Boundaries.commonContainer(
-			event.boundaries[0],
-			event.boundaries[1]
+			event.selection.boundaries[0],
+			event.selection.boundaries[1]
 		));
-		return !editable ? event.boundaries : [
+		return !editable ? event.selection.boundaries : [
 			Boundaries.create(editable, 0),
 			Boundaries.fromEndOfNode(editable)
 		];
@@ -328,7 +335,7 @@ define([
 		if (event.editable) {
 			Metaview.toggle(event.editable.elem);
 		}
-		return event.boundaries;
+		return event.selection.boundaries;
 	}};
 	// alt+1
 	handlers['keydown']['ctrl+49'] = {mutate : function toggleUndo(event) {
@@ -338,7 +345,7 @@ define([
 				'tagname': true
 			});
 		}
-		return event.boundaries;
+		return event.selection.boundaries;
 	}};
 	// alt+2
 	handlers['keydown']['ctrl+50'] = {mutate : function toggleUndo(event) {
@@ -349,23 +356,21 @@ define([
 				'padding': true
 			});
 		}
-		return event.boundaries;
+		return event.selection.boundaries;
 	}};
 
 	function handler(event) {
-		var modifier = event.meta ? event.meta + '+' : '';
-		return Keys.shortcutHandler(event, handlers) || (isTextInput(event) && handlers['keypress']['input']);
+		return Keys.shortcutHandler(event, handlers)
+		    || (isTextInput(event) && handlers['keypress']['input']);
 	}
 
 	/**
-	 * Updates:
-	 * 		boundaries
-	 * 		editor.selection
-	 * 		nativeEvent
+	 * Updates selection and nativeEvent
 	 */
 	function handleTyping(event) {
-		var start = event.boundaries[0];
-		var end = event.boundaries[1];
+		var selection = event.selection;
+		var start = selection.boundaries[0];
+		var end = selection.boundaries[1];
 		/*
 		if (!event.editable) {
 			if ('keydown' === event.type) {
@@ -385,23 +390,23 @@ define([
 			Events.preventDefault(event.nativeEvent);
 		}
 		if (handling.clearOverrides) {
-			event.editor.selection.overrides = [];
-			event.editor.selection.formatting = [];
+			selection.overrides = [];
+			selection.formatting = [];
 		}
 		if (handling.mutate) {
 			if (handling.undo) {
 				undoable(handling.undo, event, function () {
 					if (handling.removeContent && !Boundaries.equals(start, end)) {
-						event.boundaries = remove(false, event);
+						selection.boundaries = remove(false, event);
 					}
-					event.boundaries = handling.mutate(event);
+					selection.boundaries = handling.mutate(event);
 					Html.prop(Boundaries.commonContainer(
-						event.boundaries[0],
-						event.boundaries[1]
+						selection.boundaries[0],
+						selection.boundaries[1]
 					));
 				});
 			} else {
-				event.boundaries = handling.mutate(event);
+				selection.boundaries = handling.mutate(event);
 			}
 		}
 		return event;
