@@ -362,22 +362,20 @@
 					Dom.removeClass(node, 'active');
 				}
 			);
-			return;
 		}
 	});
 
-	$('.aloha-toolbar').on('click', function ($event) {
-		var action = parseAction($event.target);
-		var boundaries = Editor.selection.boundaries;
-		if (action && boundaries) {
-			boundaries = execute(action, boundaries);
-			Selections.select(
-				Editor.selection,
-				boundaries[0],
-				boundaries[1],
-				Editor.selection.focus
-			);
+	$('.aloha-toolbar').on('click', function (event) {
+		var selection = Editor.selection;
+		var action = parseAction(event.target);
+		if (action && selection.boundaries) {
+			var boundaries = execute(action, selection.boundaries);
+			Selections.select(selection, boundaries[0], boundaries[1], selection.focus);
 		}
+	});
+
+	$('.aloha-caret').on('mousedown', function (event) {
+		console.warn(event.target);
 	});
 
 	var shortcutHandlers = {

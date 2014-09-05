@@ -41,37 +41,37 @@ define([
 
 	/**
 	 * Creates an event object that will contain all the following properties:
-	 *		dnd
+	 *
 	 *		type
+	 *		nativeEvent
 	 *		editable
 	 *		selection
-	 *		nativeEvent
+	 *		dnd
 	 *
 	 * @param  {!Editor} editor
 	 * @param  {!Event}  nativeEvent
 	 * @return {?Event}
 	 */
 	function createEvent(editor, nativeEvent) {
-		if (!nativeEvent) {
-			return null;
-		}
+		var type = nativeEvent.type;
 		// Because we know that we are starting an expanded selection when a
 		// mousemove immediately follows a mousedown
-		var isDragging = 'mousemove' === nativeEvent.type
+		var isDragging = 'mousemove' === type
 		              && 'mousedown' === editor.selection.event;
-		if ('mousedown' === nativeEvent.type || isDragging) {
+		if ('click' === type || 'mousedown' === type || isDragging) {
 			// Because otherwise, if, if we are in the process of a click, and
 			// the user's cursor is over the caret element,
 			// Boundaries.fromPosition() will compute the boundaries to be
 			// inside the absolutely positioned caret element
 			Dom.setStyle(editor.selection.caret, 'display', 'none');
 		}
-		if ('mousemove' === nativeEvent.type) {
+		editor.selection.event = type;
+		if ('mousemove' === type) {
 			return null;
 		}
 		var doc = nativeEvent.target.document || nativeEvent.target.ownerDocument;
 		var boundaries;
-		if ('mousedown' === nativeEvent.type || 'click' === nativeEvent.type) {
+		if ('mousedown' === type || 'click' === type) {
 			boundaries = Boundaries.fromPosition(
 				nativeEvent.clientX,
 				nativeEvent.clientY,
@@ -87,7 +87,7 @@ define([
 		if (!Dom.isEditableNode(cac)) {
 			// Because if we are partly inside of an editable, we don't want the
 			// back-button to unload the page
-			if ('keydown' === nativeEvent.type) {
+			if ('keydown' === type) {
 				if (Dom.isEditableNode(Boundaries.container(boundaries[0]))
 				 || Dom.isEditableNode(Boundaries.container(boundaries[1]))) {
 					Events.preventDefault(nativeEvent);
@@ -101,11 +101,11 @@ define([
 		}
 		editor.selection.boundaries = boundaries;
 		return {
-			dnd         : editor.dnd,
-			type        : nativeEvent.type,
+			type        : type,
+			nativeEvent : nativeEvent,
 			editable    : editable,
 			selection   : editor.selection,
-			nativeEvent : nativeEvent
+			dnd         : editor.dnd
 		};
 	}
 

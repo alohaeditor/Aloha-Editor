@@ -85,7 +85,7 @@ define([
 			'top'     : box.top + 'px',
 			'left'    : box.left + 'px',
 			'height'  : box.height + 'px',
-			'width'   : '1px',
+			'width'   : '5px',
 			'display' : 'block'
 		});
 	}
@@ -668,7 +668,6 @@ define([
 			selection.range,
 			Events.hasKeyModifier(event, 'shift')
 		);
-		selection.type  = event.type;
 		selection.focus = change.focus;
 		selection.boundaries = Boundaries.fromRange(change.range);
 		// Because we don't want the page to scroll
@@ -713,7 +712,8 @@ define([
 	 * @param {AlohaEvent} event
 	 */
 	function update(event) {
-		if ('click' === event.type) {
+		if ('click' === event.selection.event) {
+			Dom.setStyle(event.selection.caret, 'display', 'block');
 			return;
 		}
 		var boundary = select(
