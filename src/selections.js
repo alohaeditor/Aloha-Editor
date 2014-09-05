@@ -733,26 +733,26 @@ define([
 	 *
 	 * Returns the focus boundary so that one can do focus(select(...))
 	 *
-	 * @param  {Context}  context
+	 * @param  {Context}  selection
 	 * @param  {Boundary} start
 	 * @param  {Boundary} end
 	 * @param  {string=}  focus optional. "start" or "end". Defaults to "end"
 	 * @return {Boundary}
 	 */
-	function select(context, start, end, focus) {
+	function select(selection, start, end, focus) {
 		var boundary = 'start' === focus ? start : end;
 		var node = Boundaries.container(boundary);
 		if (!Dom.isEditableNode(node)) {
-			Dom.setStyle(context.caret, 'display', 'none');
+			Dom.setStyle(selection.caret, 'display', 'none');
 			return boundary;
 		}
-		show(context.caret, boundary);
+		show(selection.caret, boundary);
 		Maps.extend(
-			context.caret.style,
-			stylesFromOverrides(mapOverrides(node, context))
+			selection.caret.style,
+			stylesFromOverrides(mapOverrides(node, selection))
 		);
 		Boundaries.select(start, end);
-		context.blinking.start();
+		selection.blinking.start();
 		return boundary;
 	}
 
