@@ -392,7 +392,7 @@
 	 * @param  {!AlohaEvent} event
 	 * @return {AlohaEvent}
 	 */
-	function handleBootstrapUi(event) {
+	function handleUi(event) {
 		var shortcutHandler = Keys.shortcutHandler(event, shortcutHandlers);
 		if (shortcutHandler) {
 			return shortcutHandler(event);
@@ -407,5 +407,5 @@
 		return event;
 	}
 
-	aloha.editor.stack.unshift(handleBootstrapUi);
+	aloha.editor.stack.unshift(handleUi);
 }(window.aloha));
