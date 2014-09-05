@@ -206,7 +206,7 @@ define([
 	 *		word-breaker (in languages that do not use space to delimit word
 	 *		boundaries).
 	 *
-	 * "block" -- Expand to completely contain the a block.
+	 * "block" -- Expand to completely contain a block.
 	 *
 	 * @param  {Boundary} start
 	 * @param  {Boundary} end

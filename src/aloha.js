@@ -39,6 +39,34 @@ define([
 	var doc = document;
 	var win = Dom.documentWindow(doc);
 
+	function processForMultiClick(event, selection) {
+		var time = new Date();
+		var elapsed = time - selection.clickTimer;
+		selection.clickTimer = time;
+		if (!selection.event) {
+			return;
+		}
+		if (elapsed > 500) {
+			return;
+		}
+		if (selection.event.clientX !== event.clientX) {
+			return;
+		}
+		if (selection.event.clientY !== event.clientY) {
+			return;
+		}
+		var type = selection.event.type;
+		return ('dblclick' === type || 'tplclick' === type) ? 'tplclick' : 'dblclick';
+	}
+
+	function isDragStartEvent(prevEvent, nextEvent) {
+		return 'mousedown' === prevEvent && 'mousemove' === nextEvent;
+	}
+
+	function isClickingEvent(type) {
+		return 'dblclick' === type || 'click' === type || 'mousedown' === type;
+	}
+
 	/**
 	 * Creates an event object that will contain all the following properties:
 	 *
@@ -47,70 +75,66 @@ define([
 	 *		editable
 	 *		selection
 	 *		dnd
+	 *		preventSelection
 	 *
 	 * @param  {!Editor} editor
-	 * @param  {!Event}  nativeEvent
+	 * @param  {!Event}  event
 	 * @return {?Event}
 	 */
-	function createEvent(editor, nativeEvent) {
-		var type = nativeEvent.type;
+	function createEvent(editor, event) {
+		var type = event.type;
+		var selection = editor.selection;
+		var isClicking = isClickingEvent(type);
 		// Because we know that we are starting an expanded selection when a
 		// mousemove immediately follows a mousedown
-		var isDragging = 'mousemove' === type
-		              && 'mousedown' === editor.selection.event;
-		if ('dblclick' === type || 'click' === type || 'mousedown' === type || isDragging) {
-			// Because otherwise, if, if we are in the process of a click, and
-			// the user's cursor is over the caret element,
+		if (isClicking || isDragStartEvent(selection.event && selection.event.type, type)) {
+			// Because otherwise, if we are in the process of a click, and the
+			// user's cursor is over the caret element,
 			// Boundaries.fromPosition() will compute the boundaries to be
 			// inside the absolutely positioned caret element
-			Dom.setStyle(editor.selection.caret, 'display', 'none');
+			Dom.setStyle(selection.caret, 'display', 'none');
 		}
-		editor.selection.event = type;
 		if ('mousemove' === type) {
 			return null;
 		}
-		var doc = nativeEvent.target.document || nativeEvent.target.ownerDocument;
-		var boundaries;
-		if ('mousedown' === type || 'click' === type || 'dblclick' === type) {
-			boundaries = Boundaries.fromPosition(
-				nativeEvent.clientX,
-				nativeEvent.clientY,
-				doc
-			);
-		} else {
-			boundaries = Boundaries.get(doc);
-		}
-		if (!boundaries) {
+		var doc = event.target.document || event.target.ownerDocument;
+		var position = isClicking
+		             ? Boundaries.fromPosition(event.clientX, event.clientY, doc)
+		             : Boundaries.get(doc);
+		if (!position) {
 			return null;
 		}
-		var cac = Boundaries.commonContainer(boundaries[0], boundaries[1]);
+		if ('mousedown' === type) {
+			type = processForMultiClick(event, selection) || type;
+		}
+		var cac = Boundaries.commonContainer(position[0], position[1]);
 		if (!Dom.isEditableNode(cac)) {
 			// Because if we are partly inside of an editable, we don't want the
 			// back-button to unload the page
 			if ('keydown' === type) {
-				if (Dom.isEditableNode(Boundaries.container(boundaries[0]))
-				 || Dom.isEditableNode(Boundaries.container(boundaries[1]))) {
-					Events.preventDefault(nativeEvent);
+				if (Dom.isEditableNode(Boundaries.container(position[0]))
+				 || Dom.isEditableNode(Boundaries.container(position[1]))) {
+					Events.preventDefault(event);
 				}
 			}
 			return null;
 		}
-		var editable = Editables.fromBoundary(editor, boundaries[0]);
+		var editable = Editables.fromBoundary(editor, position[0]);
 		if (!editable) {
 			return null;
 		}
-		editor.selection.boundaries = boundaries;
+		selection.event = event;
+		selection.boundaries = position;
 		return {
+			// Because sometimes an interaction going through the editor pipe
+			// should not result in an updated selection. eg: When inserting a
+			// link you want to focus on an input field in the ui.
+			preventSelection : false,
 			type             : type,
-			nativeEvent      : nativeEvent,
+			nativeEvent      : event,
 			editable         : editable,
-			selection        : editor.selection,
-			dnd              : editor.dnd,
-			// sometimes an interaction going through the
-			// editor pipe should not result in an updated
-			// selection - eg. when inserting a link you
-			// want to focus on an input field in the ui
-			preventSelection : false
+			selection        : selection,
+			dnd              : editor.dnd
 		};
 	}
 
@@ -169,8 +193,7 @@ define([
 	Api['mahalo'] = mahalo;
 	Api['editor'] = editor;
 	Api['buildcommit'] = '%buildcommit%';
-
-	win['aloha'] = aloha = Maps.extend(aloha, Api);
+	win['aloha'] = Maps.extend(aloha, Api);
 
 	var egg = '%c'
 	        + '       _       _                      _ _ _\n'

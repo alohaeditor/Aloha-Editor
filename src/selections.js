@@ -382,6 +382,15 @@ define([
 		};
 	}
 
+	function tplclick(event, range, focus) {
+		var boundaries = Boundaries.fromRange(range);
+		boundaries = Traversing.expand(boundaries[0], boundaries[1], 'block');
+		return {
+			range: Boundaries.range(boundaries[0], boundaries[1]),
+			focus: 'end'
+		};
+	}
+
 	/**
 	 * Processes a mouseup event.
 	 *
@@ -471,6 +480,7 @@ define([
 		'keydown'   : keydown,
 		'keypress'  : keypress,
 		'dblclick'  : dblclick,
+		'tplclick'  : tplclick,
 		'mouseup'   : mouseup,
 		'mousedown' : mousedown,
 		'mousemove' : Fn.returnFalse,
@@ -559,14 +569,14 @@ define([
 		Dom.addClass(caret, 'aloha-caret', 'aloha-ephemera');
 		Dom.insert(caret, doc.body, true);
 		return {
-			blinking         : blinking(caret),
-			focus            : 'end',
-			boundaries       : [],
-			caret            : caret,
-			event            : '',
-			doubleclickTimer : 0,
-			formatting       : [],
-			overrides        : []
+			blinking   : blinking(caret),
+			focus      : 'end',
+			boundaries : null,
+			event      : null,
+			caret      : caret,
+			clickTimer : 0,
+			formatting : [],
+			overrides  : []
 		};
 	}
 
@@ -648,17 +658,6 @@ define([
 		return map;
 	}
 
-	function processForDoubleclick(event) {
-		var selection = event.selection;
-		if ('mousedown' === event.type) {
-			var time = new Date();
-			if (time - selection.doubleclickTimer < 500) {
-				event.type = 'dblclick';
-			}
-			selection.doubleclickTimer = time;
-		}
-	}
-
 	/**
 	 * Updates selection
 	 *
@@ -669,7 +668,6 @@ define([
 		if (!handlers[event.type]) {
 			return event;
 		}
-		processForDoubleclick(event);
 		var selection = event.selection;
 		var change = handlers[event.type](
 			event,
@@ -725,7 +723,8 @@ define([
 		if (event.preventSelection) {
 			return;
 		}
-		if ('click' === event.selection.event) {
+		if ('click' === event.type
+				|| ('dblclick' === event.type && 'dblclick' === event.nativeEvent.type)) {
 			Dom.setStyle(event.selection.caret, 'display', 'block');
 			return;
 		}
