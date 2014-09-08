@@ -21,7 +21,7 @@
 	 * @param  {string} selector
 	 * @return {Array<Element>}
 	 */
-	function $(selector) {
+	function _$(selector) {
 		return Arrays.coerce(document.querySelectorAll(selector));
 	}
 
@@ -225,12 +225,12 @@
 		 */
 		open: function (toolbar, anchor) {
 			var href = Dom.getAttr(anchor, 'href');
-			removeClass($('.aloha-active'), 'aloha-active');
+			removeClass(_$('.aloha-active'), 'aloha-active');
 			Dom.addClass(anchor, 'aloha-active');
 			Dom.addClass(toolbar, 'opened');
 			positionToolbar(toolbar, anchor);
 			toolbar.querySelector('input').value = href;
-			setAttr($('a.aloha-link-follow'), 'href', href);
+			setAttr(_$('a.aloha-link-follow'), 'href', href);
 		},
 
 		/**
@@ -240,7 +240,7 @@
 		 * @param  {!Element} anchor
 		 */
 		close: function(toolbar, anchor) {
-			removeClass($('.aloha-active'), 'aloha-active');
+			removeClass(_$('.aloha-active'), 'aloha-active');
 			Dom.removeClass(toolbar, 'opened');
 		},
 
@@ -279,7 +279,7 @@
 		 * @param  {!Event}   event
 		 */
 		interact: function(toolbar, anchor, event) {
-			setAttr($('a.aloha-active, a.aloha-link-follow'), 'href', toolbar.querySelector('input').value);
+			setAttr(_$('a.aloha-active, a.aloha-link-follow'), 'href', toolbar.querySelector('input').value);
 			if (Keys.CODES.hash === event.keycode) {
 				// TODO dropdown menu of internal headers and anchors
 			}
@@ -305,7 +305,7 @@
 				LinksUI.toolbar(event.nativeEvent.target.ownerDocument),
 				Boundaries.container(boundaries[0])
 			);
-			$('.aloha-link-toolbar input[name=href]')[0].focus();
+			_$('.aloha-link-toolbar input[name=href]')[0].focus();
 			return event;
 		}
 	};
@@ -420,7 +420,7 @@
 		}
 	});
 
-	on($('.aloha-ui'), 'click', function (event) {
+	on(_$('.aloha-ui'), 'click', function (event) {
 		var selection = Editor.selection;
 		var action = parseAction(event.target);
 		if (action && selection.boundaries) {
