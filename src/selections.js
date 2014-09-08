@@ -188,13 +188,13 @@ define([
 	 * Jumps the front or end position of the given editable.
 	 *
 	 * @private
-	 * @param  {string} direction "up" or "down"
-	 * @param  {Event}  event
-	 * @param  {Range}  range
-	 * @param  {string} focus
+	 * @param  {string}           direction "up" or "down"
+	 * @param  {Event}            event
+	 * @param  {Array.<Boundary>} boundaries
+	 * @param  {string}           focus
 	 * @return {Object}
 	 */
-	function jump(direction, event, range, focus) {
+	function jump(direction, event, boundaries, focus) {
 		var boundary;
 		if ('up' === direction) {
 			boundary = Boundaries.create(event.editable.elem, 0);
@@ -210,6 +210,7 @@ define([
 				focus: focus
 			};
 		}
+		var range = Boundaries.range(boundaries[0], boundaries[1]);
 		return mergeRanges(next, range, focus);
 	}
 
@@ -262,19 +263,19 @@ define([
 
 	/**
 	 * Determines the next visual caret position before or after the given
-	 * range.
+	 * boundaries.
 	 *
 	 * @private
-	 * @param  {string} direction "left" or "right"
-	 * @param  {Event}  event
-	 * @param  {Range}  range
-	 * @param  {string} focus
+	 * @param  {string}           direction "left" or "right"
+	 * @param  {Event}            event
+	 * @param  {Array.<Boundary>} boundaries
+	 * @param  {string}           focus
 	 * @return {Object}
 	 */
-	function step(direction, event, range, focus) {
+	function step(direction, event, boundaries, focus) {
 		var shift = Events.hasKeyModifier(event, 'shift');
-		var start = Boundaries.fromRangeStart(range);
-		var end = Boundaries.fromRangeEnd(range);
+		var start = boundaries[0];
+		var end = boundaries[1];
 		var collapsed = Boundaries.equals(start, end);
 		if (collapsed || !shift) {
 			focus = ('left' === direction) ? 'start' : 'end';
@@ -319,7 +320,7 @@ define([
 	 * Caret movement operations mapped against cursor key keycodes.
 	 *
 	 * @private
-	 * @type {Object.<string, function(Event, Range, string):Object>}
+	 * @type {Object.<string, function(Event, Array.<Boundary>, string):Object>}
 	 */
 	var movements = {};
 	movements[Keys.CODES['up']] = Fn.partial(climb, 'up');
@@ -335,14 +336,14 @@ define([
 	 * Processes a keypress event.
 	 *
 	 * @private
-	 * @param  {Event}  event
-	 * @param  {Range}  range
-	 * @param  {string} focus
+	 * @param  {Event}            event
+	 * @param  {Array.<Boundary>} range
+	 * @param  {string}           focus
 	 * @return {Object}
 	 */
-	function keypress(event, range, focus) {
+	function keypress(event, boundaries, focus) {
 		return {
-			range: range,
+			range: Boundaries.range(boundaries[0], boundaries[1]),
 			focus: focus
 		};
 	}
@@ -351,30 +352,28 @@ define([
 	 * Processes a keydown event.
 	 *
 	 * @private
-	 * @param  {Event}  event
-	 * @param  {Range}  range
-	 * @param  {string} focus
+	 * @param  {Event}            event
+	 * @param  {Array.<Boundary>} boundaries
+	 * @param  {string}           focus
 	 * @return {Object}
 	 */
-	function keydown(event, range, focus) {
+	function keydown(event, boundaries, focus) {
 		var meta = event.meta.indexOf('meta') > -1;
 		if (meta && movements['meta+' + event.keycode]) {
-			return movements['meta+' + event.keycode](event, range, focus);
+			return movements['meta+' + event.keycode](event, boundaries, focus);
 		}
-		return (movements[event.keycode] || keypress)(event, range, focus);
+		return (movements[event.keycode] || keypress)(event, boundaries, focus);
 	}
 
 	/**
 	 * Processes a double-click event.
 	 *
 	 * @private
-	 * @param  {Event}  event
-	 * @param  {Range}  range
-	 * @param  {string} focus
+	 * @param  {Event}            event
+	 * @param  {Array.<Boundary>} boundaries
 	 * @return {Object}
 	 */
-	function dblclick(event, range, focus, previous, expanding) {
-		var boundaries = Boundaries.fromRange(range);
+	function dblclick(event, boundaries) {
 		boundaries = Traversing.expand(boundaries[0], boundaries[1], 'word');
 		return {
 			range: Boundaries.range(boundaries[0], boundaries[1]),
@@ -382,8 +381,15 @@ define([
 		};
 	}
 
-	function tplclick(event, range, focus) {
-		var boundaries = Boundaries.fromRange(range);
+	/**
+	 * Processes a triple-click event.
+	 *
+	 * @private
+	 * @param  {Event}            event
+	 * @param  {Array.<Boundary>} boundaries
+	 * @return {Object}
+	 */
+	function tplclick(event, boundaries) {
 		boundaries = Traversing.expand(boundaries[0], boundaries[1], 'block');
 		return {
 			range: Boundaries.range(boundaries[0], boundaries[1]),
@@ -395,12 +401,13 @@ define([
 	 * Processes a mouseup event.
 	 *
 	 * @private
-	 * @param  {Event}  event
-	 * @param  {Range}  range
-	 * @param  {string} focus
+	 * @param  {Event}            event
+	 * @param  {Array.<Boundary>} boundaries
+	 * @param  {string}           focus
 	 * @return {Object}
 	 */
-	function mouseup(event, range, focus, previous, expanding) {
+	function mouseup(event, boundaries, focus, previous, expanding) {
+		var range = Boundaries.range(boundaries[0], boundaries[1]);
 		if (!expanding) {
 			return {
 				range: range,
@@ -414,58 +421,59 @@ define([
 	 * Processes a mousedown event.
 	 *
 	 * @private
-	 * @param  {Event}  event
-	 * @param  {Range}  range
-	 * @param  {string} focus
+	 * @param  {Event}            event
+	 * @param  {Array.<Boundary>} boundaries
+	 * @param  {string}           focus
+	 * @param  {Array.<Boundary>} previous
+	 * @param  {boolean}          expanding
 	 * @return {Object}
 	 */
-	function mousedown(event, range, focus, previous, expanding) {
+	function mousedown(event, boundaries, focus, previous, expanding) {
+		var range = Boundaries.range(boundaries[0], boundaries[1]);
 		if (!expanding) {
 			return {
 				range: range,
 				focus: focus
 			};
 		}
-		var sc = range.startContainer;
-		var so = range.startOffset;
-		var ec, eo, current;
-		if ('start' === focus) {
-			ec = previous.endContainer;
-			eo = previous.endOffset;
-		} else {
-			ec = previous.startContainer;
-			eo = previous.startOffset;
-		}
+		var start = boundaries[0];
+		var end = previous['start' === focus ? 1 : 0];
+		var sc = Boundaries.container(start);
+		var so = Boundaries.offset(start);
+		var ec = Boundaries.container(end);
+		var eo = Boundaries.offset(end);
 		if (isReversed(sc, so, ec, eo)) {
 			focus = 'end';
-			current = Ranges.create(ec, eo, sc, so);
+			start = Boundaries.create(ec, eo);
+			end = Boundaries.create(sc, so);
 		} else {
 			focus = 'start';
-			current = Ranges.create(sc, so, ec, eo);
+			start = Boundaries.create(sc, so);
+			end = Boundaries.create(ec, eo);
 		}
 		return {
-			range: current,
+			range: Boundaries.range(start, end),
 			focus: focus
 		};
 	}
 
-	function dragndrop(event, range) {
+	function dragndrop(event, boundaries) {
 		return {
-			range: range,
+			range: Boundaries.range(boundaries[0], boundaries[1]),
 			focus: 'end'
 		};
 	}
 
-	function resize(event, range, focus) {
+	function resize(event, boundaries, focus) {
 		return {
-			range: range,
+			range: Boundaries.range(boundaries[0], boundaries[1]),
 			focus: focus
 		};
 	}
 
-	function paste(event, range, focus) {
+	function paste(event, boundaries) {
 		return {
-			range: Boundaries.range(event.selection.boundaries[0], event.selection.boundaries[1]),
+			range: Boundaries.range(boundaries[0], boundaries[1]),
 			focus: 'end'
 		};
 	}
@@ -483,7 +491,6 @@ define([
 		'tplclick'  : tplclick,
 		'mouseup'   : mouseup,
 		'mousedown' : mousedown,
-		'mousemove' : Fn.returnFalse,
 		'dragover'  : dragndrop,
 		'drop'      : dragndrop,
 		'resize'    : resize,
@@ -638,15 +645,15 @@ define([
 	 * An object with overrides mapped against their names
 	 *
 	 * @private
-	 * @param  {Node}             node
-	 * @param  {SelectionContext} context
+	 * @param  {Node}      node
+	 * @param  {Selection} selectoin
 	 * @return {Object}
 	 */
-	function mapOverrides(node, context) {
+	function mapOverrides(node, selection) {
 		var overrides = joinToSet(
-			context.formatting,
+			selection.formatting,
 			Overrides.harvest(node),
-			context.overrides
+			selection.overrides
 		);
 		var map = Maps.merge(Maps.mapTuples(overrides));
 		if (!map['color']) {
@@ -661,8 +668,8 @@ define([
 	/**
 	 * Updates selection
 	 *
-	 * @param  {AlohaEvent} event
-	 * @return {AlohaEvent}
+	 * @param  {Event} event
+	 * @return {Event}
 	 */
 	function handleSelections(event) {
 		if (!handlers[event.type]) {
@@ -671,9 +678,9 @@ define([
 		var selection = event.selection;
 		var change = handlers[event.type](
 			event,
-			Boundaries.range(selection.boundaries[0], selection.boundaries[1]),
+			selection.boundaries,
 			selection.focus,
-			selection.range,
+			selection.boundaries,
 			Events.hasKeyModifier(event, 'shift')
 		);
 		selection.focus = change.focus;
@@ -717,7 +724,7 @@ define([
 	 * Causes the selection for the given event to be set to the browser and the
 	 * caret position to be visualized.
 	 *
-	 * @param {AlohaEvent} event
+	 * @param {Event} event
 	 */
 	function update(event) {
 		if (event.preventSelection) {
