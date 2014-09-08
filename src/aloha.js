@@ -101,11 +101,16 @@ define([
 		}
 		editor.selection.boundaries = boundaries;
 		return {
-			type        : type,
-			nativeEvent : nativeEvent,
-			editable    : editable,
-			selection   : editor.selection,
-			dnd         : editor.dnd
+			type             : type,
+			nativeEvent      : nativeEvent,
+			editable         : editable,
+			selection        : editor.selection,
+			dnd              : editor.dnd,
+			// sometimes an interaction going through the
+			// editor pipe should not result in an updated
+			// selection - eg. when inserting a link you
+			// want to focus on an input field in the ui
+			preventSelection : false
 		};
 	}
 

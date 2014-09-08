@@ -722,6 +722,9 @@ define([
 	 * @param {AlohaEvent} event
 	 */
 	function update(event) {
+		if (event.preventSelection) {
+			return;
+		}
 		if ('click' === event.selection.event) {
 			Dom.setStyle(event.selection.caret, 'display', 'block');
 			return;

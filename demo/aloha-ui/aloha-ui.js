@@ -258,6 +258,17 @@
 		},
 
 		/**
+		 * Resolves the anchor element from the boundaries
+		 *
+		 * @param  {!Boundaries} boundaries
+		 * @param  {?Element}
+		 */
+		anchor: function (boundaries) {
+			var cac = Boundaries.commonContainer(boundaries[0], boundaries[1]);
+			return Dom.upWhile(cac, notAnchor);
+		},
+
+		/**
 		 * Returns the element or its first ancestor that has a 'aloha-ui'
 		 * class, if any.
 		 *
@@ -278,11 +289,8 @@
 		 * @param  {!Element} anchor
 		 * @param  {!Event}   event
 		 */
-		interact: function(toolbar, anchor, event) {
+		interact: function(toolbar, anchor) {
 			setAttr(_$('a.aloha-active, a.aloha-link-follow'), 'href', toolbar.querySelector('input').value);
-			if (Keys.CODES.hash === event.keycode) {
-				// TODO dropdown menu of internal headers and anchors
-			}
 		},
 
 		/**
@@ -305,6 +313,7 @@
 				LinksUI.toolbar(event.nativeEvent.target.ownerDocument),
 				Boundaries.container(boundaries[0])
 			);
+			event.preventSelection = true;
 			_$('.aloha-link-toolbar input[name=href]')[0].focus();
 			return event;
 		}
@@ -316,9 +325,7 @@
 	 * @param {!Event} event
 	 */
 	function handleLinks(event) {
-		var boundaries = event.selection.boundaries;
-		var cac = Boundaries.commonContainer(boundaries[0], boundaries[1]);
-		var anchor = Dom.upWhile(cac, notAnchor);
+		var anchor = LinksUI.anchor(event.selection.boundaries);
 		var toolbar = LinksUI.toolbar(event.nativeEvent.target.ownerDocument);
 		if (!toolbar) {
 			return;
@@ -421,12 +428,22 @@
 	});
 
 	on(_$('.aloha-ui'), 'click', function (event) {
+		if (event.target.nodeName === 'INPUT') {
+			return;
+		}
 		var selection = Editor.selection;
 		var action = parseAction(event.target);
 		if (action && selection.boundaries) {
 			var boundaries = execute(action, selection.boundaries);
 			Selections.select(selection, boundaries[0], boundaries[1], selection.focus);
 		}
+	});
+
+	on(_$('.aloha-link-toolbar input[name=href]'), 'keyup', function (event) {
+		LinksUI.interact(
+			LinksUI.toolbar(event.target.ownerDocument), 
+			LinksUI.anchor(aloha.editor.selection.boundaries)
+		);
 	});
 
 	var shortcutHandlers = {
