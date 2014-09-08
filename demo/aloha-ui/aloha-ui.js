@@ -224,11 +224,13 @@
 		 * @param  {!Element} anchor
 		 */
 		open: function (toolbar, anchor) {
+			var href = Dom.getAttr(anchor, 'href');
 			removeClass($('.aloha-active'), 'aloha-active');
 			Dom.addClass(anchor, 'aloha-active');
 			Dom.addClass(toolbar, 'opened');
 			positionToolbar(toolbar, anchor);
-			toolbar.querySelector('input').value = Dom.getAttr(anchor, 'href');
+			toolbar.querySelector('input').value = href;
+			setAttr($('a.aloha-link-follow'), 'href', href);
 		},
 
 		/**
