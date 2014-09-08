@@ -107,19 +107,19 @@ define([
 	}
 
 	/**
-	 * Given the containers and offsets representing a start and end boundary,
-	 * checks whether the end boundary preceeds the start boundary in document
-	 * order.
+	 * Given the boundaries checks whether the end boundary preceeds the start
+	 * boundary in document order.
 	 *
 	 * @private
-	 * @param  {Element} sc Start container
-	 * @param  {string}  so Start offset
-	 * @param  {Element} ec End container
-	 * @param  {string}  eo End offset
+	 * @param  {Boundary} start
+	 * @param  {Boundary} end
 	 * @return {boolean}
-	 *         True if the boundary positions are reversed.
 	 */
-	function isReversed(sc, so, ec, eo) {
+	function isReversed(start, end) {
+		var sc = Boundaries.container(start);
+		var ec = Boundaries.container(end);
+		var so = Boundaries.offset(start);
+		var eo = Boundaries.offset(end);
 		return (sc === ec && so > eo) || Dom.followedBy(ec, sc);
 	}
 
@@ -151,36 +151,33 @@ define([
 	}
 
 	/**
-	 * Given two ranges, creates a range that is between the two.
+	 * Given two ranges (represented in boundary tuples), creates a range that
+	 * is between the two.
 	 *
 	 * @private
-	 * @param  {Range}  a
-	 * @param  {Range}  b
+	 * @param  {Array.<Boundary>} a
+	 * @param  {Array.<Boundary>} b
 	 * @param  {string} focus Either "start" or "end"
 	 * @return {Object}
 	 */
 	function mergeRanges(a, b, focus) {
-		var sc, so, ec, eo;
+		var start, end;
 		if ('start' === focus) {
-			sc = a.startContainer;
-			so = a.startOffset;
-			ec = b.endContainer;
-			eo = b.endOffset;
+			start = a[0];
+			end = b[1];
 		} else {
-			sc = b.startContainer;
-			so = b.startOffset;
-			ec = a.endContainer;
-			eo = a.endOffset;
+			start = b[0];
+			end = a[1];
 		}
-		if (isReversed(sc, so, ec, eo)) {
+		if (isReversed(start, end)) {
 			return {
-				range: Ranges.create(ec, eo, sc, so),
-				focus: ('start' === focus) ? 'end' : 'start'
+				boundaries : [end, start],
+				focus      : ('start' === focus) ? 'end' : 'start'
 			};
 		}
 		return {
-			range: Ranges.create(sc, so, ec, eo),
-			focus: focus
+			boundaries : [start, end],
+			focus      : focus
 		};
 	}
 
@@ -203,15 +200,14 @@ define([
 			boundary = Boundaries.fromEndOfNode(event.editable.elem);
 			boundary = Html.expandBackward(boundary);
 		}
-		var next = Boundaries.range(boundary, boundary);
+		var next = [boundary, boundary];
 		if (!Events.hasKeyModifier(event, 'shift')) {
 			return {
-				range: next,
-				focus: focus
+				boundaries : next,
+				focus      : focus
 			};
 		}
-		var range = Boundaries.range(boundaries[0], boundaries[1]);
-		return mergeRanges(next, range, focus);
+		return mergeRanges(next, boundaries, focus);
 	}
 
 	/**
@@ -219,22 +215,20 @@ define([
 	 * range.
 	 *
 	 * @private
-	 * @param  {string} direction "up" or "down"
-	 * @param  {Event}  event
-	 * @param  {Range}  range
-	 * @param  {string} focus
+	 * @param  {string}           direction "up" or "down"
+	 * @param  {Event}            event
+	 * @param  {Array.<Boundary>} boundary
+	 * @param  {string}           focus
 	 * @return {Object}
 	 */
-	function climb(direction, event, range, focus) {
-		var boundary = ('start' === focus)
-		             ? Boundaries.fromRangeStart(range)
-		             : Boundaries.fromRangeEnd(range);
-		var clone = Boundaries.range(boundary, boundary);
-		var box = Carets.box(clone);
-		var doc = range.commonAncestorContainer.ownerDocument;
+	function climb(direction, event, boundaries, focus) {
+		var boundary = boundaries['start' === focus ? 0 : 1];
+		var doc = Boundaries.document(boundary);
 		var win = Dom.documentWindow(doc);
 		var topOffset = win.pageYOffset - doc.body.clientTop;
 		var leftOffset = win.pageXOffset - doc.body.clientLeft;
+		var range = Boundaries.range(boundary, boundary);
+		var box = Carets.box(range);
 
 		box.top -= topOffset;
 		box.left -= leftOffset;
@@ -244,21 +238,24 @@ define([
 		var move = ('up' === direction) ? up : down;
 		var next = move(box, stride, doc);
 
-		// TODO: also check if `next` and `clone` are *visually* adjacent
-		while (next && Ranges.equals(next, clone)) {
+		// TODO: also check if `next` and `range` are *visually* adjacent
+		while (next && Ranges.equals(next, range)) {
 			stride += half;
 			next = move(box, stride, doc);
 		}
 		if (!next) {
-			return;
-		}
-		if (!Events.hasKeyModifier(event, 'shift')) {
 			return {
-				range: next,
-				focus: focus
+				boundaries : boundaries,
+				focus      : focus
 			};
 		}
-		return mergeRanges(next, range, focus);
+		if (Events.hasKeyModifier(event, 'shift')) {
+			return mergeRanges(Boundaries.fromRange(next), boundaries, focus);
+		}
+		return {
+			boundaries : Boundaries.fromRange(range),
+			focus      : focus
+		};
 	}
 
 	/**
@@ -285,7 +282,7 @@ define([
 		             : Traversing.envelopeInvisibleCharacters(end);
 		if (collapsed || shift) {
 			var stride = (Events.hasKeyModifier(event, 'ctrl')
-			           || Events.hasKeyModifier(event, 'alt'))
+			          || Events.hasKeyModifier(event, 'alt'))
 			           ? 'word'
 			           : 'visual';
 			var next = ('left' === direction)
@@ -302,17 +299,15 @@ define([
 				boundary = next;
 			}
 		}
-		var clone;
-		if (!shift) {
-			clone = Boundaries.range(boundary, boundary);
-		} else {
-			clone = ('start' === focus)
-			      ? Boundaries.range(boundary, end)
-			      : Boundaries.range(start, boundary);
+		if (shift) {
+			return {
+				boundaries : ('start' === focus) ? [boundary, end] : [start, boundary],
+				focus      : focus
+			};
 		}
 		return {
-			range: clone,
-			focus: focus
+			boundaries : [boundary, boundary],
+			focus      : focus
 		};
 	}
 
@@ -343,8 +338,8 @@ define([
 	 */
 	function keypress(event, boundaries, focus) {
 		return {
-			range: Boundaries.range(boundaries[0], boundaries[1]),
-			focus: focus
+			boundaries : boundaries,
+			focus      : focus
 		};
 	}
 
@@ -374,10 +369,9 @@ define([
 	 * @return {Object}
 	 */
 	function dblclick(event, boundaries) {
-		boundaries = Traversing.expand(boundaries[0], boundaries[1], 'word');
 		return {
-			range: Boundaries.range(boundaries[0], boundaries[1]),
-			focus: 'end'
+			boundaries : Traversing.expand(boundaries[0], boundaries[1], 'word'),
+			focus      : 'end'
 		};
 	}
 
@@ -390,10 +384,9 @@ define([
 	 * @return {Object}
 	 */
 	function tplclick(event, boundaries) {
-		boundaries = Traversing.expand(boundaries[0], boundaries[1], 'block');
 		return {
-			range: Boundaries.range(boundaries[0], boundaries[1]),
-			focus: 'end'
+			boundaries : Traversing.expand(boundaries[0], boundaries[1], 'block'),
+			focus      : 'end'
 		};
 	}
 
@@ -407,14 +400,10 @@ define([
 	 * @return {Object}
 	 */
 	function mouseup(event, boundaries, focus, previous, expanding) {
-		var range = Boundaries.range(boundaries[0], boundaries[1]);
-		if (!expanding) {
-			return {
-				range: range,
-				focus: focus
-			};
-		}
-		return mergeRanges(range, previous, focus);
+		return expanding ? mergeRanges(boundaries, previous, focus) : {
+			boundaries : boundaries,
+			focus      : focus
+		};
 	}
 
 	/**
@@ -429,52 +418,44 @@ define([
 	 * @return {Object}
 	 */
 	function mousedown(event, boundaries, focus, previous, expanding) {
-		var range = Boundaries.range(boundaries[0], boundaries[1]);
 		if (!expanding) {
 			return {
-				range: range,
-				focus: focus
+				boundaries : boundaries,
+				focus      : focus
 			};
 		}
 		var start = boundaries[0];
 		var end = previous['start' === focus ? 1 : 0];
-		var sc = Boundaries.container(start);
-		var so = Boundaries.offset(start);
-		var ec = Boundaries.container(end);
-		var eo = Boundaries.offset(end);
-		if (isReversed(sc, so, ec, eo)) {
-			focus = 'end';
-			start = Boundaries.create(ec, eo);
-			end = Boundaries.create(sc, so);
-		} else {
-			focus = 'start';
-			start = Boundaries.create(sc, so);
-			end = Boundaries.create(ec, eo);
+		if (isReversed(start, end)) {
+			return {
+				boundaries : [end, start],
+				focus      : 'end'
+			};
 		}
 		return {
-			range: Boundaries.range(start, end),
-			focus: focus
+			boundaries : [start, end],
+			focus      : 'start'
 		};
 	}
 
 	function dragndrop(event, boundaries) {
 		return {
-			range: Boundaries.range(boundaries[0], boundaries[1]),
-			focus: 'end'
+			boundaries : boundaries,
+			focus      : 'end'
 		};
 	}
 
 	function resize(event, boundaries, focus) {
 		return {
-			range: Boundaries.range(boundaries[0], boundaries[1]),
-			focus: focus
+			boundaries : boundaries,
+			focus      : focus
 		};
 	}
 
 	function paste(event, boundaries) {
 		return {
-			range: Boundaries.range(boundaries[0], boundaries[1]),
-			focus: 'end'
+			boundaries : boundaries,
+			focus      : 'end'
 		};
 	}
 
@@ -684,7 +665,7 @@ define([
 			Events.hasKeyModifier(event, 'shift')
 		);
 		selection.focus = change.focus;
-		selection.boundaries = Boundaries.fromRange(change.range);
+		selection.boundaries = change.boundaries;
 		// Because we don't want the page to scroll
 		if ('keydown' === event.type && movements[event.keycode]) {
 			Events.preventDefault(event.nativeEvent);
