@@ -125,7 +125,7 @@ define(['strings', 'boundaries'], function (Strings, Boundaries) {
 			return;
 		}
 		var lookupKey = event.meta 
-			? event.meta + '+' + event.keycode
+			? event.meta + '+' + String.fromCharCode(event.keycode).toLowerCase() || event.keycode
 			: event.keycode;
 
 		if (shortcutHandlers[event.type] && shortcutHandlers[event.type][lookupKey]) {
