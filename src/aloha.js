@@ -133,7 +133,7 @@ define([
 	 */
 	function createEvent(editor, event) {
 		var type = event.type;
-		var selection = editor.selection;
+		var selection = editor.selecting;
 		var isClicking = CLICKING_EVENT[type];
 		var dragging = getDragging(type, selection);
 		var isDragStart = dragging && dragging !== selection.dragging;
@@ -206,16 +206,17 @@ define([
 		var event = createEvent(editor, nativeEvent);
 		if (event) {
 			event = Fn.comp.apply(editor.stack, editor.stack)(event);
-			Selections.update(event);
+			Maps.extend(editor.selection, Selections.update(event));
 		}
 	}
 
 	editor.BLOCK_CLASS = 'aloha-block';
 	editor.CARET_CLASS = 'aloha-caret';
-	editor.selection = Selections.Context(doc);
-	editor.dnd = DragDrop.Context();
-	editor.editables = {};
-	editor.stack = [
+	editor.dnd         = DragDrop.Context();
+	editor.selecting   = Selections.Context(doc);
+	editor.selection   = {};
+	editor.editables   = {};
+	editor.stack       = [
 		Selections.handleSelections,
 		Links.handleLinks,
 		Typing.handleTyping,

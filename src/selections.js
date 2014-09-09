@@ -706,26 +706,30 @@ define([
 	 * Causes the selection for the given event to be set to the browser and the
 	 * caret position to be visualized.
 	 *
-	 * @param {Event} event
+	 * @param  {!Event} event
+	 * @return {?Selection}
 	 */
 	function update(event) {
-		if (event.preventSelection || event.selection.dragging) {
+		var selection = event.selection;
+		if (event.preventSelection || selection.dragging) {
 			return;
 		}
-		if ('mouseup' === event.type || 'click' === event.type || 'dblclick' === event.type) {
-			Dom.setStyle(event.selection.caret, 'display', 'block');
+		var type = event.type;
+		if ('mouseup' === type || 'click' === type || 'dblclick' === type) {
+			Dom.setStyle(selection.caret, 'display', 'block');
 			return;
 		}
 		var boundary = select(
-			event.selection,
-			event.selection.boundaries[0],
-			event.selection.boundaries[1],
-			event.selection.focus
+			selection,
+			selection.boundaries[0],
+			selection.boundaries[1],
+			selection.focus
 		);
 		// Because we don't want the screen to jump when the editor hits "shift"
 		if (isCaretMovingEvent(event)) {
 			focus(boundary);
 		}
+		return selection;
 	}
 
 	/**
