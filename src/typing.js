@@ -301,31 +301,30 @@ define([
 	handlers['keydown'][Keys.CODES['backspace']] = deleteBackward;
 	handlers['keydown'][Keys.CODES['enter']] = breakBlock;
 	handlers['keydown']['shift+' + Keys.CODES['enter']] = breakLine;
-	handlers['keydown']['ctrl+'  + Keys.CODES['bold']] =
-	handlers['keydown']['meta+'  + Keys.CODES['bold']] = formatBold;
-	handlers['keydown']['ctrl+'  + Keys.CODES['italic']] =
-	handlers['keydown']['meta+'  + Keys.CODES['italic']] = formatItalic;
-	handlers['keydown']['ctrl+'  + Keys.CODES['underline']] =
-	handlers['keydown']['meta+'  + Keys.CODES['underline']] = formatUnderline;
-	handlers['keydown']['ctrl+'  + Keys.CODES['selectAll']] =
-	handlers['keydown']['meta+'  + Keys.CODES['selectAll']] = selectAll;
-	handlers['keydown']['ctrl+'  + Keys.CODES['undo']] =
-	handlers['keydown']['meta+'  + Keys.CODES['undo']] = undo;
-	handlers['keydown']['ctrl+shift+' + Keys.CODES['undo']] =
-	handlers['keydown']['meta+shift+' + Keys.CODES['undo']] = redo;
+	handlers['keydown']['ctrl+b'] =
+	handlers['keydown']['meta+b'] = formatBold;
+	handlers['keydown']['ctrl+i'] =
+	handlers['keydown']['meta+i'] = formatItalic;
+	handlers['keydown']['ctrl+u'] =
+	handlers['keydown']['meta+u'] = formatUnderline;
+	handlers['keydown']['ctrl+a'] =
+	handlers['keydown']['meta+a'] = selectAll;
+	handlers['keydown']['ctrl+z'] =
+	handlers['keydown']['meta+z'] = undo;
+	handlers['keydown']['ctrl+shift+z'] =
+	handlers['keydown']['meta+shift+z'] = redo;
 	handlers['keydown'][Keys.CODES['tab']] = inputText;
 
 	handlers['keypress']['input'] = inputText;
 
-	// alt+0
-	handlers['keydown']['ctrl+48'] = {mutate : function toggleUndo(event) {
+	handlers['keydown']['ctrl+0'] = {mutate : function toggleUndo(event) {
 		if (event.editable) {
 			Metaview.toggle(event.editable.elem);
 		}
 		return event.selection.boundaries;
 	}};
-	// alt+1
-	handlers['keydown']['ctrl+49'] = {mutate : function toggleUndo(event) {
+
+	handlers['keydown']['ctrl+1'] = {mutate : function toggleUndo(event) {
 		if (event.editable) {
 			Metaview.toggle(event.editable.elem, {
 				'outline': true,
@@ -334,8 +333,8 @@ define([
 		}
 		return event.selection.boundaries;
 	}};
-	// alt+2
-	handlers['keydown']['ctrl+50'] = {mutate : function toggleUndo(event) {
+
+	handlers['keydown']['ctrl+2'] = {mutate : function toggleUndo(event) {
 		if (event.editable) {
 			Metaview.toggle(event.editable.elem, {
 				'outline': true,
