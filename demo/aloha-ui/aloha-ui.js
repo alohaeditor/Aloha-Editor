@@ -423,7 +423,7 @@
 	function handleOverrides(event) {
 		event.selection.overrides.forEach(function (override) {
 			var format = Overrides.stateToNode[override[0]];
-			if (!format) {
+			if (format) {
 				var btns = _$('.aloha-ui .' + ACTION_CLASS_PREFIX + format);
 				if (override[1]) {
 					addClass(btns, 'active');
