@@ -357,17 +357,6 @@ define([
 		var selection = event.selection;
 		var start = selection.boundaries[0];
 		var end = selection.boundaries[1];
-		/*
-		if (!event.editable) {
-			if ('keydown' === event.type) {
-				if (Dom.isEditableNode(Boundaries.container(start))
-				 || Dom.isEditableNode(Boundaries.container(end))) {
-					Events.preventDefault(event.nativeEvent);
-				}
-			}
-			return event;
-		}
-		*/
 		var handling = handler(event);
 		if (!handling) {
 			return event;
