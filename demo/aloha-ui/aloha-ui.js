@@ -328,6 +328,7 @@
 			);
 			event.preventSelection = true;
 			_$('.aloha-link-toolbar input[name=href]')[0].focus();
+			addClass(_$('.aloha-ui .' + ACTION_CLASS_PREFIX + 'A'), 'active');
 			return event;
 		}
 	};
