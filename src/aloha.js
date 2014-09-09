@@ -39,14 +39,33 @@ define([
 	var doc = document;
 	var win = Dom.documentWindow(doc);
 
-	function processForMultiClick(event, selection) {
-		var time = new Date();
-		var elapsed = time - selection.clickTimer;
-		selection.clickTimer = time;
-		if (!selection.event) {
+	/*
+	 mousedown
+	 mouseup
+	 click
+
+	 mousedown -> aloha.dblclick
+	 mouseup
+	 click
+	 dblclick
+
+	 mousedown -> aloha.tplclick
+	 mouseup
+	 click
+	 */
+	function processClicking(event, selection) {
+		if ('mousedown' !== event.type && 'dbclick' !== event.type && 'aloha.dblclick' !== event.type) {
 			return;
 		}
+		var time = new Date();
+		var elapsed = time - selection.clickTimer;
+		var multiclick = selection.multiclick;
+		selection.multiclick = null;
+		selection.clickTimer = time;
 		if (elapsed > 500) {
+			return;
+		}
+		if (!selection.event) {
 			return;
 		}
 		if (selection.event.clientX !== event.clientX) {
@@ -55,16 +74,48 @@ define([
 		if (selection.event.clientY !== event.clientY) {
 			return;
 		}
-		var type = selection.event.type;
-		return ('dblclick' === type || 'tplclick' === type) ? 'tplclick' : 'dblclick';
+		return MUTLICLICK_EVENT[multiclick] ? 'aloha.tplclick' : 'aloha.dblclick';
 	}
 
-	function isDragStartEvent(prevEvent, nextEvent) {
-		return 'mousedown' === prevEvent && 'mousemove' === nextEvent;
-	}
+	var MOUSE_EVENT = {
+		'mousemove'      : true,
+		'mousedown'      : true,
+		'mouseup'        : true,
+		'click'          : true,
+		'dblclick'       : true,
+		'aloha.dblclick' : true,
+		'aloha.tplclick' : true
+	};
 
-	function isClickingEvent(type) {
-		return 'dblclick' === type || 'click' === type || 'mousedown' === type;
+	var CLICKING_EVENT = {
+		'mousedown'       : true,
+		'mouseup'         : true,
+		'click'           : true,
+		'dblclick'        : true,
+		'aloha.dblclick'  : true,
+		'aloha.tplclick'  : true
+	};
+
+	var MUTLICLICK_EVENT = {
+		'dblclick'       : true,
+		'aloha.dblclick' : true,
+		'aloha.tplclick' : true
+	};
+
+	function getDragging(current, selection) {
+		if (selection.dragging) {
+			return selection.dragging;
+		}
+		if ('mousemove' !== current) {
+			return null;
+		}
+		var last = selection.lastMouseEvent;
+		if ('mousedown'       === last
+		||  'aloha.dblclick'  === last
+		||  'aloha.tplclick'  === last) {
+			return last;
+		}
+		return null;
 	}
 
 	/**
@@ -84,47 +135,60 @@ define([
 	function createEvent(editor, event) {
 		var type = event.type;
 		var selection = editor.selection;
-		var isClicking = isClickingEvent(type);
-		// Because we know that we are starting an expanded selection when a
-		// mousemove immediately follows a mousedown
-		if (isClicking || isDragStartEvent(selection.event && selection.event.type, type)) {
-			// Because otherwise, if we are in the process of a click, and the
-			// user's cursor is over the caret element,
-			// Boundaries.fromPosition() will compute the boundaries to be
-			// inside the absolutely positioned caret element
+		var isClicking = CLICKING_EVENT[type];
+		var dragging = getDragging(type, selection);
+		var isDragStart = dragging && dragging !== selection.dragging;
+		if (isClicking || isDragStart) {
+			// Because otherwise if the mouse position is over the caret
+			// element, Boundaries.fromPosition() will compute the boundaries to
+			// be inside the absolutely positioned caret element, which is not
+			// we want
 			Dom.setStyle(selection.caret, 'display', 'none');
+		}
+		if (isDragStart) {
+			selection.dragging = dragging;
 		}
 		if ('mousemove' === type) {
 			return null;
 		}
+		if ('mouseup' === type) {
+			selection.dragging = null;
+		}
+		if (isClicking) {
+			type = processClicking(event, selection) || type;
+		}
+		if (MUTLICLICK_EVENT[type]) {
+			selection.multiclick = type;
+		}
+		if (MOUSE_EVENT[type]) {
+			selection.lastMouseEvent = type;
+		}
 		var doc = event.target.document || event.target.ownerDocument;
-		var position = isClicking
-		             ? Boundaries.fromPosition(event.clientX, event.clientY, doc)
-		             : Boundaries.get(doc);
-		if (!position) {
+		var boundaries = isClicking
+		               ? Boundaries.fromPosition(event.clientX, event.clientY, doc)
+		               : Boundaries.get(doc);
+		if (!boundaries) {
 			return null;
 		}
-		if ('mousedown' === type) {
-			type = processForMultiClick(event, selection) || type;
-		}
-		var cac = Boundaries.commonContainer(position[0], position[1]);
+		var cac = Boundaries.commonContainer(boundaries[0], boundaries[1]);
 		if (!Dom.isEditableNode(cac)) {
 			// Because if we are partly inside of an editable, we don't want the
 			// back-button to unload the page
 			if ('keydown' === type) {
-				if (Dom.isEditableNode(Boundaries.container(position[0]))
-				 || Dom.isEditableNode(Boundaries.container(position[1]))) {
+				if (Dom.isEditableNode(Boundaries.container(boundaries[0]))
+				 || Dom.isEditableNode(Boundaries.container(boundaries[1]))) {
 					Events.preventDefault(event);
 				}
 			}
 			return null;
 		}
-		var editable = Editables.fromBoundary(editor, position[0]);
+		var editable = Editables.fromBoundary(editor, boundaries[0]);
 		if (!editable) {
 			return null;
 		}
+		selection.previousBoundaries = selection.boundaries;
+		selection.boundaries = boundaries;
 		selection.event = event;
-		selection.boundaries = position;
 		return {
 			// Because sometimes an interaction going through the editor pipe
 			// should not result in an updated selection. eg: When inserting a

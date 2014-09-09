@@ -400,10 +400,7 @@ define([
 	 * @return {Object}
 	 */
 	function mouseup(event, boundaries, focus, previous, expanding) {
-		return expanding ? mergeRanges(boundaries, previous, focus) : {
-			boundaries : boundaries,
-			focus      : focus
-		};
+		return mergeRanges(boundaries, previous, focus);
 	}
 
 	/**
@@ -466,16 +463,16 @@ define([
 	 * @type {Object.<string, function>}
 	 */
 	var handlers = {
-		'keydown'   : keydown,
-		'keypress'  : keypress,
-		'dblclick'  : dblclick,
-		'tplclick'  : tplclick,
-		'mouseup'   : mouseup,
-		'mousedown' : mousedown,
-		'dragover'  : dragndrop,
-		'drop'      : dragndrop,
-		'resize'    : resize,
-		'paste'     : paste
+		'keydown'        : keydown,
+		'keypress'       : keypress,
+		'aloha.dblclick' : dblclick,
+		'aloha.tplclick' : tplclick,
+		'mouseup'        : mouseup,
+		'mousedown'      : mousedown,
+		'dragover'       : dragndrop,
+		'drop'           : dragndrop,
+		'resize'         : resize,
+		'paste'          : paste
 	};
 
 	/**
@@ -557,14 +554,17 @@ define([
 		Dom.addClass(caret, 'aloha-caret', 'aloha-ephemera');
 		Dom.insert(caret, doc.body, true);
 		return {
-			blinking   : blinking(caret),
-			focus      : 'end',
-			boundaries : null,
-			event      : null,
-			caret      : caret,
-			clickTimer : 0,
-			formatting : [],
-			overrides  : []
+			blinking       : blinking(caret),
+			focus          : 'end',
+			boundaries     : null,
+			event          : null,
+			dragging       : null,
+			multiclick     : null,
+			clickTimer     : 0,
+			lastMouseEvent : '',
+			caret          : caret,
+			formatting     : [],
+			overrides      : []
 		};
 	}
 
@@ -661,7 +661,7 @@ define([
 			event,
 			selection.boundaries,
 			selection.focus,
-			selection.boundaries,
+			selection.previousBoundaries,
 			Events.hasKeyModifier(event, 'shift')
 		);
 		selection.focus = change.focus;
@@ -708,11 +708,10 @@ define([
 	 * @param {Event} event
 	 */
 	function update(event) {
-		if (event.preventSelection) {
+		if (event.preventSelection || event.selection.dragging) {
 			return;
 		}
-		if ('click' === event.type
-				|| ('dblclick' === event.type && 'dblclick' === event.nativeEvent.type)) {
+		if ('mouseup' === event.type || 'click' === event.type || 'dblclick' === event.type) {
 			Dom.setStyle(event.selection.caret, 'display', 'block');
 			return;
 		}

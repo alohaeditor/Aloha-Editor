@@ -75,14 +75,15 @@ var MutationObserver = {
 };
 
 var alohaEvent = {
-	type        : '',
-	target      : [],
-	editor      : null,
-	editable    : null,
-	boundaries  : null,
-	nativeEvent : null,
-	meta        : '',
-	keycode     : ''
+	lastMouseEvent : '',
+	type           : '',
+	target         : [],
+	editor         : null,
+	editable       : null,
+	nativeEvent    : null,
+	selection      : {},
+	meta           : '',
+	keycode        : ''
 };
 
 var Boromir = {
@@ -155,11 +156,11 @@ var undoContext = {
 }
 
 var SelectionContext = {
+	boundaries     : null,
 	caret          : null,
-	range          : null,
 	focus          : '',
+	mousedown      : null,
 	dragging       : false,
-	mousedown      : false,
 	doubleclicking : false,
 	tripleclicking : false,
 	formatting     : [],
