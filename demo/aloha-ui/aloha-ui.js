@@ -19,7 +19,7 @@
 	 * of found DOM nodes or an empty array
 	 *
 	 * @param  {string} selector
-	 * @return {Array<Element>}
+	 * @return {Array.<Element>}
 	 */
 	function _$(selector) {
 		return Arrays.coerce(document.querySelectorAll(selector));
@@ -28,9 +28,9 @@
 	/**
 	 * Attach event handlers to an array of elements
 	 *
-	 * @param {Array<Element>} elements
-	 * @param {string}         event
-	 * @param {function}       handler
+	 * @param {Array.<Element>} elements
+	 * @param {string}          event
+	 * @param {function}        handler
 	 */
 	function on(elements, event, handler) {
 		elements.forEach(function (element) {
@@ -41,8 +41,8 @@
 	/**
 	 * Remove a class from an array of elements
 	 *
-	 * @param {Array<Element>} elements
-	 * @param {string}         className
+	 * @param {Array.<Element>} elements
+	 * @param {string}          className
 	 */
 	function removeClass(elements, className) {
 		elements.forEach(function (element) {
@@ -53,9 +53,9 @@
 	/**
 	 * Update an attribute for an array of elements
 	 *
-	 * @param {Array<Element>} elements
-	 * @param {string}         name
-	 * @param {string}         value
+	 * @param {Array.<Element>} elements
+	 * @param {string}          name
+	 * @param {string}          value
 	 */
 	function setAttr(elements, name, value) {
 		elements.forEach(function (element) {
@@ -83,7 +83,7 @@
 	 * @private
 	 * @param  {!Object.<string, ?>} action
 	 * @param  {!Array.<Boundary>}   boundaries
-	 * @return {Array.<Boundaries>}
+	 * @return {Array.<Boundary>}
 	 */
 	function execute(action, boundaries) {
 		if (action.format) {
@@ -166,7 +166,7 @@
 	 * above.
 	 *
 	 * @private
-	 * @param {!Array.<Element>} nodes
+	 * @param  {!Array.<Element>} nodes
 	 * @return {Array.<string>}
 	 */
 	function uniqueNodeNames(nodes) {
@@ -186,8 +186,8 @@
 	 * Positions the given toolbar element to point to the anchor element in the
 	 * document.
 	 *
-	 * @param  {!Element} toolbar
-	 * @param  {!Element} anchor
+	 * @param {!Element} toolbar
+	 * @param {!Element} anchor
 	 */
 	function positionToolbar(toolbar, anchor) {
 		var box = aloha.carets.box(Boundaries.range(
@@ -220,8 +220,8 @@
 		/**
 		 * Opens the given context toolbar for editing the given anchor.
 		 *
-		 * @param  {!Element} toolbar
-		 * @param  {!Element} anchor
+		 * @param {!Element} toolbar
+		 * @param {!Element} anchor
 		 */
 		open: function (toolbar, anchor) {
 			var href = Dom.getAttr(anchor, 'href');
@@ -236,8 +236,8 @@
 		/**
 		 * Closes the context toolbar.
 		 *
-		 * @param  {!Element} toolbar
-		 * @param  {!Element} anchor
+		 * @param {!Element} toolbar
+		 * @param {!Element} anchor
 		 */
 		close: function(toolbar, anchor) {
 			removeClass(_$('.aloha-active'), 'aloha-active');
@@ -248,7 +248,7 @@
 		 * Retrieves a toolbar element from the given document if one exists.
 		 *
 		 * @param  {!Document} doc
-		 * @param  {?Element}
+		 * @return {?Element}
 		 */
 		toolbar: function (doc) {
 			var toolbar = doc.querySelector('.aloha-link-toolbar');
@@ -260,8 +260,8 @@
 		/**
 		 * Resolves the anchor element from the boundaries
 		 *
-		 * @param  {!Boundaries} boundaries
-		 * @param  {?Element}
+		 * @param  {Array.<Boundary>} boundaries
+		 * @return {?Element}
 		 */
 		anchor: function (boundaries) {
 			var cac = Boundaries.commonContainer(boundaries[0], boundaries[1]);
@@ -273,7 +273,7 @@
 		 * class, if any.
 		 *
 		 * @param  {!Element} element
-		 * @param  {?Element}
+		 * @return {?Element}
 		 */
 		closestToolbar: function (element) {
 			var toolbar = Dom.upWhile(element, Fn.complement(Fn.partial(hasClass, 'aloha-ui')));
@@ -285,9 +285,9 @@
 		/**
 		 * Handles user interaction on the context toolbar.
 		 *
-		 * @param  {!Element} element
-		 * @param  {!Element} anchor
-		 * @param  {!Event}   event
+		 * @param {!Element} element
+		 * @param {!Element} anchor
+		 * @param {!Event}   event
 		 */
 		interact: function(toolbar, anchor) {
 			setAttr(_$('a.aloha-active, a.aloha-link-follow'), 'href', toolbar.querySelector('input').value);
@@ -296,8 +296,8 @@
 		/**
 		 * inserts a link at the event's boundary position
 		 *
-		 * @param {!Event} event
-		 * @return {Event} event
+		 * @param  {!Event} event
+		 * @return {Event}  event
 		 */
 		insertLink: function (event) {
 			var boundaries = event.selection.boundaries;
@@ -322,7 +322,8 @@
 	/**
 	 * Links-specific UI handling.
 	 *
-	 * @param {!Event} event
+	 * @param  {!Event} event
+	 * @return {Event}
 	 */
 	function handleLinks(event) {
 		var anchor = LinksUI.anchor(event.selection.boundaries);
@@ -345,7 +346,7 @@
 	 * Sets to active all ui toolbar elements that match the current overrides.
 	 *
 	 * @private
-	 * @param {!Array.<Boundary>} boundries
+	 * @param {Array.<Boundary>} boundries
 	 */
 	function handleFormats(boundaries) {
 		var doc = Boundaries.document(boundaries[0]);
@@ -415,7 +416,6 @@
 		var ui = Dom.upWhile(event.target, function (node) {
 			return Dom.hasClass(node, 'aloha-ui');
 		});
-
 		if (!ui) {
 			Editor.selection.boundaries = null;
 			Array.prototype.forEach.call(
