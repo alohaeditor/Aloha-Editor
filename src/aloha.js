@@ -39,19 +39,43 @@ define([
 	var doc = document;
 	var win = Dom.documentWindow(doc);
 
-	/*
-	 mousedown
-	 mouseup
-	 click
+	var MOUSE_EVENT = {
+		'mousemove'      : true,
+		'mousedown'      : true,
+		'mouseup'        : true,
+		'click'          : true,
+		'dblclick'       : true,
+		'aloha.dblclick' : true,
+		'aloha.tplclick' : true
+	};
 
-	 mousedown -> aloha.dblclick
-	 mouseup
-	 click
-	 dblclick
+	var CLICKING_EVENT = {
+		'mousedown'      : true,
+		'mouseup'        : true,
+		'click'          : true,
+		'dblclick'       : true,
+		'aloha.dblclick' : true,
+		'aloha.tplclick' : true
+	};
 
-	 mousedown -> aloha.tplclick
-	 mouseup
-	 click
+	var MUTLICLICK_EVENT = {
+		'dblclick'       : true,
+		'aloha.dblclick' : true,
+		'aloha.tplclick' : true
+	};
+
+	/**
+	 * Event cycle:
+	 * mousedown
+	 * mouseup
+	 * click
+	 * mousedown -> aloha.dblclick
+	 * mouseup
+	 * click
+	 * dblclick
+	 * mousedown -> aloha.tplclick
+	 * mouseup
+	 * click
 	 */
 	function processClicking(event, selection) {
 		if ('mousedown' !== event.type && 'dbclick' !== event.type && 'aloha.dblclick' !== event.type) {
@@ -77,31 +101,6 @@ define([
 		return MUTLICLICK_EVENT[multiclick] ? 'aloha.tplclick' : 'aloha.dblclick';
 	}
 
-	var MOUSE_EVENT = {
-		'mousemove'      : true,
-		'mousedown'      : true,
-		'mouseup'        : true,
-		'click'          : true,
-		'dblclick'       : true,
-		'aloha.dblclick' : true,
-		'aloha.tplclick' : true
-	};
-
-	var CLICKING_EVENT = {
-		'mousedown'       : true,
-		'mouseup'         : true,
-		'click'           : true,
-		'dblclick'        : true,
-		'aloha.dblclick'  : true,
-		'aloha.tplclick'  : true
-	};
-
-	var MUTLICLICK_EVENT = {
-		'dblclick'       : true,
-		'aloha.dblclick' : true,
-		'aloha.tplclick' : true
-	};
-
 	function getDragging(current, selection) {
 		if (selection.dragging) {
 			return selection.dragging;
@@ -110,9 +109,9 @@ define([
 			return null;
 		}
 		var last = selection.lastMouseEvent;
-		if ('mousedown'       === last
-		||  'aloha.dblclick'  === last
-		||  'aloha.tplclick'  === last) {
+		if ('mousedown'       === last ||
+		    'aloha.dblclick'  === last ||
+		    'aloha.tplclick'  === last) {
 			return last;
 		}
 		return null;
@@ -139,10 +138,10 @@ define([
 		var dragging = getDragging(type, selection);
 		var isDragStart = dragging && dragging !== selection.dragging;
 		if (isClicking || isDragStart) {
-			// Because otherwise if the mouse position is over the caret
-			// element, Boundaries.fromPosition() will compute the boundaries to
-			// be inside the absolutely positioned caret element, which is not
-			// we want
+			// Because otherwise if the mouse position is over the caret element
+			// Boundaries.fromPosition() will compute the boundaries to be
+			// inside the absolutely positioned caret element, which is not we
+			// want
 			Dom.setStyle(selection.caret, 'display', 'none');
 		}
 		if (isDragStart) {
@@ -151,7 +150,8 @@ define([
 		if ('mousemove' === type) {
 			return null;
 		}
-		if ('mouseup' === type) {
+		if ('mouseup' === type && selection.dragging) {
+			type = 'aloha.mouseup';
 			selection.dragging = null;
 		}
 		if (isClicking) {

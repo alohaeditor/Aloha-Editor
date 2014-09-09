@@ -253,7 +253,7 @@ define([
 			return mergeRanges(Boundaries.fromRange(next), boundaries, focus);
 		}
 		return {
-			boundaries : Boundaries.fromRange(range),
+			boundaries : Boundaries.fromRange(next),
 			focus      : focus
 		};
 	}
@@ -467,6 +467,7 @@ define([
 		'keypress'       : keypress,
 		'aloha.dblclick' : dblclick,
 		'aloha.tplclick' : tplclick,
+		'aloha.mouseup'  : mouseup,
 		'mouseup'        : mouseup,
 		'mousedown'      : mousedown,
 		'dragover'       : dragndrop,
