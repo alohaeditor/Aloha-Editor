@@ -417,7 +417,7 @@
 			return Dom.hasClass(node, 'aloha-ui');
 		});
 		if (!ui) {
-			Editor.selection.boundaries = null;
+			Editor.selection = null;
 			Array.prototype.forEach.call(
 				document.querySelectorAll('.aloha-ui .active'),
 				function (node) {
@@ -431,25 +431,30 @@
 		if (event.target.nodeName === 'INPUT') {
 			return;
 		}
-		var selection = Editor.selection;
 		var action = parseAction(event.target);
-		if (action && selection.boundaries) {
-			var boundaries = execute(action, selection.boundaries);
-			Selections.select(selection, boundaries[0], boundaries[1], selection.focus);
+		if (action && Editor.selection) {
+			var boundaries = execute(action, Editor.selection.boundaries);
+			Selections.select(
+				Editor.selection,
+				boundaries[0],
+				boundaries[1],
+				Editor.selection.focus
+			);
 		}
 	});
 
 	on(_$('.aloha-link-toolbar input[name=href]'), 'keyup', function (event) {
-		LinksUI.interact(
-			LinksUI.toolbar(event.target.ownerDocument), 
-			LinksUI.anchor(aloha.editor.selection.boundaries)
-		);
+		if (Editor.selection) {
+			LinksUI.interact(
+				LinksUI.toolbar(event.target.ownerDocument),
+				LinksUI.anchor(Editor.selection.boundaries)
+			);
+		}
 	});
 	
 	// make .aloha-sticky-top items stick to the top when scrolling
 	on([window], 'scroll', function (event) {
 		var stickies = _$('.aloha-sticky-top');
-		var i = stickies.length;
 		var scrollTop = Dom.scrollTop(document);
 		stickies.forEach(function (element) {
 			if (Dom.hasClass(element, 'aloha-sticky-top-active')) {
@@ -477,8 +482,8 @@
 	/**
 	 * Handles UI updates invoked by event
 	 *
-	 * @param  {!AlohaEvent} event
-	 * @return {AlohaEvent}
+	 * @param  {!Event} event
+	 * @return {Event}
 	 */
 	function handleUi(event) {
 		var shortcutHandler = Keys.shortcutHandler(event, shortcutHandlers);
