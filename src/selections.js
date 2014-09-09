@@ -85,7 +85,7 @@ define([
 			'top'     : box.top + 'px',
 			'left'    : box.left + 'px',
 			'height'  : box.height + 'px',
-			'width'   : '5px',
+			'width'   : '2px',
 			'display' : 'block'
 		});
 	}
@@ -99,7 +99,7 @@ define([
 	 */
 	function stylesFromOverrides(overrides) {
 		var style = {};
-		style['padding'] = overrides['bold'] ? '1px' : '0px';
+		style['padding'] = overrides['bold'] ? '1.5px' : '0px';
 		style[Browsers.VENDOR_PREFIX + 'transform']
 				= overrides['italic'] ? 'rotate(16deg)' : '';
 		style['background'] = overrides['color'] || 'black';
