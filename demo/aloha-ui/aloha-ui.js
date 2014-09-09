@@ -307,20 +307,50 @@
 		},
 
 		/**
+		 * Normalize boundaries, so that if either start
+		 * or end boundaries are inside an anchor tag
+		 * both boundaries will snap to that tag.
+		 * If the boundaries are collapsed, they will be
+		 * extended to word.
+		 *
+		 * @param {!Boundaries} boundaries
+		 * @return {Boundaries}
+		 */
+		normalize: function (boundaries) {
+			var anchor;
+			var i;
+			function getAnchor (node) {
+				if (node.nodeName === 'A') {
+					anchor = node;
+				}
+			}
+			for (i = 0; i < boundaries.length; i++) {
+				Dom.childAndParentsUntilIncl(Boundaries.container(boundaries[i]), getAnchor);
+				if (anchor) {
+					return [Boundaries.next(Boundaries.fromNode(anchor)), Boundaries.fromEndOfNode(anchor)];
+				}
+			}
+
+			if (Arrays.equal(boundaries[0], boundaries[1])) {
+				return Traversing.expand(boundaries[0], boundaries[1], 'word');
+			}			
+		},
+
+		/**
 		 * inserts a link at the event's boundary position
 		 *
 		 * @param  {!Event} event
 		 * @return {Event}  event
 		 */
 		insertLink: function (event) {
-			var boundaries = event.selection.boundaries;
-			if (Arrays.equal(boundaries[0], boundaries[1])) {
-				boundaries = Traversing.expand(boundaries[0], boundaries[1], 'word');
+			var boundaries = LinksUI.normalize(event.selection.boundaries);
+
+			if (Boundaries.container(boundaries[0]).nodeName !== 'A') {
+				boundaries = Editing.wrap('A', boundaries[0], boundaries[1]);
+				boundaries[0] = Boundaries.next(boundaries[0]);
+				boundaries[1] = Boundaries.fromEndOfNode(boundaries[0])[0];
 			}
-			boundaries = Editing.wrap('A', boundaries[0], boundaries[1]);
-			boundaries[0] = Boundaries.next(boundaries[0]);
-			boundaries[1] = Boundaries.fromEndOfNode(boundaries[0])[0];
-			//var href = Dom.getAttr(Boundaries.container(boundaries[0]), 'href');
+
 			event.selection.boundaries = boundaries;
 			LinksUI.open(
 				LinksUI.toolbar(event.nativeEvent.target.ownerDocument),
