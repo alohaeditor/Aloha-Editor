@@ -5,8 +5,9 @@
 	var Dom = aloha.dom;
 	var Keys = aloha.keys;
 	var Editor = aloha.editor;
-	var Editing = aloha.editing;
 	var Events = aloha.events;
+	var Editing = aloha.editing;
+	var Overrides = aloha.overrides;
 	var Selections = aloha.selections;
 	var Boundaries = aloha.boundaries;
 	var Traversing = aloha.traversing;
@@ -26,7 +27,7 @@
 	}
 
 	/**
-	 * Attach event handlers to an array of elements
+	 * Attaches event handlers to an array of elements.
 	 *
 	 * @param {Array.<Element>} elements
 	 * @param {string}          event
@@ -39,7 +40,19 @@
 	}
 
 	/**
-	 * Remove a class from an array of elements
+	 * Adds a class from an array of elements.
+	 *
+	 * @param {Array.<Element>} elements
+	 * @param {string}          className
+	 */
+	function addClass(elements, className) {
+		elements.forEach(function (element) {
+			Dom.addClass(element, className);
+		});
+	}
+
+	/**
+	 * Removes a class from an array of elements.
 	 *
 	 * @param {Array.<Element>} elements
 	 * @param {string}          className
@@ -51,7 +64,7 @@
 	}
 
 	/**
-	 * Update an attribute for an array of elements
+	 * Updates an attribute for an array of elements.
 	 *
 	 * @param {Array.<Element>} elements
 	 * @param {string}          name
@@ -350,7 +363,6 @@
 	 */
 	function handleFormats(event) {
 		var boundaries = event.selection.boundaries;
-		var doc = Boundaries.document(boundaries[0]);
 		var formatNodes = uniqueNodeNames(Dom.childAndParentsUntilIncl(
 			Boundaries.container(boundaries[0]),
 			function (node) {
@@ -384,7 +396,6 @@
 
 			// update dropdowns
 			var dropdownEntries = _$('.aloha-ui .dropdown-menu .' + ACTION_CLASS_PREFIX + format);
-			var dropdownRoot;
 			i = dropdownEntries.length;
 			removeClass(_$('.aloha-ui .dropdown-toggle .active'), 'active');
 			if (i > 0) {
@@ -394,6 +405,7 @@
 				var btnGroup = Arrays.last(parents);
 				Dom.addClass(btnGroup.querySelector('.dropdown-toggle'), 'active');
 			}
+			var dropdownRoot;
 			while (i--) {
 				dropdownRoot = Dom.upWhile(dropdownEntries[i], isDropdownUl).parentNode;
 				dropdownRoot.querySelector('.dropdown-toggle').firstChild.data =
@@ -402,8 +414,24 @@
 		});
 	}
 
+	/**
+	 * Handles overrides toggling.
+	 *
+	 * @private
+	 * @param {!Event} event
+	 */
 	function handleOverrides(event) {
-		var overrides = event.selection.overrides;
+		event.selection.overrides.forEach(function (override) {
+			var format = Overrides.stateToNode[override[0]];
+			if (!format) {
+				var btns = _$('.aloha-ui .' + ACTION_CLASS_PREFIX + format);
+				if (override[1]) {
+					addClass(btns, 'active');
+				} else {
+					removeClass(btns, 'active');
+				}
+			}
+		});
 	}
 
 	var eventLoop = { inEditable: false };
@@ -496,6 +524,7 @@
 		} else if ('keyup' === event.type || 'click' === event.type) {
 			handleLinks(event);
 			handleFormats(event);
+			handleOverrides(event);
 		}
 		return event;
 	}

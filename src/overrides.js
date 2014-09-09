@@ -398,6 +398,7 @@ define([
 		toggle      : toggle,
 		consume     : consume,
 		harvest     : harvest,
-		nodeToState : nodeToState
+		nodeToState : nodeToState,
+		stateToNode : stateToNode
 	};
 });

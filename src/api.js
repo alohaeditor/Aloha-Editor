@@ -403,6 +403,7 @@ define([
 	exports['overrides']['harvest']     = Overrides.harvest;
 	exports['overrides']['consume']     = Overrides.consume;
 	exports['overrides']['nodeToState'] = Overrides.nodeToState;
+	exports['overrides']['stateToNode'] = Overrides.stateToNode;
 
 	exports['paste'] = {};
 	exports['paste']['handlePaste'] = Paste.handlePaste;
