@@ -1776,20 +1776,20 @@ define([
 	 * @return {Array.<Boundary>}
 	 */
 	function format(start, end, nodeName, boundaries) {
-		if (nodeName.toLowerCase() === 'a') {
-			return Links.create('', start, end);
-		}
+		var range;
 		var node = {nodeName: nodeName};
-		if (Html.isTextLevelSemanticNode(node)) {
-			return formatInline(nodeName, start, end, true);
+		if (nodeName.toLowerCase() === 'a') {
+			range = Links.create('', start, end);
+		} else if (Html.isTextLevelSemanticNode(node)) {
+			range = formatInline(nodeName, start, end, true);
+		} else if (Html.isListContainer(node)) {
+			range = Lists.toggle(nodeName, start, end);
+		} else if (Html.isBlockNode(node)) {
+			range = blockFormat(nodeName, start, end);
 		}
-		if (Html.isListContainer(node)) {
-			return Lists.toggle(nodeName, start, end);
-		}
-		if (Html.isBlockNode(node)) {
-			return blockFormat(nodeName, start, end);
-		}
-		return [start, end];
+		return range
+		     ? [Boundaries.next(range[0]), Boundaries.prev(range[1])]
+		     : [start, end];
 	}
 
 	function unformat(start, end, nodeName, boundaries) {

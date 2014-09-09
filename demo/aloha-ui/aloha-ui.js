@@ -520,6 +520,7 @@
 			eventLoop.inEditable = true;
 		}
 		if ('keydown' === event.type) {
+			handleFormats(event);
 			handleOverrides(event);
 		} else if ('keyup' === event.type || 'click' === event.type) {
 			handleLinks(event);
