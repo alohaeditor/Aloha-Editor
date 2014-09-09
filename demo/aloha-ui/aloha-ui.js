@@ -77,25 +77,18 @@
 	}
 
 	/**
+	 * Executes an action based on the given parameters list
 	 *
 	 * @private
-	 * @param  {!Array.<string>} actionParams
-	 * @param  {!Array.<Boundary>}   boundaries
+	 * @param  {!Array.<string>}   params
+	 * @param  {!Array.<Boundary>} boundaries
 	 * @return {Array.<Boundary>}
 	 */
-	function execute(actionParams, boundaries) {
-		var action = actionParams.shift();
-		var parameters = [
-			boundaries[0],
-			boundaries[1]
-		];
-		parameters = parameters.concat(actionParams);
-
-		if (actions[action]) {
-			boundaries = actions[action].apply(window, parameters);
-		}
-
-		return boundaries;
+	function execute(params, boundaries) {
+		var action = params.shift();
+		return actions[action]
+		     ? actions[action].apply(window, boundaries.concat(params))
+		     : boundaries;
 	}
 
 	/**
@@ -107,7 +100,7 @@
 	 *
 	 * @private
 	 * @param  {!Element} element
-	 * @return {Array<string>}
+	 * @return {Array.<string>}
 	 */
 	function parseActionParams(element) {
 		var match;
@@ -310,21 +303,17 @@
 		 */
 		insertLink: function insertLink(start, end) {
 			var boundaries = LinksUI.normalize([start, end]);
-
 			if (Boundaries.container(boundaries[0]).nodeName !== 'A') {
 				boundaries = Editing.wrap('A', boundaries[0], boundaries[1]);
 				boundaries[0] = Boundaries.next(boundaries[0]);
 				boundaries[1] = Boundaries.fromEndOfNode(boundaries[0])[0];
 			}
-
 			LinksUI.open(
 				LinksUI.toolbar(document),
 				Boundaries.container(boundaries[0])
 			);
-
 			_$('.aloha-link-toolbar input[name=href]')[0].focus();
 			addClass(_$('.aloha-ui .' + ACTION_CLASS_PREFIX + 'A'), 'active');
-
 			return boundaries;
 		}
 	};
@@ -498,7 +487,7 @@
 		});
 	});	
 
-	var shortcutHandlers = {
+	var shortcuts = {
 		'keydown': {
 			'meta+k' : LinksUI.insertLink,
 			'ctrl+k' : LinksUI.insertLink
@@ -536,21 +525,20 @@
 	 * @return {Event}
 	 */
 	function handleUi(event) {
-		var shortcutHandler = Keys.shortcutHandler(event, shortcutHandlers);
-		if (shortcutHandler) {
-			event.selection.boundaries = shortcutHandler(
+		var handler = Keys.shortcutHandler(event, shortcuts);
+		if (handler) {
+			event.selection.boundaries = handler(
 				event.selection.boundaries[0], 
 				event.selection.boundaries[1]
 			);
-			if (shortcutHandler.name === 'insertLink') {
+			if (handler.name === 'insertLink') {
 				event.preventSelection = true;
 			}
 			return event;
 		}
 		if ('mouseup' === event.type || 'aloha.mouseup' === event.type) {
 			eventLoop.inEditable = true;
-		}
-		if ('keydown' === event.type) {
+		} else if ('keydown' === event.type) {
 			handleFormats(event);
 			handleOverrides(event);
 		} else if ('keyup' === event.type || 'click' === event.type) {
