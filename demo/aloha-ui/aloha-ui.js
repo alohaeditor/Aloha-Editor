@@ -421,7 +421,11 @@
 	 * @param {!Event} event
 	 */
 	function handleOverrides(event) {
-		event.selection.overrides.forEach(function (override) {
+		var overrides = Overrides.joinToSet(
+			event.selection.formatting,
+			event.selection.overrides
+		);
+		overrides.forEach(function (override) {
 			var format = Overrides.stateToNode[override[0]];
 			if (format) {
 				var btns = _$('.aloha-ui .' + ACTION_CLASS_PREFIX + format);

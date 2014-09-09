@@ -55,19 +55,6 @@ define([
 	}
 
 	/**
-	 * Joins a variable list of overrides-lists into a single unique set.
-	 *
-	 * @private
-	 * @param  {Array.<Override>...}
-	 * @param  {Array.<Override>}
-	 */
-	function joinToSet() {
-		return Overrides.unique(
-			Array.prototype.concat.apply([], Arrays.coerce(arguments))
-		);
-	}
-
-	/**
 	 * Removes unrendered containers from each of the given boundaries while
 	 * preserving the correct position of all.
 	 *
@@ -104,7 +91,7 @@ define([
 			start,
 			Traversing.envelopeInvisibleCharacters(end)
 		);
-		selection.formatting = joinToSet(
+		selection.formatting = Overrides.joinToSet(
 			selection.formatting,
 			Overrides.harvest(Boundaries.container(boundaries[0]))
 		);
@@ -123,7 +110,7 @@ define([
 		if (!override) {
 			return boundaries;
 		}
-		var overrides = joinToSet(
+		var overrides = Overrides.joinToSet(
 			selection.formatting,
 			Overrides.harvest(Boundaries.container(boundaries[0])),
 			selection.overrides
@@ -134,7 +121,7 @@ define([
 
 	function breakline(isLinebreak, event) {
 		if (!isLinebreak) {
-			event.selection.formatting = joinToSet(
+			event.selection.formatting = Overrides.joinToSet(
 				event.selection.formatting,
 				Overrides.harvest(Boundaries.container(event.selection.boundaries[0]))
 			);
@@ -162,10 +149,10 @@ define([
 				text = '\xa0';
 			}
 		}
-		boundary = Overrides.consume(
-			boundary,
-			joinToSet(selection.formatting, selection.overrides)
-		);
+		boundary = Overrides.consume(boundary, Overrides.joinToSet(
+			selection.formatting,
+			selection.overrides
+		));
 		selection.overrides = [];
 		selection.formatting = [];
 		var range = Boundaries.range(boundary, boundary);

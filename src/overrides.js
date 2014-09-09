@@ -25,6 +25,7 @@ define([
 	'misc',
 	'maps',
 	'html',
+	'arrays',
 	'mutation',
 	'boundaries'
 ], function (
@@ -32,6 +33,7 @@ define([
 	Misc,
 	Maps,
 	Html,
+	Arrays,
 	Mutation,
 	Boundaries
 ) {
@@ -392,12 +394,27 @@ define([
 		return set.reverse();
 	}
 
+	/**
+	 * Joins a variable list of overrides-lists into a single unique set.
+	 *
+	 * @private
+	 * @param  {Array.<Override>...}
+	 * @param  {Array.<Override>}
+	 * @return {Array.<Override>}
+	 */
+	function joinToSet() {
+		return unique(
+			Array.prototype.concat.apply([], Arrays.coerce(arguments))
+		);
+	}
+
 	return {
 		indexOf     : indexOf,
 		unique      : unique,
 		toggle      : toggle,
 		consume     : consume,
 		harvest     : harvest,
+		joinToSet   : joinToSet,
 		nodeToState : nodeToState,
 		stateToNode : stateToNode
 	};

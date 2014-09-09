@@ -608,19 +608,6 @@ define([
 	}
 
 	/**
-	 * Joins a variable list of overrides-lists into a single unique set.
-	 *
-	 * @private
-	 * @param  {Array.<Override>...}
-	 * @param  {Array.<Override>}
-	 */
-	function joinToSet() {
-		return Overrides.unique(
-			Array.prototype.concat.apply([], Arrays.coerce(arguments))
-		);
-	}
-
-	/**
 	 * Computes a table of the given override and those collected at the given
 	 * node.
 	 *
@@ -632,7 +619,7 @@ define([
 	 * @return {Object}
 	 */
 	function mapOverrides(node, selection) {
-		var overrides = joinToSet(
+		var overrides = Overrides.joinToSet(
 			selection.formatting,
 			Overrides.harvest(node),
 			selection.overrides

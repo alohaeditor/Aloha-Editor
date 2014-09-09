@@ -404,6 +404,7 @@ define([
 	exports['overrides']['consume']     = Overrides.consume;
 	exports['overrides']['nodeToState'] = Overrides.nodeToState;
 	exports['overrides']['stateToNode'] = Overrides.stateToNode;
+	exports['overrides']['joinToSet']   = Overrides.joinToSet;
 
 	exports['paste'] = {};
 	exports['paste']['handlePaste'] = Paste.handlePaste;
