@@ -201,3 +201,12 @@
 	border-right:  8px solid transparent;
 	border-bottom: 8px solid rgb(90,90,90);
 }
+
+.aloha-sticky-top-active {
+	position: fixed;
+	top: 0px;
+}
+
+.menu-wrap {
+	height: 45px;
+}

@@ -277,6 +277,8 @@ define([
 	exports['dom']['editableParent']               = Dom.editableParent;
 	exports['dom']['scrollTop']                    = Dom.scrollTop;
 	exports['dom']['scrollLeft']                   = Dom.scrollLeft;
+	exports['dom']['absoluteTop']                  = Dom.absoluteTop;
+	exports['dom']['absoluteLeft']                 = Dom.absoluteLeft;
 
 	exports['dragdrop'] = {};
 	exports['dragdrop']['handleDragDrop'] = DragDrop.handleDragDrop;

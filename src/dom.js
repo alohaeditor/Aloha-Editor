@@ -231,6 +231,46 @@ define([
 		return scrollLeftElem.scrollLeft;
 	}
 
+	/**
+	 * Calculate absolute offsetTop or offsetLeft properties
+	 * for an element
+	 *
+	 * @param {!Element} element
+	 * @param {string}   property
+	 * @return {integer}
+	 */
+	function absoluteOffset(element, property) {
+		var offset = element[property];
+		var parent = element.offsetParent;
+		while (parent) {
+			offset += parent[property];
+			parent = parent.offsetParent;
+		}
+		return offset;		
+	}
+
+	/**
+	 * Calculates the absolute top position
+	 * of an element
+	 *
+	 * @param {!Element} element
+	 * @return {integer}
+	 */
+	function absoluteTop(element) {
+		return absoluteOffset(element, 'offsetTop');
+	}
+
+	/**
+	 * Calculates the absolute left position
+	 * of an element
+	 *
+	 * @param {!Element} element
+	 * @return {integer}
+	 */
+	function absoluteLeft(element) {
+		return absoluteOffset(element, 'offsetLeft');
+	}
+
 	return {
 		Nodes                   : Nodes.Nodes,
 		offset                  : Nodes.offset,
@@ -340,6 +380,8 @@ define([
 		editingHost       : editingHost,
 		editableParent    : editableParent,
 		scrollTop         : scrollTop,
-		scrollLeft        : scrollLeft
+		scrollLeft        : scrollLeft,
+		absoluteTop       : absoluteTop,
+		absoluteLeft      : absoluteLeft
 	};
 });

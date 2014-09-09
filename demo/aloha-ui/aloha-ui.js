@@ -445,6 +445,26 @@
 			LinksUI.anchor(aloha.editor.selection.boundaries)
 		);
 	});
+	
+	// make .aloha-sticky-top items stick to the top when scrolling
+	on([window], 'scroll', function (event) {
+		var stickies = _$('.aloha-sticky-top');
+		var i = stickies.length;
+		var scrollTop = Dom.scrollTop(document);
+		stickies.forEach(function (element) {
+			if (Dom.hasClass(element, 'aloha-sticky-top-active')) {
+				if (scrollTop <= Dom.getAttr(element, 'data-aloha-sticky-top-pos')) {
+					Dom.setAttr(element, 'data-aloha-sticky-top-pos', null);
+					Dom.removeClass(element, 'aloha-sticky-top-active');
+				}
+			} else {
+				if (scrollTop > Dom.absoluteTop(element)) {
+					Dom.setAttr(element, 'data-aloha-sticky-top-pos', Dom.absoluteTop(element));
+					Dom.addClass(element, 'aloha-sticky-top-active');
+				}
+			}
+		});
+	});	
 
 	var shortcutHandlers = {
 		'keydown': {
