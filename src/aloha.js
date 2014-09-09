@@ -175,8 +175,8 @@ define([
 			// Because if we are partly inside of an editable, we don't want the
 			// back-button to unload the page
 			if ('keydown' === type) {
-				if (Dom.isEditableNode(Boundaries.container(boundaries[0]))
-				 || Dom.isEditableNode(Boundaries.container(boundaries[1]))) {
+				if (Dom.isEditableNode(Boundaries.container(boundaries[0])) ||
+				    Dom.isEditableNode(Boundaries.container(boundaries[1]))) {
 					Events.preventDefault(event);
 				}
 			}

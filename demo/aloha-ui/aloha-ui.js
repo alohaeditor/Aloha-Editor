@@ -376,23 +376,17 @@
 
 		formatNodes.forEach(function (format) {
 			// update buttons
-			var buttons = doc.querySelectorAll('.aloha-ui .' + ACTION_CLASS_PREFIX + format),
-				i = buttons.length;
+			var buttons = _$('.aloha-ui .' + ACTION_CLASS_PREFIX + format);
+			var i = buttons.length;
 			while (i--) {
 				buttons[i].className += ' active';
 			}
 
 			// update dropdowns
-			var dropdownEntries = doc
-				.querySelectorAll('.aloha-ui .dropdown-menu .' + ACTION_CLASS_PREFIX + format),
-				dropdownRoot;
+			var dropdownEntries = _$('.aloha-ui .dropdown-menu .' + ACTION_CLASS_PREFIX + format);
+			var dropdownRoot;
 			i = dropdownEntries.length;
-			var activeDropdowns = doc.querySelectorAll('.aloha-ui .dropdown-toggle .active');
-			if (activeDropdowns.length > 0) {
-				activeDropdowns.forEach(function (node) {
-					Dom.removeClass('active');
-				});
-			}
+			removeClass(_$('.aloha-ui .dropdown-toggle .active'), 'active');
 			if (i > 0) {
 				var parents = Dom.parentsUntilIncl(dropdownEntries[0], function (node) {
 					return Dom.hasClass(node, 'btn-group');
@@ -408,7 +402,20 @@
 		});
 	}
 
+	function handleOverrides(event) {
+		var overrides = event.selection.overrides;
+	}
+
+	var eventLoop = { inEditable: false };
+
 	on([document], 'mousedown', function (event) {
+		eventLoop.inEditable = false;
+	});
+
+	on([document], 'mouseup', function (event) {
+		if (eventLoop.inEditable) {
+			return;
+		}
 		var ui = Dom.upWhile(event.target, function (node) {
 			return !Dom.hasClass(node, 'aloha-ui');
 		});
@@ -418,7 +425,7 @@
 		}
 	});
 
-	on(_$('.aloha-ui'), 'click', function (event) {
+	on(_$('.aloha-ui'), 'mousedown', function (event) {
 		if (event.target.nodeName === 'INPUT') {
 			return;
 		}
@@ -481,7 +488,12 @@
 		if (shortcutHandler) {
 			return shortcutHandler(event);
 		}
-		if ('keyup' === event.type || 'click' === event.type) {
+		if ('mouseup' === event.type || 'aloha.mouseup' === event.type) {
+			eventLoop.inEditable = true;
+		}
+		if ('keydown' === event.type) {
+			handleOverrides(event);
+		} else if ('keyup' === event.type || 'click' === event.type) {
 			handleLinks(event);
 			handleFormats(event);
 		}
