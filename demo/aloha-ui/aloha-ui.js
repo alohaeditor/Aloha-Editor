@@ -346,9 +346,10 @@
 	 * Sets to active all ui toolbar elements that match the current overrides.
 	 *
 	 * @private
-	 * @param {Array.<Boundary>} boundries
+	 * @param {!Event} event
 	 */
-	function handleFormats(boundaries) {
+	function handleFormats(event) {
+		var boundaries = event.selection.boundaries;
 		var doc = Boundaries.document(boundaries[0]);
 		var formatNodes = uniqueNodeNames(Dom.childAndParentsUntilIncl(
 			Boundaries.container(boundaries[0]),
@@ -371,12 +372,7 @@
 			return Array.prototype.indexOf.call(node.classList, 'dropdown-menu') === -1;
 		}
 
-		Array.prototype.forEach.call(
-			doc.querySelectorAll('.aloha-ui .active'),
-			function (node) {
-				Dom.removeClass(node, 'active');
-			}
-		);
+		removeClass(_$('.aloha-ui .active'), 'active');
 
 		formatNodes.forEach(function (format) {
 			// update buttons
@@ -412,18 +408,13 @@
 		});
 	}
 
-	on([document], 'click', function (event) {
+	on([document], 'mousedown', function (event) {
 		var ui = Dom.upWhile(event.target, function (node) {
-			return Dom.hasClass(node, 'aloha-ui');
+			return !Dom.hasClass(node, 'aloha-ui');
 		});
 		if (!ui) {
 			Editor.selection = null;
-			Array.prototype.forEach.call(
-				document.querySelectorAll('.aloha-ui .active'),
-				function (node) {
-					Dom.removeClass(node, 'active');
-				}
-			);
+			removeClass(_$('.aloha-ui .active'), 'active');
 		}
 	});
 
@@ -492,7 +483,7 @@
 		}
 		if ('keyup' === event.type || 'click' === event.type) {
 			handleLinks(event);
-			handleFormats(event.selection.boundaries);
+			handleFormats(event);
 		}
 		return event;
 	}

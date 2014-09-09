@@ -206,7 +206,10 @@ define([
 		var event = createEvent(editor, nativeEvent);
 		if (event) {
 			event = Fn.comp.apply(editor.stack, editor.stack)(event);
-			Maps.extend(editor.selection, Selections.update(event));
+			var selection = Selections.update(event);
+			if (selection) {
+				editor.selection = Maps.merge(selection);
+			}
 		}
 	}
 
@@ -214,7 +217,7 @@ define([
 	editor.CARET_CLASS = 'aloha-caret';
 	editor.dnd         = DragDrop.Context();
 	editor.selecting   = Selections.Context(doc);
-	editor.selection   = {};
+	editor.selection   = null;
 	editor.editables   = {};
 	editor.stack       = [
 		Selections.handleSelections,
