@@ -168,7 +168,9 @@
 	    -ms-animation: flip-close .2s ease-out forwards;
 	        animation: flip-close .2s ease-out forwards;
 }
-.aloha-link-toolbar input, .aloha-link-toolbar a {
+.aloha-link-toolbar a,
+.aloha-link-toolbar input,
+.aloha-link-toolbar button {
 	display: block;
 	float: left;
 }

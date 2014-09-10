@@ -122,36 +122,6 @@
 	}
 
 	/**
-	 * Transforms an array of dom nodes into an array of node names
-	 * for faster iteration, eg:
-	 *
-	 * [text, h1, text, p] // array contains DOM nodes
-	 *
-	 * will return:
-	 *
-	 * ['P', '#text', 'H1']
-	 *
-	 * Duplicate entries will be removed, as displayed in the example
-	 * above.
-	 *
-	 * @private
-	 * @param  {!Array.<Element>} nodes
-	 * @return {Array.<string>}
-	 */
-	function uniqueNodeNames(nodes) {
-		var i = nodes.length;
-		var arr = [];
-		var added = {};
-		while (i--) {
-			if (!added[nodes[i].nodeName]) {
-				arr.push(nodes[i].nodeName);
-				added[nodes[i].nodeName] = true;
-			}
-		}
-		return arr;
-	}
-
-	/**
 	 * Positions the given toolbar element to point to the anchor element in the
 	 * document.
 	 *
@@ -208,7 +178,7 @@
 		 * @param {!Element} toolbar
 		 * @param {!Element} anchor
 		 */
-		close: function(toolbar, anchor) {
+		close: function (toolbar, anchor) {
 			removeClass(_$('.aloha-active'), 'aloha-active');
 			Dom.removeClass(toolbar, 'opened');
 		},
@@ -256,10 +226,13 @@
 		 *
 		 * @param {!Element} element
 		 * @param {!Element} anchor
-		 * @param {!Event}   event
 		 */
-		interact: function(toolbar, anchor) {
-			setAttr(_$('a.aloha-active, a.aloha-link-follow'), 'href', toolbar.querySelector('input').value);
+		interact: function (toolbar, anchor) {
+			setAttr(
+				_$('a.aloha-active, a.aloha-link-follow'),
+				'href',
+				toolbar.querySelector('input').value
+			);
 		},
 
 		/**
@@ -269,29 +242,24 @@
 		 * If the boundaries are collapsed, they will be
 		 * extended to word.
 		 *
-		 * @param {!Boundaries} boundaries
-		 * @return {Boundaries}
+		 * @param  {!Boundary} start
+		 * @param  {!Boundary} end
+		 * @return {Array.<Boundary>}
 		 */
-		normalize: function (boundaries) {
-			var anchor;
-			var i;
-			function getAnchor (node) {
-				if (node.nodeName === 'A') {
-					anchor = node;
-				}
-			}
-			for (i = 0; i < boundaries.length; i++) {
-				Dom.childAndParentsUntilIncl(Boundaries.container(boundaries[i]), getAnchor);
+		normalize: function (start, end) {
+			var boundaries = [start, end];
+			for (var i = 0; i < boundaries.length; i++) {
+				var anchor = Dom.upWhile(Boundaries.container(boundaries[i]), notAnchor);
 				if (anchor) {
-					return [Boundaries.next(Boundaries.fromNode(anchor)), Boundaries.fromEndOfNode(anchor)];
+					return [
+						Boundaries.next(Boundaries.fromNode(anchor)),
+						Boundaries.fromEndOfNode(anchor)
+					];
 				}
 			}
-
-			if (Arrays.equal(boundaries[0], boundaries[1])) {
-				return Traversing.expand(boundaries[0], boundaries[1], 'word');
-			}
-
-			return boundaries;
+			return Boundaries.equals(start, end)
+			     ? Traversing.expand(start, end, 'word')
+			     : boundaries;
 		},
 
 		/**
@@ -301,8 +269,8 @@
 		 * @param  {!Boundary}  end
 		 * @return {Boundaries} event
 		 */
-		insertLink: function insertLink(start, end) {
-			var boundaries = LinksUI.normalize([start, end]);
+		insertLink: function (start, end) {
+			var boundaries = LinksUI.normalize(start, end);
 			if (Boundaries.container(boundaries[0]).nodeName !== 'A') {
 				boundaries = Editing.wrap('A', boundaries[0], boundaries[1]);
 				boundaries[0] = Boundaries.next(boundaries[0]);
@@ -315,6 +283,16 @@
 			_$('.aloha-link-toolbar input[name=href]')[0].focus();
 			addClass(_$('.aloha-ui .' + ACTION_CLASS_PREFIX + 'A'), 'active');
 			return boundaries;
+		},
+
+		toggleTarget: function (start, end) {
+			var anchor = _$('.aloha-active')[0];
+			if ('blank' === Dom.getAttr(anchor, '_target')) {
+				Dom.removeAttr(anchor, '_target');
+			} else {
+				Dom.setAttr(anchor, '_target', 'blank');
+			}
+			return [start, end];
 		}
 	};
 
@@ -340,6 +318,87 @@
 	}
 
 	/**
+	 * Deactivates all ui buttons.
+	 *
+	 * @private
+	 */
+	function resetUi() {
+		removeClass(_$('.aloha-ui .active'), 'active');
+	}
+
+	/**
+	 * Toggles ui action buttons to active state based on the given list of
+	 * formats.
+	 *
+	 * @private
+	 * @param {Array.<string>} formats
+	 */
+	function activateButtons(formats) {
+		var selectors = formats.reduce(function (list, format) {
+			return list.concat('.aloha-ui .' + ACTION_CLASS_PREFIX + format);
+		}, []);
+		var btns = _$(selectors.join(','));
+		addClass(btns, 'active');
+	}
+
+	/**
+	 * Updates ui menu buttons based on the given list of formats.
+	 *
+	 * @private
+	 * @param {Array.<string>} formats
+	 */
+	function activateMenus(formats) {
+		var selectors = formats.reduce(function (list, format) {
+			return list.concat('.aloha-ui .dropdown-menu .' + ACTION_CLASS_PREFIX + format);
+		}, []);
+		var btns = _$(selectors.join(','));
+		if (0 === btns.length) {
+			return;
+		}
+		var item = btns[0];
+		var group = Dom.upWhile(item, function (node) {
+			return !Dom.hasClass(node, 'btn-group');
+		});
+		var toggler = group.querySelector('.dropdown-toggle');
+		Dom.addClass(toggler, 'active');
+		toggler.firstChild.data = item.textContent + ' ';
+	}
+
+	/**
+	 * Computes a list of all active formats determined from the given
+	 * selection.
+	 *
+	 * Formats are simply a lists of node names which reflect semantic formatting.
+	 *
+	 * @private
+	 * @param  {!Selection} selection
+	 * @return {Array.<string>}
+	 */
+	function activeFormats(selection) {
+		var nodes = Dom.childAndParentsUntilIncl(
+			Boundaries.container(selection.boundaries[0]),
+			function (node) { return Dom.isEditingHost(node.parentNode); }
+		);
+		var overrides = Overrides.joinToSet(
+			selection.formatting,
+			selection.overrides
+		);
+		var active = nodes.map(function (node) { return node.nodeName; });
+		var unactive = [];
+		overrides.forEach(function (override) {
+			var format = Overrides.stateToNode[override[0]];
+			if (format) {
+				if (override[1]) {
+					active.push(format);
+				} else {
+					unactive.push(format);
+				}
+			}
+		});
+		return Arrays.difference(Arrays.unique(active), unactive);
+	}
+
+	/**
 	 * Updates the ui according to current state overrides.
 	 *
 	 * Sets to active all ui toolbar elements that match the current overrides.
@@ -347,81 +406,11 @@
 	 * @private
 	 * @param {!Event} event
 	 */
-	function handleFormats(event) {
-		var boundaries = event.selection.boundaries;
-		var formatNodes = uniqueNodeNames(Dom.childAndParentsUntilIncl(
-			Boundaries.container(boundaries[0]),
-			function (node) {
-				return node.parentNode && Dom.isEditingHost(node.parentNode);
-			}
-		));
-
-		/**
-		 * Finds the root ul of a bootstrap dropdown menu
-		 * starting from an entry node within the menu.
-		 * Returns true until the node is found. Meant to
-		 * be used with Dom.upWhile().
-		 *
-		 * @private
-		 * @param {!Node} node
-		 * @return {boolean}
-		 */
-		function isDropdownUl(node) {
-			return Array.prototype.indexOf.call(node.classList, 'dropdown-menu') === -1;
-		}
-
-		removeClass(_$('.aloha-ui .active'), 'active');
-
-		formatNodes.forEach(function (format) {
-			// update buttons
-			var buttons = _$('.aloha-ui .' + ACTION_CLASS_PREFIX + format);
-			var i = buttons.length;
-			while (i--) {
-				buttons[i].className += ' active';
-			}
-
-			// update dropdowns
-			var dropdownEntries = _$('.aloha-ui .dropdown-menu .' + ACTION_CLASS_PREFIX + format);
-			i = dropdownEntries.length;
-			removeClass(_$('.aloha-ui .dropdown-toggle .active'), 'active');
-			if (i > 0) {
-				var parents = Dom.parentsUntilIncl(dropdownEntries[0], function (node) {
-					return Dom.hasClass(node, 'btn-group');
-				});
-				var btnGroup = Arrays.last(parents);
-				Dom.addClass(btnGroup.querySelector('.dropdown-toggle'), 'active');
-			}
-			var dropdownRoot;
-			while (i--) {
-				dropdownRoot = Dom.upWhile(dropdownEntries[i], isDropdownUl).parentNode;
-				dropdownRoot.querySelector('.dropdown-toggle').firstChild.data =
-					dropdownEntries[i].innerText + ' ';
-			}
-		});
-	}
-
-	/**
-	 * Handles overrides toggling.
-	 *
-	 * @private
-	 * @param {!Event} event
-	 */
-	function handleOverrides(event) {
-		var overrides = Overrides.joinToSet(
-			event.selection.formatting,
-			event.selection.overrides
-		);
-		overrides.forEach(function (override) {
-			var format = Overrides.stateToNode[override[0]];
-			if (format) {
-				var btns = _$('.aloha-ui .' + ACTION_CLASS_PREFIX + format);
-				if (override[1]) {
-					addClass(btns, 'active');
-				} else {
-					removeClass(btns, 'active');
-				}
-			}
-		});
+	function updateUi(selection) {
+		resetUi();
+		var formats = activeFormats(selection);
+		activateButtons(formats);
+		activateMenus(formats);
 	}
 
 	var eventLoop = { inEditable: false };
@@ -439,7 +428,7 @@
 		});
 		if (!ui) {
 			Editor.selection = null;
-			removeClass(_$('.aloha-ui .active'), 'active');
+			resetUi();
 		}
 	});
 
@@ -447,14 +436,15 @@
 		if (event.target.nodeName === 'INPUT') {
 			return;
 		}
-		var actionParams = parseActionParams(event.target);
-		if (actionParams && Editor.selection) {
-			var boundaries = execute(actionParams, Editor.selection.boundaries);
+		var params = parseActionParams(event.target);
+		var selection = Editor.selection;
+		if (params && selection) {
+			selection.boundaries = execute(params, selection.boundaries);
 			Selections.select(
-				Editor.selection,
-				boundaries[0],
-				boundaries[1],
-				Editor.selection.focus
+				selection,
+				selection.boundaries[0],
+				selection.boundaries[1],
+				selection.focus
 			);
 		}
 	});
@@ -505,6 +495,7 @@
 		'aloha-action-OL'      : Editing.format,
 		'aloha-action-UL'      : Editing.format,
 		'aloha-action-A'       : LinksUI.insertLink,
+		'aloha-action-target'  : LinksUI.toggleTarget,
 		'aloha-action-unformat': function (start, end) {
 			var boundaries = [start, end];
 			['B', 'I', 'U'].forEach(function (format) {
@@ -534,17 +525,16 @@
 			if (handler.name === 'insertLink') {
 				event.preventSelection = true;
 			}
-			return event;
 		}
-		if ('mouseup' === event.type || 'aloha.mouseup' === event.type) {
+		var type = event.type;
+		if ('mouseup' === type || 'aloha.mouseup' === type) {
 			eventLoop.inEditable = true;
-		} else if ('keydown' === event.type) {
-			handleFormats(event);
-			handleOverrides(event);
-		} else if ('keyup' === event.type || 'click' === event.type) {
+		}
+		if ('keyup' === type || 'click' === type) {
 			handleLinks(event);
-			handleFormats(event);
-			handleOverrides(event);
+		}
+		if ('keydown' === type || 'keyup' === type || 'click' === type) {
+			updateUi(event.selection);
 		}
 		return event;
 	}
