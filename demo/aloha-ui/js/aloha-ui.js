@@ -14,84 +14,80 @@
 	var Arrays = aloha.arrays;
 	var ACTION_CLASS_PREFIX = 'aloha-action-';
 
-	/**
-	 * jQuery-like wrapper for document.querySelectorAll
-	 * Will accept a selector string and return an array
-	 * of found DOM nodes or an empty array
-	 *
-	 * @param  {string|Element} selector
-	 * @return {Array.<Element>}
-	 */
-	function _$(selectorOrElement) {
-		var elements = typeof selectorOrElement === 'string'
-			? Arrays.coerce(document.querySelectorAll(selectorOrElement))
-			: [selectorOrElement];
-		return {
+	var $$ = (function () {
+		/**
+		 * jQuery-like wrapper for document.querySelectorAll
+		 * Will accept a selector or an element
+		 *
+		 * @param  {string|Element} selector
+		 * @return {Array.<Element>}
+		 */
+		function $$ (selectorOrElement) {
+			this.elements = typeof selectorOrElement === 'string'
+				? Arrays.coerce(document.querySelectorAll(selectorOrElement))
+				: [selectorOrElement];
+		}
+		$$.prototype = {
+			/**
+			 * Array of matched elements
+			 * @type {Array.<Element>}
+			 */
+			elements : [],
 			/**
 			 * Attaches event handlers for an event
 			 *
 			 * @param {string}   event
 			 * @param {function} handler
+			 * @return {$$}
 			 */
 			on : function (event, handler) {
-				elements.forEach(function (element) {
+				this.elements.forEach(function (element) {
 					Events.add(element, event, handler);
 				});
+				return this;
 			},
 			/**
 			 * Adds a class
 			 *
 			 * @param {string} className
+			 * @return {$$}
 			 */
 			addClass : function (className) {
-				elements.forEach(function (element) {
+				this.elements.forEach(function (element) {
 					Dom.addClass(element, className);
 				});
+				return this;
 			},
 			/**
 			 * Removes a class
 			 *
 			 * @param {string} className
+			 * @return {$$}
 			 */
 			removeClass : function (className) {
-				elements.forEach(function (element) {
+				this.elements.forEach(function (element) {
 					Dom.removeClass(element, className);
 				});
+				return this;
 			},
 			/**
 			 * Updates an attribute
 			 *
 			 * @param {string} name
 			 * @param {string} value
+			 * @return {$$}
 			 */
 			setAttr : function (name, value) {
-				elements.forEach(function (element) {
+				this.elements.forEach(function (element) {
 					Dom.setAttr(element, name, value);
 				});
-			},
-			/**
-			 * Get the element at index i
-			 *
-			 * @param  {integer} i
-			 * @return {Element}
-			 */
-			get : function (i) {
-				return elements[i];
-			},
-			/**
-			 * Get the first element
-			 *
-			 * @return {Element}
-			 */
-			first : function () {
-				return elements[0];
-			},
-			/**
-			 * holds the count of matched elements
-			 */
-			length : elements.length
+				return this;
+			}
 		};
-	}
+		return function (selectorOrElement) {
+			return new $$(selectorOrElement);
+		};
+	})();
 
 	/**
 	 * Executes an action based on the given parameters list
@@ -179,12 +175,12 @@
 		 */
 		open: function (toolbar, anchor) {
 			var href = Dom.getAttr(anchor, 'href');
-			_$('.aloha-active').removeClass('aloha-active');
+			$$('.aloha-active').removeClass('aloha-active');
 			Dom.addClass(anchor, 'aloha-active');
 			Dom.addClass(toolbar, 'opened');
 			positionToolbar(toolbar, anchor);
 			toolbar.querySelector('input').value = href;
-			_$('a.aloha-link-follow').setAttr('href', href);
+			$$('a.aloha-link-follow').setAttr('href', href);
 		},
 
 		/**
@@ -193,7 +189,7 @@
 		 * @param {!Element} toolbar
 		 */
 		close: function(toolbar) {
-			_$('.aloha-active').removeClass('aloha-active');
+			$$('.aloha-active').removeClass('aloha-active');
 			Dom.removeClass(toolbar, 'opened');
 		},
 
@@ -242,7 +238,7 @@
 		 * @param {!Element} anchor
 		 */
 		interact: function (toolbar, anchor) {
-			_$('a.aloha-active, a.aloha-link-follow').setAttr(
+			$$('a.aloha-active, a.aloha-link-follow').setAttr(
 				'href',
 				toolbar.querySelector('input').value
 			);
@@ -298,7 +294,7 @@
 				LinksUI.toolbar(document),
 				Boundaries.container(boundaries[0])
 			);
-			_$('.aloha-link-toolbar input[name=href]').first().focus();
+			$$('.aloha-link-toolbar input[name=href]').elements[0].focus();
 			return boundaries;
 		},
 
@@ -310,7 +306,7 @@
 		 * @return {Array.<Boundary>}
 		 */
 		toggleTarget: function (start, end) {
-			var anchor = _$('.aloha-active').first();
+			var anchor = $$('.aloha-active').elements[0];
 			if (!anchor) {
 				return [start, end];
 			}
@@ -326,17 +322,17 @@
 		 * Updates the ui according to any active anchor element.
 		 */
 		update: function () {
-			var anchor = _$('a.aloha-active').first();
+			var anchor = $$('a.aloha-active').elements[0];
 			if (!anchor) {
 				return;
 			}
 			var href = Dom.getAttr(anchor, 'href');
 			var target = Dom.getAttr(anchor, 'target');
-			_$('.aloha-link-toolbar input[name=href]').value = href;
+			$$('.aloha-link-toolbar input[name=href]').value = href;
 			if ('_blank' === target) {
-				_$('.aloha-action-target').addClass('active');
+				$$('.aloha-action-target').addClass('active');
 			} else {
-				_$('.aloha-action-target').removeClass('active');
+				$$('.aloha-action-target').removeClass('active');
 			}
 		}
 	};
@@ -368,7 +364,7 @@
 	 * @private
 	 */
 	function resetUi() {
-		_$('.aloha-ui .active').removeClass('active');
+		$$('.aloha-ui .active').removeClass('active');
 	}
 
 	/**
@@ -382,7 +378,7 @@
 		var selectors = formats.reduce(function (list, format) {
 			return list.concat('.aloha-ui .' + ACTION_CLASS_PREFIX + format);
 		}, []);
-		_$(selectors.join(',')).addClass('active');
+		$$(selectors.join(',')).addClass('active');
 	}
 
 	/**
@@ -395,11 +391,11 @@
 		var selectors = formats.reduce(function (list, format) {
 			return list.concat('.aloha-ui .dropdown-menu .' + ACTION_CLASS_PREFIX + format);
 		}, []);
-		var items = _$(selectors.join(','));
+		var items = $$(selectors.join(','));
 		if (0 === items.length) {
 			return;
 		}
-		var item = items.first();
+		var item = items.elements[0];
 		var group = Dom.upWhile(item, function (node) {
 			return !Dom.hasClass(node, 'btn-group');
 		});
@@ -462,11 +458,11 @@
 
 	var eventLoop = { inEditable: false };
 
-	_$(document).on('mousedown', function (event) {
+	$$(document).on('mousedown', function (event) {
 		eventLoop.inEditable = false;
 	});
 
-	_$(document).on('mouseup', function (event) {
+	$$(document).on('mouseup', function (event) {
 		if (eventLoop.inEditable) {
 			return;
 		}
@@ -479,7 +475,7 @@
 		}
 	});
 
-	_$('.aloha-ui').on('mousedown', function (event) {
+	$$('.aloha-ui').on('mousedown', function (event) {
 		if (event.target.nodeName === 'INPUT') {
 			return;
 		}
@@ -497,7 +493,7 @@
 		updateUi(selection);
 	});
 
-	_$('.aloha-link-toolbar input[name=href]').on('keyup', function (event) {
+	$$('.aloha-link-toolbar input[name=href]').on('keyup', function (event) {
 		if (Editor.selection) {
 			LinksUI.interact(
 				LinksUI.toolbar(event.target.ownerDocument),
@@ -507,8 +503,8 @@
 
 		var shortcuts = { 
 			'enter' : function () {
-				var anchor = _$('a.aloha-active').first();
-				var href = _$('.aloha-link-toolbar input[name=href]').first();
+				var anchor = $$('a.aloha-active').elements[0];
+				var href = $$('.aloha-link-toolbar input[name=href]').elements[0];
 				var boundary = Boundaries.next(Boundaries.fromEndOfNode(anchor));
 				Editor.selection = Selections.select(
 					Editor.selection,
@@ -533,10 +529,10 @@
 	});
 	
 	// make .aloha-sticky-top items stick to the top when scrolling
-	_$(window).on('scroll', function (event) {
-		var stickies = _$('.aloha-sticky-top');
+	$$(window).on('scroll', function (event) {
+		var stickies = $$('.aloha-sticky-top');
 		var scrollTop = Dom.scrollTop(document);
-		stickies.forEach(function (element) {
+		stickies.elements.forEach(function (element) {
 			if (Dom.hasClass(element, 'aloha-sticky-top-active')) {
 				if (scrollTop <= Dom.getAttr(element, 'data-aloha-sticky-top-pos')) {
 					Dom.setAttr(element, 'data-aloha-sticky-top-pos', null);
