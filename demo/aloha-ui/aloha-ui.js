@@ -166,7 +166,7 @@
 			return list.concat('.aloha-ui .dropdown-menu .' + ACTION_CLASS_PREFIX + format);
 		}, []);
 		var items = $$(selectors.join(','));
-		if (0 === items.length) {
+		if (0 === items.elements.length) {
 			return;
 		}
 		var item = items.elements[0];
