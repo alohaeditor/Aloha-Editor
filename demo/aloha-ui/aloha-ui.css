@@ -20,62 +20,64 @@
 }
 
 .aloha-ui.btn-toolbar { display: inline-block; }
-.aloha-ui.btn-toolbar,
-.aloha-ui.btn-toolbar .btn {
+
+.aloha-ui .btn,
+.aloha-ui .btn-toolbar,
+.aloha-ui.btn-toolbar {
 	font-size: 18px;
 	-moz-osx-font-smoothing: grayscale;
 	 -webkit-font-smoothing: antialiased;
 	    -moz-font-smoothing: antialiased;
 	         font-smoothing: antialiased;
 }
-.aloha-ui.btn-toolbar input { outline: 0; }
-.aloha-ui.btn-toolbar .btn {
+.aloha-ui input { outline: 0; }
+.aloha-ui .btn {
 	outline: 0;
 	width: 45px;
 	height: 45px;
 	margin-left: 0;
 }
-.aloha-ui.btn-toolbar .dropdown-toggle {
+.aloha-ui .btn.dropdown-toggle {
 	-webkit-transition: width 0.25s;
 	   -moz-transition: width 0.25s;
 	    -ms-transition: width 0.25s;
 	        transition: width 0.25s;
 }
 .aloha-ui.btn-toolbar .btn.dropdown-toggle::before {
-	content: "";
+	content: '';
 	position: absolute;
 	right: 0px;
 	top: 0px;
 	width: 50%;
 	height: 100%;
-	background: -moz-linear-gradient(left,  rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 100%); /* FF3.6+ */
+	background: -moz-linear-gradient(left, rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 100%); /* FF3.6+ */
 	background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(0,0,0,0)), color-stop(100%,rgba(0,0,0,0.5))); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(left,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.5) 100%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(left,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.5) 100%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(left,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.5) 100%); /* IE10+ */
-	background: linear-gradient(to right,  rgba(0,0,0,0) 0%,rgba(0,0,0,0.5) 100%); /* W3C */
+	background: -webkit-linear-gradient(left, rgba(0,0,0,0) 0%,rgba(0,0,0,0.5) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(left, rgba(0,0,0,0) 0%,rgba(0,0,0,0.5) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(left, rgba(0,0,0,0) 0%,rgba(0,0,0,0.5) 100%); /* IE10+ */
+	background: linear-gradient(to right, rgba(0,0,0,0) 0%,rgba(0,0,0,0.5) 100%); /* W3C */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#000000',GradientType=1 ); /* IE6-9 */
 }
-.aloha-ui.btn-toolbar .btn.dropdown-toggle:hover,
-.aloha-ui.btn-toolbar .btn-group.open .btn.dropdown-toggle {
-	width: 135px;
-}
+
+.aloha-ui .btn.dropdown-toggle:hover,
+.aloha-ui .btn-group.open .btn.dropdown-toggle { width: 135px; }
+
 .aloha-ui.btn-toolbar .btn.dropdown-toggle:hover::before,
-.aloha-ui.btn-toolbar .btn-group.open .btn.dropdown-toggle::before {
-	display: none;
-}
+.aloha-ui.btn-toolbar .btn-group.open .btn.dropdown-toggle::before { display: none; }
+
 .aloha-ui.btn-toolbar .dropdown-menu {
 	border: 0;
 	padding: 0;
 	font-size: 16px;
 }
+
 .aloha-ui.btn-toolbar,
-.aloha-ui.btn-toolbar a,
-.aloha-ui.btn-toolbar a:focus,
-.aloha-ui.btn-toolbar button,
-.aloha-ui.btn-toolbar button:focus,
-.aloha-ui.btn-toolbar .dropdown-menu a, 
-.aloha-ui.btn-toolbar .dropdown-menu a:focus {
+.aloha-ui a,
+.aloha-ui a:focus,
+.aloha-ui button,
+.aloha-ui button:focus,
+.aloha-ui .dropdown-menu a, 
+.aloha-ui .dropdown-menu a:focus {
 	border: 0;
 	border-radius: 0;
 	background: #3f3f3f;
@@ -88,22 +90,23 @@
 }
 .aloha-ui.btn-toolbar.btn-toolbar>.btn-group {
 	margin-left: 0;
+	background: red !important;
 	border-right: 1px solid white;
 }
-.aloha-ui.btn-toolbar button,
-.aloha-ui.btn-toolbar a {
+.aloha-ui a
+.aloha-ui button {
 	-webkit-transition: background-color 0.25s;
 	   -moz-transition: background-color 0.25s;
 	    -ms-transition: background-color 0.25s;
 	        transition: background-color 0.25s;
 }
-.aloha-ui.btn-toolbar a.active,
-.aloha-ui.btn-toolbar a:hover,
-.aloha-ui.btn-toolbar button.active,
-.aloha-ui.btn-toolbar button:hover,
-.aloha-ui.btn-toolbar .dropdown-menu .active,
-.aloha-ui.btn-toolbar .dropdown-menu a:hover,
-.aloha-ui.btn-toolbar .btn-group.open .btn {
+.aloha-ui a.active,
+.aloha-ui a:hover,
+.aloha-ui button.active,
+.aloha-ui button:hover,
+.aloha-ui .dropdown-menu .active,
+.aloha-ui .dropdown-menu a:hover,
+.aloha-ui .btn-group.open .btn {
 	color: #fff;
 	background: #5daecc;
 	text-shadow: -1px -1px 0px rgb(150,150,150);
@@ -156,7 +159,7 @@
 	background: transparent;
 	white-space: nowrap;
 }
-.aloha-3d.opened .aloha-link-toolbar {
+.aloha-3d.active .aloha-link-toolbar {
 	display: block;
 	-webkit-animation: flip-open .2s ease-out forwards;
 	   -moz-animation: flip-open .2s ease-out forwards;
@@ -188,6 +191,7 @@
 	padding-top: 10px;
 }
 .aloha-link-toolbar .aloha-action-follow { float: right; }
+
 .aloha-active,
 .aloha-active:hover {
 	background: rgba(93, 174, 204, 0.15);

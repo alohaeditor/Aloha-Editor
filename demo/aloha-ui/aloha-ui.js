@@ -13,9 +13,11 @@
 	var ACTION_CLASS_PREFIX = 'aloha-action-';
 
 	var $$ = (function () {
+
 		/**
-		 * jQuery-like wrapper for document.querySelectorAll
-		 * Will accept a selector or an element
+		 * jQuery-like wrapper for document.querySelectorAll .
+		 *
+		 * Will accept a selector or an element.
 		 *
 		 * @param  {string|Element} selector
 		 * @return {Array.<Element>}
@@ -25,44 +27,49 @@
 				? Arrays.coerce(document.querySelectorAll(selectorOrElement))
 				: [selectorOrElement];
 		}
+
 		$$.prototype = {
+
 			/**
 			 * Array of matched elements
 			 * @type {Array.<Element>}
 			 */
-			elements : [],
+			elements: [],
+
 			/**
 			 * Attaches event handlers for an event
 			 *
-			 * @param {string}   event
-			 * @param {function} handler
+			 * @param  {string}   event
+			 * @param  {function} handler
 			 * @return {$$}
 			 */
-			on : function (event, handler) {
+			on: function (event, handler) {
 				this.elements.forEach(function (element) {
 					Events.add(element, event, handler);
 				});
 				return this;
 			},
+
 			/**
-			 * Adds a class
+			 * Adds a class.
 			 *
-			 * @param {string} className
+			 * @param  {string} className
 			 * @return {$$}
 			 */
-			addClass : function (className) {
+			addClass: function (className) {
 				this.elements.forEach(function (element) {
 					Dom.addClass(element, className);
 				});
 				return this;
 			},
+
 			/**
-			 * Removes a class
+			 * Removes a class.
 			 *
-			 * @param {string} className
+			 * @param  {string} className
 			 * @return {$$}
 			 */
-			removeClass : function (className) {
+			removeClass: function (className) {
 				this.elements.forEach(function (element) {
 					Dom.removeClass(element, className);
 				});
@@ -71,24 +78,26 @@
 			/**
 			 * Updates an attribute
 			 *
-			 * @param {string} name
-			 * @param {string} value
+			 * @param  {string} name
+			 * @param  {string} value
 			 * @return {$$}
 			 */
-			setAttr : function (name, value) {
+			setAttr: function (name, value) {
 				this.elements.forEach(function (element) {
 					Dom.setAttr(element, name, value);
 				});
 				return this;
 			}
 		};
+
 		return function (selectorOrElement) {
 			return new $$(selectorOrElement);
 		};
+
 	})();
 
 	/**
-	 * Executes an action based on the given parameters list
+	 * Executes an action based on the given parameters list.
 	 *
 	 * @private
 	 * @param  {!Array.<string>}   params
@@ -138,7 +147,7 @@
 	 * @private
 	 */
 	function resetUi() {
-		$$('.aloha-ui .active').removeClass('active');
+		$$('.aloha-ui .active, .aloha-ui.active').removeClass('active');
 	}
 
 	/**
@@ -262,28 +271,30 @@
 			return;
 		}
 		var params = parseActionParams(event.target);
-		var selection = Editor.selection;
-		if (params && selection) {
-			selection.boundaries = execute(params, selection.boundaries);
-			Selections.select(
-				selection,
-				selection.boundaries[0],
-				selection.boundaries[1],
-				selection.focus
+		if (params && Editor.selection) {
+			var boundaries = execute(params, Editor.selection.boundaries);
+			Editor.selection = Selections.select(
+				Editor.selection,
+				boundaries[0],
+				boundaries[1]
 			);
 		}
-		updateUi(selection);
+		updateUi(Editor.selection);
 	});
 	
 	/**
-	 * Handles UI updates invoked by event
+	 * Handles UI updates invoked by event.
 	 *
 	 * @param  {!Event} event
 	 * @return {Event}
 	 */
 	function handleUi(event) {
 		if ('keydown' === event.type) {
-			var handler = Keys.shortcutHandler(event.meta, event.keycode, aloha.editor.ui.shortcuts);
+			var handler = Keys.shortcutHandler(
+				event.meta,
+				event.keycode,
+				aloha.editor.ui.shortcuts
+			);
 			if (handler) {
 				event.selection.boundaries = handler(
 					event.selection.boundaries[0], 
