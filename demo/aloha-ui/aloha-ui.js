@@ -528,25 +528,6 @@
 		}
 	});
 	
-	// make .aloha-sticky-top items stick to the top when scrolling
-	$$(window).on('scroll', function (event) {
-		var stickies = $$('.aloha-sticky-top');
-		var scrollTop = Dom.scrollTop(document);
-		stickies.elements.forEach(function (element) {
-			if (Dom.hasClass(element, 'aloha-sticky-top-active')) {
-				if (scrollTop <= Dom.getAttr(element, 'data-aloha-sticky-top-pos')) {
-					Dom.setAttr(element, 'data-aloha-sticky-top-pos', null);
-					Dom.removeClass(element, 'aloha-sticky-top-active');
-				}
-			} else {
-				if (scrollTop > Dom.absoluteTop(element)) {
-					Dom.setAttr(element, 'data-aloha-sticky-top-pos', Dom.absoluteTop(element));
-					Dom.addClass(element, 'aloha-sticky-top-active');
-				}
-			}
-		});
-	});	
-
 	var shortcuts = {
 		'meta+k' : LinksUI.insertLink,
 		'ctrl+k' : LinksUI.insertLink
@@ -611,4 +592,11 @@
 	}
 
 	aloha.editor.stack.unshift(handleUi);
+
+	// exports
+	aloha.editor.ui = {
+		'$$'      : $$,
+		shortcuts : shortcuts,
+		actions   : actions
+	};
 }(window.aloha));
