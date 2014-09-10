@@ -706,12 +706,13 @@ define([
 			Dom.setStyle(selection.caret, 'display', 'block');
 			return;
 		}
-		var boundary = select(
+		selection = select(
 			selection,
 			selection.boundaries[0],
 			selection.boundaries[1],
 			selection.focus
 		);
+		var boundary = selection.focus === 'start' ? selection.boundaries[0] : selection.boundaries[1];
 		// Because we don't want the screen to jump when the editor hits "shift"
 		if (isCaretMovingEvent(event)) {
 			focus(boundary);
@@ -722,13 +723,14 @@ define([
 	/**
 	 * Selects the given boundaries and visualizes the caret position.
 	 *
-	 * Returns the focus boundary so that one can do focus(select(...))
+	 * Returns the updated Selection object, that can be reassigned to
+	 * aloha.editor.selection
 	 *
-	 * @param  {Context}  selection
-	 * @param  {Boundary} start
-	 * @param  {Boundary} end
-	 * @param  {string=}  focus optional. "start" or "end". Defaults to "end"
-	 * @return {Boundary}
+	 * @param  {Selection} selection
+	 * @param  {Boundary}  start
+	 * @param  {Boundary}  end
+	 * @param  {string=}   focus optional. "start" or "end". Defaults to "end"
+	 * @return {Selection}
 	 */
 	function select(selection, start, end, focus) {
 		var boundary = 'start' === focus ? start : end;
@@ -744,7 +746,10 @@ define([
 		);
 		Boundaries.select(start, end);
 		selection.blinking.start();
-		return boundary;
+		return Maps.merge(selection, { 
+			boundaries : [start, end],
+			focus      : focus
+		});
 	}
 
 	return {

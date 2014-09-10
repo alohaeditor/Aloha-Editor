@@ -488,6 +488,32 @@
 				LinksUI.anchor(Editor.selection.boundaries)
 			);
 		}
+
+		var shortcuts = { 
+			'enter' : function () {
+				var anchor = _$('a.aloha-active')[0];
+				var href = _$('.aloha-link-toolbar input[name=href]')[0];
+				var boundary = Boundaries.next(Boundaries.fromEndOfNode(anchor));
+				Editor.selection = Selections.select(
+					Editor.selection,
+					boundary,
+					boundary
+				);
+				updateUi(Editor.selection);
+				if (!href.value) {
+					Dom.removeShallow(anchor);
+				}
+				return [boundary, boundary];
+			} 
+		};
+		var key = Keys.parseKeys(event);
+		var handler = Keys.shortcutHandler(key.meta, key.keycode, shortcuts);
+		if (handler) {
+			Editor.selection.boundaries = handler(
+				Editor.selection.boundaries[0],
+				Editor.selection.boundaries[1]
+			);
+		}
 	});
 	
 	// make .aloha-sticky-top items stick to the top when scrolling
