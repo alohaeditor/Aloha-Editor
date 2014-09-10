@@ -30,6 +30,7 @@
 }
 .aloha-ui.btn-toolbar input { outline: 0; }
 .aloha-ui.btn-toolbar .btn {
+	outline: 0;
 	width: 45px;
 	height: 45px;
 	margin-left: 0;

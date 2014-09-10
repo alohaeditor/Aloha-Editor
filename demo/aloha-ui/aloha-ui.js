@@ -145,9 +145,7 @@
 		Dom.setStyle(toolbar, 'left', x + 'px');
 		Dom.setStyle(toolbar, 'top', y + 'px');
 		var arrow = toolbar.querySelector('.aloha-arrow-up');
-		var arrowOffset = (x <= xMin || x >= xMax)
-		                ? (center - x) + 'px'
-		                : 'auto';
+		var arrowOffset = (x <= xMin || x >= xMax) ? (center - x) + 'px' : 'auto';
 		Dom.setStyle(arrow, 'margin-left', arrowOffset);
 	}
 
@@ -269,8 +267,8 @@
 		 * prevent a selection update when a new link
 		 * is inserted later on.
 		 * 
-		 * @param  {!Boundary}  start
-		 * @param  {!Boundary}  end
+		 * @param  {!Boundary} start
+		 * @param  {!Boundary} end
 		 * @return {Array.<Boundary>}
 		 */
 		insertLink: function insertLink (start, end) {
@@ -288,14 +286,42 @@
 			return boundaries;
 		},
 
+		/**
+		 * Toggles the target attribute on any active anchor.
+		 *
+		 * @param  {!Boundary} start
+		 * @param  {!Boundary} end
+		 * @return {Array.<Boundary>}
+		 */
 		toggleTarget: function (start, end) {
 			var anchor = _$('.aloha-active')[0];
+			if (!anchor) {
+				return [start, end];
+			}
 			if ('blank' === Dom.getAttr(anchor, '_target')) {
 				Dom.removeAttr(anchor, '_target');
 			} else {
 				Dom.setAttr(anchor, '_target', 'blank');
 			}
 			return [start, end];
+		},
+
+		/**
+		 * Updates the ui according to any active anchor element.
+		 */
+		update: function () {
+			var anchor = _$('a.aloha-active')[0];
+			if (!anchor) {
+				return;
+			}
+			var href = Dom.getAttr(anchor, 'href');
+			var target = Dom.getAttr(anchor, '_target');
+			_$('.aloha-link-toolbar input[name=href]').value = href;
+			if ('blank' === target) {
+				addClass(_$('.aloha-action-target'), 'active');
+			} else {
+				removeClass(_$('.aloha-action-target'), 'active');
+			}
 		}
 	};
 
@@ -340,8 +366,7 @@
 		var selectors = formats.reduce(function (list, format) {
 			return list.concat('.aloha-ui .' + ACTION_CLASS_PREFIX + format);
 		}, []);
-		var btns = _$(selectors.join(','));
-		addClass(btns, 'active');
+		addClass(_$(selectors.join(',')), 'active');
 	}
 
 	/**
@@ -354,11 +379,11 @@
 		var selectors = formats.reduce(function (list, format) {
 			return list.concat('.aloha-ui .dropdown-menu .' + ACTION_CLASS_PREFIX + format);
 		}, []);
-		var btns = _$(selectors.join(','));
-		if (0 === btns.length) {
+		var items = _$(selectors.join(','));
+		if (0 === items.length) {
 			return;
 		}
-		var item = btns[0];
+		var item = items[0];
 		var group = Dom.upWhile(item, function (node) {
 			return !Dom.hasClass(node, 'btn-group');
 		});
@@ -414,6 +439,9 @@
 		var formats = activeFormats(selection);
 		activateButtons(formats);
 		activateMenus(formats);
+		if (Arrays.contains(formats, 'A')) {
+			LinksUI.update(selection);
+		}
 	}
 
 	var eventLoop = { inEditable: false };
@@ -450,6 +478,7 @@
 				selection.focus
 			);
 		}
+		updateUi(selection);
 	});
 
 	on(_$('.aloha-link-toolbar input[name=href]'), 'keyup', function (event) {
