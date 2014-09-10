@@ -264,11 +264,16 @@
 		/**
 		 * Inserts a link at the boundary position
 		 *
+		 * IMPORTANT: this function MUST be a named
+		 * function, because we will need to
+		 * prevent a selection update when a new link
+		 * is inserted later on.
+		 * 
 		 * @param  {!Boundary}  start
 		 * @param  {!Boundary}  end
-		 * @return {Boundaries} event
+		 * @return {Array.<Boundary>}
 		 */
-		insertLink: function (start, end) {
+		insertLink: function insertLink (start, end) {
 			var boundaries = LinksUI.normalize(start, end);
 			if (Boundaries.container(boundaries[0]).nodeName !== 'A') {
 				boundaries = Editing.wrap('A', boundaries[0], boundaries[1]);
@@ -280,7 +285,6 @@
 				Boundaries.container(boundaries[0])
 			);
 			_$('.aloha-link-toolbar input[name=href]')[0].focus();
-			addClass(_$('.aloha-ui .' + ACTION_CLASS_PREFIX + 'A'), 'active');
 			return boundaries;
 		},
 
