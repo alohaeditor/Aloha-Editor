@@ -165,11 +165,10 @@
 		var selectors = formats.reduce(function (list, format) {
 			return list.concat('.aloha-ui .dropdown-menu .' + ACTION_CLASS_PREFIX + format);
 		}, []);
-		var items = $$(selectors.join(','));
-		if (0 === items.elements.length) {
+		var item = $$(selectors.join(',')).elements[0];
+		if (!item) {
 			return;
 		}
-		var item = items.elements[0];
 		var group = Dom.upWhile(item, function (node) {
 			return !Dom.hasClass(node, 'btn-group');
 		});
@@ -213,6 +212,17 @@
 	}
 
 	/**
+	 * Updates formatting ui components.
+	 *
+	 * @param {!Selection}     selection
+	 * @param {Array.<string>} formats
+	 */
+	function updateFormattingUi(selection, formats) {
+		activateButtons(formats);
+		activateMenus(formats);
+	}
+
+	/**
 	 * Updates the ui according to current state overrides.
 	 *
 	 * Sets to active all ui toolbar elements that match the current overrides.
@@ -223,8 +233,6 @@
 	function updateUi(selection) {
 		resetUi();
 		var formats = activeFormats(selection);
-		activateButtons(formats);
-		activateMenus(formats);
 		aloha.editor.ui.updateHandlers.forEach(function (handler) {
 			handler(selection, formats);
 		});
@@ -301,19 +309,19 @@
 
 	// exports
 	aloha.editor.ui = {
-		'$$'           : $$,
-		shortcuts      : {},
-		actions        : {
-			'aloha-action-B'       : Editing.format,
-			'aloha-action-I'       : Editing.format,
-			'aloha-action-H2'      : Editing.format,
-			'aloha-action-H3'      : Editing.format,
-			'aloha-action-H4'      : Editing.format,
-			'aloha-action-P'       : Editing.format,
-			'aloha-action-PRE'     : Editing.format,
-			'aloha-action-OL'      : Editing.format,
-			'aloha-action-UL'      : Editing.format,
-			'aloha-action-unformat': function (start, end) {
+		'$$'      : $$,
+		shortcuts : {},
+		actions   : {
+			'aloha-action-B'        : Editing.format,
+			'aloha-action-I'        : Editing.format,
+			'aloha-action-H2'       : Editing.format,
+			'aloha-action-H3'       : Editing.format,
+			'aloha-action-H4'       : Editing.format,
+			'aloha-action-P'        : Editing.format,
+			'aloha-action-PRE'      : Editing.format,
+			'aloha-action-OL'       : Editing.format,
+			'aloha-action-UL'       : Editing.format,
+			'aloha-action-unformat' : function (start, end) {
 				var boundaries = [start, end];
 				['B', 'I', 'U'].forEach(function (format) {
 					boundaries = Editing.unformat(
@@ -326,6 +334,6 @@
 			}
 		},
 		update         : updateUi,
-		updateHandlers : []
+		updateHandlers : [updateFormattingUi]
 	};
 }(window.aloha));
