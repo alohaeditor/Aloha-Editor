@@ -298,10 +298,10 @@
 			if (!anchor) {
 				return [start, end];
 			}
-			if ('blank' === Dom.getAttr(anchor, '_target')) {
-				Dom.removeAttr(anchor, '_target');
+			if ('_blank' === Dom.getAttr(anchor, 'target')) {
+				Dom.removeAttr(anchor, 'target');
 			} else {
-				Dom.setAttr(anchor, '_target', 'blank');
+				Dom.setAttr(anchor, 'target', '_blank');
 			}
 			return [start, end];
 		},
@@ -315,9 +315,9 @@
 				return;
 			}
 			var href = Dom.getAttr(anchor, 'href');
-			var target = Dom.getAttr(anchor, '_target');
+			var target = Dom.getAttr(anchor, 'target');
 			_$('.aloha-link-toolbar input[name=href]').value = href;
-			if ('blank' === target) {
+			if ('_blank' === target) {
 				addClass(_$('.aloha-action-target'), 'active');
 			} else {
 				removeClass(_$('.aloha-action-target'), 'active');
