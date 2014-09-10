@@ -358,6 +358,7 @@ define([
 
 	exports['keys'] = {};
 	exports['keys']['handleKeys']      = Keys.handleKeys;
+	exports['keys']['parseKeys']       = Keys.parseKeys;
 	exports['keys']['ARROWS']          = Keys.ARROWS;
 	exports['keys']['CODES']           = Keys.CODES;
 	exports['keys']['shortcutHandler'] = Keys.shortcutHandler;

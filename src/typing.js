@@ -292,15 +292,15 @@ define([
 		'keyup'    : {}
 	};
 
-	handlers['keydown'][Keys.CODES['up']] =
-	handlers['keydown'][Keys.CODES['down']] =
-	handlers['keydown'][Keys.CODES['left']] =
-	handlers['keydown'][Keys.CODES['right']] = {clearOverrides: true};
+	handlers['keydown']['up'] =
+	handlers['keydown']['down'] =
+	handlers['keydown']['left'] =
+	handlers['keydown']['right'] = {clearOverrides: true};
 
-	handlers['keydown'][Keys.CODES['delete']] = deleteForward;
-	handlers['keydown'][Keys.CODES['backspace']] = deleteBackward;
-	handlers['keydown'][Keys.CODES['enter']] = breakBlock;
-	handlers['keydown']['shift+' + Keys.CODES['enter']] = breakLine;
+	handlers['keydown']['delete'] = deleteForward;
+	handlers['keydown']['backspace'] = deleteBackward;
+	handlers['keydown']['enter'] = breakBlock;
+	handlers['keydown']['shift+enter'] = breakLine;
 	handlers['keydown']['ctrl+b'] =
 	handlers['keydown']['meta+b'] = formatBold;
 	handlers['keydown']['ctrl+i'] =
@@ -313,7 +313,7 @@ define([
 	handlers['keydown']['meta+z'] = undo;
 	handlers['keydown']['ctrl+shift+z'] =
 	handlers['keydown']['meta+shift+z'] = redo;
-	handlers['keydown'][Keys.CODES['tab']] = inputText;
+	handlers['keydown']['tab'] = inputText;
 
 	handlers['keypress']['input'] = inputText;
 
@@ -346,7 +346,7 @@ define([
 	}};
 
 	function handler(event) {
-		return Keys.shortcutHandler(event, handlers)
+		return Keys.shortcutHandler(event.meta, event.keycode, handlers[event.type] || [])
 		    || (isTextInput(event) && handlers['keypress']['input']);
 	}
 

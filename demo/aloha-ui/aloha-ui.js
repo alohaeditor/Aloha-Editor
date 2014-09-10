@@ -176,9 +176,8 @@
 		 * Closes the context toolbar.
 		 *
 		 * @param {!Element} toolbar
-		 * @param {!Element} anchor
 		 */
-		close: function (toolbar, anchor) {
+		close: function(toolbar) {
 			removeClass(_$('.aloha-active'), 'aloha-active');
 			Dom.removeClass(toolbar, 'opened');
 		},
@@ -314,7 +313,7 @@
 		if (toolbar === LinksUI.closestToolbar(event.nativeEvent.target)) {
 			return LinksUI.interact(toolbar, anchor, event);
 		}
-		return LinksUI.close(toolbar, anchor);
+		return LinksUI.close(toolbar);
 	}
 
 	/**
@@ -478,10 +477,8 @@
 	});	
 
 	var shortcuts = {
-		'keydown': {
-			'meta+k' : LinksUI.insertLink,
-			'ctrl+k' : LinksUI.insertLink
-		}
+		'meta+k' : LinksUI.insertLink,
+		'ctrl+k' : LinksUI.insertLink
 	};
 
 	var actions = {
@@ -516,14 +513,17 @@
 	 * @return {Event}
 	 */
 	function handleUi(event) {
-		var handler = Keys.shortcutHandler(event, shortcuts);
-		if (handler) {
-			event.selection.boundaries = handler(
-				event.selection.boundaries[0], 
-				event.selection.boundaries[1]
-			);
-			if (handler.name === 'insertLink') {
-				event.preventSelection = true;
+		if ('keydown' === event.type) {
+			var handler = Keys.shortcutHandler(event.meta, event.keycode, shortcuts);
+			if (handler) {
+				event.selection.boundaries = handler(
+					event.selection.boundaries[0], 
+					event.selection.boundaries[1]
+				);
+				if (handler.name === 'insertLink') {
+					event.preventSelection = true;
+				}
+				return event;
 			}
 		}
 		var type = event.type;
