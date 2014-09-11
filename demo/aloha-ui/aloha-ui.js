@@ -237,7 +237,7 @@
 	 * Sets to active all ui toolbar elements that match the current overrides.
 	 *
 	 * @private
-	 * @param {!Event} event
+	 * @param {!Selection} selection
 	 */
 	function updateUi(selection) {
 		resetUi();
@@ -279,7 +279,9 @@
 				boundaries[1]
 			);
 		}
-		updateUi(Editor.selection);
+		if (Editor.selection) {
+			updateUi(Editor.selection);
+		}
 	});
 	
 	/**
