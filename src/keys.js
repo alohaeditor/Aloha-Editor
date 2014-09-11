@@ -11,34 +11,43 @@
  * @todo:
  * consider https://github.com/nostrademons/keycode.js/blob/master/keycode.js
  */
-define(['strings', 'boundaries'], function (Strings, Boundaries) {
+define([
+	'maps',
+	'strings',
+	'boundaries'
+], function (
+	Maps,
+	Strings,
+	Boundaries
+) {
 	'use strict';
 
-	var CODE_KEY = [];
-	CODE_KEY[18] = 'alt';
-	CODE_KEY[8]  = 'backspace';
-	CODE_KEY[20] = 'capslock';
-	CODE_KEY[17] = 'ctrl';
-	CODE_KEY[91] = 'cmd';
-	CODE_KEY[46] = 'delete';
-	CODE_KEY[13] = 'enter';
-	CODE_KEY[27] = 'escape';
-	CODE_KEY[12] = 'f1';
-	CODE_KEY[23] = 'f12';
-	CODE_KEY[16] = 'shift';
-	CODE_KEY[32] = 'space';
-	CODE_KEY[9]  = 'tab';
-	CODE_KEY[90] = 'undo';
-	CODE_KEY[66] = 'bold';
-	CODE_KEY[73] = 'italic';
-	CODE_KEY[85] = 'underline';
-	CODE_KEY[37] = 'left';
-	CODE_KEY[38] = 'up';
-	CODE_KEY[39] = 'right';
-	CODE_KEY[40] = 'down';
-	CODE_KEY[65] = 'selectAll';
-	CODE_KEY[33] = 'pageUp';
-	CODE_KEY[34] = 'pageDown';
+	var CODE_KEY = {
+		18 : 'alt',
+		8  : 'backspace',
+		20 : 'capslock',
+		17 : 'ctrl',
+		91 : 'cmd',
+		46 : 'delete',
+		13 : 'enter',
+		27 : 'escape',
+		12 : 'f1',
+		23 : 'f12',
+		16 : 'shift',
+		32 : 'space',
+		9  : 'tab',
+		90 : 'undo',
+		66 : 'bold',
+		73 : 'italic',
+		85 : 'underline',
+		37 : 'left',
+		38 : 'up',
+		39 : 'right',
+		40 : 'down',
+		65 : 'selectAll',
+		33 : 'pageUp',
+		34 : 'pageDown'
+	};
 
 	/**
 	 * A map of key names to their keycode.
@@ -46,7 +55,7 @@ define(['strings', 'boundaries'], function (Strings, Boundaries) {
 	 * @type {object<string, number>}
 	 */
 	var CODES = {};
-	CODE_KEY.map(function (current, index) {
+	Maps.forEach(CODE_KEY, function (current, index) {
 		CODES[current] = index;
 	});
 
@@ -142,28 +151,18 @@ define(['strings', 'boundaries'], function (Strings, Boundaries) {
 	 * MUST be in alphabetical order, as provided by
 	 * @see Keys.parsekeys
 	 *
-	 * @param {!string}  meta
-	 * @param {!integer} keycode
-	 * @param {!Object}  shortcutHandlers
+	 * @param  {!string}  meta
+	 * @param  {!integer} keycode
+	 * @param  {!Object}  shortcutHandlers
 	 * @return {*} null if no handler could be found
 	 */
-	function shortcutHandler (meta, keycode, shortcutHandlers) {
-		if (!keycode) {
-			return;
-		}
+	function shortcutHandler(meta, keycode, shortcutHandlers) {
 		// special keys stop at code 31 according to http://www.asciitable.com/
 		var key = keycode < 32
-			? CODE_KEY[keycode] || keycode 
-			: String.fromCharCode(keycode).toLowerCase();
-		var lookupKey = meta 
-			? meta + '+' + key
-			: key;
-
-		if (shortcutHandlers[lookupKey]) {
-			return shortcutHandlers[lookupKey];
-		} else {
-			return null;
-		}
+		        ? CODE_KEY[keycode] || keycode
+		        : String.fromCharCode(keycode).toLowerCase();
+		var lookupKey = meta ? meta + '+' + key : key;
+		return shortcutHandlers[lookupKey] ? shortcutHandlers[lookupKey] : null;
 	}
 
 	return {
