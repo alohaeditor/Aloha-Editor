@@ -278,8 +278,6 @@
 				boundaries[0],
 				boundaries[1]
 			);
-		}
-		if (Editor.selection) {
 			updateUi(Editor.selection);
 		}
 	});
