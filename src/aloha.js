@@ -137,6 +137,7 @@ define([
 		var isClicking = CLICKING_EVENT[type];
 		var dragging = getDragging(type, selection);
 		var isDragStart = dragging && dragging !== selection.dragging;
+		var caretDisplay = Dom.getStyle(selection.caret, 'display');
 		if (isClicking || isDragStart) {
 			// Because otherwise if the mouse position is over the caret element
 			// Boundaries.fromPosition() will compute the boundaries to be
@@ -167,6 +168,7 @@ define([
 		var boundaries = isClicking
 		               ? Boundaries.fromPosition(event.clientX, event.clientY, doc)
 		               : Boundaries.get(doc);
+		Dom.setStyle(selection.caret, 'display', caretDisplay);
 		if (!boundaries) {
 			return null;
 		}

@@ -199,7 +199,7 @@
 	function activeFormats(selection) {
 		var nodes = Dom.childAndParentsUntilIncl(
 			Boundaries.container(selection.boundaries[0]),
-			function (node) { return Dom.isEditingHost(node.parentNode); }
+			function (node) { return Dom.isEditingHost(node); }
 		);
 		var overrides = Overrides.joinToSet(
 			selection.formatting,
@@ -261,6 +261,9 @@
 			return !Dom.hasClass(node, 'aloha-ui');
 		});
 		if (!ui) {
+			if (Editor.selection) {
+				Dom.setStyle(Editor.selection.caret, 'display', 'none');
+			}
 			Editor.selection = null;
 			resetUi();
 		}
@@ -281,7 +284,7 @@
 			updateUi(Editor.selection);
 		}
 	});
-	
+
 	/**
 	 * Handles UI updates invoked by event.
 	 *
@@ -316,6 +319,33 @@
 		return event;
 	}
 
+	/**
+	 * Execute inline formatting or toggle overrides.
+	 *
+	 * @private
+	 * @param  {!Boundary} start
+	 * @param  {!Boundary} end
+	 * @param  {string}    formatting
+	 * @return {Array.<Boundary>}
+	 */
+	function inlineFormat(start, end, formatting) {
+		if (!Boundaries.equals(start, end)) {
+			return Editing.format(start, end, formatting);
+		}
+		var selection = Editor.selection;
+		var override = Overrides.nodeToState[formatting];
+		if (!override || !selection) {
+			return [start, end];
+		}
+		var overrides = Overrides.joinToSet(
+			selection.formatting,
+			Overrides.harvest(Boundaries.container(start)),
+			selection.overrides
+		);
+		selection.overrides = Overrides.toggle(overrides, override, true);
+		return [start, end];
+	}
+
 	aloha.editor.stack.unshift(handleUi);
 
 	// exports
@@ -323,8 +353,8 @@
 		'$$'      : $$,
 		shortcuts : {},
 		actions   : {
-			'aloha-action-B'        : Editing.format,
-			'aloha-action-I'        : Editing.format,
+			'aloha-action-B'        : inlineFormat,
+			'aloha-action-I'        : inlineFormat,
 			'aloha-action-H2'       : Editing.format,
 			'aloha-action-H3'       : Editing.format,
 			'aloha-action-H4'       : Editing.format,
