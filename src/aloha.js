@@ -188,6 +188,7 @@ define([
 		if (!editable) {
 			return null;
 		}
+		selection.overrides = editor.selection ? editor.selection.overrides : [];
 		selection.previousBoundaries = selection.boundaries;
 		selection.boundaries = boundaries;
 		selection.event = event;
