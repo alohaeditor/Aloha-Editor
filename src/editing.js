@@ -1787,9 +1787,13 @@ define([
 		} else if (Html.isBlockNode(node)) {
 			range = blockFormat(nodeName, start, end);
 		}
-		return range
-		     ? [Boundaries.next(range[0]), Boundaries.prev(range[1])]
-		     : [start, end];
+		if (!range) {
+			return [start, end];
+		}
+		if (Boundaries.equals(range[0], range[1])) {
+			return range;
+		}
+		return [Boundaries.next(range[0]), Boundaries.prev(range[1])];
 	}
 
 	function unformat(start, end, nodeName, boundaries) {
