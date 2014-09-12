@@ -37,7 +37,7 @@
 
 		test('next("word")', function () {
 			var dom = $('<div>foo<b>bar</b>s baz</div>')[0];
-			var boundary = Html.next(Boundaries.fromNode(dom.firstChild), 'word');
+			var boundary = Html.next(Boundaries.fromStartOfNode(dom), 'word');
 			equal(Boundaries.container(boundary), dom.lastChild);
 			equal(Boundaries.offset(boundary), 1);
 
@@ -47,7 +47,7 @@
 			dom = $('<div contenteditable="true">' + control + '</div>')[0];
 
 			Boundaries.walkWhile(
-				Boundaries.fromNode(dom.firstChild),
+				Boundaries.fromStartOfNode(dom),
 				function (boundary) {
 					return !Dom.isEditingHost(Boundaries.nextNode(boundary));
 				},
@@ -67,7 +67,7 @@
 
 		test('prev("word")', function () {
 			var dom = $('<div>foo <b>bar</b>s baz</div>')[0];
-			var boundary = Html.prev(Boundaries.create(dom.firstChild.nextSibling, 0), 'word');
+			var boundary = Html.prev(Boundaries.fromStartOfNode(dom.firstChild.nextSibling), 'word');
 			equal(Boundaries.container(boundary), dom.firstChild);
 			equal(Boundaries.offset(boundary), 4);
 
@@ -154,7 +154,7 @@
 		 */
 		function markForward(elem) {
 			Dom.insert(elem, elem.ownerDocument.body, true);
-			var boundary = Boundaries.fromNode(elem.firstChild);
+			var boundary = Boundaries.fromStartOfNode(elem);
 			var paths = [];
 			while (boundary) {
 				boundary = Html.next(boundary, 'word');

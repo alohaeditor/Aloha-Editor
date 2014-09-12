@@ -91,8 +91,8 @@ define([
 			anchors.reduce(function (list, a) {list.push(a); return list;}, created);
 		}
 		return [
-			Boundaries.fromNode(anchors[0]),
-			Boundaries.jumpOver(Boundaries.fromNode(Arrays.last(anchors)))
+			Boundaries.fromFrontOfNode(anchors[0]),
+			Boundaries.fromBehindOfNode(Arrays.last(anchors))
 		];
 	}
 

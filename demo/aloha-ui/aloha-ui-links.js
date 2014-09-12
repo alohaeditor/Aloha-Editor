@@ -125,7 +125,7 @@
 			var anchor = Dom.upWhile(Boundaries.container(boundaries[i]), notAnchor);
 			if (anchor) {
 				return [
-					Boundaries.next(Boundaries.fromNode(anchor)),
+					Boundaries.fromStartOfNode(anchor),
 					Boundaries.fromEndOfNode(anchor)
 				];
 			}

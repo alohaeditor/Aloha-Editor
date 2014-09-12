@@ -40,16 +40,6 @@ define([
 	}
 
 	/**
-	 * Returns the document associated with the given boundary.
-	 *
-	 * @param  {!Boundary} boundary
-	 * @return {Document}
-	 */
-	function document(boundary) {
-		return container(boundary).ownerDocument;
-	}
-
-	/**
 	 * Returns a boundary's offset.
 	 *
 	 * @param  {Boundary} boundary
@@ -60,17 +50,47 @@ define([
 	}
 
 	/**
-	 * Returns a boundary that is right in front of the given node.
+	 * Returns the document associated with the given boundary.
+	 *
+	 * @param  {!Boundary} boundary
+	 * @return {Document}
+	 */
+	function document(boundary) {
+		return container(boundary).ownerDocument;
+	}
+
+	/**
+	 * Returns a boundary that in front of the given node.
 	 *
 	 * @param  {Node} node
 	 * @return {Boundary}
 	 */
-	function fromNode(node) {
+	function fromFrontOfNode(node) {
 		return raw(node.parentNode, Dom.nodeIndex(node));
 	}
 
 	/**
-	 * Returns a boundary that is at the end position of the given node.
+	 * Returns a boundary that is behind the given node.
+	 *
+	 * @param  {Node} node
+	 * @return {Boundary}
+	 */
+	function fromBehindOfNode(node) {
+		return raw(node.parentNode, Dom.nodeIndex(node) + 1);
+	}
+
+	/**
+	 * Returns a boundary that is at the start position inside the given node.
+	 *
+	 * @param  {Node} node
+	 * @return {Boundary}
+	 */
+	function fromStartOfNode(node) {
+		return raw(node, 0);
+	}
+
+	/**
+	 * Returns a boundary that is at the end position inside the given node.
 	 *
 	 * @param  {Node} node
 	 * @return {Boundary}
@@ -104,33 +124,34 @@ define([
 			Assert.assertNotNou(node.parentNode);
 			var boundaryOffset = offset(boundary);
 			if (0 === boundaryOffset) {
-				return fromNode(node);
+				return fromFrontOfNode(node);
 			}
 			if (boundaryOffset >= Dom.nodeLength(node)) {
-				return raw(node.parentNode, Dom.nodeIndex(node) + 1);
+				return fromBehindOfNode(node);
 			}
 		}
 		return boundary;
 	}
 
 	/**
-	 * Creates a node boundary representing an offset position inside of a
-	 * container node.
+	 * Creates a node boundary representing an (positive integer) offset
+	 * position inside of a container node.
 	 *
 	 * The resulting boundary will be a normalized boundary, such that the
 	 * boundary will never describe a terminal position in a text node.
 	 *
 	 * @param  {Node} node
-	 * @param  {number} offset Positive integer
+	 * @param  {number} offset
 	 * @return {Boundary}
 	 */
 	function create(node, offset) {
+		Assert.assert(offset > -1, 'Boundaries.create(): Offset must be 0 or greater');
 		return normalize(raw(node, offset));
 	}
 
 	/**
-	 * Compares two boundaries for equality.  Boundaries are equal if their
-	 * corresponding containers and offsets are strictly equal.
+	 * Compares two boundaries for equality. Boundaries are equal if their
+	 * corresponding containers and offsets are equal.
 	 *
 	 * @param  {Boundary} a
 	 * @param  {Boundary} b
@@ -163,12 +184,12 @@ define([
 	}
 
 	/**
-	 * Sets the given range's start and end position from two respective
+	 * Modifies the given range's start and end positions to the two respective
 	 * boundaries.
 	 *
-	 * @param {Range}    range Range to modify.
-	 * @param {Boundary} start Boundary to set the start position to
-	 * @param {Boundary} end   Boundary to set the end position to
+	 * @param {Range}    range
+	 * @param {Boundary} start
+	 * @param {Boundary} end
 	 */
 	function setRange(range, start, end) {
 		setRangeStart(range, start);
@@ -261,7 +282,7 @@ define([
 	 * Checks if a boundary represents a position at the end of its container's
 	 * content.
 	 *
-	 * The end boundary of the given ranges is at the end position:
+	 * The end boundary of the given selection is at the end position:
 	 * <b><i>f</i>{oo]</b> and <b><i>f</i>{oo}</b>
 	 * The first is at end of the text node "oo"and the other at end of the <b>
 	 * element.
@@ -275,7 +296,7 @@ define([
 	}
 
 	/**
-	 * Checks if the unnormalized boundary is at the start position of it's
+	 * Checks if the un-normalized boundary is at the start position of it's
 	 * container.
 	 *
 	 * @param  {Boundary} boundary
@@ -286,7 +307,7 @@ define([
 	}
 
 	/**
-	 * Checks if the unnormalized boundary is at the end position of it's
+	 * Checks if the un-normalized boundary is at the end position of it's
 	 * container.
 	 *
 	 * @param  {Boundary} boundary
@@ -376,8 +397,7 @@ define([
 	 * @return {Boundary}
 	 */
 	function jumpOver(boundary) {
-		var node = nextNode(boundary);
-		return raw(node.parentNode, Dom.nodeIndex(node) + 1);
+		return fromBehindOfNode(nextNode(boundary));
 	}
 
 	/**
@@ -413,12 +433,12 @@ define([
 		boundary = normalize(boundary);
 		var node = container(boundary);
 		if (Dom.isTextNode(node) || isAtStart(boundary)) {
-			return fromNode(node);
+			return fromFrontOfNode(node);
 		}
 		node = Dom.nthChild(node, offset(boundary) - 1);
 		return Dom.isTextNode(node)
-		     ? fromNode(node)
-		     : raw(node, Dom.nodeLength(node));
+		     ? fromFrontOfNode(node)
+		     : fromEndOfNode(node);
 	}
 
 	/**
@@ -437,8 +457,8 @@ define([
 		}
 		var nextNode = Dom.nthChild(node, boundaryOffset);
 		return Dom.isTextNode(nextNode)
-		     ? raw(nextNode.parentNode, boundaryOffset + 1)
-		     : raw(nextNode, 0);
+		     ? fromBehindOfNode(nextNode)
+		     : fromStartOfNode(nextNode);
 	}
 
 	/**
@@ -451,10 +471,10 @@ define([
 	function prevRawBoundary(boundary) {
 		var node = container(boundary);
 		if (isAtRawStart(boundary)) {
-			return fromNode(node);
+			return fromFrontOfNode(node);
 		}
 		if (isTextBoundary(boundary)) {
-			return raw(node, 0);
+			return fromStartOfNode(node);
 		}
 		node = Dom.nthChild(node, offset(boundary) - 1);
 		return fromEndOfNode(node);
@@ -470,12 +490,12 @@ define([
 	function nextRawBoundary(boundary) {
 		var node = container(boundary);
 		if (isAtRawEnd(boundary)) {
-			return raw(node.parentNode, Dom.nodeIndex(node) + 1);
+			return fromBehindOfNode(node);
 		}
 		if (isTextBoundary(boundary)) {
 			return fromEndOfNode(node);
 		}
-		return raw(Dom.nthChild(node, offset(boundary)), 0);
+		return fromStartOfNode(Dom.nthChild(node, offset(boundary)));
 	}
 
 	/**
@@ -618,7 +638,9 @@ define([
 		fromRanges          : fromRanges,
 		fromRangeStart      : fromRangeStart,
 		fromRangeEnd        : fromRangeEnd,
-		fromNode            : fromNode,
+		fromFrontOfNode     : fromFrontOfNode,
+		fromBehindOfNode    : fromBehindOfNode,
+		fromStartOfNode     : fromStartOfNode,
 		fromEndOfNode       : fromEndOfNode,
 		fromPosition        : fromPosition,
 

@@ -1757,7 +1757,7 @@ define([
 		var replacement = Boundaries.document(start).createElement(formatting);
 		Dom.replaceShallow(node, replacement);
 		return [
-			Boundaries.fromNode(replacement),
+			Boundaries.fromStartOfNode(replacement),
 			Boundaries.fromEndOfNode(replacement)
 		];
 	}

@@ -83,10 +83,13 @@
 	test('prevWhile', function () {
 		var dom = document.createElement('div');
 		dom.innerHTML = 'foo<p>bar<b><u><i>baz</i></u>buzz</b></p>';
-		Boundaries.prevWhile(Boundaries.fromEndOfNode(dom), function (boundary) {
-			Mutation.insertTextAtBoundary('|', boundary, false);
-			return Boundaries.prevNode(boundary) !== dom;
-		});
+		Boundaries.prevWhile(
+			Boundaries.fromEndOfNode(dom),
+			function (boundary) {
+				Mutation.insertTextAtBoundary('|', boundary, false);
+				return Boundaries.prevNode(boundary) !== dom;
+			}
+		);
 		equal(
 			dom.outerHTML,
 			'<div>|foo|<p>|bar|<b>|<u>|<i>|baz|</i>|</u>|buzz|</b>|</p>|</div>'
@@ -96,10 +99,13 @@
 	test('nextWhile', function () {
 		var dom = document.createElement('div');
 		dom.innerHTML = 'foo<p>bar<b><u><i>baz</i></u>buzz</b></p>';
-		Boundaries.nextWhile(Boundaries.fromNode(dom.firstChild), function (boundary) {
-			Mutation.insertTextAtBoundary('|', boundary, true);
-			return Boundaries.nextNode(boundary) !== dom;
-		});
+		Boundaries.nextWhile(
+			Boundaries.fromStartOfNode(dom),
+			function (boundary) {
+				Mutation.insertTextAtBoundary('|', boundary, true);
+				return Boundaries.nextNode(boundary) !== dom;
+			}
+		);
 		equal(
 			dom.outerHTML,
 			'<div>|foo|<p>|bar|<b>||<u>||<i>|baz|</i>||</u>|buzz|</b>||</p>||</div>'

@@ -524,7 +524,7 @@ define([
 		if (Boundaries.isNodeBoundary(boundary)) {
 			var node = Boundaries.nodeBefore(boundary);
 			if (node && Elements.isVoidType(node)) {
-				return Boundaries.fromNode(node);
+				return Boundaries.fromFrontOfNode(node);
 			}
 		}
 		return Boundaries.prevRawBoundary(boundary);

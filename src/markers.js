@@ -171,7 +171,10 @@ define([
 		var root;
 
 		if (cac.parentNode) {
-			root = Paths.fromBoundary(cac.parentNode, Boundaries.fromNode(cac));
+			root = Paths.fromBoundary(
+				cac.parentNode,
+				Boundaries.fromFrontOfNode(cac)
+			);
 			clone = Boundaries.container(
 				Paths.toBoundary(cac.parentNode.cloneNode(true), root)
 			);

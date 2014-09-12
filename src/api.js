@@ -125,7 +125,9 @@ define([
 	exports['boundaries']['fromRanges']          = Boundaries.fromRanges;
 	exports['boundaries']['fromRangeStart']      = Boundaries.fromRangeStart;
 	exports['boundaries']['fromRangeEnd']        = Boundaries.fromRangeEnd;
-	exports['boundaries']['fromNode']            = Boundaries.fromNode;
+	exports['boundaries']['fromFrontOfNode']     = Boundaries.fromFrontOfNode;
+	exports['boundaries']['fromBehindOfNode']    = Boundaries.fromBehindOfNode;
+	exports['boundaries']['fromStartOfNode']     = Boundaries.fromStartOfNode;
 	exports['boundaries']['fromEndOfNode']       = Boundaries.fromEndOfNode;
 	exports['boundaries']['fromPosition']        = Boundaries.fromPosition;
 	exports['boundaries']['setRange']            = Boundaries.setRange;

@@ -312,7 +312,7 @@ define([
 
 	function create(element, boundaries) {
 		var body = element.ownerDocument.body;
-		var root = Paths.fromBoundary(body, Boundaries.fromNode(element));
+		var root = Paths.fromBoundary(body, Boundaries.fromFrontOfNode(element));
 		var paths = (boundaries || []).map(Fn.partial(Paths.fromBoundary, body));
 		var clipped = paths.map(Fn.partial(clipCommonRoot, root)).filter(function (arr) {
 			return arr.length > 0;

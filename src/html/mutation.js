@@ -236,7 +236,7 @@ define([
 
 		// Because a br is the first space-consuming *tag* inside of a
 		// line-breaking element is rendered
-		var boundary = Boundaries.fromNode(node);
+		var boundary = Boundaries.fromFrontOfNode(node);
 		while (Traversing.isAtStart(boundary)) {
 			if (Styles.hasLinebreakingStyle(Boundaries.container(boundary))) {
 				return true;
@@ -244,7 +244,7 @@ define([
 			boundary = Boundaries.prev(boundary);
 		}
 
-		boundary = Boundaries.jumpOver(Boundaries.fromNode(node));
+		boundary = Boundaries.jumpOver(Boundaries.fromFrontOfNode(node));
 		while (Traversing.isAtEnd(boundary)) {
 			if (Styles.hasLinebreakingStyle(Boundaries.container(boundary))) {
 				return false;
@@ -434,7 +434,7 @@ define([
 		}
 		// Because we are in a nested list ...
 		var boundary = Mutation.splitBoundaryUntil(
-			Boundaries.fromNode(ul),
+			Boundaries.fromFrontOfNode(ul),
 			function (boundary) {
 				return Predicates.isListContainer(Boundaries.container(boundary));
 			}
