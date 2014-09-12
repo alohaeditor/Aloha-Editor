@@ -189,9 +189,7 @@
 	height: 45px;
 	font-size: 18px;
 }
-.aloha-link-toolbar a.btn {
-	padding-top: 10px;
-}
+.aloha-link-toolbar a.btn { padding-top: 10px; }
 .aloha-link-toolbar .aloha-action-follow { float: right; }
 
 .aloha-active,
@@ -216,6 +214,9 @@
 	top: 0px;
 }
 
-.menu-wrap {
-	height: 45px;
+.menu-wrap { height: 45px; }
+
+.aloha-editable a {
+	cursor: text;
+	text-decoration: underline;
 }
