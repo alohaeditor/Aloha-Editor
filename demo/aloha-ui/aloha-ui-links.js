@@ -43,167 +43,167 @@
 
 	function notAnchor(node) { return 'A' !== node.nodeName; }
 
-	var LinksUi = {
+	/**
+	 * Opens the given context toolbar for editing the given anchor.
+	 *
+	 * @private
+	 * @param {!Element} toolbar
+	 * @param {!Element} anchor
+	 */
+	function open(toolbar, anchor) {
+		var href = Dom.getAttr(anchor, 'href');
+		var target = Dom.getAttr(anchor, 'target');
+		$$('.aloha-active').removeClass('aloha-active');
+		Dom.addClass(anchor, 'aloha-active');
+		Dom.addClass(toolbar, 'active');
+		positionToolbar(toolbar, anchor);
+		toolbar.querySelector('input').value = href;
+		$$('a.aloha-link-follow').setAttr('href', href);
+		if ('_blank' === target) {
+			$$('.aloha-action-target').addClass('active');
+		} else {
+			$$('.aloha-action-target').removeClass('active');
+		}
+	}
 
-		/**
-		 * Opens the given context toolbar for editing the given anchor.
-		 *
-		 * @param {!Element} toolbar
-		 * @param {!Element} anchor
-		 */
-		open: function open(toolbar, anchor) {
-			var href = Dom.getAttr(anchor, 'href');
-			var target = Dom.getAttr(anchor, 'target');
+	/**
+	 * Closes the context toolbar.
+	 *
+	 * @private
+	 * @param {!Element} toolbar
+	function close(toolbar) {
+		$$('.aloha-active').removeClass('aloha-active');
+	}
+	 */
 
-			$$('.aloha-active').removeClass('aloha-active');
-			Dom.addClass(anchor, 'aloha-active');
-			Dom.addClass(toolbar, 'active');
+	/**
+	 * Retrieves a toolbar element.
+	 *
+	 * @private
+	 * @return {?Element}
+	 */
+	function getToolbar() {
+		return Dom.upWhile($$('.aloha-link-toolbar').elements[0], function (node) {
+			return !Dom.hasClass(node, 'aloha-ui');
+		});
+	}
 
-			positionToolbar(toolbar, anchor);
+	/**
+	 * Resolves the anchor element from the boundaries
+	 *
+	 * @private
+	 * @param  {Array.<Boundary>} boundaries
+	 * @return {?Element}
+	 */
+	function getAnchor(boundaries) {
+		return Dom.upWhile(Boundaries.container(boundaries[0]), notAnchor)
+			|| Dom.upWhile(Boundaries.container(boundaries[1]), notAnchor);
+	}
 
-			toolbar.querySelector('input').value = href;
-			$$('a.aloha-link-follow').setAttr('href', href);
-			if ('_blank' === target) {
-				$$('.aloha-action-target').addClass('active');
-			} else {
-				$$('.aloha-action-target').removeClass('active');
-			}
-		},
+	/**
+	 * Handles user interaction on the context toolbar.
+	 *
+	 * @private
+	 * @param {!Element} element
+	 * @param {!Element} anchor
+	 */
+	function interact(toolbar, anchor) {
+		$$('a.aloha-active, a.aloha-link-follow').setAttr(
+			'href',
+			toolbar.querySelector('input').value
+		);
+	}
 
-		/**
-		 * Closes the context toolbar.
-		 *
-		 * @param {!Element} toolbar
-		 */
-		close: function close(toolbar) {
-			$$('.aloha-active').removeClass('aloha-active');
-		},
-
-		/**
-		 * Retrieves a toolbar element.
-		 *
-		 * @return {?Element}
-		 */
-		toolbar: function toolbar() {
-			return Dom.upWhile($$('.aloha-link-toolbar').elements[0], function (node) {
-				return !Dom.hasClass(node, 'aloha-ui');
-			});
-		},
-
-		/**
-		 * Resolves the anchor element from the boundaries
-		 *
-		 * @param  {Array.<Boundary>} boundaries
-		 * @return {?Element}
-		 */
-		anchor: function anchor(boundaries) {
-			return Dom.upWhile(Boundaries.container(boundaries[0]), notAnchor)
-			    || Dom.upWhile(Boundaries.container(boundaries[1]), notAnchor);
-		},
-
-		/**
-		 * Handles user interaction on the context toolbar.
-		 *
-		 * @param {!Element} element
-		 * @param {!Element} anchor
-		 */
-		interact: function interact(toolbar, anchor) {
-			$$('a.aloha-active, a.aloha-link-follow').setAttr(
-				'href',
-				toolbar.querySelector('input').value
-			);
-		},
-
-		/**
-		 * Normalize boundaries, so that if either start
-		 * or end boundaries are inside an anchor element
-		 * both boundaries will snap to that element.
-		 *
-		 * If the boundaries are collapsed, they will be
-		 * extended to word.
-		 *
-		 * @param  {!Boundary} start
-		 * @param  {!Boundary} end
-		 * @return {Array.<Boundary>}
-		 */
-		normalize: function normalize(start, end) {
-			var boundaries = [start, end];
-			for (var i = 0; i < boundaries.length; i++) {
-				var anchor = Dom.upWhile(Boundaries.container(boundaries[i]), notAnchor);
-				if (anchor) {
-					return [
-						Boundaries.next(Boundaries.fromNode(anchor)),
-						Boundaries.fromEndOfNode(anchor)
-					];
-				}
-			}
-			return Boundaries.equals(start, end)
-			     ? Traversing.expand(start, end, 'word')
-			     : boundaries;
-		},
-
-		/**
-		 * Inserts a link at the boundary position
-		 *
-		 * IMPORTANT: this function MUST be a named
-		 * function, because we will need to
-		 * prevent a selection update when a new link
-		 * is inserted later on.
-		 * 
-		 * @param  {!Boundary} start
-		 * @param  {!Boundary} end
-		 * @return {Array.<Boundary>}
-		 */
-		insertLink: function insertLink(start, end) {
-			var boundaries = LinksUi.normalize(start, end);
-			if (Boundaries.container(boundaries[0]).nodeName !== 'A') {
-				boundaries = Editing.wrap('A', boundaries[0], boundaries[1]);
-				boundaries[0] = Boundaries.next(boundaries[0]);
-				boundaries[1] = Boundaries.fromEndOfNode(boundaries[0])[0];
-			}
-			LinksUi.open(LinksUi.toolbar(), Boundaries.container(boundaries[0]));
-			$$('.aloha-link-toolbar input[name=href]').elements[0].focus();
-			return boundaries;
-		},
-
-		/**
-		 * Toggles the target attribute on any active anchor.
-		 *
-		 * @param  {!Boundary} start
-		 * @param  {!Boundary} end
-		 * @return {Array.<Boundary>}
-		 */
-		toggleTarget: function toggleTarget(start, end) {
-			var boundaries = [start, end];
-			var anchor = LinksUi.anchor(boundaries);
-			if (!anchor) {
-				return boundaries;
-			}
-			if ('_blank' === Dom.getAttr(anchor, 'target')) {
-				Dom.removeAttr(anchor, 'target');
-			} else {
-				Dom.setAttr(anchor, 'target', '_blank');
-			}
-			return boundaries;
-		},
-
-		/**
-		 * Updates the ui according to any active anchor element.
-		 *
-		 * @param {!Selection}     selection
-		 * @param {Array.<string>} formats
-		 */
-		update: function update(selection, formats) {
-			if (Arrays.contains(formats, 'A')) {
-				LinksUi.open(
-					LinksUi.toolbar(),
-					LinksUi.anchor(selection.boundaries)
-				);
+	/**
+	 * Normalize boundaries, so that if either start
+	 * or end boundaries are inside an anchor element
+	 * both boundaries will snap to that element.
+	 *
+	 * If the boundaries are collapsed, they will be
+	 * extended to word.
+	 *
+	 * @private
+	 * @param  {!Boundary} start
+	 * @param  {!Boundary} end
+	 * @return {Array.<Boundary>}
+	 */
+	function normalize(start, end) {
+		var boundaries = [start, end];
+		for (var i = 0; i < boundaries.length; i++) {
+			var anchor = Dom.upWhile(Boundaries.container(boundaries[i]), notAnchor);
+			if (anchor) {
+				return [
+					Boundaries.next(Boundaries.fromNode(anchor)),
+					Boundaries.fromEndOfNode(anchor)
+				];
 			}
 		}
-	};
+		return Boundaries.equals(start, end)
+			 ? Traversing.expand(start, end, 'word')
+			 : boundaries;
+	}
 
-	var shortcuts = { 
+	/**
+	 * Inserts a link at the boundary position
+	 *
+	 * IMPORTANT: this function MUST be a named
+	 * function, because we will need to
+	 * prevent a selection update when a new link
+	 * is inserted later on.
+	 *
+	 * @private
+	 * @param  {!Boundary} start
+	 * @param  {!Boundary} end
+	 * @return {Array.<Boundary>}
+	 */
+	function insertLink(start, end) {
+		var boundaries = normalize(start, end);
+		if (Boundaries.container(boundaries[0]).nodeName !== 'A') {
+			boundaries = Editing.wrap('A', boundaries[0], boundaries[1]);
+			boundaries[0] = Boundaries.next(boundaries[0]);
+			boundaries[1] = Boundaries.fromEndOfNode(boundaries[0])[0];
+		}
+		open(getToolbar(), Boundaries.container(boundaries[0]));
+		$$('.aloha-link-toolbar input[name=href]').elements[0].focus();
+		return boundaries;
+	}
+
+	/**
+	 * Toggles the target attribute on any active anchor.
+	 *
+	 * @private
+	 * @param  {!Boundary} start
+	 * @param  {!Boundary} end
+	 * @return {Array.<Boundary>}
+	 */
+	function toggleTarget(start, end) {
+		var boundaries = [start, end];
+		var anchor = getAnchor(boundaries);
+		if (!anchor) {
+			return boundaries;
+		}
+		if ('_blank' === Dom.getAttr(anchor, 'target')) {
+			Dom.removeAttr(anchor, 'target');
+		} else {
+			Dom.setAttr(anchor, 'target', '_blank');
+		}
+		return boundaries;
+	}
+
+	/**
+	 * Updates the ui according to any active anchor element.
+	 *
+	 * @private
+	 * @param {!Selection}     selection
+	 * @param {Array.<string>} formats
+	 */
+	function update(selection, formats) {
+		if (Arrays.contains(formats, 'A')) {
+			open(getToolbar(), getAnchor(selection.boundaries));
+		}
+	}
+
+	var shortcuts = {
 		'enter' : function (start, end) {
 			var anchor = $$('a.aloha-active').elements[0];
 			var href = $$('.aloha-link-toolbar input[name=href]').elements[0];
@@ -218,7 +218,7 @@
 			}
 			aloha.editor.ui.update(Editor.selection);
 			return Editor.selection.boundaries;
-		} 
+		}
 	};
 
 	/*
@@ -226,10 +226,7 @@
 	 */
 	$$('.aloha-link-toolbar input[name=href]').on('keyup', function (event) {
 		if (Editor.selection) {
-			LinksUi.interact(
-				LinksUi.toolbar(event.target.ownerDocument),
-				LinksUi.anchor(Editor.selection.boundaries)
-			);
+			interact(getToolbar(), getAnchor(Editor.selection.boundaries));
 		}
 		var key = Keys.parseKeys(event);
 		var handler = Keys.shortcutHandler(key.meta, key.keycode, shortcuts);
@@ -242,14 +239,14 @@
 	});
 
 	aloha.editor.ui.actions = Maps.merge(aloha.editor.ui.actions, {
-		'aloha-action-A'      : LinksUi.insertLink,
-		'aloha-action-target' : LinksUi.toggleTarget
+		'aloha-action-A'      : insertLink,
+		'aloha-action-target' : toggleTarget
 	});
 
 	aloha.editor.ui.shortcuts = Maps.merge(aloha.editor.ui.shortcuts, {
-		'meta+k' : LinksUi.insertLink,
-		'ctrl+k' : LinksUi.insertLink
+		'meta+k' : insertLink,
+		'ctrl+k' : insertLink
 	});
 
-	aloha.editor.ui.updateHandlers.push(LinksUi.update);
+	aloha.editor.ui.updateHandlers.push(update);
 })(window.aloha);
