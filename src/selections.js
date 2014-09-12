@@ -547,6 +547,7 @@ define([
 	function Context(doc) {
 		var caret = doc.createElement('div');
 		Maps.extend(caret.style, {
+			'cursor'   : 'text',
 			'color'    : '#000',
 			'zIndex'   : '9999',
 			'display'  : 'none',
