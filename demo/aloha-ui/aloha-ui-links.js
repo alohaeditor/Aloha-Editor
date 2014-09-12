@@ -1,7 +1,9 @@
 (function (aloha) {
+
 	'use strict';
 
-	var $$ = aloha.editor.ui.$$;
+	var Ui = aloha.editor.ui;
+	var $$ = Ui.$$;
 	var Dom = aloha.dom;
 	var Keys = aloha.keys;
 	var Maps = aloha.maps;
@@ -216,7 +218,7 @@
 			if (!href.value) {
 				Dom.removeShallow(anchor);
 			}
-			aloha.editor.ui.update(Editor.selection);
+			Ui.update(Editor.selection);
 			return Editor.selection.boundaries;
 		}
 	};
@@ -238,15 +240,16 @@
 		}
 	});
 
-	aloha.editor.ui.actions = Maps.merge(aloha.editor.ui.actions, {
+	Ui.actions = Maps.merge(Ui.actions, {
 		'aloha-action-A'      : insertLink,
 		'aloha-action-target' : toggleTarget
 	});
 
-	aloha.editor.ui.shortcuts = Maps.merge(aloha.editor.ui.shortcuts, {
+	Ui.shortcuts = Maps.merge(Ui.shortcuts, {
 		'meta+k' : insertLink,
 		'ctrl+k' : insertLink
 	});
 
-	aloha.editor.ui.updateHandlers.push(update);
+	Ui.updateHandlers.push(update);
+
 })(window.aloha);

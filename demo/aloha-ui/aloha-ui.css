@@ -21,6 +21,11 @@
 
 .aloha-ui.btn-toolbar { display: inline-block; }
 
+.aloha-ui input,
+.aloha-ui .btn,
+.aloha-ui .btn:focus,
+.aloha-ui .btn:active { outline: 0; }
+
 .aloha-ui .btn,
 .aloha-ui .btn-toolbar,
 .aloha-ui.btn-toolbar {
@@ -30,9 +35,7 @@
 	    -moz-font-smoothing: antialiased;
 	         font-smoothing: antialiased;
 }
-.aloha-ui input { outline: 0; }
 .aloha-ui .btn {
-	outline: 0;
 	width: 45px;
 	height: 45px;
 	margin-left: 0;
