@@ -58,6 +58,7 @@ define({
 		"tab.abbr.label": "Abbreviation",
 		"tab.img.label": "Image",
 		"tab.link.label": "Link",
+		"tab.cite.label": "Cite",
 		"tab.list.label": "List",
 		"tab.table.label": "Table",
 		"tab.col.label": "Table Column",
