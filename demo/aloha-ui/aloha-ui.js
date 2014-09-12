@@ -292,7 +292,8 @@
 	 * @return {Event}
 	 */
 	function handleUi(event) {
-		if ('keydown' === event.type) {
+		var type = event.type;
+		if ('keydown' === type) {
 			var handler = Keys.shortcutHandler(
 				event.meta,
 				event.keycode,
@@ -309,11 +310,10 @@
 				return event;
 			}
 		}
-		var type = event.type;
 		if ('mouseup' === type || 'aloha.mouseup' === type) {
 			eventLoop.inEditable = true;
 		}
-		if ('keydown' === type || 'keyup' === type || 'click' === type) {
+		if ('keydown' === type || 'keyup' === type || 'mouseup' === type || 'click' === type) {
 			updateUi(event.selection);
 		}
 		return event;

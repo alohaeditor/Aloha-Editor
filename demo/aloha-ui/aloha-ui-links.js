@@ -69,16 +69,6 @@
 	}
 
 	/**
-	 * Closes the context toolbar.
-	 *
-	 * @private
-	 * @param {!Element} toolbar
-	function close(toolbar) {
-		$$('.aloha-active').removeClass('aloha-active');
-	}
-	 */
-
-	/**
 	 * Retrieves a toolbar element.
 	 *
 	 * @private
@@ -202,12 +192,17 @@
 	function update(selection, formats) {
 		if (Arrays.contains(formats, 'A')) {
 			open(getToolbar(), getAnchor(selection.boundaries));
+		} else {
+			$$('.aloha-active').removeClass('aloha-active');
 		}
 	}
 
 	var shortcuts = {
 		'enter' : function (start, end) {
 			var anchor = $$('a.aloha-active').elements[0];
+			if (!anchor) {
+				return [start, end];
+			}
 			var href = $$('.aloha-link-toolbar input[name=href]').elements[0];
 			var boundary = Boundaries.next(Boundaries.fromEndOfNode(anchor));
 			Editor.selection = Selections.select(
