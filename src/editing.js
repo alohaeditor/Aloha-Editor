@@ -34,6 +34,7 @@ define([
 	'content',
 	'lists',
 	'links',
+	'paths',
 	'overrides'
 ], function (
 	Dom,
@@ -50,6 +51,7 @@ define([
 	Content,
 	Lists,
 	Links,
+	Paths,
 	Overrides
 ) {
 	'use strict';
@@ -1211,9 +1213,21 @@ define([
 	 */
 	function formatInline(node, start, end, isWrapping) {
 		var styleName = resolveStyleName(node);
-		return (styleName === false)
-		     ? [start, end]
-		     : style(start, end, styleName, isWrapping);
+		var boundaries = (styleName === false)
+		               ? [start, end]
+		               : style(start, end, styleName, isWrapping);
+		if (Boundaries.equals(boundaries[0], boundaries[1])) {
+			return boundaries;
+		}
+		var next = Boundaries.nodeAfter(boundaries[0]);
+		var prev = Boundaries.nodeBefore(boundaries[1]);
+		start = next
+		      ? Boundaries.normalize(Boundaries.fromStartOfNode(next))
+			  : boundaries[0];
+		end = prev
+		    ? Boundaries.normalize(Boundaries.fromEndOfNode(prev))
+			: boundaries[1];
+		return [start, end];
 	}
 
 	/**
@@ -1733,6 +1747,122 @@ define([
 		throw 'Not implemented';
 	}
 
+	function nearest(node, pred) {
+		return Dom.upWhile(node, function (node) {
+			return !pred(node)
+			    && !(node.parentNode && Dom.isEditingHost(node.parentNode));
+		});
+	}
+
+	/**
+	 * Expands the given start and end boundaires until the nearst containers
+	 * that match the given predicate.
+	 *
+	 * @private
+	 * @param  {Boundary}               start
+	 * @param  {Boundary}               end
+	 * @param  {function(Node):boolean} pred
+	 * @return {Array.<Boundary>}
+	 */
+	function expandUntil(start, end, pred) {
+		var node, startNode, endNode;
+		if (Html.isBoundariesEqual(start, end)) {
+			//       node ----------.
+			//        |             |
+			//        v             v
+			// </p>{}<u> or </b>{}</p>
+			node = Boundaries.nextNode(end);
+			if (Dom.isEditingHost(node)) {
+				node = Boundaries.prevNode(start);
+			}
+			if (Dom.isEditingHost(node)) {
+				return [start, end];
+			}
+			startNode = endNode = pred(node) ? node : nearest(node, pred);
+		} else {
+			startNode = nearest(Boundaries.nextNode(start), pred);
+			endNode = nearest(Boundaries.prevNode(end), pred);
+		}
+		return [
+			Boundaries.fromFrontOfNode(startNode),
+			Boundaries.fromBehindOfNode(endNode)
+		];
+	}
+
+	function walkabout(start, end, step) {
+		var cac = Boundaries.commonContainer(start, end);
+		var ascent = Paths.fromBoundary(cac, start).reverse();
+		var descent = Paths.fromBoundary(cac, end);
+		var node = Boundaries.container(start);
+		step(
+			node,
+			ascent[0],
+			node === cac ? descent[0] : Dom.children(node).length
+		);
+		ascent.slice(1, -1).reduce(function (node, start) {
+			step(node, start + 1, Dom.children(node).length);
+			return node.parentNode;
+		}, node.parentNode);
+		step(cac, Arrays.last(ascent) + 1, descent[0]);
+		descent.slice(1).reduce(function (node, end) {
+			step(node, 0, end);
+			return Dom.children(node)[end];
+		}, Dom.children(cac)[descent[0]]);
+		return [start, end];
+	}
+
+	/**
+	 * Given a list of sibling nodes and a formatting, will
+	 * apply the formatting across the list of nodes.
+	 *
+	 * @private
+	 * @param  {string}       formatting
+	 * @param  {Array.<Node>} siblings
+	 */
+	function formatSiblings(formatting, siblings) {
+		var wrapper = null;
+		siblings.forEach(function (node) {
+			if (Html.isUnrendered(node) && !wrapper) {
+				return;
+			}
+			if (Content.allowsNesting(formatting, node.nodeName)) {
+				if (!wrapper) {
+					wrapper = node.ownerDocument.createElement(formatting);
+					Dom.insert(wrapper, node);
+				}
+				return Dom.move([node], wrapper);
+			}
+			wrapper = null;
+			if (Html.isVoidType(node)) {
+				return;
+			}
+			var children = Dom.children(node);
+			var childNames = children.map(function (child) { return child.nodeName; });
+			var canWrapChildren = childNames.length === childNames.filter(
+				Fn.partial(Content.allowsNesting, formatting)
+			).length;
+			var allowedInParent = Content.allowsNesting(
+				node.parentNode.nodeName,
+				formatting
+			);
+			if (
+				canWrapChildren              &&
+				allowedInParent              &&
+				!Html.isGroupContainer(node) &&
+				!Html.isGroupedElement(node)
+			) {
+				return Dom.replaceShallow(
+					node,
+					node.ownerDocument.createElement(formatting)
+				);
+			}
+			var i = Arrays.someIndex(children, Html.isRendered);
+			if (i > -1) {
+				formatSiblings(formatting, children.slice(i));
+			}
+		});
+	}
+
 	/**
 	 * Applies block formatting to contents enclosed by start and end boundary.
 	 * Will return updated array of boundaries after the operation.
@@ -1743,23 +1873,15 @@ define([
 	 * @param  {!Boundary} end
 	 * @return {Array.<Boundary>}
 	 */
-	function blockFormat(formatting, start, end, boundaries) {
-		var node = Boundaries.container(start);
-		if (Html.isBlockNode(node)) {
-			node = Boundaries.nextNode(start);
-		}
-		if (Dom.isTextNode(node)) {
-			node = node.parentNode;
-		}
-		if (Html.isGroupContainer(node) || Html.isGroupedElement(node) || Dom.isEditingHost(node)) {
-			return [start, end];
-		}
-		var replacement = Boundaries.document(start).createElement(formatting);
-		Dom.replaceShallow(node, replacement);
-		return [
-			Boundaries.fromStartOfNode(replacement),
-			Boundaries.fromEndOfNode(replacement)
-		];
+	function formatBlock(formatting, start, end, preserve) {
+		var boundaries = expandUntil(start, end, Html.hasLinebreakingStyle);
+		return walkabout(
+			boundaries[0],
+			boundaries[1],
+			function (node, start, end) {
+				formatSiblings(formatting, Dom.children(node).slice(start, end));
+			}
+		);
 	}
 
 	/**
@@ -1785,15 +1907,9 @@ define([
 		} else if (Html.isListContainer(node)) {
 			range = Lists.toggle(nodeName, start, end);
 		} else if (Html.isBlockNode(node)) {
-			range = blockFormat(nodeName, start, end);
+			range = formatBlock(nodeName, start, end);
 		}
-		if (!range) {
-			return [start, end];
-		}
-		if (Boundaries.equals(range[0], range[1])) {
-			return range;
-		}
-		return [Boundaries.next(range[0]), Boundaries.prev(range[1])];
+		return range;
 	}
 
 	function unformat(start, end, nodeName, boundaries) {
