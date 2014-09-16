@@ -1897,11 +1897,15 @@ define([
 	 */
 	function formatBlock(formatting, start, end, preserve) {
 		var boundaries = expandUntil(start, end, Html.hasLinebreakingStyle);
-		return walkabout(
+		boundaries = walkabout(
 			boundaries[0],
 			boundaries[1],
 			Fn.partial(formatSiblings, formatting)
 		);
+		return [
+			Boundaries.fromStartOfNode(Boundaries.nextNode(boundaries[0])),
+			Boundaries.fromEndOfNode(Boundaries.prevNode(boundaries[1]))
+		];
 	}
 
 	/**
