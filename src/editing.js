@@ -1223,10 +1223,10 @@ define([
 		var prev = Boundaries.nodeBefore(boundaries[1]);
 		start = next
 		      ? Boundaries.normalize(Boundaries.fromStartOfNode(next))
-			  : boundaries[0];
+		      : boundaries[0];
 		end = prev
 		    ? Boundaries.normalize(Boundaries.fromEndOfNode(prev))
-			: boundaries[1];
+		    : boundaries[1];
 		return [start, end];
 	}
 
@@ -1747,6 +1747,15 @@ define([
 		throw 'Not implemented';
 	}
 
+	/**
+	 * Starting with the given, returns the first node taht matches the given
+	 * predicate.
+	 *
+	 * @private
+	 * @param  {!Node}                  node
+	 * @param  {function(Node):boolean} pred
+	 * @return {Node}
+	 */
 	function nearest(node, pred) {
 		return Dom.upWhile(node, function (node) {
 			return !pred(node)
@@ -1789,24 +1798,37 @@ define([
 		];
 	}
 
+	/**
+	 * Traverses between the given start and end boundaries
+	 * in document order invoking step() with a list of siblings
+	 * that are wholey contained within the two boundaries.
+	 *
+	 * @private
+	 * @param  {!Boundary}              start
+	 * @param  {!Boundary}              end
+	 * @param  {function(Array.<Node>)} step
+	 * @return {Array.<Boundary>}
+	 */
 	function walkabout(start, end, step) {
 		var cac = Boundaries.commonContainer(start, end);
 		var ascent = Paths.fromBoundary(cac, start).reverse();
 		var descent = Paths.fromBoundary(cac, end);
 		var node = Boundaries.container(start);
-		step(
-			node,
+		var children = Dom.children(node);
+		step(children.slice(
 			ascent[0],
-			node === cac ? descent[0] : Dom.children(node).length
-		);
+			node === cac ? descent[0] : children.length
+		));
 		ascent.slice(1, -1).reduce(function (node, start) {
-			step(node, start + 1, Dom.children(node).length);
+			var children = Dom.children(node);
+			step(children.slice(start + 1, children.length));
 			return node.parentNode;
 		}, node.parentNode);
-		step(cac, Arrays.last(ascent) + 1, descent[0]);
+		step(Dom.children(cac).slice(Arrays.last(ascent) + 1, descent[0]));
 		descent.slice(1).reduce(function (node, end) {
-			step(node, 0, end);
-			return Dom.children(node)[end];
+			var children = Dom.children(node);
+			step(children.slice(0, end));
+			return children[end];
 		}, Dom.children(cac)[descent[0]]);
 		return [start, end];
 	}
@@ -1878,9 +1900,7 @@ define([
 		return walkabout(
 			boundaries[0],
 			boundaries[1],
-			function (node, start, end) {
-				formatSiblings(formatting, Dom.children(node).slice(start, end));
-			}
+			Fn.partial(formatSiblings, formatting)
 		);
 	}
 
