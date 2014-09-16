@@ -1902,10 +1902,9 @@ define([
 			boundaries[1],
 			Fn.partial(formatSiblings, formatting)
 		);
-		return [
-			Boundaries.fromStartOfNode(Boundaries.nextNode(boundaries[0])),
-			Boundaries.fromEndOfNode(Boundaries.prevNode(boundaries[1]))
-		];
+		start = Boundaries.fromStartOfNode(Boundaries.nextNode(boundaries[0]));
+		end = Boundaries.fromEndOfNode(Boundaries.prevNode(boundaries[1]));
+		return [Html.expandForward(start), Html.expandBackward(end)];
 	}
 
 	/**
