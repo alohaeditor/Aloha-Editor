@@ -132,13 +132,108 @@ define([
 		return Editing.breakline(event.selection.boundaries[1], breaker);
 	}
 
+	/**
+	 * Checks whether the given normalized boundary is immediately behind of a
+	 * whitespace character.
+	 *
+	 * @private
+	 * @param  {!Boundary} boundary
+	 * @return {boolean}
+	 */
+	function isBehindWhitespace(boundary) {
+		var text = Boundaries.container(boundary).data;
+		var offset = Boundaries.offset(boundary);
+		return Strings.WHITE_SPACE.test(text.substr(offset - 1, 1));
+	}
+
+	/**
+	 * Checks whether the given normalized boundary is immediately in front of a
+	 * whitespace character.
+	 *
+	 * @private
+	 * @param  {!Boundary} boundary
+	 * @return {boolean}
+	 */
+	function isInfrontWhitespace(boundary) {
+		var text = Boundaries.container(boundary).data;
+		var offset = Boundaries.offset(boundary);
+		return Strings.WHITE_SPACE.test(text.substr(offset, 1));
+	}
+
+	/**
+	 * Determines the appropriate white-space that should be inserted at the
+	 * given normalized boundary position.
+	 *
+	 * Strategy:
+	 *
+	 * A non-breaking-white-space (0x00a0) is required if none of the two
+	 * conditions below is met:
+	 *
+	 * Condition 1.
+	 *
+	 * The boundary is inside a text node with non-space characters adjacent on
+	 * either side. This is often the case when seperating words with a space.
+	 *
+	 *
+	 * Condition 2.
+	 *
+	 * From the boundary it is possible to locate a preceeding text node (using
+	 * pre-order-backtracing traversal. @see
+	 * Dom.backwardPreorderBacktracingUntil()) whose last character is non-space
+	 * character. This text node must be located without encountering a
+	 * linebreaking element.
+	 *
+	 * ... and ...
+	 *
+	 * From the boundary it is possible to locate a preceeding text node (using
+	 * pre-order-backtracing traversal.  @see
+	 * Dom.forwardPreorderBacktracingUntil()) whose first character is non-space
+	 * character. This text node must be located without encountering a
+	 * linebreaking element.
+	 *
+	 * @private
+	 * @param  {!Boundary} boundary Normalized.
+	 * @return {string}
+	 */
+	function appropriateWhitespace(boundary) {
+		if (Boundaries.isTextBoundary(boundary)) {
+			return (isBehindWhitespace(boundary) || isInfrontWhitespace(boundary))
+			     ? '\xa0'
+			     : ' ';
+		}
+		var node = Boundaries.container(boundary);
+		var stop = Dom.backwardPreorderBacktraceUntil(node, function (node) {
+			return Dom.isTextNode(node)
+			    || Dom.isEditingHost(node)
+			    || Html.hasLinebreakingStyle(node);
+		});
+		if (!Dom.isElementNode(stop)) {
+			return '\xa0';
+		}
+		if (isBehindWhitespace(Boundaries.fromEndOfNode(stop))) {
+			return '\xa0';
+		}
+		stop = Dom.forwardPreorderBacktraceUntil(node, function (node) {
+			return Dom.isTextNode(node)
+			    || Dom.isEditingHost(node)
+			    || Html.hasLinebreakingStyle(node);
+		});
+		if (!Dom.isElementNode(stop)) {
+			return '\xa0';
+		}
+		if (isInfrontWhitespace(Boundaries.fromStartOfNode(stop))) {
+			return '\xa0';
+		}
+		return ' ';
+	}
+
 	function insertText(event) {
 		var editable = event.editable;
 		var selection = event.selection;
 		var text = String.fromCharCode(event.keycode);
 		var boundary = selection.boundaries[0];
 		if ('\t' === text) {
-			text = '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0';
+			text = '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
 		}
 		if (' ' === text) {
 			var whiteSpaceStyle = Dom.getComputedStyle(
@@ -146,7 +241,7 @@ define([
 				'white-space'
 			);
 			if (!Html.isWhiteSpacePreserveStyle(whiteSpaceStyle)) {
-				text = '\xa0';
+				text = appropriateWhitespace(boundary);
 			}
 		}
 		boundary = Overrides.consume(boundary, Overrides.joinToSet(

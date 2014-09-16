@@ -363,6 +363,8 @@ define([
 		childAndParentsUntilInclNode : Traversing.childAndParentsUntilInclNode,
 		parentsUntil                 : Traversing.parentsUntil,
 		parentsUntilIncl             : Traversing.parentsUntilIncl,
+		forwardPreorderBacktraceUntil  : Traversing.forwardPreorderBacktraceUntil,
+		backwardPreorderBacktraceUntil : Traversing.backwardPreorderBacktraceUntil,
 
 		serialize         : serialize,
 		ensureExpandoId   : ensureExpandoId,

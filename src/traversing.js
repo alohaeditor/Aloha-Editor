@@ -225,9 +225,11 @@ define([
 	}
 
 	return {
+		expand                      : expand,
 		next                        : next,
 		prev                        : prev,
-		expand                      : expand,
+		backward                    : Html.stepBackward,
+		forward                     : Html.stepForward,
 		isAtStart                   : Html.isAtStart,
 		isAtEnd                     : Html.isAtEnd,
 		isBoundaryEqual             : Html.isBoundaryEqual,

@@ -39,6 +39,21 @@ define([
 	 *
 	 * <b>, "two", <u>, <i>, "three", "four", "five"
 	 *
+	 * This is pre-order traversal:
+	 *
+	 *      <div>
+	 *      / | \
+	 *    /   |   \
+	 *  one  <b>  five
+	 *      /   \
+	 *    /     / \
+	 *  two   <u>  four
+	 *         |
+	 *        <i>
+	 *         |
+	 *       three
+	 *
+	 * @see http://www.w3.org/TR/dom/#concept-tree-order
 	 * @param  {Node} node
 	 * @return {Node}
 	 *         The succeeding node or null if the given node has no previous
@@ -59,6 +74,8 @@ define([
 	 * Given a node, will return the node that preceeds it in the document
 	 * order.
 	 *
+	 * This is post-order traversal.
+	 *
 	 * For example, if this function is called recursively, starting from the
 	 * text node "five" in the below DOM tree:
 	 *
@@ -77,6 +94,18 @@ define([
 	 * backward() will return nodes in the following order:
 	 *
 	 * "four", "three", <i>, <u>, "two", <b>, "one"
+	 *
+	 *      <div>
+	 *      / | \
+	 *    /   |   \
+	 *  one  <b>  five
+	 *      /   \
+	 *    /     / \
+	 *  two   <u>  four
+	 *         |
+	 *        <i>
+	 *         |
+	 *       three
 	 *
 	 * @param  {Node} node
 	 * @return {Node}
@@ -144,6 +173,38 @@ define([
 	 */
 	function findBackward(node, match, until) {
 		return find(node, match, until, backward);
+	}
+
+	function backwardPreorderBacktraceUntil(node, pred) {
+		var backtracing = false;
+		do {
+			if (!backtracing && node.lastChild) {
+				node = node.lastChild;
+			} else if (node.previousSibling) {
+				node = node.previousSibling;
+				backtracing = false;
+			} else {
+				node = node.parentNode;
+				backtracing = true;
+			}
+		} while (!pred(node, backtracing));
+		return node;
+	}
+
+	function forwardPreorderBacktraceUntil(node, pred) {
+		var backtracing = false;
+		do {
+			if (!backtracing && node.firstChild) {
+				node = node.firstChild;
+			} else if (node.nextSibling) {
+				node = node.nextSibling;
+				backtracing = false;
+			} else {
+				node = node.parentNode;
+				backtracing = true;
+			}
+		} while (!pred(node, backtracing));
+		return node;
 	}
 
 	/**
@@ -629,6 +690,9 @@ define([
 		childAndParentsUntilNode     : childAndParentsUntilNode,
 		childAndParentsUntilInclNode : childAndParentsUntilInclNode,
 		parentsUntil                 : parentsUntil,
-		parentsUntilIncl             : parentsUntilIncl
+		parentsUntilIncl             : parentsUntilIncl,
+
+		forwardPreorderBacktraceUntil  : forwardPreorderBacktraceUntil,
+		backwardPreorderBacktraceUntil : backwardPreorderBacktraceUntil
 	};
 });

@@ -66,6 +66,8 @@ define([
 		isBoundariesEqual         : Traversing.isBoundariesEqual,
 		expandBackward            : Traversing.expandBackward,
 		expandForward             : Traversing.expandForward,
+		stepForward               : Traversing.stepForward,
+		stepBackward              : Traversing.stepBackward,
 
 		isBlockNode               : Predicates.isBlockNode,
 		isGroupContainer          : Predicates.isGroupContainer,

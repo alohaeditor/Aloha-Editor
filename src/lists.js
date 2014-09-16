@@ -325,7 +325,12 @@ define([
 		return format(type, start, end);
 	}
 
+	function indent() {
+
+	}
+
 	return {
+		indent   : indent,
 		format   : format,
 		unformat : unformat,
 		toggle   : toggle
