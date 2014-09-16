@@ -5867,7 +5867,7 @@ define([
 	function cleanLists(node, range) {
 		// remove any whitespace nodes around list nodes
 		if (node) {
-			jQuery(node).find('ul,ol,li').each(function () {
+			jQuery(node).find('ul,ol').each(function () {
 				jQuery(this).contents().each(function () {
 					if (isWhitespaceNode(this)) {
 						var index = Dom.getIndexInParent(this);
