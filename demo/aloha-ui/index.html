@@ -51,66 +51,82 @@
 					</button>
 				</div>
 			</div>
+		</div><!-- /menu-wrap -->
+
+		<div class="aloha-3d aloha-ui">
+			<div class="aloha-link-toolbar btn-toolbar" role="toolbar">
+				<div class="aloha-arrow-up"></div>
+				<input type="text" name="href" placeholder="http://www.aloha-editor.org"/ value="">
+				<button class="aloha-action-target btn btn-default" title="Toggle to open link in new window">
+					<span class="glyphicon glyphicon-new-window"></span>
+				</button>
+				<a class="aloha-link-follow btn btn-default" href="#" target="_blank" rel="noreferrer" title="Follow this link">
+					<span class="glyphicon glyphicon-share-alt"></span>
+				</a>
+			</div>
 		</div>
-	  <br/> <br/>
-	  
-	<div class="aloha-3d aloha-ui">
-		<div class="aloha-link-toolbar btn-toolbar" role="toolbar">
-			<div class="aloha-arrow-up"></div>
-			<input type="text" name="href" placeholder="http://www.aloha-editor.org"/ value="">
-			<button class="aloha-action-target btn btn-default" title="Toggle to open link in new window">
-				<span class="glyphicon glyphicon-new-window"></span>
-			</button>
-			<a class="aloha-link-follow btn btn-default" href="#" target="_blank" rel="noreferrer" title="Follow this link">
-				<span class="glyphicon glyphicon-share-alt"></span>
-			</a>
-		</div>
-	</div>
 
-	  <div xdir="rtl" class="starter-template aloha-editable">
-		<h2>Aloha Editor UI Integration Demo</h2>
-		
-		<p>Sed ut <u><b>perspiciatis</b> <i>unde omnis</i></u> iste <a href="http://www.google.com">www.google.com</a> natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
-		
-		<ul>
-		  <li>Nemo</li>
-		  <li>Enim</li>
-		  <li>Ipsam</li>
-		</ul>
+		<div xdir="rtl" class="starter-template aloha-editable">
 
-		<h2>Magnam aliquam quaerat</h2>
+			<h2>Aloha Editor UI Integration Demo</h2>
 
-		<p>voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.</p>
+			<p>
+				Sed ut <u><b>perspiciatis</b> <i>unde omnis</i></u> iste <a
+					href="http://www.google.com">www.google.com</a> natus error sit
+				voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque
+				ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae
+				dicta sunt explicabo.
+			</p>
 
-		<p>Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?</p>
-	   </div>
+			<ul>
+				<li>Nemo</li>
+				<li>Enim</li>
+				<li>Ipsam</li>
+			</ul>
+
+			<h2>Magnam aliquam quaerat</h2>
+
+			<p>
+				voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia
+				consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
+				Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet,
+				consectetur, adipisci velit, sed quia non numquam eius modi tempora
+				incidunt ut labore et dolore magnam aliquam quaerat voluptatem.
+			</p>
+
+			<p>
+				Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis
+				suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis
+				autem vel eum iure reprehenderit qui in ea voluptate velit esse quam
+				nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo
+				voluptas nulla pariatur?
+			</p>
+
+		</div><!-- /.aloha-editable -->
 
 	</div><!-- /.container -->
 
-
-	<!-- Bootstrap core JavaScript
-	================================================== -->
-	<!-- Placed at the end of the document so the pages load faster -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 	<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 	<script src="../../src/require-pronto.js"></script>
 	<script src="../../src/require-pronto.dev.js"></script>
 	<!--script src="../../build/aloha.min.js"></script-->
 	<script>
-function main (aloha) {
-	[].forEach.call(document.querySelectorAll('.aloha-editable'), aloha);
-}
-if ('undefined' === typeof aloha) {
-	require('../../src/aloha', function (aloha) { 
-		window.aloha = aloha; 
-		main(aloha);
-	});
-} else {
-	main(aloha);
-}
+		function main (aloha) {
+			Array.prototype.forEach.call(document.querySelectorAll('.aloha-editable'), aloha);
+		}
+		if ('undefined' === typeof aloha) {
+			require('../../src/aloha', function (aloha) {
+				window.aloha = aloha;
+				main(aloha);
+			});
+		} else {
+			main(aloha);
+		}
 	</script>
 	<script src="aloha-ui.js"></script>
 	<script src="aloha-ui-sticky.js"></script>
 	<script src="aloha-ui-links.js"></script>
+
   </body>
 </html>
