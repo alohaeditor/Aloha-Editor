@@ -175,8 +175,17 @@ define([
 		return find(node, match, until, backward);
 	}
 
+	/**
+	 * Walk backward in pre-order-backtracing traversal until the given
+	 * predicate returns true.
+	 *
+	 * @see    https://en.wikipedia.org/wiki/Depth-first_search#Vertex_orderings
+	 * @param  {!Node}                   node
+	 * @param  {!function(Node):boolean} pred
+	 * return  {Node}
+	 */
 	function backwardPreorderBacktraceUntil(node, pred) {
-		var backtracing = false;
+		var backtracing = true;
 		do {
 			if (!backtracing && node.lastChild) {
 				node = node.lastChild;
@@ -191,6 +200,15 @@ define([
 		return node;
 	}
 
+	/**
+	 * Walk forward in pre-order-backtracing traversal until the given
+	 * predicate returns true.
+	 *
+	 * @see    https://en.wikipedia.org/wiki/Depth-first_search#Vertex_orderings
+	 * @param  {!Node}                   node
+	 * @param  {!function(Node):boolean} pred
+	 * return  {Node}
+	 */
 	function forwardPreorderBacktraceUntil(node, pred) {
 		var backtracing = false;
 		do {

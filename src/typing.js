@@ -207,7 +207,7 @@ define([
 			    || Dom.isEditingHost(node)
 			    || Html.hasLinebreakingStyle(node);
 		});
-		if (!Dom.isElementNode(stop)) {
+		if (Dom.isElementNode(stop)) {
 			return '\xa0';
 		}
 		if (isBehindWhitespace(Boundaries.fromEndOfNode(stop))) {
@@ -218,7 +218,7 @@ define([
 			    || Dom.isEditingHost(node)
 			    || Html.hasLinebreakingStyle(node);
 		});
-		if (!Dom.isElementNode(stop)) {
+		if (Dom.isElementNode(stop)) {
 			return '\xa0';
 		}
 		if (isInfrontWhitespace(Boundaries.fromStartOfNode(stop))) {
@@ -234,8 +234,7 @@ define([
 		var boundary = selection.boundaries[0];
 		if ('\t' === text) {
 			text = '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
-		}
-		if (' ' === text) {
+		} else if (' ' === text) {
 			var whiteSpaceStyle = Dom.getComputedStyle(
 				Dom.upWhile(Boundaries.container(boundary), Dom.isTextNode),
 				'white-space'
