@@ -178,18 +178,20 @@ define([
 	 * Condition 2.
 	 *
 	 * From the boundary it is possible to locate a preceeding text node (using
-	 * pre-order-backtracing traversal. @see
-	 * Dom.backwardPreorderBacktracingUntil()) whose last character is non-space
-	 * character. This text node must be located without encountering a
-	 * linebreaking element.
+	 * pre-order-backtracing traversal.
+	 *
+	 * @see Dom.backwardPreorderBacktracingUntil()) whose last character is
+	 * non-space character. This text node must be located without encountering
+	 * a linebreaking element.
 	 *
 	 * ... and ...
 	 *
 	 * From the boundary it is possible to locate a preceeding text node (using
-	 * pre-order-backtracing traversal.  @see
-	 * Dom.forwardPreorderBacktracingUntil()) whose first character is non-space
-	 * character. This text node must be located without encountering a
-	 * linebreaking element.
+	 * pre-order-backtracing traversal.
+	 *
+	 * @see Dom.forwardPreorderBacktracingUntil()) whose first character is
+	 * non-space character. This text node must be located without encountering
+	 * a linebreaking element.
 	 *
 	 * @private
 	 * @param  {!Boundary} boundary Normalized.

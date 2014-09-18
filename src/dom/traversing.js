@@ -4,7 +4,9 @@
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  *
- * @refernce: http://www.w3.org/TR/DOM-Level-3-Core/glossary.html#dt-document-order
+ * @reference:
+ * 	http://www.w3.org/TR/DOM-Level-3-Core/glossary.html#dt-document-order
+ *	https://en.wikipedia.org/wiki/Tree_traversal#Pre-order
  */
 define([
 	'dom/nodes',
@@ -21,43 +23,43 @@ define([
 	 * Given a node, will return the node that succeeds it in the document order.
 	 *
 	 * For example, if this function is called recursively, starting from the
-	 * text node "one" in the following DOM tree:
+	 * DIV root node in the following DOM tree:
 	 *
-	 *	"one"
-	 *	<b>
-	 *		"two"
-	 *		<u>
-	 *			<i>
-	 *				"three"
-	 *			</i>
-	 *		</u>
-	 *		"four"
-	 *	</b>
-	 *	"five"
+	 *	<div>
+	 *		"one"
+	 *		<b>
+	 *			"two"
+	 *			<u>
+	 *				<i>
+	 *					"three"
+	 *				</i>
+	 *			</u>
+	 *			"four"
+	 *		</b>
+	 *		"five"
+	 *	</div>
 	 *
 	 * forward() will return nodes in the following order:
 	 *
-	 * <b>, "two", <u>, <i>, "three", "four", "five"
+	 * "one" <b>, "two", <u>, <i>, "three", "four", "five"
 	 *
-	 * This is pre-order traversal:
+	 * This is depth-first pre-order traversal:
+	 * https://en.wikipedia.org/wiki/Tree_traversal#Pre-order
 	 *
 	 *      <div>
 	 *      / | \
 	 *    /   |   \
 	 *  one  <b>  five
-	 *      /   \
-	 *    /     / \
-	 *  two   <u>  four
-	 *         |
-	 *        <i>
-	 *         |
-	 *       three
+	 *      / | \
+	 *    /   |   \
+	 *  two  <u>  four
+	 *        |
+	 *       <i>
+	 *        |
+	 *      three
 	 *
-	 * @see http://www.w3.org/TR/dom/#concept-tree-order
-	 * @param  {Node} node
-	 * @return {Node}
-	 *         The succeeding node or null if the given node has no previous
-	 *         siblings and no parent.
+	 * @param  {!Node} node
+	 * @return {?Node}
 	 */
 	function forward(node) {
 		if (node.firstChild) {
@@ -74,43 +76,44 @@ define([
 	 * Given a node, will return the node that preceeds it in the document
 	 * order.
 	 *
-	 * This is post-order traversal.
+	 * This backwards depth-first in-order traversal:
+	 * https://en.wikipedia.org/wiki/Tree_traversal#In-order
 	 *
 	 * For example, if this function is called recursively, starting from the
-	 * text node "five" in the below DOM tree:
+	 * DIV root node in the DOM tree below:
 	 *
-	 *	"one"
-	 *	<b>
-	 *		"two"
-	 *		<u>
-	 *			<i>
-	 *				"three"
-	 *			</i>
-	 *		</u>
-	 *		"four"
-	 *	</b>
-	 *	"five"
+	 *	<div>
+	 *		"one"
+	 *		<b>
+	 *			"two"
+	 *			<u>
+	 *				<i>
+	 *					"three"
+	 *				</i>
+	 *			</u>
+	 *			"four"
+	 *		</b>
+	 *		"five"
+	 *	</div>
 	 *
 	 * backward() will return nodes in the following order:
 	 *
-	 * "four", "three", <i>, <u>, "two", <b>, "one"
+	 * "five", "four", "three", <i>, <u>, "two", <b>, "one"
 	 *
 	 *      <div>
 	 *      / | \
 	 *    /   |   \
 	 *  one  <b>  five
-	 *      /   \
-	 *    /     / \
-	 *  two   <u>  four
-	 *         |
-	 *        <i>
-	 *         |
-	 *       three
+	 *      / | \
+	 *    /   |   \
+	 *  two  <u>  four
+	 *        |
+	 *       <i>
+	 *        |
+	 *      three
 	 *
-	 * @param  {Node} node
-	 * @return {Node}
-	 *         The preceeding node or null if the given node has no previous
-	 *         siblings and no parent.
+	 * @param  {!Node} node
+	 * @return {?Node}
 	 */
 	function backward(node) {
 		var prev = node.previousSibling;
