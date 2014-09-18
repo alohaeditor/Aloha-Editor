@@ -34,7 +34,6 @@ define([
 	'content',
 	'lists',
 	'links',
-	'paths',
 	'overrides'
 ], function (
 	Dom,
@@ -51,7 +50,6 @@ define([
 	Content,
 	Lists,
 	Links,
-	Paths,
 	Overrides
 ) {
 	'use strict';
@@ -1799,43 +1797,8 @@ define([
 	}
 
 	/**
-	 * Traverses between the given start and end boundaries
-	 * in document order invoking step() with a list of siblings
-	 * that are wholey contained within the two boundaries.
-	 *
-	 * @private
-	 * @param  {!Boundary}              start
-	 * @param  {!Boundary}              end
-	 * @param  {function(Array.<Node>)} step
-	 * @return {Array.<Boundary>}
-	 */
-	function walkabout(start, end, step) {
-		var cac = Boundaries.commonContainer(start, end);
-		var ascent = Paths.fromBoundary(cac, start).reverse();
-		var descent = Paths.fromBoundary(cac, end);
-		var node = Boundaries.container(start);
-		var children = Dom.children(node);
-		step(children.slice(
-			ascent[0],
-			node === cac ? descent[0] : children.length
-		));
-		ascent.slice(1, -1).reduce(function (node, start) {
-			var children = Dom.children(node);
-			step(children.slice(start + 1, children.length));
-			return node.parentNode;
-		}, node.parentNode);
-		step(Dom.children(cac).slice(Arrays.last(ascent) + 1, descent[0]));
-		descent.slice(1).reduce(function (node, end) {
-			var children = Dom.children(node);
-			step(children.slice(0, end));
-			return children[end];
-		}, Dom.children(cac)[descent[0]]);
-		return [start, end];
-	}
-
-	/**
-	 * Given a list of sibling nodes and a formatting, will
-	 * apply the formatting across the list of nodes.
+	 * Given a list of sibling nodes and a formatting, will apply the formatting
+	 * across the list of nodes.
 	 *
 	 * @private
 	 * @param  {string}       formatting
@@ -1897,7 +1860,7 @@ define([
 	 */
 	function formatBlock(formatting, start, end, preserve) {
 		var boundaries = expandUntil(start, end, Html.hasLinebreakingStyle);
-		boundaries = walkabout(
+		boundaries = Html.walkbetween(
 			boundaries[0],
 			boundaries[1],
 			Fn.partial(formatSiblings, formatting)
