@@ -86,6 +86,13 @@ var alohaEvent = {
 	keycode        : ''
 };
 
+var parseKeys = {
+	meta    : '',
+	keycode : '',
+	key     : '',
+	chr     : ''
+};
+
 var Boromir = {
 	name         : function () {},
 	text         : function () {},

@@ -130,7 +130,7 @@ define([
 			meta    : metaKeys(event),
 			keycode : event.which,
 			key     : CODE_KEY[event.which],
-			char    : String.fromCharCode(event.which).toLowerCase()
+			chr     : String.fromCharCode(event.which).toLowerCase()
 		};
 	}
 
@@ -149,7 +149,7 @@ define([
 	 *
 	 * The order of meta keys in the shortcutHandlers array
 	 * MUST be in alphabetical order, as provided by
-	 * @see Keys.parsekeys
+	 * @see Keys.parseKeys
 	 *
 	 * @param  {!string}  meta
 	 * @param  {!integer} keycode
