@@ -1110,7 +1110,7 @@ define([
 	 * @param  {function(Array.<Node>)} step
 	 * @return {Array.<Boundary>}
 	 */
-	function walkbetween(start, end, step) {
+	function walkBetween(start, end, step) {
 		var cac = Boundaries.commonContainer(start, end);
 		var ascent = Paths.fromBoundary(cac, start).reverse();
 		var descent = Paths.fromBoundary(cac, end);
@@ -1150,6 +1150,6 @@ define([
 		isBoundariesEqual       : isBoundariesEqual,
 		expandBackward          : expandBackward,
 		expandForward           : expandForward,
-		walkbetween             : walkbetween
+		walkBetween             : walkBetween
 	};
 });

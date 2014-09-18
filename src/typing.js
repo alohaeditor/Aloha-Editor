@@ -10,6 +10,7 @@ define([
 	'keys',
 	'html',
 	'undo',
+	'lists',
 	'events',
 	'arrays',
 	'editing',
@@ -26,6 +27,7 @@ define([
 	Keys,
 	Html,
 	Undo,
+	Lists,
 	Events,
 	Arrays,
 	Editing,
@@ -235,6 +237,12 @@ define([
 		var text = String.fromCharCode(event.keycode);
 		var boundary = selection.boundaries[0];
 		if ('\t' === text) {
+			if (Lists.isAtStartOfListItem(boundary)) {
+				return Lists.indent(
+					selection.boundaries[0],
+					selection.boundaries[1]
+				);
+			}
 			text = '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
 		} else if (' ' === text) {
 			var whiteSpaceStyle = Dom.getComputedStyle(

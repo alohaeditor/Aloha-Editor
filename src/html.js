@@ -68,7 +68,7 @@ define([
 		expandForward             : Traversing.expandForward,
 		stepForward               : Traversing.stepForward,
 		stepBackward              : Traversing.stepBackward,
-		walkbetween               : Traversing.walkbetween,
+		walkBetween               : Traversing.walkBetween,
 
 		isBlockNode               : Predicates.isBlockNode,
 		isGroupContainer          : Predicates.isGroupContainer,

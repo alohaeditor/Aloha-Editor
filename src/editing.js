@@ -1746,7 +1746,7 @@ define([
 	}
 
 	/**
-	 * Starting with the given, returns the first node taht matches the given
+	 * Starting with the given, returns the first node that matches the given
 	 * predicate.
 	 *
 	 * @private
@@ -1860,7 +1860,7 @@ define([
 	 */
 	function formatBlock(formatting, start, end, preserve) {
 		var boundaries = expandUntil(start, end, Html.hasLinebreakingStyle);
-		boundaries = Html.walkbetween(
+		boundaries = Html.walkBetween(
 			boundaries[0],
 			boundaries[1],
 			Fn.partial(formatSiblings, formatting)

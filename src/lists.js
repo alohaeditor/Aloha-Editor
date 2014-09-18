@@ -11,6 +11,7 @@ define([
 	'html',
 	'arrays',
 	'assert',
+	'strings',
 	'content',
 	'mutation',
 	'boundaries'
@@ -20,6 +21,7 @@ define([
 	Html,
 	Arrays,
 	Assert,
+	Strings,
 	Content,
 	Mutation,
 	Boundaries
@@ -325,14 +327,80 @@ define([
 		return format(type, start, end);
 	}
 
-	function indent() {
+	/**
+	 * Starting with the given, returns the first node that matches the given
+	 * predicate.
+	 *
+	 * @private
+	 * @param  {!Node}                  node
+	 * @param  {function(Node):boolean} pred
+	 * @return {Node}
+	 */
+	function nearest(node, pred) {
+		return Dom.upWhile(node, function (node) {
+			return !pred(node)
+			    && !(node.parentNode && Dom.isEditingHost(node.parentNode));
+		});
+	}
 
+	/**
+	 * Checks if the given (normalized) boundary is (visually) at the start of a
+	 * list item element.
+	 *
+	 * Strategy:
+	 *
+	 * 1. If a text boundary is given, there must not be any non-collapsable
+	 *    characters in front of the boundary.
+	 *
+	 *    ... otherwise ...
+	 *
+	 * 2. The boundary must be container inside of a list item. This means that
+	 *    it must have a list item as its container or an ancestor of its
+	 *    container.
+	 *
+	 *    ... and ...
+	 *
+	 *    We must not find any visible nodes between  the start of this element
+	 *    and the boundary that was given to start of with.
+	 *
+	 * @param  {!Boundary} boundary
+	 * @return {boolean}
+	 */
+	function isAtStartOfListItem(boundary) {
+		var node = Boundaries.prevNode(boundary);
+		if (Dom.isTextNode(node)) {
+			var text = node.data;
+			var offset = Boundaries.offset(boundary);
+			var prefix = text.substr(0, offset);
+			var isVisible = Strings.NOT_SPACE.test(prefix)
+			             || Strings.NON_BREAKING_SPACE.test(prefix);
+			if (isVisible) {
+				return false;
+			}
+			node = node.previousSibling || node.parentNode;
+		}
+		var stop = nearest(node, Html.isListItem);
+		if (!Html.isListItem(stop)) {
+			return false;
+		}
+		var start = Boundaries.fromFrontOfNode(stop);
+		var visible = 0;
+		Html.walkBetween(start, boundary, function (nodes) {
+			visible += nodes.filter(Html.isRendered).length;
+		});
+		return 0 === visible;
+	}
+
+	function indent(start, end) {
+		console.warn('indent!');
+		return [start, end];
 	}
 
 	return {
-		indent   : indent,
-		format   : format,
-		unformat : unformat,
-		toggle   : toggle
+		indent              : indent,
+		format              : format,
+		unformat            : unformat,
+		toggle              : toggle,
+		isAtStartOfListItem : isAtStartOfListItem
 	};
 });
