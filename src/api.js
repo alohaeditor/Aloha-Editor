@@ -331,6 +331,8 @@ define([
 	exports['fn']['constantly']   = Fn.constantly;
 	exports['fn']['is']           = Fn.is;
 	exports['fn']['isNou']        = Fn.isNou;
+	exports['fn']['or']           = Fn.or;
+	exports['fn']['and']          = Fn.and;
 	exports['fn']['asMethod']     = Fn.asMethod;
 	exports['fn']['extendType']   = Fn.extendType;
 

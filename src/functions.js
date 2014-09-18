@@ -150,6 +150,25 @@ define([], function () {
 	}
 
 	/**
+	 * Like and() but for boolean OR.
+	 *
+	 * @param  {function():boolean...}
+	 * @return {function():boolean}
+	 */
+	function or() {
+		var predicates = arguments;
+		var len = predicates.length;
+		return function () {
+			for (var i = 0; i < len; i++) {
+				if (predicates[i].apply(this, arguments)) {
+					return true;
+				}
+			}
+			return false;
+		};
+	}
+
+	/**
 	 * Returns a function that constantly returns the given value.
 	 */
 	function constantly(value) {
@@ -222,6 +241,7 @@ define([], function () {
 		strictEquals : strictEquals,
 		comp         : comp,
 		and          : and,
+		or           : or,
 		constantly   : constantly,
 		is           : is,
 		isNou        : isNou,
