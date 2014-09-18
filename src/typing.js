@@ -231,18 +231,26 @@ define([
 		return ' ';
 	}
 
+	function indent(event) {
+		var selection = event.selection;
+		var start = selection.boundaries[0];
+		var end = selection.boundaries[1];
+		var cac = Boundaries.commonContainer(start, end);
+		if (Html.isListContainer(cac) || Lists.isAtStartOfListItem(start)) {
+			return Lists.indent(start, end);
+		}
+		if (!Boundaries.equals(start, end)) {
+			selection.boundaries = remove(false, event);
+		}
+		return insertText(event);
+	}
+
 	function insertText(event) {
 		var editable = event.editable;
 		var selection = event.selection;
 		var text = String.fromCharCode(event.keycode);
 		var boundary = selection.boundaries[0];
 		if ('\t' === text) {
-			if (Lists.isAtStartOfListItem(boundary)) {
-				return Lists.indent(
-					selection.boundaries[0],
-					selection.boundaries[1]
-				);
-			}
 			text = '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0';
 		} else if (' ' === text) {
 			var whiteSpaceStyle = Dom.getComputedStyle(
@@ -360,6 +368,12 @@ define([
 		mutate         : insertText
 	};
 
+	var indentContent = {
+		preventDefault : true,
+		undo           : 'indent',
+		mutate         : indent
+	};
+
 	var selectAll = {
 		preventDefault : true,
 		clearOverrides : true,
@@ -417,7 +431,7 @@ define([
 	handlers['keydown']['meta+z'] = undo;
 	handlers['keydown']['ctrl+shift+z'] =
 	handlers['keydown']['meta+shift+z'] = redo;
-	handlers['keydown']['tab'] = inputText;
+	handlers['keydown']['tab'] = indentContent;
 
 	handlers['keypress']['input'] = inputText;
 

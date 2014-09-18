@@ -393,6 +393,11 @@ define([
 
 	function indent(start, end) {
 		console.warn('indent!');
+		var node = Boundaries.prevNode(start);
+		var stop = nearest(node, Html.isListItem);
+		if (!Html.isListItem(stop)) {
+			return [start, end];
+		}
 		return [start, end];
 	}
 
