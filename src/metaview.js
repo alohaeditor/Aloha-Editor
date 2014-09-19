@@ -61,7 +61,7 @@ define(['dom'], function (Dom) {
 
 		// padding
 		+ '.✪✪✪{padding:10px}'
-		+ '.✪✪✪ td,.✪✪✪ th,.✪✪✪ b,.✪✪✪ i,.✪✪✪ u,.✪✪✪ p,.✪✪✪ ul,.✪✪✪ ol,.✪✪✪ li,.✪✪✪ h1,.✪✪✪ h2,.✪✪✪ h3,.✪✪✪ h4,.✪✪✪ h5,.✪✪✪ h6,.✪✪✪ div,.✪✪✪ span{padding:2px 4px;margin:2px;}';
+		+ '.✪✪✪ td,.✪✪✪ th,.✪✪✪ b,.✪✪✪ i,.✪✪✪ u,.✪✪✪ p,.✪✪✪ /*xul,.✪✪✪ ol,.✪✪✪*/ li,.✪✪✪ h1,.✪✪✪ h2,.✪✪✪ h3,.✪✪✪ h4,.✪✪✪ h5,.✪✪✪ h6,.✪✪✪ div,.✪✪✪ span{padding:2px 4px;margin:2px;}';
 
 	function insertStyle(doc) {
 		var metaview = doc.createElement('style');
