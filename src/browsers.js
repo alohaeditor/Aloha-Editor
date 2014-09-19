@@ -14,14 +14,12 @@ define([], function () {
 	 * @type {string}
 	 */
 	var VENDOR_PREFIX = '';
-
 	var testElem = document.createElement('div');
-	var prefixes = ['-webkit', '-moz', '-o'];
+	var prefixes = ['', '-webkit-', '-moz-', '-ms-', '-o-'];
 	var style = testElem.style;
-	var i;
-	for (i = 0; i < prefixes.length; i++) {
-		if (style.hasOwnProperty(prefixes[i] + '-transform')) {
-			VENDOR_PREFIX = prefixes[i] + '-';
+	for (var i = 0; i < prefixes.length; i++) {
+		if (style.hasOwnProperty(prefixes[i] + 'transform')) {
+			VENDOR_PREFIX = prefixes[i];
 		}
 	}
 
