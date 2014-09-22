@@ -80,59 +80,77 @@ define(['dom', 'arrays'], function (Dom, Arrays) {
 	 * @return {boolean}
 	 */
 	function pointIsInOrAboveRect(x, y, rect) {
-	    return y < rect.bottom && x >= rect.left && x <= rect.right;
+		return y < rect.bottom && x >= rect.left && x <= rect.right;
+	}
+
+	function stepTextNode(node, range, offset, x, y) {
+		range.setEnd(node, offset);
+		var rect = Arrays.last(range.getClientRects());
+		if (rect && pointIsInOrAboveRect(x, y, rect)) {
+			if (rect.right - x > x - rect.left) {
+				offset--;
+			}
+			return {
+				node  : node,
+				index : offset
+			};
+		}
+		if (offset < node.length) {
+			return stepTextNode(node, range, ++offset, x, y);
+		} 
+		return {
+			node  : node,
+			index : offset
+		};
+	}
+
+	function findOffset(node, range, x, y) {
+		if (Dom.isTextNode(node)) {
+			return stepTextNode(node, range, 0, x, y);
+		}
+
+		range.setEndAfter(node);
+		var rect = Arrays.last(range.getClientRects());
+		if (rect && pointIsInOrAboveRect(x, y, rect)) {
+			return {
+				node  : node.parentNode,
+				index : Dom.nodeIndex(node)
+			};
+		}
+
+		if (node.nextSibling) {
+			return findOffset(node.nextSibling, range, x, y);
+		}
+
+		return {
+			node  : node.parentNode,
+			index : Dom.nodeIndex(node)
+		};
 	}
 
 	/**
 	 * http://jsfiddle.net/timdown/ABjQP/8/
 	 */
 	function fromPointIE(x, y, doc) {
-	    var el = doc.elementFromPoint(x, y);
-	    var range = doc.createRange();	    
-	    var offsetNode = el.firstChild;
-	    var offset;
-	    var rect;
-	    var textLen;
-	    
-	    range.selectNodeContents(el);
-	    range.collapse(true);
-	    
-	    if (!offsetNode) {
-	        offsetNode = el.parentNode;
-	        offset = Dom.nodeIndex(el);
-	    } else {
-	        main: while (offsetNode) {
-	            if (offsetNode.nodeType == 3) {
-	                // Go through the text node character by character
-	                for (offset = 0, textLen = offsetNode.length; offset <= textLen; ++offset) {
-	                    range.setEnd(offsetNode, offset);
-	                    rect = Arrays.last(range.getClientRects());
-	                    if (rect && pointIsInOrAboveRect(x, y, rect)) {
-	                        // We've gone past the point. Now we check which side (left or right) 
-	                        // of the character the point is nearer to
-	                        if (rect.right - x > x - rect.left) {
-	                            --offset;
-	                        }
-	                        break main;
-	                    }
-	                }
-	            } else {
-	                range.setEndAfter(offsetNode);
-	                rect = Arrays.last(range.getClientRects());
-	                if (rect && pointIsInOrAboveRect(x, y, rect)) {
-	                    offset = Dom.nodeIndex(offsetNode);
-	                    offsetNode = el.parentNode;
-	                    break main;
-	                }
-	            }
-	            offsetNode = offsetNode.nextSibling;
-	        }
-	        if (!offsetNode) {
-	            offsetNode = el;
-	            offset = el.childNodes.length;
-	        }
-	    }
-	    return create(offsetNode, offset, offsetNode, offset);
+		var el = doc.elementFromPoint(x, y);
+		var range = doc.createRange();
+		var offset = {
+			node  : el.firstChild,
+			index : -1
+		};
+
+		range.selectNodeContents(el);
+		range.collapse(true);
+
+		if (!offset.node) {
+			offset = {
+				node  : el.parentNode,
+				index : Dom.nodeIndex(el)
+			};
+		} else {
+			offset = findOffset(offset.node, range, x, y);
+		}
+		return create(offset.node, offset.index);
 	}
 
 
@@ -196,9 +214,9 @@ define(['dom', 'arrays'], function (Dom, Arrays) {
 	 */
 	function equals(a, b) {
 		return a.startContainer === b.startContainer
-		    && a.startOffset    === b.startOffset
-		    && a.endContainer   === b.endContainer
-		    && a.endOffset      === b.endOffset;
+			&& a.startOffset    === b.startOffset
+			&& a.endContainer   === b.endContainer
+			&& a.endOffset      === b.endOffset;
 	}
 
 	return {
