@@ -506,11 +506,13 @@ define([
 	exports['MutationTrees']['update']      = MutationTrees.update;
 
 	exports['zippers'] = {};
-	exports['zippers']['create'] = Zippers.create;
-	exports['zippers']['prev']   = Zippers.prev;
-	exports['zippers']['next']   = Zippers.next;
-	exports['zippers']['up']     = Zippers.up;
-	exports['zippers']['down']   = Zippers.down;
+	exports['zippers']['create']       = Zippers.create;
+	exports['zippers']['prev']         = Zippers.prev;
+	exports['zippers']['next']         = Zippers.next;
+	exports['zippers']['up']           = Zippers.up;
+	exports['zippers']['down']         = Zippers.down;
+	exports['zippers']['fromBoundary'] = Zippers.fromBoundary;
+	exports['zippers']['hint']         = Zippers.hint;
 
 	return exports;
 });
