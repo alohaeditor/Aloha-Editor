@@ -231,16 +231,16 @@ define([
 		return ' ';
 	}
 
+
 	function indent(event) {
-		var selection = event.selection;
-		var start = selection.boundaries[0];
-		var end = selection.boundaries[1];
-		var cac = Boundaries.commonContainer(start, end);
-		if (Html.isListContainer(cac) || Lists.isAtStartOfListItem(start)) {
+		var boundaries = event.selection.boundaries;
+		var start = boundaries[0];
+		var end = boundaries[1];
+		if (Lists.isIndentationRange(start, end)) {
 			return Lists.indent(start, end);
 		}
 		if (!Boundaries.equals(start, end)) {
-			selection.boundaries = remove(false, event);
+			event.selection.boundaries = remove(false, event);
 		}
 		return insertText(event);
 	}

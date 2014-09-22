@@ -171,7 +171,6 @@ define([
 	 * @param  {Array.<Node>} nodes
 	 */
 	function build(type, nodes) {
-		console.warn(nodes);
 		if (0 === nodes.length) {
 			return;
 		}
@@ -363,6 +362,7 @@ define([
 	 *    We must not find any visible nodes between  the start of this element
 	 *    and the boundary that was given to start of with.
 	 *
+	 * @private
 	 * @param  {!Boundary} boundary
 	 * @return {boolean}
 	 */
@@ -392,13 +392,32 @@ define([
 	}
 
 	function indent(start, end) {
-		console.warn('indent!');
-		var node = Boundaries.prevNode(start);
-		var stop = nearest(node, Html.isListItem);
-		if (!Html.isListItem(stop)) {
+		var startLi = nearest(Boundaries.prevNode(start), Html.isListItem);
+		var endLi = nearest(Boundaries.nextNode(end), Html.isListItem);
+		if (!Html.isListItem(startLi) || !Html.isListItem(endLi)) {
 			return [start, end];
 		}
+		start = Boundaries.fromFrontOfNode(startLi);
+		end = Boundaries.fromBehindOfNode(endLi);
+		Html.walkBetween(start, end, function (nodes) {
+			console.log(nodes);
+		});
 		return [start, end];
+	}
+
+	function isIndentationRange(start, end) {
+		var startLi = nearest(Boundaries.prevNode(start), Html.isListItem);
+		if (!Html.isListItem(startLi)) {
+			return false;
+		}
+		var endLi = nearest(Boundaries.nextNode(end), Html.isListItem);
+		if (!Html.isListItem(endLi)) {
+			return false;
+		}
+		// ✘ <li><b>fo[o</b><u>b]ar</u></li>
+		// ✔ <li><b>{foo</b><u>b]ar</u></li>
+		// ✔ <li><b>fo[o</b></li><li><u>b]ar</u></li>
+		return startLi !== endLi || isAtStartOfListItem(start);
 	}
 
 	return {
@@ -406,6 +425,6 @@ define([
 		format              : format,
 		unformat            : unformat,
 		toggle              : toggle,
-		isAtStartOfListItem : isAtStartOfListItem
+		isIndentationRange  : isIndentationRange
 	};
 });
