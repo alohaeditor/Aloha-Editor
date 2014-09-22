@@ -6,10 +6,14 @@
  * Contributors http://aloha-editor.org/contribution.php
  */
 define([
+	'dom',
 	'paths',
+	'arrays',
 	'Boromir'
 ], function (
+	Dom,
 	Paths,
+	Arrays,
 	Boromir
 ) {
 	'use strict';
@@ -18,16 +22,16 @@ define([
 		return '#text' === record.name();
 	}
 
+	function isTextLocation(loc) {
+		return 'string' === typeof loc.rights[0];
+	}
+
 	function contents(record, content) {
 		record = arguments[0];
-		if (!record) {
-			throw 'You must call children() with at least one argument';
-		}
-		var isText = isTextRecord(record);
 		if (1 === arguments.length) {
-			return isText ? record.text() : record.children();
+			return isTextRecord(record) ? record.text() : record.children();
 		}
-		if (isText) {
+		if (isTextRecord(record)) {
 			return record.text(content.join(''));
 		}
 		return record.children(content.map(function (item) {
@@ -35,58 +39,58 @@ define([
 		}));
 	}
 
-	function prev(loc, stride) {
-		stride = stride || 1;
+	function Location(lefts, rights, trunk) {
 		return {
-			lefts  : loc.lefts.slice(0, -stride),
-			rights : loc.lefts.slice(-stride).concat(loc.rights),
-			trunk  : loc.trunk.concat()
+			lefts  : lefts,
+			rights : rights,
+			trunk  : trunk
 		};
+	}
+
+	function prev(loc, stride) {
+		stride = 'number' === typeof stride ? stride : 1;
+		return Location(
+			loc.lefts.slice(0, -stride),
+			loc.lefts.slice(-stride).concat(loc.rights),
+			loc.trunk.concat()
+		);
 	}
 
 	function next(loc, stride) {
 		stride = 'number' === typeof stride ? stride : 1;
-		return {
-			lefts  : loc.lefts.concat(loc.rights.slice(0, stride)),
-			rights : loc.rights.slice(stride),
-			trunk  : loc.trunk.concat()
-		};
+		return Location(
+			loc.lefts.concat(loc.rights.slice(0, stride)),
+			loc.rights.slice(stride),
+			loc.trunk.concat()
+		);
 	}
 
 	function down(loc) {
-		return {
-			lefts  : [],
-			rights : contents(loc.rights[0]),
-			trunk  : loc.trunk.concat(loc)
-		};
+		return Location([], contents(loc.rights[0]), loc.trunk.concat(loc));
 	}
 
 	function up(loc) {
-		var kids  = loc.lefts.concat(loc.rights);
-		var frame = loc.trunk.slice(-1)[0];
-		var first = contents(frame.rights[0], kids);
-		return {
-			lefts  : frame.lefts.concat(),
-			rights : [first].concat(frame.rights.slice(1)),
-			trunk  : loc.trunk.slice(0, -1)
-		};
+		var content = loc.lefts.concat(loc.rights);
+		var frame = Arrays.last(loc.trunk);
+		var first = contents(frame.rights[0], content);
+		return Location(
+			frame.lefts.concat(),
+			[first].concat(frame.rights.slice(1)),
+			loc.trunk.slice(0, -1)
+		);
 	}
 
 	function create(root) {
-		return {
-			lefts  : [],
-			rights : [Boromir(root)],
-			trunk  : []
-		};
+		return Location([], [Boromir(root)], []);
 	}
 
 	function hint(loc) {
 		var print = function (content) {
-			if (content instanceof Boromir) {
-				var node = content.domNode();
-				return node.data || node.outerHTML;
-			}
-			return content;
+			return 'string' === content
+			     ? content
+			     : isTextRecord(content)
+			     ? content.text()
+			     : content.domNode().outerHTML;
 		};
 		return loc.lefts.map(print).concat('▓', loc.rights.map(print)).join('');
 	}
@@ -98,11 +102,11 @@ define([
 			var offset = path.pop();
 			if (isTextRecord(loc.rights[0])) {
 				var text = contents(loc.rights[0]);
-				return {
-					lefts  : text.substr(0, offset),
-					rights : text.substr(offset),
-					trunk  : loc.trunk.concat(loc)
-				};
+				return Location(
+					[text.substr(0, offset)],
+					[text.substr(offset)],
+					loc.trunk.concat(loc)
+				);
 			}
 			loc = down(loc);
 			if (offset > 0) {
@@ -112,13 +116,61 @@ define([
 		return loc;
 	}
 
+	function createRecord(type, content) {
+		var node = '#text' === type
+		         ? document.createTextNode('')
+		         : document.createElement(type);
+		return 'undefined' === typeof content
+		     ? Boromir(node)
+		     : contents(Boromir(node), content);
+	}
+
+	function root(loc) {
+		return loc.trunk.reduce(function (result, frame) {
+			return up(result);
+		}, loc);
+	}
+
+	function update(loc) {
+		if (isTextLocation(loc)) {
+			loc = up(loc.rights);
+		}
+		return loc.rights[0].updateDom();
+	}
+
+	function clone(record) {
+		return Boromir(Dom.cloneShallow(record.domNode()));
+	}
+
+	function split(loc) {
+		var left, right;
+		var upper = up(loc);
+		if (isTextLocation(loc)) {
+			left = createRecord('#text');
+			right = createRecord('#text');
+		} else {
+			left = clone(upper.rights[0]);
+			right = clone(upper.rights[0]);
+		}
+		left = contents(left, loc.lefts);
+		right = contents(right, loc.rights);
+		return Location(
+			upper.lefts.concat(left),
+			[right].concat(upper.rights.slice(1)),
+			upper.trunk
+		);
+	}
+
 	return {
+		hint         : hint,
 		create       : create,
 		prev         : prev,
 		next         : next,
 		up           : up,
 		down         : down,
-		fromBoundary : fromBoundary,
-		hint         : hint
+		root         : root,
+		update       : update,
+		split        : split,
+		fromBoundary : fromBoundary
 	};
 });
