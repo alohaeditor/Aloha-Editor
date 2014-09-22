@@ -8,7 +8,7 @@
  * @see
  * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#deleting-the-selection
  */
-define(['dom'], function (Dom) {
+define(['dom', 'arrays'], function (Dom, Arrays) {
 	'use strict';
 
 	/**
@@ -63,9 +63,78 @@ define(['dom'], function (Dom) {
 			return create(pos.offsetNode, pos.offset);
 		}
 		if (doc.elementFromPoint) {
-			throw 'fromPoint() unimplemented for this browser';
+			return fromPointIE(x, y, doc);
 		}
+
+		throw 'fromPoint() unimplemented for this browser';
 	}
+
+	/**
+	 * Returns whether x and y are inside or above the given
+	 * rectangle as created by range.getClientRects()
+	 * @see http://jsfiddle.net/timdown/ABjQP/8/
+	 *
+	 * @param {int} x
+	 * @param {int} y
+	 * @param {Rectangle} rect
+	 * @return {boolean}
+	 */
+	function pointIsInOrAboveRect(x, y, rect) {
+	    return y < rect.bottom && x >= rect.left && x <= rect.right;
+	}
+
+	/**
+	 * http://jsfiddle.net/timdown/ABjQP/8/
+	 */
+	function fromPointIE(x, y, doc) {
+	    var el = doc.elementFromPoint(x, y);
+	    var range = doc.createRange();	    
+	    var offsetNode = el.firstChild;
+	    var offset;
+	    var rect;
+	    var textLen;
+	    
+	    range.selectNodeContents(el);
+	    range.collapse(true);
+	    
+	    if (!offsetNode) {
+	        offsetNode = el.parentNode;
+	        offset = Dom.nodeIndex(el);
+	    } else {
+	        main: while (offsetNode) {
+	            if (offsetNode.nodeType == 3) {
+	                // Go through the text node character by character
+	                for (offset = 0, textLen = offsetNode.length; offset <= textLen; ++offset) {
+	                    range.setEnd(offsetNode, offset);
+	                    rect = Arrays.last(range.getClientRects());
+	                    if (rect && pointIsInOrAboveRect(x, y, rect)) {
+	                        // We've gone past the point. Now we check which side (left or right) 
+	                        // of the character the point is nearer to
+	                        if (rect.right - x > x - rect.left) {
+	                            --offset;
+	                        }
+	                        break main;
+	                    }
+	                }
+	            } else {
+	                range.setEndAfter(offsetNode);
+	                rect = Arrays.last(range.getClientRects());
+	                if (rect && pointIsInOrAboveRect(x, y, rect)) {
+	                    offset = Dom.nodeIndex(offsetNode);
+	                    offsetNode = el.parentNode;
+	                    break main;
+	                }
+	            }
+	            offsetNode = offsetNode.nextSibling;
+	        }
+	        if (!offsetNode) {
+	            offsetNode = el;
+	            offset = el.childNodes.length;
+	        }
+	    }
+	    return create(offsetNode, offset, offsetNode, offset);
+	}
+
 
 	/**
 	 * Gets the given node's nearest non-editable parent.
