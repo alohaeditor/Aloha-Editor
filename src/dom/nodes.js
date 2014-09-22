@@ -96,12 +96,11 @@ define([
 	 * @return {number} The zero-based index of the given node's position.
 	 */
 	function nodeIndex(node) {
-		var index = -1;
-		while (node) {
-			node = node.previousSibling;
-			index++;
-		}
-		return index;
+	    var i = 0;
+	    while ((node = node.previousSibling)) {
+	        i++;
+	    }
+	    return i;
 	}
 
 	/**
