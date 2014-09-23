@@ -507,14 +507,17 @@ define([
 
 	exports['zippers'] = {};
 	exports['zippers']['hint']         = Zippers.hint;
+	exports['zippers']['update']       = Zippers.update;
 	exports['zippers']['create']       = Zippers.create;
+	exports['zippers']['before']       = Zippers.before;
+	exports['zippers']['after']        = Zippers.after;
 	exports['zippers']['prev']         = Zippers.prev;
 	exports['zippers']['next']         = Zippers.next;
 	exports['zippers']['up']           = Zippers.up;
 	exports['zippers']['down']         = Zippers.down;
-	exports['zippers']['split']        = Zippers.split;
 	exports['zippers']['root']         = Zippers.root;
-	exports['zippers']['update']       = Zippers.update;
+	exports['zippers']['peek']         = Zippers.peek;
+	exports['zippers']['split']        = Zippers.split;
 	exports['zippers']['fromBoundary'] = Zippers.fromBoundary;
 
 	return exports;
