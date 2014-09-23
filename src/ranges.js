@@ -98,24 +98,24 @@ define(['dom', 'arrays'], function (Dom, Arrays) {
 		if (offset < node.length) {
 			return stepTextNode(node, range, ++offset, x, y);
 		} 
-		return {
-			node  : node,
-			index : offset
-		};
+		return null;
 	}
 
 	function findOffset(node, range, x, y) {
 		if (Dom.isTextNode(node)) {
-			return stepTextNode(node, range, 0, x, y);
-		}
-
-		range.setEndAfter(node);
-		var rect = Arrays.last(range.getClientRects());
-		if (rect && pointIsInOrAboveRect(x, y, rect)) {
-			return {
-				node  : node.parentNode,
-				index : Dom.nodeIndex(node)
-			};
+			var offset = stepTextNode(node, range, 0, x, y);
+			if (offset) {
+				return offset;
+			}
+		} else {
+			range.setEndAfter(node);
+			var rect = Arrays.last(range.getClientRects());
+			if (rect && pointIsInOrAboveRect(x, y, rect)) {
+				return {
+					node  : node.parentNode,
+					index : Dom.nodeIndex(node)
+				};
+			}
 		}
 
 		if (node.nextSibling) {
