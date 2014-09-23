@@ -85,7 +85,7 @@ define(['dom', 'arrays'], function (Dom, Arrays) {
 
 	function stepTextNode(node, range, offset, x, y) {
 		range.setEnd(node, offset);
-		var rect = Arrays.last(range.getClientRects());
+		var rect = range.getBoundingClientRect();
 		if (rect && pointIsInOrAboveRect(x, y, rect)) {
 			if (rect.right - x > x - rect.left) {
 				offset--;
