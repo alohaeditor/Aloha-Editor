@@ -39,11 +39,11 @@ define([
 		}));
 	}
 
-	function Location(lefts, rights, trunk) {
+	function Location(lefts, rights, frames) {
 		return {
 			lefts  : lefts,
 			rights : rights,
-			trunk  : trunk
+			frames : frames
 		};
 	}
 
@@ -52,7 +52,7 @@ define([
 		return Location(
 			loc.lefts.slice(0, -stride),
 			loc.lefts.slice(-stride).concat(loc.rights),
-			loc.trunk.concat()
+			loc.frames.concat()
 		);
 	}
 
@@ -61,22 +61,22 @@ define([
 		return Location(
 			loc.lefts.concat(loc.rights.slice(0, stride)),
 			loc.rights.slice(stride),
-			loc.trunk.concat()
+			loc.frames.concat()
 		);
 	}
 
 	function down(loc) {
-		return Location([], contents(loc.rights[0]), loc.trunk.concat(loc));
+		return Location([], contents(loc.rights[0]), loc.frames.concat(loc));
 	}
 
 	function up(loc) {
 		var content = loc.lefts.concat(loc.rights);
-		var frame = Arrays.last(loc.trunk);
+		var frame = Arrays.last(loc.frames);
 		var first = contents(frame.rights[0], content);
 		return Location(
 			frame.lefts.concat(),
 			[first].concat(frame.rights.slice(1)),
-			loc.trunk.slice(0, -1)
+			loc.frames.slice(0, -1)
 		);
 	}
 
@@ -105,7 +105,7 @@ define([
 				return Location(
 					[text.substr(0, offset)],
 					[text.substr(offset)],
-					loc.trunk.concat(loc)
+					loc.frames.concat(loc)
 				);
 			}
 			loc = down(loc);
@@ -126,9 +126,7 @@ define([
 	}
 
 	function root(loc) {
-		return loc.trunk.reduce(function (result, frame) {
-			return up(result);
-		}, loc);
+		return loc.frames.reduce(up, loc);
 	}
 
 	function update(loc) {
@@ -142,7 +140,10 @@ define([
 		return Boromir(Dom.cloneShallow(record.domNode()));
 	}
 
-	function split(loc) {
+	function split(loc, until) {
+		if (until(loc)) {
+			return loc;
+		}
 		var left, right;
 		var upper = up(loc);
 		if (isTextLocation(loc)) {
@@ -154,11 +155,12 @@ define([
 		}
 		left = contents(left, loc.lefts);
 		right = contents(right, loc.rights);
-		return Location(
+		loc = Location(
 			upper.lefts.concat(left),
 			[right].concat(upper.rights.slice(1)),
-			upper.trunk
+			upper.frames
 		);
+		return split(loc, until);
 	}
 
 	return {
