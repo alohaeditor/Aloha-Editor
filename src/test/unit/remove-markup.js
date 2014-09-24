@@ -62,6 +62,8 @@ function doRemoveMarkupTest(editable, startContainer, startOffset, endContainer,
 	var	$ = window.jQuery,
 		$body = $('body');
 
+	module('RemoveMarkup Test');
+
 	// Test whether Aloha is properly initialized
 	asyncTest('Aloha Startup Test', function() {
 		Aloha.ready( function() {

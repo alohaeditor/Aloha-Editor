@@ -30,6 +30,7 @@ function( TestUtils ) {
 	"use strict";
 	
 	var jQuery = window.jQuery;
+	var FormatPlugin, ListPlugin;
 
 	var browser, browserversion;
 	if (jQuery.browser.msie) {
@@ -43,6 +44,8 @@ function( TestUtils ) {
 	}
 	browserversion = browser + jQuery.browser.version;
 
+	module('CommandTest');
+
 	// Test whether Aloha is properly initialized
 	asyncTest( 'Aloha Startup Test', function() {
 		var timeout = setTimeout(function() {
@@ -50,14 +53,19 @@ function( TestUtils ) {
 			start();
 		}, 60000);
 		Aloha.ready( function() {
-			clearTimeout( timeout );
-			ok( true, 'Aloha Event was fired' );
+			clearTimeout(timeout);
+			ok(true, 'Alohoha Dependencies were loaded');
 			start();
 		});
 	});
 
 	// All other tests are done when Aloha is ready
 	Aloha.ready( function() {
+
+		Aloha.require( ['format/format-plugin', 'list/list-plugin'], function ( Format, List ) {
+			FormatPlugin = Format;
+			ListPlugin = List;
+		});
 
 		var 
 			editable = jQuery( '#edit' ),
@@ -68,7 +76,6 @@ function( TestUtils ) {
 		editable.aloha();
 		
 		for ( var i = 0; i < tests.tests.length; i++ ) {
-
 			var	check = tests.tests[i],
 				excluded = false;
 
@@ -169,7 +176,21 @@ function( TestUtils ) {
 					// ExecCommand
 					if ( typeof check.execResult !== 'undefined' ) {
 						// execute the command
-						Aloha.execCommand( command, false, check.value, range );
+						//Aloha.execCommand( command, false, check.value, range );
+						if (command === 'bold') {
+							FormatPlugin.addMarkup('b');
+						} else if (command === 'outdent') {
+							ListPlugin.outdentList()
+						} else if (command === 'indent') {
+							ListPlugin.indentList();
+						} else if (command === 'insertunorderedlist') {
+							ListPlugin.transformList('ul');
+						} else if (command === 'insertorderedlist') {
+							ListPlugin.transformList('ol');
+						} else {
+							Aloha.execCommand( command, false, check.value, range );
+						}
+
 						// place the marker at the selection and add brackets
 						range = rangy.getSelection().getRangeAt(0);
 						TestUtils.addBrackets(range);
@@ -228,7 +249,8 @@ function( TestUtils ) {
             // toggle ExecCommand
 						if ( typeof check.execToggle !== 'undefined' ) {
 							// execute the command
-							result = Aloha.execCommand( command, false, check.value );
+//							result = Aloha.execCommand( command, false, check.value );
+							FormatPlugin.addMarkup('b');
 							// place the marker at the selection and add brackets
 							range = rangy.getSelection().getRangeAt(0);
 							TestUtils.addBrackets(range);

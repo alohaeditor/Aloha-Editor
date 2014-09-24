@@ -1,0 +1,2 @@
+autoparagraph-plugin: The autoparagraph plugin did not work as expected. Paragraphs were only created for new editables (upon "aloha.editable.created") but not when the content in an editable changed ("aloha-smart-content-changed").
+This has been fixed now. The paragraphs will now also be created (if necessary) when content changes.

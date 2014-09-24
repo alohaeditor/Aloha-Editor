@@ -141,7 +141,8 @@
 				}
 			},
 			cite: {
-				referenceContainer: '#references'
+				referenceContainer: '#references',
+				showOnToolbar: true
 			},
 			formatlesspaste :{
 				formatlessPasteOption : true,

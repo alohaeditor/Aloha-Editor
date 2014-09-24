@@ -1,0 +1,1 @@
+List items would previously be stripped of whitespace between inline elements after pressing enter. This has been fixed now.

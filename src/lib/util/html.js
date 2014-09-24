@@ -387,7 +387,6 @@ define([
 	function isRenderedNode(node) {
 		return !isUnrenderedNode(node);
 	}
-
 	return {
 		BLOCKLEVEL_ELEMENTS: BLOCKLEVEL_ELEMENTS,
 		VOID_ELEMENTS: VOID_ELEMENTS,
