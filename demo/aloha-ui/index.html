@@ -68,9 +68,9 @@
 
 		<div><!-- limit aloha.markers.hint context -->
 
-		<div xdir="rtl" class="starter-template aloha-editable">
+		<div class="starter-template aloha-editable">
 
-			<h2>Aloha Editor UI Integration Demo</h2>
+			<h2>Aloha <b>Editor</b> UI Integration Demo</h2>
 
 			<p>
 				Sed ut <u><b>perspiciatis</b> <i>unde omnis</i></u> iste <a
@@ -81,7 +81,13 @@
 			</p>
 
 			<ul>
-				<li><b>Nemo</b></li>
+				<li>
+					<b>Nemo</b>
+					<ol>
+						<li>one</li>
+						<li>two</li>
+					</ol>
+				</li>
 				<li>Enim</li>
 				<li>Ipsam</li>
 			</ul>
@@ -110,7 +116,7 @@
 
 	</div><!-- /.container -->
 
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 	<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 	<script src="../../src/require-pronto.js"></script>
 	<script src="../../src/require-pronto.dev.js"></script>
@@ -118,6 +124,16 @@
 	<script>
 		function main (aloha) {
 			Array.prototype.forEach.call(document.querySelectorAll('.aloha-editable'), aloha);
+			Array.prototype.forEach.call(
+				document.querySelectorAll('.aloha-editable'),
+				function (elem) {
+					aloha.metaview.toggle(elem, {
+						outline: true,
+						tagname: true,
+						padding: true
+					});
+				}
+			);
 		}
 		if ('undefined' === typeof aloha) {
 			require('../../src/aloha', function (aloha) {
