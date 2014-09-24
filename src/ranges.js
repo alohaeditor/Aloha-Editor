@@ -83,9 +83,57 @@ define(['dom', 'arrays'], function (Dom, Arrays) {
 		return y < rect.bottom && x >= rect.left && x <= rect.right;
 	}
 
-	function stepTextNode(node, range, offset, x, y) {
+	/**
+	 * Transforms a collapsed range into mockup
+	 * client rectange object, by exchanging the
+	 * left property with the provided one.
+	 *
+	 * @see stepTextNode
+	 *
+	 * @param  {Range} range
+	 * @param  {?int}  left
+	 * @return {Object|null}
+	 */
+	function collapsedRangeToRect(range, left) {
+		var clientRect = Arrays.last(range.getClientRects());
+		if (!clientRect) {
+			return null;
+		}
+		return {
+			left   : left || clientRect.left,
+			right  : clientRect.right,
+			bottom : clientRect.bottom,
+		};
+	}
+
+	/**
+	 * Will extend a range inside node until it covers
+	 * x and y and then return an offset object containing
+	 * the offset node and the actual offset index.
+	 * The method will call itself recursively, using the
+	 * lastLeft parameter, which holds the left offset from
+	 * the last iteration. Don't pass lastLeft when calling
+	 * the function yourself.
+	 *
+	 * Because client rectangle calculation (range.getClientRects)
+	 * is broken in Internet Explorer 11, this function will 
+	 * use a collapsed range to match the x and y positions 
+	 * and create a rectangle using the lastLeft parameter
+	 * internally. Not using this approach will lead to bogus
+	 * results for range.getClientRects when clicking inside
+	 * an text node thats nested inside an li element.
+	 *
+	 * @param  {!Node} node
+	 * @param  {!Range} range
+	 * @param  {!integer} offset
+	 * @param  {!integer} x
+	 * @param  {!integer} y
+	 * @param  {?integer} lastLeft
+	 */
+	function stepTextNode(node, range, offset, x, y, lastLeft) {
+		range.setStart(node, offset);
 		range.setEnd(node, offset);
-		var rect = range.getBoundingClientRect();
+		var rect = collapsedRangeToRect(range, lastLeft);
 		if (rect && pointIsInOrAboveRect(x, y, rect)) {
 			if (rect.right - x > x - rect.left) {
 				offset--;
@@ -96,11 +144,22 @@ define(['dom', 'arrays'], function (Dom, Arrays) {
 			};
 		}
 		if (offset < node.length) {
-			return stepTextNode(node, range, ++offset, x, y);
+			return stepTextNode(node, range, ++offset, x, y, rect ? rect.left : null);
 		} 
 		return null;
 	}
 
+	/**
+	 * Will extend range inside a node until it covers 
+	 * the x & y position to return an offset object
+	 * that contains an offset node and the offset itself
+	 *
+	 * @param  {!Node}    node
+	 * @param  {!Range}   range
+	 * @param  {!integer} x
+	 * @param  {!integer} y
+	 * @return {Object}
+	 */
 	function findOffset(node, range, x, y) {
 		if (Dom.isTextNode(node)) {
 			var offset = stepTextNode(node, range, 0, x, y);
@@ -129,7 +188,17 @@ define(['dom', 'arrays'], function (Dom, Arrays) {
 	}
 
 	/**
-	 * http://jsfiddle.net/timdown/ABjQP/8/
+	 * Creates a Range object from click coordinates 
+	 * x and y on the document. Meant to be a drop-in
+	 * replacement for @see fromPoint which works in
+	 * Internet Explorer
+	 *
+	 * Based on http://jsfiddle.net/timdown/ABjQP/8/
+	 *
+	 * @param  {!integer}  x
+	 * @param  {!integer}  y
+	 * @param  {!Document} doc
+	 * @return {Range}
 	 */
 	function fromPointIE(x, y, doc) {
 		var el = doc.elementFromPoint(x, y);
