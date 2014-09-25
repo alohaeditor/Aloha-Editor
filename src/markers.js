@@ -56,7 +56,7 @@ define([
 	function insertSingle(boundary) {
 		var container = Boundaries.container(boundary);
 		var marker = container.ownerDocument.createTextNode(
-			Boundaries.isTextBoundary(boundary) ? '▓' : '▌'
+			Boundaries.isTextBoundary(boundary) ? '▓' : '█'
 		);
 		boundary = Mutation.splitBoundary(boundary);
 		Dom.insert(marker, Boundaries.nextNode(boundary), Boundaries.isAtEnd(boundary));

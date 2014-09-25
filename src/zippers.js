@@ -88,9 +88,6 @@ define([
 
 	function next(loc, stride) {
 		stride = 'number' === typeof stride ? stride : 1;
-		var newLefts = loc.rights.slice(0, stride);
-		console.warn(newLefts.filter(isMarker).length);
-		//stride += newLefts.filter(isMarker).length;
 		return Location(
 			loc.lefts.concat(loc.rights.slice(0, stride)),
 			loc.rights.slice(stride),
@@ -125,11 +122,48 @@ define([
 		return 'string' === typeof after(loc);
 	}
 
-	function update(loc) {
-		if (isTextLocation(loc)) {
-			loc = up(loc.rights);
+	function extractPathFromTree(record, paths, trail) {
+		paths = paths || [];
+		trail = trail || [];
+		if (isTextRecord(record)) {
+			return paths;
 		}
-		return after(loc).updateDom();
+		var textLength = 0;
+		var preceedingBoundaries = 0;
+		var children = record.children();
+		var isInText = isFragmentedText(record);
+		return children.reduce(function (list, child, i) {
+			if (isMarker(child)) {
+				var offset;
+				if (isInText) {
+					offset = textLength;
+				} else {
+					offset = i - preceedingBoundaries;
+					preceedingBoundaries++;
+				}
+				return list.concat([trail.concat(offset)]);
+			}
+			if (isInText) {
+				textLength += child.text().length;
+			}
+			return extractPathFromTree(
+				child,
+				list,
+				trail.concat(i - preceedingBoundaries)
+			);
+		}, paths);
+	}
+
+	function removePath(loc, path) {
+		loc = traverse(loc, path);
+		return root(remove(loc));
+	}
+
+	function update(loc) {
+		var tree = after(isTextLocation(loc) ? up(loc) : loc);
+		var paths = extractPathFromTree(tree);
+		loc = paths.reduce(removePath, loc);
+		return [after(loc).updateDom(), paths];
 	}
 
 	function hint(loc) {
@@ -144,26 +178,13 @@ define([
 	}
 
 	function normalizeOffset(record, offset) {
-		var children = record.children();
-		var len = children.length;
-		if (offset >= len) {
-			return offset;
-		}
-		var count = 0;
-		var index = 0;
-		while (index < len) {
-			if (!isMarker(children[index])) {
-				if (count === offset) {
-					return index;
-				}
-				count++;
-			}
-			index++;
-		}
-		return index;
+		return offset + record.children().slice(0, offset).filter(isMarker).length;
 	}
 
 	function fragmentedOffset(record, offset) {
+		if (0 === offset) {
+			return [0];
+		}
 		var fragments = record.children();
 		var len = fragments.length;
 		var remainder = offset;
@@ -241,9 +262,12 @@ define([
 	}
 
 	function splice(loc, num, replacement) {
+		var replacements = replacement instanceof Boromir
+		                 ? [replacement]
+		                 : replacement || [];
 		return Location(
 			loc.lefts.concat(),
-			replacement.concat(loc.rights.slice(num)),
+			replacements.concat(loc.rights.slice(num)),
 			loc.frames.concat()
 		);
 	}
@@ -253,7 +277,11 @@ define([
 	}
 
 	function replace(loc, item) {
-		return splice(loc, 1, [item]);
+		return splice(loc, 1, item);
+	}
+
+	function remove(loc) {
+		return splice(loc, 1);
 	}
 
 	/**
@@ -278,12 +306,14 @@ define([
 		return 'Q' === record.name();
 	}
 
+	var marker_count = 0;
+
 	/**
 	 * FIXME: isFragmentedText and original and isMarker won't be preserved on cloning.
 	 */
 	function Marker() {
 		var node = document.createElement('code');
-		node.innerHTML = '|';
+		node.innerHTML = ++marker_count;
 		var record = Boromir(node);
 		record.isMarker = true;
 		return record;
@@ -296,7 +326,7 @@ define([
 	function mark(loc) {
 		return insert(
 			isTextLocation(loc) ? FragmentedText(loc) : loc,
-			[Marker()]
+			Marker()
 		);
 	}
 
@@ -358,8 +388,13 @@ define([
 	setTimeout(function () {
 		var boundaries = Boundaries.get(document);
 		var editable = Dom.editingHost(Boundaries.container(boundaries[0]));
-		var x = zipper(editable, boundaries);
-		update(x);
+		var rootLoc = zipper(editable, boundaries);
+		var splitPath = Paths.fromBoundary(editable, boundaries[0]);
+		var loc = traverse(rootLoc, splitPath);
+		loc = split(loc);
+		loc = insert(loc, contents(createRecord('#text'), ['test']));
+		var result = update(root(loc));
+		console.log(result[1].map(Fn.partial(Paths.toBoundary, editable)).map(aloha.markers.hint));
 	}, 2000);
 
 	return {
