@@ -311,6 +311,26 @@ define([
 		};
 	}
 
+	function end(event, boundaries, focus) {
+		var range = Boundaries.range(boundaries[0], boundaries[1]);
+		var rect = Arrays.last(range.getClientRects());
+		var x = event.editable.elem.offsetLeft + event.editable.elem.clientWidth;
+		var y = rect ? rect.top : Dom.absoluteTop(Boundaries.container(boundaries[0]));
+		var targetRange = Ranges.fromPosition(x, y, Boundaries.document(boundaries[0]));
+		return {
+			boundaries : Boundaries.fromRange(targetRange),
+			focus      : focus
+		};
+	}
+
+	function home(event, boundaries, focus) {
+		event.nativeEvent.preventDefault();
+		return {
+			boundaries : boundaries,
+			focus      : focus
+		};
+	}
+
 	/**
 	 * Caret movement operations mapped against cursor key keycodes.
 	 *
@@ -318,14 +338,22 @@ define([
 	 * @type {Object.<string, function(Event, Array.<Boundary>, string):Object>}
 	 */
 	var movements = {};
-	movements[Keys.CODES['up']] = Fn.partial(climb, 'up');
-	movements[Keys.CODES['down']] = Fn.partial(climb, 'down');
-	movements[Keys.CODES['left']] = Fn.partial(step, 'left');
-	movements[Keys.CODES['right']] = Fn.partial(step, 'right');
-	movements[Keys.CODES['pageUp']] =
-	movements['meta+' + Keys.CODES['up']] = Fn.partial(jump, 'up');
-	movements[Keys.CODES['pageDown']] =
-	movements['meta+' + Keys.CODES['down']] = Fn.partial(jump, 'down');
+	movements['up'] = Fn.partial(climb, 'up');
+	movements['down'] = Fn.partial(climb, 'down');
+	movements['left'] =
+	movements['alt+left'] =
+	movements['ctrl+left'] = Fn.partial(step, 'left');
+	movements['right'] =
+	movements['alt+right'] =
+	movements['ctrl+right'] = Fn.partial(step, 'right');
+	movements['pageUp'] =
+	movements['meta+up'] = Fn.partial(jump, 'up');
+	movements['pageDown'] =
+	movements['meta+down'] = Fn.partial(jump, 'down');
+	movements['end'] =
+	movements['meta+right'] = end;
+	movements['home'] =
+	movements['meta+left'] = home;
 
 	/**
 	 * Processes a keypress event.
@@ -353,11 +381,11 @@ define([
 	 * @return {Object}
 	 */
 	function keydown(event, boundaries, focus) {
-		var meta = event.meta.indexOf('meta') > -1;
-		if (meta && movements['meta+' + event.keycode]) {
-			return movements['meta+' + event.keycode](event, boundaries, focus);
+		var handler = Keys.shortcutHandler(event.meta, event.keycode, movements);
+		if (handler) {
+			return handler(event, boundaries, focus);
 		}
-		return (movements[event.keycode] || keypress)(event, boundaries, focus);
+		return keypress(event, boundaries, focus);
 	}
 
 	/**

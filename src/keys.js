@@ -23,30 +23,31 @@ define([
 	'use strict';
 
 	var CODE_KEY = {
-		18 : 'alt',
 		8  : 'backspace',
-		20 : 'capslock',
-		17 : 'ctrl',
-		91 : 'cmd',
-		46 : 'delete',
-		13 : 'enter',
-		27 : 'escape',
-		12 : 'f1',
-		23 : 'f12',
-		16 : 'shift',
-		32 : 'space',
 		9  : 'tab',
-		90 : 'undo',
-		66 : 'bold',
-		73 : 'italic',
-		85 : 'underline',
+		12 : 'f1',
+		13 : 'enter',
+		16 : 'shift',
+		17 : 'ctrl',
+		18 : 'alt',
+		20 : 'capslock',
+		23 : 'end',
+		24 : 'home',
+		27 : 'escape',
+		32 : 'space',
+		33 : 'pageUp',
+		34 : 'pageDown',
 		37 : 'left',
 		38 : 'up',
 		39 : 'right',
 		40 : 'down',
+		46 : 'delete',
 		65 : 'selectAll',
-		33 : 'pageUp',
-		34 : 'pageDown'
+		66 : 'bold',
+		73 : 'italic',
+		85 : 'underline',
+		90 : 'undo',
+		91 : 'meta'
 	};
 
 	/**
@@ -157,8 +158,9 @@ define([
 	 * @return {*} null if no handler could be found
 	 */
 	function shortcutHandler(meta, keycode, shortcutHandlers) {
-		// special keys stop at code 31 according to http://www.asciitable.com/
-		var key = keycode < 32
+		// try to resolve special keys outside the 40 (delete)
+		// to 91 (meta) range. this range might need tweaking!
+		var key = keycode <= 46 || keycode >= 91
 		        ? CODE_KEY[keycode] || keycode
 		        : String.fromCharCode(keycode).toLowerCase();
 		var lookupKey = meta ? meta + '+' + key : key;
