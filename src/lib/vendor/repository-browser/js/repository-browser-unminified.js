@@ -953,7 +953,7 @@ define('RepositoryBrowser', [
 				}
 			}
 
-			if (isFound) {
+			if (!isFound) {
 				orderBy.unshift(sortItem);
 			}
 
