@@ -10,6 +10,7 @@
  */
 define([
 	'dom',
+	'html',
 	'paths',
 	'arrays',
 	'Boromir',
@@ -17,6 +18,7 @@ define([
 	'functions'
 ], function (
 	Dom,
+	Html,
 	Paths,
 	Arrays,
 	Boromir,
@@ -122,47 +124,77 @@ define([
 		return 'string' === typeof after(loc);
 	}
 
-	function extractPathFromTree(record, paths, trail) {
-		paths = paths || [];
-		trail = trail || [];
-		if (isTextRecord(record)) {
-			return paths;
-		}
-		var textLength = 0;
-		var preceedingBoundaries = 0;
-		var children = record.children();
-		var isInText = isFragmentedText(record);
-		return children.reduce(function (list, child, i) {
-			if (isMarker(child)) {
-				var offset;
-				if (isInText) {
-					offset = textLength;
-				} else {
-					offset = i - preceedingBoundaries;
-					preceedingBoundaries++;
-				}
-				return list.concat([trail.concat(offset)]);
-			}
-			if (isInText) {
-				textLength += child.text().length;
-			}
-			return extractPathFromTree(
-				child,
-				list,
-				trail.concat(i - preceedingBoundaries)
-			);
-		}, paths);
+	function jump(loc, steps) {
+		return 0 === steps ? loc : next(loc, steps);
 	}
 
-	function removePath(loc, path) {
-		loc = traverse(loc, path);
-		return root(remove(loc));
+	function fragmentsLength(fragments) {
+		return fragments.reduce(function (sum, record) {
+			return sum + record.text().length;
+		}, 0);
+	}
+
+	function walkPostOrder(loc, mutate) {
+		loc = root(loc);
+		var replacements;
+		var guard = 9999;
+		var trail = [];
+		var offset;
+		while (--guard) {
+			if (isAtEnd(loc)) {
+				loc = up(loc);
+				if (isRoot(loc)) {
+					break;
+				}
+				trail = trail.slice(0, -1);
+				replacements = mutate(after(loc), trail);
+				loc = jump(replace(loc, replacements), replacements.length);
+			} else if (isVoid(loc)) {
+				offset = isFragmentedText(after(up(loc)))
+				       ? fragmentsLength(loc.lefts.filter(isTextRecord))
+				       : loc.lefts.length;
+				replacements = mutate(after(loc), trail.concat(offset));
+				loc = jump(replace(loc, replacements), replacements.length);
+			} else {
+				if (!isRoot(loc)) {
+					trail.push(loc.lefts.length);
+				}
+				loc = down(loc);
+			}
+		}
+		if (0 === guard) {
+			console.error('INFINITE LOOP!');
+		}
+		return loc;
+	}
+
+	function defragmentText(record) {
+		var text = record.children().filter(isTextRecord).reduce(function (strings, string) {
+			return strings.concat(string.text());
+		}, []).join('');
+		return (record.original && record.original.text() === text)
+		     ? record.original
+		     : createRecord('#text', [text]);
 	}
 
 	function update(loc) {
-		var tree = after(isTextLocation(loc) ? up(loc) : loc);
-		var paths = extractPathFromTree(tree);
-		loc = paths.reduce(removePath, loc);
+		var paths = [];
+		loc = walkPostOrder(loc, function (record, trail) {
+			if (isMarker(record)) {
+				paths.push(trail);
+				return [];
+			}
+			if (isFragmentedText(record)) {
+				return [defragmentText(record)];
+			}
+			if (!isTextRecord(record)) {
+				if (record.children().length === 0) {
+					return [record.style('outline', '3px solid rgba(150, 50, 50, 0.3)')];
+				}
+				return [record.style('outline', '3px solid rgba(50, 150, 50, 0.3)')];
+			}
+			return [record];
+		});
 		return [after(loc).updateDom(), paths];
 	}
 
@@ -241,6 +273,9 @@ define([
 		var offset;
 		var trail = path.concat().reverse();
 		while (trail.length) {
+			while (isMarker(after(loc))) {
+				loc = next(loc);
+			}
 			offset = trail.pop();
 			if (isTextRecord(after(loc))) {
 				return locationInText(loc, offset);
@@ -306,14 +341,14 @@ define([
 		return 'Q' === record.name();
 	}
 
-	var marker_count = 0;
+	var markerCount = 0;
 
 	/**
 	 * FIXME: isFragmentedText and original and isMarker won't be preserved on cloning.
 	 */
 	function Marker() {
 		var node = document.createElement('code');
-		node.innerHTML = ++marker_count;
+		node.innerHTML = ++markerCount;
 		var record = Boromir(node);
 		record.isMarker = true;
 		return record;
@@ -324,10 +359,7 @@ define([
 	}
 
 	function mark(loc) {
-		return insert(
-			isTextLocation(loc) ? FragmentedText(loc) : loc,
-			Marker()
-		);
+		return insert(isTextLocation(loc) ? FragmentedText(loc) : loc, Marker());
 	}
 
 	function insertMarker(loc, path) {
@@ -361,6 +393,21 @@ define([
 		return 0 === loc.frames.length;
 	}
 
+	function isVoid(loc) {
+		var record = after(loc);
+		return '#text' === record.name()
+		    || isMarker(record)
+		    || Html.isVoidNode(record.domNode());
+	}
+
+	function isAtStart(loc) {
+		return 0 === loc.lefts.length;
+	}
+
+	function isAtEnd(loc) {
+		return 0 === loc.rights.length;
+	}
+
 	function split(loc, until) {
 		until = until || Fn.returnFalse;
 		if (isRoot(peek(loc)) || until(loc)) {
@@ -392,7 +439,7 @@ define([
 		var splitPath = Paths.fromBoundary(editable, boundaries[0]);
 		var loc = traverse(rootLoc, splitPath);
 		loc = split(loc);
-		loc = insert(loc, contents(createRecord('#text'), ['test']));
+		loc = insert(loc, contents(createRecord('#text'), ['↵']));
 		var result = update(root(loc));
 		console.log(result[1].map(Fn.partial(Paths.toBoundary, editable)).map(aloha.markers.hint));
 	}, 2000);

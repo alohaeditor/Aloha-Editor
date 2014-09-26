@@ -38,7 +38,7 @@ define(['dom'], function (Dom) {
 		+ '.✪✪ ul::before,.✪✪ ol::before,.✪✪ li::before,'
 		+ '.✪✪ h1::before,.✪✪ h2::before,.✪✪ h3::before,.✪✪ h4::before,.✪✪ h5::before,.✪✪ h6::before,'
 		+ '.✪✪ div::before,.✪✪ span::before,.✪✪ pre::before,'
-		+ '.✪✪ code::before{position:absolute;top:-2px;left:-2px;line-height:8px;font-size:8px;font-weight:bold;font-style:normal;letter-spacing:0.5px;background:#fff;color:#111}'
+		+ '.✪✪ code::before{position:absolute;top:-2px;left:-2px;line-height:8px;font-size:8px;font-weight:bold;font-style:normal;letter-spacing:0.5px;background:#fff;color:#111;opacity:0.5;}'
 		+ '.✪✪ td::before{content:"TD"}'
 		+ '.✪✪ th::before{content:"TH"}'
 		+ '.✪✪ b::before{content:"B"}'
