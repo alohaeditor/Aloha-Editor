@@ -266,25 +266,25 @@ define([
 	Api['buildcommit'] = '%buildcommit%';
 	win['aloha'] = Maps.extend(aloha, Api);
 
-	var egg = '%c'
-	        + '       _       _                      _ _ _\n'
-	        + '  __ _| | ___ | |__   __ _    ___  __| (_) |_ ___  _ __\n'
-	        + ' / _` | |/ _ \\| \'_ \\ / _` |  / _ \\/ _` | | __/ _ \\| \'__|\n'
-	        + '| (_| | | (_) | | | | (_| | |  __/ (_| | | || (_) | |\n'
-	        + ' \\__,_|_|\\___/|_| |_|\\__,_|  \\___|\\__,_|_|\\__\\___/|_|.org\n'
-	        + '\n'
-	        + '%c'
-	        + ' Aloha! '
-	        + '\n'
-	        + ' Help us shape the future of content editing on the web! '
-	        + '\n'
-	        + ' Join the team at %c http://github.com/alohaeditor ♥ ';
+	var egg = '%c       _       _                      _ _ _\n'
+	        + '  __ _%c| |%c ___ %c| |%c__   __ _    ___  __%c| (_) |%c_ ___  _ __\n'
+	        + ' %c/ _` | |/ _ \\| \'_ \\%c %c/ _` |%c  %c/ _ \\/ _` | | __/ _ \\| \'__|%c '
+	        + ' %cAloha!%c \n'
+	        + '%c| (%c_%c| | | (%c_%c) | |%c %c| | (%c_%c| |%c %c|  __/ (%c_%c| | | %c||%c (%c_%c) | |%c    '
+	        + ' %cHelp us shape the future of content editing on the web!%c \n'
+	        + ' %c\\__,_|_|\\___/|_|%c %c|_|\\__,_|%c  %c\\___|\\__,_|_|\\__\\___/|_|%c.org'
+	        + ' %cJoin the team at http://github.com/alohaeditor %c♥';
 
+	var w = 'color: #f34;';
+	var x = 'color: #555;';
+	var y = 'color: #bbb;';
+	var z = 'color: #bbb; background: #f8f6f5;';
 	console.log(
 		egg,
-		'color: #09d;',
-		'font-size: 14px; background: #09d; color: #fff; padding: 0.5em 0; line-height: 2em;',
-		'font-size: 14px; background: #fe7; color: #111; padding: 0.5em 0; line-height: 2em;'
+		y,z,y,z,y,
+		z,y,z,y,z,y,z,y,x,y,
+		z,y,z,y,z,y,z,y,z,y,z,y,z,y,z,y,z,y,x,y,
+		z,y,z,y,z,y,x,w
 	);
 
 	return aloha;
