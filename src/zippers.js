@@ -7,9 +7,24 @@
  *
  * @reference:
  * http://hackage.haskell.org/package/rosezipper-0.2/docs/src/Data-Tree-Zipper.html
+ *
+ * @usage:
+ *	var boundaries = Boundaries.get(document);
+ *	var zip = zipper(Dom.editingHost(Boundaries.container(boundaries[0])), {
+ *		start : boundaries[0],
+ *		end   : boundaries[1]
+ *	});
+ *	var loc = zip.tree;
+ *	var markers = zip.markers;
+ *	loc = split(gotoMarker(loc, markers.start));
+ *	loc = insert(loc, contents(createRecord('#text'), ['↵']));
+ *	loc = split(gotoMarker(loc, markers.end));
+ *	var preserved = update(root(loc));
+ *	console.log(aloha.markers.hint([preserved.start, preserved.end]));
  */
 define([
 	'dom',
+	'maps',
 	'html',
 	'paths',
 	'arrays',
@@ -18,6 +33,7 @@ define([
 	'functions'
 ], function (
 	Dom,
+	Maps,
 	Html,
 	Paths,
 	Arrays,
@@ -137,10 +153,9 @@ define([
 	function walkPostOrder(loc, mutate) {
 		loc = root(loc);
 		var replacements;
-		var guard = 9999;
 		var trail = [];
 		var offset;
-		while (--guard) {
+		while (true) {
 			if (isAtEnd(loc)) {
 				loc = up(loc);
 				if (isRoot(loc)) {
@@ -162,8 +177,26 @@ define([
 				loc = down(loc);
 			}
 		}
-		if (0 === guard) {
-			console.error('INFINITE LOOP!');
+		return loc;
+	}
+
+	function walkPreOrderWhile(loc, pred) {
+		pred = pred || Fn.returnTrue;
+		loc = root(loc);
+		while (pred(loc)) {
+			if (isAtEnd(loc)) {
+				do {
+					if (isRoot(loc)) {
+						return loc;
+					}
+					loc = up(loc);
+				} while (isAtEnd(loc));
+				loc = next(loc);
+			} else if (isVoid(loc)) {
+				loc = next(loc);
+			} else {
+				loc = down(loc);
+			}
 		}
 		return loc;
 	}
@@ -181,7 +214,10 @@ define([
 		var paths = [];
 		loc = walkPostOrder(loc, function (record, trail) {
 			if (isMarker(record)) {
-				paths.push(trail);
+				paths.push({
+					name : record.marker,
+					path : trail
+				});
 				return [];
 			}
 			if (isFragmentedText(record)) {
@@ -195,7 +231,11 @@ define([
 			}
 			return [record];
 		});
-		return [after(loc).updateDom(), paths];
+		var editable = after(loc).updateDom().domNode();
+		return paths.reduce(function (markers, mark) {
+			markers[mark.name] = Paths.toBoundary(editable, mark.path);
+			return markers;
+		}, {});
 	}
 
 	function hint(loc) {
@@ -346,11 +386,13 @@ define([
 	/**
 	 * FIXME: isFragmentedText and original and isMarker won't be preserved on cloning.
 	 */
-	function Marker() {
+	function Marker(boundary, name) {
 		var node = document.createElement('code');
 		node.innerHTML = ++markerCount;
 		var record = Boromir(node);
 		record.isMarker = true;
+		record.boundary = boundary;
+		record.marker = name;
 		return record;
 	}
 
@@ -358,22 +400,48 @@ define([
 		return true === record.isMarker;
 	}
 
-	function mark(loc) {
-		return insert(isTextLocation(loc) ? FragmentedText(loc) : loc, Marker());
+	function mark(loc, marker) {
+		return insert(isTextLocation(loc) ? FragmentedText(loc) : loc, marker);
 	}
 
-	function insertMarker(loc, path) {
-		return root(mark(traverse(loc, path)));
+	function insertMarker(marker, loc, path) {
+		return root(mark(traverse(loc, path), marker));
 	}
 
 	function zipper(element, boundaries) {
+		return markup(create(element), boundaries);
+	}
+
+	function markTree(tree, boundary, markerName) {
+		var element = after(tree).domNode();
 		var body = element.ownerDocument.body;
 		var root = Paths.fromBoundary(body, Boundaries.fromFrontOfNode(element));
-		var paths = (boundaries || []).map(Fn.partial(Paths.fromBoundary, body));
-		var clipped = paths.map(Fn.partial(clipCommonRoot, root)).filter(function (arr) {
-			return arr.length > 0;
+		var path  = Paths.fromBoundary(body, boundary);
+		var clipped = clipCommonRoot(root, path);
+		if (0 === clipped.length) {
+			return {
+				tree   : tree,
+				marker : null
+			};
+		}
+		var marker = Marker(boundary, markerName);
+		return {
+			tree   : insertMarker(marker, tree, clipped),
+			marker : marker
+		};
+	}
+
+	function markup(tree, marked) {
+		var markers = {};
+		Maps.forEach(marked, function (value, key) {
+			var result = markTree(tree, value, key);
+			markers[key] = result.marker;
+			tree = result.tree;
 		});
-		return clipped.reduce(insertMarker, create(element));
+		return {
+			tree    : tree,
+			markers : markers
+		};
 	}
 
 	function createRecord(type, content) {
@@ -432,31 +500,32 @@ define([
 		return split(loc, until);
 	}
 
-	setTimeout(function () {
-		var boundaries = Boundaries.get(document);
-		var editable = Dom.editingHost(Boundaries.container(boundaries[0]));
-		var rootLoc = zipper(editable, boundaries);
-		var splitPath = Paths.fromBoundary(editable, boundaries[0]);
-		var loc = traverse(rootLoc, splitPath);
-		loc = split(loc);
-		loc = insert(loc, contents(createRecord('#text'), ['↵']));
-		var result = update(root(loc));
-		console.log(result[1].map(Fn.partial(Paths.toBoundary, editable)).map(aloha.markers.hint));
-	}, 2000);
+	function gotoMarker(tree, marker) {
+		var loc = walkPreOrderWhile(root(tree), function (loc) {
+			var record = after(loc);
+			return !(record && isMarker(record) && record === marker);
+		});
+		return isRoot(loc) ? null : loc;
+	}
 
 	return {
-		hint   : hint,
-		update : update,
-		create : create,
-		before : before,
-		after  : after,
-		prev   : prev,
-		next   : next,
-		up     : up,
-		down   : down,
-		root   : root,
-		peek   : peek,
-		split  : split,
-		zipper : zipper
+		hint      : hint,
+		update    : update,
+		create    : create,
+		before    : before,
+		after     : after,
+		prev      : prev,
+		next      : next,
+		up        : up,
+		down      : down,
+		root      : root,
+		peek      : peek,
+		split     : split,
+		splice    : splice,
+		insert    : insert,
+		replace   : replace,
+		remove    : remove,
+		zipper    : zipper,
+		isAtStart : isAtStart,
 	};
 });
