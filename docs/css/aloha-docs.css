@@ -1,0 +1,54 @@
+body {
+	font-size: 18px;
+}
+
+.navbar-header, .navbar-right {
+	display: block;
+}
+
+.example, .CodeMirror {
+	padding: 10px;
+	padding-top: 20px;
+	margin: 10px 0px 10px 0px;
+	color: #fff;
+	box-shadow: 2px 2px 10px rgba(0,0,0,0.2) inset;
+	display: block;
+}
+
+.CodeMirror .CodeMirror-code * {
+	font-family: monospace;
+	font-size: 16px;
+}
+
+div.CodeMirror {
+	height: auto;
+	margin: 20px 0;
+}
+
+.CodeMirror::before {
+	content: "EDIT ME!";
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	padding: 4px;
+	color: #e7457b;
+}
+
+.btn {
+	color: #4ea9de;
+	border: 1px solid #4ea9de;
+	background: transparent;
+	transition: text-shadow 1s, box-shadow 1s;
+}
+
+.btn:hover {
+	color: #4ea9de;
+	text-shadow: 0 0 20px;
+	box-shadow: 0 0 20px;
+}
+
+.aloha-editable {
+	border: 5px solid #afafaf;
+	margin: 20px 0px;
+	padding: 10px;
+}

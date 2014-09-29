@@ -102,7 +102,7 @@ define(['dom', 'arrays'], function (Dom, Arrays) {
 		return {
 			left   : left || clientRect.left,
 			right  : clientRect.right,
-			bottom : clientRect.bottom,
+			bottom : clientRect.bottom
 		};
 	}
 

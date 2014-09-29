@@ -220,7 +220,7 @@ define([
 	editor.CARET_CLASS = 'aloha-caret';
 	editor.dnd         = DragDrop.Context();
 	editor.selecting   = Selections.Context(doc);
-	editor.selection   = null;
+	editor.selection   = editor.selecting;
 	editor.editables   = {};
 	editor.stack       = [
 		Selections.handleSelections,

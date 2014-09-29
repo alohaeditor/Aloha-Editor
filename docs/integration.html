@@ -1,137 +1,149 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 	<head>
-		<title>Aloha Editor</title>
-		<meta charset="UTF-8">
-		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300,700' rel='stylesheet' type='text/css'>
-		<link rel="stylesheet" type="text/css" href="demo.css">
-
-		<script src="codemirror-4.2/lib/codemirror.js"></script>
+		<title>Aloha Editor Docs</title>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="icon" href="favicon.ico">
+		<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!--[if lt IE 9]>
+			<script src="//oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+			<script src="//oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+		<![endif]-->
+		<!-- Custom styles for this template -->
+		<link href="css/aloha-web.css" rel="stylesheet">
+		<link href="css/aloha-docs.css" rel="stylesheet">
 		<link rel="stylesheet" href="codemirror-4.2/lib/codemirror.css">
-		<script src="codemirror-4.2/mode/javascript/javascript.js"></script>
 	</head>
 	<body>
-		<div>
+
+	    <div class="navbar navbar-default navbar-fixed-top funky" role="navigation">
+	    	<div class="container">
+	    		<div class="navbar-header">
+	    		<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+					<a class="navbar-brand" href="http://www.aloha-editor.org"><img src="logo-small.png" alt="Aloha Editor" title="Aloha Editor"/></a>
+				</div>
+				<div class="navbar-collapse collapse">
+					<ul class="nav navbar-nav navbar-right">
+						<li><a href="index.html">Home</a></li>
+						<li><a href="#">API Docs</a></li>
+						<li><a href="http://github.com/alohaeditor/Aloha-Editor" target="_blank">Github</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<div id="post" class="container post">
+			<div class="row">
+				<div class="col-md-12">
+
 			<h1>Aloha Editor Integration</h1>
 
 			<p>
-				Integrating Aloha Editor in your Application is a matter of three major steps:
+				After loading Aloha Editor and creating editable regions on your page, 
+				as described in our <a href="quickstart.html">Quickstart</a> guide,
+				you will want to integrate Aloha Editor with your Application.
 			</p>
-
-			<ol>
-				<li>Loading Aloha Editor</li>
-				<li>Aloha-fying editables</li>
-				<li>Integrating Aloha Editor with your application</li>
-			</ol>
-
-			<h2>Loading Aloha Editor</h2>
-
-			<p>
-				Loading the pre-buildt version of Aloha Editor is achieved by just loading the resulting
-				aloha.js file using a script tag.
-			</p>
-
-			<textarea class="example"><script src="aloha.js"></script></textarea>
-
-			<p>
-				Loading the development version currently requires you to use require-pronto, a
-				home-grown, synchronous drop-in replacement for requirejs.
-			</p>
-
-			<textarea class="example"><script src="src/require-pronto.js"></script>
-<script src="src/require-pronto.dev.js"></script>
-<script src="src/aloha.js"></script></textarea>
-
-			
-			<h2>Aloha-fying editables</h2>
-
-			<p>
-				Aloha needs to know which parts of the page should be editable. This can be achieved using the aloha() function.
-			</p>
-
-			<textarea class="example">aloha(document.querySelector('.aloha-editable'));</textarea>
-
-			<p>
-				This first example will turn the first element with the aloha-editable class applied into an Aloha editable. Preferably use divs as editing host.
-			</p>
-
-			<p>
-				If you want to turn all elements that have the aloha-editable class assigned into editables, you can use the following snippet.
-			</p>
-
-			<textarea class="example">[].forEach.call(document.querySelectorAll('.aloha-editable'), aloha);</textarea>
-
 
 			<h2>Integrating Aloha Editor with your application</h2>
 
 			<p>
-				To integrate Aloha Editor with your application you will need to define the editor stack: a collection of functions, that are invoked in order for every browser event. The default stack for Aloha Editor currently looks like this:
+				To integrate Aloha Editor with your application you will need to know about
+				two important things:
 			</p>
 
-			<textarea class="example">aloha.editor.stack = [
-	Selections.handle,
-	Typing.handle,
-	Blocks.handle,
-	DragDrop.handle,
-	Paste.handle,
-	Editables.handle,
-	Mouse.handle,
-	Keys.handle
-];</textarea>
+			<ol>
+				<li>Aloha Editor's API is stateless</li>
+				<li>Editing operations are process by the Editor Stack</li>
+			</ol>
+
+			<h3>Aloha Editor's API is stateless</h3>
 
 			<p>
-				Events will pass through the stack from bottom to top. Key and mouse event handling will be completed first, all the way through until the selection is handled in the last step. If you want to integrate with Aloha Editor just your own function on the stack:
+				Aloha Editor follows the functional programming paradigm, which means that
+				the API is stateless. You will not invoke methods of an object, but
+				rather use functions, that ask you to pass them all the information they
+				need to complete their job.
 			</p>
-
-			<textarea class="example">define([
-	'aloha',
-	'blocks',
-	'dragdrop',
-	'editables',
-	'keys',
-	'mouse',
-	'paste',
-	'selections',
-	'typing'
-], function (
-	aloha,
-	Blocks,
-	DragDrop,
-	Editables,
-	Keys,
-	Mouse,
-	Paste,
-	Selections,
-	Typing
-) {
-	aloha.editor.stack = [
-		function myHandler(alohaEvent) {
-			// magic
-		},
-		Selections.handle,
-		Typing.handle,
-		Blocks.handle,
-		DragDrop.handle,
-		Paste.handle,
-		Editables.handle,
-		Mouse.handle,
-		Keys.handle
-	];
-});</textarea>
 
 			<p>
-				In the example above a new function was put on the first position of the stack array, which means that it will be executed <b>after</b> all the other functions. Use this to
-				add handling for UI or the like. The function will receive an alohaEvent object,
-				which contains the currently active editable as well as the browser event.
-			</p>
-			<p>
-				The important thing here is to make sure that the editor stack is <b>defined once</b>
-				at initialization, as subsequent, dynamic modifications will make it harder to understand and maintain your application.
+				Since we need to keep some state after all, there is a central place where
+				state ist kept: <code>aloha.editor</code>. You can always have a look at what
+				is stored there:
 			</p>
 
+			<textarea id="example-stack-list" class="example">console.dir(aloha.editor);</textarea>
+
+			<p>Open your console, to see what's currently on the stack.</p>
+
+			<button class="btn btn-lg" onclick="executeExample('example-stack-list')">Execute Example</button>
+
+			<h3>Editing operations are process by the Editor Stack</h3>
+
+			<p>
+				The Editor Stack is an array of functions, that will be executed for all
+				events that are somewhat related to Aloha Editor and your editables. So clicking inside
+				an editable as well as typing to enter text inside an editable will all trigger events
+				that are processed by the Editor Stack. The Editor Stack resides at 
+				<code>aloha.editor.stack</code> and is processed from bottom to the top: 
+				the last entry in the array is executed first.
+			</p>
+
+			<p>
+				To integrate your code with Aloha Editor you need to put a handler function on
+				the stack.
+			</p>
+
+			<textarea id="example-stack-push" class="example">function myHandler(event) {
+    console.log(event);
+    return event;
+}
+aloha.editor.stack.push(myHandler);</textarea>
+
+			<button class="btn btn-lg" onclick="executeExample('example-stack-push')">Execute Example</button>
+
+			<div class="aloha-editable">Type here and take a look at your console to see what the handler does.</div>
+
+			<p>
+				Functions that you put on the stack must follow a contract:
+			</p>
+
+			<ol>
+				<li>They will receive one parameter, the <code>event</code></li>
+				<li>They must return the <code>event</code> after processing</li>
+			</ol>			
+			
+			<p>
+				The <code>event</code> object that your handler receives contains the native browser event
+				at <code>.nativeEvent</code> and will also come with some additional information
+				like the current selection or the editable you're in. You're welcome to modify the event
+				object - most likely you will eg. want to update the selection, before your return it.
+			</p>
+
+			<p>
+				After putting a handler function on the Editor Stack you are hooked into Aloha Editor
+				and ready to code your app.
+			</p>
+				</div>
+			</div>
 		</div>
-		<script src="../src/require-pronto.js"></script>
-		<script src="../src/require-pronto.dev.js"></script>
-		<script src="demo.js"></script>
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<script src="js/aloha.min.js"></script>
+		<script src="js/aloha-web.js"></script>
+		<script src="codemirror-4.2/lib/codemirror.js"></script>
+		<script src="codemirror-4.2/mode/javascript/javascript.js"></script>
+		<script src="js/aloha-docs.js"></script>
+		<script>[].forEach.call(document.querySelectorAll('.aloha-editable'), aloha);</script>
 	</body>
 </html>
