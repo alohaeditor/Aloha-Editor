@@ -1125,7 +1125,9 @@ define([
 			step(children.slice(start + 1, children.length));
 			return node.parentNode;
 		}, node.parentNode);
-		step(Dom.children(cac).slice(Arrays.last(ascent) + 1, descent[0]));
+		if (ascent.length > 1) {
+			step(Dom.children(cac).slice(Arrays.last(ascent) + 1, descent[0]));
+		}
 		descent.slice(1).reduce(function (node, end) {
 			var children = Dom.children(node);
 			step(children.slice(0, end));
