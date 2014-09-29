@@ -518,12 +518,12 @@ define([
 	exports['zippers']['root']     = Zippers.root;
 	exports['zippers']['peek']     = Zippers.peek;
 	exports['zippers']['split']    = Zippers.split;
-	exports['zippers']['jump']     = Zippers.jump;
 	exports['zippers']['go']       = Zippers.go;
 	exports['zippers']['insertAt'] = Zippers.insertAt;
 	exports['zippers']['splitAt']  = Zippers.splitAt;
 	exports['zippers']['isMarker'] = Zippers.isMarker;
 	exports['zippers']['createMarker'] = Zippers.createMarker;
+	exports['zippers']['walkPreOrderWhile'] = Zippers.walkPreOrderWhile;
 
 	return exports;
 });

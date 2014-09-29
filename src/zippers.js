@@ -28,6 +28,7 @@ define([
 	'html',
 	'paths',
 	'arrays',
+	'record',
 	'boromir',
 	'boundaries',
 	'functions'
@@ -37,6 +38,7 @@ define([
 	Html,
 	Paths,
 	Arrays,
+	Record,
 	Boromir,
 	Boundaries,
 	Fn
@@ -94,7 +96,7 @@ define([
 
 	function prev(loc, stride) {
 		stride = 'number' === typeof stride ? stride : 1;
-		return Location(
+		return 0 === stride ? loc : Location(
 			loc.lefts.slice(0, -stride),
 			loc.lefts.slice(-stride).concat(loc.rights),
 			loc.frames.concat()
@@ -103,7 +105,7 @@ define([
 
 	function next(loc, stride) {
 		stride = 'number' === typeof stride ? stride : 1;
-		return Location(
+		return 0 === stride ? loc : Location(
 			loc.lefts.concat(loc.rights.slice(0, stride)),
 			loc.rights.slice(stride),
 			loc.frames.concat()
@@ -137,10 +139,6 @@ define([
 		return 'string' === typeof after(loc);
 	}
 
-	function jump(loc, steps) {
-		return 0 === steps ? loc : next(loc, steps);
-	}
-
 	function fragmentsLength(fragments) {
 		return fragments.reduce(function (sum, record) {
 			return sum + record.text().length;
@@ -160,13 +158,13 @@ define([
 				}
 				trail = trail.slice(0, -1);
 				replacements = mutate(after(loc), trail);
-				loc = jump(replace(loc, replacements), replacements.length);
+				loc = next(replace(loc, replacements), replacements.length);
 			} else if (isVoid(loc)) {
 				offset = isFragmentedText(after(up(loc)))
 				       ? fragmentsLength(loc.lefts.filter(isTextRecord))
 				       : loc.lefts.length;
 				replacements = mutate(after(loc), trail.concat(offset));
-				loc = jump(replace(loc, replacements), replacements.length);
+				loc = next(replace(loc, replacements), replacements.length);
 			} else {
 				if (!isRoot(loc)) {
 					trail.push(loc.lefts.length);
@@ -327,9 +325,11 @@ define([
 	}
 
 	function splice(loc, num, replacement) {
-		var replacements = replacement instanceof Boromir
+		var replacements = replacement
+		                 ? (replacement.constructor === Boromir || replacement.constructor === Record)
 		                 ? [replacement]
-		                 : replacement || [];
+		                 : replacement
+		                 : [];
 		return Location(
 			loc.lefts.concat(),
 			replacements.concat(loc.rights.slice(num)),
@@ -523,13 +523,13 @@ define([
 		insert    : insert,
 		replace   : replace,
 		remove    : remove,
-		jump      : jump,
 		zipper    : zipper,
 		isAtStart : isAtStart,
 		isAtEnd   : isAtEnd,
 		splitAt   : splitAt,
 		insertAt  : insertAt,
 		isMarker  : isMarker,
-		createMarker : createMarker
+		createMarker : createMarker,
+		walkPreOrderWhile: walkPreOrderWhile
 	};
 });

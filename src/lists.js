@@ -24,7 +24,7 @@ define([
 	Arrays,
 	Assert,
 	Boromir,
-	Zippers,
+	Zip,
 	Strings,
 	Content,
 	Mutation,
@@ -395,102 +395,108 @@ define([
 		return 0 === visible;
 	}
 
-	/**
-	 * Returns the previous node to the given node that is not one of it's
-	 * ancestors.
-	 *
-	 * @private
-	 * @param  {!Node} node
-	 * @return {Node}
-	 */
-	function prevNonAncestor(node, match, until) {
-		return match(node) ? node : Dom.nextNonAncestor(
-			node,
-			true,
-			match,
-			until || Dom.isEditingHost
-		);
-	}
-
-	function moveIntoContainer(zip) {
-		var marker = Zippers.createMarker('insertionMarker');
-		var loc = Zippers.insert(zip.loc, marker);
-		loc = Zippers.go(loc, zip.markers.start);
-		var index = Arrays.someIndex(loc.rights.slice(1), Zippers.isMarker) + 1;
+	function removeNext(loc, num) {
 		var records = [];
-		while (index--) {
-			records.push(Zippers.after(loc));
-			loc = Zippers.remove(loc);
+		while (num--) {
+			records.push(Zip.after(loc));
+			loc = Zip.remove(loc);
 		}
-		return Zippers.insertAt(loc, marker, records);
+		return {
+			loc     : loc,
+			records : records
+		};
 	}
 
-	function moveIntoItem(boundary, start, end) {
-		var nodes = Dom.nodeAndPrevSiblings(Boundaries.prevNode(boundary));
-		var prev = Arrays.last(nodes.filter(Html.isRendered));
-		var editable = Dom.editingHost(prev);
-		var zip = Zippers.zipper(editable, {
-			inLi  : boundary,
-			inUl  : Boundaries.fromEndOfNode(prev),
-			start : start,
-			end   : end
-		});
-		if (Html.isListContainer(prev)) {
-			zip.loc = Zippers.go(zip.loc, zip.markers.inUl);
-		} else {
-			zip.loc = Zippers.down(Zippers.insertAt(
-				zip.loc,
-				zip.markers.inLi,
-				[Boromir(prev.ownerDocument.createElement('UL'))]
-			));
+	function isRenderedRecord(record) {
+		return Html.isRendered(record.domNode());
+	}
+
+	function prevVisible(loc) {
+		var index = Arrays.someIndex(loc.lefts.concat().reverse(), isRenderedRecord);
+		return -1 === index ? null : Zip.prev(loc, index + 1);
+	}
+
+	function nextVisible(loc) {
+		var index = Arrays.someIndex(loc.rights, isRenderedRecord);
+		return -1 === index ? null : Zip.next(loc, index);
+	}
+
+	function domAfter(loc) {
+		return Zip.after(loc).domNode();
+	}
+
+	function bottomJoiningLoc(loc) {
+		loc = nextVisible(loc);
+		if (!loc || !Html.isListItem(domAfter(loc))) {
+			return null;
 		}
-		return moveIntoContainer(zip);
+		loc = nextVisible(Zip.down(loc));
+		if (!loc || !Html.isListContainer(domAfter(loc))) {
+			return null;
+		}
+		return loc;
+	}
+
+	function topJoiningLoc(loc) {
+		loc = prevVisible(loc);
+		if (!loc || !Html.isListItem(domAfter(loc))) {
+			return null;
+		}
+		var atLiEnd = Zip.next(Zip.down(loc), loc.rights.length);
+		loc = prevVisible(atLiEnd);
+		if (!loc || !Html.isListContainer(domAfter(loc))) {
+			return atLiEnd;
+		}
+		loc = Zip.down(loc);
+		return Zip.next(loc, loc.rights.length);
+	}
+
+	function insertAt(loc, records) {
+		if (!Html.isListContainer(domAfter(Zip.up(loc)))) {
+			loc = Zip.down(Zip.insert(loc, Boromir(document.createElement('UL'))));
+		}
+		return Zip.insert(loc, records);
 	}
 
 	function indent(start, end) {
 		var startLi = nearest(Boundaries.prevNode(start), Html.isListItem);
 		var endLi = nearest(Boundaries.nextNode(end), Html.isListItem);
+		// Because otherwise the range between `start` and `end` is not within a
+		// list
 		if (!Html.isListItem(startLi) || !Html.isListItem(endLi)) {
 			return [start, end];
 		}
 		var editable = Dom.editingHost(startLi);
 		start = Boundaries.fromFrontOfNode(startLi);
 		end = Boundaries.fromBehindOfNode(endLi);
-		var zip = Zippers.zipper(editable, {
+		var zip = Zip.zipper(editable, {
 			start : start,
 			end   : end
 		});
 		var cac = Boundaries.commonContainer(start, end);
 		var isBelowCac = function (loc) {
-			return Zippers.after(Zippers.up(loc)).domNode() === cac;
+			return Zip.after(Zip.up(loc)).domNode() === cac;
 		};
-		zip.loc = Zippers.splitAt(zip.loc, zip.markers.start, isBelowCac);
-		zip.loc = Zippers.splitAt(zip.loc, zip.markers.end, isBelowCac);
-		var markers = Zippers.update(Zippers.root(zip.loc));
-		start = markers.start;
-		end = markers.end;
-		var prev = prevNonAncestor(Boundaries.prevNode(start), Html.isRendered);
-		var loc;
-		if (Html.isListItem(prev)) {
-			loc = moveIntoItem(Boundaries.fromEndOfNode(prev), start, end);
-		} else {
-			zip = Zippers.zipper(editable, {
-				start : start,
-				end   : end
-			});
-			zip.loc = Zippers.go(zip.markers.start);
-			zip.loc = Zippers.down(Zippers.insertAt(
-				zip.loc,
-				[Boromir(prev.ownerDocument.createElement('LI'))]
-			));
-			zip.loc = Zippers.down(Zippers.insert(
-				zip.loc,
-				[Boromir(prev.ownerDocument.createElement('UL'))]
-			));
-			loc = moveIntoContainer(zip);
+		zip.loc = Zip.splitAt(zip.loc, zip.markers.start, isBelowCac);
+		zip.loc = Zip.splitAt(zip.loc, zip.markers.end, isBelowCac);
+		var loc = zip.loc;
+		var bottom = bottomJoiningLoc(Zip.next(Zip.go(loc, zip.markers.end)));
+		var records = [];
+		var removed;
+		if (bottom) {
+			loc = Zip.down(bottom);
+			removed = removeNext(loc, loc.rights.length);
+			records = records.concat(removed.records);
+			loc = Zip.remove(Zip.up(Zip.up(removed.loc)));
 		}
-		markers = Zippers.update(Zippers.root(loc));
-		console.warn(markers);
+		loc = Zip.go(loc, zip.markers.start);
+		removed = removeNext(loc, Arrays.someIndex(loc.rights.slice(1), Zip.isMarker) + 2);
+		records = removed.records.concat(records);
+		loc = removed.loc;
+		loc = topJoiningLoc(loc)
+		   || Zip.down(Zip.insert(loc, Boromir(document.createElement('LI'))));
+		loc = insertAt(loc, records);
+		var markers = Zip.update(Zip.root(loc));
 		return [markers.start, markers.end];
 	}
 
