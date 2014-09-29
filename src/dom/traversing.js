@@ -661,7 +661,7 @@ define([
 	 * @return {Array.<Node>}
 	 */
 	function nodeAndPrevSiblings(node, until) {
-		return (until && until(node)) ? [] : [node].concat(prevSiblings(node, until));
+		return (until && until(node)) ? [] : prevSiblings(node, until).concat(node);
 	}
 
 	/**
