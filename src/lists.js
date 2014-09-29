@@ -11,6 +11,8 @@ define([
 	'html',
 	'arrays',
 	'assert',
+	'boromir',
+	'zippers',
 	'strings',
 	'content',
 	'mutation',
@@ -21,6 +23,8 @@ define([
 	Html,
 	Arrays,
 	Assert,
+	Boromir,
+	Zippers,
 	Strings,
 	Content,
 	Mutation,
@@ -391,6 +395,54 @@ define([
 		return 0 === visible;
 	}
 
+	/**
+	 * Returns the previous node to the given node that is not one of it's
+	 * ancestors.
+	 *
+	 * @param  {Node} node
+	 * @return {Node}
+	 */
+	function prevNonAncestor(node, match, until) {
+		return Dom.nextNonAncestor(node, true, match, until || Dom.isEditingHost);
+	}
+
+	function moveIntoContainer(zip) {
+		var loc = Zippers.go(zip.loc, zip.markers.start);
+		var index = Arrays.someIndex(loc.rights.slice(1), Zippers.isMarker) + 1;
+		var records = [];
+		while (index--) {
+			records.push(Zippers.after(loc));
+			loc = Zippers.remove(loc);
+		}
+		loc = Zippers.insertAt(loc, zip.markers.insert, records);
+		var markers = Zippers.update(Zippers.root(loc));
+		return [markers.start, markers.end];
+	}
+
+	function moveIntoItem(boundary, start, end) {
+		var nodes = Dom.nodeAndPrevSiblings(Boundaries.prevNode(boundary));
+		var prev = Arrays.last(nodes.filter(Html.isRendered));
+		var editable = Dom.editingHost(prev);
+		if (Html.isListContainer(prev)) {
+			return moveIntoContainer(Zippers.zipper(editable, {
+				insert : Boundaries.fromEndOfNode(prev),
+				start  : start,
+				end    : end
+			}));
+		}
+		var zip = Zippers.zipper(editable, {
+			insertContainer : boundary,
+			start           : start,
+			end             : end
+		});
+		zip.loc = Zippers.insertAt(zip.loc, zip.markers.insertContainer, [
+			Boromir(prev.ownerDocument.createElement('UL'))
+		]);
+		zip.markers.insert = Zippers.createMarker('insert');
+		zip.loc = Zippers.insert(Zippers.down(zip.loc), zip.markers.insert);
+		return moveIntoContainer(zip);
+	}
+
 	function indent(start, end) {
 		var startLi = nearest(Boundaries.prevNode(start), Html.isListItem);
 		var endLi = nearest(Boundaries.nextNode(end), Html.isListItem);
@@ -399,9 +451,24 @@ define([
 		}
 		start = Boundaries.fromFrontOfNode(startLi);
 		end = Boundaries.fromBehindOfNode(endLi);
-		Html.walkBetween(start, end, function (nodes) {
-			console.log(nodes);
+		var zip = Zippers.zipper(Dom.editingHost(startLi), {
+			start : start,
+			end   : end
 		});
+		var cac = Boundaries.commonContainer(start, end);
+		var isBelowCac = function (loc) {
+			return Zippers.after(Zippers.up(loc)).domNode() === cac;
+		};
+		var loc = zip.loc;
+		loc = Zippers.splitAt(loc, zip.markers.start, isBelowCac);
+		loc = Zippers.splitAt(loc, zip.markers.end, isBelowCac);
+		var markers = Zippers.update(Zippers.root(loc));
+		start = markers.start;
+		end = markers.end;
+		var prev = prevNonAncestor(Boundaries.prevNode(start), Html.isRendered);
+		if (Html.isListItem(prev)) {
+			return moveIntoItem(Boundaries.fromEndOfNode(prev), start, end);
+		}
 		return [start, end];
 	}
 

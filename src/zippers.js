@@ -14,11 +14,11 @@
  *		start : boundaries[0],
  *		end   : boundaries[1]
  *	});
- *	var loc = zip.tree;
+ *	var loc = zip.loc;
  *	var markers = zip.markers;
- *	loc = split(gotoMarker(loc, markers.start));
+ *	loc = splitAt(loc, markers.start);
  *	loc = insert(loc, contents(createRecord('#text'), ['↵']));
- *	loc = split(gotoMarker(loc, markers.end));
+ *	loc = splitAt(loc, markers.end);
  *	var preserved = update(root(loc));
  *	console.log(aloha.markers.hint([preserved.start, preserved.end]));
  */
@@ -28,7 +28,7 @@ define([
 	'html',
 	'paths',
 	'arrays',
-	'Boromir',
+	'boromir',
 	'boundaries',
 	'functions'
 ], function (
@@ -52,12 +52,9 @@ define([
 		if (1 === arguments.length) {
 			return isTextRecord(record) ? record.text() : record.children();
 		}
-		if (isTextRecord(record)) {
-			return record.text(content.join(''));
-		}
-		return record.children(content.map(function (item) {
-			return item instanceof Boromir ? item : Boromir(item);
-		}));
+		return isTextRecord(record)
+		     ? record.text(content.join(''))
+		     : record.children(content);
 	}
 
 	/**
@@ -220,16 +217,7 @@ define([
 				});
 				return [];
 			}
-			if (isFragmentedText(record)) {
-				return [defragmentText(record)];
-			}
-			if (!isTextRecord(record)) {
-				if (record.children().length === 0) {
-					return [record.style('outline', '3px solid rgba(150, 50, 50, 0.3)')];
-				}
-				return [record.style('outline', '3px solid rgba(50, 150, 50, 0.3)')];
-			}
-			return [record];
+			return [isFragmentedText(record) ? defragmentText(record) : record];
 		});
 		var editable = after(loc).updateDom().domNode();
 		return paths.reduce(function (markers, mark) {
@@ -386,12 +374,11 @@ define([
 	/**
 	 * FIXME: isFragmentedText and original and isMarker won't be preserved on cloning.
 	 */
-	function Marker(boundary, name) {
+	function createMarker(name) {
 		var node = document.createElement('code');
 		node.innerHTML = ++markerCount;
 		var record = Boromir(node);
 		record.isMarker = true;
-		record.boundary = boundary;
 		record.marker = name;
 		return record;
 	}
@@ -404,6 +391,19 @@ define([
 		return insert(isTextLocation(loc) ? FragmentedText(loc) : loc, marker);
 	}
 
+	function markup(loc, marked) {
+		var markers = {};
+		Maps.forEach(marked, function (value, key) {
+			var result = markTree(loc, value, key);
+			markers[key] = result.marker;
+			loc = result.loc;
+		});
+		return {
+			loc     : loc,
+			markers : markers
+		};
+	}
+
 	function insertMarker(marker, loc, path) {
 		return root(mark(traverse(loc, path), marker));
 	}
@@ -412,35 +412,22 @@ define([
 		return markup(create(element), boundaries);
 	}
 
-	function markTree(tree, boundary, markerName) {
-		var element = after(tree).domNode();
+	function markTree(loc, boundary, markerName) {
+		var element = after(loc).domNode();
 		var body = element.ownerDocument.body;
 		var root = Paths.fromBoundary(body, Boundaries.fromFrontOfNode(element));
 		var path  = Paths.fromBoundary(body, boundary);
 		var clipped = clipCommonRoot(root, path);
 		if (0 === clipped.length) {
 			return {
-				tree   : tree,
+				loc    : loc,
 				marker : null
 			};
 		}
-		var marker = Marker(boundary, markerName);
+		var marker = createMarker(markerName);
 		return {
-			tree   : insertMarker(marker, tree, clipped),
+			loc    : insertMarker(marker, loc, clipped),
 			marker : marker
-		};
-	}
-
-	function markup(tree, marked) {
-		var markers = {};
-		Maps.forEach(marked, function (value, key) {
-			var result = markTree(tree, value, key);
-			markers[key] = result.marker;
-			tree = result.tree;
-		});
-		return {
-			tree    : tree,
-			markers : markers
 		};
 	}
 
@@ -500,15 +487,24 @@ define([
 		return split(loc, until);
 	}
 
-	function gotoMarker(tree, marker) {
-		var loc = walkPreOrderWhile(root(tree), function (loc) {
+	function go(loc, marker) {
+		var loc = walkPreOrderWhile(root(loc), function (loc) {
 			var record = after(loc);
 			return !(record && isMarker(record) && record === marker);
 		});
 		return isRoot(loc) ? null : loc;
 	}
 
+	function splitAt(loc, marker, until) {
+		return split(go(loc, marker), until);
+	}
+
+	function insertAt(loc, marker, inserts) {
+		return insert(go(loc, marker), inserts);
+	}
+
 	return {
+		go        : go,
 		hint      : hint,
 		update    : update,
 		create    : create,
@@ -525,7 +521,12 @@ define([
 		insert    : insert,
 		replace   : replace,
 		remove    : remove,
+		jump      : jump,
 		zipper    : zipper,
 		isAtStart : isAtStart,
+		splitAt   : splitAt,
+		insertAt  : insertAt,
+		isMarker  : isMarker,
+		createMarker : createMarker
 	};
 });
