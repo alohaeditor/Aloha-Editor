@@ -403,7 +403,12 @@ define([
 	 * @return {Node}
 	 */
 	function prevNonAncestor(node, match, until) {
-		return Dom.nextNonAncestor(node, true, match, until || Dom.isEditingHost);
+		return match(node) ? node : Dom.nextNonAncestor(
+			node,
+			true,
+			match,
+			until || Dom.isEditingHost
+		);
 	}
 
 	function moveIntoContainer(zip) {
@@ -435,11 +440,13 @@ define([
 			start           : start,
 			end             : end
 		});
-		zip.loc = Zippers.insertAt(zip.loc, zip.markers.insertContainer, [
-			Boromir(prev.ownerDocument.createElement('UL'))
-		]);
+		zip.loc = Zippers.down(Zippers.insertAt(
+			zip.loc,
+			zip.markers.insertContainer,
+			[Boromir(prev.ownerDocument.createElement('UL'))]
+		));
 		zip.markers.insert = Zippers.createMarker('insert');
-		zip.loc = Zippers.insert(Zippers.down(zip.loc), zip.markers.insert);
+		zip.loc = Zippers.insert(zip.loc, zip.markers.insert);
 		return moveIntoContainer(zip);
 	}
 
@@ -449,9 +456,10 @@ define([
 		if (!Html.isListItem(startLi) || !Html.isListItem(endLi)) {
 			return [start, end];
 		}
+		var editable = Dom.editingHost(startLi);
 		start = Boundaries.fromFrontOfNode(startLi);
 		end = Boundaries.fromBehindOfNode(endLi);
-		var zip = Zippers.zipper(Dom.editingHost(startLi), {
+		var zip = Zippers.zipper(editable, {
 			start : start,
 			end   : end
 		});
@@ -469,7 +477,22 @@ define([
 		if (Html.isListItem(prev)) {
 			return moveIntoItem(Boundaries.fromEndOfNode(prev), start, end);
 		}
-		return [start, end];
+		zip = Zippers.zipper(editable, {
+			start : start,
+			end   : end
+		});
+		zip.loc = Zippers.down(Zippers.insertAt(
+			zip.loc,
+			zip.markers.start,
+			[Boromir(prev.ownerDocument.createElement('LI'))]
+		));
+		zip.loc = Zippers.down(Zippers.insert(
+			zip.loc,
+			[Boromir(prev.ownerDocument.createElement('UL'))]
+		));
+		zip.markers.insert = Zippers.createMarker('insert');
+		zip.loc = Zippers.insert(zip.loc, zip.markers.insert);
+		return moveIntoContainer(zip);
 	}
 
 	function isIndentationRange(start, end) {
