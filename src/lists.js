@@ -399,7 +399,8 @@ define([
 	 * Returns the previous node to the given node that is not one of it's
 	 * ancestors.
 	 *
-	 * @param  {Node} node
+	 * @private
+	 * @param  {!Node} node
 	 * @return {Node}
 	 */
 	function prevNonAncestor(node, match, until) {
@@ -412,41 +413,37 @@ define([
 	}
 
 	function moveIntoContainer(zip) {
-		var loc = Zippers.go(zip.loc, zip.markers.start);
+		var marker = Zippers.createMarker('insertionMarker');
+		var loc = Zippers.insert(zip.loc, marker);
+		loc = Zippers.go(loc, zip.markers.start);
 		var index = Arrays.someIndex(loc.rights.slice(1), Zippers.isMarker) + 1;
 		var records = [];
 		while (index--) {
 			records.push(Zippers.after(loc));
 			loc = Zippers.remove(loc);
 		}
-		loc = Zippers.insertAt(loc, zip.markers.insert, records);
-		var markers = Zippers.update(Zippers.root(loc));
-		return [markers.start, markers.end];
+		return Zippers.insertAt(loc, marker, records);
 	}
 
 	function moveIntoItem(boundary, start, end) {
 		var nodes = Dom.nodeAndPrevSiblings(Boundaries.prevNode(boundary));
 		var prev = Arrays.last(nodes.filter(Html.isRendered));
 		var editable = Dom.editingHost(prev);
-		if (Html.isListContainer(prev)) {
-			return moveIntoContainer(Zippers.zipper(editable, {
-				insert : Boundaries.fromEndOfNode(prev),
-				start  : start,
-				end    : end
-			}));
-		}
 		var zip = Zippers.zipper(editable, {
-			insertContainer : boundary,
-			start           : start,
-			end             : end
+			inLi  : boundary,
+			inUl  : Boundaries.fromEndOfNode(prev),
+			start : start,
+			end   : end
 		});
-		zip.loc = Zippers.down(Zippers.insertAt(
-			zip.loc,
-			zip.markers.insertContainer,
-			[Boromir(prev.ownerDocument.createElement('UL'))]
-		));
-		zip.markers.insert = Zippers.createMarker('insert');
-		zip.loc = Zippers.insert(zip.loc, zip.markers.insert);
+		if (Html.isListContainer(prev)) {
+			zip.loc = Zippers.go(zip.loc, zip.markers.inUl);
+		} else {
+			zip.loc = Zippers.down(Zippers.insertAt(
+				zip.loc,
+				zip.markers.inLi,
+				[Boromir(prev.ownerDocument.createElement('UL'))]
+			));
+		}
 		return moveIntoContainer(zip);
 	}
 
@@ -467,32 +464,34 @@ define([
 		var isBelowCac = function (loc) {
 			return Zippers.after(Zippers.up(loc)).domNode() === cac;
 		};
-		var loc = zip.loc;
-		loc = Zippers.splitAt(loc, zip.markers.start, isBelowCac);
-		loc = Zippers.splitAt(loc, zip.markers.end, isBelowCac);
-		var markers = Zippers.update(Zippers.root(loc));
+		zip.loc = Zippers.splitAt(zip.loc, zip.markers.start, isBelowCac);
+		zip.loc = Zippers.splitAt(zip.loc, zip.markers.end, isBelowCac);
+		var markers = Zippers.update(Zippers.root(zip.loc));
 		start = markers.start;
 		end = markers.end;
 		var prev = prevNonAncestor(Boundaries.prevNode(start), Html.isRendered);
+		var loc;
 		if (Html.isListItem(prev)) {
-			return moveIntoItem(Boundaries.fromEndOfNode(prev), start, end);
+			loc = moveIntoItem(Boundaries.fromEndOfNode(prev), start, end);
+		} else {
+			zip = Zippers.zipper(editable, {
+				start : start,
+				end   : end
+			});
+			zip.loc = Zippers.go(zip.markers.start);
+			zip.loc = Zippers.down(Zippers.insertAt(
+				zip.loc,
+				[Boromir(prev.ownerDocument.createElement('LI'))]
+			));
+			zip.loc = Zippers.down(Zippers.insert(
+				zip.loc,
+				[Boromir(prev.ownerDocument.createElement('UL'))]
+			));
+			loc = moveIntoContainer(zip);
 		}
-		zip = Zippers.zipper(editable, {
-			start : start,
-			end   : end
-		});
-		zip.loc = Zippers.down(Zippers.insertAt(
-			zip.loc,
-			zip.markers.start,
-			[Boromir(prev.ownerDocument.createElement('LI'))]
-		));
-		zip.loc = Zippers.down(Zippers.insert(
-			zip.loc,
-			[Boromir(prev.ownerDocument.createElement('UL'))]
-		));
-		zip.markers.insert = Zippers.createMarker('insert');
-		zip.loc = Zippers.insert(zip.loc, zip.markers.insert);
-		return moveIntoContainer(zip);
+		markers = Zippers.update(Zippers.root(loc));
+		console.warn(markers);
+		return [markers.start, markers.end];
 	}
 
 	function isIndentationRange(start, end) {

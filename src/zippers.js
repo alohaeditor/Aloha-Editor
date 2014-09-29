@@ -211,10 +211,12 @@ define([
 		var paths = [];
 		loc = walkPostOrder(loc, function (record, trail) {
 			if (isMarker(record)) {
-				paths.push({
-					name : record.marker,
-					path : trail
-				});
+				if (record.marker) {
+					paths.push({
+						name : record.marker,
+						path : trail
+					});
+				}
 				return [];
 			}
 			return [isFragmentedText(record) ? defragmentText(record) : record];
@@ -488,7 +490,7 @@ define([
 	}
 
 	function go(loc, marker) {
-		var loc = walkPreOrderWhile(root(loc), function (loc) {
+		loc = walkPreOrderWhile(root(loc), function (loc) {
 			var record = after(loc);
 			return !(record && isMarker(record) && record === marker);
 		});
@@ -524,6 +526,7 @@ define([
 		jump      : jump,
 		zipper    : zipper,
 		isAtStart : isAtStart,
+		isAtEnd   : isAtEnd,
 		splitAt   : splitAt,
 		insertAt  : insertAt,
 		isMarker  : isMarker,
