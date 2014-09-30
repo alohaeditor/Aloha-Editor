@@ -4,11 +4,11 @@
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
+ *
+ * @reference: cssminimizer.com
  */
 define(['dom'], function (Dom) {
 	'use strict';
-
-	// cssminimizer.com
 
 	var CSS
 
@@ -63,6 +63,12 @@ define(['dom'], function (Dom) {
 		+ '.✪✪✪{padding:10px}'
 		+ '.✪✪✪ td,.✪✪✪ th,.✪✪✪ b,.✪✪✪ i,.✪✪✪ u,.✪✪✪ p,.✪✪✪ /*xul,.✪✪✪ ol,.✪✪✪*/ li,.✪✪✪ h1,.✪✪✪ h2,.✪✪✪ h3,.✪✪✪ h4,.✪✪✪ h5,.✪✪✪ h6,.✪✪✪ div,.✪✪✪ span{padding:2px 4px;margin:2px;}';
 
+	/**
+	 * Insertes the necessary styles into the given document head.
+	 *
+	 * @private
+	 * @param {!Document} doc
+	 */
 	function insertStyle(doc) {
 		var metaview = doc.createElement('style');
 		Dom.setAttr(metaview, 'id', 'metaview');
@@ -77,8 +83,15 @@ define(['dom'], function (Dom) {
 	/**
 	 * Toggles metaview mode.
 	 *
-	 * @param {Element} editable
-	 * @param {Object}  opts
+	 * @usage:
+	 * aloha.metaview.toggle(editable, {
+	 *		outline: true,
+	 *		tagname: true,
+	 *		padding: true
+	 * });
+	 *
+	 * @param {!Element} editable
+	 * @param {Object=}  opts
 	 */
 	function toggle(editable, opts) {
 		if (!editable.ownerDocument.querySelector('style#metaview')) {
