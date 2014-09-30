@@ -38,9 +38,9 @@
 		var y = box.top + box.height + buffer;
 		Dom.setStyle(toolbar, 'left', x + 'px');
 		Dom.setStyle(toolbar, 'top', y + 'px');
-		var arrow = toolbar.querySelector('.aloha-arrow-up');
-		var arrowOffset = (x <= xMin || x >= xMax) ? (center - x) + 'px' : 'auto';
-		Dom.setStyle(arrow, 'margin-left', arrowOffset);
+		// var arrow = toolbar.querySelector('.aloha-arrow-up');
+		// var arrowOffset = (x <= xMin || x >= xMax) ? (center - x) + 'px' : 'auto';
+		// Dom.setStyle(arrow, 'margin-left', arrowOffset);
 	}
 
 	function notAnchor(node) { return 'A' !== node.nodeName; }

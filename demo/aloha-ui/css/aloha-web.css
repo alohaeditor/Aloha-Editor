@@ -1,0 +1,242 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:300);
+
+/*
+#54c8eb light blue
+#4ea9de med blue
+#4b97d2 dark blue
+#92cc8f light green
+#41bb98 mint green
+#c9de83 yellowish green
+#dee569 yellowisher green
+#c891c0 light purple
+#9464a8 med purple
+#7755a1 dark purple
+#f069a1 light pink
+#f05884 med pink
+#e7457b dark pink
+#ffd47e peach
+#f69078 salmon
+*/
+
+.featurette .glyphicon-heart {
+	color: #e7457b;
+}
+
+.featurette .glyphicon-briefcase {
+	color: #41bb98;
+}
+
+.featurette .glyphicon-dashboard {
+	color: #ffd47e;
+}
+
+a.navbar-brand img {
+	margin: -14px -12px;
+	height: 35px;
+}
+
+body {
+	font-size: 21px;
+}
+
+.footer .row p {
+	font-size: 16px;
+}
+
+body * {
+	font-family: 'Open Sans', sans-serif;
+	-moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    -moz-font-smoothing: antialiased;
+    font-smoothing: antialiased;
+    font-weight: 300;
+    color: #333;
+}
+
+.funky {
+	background-color: #54c8eb;
+	transition: background-color 15s;
+}
+
+.froggy-container {
+	padding: 7% 0;
+}
+
+.froggy-container img {
+	-webkit-filter: brightness(5);
+	filter: brightness(5);
+	transition: -webkit-filter 5s, filter 5s;
+}
+
+.navbar {
+	padding: 5px 0;
+	border: 0;
+	height: 60px;
+}
+
+.navbar-header, .navbar-right {
+	display: none;
+}
+
+.navbar .navbar-nav>li>a, .navbar .navbar-nav>li>a:hover, .navbar .navbar-nav>li>a .glyphicon {
+	color: white;
+	font-size: 18px;
+	outline: 0;
+}
+
+.navbar-nav>li>a .glyphicon {
+	display: none;
+}
+
+.page-header {
+	border: 0;
+	position: relative;
+	padding-top: 40px;
+	margin-top: 60px;
+	min-height: 85%;
+}
+
+.page-header::before {
+	content: '';
+	display: block;
+	position: absolute;
+	width: 100%;
+	height: 200px;
+	bottom: 0px;
+	left: 0px;
+	background: -moz-linear-gradient(top,  rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0)), color-stop(100%,rgba(0,0,0,1)));
+	background: -webkit-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,1) 100%);
+	background: -o-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,1) 100%);
+	background: -ms-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,1) 100%);
+	background: linear-gradient(to bottom,  rgba(0,0,0,0) 0%,rgba(0,0,0,1) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#000000',GradientType=0 );
+	opacity: 0.1;
+}
+
+.header h1 {
+	font-size: 70px;
+	margin-bottom: 30px;
+	color: white;
+}
+
+.header p {
+	font-size: 24px;
+	margin-bottom: 30px;
+	color: white;
+}
+
+h2 b {
+	font-weight: 700;
+}
+
+.muted {
+	background: white;
+	box-shadow: 0 0 100px rgb(240,240,240);
+}
+
+.navbar-collapse img {
+	width: 20px;
+	height: 20px;
+}
+
+.navbar-collapse .glyphicon, .navbar-collapse img {
+	margin-right: 5px;
+}
+
+.navbar-default .navbar-toggle, .navbar-default .navbar-toggle:hover, .navbar-default .navbar-toggle:focus {
+	border: 0;
+	background: white;
+}
+
+.page-header .btn-wrap {
+	height: 100px;
+	display: none;
+}
+
+.btn-download, .btn-tryit, .btn-example, .shop .featurette .btn, .blog-entries .btn {
+	background: transparent;
+	transition: text-shadow 1s, box-shadow 1s;
+	outline: 0;
+}
+
+.btn-download, .btn-download:hover, .btn-download:focus, .btn-tryit, .btn-tryit:hover, .btn-tryit:focus, .btn-example, .btn-example:hover, .btn-example:focus {
+	border-color: white;
+	color: white;
+	outline: 0;
+}
+
+.btn-download, .flip-container {
+	float: left;
+	margin-right: 15px;
+}
+
+.btn-download:hover, .btn-tryit:hover, .btn-example:hover, .shop .featurette .btn:hover, .blog-entries .btn:hover {
+	text-shadow: 0 0 20px;
+	box-shadow: 0 0 20px;
+}
+
+.btn-tryit, .btn-example {
+	width: 100%;
+}
+
+.demo-edit {
+	min-height: 180px;
+	margin-top: 100px;
+}
+
+.demo-edit b, .demo-edit u, .demo-edit i {
+	color: white;
+}
+.demo-edit b {
+	font-weight: 700;
+}
+
+.navbar .container, .header .container {
+	padding: 0px 20px;
+}
+
+.container {
+	padding-top: 60px;
+	padding-bottom: 60px;
+}
+
+.featurette h2 {
+	margin-bottom: 40px;
+}
+
+.features .featurette .glyphicon {
+	font-size: 100px;
+	margin-left: 30%;
+}
+
+.container p {
+	line-height: 1.5;
+}
+
+#license .gpl-logo {
+	margin-top: 40px;
+	text-align: center;
+}
+
+.shop .featurette .glyphicon {
+	font-size: 50px;
+}
+
+.shop .head {
+	margin-bottom: 60px;
+}
+
+.shop .featurette .btn, .blog-entries .btn {
+	background: transparent;
+	border: 1px solid #54c8eb;
+	color: #54c8eb;
+}
+
+.shop .featurette>div {
+	margin-bottom: 60px;
+}
+
+.blog-entries p {
+	font-size: 14px;
+}

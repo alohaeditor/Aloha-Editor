@@ -1,3 +1,7 @@
+.aloha-ui * {
+	color: white;
+}
+
 .aloha-3d {
 	display: inline-block;
 	position: absolute;
@@ -19,7 +23,10 @@
 	        transform-style: preserve-3d;
 }
 
-.aloha-ui.btn-toolbar { display: inline-block; }
+.aloha-ui.btn-toolbar { 
+	display: inline-block; 
+	float: right;
+}
 
 .aloha-ui input,
 .aloha-ui .btn,
@@ -36,7 +43,7 @@
 	         font-smoothing: antialiased;
 }
 .aloha-ui .btn {
-	width: 45px;
+	min-width: 45px;
 	height: 45px;
 	margin-left: 0;
 }
@@ -46,27 +53,6 @@
 	    -ms-transition: width 0.25s;
 	        transition: width 0.25s;
 }
-.aloha-ui.btn-toolbar .btn.dropdown-toggle::before {
-	content: '';
-	position: absolute;
-	right: 0px;
-	top: 0px;
-	width: 50%;
-	height: 100%;
-	background: -moz-linear-gradient(left, rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 100%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(0,0,0,0)), color-stop(100%,rgba(0,0,0,0.5))); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(left, rgba(0,0,0,0) 0%,rgba(0,0,0,0.5) 100%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(left, rgba(0,0,0,0) 0%,rgba(0,0,0,0.5) 100%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(left, rgba(0,0,0,0) 0%,rgba(0,0,0,0.5) 100%); /* IE10+ */
-	background: linear-gradient(to right, rgba(0,0,0,0) 0%,rgba(0,0,0,0.5) 100%); /* W3C */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#000000',GradientType=1 ); /* IE6-9 */
-}
-
-.aloha-ui .btn.dropdown-toggle:hover,
-.aloha-ui .btn-group.open .btn.dropdown-toggle { width: 135px; }
-
-.aloha-ui.btn-toolbar .btn.dropdown-toggle:hover::before,
-.aloha-ui.btn-toolbar .btn-group.open .btn.dropdown-toggle::before { display: none; }
 
 .aloha-ui.btn-toolbar .dropdown-menu {
 	border: 0;
@@ -83,17 +69,12 @@
 .aloha-ui .dropdown-menu a:focus {
 	border: 0;
 	border-radius: 0;
-	background: #3f3f3f;
+	background: transparent;
 	color: white;
-	text-shadow: -1px -1px 0px rgb(120,120,120);
-	-webkit-transition: text-shadow-color 0.25s;
-	   -moz-transition: text-shadow-color 0.25s;
-	    -ms-transition: text-shadow-color 0.25s;
-	        transition: text-shadow-color 0.25s;
+	margin: 0 1px;
 }
 .aloha-ui.btn-toolbar.btn-toolbar>.btn-group {
 	margin-left: 0;
-	border-right: 1px solid white;
 }
 .aloha-ui a
 .aloha-ui button {
@@ -108,10 +89,13 @@
 .aloha-ui button:hover,
 .aloha-ui .dropdown-menu .active,
 .aloha-ui .dropdown-menu a:hover,
-.aloha-ui .btn-group.open .btn {
-	color: #fff;
-	background: #5daecc;
-	text-shadow: -1px -1px 0px rgb(150,150,150);
+.aloha-ui .btn-group.open .btn,
+.aloha-ui .btn-group.open .btn.active {
+	color: white;
+	background: rgba(255,255,255,0.2);
+	box-shadow: 0;
+	-webkit-box-shadow: none;
+	-mox-box-shadow: none;
 }
 
 @-webkit-keyframes flip-open {
@@ -183,18 +167,18 @@
 .aloha-link-toolbar input {
 	color: #fff;
 	border: 0;
-	background: rgb(90,90,90);
+	background: rgba(255,255,255,0.2);
 	padding: 0 12px;
 	width: 310px;
-	height: 45px;
+	height: 49px;
 	font-size: 18px;
+	margin-top: -4px;
 }
 .aloha-link-toolbar a.btn { padding-top: 10px; }
 .aloha-link-toolbar .aloha-action-follow { float: right; }
 
 .aloha-active,
 .aloha-active:hover {
-	background: rgba(93, 174, 204, 0.15);
 	outline: 3px solid rgba(93, 174, 204, 0.15);
 }
 
@@ -219,4 +203,17 @@
 .aloha-editable a {
 	cursor: text;
 	text-decoration: underline;
+}
+
+.navbar {
+	height: auto;
+	min-height: 60px;
+}
+
+.navbar-header, .navbar-right {
+	display: block;
+}
+
+b {
+	font-weight: 700;
 }
