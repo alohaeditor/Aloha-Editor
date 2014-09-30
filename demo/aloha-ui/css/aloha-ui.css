@@ -232,6 +232,10 @@ b {
 	padding: 40px;
 }
 
+.aloha-editable a {
+	color: #4ea9de;
+}
+
 @media (max-width: 768px) {
 	.aloha-editable {
 		margin-top: 100px;
