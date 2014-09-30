@@ -4,23 +4,6 @@
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
- *
- * @reference:
- * http://hackage.haskell.org/package/rosezipper-0.2/docs/src/Data-Tree-Zipper.html
- *
- * @usage:
- *	var boundaries = Boundaries.get(document);
- *	var zip = zipper(Dom.editingHost(Boundaries.container(boundaries[0])), {
- *		start : boundaries[0],
- *		end   : boundaries[1]
- *	});
- *	var loc = zip.loc;
- *	var markers = zip.markers;
- *	loc = splitAt(loc, markers.start);
- *	loc = insert(loc, contents(createRecord('#text'), ['↵']));
- *	loc = splitAt(loc, markers.end);
- *	var preserved = update(root(loc));
- *	console.log(aloha.markers.hint([preserved.start, preserved.end]));
  */
 define([
 	'dom',
@@ -49,6 +32,15 @@ define([
 		return '#text' === record.name();
 	}
 
+	/**
+	 * Gets the contents of the given record. If a second argument is passed,
+	 * will set the contents of this record.
+	 *
+	 * @private
+	 * @param  {!Record}                 record
+	 * @param  {Array.<!Record|string>=} content
+	 * @return {Record}
+	 */
 	function contents(record, content) {
 		record = arguments[0];
 		if (1 === arguments.length) {
@@ -61,6 +53,13 @@ define([
 
 	/**
 	 * Represents a position between nodes inside a tree.
+	 *
+	 * @private
+	 * @type   Location
+	 * @param  {Array.<!Record>} lefts
+	 * @param  {Array.<!Record>} rights
+	 * @param  {Array.<!Record>} frames
+	 * @return {Location}
 	 */
 	function Location(lefts, rights, frames) {
 		return {
@@ -70,6 +69,12 @@ define([
 		};
 	}
 
+	/**
+	 * Return the parent frame of the given location.
+	 *
+	 * @param  {!Location} loc;
+	 * @return {Location}
+	 */
 	function peek(loc) {
 		return Arrays.last(loc.frames);
 	}
@@ -94,6 +99,15 @@ define([
 		return loc.rights[0];
 	}
 
+	/**
+	 * Returns previous location from the given position.
+	 * If a second argument is specified, it will specify the number steps to
+	 * shift the location.
+	 *
+	 * @param  {!Location} loc
+	 * @param  {number=}   stride
+	 * @return {Location}
+	 */
 	function prev(loc, stride) {
 		stride = 'number' === typeof stride ? stride : 1;
 		return 0 === stride ? loc : Location(
@@ -103,6 +117,15 @@ define([
 		);
 	}
 
+	/**
+	 * Returns next location from the given position.
+	 * If a second argument is specified, it will specify the number steps to
+	 * shift the location.
+	 *
+	 * @param  {!Location} loc
+	 * @param  {number=}   stride
+	 * @return {Location}
+	 */
 	function next(loc, stride) {
 		stride = 'number' === typeof stride ? stride : 1;
 		return 0 === stride ? loc : Location(
@@ -112,10 +135,22 @@ define([
 		);
 	}
 
+	/**
+	 * Descends into the record at the given tree location.
+	 *
+	 * @param  {!Location} loc
+	 * @return {Location}
+	 */
 	function down(loc) {
 		return Location([], contents(after(loc)), loc.frames.concat(loc));
 	}
 
+	/**
+	 * Ascends to the front of the parent of the current location.
+	 *
+	 * @param  {!Location} loc
+	 * @return {Location}
+	 */
 	function up(loc) {
 		var content = loc.lefts.concat(loc.rights);
 		var frame = Arrays.last(loc.frames);
@@ -127,25 +162,62 @@ define([
 		);
 	}
 
+	/**
+	 * Ascends to the root of the tree.
+	 * The location returned will be the create() position.
+	 *
+	 * @param  {!Location} loc
+	 * @return {Location}
+	 */
 	function root(loc) {
 		return loc.frames.reduce(up, loc);
 	}
 
+	/**
+	 * Creates a tree location pointing to the given DOM node as its root.
+	 *
+	 * @private
+	 * @param  {!Node} node
+	 * @return {Location}
+	 */
 	function create(root) {
 		return Location([], [Boromir(root)], []);
 	}
 
+	/**
+	 * Checks whether the given locations points to a text record.
+	 *
+	 * @private
+	 * @param  {!Location} loc
+	 * @return {Location}
+	 */
 	function isTextLocation(loc) {
 		return 'string' === typeof after(loc);
 	}
 
+	/**
+	 * Counts the cumulative length of the given lists of text fragment records.
+	 *
+	 * @private
+	 * @param  {Array.<!Record>} fragments
+	 * @return {number}
+	 */
 	function fragmentsLength(fragments) {
 		return fragments.reduce(function (sum, record) {
 			return sum + record.text().length;
 		}, 0);
 	}
 
-	function walkPostOrder(loc, mutate) {
+	/**
+	 * Post order traversal throught the tree, mapping each not with a given
+	 * mutate() function.
+	 *
+	 * @private
+	 * @param  {!Location}                                          loc
+	 * @param  {!function(Record, Array.<number>):Array.<!Records>} mutate
+	 * @return {Location}
+	 */
+	function mapInPostOrder(loc, mutate) {
 		loc = root(loc);
 		var replacements;
 		var trail = [];
@@ -175,7 +247,16 @@ define([
 		return loc;
 	}
 
-	function walkPreOrderWhile(loc, pred) {
+	/**
+	 * Walks the tree in depth-first pre order traversal until pred() returns
+	 * false.
+	 *
+	 * @private
+	 * @param  {!Location}                   loc
+	 * @param  {function(Location):boolean=} pred
+	 * @return {Location}
+	 */
+	function walkInPreOrderWhile(loc, pred) {
 		pred = pred || Fn.returnTrue;
 		loc = root(loc);
 		while (pred(loc)) {
@@ -196,6 +277,13 @@ define([
 		return loc;
 	}
 
+	/**
+	 * Reconstitues a fragmented text record.
+	 *
+	 * @private
+	 * @param  {!Record} record
+	 * @return {Record}
+	 */
 	function defragmentText(record) {
 		var text = record.children().filter(isTextRecord).reduce(function (strings, string) {
 			return strings.concat(string.text());
@@ -205,9 +293,16 @@ define([
 		     : createRecord('#text', [text]);
 	}
 
+	/**
+	 * Updates the DOM tree below this location and returns a map of named boundaries
+	 * that are found therein.
+	 *
+	 * @param {!Location} loc
+	 * return {Map.<string, Boundary>}
+	 */
 	function update(loc) {
 		var paths = [];
-		loc = walkPostOrder(loc, function (record, trail) {
+		loc = mapInPostOrder(loc, function (record, trail) {
 			if (isMarker(record)) {
 				if (record.marker) {
 					paths.push({
@@ -226,6 +321,12 @@ define([
 		}, {});
 	}
 
+	/**
+	 * Return a partial representation of the given location in the tree.
+	 *
+	 * @param  {!Location} loc
+	 * @return {string}
+	 */
 	function hint(loc) {
 		var print = function (content) {
 			return 'string' === typeof content
@@ -237,10 +338,28 @@ define([
 		return loc.lefts.map(print).concat('▓', loc.rights.map(print)).join('');
 	}
 
+	/**
+	 * Normalizes the given offset inside the given record by ignoring any
+	 * markers.
+	 *
+	 * @private
+	 * @param  {!Record} record
+	 * @param  {number}  offset
+	 * @return {number}
+	 */
 	function normalizeOffset(record, offset) {
 		return offset + record.children().slice(0, offset).filter(isMarker).length;
 	}
 
+	/**
+	 * Maps the given offsets from a intergral text record to that of a
+	 * fragmented representation of it.
+	 *
+	 * @private
+	 * @param  {!Record} record
+	 * @param  {number}  offset
+	 * @return {number}
+	 */
 	function fragmentedOffset(record, offset) {
 		if (0 === offset) {
 			return [0];
@@ -270,19 +389,51 @@ define([
 		throw 'Text offset out of bounds';
 	}
 
+	/**
+	 * Splits text into two halves at the givne offset.
+	 *
+	 * @private
+	 * @param  {string} text
+	 * @param  {number} offset
+	 * @return {Array.<string>}
+	 */
 	function splitText(text, offset) {
 		return [text.substr(0, offset), text.substr(offset)];
 	}
 
+	/**
+	 * Descends into an offset inside a text location.
+	 *
+	 * @private
+	 * @param  {!Location} loc
+	 * @param  {number}    offset
+	 * @return {Location}
+	 */
 	function locationInText(loc, offset) {
 		var text = splitText(contents(after(loc)), offset);
 		return Location([text[0]], [text[1]], loc.frames.concat(loc));
 	}
 
+	/**
+	 * Descends into an offset inside a element location.
+	 *
+	 * @private
+	 * @param  {!Location} loc
+	 * @param  {number}    offset
+	 * @return {Location}
+	 */
 	function locationInElement(loc, offset) {
 		return next(down(loc), normalizeOffset(after(loc), offset));
 	}
 
+	/**
+	 * Descends into an offset inside a fragmented text location.
+	 *
+	 * @private
+	 * @param  {!Location} loc
+	 * @param  {number}    offset
+	 * @return {Location}
+	 */
 	function locationInFragment(loc, offset) {
 		var record = after(loc);
 		var offsets = fragmentedOffset(record, offset);
@@ -297,6 +448,14 @@ define([
 		]));
 	}
 
+	/**
+	 * Traverses the given path.
+	 *
+	 * @private
+	 * @param  {!Location} loc
+	 * @param  {!Path}     path
+	 * @return {Location}
+	 */
 	function traverse(loc, path) {
 		var offset;
 		var trail = path.concat().reverse();
@@ -315,6 +474,14 @@ define([
 		return loc;
 	}
 
+	/**
+	 * Clips the sub section of the given path that is common with `root`.
+	 *
+	 * @private
+	 * @param  {!Path} root
+	 * @param  {!Path} path
+	 * @return {Path}
+	 */
 	function clipCommonRoot(root, path) {
 		for (var i = 0; i < root.length; i++) {
 			if (path[i] !== root[i]) {
@@ -324,6 +491,14 @@ define([
 		return path.slice(i);
 	}
 
+	/**
+	 * Splices the rights of the given location.
+	 *
+	 * @param  {!Location}                loc
+	 * @param  {number}                   num
+	 * @param  {!Record|Array.<!Record>=} replacement
+	 * @return {Location}
+	 */
 	function splice(loc, num, replacement) {
 		var replacements = replacement
 		                 ? (replacement.constructor === Boromir || replacement.constructor === Record)
@@ -337,14 +512,34 @@ define([
 		);
 	}
 
+	/**
+	 * Inserts the given items at this location.
+	 *
+	 * @param  {!Location}               loc
+	 * @param  {!Record|Array.<!Record>} items
+	 * @return {Location}
+	 */
 	function insert(loc, items) {
 		return splice(loc, 0, items);
 	}
 
+	/**
+	 * Replaces the record at this location with the given.
+	 *
+	 * @param  {!Location} loc
+	 * @param  {!Record}   item
+	 * @return {Location}
+	 */
 	function replace(loc, item) {
 		return splice(loc, 1, item);
 	}
 
+	/**
+	 * Removes the record at this location.
+	 *
+	 * @param  {!Location} loc
+	 * @return {Location}
+	 */
 	function remove(loc) {
 		return splice(loc, 1);
 	}
@@ -354,6 +549,11 @@ define([
 	 * able to visualize it in the document for debugging.
 	 *
 	 * FIXME: isFragmentedText and original won't be preserved on cloning.
+	 *
+	 * @private
+	 * @type
+	 * @param  {!Location} loc
+	 * @return {Location}
 	 */
 	function FragmentedText(loc) {
 		var atText = up(loc);
@@ -368,13 +568,16 @@ define([
 	}
 
 	function isFragmentedText(record) {
-		return 'Q' === record.name();
+		return true === record.isFragmentedText;
 	}
 
 	var markerCount = 0;
 
 	/**
-	 * FIXME: isFragmentedText and original and isMarker won't be preserved on cloning.
+	 * Creates a markers.
+	 *
+	 * @param  {string} name
+	 * @return {Record}
 	 */
 	function createMarker(name) {
 		var node = document.createElement('code');
@@ -389,10 +592,14 @@ define([
 		return true === record.isMarker;
 	}
 
-	function mark(loc, marker) {
-		return insert(isTextLocation(loc) ? FragmentedText(loc) : loc, marker);
-	}
-
+	/**
+	 * Markup the tree with the given marker.
+	 *
+	 * @private
+	 * @param  {!Location} loc
+	 * @param  {!Marker}   marked
+	 * @return {Object}
+	 */
 	function markup(loc, marked) {
 		var markers = {};
 		Maps.forEach(marked, function (value, key) {
@@ -406,14 +613,28 @@ define([
 		};
 	}
 
-	function insertMarker(marker, loc, path) {
-		return root(mark(traverse(loc, path), marker));
-	}
-
+	/**
+	 * Creates a zipper with the given set of named boundaries laced into the
+	 * tree.
+	 *
+	 * @type
+	 * @param  {!Element}                    element
+	 * @param  {!Object.<string, !Boundary>} boundaries
+	 * @return {Location}
+	 */
 	function zipper(element, boundaries) {
 		return markup(create(element), boundaries);
 	}
 
+	/**
+	 * Inserts a marker at the given boundary
+	 *
+	 * @private
+	 * @param  {!Location}  loc
+	 * @param  {!Boundary}  boundary
+	 * @param  {markerName} string
+	 * @return {Object}
+	 */
 	function markTree(loc, boundary, markerName) {
 		var element = after(loc).domNode();
 		var body = element.ownerDocument.body;
@@ -427,12 +648,22 @@ define([
 			};
 		}
 		var marker = createMarker(markerName);
+		loc = traverse(loc, clipped);
+		loc = insert(isTextLocation(loc) ? FragmentedText(loc) : loc, marker);
 		return {
-			loc    : insertMarker(marker, loc, clipped),
+			loc    : loc,
 			marker : marker
 		};
 	}
 
+	/**
+	 * Creates a record of the given type and fills it with the given content.
+	 *
+	 * @private
+	 * @param  {string}                type
+	 * @param  {Array.<!Record|string>} conent
+	 * @return {Record}
+	 */
 	function createRecord(type, content) {
 		var node = '#text' === type
 		         ? document.createTextNode('')
@@ -442,14 +673,34 @@ define([
 		     : contents(Boromir(node), content);
 	}
 
+	/**
+	 * Clones a record.
+	 *
+	 * @param  {!Record} record
+	 * @return {Record}
+	 */
 	function clone(record) {
 		return Boromir(Dom.cloneShallow(record.domNode()));
 	}
 
+	/**
+	 * Checks whether this location is the root of the tree.
+	 *
+	 * @private
+	 * @param  {!Location} location
+	 * @return {boolean}
+	 */
 	function isRoot(loc) {
 		return 0 === loc.frames.length;
 	}
 
+	/**
+	 * Checks whether this location is which cannot be descended.
+	 *
+	 * @private
+	 * @param  {!Location} location
+	 * @return {boolean}
+	 */
 	function isVoid(loc) {
 		var record = after(loc);
 		return '#text' === record.name()
@@ -457,14 +708,34 @@ define([
 		    || Html.isVoidNode(record.domNode());
 	}
 
+	/**
+	 * Checks whether this location is at the start of its parent node.
+	 *
+	 * @param  {!Location} location
+	 * @return {boolean}
+	 */
 	function isAtStart(loc) {
 		return 0 === loc.lefts.length;
 	}
 
+	/**
+	 * Checks whether this location is at the end of its parent node.
+	 *
+	 * @param  {!Location} location
+	 * @return {boolean}
+	 */
 	function isAtEnd(loc) {
 		return 0 === loc.rights.length;
 	}
 
+	/**
+	 * Splits the tree down until until() returns true or we reach the editing
+	 * host.
+	 *
+	 * @param  {!Location}                   location
+	 * @param  {!function(Location):boolean} until
+	 * @return {boolean}
+	 */
 	function split(loc, until) {
 		until = until || Fn.returnFalse;
 		if (isRoot(peek(loc)) || until(loc)) {
@@ -489,47 +760,66 @@ define([
 		return split(loc, until);
 	}
 
+	/**
+	 * Go the the location at this given marker.
+	 *
+	 * @param  {!Location} loc
+	 * @param  {!Marker}   marker
+	 * @return {?Location}
+	 */
 	function go(loc, marker) {
-		loc = walkPreOrderWhile(root(loc), function (loc) {
+		loc = walkInPreOrderWhile(root(loc), function (loc) {
 			var record = after(loc);
 			return !(record && isMarker(record) && record === marker);
 		});
 		return isRoot(loc) ? null : loc;
 	}
 
+	/**
+	 * Splits at the given marker location.
+	 *
+	 * @param  {!Location} loc
+	 * @param  {!Marker}   marker
+	 * @param  {!function(Location):boolean}
+	 */
 	function splitAt(loc, marker, until) {
 		return split(go(loc, marker), until);
 	}
 
+	/**
+	 * Insert content at the given marker location.
+	 *
+	 * @param  {!Location} loc
+	 * @param  {!Marker}   marker
+	 * @param  {!function(Location):boolean}
+	 */
 	function insertAt(loc, marker, inserts) {
 		return insert(go(loc, marker), inserts);
 	}
 
 	return {
-		go        : go,
-		hint      : hint,
-		update    : update,
-		create    : create,
-		before    : before,
-		after     : after,
-		prev      : prev,
-		next      : next,
-		up        : up,
-		down      : down,
-		root      : root,
-		peek      : peek,
-		split     : split,
-		splice    : splice,
-		insert    : insert,
-		replace   : replace,
-		remove    : remove,
-		zipper    : zipper,
-		isAtStart : isAtStart,
-		isAtEnd   : isAtEnd,
-		splitAt   : splitAt,
-		insertAt  : insertAt,
-		isMarker  : isMarker,
-		createMarker : createMarker,
-		walkPreOrderWhile: walkPreOrderWhile
+		go           : go,
+		hint         : hint,
+		update       : update,
+		before       : before,
+		after        : after,
+		prev         : prev,
+		next         : next,
+		up           : up,
+		down         : down,
+		root         : root,
+		peek         : peek,
+		split        : split,
+		splice       : splice,
+		insert       : insert,
+		replace      : replace,
+		remove       : remove,
+		zipper       : zipper,
+		isAtStart    : isAtStart,
+		isAtEnd      : isAtEnd,
+		splitAt      : splitAt,
+		insertAt     : insertAt,
+		isMarker     : isMarker,
+		createMarker : createMarker
 	};
 });
