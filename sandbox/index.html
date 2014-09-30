@@ -130,60 +130,13 @@
 					}
 				}
 				function main(aloha) {
-					aloha(document.querySelector('.aloha-editable'), {
-						defaultBlock: 'h1'
+					aloha.arrays.coerce(document.querySelectorAll('.aloha-editable')).map(aloha).forEach(function (editable) {
+						aloha.metaview.toggle(editable.elem, {
+							tagname : true,
+							outline : true,
+							padding : true
+						});
 					});
-					//aloha.arrays.coerce(document.querySelectorAll('.aloha-editable')).forEach(aloha);
-					aloha.metaview.toggle(document.querySelector('.aloha-editable'),{outline:true,padding: true});
-
-					/*
-					var boundaries = [
-						aloha.boundaries.fromStartOfNode(document.querySelector('.aloha-editable')),
-						aloha.boundaries.create(document.querySelector('.aloha-editable'), 1),
-						aloha.boundaries.create(document.querySelector('.aloha-editable'), 2),
-						aloha.boundaries.create(document.querySelector('.aloha-editable'), 1),
-						aloha.boundaries.create(document.querySelector('i').firstChild, 1),
-						aloha.boundaries.create(document.querySelector('i').firstChild, 2),
-						aloha.boundaries.create(document.querySelector('i').firstChild, 2),
-						aloha.boundaries.fromEndOfNode(document.querySelector('i')),
-						aloha.boundaries.fromFrontOfNode(document.querySelector('i')),
-						aloha.boundaries.create(document.querySelector('span').firstChild, 2),
-						aloha.boundaries.create(document.querySelector('i').firstChild, 3),
-						aloha.boundaries.create(document.querySelector('h6').firstChild, 3)
-					];
-					*/
-
-					var editable = document.querySelector('.aloha-editable');
-					var boundaries = [
-						/*
-						aloha.boundaries.create(editable.querySelector('h6').firstChild, 2),
-						aloha.boundaries.fromStartOfNode(document.querySelector('b').firstChild),
-						*/
-						aloha.boundaries.create(document.querySelector('b').firstChild, 1),
-						/*
-						aloha.boundaries.create(document.querySelector('b').firstChild, 2),
-						aloha.boundaries.create(document.querySelector('b').firstChild, 3),
-						aloha.boundaries.create(document.querySelector('b'), 1),
-						aloha.boundaries.create(document.querySelector('b'), 1),
-						aloha.boundaries.fromFrontOfNode(document.querySelector('b')),
-						aloha.boundaries.create(document.querySelector('b').firstChild, 2)
-						*/
-					];
-					var limit = editable; //.querySelector('b').parentNode.parentNode;
-					var splitBoundary = aloha.boundaries.create(limit.querySelector('b').firstChild, 1);
-					var path = aloha.paths.fromBoundary(limit, splitBoundary);
-					var tree = aloha.MutationTrees.create(limit, boundaries);
-					var result = aloha.MutationTrees.split(tree, path)
-					tree = result[0];
-					path = result[1];
-					tree = aloha.MutationTrees.insert(tree, path, [
-						document.createTextNode('apple'),
-						document.createTextNode('orange')
-					]);
-					//tree.updateDom();
-					var updated = aloha.MutationTrees.update(tree);
-
-					//console.log(updated.domNode(), aloha.markers.hint(aloha.paths.toBoundary(updated.domNode(), result[1])));
 				}
 				if ('undefined' === typeof aloha) {
 					setVersion('src');
