@@ -342,9 +342,11 @@ define([
 	movements['down'] = Fn.partial(climb, 'down');
 	movements['left'] =
 	movements['alt+left'] =
+	movements['shift+left'] =
 	movements['ctrl+left'] = Fn.partial(step, 'left');
 	movements['right'] =
 	movements['alt+right'] =
+	movements['shift+right'] =
 	movements['ctrl+right'] = Fn.partial(step, 'right');
 	movements['pageUp'] =
 	movements['meta+up'] = Fn.partial(jump, 'up');
@@ -383,6 +385,7 @@ define([
 	function keydown(event, boundaries, focus) {
 		var handler = Keys.shortcutHandler(event.meta, event.keycode, movements);
 		if (handler) {
+			Events.preventDefault(event.nativeEvent);
 			return handler(event, boundaries, focus);
 		}
 		return keypress(event, boundaries, focus);
@@ -683,10 +686,6 @@ define([
 		);
 		selection.focus = change.focus;
 		selection.boundaries = change.boundaries;
-		// Because we don't want the page to scroll
-		if ('keydown' === event.type && movements[event.keycode]) {
-			Events.preventDefault(event.nativeEvent);
-		}
 		return event;
 	}
 
