@@ -610,9 +610,9 @@ define([
 	 */
 	function markup(loc, marked) {
 		var markers = {};
-		Maps.forEach(marked, function (value, key) {
-			var result = markTree(loc, value, key);
-			markers[key] = result.marker;
+		Maps.forEach(marked, function (boundary, name) {
+			var result = markTree(loc, boundary, name);
+			markers[name] = result.marker;
 			loc = result.loc;
 		});
 		return {
@@ -644,11 +644,12 @@ define([
 	 * @return {Object}
 	 */
 	function markTree(loc, boundary, markerName) {
+		loc = root(loc);
 		var element = after(loc).domNode();
 		var body = element.ownerDocument.body;
-		var root = Paths.fromBoundary(body, Boundaries.fromFrontOfNode(element));
-		var path  = Paths.fromBoundary(body, boundary);
-		var clipped = clipCommonRoot(root, path);
+		var origin = Paths.fromBoundary(body, Boundaries.fromFrontOfNode(element));
+		var path = Paths.fromBoundary(body, boundary);
+		var clipped = clipCommonRoot(origin, path);
 		if (0 === clipped.length) {
 			return {
 				loc    : loc,
