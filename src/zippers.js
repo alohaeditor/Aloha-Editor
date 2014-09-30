@@ -56,9 +56,9 @@ define([
 	 *
 	 * @private
 	 * @type   Location
-	 * @param  {Array.<!Record>} lefts
-	 * @param  {Array.<!Record>} rights
-	 * @param  {Array.<!Record>} frames
+	 * @param  {Array.<!Record>}   lefts
+	 * @param  {Array.<!Record>}   rights
+	 * @param  {Array.<!Location>} frames
 	 * @return {Location}
 	 */
 	function Location(lefts, rights, frames) {
@@ -213,8 +213,8 @@ define([
 	 * mutate() function.
 	 *
 	 * @private
-	 * @param  {!Location}                                          loc
-	 * @param  {!function(Record, Array.<number>):Array.<!Records>} mutate
+	 * @param  {!Location}                                         loc
+	 * @param  {!function(Record, Array.<number>):Array.<!Record>} mutate
 	 * @return {Location}
 	 */
 	function mapInPostOrder(loc, mutate) {
@@ -322,19 +322,27 @@ define([
 	}
 
 	/**
+	 * Prints the content.
+	 *
+	 * @private
+	 * @param  {!Record|string} content
+	 * @return {string}
+	 */
+	function print(content) {
+		return 'string' === typeof content
+		     ? '“' + content + '”'
+		     : isTextRecord(content)
+		     ? content.text()
+		     : content.domNode().outerHTML;
+	}
+
+	/**
 	 * Return a partial representation of the given location in the tree.
 	 *
 	 * @param  {!Location} loc
 	 * @return {string}
 	 */
 	function hint(loc) {
-		var print = function (content) {
-			return 'string' === typeof content
-			     ? '“' + content + '”'
-			     : isTextRecord(content)
-			     ? content.text()
-			     : content.domNode().outerHTML;
-		};
 		return loc.lefts.map(print).concat('▓', loc.rights.map(print)).join('');
 	}
 
@@ -496,18 +504,18 @@ define([
 	 *
 	 * @param  {!Location}                loc
 	 * @param  {number}                   num
-	 * @param  {!Record|Array.<!Record>=} replacement
+	 * @param  {!Record|Array.<!Record>=} items
 	 * @return {Location}
 	 */
-	function splice(loc, num, replacement) {
-		var replacements = replacement
-		                 ? (replacement.constructor === Boromir || replacement.constructor === Record)
-		                 ? [replacement]
-		                 : replacement
-		                 : [];
+	function splice(loc, num, items) {
+		items = items
+		      ? (items.constructor === Boromir || items.constructor === Record)
+		      ? [items]
+		      : items
+		      : [];
 		return Location(
 			loc.lefts.concat(),
-			replacements.concat(loc.rights.slice(num)),
+			items.concat(loc.rights.slice(num)),
 			loc.frames.concat()
 		);
 	}
@@ -660,8 +668,8 @@ define([
 	 * Creates a record of the given type and fills it with the given content.
 	 *
 	 * @private
-	 * @param  {string}                type
-	 * @param  {Array.<!Record|string>} conent
+	 * @param  {string}                 type
+	 * @param  {Array.<!Record|string>} content
 	 * @return {Record}
 	 */
 	function createRecord(type, content) {
@@ -687,7 +695,7 @@ define([
 	 * Checks whether this location is the root of the tree.
 	 *
 	 * @private
-	 * @param  {!Location} location
+	 * @param  {!Location} loc
 	 * @return {boolean}
 	 */
 	function isRoot(loc) {
@@ -698,7 +706,7 @@ define([
 	 * Checks whether this location is which cannot be descended.
 	 *
 	 * @private
-	 * @param  {!Location} location
+	 * @param  {!Location} loc
 	 * @return {boolean}
 	 */
 	function isVoid(loc) {
@@ -711,7 +719,7 @@ define([
 	/**
 	 * Checks whether this location is at the start of its parent node.
 	 *
-	 * @param  {!Location} location
+	 * @param  {!Location} loc
 	 * @return {boolean}
 	 */
 	function isAtStart(loc) {
@@ -721,7 +729,7 @@ define([
 	/**
 	 * Checks whether this location is at the end of its parent node.
 	 *
-	 * @param  {!Location} location
+	 * @param  {!Location} loc
 	 * @return {boolean}
 	 */
 	function isAtEnd(loc) {
