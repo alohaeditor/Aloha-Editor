@@ -88,5 +88,4 @@ while test $# -gt 0; do
 done
 
 build
-exit 1
 
