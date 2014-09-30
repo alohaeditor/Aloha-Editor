@@ -1,17 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Aloha Editor UI Integration Demo</title>
+		<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+		<link href="aloha-ui.css" rel="stylesheet">
+	</head>
 
-	<title>Aloha Editor UI Integration Demo</title>
-
-	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
-	<link href="aloha-ui.css" rel="stylesheet">
-  </head>
-
-  <body>
+	<body>
 
 	<div class="container">
 		<div class="menu-wrap">
@@ -66,8 +64,6 @@
 			</div>
 		</div>
 
-		<div><!-- limit aloha.markers.hint context -->
-
 		<div class="starter-template aloha-editable">
 
 			<h2>Aloha <b>Editor</b> UI Integration Demo</h2>
@@ -112,8 +108,6 @@
 
 		</div><!-- /.aloha-editable -->
 
-		</div><!-- / limit aloha.markers.hint context -->
-
 	</div><!-- /.container -->
 
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
@@ -123,25 +117,15 @@
 	<!--script src="../../build/aloha.min.js"></script-->
 	<script>
 		function main (aloha) {
-			Array.prototype.forEach.call(document.querySelectorAll('.aloha-editable'), aloha);
-			Array.prototype.forEach.call(
-				document.querySelectorAll('.aloha-editable'),
-				function (elem) {
-					aloha.metaview.toggle(elem, {
-						outline: true,
-						tagname: true,
-						padding: true
-					});
-				}
-			);
+			aloha.dom.query('.aloha-editable', document).forEach(aloha);
 		}
-		if ('undefined' === typeof aloha) {
+		if (window.aloha) {
+			main(aloha);
+		} else {
 			require('../../src/aloha', function (aloha) {
 				window.aloha = aloha;
 				main(aloha);
 			});
-		} else {
-			main(aloha);
 		}
 	</script>
 	<script src="aloha-ui.js"></script>
