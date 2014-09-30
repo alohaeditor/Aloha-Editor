@@ -7,7 +7,7 @@ Aloha Editor build script
 
 Make sure to run this script from within the directory in which is located (ie: ./build.sh).
 Also make sure to include an .env file in the same directory as this script.
-Your .env file should define ClOSURE_PATH=$CLOSURE_PATH.
+Your .env file should define CLOSURE_PATH=$CLOSURE_PATH.
 	"
 }
 
