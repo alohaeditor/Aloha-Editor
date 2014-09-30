@@ -466,20 +466,17 @@ define([
 		if (!Html.isListItem(startLi) || !Html.isListItem(endLi)) {
 			return [start, end];
 		}
-		var editable = Dom.editingHost(startLi);
 		start = Boundaries.fromFrontOfNode(startLi);
 		end = Boundaries.fromBehindOfNode(endLi);
-		var zip = Zip.zipper(editable, {
+		var cac = Boundaries.commonContainer(start, end);
+		var zip = Zip.zipper(Dom.editingHost(startLi), {
 			start : start,
 			end   : end
 		});
-		var cac = Boundaries.commonContainer(start, end);
-		var isBelowCac = function (loc) {
-			return Zip.after(Zip.up(loc)).domNode() === cac;
-		};
-		zip.loc = Zip.splitAt(zip.loc, zip.markers.start, isBelowCac);
-		zip.loc = Zip.splitAt(zip.loc, zip.markers.end, isBelowCac);
+		var isBelowCac = function (loc) { return domAfter(Zip.up(loc)) === cac; };
 		var loc = zip.loc;
+		loc = Zip.splitAt(loc, zip.markers.start, isBelowCac);
+		loc = Zip.splitAt(loc, zip.markers.end, isBelowCac);
 		var bottom = bottomJoiningLoc(Zip.next(Zip.go(loc, zip.markers.end)));
 		var records = [];
 		var removed;
@@ -492,12 +489,12 @@ define([
 		loc = Zip.go(loc, zip.markers.start);
 		removed = removeNext(loc, Arrays.someIndex(loc.rights.slice(1), Zip.isMarker) + 2);
 		records = removed.records.concat(records);
-		loc = removed.loc;
-		loc = topJoiningLoc(loc)
-		   || Zip.down(Zip.insert(loc, Boromir(document.createElement('LI'))));
-		loc = insertAt(loc, records);
-		var markers = Zip.update(Zip.root(loc));
-		return [markers.start, markers.end];
+		loc = topJoiningLoc(removed.loc) || Zip.down(Zip.insert(
+			removed.loc,
+			Boromir(document.createElement('LI'))
+		));
+		var markers = Zip.update(Zip.root(insertAt(loc, records)));
+		return [Boundaries.next(markers.start), Boundaries.prev(markers.end)];
 	}
 
 	function isIndentationRange(start, end) {
