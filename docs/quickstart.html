@@ -90,10 +90,11 @@ aloha(editable);</textarea>
 						with the <code>aloha-editable</code> class editable.
 					</p>
 
-					<textarea class="example">[].forEach.call(document.querySelectorAll('.aloha-editable'), aloha);</textarea>
+					<textarea class="example">aloha.dom.query('.aloha-editable', document).forEach(aloha);</textarea>
 
 					<p>
-						This will use the browser's built-in <code>querySelectorAll</code> function, which basically works like jQuery, to find all elements in the page that have the <code>aloha-editable</code> class. Since the browser won't return a proper array, we will need to use <code>call()</code> to invoke Array's <code>forEach()</code> function to call <code>aloha()</code> for all elements.
+						This will use our <code>aloha.dom.query</code> method that returns an arry of elements and
+						invoke the <code>aloha</code> function on each of them.
 					</p>
 				</div>
 			</div>
