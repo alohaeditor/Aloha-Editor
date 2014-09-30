@@ -1,3 +1,7 @@
+.aloha-ui {
+	z-index: 9999;
+}
+
 .aloha-ui * {
 	color: white;
 }
@@ -200,6 +204,10 @@
 
 .menu-wrap { height: 45px; }
 
+.aloha-editable {
+	padding-top: 40px;
+}
+
 .aloha-editable a {
 	cursor: text;
 	text-decoration: underline;
@@ -216,4 +224,22 @@
 
 b {
 	font-weight: 700;
+}
+
+.aloha-editable {
+	max-width: 1000px;
+	margin: 50px auto;
+	padding: 40px;
+}
+
+@media (max-width: 768px) {
+	.aloha-editable {
+		margin-top: 100px;
+	}
+}
+
+@media (max-width: 480px) {
+	.aloha-editable {
+		margin-top: 140px;
+	}
 }
