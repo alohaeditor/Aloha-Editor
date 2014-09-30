@@ -63,13 +63,28 @@ editable.style.borderColor = '#54c8eb';
 aloha(editable);</textarea>
 
 					<button class="btn btn-lg" onclick="executeExample('example-aloha-func')">Execute Example</button>
-
+				</div>
+				<div class="col-md-6">
+					<h3>HTML Code</h3>
+					<pre><code>&lt;div class="aloha-editable"&gt;
+	&lt;h2&gt;This content will be editable...&lt;/h2&gt;
+	&lt;p&gt;
+		if you press the 
+		&lt;button class="btn btn-sm" onclick="executeExample('example-aloha-func')"
+		contentEditable="false"&gt;Execute Example&lt;/button&gt;* button.
+	&lt;/p&gt;
+	&lt;p&gt;&lt;small&gt;*) Yes, you can even press the button in the example&lt;/small&gt;&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+				</div>
+				<div class="col-md-6">
+					<h3>Result</h3>
 					<div class="aloha-editable">
 						<h2>This content will be editable...</h2>
 						<p>if you press the <button class="btn btn-sm" onclick="executeExample('example-aloha-func')" contentEditable="false">Execute Example</button>* button.</p>
 						<p><small>*) Yes, you can even press the button in the example</small></p>
 					</div>
-
+				</div>
+				<div class="col-md-12">
 					<p>
 						In our implementations we like to use the following code snippet to make all elements
 						with the <code>aloha-editable</code> class editable.
