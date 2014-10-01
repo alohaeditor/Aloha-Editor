@@ -6,6 +6,7 @@
  * Contributors http://aloha-editor.org/contribution.php
  *
  * @todo consider moving this into html/
+ * @namespace content
  */
 define(['maps', 'arrays'], function (Maps, Arrays) {
 	'use strict';

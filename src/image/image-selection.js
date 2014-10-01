@@ -23,7 +23,7 @@ define([
 
 	/**
 	 * Retrieves elements from `boundaries`.
-	 * @param {[Boundary, Boundary]} boundaries
+	 * @param {Array.<Boundary>} boundaries
 	 * @return {Array.<Element>}
 	 */
 	function imagesFromBoundaries(boundaries) {

@@ -9,6 +9,7 @@
  * - record.merge(values) shares values array (values must be persistent)
  * - transient support with linear-time record.asTransient()
  * - optional init function (default calls record.merge())
+ * @namespace record
  */
 define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor, Assert) {
 	'use strict';

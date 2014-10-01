@@ -21,6 +21,7 @@
  *	loc = splitAt(loc, markers.end);
  *	var preserved = update(root(loc));
  *	console.log(aloha.markers.hint([preserved.start, preserved.end]));
+ *	@namespace zippers
  */
 define([
 	'dom',

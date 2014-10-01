@@ -7,6 +7,7 @@
  *
  * @see
  * http://www.w3.org/TR/DOM-Level-3-Events/#idl-interface-MouseEvent-initializers
+ * @namespace events
  */
 define(['misc', 'assert'], function (Misc, Assert) {
 	'use strict';

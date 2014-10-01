@@ -4,6 +4,7 @@
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php 
+ * @namespace functions
  */
 define([], function () {
 	'use strict';
@@ -55,8 +56,8 @@ define([], function () {
 	 * The complement function will return the opposite boolean result when
 	 * called with the same arguments as the given `fn` function.
 	 *
-	 * @param  {function:boolean} fn
-	 * @return {function:boolean}
+	 * @param  {function():boolean} fn
+	 * @return {function():boolean}
 	 */
 	function complement(fn) {
 		return function () {
@@ -110,7 +111,7 @@ define([], function () {
 	 *
 	 * comp(a, b, c)(value) === a(b(c(value)))
 	 *
-	 * @param  {function(*):*...}
+	 * @param  {function(...number):...number}
 	 * @return {*}
 	 */
 	function comp() {
@@ -133,7 +134,7 @@ define([], function () {
 	 * Composes a predicate function made up of a chain of the given predicate
 	 * arguments.
 	 *
-	 * @param  {function():boolean...}
+	 * @param  {function():...boolean}
 	 * @return {function():boolean}
 	 */
 	function and() {
@@ -152,8 +153,8 @@ define([], function () {
 	/**
 	 * Like and() but for boolean OR.
 	 *
-	 * @param  {function():boolean...}
-	 * @return {function():boolean}
+	 * @param  {function(): ...boolean}
+	 * @return {function(): boolean}
 	 */
 	function or() {
 		var predicates = arguments;

@@ -7,6 +7,7 @@
  *
  * @TODO: better climbing
  *        ie support
+ * @namespace selections
  */
 define([
 	'dom',

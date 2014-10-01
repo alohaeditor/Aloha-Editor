@@ -130,7 +130,7 @@ define([
 	 * TODO This list is incomplete but should look something like
 	 * http://www.w3.org/TR/CSS21/propidx.html
 	 *
-	 * @type <string, boolean>
+	 * @type {Object.<string, boolean>}
 	 */
 	var notInheritedStyles = {
 		'background-color': true,

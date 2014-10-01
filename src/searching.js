@@ -7,6 +7,7 @@
  *
  * @overview
  * Module for searching for strings of token in markup
+ * @namespace searching
  */
 define([
 	'dom',

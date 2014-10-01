@@ -10,6 +10,7 @@
  *
  * @todo:
  * consider https://github.com/nostrademons/keycode.js/blob/master/keycode.js
+ * @namespace keys
  */
 define([
 	'maps',

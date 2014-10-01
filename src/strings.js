@@ -7,6 +7,7 @@
  *
  * Reference:
  * http://www.w3.org/TR/html401/struct/text.html
+ * @namespace strings
  */
 define(['arrays'], function (Arrays) {
 	'use strict';

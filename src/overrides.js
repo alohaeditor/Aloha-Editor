@@ -19,6 +19,7 @@
  * https://dvcs.w3.org/hg/editing/raw-file/tip/editing.html#effective-command-value
  *
  * http://www.w3.org/TR/CSS2/propidx.html
+ * @namespace overrides
  */
 define([
 	'dom',
@@ -398,7 +399,7 @@ define([
 	 * Joins a variable list of overrides-lists into a single unique set.
 	 *
 	 * @private
-	 * @param  {Array.<Override>...}
+	 * @param  {...Array.<Override>}
 	 * @param  {Array.<Override>}
 	 * @return {Array.<Override>}
 	 */

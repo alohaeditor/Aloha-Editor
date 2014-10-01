@@ -18,6 +18,7 @@
  *      <p>{<b>some<br/>text<br/></b>}</p>
  *      while it should probably be
  *      <p>{<b>some</br>text</b>}<br/></p>
+ * @namespace editing
  */
 define([
 	'dom',
@@ -1254,10 +1255,10 @@ define([
 	 *
 	 * @param {Cusor} start
 	 * @param {Cusor} end
-	 * @param {function:boolean} until
+	 * @param {function():boolean} until
 	 *        Optional predicate.  May be used to stop the trimming process from
 	 *        moving the Cursor from within an element outside of it.
-	 * @param {function:boolean} ignore
+	 * @param {function():boolean} ignore
 	 *        Optional predicate.  May be used to ignore (skip)
 	 *        following/preceding siblings which otherwise would stop the
 	 *        trimming process, like for example underendered whitespace.
@@ -1286,10 +1287,10 @@ define([
 	 *
 	 * @param {Cusor} start
 	 * @param {Cusor} end
-	 * @param {function:boolean} until
+	 * @param {function():boolean} until
 	 *        Optional predicate.  May be used to stop the trimming process from
 	 *        moving the Cursor from within an element outside of it.
-	 * @param {function:boolean} ignore
+	 * @param {function():boolean} ignore
 	 *        Optional predicate.  May be used to ignore (skip)
 	 *        following/preceding siblings which otherwise would stop the
 	 *        trimming process, like for example underendered whitespace.
@@ -1585,13 +1586,13 @@ define([
 	 *        After splitting the selection may still be inside the split
 	 *        nodes, for example after splitting the DOM may look like
 	 *
-	 *        <b>1</b><b>{2</b><i>3</i><i>}4</i>
+	 *        <b>1</b><b>\{2</b><i>3</i><i>\}4</i>
 	 *
 	 *	      If normalizeRange is true, the selection is trimmed to
-	 *	      correct <i>}4</i> and expanded to correct <b>{2</b>, such
+	 *	      correct <i>\}4</i> and expanded to correct <b>\{2</b>, such
 	 *        that it will look like
 	 *
-	 *	      <b>1</b>{<b>2</b><i>3</i>}<i>4</i>
+	 *	      <b>1</b>\{<b>2</b><i>3</i>\}<i>4</i>
 	 *
 	 *	      This should make both start and end points children of the
 	 *        same cac which is going to be the topmost unsplit node. This

@@ -10,6 +10,7 @@
  * http://www.html5rocks.com/en/tutorials/dnd/basics/
  * https://developer.mozilla.org/en-US/docs/Drag_and_drop_events
  * https://developer.mozilla.org/en-US/docs/Web/API/DataTransfer
+ * @namespace dragdrop
  */
 define([
 	'dom',

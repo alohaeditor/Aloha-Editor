@@ -87,7 +87,7 @@ define([], function () {
 	 * https://developer.mozilla.org/en/docs/Web/Guide/HTML/HTML5/HTML5_element_list#Text-level_semantics
 	 *
 	 * @private
-	 * @type {object.<string, true>}
+	 * @type {Object.<string, true>}
 	 */
 	var TEXT_LEVEL_SEMANTIC_ELEMENTS = {
 		'A'      : true,
@@ -151,7 +151,7 @@ define([], function () {
 	 *
 	 * @private
 	 * @see   GROUPED_CONTAINERS
-	 * @param {<string, boolean>}
+	 * @param {Object.<string, boolean>}
 	 */
 	var GROUP_CONTAINERS = {
 		'FIELDSET' : true,
@@ -176,7 +176,7 @@ define([], function () {
 	 *
 	 * @private
 	 * @see   GROUP_CONTAINERS
-	 * @param {<string, Array.<string>}
+	 * @param {Object.<string, Array.<string>>}
 	 */
 	var GROUPED_ELEMENTS = {
 		'LI'    : ['OL', 'UL', 'DL'],

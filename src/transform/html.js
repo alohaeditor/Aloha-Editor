@@ -82,7 +82,7 @@ define([
 	 * 2) replace the center node with a paragraph
 	 * 3) add alignment styling to new paragraph
 	 *
-	 * @todo
+	 * @todo implement this function
 	 * @private
 	 * @param  {Element} node
 	 * @return {Element}
