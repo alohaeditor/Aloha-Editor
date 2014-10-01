@@ -122,24 +122,10 @@
 		<script src="js/bootstrap.min.js"></script>
 		<script src="js/aloha.min.js"></script>
 		<script src="js/aloha-web.js"></script>
-		<script src="../../src/require-pronto.js"></script>
-		<script src="../../src/require-pronto.dev.js"></script>
-		<!--script src="../../build/aloha.min.js"></script-->
-		<script>
-			function main (aloha) {
-				aloha.dom.query('.aloha-editable', document).forEach(aloha);
-			}
-			if (window.aloha) {
-				main(aloha);
-			} else {
-				require('../../src/aloha', function (aloha) {
-					window.aloha = aloha;
-					main(aloha);
-				});
-			}
-		</script>
 		<script src="js/aloha-ui.js"></script>
-		<!--script src="js/aloha-ui-sticky.js"></script-->
 		<script src="js/aloha-ui-links.js"></script>
+		<script>
+			aloha.dom.query('.aloha-editable', document).forEach(aloha);
+		</script>
 	</body>
 </html>
