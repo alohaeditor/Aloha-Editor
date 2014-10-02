@@ -1194,7 +1194,7 @@
 						break;
 					}
 				}
-				if (found) {
+				if (!found) {
 					orderBy.unshift(sortItem);
 				}
 				this._orderBy = orderBy;
