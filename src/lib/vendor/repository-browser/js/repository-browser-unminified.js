@@ -617,10 +617,39 @@
 			},
 
 			/**
+			 * Check whether resizing is allowed right now.
+			 * This acts as a guard against endless resize cycles, that might occur in IE7
+			 *
+			 * The function will check, whether resizing was called more than 10 times in the same second and
+			 * will block any further calls by returning false.
+			 *
+			 * @return {boolean} true if resizing is allowed, false if not
+			 */
+			_isResizeAllowed: function () {
+				this.callsThisSecond = this.callsThisSecond || 0;
+				var now = Math.floor(new Date().getTime() / 1000);
+				if (now === this.lastCall) {
+					if (this.callsThisSecond >= 10) {
+						return false;
+					} else {
+						this.callsThisSecond++;
+						return true;
+					}
+				} else {
+					this.lastCall = now;
+					this.callsThisSecond = 1;
+					return true;
+				}
+			},
+
+			/**
 			 * Automatically resizes the browser modal, constraining its
 			 * dimensions between minWidth and maxWidth.
 			 */
 			_onWindowResized: function () {
+				if (!this._isResizeAllowed()) {
+					return;
+				}
 				this._resizeHorizontal(this.maxWidth - $window.width() + this.padding);
 				this._resizeVertical(this.maxHeight - $window.height() + this.padding);
 				this._resizeInnerComponents();
