@@ -37,6 +37,8 @@ define([
 	 *
 	 * @param {!Element}  elem
 	 * @param {...string} className
+	 * @alias addClass
+	 * @memberOf dom
 	 */
 	function add(elem) {
 		modifyClassList(elem, Strings.addToList, Arrays.coerce(arguments).slice(1));
@@ -48,6 +50,8 @@ define([
 	 *
 	 * @param  {!Element}  elem
 	 * @param  {...string} className
+	 * @alias removeClass
+	 * @memberOf dom
 	 */
 	function remove(elem) {
 		modifyClassList(elem, Strings.removeFromList, Arrays.coerce(arguments).slice(1));
@@ -58,6 +62,8 @@ define([
 	 *
 	 * @param  {Node}    node
 	 * @param  {string}  value
+	 * @alias hasClass
+	 * @memberOf dom
 	 * @return {boolean}
 	 */
 	function has(node, value) {

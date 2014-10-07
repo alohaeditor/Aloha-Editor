@@ -208,6 +208,7 @@ define([
 	 *
 	 * @param  {AlohaEvent} event
 	 * @return {AlohaEvent}
+	 * @memberOf paste
 	 */
 	function handlePaste(event) {
 		if ('paste' !== event.type || 'undefined' !== typeof event.nativeEvent.clipboardData) {

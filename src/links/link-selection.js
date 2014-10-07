@@ -25,7 +25,7 @@ define([
 	/**
 	 * Clones `node` and append `child`.
 	 *
-	 * @priviate
+	 * @private
 	 * @param  {!Node} node
 	 * @param  {!Node} child
 	 * @return {Node}

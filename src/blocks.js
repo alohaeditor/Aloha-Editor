@@ -130,6 +130,7 @@ define([
 	 *
 	 * @param  {AlohaEvent} event
 	 * @return {Event}
+	 * @memberOf blocks
 	 */
 	function handleBlocks(event) {
 		if (handlers[event.type]) {

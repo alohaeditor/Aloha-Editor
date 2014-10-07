@@ -17,6 +17,7 @@ define(['arrays'], function (Arrays) {
 	 * http://www.unicode.org/Public/UNIDATA/Scripts.txt
 	 *
 	 * @type {Array.<string>}
+	 * @memberOf strings
 	 */
 	var ZERO_WIDTH_CHARACTERS = [
 		'\\u200B', // ZWSP
@@ -31,6 +32,7 @@ define(['arrays'], function (Arrays) {
 	 * http://www.w3.org/TR/html5/infrastructure.html#common-parser-idioms
 	 *
 	 * @type {Array.<string>}
+	 * @memberOf strings
 	 */
 	var NON_BREAKING_SPACE_CHARACTERS = [
 		'\\u00A0', // NON BREAKING SPACE ("&nbsp;")
@@ -44,6 +46,7 @@ define(['arrays'], function (Arrays) {
 	 * http://www.unicode.org/Public/UNIDATA/PropList.txt
 	 *
 	 * @type {Array.<string>}
+	 * @memberOf strings
 	 */
 	var WHITE_SPACE_CHARACTERS = [
 		'\\u0009',
@@ -80,6 +83,7 @@ define(['arrays'], function (Arrays) {
 	 * These include whitespaces, hyphens, and punctuation.
 	 *
 	 * @type {Array.<string>}
+	 * @memberOf strings
 	 */
 	var WORD_BREAKING_CHARACTERS = [
 		'\u0041-', '\u005A', '\u0061-', '\u007A', '\u00AA', '\u00B5', '\u00BA',
@@ -206,6 +210,7 @@ define(['arrays'], function (Arrays) {
 	 * Regular expression that matches a white space character.
 	 *
 	 * @type {RegExp}
+	 * @memberOf strings
 	 */
 	var WHITE_SPACE = new RegExp('[' + WHITE_SPACE_CHARACTERS.join('') + ']');
 
@@ -213,6 +218,7 @@ define(['arrays'], function (Arrays) {
 	 * Regular expression that matches one or more white space characters.
 	 *
 	 * @type {RegExp}
+	 * @memberOf strings
 	 */
 	var WHITE_SPACES = new RegExp('[' + WHITE_SPACE_CHARACTERS.join('') + ']+');
 
@@ -220,6 +226,7 @@ define(['arrays'], function (Arrays) {
 	 * Regular expression that matches a zero width character.
 	 *
 	 * @type {RegExp}
+	 * @memberOf strings
 	 */
 	var ZERO_WIDTH_SPACE = new RegExp('[' + ZERO_WIDTH_CHARACTERS.join('') + ']');
 
@@ -227,6 +234,7 @@ define(['arrays'], function (Arrays) {
 	 * Regular expression that matches a non breaking space character.
 	 *
 	 * @type {RegExp}
+	 * @memberOf strings
 	 */
 	var NON_BREAKING_SPACE = new RegExp('[' + NON_BREAKING_SPACE_CHARACTERS.join('') + ']');
 
@@ -239,6 +247,7 @@ define(['arrays'], function (Arrays) {
 	 * the zero-width character ("\u200B").
 	 *
 	 * @type {RegExp}
+	 * @memberOf strings
 	 */
 	var SPACE = new RegExp('['
 	          + joinedWhiteSpaces
@@ -250,6 +259,7 @@ define(['arrays'], function (Arrays) {
 	 * Matches non-space characters.  Complement to Strings.SPACE.
 	 *
 	 * @type {RegExp}
+	 * @memberOf strings
 	 */
 	var NOT_SPACE = new RegExp('[^'
 	              + joinedWhiteSpaces
@@ -259,12 +269,19 @@ define(['arrays'], function (Arrays) {
 
 	var wbc = WORD_BREAKING_CHARACTERS.join('');
 
+	/**
+	 * This RegExp is missing documentation.
+	 * @TODO Complete documentation.
+	 * 
+	 * @memberOf strings
+	 */
 	var WORD_BREAKING_CHARACTER = new RegExp('[' + wbc + ']');
 
 	/**
 	 * Matches a word boundary.
 	 *
 	 * @type {RegExp}
+	 * @memberOf strings
 	 */
 	var WORD_BOUNDARY = new RegExp('[^' + wbc + ']');
 
@@ -273,6 +290,7 @@ define(['arrays'], function (Arrays) {
 	 * the end of a string.
 	 *
 	 * @type {RegExp}
+	 * @memberOf strings
 	 */
 	var WORD_BOUNDARY_FROM_END = new RegExp('[^' + wbc + '][' + wbc + ']*$');
 
@@ -286,6 +304,7 @@ define(['arrays'], function (Arrays) {
 	 * http://en.wikipedia.org/wiki/C0_and_C1_control_codes
 	 *
 	 * @type {RegExp}
+	 * @memberOf strings
 	 */
 	var CONTROL_CHARACTER = /[\x00-\x1f\x7f-\x9f]/;
 
@@ -293,6 +312,7 @@ define(['arrays'], function (Arrays) {
 	 * Matches white spaces at the beginning or ending of a string.
 	 *
 	 * @type {RegExp}
+	 * @memberOf strings
 	 */
 	var TERMINAL_WHITE_SPACES = new RegExp(
 		'^[' + joinedWhiteSpaces + ']+|[' + joinedWhiteSpaces + ']+$'
@@ -305,6 +325,7 @@ define(['arrays'], function (Arrays) {
 	 *
 	 * @param  {string} str
 	 * @return {Array.<string>}
+	 * @memberOf strings
 	 */
 	function words(str) {
 		str = str.trim().replace(TERMINAL_WHITE_SPACES, '');
@@ -323,6 +344,7 @@ define(['arrays'], function (Arrays) {
 	 * For example 'data-my-attr' becomes 'dataMyAttr'.
 	 *
 	 * @param {string} str
+	 * @memberOf strings
 	 */
 	var dashesToCamelCase = (function () {
 		var dashPrefixedCharacter = /[\-]([a-z])/gi;
@@ -346,6 +368,7 @@ define(['arrays'], function (Arrays) {
 	 *
 	 * @param  {string} str
 	 * @return {string}
+	 * @memberOf strings
 	 */
 	var camelCaseToDashes = (function () {
 		var uppercaseCharacter = /[A-Z]/g;
@@ -374,6 +397,7 @@ define(['arrays'], function (Arrays) {
 	 *
 	 * @param  {RegExp} pattern
 	 * @return {Array.<string>}
+	 * @memberOf strings
 	 */
 	function splitIncl(str, pattern) {
 		var result = [];
@@ -398,6 +422,7 @@ define(['arrays'], function (Arrays) {
 	 *
 	 * @param  {string=} str
 	 * @return {boolean}
+	 * @memberOf strings
 	 */
 	function isEmpty(str) {
 		return '' === str || null == str;
@@ -413,6 +438,7 @@ define(['arrays'], function (Arrays) {
 	 *
 	 * @param  {string} chr
 	 * @return {boolean}
+	 * @memberOf strings
 	 */
 	function isControlCharacter(chr) {
 		return CONTROL_CHARACTER.test(chr);
@@ -431,6 +457,7 @@ define(['arrays'], function (Arrays) {
 	 * @param  {!string}    list
 	 * @param  {...!string} entry
 	 * @return {string}
+	 * @memberOf strings
 	 */
 	function addToList(list) {
 		var listEntries = list.split(WHITE_SPACES);
@@ -463,6 +490,7 @@ define(['arrays'], function (Arrays) {
 	 * @param  {!string}    list
 	 * @param  {...!string} entry
 	 * @return {string}
+	 * @memberOf strings
 	 */
 	function removeFromList(list) {
 		var listArray = list.split(WHITE_SPACES);
@@ -477,6 +505,7 @@ define(['arrays'], function (Arrays) {
 	 *
 	 * @param  {!string} list
 	 * @return {string}
+	 * @memberOf strings
 	 */
 	function uniqueList(list) {
 		return Arrays.unique(list.split(WHITE_SPACES)).join(' ');

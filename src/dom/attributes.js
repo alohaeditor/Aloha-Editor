@@ -26,6 +26,7 @@ define([
 	 *
 	 * @param  {Element}        elem
 	 * @return {Map.<string,string>}
+	 * @memberOf dom
 	 */
 	function attrs(elem) {
 		var attrsMap = {};
@@ -38,20 +39,33 @@ define([
 		}
 		return attrsMap;
 	}
-
+	
+	/**
+	 * This function is missing documentation.
+	 * @TODO Complete documentation.
+	 * @alias removeAttr
+	 * @memberOf dom
+	 */
 	function remove(elem, name) {
 		elem.removeAttribute(name);
 	}
 
 	/**
 	 * Removes all attributes from `element`.
-	 *
+	 * @alias removeAttrs
+	 * @memberOf dom
 	 * @param {Element} element
 	 */
 	function removeAll(element) {
 		Maps.keys(attrs(element)).forEach(Fn.partial(remove, element));
 	}
 
+	/**
+	 * This function is missing documentation.
+	 * @TODO Complete documentation.
+	 * @alias setAttr
+	 * @memberOf dom
+	 */
 	function set(elem, name, value) {
 		if (null == value) {
 			remove(elem, name);
@@ -60,14 +74,32 @@ define([
 		}
 	}
 
+	/**
+	 * This function is missing documentation.
+	 * @TODO Complete documentation.
+	 * @alias getAttr
+	 * @memberOf dom
+	 */
 	function get(elem, name) {
 		return elem.getAttribute(name);
 	}
 
+	/**
+	 * This function is missing documentation.
+	 * @TODO Complete documentation.
+	 * @alias getAttrNS
+	 * @memberOf dom
+	 */
 	function getNS(elem, ns, name) {
 		return elem.getAttributeNS(ns, name);
 	}
 
+	/**
+	 * This function is missing documentation.
+	 * @TODO Complete documentation.
+	 * @alias removeAttrNS
+	 * @memberOf dom
+	 */
 	function removeNS(elem, ns, name) {
 		// TODO is removeAttributeNS(null, ...) the same as removeAttribute(...)?
 		if (null != ns) {
@@ -85,6 +117,8 @@ define([
 	 * @param {string}  ns
 	 * @param {string}  name
 	 * @param {string}  value
+	 * @alias setAttrNS
+	 * @memberOf dom
 	 */
 	function setNS(elem, ns, name, value) {
 		// TODO is setAttributeNS(null, ...) the same as setAttribute(...)?
@@ -98,9 +132,10 @@ define([
 	/**
 	 * Checks whether or not the given node contains one or more
 	 * attributes non-empty attributes.
-	 *
+	 * @alias hasAttrs
 	 * @param  {Node}    node
 	 * @return {boolean}
+	 * @memberOf dom
 	 */
 	function has(node) {
 		return !Maps.vals(attrs(node)).every(Strings.isEmpty);

@@ -1,4 +1,4 @@
-/**@overview Aloha Editor | Version 1.0 | github.com/alohaeditor */
+/** Aloha Editor | Version 2.0 | github.com/alohaeditor */
 define([
 	'api',
 	'dom',

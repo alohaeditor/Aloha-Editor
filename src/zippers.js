@@ -21,7 +21,7 @@
  *	loc = splitAt(loc, markers.end);
  *	var preserved = update(root(loc));
  *	console.log(aloha.markers.hint([preserved.start, preserved.end]));
- *	@namespace zippers
+ *	@TODO Add documentation, then add namespace zippers here.
  */
 define([
 	'dom',
@@ -71,6 +71,9 @@ define([
 		};
 	}
 
+	/**
+	 * @memberOf zippers
+	 */
 	function peek(loc) {
 		return Arrays.last(loc.frames);
 	}
@@ -80,6 +83,7 @@ define([
 	 *
 	 * @param  {!Location} loc
 	 * @return {Record}
+	 * @memberOf zippers
 	 */
 	function before(loc) {
 		return Arrays.last(loc.lefts);
@@ -90,11 +94,15 @@ define([
 	 *
 	 * @param  {!Location} loc
 	 * @return {Record}
+	 * @memberOf zippers
 	 */
 	function after(loc) {
 		return loc.rights[0];
 	}
 
+	/**
+	 * @memberOf zippers
+	 */
 	function prev(loc, stride) {
 		stride = 'number' === typeof stride ? stride : 1;
 		return 0 === stride ? loc : Location(
@@ -104,6 +112,9 @@ define([
 		);
 	}
 
+	/**
+	 * @memberOf zippers
+	 */
 	function next(loc, stride) {
 		stride = 'number' === typeof stride ? stride : 1;
 		return 0 === stride ? loc : Location(
@@ -113,10 +124,16 @@ define([
 		);
 	}
 
+	/**
+	 * @memberOf zippers
+	 */
 	function down(loc) {
 		return Location([], contents(after(loc)), loc.frames.concat(loc));
 	}
 
+	/**
+	 * @memberOf zippers
+	 */
 	function up(loc) {
 		var content = loc.lefts.concat(loc.rights);
 		var frame = Arrays.last(loc.frames);
@@ -128,10 +145,16 @@ define([
 		);
 	}
 
+	/**
+	 * @memberOf zippers
+	 */
 	function root(loc) {
 		return loc.frames.reduce(up, loc);
 	}
 
+	/**
+	 * @memberOf zippers
+	 */
 	function create(root) {
 		return Location([], [Boromir(root)], []);
 	}
@@ -176,6 +199,9 @@ define([
 		return loc;
 	}
 
+	/**
+	 * @memberOf zippers
+	 */
 	function walkPreOrderWhile(loc, pred) {
 		pred = pred || Fn.returnTrue;
 		loc = root(loc);
@@ -206,6 +232,9 @@ define([
 		     : createRecord('#text', [text]);
 	}
 
+	/**
+	 * @memberOf zippers
+	 */
 	function update(loc) {
 		var paths = [];
 		loc = walkPostOrder(loc, function (record, trail) {
@@ -227,6 +256,9 @@ define([
 		}, {});
 	}
 
+	/**
+	 * @memberOf zippers
+	 */
 	function hint(loc) {
 		var print = function (content) {
 			return 'string' === typeof content
@@ -376,6 +408,7 @@ define([
 
 	/**
 	 * FIXME: isFragmentedText and original and isMarker won't be preserved on cloning.
+	 * @memberOf zippers
 	 */
 	function createMarker(name) {
 		var node = document.createElement('code');
@@ -386,6 +419,9 @@ define([
 		return record;
 	}
 
+	/**
+	 * @memberOf zippers
+	 */
 	function isMarker(record) {
 		return true === record.isMarker;
 	}
@@ -466,6 +502,9 @@ define([
 		return 0 === loc.rights.length;
 	}
 
+	/**
+	 * @memberOf zippers
+	 */
 	function split(loc, until) {
 		until = until || Fn.returnFalse;
 		if (isRoot(peek(loc)) || until(loc)) {
@@ -490,6 +529,9 @@ define([
 		return split(loc, until);
 	}
 
+	/**
+	 * @memberOf zippers
+	 */
 	function go(loc, marker) {
 		loc = walkPreOrderWhile(root(loc), function (loc) {
 			var record = after(loc);
@@ -498,10 +540,16 @@ define([
 		return isRoot(loc) ? null : loc;
 	}
 
+	/**
+	 * @memberOf zippers
+	 */
 	function splitAt(loc, marker, until) {
 		return split(go(loc, marker), until);
 	}
 
+	/**
+	 * @memberOf zippers
+	 */
 	function insertAt(loc, marker, inserts) {
 		return insert(go(loc, marker), inserts);
 	}

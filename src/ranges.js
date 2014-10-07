@@ -39,7 +39,7 @@ define(['dom', 'arrays'], function (Dom, Arrays) {
 	 * Returns a collapsed range for the position where the text insertion
 	 * indicator would be rendered.
 	 *
-	 * @see:
+	 * @see
 	 * http://dev.w3.org/csswg/cssom-view/#dom-document-caretpositionfrompoint
 	 * http://stackoverflow.com/questions/3189812/creating-a-collapsed-range-from-a-pixel-position-in-ff-webkit
 	 * http://jsfiddle.net/timdown/ABjQP/8/

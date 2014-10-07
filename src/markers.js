@@ -33,6 +33,7 @@ define([
 	 * @param  {Boundary} start
 	 * @param  {Boundary} end
 	 * @return {Array.<Boundary>}
+	 * @memberOf markers
 	 */
 	function insert(start, end) {
 		var startContainer = Boundaries.container(start);
@@ -70,6 +71,7 @@ define([
 	 *
 	 * @param  {Element} rootElem
 	 * @return {Array.<Boundary>}
+	 * @memberOf markers
 	 */
 	function extract(rootElem) {
 		var markers = ['[', '{', '}', ']'];
@@ -222,6 +224,7 @@ define([
 	 *
 	 * @param  {Boundary|Array.<Boundary>|Range}
 	 * @return {string}
+	 * @memberOf markers
 	 */
 	function hint(selection) {
 		if (Misc.defined(selection.length)) {

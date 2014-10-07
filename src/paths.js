@@ -24,6 +24,7 @@ define([
 	 * @param  {Node}     limit
 	 * @param  {Boundary} boundary
 	 * @return {Array.<number>}
+	 * @memberOf paths
 	 */
 	function fromBoundary(limit, boundary) {
 		var offset = Boundaries.offset(boundary);
@@ -46,6 +47,7 @@ define([
 	 * @param  {Node}           container
 	 * @param  {Array.<number>} path
 	 * @return {Boundary}
+	 * @memberOf paths
 	 */
 	function toBoundary(container, path) {
 		var node = path.slice(0, -1).reduce(function (node, offset) {

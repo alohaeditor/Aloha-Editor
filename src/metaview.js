@@ -80,6 +80,7 @@ define(['dom'], function (Dom) {
 	 *
 	 * @param {Element} editable
 	 * @param {Object}  opts
+	 * @memberOf metaview
 	 */
 	function toggle(editable, opts) {
 		if (!editable.ownerDocument.querySelector('style#metaview')) {

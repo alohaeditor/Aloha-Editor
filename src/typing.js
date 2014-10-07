@@ -393,6 +393,12 @@ define([
 		mutate         : Fn.partial(toggleUndo, Undo.redo)
 	};
 
+	/**
+	 * This variable is missing documentation.
+	 * @TODO Complete documentation.
+	 * 
+	 * @memberOf typing
+	 */
 	var actions = {
 		'breakBlock'     : breakBlock,
 		'breakLine'      : breakLine,
@@ -471,6 +477,7 @@ define([
 
 	/**
 	 * Updates selection and nativeEvent
+	 * @memberOf typing
 	 */
 	function handleTyping(event) {
 		var selection = event.selection;

@@ -177,6 +177,7 @@ define([
 	 * @param  {Object.<string, number>} box
 	 * @param  {Document}                doc
 	 * @return {Element}
+	 * @memberOf carets
 	 */
 	function showHint(box, doc) {
 		var elem = doc.querySelector('.aloha-caret-box-hint');
@@ -203,6 +204,7 @@ define([
 	 *
 	 * @param  {Document} doc
 	 * @return {?Element}
+	 * @memberOf carets
 	 */
 	function hideHint(doc) {
 		var box = doc.querySelector('.aloha-caret-box-hint');
@@ -249,6 +251,7 @@ define([
 	 *
 	 * @param  {Range} range
 	 * @return {Object.<string, number>}
+	 * @memberOf carets
 	 */
 	function box(range) {
 		var rect = bounds(range);

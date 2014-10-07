@@ -9,7 +9,6 @@
  * - record.merge(values) shares values array (values must be persistent)
  * - transient support with linear-time record.asTransient()
  * - optional init function (default calls record.merge())
- * @namespace record
  */
 define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor, Assert) {
 	'use strict';
@@ -346,7 +345,7 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	 * instead be used as a function.
 	 *
 	 * Example:
-	 *
+	 *<pre>
 	 *     var MyType = define({
 	 *        myField: someDefaultValue
 	 *     }, function (record, optionalArgument) {
@@ -355,10 +354,11 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	 *     });
 	 *     
 	 *     var myInstance = MyType(optionalArgument);
-	 *
+	 *</pre>
 	 * @param fieldMap {?Object.<string,*>}
 	 * @param init {?function}
 	 * @return a new record type
+	 * @memberOf Record
 	 */
 	function define(fieldMap, init) {
 		if (Fn.is(fieldMap)) {
@@ -405,6 +405,7 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	 * @param afterSet {function} invoked after the field is set
 	 * @param afterSetT {?function} like afterSet but accepts a transient record
 	 * @return field {!Field} a new field
+	 * @memberOf Record
 	 */
 	function hookSetter(field, afterSet, afterSetT) {
 		var set = field.set;
@@ -435,6 +436,7 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	 * @param recompute {function} given a record computes the value for computedField
 	 * @param recomputeT {?function} like recompute but gets a transient record
 	 * @return field {!Field} a new field
+	 * @memberOf Record
 	 */
 	function hookSetterRecompute(observedField, computedField, recompute, recomputeT) {
 		return hookSetter(observedField, function (record) {

@@ -76,6 +76,7 @@ define([
 	 * @param  {!Boundary}        end
 	 * @param  {Array.<Element>=} created
 	 * @return {Array.<Boundary>}
+	 * @memberOf links
 	 */
 	function create(href, start, end, created) {
 		var anchors;
@@ -197,6 +198,7 @@ define([
 	 *
 	 * @param {!Boundary} start
 	 * @param {!Boundary} end
+	 * @memberOf links
 	 */
 	function remove(start, end) {
 		var startBoundary = LinkUtil.boundaryLinkable(
@@ -228,6 +230,12 @@ define([
 		return 'A' !== node.nodeName;
 	}
 
+	/**
+	 * This function is missing documentation.
+	 * @TODO Complete documentation.
+	 * 
+	 * @memberOf links
+	 */
 	function handleLinks(event) {
 		if ('click' !== event.type) {
 			return event;

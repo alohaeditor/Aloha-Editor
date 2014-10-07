@@ -19,6 +19,7 @@ define([
 	 *
 	 * @type {Object.<string, number>}
 	 * @enum {number}
+	 * @memberOf dom
 	 */
 	var Nodes = {
 		ELEMENT: 1,
@@ -40,6 +41,7 @@ define([
 	 *
 	 * @param  {Node} node
 	 * @return {boolean}
+	 * @memberOf dom
 	 */
 	function isTextNode(node) {
 		return Nodes.TEXT === node.nodeType;
@@ -50,6 +52,7 @@ define([
 	 *
 	 * @param {Node} node
 	 * @return {boolean}
+	 * @memberOf dom
 	 */
 	function isElementNode(node) {
 		return Nodes.ELEMENT === node.nodeType;
@@ -60,6 +63,7 @@ define([
 	 *
 	 * @param   {Node} node
 	 * @returns {boolean}
+	 * @memberOf dom
 	 */
 	function isFragmentNode(node) {
 		return Nodes.DOCUMENT_FRAGMENT === node.nodeType;
@@ -73,6 +77,7 @@ define([
 	 *
 	 * @param  {Element} elem
 	 * @return {number} Number of children contained in the given node.
+	 * @memberOf dom
 	 */
 	function numChildren(elem) {
 		return elem.childNodes.length;
@@ -83,6 +88,7 @@ define([
 	 *
 	 * @param  {Element} elem
 	 * @return {Array.<Node>}
+	 * @memberOf dom
 	 */
 	function children(elem) {
 		return Arrays.coerce(elem.childNodes);
@@ -94,6 +100,7 @@ define([
 	 *
 	 * @param  {Node} node
 	 * @return {number} The zero-based index of the given node's position.
+	 * @memberOf dom
 	 */
 	function nodeIndex(node) {
 	    var i = 0;
@@ -108,6 +115,7 @@ define([
 	 *
 	 * @param  {Node} node
 	 * @return {number} Length of the given node.
+	 * @memberOf dom
 	 */
 	function nodeLength(node) {
 		if (isElementNode(node) || isFragmentNode(node)) {
@@ -123,6 +131,7 @@ define([
 	 * Checks is `element` has children
 	 * @param  {Element} element
 	 * @return {boolean}
+	 * @memberOf dom
 	 */
 	function hasChildren(element) {
 		return numChildren(element) > 0;
@@ -137,13 +146,18 @@ define([
 	 * @param  {Element} elem
 	 * @param  {number}  offset Offset of the child to return.
 	 * @return {Element} The child node at the given offset.
+	 * @memberOf dom
 	 */
 	function nthChild(elem, offset) {
 		return elem.childNodes[offset];
 	}
 
 	/**
+	 * This function is missing documentation.
+	 * @TODO Complete documentation.
+	 * 
 	 * @param node if a text node, should have a parent node.
+	 * @memberOf dom
 	 */
 	function nodeAtOffset(node, offset) {
 		if (isElementNode(node) && offset < nodeLength(node)) {
@@ -159,6 +173,7 @@ define([
 	 *
 	 * @param  {Node} node
 	 * @return {boolean}
+	 * @memberOf dom
 	 */
 	function isEmptyTextNode(node) {
 		return isTextNode(node) && 0 === nodeLength(node);
@@ -169,6 +184,7 @@ define([
 	 * @param {Node} node1
 	 * @param {Node} node2
 	 * @returns {boolean}
+	 * @memberOf dom
 	 */
 	function isSameNode(node1, node2) {
 		return node1 === node2;
@@ -212,6 +228,12 @@ define([
 		throw Error();
 	}
 
+	/**
+	 * This function is missing documentation.
+	 * @TODO Complete documentation.
+	 * 
+	 * @memberOf dom
+	 */
 	function realFromNormalizedIndex(elem, normalizedIndex) {
 		return translateNodeIndex(elem, normalizedIndex, Number.POSITIVE_INFINITY);
 	}
@@ -220,14 +242,32 @@ define([
 		return translateNodeIndex(elem, Number.POSITIVE_INFINITY, realIndex);
 	}
 
+	/**
+	 * This function is missing documentation.
+	 * @TODO Complete documentation.
+	 * 
+	 * @memberOf dom
+	 */
 	function normalizedNumChildren(elem) {
 		return normalizedFromRealIndex(elem, numChildren(elem));
 	}
 
+	/**
+	 * This function is missing documentation.
+	 * @TODO Complete documentation.
+	 * 
+	 * @memberOf dom
+	 */
 	function normalizedNodeIndex(node) {
 		return normalizedFromRealIndex(node.parentNode, nodeIndex(node));
 	}
 
+	/**
+	 * This function is missing documentation.
+	 * @TODO Complete documentation.
+	 * 
+	 * @memberOf dom
+	 */
 	function normalizedNthChild(elem, normalizedIndex) {
 		return nthChild(elem, realFromNormalizedIndex(elem, normalizedIndex));
 	}
@@ -247,6 +287,7 @@ define([
 	 * @param  {Node} a
 	 * @param  {Node} b
 	 * @return {boolean}
+	 * @memberOf dom
 	 */
 	function contains(a, b) {
 		return (isElementNode(a)
@@ -268,6 +309,7 @@ define([
 	 * @param  {Node} node
 	 * @param  {Node} other
 	 * @return {boolean}
+	 * @memberOf dom
 	 */
 	function followedBy(node, other) {
 		return !!(node.compareDocumentPosition(other) & 4);
@@ -278,6 +320,7 @@ define([
 	 *
 	 * @param  {Node} node
 	 * @return {Object.<string, number>}
+	 * @memberOf dom
 	 */
 	function offset(node) {
 		if (!Misc.defined(node.getBoundingClientRect)) {
@@ -298,6 +341,7 @@ define([
 	 *
 	 * @param  {Node} node
 	 * @return {string}
+	 * @memberOf dom
 	 */
 	function text(node) {
 		return node.textContent;
@@ -308,6 +352,7 @@ define([
 	 *
 	 * @param  {Element} element
 	 * @return {boolean}
+	 * @memberOf dom
 	 */
 	function hasText(element) {
 		return text(element).trim().length > 0;
@@ -319,6 +364,7 @@ define([
 	 * @param  {Node} node
 	 * @param  {Node} other
 	 * @return {boolean}
+	 * @memberOf dom
 	 */
 	function equals(node, other) {
 		return node.isEqualNode(other);
@@ -330,6 +376,7 @@ define([
 	 * @param  {Node}    node
 	 * @param  {boolean} deeply Whether or not to do a deep clone
 	 * @return {Node}
+	 * @memberOf dom
 	 */
 	function clone(node, deeply) {
 		return node.cloneNode(('boolean' === typeof deeply) ? deeply : true);
@@ -340,6 +387,7 @@ define([
 	 *
 	 * @param  {Node} node
 	 * @return {Node}
+	 * @memberOf dom
 	 */
 	function cloneShallow(node) {
 		return node.cloneNode(false);
@@ -353,6 +401,7 @@ define([
 	 *
 	 * @param  {Node}
 	 * @return {string}
+	 * @memberOf dom
 	 */
 	function outerHtml(node) {
 		var div = node.ownerDocument.createElement('div');

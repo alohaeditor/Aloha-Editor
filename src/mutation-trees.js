@@ -4,7 +4,7 @@
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
- * @namespace mutation-trees
+ * @deprecated
  */
 define([
 	'dom',
@@ -295,6 +295,9 @@ define([
 		}, paths);
 	}
 
+	/**
+	 * @memberOf mutation-trees
+	 */
 	function update(tree) {
 		var paths = extractPathFromTree(tree);
 		tree = paths.reduce(removePathFromTree, tree);
@@ -311,6 +314,9 @@ define([
 		return path.slice(i);
 	}
 
+	/**
+	 * @memberOf mutation-trees
+	 */
 	function create(element, boundaries) {
 		var body = element.ownerDocument.body;
 		var root = Paths.fromBoundary(body, Boundaries.fromFrontOfNode(element));
@@ -331,6 +337,7 @@ define([
 	 * @param  {!MutationTree} tree
 	 * @param  {!Path}         path
 	 * @return {Array.<MutationTree, Path>}
+	 * @memberOf mutation-trees
 	 */
 	function split(tree, path) {
 		var halves = splitTree(tree, path);
@@ -340,6 +347,9 @@ define([
 		];
 	}
 
+	/**
+	 * @memberOf mutation-trees
+	 */
 	function insert(tree, path, content) {
 		if (0 === content.length) {
 			return tree;
@@ -354,19 +364,31 @@ define([
 			return insertRecords(record, offset, records);
 		});
 	}
-
+	
+	/**
+	 * @memberOf mutation-trees
+	 */
 	function wrap(tree, path, num, domNode) {
 		throw 'Not implemented';
 	}
 
+	/**
+	 * @memberOf mutation-trees
+	 */
 	function remove(tree, path, num) {
 		throw 'Not implemented';
 	}
 
+	/**
+	 * @memberOf mutation-trees
+	 */
 	function reduce(tree, path, num, reducer) {
 		throw 'Not implemented';
 	}
 
+	/**
+	 * @memberOf mutation-trees
+	 */
 	function removePaths(tree) {
 		return extractPathFromTree(tree).reduce(removePathFromTree, tree);
 	}
@@ -378,6 +400,7 @@ define([
 		wrap        : wrap,
 		remove      : remove,
 		reduce      : reduce,
+		/**@memberOf mutation-trees*/
 		paths       : extractPathFromTree,
 		removePaths : removePaths,
 		update      : update

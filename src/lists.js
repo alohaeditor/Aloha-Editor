@@ -201,6 +201,7 @@ define([
 	 * @param  {!Boundary} start
 	 * @param  {!Boundary} end
 	 * @return {Array.<Boundary>}
+	 * @memberOf lists
 	 */
 	function format(type, start, end) {
 		Assert.assert(
@@ -276,6 +277,7 @@ define([
 	 * @param  {!Boundary} start
 	 * @param  {!Boundary} end
 	 * @return {Array.<Boundary>}
+	 * @memberOf lists
 	 */
 	function unformat(start, end) {
 		var nearestItem = function (node) {
@@ -317,6 +319,7 @@ define([
 	 * @param  {!Boundary} start
 	 * @param  {!Boundary} end
 	 * @return {Array.<Boundary>}
+	 * @memberOf lists
 	 */
 	function toggle(type, start, end) {
 		var sc = Boundaries.container(start);

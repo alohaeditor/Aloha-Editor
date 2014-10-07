@@ -1,23 +1,28 @@
-/* editing.js is part of Aloha Editor project http://aloha-editor.org
+/** editing.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  *
- * TODO formatStyle: in the following case the outer "font-family:
- *      arial" span should be removed.  Can be done similar to how
- *      findReusableAncestor() works.
+ * @TODO formatStyle: in the following case the outer "font-family:
+ * arial" span should be removed.  Can be done similar to how
+ * findReusableAncestor() works.
+ * <pre>
  *      <span style="font-family: arial">
  *         <span style="font-family: times">one</span>
  *         <span style="font-family: helvetica">two<span>
  *      </span>
- * TODO better handling of the last <br/> in a block and generally of
- *      unrendered whitespace. For example formatting
+ *</pre>
+ * @TODO better handling of the last <br/> in a block and generally of
+ *      unrendered whitespace. 
+ *      For example: 
+ *      formatting
  *      <p>{some<br/>text<br/>}</p>
  *      will result in
  *      <p>{<b>some<br/>text<br/></b>}</p>
  *      while it should probably be
  *      <p>{<b>some</br>text</b>}<br/></p>
+ *
  * @namespace editing
  */
 define([
@@ -56,6 +61,7 @@ define([
 	'use strict';
 
 	/**
+	 * @private
 	 * Walks the siblings of the given child, calling before for
 	 * siblings before the given child, after for siblings after the
 	 * given child, and at for the given child.
@@ -73,6 +79,7 @@ define([
 	}
 
 	/**
+	 * @private
 	 * Walks the siblings of each node in the given array (see
 	 * walkSiblings()).
 	 *
@@ -127,6 +134,7 @@ define([
 	}
 
 	/**
+	 * @private
 	 * Walks the boundary of the range.
 	 *
 	 * The range's boundary starts at startContainer/startOffset, goes
@@ -496,6 +504,12 @@ define([
 		}
 	}
 
+	/**
+	 * This function is missing documentation.
+	 * @TODO Complete documentation.
+	 * 
+	 * @memberOf editing
+	 */
 	function wrap(node, wrapper, leftPoint, rightPoint) {
 		if (!Content.allowsNesting(wrapper.nodeName, node.nodeName)) {
 			return false;
@@ -1185,6 +1199,7 @@ define([
 	 *             we should implement for each supported style it's own
 	 *             equals function.
 	 * @return {Array.<Boundary>}
+	 * @memberOf editing
 	 */
 	function style(start, end, name, value, opts) {
 		var range = Boundaries.range(start, end);
@@ -1643,6 +1658,7 @@ define([
 	 * @param  {!Boundary} start
 	 * @param  {!Boundary} end
 	 * @return {Array.<Boundary>}
+	 * @memberOf editing
 	 */
 	function remove(start, end) {
 		var range = Boundaries.range(start, end);
@@ -1705,6 +1721,7 @@ define([
 	 * @param  {!Boundary} boundary
 	 * @param  {string}    breaker
 	 * @return {Array.<Boundary>}
+	 * @memberOf editing
 	 */
 	function breakline(boundary, breaker) {
 		var op = 'BR' === breaker ? Html.insertLineBreak : Html.insertBreak;
@@ -1712,6 +1729,12 @@ define([
 		return [boundary, boundary];
 	}
 
+	/**
+	 * This function is missing documentation.
+	 * @TODO Complete documentation.
+	 * 
+	 * @memberOf editing
+	 */
 	function insert(start, end, insertion) {
 		var range = Boundaries.range(start, end);
 		split(range, {
@@ -1730,18 +1753,40 @@ define([
 		return Boundaries.fromRangeStart(range);
 	}
 
+	/**
+	 * This function is missing documentation.
+	 * @TODO Complete documentation.
+	 * 
+	 * @memberOf editing
+	 */
 	function className(start, end, name, value, boundaries) {
 		throw 'Not implemented';
 	}
 
+	/**
+	 * This function is missing documentation.
+	 * @TODO Complete documentation.
+	 * 
+	 * @memberOf editing
+	 */
 	function attribute(start, end, name, value, boundaries) {
 		throw 'Not implemented';
 	}
 
+	/**
+	 * This function is not yet implemented.
+	 * @TODO to be implemented
+	 * @memberOf editing
+	 */
 	function cut(start, end, boundaries) {
 		throw 'Not implemented';
 	}
 
+	/**
+	 * This function is not yet implemented.
+	 * @TODO to be implemented
+	 * @memberOf editing
+	 */
 	function copy(start, end, boundaries) {
 		throw 'Not implemented';
 	}
@@ -1883,6 +1928,7 @@ define([
 	 * @param  {!string}   nodeName
 	 * @param  {Array.<Boundary>}
 	 * @return {Array.<Boundary>}
+	 * @memberOf editing
 	 */
 	function format(start, end, nodeName, boundaries) {
 		var range;
@@ -1899,6 +1945,12 @@ define([
 		return range;
 	}
 
+	/**
+	 * This function is missing documentation.
+	 * @TODO Complete documentation.
+	 * 
+	 * @memberOf editing
+	 */
 	function unformat(start, end, nodeName, boundaries) {
 		return formatInline(nodeName, start, end, false);
 	}

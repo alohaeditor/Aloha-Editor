@@ -12,8 +12,8 @@ define(['boundaries'], function (Boundaries) {
 	/**
 	 * Native mouse events.
 	 *
-	 * @private
 	 * @type {Object.<string, boolean>}
+	 * @memberOf mouse
 	 */
 	var EVENTS = {
 		'mouseup'   : true,
@@ -30,6 +30,7 @@ define(['boundaries'], function (Boundaries) {
 	 *
 	 * @param  {AlohaEvent} event
 	 * @return {AlohaEVent}
+	 * @memberOf mouse
 	 */
 	function handleMouse(event) {
 		if ('mousedown' === event.type) {

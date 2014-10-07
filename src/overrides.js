@@ -43,9 +43,9 @@ define([
 	/**
 	 * A table of node names that correlate to override commands.
 	 *
-	 * @private
 	 * @type {Object.<string, string>}
 	 * @see  stateToNode
+	 * @memberOf overrides
 	 */
 	var nodeToState = {
 		'A'      : 'link',
@@ -62,9 +62,9 @@ define([
 	/**
 	 * A table of overrides an node names that correlate to them.
 	 *
-	 * @private
 	 * @type {Object.<string, string>}
 	 * @see  nodeToState
+	 * @memberOf overrides
 	 */
 	var stateToNode = {
 		'link'          : 'A',
@@ -213,6 +213,7 @@ define([
 	 * @param  {Node}                   node
 	 * @param  {function(Node):boolean} until
 	 * @return {Array.<Override>}
+	 * @memberOf overrides
 	 */
 	function harvest(node, until) {
 		var nodes = Dom.childAndParentsUntil(node, until || Dom.isEditingHost);
@@ -299,6 +300,7 @@ define([
 	 * @param  {Boundary}         boundary
 	 * @param  {Array.<Override>} overrides
 	 * @return {Boundary}
+	 * @memberOf overrides
 	 */
 	function consume(boundary, overrides) {
 		var doc = Boundaries.document(boundary);
@@ -338,6 +340,7 @@ define([
 	 * @param  {Array.<Override>} overrides
 	 * @param  {string}           name
 	 * @return {number}
+	 * @memberOf overrides
 	 */
 	function indexOf(overrides, name) {
 		for (var i = 0; i < overrides.length; i++) {
@@ -358,6 +361,7 @@ define([
 	 * @param  {string}           name
 	 * @param  {string|boolean}   value
 	 * @return {Array.<Override>}
+	 * @memberOf overrides
 	 */
 	function toggle(overrides, name, value) {
 		var index = indexOf(overrides, name);
@@ -379,6 +383,7 @@ define([
 	 *
 	 * @param  {Array.<Override>} overrides
 	 * @return {Array.<Override>}
+	 * @memberOf overrides
 	 */
 	function unique(overrides) {
 		var tuple;
@@ -398,10 +403,9 @@ define([
 	/**
 	 * Joins a variable list of overrides-lists into a single unique set.
 	 *
-	 * @private
 	 * @param  {...Array.<Override>}
-	 * @param  {Array.<Override>}
 	 * @return {Array.<Override>}
+	 * @memberOf overrides
 	 */
 	function joinToSet() {
 		return unique(

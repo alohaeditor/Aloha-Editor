@@ -56,7 +56,6 @@
  * 
  * optimal DOM updating (no split text node and re-insert, then split
  *   again reinsert and join and reinsert etc.)
- * @namespace boromir
  */
 define([
 	'functions',

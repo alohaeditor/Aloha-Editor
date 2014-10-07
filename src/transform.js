@@ -21,8 +21,8 @@ define([
 	 * Transformation functions, mapped to their corresponding mime-subtype.
 	 */
 	return {
-		html   : Html.transform,
-		plain  : Plain.transform,
+		html : Html.transform,
+		plain : Plain.transform,
 		msword : MSWord.transform
 	};
 });

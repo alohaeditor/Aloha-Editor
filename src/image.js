@@ -1,9 +1,9 @@
-/* image.js is part of Aloha Editor project http://aloha-editor.org
+/** image.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
- * @namespace image
+ * @namespace images
  */
 
 define([
@@ -68,6 +68,7 @@ define([
 	 * @param {Array.<Object.<string, string>>} attributes Attributes
 	 *        for the new image
 	 * @param {Document} doc
+	 * @memberOf images
 	 */
 	function insert(attributes, doc) {
 		var boundaries = Boundaries.get(doc);
@@ -99,6 +100,7 @@ define([
 	 * Set `attributes` to all images in the actual selection.
 	 * @param {Array.<Object.<string, string>>} attributes
 	 * @param {Document} doc
+	 * @memberOf images
 	 */
 	function setAttributes(attributes, doc) {
 		var boundaries = Boundaries.get(doc);

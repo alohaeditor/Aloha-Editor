@@ -667,6 +667,7 @@ define([
 	 * @param  {Boundary} left
 	 * @param  {Boundary} right
 	 * @return {boolean}
+	 * @memberOf traversing
 	 */
 	function isBoundariesEqual(left, right) {
 		var node, consumesOffset;
@@ -1026,9 +1027,9 @@ define([
 	 * respect to how it is visually represented, rather than simply where it
 	 * is in the DOM tree.
 	 *
-	 * @private
 	 * @param  {Boundary} boundary
 	 * @return {boolean}
+	 * @memberOf traversing
 	 */
 	function isAtEnd(boundary) {
 		if (Boundaries.isAtEnd(boundary)) {
@@ -1054,9 +1055,9 @@ define([
 	 * respect to how it is visually represented, rather than simply where it
 	 * is in the DOM tree.
 	 *
-	 * @private
 	 * @param  {Boundary} boundary
 	 * @return {boolean}
+	 * @memberOf traversing
 	 */
 	function isAtStart(boundary) {
 		if (Boundaries.isAtStart(boundary)) {

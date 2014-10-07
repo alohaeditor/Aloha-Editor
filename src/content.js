@@ -566,18 +566,38 @@ define(['maps', 'arrays'], function (Maps, Arrays) {
 		'FONT': 'SPAN'
 	};
 
+	/**
+	 * This function is missing documentation.
+	 * @TODO Complete documentation.
+	 * @memberOf content
+	 */
 	function allowedStyles(overrides) {
 		return Maps.merge({}, DEFAULT_STYLES_WHITELIST, overrides);
 	}
 
+	/**
+	 * This function is missing documentation.
+	 * @TODO Complete documentation.
+	 * @memberOf content
+	 */
 	function allowedAttributes(overrides) {
 		return Maps.merge({}, DEFAULT_ATTRIBUTES_WHITELIST, overrides);
 	}
 
+	/**
+	 * This function is missing documentation.
+	 * @TODO Complete documentation.
+	 * @memberOf content
+	 */
 	function disallowedNodes(overrides) {
 		return Arrays.unique(NODES_BLACKLIST.concat(overrides));
 	}
 
+	/**
+	 * This function is missing documentation.
+	 * @TODO Complete documentation.
+	 * @memberOf content
+	 */
 	function nodeTranslations(overrides) {
 		return Maps.merge({}, DEFAULT_TRANSLATION, overrides);
 	}
@@ -594,6 +614,7 @@ define(['maps', 'arrays'], function (Maps, Arrays) {
 	 * @param  {string} outer
 	 * @param  {string} inner
 	 * @return {boolean}
+	 * @memberOf content
 	 */
 	function allowsNesting(outer, inner) {
 		var categories;

@@ -4,7 +4,7 @@
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php 
- * @namespace functions
+ * @namespace fn
  */
 define([], function () {
 	'use strict';
@@ -15,6 +15,7 @@ define([], function () {
 	 *
 	 * @param  {*} arg
 	 * @return {*} The given argument `arg`.
+	 * @memberOf fn
 	 */
 	function identity(arg) {
 		return arg;
@@ -22,6 +23,7 @@ define([], function () {
 
 	/**
 	 * Does nothing.
+	 * @memberOf fn
 	 */
 	function noop() {
 	}
@@ -30,6 +32,7 @@ define([], function () {
 	 * Always returns `true`.
 	 *
 	 * @return {boolean}
+	 * @memberOf fn
 	 */
 	function returnTrue() {
 		return true;
@@ -39,6 +42,7 @@ define([], function () {
 	 * Always returns `false`.
 	 *
 	 * @return {boolean}
+	 * @memberOf fn
 	 */
 	function returnFalse() {
 		return false;
@@ -46,6 +50,7 @@ define([], function () {
 
 	/**
 	 * Is null or undefined.
+	 * @memberOf fn
 	 */
 	function isNou(obj) {
 		return null == obj;
@@ -58,6 +63,7 @@ define([], function () {
 	 *
 	 * @param  {function():boolean} fn
 	 * @return {function():boolean}
+	 * @memberOf fn
 	 */
 	function complement(fn) {
 		return function () {
@@ -83,6 +89,7 @@ define([], function () {
 	 * @param  {function} fn
 	 * @param  {Object} thisArg
 	 * @return {function}
+	 * @memberOf fn
 	 */
 	function partial(fn) {
 		var args = Array.prototype.slice.call(arguments, 1);
@@ -101,6 +108,7 @@ define([], function () {
 	 * @param a {*}
 	 * @param b {*}
 	 * @return  {boolean}
+	 * @memberOf fn
 	 */
 	function strictEquals(a, b) {
 		return a === b;
@@ -113,6 +121,7 @@ define([], function () {
 	 *
 	 * @param  {function(...number):...number}
 	 * @return {*}
+	 * @memberOf fn
 	 */
 	function comp() {
 		var fns = arguments;
@@ -136,6 +145,7 @@ define([], function () {
 	 *
 	 * @param  {function():...boolean}
 	 * @return {function():boolean}
+	 * @memberOf fn
 	 */
 	function and() {
 		var predicates = arguments;
@@ -155,6 +165,7 @@ define([], function () {
 	 *
 	 * @param  {function(): ...boolean}
 	 * @return {function(): boolean}
+	 * @memberOf fn
 	 */
 	function or() {
 		var predicates = arguments;
@@ -171,6 +182,7 @@ define([], function () {
 
 	/**
 	 * Returns a function that constantly returns the given value.
+	 * @memberOf fn
 	 */
 	function constantly(value) {
 		return function () {
@@ -180,6 +192,7 @@ define([], function () {
 
 	/**
 	 * Returns true if the given value is a function.
+	 * @memberOf fn
 	 */
 	function is(obj) {
 		return 'function' === typeof obj;
@@ -196,6 +209,7 @@ define([], function () {
 	 * and may be either 0, no matter how many arguments the function
 	 * expects, or if not 0, must be the actual number of arguments the
 	 * function expects.
+	 * @memberOf fn
 	 */
 	function asMethod(fn) {
 		var len = fn.length;
@@ -223,6 +237,7 @@ define([], function () {
 	 *
 	 * @param Type {!*}
 	 * @param fnByName {Object.<string,function>}
+	 * @memberOf fn
 	 */
 	function extendType(Type, fnByName) {
 		for (var name in fnByName) {

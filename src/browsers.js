@@ -13,6 +13,7 @@ define([], function () {
 	 * CSS vendor prefix string for the host user agent.
 	 *
 	 * @type {string}
+	 * @memberOf browsers
 	 */
 	var VENDOR_PREFIX = '';
 	var testElem = document.createElement('div');
@@ -32,8 +33,28 @@ define([], function () {
 	        || /(msie) ([\w.]+)/.exec(ua)
 	        || (ua.indexOf('compatible') < 0
 	            && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec(ua));
-
-	var vendor, version, ie7, chrome, safari, webkit;
+	/** This property is missing documentation.
+	 * @TODO Complete documentation. 
+	 * @memberOf browsers*/
+	var vendor;
+	/** This property is missing documentation.
+	 * @TODO Complete documentation. 
+	 * @memberOf browsers*/
+	var version;
+	/** @TODO we should export ie */
+	var ie7;
+	/** This property is missing documentation.
+	 * @TODO Complete documentation. 
+	 * @memberOf browsers*/
+	var chrome;
+	/** This property is missing documentation.
+	 * @TODO Complete documentation. 
+	 * @memberOf browsers*/
+	var safari;
+	/** This property is missing documentation.
+	 * @TODO Complete documentation. 
+	 * @memberOf browsers*/
+	var webkit;
 	ie7 = chrome = safari = webkit = false;
 
 	if (info) {

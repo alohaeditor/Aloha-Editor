@@ -82,6 +82,7 @@ define([
 	 *
 	 * @param  {Object} options
 	 * @return {Object}
+	 * @memberOf dragdrop
 	 */
 	function Context(options) {
 		return Maps.merge({}, DEFAULTS, options);
@@ -96,6 +97,7 @@ define([
 	 *
 	 * @param  {Element} node
 	 * @return {boolean}
+	 * @memberOf dragdrop
 	 */
 	function isDraggable(node) {
 		if (!Dom.isElementNode(node)) {
@@ -193,6 +195,7 @@ define([
 	 *
 	 * @param  {AlohaEvent} event
 	 * @return {AlohaEvent}
+	 * @memberOf dragdrop
 	 */
 	function handleDragDrop(event) {
 		if (event.dnd && handlers[event.type]) {
