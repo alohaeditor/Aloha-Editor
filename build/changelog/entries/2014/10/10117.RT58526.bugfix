@@ -1,0 +1,4 @@
+In Internet Explorer 7 (or newer versions of Internet Explorer in IE7 mode), sometimes reading the offsetHeight of a DOM element
+would return 0 for the first access. Only when reading the offsetHeight again, the correct value would be returned.
+This bugfix adds a workaround method to get the offsetHeight of a DOM element, which reads twice if the first returned value happens to be 0.
+This fixes various problems connected with reading the offsetHeight.
