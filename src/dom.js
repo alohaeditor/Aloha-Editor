@@ -248,7 +248,7 @@ define([
 	/**
 	 * Calculate absolute offsetTop or offsetLeft properties
 	 * for an element
-	 * 
+	 *
 	 * @private
 	 * @param {!Element} element
 	 * @param {string}   property

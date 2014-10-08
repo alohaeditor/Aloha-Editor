@@ -155,7 +155,7 @@ define([
 	/**
 	 * This function is missing documentation.
 	 * @TODO Complete documentation.
-	 * 
+	 *
 	 * @param node if a text node, should have a parent node.
 	 * @memberOf dom
 	 */
@@ -231,7 +231,7 @@ define([
 	/**
 	 * This function is missing documentation.
 	 * @TODO Complete documentation.
-	 * 
+	 *
 	 * @memberOf dom
 	 */
 	function realFromNormalizedIndex(elem, normalizedIndex) {
@@ -245,7 +245,7 @@ define([
 	/**
 	 * This function is missing documentation.
 	 * @TODO Complete documentation.
-	 * 
+	 *
 	 * @memberOf dom
 	 */
 	function normalizedNumChildren(elem) {
@@ -255,7 +255,7 @@ define([
 	/**
 	 * This function is missing documentation.
 	 * @TODO Complete documentation.
-	 * 
+	 *
 	 * @memberOf dom
 	 */
 	function normalizedNodeIndex(node) {
@@ -265,7 +265,7 @@ define([
 	/**
 	 * This function is missing documentation.
 	 * @TODO Complete documentation.
-	 * 
+	 *
 	 * @memberOf dom
 	 */
 	function normalizedNthChild(elem, normalizedIndex) {
@@ -276,12 +276,11 @@ define([
 	 * Returns `true` if node `b` is a descendant of node `a`, `false`
 	 * otherwise.
 	 *
-	 * @see
-	 * http://ejohn.org/blog/comparing-document-position/
-	 * http://www.quirksmode.org/blog/archives/2006/01/contains_for_mo.html
+	 * @see http://ejohn.org/blog/comparing-document-position/
+	 * @see http://www.quirksmode.org/blog/archives/2006/01/contains_for_mo.html
 	 *
-	 * TODO: Contains seems to be problematic on Safari, is this an issue for us?
-	 *       Should we just use compareDocumentPosition() since we only need IE > 9 anyway?
+	 * @TODO Contains seems to be problematic on Safari, is this an issue for us?
+	 * Should we just use compareDocumentPosition() since we only need IE > 9 anyway?
 	 * https://code.google.com/p/google-web-toolkit/issues/detail?id=1218
 	 *
 	 * @param  {Node} a

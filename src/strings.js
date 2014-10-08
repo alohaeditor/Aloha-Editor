@@ -272,7 +272,7 @@ define(['arrays'], function (Arrays) {
 	/**
 	 * This RegExp is missing documentation.
 	 * @TODO Complete documentation.
-	 * 
+	 *
 	 * @memberOf strings
 	 */
 	var WORD_BREAKING_CHARACTER = new RegExp('[' + wbc + ']');

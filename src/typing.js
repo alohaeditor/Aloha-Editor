@@ -396,7 +396,7 @@ define([
 	/**
 	 * This variable is missing documentation.
 	 * @TODO Complete documentation.
-	 * 
+	 *
 	 * @memberOf typing
 	 */
 	var actions = {

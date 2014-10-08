@@ -68,7 +68,7 @@ define(['misc', 'assert'], function (Misc, Assert) {
 	/**
 	 * This function is missing documentation.
 	 * @TODO Complete documentation.
-	 * 
+	 *
 	 * @memberOf events
 	 */
 	function dispatch(doc, obj, event) {

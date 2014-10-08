@@ -52,7 +52,7 @@ define([
 	/**
 	 * This function is missing documentation.
 	 * @TODO Complete documentation.
-	 * 
+	 *
 	 * @memberOf editables
 	 */
 	function Editable(elem) {
@@ -119,7 +119,7 @@ define([
 	/**
 	 * This function is missing documentation.
 	 * @TODO Complete documentation.
-	 * 
+	 *
 	 * @memberOf editables
 	 */
 	function destroy(editor, element)  {

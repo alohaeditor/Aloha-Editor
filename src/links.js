@@ -233,7 +233,7 @@ define([
 	/**
 	 * This function is missing documentation.
 	 * @TODO Complete documentation.
-	 * 
+	 *
 	 * @memberOf links
 	 */
 	function handleLinks(event) {

@@ -364,7 +364,7 @@ define([
 			return insertRecords(record, offset, records);
 		});
 	}
-	
+
 	/**
 	 * @memberOf mutation-trees
 	 */

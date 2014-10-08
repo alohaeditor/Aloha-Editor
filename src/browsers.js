@@ -34,25 +34,25 @@ define([], function () {
 	        || (ua.indexOf('compatible') < 0
 	            && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec(ua));
 	/** This property is missing documentation.
-	 * @TODO Complete documentation. 
+	 * @TODO Complete documentation.
 	 * @memberOf browsers*/
 	var vendor;
 	/** This property is missing documentation.
-	 * @TODO Complete documentation. 
+	 * @TODO Complete documentation.
 	 * @memberOf browsers*/
 	var version;
 	/** @TODO we should export ie */
 	var ie7;
 	/** This property is missing documentation.
-	 * @TODO Complete documentation. 
+	 * @TODO Complete documentation.
 	 * @memberOf browsers*/
 	var chrome;
 	/** This property is missing documentation.
-	 * @TODO Complete documentation. 
+	 * @TODO Complete documentation.
 	 * @memberOf browsers*/
 	var safari;
 	/** This property is missing documentation.
-	 * @TODO Complete documentation. 
+	 * @TODO Complete documentation.
 	 * @memberOf browsers*/
 	var webkit;
 	ie7 = chrome = safari = webkit = false;

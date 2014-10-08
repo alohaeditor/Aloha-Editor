@@ -361,7 +361,7 @@ define([
 	/**
 	 * This function is missing documentation.
 	 * @TODO Complete documentation.
-	 * 
+	 *
 	 * @memberOf undo
 	 */
 	function close(context) {

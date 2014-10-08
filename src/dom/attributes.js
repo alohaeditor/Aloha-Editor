@@ -39,7 +39,7 @@ define([
 		}
 		return attrsMap;
 	}
-	
+
 	/**
 	 * This function is missing documentation.
 	 * @TODO Complete documentation.

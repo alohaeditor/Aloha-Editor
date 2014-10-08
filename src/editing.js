@@ -14,8 +14,8 @@
  *      </span>
  *</pre>
  * @TODO better handling of the last <br/> in a block and generally of
- *      unrendered whitespace. 
- *      For example: 
+ *      unrendered whitespace.
+ *      For example:
  *      formatting
  *      <p>{some<br/>text<br/>}</p>
  *      will result in
@@ -507,7 +507,7 @@ define([
 	/**
 	 * This function is missing documentation.
 	 * @TODO Complete documentation.
-	 * 
+	 *
 	 * @memberOf editing
 	 */
 	function wrap(node, wrapper, leftPoint, rightPoint) {
@@ -1732,7 +1732,7 @@ define([
 	/**
 	 * This function is missing documentation.
 	 * @TODO Complete documentation.
-	 * 
+	 *
 	 * @memberOf editing
 	 */
 	function insert(start, end, insertion) {
@@ -1756,7 +1756,7 @@ define([
 	/**
 	 * This function is missing documentation.
 	 * @TODO Complete documentation.
-	 * 
+	 *
 	 * @memberOf editing
 	 */
 	function className(start, end, name, value, boundaries) {
@@ -1766,7 +1766,7 @@ define([
 	/**
 	 * This function is missing documentation.
 	 * @TODO Complete documentation.
-	 * 
+	 *
 	 * @memberOf editing
 	 */
 	function attribute(start, end, name, value, boundaries) {

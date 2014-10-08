@@ -1,4 +1,4 @@
-/** Aloha Editor | Version 2.0 | github.com/alohaeditor */
+/** Aloha Editor | Version 2.0 | github.com/alohaeditor @summary todo write a summary here*/
 define([
 	'api',
 	'dom',
