@@ -1,0 +1,2 @@
+When using the repository browser in IE7 (or in a newer version in IE7 mode), resizing the window or the repository
+browser could lead to an endless resize cycle. This has been fixed now.
