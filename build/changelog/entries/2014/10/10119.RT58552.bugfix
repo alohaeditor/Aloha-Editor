@@ -1,0 +1,3 @@
+Nesting definition lists into normal (numbered or bulleted) lists and then removing or transforming the nested definition list
+could possibly break the DOM structure by leaving li, dt or dd elements without the proper parent.
+This has been fixed now.

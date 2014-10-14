@@ -521,18 +521,23 @@ define([
 		/**
 		* When the list is nested into another, our list items will be
 		* added to the list items of the outer list.
-		* @param Dom List Dom element
+		* @param Dom Parent List Dom element
+		* @param Dom List Dom Element
 		*/
-		fixupNestedLists: function (jqParentList) {
-				// find the place where to put the children of the inner list
-				if (jqParentList.get(0).nodeName.toLowerCase() === 'li') {
-					// inner list is nested in a li (this conforms to the html5 spec)
-					jqParentList.after(jqList.children());
-					jqList.remove();
-				} else {
-					// inner list is nested in the outer list directly (this violates the html5 spec)
-					jqList.children().unwrap();
-				}
+		fixupNestedLists: function (jqParentList, jqList) {
+			// find the place where to put the children of the inner list
+			if (jqParentList.get(0).nodeName.toLowerCase() === 'li') {
+				// transform the list elements to be li (could by dt and dd)
+				jQuery.each(jqList.children(), function (index, el) {
+					Aloha.Markup.transformDomObject(el, 'li', Aloha.Selection.rangeObject);
+				});
+				// inner list is nested in a li (this conforms to the html5 spec)
+				jqParentList.after(jqList.children());
+				jqList.remove();
+			} else {
+				// inner list is nested in the outer list directly (this violates the html5 spec)
+				jqList.children().unwrap();
+			}
 		},
 
 		/**
@@ -721,7 +726,7 @@ define([
 				jqParentList = jqList.parent();
 				if (jqParentList.length > 0 && Dom.isListElement(jqParentList.get(0))) {
 					// we are in a nested list
-					this.fixupNestedLists(jqParentList);
+					this.fixupNestedLists(jqParentList, jqList);
 				} else {
 					// we are in an list and shall transform it to paragraphs
 					if (listtype === 'dl') {
