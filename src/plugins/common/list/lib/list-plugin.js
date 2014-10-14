@@ -193,16 +193,17 @@ define([
 		},
 
 		/**
-		 * Toggle selected CSS class on current list elemnet
+		 * Set selected CSS class on current list element and all nested
+		 * list elements that are contained in the selection
 		 * @param String listtype: ol, ul or dl
 		 * @param String style: selected CSS class
 		 * @return void
 		 */
-		toggleListStyle: function (listtype, style) {
+		setListStyle: function (listtype, style) {
 			var domObject = this.getStartingDomObjectToTransform();
 			var nodeName = domObject.nodeName.toLowerCase();
 			var listToStyle =  jQuery(domObject);
-			var remove = false;
+			var plugin = this;
 
 			if (nodeName !== 'ul' && nodeName !== 'ol' && nodeName !== 'dl') {
 				// we don't have a list yet, so transform selection to list
@@ -215,15 +216,21 @@ define([
 			if (listtype === nodeName) {
 				// remove all classes
 				jQuery.each(this.templates[nodeName].classes, function () {
-					if (listToStyle.hasClass(this.cssClass) && this.cssClass === style) {
-						remove = true;
-					}
-					listToStyle.removeClass(this.cssClass);
+					listToStyle.removeClass(this);
 				});
 
-				if (!remove) {
-					listToStyle.addClass(style);
-				}
+				listToStyle.addClass(style);
+
+				// now proceed with all selected sublists
+				listToStyle.find(listtype).each(function () {
+					if (isListInSelection(this)) {
+						var listToStyle = jQuery(this);
+						jQuery.each(plugin.templates[listtype].classes, function () {
+							listToStyle.removeClass(this);
+						});
+						listToStyle.addClass(style);
+					}
+				});
 			}
 		},
 
@@ -267,7 +274,7 @@ define([
 			return {
 				html: '<div class="aloha-list-templates">' + html + '</div>',
 				click: function () {
-					that.toggleListStyle(listtype, cssClass);
+					that.setListStyle(listtype, cssClass);
 				}
 			};
 		},
