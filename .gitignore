@@ -10,3 +10,4 @@ target
 dist
 node_modules
 build
+.classpath
