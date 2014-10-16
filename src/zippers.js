@@ -293,6 +293,10 @@ define([
 		     : createRecord('#text', [text]);
 	}
 
+	function dom(loc) {
+		return after(loc).domNode();
+	}
+
 	/**
 	 * Updates the DOM tree below this location and returns a map of named boundaries
 	 * that are found therein.
@@ -645,7 +649,7 @@ define([
 	 */
 	function markTree(loc, boundary, markerName) {
 		loc = root(loc);
-		var element = after(loc).domNode();
+		var element = dom(loc);
 		var body = element.ownerDocument.body;
 		var origin = Paths.fromBoundary(body, Boundaries.fromFrontOfNode(element));
 		var path = Paths.fromBoundary(body, boundary);
@@ -808,6 +812,7 @@ define([
 
 	return {
 		go           : go,
+		dom          : dom,
 		hint         : hint,
 		update       : update,
 		before       : before,

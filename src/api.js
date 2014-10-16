@@ -45,7 +45,6 @@ define([
 	'traversing',
 	'typing',
 	'undo',
-	'mutation-trees',
 	'zippers'
 ], function (
 	Arrays,
@@ -83,7 +82,6 @@ define([
 	Traversing,
 	Typing,
 	Undo,
-	MutationTrees,
 	Zippers
 ) {
 	'use strict';
@@ -494,19 +492,9 @@ define([
 	exports['undo']['undo']    = Undo.undo;
 	exports['undo']['redo']    = Undo.redo;
 
-	exports['MutationTrees'] = {};
-	exports['MutationTrees']['create']      = MutationTrees.create;
-	exports['MutationTrees']['split']       = MutationTrees.split;
-	exports['MutationTrees']['insert']      = MutationTrees.insert;
-	exports['MutationTrees']['wrap']        = MutationTrees.wrap;
-	exports['MutationTrees']['remove']      = MutationTrees.remove;
-	exports['MutationTrees']['reduce']      = MutationTrees.reduce;
-	exports['MutationTrees']['paths']       = MutationTrees.paths;
-	exports['MutationTrees']['removePaths'] = MutationTrees.removePaths;
-	exports['MutationTrees']['update']      = MutationTrees.update;
-
 	exports['zippers'] = {};
 	exports['zippers']['go']           = Zippers.go;
+	exports['zippers']['dom']          = Zippers.dom;
 	exports['zippers']['hint']         = Zippers.hint;
 	exports['zippers']['update']       = Zippers.update;
 	exports['zippers']['before']       = Zippers.before;
