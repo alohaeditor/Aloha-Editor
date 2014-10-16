@@ -274,7 +274,7 @@
 			return;
 		}
 		var params = parseActionParams(event.target);
-		if (params && Editor.selection) {
+		if (params && Editor.selection && Editor.selection.boundaries) {
 			var boundaries = execute(params, Editor.selection.boundaries);
 			Editor.selection = Selections.select(
 				Editor.selection,
