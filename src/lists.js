@@ -421,17 +421,13 @@ define([
 		return -1 === index ? null : Zip.next(loc, index);
 	}
 
-	function domAfter(loc) {
-		return Zip.after(loc).domNode();
-	}
-
 	function bottomJoiningLoc(loc) {
 		loc = nextVisible(loc);
-		if (!loc || !Html.isListItem(domAfter(loc))) {
+		if (!loc || !Html.isListItem(Zip.dom(loc))) {
 			return null;
 		}
 		loc = nextVisible(Zip.down(loc));
-		if (!loc || !Html.isListContainer(domAfter(loc))) {
+		if (!loc || !Html.isListContainer(Zip.dom(loc))) {
 			return null;
 		}
 		return loc;
@@ -439,12 +435,12 @@ define([
 
 	function topJoiningLoc(loc) {
 		loc = prevVisible(loc);
-		if (!loc || !Html.isListItem(domAfter(loc))) {
+		if (!loc || !Html.isListItem(Zip.dom(loc))) {
 			return null;
 		}
 		var atLiEnd = Zip.next(Zip.down(loc), loc.rights.length);
 		loc = prevVisible(atLiEnd);
-		if (!loc || !Html.isListContainer(domAfter(loc))) {
+		if (!loc || !Html.isListContainer(Zip.dom(loc))) {
 			return atLiEnd;
 		}
 		loc = Zip.down(loc);
@@ -452,7 +448,7 @@ define([
 	}
 
 	function insertAt(loc, records) {
-		if (!Html.isListContainer(domAfter(Zip.up(loc)))) {
+		if (!Html.isListContainer(Zip.dom(Zip.up(loc)))) {
 			loc = Zip.down(Zip.insert(loc, Boromir(document.createElement('UL'))));
 		}
 		return Zip.insert(loc, records);
@@ -473,7 +469,7 @@ define([
 			start : start,
 			end   : end
 		});
-		var isBelowCac = function (loc) { return domAfter(Zip.up(loc)) === cac; };
+		var isBelowCac = function (loc) { return Zip.dom(Zip.up(loc)) === cac; };
 		var loc = zip.loc;
 		loc = Zip.splitAt(loc, zip.markers.start, isBelowCac);
 		loc = Zip.splitAt(loc, zip.markers.end, isBelowCac);
