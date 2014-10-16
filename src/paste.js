@@ -12,10 +12,11 @@ define([
 	'paths',
 	'arrays',
 	'events',
+	'boromir',
 	'content',
 	'editing',
+	'zippers',
 	'mutation',
-	'mutation-trees',
 	'boundaries',
 	'functions',
 	'transform',
@@ -27,10 +28,11 @@ define([
 	Paths,
 	Arrays,
 	Events,
+	Boromir,
 	Content,
 	Editing,
+	Zip,
 	Mutation,
-	MutationTrees,
 	Boundaries,
 	Fn,
 	Transform,
@@ -50,22 +52,10 @@ define([
 	};
 
 	/**
-	 * Checks if the given event is a Paste Event.
-	 *
-	 * @private
-	 * @param  {AlohaEvent} event
-	 * @return {boolean}
-	 */
-	function isPasteEvent(event) {
-		return 'paste' === event.type
-		    || ('undefined' !== typeof event.nativeEvent.clipboardData);
-	}
-
-	/**
 	 * Checks the content type of `event`.
 	 *
 	 * @private
-	 * @param  {Event}  event
+	 * @param  {!Event} event
 	 * @param  {string} type
 	 * @return {boolean}
 	 */
@@ -77,7 +67,7 @@ define([
 	 * Gets content of the paste data that matches the given mime type.
 	 *
 	 * @private
-	 * @param  {Event}  event
+	 * @param  {!Event} event
 	 * @param  {string} type
 	 * @return {string}
 	 */
@@ -89,8 +79,8 @@ define([
 	 * Moves the given node before the given boundary.
 	 *
 	 * @private
-	 * @param  {Boundary} boundary
-	 * @param  {Node}     node
+	 * @param  {!Boundary} boundary
+	 * @param  {!Node}     node
 	 * @return {Bounbary}
 	 */
 	function moveBeforeBoundary(boundary, node) {
@@ -101,10 +91,10 @@ define([
 	 * Pastes the markup at the given boundary range.
 	 *
 	 * @private
-	 * @param  {Boundary} start
-	 * @param  {Boundary} end
-	 * @param  {string}   markup
-	 * @return {Boundary} Boundary position after the inserted content
+	 * @param  {!Boundary} start
+	 * @param  {!Boundary} end
+	 * @param  {string}    markup
+	 * @return {Array.<Boundary>}
 	 */
 	function insert(start, end, markup) {
 		var doc = Boundaries.document(start);
@@ -136,22 +126,21 @@ define([
 			return boundaries;
 		}
 
-		var insertBoundary = boundaries[0];
-		var limit = Dom.editingHost(Boundaries.container(insertBoundary));
-		var tree = MutationTrees.create(limit, boundaries);
-
-		nodes.forEach(function (child) {
-			var insertPath = Paths.fromBoundary(limit, insertBoundary);
-			var result = MutationTrees.split(tree, insertPath, boundaries);
-			tree = result[0];
-			insertPath = result[1];
-			tree = MutationTrees.insert(tree, insertPath, child, boundaries);
-			insertBoundary = Paths.toBoundary(limit, insertPath);
+		var editable = Dom.editingHost(Boundaries.container(boundaries[0]));
+		var zip = Zip.zipper(editable, {
+			start : boundaries[0],
+			end   : boundaries[1]
 		});
+		var loc = Zip.go(zip.loc, zip.markers.start);
+		nodes.forEach(function (child) {
+			loc = Zip.split(loc, function (loc) {
+				return Content.allowsNesting(Zip.after(loc).name(), child.nodeName);
+			});
+			loc = Zip.insert(loc, Boromir(child));
+		});
+		var markers = Zip.update(loc);
 
-		tree.updateDom();
-
-		return boundaries;
+		return [markers.start, markers.end];
 
 		var result = MutationTrees.update(tree);
 		boundaries = result[1].map(Fn.partial(Paths.toBoundary, result[0].domNode()));
@@ -209,7 +198,7 @@ define([
 	 * @return {AlohaEvent}
 	 */
 	function handlePaste(event) {
-		if ('paste' !== event.type || 'undefined' !== typeof event.nativeEvent.clipboardData) {
+		if ('paste' !== event.type || 'undefined' === typeof event.nativeEvent.clipboardData) {
 			return event;
 		}
 		Events.suppress(event.nativeEvent);
