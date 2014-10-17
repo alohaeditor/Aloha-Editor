@@ -719,6 +719,9 @@ define([
 				return true;
 			}
 		}
+		if (Keys.CODES['enter'] === event.keycode) {
+			return true;
+		}
 		return false;
 	}
 
