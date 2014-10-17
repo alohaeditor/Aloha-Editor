@@ -27,6 +27,26 @@ define([
 ) {
 	'use strict';
 
+	/*
+	var marksX = {
+		'TEXT_LEFT'      : '▓[',
+		'TEXT_RIGHT'     : ']▓',
+		'ELEMENT_LEFT'   : '▓{',
+		'ELEMENT_RIGHT'  : '}▓',
+		'TEXT_SINGLE'    : '▓',
+		'ELEMENT_SINGLE' : '█'
+	};
+	*/
+
+	var marks = {
+		'TEXT_LEFT'      : '[',
+		'TEXT_RIGHT'     : ']',
+		'ELEMENT_LEFT'   : '{',
+		'ELEMENT_RIGHT'  : '}',
+		'TEXT_SINGLE'    : '¦',
+		'ELEMENT_SINGLE' : '|'
+	};
+
 	/**
 	 * Insert boundary markers at the given boundaries.
 	 *
@@ -39,8 +59,12 @@ define([
 		var startContainer = Boundaries.container(start);
 		var endContainer = Boundaries.container(end);
 		var doc = startContainer.ownerDocument;
-		var startMarker = doc.createTextNode(Dom.isTextNode(endContainer) ? ']▓' : '}▓');
-		var endMarker = doc.createTextNode(Dom.isTextNode(startContainer) ? '▓[' : '▓{');
+		var startMarker = doc.createTextNode(Dom.isTextNode(endContainer)
+		                ? marks.TEXT_RIGHT
+		                : marks.ELEMENT_RIGHT);
+		var endMarker = doc.createTextNode(Dom.isTextNode(startContainer)
+		              ? marks.TEXT_LEFT
+		              : marks.ELEMENT_LEFT);
 		var range = Boundaries.range(start, end);
 		start = Mutation.splitBoundary(Boundaries.fromRangeStart(range), [range]);
 		end = Mutation.splitBoundary(Boundaries.fromRangeEnd(range));
@@ -58,7 +82,9 @@ define([
 	function insertSingle(boundary) {
 		var container = Boundaries.container(boundary);
 		var marker = container.ownerDocument.createTextNode(
-			Boundaries.isTextBoundary(boundary) ? '▓' : '█'
+			Boundaries.isTextBoundary(boundary)
+				? marks.TEXT_SINGLE
+				: marks.ELEMENT_SINGLE
 		);
 		boundary = Mutation.splitBoundary(boundary);
 		Dom.insert(marker, Boundaries.nextNode(boundary), Boundaries.isAtEnd(boundary));
