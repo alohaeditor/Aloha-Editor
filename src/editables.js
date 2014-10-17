@@ -4,6 +4,7 @@
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
+ * @namespace editables
  */
 define([
 	'dom',
@@ -26,6 +27,7 @@ define([
 	 * @param  {Editor}  editor
 	 * @param  {Element} elem
 	 * @return {?Editable}
+	 * @memberOf editables
 	 */
 	function fromElem(editor, elem) {
 		return editor.editables[Dom.ensureExpandoId(elem)];
@@ -37,6 +39,7 @@ define([
 	 * @param  {Editor}   editor
 	 * @param  {Boundary} boundary
 	 * @return {?Editable}
+	 * @memberOf editables
 	 */
 	function fromBoundary(editor, boundary) {
 		var container = Boundaries.container(boundary);
@@ -46,6 +49,12 @@ define([
 		return elem && fromElem(editor, elem);
 	}
 
+	/**
+	 * This function is missing documentation.
+	 * @TODO Complete documentation.
+	 *
+	 * @memberOf editables
+	 */
 	function Editable(elem) {
 		Dom.addClass(elem, 'aloha-editable');
 		if (!Dom.getStyle(elem, 'min-height')) {
@@ -88,6 +97,7 @@ define([
 	 * @param  {Element}              element
 	 * @param  {Object}               options
 	 * @return {Editable}
+	 * @memberOf editables
 	 */
 	function create(editor, element, options) {
 		var editable = Editable(element);
@@ -106,6 +116,12 @@ define([
 		return editable;
 	}
 
+	/**
+	 * This function is missing documentation.
+	 * @TODO Complete documentation.
+	 *
+	 * @memberOf editables
+	 */
 	function destroy(editor, element)  {
 		var editable = fromElem(editor, element);
 		close(editable);

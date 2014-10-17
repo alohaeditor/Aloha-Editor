@@ -4,6 +4,7 @@
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
+ * @namespace paths
  */
 define([
 	'dom',
@@ -23,6 +24,7 @@ define([
 	 * @param  {Node}     limit
 	 * @param  {Boundary} boundary
 	 * @return {Array.<number>}
+	 * @memberOf paths
 	 */
 	function fromBoundary(limit, boundary) {
 		var offset = Boundaries.offset(boundary);
@@ -45,6 +47,7 @@ define([
 	 * @param  {Node}           container
 	 * @param  {Array.<number>} path
 	 * @return {Boundary}
+	 * @memberOf paths
 	 */
 	function toBoundary(container, path) {
 		var node = path.slice(0, -1).reduce(function (node, offset) {

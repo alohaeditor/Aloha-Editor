@@ -24,7 +24,7 @@ define([
 	 *
 	 * For example, if this function is called recursively, starting from the
 	 * DIV root node in the following DOM tree:
-	 *
+	 *<pre>
 	 *	<div>
 	 *		"one"
 	 *		<b>
@@ -38,14 +38,14 @@ define([
 	 *		</b>
 	 *		"five"
 	 *	</div>
-	 *
+	 *</pre>
 	 * forward() will return nodes in the following order:
 	 *
 	 * "one" <b>, "two", <u>, <i>, "three", "four", "five"
 	 *
 	 * This is depth-first pre-order traversal:
 	 * https://en.wikipedia.org/wiki/Tree_traversal#Pre-order
-	 *
+	 *<pre>
 	 *      <div>
 	 *      / | \
 	 *    /   |   \
@@ -57,9 +57,10 @@ define([
 	 *       <i>
 	 *        |
 	 *      three
-	 *
+	 *</pre>
 	 * @param  {!Node} node
 	 * @return {?Node}
+	 * @memberOf dom
 	 */
 	function forward(node) {
 		if (node.firstChild) {
@@ -81,7 +82,7 @@ define([
 	 *
 	 * For example, if this function is called recursively, starting from the
 	 * DIV root node in the DOM tree below:
-	 *
+	 *<pre>
 	 *	<div>
 	 *		"one"
 	 *		<b>
@@ -95,11 +96,11 @@ define([
 	 *		</b>
 	 *		"five"
 	 *	</div>
-	 *
+	 *</pre>
 	 * backward() will return nodes in the following order:
 	 *
 	 * "five", "four", "three", <i>, <u>, "two", <b>, "one"
-	 *
+	 *<pre>
 	 *      <div>
 	 *      / | \
 	 *    /   |   \
@@ -111,9 +112,10 @@ define([
 	 *       <i>
 	 *        |
 	 *      three
-	 *
+	 *</pre>
 	 * @param  {!Node} node
 	 * @return {?Node}
+	 * @memberOf dom
 	 */
 	function backward(node) {
 		var prev = node.previousSibling;
@@ -159,6 +161,7 @@ define([
 	 * @param  {function(Node):boolean} match
 	 * @param  {function(Node):boolean} until
 	 * @return {Node}
+	 * @memberOf dom
 	 */
 	function findForward(node, match, until) {
 		return find(node, match, until, forward);
@@ -173,6 +176,7 @@ define([
 	 * @param  {function(Node):boolean} match
 	 * @param  {function(Node):boolean} until
 	 * @return {Node}
+	 * @memberOf dom
 	 */
 	function findBackward(node, match, until) {
 		return find(node, match, until, backward);
@@ -241,6 +245,7 @@ define([
 	 *
 	 * @param  {Node} node
 	 * @return {Node}
+	 * @memberOf dom
 	 */
 	function nextSibling(node) {
 		return node.nextSibling;
@@ -251,6 +256,7 @@ define([
 	 *
 	 * @param  {Node} node
 	 * @return {Node}
+	 * @memberOf dom
 	 */
 	function prevSibling(node) {
 		return node.previousSibling;
@@ -262,6 +268,7 @@ define([
 	 * @private
 	 * @param  {Node} node
 	 * @return {Element}
+	 * @memberOf dom
 	 */
 	function parent(node) {
 		return node.parentNode;
@@ -312,6 +319,7 @@ define([
 	 * @param  {function(Node):boolean} cond
 	 * @param  {*}                      arg
 	 * @return {Node}
+	 * @memberOf dom
 	 */
 	function stepNextUntil(node, step, next, until, arg) {
 		return stepNextWhile(node, step, next, Fn.complement(until), arg);
@@ -327,6 +335,7 @@ define([
 	 * @param  {*}                          arg Optional arbitrary value that
 	 *                                          will be passed to `cond()`
 	 * @return {Node}
+	 * @memberOf dom
 	 */
 	function nextWhile(node, cond, arg) {
 		return stepWhile(node, nextSibling, cond, arg);
@@ -343,6 +352,7 @@ define([
 	 *                                         will be passed to the `cond()`
 	 *                                         predicate.
 	 * @return {Node}
+	 * @memberOf dom
 	 */
 	function prevWhile(node, cond, arg) {
 		return stepWhile(node, prevSibling, cond, arg);
@@ -354,6 +364,7 @@ define([
 	 * @param  {Node}                   node
 	 * @param  {function(Node):boolean} cond
 	 * @return {Node}
+	 * @memberOf dom
 	 */
 	function upWhile(node, cond) {
 		return stepWhile(node, parent, cond);
@@ -376,6 +387,7 @@ define([
 	 *        second argument.
 	 * @param {*} arg
 	 *        A value that will be passed to `func()` as the second argument.
+	 * @memberOf dom
 	 */
 	function nextUntil(node, func, until, arg) {
 		stepNextUntil(node, func, nextSibling, until, arg);
@@ -383,6 +395,7 @@ define([
 
 	/**
 	 * Like nextUntil() but in reverse.
+	 * @memberOf dom
 	 */
 	function prevUntil(node, func, until, arg) {
 		stepNextUntil(node, func, prevSibling, until, arg);
@@ -398,6 +411,7 @@ define([
 	 * @param {function(Node):boolean} until
 	 * @param {*} arg
 	 *        A value that will be passed to `func()` as the second argument.
+	 * @memberOf dom
 	 */
 	function climbUntil(node, func, until, arg) {
 		stepNextUntil(node, func, parent, until, arg);
@@ -414,6 +428,7 @@ define([
 	 *        second argument.
 	 * @param {*}                  arg
 	 *        A value that will be passed to `func()` as the second argument.
+	 * @memberOf dom
 	 */
 	function walk(node, func, arg) {
 		nextUntil(node, func, Fn.returnFalse, arg);
@@ -425,6 +440,7 @@ define([
 	 * @param  {Node}               node
 	 * @param  {function(Node, *?)} func
 	 * @return {*}                  arg
+	 * @memberOf dom
 	 */
 	function walkRec(node, func, arg) {
 		if (Nodes.isElementNode(node)) {
@@ -449,6 +465,7 @@ define([
 	 *        Terminal node.
 	 * @param {*}                  arg
 	 *        A value that will be passed to `func()` as the second argument.
+	 * @memberOf dom
 	 */
 	function walkUntilNode(node, func, untilNode, arg) {
 		nextUntil(node, func, function (nextNode) {
@@ -466,6 +483,7 @@ define([
 	 *        This function returns `true`, it will terminate the traversal.
 	 * @return {Array.<Node>}
 	 *         A set of parent elements of the given node.
+	 * @memberOf dom
 	 */
 	function parentsUntil(node, pred) {
 		var parents = [];
@@ -489,6 +507,7 @@ define([
 	 *        This function returns `true`, it will terminate the traversal.
 	 * @return {Array.<Node>}
 	 *         A set of parent element of the given node.
+	 * @memberOf dom
 	 */
 	function parentsUntilIncl(node, pred) {
 		var parents = parentsUntil(node, pred);
@@ -509,6 +528,7 @@ define([
 	 *        This function returns `true`, it will terminate the traversal.
 	 * @return {Array.<Node>}
 	 *         A set of parent element of the given node.
+	 * @memberOf dom
 	 */
 	function childAndParentsUntil(node, pred) {
 		if (pred(node)) {
@@ -529,6 +549,7 @@ define([
 	 *        This function returns `true`, it will terminate the traversal.
 	 * @return {Array.<Node>}
 	 *         A set of parent element of the given node.
+	 * @memberOf dom
 	 */
 	function childAndParentsUntilIncl(node, pred) {
 		if (pred(node)) {
@@ -545,6 +566,7 @@ define([
 	 * @param {Node}   node
 	 * @param {Node}   untilNode Terminal ancestor.
 	 * @return {Array<Node>} A set of parent element of the given node.
+	 * @memberOf dom
 	 */
 	function childAndParentsUntilNode(node, untilNode) {
 		return childAndParentsUntil(node, function (nextNode) {
@@ -561,6 +583,7 @@ define([
 	 *        Terminal ancestor.  Will be included in results.
 	 * @return {Array.<Node>}
 	 *         A set of parent element of the given node.
+	 * @memberOf dom
 	 */
 	function childAndParentsUntilInclNode(node, untilInclNode) {
 		return childAndParentsUntilIncl(node, function (nextNode) {
@@ -582,6 +605,7 @@ define([
 	 *         traversal step.  If this function returns true, traversal will
 	 *         terminal and will return null.
 	 * @return {Node}
+	 * @memberOf dom
 	 */
 	function nextNonAncestor(start, previous, match, until) {
 		match = match || Fn.returnTrue;
@@ -614,6 +638,7 @@ define([
 	 * @param  {string}  selector
 	 * @param  {Element} context
 	 * @return {Array.<Node>}
+	 * @memberOf dom
 	 */
 	function query(selector, context) {
 		return Arrays.coerce(context.querySelectorAll(selector));
@@ -627,6 +652,7 @@ define([
 	 * @param  {Node}                   node
 	 * @param  {function(Node):boolean} until
 	 * @return {Array.<Node>}
+	 * @memberOf dom
 	 */
 	function prevSiblings(node, until) {
 		if (!node.previousSibling) {
@@ -647,6 +673,7 @@ define([
 	 * @param  {Node}                   node
 	 * @param  {function(Node):boolean} until
 	 * @return {Array.<Node>}
+	 * @memberOf dom
 	 */
 	function nextSiblings(node, until) {
 		if (!node.nextSibling) {
@@ -667,6 +694,7 @@ define([
 	 * @param  {Node}                   node
 	 * @param  {function(Node):boolean} until
 	 * @return {Array.<Node>}
+	 * @memberOf dom
 	 */
 	function nodeAndPrevSiblings(node, until) {
 		return (until && until(node)) ? [] : prevSiblings(node, until).concat(node);
@@ -680,6 +708,7 @@ define([
 	 * @param  {Node}                   node
 	 * @param  {function(Node):boolean} until
 	 * @return {Array.<Node>}
+	 * @memberOf dom
 	 */
 	function nodeAndNextSiblings(node, until) {
 		return (until && until(node)) ? [] : [node].concat(nextSiblings(node, until));

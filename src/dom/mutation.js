@@ -23,6 +23,7 @@ define([
 	 * @param {Node}    node
 	 * @param {Node}    ref
 	 * @param {boolean} atEnd
+	 * @memberOf dom
 	 */
 	function insert(node, ref, atEnd) {
 		if (atEnd) {
@@ -37,6 +38,7 @@ define([
 	 *
 	 * @param {Node} node
 	 * @param {Node} ref
+	 * @memberOf dom
 	 */
 	function insertAfter(node, ref) {
 		insert(node, ref.nextSibling || ref.parentNode, !ref.nextSibling);
@@ -50,6 +52,7 @@ define([
 	 * @param {Element} parent
 	 * @param {Node}    first
 	 * @param {Node}    reference
+	 * @memberOf dom
 	 */
 	function moveNextAll(parent, first, reference) {
 		var next;
@@ -65,6 +68,7 @@ define([
 	 *
 	 * @param {Element} destination
 	 * @param {Node}    node
+	 * @memberOf dom
 	 */
 	function append(node, destination) {
 		insert(node, destination, true);
@@ -94,6 +98,7 @@ define([
 	 * @param  {Element}                destination
 	 * @param  {function(Node):boolean} until
 	 * @return {Array.<Nodes>}          The nodes that were not moved
+	 * @memberOf dom
 	 */
 	function move(nodes, destination, until) {
 		return walkUntil(nodes, function (node) {
@@ -109,6 +114,7 @@ define([
 	 * @param  {Element}                destination
 	 * @param  {function(Node):boolean} until
 	 * @return {Array.<Nodes>}          The nodes that were not copied
+	 * @memberOf dom
 	 */
 	function copy(nodes, destination, until) {
 		return walkUntil(nodes, function (node) {
@@ -124,6 +130,7 @@ define([
 	 * @param  {Element}                reference
 	 * @param  {function(Node):boolean} until
 	 * @return {Array.<Nodes>}          The nodes that were not moved
+	 * @memberOf dom
 	 */
 	function moveBefore(nodes, reference, until) {
 		return walkUntil(nodes, function (node) {
@@ -139,6 +146,7 @@ define([
 	 * @param  {Element}                reference
 	 * @param  {function(Node):boolean} until
 	 * @return {Array.<Nodes>}          The nodes that were not moved
+	 * @memberOf dom
 	 */
 	function moveAfter(nodes, reference, until) {
 		return walkUntil(nodes, function (node) {
@@ -153,6 +161,7 @@ define([
 	 * @param  {Node} node
 	 * @param  {Node} replacement
 	 * @return {Node} Replaced node
+	 * @memberOf dom
 	 */
 	function replace(node, replacement) {
 		return node.parentNode.replaceChild(replacement, node);
@@ -170,6 +179,7 @@ define([
 	 * @param  {Element} element
 	 * @param  {Element} replacement
 	 * @return {Element} Replaced element
+	 * @memberOf dom
 	 */
 	function replaceShallow(element, replacement) {
 		move(Nodes.children(element), replacement);
@@ -180,6 +190,7 @@ define([
 	 * Detaches the given node.
 	 *
 	 * @param {Node} node
+	 * @memberOf dom
 	 */
 	function remove(node) {
 		node.parentNode.removeChild(node);
@@ -189,6 +200,7 @@ define([
 	 * Removes the given node while keeping it's content intact.
 	 *
 	 * @param {Node} node
+	 * @memberOf dom
 	 */
 	function removeShallow(node) {
 		moveBefore(Nodes.children(node), node);
@@ -200,6 +212,7 @@ define([
 	 *
 	 * @param {Node}    node
 	 * @param {Element} wrapper
+	 * @memberOf dom
 	 */
 	function wrap(node, wrapper) {
 		append(replace(node, wrapper), wrapper);
@@ -211,6 +224,7 @@ define([
 	 * @param  {Element} node
 	 * @param  {string}  nodeName
 	 * @return {Element} The wrapper element
+	 * @memberOf dom
 	 */
 	function wrapWith(node, nodeName) {
 		var wrapper = node.ownerDocument.createElement(nodeName);
@@ -221,6 +235,7 @@ define([
 	/**
 	 * Removes all children from `node`.
 	 * @param {Node} node
+	 * @memberOf dom
 	 */
 	function removeChildren(node) {
 		Nodes.children(node).forEach(remove);
@@ -235,6 +250,7 @@ define([
 	 *
 	 * @param {Node} left
 	 * @param {Node} right
+	 * @memberOf dom
 	 */
 	function merge(left, right) {
 		var next;

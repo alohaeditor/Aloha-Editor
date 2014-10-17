@@ -82,7 +82,7 @@ define([
 	 * 2) replace the center node with a paragraph
 	 * 3) add alignment styling to new paragraph
 	 *
-	 * @todo
+	 * @todo implement this function
 	 * @private
 	 * @param  {Element} node
 	 * @return {Element}
@@ -224,13 +224,14 @@ define([
 	}
 
 	/**
-	 * Transforms markup to normalized HTML.
+	 * Transforms html markup to normalized HTML.
 	 *
-	 * @private
 	 * @param  {string}   markup
 	 * @param  {Document} document
 	 * @param  {Object}   rules
 	 * @return {string}
+	 * @alias html
+	 * @memberOf transform
 	 */
 	function transform(markup, doc, rules) {
 		if (!rules) {

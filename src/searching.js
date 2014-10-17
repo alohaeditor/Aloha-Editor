@@ -7,6 +7,7 @@
  *
  * @overview
  * Module for searching for strings of token in markup
+ * @namespace searching
  */
 define([
 	'dom',
@@ -131,6 +132,7 @@ define([
 	 * @param  {!RexExp}   regex
 	 * @param  {string}    direction "forward" or "backward"
 	 * @return {?Boundary}
+	 * @memberOf searching
 	 */
 	function search(boundary, regex, direction) {
 		return ('backward' === direction)
@@ -144,6 +146,7 @@ define([
 	 * @param  {!Boundary} boundary
 	 * @param  {string}    str
 	 * @return {?Boundary}
+	 * @memberOf searching
 	 */
 	function backward(boundary, str) {
 		return searchBackward(boundary, new RegExp(str + '(?!.*' + str + ')'));
@@ -154,6 +157,7 @@ define([
 	 * @param  {!Boundary} boundary
 	 * @param  {string}    str
 	 * @return {?Boundary}
+	 * @memberOf searching
 	 */
 	function forward(boundary, str) {
 		return searchForward(boundary, new RegExp(str));

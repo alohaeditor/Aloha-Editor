@@ -7,6 +7,7 @@
  *
  * @see
  * http://www.w3.org/TR/DOM-Level-3-Events/#idl-interface-MouseEvent-initializers
+ * @namespace events
  */
 define(['misc', 'assert'], function (Misc, Assert) {
 	'use strict';
@@ -25,6 +26,7 @@ define(['misc', 'assert'], function (Misc, Assert) {
 	 *        object.
 	 * @param {boolean=} opt_useCapture
 	 *        Optional.  Whether to add the handler in the capturing phase.
+	 * @memberOf events
 	 */
 	function add(obj, event, handler, opt_useCapture) {
 		var useCapture = !!opt_useCapture;
@@ -50,6 +52,7 @@ define(['misc', 'assert'], function (Misc, Assert) {
 	 * @param {boolean=} opt_useCapture
 	 *        Optional.  Must be true if the handler was registered with a true
 	 *        useCapture argument.
+	 * @memberOf events
 	 */
 	function remove(obj, event, handler, opt_useCapture) {
 		var useCapture = !!opt_useCapture;
@@ -62,6 +65,12 @@ define(['misc', 'assert'], function (Misc, Assert) {
 		}
 	}
 
+	/**
+	 * This function is missing documentation.
+	 * @TODO Complete documentation.
+	 *
+	 * @memberOf events
+	 */
 	function dispatch(doc, obj, event) {
 		var eventObj;
 		if (obj.dispatchEvent) {
@@ -86,6 +95,7 @@ define(['misc', 'assert'], function (Misc, Assert) {
 	 *
 	 * @param  {Event} event
 	 * @return {boolean}
+	 * @memberOf events
 	 */
 	function hasKeyModifier(event, modifier) {
 		return event.meta.indexOf(modifier) > -1;
@@ -101,6 +111,7 @@ define(['misc', 'assert'], function (Misc, Assert) {
 	 * https://github.com/NobleJS/setImmediate
 	 *
 	 * @param fn {function} a function to call
+	 * @memberOf events
 	 */
 	function nextTick(fn) {
 		setTimeout(fn, 4);
@@ -116,6 +127,7 @@ define(['misc', 'assert'], function (Misc, Assert) {
 	 *
 	 * @param {function} editor
 	 * @param {Document} doc
+	 * @memberOf events
 	 */
 	function setup(doc, editor) {
 		add(doc, 'resize',    editor);
@@ -146,6 +158,7 @@ define(['misc', 'assert'], function (Misc, Assert) {
 	 * behavior for it.
 	 *
 	 * @param {Event} event
+	 * @memberOf events
 	 */
 	function preventDefault(event) {
 		if (event.preventDefault) {
@@ -159,6 +172,7 @@ define(['misc', 'assert'], function (Misc, Assert) {
 	 * Stops this event from bubbling any further up the DOM tree.
 	 *
 	 * @param {Event} event
+	 * @memberOf events
 	 */
 	function stopPropagation(event) {
 		if (event.stopPropagation) {
@@ -174,6 +188,7 @@ define(['misc', 'assert'], function (Misc, Assert) {
 	 * the DOM tree from being notified of this event.
 	 *
 	 * @param {Event} event
+	 * @memberOf events
 	 */
 	function suppress(event) {
 		stopPropagation(event);

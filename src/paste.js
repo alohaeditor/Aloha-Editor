@@ -4,6 +4,7 @@
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
+ * @namespace paste
  */
 define([
 	'dom',
@@ -196,6 +197,7 @@ define([
 	 *
 	 * @param  {AlohaEvent} event
 	 * @return {AlohaEvent}
+	 * @memberOf paste
 	 */
 	function handlePaste(event) {
 		if ('paste' !== event.type || 'undefined' === typeof event.nativeEvent.clipboardData) {

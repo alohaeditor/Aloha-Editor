@@ -87,7 +87,7 @@ define([], function () {
 	 * https://developer.mozilla.org/en/docs/Web/Guide/HTML/HTML5/HTML5_element_list#Text-level_semantics
 	 *
 	 * @private
-	 * @type {object.<string, true>}
+	 * @type {Object.<string, true>}
 	 */
 	var TEXT_LEVEL_SEMANTIC_ELEMENTS = {
 		'A'      : true,
@@ -151,7 +151,7 @@ define([], function () {
 	 *
 	 * @private
 	 * @see   GROUPED_CONTAINERS
-	 * @param {<string, boolean>}
+	 * @param {Object.<string, boolean>}
 	 */
 	var GROUP_CONTAINERS = {
 		'FIELDSET' : true,
@@ -176,7 +176,7 @@ define([], function () {
 	 *
 	 * @private
 	 * @see   GROUP_CONTAINERS
-	 * @param {<string, Array.<string>}
+	 * @param {Object.<string, Array.<string>>}
 	 */
 	var GROUPED_ELEMENTS = {
 		'LI'    : ['OL', 'UL', 'DL'],
@@ -196,6 +196,7 @@ define([], function () {
 	 * @see    GROUP_CONTAINERS
 	 * @param  {Node} node
 	 * @return {boolean}
+	 * @memberOf html
 	 */
 	function isGroupContainer(node) {
 		return GROUP_CONTAINERS[node.nodeName];
@@ -210,6 +211,7 @@ define([], function () {
 	 * @see    GROUPED_CONTAINER
 	 * @param  {Node} node
 	 * @return {boolean}
+	 * @memberOf html
 	 */
 	function isGroupedElement(node) {
 		return !!GROUPED_ELEMENTS[node.nodeName];
@@ -220,6 +222,7 @@ define([], function () {
 	 *
 	 * @param  {Node} node
 	 * @return {boolean}
+	 * @memberOf html
 	 */
 	function isListItem(node) {
 		return !!LIST_ITEMS[node.nodeName];
@@ -230,6 +233,7 @@ define([], function () {
 	 *
 	 * @param  {Node} node
 	 * @return {boolean}
+	 * @memberOf html
 	 */
 	function isListContainer(node) {
 		return !!LIST_CONTAINERS[node.nodeName];
@@ -240,6 +244,7 @@ define([], function () {
 	 *
 	 * @param  {Node} node
 	 * @return {boolean}
+	 * @memberOf html
 	 */
 	function isTableContainer(node) {
 		return node.nodeName === 'TABLE';
@@ -250,6 +255,7 @@ define([], function () {
 	 *
 	 * @param  {Node} node
 	 * @return {boolean}
+	 * @memberOf html
 	 */
 	function isVoidNode(node) {
 		return !!VOID_ELEMENTS[node.nodeName];
@@ -264,6 +270,7 @@ define([], function () {
 	 *
 	 * @param  {Node} node
 	 * @return {boolean}
+	 * @memberOf html
 	 */
 	function isBlockNode(node) {
 		return !!BLOCK_LEVEL_ELEMENTS[node.nodeName];
@@ -278,6 +285,7 @@ define([], function () {
 	 *
 	 * @param  {Node} node
 	 * @return {boolean}
+	 * @memberOf html
 	 */
 	function isInlineNode(node) {
 		return !isBlockNode(node);
@@ -288,6 +296,7 @@ define([], function () {
 	 *
 	 * @param  {Node} node
 	 * @return {boolean}
+	 * @memberOf html
 	 */
 	function isTextLevelSemanticNode(node) {
 		return !!TEXT_LEVEL_SEMANTIC_ELEMENTS[node.nodeName];
@@ -313,6 +322,7 @@ define([], function () {
 	 *
 	 * @param  {Node} node
 	 * @return {boolean}
+	 * @memberOf html
 	 */
 	function isHeading(node) {
 		return !!HEADINGS[node.nodeName];

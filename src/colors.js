@@ -4,6 +4,7 @@
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
+ * @namespace colors
  */
 define([], function () {
 	'use strict';
@@ -16,6 +17,7 @@ define([], function () {
 	 *
 	 * @param  {Array.<number|string>} color
 	 * @return {string}
+	 * @memberOf colors
 	 */
 	function serialize(color) {
 		if ('string' === typeof color[0]) {
@@ -35,6 +37,7 @@ define([], function () {
 	 * @param  {string} a
 	 * @param  {string} b
 	 * @return {boolean}
+	 * @memberOf colors
 	 */
 	function equals(a, b) {
 		return hex(a) === hex(b);
@@ -96,6 +99,7 @@ define([], function () {
 	 *
 	 * @param  {string} value
 	 * @return {string}
+	 * @memberOf colors
 	 */
 	function hex(value) {
 		var color = value.match(COLOR_PREFIX);
@@ -113,6 +117,7 @@ define([], function () {
 	 *
 	 * @param  {string} value
 	 * @return {Array.<number>}
+	 * @memberOf colors
 	 */
 	function rgb(value) {
 		var color = value.match(COLOR_PREFIX);
@@ -134,6 +139,7 @@ define([], function () {
 	 * @param  {Array.<number>} to
 	 * @param  {number}         percent Range from 0 - 1
 	 * @return {Array.<number>}
+	 * @memberOf colors
 	 */
 	function cross(from, to, percent) {
 		var r = to[0] - from[0];

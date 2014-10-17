@@ -7,6 +7,7 @@
  *
  * @TODO: better climbing
  *        ie support
+ * @namespace selections
  */
 define([
 	'dom',
@@ -78,6 +79,7 @@ define([
 	 *
 	 * @param {Element}  caret
 	 * @param {Boundary} boundary
+	 * @memberOf selections
 	 */
 	function show(caret, boundary) {
 		var box = Carets.box(Boundaries.range(boundary, boundary));
@@ -574,6 +576,7 @@ define([
 	 *
 	 * @param  {Document} doc
 	 * @return {Object}
+	 * @memberOf selections
 	 */
 	function Context(doc) {
 		var caret = doc.createElement('div');
@@ -606,6 +609,7 @@ define([
 	 * scolling the view port if necessary.
 	 *
 	 * @param {!Boundary} boundary
+	 * @memberOf selections
 	 */
 	function focus(boundary) {
 		var box = Carets.box(Boundaries.range(boundary, boundary));
@@ -671,6 +675,7 @@ define([
 	 *
 	 * @param  {Event} event
 	 * @return {Event}
+	 * @memberOf selections
 	 */
 	function handleSelections(event) {
 		if (!handlers[event.type]) {
@@ -759,6 +764,7 @@ define([
 	 * @param  {Boundary}  end
 	 * @param  {string=}   focus optional. "start" or "end". Defaults to "end"
 	 * @return {Selection}
+	 * @memberOf selections
 	 */
 	function select(selection, start, end, focus) {
 		var boundary = 'start' === focus ? start : end;

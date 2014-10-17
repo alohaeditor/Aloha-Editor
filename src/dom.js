@@ -4,6 +4,7 @@
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
+ * @namespace dom
  */
 define([
 	'functions',
@@ -36,6 +37,7 @@ define([
 	 *
 	 * @param {!Node} node
 	 * @return {boolean} True if `node` is content editable.
+	 * @memberOf dom
 	 */
 	function isEditingHost(node) {
 		if (!Nodes.isElementNode(node)) {
@@ -61,6 +63,7 @@ define([
 	 *
 	 * @param  {Element} node
 	 * @return {boolean}
+	 * @memberOf dom
 	 */
 	function isContentEditable(node) {
 		return Nodes.isElementNode(node) && 'true' === node.contentEditable;
@@ -77,6 +80,7 @@ define([
 	 *
 	 * @param {!Node} node
 	 * @return {boolean}
+	 * @memberOf dom
 	 */
 	function isEditable(node) {
 		if (!Nodes.isElementNode(node)) {
@@ -104,6 +108,11 @@ define([
 		return isEditable(parent);
 	}
 
+	/**
+	 * This function is missing documentation.
+	 * @TODO Complete documentation.
+	 * @memberOf dom
+	 */
 	function isEditableNode(node) {
 		return isEditable(Nodes.isTextNode(node) ? node.parentNode : node);
 	}
@@ -113,6 +122,7 @@ define([
 	 *
 	 * @param  {Node} node
 	 * @return {boolean}
+	 * @memberOf dom
 	 */
 	function editingHost(node) {
 		if (isEditingHost(node)) {
@@ -133,6 +143,7 @@ define([
 	 *
 	 * @param  {Node} node
 	 * @return {Element}
+	 * @memberOf dom
 	 */
 	function editableParent(node) {
 		var ancestor = node.parentNode;
@@ -194,6 +205,7 @@ define([
 	 *
 	 * @param   {Document} doc
 	 * @returns {Window}
+	 * @memberOf dom
 	 */
 	function documentWindow(doc) {
 		return doc['defaultView'] || doc['parentWindow'];
@@ -204,6 +216,7 @@ define([
 	 *
 	 * @param  {!Document} doc
 	 * @return {number}
+	 * @memberOf dom
 	 */
 	function scrollTop(doc) {
 		var win = documentWindow(doc);
@@ -220,6 +233,7 @@ define([
 	 *
 	 * @param  {!Document} doc
 	 * @return {number}
+	 * @memberOf dom
 	 */
 	function scrollLeft(doc) {
 		var win = documentWindow(doc);
@@ -235,6 +249,7 @@ define([
 	 * Calculate absolute offsetTop or offsetLeft properties
 	 * for an element
 	 *
+	 * @private
 	 * @param {!Element} element
 	 * @param {string}   property
 	 * @return {integer}
@@ -246,7 +261,7 @@ define([
 			offset += parent[property];
 			parent = parent.offsetParent;
 		}
-		return offset;		
+		return offset;
 	}
 
 	/**
@@ -255,6 +270,7 @@ define([
 	 *
 	 * @param {!Element} element
 	 * @return {integer}
+	 * @memberOf dom
 	 */
 	function absoluteTop(element) {
 		return absoluteOffset(element, 'offsetTop');
@@ -266,6 +282,7 @@ define([
 	 *
 	 * @param {!Element} element
 	 * @return {integer}
+	 * @memberOf dom
 	 */
 	function absoluteLeft(element) {
 		return absoluteOffset(element, 'offsetLeft');

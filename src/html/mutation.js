@@ -65,6 +65,7 @@ define([
 	 * block level elements with one line height.
 	 *
 	 * @param {Element} elem
+	 * @memberOf html
 	 */
 	function prop(elem) {
 		if (!Predicates.isBlockNode(elem) || (Browsers.msie && closestEditable(elem))) {

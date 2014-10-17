@@ -4,6 +4,7 @@
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
+ * @namespace carets
  */
 define([
 	'dom',
@@ -176,6 +177,7 @@ define([
 	 * @param  {Object.<string, number>} box
 	 * @param  {Document}                doc
 	 * @return {Element}
+	 * @memberOf carets
 	 */
 	function showHint(box, doc) {
 		var elem = doc.querySelector('.aloha-caret-box-hint');
@@ -202,6 +204,7 @@ define([
 	 *
 	 * @param  {Document} doc
 	 * @return {?Element}
+	 * @memberOf carets
 	 */
 	function hideHint(doc) {
 		var box = doc.querySelector('.aloha-caret-box-hint');
@@ -248,6 +251,7 @@ define([
 	 *
 	 * @param  {Range} range
 	 * @return {Object.<string, number>}
+	 * @memberOf carets
 	 */
 	function box(range) {
 		var rect = bounds(range);

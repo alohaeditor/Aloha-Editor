@@ -4,6 +4,7 @@
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
+ * @namespace typing
  */
 define([
 	'dom',
@@ -425,6 +426,12 @@ define([
 		mutate         : Fn.partial(toggleUndo, Undo.redo)
 	};
 
+	/**
+	 * This variable is missing documentation.
+	 * @TODO Complete documentation.
+	 *
+	 * @memberOf typing
+	 */
 	var actions = {
 		'breakBlock'     : breakBlock,
 		'breakLine'      : breakLine,
@@ -503,6 +510,7 @@ define([
 
 	/**
 	 * Updates selection and nativeEvent
+	 * @memberOf typing
 	 */
 	function handleTyping(event) {
 		var selection = event.selection;

@@ -4,6 +4,7 @@
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
+ * @namespace selection-change
  */
 define([
 	'functions',
@@ -81,6 +82,7 @@ define([
 	 * @param fn {function(Array.<Boundary>, Event):void}
 	 *        A handler function that will be called with the changed
 	 *        selection, and the event that caused the selection change.
+	 * @memberOf selection-change
 	 */
 	function handler(getBoundaries, boundaries, fn) {
 		function watchSelection(event) {
@@ -147,6 +149,7 @@ define([
 	 *        default because handling the mousemove event could have
 	 *        different implications from handling up/down/press events.
 	 * @return {void}
+	 * @memberOf selection-change
 	 */
 	function addHandler(doc, watchSelection, mousemove) {
 		// Chrome, IE (except IE text input)
@@ -171,6 +174,7 @@ define([
 	 * handler was added.
 	 *
 	 * Expect the handler to be called even after it was removed.
+	 * @memberOf selection-change
 	 */
 	function removeHandler(doc, watchSelection, mousemove) {
 		Events.remove(doc, 'selectionchange', watchSelection, true);

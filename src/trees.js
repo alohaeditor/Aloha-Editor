@@ -35,7 +35,7 @@ define([
 	 * result argument.
 	 *
 	 * @param obj {Array.<*>|Object.<string,*>}
-	 * @param step {function(*, {integer|string}, {Array.<*>|Object.<string,*>})}
+	 * @param step {function(*, (integer|string), (Array.<*>|Object.<string,*>))}
 	 * @return the given result argument.
 	 */
 	function walkContainerWithResult(obj, step, result) {
@@ -85,10 +85,10 @@ define([
 	 * stepContainer will encounter all values.
 	 * stepLeaf will only encounter non-container values.
 	 *
-	 * @param optWalkContainer {?function (Array.<*>|Object.<string,*>,
+	 * @param optWalkContainer {function ((Array.<*>|Object.<string,*>),
 	 *                                    function(*,
-	 *                                              string|integer,
-	 *                                              Array.<*>|Object.<string,*>)
+	 *                                              (string|integer),
+	 *                                              (Array.<*>|Object.<string,*>))
 	 *                                    :void)
 	 *                          :void}
 	 *        A function to use to walk container values (for example
@@ -183,10 +183,10 @@ define([
 	 *        only to the given value itself if it isn't a tree).
 	 *        The return value will replace the corresponding value in
 	 *        the result tree.
-	 * @param optWalkContainer {?function (Array.<*>|Object.<string,*>,
+	 * @param optWalkContainer {function ((Array.<*>|Object.<string,*>),
 	 *                                    function(*,
-	 *                                              string|integer,
-	 *                                              Array.<*>|Object.<string,*>)
+	 *                                              (string|integer),
+	 *                                              (Array.<*>|Object.<string,*>))
 	 *                                    :void)
 	 *                          :void}
 	 *        A function to use to walk container values (for example
