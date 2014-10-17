@@ -59,7 +59,7 @@ define([
 	 */
 	var CODES = {};
 	Maps.forEach(CODE_KEY, function (current, index) {
-		CODES[current] = index;
+		CODES[current] = parseInt(index, 10);
 	});
 
 	/**
