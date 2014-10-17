@@ -227,6 +227,40 @@ define([
 		return ' ';
 	}
 
+	/**
+	 * Looks to see if the boundary is immediately in front of a non-breaking
+	 * whitespace and replaces it with a regular whitespace.
+	 *
+	 * It is necessary to do this normalization every time we insert any
+	 * character that is not a whitespace character in order to not end up with
+	 * a situation where all spaces between words being non-breaking
+	 * whitespaces. Such a situation would otherwise arise because, when space
+	 * inserting spaces at the end of a block-level element, these spaces need
+	 * to be non-breaking whitespace for them to be visible.  But when a
+	 * non-space character is inserted, that non-breaking whitespace is no
+	 * longer needed and should converted to a collapsable whitespace.
+	 *
+	 * @private
+	 * @param  {!Boundary} boundary
+	 */
+	function normalizePreceedingWhitespace(boundary) {
+		var node, offset;
+		if (Boundaries.isTextBoundary(boundary)) {
+			node = Boundaries.container(boundary);
+			offset = Boundaries.offset(boundary);
+		} else {
+			node = Boundaries.nodeBefore(boundary);
+			if (node && Dom.isTextNode(node)) {
+				offset = node.data.length;
+			}
+		}
+		if (node) {
+			var text = node.data;
+			if (Strings.NON_BREAKING_SPACE.test(text.substr(offset - 1, 1))) {
+				node.data = text.substr(0, offset - 1) + ' ' + text.substr(offset);
+			}
+		}
+	}
 
 	function indent(event) {
 		var boundaries = event.selection.boundaries;
@@ -256,6 +290,8 @@ define([
 			if (!Html.isWhiteSpacePreserveStyle(whiteSpaceStyle)) {
 				text = appropriateWhitespace(boundary);
 			}
+		} else {
+			normalizePreceedingWhitespace(boundary);
 		}
 		boundary = Overrides.consume(boundary, Overrides.joinToSet(
 			selection.formatting,

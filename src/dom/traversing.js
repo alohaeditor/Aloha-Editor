@@ -182,6 +182,14 @@ define([
 	 * Walk backward in pre-order-backtracing traversal until the given
 	 * predicate returns true.
 	 *
+	 * Given the following tree structure:
+	 * <pre>
+	 *		<div><b>one<i>two</i><b>three</div>
+	 * </pre>
+	 *
+	 * Will encounter the nodes in the following order:
+	 * div, three, b, i, two, i, one, b, div
+	 *
 	 * @see    https://en.wikipedia.org/wiki/Depth-first_search#Vertex_orderings
 	 * @param  {!Node}                   node
 	 * @param  {!function(Node):boolean} pred
