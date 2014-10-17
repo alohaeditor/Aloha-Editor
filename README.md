@@ -2,23 +2,21 @@
 
 Aloha Editor is a JavaScript library to simplify editing in HTML.
 
-### [Website](http://aloha-editor.org) - [Getting Started](http://aloha-editor.org/getting-started) -  [Documentation](http://aloha-editor.org/documentation)
+### [Website](http://aloha-editor.org) - [Quick Start](http://aloha-editor.org/docs/quickstart.html) -  [Documentation](http://aloha-editor.org/docs)
 
 [![Aloha Editor](https://avatars0.githubusercontent.com/u/302655?v=2&s=200)](http://aloha-editor.org)
 
 ### Usage
 
+```javascript
 	<div class="aloha-editable">
-		<p>Aloha Editor has all the power of contentEditable, plus more control,
-		minus contentEditable and it's hassle.</p>
+		Aloha Editor is a better alternative to ContentEditable.
 	</div>
 	<script src="aloha.js"></script>
 	<script>
-		require(['aloha'], function (aloha) {
-			'use strict';
-			[].forEach.call(document.querySelectorAll('.aloha-editable'), aloha);
-		});
+		aloha.dom.query('.aloha-editable', document).forEach(aloha);
 	</script>
+```
 
 ### Become a contributor
 
@@ -28,17 +26,7 @@ Thank for looking to contribute! Yay! If you want to contribute read the [contri
 
 We use Google closure compiler to build. Check out [Grunt Closure Compiler](https://github.com/gmarty/grunt-closure-compiler#closure-compiler-installation-from-source) how to setup Google closure compiler for grunt.
 
-	npm install
-	grunt
-
-### Test
-
-	grunt jshint
-	grunt qunit
-
-You can use 
-	grunt watch
-to continously proof your code during developement.
+simply run ```./build.sh``` from the project directory root.
 
 ### Contributors
 Meet the "A" Team
@@ -48,7 +36,7 @@ Meet the "A" Team
 [Petro Salema](https://github.com/petro065) | [Deliminator](https://github.com/deliminator) | [Haymo Meran](https://github.com/draftkraft) | [Clemens Prerovsky](https://github.com/cprerovsky) | [Najor Pedro Cruz Cruz] (https://github.com/najor) | [Arseny Zarechnev] (https://github.com/evindor) | [You?](https://github.com/alohaeditor/Aloha-Editor/blob/howling-mad/contributing.txt)
 
 ### ✎ ❤ ★ ☺
-We welcome your feedback, questions, and contributions!
+We welcome your feedback, questions, and contribution!
 
 ---
 
