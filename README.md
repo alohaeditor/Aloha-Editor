@@ -1,32 +1,29 @@
-# Aloha Editor
+# [Aloha Editor](http://aloha-editor.org)
 
-Aloha Editor is a JavaScript library to simplify editing in HTML.
+Aloha Editor is a JavaScript library that provide a better alternative to ContentEditable.
 
-### [Website](http://aloha-editor.org) - [Quick Start](http://aloha-editor.org/docs/quickstart.html) -  [Documentation](http://aloha-editor.org/docs)
+### [Quick Start](http://aloha-editor.org/docs/quickstart.html) | [Documentation](http://aloha-editor.org/docs)
 
 [![Aloha Editor](https://avatars0.githubusercontent.com/u/302655?v=2&s=200)](http://aloha-editor.org)
 
 ### Usage
 
 ```javascript
-	<div class="aloha-editable">
-		Aloha Editor is a better alternative to ContentEditable.
-	</div>
+	<div class="aloha-editable">A better alternative to ContentEditable.</div>
 	<script src="aloha.js"></script>
-	<script>
-		aloha.dom.query('.aloha-editable', document).forEach(aloha);
-	</script>
+	<script>aloha.dom.query('.aloha-editable', document).forEach(aloha);</script>
 ```
 
 ### Become a contributor
 
-Thank for looking to contribute! Yay! If you want to contribute read the [contribution rules](contributing.txt). You need to sign a [CLA](http://aloha-editor.org/contribution.php) before we can merge your pull request. Remember to provide *tests and documention* for all your pull requests. Go ahead we are happy to merge your contribution!
+Contribute to building amazing content editing capabilities for the web!
+Please read and sign the [CLA](http://aloha-editor.org/contribution.php) for your pull request to be merged.
 
 ### Build
 
-We use Google closure compiler to build. Check out [Grunt Closure Compiler](https://github.com/gmarty/grunt-closure-compiler#closure-compiler-installation-from-source) how to setup Google closure compiler for grunt.
-
 simply run ```./build.sh``` from the project directory root.
+
+(Requires Google Closure Compiler)
 
 ### Contributors
 Meet the "A" Team
