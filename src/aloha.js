@@ -86,8 +86,10 @@ define([
 	 * click
 	 */
 	function processClicking(event, selection) {
-		if ('mousedown' !== event.type && 'dbclick' !== event.type && 'aloha.dblclick' !== event.type) {
-			return;
+		if ('mousedown'      !== event.type &&
+		    'dbclick'        !== event.type &&
+		    'aloha.dblclick' !== event.type) {
+			return null;
 		}
 		var time = new Date();
 		var elapsed = time - selection.clickTimer;
@@ -95,16 +97,16 @@ define([
 		selection.multiclick = null;
 		selection.clickTimer = time;
 		if (elapsed > 500) {
-			return;
+			return null;
 		}
 		if (!selection.event) {
-			return;
+			return null;
 		}
 		if (selection.event.clientX !== event.clientX) {
-			return;
+			return null;
 		}
 		if (selection.event.clientY !== event.clientY) {
-			return;
+			return null;
 		}
 		return MUTLICLICK_EVENT[multiclick] ? 'aloha.tplclick' : 'aloha.dblclick';
 	}
@@ -168,6 +170,7 @@ define([
 		}
 		if (MUTLICLICK_EVENT[type]) {
 			selection.multiclick = type;
+			Events.preventDefault(event);
 		}
 		if (MOUSE_EVENT[type]) {
 			selection.lastMouseEvent = type;
