@@ -124,7 +124,7 @@ define([
 	}
 
 	/**
-	 * Creates an event object that will contain all the following properties:
+	 * Creates an event object that will contain the following properties:
 	 *
 	 *		type
 	 *		nativeEvent
@@ -140,7 +140,7 @@ define([
 	function createEvent(editor, event) {
 		var type = event.type;
 		var selection = editor.selecting;
-		var isClicking = CLICKING_EVENT[type];
+		var isClicking = CLICKING_EVENT[type] || false;
 		var dragging = getDragging(type, selection);
 		var isDragStart = dragging && dragging !== selection.dragging;
 		var caretDisplay = Dom.getStyle(selection.caret, 'display');
@@ -179,9 +179,14 @@ define([
 			return null;
 		}
 		var cac = Boundaries.commonContainer(boundaries[0], boundaries[1]);
-		if (!Dom.isEditableNode(cac)) {
+		if (Dom.isEditableNode(cac)) {
+			// Because no browser shortcuts should be allowed when editing
+			if ('keydown' === type && (event.ctrlKey || event.shiftKey || event.metaKey)) {
+				Events.preventDefault(event);
+			}
+		} else {
 			// Because if we are partly inside of an editable, we don't want the
-			// back-button to unload the page
+			// back button to unload the page
 			if ('keydown' === type) {
 				if (Dom.isEditableNode(Boundaries.container(boundaries[0])) ||
 				    Dom.isEditableNode(Boundaries.container(boundaries[1]))) {
