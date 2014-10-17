@@ -254,11 +254,12 @@ define([
 				offset = node.data.length;
 			}
 		}
-		if (node) {
-			var text = node.data;
-			if (Strings.NON_BREAKING_SPACE.test(text.substr(offset - 1, 1))) {
-				node.data = text.substr(0, offset - 1) + ' ' + text.substr(offset);
-			}
+		if (!node) {
+			return;
+		}
+		var text = node.data;
+		if (text && Strings.NON_BREAKING_SPACE.test(text.substr(offset - 1, 1))) {
+			node.data = text.substr(0, offset - 1) + ' ' + text.substr(offset);
 		}
 	}
 
