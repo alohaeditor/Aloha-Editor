@@ -14,6 +14,8 @@ define(['strings'], function (Strings) {
 	 * @param  {Element} elem
 	 * @param  {string}  name  Style property
 	 * @return {string}  value Style property value
+	 * @alias setStyle
+	 * @memberOf dom
 	 */
 	function set(elem, name, value) {
 		name = Strings.dashesToCamelCase(name);
@@ -30,6 +32,8 @@ define(['strings'], function (Strings) {
 	 * @param  {Element} elem
 	 * @param  {string}  name Style property
 	 * @return {?string} Style value or null if none is found
+	 * @alias getStyle
+	 * @memberOf dom
 	 */
 	function get(elem, name) {
 		// Because IE7 needs dashesToCamelCase().
@@ -47,6 +51,7 @@ define(['strings'], function (Strings) {
 	 * @param  {Element}                 elem
 	 * @param  {Array.<string>}          names
 	 * @return {Object.<string, string>}
+	 * @memberOf dom
 	 */
 	function getComputedStyles(elem, names) {
 		var props = {};
@@ -72,6 +77,7 @@ define(['strings'], function (Strings) {
 	 * @param  {Element} elem
 	 * @param  {string}  name Style property name.
 	 * @return {?string} Computed style, or `null` if no such style is set
+	 * @memberOf dom
 	 */
 	function getComputedStyle(elem, name) {
 		var doc = elem.ownerDocument;
@@ -97,6 +103,8 @@ define(['strings'], function (Strings) {
 	 *
 	 * @param {Element} elem
 	 * @param {string}  styleName
+	 * @alias removeStyle
+	 * @memberOf dom
 	 */
 	function remove(elem, styleName) {
 		elem.style.removeProperty(styleName);

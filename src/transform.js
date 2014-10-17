@@ -4,6 +4,7 @@
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
+ * @namespace transform
  */
 define([
 	'transform/html',
@@ -20,8 +21,8 @@ define([
 	 * Transformation functions, mapped to their corresponding mime-subtype.
 	 */
 	return {
-		html   : Html.transform,
-		plain  : Plain.transform,
+		html : Html.transform,
+		plain : Plain.transform,
 		msword : MSWord.transform
 	};
 });

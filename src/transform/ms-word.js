@@ -119,11 +119,13 @@ define([
 	}
 
 	/**
-	 * Transforms markup to normalized HTML.
+	 * Transforms msword markup to normalized HTML.
 	 *
 	 * @param  {string}    markup
 	 * @param  {!Document} doc
 	 * @return {string}
+	 * @alias msword
+	 * @memberOf transform
 	 */
 	function transform(markup, doc, rules) {
 		if (!rules) {

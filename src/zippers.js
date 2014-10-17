@@ -4,6 +4,25 @@
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
+ *
+ * @reference:
+ * http://hackage.haskell.org/package/rosezipper-0.2/docs/src/Data-Tree-Zipper.html
+ *
+ * @usage:
+ *	var boundaries = Boundaries.get(document);
+ *	var zip = zipper(Dom.editingHost(Boundaries.container(boundaries[0])), {
+ *		start : boundaries[0],
+ *		end   : boundaries[1]
+ *	});
+ *	var loc = zip.loc;
+ *	var markers = zip.markers;
+ *	loc = splitAt(loc, markers.start);
+ *	loc = insert(loc, contents(createRecord('#text'), ['↵']));
+ *	loc = splitAt(loc, markers.end);
+ *	var preserved = update(root(loc));
+ *	console.log(aloha.markers.hint([preserved.start, preserved.end]));
+ *
+ * @TODO Add documentation, then add namespace zippers here.
  */
 define([
 	'dom',
@@ -74,6 +93,7 @@ define([
 	 *
 	 * @param  {!Location} loc;
 	 * @return {Location}
+	 * @memberOf zippers
 	 */
 	function peek(loc) {
 		return Arrays.last(loc.frames);
@@ -84,6 +104,7 @@ define([
 	 *
 	 * @param  {!Location} loc
 	 * @return {Record}
+	 * @memberOf zippers
 	 */
 	function before(loc) {
 		return Arrays.last(loc.lefts);
@@ -94,6 +115,7 @@ define([
 	 *
 	 * @param  {!Location} loc
 	 * @return {Record}
+	 * @memberOf zippers
 	 */
 	function after(loc) {
 		return loc.rights[0];
@@ -107,6 +129,7 @@ define([
 	 * @param  {!Location} loc
 	 * @param  {number=}   stride
 	 * @return {Location}
+	 * @memberOf zippers
 	 */
 	function prev(loc, stride) {
 		stride = 'number' === typeof stride ? stride : 1;
@@ -125,6 +148,7 @@ define([
 	 * @param  {!Location} loc
 	 * @param  {number=}   stride
 	 * @return {Location}
+	 * @memberOf zippers
 	 */
 	function next(loc, stride) {
 		stride = 'number' === typeof stride ? stride : 1;
@@ -140,6 +164,7 @@ define([
 	 *
 	 * @param  {!Location} loc
 	 * @return {Location}
+	 * @memberOf zippers
 	 */
 	function down(loc) {
 		return Location([], contents(after(loc)), loc.frames.concat(loc));
@@ -150,6 +175,7 @@ define([
 	 *
 	 * @param  {!Location} loc
 	 * @return {Location}
+	 * @memberOf zippers
 	 */
 	function up(loc) {
 		var content = loc.lefts.concat(loc.rights);
@@ -168,6 +194,7 @@ define([
 	 *
 	 * @param  {!Location} loc
 	 * @return {Location}
+	 * @memberOf zippers
 	 */
 	function root(loc) {
 		return loc.frames.reduce(up, loc);
@@ -179,6 +206,7 @@ define([
 	 * @private
 	 * @param  {!Node} node
 	 * @return {Location}
+	 * @memberOf zippers
 	 */
 	function create(root) {
 		return Location([], [Boromir(root)], []);
@@ -255,6 +283,7 @@ define([
 	 * @param  {!Location}                   loc
 	 * @param  {function(Location):boolean=} pred
 	 * @return {Location}
+	 * @memberOf zippers
 	 */
 	function walkInPreOrderWhile(loc, pred) {
 		pred = pred || Fn.returnTrue;
@@ -301,8 +330,9 @@ define([
 	 * Updates the DOM tree below this location and returns a map of named boundaries
 	 * that are found therein.
 	 *
-	 * @param {!Location} loc
-	 * return {Map.<string, Boundary>}
+	 * @param  {!Location} loc
+	 * @return {Map.<string, Boundary>}
+	 * @memberOf zippers
 	 */
 	function update(loc) {
 		var paths = [];
@@ -345,6 +375,7 @@ define([
 	 *
 	 * @param  {!Location} loc
 	 * @return {string}
+	 * @memberOf zippers
 	 */
 	function hint(loc) {
 		return loc.lefts.map(print).concat('▓', loc.rights.map(print)).join('');
@@ -588,8 +619,11 @@ define([
 	/**
 	 * Creates a markers.
 	 *
+	 * FIXME: isFragmentedText and original and isMarker won't be preserved on cloning.
+	 *
 	 * @param  {string} name
 	 * @return {Record}
+	 * @memberOf zippers
 	 */
 	function createMarker(name) {
 		var node = document.createElement('code');
@@ -600,6 +634,9 @@ define([
 		return record;
 	}
 
+	/**
+	 * @memberOf zippers
+	 */
 	function isMarker(record) {
 		return true === record.isMarker;
 	}
@@ -748,6 +785,7 @@ define([
 	 * @param  {!Location}                   location
 	 * @param  {!function(Location):boolean} until
 	 * @return {boolean}
+	 * @memberOf zippers
 	 */
 	function split(loc, until) {
 		until = until || Fn.returnFalse;
@@ -779,6 +817,7 @@ define([
 	 * @param  {!Location} loc
 	 * @param  {!Marker}   marker
 	 * @return {?Location}
+	 * @memberOf zippers
 	 */
 	function go(loc, marker) {
 		loc = walkInPreOrderWhile(root(loc), function (loc) {
@@ -794,6 +833,7 @@ define([
 	 * @param  {!Location} loc
 	 * @param  {!Marker}   marker
 	 * @param  {!function(Location):boolean}
+	 * @memberOf zippers
 	 */
 	function splitAt(loc, marker, until) {
 		return split(go(loc, marker), until);
@@ -805,6 +845,7 @@ define([
 	 * @param  {!Location} loc
 	 * @param  {!Marker}   marker
 	 * @param  {!function(Location):boolean}
+	 * @memberOf zippers
 	 */
 	function insertAt(loc, marker, inserts) {
 		return insert(go(loc, marker), inserts);

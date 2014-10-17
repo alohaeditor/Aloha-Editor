@@ -12,6 +12,7 @@
  * http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
  * https://dvcs.w3.org/hg/domcore/raw-file/tip/overview.html#concept-range-bp
  * http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-May/031577.html
+ * @namespace html
  */
 define([
 	'html/styles',

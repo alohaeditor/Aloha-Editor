@@ -1,8 +1,9 @@
-/* undo.js is part of Aloha Editor project http://aloha-editor.org
+/** undo.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2013 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
+ * @namespace undo
  */
 define([
 	'arrays',
@@ -114,6 +115,7 @@ define([
 	 *        maxHistory - how many items to keep in the history
 	 *          (default 1000).
 	 * @return {Undo}
+	 * @memberOf undo
 	 */
 	function Context(elem, opts) {
 		opts = Maps.merge({
@@ -356,6 +358,12 @@ define([
 		}
 	}
 
+	/**
+	 * This function is missing documentation.
+	 * @TODO Complete documentation.
+	 *
+	 * @memberOf undo
+	 */
 	function close(context) {
 		if (context.frame) {
 			context.observer.disconnect();
@@ -378,6 +386,7 @@ define([
 	 *        oldRange - a range to record that reflects the range
 	 *          before any changes in this frame happen.
 	 * @return {void}
+	 * @memberOf undo
 	 */
 	function enter(context, opts) {
 		opts = opts || {};
@@ -404,8 +413,9 @@ define([
 	 * Leave a frame in the given undo context.
 	 *
 	 * @param context {Undo}
-	 * @param result {Object.<string.*>}
+	 * @param result {Object.<...string>}
 	 * @return {Frame}
+	 * @memberOf undo
 	 */
 	function leave(context, result) {
 		var frame = context.frame;
@@ -438,6 +448,7 @@ define([
 	 * @param opts {Object.<string,*>} given as the opts argument to enter()
 	 * @param {function(void):{Object.<string,*>}} given as the result argument to leave()
 	 * @return {Frame} the captured frame
+	 * @memberOf undo
 	 */
 	function capture(context, opts, fn) {
 		enter(context, opts);
@@ -1268,6 +1279,7 @@ define([
 	 *        changes in the changeSet occurred.
 	 * @param ranges {Array.<Range>} will be preserved.
 	 * @return {void}
+	 * @memberOf undo
 	 */
 	function undo(context, range, ranges) {
 		advanceHistory(context);
@@ -1294,6 +1306,7 @@ define([
 	 *        changes in the changeSet occurred.
 	 * @param ranges {Array.<Range>} will be preserved.
 	 * @return {void}
+	 * @memberOf undo
 	 */
 	function redo(context, range, ranges) {
 		advanceHistory(context);

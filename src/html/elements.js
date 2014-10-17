@@ -31,6 +31,7 @@ define([
 	 *
 	 * @param  {Node} node
 	 * @return {boolean}
+	 * @memberOf html
 	 */
 	function isVoidType(node) {
 		return Predicates.isVoidNode(node) || !Dom.isEditableNode(node);
@@ -207,6 +208,7 @@ define([
 	 *
 	 * @param  {Node} node
 	 * @return {boolean}
+	 * @memberOf html
 	 */
 	function isUnrendered(node) {
 		if (!Predicates.isVoidNode(node)
@@ -269,6 +271,7 @@ define([
 	 *
 	 * @param  {Node} node
 	 * @return {boolean}
+	 * @memberOf html
 	 */
 	function isRendered(node) {
 		return !isUnrendered(node);
@@ -281,6 +284,7 @@ define([
 	 * @param  {string}   html
 	 * @param  {Document} doc
 	 * @return {Array.<Node>}
+	 * @memberOf html
 	 */
 	function parse(html, doc) {
 		var parser = doc.createElement('DIV');

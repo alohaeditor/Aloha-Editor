@@ -10,6 +10,7 @@
  *
  * @todo:
  * consider https://github.com/nostrademons/keycode.js/blob/master/keycode.js
+ * @namespace keys
  */
 define([
 	'maps',
@@ -54,6 +55,7 @@ define([
 	 * A map of key names to their keycode.
 	 *
 	 * @type {object<string, number>}
+	 * @memberOf keys
 	 */
 	var CODES = {};
 	Maps.forEach(CODE_KEY, function (current, index) {
@@ -64,6 +66,7 @@ define([
 	 * Arrow keys
 	 *
 	 * @type {object<number, string>}
+	 * @memberOf keys
 	 */
 	var ARROWS = {
 		37 : 'left',
@@ -104,6 +107,7 @@ define([
 
 	/**
 	 * Provides meta, keycode
+	 * @memberOf keys
 	 */
 	function handleKeys(event) {
 		var keys = parseKeys(event.nativeEvent);
@@ -115,16 +119,17 @@ define([
 	/**
 	 * Parse keys for a browser event. Will return
 	 * an object as follows
-	 *
+	 *<pre>
 	 * {
 	 *     meta    : 'cmd+shift', // active meta keys
 	 *     keycode : 32, // currently active keycode
 	 *     key     : 'space', // associated key
 	 *     char    : '' // corresponding lowercase character for that key
 	 * }
-	 *
+	 *</pre>
 	 * @param  {!BrowserEvent} event
 	 * @return {Object.<string, *>}
+	 * @memberOf keys
 	 */
 	function parseKeys(event) {
 		return {
@@ -141,13 +146,13 @@ define([
 	 * meta keys along with the provided keycode.
 	 * The shortcutHandler array must be structured
 	 * as follows:
-	 *
+	 *<pre>
 	 * // add a shortcut handler for meta+esc on keydown
 	 * shortcutHandlers = {
 	 *     'meta+escape'  : function () {},
 	 *     'meta+shift+b' : function () {}
 	 * }
-	 *
+	 *</pre>
 	 * The order of meta keys in the shortcutHandlers array
 	 * MUST be in alphabetical order, as provided by
 	 * @see Keys.parseKeys
@@ -156,6 +161,7 @@ define([
 	 * @param  {!integer} keycode
 	 * @param  {!Object}  shortcutHandlers
 	 * @return {*} null if no handler could be found
+	 * @memberOf keys
 	 */
 	function shortcutHandler(meta, keycode, shortcutHandlers) {
 		// try to resolve special keys outside the 40 (delete)

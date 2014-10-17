@@ -107,8 +107,6 @@ define([
 	exports['arrays']['refill']     = Arrays.refill;
 
 	exports['blocks'] = {};
-	exports['blocks']['read']         = Blocks.read;
-	exports['blocks']['write']        = Blocks.write;
 	exports['blocks']['handleBlocks'] = Blocks.handleBlocks;
 
 	exports['boundaries'] = {};
@@ -225,7 +223,6 @@ define([
 	exports['dom']['addClass']                     = Dom.addClass;
 	exports['dom']['removeClass']                  = Dom.removeClass;
 	exports['dom']['hasClass']                     = Dom.hasClass;
-	exports['dom']['attrNames']                    = Dom.attrNames;
 	exports['dom']['hasAttrs']                     = Dom.hasAttrs;
 	exports['dom']['attrs']                        = Dom.attrs;
 	exports['dom']['setAttr']                      = Dom.setAttr;

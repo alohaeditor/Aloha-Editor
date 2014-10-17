@@ -13,6 +13,8 @@ define([], function () {
 	 *
 	 * @param  {string} text
 	 * @return {string}
+	 * @alias plain
+	 * @memberOf transform
 	 */
 	function transform(text) {
 		var markup = text.split(/\n/).reduce(function (paragraphs, snippet) {

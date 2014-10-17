@@ -4,6 +4,7 @@
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
+ * @namespace maps
  */
 define(['arrays', 'assert'], function (Arrays, Assert) {
 	'use strict';
@@ -15,6 +16,7 @@ define(['arrays', 'assert'], function (Arrays, Assert) {
 	 *        Object to check.
 	 * @return {boolean}
 	 *         True if the object is empty. eg: isEmpty({}) == true
+	 * @memberOf maps
 	 */
 	function isEmpty(obj) {
 		var name;
@@ -37,6 +39,7 @@ define(['arrays', 'assert'], function (Arrays, Assert) {
 	 * @param {string} value A single value that each given key will map to.
 	 * @return {Object}
 	 *         The given map.
+	 * @memberOf maps
 	 */
 	function fillKeys(map, keys, value) {
 		var i = keys.length;
@@ -53,6 +56,7 @@ define(['arrays', 'assert'], function (Arrays, Assert) {
 	 *
 	 * Contrary to "for (key in m)" iterates only over the "hasOwnProperty"
 	 * properties of the m, which is usually what you want.
+	 * @memberOf maps
 	 */
 	function forEach(m, cb) {
 		var key;
@@ -70,6 +74,7 @@ define(['arrays', 'assert'], function (Arrays, Assert) {
 	 * @param {!Array} ks
 	 * @param {*} _default used in place of non-existing properties
 	 * @return {!Array}
+	 * @memberOf maps
 	 */
 	function selectVals(m, ks, _default) {
 		return ks.map(function (k) {
@@ -83,6 +88,7 @@ define(['arrays', 'assert'], function (Arrays, Assert) {
 	 * The given predicate is applied to each entry in the given map,
 	 * and only if the predicate returns true, will the entry appear in
 	 * the result.
+	 * @memberOf maps
 	 */
 	function filter(m, pred) {
 		var result = {};
@@ -99,6 +105,7 @@ define(['arrays', 'assert'], function (Arrays, Assert) {
 	 *
 	 * @param {!Object} m
 	 * @return {!Array} The set of keys in `m`.
+	 * @memberOf maps
 	 */
 	function keys(m) {
 		var ks = [];
@@ -113,11 +120,17 @@ define(['arrays', 'assert'], function (Arrays, Assert) {
 	 *
 	 * @param {!Object} m
 	 * @return {!Array} The values in `m`.
+	 * @memberOf maps
 	 */
 	function vals(m) {
 		return selectVals(m, keys(m));
 	}
-
+	/**
+	 * This function is missing documentation.
+	 * @TODO Complete documentation.
+	 *
+	 * @memberOf maps
+	 */
 	function extend(dest) {
 		var i;
 		for (i = 1; i < arguments.length; i++) {
@@ -141,6 +154,7 @@ define(['arrays', 'assert'], function (Arrays, Assert) {
 	 *        A variable number of map objects.
 	 * @return {Object}
 	 *         A merge of all given maps in a single object.
+	 * @memberOf maps
 	 */
 	function merge() {
 		return extend.apply(null, [{}].concat(Arrays.coerce(arguments)));
@@ -151,6 +165,7 @@ define(['arrays', 'assert'], function (Arrays, Assert) {
 	 *
 	 * @param map {!Object}
 	 * @return {!Object}
+	 * @memberOf maps
 	 */
 	function clone(map) {
 		Assert.assertNotNou(map);
@@ -164,6 +179,7 @@ define(['arrays', 'assert'], function (Arrays, Assert) {
 	 * @param key {string}
 	 * @param value {*}
 	 * @return {!Object}
+	 * @memberOf maps
 	 */
 	function cloneSet(map, key, value) {
 		map = clone(map);
@@ -177,6 +193,7 @@ define(['arrays', 'assert'], function (Arrays, Assert) {
 	 * @param map {!Object}
 	 * @param key {string}
 	 * @return {!Object}
+	 * @memberOf maps
 	 */
 	function cloneDelete(map, key) {
 		map = clone(map);
@@ -190,6 +207,7 @@ define(['arrays', 'assert'], function (Arrays, Assert) {
 	 *
 	 * We exclude things like new String("..."), new Number(...),
 	 * document.createElement(...), but include new MyType("...").
+	 * @memberOf maps
 	 */
 	function isMap(obj) {
 		return !!(obj
@@ -209,6 +227,7 @@ define(['arrays', 'assert'], function (Arrays, Assert) {
 	 * pattern to be used without a hasOwnProperty check.
 	 *
 	 * @return {!Object}
+	 * @memberOf maps
 	 */
 	function create() {
 		return Object.create(null);
@@ -219,6 +238,7 @@ define(['arrays', 'assert'], function (Arrays, Assert) {
 	 *
 	 * @param  {Array.<Array.<string, *>>} tuples
 	 * @return {Object.<string, *>}
+	 * @memberOf maps
 	 */
 	function mapTuples(tuples) {
 		var map = {};

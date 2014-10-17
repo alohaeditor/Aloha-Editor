@@ -4,6 +4,7 @@
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
+ * @namespace blocks
  */
 define([
 	'dom',
@@ -129,6 +130,7 @@ define([
 	 *
 	 * @param  {AlohaEvent} event
 	 * @return {Event}
+	 * @memberOf blocks
 	 */
 	function handleBlocks(event) {
 		if (handlers[event.type]) {
