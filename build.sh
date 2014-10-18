@@ -14,6 +14,7 @@ Your .env file should define CLOSURE_PATH=$CLOSURE_PATH.
 pwd=$(pwd)
 dot=" \e[0;32m•\e[0m"
 tick=" \e[0;32m✔\e[0m"
+ex=" \e[0;31m×\e[0m"
 ish=$(echo "https:\/\/github.com\/alohaeditor\/Aloha-Editor\/tree\/$(git rev-parse HEAD)")
 src=src
 entry=aloha
@@ -28,7 +29,7 @@ function build {
 
 	printf "$dot Creating new $pwd/build\n"
 	mkdir $pwd/build
-	
+
 	if [ "$optimization" == "ADVANCED_OPTIMIZATIONS" ]; then
 		printf "$dot Building with ADVANCED_OPTIMIZATIONS\n"
 	else
@@ -36,7 +37,7 @@ function build {
 	fi
 
 	cd $src
-	
+
 	versioned=$entry.versioned
 	sed s/%buildcommit%/$ish/ <(cat $entry.js) > $versioned.js
 
@@ -54,6 +55,11 @@ function build {
 			--externs ../externs.js \
 			$sourcemap \
 		> $pwd/build/$target
+
+    if [ $? -ne 0 ]; then
+        printf "$ex Build failed\n"
+        exit 1
+    fi
 
 	rm $versioned.js
 
