@@ -424,6 +424,7 @@ define([
 					'h4': true,
 					'h5': true,
 					'h6': true,
+					'p': true,
 					'del': true,
 					'ins': true,
 					'u': true,
