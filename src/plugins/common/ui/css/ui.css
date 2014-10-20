@@ -317,6 +317,9 @@
 .aloha .aloha-ui-menubutton-container .ui-buttonset {
 	margin: 0px;
 }
+.ui-buttonset > button {
+	float: left;
+}
 .aloha .aloha-ui-menubutton-container .ui-button {
 	height: 24px;
 	background: transparent;
