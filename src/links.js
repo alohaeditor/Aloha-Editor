@@ -80,6 +80,7 @@ define([
 	 */
 	function create(href, start, end, created) {
 		var anchors;
+        var emailRe = /^[^@]+@[^@]+\.[^@]+$/; // very simple regex to match emails
 		if (Html.isBoundariesEqual(start, end)) {
 			var a = Boundaries.document(start).createElement('a');
 			a.innerHTML = href;
@@ -88,6 +89,9 @@ define([
 		} else {
 			anchors = createAnchors(start, end);
 		}
+        if (emailRe.exec(href) !== null) {
+            href = "mailto:" + href;
+        }
 		anchors.forEach(function (anchor) {Dom.setAttr(anchor, 'href', href);});
 		if (created) {
 			anchors.reduce(function (list, a) {list.push(a); return list;}, created);
