@@ -74,7 +74,9 @@ define([
 			boundaries = Mutation.removeNode(node, boundaries);
 		}
 		for (var i = 0; i < boundaries.length; i++) {
-			Dom.climbUntil(Boundaries.container(boundaries[i]), remove, Html.isRendered);
+			Dom.climbUntil(Boundaries.container(boundaries[i]), remove, function (node) {
+				return Html.isRendered(node) || Dom.isEditableNode(node);
+			});
 		}
 		return boundaries;
 	}
