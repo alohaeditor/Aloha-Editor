@@ -33,7 +33,7 @@ define([
 	var nonVoidBlocksSelector = Arrays.subtract(
 			Html.BLOCKLEVEL_ELEMENTS,
 			Html.VOID_ELEMENTS
-		);
+		).join();
 
 	var NOT_ALOHA_BLOCK_FILTER = ':not(.aloha-block)';
 
@@ -66,7 +66,7 @@ define([
 	function prepareForEditing(i, element) {
 		var $element = $(element);
 
-		$element.filter(nonVoidBlocksSelector).remove();
+		$element.filter(nonVoidBlocksSelector).filter(':empty').remove();
 
 		if ($.browser.msie) {
 			// Because even though content edited by Aloha Editor is no longer
@@ -116,8 +116,10 @@ define([
 	 */
 	function propBlockElements(i, element) {
 		var $element = $(element);
-		$element.filter(nonVoidBlocksSelector).filter(':empty').append('<br/>');
-		$element.children(NOT_ALOHA_BLOCK_FILTER).each(propBlockElements);
+		if ($.browser.msie) {
+			$element.filter(nonVoidBlocksSelector).filter(':empty').append('<br/>');
+			$element.children(NOT_ALOHA_BLOCK_FILTER).each(propBlockElements);
+		}
 	}
 
 	return ContentHandlerManager.createHandler({
