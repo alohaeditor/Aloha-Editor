@@ -1,0 +1,2 @@
+Buttons in the toolbar, that have a dropdown menu would display the arrow (for opening the dropdown) slightly misplaced in firefox.
+A css setting of the ui-plugin has been changed to fix this.
