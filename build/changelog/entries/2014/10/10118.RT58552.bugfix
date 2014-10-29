@@ -1,0 +1,2 @@
+Setting the list style with a selection that contains also nested lists only changed the style for the outermost list. This has been fixed now.
+The list style will be set for all lists that are contained in the selection.
