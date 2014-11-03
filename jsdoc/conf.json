@@ -11,8 +11,8 @@
 		"default": {
 			"outputSourceFiles" : true
 		},
-		"applicationName": "Aloha Editor",
-		"disqus": "",
+		"applicationName": "Aloha Editor API",
+		"disqus": "alohaeditor",
 		"googleAnalytics": "",
 		"openGraph": {
 			"title": "",
@@ -22,7 +22,7 @@
 			"url": ""
 		},
 		"meta": {
-			"title": "Aloha Editor API Docs",
+			"title": "Aloha Editor API",
 			"description": "",
 			"keyword": ""
 		},
