@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Aloha Editor Docs</title>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="icon" href="favicon.ico">
+		<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!--[if lt IE 9]>
+			<script src="//oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+			<script src="//oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+		<![endif]-->
+		<!-- Custom styles for this template -->
+		<link href="css/aloha-web.css" rel="stylesheet">
+		<link href="css/aloha-docs.css" rel="stylesheet">
+		<link rel="stylesheet" href="codemirror-4.2/lib/codemirror.css">
+	</head>
+	<body>
+
+	    <div class="navbar navbar-default navbar-fixed-top funky" role="navigation">
+	    	<div class="container">
+	    		<div class="navbar-header">
+	    		<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+					<a class="navbar-brand" href="http://www.aloha-editor.org"><img src="logo-small.png" alt="Aloha Editor" title="Aloha Editor"/></a>
+				</div>
+				<div class="navbar-collapse collapse">
+					<ul class="nav navbar-nav navbar-right">
+						<li><a href="index.html">Docs Home</a></li>
+						<li><a href="#">API [coming soon]</a></li>
+						<li><a href="http://github.com/alohaeditor/Aloha-Editor" target="_blank">Github</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<div id="post" class="container post">
+			<div class="row">
+				<div class="col-md-12">
+
+			<h1>Aloha Editor UI</h1>
+
+			<p>Though Aloha Editor comes with a UI implementation, our primary goal is to integrate flawlessly with your user experience. Therefore we expect that most of the time you will want to integrate Aloha Editor with your existing markup. This guide covers two approaches:</p>
+
+			<ol>
+				<li><a href="#copypaste">Copy &amp; paste</a> to get started quickly</li>
+				<li><a href="#extend">Extend our UI implementation</a> with additional buttons and features</li>
+			</ol>
+
+			<h2 id="copypaste">Copy &amp; Paste</h2>
+
+			<p>To add our default API to your page you will need to add three things to your page:</p>
+
+			
+			<p>1. Add Bootstrap and Aloha UI CSS files to the <code>&lt;head&gt;</code></p>
+
+			<textarea class="example"><head>
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+	<link href="css/aloha-ui.css" rel="stylesheet">
+</head></textarea>
+
+			<p>2. Add the UI HTML Code to the <code>&lt;body&gt;</code></p>
+
+			<textarea class="example"><body>
+	<!-- UI Buttons -->
+	<div class="aloha-ui btn-toolbar" role="toolbar">
+		<div class="btn-group">
+			<button type="button" class="aloha-action-B btn btn-default" title="Bold"><b>B</b></button>
+			<button type="button" class="aloha-action-I btn btn-default" title="Italic"><i>I</i></button>
+			<button type="button" class="aloha-action-unformat btn btn-default" title="Remove formatting"><span class="glyphicon glyphicon-remove"></span></button>
+		</div>
+
+		<div class="btn-group">
+			<button type="button" class="aloha-action-OL btn btn-default" title="Ordered List"><span class="glyphicon glyphicon-list"></span></button>
+			<button type="button" class="aloha-action-UL btn btn-default" title="Unordered List"><span class="glyphicon glyphicon-list"></span></button>
+		</div>
+
+		<div class="btn-group">
+			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+				Paragraph <span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu funky" role="menu">
+				<li><a href="#" class="aloha-action-H2">Heading 2</a></li>
+				<li><a href="#" class="aloha-action-H3">Heading 3</a></li>
+				<li><a href="#" class="aloha-action-H4">Heading 4</a></li>
+				<li><a href="#" class="aloha-action-P">Paragraph</a></li>
+				<li><a href="#" class="aloha-action-PRE">Preformatted</a></li>
+			</ul>
+		</div>
+	</div>
+
+	<!-- Link Dialog -->
+	<div class="aloha-3d aloha-ui">
+		<div class="btn-group">
+			<button type="button" data-activeon="a" title="Create Link"	class="aloha-action-A btn btn-default">
+				<span class="glyphicon glyphicon-link"></span>
+			</button>
+		</div>
+	</div>
+</body></textarea>
+
+			<p>3. Add the <code>aloha-ui.js</code> and <code>aloha-ui-links.js</code> scripts to the bottom of your <code>&lt;body&gt;</code> <b>after loading </b> <code>aloha.min.js</code></p>
+
+<textarea class="example"><body>
+	<script src="js/aloha.min.js"></script>
+	<script src="js/aloha-ui.js"></script>
+	<script src="js/aloha-ui-links.js"></script>
+</body></textarea>
+
+
+
+			<h2 id="extend">Extend Our UI Implementation</h2>
+
+			<p>After adding our basic UI to your code you will want to extend the functionality.</p>
+
+
+			<h3>How buttons are linked to actions</h3>
+
+			<p>When you look at the HTML code, you'll notice, that all of the buttons are nested within a wrapper that has the <code>aloha-ui</code> class assigned to it. This class is needed to let the ui code know where to find the buttons it should react to.</p>
+
+			<p>Buttons come with an <code>aloha-action-*</code> class assigned to them. This class is linked to an action via the <code>aloha.editor.ui.actions</code> array:
+
+			<textarea class="example">actions   : {
+	'aloha-action-B'        : inlineFormat,
+	'aloha-action-I'        : inlineFormat,
+	'aloha-action-H2'       : Editing.format,
+	'aloha-action-H3'       : Editing.format,
+	'aloha-action-H4'       : Editing.format,
+	'aloha-action-P'        : Editing.format,
+	...
+},
+...
+</textarea>
+			
+			<p>Functions wired here need to accept three parameters:</p>
+
+			<ol>
+				<li>a start boundary</li>
+				<li>an end boundary</li>
+				<li>an additional parameter that will contain the action key (the action key for <code>aloha-action-B</code> is "B")</li>
+			</ol>
+
+			<p>The array is exposed at <code>aloha.editor.ui.actions</code> so you can extend it with your own actions, or overwrite default actions.</p>
+
+			<h4>Example: Adding an underline button</h4>
+
+			<p>Adding an underline button will require you will need to add the button's html code to your page first:</p>
+
+			<textarea class="example"><button class="aloha-action-U">Underline</button></textarea>
+
+			<p>Next you need to wire the action <code>aloha-action-U</code> to a function call by extending the actions array.</p>
+
+			<textarea class="example">aloha.editor.ui.actions['aloha-action-U'] = aloha.editing.format;</textarea>
+
+			<p>You're done! Try to select some text and hit your new button.</p>
+
+			<h3>Customizing the UI</h3>
+
+			<p>Our <a href="../demo/aloha-ui/" target="_blank">UI example</a> uses Bootstrap with some custom styles on top. However our UI implementation does not require any specific styling or html framework. If you don't want to use bootstrap you can just remove it and use whatever styling you like.</p>
+		</div>
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<script src="js/aloha.min.js"></script>
+		<script src="js/aloha-web.js"></script>
+		<script src="codemirror-4.2/lib/codemirror.js"></script>
+		<script src="codemirror-4.2/mode/javascript/javascript.js"></script>
+		<script src="js/aloha-docs.js"></script>
+		<script>[].forEach.call(document.querySelectorAll('.aloha-editable'), aloha);</script>
+	</body>
+</html>
