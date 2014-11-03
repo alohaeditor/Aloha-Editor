@@ -1,0 +1,33 @@
+{
+	"tags":{
+		"allowUnknownTags" : true
+	},
+	"plugins": [
+		"plugins/escapeHtml"
+	],
+	"templates": {
+		"cleverLinks": true,
+		"monospaceLinks": true,
+		"default": {
+			"outputSourceFiles" : true
+		},
+		"applicationName": "Aloha Editor",
+		"disqus": "",
+		"googleAnalytics": "",
+		"openGraph": {
+			"title": "",
+			"type": "website",
+			"image": "",
+			"site_name": "",
+			"url": ""
+		},
+		"meta": {
+			"title": "Aloha Editor API Docs",
+			"description": "",
+			"keyword": ""
+		},
+		"linenums": true
+	}
+}
+
+
