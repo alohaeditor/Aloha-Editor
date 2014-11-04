@@ -279,7 +279,10 @@ define([
 
 	/**
 	 * Parses the given markup string and returns an array of detached top-level
-	 * elements.
+	 * elements. Event handler attributes will not trigger immediately to prevent
+	 * XSS, so aloha.editor.parse('<img src="" onerror="alert(1)">', document);
+	 * will NOT generate an alert box. See https://github.com/alohaeditor/Aloha-Editor/issues/1270
+	 * for details.
 	 *
 	 * @param  {string}   html
 	 * @param  {Document} doc
@@ -287,7 +290,10 @@ define([
 	 * @memberOf html
 	 */
 	function parse(html, doc) {
-		var parser = doc.createElement('DIV');
+		var context = (doc.implementation && doc.implementation.createHTMLDocument)
+			? doc.implementation.createHTMLDocument()
+			: doc;
+		var parser = context.createElement('DIV');
 		parser.innerHTML = html;
 		var nodes = Arrays.coerce(parser.childNodes);
 		nodes.forEach(Dom.remove);
