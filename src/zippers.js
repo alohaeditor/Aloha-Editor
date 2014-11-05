@@ -594,7 +594,7 @@ define([
 	 * FIXME: isFragmentedText and original won't be preserved on cloning.
 	 *
 	 * @private
-	 * @type
+	 * @type FragmentedText
 	 * @param  {!Location} loc
 	 * @return {Location}
 	 */
@@ -666,7 +666,7 @@ define([
 	 * Creates a zipper with the given set of named boundaries laced into the
 	 * tree.
 	 *
-	 * @type
+	 * @type   zipper
 	 * @param  {!Element}                    element
 	 * @param  {!Object.<string, !Boundary>} boundaries
 	 * @return {Location}
