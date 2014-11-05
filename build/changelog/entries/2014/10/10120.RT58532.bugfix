@@ -1,0 +1,4 @@
+Contenthandler plugin: Fixed handling of empty block elements
+When adding an empty paragraph with IE Version 8 or greater, the empty paragraph was not visible in the content after editing.
+This is because empty paragraphs are not rendered in the browser. For editing, a <br> is added to empty paragraphs to make them editable.
+Now, a <br> is added in the resulting content, so that it matches the expected WYSIWYG behaviour.

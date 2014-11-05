@@ -1,0 +1,1 @@
+It was not possible to delete a br, hr or img tag at the end of an inline element (like an a) by pressing the "delete" button. This has been fixed now.

@@ -318,16 +318,17 @@ define([
 		},
 
 		/**
-		 * Toggle selected CSS class on current list elemnet
+		 * Set selected CSS class on current list element and all nested
+		 * list elements that are contained in the selection
 		 * @param String listtype: ol, ul or dl
 		 * @param String style: selected CSS class
 		 * @return void
 		 */
-		toggleListStyle: function (listtype, style) {
+		setListStyle: function (listtype, style) {
 			var domObject = this.getStartingDomObjectToTransform();
 			var nodeName = domObject.nodeName.toLowerCase();
 			var listToStyle =  jQuery(domObject);
-			var remove = false;
+			var plugin = this;
 
 			if (nodeName !== 'ul' && nodeName !== 'ol' && nodeName !== 'dl') {
 				// we don't have a list yet, so transform selection to list
@@ -340,15 +341,21 @@ define([
 			if (listtype === nodeName) {
 				// remove all classes
 				jQuery.each(this.templates[nodeName].classes, function () {
-					if (listToStyle.hasClass(this.cssClass) && this.cssClass === style) {
-						remove = true;
-					}
-					listToStyle.removeClass(this.cssClass);
+					listToStyle.removeClass(this);
 				});
 
-				if (!remove) {
-					listToStyle.addClass(style);
-				}
+				listToStyle.addClass(style);
+
+				// now proceed with all selected sublists
+				listToStyle.find(listtype).each(function () {
+					if (isListInSelection(this)) {
+						var listToStyle = jQuery(this);
+						jQuery.each(plugin.templates[listtype].classes, function () {
+							listToStyle.removeClass(this);
+						});
+						listToStyle.addClass(style);
+					}
+				});
 			}
 		},
 
@@ -392,7 +399,7 @@ define([
 			return {
 				html: '<div class="aloha-list-templates">' + html + '</div>',
 				click: function () {
-					that.toggleListStyle(listtype, cssClass);
+					that.setListStyle(listtype, cssClass);
 				}
 			};
 		},
@@ -503,18 +510,23 @@ define([
 		/**
 		* When the list is nested into another, our list items will be
 		* added to the list items of the outer list.
-		* @param Dom List Dom element
+		* @param Dom Parent List Dom element
+		* @param Dom List Dom Element
 		*/
-		fixupNestedLists: function (jqParentList) {
-				// find the place where to put the children of the inner list
-				if (jqParentList.get(0).nodeName.toLowerCase() === 'li') {
-					// inner list is nested in a li (this conforms to the html5 spec)
-					jqParentList.after(jqList.children());
-					jqList.remove();
-				} else {
-					// inner list is nested in the outer list directly (this violates the html5 spec)
-					jqList.children().unwrap();
-				}
+		fixupNestedLists: function (jqParentList, jqList) {
+			// find the place where to put the children of the inner list
+			if (jqParentList.get(0).nodeName.toLowerCase() === 'li') {
+				// transform the list elements to be li (could by dt and dd)
+				jQuery.each(jqList.children(), function (index, el) {
+					Aloha.Markup.transformDomObject(el, 'li', Aloha.Selection.rangeObject);
+				});
+				// inner list is nested in a li (this conforms to the html5 spec)
+				jqParentList.after(jqList.children());
+				jqList.remove();
+			} else {
+				// inner list is nested in the outer list directly (this violates the html5 spec)
+				jqList.children().unwrap();
+			}
 		},
 
 		/**
@@ -703,7 +715,7 @@ define([
 				jqParentList = jqList.parent();
 				if (jqParentList.length > 0 && Dom.isListElement(jqParentList.get(0))) {
 					// we are in a nested list
-					this.fixupNestedLists(jqParentList);
+					this.fixupNestedLists(jqParentList, jqList);
 				} else {
 					// we are in an list and shall transform it to paragraphs
 					if (listtype === 'dl') {
