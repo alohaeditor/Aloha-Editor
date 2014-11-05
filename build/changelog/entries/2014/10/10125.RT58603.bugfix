@@ -1,0 +1,2 @@
+When pasting content containing an acronym-tag, those tags were not handled correctly.
+This has been fixed now. It is however important to note, that the acronym-tag is not part of the html5 specification anymore and should be avoided in favor of the abbr-tag.
