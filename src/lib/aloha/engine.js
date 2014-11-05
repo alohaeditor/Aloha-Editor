@@ -7313,11 +7313,6 @@ define([
 				return;
 			}
 
-			// "If node is an inline node, abort these steps."
-			if (isInlineNode(node)) {
-				return;
-			}
-
 			// "If node has a child with index offset and that child is a br or hr
 			// or img, call collapse(node, offset) on the Selection. Then delete
 			// the contents of the range with start (node, offset) and end (node,
@@ -7326,6 +7321,11 @@ define([
 				range.setStart(node, offset);
 				range.setEnd(node, offset);
 				deleteContents(node, offset, node, offset + 1);
+				return;
+			}
+
+			// "If node is an inline node, abort these steps."
+			if (isInlineNode(node)) {
 				return;
 			}
 
