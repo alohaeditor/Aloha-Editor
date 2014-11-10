@@ -125,7 +125,7 @@
 
 			<p>When you look at the HTML code, you'll notice, that all of the buttons are nested within a wrapper that has the <code>aloha-ui</code> class assigned to it. This class is needed to let the ui code know where to find the buttons it should react to.</p>
 
-			<p>Buttons come with an <code>aloha-action-*</code> class assigned to them. This class is linked to an action via the <code>aloha.editor.ui.actions</code> array:
+			<p>Buttons come with an <code>aloha-action-*</code> class assigned to them. This class is linked to an action via the <code>aloha.editor.ui.actions</code> array:</p>
 
 			<textarea class="example">actions   : {
 	'aloha-action-B'        : inlineFormat,
@@ -164,6 +164,9 @@
 			<h3>Customizing the UI</h3>
 
 			<p>Our <a href="../demo/aloha-ui/" target="_blank">UI example</a> uses Bootstrap with some custom styles on top. However our UI implementation does not require any specific styling or html framework. If you don't want to use bootstrap you can just remove it and use whatever styling you like.</p>
+				</div>
+			<div id="disqus_thread" class="col-md-12"></div>
+			</div>
 		</div>
 
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -178,5 +181,13 @@
  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 })(window,document,'script','//www.google-analytics.com/analytics.js','ga'); ga('create', 'UA-17460389-2', 'auto'); ga('require', 'displayfeatures'); ga('send', 'pageview');</script>
+	    <script type="text/javascript">
+var disqus_shortname = 'alohaeditor';
+(function() {
+	var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+	dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+	(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+	    </script>
 	</body>
 </html>
