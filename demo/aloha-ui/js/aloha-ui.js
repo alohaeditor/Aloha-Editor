@@ -364,12 +364,8 @@
 			'aloha-action-UL'       : Editing.format,
 			'aloha-action-unformat' : function (start, end) {
 				var boundaries = [start, end];
-				['B', 'I', 'U'].forEach(function (format) {
-					boundaries = Editing.unformat(
-						boundaries[0],
-						boundaries[1],
-						format
-					);
+				['B', 'I', 'U'].forEach(function (nodeName) {
+					boundaries = Editing.wrap(nodeName, boundaries[0], boundaries[1], true);
 				});
 				return boundaries;
 			}

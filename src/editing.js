@@ -1946,16 +1946,6 @@ define([
 	}
 
 	/**
-	 * This function is missing documentation.
-	 * @TODO Complete documentation.
-	 * 
-	 * @memberOf editing
-	 */
-	function unformat(start, end, nodeName, boundaries) {
-		return formatInline(nodeName, start, end, false);
-	}
-
-	/**
 	 * Toggles inline style round the given selection.
 	 *
 	 * @private
@@ -1997,7 +1987,6 @@ define([
 
 	return {
 		format     : format,
-		unformat   : unformat,
 		toggle     : toggle,
 		style      : style,
 		className  : className,
