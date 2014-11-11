@@ -578,13 +578,13 @@ define([
 	 * @return {string}
 	 */
 	function type (obj) {
-		if (Arrays.is(obj)) {
+		if (obj && Arrays.is(obj)) {
 			if (Boundaries.is(obj)) {
 				return 'Boundary';
 			}
 			return 'Array';
 		}
-		if (typeof obj === 'object') {
+		if (obj && typeof obj === 'object') {
 			if (Dom.isElementNode(obj)) {
 				return 'Element';
 			}

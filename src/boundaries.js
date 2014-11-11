@@ -668,8 +668,8 @@ define([
 	 * @param  {*} obj
 	 * @return {boolean}
 	 */
-	function is (obj) {
-		return Array.is(obj) && dom.isNode(obj[0]) && typeof obj[1] === 'number';
+	function is(obj) {
+		return Arrays.is(obj) && Dom.isNode(obj[0]) && typeof obj[1] === 'number';
 	}
 
 	return {
