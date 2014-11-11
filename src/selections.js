@@ -340,22 +340,28 @@ define([
 	 * @type {Object.<string, function(Event, Array.<Boundary>, string):Object>}
 	 */
 	var movements = {};
-	movements['up'] = Fn.partial(climb, 'up');
-	movements['down'] = Fn.partial(climb, 'down');
+
 	movements['left'] =
-	movements['alt+left'] =
-	movements['shift+left'] =
-	movements['ctrl+left'] = Fn.partial(step, 'left');
+	movements['*+left'] = Fn.partial(step, 'left');
+
 	movements['right'] =
-	movements['alt+right'] =
-	movements['shift+right'] =
-	movements['ctrl+right'] = Fn.partial(step, 'right');
+	movements['*+right'] = Fn.partial(step, 'right');
+
+	movements['up'] =
+	movements['*+up'] = Fn.partial(climb, 'up');
+
+	movements['down'] =
+	movements['*+down'] = Fn.partial(climb, 'down');
+
 	movements['pageUp'] =
 	movements['meta+up'] = Fn.partial(jump, 'up');
+
 	movements['pageDown'] =
 	movements['meta+down'] = Fn.partial(jump, 'down');
+
 	movements['end'] =
 	movements['meta+right'] = end;
+
 	movements['home'] =
 	movements['meta+left'] = home;
 

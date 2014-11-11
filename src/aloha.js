@@ -187,7 +187,7 @@ define([
 		if (Dom.isEditableNode(cac)) {
 			// Because no browser shortcuts should be allowed when editing
 			if ('keydown' === type && (event.ctrlKey || event.shiftKey || event.metaKey)) {
-				Events.preventDefault(event);
+				//Events.preventDefault(event);
 			}
 		} else {
 			// Because if we are partly inside of an editable, we don't want the

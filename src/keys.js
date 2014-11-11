@@ -169,8 +169,9 @@ define([
 		var key = keycode <= 46 || keycode >= 91
 		        ? CODE_KEY[keycode] || keycode
 		        : String.fromCharCode(keycode).toLowerCase();
-		var lookupKey = meta ? meta + '+' + key : key;
-		return shortcutHandlers[lookupKey] ? shortcutHandlers[lookupKey] : null;
+		return shortcutHandlers[meta ? meta + '+' + key : key]
+		    || shortcutHandlers['*+' + key]
+		    || null;
 	}
 
 	return {
