@@ -313,22 +313,54 @@ define([
 		};
 	}
 
-	function end(event, boundaries, focus) {
-		var range = Boundaries.range(boundaries[0], boundaries[1]);
-		var rect = Arrays.last(range.getClientRects());
-		var x = event.editable.elem.offsetLeft + event.editable.elem.clientWidth;
-		var y = rect ? rect.top : Dom.absoluteTop(Boundaries.container(boundaries[0]));
-		var targetRange = Ranges.fromPosition(x, y, Boundaries.document(boundaries[0]));
+	/**
+	 * Determines the dimensions of the vertical line in the editable at the
+	 * given boundary positions.
+	 *
+	 * @private
+	 * @param  {Array.<Boundary>} boundaries
+	 * @param  {Element}          editable
+	 * @return {Object<string, number>}
+	 */
+	function lineBox(boundaries, editable) {
+		var rect = Carets.box(Boundaries.range(boundaries[0], boundaries[1]));
+		var node = Boundaries.container(boundaries[0]);
+		if (Dom.isTextNode(node)) {
+			node = node.parentNode;
+		}
+		var fontSize = parseInt(Dom.getComputedStyle(node, 'font-size'));
+		var y = rect ? rect.top : Dom.absoluteTop(node);
 		return {
-			boundaries : Boundaries.fromRange(targetRange),
+			top   : y + (fontSize ? fontSize / 2 : 0),
+			left  : editable.offsetLeft,
+			right : editable.offsetLeft + editable.clientWidth
+		};
+	}
+
+	function end(event, boundaries, focus) {
+		var box = lineBox(boundaries, event.editable.elem);
+		var targetRange = Ranges.fromPosition(
+			box.right,
+			box.top,
+			Boundaries.document(boundaries[0])
+		);
+		//Carets.showHint({left: box.right, top: box.top, width: 10, height: 10}, document);
+		return {
+			boundaries : targetRange ? Boundaries.fromRange(targetRange) : boundaries,
 			focus      : focus
 		};
 	}
 
 	function home(event, boundaries, focus) {
-		event.nativeEvent.preventDefault();
+		var box = lineBox(boundaries, event.editable.elem);
+		var targetRange = Ranges.fromPosition(
+			box.left,
+			box.top,
+			Boundaries.document(boundaries[0])
+		);
+		//Carets.showHint({left: box.left, top: box.top, width: 10, height: 10}, document);
 		return {
-			boundaries : boundaries,
+			boundaries : targetRange ? Boundaries.fromRange(targetRange) : boundaries,
 			focus      : focus
 		};
 	}
