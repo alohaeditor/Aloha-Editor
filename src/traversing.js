@@ -46,7 +46,6 @@ define([
 		     : Boundaries.create(container, offset);
 	}
 
-
 	/**
 	 * Return the character immediately following the given boundary.
 	 * If not character exists, an empty string is returned.
@@ -98,7 +97,7 @@ define([
 	function prev(boundary, unit) {
 		var behind = Html.prev(boundary, unit);
 		if ('word' === unit) {
-			if (Strings.WORD_BOUNDARY.test(nextCharacter(behind, 'char'))) {
+			if (Strings.WORD_BOUNDARY.test(nextCharacter(behind))) {
 				return prev(behind, unit);
 			}
 		}
@@ -137,7 +136,7 @@ define([
 	 */
 	function next(boundary, unit) {
 		if ('word' === unit) {
-			if (Strings.WORD_BOUNDARY.test(nextCharacter(boundary, 'char'))) {
+			if (Strings.WORD_BOUNDARY.test(nextCharacter(boundary))) {
 				return next(Html.next(boundary, 'char'), unit);
 			}
 		}
@@ -171,7 +170,6 @@ define([
 	 * Expands two boundaries to contain a block.
 	 *
 	 * The boundaries represent the start and end containers of a range.
-	 *
 	 *
 	 * [,] = start,end boundary
 	 *
