@@ -315,18 +315,18 @@ define([
 
 	/**
 	 * Determines the dimensions of the vertical line in the editable at the
-	 * given boundary positions.
+	 * given boundary position.
 	 *
 	 * @private
-	 * @param  {Array.<Boundary>} boundaries
-	 * @param  {Element}          editable
+	 * @param  {Boundary} boundary
+	 * @param  {Element}  editable
 	 * @return {Object<string, number>}
 	 */
-	function lineBox(boundaries, editable) {
-		var doc = Boundaries.document(boundaries[0]);
+	function lineBox(boundary, editable) {
+		var doc = Boundaries.document(boundary);
 		var win = Dom.documentWindow(doc);
-		var rect = Carets.box(Boundaries.range(boundaries[0], boundaries[1]));
-		var node = Boundaries.container(boundaries[0]);
+		var rect = Carets.box(Boundaries.range(boundary, boundary));
+		var node = Boundaries.container(boundary);
 		if (Dom.isTextNode(node)) {
 			node = node.parentNode;
 		}
@@ -343,29 +343,41 @@ define([
 	}
 
 	function end(event, boundaries, focus) {
-		var box = lineBox(boundaries, event.editable.elem);
-		var targetRange = Ranges.fromPosition(
+		var box = lineBox(boundaries[1], event.editable.elem);
+		var range = Ranges.fromPosition(
 			box.right,
 			box.top,
 			Boundaries.document(boundaries[0])
 		);
-		//Carets.showHint({left: box.right, top: box.top, width: 10, height: 10}, document);
+		if (range) {
+			var start = boundaries['start' === focus ? 1 : 0];
+			boundaries = Events.hasKeyModifier(event, 'shift')
+			           ? [start, Boundaries.fromRangeEnd(range)]
+			           : Boundaries.fromRange(range);
+			focus = 'end';
+		}
 		return {
-			boundaries : targetRange ? Boundaries.fromRange(targetRange) : boundaries,
+			boundaries : boundaries,
 			focus      : focus
 		};
 	}
 
 	function home(event, boundaries, focus) {
-		var box = lineBox(boundaries, event.editable.elem);
-		var targetRange = Ranges.fromPosition(
+		var box = lineBox(boundaries[0], event.editable.elem);
+		var range = Ranges.fromPosition(
 			box.left,
 			box.top,
 			Boundaries.document(boundaries[0])
 		);
-		//Carets.showHint({left: box.left, top: box.top, width: 10, height: 10}, document);
+		if (range) {
+			var end = boundaries['end' === focus ? 0 : 1];
+			boundaries = Events.hasKeyModifier(event, 'shift')
+			           ? [Boundaries.fromRangeStart(range), end]
+			           : Boundaries.fromRange(range);
+			focus = 'start';
+		}
 		return {
-			boundaries : targetRange ? Boundaries.fromRange(targetRange) : boundaries,
+			boundaries : boundaries,
 			focus      : focus
 		};
 	}
@@ -396,11 +408,13 @@ define([
 	movements['pageDown'] =
 	movements['meta+down'] = Fn.partial(jump, 'down');
 
-	movements['end'] =
-	movements['meta+right'] = end;
-
 	movements['home'] =
-	movements['meta+left'] = home;
+	movements['meta+left'] =
+	movements['meta+shift+left'] = home;
+
+	movements['end'] =
+	movements['meta+right'] =
+	movements['meta+shift+right'] = end;
 
 	/**
 	 * Processes a keypress event.
