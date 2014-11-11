@@ -663,7 +663,17 @@ define([
 		return range && fromRange(range);
 	}
 
+	/**
+	 * true if obj is a Boundary
+	 * @param  {*} obj
+	 * @return {boolean}
+	 */
+	function is (obj) {
+		return Array.is(obj) && dom.isNode(obj[0]) && typeof obj[1] === 'number';
+	}
+
 	return {
+		is                  : is,
 		get                 : get,
 		select              : select,
 

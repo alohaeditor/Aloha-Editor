@@ -172,8 +172,13 @@ define([
 		return Serializer.serializeToString(node);
 	}
 
-	function isNode(node) {
-		var str = Object.prototype.toString.call(node);
+	/**
+	 * true if obj is a Node
+	 * @param  {*} node
+	 * @return {boolean}
+	 */
+	function isNode(obj) {
+		var str = Object.prototype.toString.call(obj);
 		// TODO: is this really the best way to do it?
 		return (/^\[object (Text|Comment|HTML\w*Element)\]$/).test(str);
 	}
@@ -305,6 +310,7 @@ define([
 		normalizedNodeIndex     : Nodes.normalizedNodeIndex,
 		realFromNormalizedIndex : Nodes.realFromNormalizedIndex,
 		normalizedNumChildren   : Nodes.normalizedNumChildren,
+		isNode                  : isNode,
 		isTextNode              : Nodes.isTextNode,
 		isElementNode           : Nodes.isElementNode,
 		isFragmentNode          : Nodes.isFragmentNode,

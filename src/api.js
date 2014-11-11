@@ -92,10 +92,12 @@ define([
 	exports['Record'] = Record;
 
 	exports['arrays'] = {};
+	exports['arrays']['is']         = Arrays.is;
 	exports['arrays']['contains']   = Arrays.contains;
 	exports['arrays']['difference'] = Arrays.difference;
 	exports['arrays']['equal']      = Arrays.equal;
 	exports['arrays']['intersect']  = Arrays.intersect;
+	exports['arrays']['is']         = Arrays.is;
 	exports['arrays']['last']       = Arrays.last;
 	exports['arrays']['coerce']     = Arrays.coerce;
 	exports['arrays']['mapcat']     = Arrays.mapcat;
@@ -110,6 +112,7 @@ define([
 	exports['blocks']['handleBlocks'] = Blocks.handleBlocks;
 
 	exports['boundaries'] = {};
+	exports['boundaries']['is']                  = Boundaries.is;
 	exports['boundaries']['get']                 = Boundaries.get;
 	exports['boundaries']['select']              = Boundaries.select;
 	exports['boundaries']['raw']                 = Boundaries.raw;
@@ -194,6 +197,7 @@ define([
 	exports['dom']['normalizedNodeIndex']          = Dom.normalizedNodeIndex;
 	exports['dom']['realFromNormalizedIndex']      = Dom.realFromNormalizedIndex;
 	exports['dom']['normalizedNumChildren']        = Dom.normalizedNumChildren;
+	exports['dom']['isNode']                       = Dom.isNode;
 	exports['dom']['isTextNode']                   = Dom.isTextNode;
 	exports['dom']['isElementNode']                = Dom.isElementNode;
 	exports['dom']['isFragmentNode']               = Dom.isFragmentNode;
@@ -514,5 +518,96 @@ define([
 	exports['zippers']['isMarker']     = Zippers.isMarker;
 	exports['zippers']['createMarker'] = Zippers.createMarker;
 
-	return exports;
+	/**
+	 * wrap an API function to catch exceptions and provide an API link
+	 *
+	 * @param  {string} pack
+	 * @param  {string} func
+	 * @return {function}
+	 */
+	function apiErrorWrapper (pack, func) {
+		return function () {
+			try {
+				return exports[pack][func].apply(this, arguments);
+			} catch (e) {
+				console.info(apiLink(e, Arrays.coerce(arguments), pack, func));
+				throw e;
+			}
+		};
+	}
+
+	/**
+	 * generate a link to the api from an exception e
+	 * the arguments object passed to the original function
+	 * the package name and the function name
+	 *
+	 * @param  {Object} e
+	 * @param  {Object} args
+	 * @param  {string} pack
+	 * @param  {string} func
+	 * @return {string}
+	 */
+	function apiLink (e, args, pack, func) {
+		return 'See http://aloha-editor.org/api/' +
+			pack +
+			'.html' +
+			'?types=' +
+			types(args).join('-') +
+			'#' +
+			func;
+	}
+
+	/**
+	 * create an array of types from objects in an array
+	 *
+	 * @param  {Array} arr
+	 * @return {Array.<string>}
+	 */
+	function types (arr) {
+		var ts = [];
+		arr.forEach(function (arg) {
+			ts.push(type(arg));
+		});
+		return ts;
+	}
+
+	/**
+	 * get the type of a variable
+	 *
+	 * @param  {*} obj
+	 * @return {string}
+	 */
+	function type (obj) {
+		if (Arrays.is(obj)) {
+			if (Boundaries.is(obj)) {
+				return 'Boundary';
+			}
+			return 'Array';
+		}
+		if (typeof obj === 'object') {
+			if (Dom.isElementNode(obj)) {
+				return 'Element';
+			}
+			if (Dom.isNode(obj)) {
+				return 'Node';
+			}
+			if (obj instanceof RegExp) {
+				return 'RegExp';
+			}
+		}
+		// boolean, function, object, string, number
+		return typeof obj;
+	}
+
+	var api = {};
+	for (var pack in exports) {
+		api[pack] = {};
+		for (var func in exports[pack]) {
+			api[pack][func] = Fn.is(exports[pack][func])
+				? apiErrorWrapper(pack, func)
+				: exports[pack][func];
+		}
+	}
+
+	return api;
 });

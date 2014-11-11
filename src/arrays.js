@@ -256,11 +256,20 @@ define(['functions'], function (Fn) {
 		}
 	}
 
+	/**
+	 * Returns true if the given value is an array.
+	 * @memberOf arrays
+	 */
+	function is(obj) {
+		return (Object.prototype.toString.call(obj) === '[object Array]');
+	}
+
 	return {
 		contains   : contains,
 		difference : difference,
 		equal      : equal,
 		intersect  : intersect,
+		is         : is,
 		last       : last,
 		coerce     : coerce,
 		mapcat     : mapcat,
