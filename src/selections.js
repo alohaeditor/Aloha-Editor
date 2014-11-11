@@ -323,17 +323,22 @@ define([
 	 * @return {Object<string, number>}
 	 */
 	function lineBox(boundaries, editable) {
+		var doc = Boundaries.document(boundaries[0]);
+		var win = Dom.documentWindow(doc);
 		var rect = Carets.box(Boundaries.range(boundaries[0], boundaries[1]));
 		var node = Boundaries.container(boundaries[0]);
 		if (Dom.isTextNode(node)) {
 			node = node.parentNode;
 		}
 		var fontSize = parseInt(Dom.getComputedStyle(node, 'font-size'));
-		var y = rect ? rect.top : Dom.absoluteTop(node);
+		var top = rect ? rect.top : Dom.absoluteTop(node);
+		top -= win.pageYOffset - doc.body.clientTop;
+		top += (fontSize ? fontSize / 2 : 0);
+		var left = editable.offsetLeft - (win.pageXOffset - doc.body.clientLeft);
 		return {
-			top   : y + (fontSize ? fontSize / 2 : 0),
-			left  : editable.offsetLeft,
-			right : editable.offsetLeft + editable.clientWidth
+			top   : top,
+			left  : left,
+			right : left + editable.clientWidth
 		};
 	}
 
