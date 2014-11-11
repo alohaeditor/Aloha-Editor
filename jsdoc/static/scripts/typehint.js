@@ -41,7 +41,7 @@ $(function ($) {
 				.parent()
 				.prepend('&#65794; ')
 				.next()
-				.prepend('<p><b>Info:</b> <i>Expected <span class="param-type error">' +
+				.prepend('<p><b>Error:</b> <i>Expected <span class="param-type error">' +
 					expected +
 					'</span>, you passed <span class="param-type error">' +
 					t +
