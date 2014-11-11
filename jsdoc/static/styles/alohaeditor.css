@@ -279,3 +279,24 @@ footer {
 	font-size: 0.8em;
 	color: gray;
 }
+.main table .type {
+	width: 120px;
+}
+.param-type {
+	border-radius: 3px;
+	padding: 3px 5px;
+}
+.param-type {
+	-webkit-transition: all 0.5s;
+	   -moz-transition: all 0.5s;
+	    -ms-transition: all 0.5s;
+	        transition: all 0.5s;
+}
+.param-type.error {
+	color: white;
+	background: #c7254e;
+}
+.param-type.ok {
+	color: white;
+	background: #779c34;
+}
