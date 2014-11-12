@@ -195,7 +195,46 @@ define(['misc', 'assert'], function (Misc, Assert) {
 		preventDefault(event);
 	}
 
+	/**
+	 * returns true if obj is a native browser event object
+	 *
+	 * @param  {*} obj
+	 * @return {boolean}
+	 * @memberOf events
+	 */
+	function is(obj) {
+		if (obj &&
+			obj.hasOwnPropery &&
+			obj.hasOwnPropery('type') &&
+			obj.stopPropagation &&
+			obj.preventDefault) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * returns true if obj is an Aloha Event object
+	 *
+	 * @param  {*} obj
+	 * @return {boolean}
+	 * @memberOf events
+	 */
+	function isAlohaEvent(obj) {
+		if (obj &&
+			obj.hasOwnProperty &&
+			obj.hasOwnProperty('nativeEvent') &&
+			obj.hasOwnProperty('editable') &&
+			obj.hasOwnProperty('selection') &&
+			obj.hasOwnProperty('dnd')) {
+			return true;
+		}
+		return false;
+	}
+
 	return {
+		is              : is,
+		isAlohaEvent    : isAlohaEvent,
 		add             : add,
 		remove          : remove,
 		setup           : setup,

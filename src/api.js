@@ -309,6 +309,8 @@ define([
 	exports['editing']['wrap']      = Editing.wrap;
 
 	exports['events'] = {};
+	exports['events']['is']              = Events.is;
+	exports['events']['isAlohaEvent']    = Events.isAlohaEvent;
 	exports['events']['add']             = Events.add;
 	exports['events']['remove']          = Events.remove;
 	exports['events']['setup']           = Events.setup;
@@ -430,6 +432,8 @@ define([
 	exports['selectionchange']['removeHandler'] = SelectionChange.removeHandler;
 
 	exports['selections'] = {};
+	exports['selections']['is']               = Selections.is;
+	exports['selections']['isRange']          = Selections.isRange;
 	exports['selections']['show']             = Selections.show;
 	exports['selections']['focus']            = Selections.focus;
 	exports['selections']['select']           = Selections.select;
@@ -591,6 +595,18 @@ define([
 			}
 			if (Dom.isNode(obj)) {
 				return 'Node';
+			}
+			if (Selections.is(obj)) {
+				return 'Selection';
+			}
+			if (Selections.isRange(obj)) {
+				return 'Range';
+			}
+			if (Events.is(obj)) {
+				return 'Event';
+			}
+			if (Events.isAlohaEvent(obj)) {
+				return 'AlohaEvent';
 			}
 			if (obj instanceof RegExp) {
 				return 'RegExp';

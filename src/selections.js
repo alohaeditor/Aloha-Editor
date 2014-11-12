@@ -846,7 +846,35 @@ define([
 		});
 	}
 
+	/**
+	 * returns true if obj is a selection as returned by Context()
+	 *
+	 * @param  {*} obj
+	 * @return {boolean}
+	 * @memberOf selections
+	 */
+	function is(obj) {
+		if (obj &&
+			obj.hasOwnPropery &&
+			obj.hasOwnProperty('focus') &&
+			obj.hasOwnProperty('caret') &&
+			obj.hasOwnProperty('boundaries')) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * @see {ranges.is}
+	 * @memberOf selections
+	 */
+	function isRange(obj) {
+		return Ranges.is(obj);
+	}
+
 	return {
+		is               : is,
+		isRange          : isRange,
 		show             : show,
 		select           : select,
 		focus            : focus,

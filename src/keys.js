@@ -127,7 +127,7 @@ define([
 	 *     char    : '' // corresponding lowercase character for that key
 	 * }
 	 *</pre>
-	 * @param  {!BrowserEvent} event
+	 * @param  {!Event} event
 	 * @return {Object.<string, *>}
 	 * @memberOf keys
 	 */
