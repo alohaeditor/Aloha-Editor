@@ -39,7 +39,7 @@ $(function ($) {
 			$t
 				.addClass('error')
 				.parent()
-				.prepend('&#65794; ')
+				.prepend('&#215; ')
 				.next()
 				.prepend('<p><b>Error:</b> <i>Expected <span class="param-type error">' +
 					expected +
