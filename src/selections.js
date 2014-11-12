@@ -436,7 +436,7 @@ define([
 	 * Processes a keydown event.
 	 *
 	 * @private
-	 * @param  {Event}            event
+	 * @param  {AlohaEvent}            event
 	 * @param  {Array.<Boundary>} boundaries
 	 * @param  {string}           focus
 	 * @return {Object}
@@ -730,8 +730,8 @@ define([
 	/**
 	 * Updates selection
 	 *
-	 * @param  {Event} event
-	 * @return {Event}
+	 * @param  {AlohaEvent} event
+	 * @return {AlohaEvent}
 	 * @memberOf selections
 	 */
 	function handleSelections(event) {

@@ -72,7 +72,7 @@ define([
 	 * Whether or not the given event is an event targeting an Aloha Block
 	 * element.
 	 *
-	 * @param  {Event}   event
+	 * @param  {AlohaEvent}   event
 	 * @return {boolean}
 	 */
 	function isBlockEvent(event) {
@@ -129,7 +129,7 @@ define([
 	 * Updates editable
 	 *
 	 * @param  {AlohaEvent} event
-	 * @return {Event}
+	 * @return {AlohaEvent}
 	 * @memberOf blocks
 	 */
 	function handleBlocks(event) {
