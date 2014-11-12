@@ -1,4 +1,6 @@
 $(function ($) {
+	'use strict';
+
 	var fmatch = document.location.href.match(/#(\w+)/);
 	var tmatch = document.location.href.match(/\?types=([\w-]+)/);
 	if (!(fmatch && tmatch)) {
@@ -12,13 +14,13 @@ $(function ($) {
 	var DELAY = 300;
 
 	function compareType (expected, provided) {
-		if (expected === '*') {
-			return true;
-		}
-		if (expected === 'Node' && provided === 'Element') {
-			return true;
-		}
-		if (expected === provided) {
+		var ex = expected.toLowerCase();
+		var pr = provided.toLowerCase();
+		if (ex === '*' ||
+			(ex === 'node' && pr === 'element') ||
+			(ex.indexOf('array') === 0 && pr === 'array') ||
+			(ex.indexOf('object') === 0 && pr === 'object') ||
+			ex === pr) {
 			return true;
 		}
 		return false;
