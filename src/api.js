@@ -297,6 +297,7 @@ define([
 
 	exports['editing'] = {};
 	exports['editing']['format']    = Editing.format;
+	exports['editing']['unformat']    = Editing.unformat;
 	exports['editing']['style']     = Editing.style;
 	exports['editing']['remove']    = Editing.remove;
 	exports['editing']['breakline'] = Editing.breakline;
