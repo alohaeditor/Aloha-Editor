@@ -334,7 +334,7 @@ define([
 		var top = rect ? rect.top : Dom.absoluteTop(node);
 		top -= win.pageYOffset - doc.body.clientTop;
 		top += (fontSize ? fontSize / 2 : 0);
-		var left = editable.offsetLeft - (win.pageXOffset - doc.body.clientLeft);
+		var left = Dom.offset(editable).left - (win.pageXOffset - doc.body.clientLeft);
 		return {
 			top   : top,
 			left  : left,
@@ -345,7 +345,8 @@ define([
 	function end(event, boundaries, focus) {
 		var box = lineBox(boundaries[1], event.editable.elem);
 		var range = Ranges.fromPosition(
-			box.right,
+			// Because -1 ensures that the position is within the viewport
+			box.right - 1,
 			box.top,
 			Boundaries.document(boundaries[0])
 		);

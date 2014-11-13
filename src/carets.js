@@ -183,6 +183,7 @@ define([
 		var elem = doc.querySelector('.aloha-caret-box-hint');
 		if (!elem) {
 			elem = doc.createElement('div');
+			Dom.addClass(elem, 'aloha-caret-box-hint', 'aloha-ephemera');
 		}
 		Maps.extend(elem.style, {
 			'top'        : box.top + 'px',
@@ -193,7 +194,6 @@ define([
 			'background' : 'red',
 			'opacity'    : 0.2
 		});
-		Dom.addClass(elem, 'aloha-caret-box-hint', 'aloha-ephemera');
 		Dom.append(elem, doc.body);
 		return elem;
 	}
