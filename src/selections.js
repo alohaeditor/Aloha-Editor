@@ -864,9 +864,11 @@ define([
 		);
 		selection.focus = change.focus;
 		selection.boundaries = change.boundaries;
+		/*
 		highlight(selection.boundaries[0], selection.boundaries[1]).forEach(function (box) {
 			Dom.setStyle(box, 'background', '#a6c7f7');
 		});
+		*/
 		return event;
 	}
 
