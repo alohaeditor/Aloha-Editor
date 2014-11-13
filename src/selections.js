@@ -212,6 +212,88 @@ define([
 		return mergeRanges(next, boundaries, focus);
 	}
 
+	function closestLine(node) {
+		return Dom.upWhile(node, Fn.complement(Html.hasLinebreakingStyle));
+	}
+
+	function climbStep(range, step) {
+		var doc = range.commonAncestorContainer.ownerDocument;
+		var win = Dom.documentWindow(doc);
+		var box = Carets.box(range);
+		box.top -= win.pageYOffset - doc.body.clientTop;
+		box.left -= win.pageXOffset - doc.body.clientLeft;
+		var half = box.height / 2;
+		var stride = 0;
+		var next;
+		do {
+			stride += half;
+			next = step(box, stride, doc);
+		} while (next && Ranges.equals(next, range));
+		return next;
+	}
+
+	function selectionBoxes(start, end) {
+		var doc = Boundaries.document(start);
+		var win = Dom.documentWindow(doc);
+		var offsetX = win.pageXOffset - doc.body.clientLeft;
+		var offsetY = win.pageYOffset - doc.body.clientTop;
+		var endBox = Carets.box(Boundaries.range(end, end));
+		var endTop = endBox.top;
+		var endLeft = endBox.left;
+		var range = Boundaries.range(start, start);
+		var box, top, left, right, width, line, atEnd;
+		var leftRange, rightRange;
+		var boxes = [];
+		while (range) {
+			box = Carets.box(range);
+			top = box.top;
+			line = closestLine(range.startContainer);
+			atEnd = endTop < top + box.height;
+			if (atEnd) {
+				if (0 === boxes.length) {
+					left = box.left;
+				} else {
+					left = Dom.offset(line).left;
+				}
+				width = endLeft - left;
+			} else {
+				if (0 === boxes.length) {
+					left = box.left;
+					width = line.clientWidth - (left - Dom.offset(line).left);
+				} else {
+					left = Dom.offset(line).left;
+					width = line.clientWidth;
+				}
+			}
+			leftRange = Ranges.fromPosition(left - offsetX, top - offsetY, doc);
+			rightRange = Ranges.fromPosition(left - offsetX + width, top - offsetY, doc);
+			if (!leftRange || !rightRange) {
+				break;
+			}
+			left = Carets.box(leftRange).left;
+			right = Carets.box(rightRange).left;
+			boxes.push({
+				top    : top,
+				left   : left,
+				width  : right - left,
+				height : box.height
+			});
+			if (atEnd) {
+				break;
+			}
+			range = climbStep(range, down);
+		}
+		return boxes;
+	}
+
+	function highlight(start, end) {
+		var doc = Boundaries.document(start);
+		Dom.query('.aloha-selection-box', doc).forEach(Dom.remove);
+		return selectionBoxes(start, end).map(function (box) {
+			return drawBox(box, doc);
+		});
+	}
+
 	/**
 	 * Determines the closest visual caret position above or below the given
 	 * range.
@@ -225,26 +307,43 @@ define([
 	 */
 	function climb(direction, event, boundaries, focus) {
 		var boundary = boundaries['start' === focus ? 0 : 1];
+		var range = Boundaries.range(boundary, boundary);
 		var doc = Boundaries.document(boundary);
 		var win = Dom.documentWindow(doc);
-		var topOffset = win.pageYOffset - doc.body.clientTop;
-		var leftOffset = win.pageXOffset - doc.body.clientLeft;
-		var range = Boundaries.range(boundary, boundary);
 		var box = Carets.box(range);
 
-		box.top -= topOffset;
-		box.left -= leftOffset;
+		box.top -= win.pageYOffset - doc.body.clientTop;
+		box.left -= win.pageXOffset - doc.body.clientLeft;
 
 		var half = box.height / 2;
 		var stride = half;
 		var move = ('up' === direction) ? up : down;
 		var next = move(box, stride, doc);
 
-		// TODO: also check if `next` and `range` are *visually* adjacent
+		var lineElement = Dom.upWhile(
+			Boundaries.container(boundary),
+			Fn.complement(Html.hasLinebreakingStyle)
+		);
+
+		/*
+		var bottom = Dom.absoluteTop(lineElement) + lineElement.clientHeight;
+		Carets.showHint({
+			top: bottom,
+			left: box.left,
+			width: 10,
+			height: 10
+		}, document);
+		*/
+
 		while (next && Ranges.equals(next, range)) {
 			stride += half;
 			next = move(box, stride, doc);
 		}
+
+		var newBox = Carets.box(next);
+		newBox.top -= win.pageYOffset - doc.body.clientTop;
+		newBox.left -= win.pageXOffset - doc.body.clientLeft;
+
 		if (!next) {
 			return {
 				boundaries : boundaries,
@@ -728,6 +827,22 @@ define([
 		return map;
 	}
 
+	function drawBox(box, doc) {
+		var elem = doc.createElement('div');
+		Maps.extend(elem.style, {
+			'top'        : box.top + 'px',
+			'left'       : box.left + 'px',
+			'height'     : box.height + 'px',
+			'width'      : box.width + 'px',
+			'position'   : 'absolute',
+			'background' : 'red',
+			'opacity'    : 0.4
+		});
+		Dom.addClass(elem, 'aloha-selection-box', 'aloha-ephemera');
+		Dom.append(elem, doc.body);
+		return elem;
+	}
+
 	/**
 	 * Updates selection
 	 *
@@ -749,6 +864,9 @@ define([
 		);
 		selection.focus = change.focus;
 		selection.boundaries = change.boundaries;
+		highlight(selection.boundaries[0], selection.boundaries[1]).forEach(function (box) {
+			Dom.setStyle(box, 'background', '#a6c7f7');
+		});
 		return event;
 	}
 
