@@ -212,16 +212,31 @@ define([
 		return mergeRanges(next, boundaries, focus);
 	}
 
+	/**
+	 * Finds the closest linebreaking element from the given node.
+	 *
+	 * @private
+	 * @param  {!Node} node
+	 * @return {?Element};
+	 */
 	function closestLine(node) {
 		return Dom.upWhile(node, Fn.complement(Html.hasLinebreakingStyle));
 	}
 
+	/**
+	 * Computes the visual range positoin above/below the given.
+	 *
+	 * @private
+	 * @param  {!Range}    range
+	 * @param  {!function} step
+	 * @return {?Range}
+	 */
 	function climbStep(range, step) {
 		var doc = range.commonAncestorContainer.ownerDocument;
-		var win = Dom.documentWindow(doc);
+		var docOffset = docOffsets(doc);
 		var box = Carets.box(range);
-		box.top -= win.pageYOffset - doc.body.clientTop;
-		box.left -= win.pageXOffset - doc.body.clientLeft;
+		box.top -= docOffset.top;
+		box.left -= docOffset.left;
 		var half = box.height / 2;
 		var stride = 0;
 		var next;
@@ -232,11 +247,19 @@ define([
 		return next;
 	}
 
+	/**
+	 * Computes a lists of box dimensions for the a given range.
+	 *
+	 * @private
+	 * @param  {!Boundary} start
+	 * @param  {!Boundary} end
+	 * @return {Array.<Object>}
+	 */
 	function selectionBoxes(start, end) {
 		var doc = Boundaries.document(start);
-		var win = Dom.documentWindow(doc);
-		var offsetX = win.pageXOffset - doc.body.clientLeft;
-		var offsetY = win.pageYOffset - doc.body.clientTop;
+		var docOffset = docOffsets(doc);
+		var offsetX = docOffset.left;
+		var offsetY = docOffset.top;
 		var endBox = Carets.box(Boundaries.range(end, end));
 		var endTop = endBox.top;
 		var endLeft = endBox.left;
@@ -248,6 +271,9 @@ define([
 			box = Carets.box(range);
 			top = box.top;
 			line = closestLine(range.startContainer);
+			if (!line) {
+				break;
+			}
 			atEnd = endTop < top + box.height;
 			if (atEnd) {
 				if (0 === boxes.length) {
@@ -259,10 +285,10 @@ define([
 			} else {
 				if (0 === boxes.length) {
 					left = box.left;
-					width = line.clientWidth - (left - Dom.offset(line).left);
+					width = elementWidth(line) - (left - Dom.offset(line).left);
 				} else {
 					left = Dom.offset(line).left;
-					width = line.clientWidth;
+					width = elementWidth(line);
 				}
 			}
 			leftRange = Ranges.fromPosition(left - offsetX, top - offsetY, doc);
@@ -286,12 +312,213 @@ define([
 		return boxes;
 	}
 
+	/**
+	 * Renders divs to represent the given range
+	 *
+	 * @private
+	 * @param  {!Boundary} start
+	 * @param  {!Boundary} end
+	 * @return {Array.<Element>}
+	 */
 	function highlight(start, end) {
 		var doc = Boundaries.document(start);
 		Dom.query('.aloha-selection-box', doc).forEach(Dom.remove);
 		return selectionBoxes(start, end).map(function (box) {
 			return drawBox(box, doc);
 		});
+	}
+
+	/**
+	 * Computes the offsets of the given document.
+	 *
+	 * @private
+	 * @param  {!Document} doc
+	 * @return {Object}
+	 */
+	function docOffsets(doc) {
+		var win = Dom.documentWindow(doc);
+		return {
+			top  : win.pageYOffset - doc.body.clientTop,
+			left : win.pageXOffset - doc.body.clientLeft
+		};
+	}
+
+	/**
+	 * Calculates the width of the given element as best as possible.
+	 *
+	 * We need to do this because clientWidth/clientHeight sometimes return 0
+	 * erroneously.
+	 *
+	 * The difference between clientWidth and offsetWidth is that offsetWidth
+	 * includes scrollbar size, but since we will almost certainly not have
+	 * scrollbar within editing elements, this should not be a problem:
+	 * http://stackoverflow.com/questions/4106538/difference-between-offsetheight-and-clientheight
+	 *
+	 * @private
+	 * @param  {!Element} elem
+	 * @return {number}
+	 */
+	function elementWidth(elem) {
+		return elem.clientWidth || elem.offsetWidth;
+	}
+
+	/**
+	 * Calculates the height of the given element as best as possible.
+	 *
+	 * We need to do this because clientWidth/clientHeight sometimes return 0
+	 * erroneously.
+	 *
+	 * @private
+	 * @see elementWidth
+	 * @param  {!Element} elem
+	 * @return {number}
+	 */
+	function elementHeight(elem) {
+		return elem.clientHeight || elem.offsetHeight;
+	}
+
+	/**
+	 * Checks whether the given node is a visible linebreaking non-void element.
+	 *
+	 * @private
+	 * @param  {!Node} node
+	 * @return {boolean}
+	 */
+	function isVisibleBreakingContainer(node) {
+		return !Html.isVoidType(node)
+		    && Html.isRendered(node)
+		    && Html.hasLinebreakingStyle(node);
+	}
+
+	/**
+	 * Checks whether the given node is a visible non-void element.
+	 *
+	 * @private
+	 * @param  {!Node} node
+	 * @return {boolean}
+	 */
+	function isVisibleContainer(node) {
+		return !Html.isVoidType(node) && Html.isRendered(node);
+	}
+
+	/**
+	 * Finds the visual boundary position above the given.
+	 *
+	 * @private
+	 * @param  {!Boundary} boundary
+	 * @return {?Boundary}
+	 */
+	function climbUp(boundary) {
+		var next;
+		var container = Boundaries.container(boundary);
+		var breaker = Dom.backwardPreorderBacktraceUntil(
+			container,
+			isVisibleBreakingContainer
+		);
+		var range = Boundaries.range(boundary, boundary);
+		if (breaker) {
+			var box = Carets.box(range);
+			var doesBreakerWrapContainer = !!Dom.upWhile(container, function (node) {
+				return node !== breaker;
+			});
+			var offset = box.top - box.height;
+			var breakpoint = Dom.absoluteTop(breaker)
+			               + (doesBreakerWrapContainer
+			               ? 0
+			               : elementHeight(breaker));
+			if (offset < breakpoint) {
+				var nextElem;
+				if (doesBreakerWrapContainer) {
+					nextElem = Dom.nextNonAncestor(
+						breaker,
+						true,
+						isVisibleContainer,
+						Dom.isEditingHost
+					);
+				} else {
+					nextElem = breaker;
+				}
+				if (nextElem) {
+					var top;
+					if (Dom.isTextNode(nextElem)) {
+						var textBoundary = Boundaries.raw(nextElem, nextElem.data.length);
+						var textBox = Carets.box(Boundaries.range(textBoundary, textBoundary));
+						top = textBox.top + box.height;
+					} else {
+						top = Dom.absoluteTop(nextElem) + elementHeight(nextElem);
+					}
+					top -= box.height / 2;
+					var offsets = docOffsets(breaker.ownerDocument);
+					var left = box.left;
+					next = Ranges.fromPosition(
+						left - offsets.left,
+						top - offsets.top,
+						breaker.ownerDocument
+					);
+				}
+			}
+		}
+		return next || climbStep(range, up);
+	}
+
+	/**
+	 * Find the visual boundary position below the given.
+	 *
+	 * @private
+	 * @param  {!Boundary} boundary
+	 * @return {?Boundary}
+	 */
+	function climbDown(boundary) {
+		var next;
+		var container = Boundaries.container(boundary);
+		var breaker = Dom.forwardPreorderBacktraceUntil(
+			container,
+			isVisibleBreakingContainer
+		);
+		var range = Boundaries.range(boundary, boundary);
+		if (breaker) {
+			var box = Carets.box(range);
+			var doesBreakerWrapContainer = !!Dom.upWhile(container, function (node) {
+				return node !== breaker;
+			});
+			var offset = box.top + box.height + box.height;
+			var breakpoint = Dom.absoluteTop(breaker)
+			               + (doesBreakerWrapContainer
+			               ? elementHeight(breaker)
+			               : 0);
+			if (offset > breakpoint) {
+				var nextElem;
+				if (doesBreakerWrapContainer) {
+					nextElem = Dom.nextNonAncestor(
+						breaker,
+						false,
+						isVisibleContainer,
+						Dom.isEditingHost
+					);
+				} else {
+					nextElem = breaker;
+				}
+				if (nextElem) {
+					var top;
+					if (Dom.isTextNode(nextElem)) {
+						var textBoundary = Boundaries.raw(nextElem, 0);
+						var textBox = Carets.box(Boundaries.range(textBoundary, textBoundary));
+						top = textBox.top;
+					} else {
+						top = Dom.absoluteTop(nextElem);
+					}
+					top += box.height / 2;
+					var offsets = docOffsets(breaker.ownerDocument);
+					var left = box.left;
+					next = Ranges.fromPosition(
+						left - offsets.left,
+						top - offsets.top,
+						breaker.ownerDocument
+					);
+				}
+			}
+		}
+		return next || climbStep(range, down);
 	}
 
 	/**
@@ -307,43 +534,7 @@ define([
 	 */
 	function climb(direction, event, boundaries, focus) {
 		var boundary = boundaries['start' === focus ? 0 : 1];
-		var range = Boundaries.range(boundary, boundary);
-		var doc = Boundaries.document(boundary);
-		var win = Dom.documentWindow(doc);
-		var box = Carets.box(range);
-
-		box.top -= win.pageYOffset - doc.body.clientTop;
-		box.left -= win.pageXOffset - doc.body.clientLeft;
-
-		var half = box.height / 2;
-		var stride = half;
-		var move = ('up' === direction) ? up : down;
-		var next = move(box, stride, doc);
-
-		var lineElement = Dom.upWhile(
-			Boundaries.container(boundary),
-			Fn.complement(Html.hasLinebreakingStyle)
-		);
-
-		/*
-		var bottom = Dom.absoluteTop(lineElement) + lineElement.clientHeight;
-		Carets.showHint({
-			top: bottom,
-			left: box.left,
-			width: 10,
-			height: 10
-		}, document);
-		*/
-
-		while (next && Ranges.equals(next, range)) {
-			stride += half;
-			next = move(box, stride, doc);
-		}
-
-		var newBox = Carets.box(next);
-		newBox.top -= win.pageYOffset - doc.body.clientTop;
-		newBox.left -= win.pageXOffset - doc.body.clientLeft;
-
+		var next = 'up' === direction ? climbUp(boundary) : climbDown(boundary);
 		if (!next) {
 			return {
 				boundaries : boundaries,
@@ -422,8 +613,7 @@ define([
 	 * @return {Object<string, number>}
 	 */
 	function lineBox(boundary, editable) {
-		var doc = Boundaries.document(boundary);
-		var win = Dom.documentWindow(doc);
+		var docOffset = docOffsets(Boundaries.document(boundary));
 		var rect = Carets.box(Boundaries.range(boundary, boundary));
 		var node = Boundaries.container(boundary);
 		if (Dom.isTextNode(node)) {
@@ -431,13 +621,13 @@ define([
 		}
 		var fontSize = parseInt(Dom.getComputedStyle(node, 'font-size'));
 		var top = rect ? rect.top : Dom.absoluteTop(node);
-		top -= win.pageYOffset - doc.body.clientTop;
+		top -= docOffset.top;
 		top += (fontSize ? fontSize / 2 : 0);
-		var left = Dom.offset(editable).left - (win.pageXOffset - doc.body.clientLeft);
+		var left = Dom.offset(editable).left - docOffset.left;
 		return {
 			top   : top,
 			left  : left,
-			right : left + editable.clientWidth
+			right : left + elementWidth(editable)
 		};
 	}
 
@@ -772,8 +962,9 @@ define([
 		var box = Carets.box(Boundaries.range(boundary, boundary));
 		var doc = Boundaries.document(boundary);
 		var win = Dom.documentWindow(doc);
-		var top = win.pageYOffset - doc.body.clientTop;
-		var left = win.pageXOffset - doc.body.clientLeft;
+		var docOffset = docOffsets(doc);
+		var top = docOffset.top;
+		var left = docOffset.left;
 		var height = win.innerHeight;
 		var width = win.innerWidth;
 		var buffer = box.height;
@@ -866,7 +1057,7 @@ define([
 		selection.boundaries = change.boundaries;
 		/*
 		highlight(selection.boundaries[0], selection.boundaries[1]).forEach(function (box) {
-			Dom.setStyle(box, 'background', '#a6c7f7');
+			Dom.setStyle(box, 'background', '#fce05e'); // or blue #a6c7f7
 		});
 		*/
 		return event;
@@ -1003,6 +1194,8 @@ define([
 		handleSelections : handleSelections,
 		Context          : Context,
 		hideCarets       : hideCarets,
-		unhideCarets     : unhideCarets
+		unhideCarets     : unhideCarets,
+		highlight        : highlight,
+		selectionBoxes   : selectionBoxes
 	};
 });

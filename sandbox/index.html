@@ -70,7 +70,7 @@
 
 		<br/><br/>
 
-		<div class="aloha-editable">
+		<div class="aloha-editable" xcontentEditable="true">
 			<h1>Aloha Editor</h1>
 			<p>
 				<img draggable="true"
@@ -130,7 +130,7 @@
 					}
 				}
 				function main(aloha) {
-					aloha.arrays.coerce(document.querySelectorAll('.aloha-editable')).map(aloha).forEach(function (editable) {
+					aloha.dom.query('.aloha-editable', document).map(aloha).forEach(function (editable) {
 						aloha.metaview.toggle(editable.elem, {
 							tagname : true,
 							outline : true,
