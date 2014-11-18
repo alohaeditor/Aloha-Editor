@@ -402,7 +402,48 @@ define([
 	}
 
 	/**
+	 * Finds the breaking element above/below the given boundary.
+	 *
+	 * @private
+	 * @param  {!Boundary} boundary
+	 * @param  {!function} next
+	 * @param  {!function} forwards
+	 * @return {?Object}
+	 */
+	function findBreakpoint(boundary, next, forwards) {
+		var node = next(boundary);
+		var breaker = isVisibleBreakingContainer(node)
+		            ? node
+		            : forwards(node, isVisibleBreakingContainer);
+		if (!breaker) {
+			return null;
+		}
+		var isInsideBreaker = !!Dom.upWhile(node, function (node) {
+			return node !== breaker;
+		});
+		return {
+			breaker: breaker,
+
+			// Because if the breaking node is an ancestor of the boundary
+			// container, then the breakpoint ought to be calculated from the
+			// top of the breaker, otherwise we ought to calculate it from the
+			// bottom
+			isInsideBreaker: isInsideBreaker
+		};
+	}
+
+	/**
 	 * Finds the visual boundary position above the given.
+	 *
+	 * Cases:
+	 * foo<br>
+	 * ba░r
+	 *
+	 * <p>foo</p>ba░r
+	 *
+	 * <p>foo</p><p>ba░r</p>
+	 *
+	 * foo<ul><li>ba░r</li></ul>
 	 *
 	 * @private
 	 * @param  {!Boundary} boundary
@@ -410,55 +451,53 @@ define([
 	 */
 	function climbUp(boundary) {
 		var next;
-		var container = Boundaries.container(boundary);
-		var breaker = Dom.backwardPreorderBacktraceUntil(
-			container,
-			isVisibleBreakingContainer
-		);
 		var range = Boundaries.range(boundary, boundary);
-		if (breaker) {
-			var box = Carets.box(range);
-			var doesBreakerWrapContainer = !!Dom.upWhile(container, function (node) {
-				return node !== breaker;
-			});
+		var box = Carets.box(range);
+		var breakpoint = findBreakpoint(
+			boundary,
+			Boundaries.prevNode,
+			Dom.backwardPreorderBacktraceUntil
+		);
+		if (breakpoint) {
+			var breaker = breakpoint.breaker;
 			var offset = box.top - box.height;
-			var breakpoint = Dom.absoluteTop(breaker)
-			               + (doesBreakerWrapContainer
-			               ? 0
-			               : elementHeight(breaker));
-			if (offset < breakpoint) {
-				var nextElem;
-				if (doesBreakerWrapContainer) {
-					nextElem = Dom.nextNonAncestor(
+			var breakOffset = Dom.absoluteTop(breaker);
+			if (!breakpoint.isInsideBreaker) {
+				breakOffset += elementHeight(breaker);
+			}
+			if (offset < breakOffset) {
+				var above;
+				if (breakpoint.isInsideBreaker) {
+					above = Dom.nextNonAncestor(
 						breaker,
 						true,
 						isVisibleContainer,
 						Dom.isEditingHost
 					);
 				} else {
-					nextElem = breaker;
+					above = breaker;
 				}
-				if (nextElem) {
+				if (above) {
 					var top;
-					if (Dom.isTextNode(nextElem)) {
-						var textBoundary = Boundaries.raw(nextElem, nextElem.data.length);
+					if (Dom.isTextNode(above)) {
+						var textBoundary = Boundaries.raw(above, above.data.length);
 						var textBox = Carets.box(Boundaries.range(textBoundary, textBoundary));
 						top = textBox.top + box.height;
 					} else {
-						top = Dom.absoluteTop(nextElem) + elementHeight(nextElem);
+						top = Dom.absoluteTop(above) + elementHeight(above);
 					}
 					top -= box.height / 2;
 					var offsets = docOffsets(breaker.ownerDocument);
-					var left = box.left;
 					next = Ranges.fromPosition(
-						left - offsets.left,
+						box.left - offsets.left,
 						top - offsets.top,
 						breaker.ownerDocument
 					);
 				}
 			}
 		}
-		return next || climbStep(range, up);
+		next = next || climbStep(range, up);
+		return (!next || box.top === Carets.box(next).top) ? range : next;
 	}
 
 	/**
@@ -470,55 +509,53 @@ define([
 	 */
 	function climbDown(boundary) {
 		var next;
-		var container = Boundaries.container(boundary);
-		var breaker = Dom.forwardPreorderBacktraceUntil(
-			container,
-			isVisibleBreakingContainer
-		);
 		var range = Boundaries.range(boundary, boundary);
-		if (breaker) {
-			var box = Carets.box(range);
-			var doesBreakerWrapContainer = !!Dom.upWhile(container, function (node) {
-				return node !== breaker;
-			});
+		var box = Carets.box(range);
+		var breakpoint = findBreakpoint(
+			boundary,
+			Boundaries.nextNode,
+			Dom.forwardPreorderBacktraceUntil
+		);
+		if (breakpoint) {
+			var breaker = breakpoint.breaker;
 			var offset = box.top + box.height + box.height;
-			var breakpoint = Dom.absoluteTop(breaker)
-			               + (doesBreakerWrapContainer
-			               ? elementHeight(breaker)
-			               : 0);
-			if (offset > breakpoint) {
-				var nextElem;
-				if (doesBreakerWrapContainer) {
-					nextElem = Dom.nextNonAncestor(
+			var breakOffset = Dom.absoluteTop(breaker);
+			if (breakpoint.isInsideBreaker) {
+				breakOffset += elementHeight(breaker);
+			}
+			if (offset > breakOffset) {
+				var below;
+				if (breakpoint.isInsideBreaker) {
+					below = Dom.nextNonAncestor(
 						breaker,
 						false,
 						isVisibleContainer,
 						Dom.isEditingHost
 					);
 				} else {
-					nextElem = breaker;
+					below = breaker;
 				}
-				if (nextElem) {
+				if (below) {
 					var top;
-					if (Dom.isTextNode(nextElem)) {
-						var textBoundary = Boundaries.raw(nextElem, 0);
+					if (Dom.isTextNode(below)) {
+						var textBoundary = Boundaries.raw(below, 0);
 						var textBox = Carets.box(Boundaries.range(textBoundary, textBoundary));
 						top = textBox.top;
 					} else {
-						top = Dom.absoluteTop(nextElem);
+						top = Dom.absoluteTop(below);
 					}
 					top += box.height / 2;
 					var offsets = docOffsets(breaker.ownerDocument);
-					var left = box.left;
 					next = Ranges.fromPosition(
-						left - offsets.left,
+						box.left - offsets.left,
 						top - offsets.top,
 						breaker.ownerDocument
 					);
 				}
 			}
 		}
-		return next || climbStep(range, down);
+		next = next || climbStep(range, down);
+		return (!next || box.top === Carets.box(next).top) ? range : next;
 	}
 
 	/**
