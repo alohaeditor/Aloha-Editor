@@ -82,7 +82,7 @@ define([
 	 * @memberOf selections
 	 */
 	function show(caret, boundary) {
-		var box = Carets.box(Boundaries.range(boundary, boundary));
+		var box = Carets.box(boundary);
 		Maps.extend(caret.style, {
 			'top'     : box.top + 'px',
 			'left'    : box.left + 'px',
@@ -135,8 +135,12 @@ define([
 	 * @return {Range}
 	 */
 	function up(box, stride, doc) {
-		var boundaries = Boundaries.fromPosition(box.left, box.top - stride, doc);
-		return boundaries && Boundaries.range(boundaries[0], boundaries[1]);
+		var boundary = Boundaries.fromPosition(
+			box.left,
+			box.top - stride,
+			doc
+		);
+		return boundary && Boundaries.range(boundary, boundary);
 	}
 
 	/**
@@ -148,8 +152,12 @@ define([
 	 * @return {Range}
 	 */
 	function down(box, stride, doc) {
-		var boundaries = Boundaries.fromPosition(box.left, box.top + box.height + stride, doc);
-		return boundaries && Boundaries.range(boundaries[0], boundaries[1]);
+		var boundary = Boundaries.fromPosition(
+			box.left,
+			box.top + box.height + stride,
+			doc
+		);
+		return boundary && Boundaries.range(boundary, boundary);
 	}
 
 	/**
@@ -224,17 +232,18 @@ define([
 	}
 
 	/**
-	 * Computes the visual range positoin above/below the given.
+	 * Computes the visual boundary positoin above/below the given.
 	 *
 	 * @private
-	 * @param  {!Range}    range
+	 * @param  {!Boundary} boundary
 	 * @param  {!function} step
-	 * @return {?Range}
+	 * @return {?Boundary}
 	 */
-	function climbStep(range, step) {
-		var doc = range.commonAncestorContainer.ownerDocument;
+	function climbStep(boundary, step) {
+		var range = Boundaries.range(boundary, boundary);
+		var doc = Boundaries.document(boundary);
 		var docOffset = docOffsets(doc);
-		var box = Carets.box(range);
+		var box = Carets.box(boundary);
 		box.top -= docOffset.top;
 		box.left -= docOffset.left;
 		var half = box.height / 4;
@@ -244,11 +253,11 @@ define([
 			stride += half;
 			next = step(box, stride, doc);
 		} while (next && Ranges.equals(next, range));
-		return next;
+		return next && Boundaries.fromRangeStart(next);
 	}
 
 	/**
-	 * Computes a lists of box dimensions for the a given range.
+	 * Computes a lists of box dimensions for the a given range boundaries.
 	 *
 	 * @private
 	 * @param  {!Boundary} start
@@ -260,17 +269,17 @@ define([
 		var docOffset = docOffsets(doc);
 		var offsetX = docOffset.left;
 		var offsetY = docOffset.top;
-		var endBox = Carets.box(Boundaries.range(end, end));
+		var endBox = Carets.box(end);
 		var endTop = endBox.top;
 		var endLeft = endBox.left;
-		var range = Boundaries.range(start, start);
 		var box, top, left, right, width, line, atEnd;
-		var leftRange, rightRange;
+		var leftBoundary, rightBoundary;
 		var boxes = [];
-		while (range) {
-			box = Carets.box(range);
+		var boundary = start;
+		while (boundary) {
+			box = Carets.box(boundary);
 			top = box.top;
-			line = closestLine(range.startContainer);
+			line = closestLine(Boundaries.container(boundary));
 			if (!line) {
 				break;
 			}
@@ -291,13 +300,21 @@ define([
 					width = elementWidth(line);
 				}
 			}
-			leftRange = Ranges.fromPosition(left - offsetX, top - offsetY, doc);
-			rightRange = Ranges.fromPosition(left - offsetX + width, top - offsetY, doc);
-			if (!leftRange || !rightRange) {
+			leftBoundary = Boundaries.fromPosition(
+				left - offsetX,
+				top - offsetY,
+				doc
+			);
+			rightBoundary = Boundaries.fromPosition(
+				left - offsetX + width,
+				top - offsetY,
+				doc
+			);
+			if (!leftBoundary || !rightBoundary) {
 				break;
 			}
-			left = Carets.box(leftRange).left;
-			right = Carets.box(rightRange).left;
+			left = Carets.box(leftBoundary).left;
+			right = Carets.box(rightBoundary).left;
 			boxes.push({
 				top    : top,
 				left   : left,
@@ -307,7 +324,7 @@ define([
 			if (atEnd) {
 				break;
 			}
-			range = climbStep(range, down);
+			boundary = climbStep(boundary, down);
 		}
 		return boxes;
 	}
@@ -451,8 +468,7 @@ define([
 	 */
 	function moveUp(boundary) {
 		var next;
-		var range = Boundaries.range(boundary, boundary);
-		var box = Carets.box(range);
+		var box = Carets.box(boundary);
 		var breakpoint = findBreakpoint(
 			boundary,
 			Boundaries.prevNode,
@@ -484,11 +500,7 @@ define([
 							Html.isGroupedElement
 						);
 					}
-					var aboveBoundary = Boundaries.raw(above, Dom.nodeLength(above));
-					var aboveBox = Carets.box(Boundaries.range(
-						aboveBoundary,
-						aboveBoundary
-					));
+					var aboveBox = Carets.box(Boundaries.raw(above, Dom.nodeLength(above)));
 					var top;
 					if (Dom.isTextNode(above)) {
 						top = aboveBox.top + (aboveBox.height / 2);
@@ -498,7 +510,7 @@ define([
 						    - (aboveBox.height / 2);
 					}
 					var offsets = docOffsets(breaker.ownerDocument);
-					next = Ranges.fromPosition(
+					next = Boundaries.fromPosition(
 						box.left - offsets.left,
 						top - offsets.top,
 						breaker.ownerDocument
@@ -506,10 +518,8 @@ define([
 				}
 			}
 		}
-		next = next || climbStep(range, up);
-		return (!next || box.top === Carets.box(next).top)
-		     ? boundary
-		     : Boundaries.fromRangeStart(next);
+		next = next || climbStep(boundary, up);
+		return (!next || box.top === Carets.box(next).top) ? boundary : next;
 	}
 
 	/**
@@ -521,8 +531,7 @@ define([
 	 */
 	function moveDown(boundary) {
 		var next;
-		var range = Boundaries.range(boundary, boundary);
-		var box = Carets.box(range);
+		var box = Carets.box(boundary);
 		var breakpoint = findBreakpoint(
 			boundary,
 			Boundaries.nextNode,
@@ -554,17 +563,13 @@ define([
 							Html.isGroupedElement
 						);
 					}
-					var belowBoundary = Boundaries.raw(below, 0);
-					var belowBox = Carets.box(Boundaries.range(
-						belowBoundary,
-						belowBoundary
-					));
+					var belowBox = Carets.box(Boundaries.raw(below, 0));
 					var top = Dom.isTextNode(below)
 					        ? belowBox.top
 					        : Dom.absoluteTop(below);
 					top += belowBox.height / 2;
 					var offsets = docOffsets(breaker.ownerDocument);
-					next = Ranges.fromPosition(
+					next = Boundaries.fromPosition(
 						box.left - offsets.left,
 						top - offsets.top,
 						breaker.ownerDocument
@@ -572,10 +577,8 @@ define([
 				}
 			}
 		}
-		next = next || climbStep(range, down);
-		return (!next || box.top === Carets.box(next).top)
-		     ? boundary
-		     : Boundaries.fromRangeStart(next);
+		next = next || climbStep(boundary, down);
+		return (!next || box.top === Carets.box(next).top) ? boundary : next;
 	}
 
 	/**
@@ -671,13 +674,13 @@ define([
 	 */
 	function lineBox(boundary, editable) {
 		var docOffset = docOffsets(Boundaries.document(boundary));
-		var rect = Carets.box(Boundaries.range(boundary, boundary));
+		var box = Carets.box(boundary);
 		var node = Boundaries.container(boundary);
 		if (Dom.isTextNode(node)) {
 			node = node.parentNode;
 		}
 		var fontSize = parseInt(Dom.getComputedStyle(node, 'font-size'));
-		var top = rect ? rect.top : Dom.absoluteTop(node);
+		var top = box ? box.top : Dom.absoluteTop(node);
 		top -= docOffset.top;
 		top += (fontSize ? fontSize / 2 : 0);
 		var left = Dom.offset(editable).left - docOffset.left;
@@ -690,17 +693,17 @@ define([
 
 	function end(event, boundaries, focus) {
 		var box = lineBox(boundaries[1], event.editable.elem);
-		var range = Ranges.fromPosition(
+		var boundary = Boundaries.fromPosition(
 			// Because -1 ensures that the position is within the viewport
 			box.right - 1,
 			box.top,
 			Boundaries.document(boundaries[0])
 		);
-		if (range) {
+		if (boundary) {
 			var start = boundaries['start' === focus ? 1 : 0];
 			boundaries = Events.hasKeyModifier(event, 'shift')
-			           ? [start, Boundaries.fromRangeEnd(range)]
-			           : Boundaries.fromRange(range);
+			           ? [start, boundary]
+			           : [boundary, boundary];
 			focus = 'end';
 		}
 		return {
@@ -711,16 +714,16 @@ define([
 
 	function home(event, boundaries, focus) {
 		var box = lineBox(boundaries[0], event.editable.elem);
-		var range = Ranges.fromPosition(
+		var boundary = Boundaries.fromPosition(
 			box.left,
 			box.top,
 			Boundaries.document(boundaries[0])
 		);
-		if (range) {
+		if (boundary) {
 			var end = boundaries['end' === focus ? 0 : 1];
 			boundaries = Events.hasKeyModifier(event, 'shift')
-			           ? [Boundaries.fromRangeStart(range), end]
-			           : Boundaries.fromRange(range);
+			           ? [boundary, end]
+			           : [boundary, boundary];
 			focus = 'start';
 		}
 		return {
@@ -1016,7 +1019,7 @@ define([
 	 * @memberOf selections
 	 */
 	function focus(boundary) {
-		var box = Carets.box(Boundaries.range(boundary, boundary));
+		var box = Carets.box(boundary);
 		var doc = Boundaries.document(boundary);
 		var win = Dom.documentWindow(doc);
 		var docOffset = docOffsets(doc);

@@ -176,9 +176,17 @@ define([
 			selection.lastMouseEvent = type;
 		}
 		var doc = event.target.document || event.target.ownerDocument;
-		var boundaries = isClicking
-		               ? Boundaries.fromPosition(event.clientX, event.clientY, doc)
-		               : Boundaries.get(doc);
+		var boundaries;
+		if (isClicking) {
+			var boundary = Boundaries.fromPosition(
+				event.clientX,
+				event.clientY,
+				doc
+			);
+			boundaries = boundary && [boundary, boundary];
+		} else {
+			boundaries = Boundaries.get(doc);
+		}
 		Dom.setStyle(selection.caret, 'display', caretDisplay);
 		if (!boundaries) {
 			return null;

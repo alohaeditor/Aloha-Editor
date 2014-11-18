@@ -145,9 +145,9 @@ define([
 
 	function calculateBoundaries(x, y, doc) {
 		var carets = Selections.hideCarets(doc);
-		var boundaries = Boundaries.fromPosition(x, y, doc);
+		var boundary = Boundaries.fromPosition(x, y, doc);
 		Selections.unhideCarets(carets);
-		return boundaries;
+		return [boundary, boundary];
 	}
 
 	function handleDragOver(event) {

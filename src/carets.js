@@ -249,11 +249,12 @@ define([
 	 * This function requires the following css:
 	 * .aloha-editable br, .aloha-editable br:after { content: "\A"; white-space: pre-line; }
 	 *
-	 * @param  {Range} range
+	 * @param  {!Boundary} boundary
 	 * @return {Object.<string, number>}
 	 * @memberOf carets
 	 */
-	function box(range) {
+	function box(boundary) {
+		var range = Boundaries.range(boundary, boundary);
 		var rect = bounds(range);
 		var doc = range.commonAncestorContainer.ownerDocument;
 		var win = Dom.documentWindow(doc);
@@ -273,7 +274,6 @@ define([
 			};
 		}
 
-		var boundary = Boundaries.fromRangeStart(range);
 		var node = Boundaries.nodeAfter(boundary)
 		        || Boundaries.nodeBefore(boundary);
 
