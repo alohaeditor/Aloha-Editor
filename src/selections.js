@@ -237,7 +237,7 @@ define([
 		var box = Carets.box(range);
 		box.top -= docOffset.top;
 		box.left -= docOffset.left;
-		var half = box.height / 2;
+		var half = box.height / 4;
 		var stride = 0;
 		var next;
 		do {
