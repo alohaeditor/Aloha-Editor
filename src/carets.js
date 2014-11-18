@@ -290,6 +290,7 @@ define([
 		}
 
 		// <li>{}</li>
+		// Petro: I'm really not sure that we should be subracting scoll offsets
 		var scrollTop = Dom.scrollTop(doc);
 		var scrollLeft = Dom.scrollLeft(doc);
 		node = Boundaries.container(boundary);

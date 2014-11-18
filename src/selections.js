@@ -447,9 +447,9 @@ define([
 	 *
 	 * @private
 	 * @param  {!Boundary} boundary
-	 * @return {?Boundary}
+	 * @return {Boundary}
 	 */
-	function climbUp(boundary) {
+	function moveUp(boundary) {
 		var next;
 		var range = Boundaries.range(boundary, boundary);
 		var box = Carets.box(range);
@@ -478,15 +478,25 @@ define([
 					above = breaker;
 				}
 				if (above) {
+					if (Html.isGroupContainer(above)) {
+						above = Dom.backwardPreorderBacktraceUntil(
+							above.nextSibling,
+							Html.isGroupedElement
+						);
+					}
+					var aboveBoundary = Boundaries.raw(above, Dom.nodeLength(above));
+					var aboveBox = Carets.box(Boundaries.range(
+						aboveBoundary,
+						aboveBoundary
+					));
 					var top;
 					if (Dom.isTextNode(above)) {
-						var textBoundary = Boundaries.raw(above, above.data.length);
-						var textBox = Carets.box(Boundaries.range(textBoundary, textBoundary));
-						top = textBox.top + box.height;
+						top = aboveBox.top + (aboveBox.height / 2);
 					} else {
-						top = Dom.absoluteTop(above) + elementHeight(above);
+						top = Dom.absoluteTop(above)
+						    + elementHeight(above)
+						    - (aboveBox.height / 2);
 					}
-					top -= box.height / 2;
 					var offsets = docOffsets(breaker.ownerDocument);
 					next = Ranges.fromPosition(
 						box.left - offsets.left,
@@ -497,7 +507,9 @@ define([
 			}
 		}
 		next = next || climbStep(range, up);
-		return (!next || box.top === Carets.box(next).top) ? range : next;
+		return (!next || box.top === Carets.box(next).top)
+		     ? boundary
+		     : Boundaries.fromRangeStart(next);
 	}
 
 	/**
@@ -505,9 +517,9 @@ define([
 	 *
 	 * @private
 	 * @param  {!Boundary} boundary
-	 * @return {?Boundary}
+	 * @return {Boundary}
 	 */
-	function climbDown(boundary) {
+	function moveDown(boundary) {
 		var next;
 		var range = Boundaries.range(boundary, boundary);
 		var box = Carets.box(range);
@@ -536,15 +548,21 @@ define([
 					below = breaker;
 				}
 				if (below) {
-					var top;
-					if (Dom.isTextNode(below)) {
-						var textBoundary = Boundaries.raw(below, 0);
-						var textBox = Carets.box(Boundaries.range(textBoundary, textBoundary));
-						top = textBox.top;
-					} else {
-						top = Dom.absoluteTop(below);
+					if (Html.isGroupContainer(below)) {
+						below = Dom.forwardPreorderBacktraceUntil(
+							below.previousSibling,
+							Html.isGroupedElement
+						);
 					}
-					top += box.height / 2;
+					var belowBoundary = Boundaries.raw(below, 0);
+					var belowBox = Carets.box(Boundaries.range(
+						belowBoundary,
+						belowBoundary
+					));
+					var top = Dom.isTextNode(below)
+					        ? belowBox.top
+					        : Dom.absoluteTop(below);
+					top += belowBox.height / 2;
 					var offsets = docOffsets(breaker.ownerDocument);
 					next = Ranges.fromPosition(
 						box.left - offsets.left,
@@ -555,7 +573,9 @@ define([
 			}
 		}
 		next = next || climbStep(range, down);
-		return (!next || box.top === Carets.box(next).top) ? range : next;
+		return (!next || box.top === Carets.box(next).top)
+		     ? boundary
+		     : Boundaries.fromRangeStart(next);
 	}
 
 	/**
@@ -571,7 +591,7 @@ define([
 	 */
 	function climb(direction, event, boundaries, focus) {
 		var boundary = boundaries['start' === focus ? 0 : 1];
-		var next = 'up' === direction ? climbUp(boundary) : climbDown(boundary);
+		var next = 'up' === direction ? moveUp(boundary) : moveDown(boundary);
 		if (!next) {
 			return {
 				boundaries : boundaries,
@@ -579,10 +599,10 @@ define([
 			};
 		}
 		if (Events.hasKeyModifier(event, 'shift')) {
-			return mergeRanges(Boundaries.fromRange(next), boundaries, focus);
+			return mergeRanges([next, next], boundaries, focus);
 		}
 		return {
-			boundaries : Boundaries.fromRange(next),
+			boundaries : [next, next],
 			focus      : focus
 		};
 	}
