@@ -582,6 +582,34 @@ define([
 	}
 
 	/**
+	 * Ensures that there is enough space above/below the given boundary from
+	 * which to calculate the next boundary position for moveUp/moveDown.
+	 *
+	 * @private
+	 * @param  {!Boundary} boundary
+	 */
+	function ensureVerticalMovingRoom(boundary) {
+		var box = Carets.box(boundary);
+		var doc = Boundaries.document(boundary);
+		var win = Dom.documentWindow(doc);
+		var docOffset = docOffsets(doc);
+		var top = docOffset.top;
+		var height = win.innerHeight;
+		var buffer = box.height;
+		var aboveCaret = box.top - box.height;
+		var belowCaret = box.top + box.height + box.height;
+		var correctTop = 0;
+		if (aboveCaret < top) {
+			correctTop = aboveCaret - buffer;
+		} else if (belowCaret > top + height) {
+			correctTop = belowCaret - height + buffer + buffer;
+		}
+		if (correctTop) {
+			win.scrollTo(docOffset.left, correctTop);
+		}
+	}
+
+	/**
 	 * Determines the closest visual caret position above or below the given
 	 * range.
 	 *
@@ -594,6 +622,7 @@ define([
 	 */
 	function climb(direction, event, boundaries, focus) {
 		var boundary = boundaries['start' === focus ? 0 : 1];
+		ensureVerticalMovingRoom(boundary);
 		var next = 'up' === direction ? moveUp(boundary) : moveDown(boundary);
 		if (!next) {
 			return {
