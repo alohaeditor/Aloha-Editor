@@ -144,7 +144,7 @@ var DelayedMap = {
 
 var editable = {
 	undo        : null,
-	overrides   : [],
+	overrides   : []
 };
 
 var undoContext = {
