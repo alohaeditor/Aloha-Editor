@@ -1,21 +1,21 @@
 (function (aloha) {
 	'use strict';
-	
+
 	var Dom = aloha.dom;
 	var Keys = aloha.keys;
+	var Arrays = aloha.arrays;
 	var Editor = aloha.editor;
 	var Events = aloha.events;
 	var Editing = aloha.editing;
 	var Overrides = aloha.overrides;
 	var Selections = aloha.selections;
 	var Boundaries = aloha.boundaries;
-	var Arrays = aloha.arrays;
 	var ACTION_CLASS_PREFIX = 'aloha-action-';
 
 	var $$ = (function () {
 
 		/**
-		 * jQuery-like wrapper for document.querySelectorAll .
+		 * jQuery-like wrapper for document.querySelectorAll.
 		 *
 		 * Will accept a selector or an element.
 		 *
@@ -75,6 +75,7 @@
 				});
 				return this;
 			},
+
 			/**
 			 * Updates an attribute
 			 *
@@ -283,6 +284,12 @@
 			);
 			updateUi(Editor.selection);
 		}
+	});
+
+	// Because Bootstrap dropdowm menu's use anchor tags containing "href='#'"
+	// which causes the page to jump to the top
+	$$('.aloha-ui').on('click', function (event) {
+		event.preventDefault();
 	});
 
 	/**

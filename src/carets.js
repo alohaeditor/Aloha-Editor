@@ -249,12 +249,16 @@ define([
 	 * This function requires the following css:
 	 * .aloha-editable br, .aloha-editable br:after { content: "\A"; white-space: pre-line; }
 	 *
-	 * @param  {!Boundary} boundary
+	 * @param  {!Boundary} start
+	 * @param  {!Boundary} end
 	 * @return {Object.<string, number>}
 	 * @memberOf carets
 	 */
-	function box(boundary) {
-		var range = Boundaries.range(boundary, boundary);
+	function box(start, end) {
+		if (!end) {
+			end = start;
+		}
+		var range = Boundaries.range(start, end);
 		var rect = bounds(range);
 		var doc = range.commonAncestorContainer.ownerDocument;
 		var win = Dom.documentWindow(doc);
@@ -274,8 +278,8 @@ define([
 			};
 		}
 
-		var node = Boundaries.nodeAfter(boundary)
-		        || Boundaries.nodeBefore(boundary);
+		var node = Boundaries.nodeAfter(start)
+		        || Boundaries.nodeBefore(start);
 
 		if (node && !Dom.isTextNode(node)) {
 			rect = boundingRect(node);
@@ -293,7 +297,7 @@ define([
 		// Petro: I'm really not sure that we should be subracting scoll offsets
 		var scrollTop = Dom.scrollTop(doc);
 		var scrollLeft = Dom.scrollLeft(doc);
-		node = Boundaries.container(boundary);
+		node = Boundaries.container(start);
 		return {
 			top    : node.offsetTop - scrollTop + topOffset,
 			left   : node.offsetLeft - scrollLeft + leftOffset,

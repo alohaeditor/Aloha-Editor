@@ -7,6 +7,7 @@
 	var Dom = aloha.dom;
 	var Keys = aloha.keys;
 	var Maps = aloha.maps;
+	var Carets = aloha.carets;
 	var Editor = aloha.editor;
 	var Arrays = aloha.arrays;
 	var Editing = aloha.editing;
@@ -23,10 +24,10 @@
 	 * @param {!Element} anchor
 	 */
 	function positionToolbar(toolbar, anchor) {
-		var box = aloha.carets.box(Boundaries.range(
+		var box = Carets.box(
 			Boundaries.create(anchor, 0),
 			Boundaries.create(anchor, 1)
-		));
+		);
 		var center = Math.round(box.left + (box.width / 2));
 		var win = Dom.documentWindow(anchor.ownerDocument);
 		var windowWidth = win.innerWidth;
