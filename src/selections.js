@@ -587,8 +587,9 @@ define([
 	 *
 	 * @private
 	 * @param  {!Boundary} boundary
+	 * @param  {string}    direction
 	 */
-	function ensureVerticalMovingRoom(boundary) {
+	function ensureVerticalMovingRoom(boundary, direction) {
 		var box = Carets.box(boundary);
 		var doc = Boundaries.document(boundary);
 		var win = Dom.documentWindow(doc);
@@ -600,9 +601,13 @@ define([
 		var belowCaret = box.top + box.height + box.height;
 		var correctTop = 0;
 		if (aboveCaret < top) {
-			correctTop = aboveCaret - buffer;
+			if ('up' === direction) {
+				correctTop = aboveCaret - buffer;
+			}
 		} else if (belowCaret > top + height) {
-			correctTop = belowCaret - height + buffer + buffer;
+			if ('down' === direction) {
+				correctTop = belowCaret - height + buffer + buffer;
+			}
 		}
 		if (correctTop) {
 			win.scrollTo(docOffset.left, correctTop);
@@ -622,7 +627,7 @@ define([
 	 */
 	function climb(direction, event, boundaries, focus) {
 		var boundary = boundaries['start' === focus ? 0 : 1];
-		ensureVerticalMovingRoom(boundary);
+		ensureVerticalMovingRoom(boundary, direction);
 		var next = 'up' === direction ? moveUp(boundary) : moveDown(boundary);
 		if (!next) {
 			return {
