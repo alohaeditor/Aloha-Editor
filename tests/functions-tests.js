@@ -15,12 +15,8 @@
 	test('noop', function () {
 		tested.push('noop');
 		equal(
-			fn.noop.toString().replace(/[\r\n]/g, '')
-			                  .replace(/\s+noop\s*\(\)\s*/, '()')
-			                  .replace(/['"]use strict['"]\;/, '')
-			                  .replace(/\{\s*\}/g, '{}')
-			                  .replace(/function\s+\(/, 'function('),
-			'function(){}'
+			fn.noop(),
+			undefined
 		);
 	});
 

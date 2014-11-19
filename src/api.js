@@ -619,10 +619,14 @@ define([
 	var api = {};
 	for (var pack in exports) {
 		api[pack] = {};
-		for (var func in exports[pack]) {
-			api[pack][func] = Fn.is(exports[pack][func])
-				? apiErrorWrapper(pack, func)
-				: exports[pack][func];
+		if (pack === 'Boromir' || pack === 'Record') {
+			api[pack] = exports[pack];
+		} else {
+			for (var func in exports[pack]) {
+				api[pack][func] = Fn.is(exports[pack][func])
+					? apiErrorWrapper(pack, func)
+					: exports[pack][func];
+			}
 		}
 	}
 
