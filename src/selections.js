@@ -500,7 +500,11 @@ define([
 							Html.isGroupedElement
 						);
 					}
-					var aboveBox = Carets.box(Boundaries.raw(above, Dom.nodeLength(above)));
+					var aboveBoundary = Html.expandBackward(
+						Boundaries.fromEndOfNode(above)
+					);
+					above = Boundaries.prevNode(aboveBoundary);
+					var aboveBox = Carets.box(aboveBoundary);
 					var top;
 					if (Dom.isTextNode(above)) {
 						top = aboveBox.top + (aboveBox.height / 2);
@@ -523,7 +527,7 @@ define([
 	}
 
 	/**
-	 * Find the visual boundary position below the given.
+	 * Finds the visual boundary position below the given.
 	 *
 	 * @private
 	 * @param  {!Boundary} boundary
@@ -563,7 +567,11 @@ define([
 							Html.isGroupedElement
 						);
 					}
-					var belowBox = Carets.box(Boundaries.raw(below, 0));
+					var belowBoundary = Html.expandForward(
+						Boundaries.fromStartOfNode(below)
+					);
+					below = Boundaries.nodeAfter(belowBoundary);
+					var belowBox = Carets.box(belowBoundary);
 					var top = Dom.isTextNode(below)
 					        ? belowBox.top
 					        : Dom.absoluteTop(below);
