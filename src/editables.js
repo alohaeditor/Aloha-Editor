@@ -103,11 +103,6 @@ define([
 		var editable = Editable(element);
 		Dom.setStyle(element, 'cursor', 'text');
 		editable.settings = Maps.merge({}, DEFAULTS, options);
-		editable.settings.disallowedNodes = Maps.fillKeys(
-			{},
-			editable.settings.disallowedNodes,
-			true
-		);
 		assocIntoEditor(editor, editable);
 		Undo.enter(editable.undoContext, {
 			meta             : {type: 'external'},

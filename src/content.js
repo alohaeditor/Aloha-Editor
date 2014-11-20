@@ -533,30 +533,30 @@ define(['maps', 'arrays'], function (Maps, Arrays) {
 	 * @private
 	 * @type {Array.<string>}
 	 */
-	var NODES_BLACKLIST = [
-		'AUDIO',
-		'COMMAND',
-		'COLGROUP',
-		'IFRAME',
-		'INPUT',
-		'INS',
-		'KBD',
-		'KEYGEN',
-		'LINK',
-		'META',
-		'NOSCRIPT',
-		'OUTPUT',
-		'Q',
-		'RUBY',
-		'SAMP',
-		'SCRIPT',
-		'SELECT',
-		'STYLE',
-		'TEMPLATE',
-		'TEXTAREA',
-		'TITLE',
-		'WBR'
-	];
+	var NODES_BLACKLIST = {
+		'AUDIO'    : true,
+		'COMMAND'  : true,
+		'COLGROUP' : true,
+		'IFRAME'   : true,
+		'INPUT'    : true,
+		'INS'      : true,
+		'KBD'      : true,
+		'KEYGEN'   : true,
+		'LINK'     : true,
+		'META'     : true,
+		'NOSCRIPT' : true,
+		'OUTPUT'   : true,
+		'Q'        : true,
+		'RUBY'     : true,
+		'SAMP'     : true,
+		'SCRIPT'   : true,
+		'SELECT'   : true,
+		'STYLE'    : true,
+		'TEMPLATE' : true,
+		'TEXTAREA' : true,
+		'TITLE'    : true,
+		'WBR'      : true
+	};
 
 	/**
 	 * @private
@@ -590,7 +590,7 @@ define(['maps', 'arrays'], function (Maps, Arrays) {
 	 * @memberOf content
 	 */
 	function disallowedNodes(overrides) {
-		return Arrays.unique(NODES_BLACKLIST.concat(overrides));
+		return Maps.merge({}, NODES_BLACKLIST, overrides);
 	}
 
 	/**
