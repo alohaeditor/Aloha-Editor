@@ -80,12 +80,13 @@ define([
 		    || Dom.hasClass(event.nativeEvent.target, event.editable.settings.BLOCK_CLASS);
 	}
 
-	function handleAloha(event) {
-		var blocks = event.editable.elem.querySelectorAll('.aloha-block,img');
-		[].forEach.call(blocks, function (block) {
+	function initializeBlocks(editable) {
+		var blocks = Dom.query('.aloha-block,img', editable.ownerDocument);
+		blocks.forEach(function (block) {
 			block.setAttribute('contentEditable', 'false');
 			Dom.setStyle(block, 'cursor', Browsers.VENDOR_PREFIX + 'grab');
 		});
+		return blocks;
 	}
 
 	function handleMouseDown(event) {
@@ -100,7 +101,9 @@ define([
 	function handleDragStart(event) {
 		if (isBlockEvent(event)) {
 			draggingStyles.forEach(function (style) {
-				Dom.setStyle(event.dnd.target, style[0], style[1]);
+				if (event.dnd.target) {
+					Dom.setStyle(event.dnd.target, style[0], style[1]);
+				}
 				Dom.setStyle(event.dnd.element, style[0], style[1]);
 			});
 		}
@@ -109,7 +112,9 @@ define([
 	function handleDragEnd(event) {
 		if (isBlockEvent(event)) {
 			draggingStyles.forEach(function (style) {
-				Dom.setStyle(event.dnd.target, style[0], '');
+				if (event.dnd.target) {
+					Dom.setStyle(event.dnd.target, style[0], '');
+				}
 				Dom.setStyle(event.dnd.element, style[0], '');
 			});
 		}
@@ -118,7 +123,6 @@ define([
 	function handleDragOver(event) {}
 
 	var handlers = {
-		'aloha'     : handleAloha,
 		'mousedown' : handleMouseDown,
 		'dragstart' : handleDragStart,
 		'dragend'   : handleDragEnd,
@@ -140,6 +144,7 @@ define([
 	}
 
 	return {
-		handleBlocks : handleBlocks
+		handleBlocks     : handleBlocks,
+		initializeBlocks : initializeBlocks
 	};
 });

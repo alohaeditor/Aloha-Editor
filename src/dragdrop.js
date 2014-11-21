@@ -141,11 +141,17 @@ define([
 			event.dnd.data[0],
 			event.dnd.data[1]
 		);
+		event.dnd.element = event.nativeEvent.target;
+		event.dnd.target = event.nativeEvent.target;
 	}
 
 	function calculateBoundaries(x, y, doc) {
 		var carets = Selections.hideCarets(doc);
-		var boundary = Boundaries.fromPosition(x, y, doc);
+		var boundary = Boundaries.fromPosition(
+			Dom.scrollLeft(doc) + x,
+			Dom.scrollTop(doc) + y,
+			doc
+		);
 		Selections.unhideCarets(carets);
 		return [boundary, boundary];
 	}

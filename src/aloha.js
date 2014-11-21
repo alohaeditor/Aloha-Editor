@@ -271,7 +271,9 @@ define([
 	 * @return {Editable}
 	 */
 	function aloha(element, options) {
-		return Editables.create(editor, element, options);
+		var editable = Editables.create(editor, element, options);
+		Blocks.initializeBlocks(editable.elem);
+		return editable;
 	}
 
 	/**

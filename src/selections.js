@@ -1122,7 +1122,8 @@ define([
 		);
 		selection.focus = change.focus;
 		selection.boundaries = change.boundaries;
-		if ('xaloha.mouseup' === event.type) {
+		// This check should not be necessary
+		if (selection.boundaries[0]) {
 			highlight(selection.boundaries[0], selection.boundaries[1]).forEach(function (box) {
 				Dom.setStyle(box, 'background', '#fce05e'); // or blue #a6c7f7
 			});
@@ -1170,7 +1171,7 @@ define([
 	 */
 	function update(event) {
 		var selection = event.selection;
-		if (event.preventSelection || selection.dragging) {
+		if (event.preventSelection || (selection.dragging && 'dragover' !== event.type)) {
 			return;
 		}
 		var type = event.type;
@@ -1210,7 +1211,7 @@ define([
 		var node = Boundaries.container(boundary);
 		if (!Dom.isEditableNode(node)) {
 			Dom.setStyle(selection.caret, 'display', 'none');
-			return boundary;
+			return selection;
 		}
 		show(selection.caret, boundary);
 		Maps.extend(
