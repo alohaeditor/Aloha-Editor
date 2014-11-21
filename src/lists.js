@@ -232,7 +232,7 @@ define([
 				&& !Dom.isEditingHost(node.parentNode);
 		});
 		var endNode = Dom.upWhile(Boundaries.prevNode(end), function (node) {
-			return !isCollectLimit(node.parentNode)
+			return !isCollectLimit(node)
 				&& !Dom.isEditingHost(node.parentNode);
 		});
 
