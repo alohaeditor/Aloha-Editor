@@ -27,8 +27,7 @@ define([
 ) {
 	'use strict';
 
-	/*
-	var marksX = {
+	var augmentedMarks = {
 		'TEXT_LEFT'      : '▓[',
 		'TEXT_RIGHT'     : ']▓',
 		'ELEMENT_LEFT'   : '▓{',
@@ -36,7 +35,6 @@ define([
 		'TEXT_SINGLE'    : '▓',
 		'ELEMENT_SINGLE' : '█'
 	};
-	*/
 
 	var marks = {
 		'TEXT_LEFT'      : '[',
@@ -50,21 +48,23 @@ define([
 	/**
 	 * Insert boundary markers at the given boundaries.
 	 *
-	 * @param  {Boundary} start
-	 * @param  {Boundary} end
+	 * @param  {!Boundary} start
+	 * @param  {!Boundary} end
+	 * @param  {boolean=}  augment
 	 * @return {Array.<Boundary>}
 	 * @memberOf markers
 	 */
-	function insert(start, end) {
+	function insert(start, end, augment) {
+		var markers = augment ? augmentedMarks : marks;
 		var startContainer = Boundaries.container(start);
 		var endContainer = Boundaries.container(end);
 		var doc = startContainer.ownerDocument;
 		var startMarker = doc.createTextNode(Dom.isTextNode(endContainer)
-		                ? marks.TEXT_RIGHT
-		                : marks.ELEMENT_RIGHT);
+		                ? markers['TEXT_RIGHT']
+		                : markers['ELEMENT_RIGHT']);
 		var endMarker = doc.createTextNode(Dom.isTextNode(startContainer)
-		              ? marks.TEXT_LEFT
-		              : marks.ELEMENT_LEFT);
+		              ? markers['TEXT_LEFT']
+		              : markers['ELEMENT_LEFT']);
 		var range = Boundaries.range(start, end);
 		start = Mutation.splitBoundary(Boundaries.fromRangeStart(range), [range]);
 		end = Mutation.splitBoundary(Boundaries.fromRangeEnd(range));
@@ -76,15 +76,17 @@ define([
 	/**
 	 * Insert a single boundary marker at the given boundary.
 	 *
-	 * @param  {Boundary} boundary
+	 * @param  {!Boundary} boundary
+	 * @param  {boolean=}  augment
 	 * @return {Boundary}
 	 */
-	function insertSingle(boundary) {
+	function insertSingle(boundary, augment) {
+		var markers = augment ? augmentedMarks : marks;
 		var container = Boundaries.container(boundary);
 		var marker = container.ownerDocument.createTextNode(
 			Boundaries.isTextBoundary(boundary)
-				? marks.TEXT_SINGLE
-				: marks.ELEMENT_SINGLE
+				? markers['TEXT_SINGLE']
+				: markers['ELEMENT_SINGLE']
 		);
 		boundary = Mutation.splitBoundary(boundary);
 		Dom.insert(marker, Boundaries.nextNode(boundary), Boundaries.isAtEnd(boundary));
@@ -179,11 +181,12 @@ define([
 	 * of the DOM to indicate the span of the given range.
 	 *
 	 * @private
-	 * @param  {Boundary} start
-	 * @param  {Boundary} end
+	 * @param  {!Boundary} start
+	 * @param  {!Boundary} end
+	 * @param  {augment=}  augment
 	 * @return {string}
 	 */
-	function show(start, end) {
+	function show(start, end, augment) {
 		var single = !end;
 
 		end = end || start;
@@ -220,11 +223,12 @@ define([
 		endPath = root.concat(endPath);
 
 		if (single) {
-			insertSingle(Paths.toBoundary(clone, startPath));
+			insertSingle(Paths.toBoundary(clone, startPath), augment);
 		} else {
 			insert(
 				Paths.toBoundary(clone, startPath),
-				Paths.toBoundary(clone, endPath)
+				Paths.toBoundary(clone, endPath),
+				augment
 			);
 		}
 
@@ -248,18 +252,23 @@ define([
 	 * Returns string representation of the given boundary boundaries tuple or
 	 * range.
 	 *
-	 * @param  {Boundary|Array.<Boundary>|Range}
+	 * If the option argument augment is set to true, the markers will be
+	 * rendered with an extra character along side it to make it easier to see
+	 * it in the output.
+	 *
+	 * @param  {!Boundary|Array.<Boundary>|Range} selection
+	 * @param  {boolean=}                         augment
 	 * @return {string}
 	 * @memberOf markers
 	 */
-	function hint(selection) {
+	function hint(selection, augment) {
 		if (Misc.defined(selection.length)) {
 			return ('string' === typeof selection[0].nodeName)
-			     ? show(selection)
-			     : show(selection[0], selection[1]);
+			     ? show(selection, augment)
+			     : show(selection[0], selection[1], augment);
 		}
 		var boundaries = rawBoundariesFromRange(selection);
-		return show(boundaries[0], boundaries[1]);
+		return show(boundaries[0], boundaries[1], augment);
 	}
 
 	return {

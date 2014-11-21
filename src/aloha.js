@@ -213,7 +213,7 @@ define([
 			return null;
 		}
 		selection.overrides = editor.selection ? editor.selection.overrides : [];
-		selection.previousBoundaries = selection.boundaries;
+		selection.previousBoundaries = selection.boundaries || boundaries;
 		selection.boundaries = boundaries;
 		selection.event = event;
 		return {
@@ -240,11 +240,11 @@ define([
 		}
 	}
 
-	editor.dnd         = DragDrop.Context();
-	editor.selecting   = Selections.Context(doc);
-	editor.selection   = editor.selecting;
-	editor.editables   = {};
-	editor.stack       = [
+	editor.dnd       = DragDrop.Context();
+	editor.selecting = Selections.Context(doc);
+	editor.selection = editor.selecting;
+	editor.editables = {};
+	editor.stack     = [
 		Selections.handleSelections,
 		Links.handleLinks,
 		Typing.handleTyping,

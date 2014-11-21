@@ -243,7 +243,7 @@ define([
 	}
 
 	/**
-	 * Remove any node/formatting that corresponds to `state` at the given
+	 * Removes any node/formatting that corresponds to `state` at the given
 	 * boundary.
 	 *
 	 * @private
@@ -375,6 +375,14 @@ define([
 		return copy;
 	}
 
+	function map(overrides) {
+		var table = Maps.create();
+		overrides.forEach(function (override) {
+			table[override[0]] = override[1];
+		});
+		return table;
+	}
+
 	/**
 	 * Returns a unique set from the given list of overrides.
 	 *
@@ -414,6 +422,7 @@ define([
 	}
 
 	return {
+		map         : map,
 		indexOf     : indexOf,
 		unique      : unique,
 		toggle      : toggle,

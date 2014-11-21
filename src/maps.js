@@ -219,8 +219,8 @@ define(['arrays', 'assert'], function (Arrays, Assert) {
 	/**
 	 * Creates a map without inheriting from Object.
 	 *
-	 * Use this instead of an object literal to avoid having unwanted,
-	 * inherited properties on the map.
+	 * Use this instead of an object literal to avoid having unwanted, inherited
+	 * properties on the map.
 	 *
 	 * A map constructed like this allows for the
 	 * ```for (var key in map) { }```

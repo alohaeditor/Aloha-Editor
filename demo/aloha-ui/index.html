@@ -25,11 +25,10 @@
 	    		<div class="navbar-header">
 					<a class="navbar-brand" href="http://www.aloha-editor.org"><img src="logo-small.png" alt="Aloha Editor" title="Aloha Editor" /></a>
 				</div>
-
 				<div class="aloha-ui btn-toolbar" role="toolbar">
 					<div class="btn-group">
-						<button type="button" class="aloha-action-B btn btn-default" title="Bold"><b>B</b></button>
-						<button type="button" class="aloha-action-I btn btn-default" title="Italic"><i>I</i></button>
+						<button type="button" class="aloha-action-bold btn btn-default" title="Bold"><b>B</b></button>
+						<button type="button" class="aloha-action-italic btn btn-default" title="Italic"><i>I</i></button>
 						<button type="button" class="aloha-action-unformat btn btn-default" title="Remove formatting"><span class="glyphicon glyphicon-remove"></span></button>
 					</div>
 
@@ -48,11 +47,11 @@
 							Paragraph <span class="caret"></span>
 						</button>
 						<ul class="dropdown-menu funky" role="menu">
-							<li><a href="#" class="aloha-action-H2">Heading 2</a></li>
-							<li><a href="#" class="aloha-action-H3">Heading 3</a></li>
-							<li><a href="#" class="aloha-action-H4">Heading 4</a></li>
-							<li><a href="#" class="aloha-action-P">Paragraph</a></li>
-							<li><a href="#" class="aloha-action-PRE">Preformatted</a></li>
+							<li><a href="#" class="aloha-action-h2">Heading 2</a></li>
+							<li><a href="#" class="aloha-action-h3">Heading 3</a></li>
+							<li><a href="#" class="aloha-action-h4">Heading 4</a></li>
+							<li><a href="#" class="aloha-action-p">Paragraph</a></li>
+							<li><a href="#" class="aloha-action-pre">Preformatted</a></li>
 						</ul>
 					</div>
 
@@ -79,7 +78,6 @@
 
 		<div class="aloha-editable">
 			<h1>Aloha Editor UI Demo</h1>
-
 			<p>
 				You wonder how to integrate Aloha Editor with your app? Look no further! <code>aloha-ui.js</code>
 				contains our default implementation that you can use as a starting point to integrate Aloha Editor.
@@ -123,9 +121,64 @@
 		<script src="js/aloha.min.js"></script>
 		<script src="js/aloha-web.js"></script>
 		<script src="js/aloha-ui.js"></script>
-		<script src="js/aloha-ui-links.js"></script>
+		<!-- script src="js/aloha-ui-links.js"></script -->
 		<script>
-			aloha.dom.query('.aloha-editable', document).forEach(aloha);
+			(function () {
+				'use strict';
+				var commands = {
+					'.aloha-action-p'        : { node : 'p'                   },
+					'.aloha-action-h2'       : { node : 'h2'                  },
+					'.aloha-action-h3'       : { node : 'h3'                  },
+					'.aloha-action-h4'       : { node : 'h4'                  },
+					'.aloha-action-pre'      : { node : 'pre'                 },
+					'.aloha-action-bold'     : { node : 'b', state : 'bold'   },
+					'.aloha-action-italic'   : { node : 'i', state : 'italic' },
+					'.aloha-action-unformat' : {
+						action : aloha.ui.removeFormatting,
+						nodes  : ['b', 'i']
+					},
+					'.xyz' : {
+						node  : 'p',
+						style : {
+							background : 'rgb(204, 224, 94)',
+							padding    : '18px',
+							border     : '4px solid rgb(154, 174, 94)'
+						}
+					}
+				};
+
+				var editables = aloha.dom.query('.aloha-editable', document).map(aloha);
+
+				for (var selector in commands) {
+					$(selector).click(aloha.ui.command(editables[0].elem, commands[selector]));
+				}
+
+				aloha.ui.on(editables[0].elem, '*', function (event) {
+					$('.aloha-ui.active, .aloha-ui .active').removeClass('active');
+					var states = aloha.ui.states(commands, event);
+					for (var selector in states) {
+						$(selector).toggleClass('active', states[selector]);
+						if (states[selector] && dropdowns[selector]) {
+							updateDropdown(selector);
+						}
+					}
+				});
+
+				var dropdowns = {
+					'.aloha-action-p'   : true,
+					'.aloha-action-h2'  : true,
+					'.aloha-action-h3'  : true,
+					'.aloha-action-h4'  : true,
+					'.aloha-action-pre' : true
+				};
+
+				function updateDropdown(selector) {
+					var $item = $(selector);
+					var $toggler = $item.closest('.btn-group').find('.dropdown-toggle');
+					$toggler.addClass('active')[0].firstChild.data = $item[0].textContent + ' ';
+				}
+
+			}());
 		</script>
 		<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

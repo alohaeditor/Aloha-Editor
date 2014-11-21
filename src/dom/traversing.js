@@ -714,6 +714,20 @@ define([
 		return (until && until(node)) ? [] : [node].concat(nextSiblings(node, until));
 	}
 
+	/**
+	 * Returns a list of the given nodes and any siblings inbetween.
+	 *
+	 * @param  {!Node} start
+	 * @param  {!Node} end
+	 * @return {Array.<Node>}
+	 */
+	function nodesAndSiblingsBetween(start, end) {
+		return (start === end) ? [start] : [start].concat(
+			nextSiblings(start, function (node) { return node === end; }),
+			end
+		);
+	}
+
 	return {
 		query                        : query,
 
@@ -731,6 +745,7 @@ define([
 
 		nodeAndPrevSiblings          : nodeAndPrevSiblings,
 		nodeAndNextSiblings          : nodeAndNextSiblings,
+		nodesAndSiblingsBetween      : nodesAndSiblingsBetween,
 
 		walk                         : walk,
 		walkRec                      : walkRec,

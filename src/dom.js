@@ -371,6 +371,7 @@ define([
 		prevSiblings                 : Traversing.prevSiblings,
 		nodeAndNextSiblings          : Traversing.nodeAndNextSiblings,
 		nodeAndPrevSiblings          : Traversing.nodeAndPrevSiblings,
+		nodesAndSiblingsBetween      : Traversing.nodesAndSiblingsBetween,
 		walk                         : Traversing.walk,
 		walkRec                      : Traversing.walkRec,
 		walkUntilNode                : Traversing.walkUntilNode,

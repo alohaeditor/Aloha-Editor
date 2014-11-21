@@ -253,6 +253,7 @@ define([
 	exports['dom']['prevSiblings']                 = Dom.prevSiblings;
 	exports['dom']['nodeAndNextSiblings']          = Dom.nodeAndNextSiblings;
 	exports['dom']['nodeAndPrevSiblings']          = Dom.nodeAndPrevSiblings;
+	exports['dom']['nodesAndSiblingsBetween']      = Dom.nodesAndSiblingsBetween;
 	exports['dom']['walk']                         = Dom.walk;
 	exports['dom']['walkRec']                      = Dom.walkRec;
 	exports['dom']['walkUntilNode']                = Dom.walkUntilNode;
@@ -405,6 +406,7 @@ define([
 	exports['mouse']['EVENTS'] = Mouse.EVENTS;
 
 	exports['overrides'] = {};
+	exports['overrides']['map']         = Overrides.map;
 	exports['overrides']['indexOf']     = Overrides.indexOf;
 	exports['overrides']['unique']      = Overrides.unique;
 	exports['overrides']['toggle']      = Overrides.toggle;
