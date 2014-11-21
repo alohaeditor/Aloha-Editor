@@ -440,57 +440,26 @@ define([
 	function moveUp(boundary) {
 		var next;
 		var box = Carets.box(boundary);
-		var breakpoint = findBreakpoint(
-			boundary,
-			Boundaries.prevNode,
-			Dom.backwardPreorderBacktraceUntil
-		);
-		if (breakpoint) {
-			var breaker = breakpoint.breaker;
-			var offset = box.top - box.height;
-			var breakOffset = Dom.absoluteTop(breaker);
-			if (!breakpoint.isInsideBreaker) {
-				breakOffset += elementHeight(breaker);
+		var above = paragraphAbove(boundary);
+		if (above) {
+			var aboveBoundary = Html.expandBackward(
+				Boundaries.fromEndOfNode(above)
+			);
+			above = Boundaries.prevNode(aboveBoundary);
+			var aboveBox = Carets.box(aboveBoundary);
+			var top;
+			if (Dom.isTextNode(above)) {
+				top = aboveBox.top + (aboveBox.height / 2);
+			} else {
+				top = Dom.absoluteTop(above)
+				    + elementHeight(above)
+				    - (aboveBox.height / 2);
 			}
-			if (offset < breakOffset) {
-				var above;
-				if (breakpoint.isInsideBreaker) {
-					above = Dom.nextNonAncestor(
-						breaker,
-						true,
-						isVisibleContainer,
-						Dom.isEditingHost
-					);
-				} else {
-					above = breaker;
-				}
-				if (above) {
-					if (Html.isGroupContainer(above)) {
-						above = Dom.backwardPreorderBacktraceUntil(
-							above.nextSibling,
-							Html.isGroupedElement
-						);
-					}
-					var aboveBoundary = Html.expandBackward(
-						Boundaries.fromEndOfNode(above)
-					);
-					above = Boundaries.prevNode(aboveBoundary);
-					var aboveBox = Carets.box(aboveBoundary);
-					var top;
-					if (Dom.isTextNode(above)) {
-						top = aboveBox.top + (aboveBox.height / 2);
-					} else {
-						top = Dom.absoluteTop(above)
-						    + elementHeight(above)
-						    - (aboveBox.height / 2);
-					}
-					next = Boundaries.fromPosition(
-						box.left,
-						top,
-						breaker.ownerDocument
-					);
-				}
-			}
+			next = Boundaries.fromPosition(
+				box.left,
+				top,
+				above.ownerDocument
+			);
 		}
 		next = next || climbStep(boundary, up);
 		return (!next || box.top === Carets.box(next).top) ? boundary : next;
@@ -506,56 +475,131 @@ define([
 	function moveDown(boundary) {
 		var next;
 		var box = Carets.box(boundary);
+		var below = paragraphBelow(boundary);
+		if (below) {
+			var belowBoundary = Html.expandForward(
+				Boundaries.fromStartOfNode(below)
+			);
+			below = Boundaries.nodeAfter(belowBoundary);
+			var belowBox = Carets.box(belowBoundary);
+			var top = Dom.isTextNode(below)
+					? belowBox.top
+					: Dom.absoluteTop(below);
+			top += belowBox.height / 2;
+			next = Boundaries.fromPosition(
+				box.left,
+				top,
+				below.ownerDocument
+			);
+		}
+		next = next || climbStep(boundary, down);
+		return (!next || box.top === Carets.box(next).top) ? boundary : next;
+	}
+
+	/**
+	 * Locates the next paragraphing element that is visually above the given
+	 * aboundary.
+	 *
+	 * If a soft break is causing there to be a line of text inside before a
+	 * visual paragraph-dictated linebreak, then `null` is returned.
+	 *
+	 * @private
+	 * @param  {!Boundary} boundary
+	 * @return {?Boundary}
+	 */
+	function paragraphAbove(boundary) {
+		var breakpoint = findBreakpoint(
+			boundary,
+			Boundaries.prevNode,
+			Dom.backwardPreorderBacktraceUntil
+		);
+		if (!breakpoint) {
+			return null;
+		}
+		var box = Carets.box(boundary);
+		var breaker = breakpoint.breaker;
+		var offset = box.top - box.height;
+		var breakOffset = Dom.absoluteTop(breaker);
+		if (!breakpoint.isInsideBreaker) {
+			breakOffset += elementHeight(breaker);
+		}
+		if (offset >= breakOffset) {
+			return null;
+		}
+		var above;
+		if (breakpoint.isInsideBreaker) {
+			above = Dom.nextNonAncestor(
+				breaker,
+				true,
+				isVisibleContainer,
+				Dom.isEditingHost
+			);
+		} else {
+			above = breaker;
+		}
+		if (!above) {
+			return null;
+		}
+		if (Html.isGroupContainer(above)) {
+			return Dom.backwardPreorderBacktraceUntil(
+				above.nextSibling,
+				Html.isGroupedElement
+			);
+		}
+		return above;
+	}
+
+	/**
+	 * Locates the next paragraphing element that is visually below the given
+	 * aboundary.
+	 *
+	 * If a soft break is causing there to be a line of text inside before a
+	 * visual paragraph-dictated linebreak, then `null` is returned.
+	 *
+	 * @private
+	 * @param  {!Boundary} boundary
+	 * @return {?Boundary}
+	 */
+	function paragraphBelow(boundary) {
 		var breakpoint = findBreakpoint(
 			boundary,
 			Boundaries.nextNode,
 			Dom.forwardPreorderBacktraceUntil
 		);
-		if (breakpoint) {
-			var breaker = breakpoint.breaker;
-			var offset = box.top + box.height + box.height;
-			var breakOffset = Dom.absoluteTop(breaker);
-			if (breakpoint.isInsideBreaker) {
-				breakOffset += elementHeight(breaker);
-			}
-			if (offset > breakOffset) {
-				var below;
-				if (breakpoint.isInsideBreaker) {
-					below = Dom.nextNonAncestor(
-						breaker,
-						false,
-						isVisibleContainer,
-						Dom.isEditingHost
-					);
-				} else {
-					below = breaker;
-				}
-				if (below) {
-					if (Html.isGroupContainer(below)) {
-						below = Dom.forwardPreorderBacktraceUntil(
-							below.previousSibling,
-							Html.isGroupedElement
-						);
-					}
-					var belowBoundary = Html.expandForward(
-						Boundaries.fromStartOfNode(below)
-					);
-					below = Boundaries.nodeAfter(belowBoundary);
-					var belowBox = Carets.box(belowBoundary);
-					var top = Dom.isTextNode(below)
-					        ? belowBox.top
-					        : Dom.absoluteTop(below);
-					top += belowBox.height / 2;
-					next = Boundaries.fromPosition(
-						box.left,
-						top,
-						breaker.ownerDocument
-					);
-				}
-			}
+		if (!breakpoint) {
+			return null;
 		}
-		next = next || climbStep(boundary, down);
-		return (!next || box.top === Carets.box(next).top) ? boundary : next;
+		var breaker = breakpoint.breaker;
+		var box = Carets.box(boundary);
+		var offset = box.top + box.height + box.height;
+		var breakOffset = Dom.absoluteTop(breaker);
+		if (breakpoint.isInsideBreaker) {
+			breakOffset += elementHeight(breaker);
+		}
+		if (offset <= breakOffset) {
+			return null;
+		}
+		var below;
+		if (breakpoint.isInsideBreaker) {
+			below = Dom.nextNonAncestor(
+				breaker,
+				false,
+				isVisibleContainer,
+				Dom.isEditingHost
+			);
+		} else {
+			below = breaker;
+		}
+		if (!below) {
+			return null;
+		}
+		if (Html.isGroupContainer(below)) {
+			return Dom.forwardPreorderBacktraceUntil(
+				below.previousSibling,
+				Html.isGroupedElement
+			);
+		}
+		return below;
 	}
 
 	/**
@@ -567,20 +611,30 @@ define([
 	 * @param  {string}    direction
 	 */
 	function ensureVerticalMovingRoom(boundary, direction) {
-		var box = Carets.box(boundary);
 		var doc = Boundaries.document(boundary);
 		var win = Dom.documentWindow(doc);
 		var top = Dom.scrollTop(doc);
 		var height = win.innerHeight;
+		var box = Carets.box(boundary);
+
+		var above = paragraphAbove(boundary);
+		var below = paragraphBelow(boundary);
+
+		var belowCaret = (below && !Dom.isTextNode(below))
+		               ? Dom.absoluteTop(below) + box.height
+		               : box.top + box.height + box.height;
+
+		var aboveCaret = (above && !Dom.isTextNode(above))
+		               ? Dom.absoluteTop(above) + elementHeight(above) - box.height
+		               : box.top - box.height;
+
 		var buffer = box.height;
-		var aboveCaret = box.top - box.height;
-		var belowCaret = box.top + box.height + box.height;
 		var correctTop = 0;
-		if (aboveCaret < top) {
+		if (aboveCaret <= top) {
 			if ('up' === direction) {
 				correctTop = aboveCaret - buffer;
 			}
-		} else if (belowCaret > top + height) {
+		} else if (belowCaret >= top + height) {
 			if ('down' === direction) {
 				correctTop = belowCaret - height + buffer + buffer;
 			}
