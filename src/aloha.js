@@ -179,8 +179,8 @@ define([
 		var boundaries;
 		if (isClicking) {
 			var boundary = Boundaries.fromPosition(
-				event.clientX,
-				event.clientY,
+				event.clientX + Dom.scrollLeft(doc),
+				event.clientY + Dom.scrollTop(doc),
 				doc
 			);
 			boundaries = boundary && [boundary, boundary];

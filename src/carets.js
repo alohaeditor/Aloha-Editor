@@ -250,7 +250,7 @@ define([
 	 * .aloha-editable br, .aloha-editable br:after { content: "\A"; white-space: pre-line; }
 	 *
 	 * @param  {!Boundary} start
-	 * @param  {!Boundary} end
+	 * @param  {Boundary=} end
 	 * @return {Object.<string, number>}
 	 * @memberOf carets
 	 */
@@ -261,9 +261,6 @@ define([
 		var range = Boundaries.range(start, end);
 		var rect = bounds(range);
 		var doc = range.commonAncestorContainer.ownerDocument;
-		var win = Dom.documentWindow(doc);
-		var topOffset = win.pageYOffset - doc.body.clientTop;
-		var leftOffset = win.pageXOffset - doc.body.clientLeft;
 
 		ensureBrStyleFix(doc);
 
@@ -271,8 +268,8 @@ define([
 		// therefore have a non-zero width if valid
 		if (rect.width > 0) {
 			return {
-				top    : rect.top + topOffset,
-				left   : rect.left + leftOffset,
+				top    : rect.top + Dom.scrollTop(doc),
+				left   : rect.left + Dom.scrollLeft(doc),
 				width  : rect.width,
 				height : rect.height
 			};
@@ -285,8 +282,8 @@ define([
 			rect = boundingRect(node);
 			if (rect) {
 				return {
-					top    : rect.top + topOffset,
-					left   : rect.left + leftOffset,
+					top    : rect.top + Dom.scrollTop(doc),
+					left   : rect.left + Dom.scrollLeft(doc),
 					width  : rect.width,
 					height : rect.height
 				};
@@ -294,13 +291,10 @@ define([
 		}
 
 		// <li>{}</li>
-		// Petro: I'm really not sure that we should be subracting scoll offsets
-		var scrollTop = Dom.scrollTop(doc);
-		var scrollLeft = Dom.scrollLeft(doc);
 		node = Boundaries.container(start);
 		return {
-			top    : node.offsetTop - scrollTop + topOffset,
-			left   : node.offsetLeft - scrollLeft + leftOffset,
+			top    : node.offsetTop + Dom.scrollTop(doc),
+			left   : node.offsetLeft + Dom.scrollLeft(doc),
 			width  : node.offsetWidth,
 			height : parseInt(Dom.getComputedStyle(node, 'line-height'), 10)
 		};

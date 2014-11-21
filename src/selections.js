@@ -242,10 +242,7 @@ define([
 	function climbStep(boundary, step) {
 		var range = Boundaries.range(boundary, boundary);
 		var doc = Boundaries.document(boundary);
-		var docOffset = docOffsets(doc);
 		var box = Carets.box(boundary);
-		box.top -= docOffset.top;
-		box.left -= docOffset.left;
 		var half = box.height / 4;
 		var stride = 0;
 		var next;
@@ -266,9 +263,6 @@ define([
 	 */
 	function selectionBoxes(start, end) {
 		var doc = Boundaries.document(start);
-		var docOffset = docOffsets(doc);
-		var offsetX = docOffset.left;
-		var offsetY = docOffset.top;
 		var endBox = Carets.box(end);
 		var endTop = endBox.top;
 		var endLeft = endBox.left;
@@ -300,16 +294,8 @@ define([
 					width = elementWidth(line);
 				}
 			}
-			leftBoundary = Boundaries.fromPosition(
-				left - offsetX,
-				top - offsetY,
-				doc
-			);
-			rightBoundary = Boundaries.fromPosition(
-				left - offsetX + width,
-				top - offsetY,
-				doc
-			);
+			leftBoundary = Boundaries.fromPosition(left, top, doc);
+			rightBoundary = Boundaries.fromPosition(left + width, top, doc);
 			if (!leftBoundary || !rightBoundary) {
 				break;
 			}
@@ -324,7 +310,7 @@ define([
 			if (atEnd) {
 				break;
 			}
-			boundary = climbStep(boundary, down);
+			boundary = moveDown(boundary);
 		}
 		return boxes;
 	}
@@ -343,21 +329,6 @@ define([
 		return selectionBoxes(start, end).map(function (box) {
 			return drawBox(box, doc);
 		});
-	}
-
-	/**
-	 * Computes the offsets of the given document.
-	 *
-	 * @private
-	 * @param  {!Document} doc
-	 * @return {Object}
-	 */
-	function docOffsets(doc) {
-		var win = Dom.documentWindow(doc);
-		return {
-			top  : win.pageYOffset - doc.body.clientTop,
-			left : win.pageXOffset - doc.body.clientLeft
-		};
 	}
 
 	/**
@@ -513,10 +484,9 @@ define([
 						    + elementHeight(above)
 						    - (aboveBox.height / 2);
 					}
-					var offsets = docOffsets(breaker.ownerDocument);
 					next = Boundaries.fromPosition(
-						box.left - offsets.left,
-						top - offsets.top,
+						box.left,
+						top,
 						breaker.ownerDocument
 					);
 				}
@@ -576,10 +546,9 @@ define([
 					        ? belowBox.top
 					        : Dom.absoluteTop(below);
 					top += belowBox.height / 2;
-					var offsets = docOffsets(breaker.ownerDocument);
 					next = Boundaries.fromPosition(
-						box.left - offsets.left,
-						top - offsets.top,
+						box.left,
+						top,
 						breaker.ownerDocument
 					);
 				}
@@ -601,8 +570,7 @@ define([
 		var box = Carets.box(boundary);
 		var doc = Boundaries.document(boundary);
 		var win = Dom.documentWindow(doc);
-		var docOffset = docOffsets(doc);
-		var top = docOffset.top;
+		var top = Dom.scrollTop(doc);
 		var height = win.innerHeight;
 		var buffer = box.height;
 		var aboveCaret = box.top - box.height;
@@ -618,7 +586,7 @@ define([
 			}
 		}
 		if (correctTop) {
-			win.scrollTo(docOffset.left, correctTop);
+			win.scrollTo(Dom.scrollLeft(doc), correctTop);
 		}
 	}
 
@@ -715,7 +683,6 @@ define([
 	 * @return {Object<string, number>}
 	 */
 	function lineBox(boundary, editable) {
-		var docOffset = docOffsets(Boundaries.document(boundary));
 		var box = Carets.box(boundary);
 		var node = Boundaries.container(boundary);
 		if (Dom.isTextNode(node)) {
@@ -723,9 +690,8 @@ define([
 		}
 		var fontSize = parseInt(Dom.getComputedStyle(node, 'font-size'));
 		var top = box ? box.top : Dom.absoluteTop(node);
-		top -= docOffset.top;
 		top += (fontSize ? fontSize / 2 : 0);
-		var left = Dom.offset(editable).left - docOffset.left;
+		var left = Dom.offset(editable).left;
 		return {
 			top   : top,
 			left  : left,
@@ -1064,9 +1030,8 @@ define([
 		var box = Carets.box(boundary);
 		var doc = Boundaries.document(boundary);
 		var win = Dom.documentWindow(doc);
-		var docOffset = docOffsets(doc);
-		var top = docOffset.top;
-		var left = docOffset.left;
+		var top = Dom.scrollTop(doc);
+		var left = Dom.scrollLeft(doc);
 		var height = win.innerHeight;
 		var width = win.innerWidth;
 		var buffer = box.height;
@@ -1157,11 +1122,11 @@ define([
 		);
 		selection.focus = change.focus;
 		selection.boundaries = change.boundaries;
-		/*
-		highlight(selection.boundaries[0], selection.boundaries[1]).forEach(function (box) {
-			Dom.setStyle(box, 'background', '#fce05e'); // or blue #a6c7f7
-		});
-		*/
+		if ('xaloha.mouseup' === event.type) {
+			highlight(selection.boundaries[0], selection.boundaries[1]).forEach(function (box) {
+				Dom.setStyle(box, 'background', '#fce05e'); // or blue #a6c7f7
+			});
+		}
 		return event;
 	}
 

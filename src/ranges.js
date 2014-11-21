@@ -240,7 +240,12 @@ define(['dom', 'arrays'], function (Dom, Arrays) {
 
 	/**
 	 * Derives a range from the horizontal and vertical offset pixel positions
-	 * relative to upper-left corner of the document body.
+	 * relative to upper-left corner of the document that is visible within the
+	 * view port.
+	 *
+	 * It is important that the x, y coordinates given are not only within the
+	 * dimensions of the document, but also viewport (ie: they are visible on
+	 * the screen).
 	 *
 	 * Returns null if no suitable range can be determined from within an
 	 * editable.
@@ -251,6 +256,8 @@ define(['dom', 'arrays'], function (Dom, Arrays) {
 	 * @return {?Range}
 	 */
 	function fromPosition(x, y, doc) {
+		x -= Dom.scrollLeft(doc);
+		y -= Dom.scrollTop(doc);
 		var range = fromPoint(x, y, doc);
 		if (!range) {
 			return null;
