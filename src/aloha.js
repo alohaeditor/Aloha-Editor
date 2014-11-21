@@ -240,8 +240,6 @@ define([
 		}
 	}
 
-	editor.BLOCK_CLASS = 'aloha-block';
-	editor.CARET_CLASS = 'aloha-caret';
 	editor.dnd         = DragDrop.Context();
 	editor.selecting   = Selections.Context(doc);
 	editor.selection   = editor.selecting;

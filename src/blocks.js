@@ -77,7 +77,7 @@ define([
 	 */
 	function isBlockEvent(event) {
 		return 'IMG' === event.nativeEvent.target.nodeName
-		    || Dom.hasClass(event.nativeEvent.target, event.editable.settings.BLOCK_CLASS);
+		    || Dom.hasClass(event.nativeEvent.target, 'aloha-block');
 	}
 
 	function initializeBlocks(editable) {
