@@ -4,7 +4,6 @@
 	var Fn = aloha.fn;
 	var Dom = aloha.dom;
 	var Maps = aloha.maps;
-	var Keys = aloha.keys;
 	var Html = aloha.html;
 	var Arrays = aloha.arrays;
 	var Editor = aloha.editor;
@@ -14,49 +13,6 @@
 	var Selections = aloha.selections;
 	var Boundaries = aloha.boundaries;
 	var SelectionChange = aloha.selectionchange;
-
-	/**
-	 * Deactivates all ui buttons.
-	 *
-	 * @private
-	 * @param {!Document} doc
-	 */
-	function resetUi(doc) {
-		Dom.query('.aloha-ui .active, .aloha-ui.active', doc).forEach(
-			function (elem) { Dom.removeClass(elem, 'active'); }
-		);
-	}
-
-	var eventLoop = { inEditable: false };
-
-	// Resets inEditable flag throught click cycle
-	Events.add(document, 'mousedown', function () {
-		eventLoop.inEditable = false;
-	});
-
-	Events.add(document, 'mouseup', function (event) {
-		if (eventLoop.inEditable) {
-			return;
-		}
-		var ui = Dom.upWhile(event.target, function (node) {
-			return !Dom.hasClass(node, 'aloha-ui');
-		});
-		if (!ui) {
-			if (Editor.selection) {
-				Dom.setStyle(Editor.selection.caret, 'display', 'none');
-			}
-			Editor.selection = null;
-			resetUi(document);
-		}
-	});
-
-	// Because Bootstrap dropdowm menu's use anchor tags containing "href='#'"
-	// which causes the page to jump to the top
-	Dom.query('.aloha-ui', document).forEach(function (elem) {
-		Events.add(elem, 'click', function (event) {
-			Events.preventDefault(event);
-		});
-	});
 
 	function mapsEquals(a, b) {
 		var key;
@@ -73,59 +29,13 @@
 		return true;
 	}
 
-	/**
-	 * Handles UI updates invoked by event.
-	 *
-	 * Handlers on the aloha.editor.stack are only invoked when interactions
-	 * happens in an editable.
-	 *
-	 * @param  {!Event} event
-	 * @return {Event}
-	 */
-	function handleUi(event) {
-		var type = event.type;
-		if ('keydown' === type) {
-			var handler = Keys.shortcutHandler(
-				event.meta,
-				event.keycode,
-				aloha.ui.shortcuts
-			);
-			if (false && handler) {
-				event.selection.boundaries = handler(
-					event.selection.boundaries[0], 
-					event.selection.boundaries[1]
-				);
-				if (handler.name === 'insertLink') {
-					event.preventSelection = true;
-				}
-				return event;
-			}
-		}
-		if ('mouseup' === type || 'aloha.mouseup' === type) {
-			eventLoop.inEditable = true;
-		}
-		if ('keydown' === type) {
-			var overrides = Overrides.map(Overrides.joinToSet(
-				event.selection.formatting,
-				event.selection.overrides
-			));
-			if (!state.overrides || !mapsEquals(state.overrides, overrides)) {
-				var nodes = Dom.childAndParentsUntil(
-					Boundaries.container(event.selection.boundaries[0]),
-					Dom.isEditingHost
-				).filter(Dom.isElementNode);
-				fire('overrides.changed', {
-					selection: event.selection,
-					overrides: overrides,
-					nodes: nodes
-				});
-				state.overrides = overrides;
-			}
-		}
-		return event;
-	}
+	var state = {
+		eventsInitialized: false,
+		inEditable: false,
+		overrides: null
+	};
 
-	var state = {overrides: null};
+	var changeEvents = 'ui.nodeChanged ui.selectionChanged ui.overridesChanged';
 
 	function commandState(node, command) {
 		if (command.state) {
@@ -256,13 +166,10 @@
 	}
 
 	function hook(editable, commands, onEvent, bindCommand) {
-		on(
-			'nodes.changed selection.changed overrides.changed',
-			bind(editable, function (event) {
-				resetUi(document);
-				Maps.forEach(states(commands, event), onEvent);
-			})
-		);
+		var doc = editable.ownerDocument;
+		on(changeEvents, bind(editable, function (event) {
+			Maps.forEach(states(commands, event), onEvent);
+		}));
 		Maps.forEach(commands, function (command, selector) {
 			bindCommand(bind(editable, Fn.partial(execute, command)), selector);
 		});
@@ -270,7 +177,7 @@
 
 	function onSelectionChange(boundaries) {
 		var cac = Boundaries.commonContainer(boundaries[0], boundaries[1]);
-		if (Dom.isEditableNode(cac)) {
+		if (Editor.selection && Dom.isEditableNode(cac)) {
 			var nodes = Dom.childAndParentsUntil(
 				Boundaries.container(boundaries[0]),
 				Dom.isEditingHost
@@ -279,7 +186,7 @@
 				Editor.selection.formatting,
 				Editor.selection.overrides
 			);
-			fire('selection.changed', {
+			fire('ui.selectionChanged', {
 				selection: Editor.selection,
 				overrides: overrides,
 				nodes: nodes
@@ -312,9 +219,16 @@
 	}
 
 	var handlers = {};
-	var changeEvents = 'nodes.changed selection.changed overrides.changed';
 
-	function on(editable, eventNames, handler) {
+	function on(elem, eventNames, handler) {
+		var fn;
+		if (Dom.documentWindow(elem)) {
+			init(elem);
+			fn = handler;
+		} else {
+			init(elem.ownerDocument);
+			fn = bind(elem, handler);
+		}
 		if ('*' === eventNames) {
 			eventNames = changeEvents;
 		}
@@ -322,7 +236,7 @@
 			if (!handlers[event]) {
 				handlers[event] = [];
 			}
-			handlers[event].push(bind(editable, handler));
+			handlers[event].push(fn);
 		});
 	}
 
@@ -335,11 +249,89 @@
 		}
 	}
 
-	SelectionChange.addHandler(document, SelectionChange.handler(
-		Fn.partial(Boundaries.get, document),
-		[],
-		onSelectionChange
-	));
+	function init(doc) {
+		if (state.eventsInitialized) {
+			return;
+		}
+
+		state.eventsInitialized = true;
+
+		SelectionChange.addHandler(doc, SelectionChange.handler(
+			Fn.partial(Boundaries.get, doc),
+			[],
+			onSelectionChange
+		));
+
+		Editor.stack.unshift(function handleUi(event) {
+			state.inEditable = true;
+			var type = event.type;
+			if ('keydown' === type) {
+				var overrides = Overrides.map(Overrides.joinToSet(
+					event.selection.formatting,
+					event.selection.overrides
+				));
+				if (!state.overrides || !mapsEquals(state.overrides, overrides)) {
+					var nodes = Dom.childAndParentsUntil(
+						Boundaries.container(event.selection.boundaries[0]),
+						Dom.isEditingHost
+					).filter(Dom.isElementNode);
+					fire('ui.overridesChanged', {
+						selection: event.selection,
+						overrides: overrides,
+						nodes: nodes
+					});
+					state.overrides = overrides;
+				}
+			}
+			return event;
+		});
+
+		// Resets inEditable flag at start of click cycle
+		Events.add(doc, 'mousedown', function () {
+			state.inEditable = false;
+		});
+
+		Events.add(doc, 'mouseup', function (event) {
+			if (state.inEditable) {
+				return;
+			}
+			var ui = Dom.upWhile(event.target, function (node) {
+				return !Dom.hasClass(node, 'aloha-ui');
+			});
+			if (!ui) {
+				fire('ui.clickOutside', event);
+				if (Editor.selection) {
+					Dom.setStyle(Editor.selection.caret, 'display', 'none');
+				}
+				Editor.selection = null;
+			}
+		});
+
+		// Because Bootstrap dropdowm menu's use anchor tags containing
+		// "href='#'" which causes the page to jump to the top
+		Dom.query('.aloha-ui', doc).forEach(function (elem) {
+			Events.add(elem, 'click', function (event) {
+				Events.preventDefault(event);
+			});
+		});
+	}
+
+	var commands = {
+		p        : { node : 'p'                      },
+		h2       : { node : 'h2'                     },
+		h3       : { node : 'h3'                     },
+		h4       : { node : 'h4'                     },
+		pre      : { node : 'pre'                    },
+		ol       : { node : 'ol'                     },
+		ul       : { node : 'ul'                     },
+		bold     : { node : 'b', override : 'bold'   },
+		italic   : { node : 'i', override : 'italic' },
+		unformat : {
+			state  : Fn.returnFalse,
+			action : removeFormatting,
+			nodes  : ['b', 'i', 'u']
+		}
+	};
 
 	aloha.ui = {
 		on               : on,
@@ -347,10 +339,9 @@
 		states           : states,
 		execute          : execute,
 		command          : command,
+		commands         : commands,
 		removeFormatting : removeFormatting,
 		shortcuts        : []
 	};
-
-	Editor.stack.unshift(handleUi);
 
 }(window.aloha));

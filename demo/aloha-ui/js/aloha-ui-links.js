@@ -3,7 +3,6 @@
 	'use strict';
 
 	var Ui = aloha.editor.ui;
-	var $$ = Ui.$$;
 	var Dom = aloha.dom;
 	var Keys = aloha.keys;
 	var Maps = aloha.maps;

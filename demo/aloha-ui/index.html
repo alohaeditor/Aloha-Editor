@@ -76,6 +76,8 @@
 			</div>
 		</div>
 
+		<br/><br/><br/>
+
 		<div class="aloha-editable">
 			<h1>Aloha Editor UI Demo</h1>
 			<p>
@@ -126,21 +128,9 @@
 			(function () {
 				'use strict';
 
-				var commands = {
-					p        : { node : 'p'                      },
-					h2       : { node : 'h2'                     },
-					h3       : { node : 'h3'                     },
-					h4       : { node : 'h4'                     },
-					pre      : { node : 'pre'                    },
-					ol       : { node : 'ol'                     },
-					ul       : { node : 'ul'                     },
-					bold     : { node : 'b', override : 'bold'   },
-					italic   : { node : 'i', override : 'italic' },
-					unformat : {
-						state  : aloha.fn.returnFalse,
-						action : aloha.ui.removeFormatting,
-						nodes  : ['b', 'i']
-					},
+				var Ui = aloha.ui;
+
+				var commands = aloha.maps.merge({}, Ui.commands, {
 					superBlock : {
 						node  : 'p',
 						style : {
@@ -148,21 +138,21 @@
 							padding    : '18px',
 							border     : '4px solid rgb(154, 174, 94)'
 						},
-						classes : ['aloha-blah']
+						classes : ['aloha-super-block']
 					}
-				};
+				});
 
 				var editables = aloha.dom.query('.aloha-editable', document);
 
 				editables.forEach(aloha);
 
 				for (var selector in commands) {
-					$('.aloha-action-' + selector).click(aloha.ui.command(editables[0], commands[selector]));
+					$('.aloha-action-' + selector).click(Ui.command(editables[0], commands[selector]));
 				}
 
-				aloha.ui.on(editables[0], '*', function (event) {
+				Ui.on(editables[0], '*', function (event) {
 					$('.aloha-ui.active, .aloha-ui .active').removeClass('active');
-					var states = aloha.ui.states(commands, event);
+					var states = Ui.states(commands, event);
 					for (var selector in states) {
 						var $item = $('.aloha-action-' + selector).toggleClass('active', states[selector]);
 						if (states[selector] && $item.parents('.dropdown-menu').length) {
@@ -170,6 +160,10 @@
 							     .addClass('active')[0].firstChild.data = $item[0].textContent + ' ';
 						}
 					}
+				});
+
+				Ui.on(document, 'ui.clickOutside', function () {
+					$('.aloha-ui .active, .aloha-ui.active').removeClass('active');
 				});
 
 			}());
