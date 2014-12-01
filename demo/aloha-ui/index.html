@@ -33,8 +33,8 @@
 					</div>
 
 					<div class="btn-group">
-						<button type="button" class="aloha-action-OL btn btn-default" title="Ordered List"><span class="glyphicon glyphicon-list"></span></button>
-						<button type="button" class="aloha-action-UL btn btn-default" title="Unordered List"><span class="glyphicon glyphicon-list"></span></button>
+						<button type="button" class="aloha-action-ol btn btn-default" title="Ordered List"><span class="glyphicon glyphicon-list"></span></button>
+						<button type="button" class="aloha-action-ul btn btn-default" title="Unordered List"><span class="glyphicon glyphicon-list"></span></button>
 					</div>
 
 					<!--div class="btn-group">
@@ -127,19 +127,21 @@
 				'use strict';
 
 				var commands = {
-					'.aloha-action-p'        : { node : 'p'                      },
-					'.aloha-action-h2'       : { node : 'h2'                     },
-					'.aloha-action-h3'       : { node : 'h3'                     },
-					'.aloha-action-h4'       : { node : 'h4'                     },
-					'.aloha-action-pre'      : { node : 'pre'                    },
-					'.aloha-action-bold'     : { node : 'b', override : 'bold'   },
-					'.aloha-action-italic'   : { node : 'i', override : 'italic' },
-					'.aloha-action-unformat' : {
+					p        : { node : 'p'                      },
+					h2       : { node : 'h2'                     },
+					h3       : { node : 'h3'                     },
+					h4       : { node : 'h4'                     },
+					pre      : { node : 'pre'                    },
+					ol       : { node : 'ol'                     },
+					ul       : { node : 'ul'                     },
+					bold     : { node : 'b', override : 'bold'   },
+					italic   : { node : 'i', override : 'italic' },
+					unformat : {
 						state  : aloha.fn.returnFalse,
 						action : aloha.ui.removeFormatting,
 						nodes  : ['b', 'i']
 					},
-					'.xyz' : {
+					superBlock : {
 						node  : 'p',
 						style : {
 							background : 'rgb(204, 224, 94)',
@@ -155,14 +157,14 @@
 				editables.forEach(aloha);
 
 				for (var selector in commands) {
-					$(selector).click(aloha.ui.command(editables[0], commands[selector]));
+					$('.aloha-action-' + selector).click(aloha.ui.command(editables[0], commands[selector]));
 				}
 
 				aloha.ui.on(editables[0], '*', function (event) {
 					$('.aloha-ui.active, .aloha-ui .active').removeClass('active');
 					var states = aloha.ui.states(commands, event);
 					for (var selector in states) {
-						var $item = $(selector).toggleClass('active', states[selector]);
+						var $item = $('.aloha-action-' + selector).toggleClass('active', states[selector]);
 						if (states[selector] && $item.parents('.dropdown-menu').length) {
 							$item.closest('.btn-group').find('.dropdown-toggle')
 							     .addClass('active')[0].firstChild.data = $item[0].textContent + ' ';
