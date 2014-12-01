@@ -62,9 +62,9 @@ define([
 	 *
 	 * @param  {Node}    node
 	 * @param  {string}  value
+	 * @return {boolean}
 	 * @alias hasClass
 	 * @memberOf dom
-	 * @return {boolean}
 	 */
 	function has(node, value) {
 		return Nodes.isElementNode(node)

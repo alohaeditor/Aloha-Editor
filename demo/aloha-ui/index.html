@@ -125,15 +125,17 @@
 		<script>
 			(function () {
 				'use strict';
+
 				var commands = {
-					'.aloha-action-p'        : { node : 'p'                   },
-					'.aloha-action-h2'       : { node : 'h2'                  },
-					'.aloha-action-h3'       : { node : 'h3'                  },
-					'.aloha-action-h4'       : { node : 'h4'                  },
-					'.aloha-action-pre'      : { node : 'pre'                 },
-					'.aloha-action-bold'     : { node : 'b', state : 'bold'   },
-					'.aloha-action-italic'   : { node : 'i', state : 'italic' },
+					'.aloha-action-p'        : { node : 'p'                      },
+					'.aloha-action-h2'       : { node : 'h2'                     },
+					'.aloha-action-h3'       : { node : 'h3'                     },
+					'.aloha-action-h4'       : { node : 'h4'                     },
+					'.aloha-action-pre'      : { node : 'pre'                    },
+					'.aloha-action-bold'     : { node : 'b', override : 'bold'   },
+					'.aloha-action-italic'   : { node : 'i', override : 'italic' },
 					'.aloha-action-unformat' : {
+						state  : aloha.fn.returnFalse,
 						action : aloha.ui.removeFormatting,
 						nodes  : ['b', 'i']
 					},
@@ -143,40 +145,30 @@
 							background : 'rgb(204, 224, 94)',
 							padding    : '18px',
 							border     : '4px solid rgb(154, 174, 94)'
-						}
+						},
+						classes : ['aloha-blah']
 					}
 				};
 
-				var editables = aloha.dom.query('.aloha-editable', document).map(aloha);
+				var editables = aloha.dom.query('.aloha-editable', document);
+
+				editables.forEach(aloha);
 
 				for (var selector in commands) {
-					$(selector).click(aloha.ui.command(editables[0].elem, commands[selector]));
+					$(selector).click(aloha.ui.command(editables[0], commands[selector]));
 				}
 
-				aloha.ui.on(editables[0].elem, '*', function (event) {
+				aloha.ui.on(editables[0], '*', function (event) {
 					$('.aloha-ui.active, .aloha-ui .active').removeClass('active');
 					var states = aloha.ui.states(commands, event);
 					for (var selector in states) {
-						$(selector).toggleClass('active', states[selector]);
-						if (states[selector] && dropdowns[selector]) {
-							updateDropdown(selector);
+						var $item = $(selector).toggleClass('active', states[selector]);
+						if (states[selector] && $item.parents('.dropdown-menu').length) {
+							$item.closest('.btn-group').find('.dropdown-toggle')
+							     .addClass('active')[0].firstChild.data = $item[0].textContent + ' ';
 						}
 					}
 				});
-
-				var dropdowns = {
-					'.aloha-action-p'   : true,
-					'.aloha-action-h2'  : true,
-					'.aloha-action-h3'  : true,
-					'.aloha-action-h4'  : true,
-					'.aloha-action-pre' : true
-				};
-
-				function updateDropdown(selector) {
-					var $item = $(selector);
-					var $toggler = $item.closest('.btn-group').find('.dropdown-toggle');
-					$toggler.addClass('active')[0].firstChild.data = $item[0].textContent + ' ';
-				}
 
 			}());
 		</script>

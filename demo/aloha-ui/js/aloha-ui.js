@@ -128,11 +128,18 @@
 	var state = {overrides: null};
 
 	function commandState(node, command) {
+		if (command.state) {
+			return command.state(node, command);
+		}
+		if (!(command.node || command.style || command.classes)) {
+			return false;
+		}
 		if (command.node && node.nodeName !== command.node.toUpperCase()) {
 			return false;
 		}
+		var result;
 		if (command.style) {
-			var result = 1;
+			result = 1;
 			Maps.forEach(command.style, function (value, prop) {
 				result &= (value === Dom.getStyle(node, prop));
 			});
@@ -141,7 +148,13 @@
 			}
 		}
 		if (command.classes) {
-
+			result = 1;
+			Maps.forEach(command.classes, function (value, prop) {
+				result &= Dom.hasClass(node, prop);
+			});
+			if (!result) {
+				return false;
+			}
 		}
 		return true;
 	}
@@ -149,8 +162,8 @@
 	function states(commands, event) {
 		var values = {};
 		Maps.forEach(commands, function (command, key) {
-			if (command.state && command.state in event.overrides) {
-				values[key] = !!event.overrides[command.state];
+			if (command.override && command.override in event.overrides) {
+				values[key] = !!event.overrides[command.override];
 			} else {
 				var state = 0;
 				event.nodes.forEach(function (node) {
@@ -323,7 +336,7 @@
 	}
 
 	SelectionChange.addHandler(document, SelectionChange.handler(
-		Fn.partial(aloha.boundaries.get, document),
+		Fn.partial(Boundaries.get, document),
 		[],
 		onSelectionChange
 	));
@@ -338,6 +351,6 @@
 		shortcuts        : []
 	};
 
-	aloha.editor.stack.unshift(handleUi);
+	Editor.stack.unshift(handleUi);
 
 }(window.aloha));
