@@ -10,6 +10,7 @@
  * @namespace selections
  */
 define([
+	'functions',
 	'dom',
 	'keys',
 	'maps',
@@ -24,8 +25,9 @@ define([
 	'animation',
 	'boundaries',
 	'traversing',
-	'functions'
+	'editables'
 ], function (
+	Fn,
 	Dom,
 	Keys,
 	Maps,
@@ -40,7 +42,7 @@ define([
 	Animation,
 	Boundaries,
 	Traversing,
-	Fn
+	Editables
 ) {
 	'use strict';
 
@@ -1230,6 +1232,10 @@ define([
 		if (event.preventSelection || (selection.dragging && 'dragover' !== event.type)) {
 			return;
 		}
+		if ('leave' === event.type) {
+			Dom.setStyle(selection.caret, 'display', 'none');
+			return;
+		}
 		var type = event.type;
 		if ('mouseup' === type || 'click' === type || 'dblclick' === type) {
 			Dom.setStyle(selection.caret, 'display', 'block');
@@ -1300,17 +1306,227 @@ define([
 		return false;
 	}
 
+	var MOUSE_EVENT = {
+		'mousemove'      : true,
+		'mousedown'      : true,
+		'mouseup'        : true,
+		'click'          : true,
+		'dblclick'       : true,
+		'aloha.dblclick' : true,
+		'aloha.tplclick' : true
+	};
+
+	var CLICKING_EVENT = {
+		'mousedown'      : true,
+		'mouseup'        : true,
+		'click'          : true,
+		'dblclick'       : true,
+		'aloha.dblclick' : true,
+		'aloha.tplclick' : true
+	};
+
+	var MUTLICLICK_EVENT = {
+		'dblclick'       : true,
+		'aloha.dblclick' : true,
+		'aloha.tplclick' : true
+	};
+
 	/**
-	 * @see {ranges.is}
-	 * @memberOf selections
+	 * Returns the appropriate event type in the click cycle.
+	 *
+	 *
+	 * Event cycle:
+	 * mousedown
+	 * mouseup
+	 * click
+	 * mousedown -> aloha.dblclick
+	 * mouseup
+	 * click
+	 * dblclick
+	 * mousedown -> aloha.tplclick
+	 * mouseup
+	 * click
+	 *
+	 * @private
+	 * @param  {!Event}     event
+	 * @param  {!Selection} selection
+	 * @return {?string}
 	 */
-	function isRange(obj) {
-		return Ranges.is(obj);
+	function processClicking(event, selection) {
+		if ('mousedown'      !== event.type &&
+		    'dbclick'        !== event.type &&
+		    'aloha.dblclick' !== event.type) {
+			return null;
+		}
+		var time = new Date();
+		var elapsed = time - selection.clickTimer;
+		var multiclick = selection.multiclick;
+		selection.multiclick = null;
+		selection.clickTimer = time;
+		if (elapsed > 500) {
+			return null;
+		}
+		if (!selection.event) {
+			return null;
+		}
+		if (selection.event.clientX !== event.clientX) {
+			return null;
+		}
+		if (selection.event.clientY !== event.clientY) {
+			return null;
+		}
+		return MUTLICLICK_EVENT[multiclick] ? 'aloha.tplclick' : 'aloha.dblclick';
+	}
+
+	/**
+	 * Gets the dragging state.
+	 *
+	 * @private
+	 * @param  {!Event}     event
+	 * @param  {!Selection} selection
+	 * @return {?string}
+	 */
+	function getDragging(event, selection) {
+		if (selection.dragging) {
+			return selection.dragging;
+		}
+		if ('mousemove' !== event.type) {
+			return null;
+		}
+		var last = selection.lastMouseEvent;
+		if ('mousedown'       === last ||
+		    'aloha.dblclick'  === last ||
+		    'aloha.tplclick'  === last) {
+			return last;
+		}
+		return null;
+	}
+
+	/**
+	 * Creates an event object that will contain the following properties:
+	 *
+	 *		type
+	 *		nativeEvent
+	 *		editable
+	 *		selection
+	 *		dnd
+	 *		preventSelection
+	 *
+	 * @param  {!Editor} editor
+	 * @param  {!Event}  event
+	 * @return {?Event}
+	 */
+	function selectionEvent(editor, event) {
+		var type = event.type;
+		var doc = event.target.document || event.target.ownerDocument;
+		var selection = editor.selection || Context(doc);
+		var isClicking = CLICKING_EVENT[type] || false;
+		var dragging = getDragging(event, selection);
+		var isDragStart = dragging && dragging !== selection.dragging;
+		var caretDisplay = Dom.getStyle(selection.caret, 'display');
+		if (isClicking || isDragStart) {
+			// Because otherwise if the mouse position is over the caret element
+			// Boundaries.fromPosition() will compute the boundaries to be
+			// inside the absolutely positioned caret element, which is not what
+			// we want
+			Dom.setStyle(selection.caret, 'display', 'none');
+		}
+		if (isDragStart) {
+			selection.dragging = dragging;
+		}
+		if ('mousemove' === type) {
+			return null;
+		}
+		if ('mouseup' === type && selection.dragging) {
+			type = 'aloha.mouseup';
+			selection.dragging = null;
+		}
+		if (isClicking) {
+			type = processClicking(event, selection) || type;
+		}
+		if (MUTLICLICK_EVENT[type]) {
+			selection.multiclick = type;
+			Events.preventDefault(event);
+		}
+		if (MOUSE_EVENT[type]) {
+			selection.lastMouseEvent = type;
+		}
+		var boundaries;
+		if (isClicking) {
+			var boundary = Boundaries.fromPosition(
+				event.clientX + Dom.scrollLeft(doc),
+				event.clientY + Dom.scrollTop(doc),
+				doc
+			);
+			boundaries = boundary && [boundary, boundary];
+		} else {
+			boundaries = Boundaries.get(doc);
+		}
+		Dom.setStyle(selection.caret, 'display', caretDisplay);
+		var editable;
+		if (!boundaries) {
+			if (selection.boundaries) {
+				editable = Editables.fromBoundary(editor, selection.boundaries[0]);
+				return {
+					preventSelection : false,
+					type             : 'leave',
+					nativeEvent      : event,
+					editable         : editable,
+					selection        : selection,
+					dnd              : editor.dnd
+				};
+			}
+			return null;
+		}
+		var cac = Boundaries.commonContainer(boundaries[0], boundaries[1]);
+		var start = Boundaries.container(boundaries[0]);
+		var end = Boundaries.container(boundaries[1]);
+		var isPartial = !Dom.isEditableNode(cac)
+		             && (Dom.isEditableNode(start) || Dom.isEditableNode(end));
+		if ('keydown' === type && isPartial) {
+			Events.preventDefault(event);
+			return null;
+		}
+		editable = Editables.fromBoundary(editor, boundaries[0]);
+		if (!editable) {
+			return null;
+		}
+		selection.overrides = editor.selection ? editor.selection.overrides : [];
+		selection.previousBoundaries = selection.boundaries || boundaries;
+		selection.boundaries = boundaries;
+		selection.event = event;
+		return {
+			// Because sometimes an interaction going through the editor pipe
+			// should not result in an updated selection. eg: When inserting a
+			// link you want to focus on an input field in the ui.
+			preventSelection : false,
+			type             : type,
+			nativeEvent      : event,
+			editable         : editable,
+			selection        : selection,
+			dnd              : editor.dnd
+		};
+	}
+
+	/**
+	 * Returns true if obj is an Selection Event object.
+	 *
+	 * @param  {*} obj
+	 * @return {boolean}
+	 * @memberOf events
+	 */
+	function isSelectionEvent(obj) {
+		return obj
+		    && obj.hasOwnProperty
+		    && obj.hasOwnProperty('dnd')
+		    && obj.hasOwnProperty('editable')
+		    && obj.hasOwnProperty('selection')
+		    && obj.hasOwnProperty('nativeEvent');
 	}
 
 	return {
 		is               : is,
-		isRange          : isRange,
+		isSelectionEvent : isSelectionEvent,
 		show             : show,
 		select           : select,
 		focus            : focus,
@@ -1320,6 +1536,7 @@ define([
 		hideCarets       : hideCarets,
 		unhideCarets     : unhideCarets,
 		highlight        : highlight,
-		selectionBoxes   : selectionBoxes
+		selectionBoxes   : selectionBoxes,
+		selectionEvent   : selectionEvent
 	};
 });

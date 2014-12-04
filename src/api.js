@@ -36,6 +36,7 @@ define([
 	'overrides',
 	'paste',
 	'paths',
+	'ranges',
 	'record',
 	'selection-change',
 	'selections',
@@ -44,6 +45,7 @@ define([
 	'transform',
 	'traversing',
 	'typing',
+	'ui',
 	'undo',
 	'zippers'
 ], function (
@@ -73,6 +75,7 @@ define([
 	Overrides,
 	Paste,
 	Paths,
+	Ranges,
 	Record,
 	SelectionChange,
 	Selections,
@@ -81,6 +84,7 @@ define([
 	Transform,
 	Traversing,
 	Typing,
+	Ui,
 	Undo,
 	Zippers
 ) {
@@ -167,7 +171,7 @@ define([
 	exports['browsers']['VENDOR_PREFIX'] = Browsers.VENDOR_PREFIX;
 
 	exports['colors'] = {};
-	exports['colors']['hex']      = Colors.hex;
+	exports['colors']['hex']       = Colors.hex;
 	exports['colors']['rgb']       = Colors.rgb;
 	exports['colors']['cross']     = Colors.cross;
 	exports['colors']['equals']    = Colors.equals;
@@ -226,6 +230,7 @@ define([
 	exports['dom']['removeChildren']               = Dom.removeChildren;
 	exports['dom']['addClass']                     = Dom.addClass;
 	exports['dom']['removeClass']                  = Dom.removeClass;
+	exports['dom']['toggleClass']                  = Dom.toggleClass;
 	exports['dom']['hasClass']                     = Dom.hasClass;
 	exports['dom']['hasAttrs']                     = Dom.hasAttrs;
 	exports['dom']['attrs']                        = Dom.attrs;
@@ -290,7 +295,6 @@ define([
 	exports['dragdrop']['isDraggable']    = DragDrop.isDraggable;
 
 	exports['editables'] = {};
-	exports['editables']['Editable']     = Editables.Editable;
 	exports['editables']['fromElem']     = Editables.fromElem;
 	exports['editables']['fromBoundary'] = Editables.fromBoundary;
 	exports['editables']['create']       = Editables.create;
@@ -298,7 +302,7 @@ define([
 
 	exports['editing'] = {};
 	exports['editing']['format']    = Editing.format;
-	exports['editing']['unformat']    = Editing.unformat;
+	exports['editing']['unformat']  = Editing.unformat;
 	exports['editing']['style']     = Editing.style;
 	exports['editing']['remove']    = Editing.remove;
 	exports['editing']['breakline'] = Editing.breakline;
@@ -311,7 +315,6 @@ define([
 
 	exports['events'] = {};
 	exports['events']['is']              = Events.is;
-	exports['events']['isAlohaEvent']    = Events.isAlohaEvent;
 	exports['events']['add']             = Events.add;
 	exports['events']['remove']          = Events.remove;
 	exports['events']['setup']           = Events.setup;
@@ -361,7 +364,7 @@ define([
 	exports['html']['isVoidNode']              = Html.isVoidNode;
 
 	exports['images'] = {};
-	exports['images']['insert'] = Images.insert;
+	exports['images']['insert']        = Images.insert;
 	exports['images']['setAttributes'] = Images.setAttributes;
 
 	exports['keys'] = {};
@@ -377,9 +380,9 @@ define([
 	exports['links']['handleLinks'] = Links.handleLinks;
 
 	exports['lists'] = {};
-	exports['lists']['format'] = Lists.format;
+	exports['lists']['toggle']   = Lists.toggle;
+	exports['lists']['format']   = Lists.format;
 	exports['lists']['unformat'] = Lists.unformat;
-	exports['lists']['toggle'] = Lists.toggle;
 
 	exports['maps'] = {};
 	exports['maps']['isEmpty']     = Maps.isEmpty;
@@ -403,7 +406,7 @@ define([
 
 	exports['mouse'] = {};
 	exports['mouse']['handleMouse'] = Mouse.handleMouse;
-	exports['mouse']['EVENTS'] = Mouse.EVENTS;
+	exports['mouse']['EVENTS']      = Mouse.EVENTS;
 
 	exports['overrides'] = {};
 	exports['overrides']['map']         = Overrides.map;
@@ -435,12 +438,14 @@ define([
 
 	exports['selections'] = {};
 	exports['selections']['is']               = Selections.is;
+	exports['selections']['isSelectionEvent'] = Selections.isSelectionEvent;
 	exports['selections']['isRange']          = Selections.isRange;
 	exports['selections']['show']             = Selections.show;
 	exports['selections']['focus']            = Selections.focus;
 	exports['selections']['select']           = Selections.select;
 	exports['selections']['handleSelections'] = Selections.handleSelections;
 	exports['selections']['Context']          = Selections.Context;
+	exports['selections']['selectionEvent']   = Selections.selectionEvent;
 
 	exports['searching'] = {};
 	exports['searching']['search']   = Searching.search;
@@ -489,6 +494,13 @@ define([
 	exports['typing'] = {};
 	exports['typing']['handleTyping'] = Typing.handleTyping;
 	exports['typing']['actions']      = Typing.actions;
+
+	exports['ui'] = {};
+	exports['ui']['states']           = Ui.states;
+	exports['ui']['command']          = Ui.command;
+	exports['ui']['commands']         = Ui.commands;
+	exports['ui']['middleware']       = Ui.middleware;
+	exports['ui']['removeFormatting'] = Ui.removeFormatting;
 
 	exports['undo'] = {};
 	exports['undo']['Context'] = Undo.Context;
@@ -601,13 +613,13 @@ define([
 			if (Selections.is(obj)) {
 				return 'Selection';
 			}
-			if (Selections.isRange(obj)) {
+			if (Ranges.is(obj)) {
 				return 'Range';
 			}
 			if (Events.is(obj)) {
 				return 'Event';
 			}
-			if (Events.isAlohaEvent(obj)) {
+			if (Selections.isSelectionEvent(obj)) {
 				return 'AlohaEvent';
 			}
 			if (obj instanceof RegExp) {
@@ -621,7 +633,7 @@ define([
 	var api = {};
 	for (var pack in exports) {
 		api[pack] = {};
-		if (pack === 'Boromir' || pack === 'Record') {
+		if (true || pack === 'Boromir' || pack === 'Record') {
 			api[pack] = exports[pack];
 		} else {
 			for (var func in exports[pack]) {

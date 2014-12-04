@@ -71,9 +71,20 @@ define([
 		    && node.className.trim().split(Strings.WHITE_SPACES).indexOf(value) >= 0;
 	}
 
+	function toggle(node, name, flag) {
+		if (true === flag) {
+			add(node, name);
+		} else if (false === flag) {
+			remove(node, name);
+		} else {
+			toggle(node, name, has(node, name));
+		}
+	}
+
 	return {
 		has    : has,
 		add    : add,
-		remove : remove
+		remove : remove,
+		toggle : toggle
 	};
 });

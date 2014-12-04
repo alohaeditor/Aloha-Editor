@@ -9,7 +9,15 @@
  * http://www.w3.org/TR/DOM-Level-3-Events/#idl-interface-MouseEvent-initializers
  * @namespace events
  */
-define(['misc', 'assert'], function (Misc, Assert) {
+define([
+	'functions',
+	'misc',
+	'assert'
+], function (
+	Fn,
+	Misc,
+	Assert
+) {
 	'use strict';
 
 	/**
@@ -196,45 +204,22 @@ define(['misc', 'assert'], function (Misc, Assert) {
 	}
 
 	/**
-	 * returns true if obj is a native browser event object
+	 * Returns true if obj is a native browser event object.
 	 *
 	 * @param  {*} obj
 	 * @return {boolean}
 	 * @memberOf events
 	 */
 	function is(obj) {
-		if (obj &&
-			obj.hasOwnPropery &&
-			obj.hasOwnPropery('type') &&
-			obj.stopPropagation &&
-			obj.preventDefault) {
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * returns true if obj is an Aloha Event object
-	 *
-	 * @param  {*} obj
-	 * @return {boolean}
-	 * @memberOf events
-	 */
-	function isAlohaEvent(obj) {
-		if (obj &&
-			obj.hasOwnProperty &&
-			obj.hasOwnProperty('nativeEvent') &&
-			obj.hasOwnProperty('editable') &&
-			obj.hasOwnProperty('selection') &&
-			obj.hasOwnProperty('dnd')) {
-			return true;
-		}
-		return false;
+		return obj
+		    && obj.hasOwnProperty
+		    && obj.hasOwnProperty('type')
+		    && !Fn.isNou(obj.stopPropagation)
+		    && !Fn.isNou(obj.preventDefault);
 	}
 
 	return {
 		is              : is,
-		isAlohaEvent    : isAlohaEvent,
 		add             : add,
 		remove          : remove,
 		setup           : setup,

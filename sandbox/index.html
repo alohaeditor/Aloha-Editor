@@ -56,9 +56,16 @@
 				background: whitesmoke;
 				padding: 0.2em;
 			}
+			.active { background: red; }
 		</style>
 	</head>
 	<body>
+		<span class="aloha-ui">
+			<button class="aloha-action-bold-1">B</button>
+			<button class="aloha-action-italic-1">I</button>
+			<button class="aloha-action-underline-1">U</button>
+		</span>
+
 		<div class="aloha-editable">starting<i>foobar</i><p
 			><span>one</span> <u><b>two</b> <i>three</i></u></p> <h6
 			>four</h6
@@ -66,7 +73,7 @@
 
 		<br/>
 
-		<input value="Not an Aloha Editor element" />
+		<p><input value="Not an Aloha Editor element" /></p>
 
 		<br/><br/>
 
@@ -123,26 +130,38 @@
 		<script>
 			(function () {
 				'use strict';
-				function setVersion (version) {
-					var h1 = document.querySelector('h1');
-					if (h1) {
-						h1.innerHTML = h1.innerHTML + ': <span style="color:#df215a">' + version + '</' + 'span>';
-					}
+				function query(selector) {
+					return aloha.dom.query(selector, document);
 				}
 				function main(aloha) {
-					aloha.dom.query('.aloha-editable', document).map(aloha).forEach(function (editable) {
-						aloha.metaview.toggle(editable.elem, {
-							tagname : true,
-							outline : true,
-							padding : true
+					function resetUi() {
+						query('.aloha-ui .active, .aloha-ui.active').forEach(function (node) {
+							aloha.dom.removeClass(node, 'active');
 						});
+					}
+					var Ui = aloha.ui;
+					var editables = query('.aloha-editable').map(aloha);
+					for (var selector in Ui.commands) {
+						query('.aloha-action-' + selector + '-' + editables[0].id).forEach(function (node) {
+							aloha.events.add(node, 'click', Ui.command(editables, Ui.commands[selector]));
+						});
+					}
+					aloha.editor.stack.push(function (event) {
+						resetUi();
+						if ('leave' !== event.type) {
+							var states = Ui.states(Ui.commands, event);
+							for (var selector in states) {
+								query('.aloha-action-' + selector + '-' + event.editable.id).forEach(function (node) {
+									aloha.dom.toggleClass(node, 'active', states[selector]);
+								});
+							}
+						}
+						return event;
 					});
 				}
 				if ('undefined' === typeof aloha) {
-					setVersion('src');
 					require('../src/aloha', main);
 				} else {
-					setVersion('build');
 					main(aloha);
 				}
 			}());

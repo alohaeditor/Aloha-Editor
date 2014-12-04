@@ -341,6 +341,7 @@ define([
 
 		addClass     : Classes.add,
 		removeClass  : Classes.remove,
+		toggleClass  : Classes.toggle,
 		hasClass     : Classes.has,
 
 		attrs        : Attributes.attrs,

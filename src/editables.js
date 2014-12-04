@@ -76,6 +76,7 @@ define([
 
 	function assocIntoEditor(editor, editable) {
 		editor.editables[editable.id] = editable;
+		editable.editor = editor;
 	}
 
 	function close(editable) {
@@ -125,7 +126,6 @@ define([
 	}
 
 	return {
-		Editable         : Editable,
 		fromElem         : fromElem,
 		fromBoundary     : fromBoundary,
 		assocIntoEditor  : assocIntoEditor,
