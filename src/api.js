@@ -504,7 +504,6 @@ define([
 	exports['ui']['states']           = Ui.states;
 	exports['ui']['command']          = Ui.command;
 	exports['ui']['commands']         = Ui.commands;
-	exports['ui']['middleware']       = Ui.middleware;
 	exports['ui']['removeFormatting'] = Ui.removeFormatting;
 
 	exports['undo'] = {};
