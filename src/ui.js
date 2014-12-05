@@ -154,6 +154,15 @@ define([
 			boundaries[0],
 			boundaries[1]
 		);
+		// TODO: Rely on nodechange event instead
+		Fn.comp.apply(editor.stack, editor.stack)({
+			preventSelection : false,
+			type             : 'ui',
+			nativeEvent      : event,
+			editable         : Editables.fromBoundary(editor, boundaries[0]),
+			selection        : editor.selection,
+			dnd              : editor.dnd
+		});
 	}
 
 	function command(editables, cmd) {

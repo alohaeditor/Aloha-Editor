@@ -1465,7 +1465,7 @@ define([
 		Dom.setStyle(selection.caret, 'display', caretDisplay);
 		var editable;
 		if (!boundaries) {
-			if (selection.boundaries) {
+			if ('click' !== type && selection.boundaries) {
 				editable = Editables.fromBoundary(editor, selection.boundaries[0]);
 				return {
 					preventSelection : false,
@@ -1496,6 +1496,7 @@ define([
 		selection.boundaries = boundaries;
 		selection.event = event;
 		return {
+			// TODO: Reconsider this
 			// Because sometimes an interaction going through the editor pipe
 			// should not result in an updated selection. eg: When inserting a
 			// link you want to focus on an input field in the ui.
