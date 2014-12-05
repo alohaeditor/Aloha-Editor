@@ -501,6 +501,7 @@ define([
 	exports['typing']['actions']    = Typing.actions;
 
 	exports['ui'] = {};
+	exports['ui']['bind']             = Ui.bind;
 	exports['ui']['states']           = Ui.states;
 	exports['ui']['command']          = Ui.command;
 	exports['ui']['commands']         = Ui.commands;

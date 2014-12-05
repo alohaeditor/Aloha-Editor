@@ -165,8 +165,7 @@ define([
 		});
 	}
 
-	function command(editables, cmd) {
-		var fn = Fn.partial(execute, cmd);
+	function bind(editables, fn) {
 		editables = Arrays.is(editables) ? editables : [editables];
 		if (0 === editables.length) {
 			return fn;
@@ -191,6 +190,10 @@ define([
 		};
 	}
 
+	function command(editables, cmd) {
+		return bind(editables, Fn.partial(execute, cmd));
+	}
+
 	var commands = {
 		'p'         : { node : 'p'                         },
 		'h2'        : { node : 'h2'                        },
@@ -210,6 +213,7 @@ define([
 	};
 
 	return {
+		bind             : bind,
 		states           : states,
 		command          : command,
 		commands         : commands,
