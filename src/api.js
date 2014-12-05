@@ -11,6 +11,7 @@
  */
 define([
 	'arrays',
+	'autoformat',
 	'blocks',
 	'boromir',
 	'boundaries',
@@ -50,6 +51,7 @@ define([
 	'zippers'
 ], function (
 	Arrays,
+	AutoFormat,
 	Blocks,
 	Boromir,
 	Boundaries,
@@ -111,6 +113,9 @@ define([
 	exports['arrays']['split']      = Arrays.split;
 	exports['arrays']['unique']     = Arrays.unique;
 	exports['arrays']['refill']     = Arrays.refill;
+
+	exports['autoformat']               = {};
+	exports['autoformat']['middleware'] = AutoFormat.middleware;
 
 	exports['blocks'] = {};
 	exports['blocks']['middleware'] = Blocks.middleware;
