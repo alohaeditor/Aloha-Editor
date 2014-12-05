@@ -99,7 +99,7 @@ define([
 	}
 
 	function handleDragStart(event) {
-		if (isBlockEvent(event)) {
+		if (event.dnd && isBlockEvent(event)) {
 			draggingStyles.forEach(function (style) {
 				if (event.dnd.target) {
 					Dom.setStyle(event.dnd.target, style[0], style[1]);
@@ -110,7 +110,7 @@ define([
 	}
 
 	function handleDragEnd(event) {
-		if (isBlockEvent(event)) {
+		if (event.dnd && isBlockEvent(event)) {
 			draggingStyles.forEach(function (style) {
 				if (event.dnd.target) {
 					Dom.setStyle(event.dnd.target, style[0], '');

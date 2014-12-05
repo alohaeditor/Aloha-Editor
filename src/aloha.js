@@ -56,10 +56,13 @@ define([
 			if (selection) {
 				editor.selection = Maps.merge(selection);
 			}
+			if (event.dnd) {
+				editor.dnd = Maps.merge(event.dnd);
+			}
 		}
 	}
 
-	editor.dnd       = DragDrop.Context();
+	editor.dnd       = null;
 	editor.selection = null;
 	editor.editables = {};
 	editor.stack     = [
