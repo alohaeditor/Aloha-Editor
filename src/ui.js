@@ -59,12 +59,11 @@ define([
 		var values = {};
 		var boundary = event.selection.boundaries[0];
 		var container = Boundaries.container(boundary);
-		var overrides = Overrides.joinToSet(
+		var overrides = Overrides.map(Overrides.joinToSet(
 			event.selection.formatting,
 			Overrides.harvest(container),
 			event.selection.overrides
-		);
-		console.log(event.type, event.selection.overrides, event.selection.formatting, JSON.stringify(overrides));
+		));
 		var nodes = Dom.childAndParentsUntil(
 			container,
 			Dom.isEditingHost

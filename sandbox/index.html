@@ -146,7 +146,7 @@
 							aloha.events.add(node, 'click', Ui.command(editables, Ui.commands[selector]));
 						});
 					}
-					aloha.editor.stack.push(function (event) {
+					aloha.editor.stack.unshift(function (event) {
 						resetUi();
 						if ('leave' !== event.type) {
 							var states = Ui.states(Ui.commands, event);
