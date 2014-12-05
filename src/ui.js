@@ -57,12 +57,14 @@ define([
 
 	function states(commands, event) {
 		var values = {};
-		var boundary = event.selection.boundaries[0];
-		var container = Boundaries.container(boundary);
+		var selection = event.selection;
+		var container = Boundaries.container(
+			selection.boundaries['start' === selection.focus ? 0 : 1]
+		);
 		var overrides = Overrides.map(Overrides.joinToSet(
-			event.selection.formatting,
+			selection.formatting,
 			Overrides.harvest(container),
-			event.selection.overrides
+			selection.overrides
 		));
 		var nodes = Dom.childAndParentsUntil(
 			container,
@@ -137,7 +139,25 @@ define([
 		return boundaries;
 	}
 
-	function bind(editables, fn) {
+	function execute(command, boundaries, editor, event) {
+		if (command.action) {
+			return command.action(boundaries, editor.selection, command)
+			    || boundaries;
+		}
+		var node = command.node.toUpperCase();
+		var action = Html.isBlockNode({nodeName: node})
+		           ? formatBlock
+		           : formatInline;
+		boundaries = action(boundaries, editor.selection, node, command.style);
+		editor.selection = Selections.select(
+			editor.selection,
+			boundaries[0],
+			boundaries[1]
+		);
+	}
+
+	function command(editables, cmd) {
+		var fn = Fn.partial(execute, cmd);
 		editables = Arrays.is(editables) ? editables : [editables];
 		if (0 === editables.length) {
 			return fn;
@@ -158,29 +178,8 @@ define([
 			if (!Arrays.contains(editables, editable)) {
 				return;
 			}
-			fn(boundaries, editor);
+			fn(boundaries, editor, event);
 		};
-	}
-
-	function execute(command, boundaries, editor) {
-		if (command.action) {
-			return command.action(boundaries, editor.selection, command)
-			    || boundaries;
-		}
-		var node = command.node.toUpperCase();
-		var action = Html.isBlockNode({nodeName: node})
-		           ? formatBlock
-		           : formatInline;
-		boundaries = action(boundaries, editor.selection, node, command.style);
-		editor.selection = Selections.select(
-			editor.selection,
-			boundaries[0],
-			boundaries[1]
-		);
-	}
-
-	function command(editables, cmd) {
-		return bind(editables, Fn.partial(execute, cmd));
 	}
 
 	var commands = {
