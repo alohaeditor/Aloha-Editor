@@ -128,7 +128,7 @@
 			(function () {
 				'use strict';
 
-				var Ui = aloha.ui;
+				var Ui = aloha.ui.Context(aloha.editor);
 
 				var commands = aloha.maps.merge({}, Ui.commands, {
 					superBlock : {
@@ -142,16 +142,22 @@
 					}
 				});
 
-				var editables = aloha.dom.query('.aloha-editable', document);
-
-				editables.forEach(aloha);
+				var editables = aloha.dom.query('.aloha-editable', document).map(aloha);
 
 				for (var selector in commands) {
-					$('.aloha-action-' + selector).click(Ui.command(editables[0], commands[selector]));
+					$('.aloha-action-' + selector).click(
+						Ui.command(editables[0].elem, commands[selector])
+					);
 				}
 
-				Ui.on(editables[0], '*', function (event) {
-					$('.aloha-ui.active, .aloha-ui .active').removeClass('active');
+				function resetUi() {
+					$('.aloha-ui .active, .aloha-ui.active').removeClass('active');
+				}
+
+				Ui.on(document, 'ui.clickOutside', resetUi);
+
+				Ui.on(editables[0].elem, '*', function (event) {
+					resetUi();
 					var states = Ui.states(commands, event);
 					for (var selector in states) {
 						var $item = $('.aloha-action-' + selector).toggleClass('active', states[selector]);
@@ -160,10 +166,6 @@
 							     .addClass('active')[0].firstChild.data = $item[0].textContent + ' ';
 						}
 					}
-				});
-
-				Ui.on(document, 'ui.clickOutside', function () {
-					$('.aloha-ui .active, .aloha-ui.active').removeClass('active');
 				});
 
 			}());
