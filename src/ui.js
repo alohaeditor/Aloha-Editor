@@ -164,7 +164,8 @@ define([
 
 	function execute(command, boundaries, editor) {
 		if (command.action) {
-			return command.action(boundaries, editor.selection, command) || boundaries;
+			return command.action(boundaries, editor.selection, command)
+			    || boundaries;
 		}
 		var node = command.node.toUpperCase();
 		var action = Html.isBlockNode({nodeName: node})

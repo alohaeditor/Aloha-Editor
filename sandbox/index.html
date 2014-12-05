@@ -75,7 +75,7 @@
 
 		<p><input value="Not an Aloha Editor element" /></p>
 
-		<br/><br/>
+		<br/>
 
 		<div class="aloha-editable">
 			<h1>Aloha Editor</h1>
@@ -84,17 +84,18 @@
 				     src="demo.jpg"
 				     alt="Some Rights Reserved. Andrea O, Connell"
 				     style="float:left; width: 300px; margin: 0 20px 20px 0" />
-				Lorem    ipsum &nbsp;dolor sit amet, <b>consec<i>tet</i>ur</b> adipiscin
-				elit. Donec a diam lectus. Sed sit amet ipsum mauris.  Maecen
-				congue ligula ac quam viverra nec consectetur ante hendrerit
+				Lorem    ipsum &nbsp;dolor sit amet, <b>consec<i>tet</i>ur</b>
+				adipiscin elit. Donec a diam lectus. Sed sit amet ipsum mauris.
+				Maecen congue ligula ac quam viverra nec consectetur ante
+				hendrerit
 			</p>
 			<div draggable="true" class="aloha-block"
 				data-aloha='{"hello":"word"}'>Aloha Block</div>
 			<p>
 				Donec et mollis dolor.  Praesent et diam eget libero egesta
-				mattis sit amet vitae augue.  Nam tincidunt congue enim, u
-				porta lorem lacinia consectetur. Donec ut libero sed arc
-				vehicula ultricies a non tortor*
+				mattis sit amet vitae augue.  Nam tincidunt congue enim, u porta
+				lorem lacinia consectetur. Donec ut libero sed arc vehicula
+				ultricies a non tortor
 			</p>
 			<ul>
 				<li>one</li>
@@ -110,9 +111,9 @@
 			</ul>
 			<p>
 				Donec et mollis dolor.  Praesent et diam eget libero egesta
-				mattis sit amet vitae augue.
-				Nam tincidunt congue enim, u porta lorem lacinia consectetur.
-				Donec ut libero sed arc vehicula ultricies a non tortor
+				mattis sit amet vitae augue.  Nam tincidunt congue enim, u porta
+				lorem lacinia consectetur.  Donec ut libero sed arc vehicula
+				ultricies a non tortor
 			</p>
 			<p>
 				Donec ut libero sed arc vehicula ultricies a non tortor
@@ -135,25 +136,28 @@
 				}
 				function main(aloha) {
 					function resetUi() {
-						query('.aloha-ui .active, .aloha-ui.active').forEach(function (node) {
-							aloha.dom.removeClass(node, 'active');
-						});
+						query('.aloha-ui .active, .aloha-ui.active')
+							.forEach(function (node) {
+								aloha.dom.removeClass(node, 'active');
+							});
 					}
-					var Ui = aloha.ui;
 					var editables = query('.aloha-editable').map(aloha);
-					for (var selector in Ui.commands) {
-						query('.aloha-action-' + selector + '-' + editables[0].id).forEach(function (node) {
-							aloha.events.add(node, 'click', Ui.command(editables, Ui.commands[selector]));
-						});
+					for (var selector in aloha.ui.commands) {
+						query('.aloha-action-' + selector + '-' + editables[0].id).
+							forEach(function (node) {
+								aloha.events.add(node, 'click',
+									aloha.ui.command(editables, aloha.ui.commands[selector]));
+							});
 					}
-					aloha.editor.stack.unshift(function (event) {
+					aloha.editor.stack.unshift(function middleware(event) {
 						resetUi();
 						if ('leave' !== event.type) {
-							var states = Ui.states(Ui.commands, event);
+							var states = aloha.ui.states(aloha.ui.commands, event);
 							for (var selector in states) {
-								query('.aloha-action-' + selector + '-' + event.editable.id).forEach(function (node) {
-									aloha.dom.toggleClass(node, 'active', states[selector]);
-								});
+								query('.aloha-action-' + selector + '-' + event.editable.id)
+									.forEach(function (node) {
+										aloha.dom.toggleClass(node, 'active', states[selector]);
+									});
 							}
 						}
 						return event;
