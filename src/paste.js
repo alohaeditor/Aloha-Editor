@@ -199,7 +199,7 @@ define([
 	 * @return {AlohaEvent}
 	 * @memberOf paste
 	 */
-	function handlePaste(event) {
+	function middleware(event) {
 		if ('paste' !== event.type || 'undefined' === typeof event.nativeEvent.clipboardData) {
 			return event;
 		}
@@ -225,6 +225,6 @@ define([
 	}
 
 	return {
-		handlePaste: handlePaste
+		middleware: middleware
 	};
 });

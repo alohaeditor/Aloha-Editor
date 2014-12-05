@@ -63,15 +63,15 @@ define([
 	editor.selection = null;
 	editor.editables = {};
 	editor.stack     = [
-		Selections.handleSelections,
-		Links.handleLinks,
-		Typing.handleTyping,
-		AutoFormat.handleAutoFormat,
-		Blocks.handleBlocks,
-		DragDrop.handleDragDrop,
-		Paste.handlePaste,
-		Keys.handleKeys,
-		Mouse.handleMouse
+		Selections.middleware,
+		Links.middleware,
+		Typing.middleware,
+		AutoFormat.middleware,
+		Blocks.middleware,
+		DragDrop.middleware,
+		Paste.middleware,
+		Keys.middleware,
+		Mouse.middleware
 	];
 
 	function documents(editor) {

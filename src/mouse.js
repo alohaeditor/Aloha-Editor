@@ -32,7 +32,7 @@ define(['boundaries'], function (Boundaries) {
 	 * @return {AlohaEVent}
 	 * @memberOf mouse
 	 */
-	function handleMouse(event) {
+	function middleware(event) {
 		if ('mousedown' === event.type) {
 			event.selection.formatting = [];
 			event.selection.overrides = [];
@@ -41,7 +41,7 @@ define(['boundaries'], function (Boundaries) {
 	}
 
 	return {
-		handleMouse : handleMouse,
-		EVENTS      : EVENTS
+		middleware : middleware,
+		EVENTS     : EVENTS
 	};
 });

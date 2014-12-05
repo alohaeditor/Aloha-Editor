@@ -512,7 +512,7 @@ define([
 	 * Updates selection and nativeEvent
 	 * @memberOf typing
 	 */
-	function handleTyping(event) {
+	function middleware(event) {
 		var selection = event.selection;
 		var start = selection.boundaries[0];
 		var end = selection.boundaries[1];
@@ -547,7 +547,7 @@ define([
 	}
 
 	return {
-		handleTyping  : handleTyping,
-		actions       : actions
+		middleware : middleware,
+		actions    : actions
 	};
 });

@@ -1164,7 +1164,7 @@ define([
 	 * @return {AlohaEvent}
 	 * @memberOf selections
 	 */
-	function handleSelections(event) {
+	function middleware(event) {
 		if (!handlers[event.type]) {
 			return event;
 		}
@@ -1531,7 +1531,7 @@ define([
 		select           : select,
 		focus            : focus,
 		update           : update,
-		handleSelections : handleSelections,
+		middleware       : middleware,
 		Context          : Context,
 		hideCarets       : hideCarets,
 		unhideCarets     : unhideCarets,

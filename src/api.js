@@ -113,7 +113,7 @@ define([
 	exports['arrays']['refill']     = Arrays.refill;
 
 	exports['blocks'] = {};
-	exports['blocks']['handleBlocks'] = Blocks.handleBlocks;
+	exports['blocks']['middleware'] = Blocks.middleware;
 
 	exports['boundaries'] = {};
 	exports['boundaries']['is']                  = Boundaries.is;
@@ -290,9 +290,9 @@ define([
 	exports['dom']['absoluteLeft']                 = Dom.absoluteLeft;
 
 	exports['dragdrop'] = {};
-	exports['dragdrop']['handleDragDrop'] = DragDrop.handleDragDrop;
-	exports['dragdrop']['Context']        = DragDrop.Context;
-	exports['dragdrop']['isDraggable']    = DragDrop.isDraggable;
+	exports['dragdrop']['middleware']  = DragDrop.middleware;
+	exports['dragdrop']['Context']     = DragDrop.Context;
+	exports['dragdrop']['isDraggable'] = DragDrop.isDraggable;
 
 	exports['editables'] = {};
 	exports['editables']['fromElem']     = Editables.fromElem;
@@ -368,16 +368,16 @@ define([
 	exports['images']['setAttributes'] = Images.setAttributes;
 
 	exports['keys'] = {};
-	exports['keys']['handleKeys']      = Keys.handleKeys;
+	exports['keys']['middleware']      = Keys.middleware;
 	exports['keys']['parseKeys']       = Keys.parseKeys;
 	exports['keys']['ARROWS']          = Keys.ARROWS;
 	exports['keys']['CODES']           = Keys.CODES;
 	exports['keys']['shortcutHandler'] = Keys.shortcutHandler;
 
 	exports['links'] = {};
-	exports['links']['create']      = Links.create;
-	exports['links']['remove']      = Links.remove;
-	exports['links']['handleLinks'] = Links.handleLinks;
+	exports['links']['create']     = Links.create;
+	exports['links']['remove']     = Links.remove;
+	exports['links']['middleware'] = Links.middleware;
 
 	exports['lists'] = {};
 	exports['lists']['toggle']   = Lists.toggle;
@@ -405,8 +405,8 @@ define([
 	exports['metaview']['toggle'] = Metaview.toggle;
 
 	exports['mouse'] = {};
-	exports['mouse']['handleMouse'] = Mouse.handleMouse;
-	exports['mouse']['EVENTS']      = Mouse.EVENTS;
+	exports['mouse']['middleware'] = Mouse.middleware;
+	exports['mouse']['EVENTS']     = Mouse.EVENTS;
 
 	exports['overrides'] = {};
 	exports['overrides']['map']         = Overrides.map;
@@ -420,7 +420,7 @@ define([
 	exports['overrides']['joinToSet']   = Overrides.joinToSet;
 
 	exports['paste'] = {};
-	exports['paste']['handlePaste'] = Paste.handlePaste;
+	exports['paste']['middleware'] = Paste.middleware;
 
 	exports['paths'] = {};
 	exports['paths']['toBoundary']   = Paths.toBoundary;
@@ -432,7 +432,7 @@ define([
 	exports['carets']['hideHint'] = Carets.hideHint;
 
 	exports['selectionchange'] = {};
-	exports['selectionchange']['handler']       = SelectionChange.handler;
+	exports['selectionchange']['middleware']    = SelectionChange.middleware;
 	exports['selectionchange']['addHandler']    = SelectionChange.addHandler;
 	exports['selectionchange']['removeHandler'] = SelectionChange.removeHandler;
 
@@ -443,7 +443,7 @@ define([
 	exports['selections']['show']             = Selections.show;
 	exports['selections']['focus']            = Selections.focus;
 	exports['selections']['select']           = Selections.select;
-	exports['selections']['handleSelections'] = Selections.handleSelections;
+	exports['selections']['middleware']       = Selections.middleware;
 	exports['selections']['Context']          = Selections.Context;
 	exports['selections']['selectionEvent']   = Selections.selectionEvent;
 
@@ -492,8 +492,8 @@ define([
 	exports['traversing']['isBoundariesEqual'] = Traversing.isBoundariesEqual;
 
 	exports['typing'] = {};
-	exports['typing']['handleTyping'] = Typing.handleTyping;
-	exports['typing']['actions']      = Typing.actions;
+	exports['typing']['middleware'] = Typing.middleware;
+	exports['typing']['actions']    = Typing.actions;
 
 	exports['ui'] = {};
 	exports['ui']['states']           = Ui.states;

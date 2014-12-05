@@ -109,7 +109,7 @@ define([
 	 * Provides meta, keycode
 	 * @memberOf keys
 	 */
-	function handleKeys(event) {
+	function middleware(event) {
 		var keys = parseKeys(event.nativeEvent);
 		event.meta = keys.meta;
 		event.keycode = keys.keycode;
@@ -178,7 +178,7 @@ define([
 		CODES           : CODES,
 		EVENTS          : EVENTS,
 		ARROWS          : ARROWS,
-		handleKeys      : handleKeys,
+		middleware      : middleware,
 		shortcutHandler : shortcutHandler,
 		parseKeys       : parseKeys
 	};

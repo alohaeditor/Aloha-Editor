@@ -130,7 +130,7 @@ define([
 		return '';
 	}
 
-	function handleAutoFormat(event) {
+	function middleware(event) {
 		if ('keydown' !== event.type) {
 			return event;
 		}
@@ -164,6 +164,6 @@ define([
 	}
 
 	return {
-		handleAutoFormat: handleAutoFormat
+		middleware: middleware
 	};
 });

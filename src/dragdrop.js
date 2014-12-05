@@ -203,7 +203,7 @@ define([
 	 * @return {AlohaEvent}
 	 * @memberOf dragdrop
 	 */
-	function handleDragDrop(event) {
+	function middleware(event) {
 		if (event.dnd && handlers[event.type]) {
 			handlers[event.type](event);
 		}
@@ -211,8 +211,8 @@ define([
 	}
 
 	return {
-		handleDragDrop : handleDragDrop,
-		Context        : Context,
-		isDraggable    : isDraggable
+		middleware  : middleware,
+		Context     : Context,
+		isDraggable : isDraggable
 	};
 });

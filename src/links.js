@@ -236,7 +236,7 @@ define([
 	 *
 	 * @memberOf links
 	 */
-	function handleLinks(event) {
+	function middleware(event) {
 		if ('click' !== event.type) {
 			return event;
 		}
@@ -252,8 +252,8 @@ define([
 	}
 
 	return {
-		handleLinks : handleLinks,
-		create      : create,
-		remove      : remove
+		middleware : middleware,
+		create     : create,
+		remove     : remove
 	};
 });

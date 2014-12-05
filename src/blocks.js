@@ -136,7 +136,7 @@ define([
 	 * @return {AlohaEvent}
 	 * @memberOf blocks
 	 */
-	function handleBlocks(event) {
+	function middleware(event) {
 		if (handlers[event.type]) {
 			handlers[event.type](event);
 		}
@@ -144,7 +144,7 @@ define([
 	}
 
 	return {
-		handleBlocks     : handleBlocks,
+		middleware       : middleware,
 		initializeBlocks : initializeBlocks
 	};
 });
