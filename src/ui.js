@@ -23,21 +23,6 @@ define([
 ) {
 	'use strict';
 
-	function mapsEquals(a, b) {
-		var key;
-		for (key in a) {
-			if (a[key] !== b[key]) {
-				return false;
-			}
-		}
-		for (key in b) {
-			if (a[key] !== b[key]) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 	function commandState(node, command) {
 		if (command.state) {
 			return command.state(node, command);
@@ -73,13 +58,15 @@ define([
 	function states(commands, event) {
 		var values = {};
 		var boundary = event.selection.boundaries[0];
+		var container = Boundaries.container(boundary);
 		var overrides = Overrides.joinToSet(
 			event.selection.formatting,
-			Overrides.harvest(Boundaries.container(boundary)),
+			Overrides.harvest(container),
 			event.selection.overrides
 		);
+		console.log(event.type, event.selection.overrides, event.selection.formatting, JSON.stringify(overrides));
 		var nodes = Dom.childAndParentsUntil(
-			Boundaries.container(boundary),
+			container,
 			Dom.isEditingHost
 		).filter(Dom.isElementNode);
 		Maps.forEach(commands, function (command, key) {
@@ -97,7 +84,7 @@ define([
 	}
 
 	function formatBlock(boundaries, selection, formatting, style) {
-		var boundaries = Editing.format(
+		boundaries = Editing.format(
 			boundaries[0],
 			boundaries[1],
 			formatting
@@ -196,34 +183,6 @@ define([
 		return bind(editables, Fn.partial(execute, cmd));
 	}
 
-	function middleware(event) {
-		if ('selectionchange' !== event.type) {
-			return event;
-		}
-		console.log('!!!');
-		return event;
-
-		var ui = event.ui;
-		ui.inEditable = true;
-		var overrides = Overrides.map(Overrides.joinToSet(
-			event.selection.formatting,
-			event.selection.overrides
-		));
-		if (!ui.overrides || !mapsEquals(ui.overrides, overrides)) {
-			var nodes = Dom.childAndParentsUntil(
-				Boundaries.container(event.selection.boundaries[0]),
-				Dom.isEditingHost
-			).filter(Dom.isElementNode);
-			ui.overridesChange = {
-				selection : event.selection,
-				overrides : overrides,
-				nodes     : nodes
-			};
-			ui.overrides = overrides;
-		}
-		return event;
-	}
-
 	var commands = {
 		'p'         : { node : 'p'                         },
 		'h2'        : { node : 'h2'                        },
@@ -246,7 +205,6 @@ define([
 		states           : states,
 		command          : command,
 		commands         : commands,
-		middleware       : middleware,
 		removeFormatting : removeFormatting
 	};
 
