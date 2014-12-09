@@ -84,12 +84,10 @@ define([
 		return values;
 	}
 
-	function formatBlock(boundaries, selection, formatting, style) {
-		boundaries = Editing.format(
-			boundaries[0],
-			boundaries[1],
-			formatting
-		);
+	function formatBlock(boundaries, selection, command) {
+		var style = command.style;
+		var formatting = command.node.toUpperCase();
+		boundaries = Editing.format(boundaries[0], boundaries[1], formatting);
 		if (!style) {
 			return boundaries;
 		}
@@ -106,27 +104,26 @@ define([
 		return boundaries;
 	}
 
-	function formatInline(boundaries, selection, formatting) {
-		var start = boundaries[0];
-		var end = boundaries[1];
-		if (!Boundaries.equals(start, end)) {
-			return Editing.format(start, end, formatting);
+	function formatInline(boundaries, selection, command) {
+		var formatting = command.node.toUpperCase();
+		if (!Boundaries.equals(boundaries[0], boundaries[1])) {
+			return Editing.format(boundaries[0], boundaries[1], formatting);
 		}
 		var override = Overrides.nodeToState[formatting];
 		if (!override) {
-			return [start, end];
+			return boundaries;
 		}
 		var overrides = Overrides.joinToSet(
 			selection.formatting,
-			Overrides.harvest(Boundaries.container(start)),
+			Overrides.harvest(Boundaries.container(boundaries[0])),
 			selection.overrides
 		);
 		selection.overrides = Overrides.toggle(overrides, override, true);
-		return [start, end];
+		return boundaries;
 	}
 
 	function removeFormatting(boundaries, selection, command) {
-		command.nodes.map(function (node) {
+		command['nodes'].map(function (node) {
 			return node.toUpperCase();
 		}).forEach(function (formatting) {
 			boundaries = Editing.wrap(
@@ -141,14 +138,14 @@ define([
 
 	function execute(command, boundaries, editor, event) {
 		if (command.action) {
-			return command.action(boundaries, editor.selection, command)
-			    || boundaries;
+			boundaries = command.action(boundaries, editor.selection, command)
+			          || boundaries;
+		} else {
+			var action = Html.isBlockNode({nodeName: command.node.toUpperCase()})
+			           ? formatBlock
+			           : formatInline;
+			boundaries = action(boundaries, editor.selection, command);
 		}
-		var node = command.node.toUpperCase();
-		var action = Html.isBlockNode({nodeName: node})
-		           ? formatBlock
-		           : formatInline;
-		boundaries = action(boundaries, editor.selection, node, command.style);
 		editor.selection = Selections.select(
 			editor.selection,
 			boundaries[0],
@@ -208,7 +205,7 @@ define([
 		'unformat'  : {
 			'state'  : Fn.returnFalse,
 			'action' : removeFormatting,
-			'nodes'  : ['b', 'i', 'u', 'em', 'strong']
+			'nodes'  : ['b', 'i', 'u', 'em', 'strong', 'sub', 'sup', 'del', 'small']
 		}
 	};
 
