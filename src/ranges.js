@@ -296,22 +296,20 @@ define(['dom', 'arrays'], function (Dom, Arrays) {
 	}
 
 	/**
-	 * returns true if obj is a Range as created by document.createRange()
+	 * Returns true if the given value is a Range object as created by
+	 * document.createRange()
 	 *
 	 * @param  {*} obj
 	 * @return {boolean}
 	 * @memberOf selections
 	 */
 	function is(obj) {
-		if (obj &&
-			obj.hasOwnProperty &&
-			obj.hasOwnProperty('commonAncestorContainer') &&
-			obj.hasOwnProperty('collapsed') &&
-			obj.hasOwnProperty('startContainer') &&
-			obj.hasOwnProperty('startOffset')) {
-			return true;
-		}
-		return false;
+		return obj
+		    && obj.hasOwnProperty
+		    && obj.hasOwnProperty('commonAncestorContainer')
+		    && obj.hasOwnProperty('collapsed')
+		    && obj.hasOwnProperty('startContainer')
+		    && obj.hasOwnProperty('startOffset');
 	}
 
 	return {

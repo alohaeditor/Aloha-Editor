@@ -204,7 +204,7 @@ define([
 	}
 
 	/**
-	 * Returns true if obj is a native browser event object.
+	 * Returns true if the given value is a native browser event object.
 	 *
 	 * @param  {*} obj
 	 * @return {boolean}

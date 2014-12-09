@@ -1511,7 +1511,8 @@ define([
 	}
 
 	/**
-	 * Returns true if obj is an Selection Event object.
+	 * Returns true if the given value is a Selection Event object as created by
+	 * aloha.selections.selectionEvent.
 	 *
 	 * @param  {*} obj
 	 * @return {boolean}

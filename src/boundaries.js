@@ -664,7 +664,8 @@ define([
 	}
 
 	/**
-	 * true if obj is a Boundary
+	 * Returns true if the given value is a Boundary object.
+	 *
 	 * @param  {*} obj
 	 * @return {boolean}
 	 */

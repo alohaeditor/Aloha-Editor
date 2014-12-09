@@ -638,7 +638,7 @@ define([
 	var api = {};
 	for (var pack in exports) {
 		api[pack] = {};
-		if (true || pack === 'Boromir' || pack === 'Record') {
+		if (pack === 'Boromir' || pack === 'Record') {
 			api[pack] = exports[pack];
 		} else {
 			for (var func in exports[pack]) {
