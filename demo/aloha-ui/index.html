@@ -122,52 +122,43 @@
 		<script src="js/bootstrap.min.js"></script>
 		<script src="js/aloha.min.js"></script>
 		<script src="js/aloha-web.js"></script>
-		<script src="js/aloha-ui.js"></script>
 		<!-- script src="js/aloha-ui-links.js"></script -->
 		<script>
 			(function () {
 				'use strict';
-
-				var Ui = aloha.ui.Context(aloha.editor);
-
-				var commands = aloha.maps.merge({}, Ui.commands, {
+				var commands = aloha.maps.merge(aloha.ui.commands, {
 					superBlock : {
 						node  : 'p',
 						style : {
-							background : 'rgb(204, 224, 94)',
 							padding    : '18px',
+							background : 'rgb(204, 224, 94)',
 							border     : '4px solid rgb(154, 174, 94)'
 						},
 						classes : ['aloha-super-block']
 					}
 				});
-
 				var editables = aloha.dom.query('.aloha-editable', document).map(aloha);
-
 				for (var selector in commands) {
-					$('.aloha-action-' + selector).click(
-						Ui.command(editables[0].elem, commands[selector])
-					);
+					$('.aloha-action-' + selector)
+						.on('click', aloha.ui.command(editables, commands[selector]));
 				}
-
 				function resetUi() {
 					$('.aloha-ui .active, .aloha-ui.active').removeClass('active');
 				}
-
-				Ui.on(document, 'ui.clickOutside', resetUi);
-
-				Ui.on(editables[0].elem, '*', function (event) {
+				aloha.editor.stack.unshift(function middleware(event) {
 					resetUi();
-					var states = Ui.states(commands, event);
-					for (var selector in states) {
-						var $item = $('.aloha-action-' + selector).toggleClass('active', states[selector]);
-						if (states[selector] && $item.parents('.dropdown-menu').length) {
-							$item.closest('.btn-group').find('.dropdown-toggle')
-							     .addClass('active')[0].firstChild.data = $item[0].textContent + ' ';
+					if ('leave' !== event.type) {
+						var states = aloha.ui.states(commands, event);
+						for (var selector in states) {
+							var $item = $('.aloha-action-' + selector).toggleClass('active', states[selector]);
+							if (states[selector] && $item.parents('.dropdown-menu').length) {
+								$item.closest('.btn-group').find('.dropdown-toggle')
+								     .addClass('active')[0].firstChild.data = $item[0].textContent + ' ';
+							}
 						}
 					}
+					return event;
 				});
-
 			}());
 		</script>
 		<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
