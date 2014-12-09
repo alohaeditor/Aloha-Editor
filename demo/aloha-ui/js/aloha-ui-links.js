@@ -1,15 +1,24 @@
-(function (aloha, $) {
+(function (aloha) {
 
 	'use strict';
 
 	var Dom = aloha.dom;
 	var Keys = aloha.keys;
+	var Arrays = aloha.arrays;
+	var Events = aloha.events;
 	var Carets = aloha.carets;
 	var Editor = aloha.editor;
 	var Editing = aloha.editing;
 	var Selections = aloha.selections;
 	var Boundaries = aloha.boundaries;
 	var Traversing = aloha.traversing;
+
+	function query(selector, doc, fn) {
+		var args = Arrays.coerce(arguments).slice(3);
+		Dom.query(selector, doc).forEach(function (node) {
+			fn.apply(null, [node].concat(args));
+		});
+	}
 
 	/**
 	 * Positions the given toolbar element to point to the anchor element in the
@@ -49,13 +58,14 @@
 	function open(toolbar, anchor) {
 		var href = Dom.getAttr(anchor, 'href');
 		var target = Dom.getAttr(anchor, 'target');
-		$('.aloha-active').removeClass('aloha-active');
+		var doc = anchor.ownerDocument;
+		query('.aloha-active', doc, Dom.removeClass, 'aloha-active');
+		query('a.aloha-link-follow', doc, Dom.setAttr, 'href', href);
+		query('.aloha-action-target', doc, Dom.toggleClass, 'active', '_blank' === target);
 		Dom.addClass(anchor, 'aloha-active');
 		Dom.addClass(toolbar, 'active');
 		positionToolbar(toolbar, anchor);
 		toolbar.querySelector('input').value = href;
-		$('a.aloha-link-follow').attr('href', href);
-		$('.aloha-action-target').toggleClass('active', '_blank' === target);
 	}
 
 	/**
@@ -91,8 +101,13 @@
 	 * @param {!Element} anchor
 	 */
 	function interact(toolbar, anchor) {
-		$('a.aloha-active, a.aloha-link-follow')
-			.attr('href', toolbar.querySelector('input').value);
+		query(
+			'a.aloha-active, a.aloha-link-follow',
+			toolbar.ownerDocument,
+			Dom.setAttr,
+			'href',
+			toolbar.querySelector('input').value
+		);
 	}
 
 	/**
@@ -194,7 +209,7 @@
 	/*
 	 * link toolbar interactions
 	 */
-	$('.aloha-link-toolbar input[name=href]').on('keyup', function (event) {
+	query('.aloha-link-toolbar input[name=href]', document, Events.add, 'keyup', function (event) {
 		if (Editor.selection) {
 			interact(
 				getToolbar(Boundaries.document(Editor.selection.boundaries[0])),
@@ -210,26 +225,21 @@
 
 	function middleware(event) {
 		var boundaries = event.selection.boundaries;
+		var doc = Boundaries.document(boundaries[0]);
 		var isInLink = 0 < Dom.childAndParentsUntil(
 			Boundaries.container(boundaries[0]),
 			Dom.isEditingHost
 		).filter(function (node) { return 'A' === node.nodeName; }).length;
 		if ('leave' === event.type) {
 			if (isInLink) {
-				Dom.addClass(
-					getToolbar(Boundaries.document(boundaries[0])),
-					'active'
-				);
+				Dom.addClass(getToolbar(doc), 'active');
 			}
 			return event;
 		}
 		if (isInLink) {
-			open(
-				getToolbar(Boundaries.document(boundaries[0])),
-				getAnchor(boundaries)
-			);
+			open(getToolbar(doc), getAnchor(boundaries));
 		} else {
-			$('.aloha-active').removeClass('aloha-active');
+			query('.aloha-active', doc, Dom.removeClass, 'aloha-active');
 		}
 		return event;
 	}
@@ -240,4 +250,4 @@
 		middleware : middleware
 	};
 
-})(window.aloha, window.jQuery);
+})(window.aloha);
