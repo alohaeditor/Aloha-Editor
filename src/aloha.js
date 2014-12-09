@@ -120,27 +120,9 @@ define([
 	Api['buildcommit'] = '%buildcommit%';
 	window['aloha'] = Maps.extend(aloha, Api);
 
-	var egg = '%c       _       _                      _ _ _\n'
-	        + '  __ _%c| |%c ___ %c| |%c__   __ _    ___  __%c| (_) |%c_ ___  _ __  '
-	        + ' %cAloha! \n'
-	        + ' %c/ _` | |/ _ \\| \'_ \\%c %c/ _` |%c  %c/ _ \\/ _` | | __/ _ \\| \'__|%c '
-	        + ' %cHelp us shape the future of content editing on the web! \n'
-	        + '%c| (%c_%c| | | (%c_%c) | |%c %c| | (%c_%c| |%c %c|  __/ (%c_%c| | | %c||%c (%c_%c) | |%c    '
-	        + ' %cJoin the team at http://github.com/alohaeditor \n'
-	        + ' %c\\__,_|_|\\___/|_|%c %c|_|\\__,_|%c  %c\\___|\\__,_|_|\\__\\___/|_|%c.org'
-			+ ' %c♥';
-
-	var w = 'color: #f34;';
-	var x = 'color: #555;';
-	var y = 'color: #bbb;';
-	var z = 'color: #bbb; background: #f8f6f5;';
-	console.log(
-		egg,
-		y,z,y,z,y,z,y,x,
-		z,y,z,y,z,y,x,
-		z,y,z,y,z,y,z,y,z,y,z,y,z,y,z,y,z,y,x,
-		z,y,z,y,z,y,w
-	);
+	var a = 'color: #7ad; background: #f8f6f5; padding: 5px 0;';
+	var b = 'color: #aaa; background: #f8f6f5; padding: 5px 0;';
+	console.log('%c ✔%c Invoke Aloha by calling: %caloha(document.querySelector(".editable")) ', a, b, a);
 
 	return aloha;
 });
