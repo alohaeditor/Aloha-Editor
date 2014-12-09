@@ -1,5 +1,4 @@
 define([
-	'functions',
 	'dom',
 	'maps',
 	'html',
@@ -8,9 +7,9 @@ define([
 	'editables',
 	'overrides',
 	'boundaries',
-	'selections'
+	'selections',
+	'functions'
 ], function (
-	Fn,
 	Dom,
 	Maps,
 	Html,
@@ -19,7 +18,8 @@ define([
 	Editables,
 	Overrides,
 	Boundaries,
-	Selections
+	Selections,
+	Fn
 ) {
 	'use strict';
 

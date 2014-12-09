@@ -50,7 +50,8 @@ define([
 	 * Hides all visible caret elements and returns all those that were hidden
 	 * in this operation.
 	 *
-	 * @param  {Document} doc * @return {Array.<Element>}
+	 * @param  {Document} doc
+	 * @return {Array.<Element>}
 	 */
 	function hideCarets(doc) {
 		var carets = doc.querySelectorAll('div.aloha-caret');

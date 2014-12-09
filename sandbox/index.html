@@ -136,6 +136,17 @@
 					return aloha.dom.query(selector, document);
 				}
 				function main(aloha) {
+					var commands = aloha.maps.merge(aloha.ui.commands, {
+						superBlock : {
+							node  : 'p',
+							style : {
+								padding    : '18px',
+								background : 'rgb(204, 224, 94)',
+								border     : '4px solid rgb(154, 174, 94)'
+							},
+							classes : ['aloha-super-block']
+						}
+					});
 					function resetUi() {
 						query('.aloha-ui .active, .aloha-ui.active')
 							.forEach(function (node) {
@@ -143,17 +154,17 @@
 							});
 					}
 					var editables = query('.aloha-editable').map(aloha);
-					for (var selector in aloha.ui.commands) {
+					for (var selector in commands) {
 						query('.aloha-action-' + selector + '-' + editables[0].id).
 							forEach(function (node) {
 								aloha.events.add(node, 'click',
-									aloha.ui.command(editables, aloha.ui.commands[selector]));
+									aloha.ui.command(editables, commands[selector]));
 							});
 					}
 					aloha.editor.stack.unshift(function middleware(event) {
 						resetUi();
 						if ('leave' !== event.type) {
-							var states = aloha.ui.states(aloha.ui.commands, event);
+							var states = aloha.ui.states(commands, event);
 							for (var selector in states) {
 								query('.aloha-action-' + selector + '-' + event.editable.id)
 									.forEach(function (node) {

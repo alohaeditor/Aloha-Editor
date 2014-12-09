@@ -20,7 +20,6 @@ $(function () {
 		var color = colors[parseInt(Math.random() * (colors.length - 1), 10)];
 		$('.funky').css('background-color', color);
 	}
-
 	colorcycle();
 	setInterval(colorcycle, 15000);
 });

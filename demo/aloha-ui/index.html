@@ -33,6 +33,12 @@
 					</div>
 
 					<div class="btn-group">
+						<button type="button" data-activeon="a" title="Create Link"	class="aloha-action-link btn btn-default">
+							<span class="glyphicon glyphicon-link"></span>
+						</button>
+					</div>
+
+					<div class="btn-group">
 						<button type="button" class="aloha-action-ol btn btn-default" title="Ordered List"><span class="glyphicon glyphicon-list"></span></button>
 						<button type="button" class="aloha-action-ul btn btn-default" title="Unordered List"><span class="glyphicon glyphicon-list"></span></button>
 					</div>
@@ -53,12 +59,6 @@
 							<li><a href="#" class="aloha-action-p">Paragraph</a></li>
 							<li><a href="#" class="aloha-action-pre">Preformatted</a></li>
 						</ul>
-					</div>
-
-					<div class="btn-group">
-						<button type="button" data-activeon="a" title="Create Link"	class="aloha-action-A btn btn-default">
-							<span class="glyphicon glyphicon-link"></span>
-						</button>
 					</div>
 				</div>
 			</div>
@@ -122,43 +122,36 @@
 		<script src="js/bootstrap.min.js"></script>
 		<script src="js/aloha.min.js"></script>
 		<script src="js/aloha-web.js"></script>
-		<!-- script src="js/aloha-ui-links.js"></script -->
+		<script src="js/aloha-ui-links.js"></script>
 		<script>
 			(function () {
 				'use strict';
-				var commands = aloha.maps.merge(aloha.ui.commands, {
-					superBlock : {
-						node  : 'p',
-						style : {
-							padding    : '18px',
-							background : 'rgb(204, 224, 94)',
-							border     : '4px solid rgb(154, 174, 94)'
-						},
-						classes : ['aloha-super-block']
-					}
-				});
+				var commands = aloha.maps.merge(aloha.linksUi.commands, aloha.ui.commands);
 				var editables = aloha.dom.query('.aloha-editable', document).map(aloha);
 				for (var selector in commands) {
 					$('.aloha-action-' + selector)
 						.on('click', aloha.ui.command(editables, commands[selector]));
 				}
-				function resetUi() {
+				function middleware(event) {
 					$('.aloha-ui .active, .aloha-ui.active').removeClass('active');
-				}
-				aloha.editor.stack.unshift(function middleware(event) {
-					resetUi();
-					if ('leave' !== event.type) {
-						var states = aloha.ui.states(commands, event);
-						for (var selector in states) {
-							var $item = $('.aloha-action-' + selector).toggleClass('active', states[selector]);
-							if (states[selector] && $item.parents('.dropdown-menu').length) {
-								$item.closest('.btn-group').find('.dropdown-toggle')
-								     .addClass('active')[0].firstChild.data = $item[0].textContent + ' ';
-							}
+					if ('leave' === event.type) {
+						return event;
+					}
+					var states = aloha.ui.states(commands, event);
+					for (var selector in states) {
+						var $item = $('.aloha-action-' + selector).toggleClass('active', states[selector]);
+						if (states[selector] && $item.parents('.dropdown-menu').length) {
+							$item.closest('.btn-group').find('.dropdown-toggle')
+							     .addClass('active')[0].firstChild.data = $item[0].textContent + ' ';
 						}
 					}
 					return event;
-				});
+				}
+				aloha.editor.stack.unshift(aloha.linksUi.middleware, middleware);
+
+				// Because Bootstrap dropdowm menu's use anchor tags containing
+				// "href='#'" which causes the page to jump to the top
+				$('.aloha-ui .dropdown-menu').on('click', function (event) { event.preventDefault(); });
 			}());
 		</script>
 		<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
