@@ -7,7 +7,7 @@
  *
  * This module exports the Aloha Editor API in a way that will be safe from
  * mungling by the Google Closure Compiler when comipling in advanced
- * compilation mode.
+ * compilation mode. It also wraps all API functions in API helper wrapper.
  */
 define([
 	'arrays',
@@ -114,7 +114,7 @@ define([
 	exports['arrays']['unique']     = Arrays.unique;
 	exports['arrays']['refill']     = Arrays.refill;
 
-	exports['autoformat']               = {};
+	exports['autoformat'] = {};
 	exports['autoformat']['middleware'] = AutoFormat.middleware;
 
 	exports['blocks'] = {};
@@ -501,11 +501,10 @@ define([
 	exports['typing']['actions']    = Typing.actions;
 
 	exports['ui'] = {};
-	exports['ui']['bind']             = Ui.bind;
-	exports['ui']['states']           = Ui.states;
-	exports['ui']['command']          = Ui.command;
-	exports['ui']['commands']         = Ui.commands;
-	exports['ui']['removeFormatting'] = Ui.removeFormatting;
+	exports['ui']['bind']     = Ui.bind;
+	exports['ui']['states']   = Ui.states;
+	exports['ui']['command']  = Ui.command;
+	exports['ui']['commands'] = Ui.commands;
 
 	exports['undo'] = {};
 	exports['undo']['Context'] = Undo.Context;
@@ -545,6 +544,7 @@ define([
 	/**
 	 * wrap an API function to catch exceptions and provide an API link
 	 *
+	 * @private
 	 * @param  {string} pack
 	 * @param  {string} func
 	 * @return {function}
@@ -554,85 +554,67 @@ define([
 			try {
 				return exports[pack][func].apply(this, arguments);
 			} catch (e) {
-				console.info(apiLink(e, Arrays.coerce(arguments), pack, func));
+				console.info(apiLink(Arrays.coerce(arguments), pack, func));
 				throw e;
 			}
 		};
 	}
 
 	/**
-	 * generate a link to the api from an exception e
-	 * the arguments object passed to the original function
-	 * the package name and the function name
+	 * Generates a link to the api from using the list of  arguments passed to
+	 * the original function the package name and the function name
 	 *
-	 * @param  {Object} e
-	 * @param  {Object} args
-	 * @param  {string} pack
-	 * @param  {string} func
+	 * @private
+	 * @param  {Array.<*>} args
+	 * @param  {string}    pack
+	 * @param  {string}    func
 	 * @return {string}
 	 */
-	function apiLink (e, args, pack, func) {
-		return 'See http://aloha-editor.org/api/' +
-			pack +
-			'.html' +
-			'?types=' +
-			types(args).join('-') +
-			'#' +
-			func;
+	function apiLink(args, pack, func) {
+		return 'See http://aloha-editor.org/api/' + pack + '.html'
+		     + '?types=' + args.map(typeOf).join('-') + '#' + func;
 	}
 
 	/**
-	 * create an array of types from objects in an array
-	 *
-	 * @param  {Array} arr
-	 * @return {Array.<string>}
-	 */
-	function types (arr) {
-		var ts = [];
-		arr.forEach(function (arg) {
-			ts.push(type(arg));
-		});
-		return ts;
-	}
-
-	/**
-	 * get the type of a variable
+	 * Gets the type of the given value.
 	 *
 	 * @param  {*} obj
 	 * @return {string}
 	 */
-	function type (obj) {
-		if (obj && Arrays.is(obj)) {
-			if (Boundaries.is(obj)) {
-				return 'Boundary';
-			}
-			return 'Array';
+	function typeOf(obj) {
+		if (null === obj) {
+			return 'null';
 		}
-		if (obj && typeof obj === 'object') {
-			if (Dom.isElementNode(obj)) {
-				return 'Element';
-			}
-			if (Dom.isNode(obj)) {
-				return 'Node';
-			}
-			if (Selections.is(obj)) {
-				return 'Selection';
-			}
-			if (Ranges.is(obj)) {
-				return 'Range';
-			}
-			if (Events.is(obj)) {
-				return 'Event';
-			}
-			if (Selections.isSelectionEvent(obj)) {
-				return 'AlohaEvent';
-			}
-			if (obj instanceof RegExp) {
-				return 'RegExp';
-			}
+		var type = typeof obj;
+		if ('object' !== type) {
+			// boolean, function, object, string, number, undefined
+			return type;
 		}
-		// boolean, function, object, string, number
-		return typeof obj;
+		if (Arrays.is(obj)) {
+			return Boundaries.is(obj) ? 'Boundary' : 'Array';
+		}
+		if (Dom.isElementNode(obj)) {
+			return 'Element';
+		}
+		if (Dom.isNode(obj)) {
+			return 'Node';
+		}
+		if (Selections.is(obj)) {
+			return 'Selection';
+		}
+		if (Ranges.is(obj)) {
+			return 'Range';
+		}
+		if (Events.is(obj)) {
+			return 'Event';
+		}
+		if (Selections.isSelectionEvent(obj)) {
+			return 'AlohaEvent';
+		}
+		if (obj instanceof RegExp) {
+			return 'RegExp';
+		}
+		return type;
 	}
 
 	var api = {};
