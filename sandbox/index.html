@@ -157,8 +157,7 @@
 					for (var selector in commands) {
 						query('.aloha-action-' + selector + '-' + editables[0].id).
 							forEach(function (node) {
-								aloha.events.add(node, 'click',
-									aloha.ui.command(editables, commands[selector]));
+								aloha.events.add(node, 'click', aloha.ui.command(commands[selector]));
 							});
 					}
 					aloha.editor.stack.unshift(function middleware(event) {

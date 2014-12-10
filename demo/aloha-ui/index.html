@@ -23,33 +23,25 @@
 	    <div class="navbar navbar-default navbar-fixed-top funky" role="navigation">
 	    	<div class="container">
 	    		<div class="navbar-header">
-					<a class="navbar-brand" href="http://www.aloha-editor.org"><img src="logo-small.png" alt="Aloha Editor" title="Aloha Editor" /></a>
+					<a class="navbar-brand" href="http://www.aloha-editor.org">
+						<img src="logo-small.png" alt="Aloha Editor" title="Aloha Editor" />
+					</a>
 				</div>
 				<div class="aloha-ui btn-toolbar" role="toolbar">
 					<div class="btn-group">
-						<button type="button" class="aloha-action-bold btn btn-default" title="Bold"><b>B</b></button>
-						<button type="button" class="aloha-action-italic btn btn-default" title="Italic"><i>I</i></button>
-						<button type="button" class="aloha-action-unformat btn btn-default" title="Remove formatting"><span class="glyphicon glyphicon-remove"></span></button>
+						<button class="aloha-action-bold btn" title="Bold"><b>B</b></button>
+						<button class="aloha-action-italic btn" title="Italic"><i>I</i></button>
+						<button class="aloha-action-unformat btn glyphicon glyphicon-remove" title="Remove formatting"></button>
+						<button class="aloha-action-link btn glyphicon glyphicon-link" title="Create Link"></button>
+						<button class="aloha-action-ol btn glyphicon glyphicon-list" title="Ordered List"></button>
+						<button class="aloha-action-ul btn glyphicon glyphicon-list" title="Unordered List"></button>
+						<!--
+						<button class="aloha-action-undo btn glyphicon glyphicon-step-backward" title="Undo"></button>
+						<button class="aloha-action-redo btn glyphicon glyphicon-step-forward" title="Redo"></button>
+						-->
 					</div>
-
 					<div class="btn-group">
-						<button type="button" data-activeon="a" title="Create Link"	class="aloha-action-link btn btn-default">
-							<span class="glyphicon glyphicon-link"></span>
-						</button>
-					</div>
-
-					<div class="btn-group">
-						<button type="button" class="aloha-action-ol btn btn-default" title="Ordered List"><span class="glyphicon glyphicon-list"></span></button>
-						<button type="button" class="aloha-action-ul btn btn-default" title="Unordered List"><span class="glyphicon glyphicon-list"></span></button>
-					</div>
-
-					<!--div class="btn-group">
-						<button type="button" class="aloha-action-undo btn btn-default" title="Undo"><span class="glyphicon glyphicon-step-backward"></span></button>
-						<button type="button" class="aloha-action-redo btn btn-default" title="Redo"><span class="glyphicon glyphicon-step-forward"></span></button>
-					</div-->
-
-					<div class="btn-group">
-						<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+						<button class="btn dropdown-toggle" data-toggle="dropdown">
 							Paragraph <span class="caret"></span>
 						</button>
 						<ul class="dropdown-menu funky" role="menu">
@@ -66,13 +58,9 @@
 
 		<div class="aloha-3d aloha-ui">
 			<div class="aloha-link-toolbar btn-toolbar funky" role="toolbar">
-				<input type="text" name="href" placeholder="http://www.aloha-editor.org"/ value="">
-				<button class="aloha-action-target btn btn-default" title="Toggle to open link in new window">
-					<span class="glyphicon glyphicon-new-window"></span>
-				</button>
-				<a class="aloha-link-follow btn btn-default" href="#" target="_blank" rel="noreferrer" title="Follow this link">
-					<span class="glyphicon glyphicon-share-alt"></span>
-				</a>
+				<input type="text" name="href" placeholder="http://www.aloha-editor.org" value="">
+				<button class="aloha-action-target btn glyphicon glyphicon-new-window" title="Toggle to open link in new window"></button>
+				<a class="aloha-link-follow btn glyphicon glyphicon-share-alt" href="#" target="_blank" rel="noreferrer" title="Follow this link"></a>
 			</div>
 		</div>
 
@@ -81,18 +69,28 @@
 		<div class="aloha-editable">
 			<h1>Aloha Editor UI Demo</h1>
 			<p>
-				You wonder how to integrate Aloha Editor with your app? Look no further! <code>aloha-ui.js</code>
-				contains our default implementation that you can use as a starting point to integrate Aloha Editor.
-				<code>aloha-ui-links.js</code> is an addon module, that handles the ui and interactions for
-				<a href="http://www.aloha-editor.org" target="_blank">links</a>.
+				This UI demo is a basic implementation that you can use as a
+				starting point to integrate Aloha Editor into your own
+				application. Simply view source.
 			</p>
 
-			<h2>Aloha Editor - the functional WYSIWIG editor</h2>
+			<p>
+				Included is <code>aloha-ui-links.js</code>, which is an
+				additional module that handles UI interactions for editing
+				<a href="http://www.aloha-editor.org" target="_blank">links</a>.
+				Look at that as a reference for extending and customizing the
+				capabilities of Aloha Editor.
+			</p>
+
+			<h2>Aloha Editor is a better alternative to ContentEditable</h2>
 
 			<p>
-				Aloha Editor is the first WYSIWIG editor following the <a href="http://en.wikipedia.org/wiki/Functional_programming" target="_blank">functional programming</a> paradigm.
-				It integrates seamlessly with your web application so your users can experience
-				content creation at it's best.
+				Aloha Editor is a <a
+					href="http://en.wikipedia.org/wiki/Functional_programming"
+					target="_blank">functional</a> content editing library.
+				It has been designed this way to make it a simple and extensible
+				foundation for building—not only word-processing WYSIWYG
+				editors—but future digital native content authoring tools.
 			</p>
 
 			<ul>
@@ -116,6 +114,18 @@
 				Use the clean and modern user interface of Aloha Editor, customize it or build your own according to your needs. Make it an integral part of your web application and the user experience of your customers.</li>
 			</ul>
 		</div>
+
+
+	<div style="position: absolute; top: 100px; background:#ccc">
+
+
+
+	</div>
+
+	<!-- Link Dialog -->
+	<div class="aloha-ui aloha-link-toolbar btn-toolbar" role="toolbar">
+		<input name="href" placeholder="http://www.aloha-editor.org">
+	</div>
 
 
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>

@@ -48,21 +48,26 @@
 			<h1>Aloha Editor UI</h1>
 
 			<p>
-				This outline will show you how to intergrate basic UI with Aloha
-				Editor into your application. We will cover two topics:
+				Though Aloha Editor comes with a UI implementation, our primary
+				goal is to integrate simply with your user experience.
+				Therefore we expect that most of the time you will want to
+				integrate Aloha Editor with your markup. This guide covers two
+				approaches:
 			</p>
 
 			<ol>
 				<li><a href="#copypaste">Copy &amp; paste</a> to get started quickly</li>
-				<li><a href="#extend">Extend the UI implementation</a> with additional buttons and features</li>
+				<li><a href="#extend">Extend our UI implementation</a> with additional buttons and features</li>
 			</ol>
 
 			<h2 id="copypaste">Copy &amp; Paste</h2>
-			<hr/>
 
+			<p>To add our default API to your page you will need to add three things to your page:</p>
+
+			
 			<h2><b>Step 1:</b> CSS</h2>
 
-			<p>Include Bootstrap and Aloha UI CSS files to the <code>&lt;head&gt;</code>.</p>
+			<p>Add Bootstrap and Aloha UI CSS files to the <code>&lt;head&gt;</code></p>
 
 			<textarea class="example"><head>
 	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
@@ -71,9 +76,10 @@
 
 			<h2><b>Step 2:</b> HTML</h2>
 
-			<p>Add UI markup into the <code>&lt;body&gt;</code> of your document.</p>
+			<p>Add the UI HTML Code to the <code>&lt;body&gt;</code></p>
 
 			<textarea class="example"><body>
+	<!-- Main Toolbar -->
 	<div class="aloha-ui btn-toolbar" role="toolbar">
 		<div class="btn-group">
 			<button class="aloha-action-bold btn"><b>B</b></button>
@@ -97,20 +103,22 @@
 		</div>
 	</div>
 
+	<!-- Link Dialog -->
+	<div class="aloha-ui aloha-link-toolbar btn-toolbar" role="toolbar">
+		<input name="href" placeholder="http://www.aloha-editor.org">
+	</div>
+
 	...
 
 </body></textarea>
 
-			<h2><b>Step 3:</b> JS</h2>
-
-			<p>Include at the bottom of your <code>&lt;body&gt;</code> after <code>aloha.min.js</code></p>
+			<p>3. Include <code>aloha-ui-links.js</code> at the bottom of your <code>&lt;body&gt;</code> after <code>aloha.min.js</code></p>
 
 <textarea class="example"><body>
 	...
 	<script src="js/aloha.min.js"></script>
+	<script src="js/aloha-ui-links.js"></script>
 </body></textarea>
-
-			<p>Include the basic wiring.</p>
 
 			<p><i>
 				(This example uses jQuery-syntax for short-hand, though it is
@@ -137,7 +145,6 @@
 </textarea>
 
 			<h2 id="extend">Extend Our UI Implementation</h2>
-			<hr/>
 
 			<p>After this basic UI you will want to extend the functionality.</p>
 

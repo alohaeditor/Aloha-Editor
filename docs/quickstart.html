@@ -47,19 +47,28 @@
 					<h1>Aloha Editor Quickstart</h1>
 					
 					<p>
-						To use Aloha Editor in your application you will just need to load the
-						minified JavaScript file
+						Using Aloha Editor in your application you is quite
+						straightforward, with just 2 essential steps.
 					</p>
 
-					<textarea class="example"><script src="aloha.min.js"></script></textarea>
+					<h2><b>Step 1:</b> Include Aloha</h2>
+
+					<p>Include the <code>aloha.min.js</code> script.</p>
+
+					<textarea class="example">&lt;script src="aloha.min.js"&gt;&lt;/script&gt;</textarea>
+
+					<h2><b>Step 2:</b> Invoke Aloha</h2>
 
 					<p>
-						and create an editable region in the page, by using the <code>aloha()</code> function
+						Invoke the <code>aloha</code> function to create an
+						editable region in your page.
 					</p>
 
-					<textarea id="example-aloha-func" class="example">var editable = document.querySelector('.aloha-editable');
-editable.style.borderColor = '#54c8eb';
-aloha(editable);</textarea>
+					<textarea id="example-aloha-func" class="example">aloha(document.querySelector('.aloha-editable'));</textarea>
+
+					<p>That's it. You're editing with Aloha Editor!</p>
+
+					<hr/>
 
 					<button class="btn btn-lg" onclick="executeExample('example-aloha-func')">Execute Example</button>
 				</div>
@@ -83,17 +92,21 @@ aloha(editable);</textarea>
 						<p><small>*) Yes, you can even press the button in the example</small></p>
 					</div>
 				</div>
+
+				&nbsp;<hr/>&nbsp;
+
 				<div class="col-md-12">
 					<p>
-						In our implementations we like to use the following code snippet to make all elements
-						with the <code>aloha-editable</code> class editable.
+						You will notice that we often use code like the snippet
+						below to make multiple elements editable at once.
 					</p>
 
 					<textarea class="example">aloha.dom.query('.aloha-editable', document).forEach(aloha);</textarea>
 
 					<p>
-						This will use our <code>aloha.dom.query</code> method that returns an arry of elements and
-						invoke the <code>aloha</code> function on each of them.
+						In the above snippet, <code>aloha.dom.query</code>
+						returns an array of elements which each have
+						<code>aloha</code> invoked on them.
 					</p>
 				</div>
 				<div id="disqus_thread" class="col-md-12"></div>

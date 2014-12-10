@@ -1,16 +1,15 @@
-(function (aloha) {
+(function (aloha, CodeMirror) {
 	'use strict';
-	
+
 	var codeEditors = {};
-	
+
+	aloha.dom.query('textarea', document).forEach(function (textarea) {
+		codeEditors[textarea.id] = CodeMirror.fromTextArea(textarea);
+	});
+
 	window.executeExample = function (example) {
-		var code = codeEditors[example].getValue();
 		window.event.target.blur();
-		eval(code);
+		eval(codeEditors[example].getValue());
 	};
 
-	[].forEach.call(document.querySelectorAll('textarea'), function (textarea) {
-		var exampleName = textarea.id;
-		codeEditors[exampleName] = CodeMirror.fromTextArea(textarea);
-	});
-}(aloha, CodeMirror));
+}(window.aloha, window.CodeMirror));

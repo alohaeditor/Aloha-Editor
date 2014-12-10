@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Aloha Editor Docs: UI</title>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="og:description" content="A simple step by step guide to intergrating Aloha Editor into your application">
+		<meta name="og:image" content="http://aloha-editor.org/Content.Node/img/froggy.png">
+		<meta name="author" content="">
+		<link rel="icon" href="favicon.ico">
+		<style>
+			* {
+				-webkit-box-sizing: border-box;
+				   -moz-box-sizing: border-box;
+						box-sizing: border-box;
+			}
+			pre {
+				box-sizing: border;
+				width: 100%;
+				font-size: 16px;
+				font-weight: bold;
+				font-family: monospace;
+				background: whitesmoke;
+				border: 0;
+				padding: 1em;
+			}
+			pre u {
+				background: #6ac;
+				color: #fff;
+				text-decoration: none;
+			}
+			h1 {
+				background: url(http://aloha-editor.org/Content.Node/img/froggy.png);
+				background-position: center left;
+				background-repeat: no-repeat;
+				background-size: 50px auto;
+				padding-left: 60px;
+			}
+		</style>
+	</head>
+	<body>
+
+		<div>
+			<i>Keep calm and follow the frog...</i>
+
+			<h1>Leap 1: Include and invoke Aloha</h1>
+
+			<p>
+				To replace ContentEditable with Aloha Editor is as simple as 1
+				line of JavaScript:
+			</p>
+
+			<pre>aloha(document.querySelector('#editable'))</pre>
+
+			<p>
+				You can initialize multiple editables at once with this simply
+				trick:
+			</p>
+
+			<pre>aloha.dom.query('.editable', document).forEach(aloha)</pre>
+
+			<p>
+				<a href="http://alohaeditor.org/api/aloha.html#aloha"><code>aloha()</code></a>
+				transforms the given element into an editing canvas; you can
+				start typing and using keyboard commands to format content bold,
+				italic, etc.
+			</p>
+
+			<iframe width="100%" height="200" frameborder="0"
+				src="http://jsfiddle.net/zsjp7xka/4/embedded/html,result"></iframe>
+
+			<p>
+				To disable editing use
+				<a href="http://alohaeditor.org/api/aloha.html#mahalo"><code>aloha.mahalo()</code></a>
+			</p>
+
+			<h1>Leap 2: Add a button</h1>
+
+			<p>
+				Aloha Editor uses a blinking DIV element as the caret. It is the
+				minimal visual user interface (<a href="#caretStylingFiddle">which you can style with CSS
+					btw!</a>). But you'll want more than just a caret. So this is how
+				you can a bold to format content button with Aloha Editor.
+			</p>
+
+			<p>
+				Add this markup into your document.
+			</p>
+
+			<pre>&lt;button class="my-big-bold-button"&gt;B&lt;/button&gt;</pre>
+
+			<i>
+				NB: We're using jQuery API as a shorthand because it's terse and
+				everyone's familliar with it; you can
+				<a href="http://vanilla-js.com">pick your own poison</a>.
+			</i>
+
+			<pre>$('.my-big-bold-button').on('click', aloha.ui.command(aloha.ui.commands.bold))</pre>
+
+			// Fiddle
+
+			<h1>Leap 3: Add many buttons</h1>
+
+			<p>
+				There a number of formatting commands that come with Aloha
+				Editor out of the box. You saw the
+				<code>aloha.ui.commands.bold</code> command, but there are
+				<a href="http://alohaeditor.org/api/ui.html#commands">a few more</a>.
+			</p>
+
+			<p>
+				Let's use a for-loop to bind 4 commands to buttons.
+			</p>
+
+			<pre>
+&lt;button class="action-bold"&gt;B&lt;/button&gt;
+&lt;button class="action-italic"&gt;I&lt;/button&gt;
+&lt;button class="action-underline"&gt;U&lt;/button&gt;
+&lt;button class="action-unformat"&gt;✘&lt;/button&gt;
+</pre>
+
+		<pre>
+for (var command in aloha.ui.commands) {
+  $('.action-' + command).on('click', aloha.ui.command(aloha.ui.commands[command]));
+}
+</pre>
+
+		// fiddle
+
+		<h1>Leap 4: Per-editable binding</h1>
+
+		<p>
+			But what if we want to the underline button to be able to effect one
+			editable and not the other?
+		</p>
+
+		<p>
+			To do this we need to pass 2 arguments into
+			<a href=http://alohaeditor.org/api/ui.html#command"> <code>aloha.ui.command</code></a>
+			instead of 1. You'll see why in a minute. First let add some
+			suffixes to our button classnames. We add <u>1</u> to demark buttons
+			that should effect editable 1 and <u>2</u> to demark buttons that
+			should effect editable 2.
+		</p>
+
+		<pre>
+&lt;button class="action-bold-<u>1</u>"&gt;B&lt;/button&gt;
+&lt;button class="action-underline-<u>2</u>"&gt;U&lt;/button&gt;
+</pre>
+
+		<pre>
+var editables = aloha.dom.query('.editables', document).map(aloha);
+for (var editable in editables) {
+  for (var command in aloha.ui.commands) {
+    $('.action-' + command + '-' + <u>editable.id</u>).on(
+      'click',
+      aloha.ui.command(<u>editable</u>, aloha.ui.commands[command])
+    );
+  }
+}</pre>
+
+		<p>
+			Bare in mind that <code>aloha.ui.command</code> can also take an
+			array of <a href=http://alohaeditor.org/api/editables.html">editables</a>
+			as its first argument to bind a single button to more than just one
+			editables.
+		</p>
+
+		</div>
+
+		<div id="disqus_thread"></div>
+
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+		<!-- script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+ (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-17460389-2', 'auto'); ga('require', 'displayfeatures');
+ga('send', 'pageview');</script -->
+
+	    <script type="text/javascript">
+			(function(d) {
+				 return;
+				var q=d.createElement('script');q.async=1;q.src='//alohaeditor.disqus.com/embed.js';
+				(d.getElementsByTagName('head')[0]||d.getElementsByTagName('body')[0]).appendChild(q);
+			})(document);
+	    </script>
+
+		<script src="js/aloha.min.js"></script>
+		<script>aloha(document.querySelector('h1'));</script>
+	</body>
+</html>

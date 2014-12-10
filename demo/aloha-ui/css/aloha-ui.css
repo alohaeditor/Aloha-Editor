@@ -144,19 +144,20 @@
 }
 
 /** links **/
-.aloha-3d .aloha-link-toolbar {
+.aloha-link-toolbar {
 	display: none;
-	background: transparent;
+	position: absolute;
 	white-space: nowrap;
+	background: #333;
 }
-.aloha-3d.active .aloha-link-toolbar {
+.active .aloha-link-toolbar {
 	display: block;
 	-webkit-animation: flip-open .2s ease-out forwards;
 	   -moz-animation: flip-open .2s ease-out forwards;
 	    -ms-animation: flip-open .2s ease-out forwards;
 	        animation: flip-open .2s ease-out forwards;
 }
-.aloha-3d.closed .aloha-link-toolbar {
+.closed .aloha-link-toolbar {
 	-webkit-animation: flip-close .2s ease-out forwards;
 	   -moz-animation: flip-close .2s ease-out forwards;
 	    -ms-animation: flip-close .2s ease-out forwards;
@@ -180,6 +181,10 @@
 }
 .aloha-link-toolbar a.btn { padding-top: 10px; }
 .aloha-link-toolbar .aloha-action-follow { float: right; }
+
+.aloha-3d .aloha-link-toolbar { position: relative; }
+.aloha-ui.aloha-link-toolbar { display: none; background: #333; }
+.aloha-ui.aloha-link-toolbar.active { display: block; }
 
 .aloha-active,
 .aloha-active:hover {

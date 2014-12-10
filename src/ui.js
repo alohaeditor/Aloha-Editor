@@ -190,7 +190,7 @@ define([
 	}
 
 	function command(editables, cmd) {
-		if (Dom.isElementNode(editables)) {
+		if (Editables.is(editables)) {
 			editables = [editables];
 		}
 		if (!Arrays.is(editables)) {
@@ -200,8 +200,31 @@ define([
 		return bind(editables, Fn.partial(execute, cmd));
 	}
 
+	/**
+	 * UI Commands.
+	 *
+	 * <code>
+	 * 	Commands:
+	 * 		p
+	 * 		h1
+	 * 		h2
+	 * 		h3
+	 * 		h4
+	 * 		ol
+	 * 		ul
+	 * 		pre
+	 * 		bold
+	 * 		italic
+	 * 		underline
+	 * 		unformat
+	 * </code>
+	 *
+	 * @type {Object}
+	 * @memberOf ui
+	 */
 	var commands = {
 		'p'         : { node : 'p'                         },
+		'h1'        : { node : 'h1'                        },
 		'h2'        : { node : 'h2'                        },
 		'h3'        : { node : 'h3'                        },
 		'h4'        : { node : 'h4'                        },
