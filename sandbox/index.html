@@ -4,7 +4,6 @@
 		<title>Aloha Editor</title>
 		<meta charset="UTF-8">
 		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300,700' rel='stylesheet' type='text/css'>
-		<!-- Image from: https://www.flickr.com/photos/lovingjazz/6737863743 -->
 		<style>
 			html {
 				height: 100%;
@@ -19,9 +18,10 @@
 				box-shadow: 0 0 100px rgba(0,0,0,0.2) inset;
 				font-family: 'Open Sans', sans-serif;
 				font-size: 16px;
-				-webkit-font-smoothing: antialiased;
-				   -moz-font-smoothing: antialiased;
-				       -font-smoothing: antialiased;
+				-moz-osx-font-smoothing: grayscale;
+				 -webkit-font-smoothing: antialiased;
+				    -moz-font-smoothing: antialiased;
+				         font-smoothing: antialiased;
 			}
 			::selection {
 				background: #4285f4;
@@ -47,8 +47,7 @@
 				text-align: center;
 				display: table-cell;
 				vertical-align: middle;
-				background-image: -webkit-linear-gradient(50deg, #8aeae2 0%, #dcc23a 30%, #ee5577 100%);
-				background-image: -moz-linear-gradient(50deg, #8aeae2 0%, #dcc23a 30%, #ee5577 100%);
+				background-image: linear-gradient(50deg, #8aeae2 0%, #dcc23a 30%, #ee5577 100%);
 			}
 			code {
 				border: 1px solid #ddd;
@@ -60,12 +59,12 @@
 		</style>
 	</head>
 	<body>
-		<span class="aloha-ui">
+		<div class="aloha-ui">
 			<button class="aloha-action-bold-1">B</button>
 			<button class="aloha-action-italic-1">I</button>
 			<button class="aloha-action-underline-1">U</button>
 			<button class="aloha-action-unformat-1">✘</button>
-		</span>
+		</div>
 
 		<div class="aloha-editable">starting<i>foobar</i><p
 			><span>one</span> <u><b>two</b> <i>three</i></u></p> <h6
@@ -157,8 +156,7 @@
 					for (var selector in commands) {
 						query('.aloha-action-' + selector + '-' + editables[0].id).
 							forEach(function (node) {
-								aloha.events.add(node, 'click',
-									aloha.ui.command(editables, commands[selector]));
+								aloha.events.add(node, 'click', aloha.ui.command(commands[selector]));
 							});
 					}
 					aloha.editor.stack.unshift(function middleware(event) {
@@ -182,6 +180,7 @@
 				}
 			}());
 		</script>
+
 	</body>
 </html>
 

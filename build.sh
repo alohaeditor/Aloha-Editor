@@ -4,6 +4,7 @@ Aloha Editor build script
 
 --simple      build with simple optimization - default is advanced
 --source-map  creates a source-mapped output in build directory
+--docs        build api docs
 
 Make sure to run this script from within the directory in which is located (ie: ./build.sh).
 Also make sure to include an .env file in the same directory as this script.
@@ -38,6 +39,7 @@ function build {
 	cd $src
 	
 	versioned=$entry.versioned
+
 	sed s/%buildcommit%/$ish/ <(cat $entry.js) > $versioned.js
 
 	find ./ -name "*.js" | \
@@ -55,12 +57,12 @@ function build {
 			$sourcemap \
 		> $pwd/build/$target
 
-	rm $versioned.js
-
 	if [[ -n $sourcemap ]]; then
 		echo -e "\n//# sourceMappingURL=aloha.js.map" >> $pwd/build/$target
 		cp -r $pwd/src/* $pwd/build
 		printf "$tick Source maps placed in $pwd/build.\n"
+	else
+		rm $versioned.js
 	fi
 
 	printf "$tick Building is complete.\n"
@@ -69,6 +71,13 @@ function build {
 if [ -f .env ]; then
 	source .env
 fi
+
+function docs {
+	printf "$dot Building API docs\n"
+	rm -rf api; mkdir api
+	jsdoc --verbose -r -d api/ -c jsdoc/conf.json src #-t jsdoc/ -R README.md
+	printf "$tick Done!\n"
+}
 
 while test $# -gt 0; do
 	case "$1" in
@@ -83,6 +92,10 @@ while test $# -gt 0; do
 		--source-map)
 			sourcemap="--create_source_map ../build/aloha.js.map --source_map_format=V3"
 			shift
+			;;
+		--docs)
+			docs
+			exit 0
 			;;
 	esac
 done

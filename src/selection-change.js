@@ -2,7 +2,7 @@
  * selection-change.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2015 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  * @namespace selection-change
  */
@@ -72,7 +72,7 @@ define([
 	 *
 	 * See watchSelection().
 	 *
-	 * @param {function:Array.<Boundary>} getBoundaries
+	 * @param {function():Array.<Boundary>} getBoundaries
 	 * @param {Array.<Boundary>} boundaries current selection
 	 * @param fn {!function(Array.<Boundary>, Event)}
 	 *        A handler function that will be called with the changed

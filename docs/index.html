@@ -1,90 +1,531 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>Aloha Editor Docs</title>
-		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta name="description" content="">
-		<meta name="author" content="">
-		<link rel="icon" href="favicon.ico">
-		<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-		<!--[if lt IE 9]>
-			<script src="//oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-			<script src="//oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-		<![endif]-->
-		<!-- Custom styles for this template -->
-		<link href="css/aloha-web.css" rel="stylesheet">
-		<link href="css/aloha-docs.css" rel="stylesheet">
+		<title>Getting Started with Aloha Editor</title>
+		<meta charset='utf-8'>
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+		<meta name='viewport' content='width=device-width, initial-scale=1'>
+		<meta name='og:description' content='A simple step by step guide to get started with Aloha Editor'>
+		<meta name='og:image' content='http://aloha-editor.org/Content.Node/img/froggy.png'>
+		<meta name='author' content='Aloha Editor'>
+		<link rel="icon" type="image/png" href="favicon.png">
+		<link href='http://fonts.googleapis.com/css?family=Droid+Serif:400|Roboto:300,400,700' rel='stylesheet' type='text/css'>
+		<link href='codemirror-4.2/lib/codemirror.css' rel='stylesheet' type='text/css'>
+		<link href='docs.css' rel='stylesheet' type='text/css'>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="js/aloha.min.js"></script>
 	</head>
+
 	<body>
 
-	    <div class="navbar navbar-default navbar-fixed-top funky" role="navigation">
-	    	<div class="container">
-	    		<div class="navbar-header">
-	    		<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
-					<span class="sr-only">Toggle navigation</span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				</button>
-					<a class="navbar-brand" href="http://www.aloha-editor.org"><img src="logo-small.png" alt="Aloha Editor" title="Aloha Editor"/></a>
+		<div class="★">
+			<header class="title"><div>
+				<div class="bg"></div>
+				<div class="editable">
+					<h1>Getting Started</h1>
+					<h2><span>with Aloha Editor</span></h2>
 				</div>
-				<div class="navbar-collapse collapse">
-					<ul class="nav navbar-nav navbar-right">
-						<li><a href="index.html">Docs Home</a></li>
-						<li><a href="http://github.com/alohaeditor/Aloha-Editor" target="_blank">Github</a></li>
-					</ul>
-				</div>
-			</div>
-		</div>
+				<h3><a href="#include-and-invoke-aloha"><span>Leap 1:</span> Include &amp; Invoke Aloha</a></h3>
+				<h3><a href="#add-and-bind-a-button"><span>Leap 2:</span> Add &amp; Bind a Button</a></h3>
+				<h3><a href="#add-more-buttons"><span>Leap 3:</span> Add More Buttons</a></h3>
+				<h3><a href="#multiple-editables"><span>Leap 4:</span> Multiple Editables</a></h3>
+				<h3><a href="#update-button-states"><span>Leap 5:</span> Update Button States</a></h3>
+				<h3><a href="#custom-commands"><span>Leap 6:</span> Custom Commands</a></h3>
+			</div></header>
 
-		<div id="post" class="container post">
-			<div class="row">
-				<div class="col-md-12">
-					<h1>Aloha Editor Documentation</h1>
+			<article>
 
+				<header id="include-and-invoke-aloha"><div>
+					<div class="bg"></div>
+					<img src="http://aloha-editor.org/Content.Node/img/froggy.png"
+						alt="#followTheFrog" title="#followTheFrog"
+						style="display: block; height: 90px; margin: 0 auto 90px;" />
+					<h2><span>Leap 1:</span> Include &amp; Invoke Aloha</h2>
+				</div></header>
+
+				<section>
 					<p>
-						Welcome to the Aloha Editor Documentation.
+						To replace ContentEditable with Aloha Editor is as simple as
+						1 line of markup and 1 line of JavaScript:
 					</p>
 
-					<ul>
-						<li>
-							<h2><a href="quickstart.html">Quickstart</a></h2>
-							Start editing with Aloha Editor right away
+					<div class="snippet" data-syntax='text/html'>
+						&lt;script src="http://aloha-editor.org/download/aloha.min.js"&gt;&lt;/script&gt;
+					</div>
+					<div class="snippet" data-snippet="aloha"><&aloha&>(document.querySelector('#editable'))</div>
 
-						</li>
-						<li>
-							<h2><a href="ui.html">User Interface</a></h2>
-							Learn how to add, modify or build your own UI
-						</li>
+					<p>
+						<a href="/api/aloha.html#aloha"
+							data-snippet-link="aloha.1">aloha()</a>
+						transforms the element given to it into a rich-text
+						editing canvas.
+					</p>
 
-						<li>
-							<h2><a href="integration.html">Integration</a></h2>
-							Integrate Aloha Editor in you application
-						</li>
-						<li>
-							<h2><a href="api.html">API Introduction</a></h2>
-							Basic introduction to Aloha Editor's extensive API
-						</li>
-						<li>
-							<h2><a href="http://aloha-editor.org/api/">API</a></h2>
-							API docs for Aloha Editor
-						</li>
-					</ul>
+					<p>
+						Deactivate editing by invoking
+						<a href="/api/aloha.html#mahalo"><code>aloha.mahalo()</code></a>
+						on the same element that was given to
+						<a href="/api/aloha.html#aloha" data-snippet-link="aloha.1">aloha()</a>.
+					</p>
 
-				</div>
-			</div>
+					<p>
+						You can initialize multiple editables at once with this
+						line of code:
+					</p>
+
+					<div class="snippet" data-snippet="aloha">aloha.dom.query('.editable', document).forEach(<&aloha&>)</div>
+
+					<p>
+						Once an editable is initialized
+						<span id="caret-tease" class="editable"> you will
+						see that Aloha Editor uses a blinking DIV element as the
+						caret</span>.  This caret is the minimal visual user interface
+						(<!-- a href="#caretStylingFiddle" -->which you can style and
+						animate with CSS, by the way).
+					</p>
+
+					<p>
+						Sooner or later you'll need more for UI than just a
+						caret, so the next section shows you how to add a simple
+						bold button to your UI.
+					</p>
+				</section>
+
+			</article>
+
+			<article>
+
+				<header id="add-and-bind-a-button"><div>
+					<div class="bg"></div>
+					<h2><span>Leap 2:</span> Add &amp; Bind a Button</h2>
+				</div></header>
+
+				<section>
+					<p>
+						These instructions will show you how to add a button
+						that, when clicked, will format the selected content in
+						an editable to bold.
+					</p>
+					<p>
+						Begin by putting the following markup somewhere in the
+						body your document:
+					</p>
+
+					<div class="snippet" data-syntax='text/html'>
+						&lt;button id="big-bad-bold-button"&gt;B&lt;/button&gt;
+					</div>
+
+					<p>
+						The next step is to bind the <a href="/api/ui#commands"><code>bold</code>
+						command</a> to this element.
+					</p>
+
+					<blockquote>
+						NB: We will use the jQuery API for these code snippets
+						because it's terse and familiar to most. This is not a
+						requirement for Aloha Editor, however; you are free to
+						<a href="http://vanilla-js.com">pick your own poison</a>.
+					</blockquote>
+
+					<div class="snippet" data-snippet="binding">
+$('#big-bad-bold-button')
+	.on('click', <&aloha.ui.command&>(<&aloha.ui.commands.bold&>))
+					</div>
+
+					<p>
+						The two notable components of the code above are
+						<a href="/api/ui#command" data-snippet-link="binding.1">aloha.ui.command()</a> and
+						<a href="/api/ui#commands" data-snippet-link="binding.2">aloha.ui.commands.bold</a>.
+					</p>
+
+					<p>
+						<a href="/api/ui#command" data-snippet-link="binding.1">aloha.ui.command</a>
+						is a function that generates an event handler, and uses
+						a map of properties—defined through
+						<a href="/api/ui#commands" data-snippet-link="binding.2">aloha.ui.commands.bold</a>—to
+						determine what that event handler should do when the
+						button is clicked. In this case, any content that is
+						selected inside of an editable when this  button is
+						clicked will be formatted bold.
+					</p>
+
+					<div id="demo1" class="tryit">
+						<p class="editable demo">Try it in this editable...</p>
+						<button id="big-bad-bold-button">Bold</button>
+						<script>
+							'use strict';
+							aloha($('#demo1 .editable')[0]);
+							$('#big-bad-bold-button')
+								.on('click', aloha.ui.command(aloha.ui.commands.bold));
+						</script>
+					</div>
+
+					<p>
+						There are a number of other formatting commands that
+						come as defaults with Aloha Editor. You've just seen the
+						<code>aloha.ui.commands.bold</code>
+						command in action, but there are
+						<a href="/api/ui#commands">a few more</a>.
+						The next section explains a convenient way to bind multiple buttons.
+					</p>
+
+				</section>
+
+			</article>
+
+			<article>
+
+				<header id="add-more-buttons"><div>
+					<div class="bg"></div>
+					<h2><span>Leap 3:</span> Add More Buttons</h2>
+				</div></header>
+
+				<section>
+
+					<p>
+						<a href="api/ui#commands"><code>aloha.ui.commands</code></a>
+						contains a set of editing commands that can be bound to
+						elements in order to be executed from event handlers,
+						which
+						<code>aloha.ui.commands.bold</code> is one of.
+					</p>
+
+					<p>
+						These commands are just objects with properties that
+						help to define a formatting operation. For example, this
+						is what the the
+						<code>bold command</code> looks like:
+					</p>
+
+					<div class="snippet">
+{
+	node     : 'b',
+	override : 'bold'
+}
+					</div>
+
+					<p>
+						Now let's bind
+						<a
+							href="api/ui#commands"
+							data-snippet-link="default-commands.1,default-commands.2,default-commands.3,default-commands.4">4 of these commands</a>
+						to buttons at once. First the HTML...
+					</p>
+
+					<div class="snippet"
+						data-syntax="text/html"
+						data-snippet="default-commands">
+&lt;button class="action-{&bold&}"&gt;B&lt;/button&gt;
+&lt;button class="action-{&italic&}"&gt;I&lt;/button&gt;
+&lt;button class="action-{&underline&}"&gt;U&lt;/button&gt;
+&lt;button class="action-{&unformat&}"&gt;✘&lt;/button&gt;
+					</div>
+
+					<p>... then some JavaScript...</p>
+
+					<div class="snippet" data-snippet="default-commands">
+for (var <&command&> in aloha.ui.commands) {
+	$('.action-' + <&command&>).on(
+		'click',
+		aloha.ui.command(aloha.ui.commands[<&command&>])
+	);
+}
+					</div>
+
+					<p>... and done.</p>
+
+					<div id="demo2" class="tryit">
+						<p class="editable demo">Now, try it in this editable...</p>
+						<button class="action-bold">B</button>
+						<button class="action-italic">I</button>
+						<button class="action-underline">U</button>
+						<button class="action-unformat">✘</button>
+						<script>
+							'use strict';
+							aloha($('#demo2 .editable')[0]);
+							for (var command in aloha.ui.commands) {
+								$('#demo2 .action-' + command).on(
+									'click',
+									aloha.ui.command(aloha.ui.commands[command])
+								);
+							}
+						</script>
+					</div>
+
+
+				</section>
+
+			</article>
+
+			<article>
+
+				<header id="multiple-editables"><div>
+					<div  class="bg"></div>
+					<h2><span>Leap 4:</span> Multiple Editables</h2>
+				</div></header>
+
+				<section>
+
+					<p>
+						But what if we want the underline button to be able to
+						effect one editable and not the other? We can do this
+						with a little more code. We will need to pass 2
+						arguments into
+						<a href="/api/ui#command"><code>aloha.ui.command</code></a>
+						instead of 1.
+					</p>
+
+					<p>
+						First let's add some suffixes to our button classnames.
+						We add
+						<span data-snippet-link="config-markup.1,config-code1.2">1</span>
+						to demark buttons that should effect
+						<span data-snippet-link="config-markup.1,config-code1.2">editable 1</span>
+						and
+						<span data-snippet-link="config-markup.2,config-code2.2">2</span>
+						to demark buttons that should effect editable
+						<span data-snippet-link="config-markup.2,config-code2.2">editable 2</span>.
+					</p>
+
+					<div class="snippet" data-snippet="config-markup" data-syntax="text/html">
+&lt;button class="action-bold-{&1&}"&gt;B&lt;/button&gt;
+&lt;button class="action-underline-{&2&}"&gt;U&lt;/button&gt;
+					</div>
+
+					<div class="snippet" data-snippet="config-code1,config-code2">
+var <&editables&> = aloha.dom.query('.editable', document).map(aloha);
+
+editables.forEach(editable) {
+	for (var command in aloha.ui.commands) {
+		$('.action-' + command + '-' + <&editable.id&>).on(
+			'click',
+			<&aloha.ui.command&>(editable, aloha.ui.commands[command])
+		);
+	}
+})
+					</div>
+
+					<p>
+						Bare in mind that
+						<a href="api/ui#comand" data-snippet-link="config-code1.3">aloha.ui.command</a>
+						can also take an array of
+						<a href="/api/editables" data-snippet-link="config-code1.1">editables</a>
+						as its first argument to bind a single button to more than
+						just one editables.
+					</p>
+
+					<div id="demo3" class="tryit">
+						<p class="editable demo">Third editable on page--automatically assigned id "3"...</p>
+						<p class="editable demo">Fourth editable on page--automatically assigned id "4"..</p>
+						<button class="action-bold-3">B (only works for editable 3)</button>
+						<button class="action-underline-4">U (only works for editable 4)</button>
+						<script>
+							'use strict';
+							var editables = aloha.dom.query('#demo3 .editable', document).map(aloha);
+							editables.forEach(function (editable) {
+								for (var command in aloha.ui.commands) {
+									var $btn = $('#demo3 .action-' + command + '-' + editable.id);
+									if ($btn.length > 0) {
+										$btn.on('click', aloha.ui.command(editable, aloha.ui.commands[command]));
+									}
+								}
+							});
+						</script>
+					</div>
+
+				</section>
+
+			</article>
+
+			<article>
+
+				<header id="update-button-states"><div>
+					<div class="bg"></div>
+					<h2><span>Leap 5:</span> Update Button States</h2>
+				</div></header>
+
+				<section>
+					<p>
+						As well as formatting the selection inside of an editable, you will
+						want your buttons to also reflect the formatting at the
+						selection inside of an editable.
+					</p>
+
+					<p>
+						You can achieve this by adding a
+						<span
+						data-snippet-link="middleware.1,middleware.7">function (called "middleware")</span>
+						at the end of
+						<a href="/api/editor#stack" data-snippet-link="middleware.6">aloha.editor.stack</a>
+						array of functions.
+					</p>
+
+					<p>
+						All such middleware functions receive an
+						<a href="/api" data-snippet-link="middleware.2,middleware.5">event object</a>
+						that is threaded through aloha.editor.stack everytime
+						there is an editing interaction.
+					</p>
+
+					<div class="snippet" data-snippet="middleware">
+function <&middleware&>(<&event&>) {
+	$('.active').removeClass('active');
+	if ('leave' !== event.type) {
+		var states = <&aloha.ui.states&>(<&aloha.ui.commands&>, <&event&>);
+		for (var selector in states) {
+			$('#.action-' + selector)
+				.toggleClass('active', states[selector]);
+		}
+	}
+	return event;
+}
+
+<&aloha.editor.stack&>.unshift(<&middleware&>);
+					</div>
+
+					<div id="demo4" class="tryit">
+						<p class="editable demo"><i>Lots</i> <b>for <u>formatting</u></b> here—click around!</p>
+						<button class="action-bold">B</button>
+						<button class="action-italic">I</button>
+						<button class="action-underline">U</button>
+						<button class="action-unformat">✘</button>
+						<script>
+							'use strict';
+							aloha($('#demo4 .editable')[0]);
+							for (var command in aloha.ui.commands) {
+								$('#demo4 .action-' + command)
+									.on('click', aloha.ui.command(aloha.ui.commands[command]));
+							}
+							aloha.editor.stack.unshift(function (event) {
+								$('#demo4 .active').removeClass('active');
+								if ('leave' !== event.type) {
+									var states = aloha.ui.states(aloha.ui.commands, event);
+									for (var selector in states) {
+										$('#demo4 .action-' + selector)
+											.toggleClass('active', states[selector]);
+									}
+								}
+								return event;
+							});
+						</script>
+					</div>
+
+				</section>
+
+			</article>
+
+			<article>
+
+				<header id="custom-commands"><div>
+					<div class="bg"></div>
+					<h2><span>Leap 6:</span> Custom Commands</h2>
+				</div></header>
+
+				<section>
+					<p>
+						You are not restricted to the default commands found in
+						<a href="/api/ui#commands"><code>aloha.ui.commands</code></a>. You can
+						also use your own custom commands.
+					</p>
+
+					<p>
+						You do this by specifying your own
+						<a href="/api/ui#command" data-snippet-link="custom-command.1,custom-command.6,custom-command.9">command object</a>
+						that contains an
+						<a href="/api/ui#command" data-snippet-link="custom-command.3">action</a>
+						function, and any other
+						<a href="/api/ui#command" data-snippet-link="custom-command.2,custom-command.7">properties</a>
+						you want. When the event to which this
+						<a href="/api/ui#command" data-snippet-link="custom-command.9">command is bound</a>
+						is fired, this command's action function will be called,
+						and will receive an
+						<a href="/api/ui#command" data-snippet-link="custom-command.4,custom-command.8">array of boundaries</a>
+						that represent the current boundary selection, the
+						<a href="/api/editor#selection" data-snippet-link="custom-command.5">selection context object</a>,
+						and the
+						<a href="/api/ui#command" data-snippet-link="custom-command.6">the command</a>
+						itself.
+					</p>
+
+					<div class="snippet" data-snippet="custom-command">
+var <&command&> = {
+	<&crazyCoolProperty&>: 'Current boundary selection: ',
+	<&action&>: function (<&boundaries&>, <&selection&>, <&command&>) {
+		console.log(<&command.crazyCoolProperty&> + aloha.markers.hint(<&boundaries&>));
+	}
+};
+$('#crazy-cool-custom-command')
+	.on('click', <&aloha.ui.command(command)&>);
+					</div>
+
+					<div id="demo5" class="tryit">
+						<p class="editable demo"><u>Select</u> some text here, and <i>click</i> that <b>button</b> below.</p>
+						<p><pre class="console"></pre></p>
+						<button id="crazy-cool-custom-command">★ Crazy Cool Custom Command ★</button>
+						<script>
+							var command = {
+								crazyCoolProperty: 'You selected:',
+								action: function (boundaries, selection, command) {
+									var source = aloha.markers.hint(boundaries, true)
+									           .replace(/[\n\r]/g, '')
+									           .replace(/^.*?▓([^▓]+)▓.*$/, '$1')
+											   .replace(/</g, '&lt;').replace(/>/g, '&gt;')
+											   .replace(/^[\{\[]|[\}\]]$/g, '');
+								   $('#demo5 .console')
+									   .html('<b>' + command.crazyCoolProperty + '</b> "' + source + '"');
+								}
+							};
+							$('#crazy-cool-custom-command').on(
+								'click',
+								aloha.ui.command(aloha($('#demo5 .editable')[0]), command)
+							);
+						</script>
+					</div>
+				</section>
+
+			</article>
+
 		</div>
 
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-		<script src="js/bootstrap.min.js"></script>
-		<script src="js/aloha.min.js"></script>
+		<a href="http://aloha-editor.org/api" id="something-amazing">
+			Now build something amazing!
+		</a>
+
+		<div id="disqus_thread"></div>
+
+		<a id="followTheFrog" href="https://twitter.com/alohaeditor">#followTheFrog</a>
+
 		<script src="js/aloha-web.js"></script>
+
 		<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga'); ga('create', 'UA-17460389-2', 'auto'); ga('require', 'displayfeatures'); ga('send', 'pageview');</script>
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-17460389-2', 'auto'); ga('require', 'displayfeatures');
+ga('send', 'pageview');</script>
+
+	    <script>
+			(function(d) {
+				var q=d.createElement('script');q.async=1;q.src='//alohaeditor.disqus.com/embed.js';
+				(d.getElementsByTagName('head')[0]||d.getElementsByTagName('body')[0]).appendChild(q);
+			})(document);
+	    </script>
+
+		<script>setTimeout(function () {
+			'use strict';
+			aloha.dom.query('header .editable, #caret-tease', document).map(aloha);
+			var boundary = aloha.boundaries.fromEndOfNode(
+				aloha.dom.query('header .editable h1', document)[0]
+			);
+			aloha.editor.selection = aloha.selections.select(
+				aloha.editor.selection,
+				boundary,
+				boundary
+			);
+		}, 500)</script>
+		<script src="codemirror-4.2/lib/codemirror.js"></script>
+		<script src="codemirror-4.2/mode/javascript/javascript.js"></script>
+		<script src="codemirror-4.2/mode/xml/xml.js"></script>
+		<script src="js/aloha-docs.js"></script>
 	</body>
 </html>

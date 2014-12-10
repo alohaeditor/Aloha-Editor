@@ -11,3 +11,5 @@ dist
 node_modules
 build
 .classpath
+aloha.versioned.js
+api

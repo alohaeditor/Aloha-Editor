@@ -1,3 +1,11 @@
+/**
+ * ui.js is part of Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
+ * Copyright (c) 2010-2015 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php
+ * @namespace ui
+ */
 define([
 	'dom',
 	'maps',
@@ -23,6 +31,15 @@ define([
 ) {
 	'use strict';
 
+	/**
+	 * For the given command, determines if the command state is true for the
+	 * specified node.
+	 *
+	 * @private
+	 * @param  {Node}    node
+	 * @param  {Command} command
+	 * @return {boolean}
+	 */
 	function commandState(node, command) {
 		if (command.state) {
 			return command.state(node, command);
@@ -55,6 +72,14 @@ define([
 		return true;
 	}
 
+	/**
+	 * Determines the states of the commands for the given event.
+	 *
+	 * @param  {Object<string, command>} commands
+	 * @param  {Event}                   event
+	 * @return {Object<string, boolean>}
+	 * @memberOf ui
+	 */
 	function states(commands, event) {
 		var values = {};
 		var selection = event.selection;
@@ -84,6 +109,16 @@ define([
 		return values;
 	}
 
+	/**
+	 * Applies the given formatting command for blocks inside the given
+	 * boundaries.
+	 *
+	 * @private
+	 * @param  {Array.<Boundary>} boundaries
+	 * @param  {Selection}        selection
+	 * @param  {Command}          command
+	 * @return {Array.<Boundary>}
+	 */
 	function formatBlock(boundaries, selection, command) {
 		var style = command.style;
 		var formatting = command.node.toUpperCase();
@@ -104,6 +139,16 @@ define([
 		return boundaries;
 	}
 
+	/**
+	 * Applies the given formatting command for inline elements inside the given
+	 * boundaries.
+	 *
+	 * @private
+	 * @param  {Array.<Boundary>} boundaries
+	 * @param  {Selection}        selection
+	 * @param  {Command}          command
+	 * @return {Array.<Boundary>}
+	 */
 	function formatInline(boundaries, selection, command) {
 		var formatting = command.node.toUpperCase();
 		if (!Boundaries.equals(boundaries[0], boundaries[1])) {
@@ -122,6 +167,15 @@ define([
 		return boundaries;
 	}
 
+	/**
+	 * Removes formatting between the given boundaries according to the given command.
+	 *
+	 * @private
+	 * @param  {Array.<Boundary>} boundaries
+	 * @param  {Selection}        selection
+	 * @param  {Command}          command
+	 * @return {Array.<Boundary>}
+	 */
 	function removeFormatting(boundaries, selection, command) {
 		command['nodes'].map(function (node) {
 			return node.toUpperCase();
@@ -136,6 +190,15 @@ define([
 		return boundaries;
 	}
 
+	/**
+	 * Executes the given command
+	 *
+	 * @private
+	 * @param {Command}          command
+	 * @param {Array.<Boundary>} boundaries
+	 * @param {Editor}           editor
+	 * @param {AlohaEvent}       event
+	 */
 	function execute(command, boundaries, editor, event) {
 		if (command.action) {
 			boundaries = command.action(boundaries, editor.selection, command)
@@ -165,32 +228,41 @@ define([
 		}
 	}
 
+	/**
+	 * Binds the given function to only be executed if the current document
+	 * selection is inside the given editable(s).
+	 *
+	 * @param {Editable|Array.<Editable>} editables
+	 * @param {function(Boundaries, Editor, AlohaEvent)}
+	 * @memberOf ui
+	 */
 	function bind(editables, fn) {
 		var check = 0 === editables.length
 		          ? Fn.returnTrue
 		          : Fn.partial(Arrays.contains, editables);
+		// TODO: I'm sorry. I'll fix this!
+		var editor = (editables[0] || window['aloha'])['editor'];
 		return function (event) {
-			// TODO: I'm sorry. I'll fix this!
-			var editor = (editables[0] || Dom.documentWindow(event.target.ownerDocument).aloha).editor;
 			var selection = editor.selection;
-			if (!selection || !selection.boundaries) {
-				return;
+			if (selection && selection.boundaries) {
+				var boundaries = Boundaries.get(Boundaries.document(selection.boundaries[0]));
+				if (boundaries && check(Editables.fromBoundary(editor, boundaries[0]))) {
+					fn(boundaries, editor, event);
+				}
 			}
-			var boundaries = Boundaries.get(
-				Boundaries.document(selection.boundaries[0])
-			);
-			if (!boundaries) {
-				return;
-			}
-			if (!check(Editables.fromBoundary(editor, boundaries[0]))) {
-				return;
-			}
-			fn(boundaries, editor, event);
 		};
 	}
 
+	/**
+	 * Binds the given command.
+	 *
+	 * @param  {Command}           cmd
+	 * @param  {Array.<Editable>=} editables
+	 * @return {function(Boundaries, Editor, AlohaEvent)}
+	 * @memberOf ui
+	 */
 	function command(editables, cmd) {
-		if (Dom.isElementNode(editables)) {
+		if (Editables.is(editables)) {
 			editables = [editables];
 		}
 		if (!Arrays.is(editables)) {
@@ -200,17 +272,40 @@ define([
 		return bind(editables, Fn.partial(execute, cmd));
 	}
 
+	/**
+	 * UI Commands.
+	 *
+	 * <code>
+	 * 	Commands:
+	 * 		p
+	 * 		h1
+	 * 		h2
+	 * 		h3
+	 * 		h4
+	 * 		ol
+	 * 		ul
+	 * 		pre
+	 * 		bold
+	 * 		italic
+	 * 		underline
+	 * 		unformat
+	 * </code>
+	 *
+	 * @type {Object}
+	 * @memberOf ui
+	 */
 	var commands = {
-		'p'         : { node : 'p'                         },
-		'h2'        : { node : 'h2'                        },
-		'h3'        : { node : 'h3'                        },
-		'h4'        : { node : 'h4'                        },
-		'ol'        : { node : 'ol'                        },
-		'ul'        : { node : 'ul'                        },
-		'pre'       : { node : 'pre'                       },
-		'bold'      : { node : 'b', override : 'bold'      },
-		'italic'    : { node : 'i', override : 'italic'    },
-		'underline' : { node : 'u', override : 'underline' },
+		'p'         : { 'node' : 'p'                           },
+		'h1'        : { 'node' : 'h1'                          },
+		'h2'        : { 'node' : 'h2'                          },
+		'h3'        : { 'node' : 'h3'                          },
+		'h4'        : { 'node' : 'h4'                          },
+		'ol'        : { 'node' : 'ol'                          },
+		'ul'        : { 'node' : 'ul'                          },
+		'pre'       : { 'node' : 'pre'                         },
+		'bold'      : { 'node' : 'b', 'override' : 'bold'      },
+		'italic'    : { 'node' : 'i', 'override' : 'italic'    },
+		'underline' : { 'node' : 'u', 'override' : 'underline' },
 		'unformat'  : {
 			'state'  : Fn.returnFalse,
 			'action' : removeFormatting,

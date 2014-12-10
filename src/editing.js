@@ -1,7 +1,7 @@
 /** editing.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2015 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  *
  * @TODO formatStyle: in the following case the outer "font-family:
@@ -61,10 +61,11 @@ define([
 	'use strict';
 
 	/**
+	 * Walks the siblings of the given child, calling before for siblings before
+	 * the given child, after for siblings after the given child, and at for the
+	 * given child.
+	 *
 	 * @private
-	 * Walks the siblings of the given child, calling before for
-	 * siblings before the given child, after for siblings after the
-	 * given child, and at for the given child.
 	 */
 	function walkSiblings(parent, beforeAtAfterChild, before, at, after, arg) {
 		var func = before;
@@ -79,9 +80,10 @@ define([
 	}
 
 	/**
-	 * @private
 	 * Walks the siblings of each node in the given array (see
 	 * walkSiblings()).
+	 *
+	 * @private
 	 *
 	 * @param ascendNodes from lowest descendant to topmost parent. The
 	 * topmost parent and its siblings will not be walked over.
@@ -134,7 +136,6 @@ define([
 	}
 
 	/**
-	 * @private
 	 * Walks the boundary of the range.
 	 *
 	 * The range's boundary starts at startContainer/startOffset, goes
@@ -146,6 +147,8 @@ define([
 	 *
 	 * Requires range's boundary points to be between nodes
 	 * (Mutation.splitTextContainers).
+	 *
+	 * @private
 	 */
 	function walkBoundaryLeftRightInbetween(liveRange,
 	                                        carryDown,
@@ -1355,6 +1358,8 @@ define([
 	}
 
 	/**
+	 * Seekts a boundary point.
+	 *
 	 * @private
 	 */
 	function seekBoundaryPoint(range, container, offset, oppositeContainer,

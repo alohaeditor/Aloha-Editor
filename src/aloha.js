@@ -2,10 +2,12 @@
  * ┌───────────────────────────────────────────────────────────────┐
  * │ Aloha Editor 2.0.0 - JavaScript Content Editing Library       │
  * ├───────────────────────────────────────────────────────────────┤
- * │ Copyright © 2010-2014 Gentics Software GmbH, Vienna, Austria. │
+ * │ Copyright © 2010-2015 Gentics Software GmbH, Vienna, Austria. │
  * ├───────────────────────────────────────────────────────────────┤
  * │ aloha-editor.org | github.com/alohaeditor                     │
  * └───────────────────────────────────────────────────────────────┘
+ *
+ * @namespace aloha
  */
 define([
 	'api',
@@ -44,6 +46,15 @@ define([
 ) {
 	'use strict';
 
+	/**
+	 * Editor function/namespace.
+	 *
+	 * This is where state is surfaced.
+	 *
+	 * @param {Event}      nativeEvent
+	 * @param {AlohaEvent} event
+	 * @memberOf aloha
+	 */
 	function editor(nativeEvent, event) {
 		event = event || Selections.selectionEvent(editor, nativeEvent);
 		if (event) {
@@ -61,6 +72,33 @@ define([
 	editor.dnd       = null;
 	editor.selection = null;
 	editor.editables = {};
+	
+	/**
+	 * Aloha Editor stack.
+	 *
+	 * Aloha Editor’s aloha.editor.stack uses the middleware pattern to thread a
+	 * browser event through a series of ordered functions called handlers. Each
+	 * handler receives an event (a map of properties), operates on it, and
+	 * returns an potentially modified version of that object.
+	 *
+	 * Order matters.
+	 *
+	 * It is important to remember that when it comes to middleware order
+	 * matters. Middlewares that depend on particular properties to be in the
+	 * event object, need to be ordered after middleware that provide those
+	 * required properties. e.g.: handleKeys must be ordered before
+	 * handleTyping.
+	 *
+	 * Where’s the `next()` argument?
+	 *
+	 * Unlike other middleware implementations, Aloha Editor’s does not require
+	 * calling a next() function to continue the execution of the middlewares
+	 * function chain. This is because aloha.editor.middleware, assume
+	 * synchronous execution for the purpose of processing editing events.
+	 *
+	 * @type {Array.<Function(AlohaEvent):AlohaEvent>}
+	 * @memberOf aloha
+	 */
 	editor.stack     = [
 		Selections.middleware,
 		Links.middleware,
@@ -82,9 +120,9 @@ define([
 	}
 
 	/**
-	 * The Aloha Editor namespace root.
+	 * Transforms the given element into an Aloha editable region.
 	 *
-	 * Also serves as alias for aloha.aloha.
+	 * Also serves at the Aloha Editor API root.
 	 *
 	 * @param    {!Element} element
 	 * @parma    {Object=}  options

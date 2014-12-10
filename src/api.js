@@ -2,7 +2,7 @@
  * api.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2015 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  *
  * This module exports the Aloha Editor API in a way that will be safe from
@@ -300,6 +300,7 @@ define([
 	exports['dragdrop']['isDraggable'] = DragDrop.isDraggable;
 
 	exports['editables'] = {};
+	exports['editables']['is']           = Editables.is;
 	exports['editables']['fromElem']     = Editables.fromElem;
 	exports['editables']['fromBoundary'] = Editables.fromBoundary;
 	exports['editables']['create']       = Editables.create;
@@ -592,6 +593,9 @@ define([
 		}
 		if (Arrays.is(obj)) {
 			return Boundaries.is(obj) ? 'Boundary' : 'Array';
+		}
+		if (Editables.is(obj)) {
+			return 'Editable';
 		}
 		if (Dom.isElementNode(obj)) {
 			return 'Element';

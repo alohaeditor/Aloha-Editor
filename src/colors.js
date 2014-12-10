@@ -2,7 +2,7 @@
  * colors.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2015 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  * @namespace colors
  */
@@ -102,7 +102,7 @@ define([], function () {
 	 * @memberOf colors
 	 */
 	function hex(value) {
-		var color = value.match(COLOR_PREFIX);
+		var color = value.trim().match(COLOR_PREFIX);
 		switch (color && color[1]) {
 		case '#':
 			return '#' + normalizeHex(color[0]).join('');
@@ -120,7 +120,7 @@ define([], function () {
 	 * @memberOf colors
 	 */
 	function rgb(value) {
-		var color = value.match(COLOR_PREFIX);
+		var color = value.trim().match(COLOR_PREFIX);
 		switch (color && color[1]) {
 		case '#':
 			return hex2rgb(color[0]);

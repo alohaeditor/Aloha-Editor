@@ -2,7 +2,7 @@
  * editables.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2015 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  * @namespace editables
  */
@@ -125,11 +125,26 @@ define([
 		return editable;
 	}
 
+	/**
+	 * Returns true if the given value is an editable.
+	 *
+	 * @param  {*} obj
+	 * @return {boolean}
+	 * @memberOf editables
+	 */
+	function is(obj) {
+		return obj
+		    && obj['elem']
+		    && obj['elem'].hasOwnProperty
+		    && obj['elem'].hasOwnProperty('!aloha-expando-node-id');
+	}
+
 	return {
 		fromElem         : fromElem,
 		fromBoundary     : fromBoundary,
 		assocIntoEditor  : assocIntoEditor,
 		dissocFromEditor : dissocFromEditor,
+		is               : is,
 		close            : close,
 		create           : create,
 		destroy          : destroy

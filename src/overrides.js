@@ -2,7 +2,7 @@
  * overrides.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2015 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  *
  * Refernces:
@@ -98,6 +98,7 @@ define([
 	 *
 	 * @private
 	 * @type {Object.<string, string>}
+	 */
 	var valueToStyle = {
 		'hilitecolor' : 'background-color',
 		'backcolor'   : 'background-color',
@@ -105,7 +106,6 @@ define([
 		'fontsize'    : 'font-size',
 		'fontcolor'   : 'color'
 	};
-	 */
 
 	/**
 	 * List of styles that can be affected through overrides.
