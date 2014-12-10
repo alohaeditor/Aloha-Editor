@@ -205,16 +205,15 @@ define([
 		'unformat'  : {
 			'state'  : Fn.returnFalse,
 			'action' : removeFormatting,
-			'nodes'  : ['b', 'i', 'u', 'em', 'strong', 'sub', 'sup', 'del', 'small']
+			'nodes'  : ['b', 'i', 'u', 'em', 'strong', 'sub', 'sup', 'del', 'small', 'code']
 		}
 	};
 
 	return {
-		bind             : bind,
-		states           : states,
-		command          : command,
-		commands         : commands,
-		removeFormatting : removeFormatting
+		bind     : bind,
+		states   : states,
+		command  : command,
+		commands : commands
 	};
 
 });
