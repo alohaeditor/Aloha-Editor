@@ -151,24 +151,27 @@ define([
 			boundaries[0],
 			boundaries[1]
 		);
-		// TODO: Rely on nodechange event instead
-		Fn.comp.apply(editor.stack, editor.stack)({
-			preventSelection : false,
-			type             : 'ui',
-			nativeEvent      : event,
-			editable         : Editables.fromBoundary(editor, boundaries[0]),
-			selection        : editor.selection,
-			dnd              : editor.dnd
-		});
+		var editable = Editables.fromBoundary(editor, boundaries[0]);
+		if (editable) {
+			// TODO: Rely on nodechange event instead
+			Fn.comp.apply(editor.stack, editor.stack)({
+				preventSelection : false,
+				type             : 'nodechange',
+				nativeEvent      : event,
+				editable         : editable,
+				selection        : editor.selection,
+				dnd              : editor.dnd
+			});
+		}
 	}
 
 	function bind(editables, fn) {
-		editables = Arrays.is(editables) ? editables : [editables];
-		if (0 === editables.length) {
-			return fn;
-		}
+		var check = 0 === editables.length
+		          ? Fn.returnTrue
+		          : Fn.partial(Arrays.contains, editables);
 		return function (event) {
-			var editor = editables[0].editor;
+			// TODO: I'm sorry. I'll fix this!
+			var editor = (editables[0] || Dom.documentWindow(event.target.ownerDocument).aloha).editor;
 			var selection = editor.selection;
 			if (!selection || !selection.boundaries) {
 				return;
@@ -179,8 +182,7 @@ define([
 			if (!boundaries) {
 				return;
 			}
-			var editable = Editables.fromBoundary(editor, boundaries[0]);
-			if (!Arrays.contains(editables, editable)) {
+			if (!check(Editables.fromBoundary(editor, boundaries[0]))) {
 				return;
 			}
 			fn(boundaries, editor, event);
@@ -188,6 +190,13 @@ define([
 	}
 
 	function command(editables, cmd) {
+		if (Dom.isElementNode(editables)) {
+			editables = [editables];
+		}
+		if (!Arrays.is(editables)) {
+			cmd = editables;
+			editables = [];
+		}
 		return bind(editables, Fn.partial(execute, cmd));
 	}
 
