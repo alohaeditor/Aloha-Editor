@@ -102,7 +102,7 @@ define([], function () {
 	 * @memberOf colors
 	 */
 	function hex(value) {
-		var color = value.match(COLOR_PREFIX);
+		var color = value.trim().match(COLOR_PREFIX);
 		switch (color && color[1]) {
 		case '#':
 			return '#' + normalizeHex(color[0]).join('');
@@ -120,7 +120,7 @@ define([], function () {
 	 * @memberOf colors
 	 */
 	function rgb(value) {
-		var color = value.match(COLOR_PREFIX);
+		var color = value.trim().match(COLOR_PREFIX);
 		switch (color && color[1]) {
 		case '#':
 			return hex2rgb(color[0]);

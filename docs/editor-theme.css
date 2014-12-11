@@ -1,0 +1,126 @@
+.cm-s-default                  { color: #ccc }
+.cm-s-default .cm-operator     { color: #cba }
+.cm-s-default .cm-number       { color: #d9a }
+.cm-s-default .cm-unit         { color: #d9a }
+.cm-s-default .cm-keyword      { color: #999 }
+.cm-s-default .cm-def          { color: #abc }
+.cm-s-default .cm-variable     { color: #abc }
+.cm-s-default .cm-variable-2   { color: #abc }
+.cm-s-default .cm-property     { color: #bab }
+.cm-s-default .cm-meta         { color: #bab }
+.cm-s-default .cm-comment      { color: #666 }
+.cm-s-default .cm-string       { color: #9b9 }
+.cm-s-default .cm-string-2     { color: #fff }
+.cm-s-default .cm-header       { color: #f63 }
+.cm-s-default .cm-tag          { color: #a98 }
+.cm-s-default .box-css .cm-tag { color: #dc8 }
+.cm-s-default .cm-attribute    { color: #dc8 }
+.cm-s-default .cm-strong       { color: #dc8 }
+.cm-s-default .cm-em           { color: #dc8 }
+.cm-s-default .cm-qualifier    { color: #dc8 }
+.cm-s-default .cm-builtin      { color: #dc8 }
+.cm-s-default .cm-atom         { color: #dc8 }
+
+.cm-s-default u>span { color: #fff !important; }
+
+.cm-s-default u {
+	display: inline-block;
+	background: #555;
+	color: #fff;
+	padding: 0 5px;
+	text-decoration: none;
+	margin: 5px;
+	border-radius: 1em;
+	cursor: default;
+	-webkit-transition: padding 100ms cubic-bezier(.2,.3,.25,.9), margin 100ms cubic-bezier(.2,.3,.25,.9);
+	   -moz-transition: padding 100ms cubic-bezier(.2,.3,.25,.9), margin 100ms cubic-bezier(.2,.3,.25,.9);
+	    -ms-transition: padding 100ms cubic-bezier(.2,.3,.25,.9), margin 100ms cubic-bezier(.2,.3,.25,.9);
+	     -o-transition: padding 100ms cubic-bezier(.2,.3,.25,.9), margin 100ms cubic-bezier(.2,.3,.25,.9);
+	        transition: padding 100ms cubic-bezier(.2,.3,.25,.9), margin 100ms cubic-bezier(.2,.3,.25,.9);
+} 
+.cm-s-default u:hover {
+	background: #e67;
+	margin: 0px;
+	padding: 5px 10px;
+}
+.cm-s-default pre { padding: 0 1em; }
+
+
+.CodeMirror {
+	height: auto;
+	background: transparent;
+}
+
+.snippet {
+	position: relative;
+	-moz-osx-font-smoothing: grayscale;
+	 -webkit-font-smoothing: antialiased;
+		-moz-font-smoothing: antialiased;
+			 font-smoothing: antialiased;
+	width: 100%;
+	margin: 0 0 1em;
+	padding: 1em 0;
+	background: #f9f9f5;
+	border: 1px solid #edede8;
+	border-radius: 5px;
+	font-weight: bold;
+	font-family: monospace;
+	line-height: 1em;
+	overflow-x: scroll;
+}
+.snippet::after,
+.snippet::before {
+	display: block;
+	position: absolute;
+	content: '';
+	z-index: 9;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 1.4em;
+	background: linear-gradient(
+		to left,
+		rgba(249, 249, 245, 0) 0,
+		rgba(249, 249, 245, 1) 1em
+	);
+}
+.snippet::after {
+	left: auto;
+	right: 0;
+	background: linear-gradient(
+		to right,
+		rgba(249, 249, 245, 0) 0%,
+		rgba(249, 249, 245, 1) 1em
+	);
+}
+
+/*
+.cm-header { font-weight: bold }
+.cm-strong { font-weight: bold }
+.cm-em { font-style: italic }
+.cm-searching {
+    background: black;
+    outline: 2px solid rgba(255,255,255,0.25)
+}
+body.editor { background: #1d1f20 }
+.box,.editor .top-boxes { background: #1d1f20 }
+.box pre,.editor .top-boxes pre { color: white }
+.tabbed-editor .CodeMirror { background: #1d1f20 }
+.tabbed-editor .CodeMirror pre { color: white }
+.tabbed-editor .settings-nub.open span { color: white }
+.CodeMirror-vscrollbar::-webkit-scrollbar-thumb,.CodeMirror-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.3);
+    -webkit-background-clip: content-box;
+    background-clip: content-box
+}
+.CodeMirror-linenumber { color: #343434 }
+.CodeMirror-cursor { border-left-color: white !important }
+.CodeMirror-selected { background: rgba(255,255,255,0.05) }
+.CodeMirror-focused .CodeMirror-selected { background: rgba(255,255,255,0.1) }
+.CodeMirror-matchingbracket { border-bottom: 1px solid rgba(255,255,255,0.5) }
+.powers { border-bottom: 1px solid rgba(255,255,255,0.05) }
+.editor-title-button svg { fill: #999 }
+.editor-title-button:hover svg,.editor-title-button:focus svg { fill: #eee }
+.settings-nub.open svg { fill: white }
+.box-html .cm-atom { color: #96b38a }
+*/
