@@ -72,7 +72,7 @@ define([
 	 * @param {Function(String)} getSwatchClass
 	 * @return {Array<String>}
 	 */
-	function generateSwatches(colors, getSwatchClass) {
+	function generateSwatches(style, colors, getSwatchClass) {
 		var list = Arrays.map(colors, function (color) {
 			return (
 				isColor(color)
@@ -85,7 +85,7 @@ define([
 		});
 		list.push(
 			'<div class="removecolor" title="'
-				+ i18n.t('remove-text-color')
+				+ i18n.t('remove-textcolor-' + style)
 				+ '">&#10006</div></td>'
 		);
 		return list;
@@ -111,15 +111,17 @@ define([
 	 * @param {DOMObject} selected
 	 * @param {Range} range
 	 */
-	function onSelect(selected, range) {
+	function onSelect(style, selected, range) {
 		if (range.collapsed) {
 			Dom.extendToWord(range);
 		}
 		var $swatch = $('>div', selected);
+
 		if ($swatch.hasClass('removecolor')) {
-			TextColor.unsetColor(range);
+			TextColor.unsetColor(style, range);
 		} else {
 			TextColor.setColor(
+				style,
 				range,
 				Dom.getComputedStyle($swatch[0], 'background-color')
 			);
@@ -142,27 +144,100 @@ define([
 	 * @param {Function(String)} getSwatchClass
 	 * @return {Overlay}
 	 */
-	function getOverlay(editable, plugin, button, getSwatchClass) {
+	function getOverlay(style, editable, plugin, button, getSwatchClass) {
 		// Because each editable may have its own configuration and therefore
 		// each may have its own overlay.
 		var config = plugin.getEditableConfig(editable.obj);
-		if (!config || config.length < 1) {
+		if (!config[style] || config[style].length < 1) {
 			return null;
 		}
+		if(!overlays[style]) {
+			overlays[style] = {};
+		}
 		var id = editable.getId();
-		var overlay = overlays[id];
+		var overlay = overlays[style][id];
 		if (!overlay) {
 			overlay = new Overlay(
-				generateSwatches(config, getSwatchClass),
-				function (swatch) { onSelect(swatch, rangeAtOpen); },
+				generateSwatches(style, config[style], getSwatchClass),
+				function (swatch) { onSelect(style, swatch, rangeAtOpen); },
 				button.element[0]
 			);
 			overlay.$element
+			       .addClass('aloha-ui-textcolor-picker-overlay-' + style)
 			       .addClass('aloha-ui-textcolor-picker-overlay')
 			       .css('position', Floating.POSITION_STYLE);
 			overlays[id] = overlay;
 		}
 		return overlay;
+	}
+	/**
+	 * returns a function that finds the class for the swatch of a given color
+	 *
+	 * @param  {Array} colors the array of colors for the style
+	 * @return {Function(String)} the function
+	 */
+	function getSwatchClassFn(style, colors) {
+		var index = {};
+		Arrays.forEach(colors, function (color, i) {
+			index[TextColor.hex(color.toLowerCase())] = 'swatch-' + style + i;
+		});
+		return function getSwatchClass(color) {
+			return (
+				index[color]
+					|| index[color.toLowerCase()]
+						|| index[TextColor.hex(color)]
+			);
+		};
+	}
+	/**
+	 * generates the button component
+	 *
+	 * @param  {String} style  the name of the style property
+	 * @param  {Plugin} plugin the plugin
+	 * @param  {Function(String)} getSwatchClass a function that returns the class for the swatch of a given color
+	 * @return the generated button component
+	 */
+	function generateButton(style, plugin, getSwatchClass) {
+		return Ui.adopt('colorPicker', Button, {
+			tooltip: i18n.t('change-textcolor-' + style),
+			icon: 'aloha-icon-textcolor-' + style,
+			scope: 'Aloha.continuoustext',
+			click: function () {
+				if (plugin.overlays[style]) {
+					var $button = this.element;
+
+					var swatchClass = getSwatchClass(
+						$button.find('.ui-icon').css('background-color')
+					);
+
+					plugin.overlays[style].$element.find('.selected')
+					              .removeClass('selected');
+
+					plugin.overlays[style].$element.find('.focused')
+					              .removeClass('focused');
+
+					plugin.overlays[style].$element.find('.' + swatchClass)
+					              .closest('td')
+					              .addClass('focused')
+					              .addClass('selected');
+
+					var selection = Aloha.getSelection();
+					if (selection.getRangeCount()) {
+						rangeAtOpen = selection.getRangeAt(0);
+					}
+
+					var offset = Overlay.calculateOffset(
+						$button,
+						Floating.POSITION_STYLE
+					);
+					offset.top += $button.height();
+
+					plugin.overlays[style].show(offset);
+
+					this.element.blur();
+				}
+			}
+		});
 	}
 
 	/**
@@ -172,15 +247,16 @@ define([
 	 * @param {Button} button
 	 * @param {Function(String)} getSwatchClass
 	 */
-	function ui(plugin, button, getSwatchClass) {
+	function ui(style, plugin, button, getSwatchClass) {
 		PubSub.sub('aloha.editable.activated', function (message) {
-			plugin.overlay = getOverlay(
+			plugin.overlays[style] = getOverlay(
+				style,
 				message.data.editable,
 				plugin,
 				button,
 				getSwatchClass
 			);
-			if (plugin.overlay) {
+			if (plugin.overlays[style]) {
 				button.show();
 			} else {
 				button.hide();
@@ -188,8 +264,8 @@ define([
 		});
 
 		PubSub.sub('aloha.floating.changed', function (message) {
-			if (plugin.overlay) {
-				plugin.overlay.offset = message.position.offset;
+			if (plugin.overlays[style]) {
+				plugin.overlays[style].offset = message.position.offset;
 
 				var offset = Overlay.calculateOffset(
 					button.element,
@@ -197,7 +273,7 @@ define([
 				);
 				offset.top += button.element.height();
 
-				plugin.overlay.$element.css(offset);
+				plugin.overlays[style].$element.css(offset);
 			}
 		});
 
@@ -205,102 +281,79 @@ define([
 			// The `execCommand` runs asynchronously, so it fires the selection
 			// change event, before actually applying the forecolor.
 			setTimeout(function () {
-				$('.aloha-icon-textcolor').css(
+				$('.aloha-icon-textcolor-' + style).css(
 					'background-color',
-					$(message.range.endContainer).parent().css('color')
+					$(message.range.endContainer).parent().css(style)
 				);
 			}, 20);
+		});
+	}
+	/**
+	 * Generates and registers the buttons in the UI
+	 *
+	 * @param  {String} style  the name of the style property
+	 * @param  {Plugin} plugin the plugin
+	 */
+	function registerButton(style, plugin) {
+		if(!TextColor.isPluginSupportedStyle(style) || !$.isArray(plugin.config[style])) {
+			// config for the style is empty or not set
+			return;
+		}
+		var getSwatchClass = getSwatchClassFn(style, plugin.config[style]);
+		var button = generateButton(style, plugin, getSwatchClass);
+
+		ui(style, plugin, button, getSwatchClass);
+
+		Aloha.ready(function () {
+			(function prepare(pos) {
+				if (pos) {
+					var index = pos - 1;
+					getOverlay(
+						style,
+						Aloha.editables[index],
+						plugin,
+						button,
+						getSwatchClass
+					);
+					setTimeout(function () {
+						prepare(index);
+					}, 100);
+				}
+			}(Aloha.editables.length));
 		});
 	}
 
 	return Plugin.create('textcolor', {
 
-		config: Palette,
+		config: {
+			"color": Palette,
+			"background-color": Palette
+		},
 
 		_constructor: function () {
 			this._super('textcolor');
 		},
 
 		init: function () {
-			var plugin = this;
-
+			var plugin = this,
+				style,
+				tmp;
+			plugin.overlays = {};
 			if (Aloha.settings.plugins && Aloha.settings.plugins.textcolor) {
-				plugin.config = Aloha.settings.plugins.textcolor;
-			}
-
-			var getSwatchClass = (function (colors) {
-				var index = {};
-				Arrays.forEach(colors, function (color, i) {
-					index[TextColor.hex(color.toLowerCase())] = 'swatch' + i;
-				});
-				return function getSwatchClass(color) {
-					return (
-						index[color]
-							|| index[color.toLowerCase()]
-								|| index[TextColor.hex(color)]
-					);
-				};
-			}(plugin.config));
-
-			var button = Ui.adopt('colorPicker', Button, {
-				tooltip: i18n.t('change-text-color'),
-				icon: 'aloha-icon-textcolor',
-				scope: 'Aloha.continuoustext',
-				click: function () {
-					if (plugin.overlay) {
-						var $button = this.element;
-
-						var swatchClass = getSwatchClass(
-							$button.find('.ui-icon').css('background-color')
-						);
-
-						plugin.overlay.$element.find('.selected')
-						              .removeClass('selected');
-
-						plugin.overlay.$element.find('.focused')
-						              .removeClass('focused');
-
-						plugin.overlay.$element.find('.' + swatchClass)
-						              .closest('td')
-						              .addClass('focused')
-						              .addClass('selected');
-
-						var selection = Aloha.getSelection();
-						if (selection.getRangeCount()) {
-							rangeAtOpen = selection.getRangeAt(0);
-						}
-
-						var offset = Overlay.calculateOffset(
-							$button,
-							Floating.POSITION_STYLE
-						);
-						offset.top += $button.height();
-
-						plugin.overlay.show(offset);
-
-						this.element.blur();
-					}
+				if(Aloha.settings.plugins.textcolor.config) {
+					plugin.config = Aloha.settings.plugins.textcolor.config;
+				} else if( $.isArray(Aloha.settings.plugins.textcolor)) {
+					// for legacy support check if the settings consists of only an array and rebuild the config to match with new logic
+					tmp = {};
+					tmp[TextColor.getDefaultStyle()] = Aloha.settings.plugins.textcolor;
+					plugin.config = tmp;
 				}
-			});
-
-			ui(plugin, button, getSwatchClass);
-
-			Aloha.ready(function () {
-				(function prepare(pos) {
-					if (pos) {
-						var index = pos - 1;
-						getOverlay(
-							Aloha.editables[index],
-							plugin,
-							button,
-							getSwatchClass
-						);
-						setTimeout(function () {
-							prepare(index);
-						}, 100);
-					}
-				}(Aloha.editables.length));
-			});
+			}
+			for(style in plugin.config) {
+				if(plugin.config.hasOwnProperty(style) ) {
+					registerButton(style, plugin);
+				}
+			}
 		}
 	});
 });

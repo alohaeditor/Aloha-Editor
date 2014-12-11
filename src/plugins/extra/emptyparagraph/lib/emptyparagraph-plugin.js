@@ -88,6 +88,24 @@ define([
 	}
 
 	/**
+	 * Checks if remove consecutive br's is activated.
+	 * @param {Object} config
+	 * @returns {boolean}
+	 */
+	function isRemoveConsecutiveBrActivated(config) {
+		switch(typeof config.removebr) {
+		case 'undefined':
+			return true;
+		case 'boolean':
+			return config.removebr;
+		case 'string':
+			return config.removebr.toLowerCase() === 'true';
+		default:
+			throw new Error('Invalid Empty Paragraph Plugin configuration: config.removebr');
+		}
+	}
+
+	/**
 	 * @type {Aloha.Plugin}
 	 */
 	return Plugin.create(pluginName, {
@@ -120,7 +138,7 @@ define([
 
 				EmptyParagraph.removeEmptyElements(obj[0], elements);
 
-				if (typeof config.removebr === 'undefined' || config.removebr.toLowerCase() === 'true') {
+				if (isRemoveConsecutiveBrActivated(config)) {
 					EmptyParagraph.removeConsecutiveBr(obj[0]);
 				}
 			}
