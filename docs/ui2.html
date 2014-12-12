@@ -47,7 +47,7 @@
 				padding: 1vw;
 				line-height: 1.3em;
 				font-weight: bold;
-				font-style: italic;
+				font-style: normal;
 				font-size: 1em;
 				font-family: 'Droid Serif', serif;
 				-moz-osx-font-smoothing: grayscale;
@@ -139,16 +139,6 @@
 			h2 span, h3 span { opacity: 0.6; }
 			h2 span { font-weight: 700; }
 			code { font-weight: bold; }
-			@media (max-width: 768px) {
-				header {
-					padding: 90px 0 60px;
-					font-size: 0.8em;
-					text-align: center;
-				}
-			}
-			@media (max-width: 480px) {
-				h3 { font-size: 0.9em; }
-			}
 			.title {
 				min-height: 100vh;
 				-webkit-perspective: 400px;
@@ -169,10 +159,9 @@
 			}
 			.title h2 {
 				font-size: 2em;
-				font-weight: 700;
-				font-family: 'Droid Serif';
 				margin-bottom: 90px;
 			}
+			.title h2 span { font-weight: 300; }
 			.title h2 img {
 				height: 1.6em;
 				vertical-align: middle;
@@ -206,6 +195,21 @@
 				margin: 0 auto 30px;
 				padding: 0 30px;
 				color: #797875;
+			}
+			@media (max-width: 768px) {
+				header {
+					padding: 90px 0 60px;
+					font-size: 0.8em;
+					text-align: center;
+				}
+			}
+			@media (max-width: 480px) {
+				h3 { font-size: 0.9em; }
+				header span {
+					display: block;
+					margin: 30px 0;
+				}
+				header h3 span { margin-bottom: 10px; }
 			}
 		</style>
 	</head>
