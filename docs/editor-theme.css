@@ -45,7 +45,6 @@
 }
 .cm-s-default pre { padding: 0 1em; }
 
-
 .CodeMirror {
 	height: auto;
 	background: transparent;
@@ -66,7 +65,6 @@
 	font-weight: bold;
 	font-family: monospace;
 	line-height: 1em;
-	overflow-x: scroll;
 }
 .snippet::after,
 .snippet::before {

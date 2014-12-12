@@ -9,7 +9,7 @@
 		<meta name='og:image' content='http://aloha-editor.org/Content.Node/img/froggy.png'>
 		<meta name='author' content=''>
 		<link rel='icon' href='favicon.ico'>
-		<link href='http://fonts.googleapis.com/css?family=Droid+Serif:400italic|Roboto:300,400,700' rel='stylesheet' type='text/css'>
+		<link href='http://fonts.googleapis.com/css?family=Droid+Serif:400|Roboto:300,400,700' rel='stylesheet' type='text/css'>
 		<link href='codemirror-4.2/lib/codemirror.css' rel='stylesheet' type='text/css'>
 		<link href='editor-theme.css' rel='stylesheet' type='text/css'>
 		<style>
@@ -32,8 +32,8 @@
 				line-height: 1.7em;
 			}
 			a {
+				font-weight: bold;
 				color: #898885;
-				font-weight: 400;
 				text-decoration: none;
 				border-bottom: 2px solid #edede8;
 				-webkit-transition: all 250ms cubic-bezier(.2,.3,.25,.9);
@@ -43,23 +43,12 @@
 				        transition: all 250ms cubic-bezier(.2,.3,.25,.9);
 			}
 			a:hover { border-color: #a9a8a5; }
-			h1 {
-				-moz-osx-font-smoothing: grayscale;
-				 -webkit-font-smoothing: antialiased;
-				    -moz-font-smoothing: antialiased;
-				         font-smoothing: antialiased;
-				margin: 0 0 30px;
-				font-weight: 700;
-				font-family: 'Roboto', sans-serif;
-				font-size: 3em;
-				letter-spacing: -0.05em;
-				line-height: 1em;
-			}
 			i, blockquote {
-				color: #cdcdc8;
-				padding: 1em;
-				font-style: italic;
+				color: #bdbdb8;
+				padding: 1vw;
 				line-height: 1.3em;
+				font-weight: bold;
+				font-style: italic;
 				font-size: 1em;
 				font-family: 'Droid Serif', serif;
 				-moz-osx-font-smoothing: grayscale;
@@ -72,7 +61,7 @@
 				background: url(http://aloha-editor.org/Content.Node/img/froggy.png);
 				background-position: center bottom;
 				background-repeat: no-repeat;
-				background-size: auto 100px;
+				background-size: auto 90px;
 				margin-bottom: -50px;
 			}
 			article:nth-child(1n) { z-index: 9; }
@@ -84,7 +73,6 @@
 			article:nth-child(7n) { z-index: 3; }
 			article:nth-child(8n) { z-index: 2; }
 			article:nth-child(9n) { z-index: 1; }
-
 			section {
 				max-width: 800px;
 				margin: 0 auto;
@@ -97,30 +85,82 @@
 				width: 100%;
 				height: 50vh;
 				margin: 0;
-				padding: 0;
+				padding: 50px 0 30px;
 				background: whitesmoke;
 				color: #fff;
-				text-shadow: 0 0 60px rgba(0,0,0,0.2);
+				text-shadow: 0 0 60px rgba(0,0,0,0.1);
+				background-color: #54c8eb;
+				transition: background-color 6s;
 			}
-			header div {
+			header>div {
 				display: table-cell;
 				vertical-align: middle;
 			}
-			header h1 {
+			h1, h2, h3 {
 				max-width: 800px;
-				margin: 0 auto;
+				margin: 0 auto 30px;
 				padding: 0 30px;
+				font-weight: 700;
+				font-family: 'Roboto', sans-serif;
+				line-height: 1em;
+				-moz-osx-font-smoothing: grayscale;
+				 -webkit-font-smoothing: antialiased;
+				    -moz-font-smoothing: antialiased;
+				         font-smoothing: antialiased;
 			}
+			h1 {
+				font-size: 4em;
+				letter-spacing: -0.04em;
+			}
+			h2 {
+				max-width: 800px;
+				margin: 0 auto 30px;
+				padding: 0 30px;
+				font-size: 3em;
+				letter-spacing: -0.03em;
+			}
+			code { font-weight: bold; }
+			@media (max-width: 768px) {
+				header {
+					padding: 90px 0 60px;
+					font-size: 0.8em;
+				}
+			}
+			.title { min-height: 100vh; }
+			.title h2 {
+				opacity: 0.5;
+				font-size: 2em;
+				font-weight: 700;
+				font-family: 'Droid Serif';
+				margin: 40px auto;
+			}
+			h3 a {
+				font-size: 2em;
+				color: #fff;
+				border-bottom: 4px solid transparent;
+				line-height: 1em;
+			}
+			h3 a:hover { border-color: rgba(255,255,255,0.3); }
+			h2 span, h3 span { opacity: 0.5; }
 		</style>
 	</head>
 
 	<body>
 
-		<!-- Keep calm and follow the frog... -->
+		<header class="title"><div>
+			<h1>Aloha Editor UI Guide</h1>
+			<h2>Keep calm and follow the frog</h2>
+			<h3><a href="#include-and-invoke-aloha"><span>Leap 1:</span> Include &amp; Invoke Aloha</a></h3>
+			<h3><a href="#add-and-bind-a-button"><span>Leap 2:</span> Add &amp; Bind a Button</a></h3>
+			<h3><a href="#add-more-buttons"><span>Leap 3:</span> Add More Buttons</a></h3>
+			<h3><a href="#per-editable-binding"><span>Leap 4:</span> Per-editable Binding</a></h3>
+		</div></header>
 
 		<article>
 
-			<header><div><h1>Leap 1: Include &amp; Invoke Aloha</h1></div></header>
+			<header id="include-and-invoke-aloha"><div>
+				<h2><span>Leap 1:</span> Include &amp; Invoke Aloha</h2>
+			</div></header>
 
 			<section>
 				<p>
@@ -157,7 +197,7 @@
 				<p>
 					When you invoke <code>aloha()</code> on an element, you will
 					see that Aloha Editor uses a blinking DIV element as the
-					caret.  The caret is the minimal visual user interface
+					caret (<span id="blinking-caret"></span>).  The caret is the minimal visual user interface
 					(<a href="#caretStylingFiddle">which you can style with CSS, by the way</a>).
 					But sooner or later you'll probably need more than just a
 					caret for a UI, so the next section will cover how you can
@@ -168,7 +208,9 @@
 
 		<article>
 
-			<header><div><h1>Leap 2: Add &amp; Bind a Button</h1></div></header>
+			<header id="add-and-bind-a-button"><div>
+				<h2><span>Leap 2:</span> Add &amp; Bind a Button</h2>
+			</div></header>
 
 			<section>
 				<p>
@@ -228,7 +270,9 @@
 
 		<article>
 
-			<header><div><h1>Leap 3: Add many buttons</h1></div></header>
+			<header id="add-more-buttons"><div>
+				<h2><span>Leap 3:</span> Add More Buttons</h2>
+			</div></header>
 
 			<section>
 
@@ -277,7 +321,9 @@ for (var command in aloha.ui.commands) {
 
 		<article>
 
-			<header><div><h1>Leap 4: Per-editable binding</h1></div></header>
+			<header id="per-editable-binging"><div>
+				<h2><span>Leap 4:</span> Per-editable binding</h2>
+			</div></header>
 
 			<section>
 
@@ -309,7 +355,7 @@ for (var editable in editables) {
 			aloha.ui.command(<*editable*>, aloha.ui.commands[command])
 		);
 	}
-	}
+}
 				</div>
 
 				<p>
@@ -344,7 +390,7 @@ ga('send', 'pageview');</script -->
 	    </script -->
 
 		<script src="js/aloha.min.js"></script>
-		<script>aloha(document.querySelector('h1'));</script>
+		<script>aloha.dom.query('h1', document).map(aloha);</script>
 		<script src="codemirror-4.2/lib/codemirror.js"></script>
 		<script src="codemirror-4.2/mode/javascript/javascript.js"></script>
 		<script src="codemirror-4.2/mode/xml/xml.js"></script>

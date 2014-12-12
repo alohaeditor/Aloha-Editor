@@ -20,5 +20,5 @@ $(function () {
 		];
 		$('header').css('background', colors[Math.round(Math.random() * (colors.length - 1))]);
 		return colorcycle;
-	}()), 9000);
+	}()), 8000);
 });
