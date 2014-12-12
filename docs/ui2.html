@@ -39,11 +39,7 @@
 				color: #898885;
 				text-decoration: none;
 				border-bottom: 2px solid #edede8;
-				-webkit-transition: all 250ms cubic-bezier(.2,.3,.25,.9);
-				   -moz-transition: all 250ms cubic-bezier(.2,.3,.25,.9);
-				    -ms-transition: all 250ms cubic-bezier(.2,.3,.25,.9);
-				     -o-transition: all 250ms cubic-bezier(.2,.3,.25,.9);
-				        transition: all 250ms cubic-bezier(.2,.3,.25,.9);
+				transition: all 250ms cubic-bezier(.2,.3,.25,.9);
 			}
 			a:hover { border-color: #a9a8a5; }
 			blockquote {
@@ -84,6 +80,7 @@
 			section>:first-child { margin-top: 0; }
 			section>:last-child { margin-bottom: 0; }
 			header {
+				position: relative;
 				display: table;
 				width: 100%;
 				height: 50vh;
@@ -93,9 +90,9 @@
 				color: #fff;
 				text-shadow: 0 0 60px rgba(0,0,0,0.1);
 				background-color: #54c8eb;
-				transition: background-color 6s;
+				-webkit-transition: background-color 3s; /* Don't transition in ff*/
 			}
-			header>div::before {
+			header::before {
 				content: '';
 				display: block;
 				position: absolute;
@@ -103,20 +100,16 @@
 				left: 0;
 				width: 100%;
 				height: 100%;
-				background-image: url(letters-1.png);
+				background-image: url(letters.png);
 				background-attachment: fixed;
 				background-position: center center;
-				xbackground-size: cover;
+				background-size: cover;
 				opacity: 0.03;
 			}
 			header>div {
 				position: relative;
-				overflow: hidden;
 				display: table-cell;
 				vertical-align: middle;
-			}
-			header>div>* {
-				position: relative;
 			}
 			h1, h2, h3 {
 				max-width: 800px;
@@ -134,6 +127,7 @@
 				font-size: 4em;
 				font-weight: 700;
 				letter-spacing: -0.04em;
+				margin: 90px auto 0px;
 			}
 			h2 {
 				max-width: 800px;
@@ -149,22 +143,45 @@
 				header {
 					padding: 90px 0 60px;
 					font-size: 0.8em;
+					text-align: center;
 				}
 			}
 			@media (max-width: 480px) {
 				h3 { font-size: 0.9em; }
 			}
-			.title { min-height: 100vh; }
+			.title {
+				min-height: 100vh;
+				-webkit-perspective: 400px;
+				   -moz-perspective: 400px;
+					-ms-perspective: 400px;
+					 -o-perspective: 400px;
+						perspective: 400px;
+				-webkit-transform-style: preserve-3d;
+				   -moz-transform-style: preserve-3d;
+					-ms-transform-style: preserve-3d;
+					 -o-transform-style: preserve-3d;
+						transform-style: preserve-3d;
+			}
+			.xtitle::before { -webkit-animation: intro 1s ease-out forwards; }
+			@-webkit-keyframes intro {
+				0% { -webkit-transform: translateY(300px) translateZ(400px) rotateX(20deg); }
+				100% { -webkit-transform: translate(0px) translateZ(0px) rotateX(0deg); }
+			}
 			.title h2 {
 				font-size: 2em;
 				font-weight: 700;
 				font-family: 'Droid Serif';
-				margin: 40px auto;
+				margin-bottom: 90px;
 			}
 			.title h2 img {
 				height: 1.6em;
 				vertical-align: middle;
 				margin-left: 20px;
+				transition: all 250ms cubic-bezier(.2,.3,.25,.9);
+			}
+			.title h2 img:hover {
+				-webkit-transform-origin: center;
+				-webkit-transform: scale(1.5) rotateZ(20deg);
 			}
 			h3 a {
 				font-weight: 300;
@@ -198,7 +215,11 @@
 		<div class="★">
 			<header class="title"><div>
 				<h1>Aloha Editor UI Guide</h1>
-				<h2><span>Keep calm and follow the frog</span><img src="http://aloha-editor.org/Content.Node/img/froggy.png" /></h2>
+				<h2>
+					<span>Keep calm and follow the frog</span>
+					<img src="http://aloha-editor.org/Content.Node/img/froggy.png"
+						alt="#followTheFrog" title="#followTheFrog" />
+				</h2>
 				<h3><a href="#include-and-invoke-aloha"><span>Leap 1:</span> Include &amp; Invoke Aloha</a></h3>
 				<h3><a href="#add-and-bind-a-button"><span>Leap 2:</span> Add &amp; Bind a Button</a></h3>
 				<h3><a href="#add-more-buttons"><span>Leap 3:</span> Add More Buttons</a></h3>
@@ -208,6 +229,9 @@
 			<article>
 
 				<header id="include-and-invoke-aloha"><div>
+					<img src="http://aloha-editor.org/Content.Node/img/froggy.png"
+						alt="#followTheFrog" title="#followTheFrog"
+						style="display: block; height: 90px; margin: 0 auto 90px;" />
 					<h2><span>Leap 1:</span> Include &amp; Invoke Aloha</h2>
 				</div></header>
 
