@@ -13,6 +13,20 @@
 		<link href='codemirror-4.2/lib/codemirror.css' rel='stylesheet' type='text/css'>
 		<link href='editor-theme.css' rel='stylesheet' type='text/css'>
 		<style>
+			body {
+				margin: 0 auto;
+				-webkit-text-size-adjust: 100%;
+				    -ms-text-size-adjust: 100%;
+				text-rendering: optimizeLegibility;
+				line-height: 1.7em;
+				font-family: 'Roboto', sans-serif;
+				font-weight: 300;
+				font-size: 18px;
+				color: #a9a8a5;
+			}
+			.★ {
+				margin-bottom: 90px;
+			}
 			* {
 				-webkit-box-sizing: border-box;
 				   -moz-box-sizing: border-box;
@@ -20,17 +34,6 @@
 			}
 			::selection { background: #333; }
 			::-moz-selection { background: #333; }
-			body {
-				margin: 0 auto;
-				color: #a9a8a5;
-				-webkit-text-size-adjust: 100%;
-				    -ms-text-size-adjust: 100%;
-				text-rendering: optimizeLegibility;
-				font-family: 'Roboto', sans-serif;
-				font-weight: 300;
-				font-size: 18px;
-				line-height: 1.7em;
-			}
 			a {
 				font-weight: bold;
 				color: #898885;
@@ -43,7 +46,7 @@
 				        transition: all 250ms cubic-bezier(.2,.3,.25,.9);
 			}
 			a:hover { border-color: #a9a8a5; }
-			i, blockquote {
+			blockquote {
 				color: #bdbdb8;
 				padding: 1vw;
 				line-height: 1.3em;
@@ -92,15 +95,34 @@
 				background-color: #54c8eb;
 				transition: background-color 6s;
 			}
+			header>div::before {
+				content: '';
+				display: block;
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background-image: url(letters-1.png);
+				background-attachment: fixed;
+				background-position: center center;
+				xbackground-size: cover;
+				opacity: 0.03;
+			}
 			header>div {
+				position: relative;
+				overflow: hidden;
 				display: table-cell;
 				vertical-align: middle;
+			}
+			header>div>* {
+				position: relative;
 			}
 			h1, h2, h3 {
 				max-width: 800px;
 				margin: 0 auto 30px;
 				padding: 0 30px;
-				font-weight: 700;
+				font-weight: 300;
 				font-family: 'Roboto', sans-serif;
 				line-height: 1em;
 				-moz-osx-font-smoothing: grayscale;
@@ -110,6 +132,7 @@
 			}
 			h1 {
 				font-size: 4em;
+				font-weight: 700;
 				letter-spacing: -0.04em;
 			}
 			h2 {
@@ -119,6 +142,8 @@
 				font-size: 3em;
 				letter-spacing: -0.03em;
 			}
+			h2 span, h3 span { opacity: 0.6; }
+			h2 span { font-weight: 700; }
 			code { font-weight: bold; }
 			@media (max-width: 768px) {
 				header {
@@ -126,228 +151,252 @@
 					font-size: 0.8em;
 				}
 			}
+			@media (max-width: 480px) {
+				h3 { font-size: 0.9em; }
+			}
 			.title { min-height: 100vh; }
 			.title h2 {
-				opacity: 0.5;
 				font-size: 2em;
 				font-weight: 700;
 				font-family: 'Droid Serif';
 				margin: 40px auto;
 			}
+			.title h2 img {
+				height: 1.6em;
+				vertical-align: middle;
+				margin-left: 20px;
+			}
 			h3 a {
+				font-weight: 300;
 				font-size: 2em;
 				color: #fff;
 				border-bottom: 4px solid transparent;
 				line-height: 1em;
 			}
-			h3 a:hover { border-color: rgba(255,255,255,0.3); }
-			h2 span, h3 span { opacity: 0.5; }
+			h3 a:hover { border-color: rgba(255,255,255,0.2); }
+			#something-awesome {
+				max-width: 800px;
+				margin: 0 auto 30px;
+				padding: 60px 30px;
+				font-size: 3em;
+				font-weight: 700;
+				color: #c9c8c5;
+				line-height: 1em;
+				text-align: center;
+			}
+			#disqus_thread {
+				max-width: 800px;
+				margin: 0 auto 30px;
+				padding: 0 30px;
+				color: #797875;
+			}
 		</style>
 	</head>
 
 	<body>
 
-		<header class="title"><div>
-			<h1>Aloha Editor UI Guide</h1>
-			<h2>Keep calm and follow the frog</h2>
-			<h3><a href="#include-and-invoke-aloha"><span>Leap 1:</span> Include &amp; Invoke Aloha</a></h3>
-			<h3><a href="#add-and-bind-a-button"><span>Leap 2:</span> Add &amp; Bind a Button</a></h3>
-			<h3><a href="#add-more-buttons"><span>Leap 3:</span> Add More Buttons</a></h3>
-			<h3><a href="#per-editable-binding"><span>Leap 4:</span> Per-editable Binding</a></h3>
-		</div></header>
-
-		<article>
-
-			<header id="include-and-invoke-aloha"><div>
-				<h2><span>Leap 1:</span> Include &amp; Invoke Aloha</h2>
+		<div class="★">
+			<header class="title"><div>
+				<h1>Aloha Editor UI Guide</h1>
+				<h2><span>Keep calm and follow the frog</span><img src="http://aloha-editor.org/Content.Node/img/froggy.png" /></h2>
+				<h3><a href="#include-and-invoke-aloha"><span>Leap 1:</span> Include &amp; Invoke Aloha</a></h3>
+				<h3><a href="#add-and-bind-a-button"><span>Leap 2:</span> Add &amp; Bind a Button</a></h3>
+				<h3><a href="#add-more-buttons"><span>Leap 3:</span> Add More Buttons</a></h3>
+				<h3><a href="#per-editable-binding"><span>Leap 4:</span> Per-editable Binding</a></h3>
 			</div></header>
 
-			<section>
-				<p>
-					To replace ContentEditable with Aloha Editor is as simple as
-					1 line of markup and 1 line of JavaScript:
-				</p>
+			<article>
 
-				<div class="snippet" data-syntax='text/html'>
-					&lt;script src="http://aloha-editor.org/download/aloha.min.js"&gt;&lt;/script&gt;
-				</div>
-				<div class="snippet">aloha(document.querySelector('#editable'))</div>
+				<header id="include-and-invoke-aloha"><div>
+					<h2><span>Leap 1:</span> Include &amp; Invoke Aloha</h2>
+				</div></header>
 
-				<p>
-					You can initialize multiple editables at once with this
-					simply trick:
-				</p>
+				<section>
+					<p>
+						To replace ContentEditable with Aloha Editor is as simple as
+						1 line of markup and 1 line of JavaScript:
+					</p>
 
-				<div class="snippet">aloha.dom.query('.editable', document).forEach(aloha)</div>
+					<div class="snippet" data-syntax='text/html'>
+						&lt;script src="http://aloha-editor.org/download/aloha.min.js"&gt;&lt;/script&gt;
+					</div>
+					<div class="snippet">aloha(document.querySelector('#editable'))</div>
 
-				<p>
-					<a href="http://alohaeditor.org/api/aloha.html#aloha"><code>aloha()</code></a>
-					will transform the given element into an HTML editing canvas
-					in which you can start typing and using keyboard commands to
-					format content bold, italic, etc.
-				</p>
+					<p>
+						You can initialize multiple editables at once with this
+						simply trick:
+					</p>
 
-				<p>
-					To deactivate editing, simply invoke
-					<a href="http://alohaeditor.org/api/aloha.html#mahalo"><code>aloha.mahalo()</code></a>
-					on the DOM element that was editable through
-					<code>aloha()</code>.
-				</p>
+					<div class="snippet">aloha.dom.query('.editable', document).forEach(aloha)</div>
 
-				<p>
-					When you invoke <code>aloha()</code> on an element, you will
-					see that Aloha Editor uses a blinking DIV element as the
-					caret (<span id="blinking-caret"></span>).  The caret is the minimal visual user interface
-					(<a href="#caretStylingFiddle">which you can style with CSS, by the way</a>).
-					But sooner or later you'll probably need more than just a
-					caret for a UI, so the next section will cover how you can
-					add a simple bold button.
-				</p>
-			</section>
-		</article>
+					<p>
+						<a href="http://alohaeditor.org/api/aloha.html#aloha"><code>aloha()</code></a>
+						will transform the given element into an HTML editing canvas
+						in which you can start typing and using keyboard commands to
+						format content bold, italic, etc.
+					</p>
 
-		<article>
+					<p>
+						To deactivate editing, simply invoke
+						<a href="http://alohaeditor.org/api/aloha.html#mahalo"><code>aloha.mahalo()</code></a>
+						on the DOM element that was editable through
+						<code>aloha()</code>.
+					</p>
 
-			<header id="add-and-bind-a-button"><div>
-				<h2><span>Leap 2:</span> Add &amp; Bind a Button</h2>
-			</div></header>
+					<p>
+						When you invoke <code>aloha()</code> on an element, you will
+						see that Aloha Editor uses a blinking DIV element as the
+						caret (<span id="blinking-caret"></span>).  The caret is the minimal visual user interface
+						(<a href="#caretStylingFiddle">which you can style with CSS, by the way</a>).
+						But sooner or later you'll probably need more than just a
+						caret for a UI, so the next section will cover how you can
+						add a simple bold button.
+					</p>
+				</section>
+			</article>
 
-			<section>
-				<p>
-					Add a simple bold button to format content inside of an editable
-					by putting the following markup into your document.
-				</p>
+			<article>
 
-				<div class="snippet" data-syntax='text/html'>
-					&lt;button class="my-big-bold-button"&gt;B&lt;/button&gt;
-				</div>
+				<header id="add-and-bind-a-button"><div>
+					<h2><span>Leap 2:</span> Add &amp; Bind a Button</h2>
+				</div></header>
 
-				<p>
-					Then you need to bind the <a href="#"><code>bold</code></a>
-					command to fire on this element's click event.
-				</p>
+				<section>
+					<p>
+						Add a simple bold button to format content inside of an editable
+						by putting the following markup into your document.
+					</p>
 
-				<blockquote>
-					NB: While we will use jQuery API as a shorthand because it's
-					terse and everyone's familiar with it, it is not a requirement
-					for Aloha Editor; you are free to
-					<a href="http://vanilla-js.com">pick your own poison</a>.
-				</blockquote>
+					<div class="snippet" data-syntax='text/html'>
+						&lt;button class="my-big-bold-button"&gt;B&lt;/button&gt;
+					</div>
 
-				<div class="snippet">
-	$('.my-big-bold-button')
-		.on('click', aloha.ui.command(aloha.ui.commands.bold))
-				</div>
+					<p>
+						Then you need to bind the <a href="#"><code>bold</code></a>
+						command to fire on this element's click event.
+					</p>
 
-				<p>
-					<a href="#"><code>aloha.ui.command</code></a> generates an event
-					handler using <a href="#"><code>aloha.ui.commands.bold</code></a>
-					to define what that event handler should do when the button is
-					clicked.
-				</p>
+					<blockquote>
+						NB: While we will use jQuery API as a shorthand because it's
+						terse and everyone's familiar with it, it is not a requirement
+						for Aloha Editor; you are free to
+						<a href="http://vanilla-js.com">pick your own poison</a>.
+					</blockquote>
 
-				<p>
-					Now each time "my-big-bold-button" is clicked, any content
-					within a selection inside of an editable will be formatted bold.
-					If there selection is outside of an editable nothing will
-					happen. Try it below.
-				<p>
+					<div class="snippet">
+$('.my-big-bold-button')
+	.on('click', aloha.ui.command(aloha.ui.commands.bold))
+					</div>
 
-				// Fiddle
+					<p>
+						<a href="#"><code>aloha.ui.command</code></a> generates an event
+						handler using <a href="#"><code>aloha.ui.commands.bold</code></a>
+						to define what that event handler should do when the button is
+						clicked.
+					</p>
 
-				<p>
-					There are a number of formatting commands that come with Aloha
-					Editor out of the box. You've just seen the
-					<code>aloha.ui.commands.bold</code> command in action, but there are
-					<a href="http://alohaeditor.org/api/ui.html#commands">a few more</a>.
-					The next section explains how to bind many buttons in simple
-					way.
-				</p>
+					<p>
+						Now each time "my-big-bold-button" is clicked, any content
+						within a selection inside of an editable will be formatted bold.
+						If there selection is outside of an editable nothing will
+						happen. Try it below.
+					<p>
 
-			</section>
+					// Fiddle
 
-		</article>
+					<p>
+						There are a number of formatting commands that come with Aloha
+						Editor out of the box. You've just seen the
+						<code>aloha.ui.commands.bold</code> command in action, but there are
+						<a href="http://alohaeditor.org/api/ui.html#commands">a few more</a>.
+						The next section explains how to bind many buttons in simple
+						way.
+					</p>
 
-		<article>
+				</section>
 
-			<header id="add-more-buttons"><div>
-				<h2><span>Leap 3:</span> Add More Buttons</h2>
-			</div></header>
+			</article>
 
-			<section>
+			<article>
 
-				<p>
-					<code>aloha.ui.commands</code> contains a number of editing
-					commands that can be bound to execute formatting from event
-					handlers. <code>aloha.ui.commands.bold</code> is on of them.
-				</p>
+				<header id="add-more-buttons"><div>
+					<h2><span>Leap 3:</span> Add More Buttons</h2>
+				</div></header>
 
-				<p>
-					These commands are just objects with properties that help to
-					define a formatting operation.
-				</p>
+				<section>
 
-				<p>
-					Let's use a for-loop to bind 4 of these commands to buttons.
-				</p>
+					<p>
+						<code>aloha.ui.commands</code> contains a number of editing
+						commands that can be bound to execute formatting from event
+						handlers. <code>aloha.ui.commands.bold</code> is on of them.
+					</p>
 
-				<p>First the HTML ...</p>
+					<p>
+						These commands are just objects with properties that help to
+						define a formatting operation.
+					</p>
 
-				<div class="snippet" data-syntax='text/html'>
+					<p>
+						Let's use a for-loop to bind 4 of these commands to buttons.
+					</p>
+
+					<p>First the HTML ...</p>
+
+					<div class="snippet" data-syntax='text/html'>
 &lt;button class="action-bold"&gt;B&lt;/button&gt;
 &lt;button class="action-italic"&gt;I&lt;/button&gt;
 &lt;button class="action-underline"&gt;U&lt;/button&gt;
 &lt;button class="action-unformat"&gt;✘&lt;/button&gt;
-				</div>
+					</div>
 
-				<p>Then some JavaScript ...</p>
+					<p>Then some JavaScript ...</p>
 
-				<div class="snippet">
+					<div class="snippet">
 for (var command in aloha.ui.commands) {
 	$('.action-' + command).on(
 		'click',
 		aloha.ui.command(aloha.ui.commands[command])
 	);
 }
-				</div>
+					</div>
 
-				<p>And done.</p>
+					<p>And done.</p>
 
-				// fiddle
+					// fiddle
 
-			</section>
+				</section>
 
-		</article>
+			</article>
 
-		<article>
+			<article>
 
-			<header id="per-editable-binging"><div>
-				<h2><span>Leap 4:</span> Per-editable binding</h2>
-			</div></header>
+				<header id="per-editable-binding"><div>
+					<h2><span>Leap 4:</span> Per-editable binding</h2>
+				</div></header>
 
-			<section>
+				<section>
 
-				<p>
-					But what if we want to the underline button to be able to
-					effect one editable and not the other?
-				</p>
+					<p>
+						But what if we want to the underline button to be able to
+						effect one editable and not the other?
+					</p>
 
-				<p>
-					To do this we need to pass 2 arguments into
-					<a href=http://alohaeditor.org/api/ui.html#command"> <code>aloha.ui.command</code></a>
-					instead of 1. You'll see why in a minute. First let add some
-					suffixes to our button classnames. We add {%1%} to demark
-					buttons that should effect editable 1 and {%2%} to demark
-					buttons that should effect editable 2.
-				</p>
+					<p>
+						To do this we need to pass 2 arguments into
+						<a href="http://alohaeditor.org/api/ui.html#command"> <code>aloha.ui.command</code></a>
+						instead of 1. You'll see why in a minute. First let add some
+						suffixes to our button classnames. We add {%1%} to demark
+						buttons that should effect editable 1 and {%2%} to demark
+						buttons that should effect editable 2.
+					</p>
 
-				<div class="snippet" data-syntax='text/html'>
+					<div class="snippet" data-syntax='text/html'>
 &lt;button class="action-bold-{%1%}"&gt;B&lt;/button&gt;
 &lt;button class="action-underline-{%2%}"&gt;U&lt;/button&gt;
-				</div>
+					</div>
 
-				<div class="snippet">
-var editables = aloha.dom.query('.editables', document).map(aloha);
+					<div class="snippet">
+var <*editables*> = aloha.dom.query('.editables', document).map(aloha);
 for (var editable in editables) {
 	for (var command in aloha.ui.commands) {
 		$('.action-' + command + '-' + <*editable.id*>).on(
@@ -356,18 +405,21 @@ for (var editable in editables) {
 		);
 	}
 }
-				</div>
+					</div>
 
-				<p>
-					Bare in mind that <code>aloha.ui.command</code> can also
-					take an array of <a href=http://alohaeditor.org/api/editables.html">editables</a>
-					as its first argument to bind a single button to more than
-					just one editables.
-				</p>
+					<p>
+						Bare in mind that <code>aloha.ui.command</code> can also
+						take an array of <a href="http://alohaeditor.org/api/editables.html">editables</a>
+						as its first argument to bind a single button to more than
+						just one editables.
+					</p>
 
-			</section>
+				</section>
 
-		</article>
+			</article>
+		</div>
+
+		<div id="something-awesome">Now build something awesome!</div>
 
 		<div id="disqus_thread"></div>
 
@@ -382,12 +434,12 @@ m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 ga('create', 'UA-17460389-2', 'auto'); ga('require', 'displayfeatures');
 ga('send', 'pageview');</script -->
 
-	    <!-- script type="text/javascript">
+	    <script type="text/javascript">
 			(function(d) {
 				var q=d.createElement('script');q.async=1;q.src='//alohaeditor.disqus.com/embed.js';
 				(d.getElementsByTagName('head')[0]||d.getElementsByTagName('body')[0]).appendChild(q);
 			})(document);
-	    </script -->
+	    </script>
 
 		<script src="js/aloha.min.js"></script>
 		<script>aloha.dom.query('h1', document).map(aloha);</script>

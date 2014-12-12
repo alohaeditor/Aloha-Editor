@@ -18,7 +18,7 @@ $(function () {
 			'#ffd47e', // peach
 			'#f69078'  // salmon
 		];
-		$('header').css('background', colors[Math.round(Math.random() * (colors.length - 1))]);
+		$('header').css('background-color', colors[Math.round(Math.random() * (colors.length - 1))]);
 		return colorcycle;
 	}()), 8000);
 });
