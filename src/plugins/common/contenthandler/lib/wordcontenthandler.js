@@ -49,7 +49,7 @@ define([
 	 * @type {RexExp}
 	 * @const
 	 */
-	var MSO = /mso/;
+	var MSO = /mso/i;
 
 	/**
 	 * Matches string starting with "#".
@@ -275,7 +275,7 @@ define([
 					// I.
 					// i.
 					// o § (or any other single character)
-					if (outerText.match(/^([0-9]{1,3}\.)|([0-9]{1,3}\))|([a-zA-Z]{1,5}\.)|([a-zA-Z]{1,5}\))|(.)$/)) {
+					if (outerText.match(/^(([0-9]{1,3}\.)|([0-9]{1,3}\))|([a-zA-Z]{1,5}\.)|([a-zA-Z]{1,5}\))|(.))$/)) {
 						jqElem.closest('p').addClass(listElementClass);
 						jqElem.parent().parent().addClass(bulletClass);
 					}
