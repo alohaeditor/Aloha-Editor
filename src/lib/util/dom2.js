@@ -149,7 +149,7 @@ define([
 			var name = names[i];
 			var value = $.attr(elem, name);
 			//IE9 Fix, "lang" value not in attributes
-			if (name === "lang"){
+			if (name === "lang") {
 				if (elem.lang) {
 					value = elem.lang;
 				}
@@ -160,7 +160,7 @@ define([
 				value = value.toString();
 			}
 			//filter duplicates. IE 10 doesn't take care of duplicates
-			if (!(name in visited)) {
+			if (!visited.hasOwnProperty(name)) {
 				as.push([name, value]);
 				visited[name] = true;
 			}
