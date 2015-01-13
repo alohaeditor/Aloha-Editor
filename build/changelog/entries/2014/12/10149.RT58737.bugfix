@@ -1,0 +1,2 @@
+Defining a whitelist for content elements in the aloha settings was not working. This has been fixed.
+See the "Content Rules feature":http://www.alohaeditor.org/guides/content_rules.html for further details.
