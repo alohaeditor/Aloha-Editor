@@ -1,0 +1,1 @@
+Wai-lang plugin: when adding a language annotation, the change is not saved correctly in IE9. This has been fixed.
