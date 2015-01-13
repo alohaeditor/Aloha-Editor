@@ -56,6 +56,11 @@ define([
 	var removeButton = null;
 
 	/**
+	 * True if IE9
+	 */
+	var isIE9 = Aloha.browser.msie && parseInt(Aloha.browser.version, 10) === 9;
+
+	/**
 	 * Sets focus on the given field.
 	 *
 	 * @param {AttributeField} field
@@ -92,7 +97,8 @@ define([
 	 */
 	function filterForWaiLangMarkup() {
 		var $elem = $(this);
-		return $elem.hasClass(WAI_LANG_CLASS) || $elem.is('[lang]');
+		//IE9 Fix, "lang" value not in dom attributes, use "xml:lang" instead
+		return $elem.hasClass(WAI_LANG_CLASS) || $elem.is('[lang]' || $elem.is('[xml\\:lang'));
 	}
 
 	/**
@@ -177,7 +183,7 @@ define([
 		var $element = $(element);
 		$element.addClass(WAI_LANG_CLASS)
 		        .attr('data-gentics-aloha-repository', 'wai-languages')
-		        .attr('data-gentics-aloha-object-id', $element.attr('lang'));
+		        .attr('data-gentics-aloha-object-id', $element.attr(isIE9 ? 'xml:lang' : 'lang'));
 	}
 
 	/**
@@ -289,7 +295,10 @@ define([
 				var markup = findWaiLangMarkup(range);
 				if (markup) {
 					plugin._wailangButton.setState(true);
-					FIELD.setTargetObject(markup, 'lang');
+					//IE9 Fix, "lang" value not in dom attributes,
+					//use "xml:lang" instead
+					FIELD.setTargetObject(markup, isIE9 ? 'xml:lang' : 'lang');
+
 					FIELD.show();
 					removeButton.show();
 					Scopes.enterScope(plugin.name, 'wai-lang');
@@ -392,13 +401,21 @@ define([
 		 *                                       element to clean up.
 		 */
 		makeClean: function makeClean($element) {
-			$element.find('span[lang]').each(function onEachLangSpan() {
-				var $span = $(this);
-				$span.removeClass(WAI_LANG_CLASS)
-				     .removeAttr('data-gentics-aloha-repository')
-				     .removeAttr('data-gentics-aloha-object-id')
-				     .attr('xml:lang', $span.attr('lang'));
-			});
+			//IE9 Fix, "lang" value not in dom attributes,
+			//use "xml:lang" instead
+			$element.find(isIE9 ? 'span[xml\\:lang]' : 'span[lang]')
+				.each(function onEachLangSpan() {
+					var $span = $(this);
+					$span.removeClass(WAI_LANG_CLASS)
+					     .removeAttr('data-gentics-aloha-repository')
+					     .removeAttr('data-gentics-aloha-object-id');
+					if (isIE9) {
+						$span.attr('lang', $span.attr('xml:lang'));
+						$span.lang = $span.attr('xml:lang');
+					} else {
+						$span.attr('xml:lang', $span.attr('lang'));
+					}
+				});
 		}
 
 	});
