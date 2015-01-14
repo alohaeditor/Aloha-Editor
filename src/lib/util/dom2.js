@@ -141,18 +141,29 @@ define([
 	 */
 	function attrs(elem) {
 		var as = [];
+		var visited = {};
 		var names = attrNames(elem);
 		var i;
 		var len;
 		for (i = 0, len = names.length; i < len; i++) {
 			var name = names[i];
 			var value = $.attr(elem, name);
+			//IE9 Fix, "lang" value not in attributes
+			if (name === "lang") {
+				if (elem.lang) {
+					value = elem.lang;
+				}
+			}
 			if (null == value) {
 				value = "";
 			} else {
 				value = value.toString();
 			}
-			as.push([name, value]);
+			//filter duplicates. IE 10 doesn't take care of duplicates
+			if (!visited.hasOwnProperty(name)) {
+				as.push([name, value]);
+				visited[name] = true;
+			}
 		}
 		return as;
 	}
