@@ -182,7 +182,7 @@ $('#big-bad-bold-button')
 				<section>
 
 					<p>
-						<a href="api/ui.html#commands"><code>aloha.ui.commands</code></a>
+						<a href="/api/ui.html#commands"><code>aloha.ui.commands</code></a>
 						contains a set of editing commands that can be bound to
 						elements in order to be executed from event handlers,
 						which
@@ -206,7 +206,7 @@ $('#big-bad-bold-button')
 					<p>
 						Now let's bind
 						<a
-							href="api/ui#commands"
+							href="/api/ui#commands"
 							data-snippet-link="default-commands.1,default-commands.2,default-commands.3,default-commands.4">4 of these commands</a>
 						to buttons at once. First the HTML...
 					</p>
@@ -306,7 +306,7 @@ editables.forEach(editable) {
 
 					<p>
 						Bare in mind that
-						<a href="api/ui.html#comand" data-snippet-link="config-code1.3">aloha.ui.command</a>
+						<a href="/api/ui.html#command" data-snippet-link="config-code1.3">aloha.ui.command</a>
 						can also take an array of
 						<a href="/api/editables.html" data-snippet-link="config-code1.1">editables</a>
 						as its first argument to bind a single button to more than
@@ -512,6 +512,9 @@ ga('send', 'pageview');</script>
 
 		<script>setTimeout(function () {
 			'use strict';
+			if (-1 === window.location.toString().indexOf('#')) {
+				// window.location = '#add-and-bind-a-button';
+			}
 			aloha.dom.query('header .editable, #caret-tease', document).map(aloha);
 			var boundary = aloha.boundaries.fromEndOfNode(
 				aloha.dom.query('header .editable h1', document)[0]

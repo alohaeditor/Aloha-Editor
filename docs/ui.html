@@ -55,8 +55,7 @@
 					<div class="snippet" data-snippet="aloha"><&aloha&>(document.querySelector('#editable'))</div>
 
 					<p>
-						<a href="/api/aloha.html#aloha"
-							data-snippet-link="aloha.1">aloha()</a>
+						<a href="/api/aloha.html#aloha" data-snippet-link="aloha.1">aloha()</a>
 						transforms the element given to it into a rich-text
 						editing canvas.
 					</p>
@@ -116,7 +115,7 @@
 					</div>
 
 					<p>
-						The next step is to bind the <a href="/api/ui#commands"><code>bold</code>
+						The next step is to bind the <a href="/api/ui.html#commands"><code>bold</code>
 						command</a> to this element.
 					</p>
 
@@ -134,15 +133,15 @@ $('#big-bad-bold-button')
 
 					<p>
 						The two notable components of the code above are
-						<a href="/api/ui#command" data-snippet-link="binding.1">aloha.ui.command()</a> and
-						<a href="/api/ui#commands" data-snippet-link="binding.2">aloha.ui.commands.bold</a>.
+						<a href="/api/ui.html#command" data-snippet-link="binding.1">aloha.ui.command()</a> and
+						<a href="/api/ui.html#commands" data-snippet-link="binding.2">aloha.ui.commands.bold</a>.
 					</p>
 
 					<p>
-						<a href="/api/ui#command" data-snippet-link="binding.1">aloha.ui.command</a>
+						<a href="/api/ui.html#command" data-snippet-link="binding.1">aloha.ui.command</a>
 						is a function that generates an event handler, and uses
 						a map of properties—defined through
-						<a href="/api/ui#commands" data-snippet-link="binding.2">aloha.ui.commands.bold</a>—to
+						<a href="/api/ui.html#commands" data-snippet-link="binding.2">aloha.ui.commands.bold</a>—to
 						determine what that event handler should do when the
 						button is clicked. In this case, any content that is
 						selected inside of an editable when this  button is
@@ -165,7 +164,7 @@ $('#big-bad-bold-button')
 						come as defaults with Aloha Editor. You've just seen the
 						<code>aloha.ui.commands.bold</code>
 						command in action, but there are
-						<a href="/api/ui#commands">a few more</a>.
+						<a href="/api/ui.html#commands">a few more</a>.
 						The next section explains a convenient way to bind multiple buttons.
 					</p>
 
@@ -183,7 +182,7 @@ $('#big-bad-bold-button')
 				<section>
 
 					<p>
-						<a href="api/ui#commands"><code>aloha.ui.commands</code></a>
+						<a href="/api/ui.html#commands"><code>aloha.ui.commands</code></a>
 						contains a set of editing commands that can be bound to
 						elements in order to be executed from event handlers,
 						which
@@ -207,7 +206,7 @@ $('#big-bad-bold-button')
 					<p>
 						Now let's bind
 						<a
-							href="api/ui#commands"
+							href="/api/ui#commands"
 							data-snippet-link="default-commands.1,default-commands.2,default-commands.3,default-commands.4">4 of these commands</a>
 						to buttons at once. First the HTML...
 					</p>
@@ -271,7 +270,7 @@ for (var <&command&> in aloha.ui.commands) {
 						effect one editable and not the other? We can do this
 						with a little more code. We will need to pass 2
 						arguments into
-						<a href="/api/ui#command"><code>aloha.ui.command</code></a>
+						<a href="/api/ui.html#command"><code>aloha.ui.command</code></a>
 						instead of 1.
 					</p>
 
@@ -307,9 +306,9 @@ editables.forEach(editable) {
 
 					<p>
 						Bare in mind that
-						<a href="api/ui#comand" data-snippet-link="config-code1.3">aloha.ui.command</a>
+						<a href="/api/ui.html#command" data-snippet-link="config-code1.3">aloha.ui.command</a>
 						can also take an array of
-						<a href="/api/editables" data-snippet-link="config-code1.1">editables</a>
+						<a href="/api/editables.html" data-snippet-link="config-code1.1">editables</a>
 						as its first argument to bind a single button to more than
 						just one editables.
 					</p>
@@ -356,13 +355,13 @@ editables.forEach(editable) {
 						<span
 						data-snippet-link="middleware.1,middleware.7">function (called "middleware")</span>
 						at the end of
-						<a href="/api/editor#stack" data-snippet-link="middleware.6">aloha.editor.stack</a>
+						<a href="/api/aloha.html#editor.stack" data-snippet-link="middleware.6">aloha.editor.stack</a>
 						array of functions.
 					</p>
 
 					<p>
 						All such middleware functions receive an
-						<a href="/api" data-snippet-link="middleware.2,middleware.5">event object</a>
+						<a href="/api/selections.html#selectionEvent" data-snippet-link="middleware.2,middleware.5">event object</a>
 						that is threaded through aloha.editor.stack everytime
 						there is an editing interaction.
 					</p>
@@ -424,26 +423,26 @@ function <&middleware&>(<&event&>) {
 				<section>
 					<p>
 						You are not restricted to the default commands found in
-						<a href="/api/ui#commands"><code>aloha.ui.commands</code></a>. You can
+						<a href="/api/ui.html#commands"><code>aloha.ui.commands</code></a>. You can
 						also use your own custom commands.
 					</p>
 
 					<p>
 						You do this by specifying your own
-						<a href="/api/ui#command" data-snippet-link="custom-command.1,custom-command.6,custom-command.9">command object</a>
+						<span data-snippet-link="custom-command.1,custom-command.6,custom-command.9">command object</span>
 						that contains an
-						<a href="/api/ui#command" data-snippet-link="custom-command.3">action</a>
+						<span data-snippet-link="custom-command.3">action</span>
 						function, and any other
-						<a href="/api/ui#command" data-snippet-link="custom-command.2,custom-command.7">properties</a>
+						<span data-snippet-link="custom-command.2,custom-command.7">properties</span>
 						you want. When the event to which this
-						<a href="/api/ui#command" data-snippet-link="custom-command.9">command is bound</a>
+						<a href="/api/ui.html#command" data-snippet-link="custom-command.9">command is bound</a>
 						is fired, this command's action function will be called,
 						and will receive an
-						<a href="/api/ui#command" data-snippet-link="custom-command.4,custom-command.8">array of boundaries</a>
+						<a href="/api/boundaries.html" data-snippet-link="custom-command.4,custom-command.8">array of boundaries</a>
 						that represent the current boundary selection, the
-						<a href="/api/editor#selection" data-snippet-link="custom-command.5">selection context object</a>,
+						<a href="/api/aloha.html#editor.selection" data-snippet-link="custom-command.5">selection context object</a>,
 						and the
-						<a href="/api/ui#command" data-snippet-link="custom-command.6">the command</a>
+						<span data-snippet-link="custom-command.6">the command</span>
 						itself.
 					</p>
 
@@ -513,7 +512,9 @@ ga('send', 'pageview');</script>
 
 		<script>setTimeout(function () {
 			'use strict';
-			window.location = '#add-and-bind-a-button';
+			if (-1 === window.location.toString().indexOf('#')) {
+				window.location = '#add-and-bind-a-button';
+			}
 			aloha.dom.query('header .editable, #caret-tease', document).map(aloha);
 			var boundary = aloha.boundaries.fromEndOfNode(
 				aloha.dom.query('header .editable h1', document)[0]
