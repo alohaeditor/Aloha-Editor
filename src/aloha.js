@@ -1,4 +1,4 @@
-/*!
+/**
  * ┌───────────────────────────────────────────────────────────────┐
  * │ Aloha Editor 2.0.0 - JavaScript Content Editing Library       │
  * ├───────────────────────────────────────────────────────────────┤
@@ -6,7 +6,10 @@
  * ├───────────────────────────────────────────────────────────────┤
  * │ aloha-editor.org | github.com/alohaeditor                     │
  * └───────────────────────────────────────────────────────────────┘
- *
+ * @preserve
+ */
+/**
+ * Aloha Editor API root.
  * @namespace aloha
  */
 define([
@@ -121,8 +124,6 @@ define([
 
 	/**
 	 * Transforms the given element into an Aloha editable region.
-	 *
-	 * Also serves at the Aloha Editor API root.
 	 *
 	 * @param    {!Element} element
 	 * @parma    {Object=}  options
