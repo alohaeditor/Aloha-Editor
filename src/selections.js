@@ -5,8 +5,6 @@
  * Copyright (c) 2010-2015 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  *
- * @TODO: better climbing
- *        ie support
  * @namespace selections
  */
 define([
@@ -1119,7 +1117,7 @@ define([
 	 * Computes a table of the given override and those collected at the given
 	 * node.
 	 *
-	 * An object with overrides mapped against their names
+	 * An object with overrides mapped against their names.
 	 *
 	 * @private
 	 * @param  {Node}      node
@@ -1290,7 +1288,8 @@ define([
 	}
 
 	/**
-	 * returns true if obj is a selection as returned by Context()
+	 * Returns true if obj is a selection as returned by a selection context
+	 * object.
 	 *
 	 * @param  {*} obj
 	 * @return {boolean}
@@ -1335,18 +1334,19 @@ define([
 	/**
 	 * Returns the appropriate event type in the click cycle.
 	 *
-	 *
+	 * <pre>
 	 * Event cycle:
-	 * mousedown
-	 * mouseup
-	 * click
-	 * mousedown -> aloha.dblclick
-	 * mouseup
-	 * click
-	 * dblclick
-	 * mousedown -> aloha.tplclick
-	 * mouseup
-	 * click
+	 *     mousedown
+	 *     mouseup
+	 *     click
+	 *     mousedown -> aloha.dblclick
+	 *     mouseup
+	 *     click
+	 *     dblclick
+	 *     mousedown -> aloha.tplclick
+	 *     mouseup
+	 *     click
+	 * </pre>
 	 *
 	 * @private
 	 * @param  {!Event}     event
@@ -1406,16 +1406,19 @@ define([
 	/**
 	 * Creates an event object that will contain the following properties:
 	 *
-	 *		type
-	 *		nativeEvent
-	 *		editable
-	 *		selection
-	 *		dnd
-	 *		preventSelection
+	 * <pre>
+	 *     type
+	 *     nativeEvent
+	 *     editable
+	 *     selection
+	 *     dnd
+	 *     preventSelection
+	 * </pre>
 	 *
 	 * @param  {!Editor} editor
 	 * @param  {!Event}  event
-	 * @return {?Event}
+	 * @return {?AlohaEvent}
+	 * @memberOf selections
 	 */
 	function selectionEvent(editor, event) {
 		var type = event.type;

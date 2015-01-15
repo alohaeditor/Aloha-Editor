@@ -436,22 +436,24 @@ define([
 	 * returned boundary will be moved behind that text node.
 	 *
 	 * Given the markup below:
-	 *<pre>
-	 *	<div>
-	 *		foo
-	 *		<p>
-	 *			bar
-	 *			<b>
-	 *				<u></u>
-	 *				baz
-	 *			</b>
-	 *		</p>
-	 *	</div>
-	 *</pre>
+	 *
+	 * <pre>
+	 * <div>
+	 *	foo
+	 *	<p>
+	 *		bar
+	 *		<b>
+	 *			<u></u>
+	 *			baz
+	 *		</b>
+	 *	</p>
+	 * </div>
+	 * </pre>
+	 *
 	 * the boundary positions which can be traversed with this function are
 	 * those marked with the pipe ("|") below:
 	 *
-	 * |foo|<p>|bar|<b>|<u>|</u>|baz|<b>|</p>|
+	 * <pre>|foo|<p>|bar|<b>|<u>|</u>|baz|<b>|</p>|</pre>
 	 *
 	 * This function complements Boundaries.next()
 	 *

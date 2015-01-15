@@ -275,21 +275,21 @@ define([
 	/**
 	 * UI Commands.
 	 *
-	 * <code>
-	 * 	Commands:
-	 * 		p
-	 * 		h1
-	 * 		h2
-	 * 		h3
-	 * 		h4
-	 * 		ol
-	 * 		ul
-	 * 		pre
-	 * 		bold
-	 * 		italic
-	 * 		underline
-	 * 		unformat
-	 * </code>
+	 * <pre>
+	 * Commands:
+	 *     p
+	 *     h1
+	 *     h2
+	 *     h3
+	 *     h4
+	 *     ol
+	 *     ul
+	 *     pre
+	 *     bold
+	 *     italic
+	 *     underline
+	 *     unformat
+	 * </pre>
 	 *
 	 * @type {Object}
 	 * @memberOf ui
@@ -306,6 +306,13 @@ define([
 		'bold'      : { 'node' : 'b', 'override' : 'bold'      },
 		'italic'    : { 'node' : 'i', 'override' : 'italic'    },
 		'underline' : { 'node' : 'u', 'override' : 'underline' },
+
+		/**
+		 * Unformat command.
+		 *
+		 * @type {Object}
+		 * @memberOf ui.commands
+		 */
 		'unformat'  : {
 			'state'  : Fn.returnFalse,
 			'action' : removeFormatting,

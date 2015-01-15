@@ -24,40 +24,44 @@ define([
 	 *
 	 * For example, if this function is called recursively, starting from the
 	 * DIV root node in the following DOM tree:
-	 *<pre>
-	 *	<div>
-	 *		"one"
-	 *		<b>
-	 *			"two"
-	 *			<u>
-	 *				<i>
-	 *					"three"
-	 *				</i>
-	 *			</u>
-	 *			"four"
-	 *		</b>
-	 *		"five"
-	 *	</div>
-	 *</pre>
+	 *
+	 * <pre>
+	 * <div>
+     *     "one"
+     *     <b>
+     *         "two"
+     *         <u>
+     *             <i>
+     *                 "three"
+     *             </i>
+     *         </u>
+     *         "four"
+     *     </b>
+     *     "five"
+	 * </div>
+	 * </pre>
+	 *
 	 * forward() will return nodes in the following order:
 	 *
-	 * "one" <b>, "two", <u>, <i>, "three", "four", "five"
+	 * <pre>"one" <b>, "two", <u>, <i>, "three", "four", "five"</pre>
 	 *
 	 * This is depth-first pre-order traversal:
 	 * https://en.wikipedia.org/wiki/Tree_traversal#Pre-order
-	 *<pre>
-	 *      <div>
-	 *      / | \
-	 *    /   |   \
-	 *  one  <b>  five
-	 *      / | \
-	 *    /   |   \
-	 *  two  <u>  four
-	 *        |
-	 *       <i>
-	 *        |
-	 *      three
-	 *</pre>
+	 *
+	 * <pre>
+	 *         <div>
+	 *         / | \
+	 *       /   |   \
+	 *     one  <b>  five
+	 *         / | \
+	 *       /   |   \
+	 *     two  <u>  four
+	 *           |
+	 *          <i>
+	 *           |
+	 *         three
+	 * </pre>
+	 *
 	 * @param  {!Node} node
 	 * @return {?Node}
 	 * @memberOf dom
@@ -82,37 +86,39 @@ define([
 	 *
 	 * For example, if this function is called recursively, starting from the
 	 * DIV root node in the DOM tree below:
-	 *<pre>
-	 *	<div>
-	 *		"one"
-	 *		<b>
-	 *			"two"
-	 *			<u>
-	 *				<i>
-	 *					"three"
-	 *				</i>
-	 *			</u>
-	 *			"four"
-	 *		</b>
-	 *		"five"
-	 *	</div>
-	 *</pre>
+	 * <pre>
+	 * <div>
+     *     "one"
+     *     <b>
+     *         "two"
+     *         <u>
+     *             <i>
+     *                 "three"
+     *             </i>
+     *         </u>
+     *         "four"
+     *     </b>
+     *     "five"
+	 * </div>
+	 * </pre>
 	 * backward() will return nodes in the following order:
 	 *
-	 * "five", "four", "three", <i>, <u>, "two", <b>, "one"
-	 *<pre>
-	 *      <div>
-	 *      / | \
-	 *    /   |   \
-	 *  one  <b>  five
-	 *      / | \
-	 *    /   |   \
-	 *  two  <u>  four
-	 *        |
-	 *       <i>
-	 *        |
-	 *      three
-	 *</pre>
+	 * <pre>"five", "four", "three", <i>, <u>, "two", <b>, "one"</pre>
+	 *
+	 * <pre>
+	 *         <div>
+	 *         / | \
+	 *       /   |   \
+	 *     one  <b>  five
+	 *         / | \
+	 *       /   |   \
+	 *     two  <u>  four
+	 *           |
+	 *          <i>
+	 *           |
+	 *         three
+	 * </pre>
+	 *
 	 * @param  {!Node} node
 	 * @return {?Node}
 	 * @memberOf dom
@@ -187,9 +193,8 @@ define([
 	 * predicate returns true.
 	 *
 	 * Given the following tree structure:
-	 * <pre>
-	 *		<div><b>one<i>two</i><b>three</div>
-	 * </pre>
+	 *
+	 * <pre><div><b>one<i>two</i><b>three</div></pre>
 	 *
 	 * Will encounter the nodes in the following order:
 	 * div, three, b, i, two, i, one, b, div

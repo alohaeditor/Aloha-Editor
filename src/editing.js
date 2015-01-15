@@ -7,12 +7,14 @@
  * @TODO formatStyle: in the following case the outer "font-family:
  * arial" span should be removed.  Can be done similar to how
  * findReusableAncestor() works.
+ *
  * <pre>
- *      <span style="font-family: arial">
- *         <span style="font-family: times">one</span>
- *         <span style="font-family: helvetica">two<span>
- *      </span>
- *</pre>
+ *	<span style="font-family: arial">
+ *	   <span style="font-family: times">one</span>
+ *	   <span style="font-family: helvetica">two<span>
+ *	</span>
+ * </pre>
+ *
  * @TODO better handling of the last <br/> in a block and generally of
  *      unrendered whitespace.
  *      For example:

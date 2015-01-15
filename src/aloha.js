@@ -73,7 +73,21 @@ define([
 	}
 
 	editor.dnd       = null;
+
+	/**
+	 * Volatile selection context object.
+	 *
+	 * @type {Selection}
+	 * @memberOf aloha
+	 */
 	editor.selection = null;
+
+	/**
+	 * Editables.
+	 *
+	 * @type {Array.<Editable>}
+	 * @memberOf aloha
+	 */
 	editor.editables = {};
 	
 	/**

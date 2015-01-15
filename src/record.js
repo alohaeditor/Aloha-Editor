@@ -345,16 +345,18 @@ define(['functions', 'maps', 'accessor', 'assert'], function (Fn, Maps, Accessor
 	 * instead be used as a function.
 	 *
 	 * Example:
-	 *<pre>
-	 *     var MyType = define({
-	 *        myField: someDefaultValue
-	 *     }, function (record, optionalArgument) {
-	 *        record = record.myField(optionalArgument);
-	 *        return record;
-	 *     });
-	 *     
-	 *     var myInstance = MyType(optionalArgument);
-	 *</pre>
+	 *
+	 * <pre>
+	 * var MyType = define({
+	 *     myField: someDefaultValue
+	 * }, function (record, optionalArgument) {
+	 *     record = record.myField(optionalArgument);
+	 *     return record;
+	 * });
+	 *
+	 * var myInstance = MyType(optionalArgument);
+	 * </pre>
+	 *
 	 * @param fieldMap {?Object.<string,*>}
 	 * @param init {?function}
 	 * @return a new record type

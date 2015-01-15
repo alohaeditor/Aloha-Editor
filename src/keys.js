@@ -117,16 +117,17 @@ define([
 	}
 
 	/**
-	 * Parse keys for a browser event. Will return
-	 * an object as follows
-	 *<pre>
+	 * Parses keys for a browser event. Will return an object as follows:
+	 *
+	 * <pre>
 	 * {
 	 *     meta    : 'cmd+shift', // active meta keys
-	 *     keycode : 32, // currently active keycode
-	 *     key     : 'space', // associated key
-	 *     char    : '' // corresponding lowercase character for that key
+	 *     keycode : 32,          // currently active keycode
+	 *     key     : 'space',     // associated key
+	 *     char    : ''           // corresponding lowercase character key
 	 * }
-	 *</pre>
+	 * </pre>
+	 *
 	 * @param  {!Event} event
 	 * @return {Object.<string, *>}
 	 * @memberOf keys
@@ -141,22 +142,22 @@ define([
 	}
 
 	/**
-	 * Will go through the shortcutHandlers object to
-	 * find a shortcutHandler that matches the pressed
-	 * meta keys along with the provided keycode.
-	 * The shortcutHandler array must be structured
-	 * as follows:
-	 *<pre>
+	 * Goes through the shortcutHandlers object to find a shortcutHandler that
+	 * matches the pressed meta keys along with the provided keycode.  The
+	 * shortcutHandler array must be structured as follows:
+	 *
+	 * <pre>
 	 * // add a shortcut handler for meta+esc on keydown
 	 * shortcutHandlers = {
 	 *     'meta+escape'  : function () {},
 	 *     'meta+shift+b' : function () {}
 	 * }
-	 *</pre>
-	 * The order of meta keys in the shortcutHandlers array
-	 * MUST be in alphabetical order, as provided by
-	 * @see Keys.parseKeys
+	 * </pre>
 	 *
+	 * The order of meta keys in the shortcutHandlers array MUST be in
+	 * alphabetical order, as provided by
+	 *
+	 * @see Keys.parseKeys
 	 * @param  {!string}  meta
 	 * @param  {!integer} keycode
 	 * @param  {!Object}  shortcutHandlers

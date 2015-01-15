@@ -1,28 +1,97 @@
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:300);
+@import url(http://fonts.googleapis.com/css?family=Roboto:300,400,700);
 
-html,
+::selection      { background: #3c3c3c; }
+::-moz-selection { background: #3c3c3c; }
+
 body {
-	font-family: 'Open Sans', sans-serif;
-	font-size: 18px;
-	background-color: #fff;
-	-moz-osx-font-smoothing: grayscale;
-	-webkit-font-smoothing: antialiased;  
-	-moz-font-smoothing: antialiased;
-	font-smoothing: antialiased;
+	margin: 0 auto;
+	-webkit-text-size-adjust: 100%;
+	    -ms-text-size-adjust: 100%;
+	text-rendering: optimizeLegibility;
+	line-height: 1.7em;
+	font-family: 'Roboto', sans-serif;
 	font-weight: 300;
-	color: #333;
+	font-size: 18px;
+	color: #797875;
 }
-ul,
-ol {
+
+h1, h2, h3 {
+	margin: 0 auto .4rem;
+	font-weight: 300;
+	letter-spacing: -.02em;
+	line-height: 1em;
+	-moz-osx-font-smoothing: grayscale;
+	 -webkit-font-smoothing: antialiased;
+	    -moz-font-smoothing: antialiased;
+	         font-smoothing: antialiased;
+}
+h1 {
+	font-size: 4em;
+	font-weight: 700;
+}
+h2 { font-size: 3em; }
+h3 { font-size: 1.5em; }
+
+a {
+	font-weight: bold;
+	color: #898885;
+	text-decoration: none;
+	border-bottom: 2px solid #edede8;
+	transition: all 250ms cubic-bezier(.2,.3,.25,.9);
+}
+a:hover {
+	border-color: #a9a8a5;
+	text-decoration: none;
+}
+
+.centered { display: table; }
+.centered>* {
+	display: table-cell;
+	vertical-align: middle;
+}
+
+#something-amazing {
+	display: block;
+	margin: 0 auto;
+	padding: 1em 2em;
+	font-size: 3rem;
+	font-weight: 700;
+	line-height: 1em;
+	text-align: center;
+	color: #c9c8c5;
+	border: 0;
+}
+#something-amazing:hover { color: #999895; }
+
+#followTheFrog {
+	display: block;
+	margin: 0 auto;
+	max-width: 800px;
+	padding: 2em;
+	text-align: center;
+	font-weight: 700;
+	border: 0;
+}
+#followTheFrog a {
+	color: #c9c8c5;
+	border: 0;
+}
+#followTheFrog a:hover { color: #999895; }
+
+#disqus_thread {
+	margin: 0 auto;
+	padding: 0 2em;
+	color: #797875;
+}
+
+/* --- */
+
+ul, ol {
 	margin: 0;
 	padding: 0;
 }
-li {
-	list-style-type: none;
-}
-#wrap {
-	position: relative;
-}
+li { list-style-type: none; }
+#wrap { position: relative; }
 ::-webkit-scrollbar {
 	width: 8px;
 	background-color: transparent;
@@ -46,12 +115,8 @@ li {
 .navigation .applicationName a {
 
 }
-.navigation .search {
-	padding: 10px 15px;
-}
-.navigation .search input {
-	color: #333;
-}
+.navigation .search { padding: 10px 15px; }
+.navigation .search input { color: #333; }
 .navigation .list {
 	padding: 10px 15px 0 15px;
 	position: relative;
@@ -68,9 +133,7 @@ li {
 	position: relative;
 	display: block;
 }
-.navigation li.item .title .static {
-	display: none;
-}
+.navigation li.item .title .static { display: none; }
 .navigation li.item .subtitle {
 	margin-top: 10px;
 	font-size: 0.8em;
@@ -81,16 +144,12 @@ li {
 	padding-left: 8px;
 	margin-top: 2px;
 }
-.navigation li.item .itemMembers {
-	display: none;
-}
+.navigation li.item .itemMembers { display: none; }
 .main {
 	padding: 20px 20px;
 	margin-left: 250px;
 }
-.main .page-title {
-	display: none;
-}
+.main .page-title { display: none; }
 .main h1 {
 	font-weight: bold;
 	margin: 0;
@@ -103,67 +162,54 @@ li {
 	font-weight: bold;
 	margin: 5px 0;
 }
-.main h4 {
-	font-weight: bold;
-}
-.main h5 {
-	font-weight: bold;
-}
+.main h4 { font-weight: bold; }
+.main h5 { font-weight: bold; }
+.main h4.name span.type-signature.type a { color: #fff; }
 .main h4.name span.type-signature {
 	display: inline-block;
-	border-radius: 3px;
-	background-color: gray;
-	color: #fff;
-	padding: 2px 4px;
+	background: #edede8;
+	border-radius: 20px;
+	margin-left: 5px; 
+	padding: 4px 8px;
+	color: #adada8;
+	font-weight: 700;
+	font-size: 0.8em;
 }
-.main h4.name span.type-signature.type a {
-	color: #fff;
-}
-.main h4.name > span.type-signature:first-child {
-	margin-right: 8px;
-}
-.main h4.name span.type {
-	margin-left: 5px;
-}
+.main h4.name span.type-signature:first-child { display: none; }
+.main h4.name span.type { margin-left: 5px; }
 .main h4.name span.glyphicon {
 	display: inline-block;
 	vertical-align: middle;
-	color: #333;
+	color: #adada8;
 	margin-left: 7px;
 }
-.main h4.name span.returnType {
-	margin-left: 3px;
-	background-color: transparent!important;
-	color: gray!important;
-}
-.main span.static {
-	display: none;
-}
-.main span.number {
-	background-color: gray!important;
-}
-.main span.string {
-	background-color: gray!important;
-}
-.main span.object {
-	background-color: #2a6496 !important;
-}
-.main span.array {
-	background-color: #2a6496 !important;
-}
-.main span.boolean {
-	background-color: #ee7d7d !important;
-}
+.main span.static  { display: none; }
+.main span.number  { background-color: gray    !important; }
+.main span.string  { background-color: gray    !important; }
+.main span.object  { background-color: #2a6496 !important; }
+.main span.array   { background-color: #2a6496 !important; }
+.main span.boolean { background-color: #ee7d7d !important; }
 .main .subsection-title {
 	margin-top: 30px;
 	color: #779c34;
 }
 .main .description {
 	margin-top: 10px;
+	font-size: 0.8em;
 }
-.main dt.tag-source {
-	margin-top: 5px;
+.main .params {
+	font-size: 0.8em;
+	margin-top: 10px;
 }
+.main article>dl>dt,
+.main article>dl>dd {
+	background: #f9f9f5;
+	border-left: 5px solid #efefeb;
+	padding: 4px 16px;
+}
+.main article>dl>dt { padding-bottom: 1px; }
+.main article>dl>dd { margin: -10px 0 10px; }
+.main dt.tag-source { margin-top: 5px; }
 .main dt.tag-todo {
 	display: inline-block;
 	background-color: #2a6496;
@@ -171,63 +217,50 @@ li {
 	padding: 2px 4px;
 	border-radius: 5px;
 }
-.main .tag-deprecated {
-	display: inline-block;
-}
+.main .tag-deprecated { display: inline-block; }
 .main .important {
 	background-color: #ee7d7d;
 	color: #fff;
 	padding: 2px 4px;
 	border-radius: 5px;
 }
-.main .nameContainer {
-	position: relative;
-	margin-top: 20px;
-	padding-top: 5px;
-	border-top: 1px solid #e1e1e1;
-}
+.main .nameContainer { position: relative; }
 .main .nameContainer .inherited {
 	display: inline-block;
 	border-radius: 3px;
-	background-color: #888!important;
+	background-color: #888 !important;
 	padding: 2px 4px;
 	margin-right: 5px;
 }
-.main .nameContainer .inherited a {
-	color: #fff;
-}
+.main .nameContainer .inherited a { color: #fff; }
 .main .nameContainer .tag-source {
 	position: absolute;
-	top: 17px;
+	top: 0px;
 	right: 0;
 }
-.main .nameContainer .tag-source a {
-	color: gray;
-}
-.main .nameContainer.inherited {
-	color: gray;
-}
+.main .nameContainer .tag-source a { color: gray; }
+.main .nameContainer.inherited { color: gray; }
 .main .nameContainer h4 {
 	margin-right: 150px;
 	line-height: 1.3;
+	font-size: 1.5em;
 }
-.main .nameContainer h4 .signature {
-	font-weight: normal;
-}
+.main .nameContainer h4 .signature { font-weight: 300; }
+
 .main table {
 	width: 100%;
 	margin-bottom: 15px;
 }
-.main table th {
-	padding: 3px 3px;
-}
+
+.main table th,
 .main table td {
 	vertical-align: top;
-	padding: 5px 3px;
+	padding: 3px;
 }
-.main table .name {
-	width: 110px;
-}
+.main table th.last,
+.main table td.last { display: none;}
+
+.main table .name { width: 110px; }
 .main table .type {
 	width: 60px;
 	color: #aaa;
@@ -236,13 +269,11 @@ li {
 	width: 80px;
 	color: #aaa;
 }
-.main table .description p {
-	margin: 0;
-}
+.main table .description p { margin: 0; }
 .main table .optional {
 	float: left;
 	border-radius: 3px;
-	background-color: #ddd!important;
+	background-color: #ddd !important;
 	padding: 2px 4px;
 	margin-right: 5px;
 	color: gray;
@@ -257,13 +288,9 @@ li {
 	padding-bottom: 10px;
 	border-bottom: 1px solid #e1e1e1;
 }
-.main .readme li {
-	margin-bottom: 10px;
-}
+.main .readme li { margin-bottom: 10px; }
 .main article ol,
-.main article ul {
-	margin-left: 25px;
-}
+.main article ul { margin-left: 25px; }
 .main article ol > li {
 	list-style-type: decimal;
 	margin-bottom: 5px;
@@ -279,9 +306,7 @@ footer {
 	font-size: 0.8em;
 	color: gray;
 }
-.main table .type {
-	width: 120px;
-}
+.main table .type { width: 120px; }
 .param-type {
 	border-radius: 3px;
 	padding: 3px 5px;
@@ -299,4 +324,12 @@ footer {
 .param-type.ok {
 	color: white;
 	background: #779c34;
+}
+
+.main pre {
+	background: #fff;
+	border: 1px solid #edede8;
+	margin: 20px 0;
+	padding: 20px;
+	color: #adada8;
 }
