@@ -513,6 +513,7 @@ ga('send', 'pageview');</script>
 
 		<script>setTimeout(function () {
 			'use strict';
+			window.location = '#add-and-bind-a-button';
 			aloha.dom.query('header .editable, #caret-tease', document).map(aloha);
 			var boundary = aloha.boundaries.fromEndOfNode(
 				aloha.dom.query('header .editable h1', document)[0]

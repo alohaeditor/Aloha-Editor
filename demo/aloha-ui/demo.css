@@ -16,61 +16,36 @@
 #f69078 salmon
 */
 
-.featurette .glyphicon-heart {
-	color: #e7457b;
-}
-
-.featurette .glyphicon-briefcase {
-	color: #41bb98;
-}
-
-.featurette .glyphicon-dashboard {
-	color: #ffd47e;
-}
-
-a.navbar-brand img {
-	position: relative;
-	top: -10px;
-	margin-left: -12px;
-	height: 35px;
-}
+.featurette .glyphicon-heart     { color: #e7457b; }
+.featurette .glyphicon-briefcase { color: #41bb98; }
+.featurette .glyphicon-dashboard { color: #ffd47e; }
 
 body {
-	font-size: 21px;
-}
-
-.footer .row p {
-	font-size: 16px;
-}
-
-body {
-	font-family: 'Roboto', sans-serif;
-	-moz-osx-font-smoothing: grayscale;
-     -webkit-font-smoothing: antialiased;
-        -moz-font-smoothing: antialiased;
-             font-smoothing: antialiased;
-	font-weight: 300;
+	font-size: 20px;
 	color: #797875;
 }
+
+h1 { font-size: 3em; }
+h2 { font-size: 2em; }
 
 .funky {
 	background-color: #54c8eb;
 	transition: background-color 15s;
 }
 
-.froggy-container {
-	padding: 7% 0;
-}
+a { transition: none; }
 
-.froggy-container img {
-	-webkit-filter: brightness(5);
-	filter: brightness(5);
-	transition: -webkit-filter 5s, filter 5s;
+a.navbar-brand { border: 0; }
+a.navbar-brand img {
+	position: relative;
+	top: -10px;
+	height: 35px;
+	margin-left: -12px;
 }
 
 .navbar {
 	border: 0;
-	height: 60px;
+	min-height: 60px;
 }
 .navbar::before {
 	content: '';
@@ -84,195 +59,14 @@ body {
 	background-position: -20px -5px;
 	opacity: 0.02;
 }
-.navbar>.container {
+.navbar .container {
 	position: relative;
 	top: 7px;
 }
 
-.navbar-header, .navbar-right {
-	display: none;
-}
+/* `ui */
 
-.navbar .navbar-nav>li>a, .navbar .navbar-nav>li>a:hover, .navbar .navbar-nav>li>a .glyphicon {
-	color: white;
-	font-size: 18px;
-	outline: 0;
-}
-
-.navbar-nav>li>a .glyphicon {
-	display: none;
-}
-
-.page-header {
-	border: 0;
-	position: relative;
-	padding-top: 40px;
-	margin-top: 60px;
-	min-height: 85%;
-}
-
-.page-header::before {
-	content: '';
-	display: block;
-	position: absolute;
-	width: 100%;
-	height: 200px;
-	bottom: 0px;
-	left: 0px;
-	background: -moz-linear-gradient(top,  rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%);
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0)), color-stop(100%,rgba(0,0,0,1)));
-	background: -webkit-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,1) 100%);
-	background: -o-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,1) 100%);
-	background: -ms-linear-gradient(top,  rgba(0,0,0,0) 0%,rgba(0,0,0,1) 100%);
-	background: linear-gradient(to bottom,  rgba(0,0,0,0) 0%,rgba(0,0,0,1) 100%);
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#000000',GradientType=0 );
-	opacity: 0.1;
-}
-
-.header h1 {
-	font-size: 70px;
-	margin-bottom: 30px;
-	color: white;
-}
-
-.header p {
-	font-size: 24px;
-	margin-bottom: 30px;
-	color: white;
-}
-
-h1 { font-size: 2.5em; }
-h1, h2 { font-weight: 700; }
-
-.muted {
-	background: white;
-	box-shadow: 0 0 100px rgb(240,240,240);
-}
-
-.navbar-collapse img {
-	width: 20px;
-	height: 20px;
-}
-
-.navbar-collapse .glyphicon, .navbar-collapse img {
-	margin-right: 5px;
-}
-
-.navbar-default .navbar-toggle, .navbar-default .navbar-toggle:hover, .navbar-default .navbar-toggle:focus {
-	border: 0;
-	background: white;
-}
-
-.page-header .btn-wrap {
-	height: 100px;
-	display: none;
-}
-
-.btn-download, .btn-tryit, .btn-example, .shop .featurette .btn, .blog-entries .btn {
-	background: transparent;
-	transition: text-shadow 1s, box-shadow 1s;
-	outline: 0;
-}
-
-.btn-download, .btn-download:hover, .btn-download:focus, .btn-tryit, .btn-tryit:hover, .btn-tryit:focus, .btn-example, .btn-example:hover, .btn-example:focus {
-	border-color: white;
-	color: white;
-	outline: 0;
-}
-
-.btn-download, .flip-container {
-	float: left;
-	margin-right: 15px;
-}
-
-.btn-download:hover, .btn-tryit:hover, .btn-example:hover, .shop .featurette .btn:hover, .blog-entries .btn:hover {
-	text-shadow: 0 0 20px;
-	box-shadow: 0 0 20px;
-}
-
-.btn-tryit, .btn-example {
-	width: 100%;
-}
-
-.demo-edit {
-	min-height: 180px;
-	margin-top: 100px;
-}
-
-.demo-edit b, .demo-edit u, .demo-edit i {
-	color: white;
-}
-.demo-edit b {
-	font-weight: 700;
-}
-
-.navbar .container, .header .container {
-	padding: 0px 20px;
-}
-
-.container {
-	padding-top: 60px;
-	padding-bottom: 60px;
-}
-
-.featurette h2 {
-	margin-bottom: 40px;
-}
-
-.features .featurette .glyphicon {
-	font-size: 100px;
-	margin-left: 30%;
-}
-
-.container p {
-	line-height: 1.5;
-}
-
-#license .gpl-logo {
-	margin-top: 40px;
-	text-align: center;
-}
-
-.shop .featurette .glyphicon {
-	font-size: 50px;
-}
-
-.shop .head {
-	margin-bottom: 60px;
-}
-
-.shop .featurette .btn, .blog-entries .btn {
-	background: transparent;
-	border: 1px solid #54c8eb;
-	color: #54c8eb;
-}
-
-.shop .featurette>div {
-	margin-bottom: 60px;
-}
-
-.blog-entries p {
-	font-size: 14px;
-}
-
-#followTheFrog {
-	display: block;
-	padding: 2em 0;
-	text-align: center;
-	font-weight: bold;
-	font-size: 0.8em;
-	border: 0;
-	color: #c9c8c5;
-}
-#followTheFrog:hover { color: #999895; }
-
-.aloha-ui {
-	z-index: 9999;
-}
-
-.aloha-ui * {
-	color: white;
-}
+.aloha-ui { z-index: 9999; }
 
 .aloha-3d {
 	display: inline-block;
@@ -413,7 +207,8 @@ h1, h2 { font-weight: 700; }
 	}
 }
 
-/** links **/
+/* `links */
+
 .aloha-link-toolbar {
 	display: none;
 	position: absolute;
@@ -477,31 +272,12 @@ h1, h2 { font-weight: 700; }
 	top: 0px;
 }
 
-.menu-wrap { height: 45px; }
-
-.aloha-editable {
-	padding-top: 40px;
-}
-
-.aloha-editable a {
-	cursor: text;
-	text-decoration: underline;
-}
-
-.navbar {
-	height: auto;
-	min-height: 60px;
-}
-
-.navbar-header, .navbar-right {
-	display: block;
-}
-
 .aloha-editable {
 	max-width: 800px;
 	margin: 50px auto 0;
 	padding: 50px;
 }
+.aloha-editable a { cursor: text; }
 .aloha-editable p,
 .aloha-editable h1,
 .aloha-editable h2,
@@ -512,15 +288,11 @@ h1, h2 { font-weight: 700; }
 .aloha-editable>:last-child { margin-bottom: 0; }
 .aloha-editable b { font-weight: 700; }
 .aloha-editable a {
-	color: #797875;
 	text-decoration: none;
+	color: #797875;
 	font-weight: 400;
 	border-bottom: 2px dotted #e9e8e5;
 }
 
-@media (max-width: 768px) {
-	.aloha-editable { margin-top: 100px; }
-}
-@media (max-width: 480px) {
-	.aloha-editable { margin-top: 140px; }
-}
+@media (max-width: 768px) { .aloha-editable { margin-top: 100px; } }
+@media (max-width: 480px) { .aloha-editable { margin-top: 140px; } }

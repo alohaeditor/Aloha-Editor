@@ -1,0 +1,85 @@
+@import url(http://fonts.googleapis.com/css?family=Roboto:300,400,700);
+
+::selection      { background: #3c3c3c; }
+::-moz-selection { background: #3c3c3c; }
+
+body {
+	margin: 0 auto;
+	-webkit-text-size-adjust: 100%;
+	    -ms-text-size-adjust: 100%;
+	text-rendering: optimizeLegibility;
+	line-height: 1.7em;
+	font-family: 'Roboto', sans-serif;
+	font-weight: 300;
+	font-size: 18px;
+	color: #a9a8a5;
+}
+
+h1, h2, h3 {
+	margin: 0 auto .4rem;
+	font-weight: 300;
+	letter-spacing: -.02em;
+	line-height: 1em;
+	-moz-osx-font-smoothing: grayscale;
+	 -webkit-font-smoothing: antialiased;
+	    -moz-font-smoothing: antialiased;
+	         font-smoothing: antialiased;
+}
+h1 {
+	font-size: 4em;
+	font-weight: 700;
+}
+h2 { font-size: 3em; }
+h3 { font-size: 1.5em; }
+
+a {
+	font-weight: bold;
+	color: #898885;
+	text-decoration: none;
+	border-bottom: 2px solid #edede8;
+	transition: all 250ms cubic-bezier(.2,.3,.25,.9);
+}
+a:hover {
+	border-color: #a9a8a5;
+	text-decoration: none;
+}
+
+.centered { display: table; }
+.centered>* {
+	display: table-cell;
+	vertical-align: middle;
+}
+
+#something-amazing {
+	display: block;
+	margin: 0 auto;
+	padding: 1em 2em;
+	font-size: 3rem;
+	font-weight: 700;
+	line-height: 1em;
+	text-align: center;
+	color: #c9c8c5;
+	border: 0;
+}
+#something-amazing:hover { color: #999895; }
+
+#followTheFrog {
+	display: block;
+	margin: 0 auto;
+	max-width: 800px;
+	padding: 2em;
+	text-align: center;
+	font-weight: 700;
+	border: 0;
+}
+#followTheFrog a {
+	color: #c9c8c5;
+	border: 0;
+}
+#followTheFrog a:hover { color: #999895; }
+
+#disqus_thread {
+	margin: 0 auto;
+	padding: 0 2em;
+	color: #797875;
+}
