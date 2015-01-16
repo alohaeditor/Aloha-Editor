@@ -35,13 +35,24 @@ h2 { font-size: 2em; }
 
 a { transition: none; }
 
-a.navbar-brand { border: 0; }
-a.navbar-brand img {
-	position: relative;
-	top: -10px;
-	height: 35px;
-	margin-left: -12px;
+.navbar-default a.navbar-brand {
+	border: 0;
+	color: #fff;
+	font-size: 1.5em;
+	font-weight: 300;
+	letter-spacing: -0.5px;
+	margin-top: -2px;
+	padding-left: 55px;
+	background-image: url(froggy.png);
+	background-repeat: no-repeat;
+	background-size: 40px;
+	background-position: 10px center;
 }
+.navbar-default a.navbar-brand:hover { 
+	color: #fff;
+	background-color: rgba(255,255,255,0.2);
+}
+a.navbar-brand b { font-weight: 700; }
 
 .navbar {
 	border: 0;
