@@ -151,8 +151,7 @@ li { list-style-type: none; }
 	font-size: 0.8em;
 	margin-top: 10px;
 }
-.main .details a,
-.main .description a {
+.main article>dl>dd a {
 	font-weight: 300;
 	font-size: 0.8em;
 }
