@@ -46,25 +46,28 @@ li { list-style-type: none; }
 }
 .navigation a:hover { border-color: rgba(255,255,255,0.3); }
 .navigation .applicationName {
-	margin: 15px 0;
-	padding: 0 15px;
-	letter-spacing: -1px;
+	letter-spacing: -0.5px;
+	margin: 0;
 }
 .navigation .applicationName a {
+	display: block;
+	border: none;
 	background-image: url(../froggy.png);
+	background-position: 15px center;
 	background-repeat: no-repeat;
-	background-size: 40px;
-	background-position: center left;
-	padding-left: 43px;
+	background-size: 35px;
+	padding: 15px 10px 15px 55px;
 }
+.navigation .applicationName a:hover { background-color: rgba(255,255,255,0.1); }
 .navigation .search { padding: 10px 15px; }
 .navigation .search input {
-	color: #333;
+	color: #797875;
 	border: none;
 	border-radius: 2px;
+	font-weight: normal;
 	font-size: 1em;
 	line-height: 1em;
-	height: 2em;
+	height: 2.5em;
 }
 .navigation .list {
 	padding: 10px 15px 0;
@@ -73,7 +76,7 @@ li { list-style-type: none; }
 	width: 100%;
 }
 .navigation li.item { padding-bottom: 4px; }
-.navigation li.item:last-child { padding-bottom: 30px; }
+.navigation li.item:last-child { padding-bottom: 15px; }
 .navigation li.item .title {
 	font-weight: bold;
 	cursor: pointer;
