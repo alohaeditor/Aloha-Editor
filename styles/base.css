@@ -58,7 +58,7 @@ a:hover {
 	font-weight: 700;
 	line-height: 1em;
 	text-align: center;
-	color: #c9c8c5;
+	color: #d7d6c5;
 	border: 0;
 }
 #something-amazing:hover { color: #999895; }
@@ -73,7 +73,7 @@ a:hover {
 	border: 0;
 }
 #followTheFrog a {
-	color: #c9c8c5;
+	color: #d7d6c5;
 	border: 0;
 }
 #followTheFrog a:hover { color: #999895; }

@@ -154,7 +154,7 @@ h3 a:hover { border-color: rgba(255,255,255,0.2); }
 	100% { -webkit-transform: translate3d(0px,0px,0px);   }
 }
 @-webkit-keyframes intro {
-	0%   { -webkit-transform: rotate3d(1,0,0,40deg) translate3d(200px,0px,400px); }
+	0%   { -webkit-transform: rotate3d(1,0,0,30deg) translate3d(200px,0px,400px); }
 	100% { -webkit-transform: rotate3d(1,0,0,0deg)  translate3d(0px,0.85px,0px);    }
 	/* http://stackoverflow.com/questions/15194313/webkit-css-transform3d-position-fixed-issue#15256339 */
 }
@@ -228,7 +228,6 @@ h3 a:hover { border-color: rgba(255,255,255,0.2); }
 	color: #898885;
 	text-decoration: none;
 	border-bottom: 2px solid #edede8;
-	transition: all 250ms cubic-bezier(.2,.3,.25,.9);
 	white-space: nowrap;
 	position: relative;
 	font-family: monospace;
