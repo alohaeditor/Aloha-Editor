@@ -81,7 +81,7 @@ define([
 	}
 
 	function initializeBlocks(editable) {
-		var blocks = Dom.query('.aloha-block,img', editable.ownerDocument);
+		var blocks = Dom.query('.aloha-block img', editable.ownerDocument);
 		blocks.forEach(function (block) {
 			block.setAttribute('contentEditable', 'false');
 			Dom.setStyle(block, 'cursor', Browsers.VENDOR_PREFIX + 'grab');
