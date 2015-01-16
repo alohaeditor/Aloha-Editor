@@ -1,7 +1,7 @@
 @import url(http://fonts.googleapis.com/css?family=Roboto:300,400,700);
 
-::selection      { background: #3c3c3c; }
-::-moz-selection { background: #3c3c3c; }
+::selection      { background: #3c3c3c; color: #a9a8a5; }
+::-moz-selection { background: #3c3c3c; color: #a9a8a5; }
 
 body {
 	margin: 0 auto;
