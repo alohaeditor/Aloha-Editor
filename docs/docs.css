@@ -3,6 +3,7 @@
 	   -moz-box-sizing: border-box;
 	        box-sizing: border-box;
 }
+body { color: #a9a8a5; }
 .★ { margin-bottom: 90px; }
 blockquote {
 	color: #bdbdb8;
@@ -19,7 +20,7 @@ blockquote {
 }
 article {
 	position: relative;
-	background: url(http://aloha-editor.org/Content.Node/img/froggy.png);
+	background: url(froggy.png);
 	background-position: center bottom;
 	background-repeat: no-repeat;
 	background-size: auto 90px;
@@ -135,7 +136,7 @@ h3 a:hover { border-color: rgba(255,255,255,0.2); }
 	left: -20px;
 	width: 40px;
 	height: 40px;
-	background: url(http://aloha-editor.org/Content.Node/img/froggy.png);
+	background: url(froggy.png);
 	background-size: 40px;
 	background-repeat: no-repeat;
 	-webkit-animation: hopping 800ms ease-out infinite alternate

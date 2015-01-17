@@ -7,12 +7,16 @@ body {
 	margin: 0 auto;
 	-webkit-text-size-adjust: 100%;
 	    -ms-text-size-adjust: 100%;
+	-moz-osx-font-smoothing: grayscale;
+	 -webkit-font-smoothing: antialiased;
+	    -moz-font-smoothing: antialiased;
+	         font-smoothing: antialiased;
 	text-rendering: optimizeLegibility;
 	line-height: 1.7em;
 	font-family: 'Roboto', sans-serif;
 	font-weight: 300;
 	font-size: 18px;
-	color: #a9a8a5;
+	color: #797875;
 }
 
 h1, h2, h3 {
@@ -20,10 +24,6 @@ h1, h2, h3 {
 	font-weight: 300;
 	letter-spacing: -.02em;
 	line-height: 1em;
-	-moz-osx-font-smoothing: grayscale;
-	 -webkit-font-smoothing: antialiased;
-	    -moz-font-smoothing: antialiased;
-	         font-smoothing: antialiased;
 }
 h1 {
 	font-size: 4em;
@@ -82,4 +82,26 @@ a:hover {
 	margin: 0 auto;
 	padding: 0 2em;
 	color: #797875;
+}
+
+.brand {
+	display: inline-block;
+	border: none;
+	background-image: url(froggy.png);
+	background-position: 10px center;
+	background-repeat: no-repeat;
+	background-size: 35px;
+	padding: 0px 10px 0px 50px;
+	color: rgba(255,255,255,0.8);
+	font-size: 1.5em;
+	font-weight: 300;
+	letter-spacing: -0.5px;
+	transition: text-shadow 250ms ease-out;
+}
+.brand:hover { text-shadow: 0 0 30px #fff; }
+@media (max-width: 768px) {
+	.brand {
+		font-size: 0;
+		padding: 0;
+	}
 }

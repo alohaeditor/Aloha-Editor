@@ -19,11 +19,9 @@
 	</head>
 	<body>
 
-	    <div class="navbar navbar-default navbar-fixed-top funky" role="navigation">
+	    <div class="navbar navbar-fixed-top funky" role="navigation">
 	    	<div class="container">
-	    		<div class="navbar-header">
-					<a class="navbar-brand" href="http://www.aloha-editor.org"><b>aloha</b>editor</a>
-				</div>
+				<a class="navbar-brand brand" href="http://www.aloha-editor.org"><b>aloha</b>editor</a>
 				<div class="aloha-ui btn-toolbar" role="toolbar">
 					<div class="btn-group">
 						<button class="aloha-action-bold btn" title="Bold"><b>B</b></button>
@@ -62,7 +60,7 @@
 			</div>
 		</div>
 
-		<div class="aloha-editable">
+		<div class="editable">
 			<h1>Aloha Editor UI Demo</h1>
 			<p>
 				This UI demo is a basic implementation that you can use as a
@@ -131,7 +129,7 @@
 			(function () {
 				'use strict';
 				var commands = aloha.maps.merge(aloha.linksUi.commands, aloha.ui.commands);
-				var editables = aloha.dom.query('.aloha-editable', document).map(aloha);
+				var editables = aloha.dom.query('.editable', document).map(aloha);
 				for (var selector in commands) {
 					$('.aloha-action-' + selector)
 						.on('click', aloha.ui.command(editables, commands[selector]));

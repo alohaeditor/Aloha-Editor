@@ -1,63 +1,4 @@
-/*
-#54c8eb light blue
-#4ea9de med blue
-#4b97d2 dark blue
-#92cc8f light green
-#41bb98 mint green
-#c9de83 yellowish green
-#dee569 yellowisher green
-#c891c0 light purple
-#9464a8 med purple
-#7755a1 dark purple
-#f069a1 light pink
-#f05884 med pink
-#e7457b dark pink
-#ffd47e peach
-#f69078 salmon
-*/
-
-.featurette .glyphicon-heart     { color: #e7457b; }
-.featurette .glyphicon-briefcase { color: #41bb98; }
-.featurette .glyphicon-dashboard { color: #ffd47e; }
-
-body {
-	font-size: 20px;
-	color: #797875;
-}
-
-h1 { font-size: 3em; }
-h2 { font-size: 2em; }
-
-.funky {
-	background-color: #54c8eb;
-	transition: background-color 15s;
-}
-
-a { transition: none; }
-
-.navbar-default a.navbar-brand {
-	border: 0;
-	color: #fff;
-	font-size: 1.5em;
-	font-weight: 300;
-	letter-spacing: -0.5px;
-	margin-top: -2px;
-	padding-left: 55px;
-	background-image: url(froggy.png);
-	background-repeat: no-repeat;
-	background-size: 40px;
-	background-position: 10px center;
-}
-.navbar-default a.navbar-brand:hover { 
-	color: #fff;
-	background-color: rgba(255,255,255,0.2);
-}
-a.navbar-brand b { font-weight: 700; }
-
-.navbar {
-	border: 0;
-	min-height: 60px;
-}
+.navbar { border: 0; }
 .navbar::before {
 	content: '';
 	z-index: -1;
@@ -68,11 +9,13 @@ a.navbar-brand b { font-weight: 700; }
 	background-image: url(letters.png);
 	background-size: 500px;
 	background-position: -20px -5px;
-	opacity: 0.02;
+	opacity: 0.03;
 }
-.navbar .container {
-	position: relative;
-	top: 7px;
+.navbar .container {max-width: 800px; }
+.navbar a.brand {
+	color: #fff;
+	height: 60px;
+	line-height: 60px;
 }
 
 /* `ui */
@@ -108,33 +51,61 @@ a.navbar-brand b { font-weight: 700; }
 .aloha-ui input,
 .aloha-ui .btn,
 .aloha-ui .btn:focus,
-.aloha-ui .btn:active { outline: 0; }
+.aloha-ui .btn:active {
+	outline: 0;
+	height: 60px;
+	margin: 0;
+	padding: 0 10px;
+	line-height: 60px;
+}
 
 .aloha-ui .btn,
 .aloha-ui .btn-toolbar,
 .aloha-ui.btn-toolbar {
+	min-width: 45px;
 	font-size: 18px;
+	font-weight: 300;
 	-moz-osx-font-smoothing: grayscale;
 	 -webkit-font-smoothing: antialiased;
 	    -moz-font-smoothing: antialiased;
 	         font-smoothing: antialiased;
 }
-.aloha-ui .btn {
-	min-width: 45px;
-	height: 45px;
-	margin-left: 0;
+.aloha-ui .glyphicon { top :0; }
+
+@media (max-width: 480px) {
+	.aloha-ui .btn {
+		min-width: 40px;
+		font-size: 14px;
+		padding: 0;
+	}
 }
-.aloha-ui .btn.dropdown-toggle {
-	-webkit-transition: width 0.25s;
-	   -moz-transition: width 0.25s;
-	    -ms-transition: width 0.25s;
-	        transition: width 0.25s;
-}
+
+.aloha-ui .btn.dropdown-toggle { transition: width 250ms; }
 
 .aloha-ui.btn-toolbar .dropdown-menu {
 	border: 0;
+	border-radius: 0;
 	padding: 0;
+	margin: 0;
 	font-size: 16px;
+}
+@media (max-width: 768px) {
+	.aloha-ui.btn-toolbar .dropdown-menu {
+		right: 0;
+		left: initial;
+	}
+}
+.aloha-ui.btn-toolbar .dropdown-menu::before {
+	content: '';
+	z-index: -1;
+	display: block;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-image: url(letters.png);
+	background-size: 500px;
+	background-position: -20px -5px;
+	opacity: 0.03;
 }
 
 .aloha-ui .dropdown-menu>li>a { padding: 10px 20px; }
@@ -150,17 +121,14 @@ a.navbar-brand b { font-weight: 700; }
 	border-radius: 0;
 	background: transparent;
 	color: white;
-	margin: 0 1px;
 }
-.aloha-ui.btn-toolbar.btn-toolbar>.btn-group {
-	margin-left: 0;
-}
-.aloha-ui a
+.aloha-ui.btn-toolbar.btn-toolbar>.btn-group { margin-left: 0; }
+.aloha-ui a,
 .aloha-ui button {
-	-webkit-transition: background-color 0.25s;
-	   -moz-transition: background-color 0.25s;
-	    -ms-transition: background-color 0.25s;
-	        transition: background-color 0.25s;
+	-webkit-transition: background-color 250ms;
+	   -moz-transition: background-color 250ms;
+	    -ms-transition: background-color 250ms;
+	        transition: background-color 250ms;
 }
 .aloha-ui a.active,
 .aloha-ui a:hover,
@@ -170,11 +138,9 @@ a.navbar-brand b { font-weight: 700; }
 .aloha-ui .dropdown-menu a:hover,
 .aloha-ui .btn-group.open .btn,
 .aloha-ui .btn-group.open .btn.active {
-	color: white;
+	color: #fff;
 	background: rgba(255,255,255,0.2);
-	box-shadow: 0;
-	-webkit-box-shadow: none;
-	-mox-box-shadow: none;
+box-shadow: none;
 }
 
 @-webkit-keyframes flip-open {
@@ -225,7 +191,22 @@ a.navbar-brand b { font-weight: 700; }
 	position: absolute;
 	white-space: nowrap;
 	background: #333;
+	margin: 0;
 }
+.aloha-link-toolbar::before {
+	content: '';
+	z-index: -1;
+	display: block;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-image: url(letters.png);
+	background-size: 500px;
+	background-position: -20px -5px;
+	background-attachment: fixed;
+	opacity: 0.04;
+}
+
 .active .aloha-link-toolbar {
 	display: block;
 	-webkit-animation: flip-open .2s ease-out forwards;
@@ -251,13 +232,9 @@ a.navbar-brand b { font-weight: 700; }
 	background: rgba(255,255,255,0.2);
 	padding: 0 12px;
 	width: 310px;
-	height: 49px;
 	font-size: 18px;
-	margin-top: -4px;
 }
-.aloha-link-toolbar a.btn { padding-top: 10px; }
 .aloha-link-toolbar .aloha-action-follow { float: right; }
-
 .aloha-3d .aloha-link-toolbar { position: relative; }
 .aloha-ui.aloha-link-toolbar { display: none; background: #333; }
 .aloha-ui.aloha-link-toolbar.active { display: block; }
@@ -283,27 +260,28 @@ a.navbar-brand b { font-weight: 700; }
 	top: 0px;
 }
 
-.aloha-editable {
+.editable {
 	max-width: 800px;
 	margin: 50px auto 0;
-	padding: 50px;
+	padding: 40px 30px 0;
 }
-.aloha-editable a { cursor: text; }
-.aloha-editable p,
-.aloha-editable h1,
-.aloha-editable h2,
-.aloha-editable h3,
-.aloha-editable h4 { margin: 1em 0 0.5em; }
-.aloha-editable li { margin-bottom: 0.5em; }
-.aloha-editable>:first-child { margin-top: 0; }
-.aloha-editable>:last-child { margin-bottom: 0; }
-.aloha-editable b { font-weight: 700; }
-.aloha-editable a {
+.editable a { cursor: text; }
+.editable p,
+.editable h1,
+.editable h2,
+.editable h3,
+.editable h4 { margin: 1em 0 0.5em; }
+.editable h1 { font-size: 3em; }
+.editable h2 { font-size: 2em; }
+.editable li { margin-bottom: 0.5em; }
+.editable>:first-child { margin-top: 0; }
+.editable>:last-child { margin-bottom: 0; }
+.editable b { font-weight: 700; }
+.editable a {
 	text-decoration: none;
 	color: #797875;
 	font-weight: 400;
 	border-bottom: 2px dotted #e9e8e5;
+	transition: none;
 }
 
-@media (max-width: 768px) { .aloha-editable { margin-top: 100px; } }
-@media (max-width: 480px) { .aloha-editable { margin-top: 140px; } }

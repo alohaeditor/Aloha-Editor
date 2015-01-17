@@ -45,20 +45,12 @@ li { list-style-type: none; }
 	         font-smoothing: antialiased;
 }
 .navigation a:hover { border-color: rgba(255,255,255,0.3); }
-.navigation .applicationName {
-	letter-spacing: -0.5px;
-	margin: 0;
-}
 .navigation .applicationName a {
-	display: block;
-	border: none;
 	background-image: url(../froggy.png);
-	background-position: 15px center;
-	background-repeat: no-repeat;
-	background-size: 35px;
-	padding: 15px 10px 15px 55px;
+	margin-top: 10px;
+	font-size: 1em;
 }
-.navigation .applicationName a:hover { background-color: rgba(255,255,255,0.1); }
+
 .navigation .search { padding: 10px 15px; }
 .navigation .search input {
 	color: #797875;
