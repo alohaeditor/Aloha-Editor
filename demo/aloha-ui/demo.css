@@ -18,6 +18,11 @@
 	line-height: 60px;
 }
 
+.funky {
+	background-color: #797875;
+	transition: background-color 10s;
+}
+
 /* `ui */
 
 .aloha-ui { z-index: 9999; }
