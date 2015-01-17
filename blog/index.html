@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Aloha Editor</title>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<link href="../styles/base.css" rel="stylesheet">
+		<link href="blog.css" rel="stylesheet">
+	</head>
+
+	<body>
+		<div class="top wrapper rainbow">
+			<div class="bg"></div>
+			<nav>
+				<a class="brand" href="#"><b>aloha</b>editor<span><b>:</b> blog</span></a>
+
+				<button>
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+
+				<ul>
+					<li><a href="/">Blog</a></li>
+					<li><a href="http://aloha-editor.org/docs/">Docs</a></li>
+					<li><a href="http://aloha-editor.org/api/">API</a></li>
+					<li><a href="https://github.com/alohaeditor/Aloha-Editor/tree/howling-mad">Code</a></li>
+				</ul>
+			</nav>
+
+			<header class="centered"><h1>Goodbye, contentEditable.</h1></header>
+		</div>
+
+		<article class="wrapper">
+			<p class="byline">27.11.2014 by Clemens Prerovsky</p>
+
+			<p>
+				Aloha Editor has been around for quite some time now. In 2009
+				we've introduced an editor, that took a different approach and
+				freed content creators from the narrow box of iframes and
+				textareas. We've added a lot of plugins and features, and made
+				Aloha Editor an interesting choice on the market.
+			</p>
+			<p>
+				What we did not achieve however, is our vision. Like textareas
+				for editors we were bound by the narrow constraints of
+				contentEditable and the execCommand API. An API that was
+				introduced over a decade ago, that is broken and limited in
+				functionality. An API, that was never fully specified, and yet
+				has made it's way into myriads of applications. It's broad
+				adoption has finally sealed it's demise as it keeps browser
+				vendors from fixing it today. The Selection API provided by
+				browsers is a black box, with pitfalls and edge cases lurking
+				around every corner.  Working with Ranges is extremely
+				difficult, as the API is stateful and limiting.
+				<br><br>
+				Basing your editor on contentEditable means that you have to
+				clean up the broken mess of markup the browser leaves behind.
+				Every big editor with wide adoption works exactly that way. It's
+				basically like babysitting a caffeinated lemming. We think that
+				this is the wrong approach. Why would you want to fix something
+				if you can get it right in the first place?
+				<br><br>
+				This is why we came up with Aloha Editor 2. We provide you
+				capabilities to create editing experiences embedded seamlessly
+				in your web application. With a stateless API, that was built to
+				give you full control. An API that is easy to use, so you can
+				craft the best experience possible for your users.
+			</p>
+			
+			<p><a href="http://www.alohaeditor.org/demo/aloha-ui/">Try it.</a></p>
+		</article>
+
+		<script src="blog.js"></script>
+
+	</body>
+</html>
