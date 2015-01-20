@@ -35,9 +35,15 @@ article:nth-child(6n) { z-index: 4; }
 article:nth-child(7n) { z-index: 3; }
 article:nth-child(8n) { z-index: 2; }
 article:nth-child(9n) { z-index: 1; }
+.nav-wrapper {
+	width: 100%;
+	position: absolute;
+	top: -20px;
+}
+@media(max-width: 768px) { .nav-wrapper { top: -70px; } }
 nav {
 	max-width: 1024px;
-	margin: -20px auto 0;
+	margin: 0 auto;
 	padding: 0 30px;
 }
 section {
@@ -150,10 +156,11 @@ h3 a:hover { border-color: rgba(255,255,255,0.2); }
 @media (max-width: 768px) {
 	header {
 		padding: 6rem 0 4rem;
-		font-size: 0.8em;
 		text-align: center;
 	}
 	header .bg { top: -6rem; }
+	header h1 { font-size: 3em; }
+	header h2 { font-size: 2.5em; }
 }
 @media (max-width: 480px) { header span { display: block; } }
 @-webkit-keyframes hopping {
