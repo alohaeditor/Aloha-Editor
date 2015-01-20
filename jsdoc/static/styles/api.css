@@ -6,6 +6,10 @@ ul, ol {
 	padding: 0;
 }
 li { list-style-type: none; }
+.navigation h1,
+.navigation h2,
+.navigation h3,
+.navigation h4 { font-family: 'Roboto', sans-serif; }
 #wrap { position: relative; }
 ::-webkit-scrollbar {
 	width: 8px;
@@ -44,12 +48,8 @@ li { list-style-type: none; }
 	    -moz-font-smoothing: antialiased;
 	         font-smoothing: antialiased;
 }
-.navigation a:hover { border-color: rgba(255,255,255,0.3); }
-.navigation .applicationName a {
-	background-image: url(../froggy.png);
-	margin-top: 10px;
-	font-size: 1em;
-}
+.navigation .list a:hover { border-color: rgba(255,255,255,0.3); }
+.navigation .applicationName { margin: 10px 10px 0; }
 
 .navigation .search { padding: 10px 15px; }
 .navigation .search input {

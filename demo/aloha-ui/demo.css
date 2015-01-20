@@ -12,10 +12,16 @@
 	opacity: 0.03;
 }
 .navbar .container {max-width: 800px; }
-.navbar a.brand {
-	color: #fff;
+.navbar .brand {
 	height: 60px;
 	line-height: 60px;
+}
+@media (max-width: 600px) { .navbar .brand span { display: none; } }
+@media (max-width: 480px) {
+	.navbar .brand {
+		float: left;
+		width: auto;
+	}
 }
 
 .funky {
@@ -79,9 +85,9 @@
 
 @media (max-width: 480px) {
 	.aloha-ui .btn {
-		min-width: 40px;
+		min-width: 30px;
 		font-size: 14px;
-		padding: 0;
+		padding: 0 10px;
 	}
 }
 
@@ -145,7 +151,7 @@
 .aloha-ui .btn-group.open .btn.active {
 	color: #fff;
 	background: rgba(255,255,255,0.2);
-box-shadow: none;
+	box-shadow: none;
 }
 
 @-webkit-keyframes flip-open {
@@ -234,7 +240,7 @@ box-shadow: none;
 .aloha-link-toolbar input {
 	color: #fff;
 	border: 0;
-	background: rgba(255,255,255,0.2);
+	background: rgba(0,0,0,0.1);
 	padding: 0 12px;
 	width: 310px;
 	font-size: 18px;
@@ -245,9 +251,7 @@ box-shadow: none;
 .aloha-ui.aloha-link-toolbar.active { display: block; }
 
 .aloha-active,
-.aloha-active:hover {
-	outline: 3px solid rgba(93, 174, 204, 0.15);
-}
+.aloha-active:hover { outline: 3px solid rgba(93, 174, 204, 0.15); }
 
 .aloha-arrow-up {
 	width: 0;

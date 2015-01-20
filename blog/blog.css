@@ -35,105 +35,17 @@ body {
 	height: 10vh;
 }
 
-nav {
-	position: relative;
-	top: 30px;
-	min-height: 10vh;
-	z-index: 1;
-}
-
-nav ul {
-	float: right;
-	margin: 0;
-	padding: 0;
-	list-style: none;
-	height: 50px;
-}
-nav ul::after {
-	content: '';
-	display: block;
-	clear: both;
-	float: none
-}
-nav li {
-	float: left;
-	position: relative;
-	padding-right: 10px;
-	color: #fff;
-}
-nav li a {
-	display: block;
-	padding: 0 0.8em;
-	line-height: 3rem;
-	border-color: transparent;
-	color: #fff;
-	text-transform: uppercase;
-	font-size: 0.8em;
-	font-weight: 400;
-	letter-spacing: 0.04em;
-	line-height: 50px;
-}
-nav li::after {
-	content: '●';
-	display: block;
-	position: absolute;
-	top: 0;
-	left: -5px;
-	line-height: 2.8rem;
-	font-size: 0.5em;
-	opacity: 0.5;
-}
-nav li:first-child::after { display: none; }
-nav li a:hover {
-	color: rgba(255,255,255,0.6);
-	border-color: rgba(255,255,255,0.5);
-}
-
-nav button { display: none; }
-
-.brand {
-	float: left;
-	font-size: 2em;
-	line-height: 50px;
-	height: 50px;
-	background-image: url(froggy.png);
-	background-size: 40px;
-	padding-left: 55px;
-}
-.brand span { opacity: 0.5; }
-
-@media (max-width: 768px) {
-	.brand {
-		font-size: 2em;
-		padding: 0px 0px 0px 55px;
-	}
-	.brand span { display: none; }
-}
-@media (max-width: 600px) {
-	.brand {
-		float: none;
-		display: block;
-		font-size: 0;
-		background-position: center;
-	}
-	nav ul {
-		float: none;
-		text-align: center;
-	}
-	nav li {
-		float: none;
-		display: inline-block;
-	}
-	nav ul li a { display: inline-block; }
-}
-
 header {
 	height: 80vh;
 	color: #fff;
 }
 header h1 {
-	font-weight: 300;
+	font-weight: 700;
 	font-size: 3.5em;
+}
+header h2 {
+	opacity: 0.5;
+	font-size: 2em;
 }
 
 @media (max-width: 768px) {
@@ -141,8 +53,14 @@ header h1 {
 		font-size: 3em;
 		text-align: center;
 	}
+	header h2 { text-align: center; }
 }
-@media (max-width: 480px) { header h1 { font-size: 2em; } }
+@media (max-width: 480px) { header h1 { font-size: 2.3em; } }
+
+.wrapper nav {
+	top: 30px;
+	margin-bottom: 30px;
+}
 
 article {
 	padding: 30px 0;
@@ -153,8 +71,13 @@ article .byline {
 	color: #d9d8d5;
 	font-weight: 700;
 }
-article.wrapper p { margin-bottom: 1em; }
-article.wrapper p:last-child { margin-bottom: 0; }
+article.wrapper p,
+article.wrapper ul,
+article.wrapper ol { margin-bottom: 1em; }
+
+article.wrapper p:last-child,
+article.wrapper ul:last-child,
+article.wrapper ol:last-child { margin-bottom: 0; }
 
 .rainbow {
 	position: relative;
@@ -163,10 +86,19 @@ article.wrapper p:last-child { margin-bottom: 0; }
 	background: #797875;
 	overflow: hidden;
 	transition: background-color 1s;
+	-webkit-perspective: 400px;
+	   -moz-perspective: 400px;
+	    -ms-perspective: 400px;
+	     -o-perspective: 400px;
+	        perspective: 400px;
+	-webkit-transform-style: preserve-3d;
+	   -moz-transform-style: preserve-3d;
+	    -ms-transform-style: preserve-3d;
+	     -o-transform-style: preserve-3d;
+	        transform-style: preserve-3d;
 }
 .rainbow .bg {
 	z-index: -1;
-	display: block;
 	position: absolute;
 	max-width: 100%;
 	width: 100%;
@@ -175,4 +107,18 @@ article.wrapper p:last-child { margin-bottom: 0; }
 	background-size: 1000px;
 	background-position: -20px -5px;
 	opacity: 0.03;
+}
+.rainbow .bg {
+	-webkit-animation: intro 2s ease-out;
+	   -moz-animation: intro 2s ease-out;
+}
+@-webkit-keyframes intro {
+	0%   { -webkit-transform: rotate3d(1,0,0,30deg) translate3d(200px,0px,400px); }
+	100% { -webkit-transform: rotate3d(1,0,0,0deg)  translate3d(0px,0.85px,0px);    }
+	/* http://stackoverflow.com/questions/15194313/webkit-css-transform3d-position-fixed-issue#15256339 */
+}
+@-moz-keyframes intro {
+	0%   { -moz-transform: rotate3d(1,0,0,30deg) translate3d(200px,0px,400px); }
+	100% { -moz-transform: rotate3d(1,0,0,0deg)  translate3d(0px,0.85px,0px);    }
+	/* http://stackoverflow.com/questions/15194313/webkit-css-transform3d-position-fixed-issue#15256339 */
 }

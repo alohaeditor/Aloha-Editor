@@ -35,6 +35,11 @@ article:nth-child(6n) { z-index: 4; }
 article:nth-child(7n) { z-index: 3; }
 article:nth-child(8n) { z-index: 2; }
 article:nth-child(9n) { z-index: 1; }
+nav {
+	max-width: 1024px;
+	margin: -20px auto 0;
+	padding: 0 30px;
+}
 section {
 	max-width: 800px;
 	margin: 0 auto;
@@ -74,7 +79,8 @@ header .bg {
 	background-size: 1024px;
 	opacity: 0.03;
 }
-header span {
+header h2 span,
+header h3 span {
 	font-weight: 700;
 	opacity: 0.6;
 }

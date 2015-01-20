@@ -17,14 +17,25 @@
 	</head>
 
 	<body>
-
 		<div class="★">
 			<header class="title"><div>
 				<div class="bg"></div>
+
+				<nav>
+					<div class="brand"><a href="/"><span><b>aloha</b>editor</span></a><span>docs</span></div>
+					<ul>
+						<li><a href="/blog">Blog</a></li>
+						<li class="active"><a href="/docs">Docs</a></li>
+						<li><a href="/api">API</a></li>
+						<li><a href="https://github.com/alohaeditor/Aloha-Editor/tree/howling-mad">Code</a></li>
+					</ul>
+				</nav>
+
 				<div class="editable">
 					<h1>Getting Started</h1>
 					<h2><span>with Aloha Editor</span></h2>
 				</div>
+
 				<h3><a href="#include-and-invoke-aloha"><span>Leap 1:</span> Include &amp; Invoke Aloha</a></h3>
 				<h3><a href="#add-and-bind-a-button"><span>Leap 2:</span> Add &amp; Bind a Button</a></h3>
 				<h3><a href="#add-more-buttons"><span>Leap 3:</span> Add More Buttons</a></h3>
@@ -52,7 +63,7 @@
 					<div class="snippet" data-syntax='text/html'>
 						&lt;script src="http://aloha-editor.org/download/aloha.min.js"&gt;&lt;/script&gt;
 					</div>
-					<div class="snippet" data-snippet="aloha"><&aloha&>(document.querySelector('#editable'))</div>
+					<div class="snippet" data-snippet="aloha"><&aloha&>(document.querySelector('#editable'));</div>
 
 					<p>
 						<a href="/api/aloha.html#aloha" data-snippet-link="aloha.1">aloha()</a>
@@ -72,15 +83,15 @@
 						line of code:
 					</p>
 
-					<div class="snippet" data-snippet="aloha">aloha.dom.query('.editable', document).forEach(<&aloha&>)</div>
+					<div class="snippet" data-snippet="aloha">aloha.dom.query('.editable', document).forEach(<&aloha&>);</div>
 
 					<p>
 						Once an editable is initialized
 						<span id="caret-tease" class="editable"> you will
 						see that Aloha Editor uses a blinking DIV element as the
-						caret</span>.  This caret is the minimal visual user interface
-						(<!-- a href="#caretStylingFiddle" -->which you can style and
-						animate with CSS, by the way).
+						caret</span>.  This caret is the minimal visual user
+						interface (which you can style and animate with CSS, by
+						the way).
 					</p>
 
 					<p>
@@ -128,7 +139,7 @@
 
 					<div class="snippet" data-snippet="binding">
 $('#big-bad-bold-button')
-	.on('click', <&aloha.ui.command&>(<&aloha.ui.commands.bold&>))
+	.on('click', <&aloha.ui.command&>(<&aloha.ui.commands.bold&>));
 					</div>
 
 					<p>
