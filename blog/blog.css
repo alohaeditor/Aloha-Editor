@@ -134,7 +134,7 @@ article blockquote::after {
 	max-width: 100%;
 	width: 100%;
 	height: 100%;
-	background-image: url(http://alohaeditor.org/assets/letters.png);
+	background-image: url(../assets/letters.png);
 	background-size: 1000px;
 	background-position: -20px -5px;
 	opacity: 0.03;
