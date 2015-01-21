@@ -119,7 +119,7 @@ nav .brand {
 	.brand a span { display: none }
 	.brand>span { opacity: 1; }
 }
-@media (max-width: 480px) {
+@media (max-width: 600px) {
 	.brand,
 	nav .brand {
 		float: none;
@@ -183,7 +183,7 @@ nav>ul>li a:hover {
 	color: rgba(255,255,255,0.6);
 	border-color: rgba(255,255,255,0.5);
 }
-@media (max-width: 480px) {
+@media (max-width: 600px) {
 	nav>ul {
 		float: none;
 		text-align: center;
