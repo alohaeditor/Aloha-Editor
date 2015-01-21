@@ -10,7 +10,7 @@
 		<meta name='author' content='Team Aloha'>
 		<link rel="icon" type="image/png" href="favicon.png">
 		<title>Aloha Editor &mdash; We've been busy...</title>
-		<link href="../styles/base.css" rel="stylesheet">
+		<link href="../assets/base.css" rel="stylesheet">
 		<link href="blog.css" rel="stylesheet">
 	</head>
 
@@ -21,80 +21,100 @@
 			<nav>
 				<div class="brand"><a href="/"><span><b>aloha</b>editor</span></a><span>blog</span></div>
 				<ul>
-					<li class="active"><a href="/blog">Blog</a></li>
+					<li><a href="/demo">Demo</a></li>
 					<li><a href="/docs">Docs</a></li>
 					<li><a href="/api">API</a></li>
+					<li class="active"><a href="/blog">Blog</a></li>
 					<li><a href="https://github.com/alohaeditor/Aloha-Editor/tree/howling-mad">Code</a></li>
 				</ul>
 			</nav>
 
 			<header class="centered"><div>
 				<h1>We've been busy...</h1>
-				<h2>Beautiful design, <s>boilerplate</s>, &amp; breaking changes</h2>
+				<h2>Introducing aloha.ui</h2>
 			</div></header>
 		</div>
 
-		<article class="wrapper">
+		<article>
 			<p class="byline">18 January, 2014 by Petro Salema</p>
 
-			<p>Here come our first breaking changes of 2015&mdash;yes, we've been busy!</p>
-
 			<p>
-				We're releasing improvements to the way UI wiring can be done
-				with Aloha Editor. The goal of these efforts was to make the
-				design more <i>comprehensible</i> and <i>comprehensive</i> for
-				API users.
+				Here come our first breaking changes of 2015! Yes, we've been
+				busy.
 			</p>
 
 			<p>
-				One of the design principles behind Aloha Editor is the of
-				minimal shared state.
+				We're releasing API improvements that are summed up in the
+				introduction of <a href="/api/ui.html">aloha.ui</a> as a core
+				API module. Along with these changes, we've also freshened-up
+				the design of the website and created
+				<a href="http://aloha-editor.org/ui.html">new guides</a> to help
+				you better along. We hope you're inspired!
 			</p>
 
-			<p>These changes include:</p>
-
-			<ul>
-				<li><a href="http://aloha-editor.org/docs/#add-and-bind-a-button">
-					Simplified wiring and reduced boilerplate
-				</a></li>
-				<li><a href="http://aloha-editor.org/docs/#multiple-editables">Allowing per-editable configuration</a></li>
-			</ul>
+			<blockquote>
+				 A good library should not dictate application-level wiring
+			</blockquote>
 
 			<p>
-				If you followed those two links above, you would have noticed
-				that we've introduced a new API module
-				<a href="http://aloha-editor.org/api/ui.html">aloha.ui</a>, and
-				an updated <a href="http://aloha-editor.org/ui.html">guide</a>
-				for how to get started that has more comprehensive content and
-				is more beautifully designed.
-			</p>
-
-			<p>
-				<i>These are breaking changes</i>. View the source of our
-				<a
-					href="view-source:http://localhost/Aloha-Editor/demo/aloha-ui/">UI
-					demo</a> to see how the UI wiring there was able to be far
-					less code and much simplified. Use that as a guide to update
-					your own implementation.
+				The goal of these efforts was to provide a better API for wiring
+				UI with Aloha Editor. Our vision of what an editing library
+				should be is that a good library should not dictate
+				application-level wiring. As developers who work in increasingly
+				complex UI applications, you'll most probably have had the pain
+				of dealing with libraries that assume an architectural
+				convention or force a design on your system. The result of this
+				presumtion is often as many new problems being introduced by the
+				library as were solved by it.
 			</p>
 
 			<p>
-				We hope you will find these changes helpful. 
+				The <a href="/api/ui.html">aloha.ui</a> is designed in light of
+				these considerations. We want Aloha Editor to be as conservative
+				as possible with the assumptions it makes about the design of
+				your application. To that end, we put no requirement on the
+				structure of the markup whatsoever&mdash;there are no mandatory
+				classes, attributes, or elements types; there is no dictated way
+				to do event binding; no lifecycles; and certainly no hidden
+				shared state!
 			</p>
 
 			<p>
-				follow us for more notifications on code chnanges
-				we believe that less code is better code
-				less boilerplate through better api
-				also beautiful design
+				<a href="/api/ui.html">aloha.ui</a> is designed to give the API
+				consumer the flexibility to define and generate UI elements
+				exactly when and how they want or need them.
+				What <a href="/api.ui.html">aloha.ui</a> provides are just
+				relatively generic convenient functions and objects that would
+				serve to help you with wiring.
 			</p>
 
-			<p><a href="http://www.alohaeditor.org/demo/aloha-ui/">Try it.</a></p>
+			<p>
+				These represent <i>breaking changes</i>. View the source of this
+				<a href="view-source:http://www.alohaeditor.org/demo/aloha-ui/index.html">demo</a>
+				to see how <a href="/api/ui.html">aloha.ui</a> was used to replaced the
+				old implementation. Use this example, and the <a href="/docs">new docs</a>
+				to update your own implementation.
+			</p>
+
+			<p>
+				<b>#followTheFrog</b> on <a href="http://twitter.com/alohaeditor">Twitter</a>
+				or on <a href="http://github.com/alohaeditor/Aloha-Editor/tree/howling-mad">Github</a>
+				for more notifications on upcoming development. We would also
+				love to hear your thoughts!
+			</p>
 		</article>
 
+		<a href="http://aloha-editor.org/api" id="something-amazing">
+			Now build something amazing!
+		</a>
+
+		<div id="disqus_thread"></div>
+
+		<div id="followTheFrog"><a href="https://twitter.com/alohaeditor">#followTheFrog</a></div>
+
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-		<script src="aloha.min.js"></script>
-		<script src="blog.js"></script>
+		<script src="../assets/aloha.min.js"></script>
+		<script src="../assets/background.js"></script>
 		<script>setTimeout(function () {
 			'use strict';
 			aloha.dom.query('header', document).map(aloha);

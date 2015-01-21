@@ -1,4 +1,4 @@
-(function (aloha, $, CodeMirror) {
+(function (aloha, $) {
 	'use strict';
 
 	var VENDOR_PREFIX = (function () {
@@ -92,4 +92,4 @@
 		}()), 8000);
 	});
 
-}(window.aloha, window.jQuery, window.CodeMirror));
+}(window.aloha, window.jQuery));

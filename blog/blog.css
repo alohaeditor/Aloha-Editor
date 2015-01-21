@@ -61,9 +61,12 @@ header h2 {
 	top: 30px;
 	margin-bottom: 30px;
 }
+@media (max-width: 480px) { .wrapper nav { padding: 0 10px; } }
 
 article {
-	padding: 30px 0;
+	max-width: 1024px;
+	margin: 0 auto;
+	padding: 30px;
 	line-height: 1.5em;
 }
 
@@ -71,13 +74,41 @@ article .byline {
 	color: #d9d8d5;
 	font-weight: 700;
 }
-article.wrapper p,
-article.wrapper ul,
-article.wrapper ol { margin-bottom: 1em; }
+article p,
+article ul,
+article ol { margin-bottom: 1em; }
 
-article.wrapper p:last-child,
-article.wrapper ul:last-child,
-article.wrapper ol:last-child { margin-bottom: 0; }
+article p:last-child,
+article ul:last-child,
+article ol:last-child { margin-bottom: 0; }
+
+/* Pull quotes */
+article blockquote {
+	padding: 0.8em 1.2em 0.4em;
+	margin: 0;
+	float: left;
+	width: 380px;
+	font-size: 2.2em;
+	font-weight: 300;
+	text-align: center;
+	line-height: 1.2em;
+	position: relative;
+}
+article blockquote::after {
+	content: '”';
+	bottom: 0;
+	left: 0;
+	display: block;
+	width: 100%;
+	height: 0.5em;
+	overflow: hidden;
+	text-align: center;
+	font-size: 2em;
+	font-weight: 700;
+	font-family: 'Georgia';
+	line-height: 1em;
+	opacity: 0.1;
+}
 
 .rainbow {
 	position: relative;
@@ -103,7 +134,7 @@ article.wrapper ol:last-child { margin-bottom: 0; }
 	max-width: 100%;
 	width: 100%;
 	height: 100%;
-	background-image: url(../styles/letters.png);
+	background-image: url(http://alohaeditor.org/assets/letters.png);
 	background-size: 1000px;
 	background-position: -20px -5px;
 	opacity: 0.03;
@@ -114,11 +145,9 @@ article.wrapper ol:last-child { margin-bottom: 0; }
 }
 @-webkit-keyframes intro {
 	0%   { -webkit-transform: rotate3d(1,0,0,30deg) translate3d(200px,0px,400px); }
-	100% { -webkit-transform: rotate3d(1,0,0,0deg)  translate3d(0px,0.85px,0px);    }
-	/* http://stackoverflow.com/questions/15194313/webkit-css-transform3d-position-fixed-issue#15256339 */
+	100% { -webkit-transform: rotate3d(1,0,0,0deg)  translate3d(0px,0.85px,0px);  }
 }
 @-moz-keyframes intro {
 	0%   { -moz-transform: rotate3d(1,0,0,30deg) translate3d(200px,0px,400px); }
-	100% { -moz-transform: rotate3d(1,0,0,0deg)  translate3d(0px,0.85px,0px);    }
-	/* http://stackoverflow.com/questions/15194313/webkit-css-transform3d-position-fixed-issue#15256339 */
+	100% { -moz-transform: rotate3d(1,0,0,0deg)  translate3d(0px,0.85px,0px);  }
 }

@@ -40,12 +40,13 @@ article:nth-child(9n) { z-index: 1; }
 	position: absolute;
 	top: -20px;
 }
-@media(max-width: 768px) { .nav-wrapper { top: -70px; } }
+@media (max-width: 768px) { .nav-wrapper { top: -70px; } }
 nav {
 	max-width: 1024px;
 	margin: 0 auto;
 	padding: 0 30px;
 }
+@media (max-width: 480px) { nav { padding: 0 10px; } }
 section {
 	max-width: 800px;
 	margin: 0 auto;
