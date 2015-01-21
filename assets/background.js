@@ -1,4 +1,4 @@
-(function (aloha, $) {
+(function ($) {
 	'use strict';
 
 	var VENDOR_PREFIX = (function () {
@@ -33,10 +33,21 @@
 		});
 	}
 
+	function delayed(fn, delay) {
+		var timeout = null;
+		return function () {
+			if (timeout) {
+				clearTimeout(timeout);
+			}
+			timeout = setTimeout(fn, delay);
+		};
+	}
+
 	$(function () {
 		if (0 === $('.rainbow .bg').length) {
 			return;
 		}
+
 		window.requestAnimationFrame(function parallax() {
 			var yStart = $window.scrollTop();
 			var yEnd = yStart + state.viewport.height;
@@ -51,23 +62,10 @@
 			});
 			window.requestAnimationFrame(parallax);
 		});
-	});
 
-	function delayed(fn, delay) {
-		var timeout = null;
-		return function () {
-			if (timeout) {
-				clearTimeout(timeout);
-			}
-			timeout = setTimeout(fn, delay);
-		};
-	}
+		$window.on('resize', delayed(onresize, 50));
+		onresize();
 
-	$window.on('resize', delayed(onresize, 50));
-
-	onresize();
-
-	$(function () {
 		var $items = $('.rainbow');
 		setInterval((function colorcycle() {
 			var colors = [
@@ -92,4 +90,4 @@
 		}()), 8000);
 	});
 
-}(window.aloha, window.jQuery));
+}(window.jQuery));

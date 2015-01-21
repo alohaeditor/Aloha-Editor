@@ -195,3 +195,46 @@ nav>ul>li a:hover {
 	}
 	nav>ul>li a { display: inline-block; }
 }
+
+.rainbow {
+	position: relative;
+	width: 100%;
+	z-index: 0;
+	background: #797875;
+	overflow: hidden;
+	transition: background-color 1s;
+	-webkit-perspective: 400px;
+	   -moz-perspective: 400px;
+	    -ms-perspective: 400px;
+	     -o-perspective: 400px;
+	        perspective: 400px;
+	-webkit-transform-style: preserve-3d;
+	   -moz-transform-style: preserve-3d;
+	    -ms-transform-style: preserve-3d;
+	     -o-transform-style: preserve-3d;
+	        transform-style: preserve-3d;
+}
+.rainbow .bg {
+	z-index: -1;
+	position: absolute;
+	max-width: 100%;
+	width: 100%;
+	height: 100vh;
+	background-image: url(../assets/letters.png);
+	background-size: 1000px;
+	background-position: -20px -5px;
+	opacity: 0.03;
+}
+.rainbow.intro .bg{
+	-webkit-animation: intro 2s ease-out;
+	   -moz-animation: intro 2s ease-out;
+}
+@-webkit-keyframes intro {
+	0%   { -webkit-transform: rotate3d(1,0,0,30deg) translate3d(200px,0px,400px); }
+	100% { -webkit-transform: rotate3d(1,0,0,0deg)  translate3d(0px,0.85px,0px);  }
+}
+@-moz-keyframes intro {
+	0%   { -moz-transform: rotate3d(1,0,0,30deg) translate3d(200px,0px,400px); }
+	100% { -moz-transform: rotate3d(1,0,0,0deg)  translate3d(0px,0.85px,0px);  }
+}
+

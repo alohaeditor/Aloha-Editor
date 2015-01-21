@@ -73,19 +73,8 @@ header>div {
 	display: table-cell;
 	vertical-align: middle;
 }
-header>div>* { position: relative; }
-header .bg {
-	display: block;
-	position: absolute;
-	top: -50px;
-	left: 0;
-	width: 100%;
-	height: 100vh;
-	background-image: url(../assets/letters.png);
-	background-position: center center;
-	background-size: 1024px;
-	opacity: 0.03;
-}
+header .bg { top: -50px; }
+header.intro .bg { -moz-animation: none; }
 header h2 span,
 header h3 span {
 	font-weight: 700;
@@ -101,23 +90,7 @@ h1, h2, h3 {
 
 code { font-weight: bold; }
 
-.title {
-	min-height: 100vh;
-	-webkit-perspective: 400px;
-	   -moz-perspective: 400px;
-	    -ms-perspective: 400px;
-	     -o-perspective: 400px;
-	        perspective: 400px;
-	-webkit-transform-style: preserve-3d;
-	   -moz-transform-style: preserve-3d;
-	    -ms-transform-style: preserve-3d;
-	     -o-transform-style: preserve-3d;
-	        transform-style: preserve-3d;
-}
-.title .bg {
-	-webkit-animation: intro 2s ease-out;
-	/*   -moz-animation: intro 4s ease-out; */
-}
+.title { min-height: 100vh; }
 .title h2 {
 	font-size: 2em;
 	margin-bottom: 4rem;
@@ -167,15 +140,6 @@ h3 a:hover { border-color: rgba(255,255,255,0.2); }
 @-webkit-keyframes hopping {
 	0%   { -webkit-transform: translate3d(0px,-10px,0px); }
 	100% { -webkit-transform: translate3d(0px,0px,0px);   }
-}
-@-webkit-keyframes intro {
-	0%   { -webkit-transform: rotate3d(1,0,0,30deg) translate3d(200px,0px,400px); }
-	100% { -webkit-transform: rotate3d(1,0,0,0deg)  translate3d(0px,0.85px,0px);    }
-	/* http://stackoverflow.com/questions/15194313/webkit-css-transform3d-position-fixed-issue#15256339 */
-}
-@-moz-keyframes intro {
-	0%   { -moz-transform: rotate3d(1,0,0,40deg) translate3d(200px,0,400px); }
-	100% { -moz-transform: rotate3d(1,0,0,0deg)  translate3d(0px,0px,0px);   }
 }
 
 /** `codemirror theme **/
