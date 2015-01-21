@@ -44,29 +44,27 @@
 	}
 
 	$(function () {
-		if (0 === $('.rainbow .bg').length) {
-			return;
+		if (0 < $('.rainbow .bg').length) {
+			window.requestAnimationFrame(function parallax() {
+				var yStart = $window.scrollTop();
+				var yEnd = yStart + state.viewport.height;
+				state.offsets.forEach(function (offsets) {
+					if (offsets[0] < yEnd && offsets[1] > yStart) {
+						var position = Math.round(yStart - offsets[0]) / 2;
+						offsets[2].css(
+							VENDOR_PREFIX + 'transform',
+							'translate3d(0, ' + position + 'px, 0)'
+						);
+					}
+				});
+				window.requestAnimationFrame(parallax);
+			});
+			$window.on('resize', delayed(onresize, 50));
+			onresize();
 		}
 
-		window.requestAnimationFrame(function parallax() {
-			var yStart = $window.scrollTop();
-			var yEnd = yStart + state.viewport.height;
-			state.offsets.forEach(function (offsets) {
-				if (offsets[0] < yEnd && offsets[1] > yStart) {
-					var position = Math.round(yStart - offsets[0]) / 2;
-					offsets[2].css(
-						VENDOR_PREFIX + 'transform',
-						'translate3d(0, ' + position + 'px, 0)'
-					);
-				}
-			});
-			window.requestAnimationFrame(parallax);
-		});
+		var $items = $('.rainbow,.rainbow-static');
 
-		$window.on('resize', delayed(onresize, 50));
-		onresize();
-
-		var $items = $('.rainbow');
 		setInterval((function colorcycle() {
 			var colors = [
 				'#54c8eb', // light blue

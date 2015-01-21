@@ -3,14 +3,20 @@
 ::selection      { background: #3c3c3c; color: #a9a8a5; }
 ::-moz-selection { background: #3c3c3c; color: #a9a8a5; }
 
+* {
+	-webkit-box-sizing: border-box;
+	   -moz-box-sizing: border-box;
+	        box-sizing: border-box;
+}
+
 body {
 	margin: 0 auto;
-	-webkit-text-size-adjust: 100%;
-	    -ms-text-size-adjust: 100%;
 	-moz-osx-font-smoothing: grayscale;
 	 -webkit-font-smoothing: antialiased;
 	    -moz-font-smoothing: antialiased;
 	         font-smoothing: antialiased;
+	-webkit-text-size-adjust: 100%;
+	    -ms-text-size-adjust: 100%;
 	text-rendering: optimizeLegibility;
 	line-height: 1.7em;
 	font-family: 'Roboto', sans-serif;

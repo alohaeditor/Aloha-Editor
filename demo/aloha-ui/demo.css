@@ -1,16 +1,18 @@
-.navbar { border: 0; }
-.navbar::before {
+.rainbow-static { background-color: #797875; }
+.rainbow-static::before {
 	content: '';
 	z-index: -1;
 	display: block;
 	position: absolute;
 	width: 100%;
 	height: 100%;
-	background-image: url(letters.png);
+	transition: background-color 10s;
+	background-image: url(../../assets/letters.png);
 	background-size: 500px;
 	background-position: -20px -5px;
-	opacity: 0.03;
+	opacity: 0.04;
 }
+.navbar { border: 0; }
 .navbar .container {max-width: 800px; }
 .navbar .brand {
 	height: 60px;
@@ -22,11 +24,6 @@
 		float: left;
 		width: auto;
 	}
-}
-
-.funky {
-	background-color: #797875;
-	transition: background-color 10s;
 }
 
 /* `ui */
@@ -105,18 +102,6 @@
 		right: 0;
 		left: initial;
 	}
-}
-.aloha-ui.btn-toolbar .dropdown-menu::before {
-	content: '';
-	z-index: -1;
-	display: block;
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	background-image: url(letters.png);
-	background-size: 500px;
-	background-position: -20px -5px;
-	opacity: 0.03;
 }
 
 .aloha-ui .dropdown-menu>li>a { padding: 10px 20px; }
@@ -201,21 +186,7 @@
 	display: none;
 	position: absolute;
 	white-space: nowrap;
-	background: #333;
 	margin: 0;
-}
-.aloha-link-toolbar::before {
-	content: '';
-	z-index: -1;
-	display: block;
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	background-image: url(letters.png);
-	background-size: 500px;
-	background-position: -20px -5px;
-	background-attachment: fixed;
-	opacity: 0.04;
 }
 
 .active .aloha-link-toolbar {
