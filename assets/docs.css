@@ -3,8 +3,8 @@
 	   -moz-box-sizing: border-box;
 	        box-sizing: border-box;
 }
+.★ { margin-bottom: 30px; }
 body { color: #a9a8a5; }
-.★ { margin-bottom: 90px; }
 blockquote {
 	color: #bdbdb8;
 	padding: 1vw;
@@ -20,7 +20,7 @@ blockquote {
 }
 article {
 	position: relative;
-	background: url(../assets/froggy.png);
+	background-image: url(froggy.png);
 	background-position: center bottom;
 	background-repeat: no-repeat;
 	background-size: auto 90px;
@@ -35,6 +35,10 @@ article:nth-child(6n) { z-index: 4; }
 article:nth-child(7n) { z-index: 3; }
 article:nth-child(8n) { z-index: 2; }
 article:nth-child(9n) { z-index: 1; }
+
+article:last-child { background: none; }
+article:last-child section { padding-bottom: 90px; }
+
 .nav-wrapper {
 	width: 100%;
 	position: absolute;
@@ -122,7 +126,7 @@ h3 a:hover { border-color: rgba(255,255,255,0.2); }
 	left: -20px;
 	width: 40px;
 	height: 40px;
-	background: url(../assets/froggy.png);
+	background: url(froggy.png);
 	background-size: 40px;
 	background-repeat: no-repeat;
 	-webkit-animation: hopping 800ms ease-out infinite alternate
