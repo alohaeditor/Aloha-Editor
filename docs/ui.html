@@ -506,6 +506,16 @@ $('#crazy-cool-custom-command')
 
 		<div id="followTheFrog"><a href="https://twitter.com/alohaeditor">#followTheFrog</a></div>
 
+		<footer>
+			&copy; 2015 Gentics Software GmbH, Inc.
+			&bull;
+			<a href="/Content.Node/Privacy.html">Privacy</a>
+			&bull;
+			<a href="/Content.Node/terms.html">Terms</a>
+			&bull;
+			<a href="https://twitter.com/alohaeditor">#followTheFrog</a>
+		</footer>
+
 		<script src="../assets/background.js"></script>
 
 		<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -515,28 +525,30 @@ m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 ga('create', 'UA-17460389-2', 'auto'); ga('require', 'displayfeatures');
 ga('send', 'pageview');</script>
 
-	    <script>
+		<script>
 			(function(d) {
 				var q=d.createElement('script');q.async=1;q.src='//alohaeditor.disqus.com/embed.js';
 				(d.getElementsByTagName('head')[0]||d.getElementsByTagName('body')[0]).appendChild(q);
 			})(document);
-	    </script>
+		</script>
 
-		<script>setTimeout(function () {
-			'use strict';
-			if (-1 === window.location.toString().indexOf('#')) {
-				window.location = '#add-and-bind-a-button';
-			}
-			aloha.dom.query('header .editable, #caret-tease', document).map(aloha);
-			var boundary = aloha.boundaries.fromEndOfNode(
-				aloha.dom.query('header .editable h1', document)[0]
-			);
-			aloha.editor.selection = aloha.selections.select(
-				aloha.editor.selection,
-				boundary,
-				boundary
-			);
-		}, 500)</script>
+		<script>
+			setTimeout(function () {
+				'use strict';
+				if (-1 === window.location.toString().indexOf('#')) {
+					window.location = '#add-and-bind-a-button';
+				}
+				aloha.dom.query('header .editable, #caret-tease', document).map(aloha);
+				var boundary = aloha.boundaries.fromEndOfNode(
+					aloha.dom.query('header .editable h1', document)[0]
+				);
+				aloha.editor.selection = aloha.selections.select(
+					aloha.editor.selection,
+					boundary,
+					boundary
+				);
+			}, 500);
+		</script>
 
 		<script src="codemirror-4.2/lib/codemirror.js"></script>
 		<script src="codemirror-4.2/mode/javascript/javascript.js"></script>

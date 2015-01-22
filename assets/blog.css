@@ -59,7 +59,7 @@ header h2 {
 	overflow: hidden;
 	width: 80px;
 	height: 80px;
-	padding: 6px;
+	padding: 8px;
 	border-radius: 60px;
 	transition: background-color 4s;
 }
@@ -73,7 +73,7 @@ header h2 {
 	position: absolute;
 }
 .byline .photo::before {
-	opacity: 0.2;
+	opacity: 0.1;
 	z-index: 0;
 	content: '';
 	width: 100%;
@@ -139,4 +139,10 @@ article blockquote::after {
 	line-height: 1em;
 	opacity: 0.1;
 }
-@media (max-width: 480px) { article blockquote { width: 100%; } }
+@media (max-width: 480px) {
+	article blockquote {
+		width: 100%;
+		font-size: 1.5em;
+		padding-bottom: 1.2em;
+	}
+}

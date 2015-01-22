@@ -72,7 +72,12 @@ a:hover {
 	background-size: auto 90px;
 }
 #something-amazing:hover { color: #999895; }
-@media (max-width: 480px) { #something-amazing { padding: 1em 0; } }
+@media (max-width: 480px) {
+	#something-amazing {
+		padding-left: 0;
+		padding-right: 0;
+	}
+}
 
 #followTheFrog {
 	display: block;
@@ -82,6 +87,7 @@ a:hover {
 	text-align: center;
 	font-weight: 700;
 	border: 0;
+	color: #d7d6c5;
 }
 #followTheFrog a {
 	color: #d7d6c5;
@@ -149,7 +155,7 @@ nav::after {
 	content: '';
 	display: block;
 	clear: both;
-	float: none
+	float: none;
 }
 nav button { display: none; }
 nav>ul {
@@ -204,9 +210,11 @@ nav>ul>li a:hover {
 	}
 	nav>ul>li {
 		float: none;
+		padding: 0;
 		display: inline-block;
 	}
 	nav>ul>li a { display: inline-block; }
+	nav>ul>li::after { left: -0.5em; }
 }
 
 .rainbow {
@@ -239,16 +247,16 @@ nav>ul>li a:hover {
 	opacity: 0.03;
 }
 .rainbow.intro .bg{
-	-webkit-animation: intro 2s ease-out;
-	   -moz-animation: intro 2s ease-out;
+	-webkit-animation: intro 1s ease-out;
+	   -moz-animation: intro 1s ease-out;
 }
 @-webkit-keyframes intro {
-	0%   { -webkit-transform: rotate3d(1,0,0,30deg) translate3d(200px,0px,400px); }
-	100% { -webkit-transform: rotate3d(1,0,0,0deg)  translate3d(0px,0.85px,0px);  }
+	0%   { -webkit-transform: rotate3d(1,0,0,30deg) translate3d(0px,0px,400px);  }
+	100% { -webkit-transform: rotate3d(1,0,0,0deg)  translate3d(0px,0.85px,0px); }
 }
 @-moz-keyframes intro {
-	0%   { -moz-transform: rotate3d(1,0,0,30deg) translate3d(200px,0px,400px); }
-	100% { -moz-transform: rotate3d(1,0,0,0deg)  translate3d(0px,0.85px,0px);  }
+	0%   { -moz-transform: rotate3d(1,0,0,30deg) translate3d(0px,0px,400px);  }
+	100% { -moz-transform: rotate3d(1,0,0,0deg)  translate3d(0px,0.85px,0px); }
 }
 
 .rainbow-static { background-color: #797875; }
@@ -259,9 +267,14 @@ nav>ul>li a:hover {
 	position: absolute;
 	width: 100%;
 	height: 100%;
-	transition: background-color 10s;
 	background-image: url(letters.png);
 	background-size: 500px;
 	background-position: -20px -5px;
+	transition: background-color 10s;
 	opacity: 0.04;
+}
+
+footer {
+	padding: 90px 0;
+	text-align: center;
 }

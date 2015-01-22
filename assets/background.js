@@ -48,19 +48,31 @@
 			window.requestAnimationFrame(function parallax() {
 				var yStart = $window.scrollTop();
 				var yEnd = yStart + state.viewport.height;
-				state.offsets.forEach(function (offsets) {
+				state.offsets.forEach(function (offsets, index) {
 					if (offsets[0] < yEnd && offsets[1] > yStart) {
-						var position = Math.round(yStart - offsets[0]) / 2;
-						offsets[2].css(
-							VENDOR_PREFIX + 'transform',
-							'translate3d(0, ' + position + 'px, 0)'
-						);
+						var position = Math.round(yStart - offsets[0]);
+						if (0 === index) {
+							position /= 5;
+							var tilt = Math.round(90 * (yStart / offsets[1]));
+							offsets[2].css(
+								VENDOR_PREFIX + 'transform',
+								'translate3d(0,' + position + 'px,' + position + 'px) rotate3d(1,0,0,' + tilt + 'deg)'
+							);
+						} else {
+							offsets[2].css(
+								VENDOR_PREFIX + 'transform',
+								'translate3d(0,' + (position / 2) + 'px,0)'
+							);
+						}
 					}
 				});
 				window.requestAnimationFrame(parallax);
 			});
 			$window.on('resize', delayed(onresize, 50));
 			onresize();
+			setTimeout(function () {
+				state.offsets[0][2].parent().css(VENDOR_PREFIX + 'perspective', '1000px');
+			}, 1300);
 		}
 
 		var $items = $('.rainbow,.rainbow-static');
