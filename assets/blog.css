@@ -73,7 +73,7 @@ header h2 {
 	position: absolute;
 }
 .byline .photo::before {
-	opacity: 0.3;
+	opacity: 0.2;
 	z-index: 0;
 	content: '';
 	width: 100%;

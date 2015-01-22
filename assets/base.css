@@ -186,12 +186,10 @@ nav>ul>li a {
 	letter-spacing: 0.04em;
 	line-height: 54px;
 }
+nav>ul>li.active a { border-color: rgba(255,255,255,0.1); }
 nav>ul>li a:hover {
 	color: rgba(255,255,255,0.6);
 	border-color: rgba(255,255,255,0.5);
-}
-nav>ul>li.active {
-	border-color: red;
 }
 @media (max-width: 600px) {
 	nav>ul {
