@@ -85,6 +85,7 @@ a:hover {
 #followTheFrog a:hover { color: #999895; }
 
 #disqus_thread {
+	max-width: 1024px;
 	margin: 0 auto;
 	padding: 0 2em;
 	color: #797875;
@@ -188,6 +189,9 @@ nav>ul>li a {
 nav>ul>li a:hover {
 	color: rgba(255,255,255,0.6);
 	border-color: rgba(255,255,255,0.5);
+}
+nav>ul>li.active {
+	border-color: red;
 }
 @media (max-width: 600px) {
 	nav>ul {

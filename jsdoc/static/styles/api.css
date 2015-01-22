@@ -216,6 +216,7 @@ li { list-style-type: none; }
 	margin-right: 5px;
 	color: gray;
 }
+.main .readme img { width: 100px; }
 .main .readme p {
 	margin-top: 15px;
 	line-height: 1.2;
