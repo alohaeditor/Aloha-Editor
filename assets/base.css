@@ -68,6 +68,7 @@ a:hover {
 	border: 0;
 }
 #something-amazing:hover { color: #999895; }
+@media (max-width: 480px) { #something-amazing { padding: 1em 0; } }
 
 #followTheFrog {
 	display: block;
