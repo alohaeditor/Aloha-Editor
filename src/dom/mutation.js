@@ -66,8 +66,8 @@ define([
 	/**
 	 * Insert node at end of destination.
 	 *
-	 * @param {Element} destination
 	 * @param {Node}    node
+	 * @param {Element} destination
 	 * @memberOf dom
 	 */
 	function append(node, destination) {

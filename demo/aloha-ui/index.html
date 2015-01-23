@@ -162,6 +162,29 @@ ga('send', 'pageview');</script>
 					$('.aloha-action-' + selector)
 						.on('click', aloha.ui.command(editables, commands[selector]));
 				}
+				var hidden = aloha.html.parse(
+					'<div contentEditable="true" style="width:1px;height:1px;overflow:hidden;xoutline:0;"></div>',
+					document
+				)[0];
+				aloha.dom.append(hidden, aloha.editor.selection.caret);
+				var mobile = {
+					selection: null	
+				};
+				function mobile_start(event) {
+					return event;
+				}
+				function mobile_end(event) {
+					console.log(event.type, aloha.markers.hint(event.selection.boundaries)); hidden.innerHTML = '';
+					var isCollapse = aloha.boundaries.equals(
+						event.selection.boundaries[0],
+						event.selection.boundaries[1]
+					);
+					if (isCollapse) {
+						aloha.boundaries.select(aloha.boundaries.fromStartOfNode(hidden));
+					}
+					mobile.selection = event.selection.boundaries;
+					return event;
+				}
 				function middleware(event) {
 					$('.aloha-ui .active, .aloha-ui.active').removeClass('active');
 					if ('leave' === event.type) {
@@ -177,7 +200,8 @@ ga('send', 'pageview');</script>
 					}
 					return event;
 				}
-				aloha.editor.stack.unshift(aloha.linksUi.middleware, middleware);
+				aloha.editor.stack.unshift(aloha.linksUi.middleware, middleware, mobile_end);
+				aloha.editor.stack.push(mobile_start);
 
 				// Because Bootstrap dropdowm menu's use anchor tags containing
 				// "href='#'" which causes the page to jump to the top
