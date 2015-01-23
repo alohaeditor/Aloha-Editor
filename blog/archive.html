@@ -30,20 +30,24 @@
 				</ul>
 			</nav>
 
-			<div class="centered">
-				<ul class="archive">
-					<li><a href="/Content.Node/introducing-aloha-ui.html">
-						<div class="photo">
-							<div style="background-image:url(http://www.gravatar.com/avatar/2087327e79d09b56ce8572e6f363abff.jpg?s=100)"></div>
+			<div class="centered archive">
+				<ul>
+					<li><a href="/Content.Node/blog/introducing-aloha-ui.html">
+						<div>
+							<div class="photo">
+								<div style="background-image:url(http://www.gravatar.com/avatar/2087327e79d09b56ce8572e6f363abff.jpg?s=100)"></div>
+							</div>
 						</div>
 						<div class="details">
 							<h3>We've been busy...</h3>
 							<div>21 January, 2015</div>
 						</div>
 					</a></li>
-					<li><a href="/Content.Node/goodbye-contenteditable.html">
-						<div class="photo">
-							<div style="background-image:url(http://www.gravatar.com/avatar/c84901471a3d6c401c37239dda64c6ff.jpg?s=80)"></div>
+					<li><a href="/Content.Node/blog/goodbye-contenteditable.html">
+						<div>
+							<div class="photo">
+								<div style="background-image:url(http://www.gravatar.com/avatar/c84901471a3d6c401c37239dda64c6ff.jpg?s=80)"></div>
+							</div>
 						</div>
 						<div class="details">
 							<h3>Goodbye, contentEditable.</h3>
@@ -75,21 +79,6 @@ m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 ga('create', 'UA-17460389-2', 'auto'); ga('require', 'displayfeatures');
 ga('send', 'pageview');</script>
-
-		<script>
-			setTimeout(function () {
-				'use strict';
-				aloha.dom.query('header', document).map(aloha);
-				var boundary = aloha.boundaries.fromEndOfNode(
-					aloha.dom.query('header h1', document)[0]
-				);
-				aloha.editor.selection = aloha.selections.select(
-					aloha.editor.selection,
-					boundary,
-					boundary
-				);
-			}, 500);
-		</script>
 
 	</body>
 </html>
