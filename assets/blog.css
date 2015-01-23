@@ -49,7 +49,10 @@ header h2 {
 }
 @media (max-width: 480px) { .wrapper nav { padding: 0 10px; } }
 
-.archive { min-height: 90vh; }
+.archive {
+	min-height: 90vh;
+	padding: 10vh 30px;
+}
 
 .archive ul {
 	list-style: none;
