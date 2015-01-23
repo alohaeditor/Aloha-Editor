@@ -115,12 +115,38 @@
 
 		</div>
 
-		<div id="followTheFrog"><a href="https://twitter.com/alohaeditor">#followTheFrog</a></div>
-
 		<!-- Link Dialog -->
 		<div class="aloha-ui aloha-link-toolbar btn-toolbar" role="toolbar">
 			<input name="href" placeholder="http://www.aloha-editor.org">
 		</div>
+
+		<div id="disqus_thread"></div>
+
+		<footer>
+			&copy; 2015 Gentics Software GmbH, Inc.
+			&nbsp;&bull;&nbsp;
+			<a href="/Content.Node/Privacy.html">Privacy</a>
+			&nbsp;&bull;&nbsp;
+			<a href="/Content.Node/terms.html">Terms</a>
+			&nbsp;&bull;&nbsp;
+			<a href="https://twitter.com/alohaeditor">#followTheFrog</a>
+		</footer>
+
+		<script src="../assets/background.js"></script>
+
+		<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+ (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-17460389-2', 'auto'); ga('require', 'displayfeatures');
+ga('send', 'pageview');</script>
+
+		<script>
+			(function(d) {
+				var q=d.createElement('script');q.async=1;q.src='//alohaeditor.disqus.com/embed.js';
+				(d.getElementsByTagName('head')[0]||d.getElementsByTagName('body')[0]).appendChild(q);
+			})(document);
+		</script>
 
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<script src="js/bootstrap.min.js"></script>
@@ -158,9 +184,5 @@
 				$('.aloha-ui .dropdown-menu').on('click', function (event) { event.preventDefault(); });
 			}());
 		</script>
-		<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
- (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga'); ga('create', 'UA-17460389-2', 'auto'); ga('require', 'displayfeatures'); ga('send', 'pageview');</script>
 	</body>
 </html>

@@ -275,6 +275,10 @@ nav>ul>li a:hover {
 }
 
 footer {
-	padding: 90px 0;
+	padding: 100px 0 30px;
+	background-image: url(froggy.png);
+	background-position: center 30px;
+	background-repeat: no-repeat;
+	background-size: 80px auto;
 	text-align: center;
 }

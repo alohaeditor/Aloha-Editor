@@ -229,7 +229,7 @@
 .editable {
 	max-width: 800px;
 	margin: 50px auto 0;
-	padding: 40px 30px 0;
+	padding: 40px 30px;
 }
 .editable a { cursor: text; }
 .editable p,
