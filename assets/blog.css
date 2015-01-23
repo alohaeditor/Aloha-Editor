@@ -49,6 +49,75 @@ header h2 {
 }
 @media (max-width: 480px) { .wrapper nav { padding: 0 10px; } }
 
+ul.archive {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	height: 90vh;
+}
+ul.archive li {
+	clear: both;
+	margin-bottom: 20px;
+}
+ul.archive a {
+	display: block;
+	font-weight: 300;
+	border-color: transparent;
+	color: #fff;
+	perspective: 1000px;
+}
+ul.archive a:hover { text-shadow: 0px 0px 20px rgba(255,255,255,0.5); }
+ul.archive a:hover .details { transform: translate3d(-10px,0,0); }
+ul.archive a:hover .photo { transform: rotate3d(0,1,0,60deg); }
+ul.archive li a>div {
+	display: table-cell;
+	vertical-align: middle;
+	text-align: left;
+	line-height: 1em;
+	min-width: 90px;
+}
+ul.archive .details {
+	padding-left: 10px;
+	transition: transform 250ms ease-out;
+}
+ul.archive .photo {
+	transform-style: preserve-3d;
+	transform: rotate3d(0,1,0,10deg);
+	transition: transform 250ms ease-out;
+	position: relative;
+	overflow: hidden;
+	width: 90px;
+	height: 90px;
+	padding: 8px;
+	border-radius: 50px;
+	background-color: rgba(255,255,255,0.4);
+	box-shadow: 5px 5px 50px rgba(0,0,0,0.2);
+}
+ul.archive .photo::before {
+	opacity: 0.1;
+	z-index: 0;
+	content: '';
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	position: absolute;
+	background-image: url(letters.png);
+	background-size: 400px;
+}
+ul.archive .photo div {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	border-radius: 100px;
+	background-size: cover;
+	background-position: center;
+}
+ul.archive h3 {
+	font-weight: 700;
+	font-size: 2em;
+}
+
 .byline {
 	color: #b9b8b5;
 	font-weight: 400;
@@ -60,17 +129,8 @@ header h2 {
 	width: 80px;
 	height: 80px;
 	padding: 8px;
-	border-radius: 60px;
+	border-radius: 40px;
 	transition: background-color 4s;
-}
-.byline .photo::after {
-	z-index: -1;
-	content: '';
-	width: 100%;
-	height: 100%;
-	top: 0;
-	left: 0;
-	position: absolute;
 }
 .byline .photo::before {
 	opacity: 0.1;
