@@ -1219,6 +1219,8 @@ define([
 		return false;
 	}
 
+	var MOBILE_REGEX = /^mobile\./;
+
 	/**
 	 * Causes the selection for the given event to be set to the browser and the
 	 * caret position to be visualized.
@@ -1228,6 +1230,9 @@ define([
 	 */
 	function update(event) {
 		var selection = event.selection;
+		if (MOBILE_REGEX.test(event.type)) {
+			return;
+		}
 		if (event.preventSelection || (selection.dragging && 'dragover' !== event.type)) {
 			return;
 		}
@@ -1403,6 +1408,11 @@ define([
 		return null;
 	}
 
+	function isMobileField(node, selection) {
+		return node.parentNode === selection.caret
+		    && 'true' === Dom.getAttr(node, 'contentEditable');
+	}
+
 	/**
 	 * Creates an event object that will contain the following properties:
 	 *
@@ -1493,7 +1503,11 @@ define([
 		}
 		editable = Editables.fromBoundary(editor, boundaries[0]);
 		if (!editable) {
-			return null;
+			if (isMobileField(Boundaries.container(boundaries[0]), selection)) {
+				type = 'mobile.' + type;
+			} else {
+				return null;
+			}
 		}
 		selection.overrides = editor.selection ? editor.selection.overrides : [];
 		selection.previousBoundaries = selection.boundaries || boundaries;
