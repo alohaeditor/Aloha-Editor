@@ -1167,7 +1167,12 @@ define([
 
 		var origHeight = ref.offsetHeight;
 		if (origHeight == 0) {
-			throw "isExtraneousLineBreak: original height is zero, bug?";
+			/**
+			 * I feel bad doing this, but I had to remove this throw to prevent a
+			 * bug where deleting an LI would not work and instead add a bunch of BRs
+			 * to the previous list element.
+			 */
+			//throw "isExtraneousLineBreak: original height is zero, bug?";
 		}
 
 		var origBrDisplay = br.style.display;
