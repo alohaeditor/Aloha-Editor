@@ -200,11 +200,11 @@ define([
 
 	function cleanupPlaceholders(range) {
 		if (window.$_alohaPlaceholder && !isInsidePlaceholder(range)) {
-			if (0 === window.$_alohaPlaceholder.html().replace(/^(&nbsp;)*$/, '').length) {
+			var placeholder = window.$_alohaPlaceholder.html().replace(/^(&nbsp;)*$/, '');
+			if (0 === placeholder.length) {
 				window.$_alohaPlaceholder.remove();
+				window.$_alohaPlaceholder = null;
 			}
-
-			window.$_alohaPlaceholder = null;
 		}
 	}
 
@@ -219,7 +219,7 @@ define([
 		var sibling = isGoingLeft ? prevVisibleNode(block) : nextVisibleNode(block);
 
 		if (!sibling || isBlock(sibling)) {
-			var $landing = jQuery('<div>&nbsp;</div>');
+			var $landing = jQuery('<div class="aloha-placeholder aloha-editable-div">&nbsp;</div>');
 
 			if (isGoingLeft) {
 				jQuery(block).before($landing);
