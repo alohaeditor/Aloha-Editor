@@ -209,6 +209,50 @@ define([
 		});
 	}
 
+	/**
+	 * This function is used for safely removing a placeholder without losing
+	 * valuable information.
+	 * @param {Editable} obj the editable in which to remove the placeholder
+	 * @param {string} placeholderClass the name of the placeholder class
+	 */
+	function safelyRemovePlaceholder(obj, placeholderClass) {
+		jQuery('.' + placeholderClass, obj).each(function(index, value) {
+				var $value = $(value);
+				//preserve content if the placeholder is an aloha-editable-div
+				if ($value.hasClass("aloha-editable-div")) {
+					var child = $value[0].firstChild;
+
+					//delete the none-breaking space that has been inserted to
+					//make the div visible for editing
+					if (child) {
+						if (child.nodeType !== 3 || child.data.indexOf('\u00A0') === -1){
+								child = $value[0].lastChild;
+						}
+						if (child.nodeType === 3) {
+							var innerText = child.data;
+							//the none-breaking space could be the first or the
+							//last character
+							if (innerText.indexOf('\u00A0') > -1) {
+								innerText = innerText.replace(/^(\u00A0)*/, '');
+								if (innerText.indexOf('\u00A0') > -1) {
+									innerText = innerText.replace(/(\u00A0)*$/, '');
+								}
+								child.data = innerText;
+							}
+						}
+					}
+
+					if(!$value.is(':empty')){
+						Dom.removeShallow(value);
+					}else{
+						value.remove();
+					}
+				} else {
+					value.remove();
+				}
+			});
+	}
+
 	$(document).keydown(onKeydown);
 
 	/**
@@ -554,12 +598,12 @@ define([
 					range = new Selection.SelectionRange();
 					range.startContainer = range.endContainer = obj.get(0);
 					range.startOffset = range.endOffset = 0;
-					jQuery('.' + placeholderClass, obj).remove();
+					safelyRemovePlaceholder(obj, placeholderClass);
 					range.select();
 
 				}, 100);
 			} else {
-				jQuery('.' + placeholderClass, obj).remove();
+				safelyRemovePlaceholder(obj, placeholderClass);
 			}
 		},
 
