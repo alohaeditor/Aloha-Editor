@@ -226,6 +226,44 @@ define([
 		});
 	}
 
+	/**
+	 * Safely removes a placeholder and leaves its content at its place.
+	 * This function is a helper to be passed to a jQuery each() invocation.
+	 *
+	 * @private
+	 * @param {index}   index (Unused) index of placeholder element in jQuery collection.
+	 * @param {Element} placeholder DOM Element
+	 */
+	function removePlaceholder(index, placeholder) {
+		var $placeholder = $(placeholder);
+
+		if (!$placeholder.hasClass('aloha-editable-div')) {
+			placeholder.remove();
+			return;
+		}
+
+		var child = placeholder.firstChild;
+
+		if (!child) {
+			placeholder.remove();
+			return;
+		}
+
+		if (!Dom.isTextNode(child) || child.data.indexOf('\u00A0') === -1) {
+			child = placeholder.lastChild;
+		}
+
+		if (Dom.isTextNode(child)) {
+			child.data = child.data.replace(/(^(\u00A0)+)|((\u00A0)+$)/g, '');
+		}
+
+		if (!$placeholder.is(':empty')) {
+			Dom.removeShallow(placeholder);
+		} else {
+			placeholder.remove();
+		}
+	}
+
 	$(document).keydown(onKeydown);
 
 	/**
@@ -568,12 +606,12 @@ define([
 					range = new Selection.SelectionRange();
 					range.startContainer = range.endContainer = obj.get(0);
 					range.startOffset = range.endOffset = 0;
-					jQuery('.' + placeholderClass, obj).remove();
+					obj.find('.' + placeholderClass).each(removePlaceholder);
 					range.select();
 
 				}, 100);
 			} else {
-				jQuery('.' + placeholderClass, obj).remove();
+				obj.find('.' + placeholderClass).each(removePlaceholder);
 			}
 		},
 
