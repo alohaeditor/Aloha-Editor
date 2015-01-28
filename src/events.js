@@ -138,27 +138,31 @@ define([
 	 * @memberOf events
 	 */
 	function setup(doc, editor) {
-		add(doc, 'resize',    editor);
+		add(doc, 'resize',     editor);
 
-		add(doc, 'keyup',     editor);
-		add(doc, 'keydown',   editor);
-		add(doc, 'keypress',  editor);
+		add(doc, 'keyup',      editor);
+		add(doc, 'keydown',    editor);
+		add(doc, 'keypress',   editor);
 
-		add(doc, 'click',     editor);
-		add(doc, 'mouseup',   editor);
-		add(doc, 'mousedown', editor);
-		add(doc, 'mousemove', editor);
-		add(doc, 'dblclick',  editor);
+		add(doc, 'click',      editor);
+		add(doc, 'mouseup',    editor);
+		add(doc, 'mousedown',  editor);
+		add(doc, 'mousemove',  editor);
+		add(doc, 'dblclick',   editor);
 
-		add(doc, 'dragstart', editor);
-		add(doc, 'drag',      editor);
-		add(doc, 'dragenter', editor);
-		add(doc, 'dragexit',  editor);
-		add(doc, 'dragleave', editor);
-		add(doc, 'dragover',  editor);
-		add(doc, 'drop',      editor);
-		add(doc, 'dragend',   editor);
-		add(doc, 'paste',     editor);
+		add(doc, 'dragstart',  editor);
+		add(doc, 'drag',       editor);
+		add(doc, 'dragenter',  editor);
+		add(doc, 'dragexit',   editor);
+		add(doc, 'dragleave',  editor);
+		add(doc, 'dragover',   editor);
+		add(doc, 'drop',       editor);
+		add(doc, 'dragend',    editor);
+		add(doc, 'paste',      editor);
+
+		add(doc, 'touchstart', editor);
+		add(doc, 'touchend',   editor);
+		add(doc, 'touchmove',  editor);
 	}
 
 	/**

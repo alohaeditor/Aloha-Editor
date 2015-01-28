@@ -735,7 +735,7 @@ define([
 	 * @private
 	 * @param  {Boundary} boundary
 	 * @param  {Element}  editable
-	 * @return {Object<string, number>}
+	 * @return {Object.<string, number>}
 	 */
 	function lineBox(boundary, editable) {
 		var box = Carets.box(boundary);
@@ -849,7 +849,7 @@ define([
 	 * Processes a keydown event.
 	 *
 	 * @private
-	 * @param  {AlohaEvent}            event
+	 * @param  {AlohaEvent}       event
 	 * @param  {Array.<Boundary>} boundaries
 	 * @param  {string}           focus
 	 * @return {Object}
@@ -1049,6 +1049,14 @@ define([
 	 * @memberOf selections
 	 */
 	function Context(doc) {
+		var hidden = doc.createElement('div');
+		Maps.extend(hidden.style, {
+			'overflow' : 'hidden',
+			'width'    : '1px',
+			'height'   : '1px',
+			'outline'  : '0'
+		});
+		Dom.setAttr(hidden, 'contentEditable', 'true');
 		var caret = doc.createElement('div');
 		Maps.extend(caret.style, {
 			'cursor'   : 'text',
@@ -1058,7 +1066,8 @@ define([
 			'position' : 'absolute'
 		});
 		Dom.addClass(caret, 'aloha-caret', 'aloha-ephemera');
-		Dom.insert(caret, doc.body, true);
+		Dom.append(hidden, caret);
+		Dom.append(caret, doc.body);
 		return {
 			blinking       : blinking(caret),
 			focus          : 'end',
@@ -1177,8 +1186,8 @@ define([
 		);
 		selection.focus = change.focus;
 		selection.boundaries = change.boundaries;
-		// This check should not be necessary
 		/*
+		// This check should not be necessary
 		if (selection.boundaries[0]) {
 			highlight(selection.boundaries[0], selection.boundaries[1]).forEach(function (box) {
 				Dom.setStyle(box, 'background', '#fce05e'); // or blue #a6c7f7
@@ -1219,7 +1228,7 @@ define([
 		return false;
 	}
 
-	var MOBILE_REGEX = /^mobile\./;
+	var MOBILE_EVENT_TYPE = /^mobile\./;
 
 	/**
 	 * Causes the selection for the given event to be set to the browser and the
@@ -1230,7 +1239,7 @@ define([
 	 */
 	function update(event) {
 		var selection = event.selection;
-		if (MOBILE_REGEX.test(event.type)) {
+		if (MOBILE_EVENT_TYPE.test(event.type)) {
 			return;
 		}
 		if (event.preventSelection || (selection.dragging && 'dragover' !== event.type)) {
@@ -1409,8 +1418,9 @@ define([
 	}
 
 	function isMobileField(node, selection) {
-		return node.parentNode === selection.caret
-		    && 'true' === Dom.getAttr(node, 'contentEditable');
+		var parent = node.parentNode;
+		return (parent.parentNode === selection.caret)
+		    && ('true' === Dom.getAttr(parent, 'contentEditable'));
 	}
 
 	/**

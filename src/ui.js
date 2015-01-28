@@ -75,9 +75,9 @@ define([
 	/**
 	 * Determines the states of the commands for the given event.
 	 *
-	 * @param  {Object<string, command>} commands
-	 * @param  {Event}                   event
-	 * @return {Object<string, boolean>}
+	 * @param  {Object.<string, command>} commands
+	 * @param  {Event}                    event
+	 * @return {Object.<string, boolean>}
 	 * @memberOf ui
 	 */
 	function states(commands, event) {

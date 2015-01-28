@@ -30,7 +30,7 @@ define([
 	 *
 	 * @const
 	 * @private
-	 * @type {Object<string, string>}
+	 * @type {Object.<string, string>}
 	 */
 	var FONT_SIZES = {
 		'1': '0.63em',

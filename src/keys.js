@@ -54,7 +54,7 @@ define([
 	/**
 	 * A map of key names to their keycode.
 	 *
-	 * @type {object<string, number>}
+	 * @type {Object.<string, number>}
 	 * @memberOf keys
 	 */
 	var CODES = {};
@@ -65,7 +65,7 @@ define([
 	/**
 	 * Arrow keys
 	 *
-	 * @type {object<number, string>}
+	 * @type {Object.<number, string>}
 	 * @memberOf keys
 	 */
 	var ARROWS = {
@@ -107,12 +107,15 @@ define([
 
 	/**
 	 * Provides meta, keycode
+	 *
+	 * @param  {!AlohaEvent} event
+	 * @return {AlohaEvent}
 	 * @memberOf keys
 	 */
 	function middleware(event) {
 		var keys = parseKeys(event.nativeEvent);
 		event.meta = keys.meta;
-		event.keycode = keys.keycode;
+		event.keycode = event.keycode || keys.keycode;
 		return event;
 	}
 
@@ -143,7 +146,7 @@ define([
 
 	/**
 	 * Goes through the shortcutHandlers object to find a shortcutHandler that
-	 * matches the pressed meta keys along with the provided keycode.  The
+	 * matches the pressed meta keys along with the provided keycode. The
 	 * shortcutHandler array must be structured as follows:
 	 *
 	 * <pre>
@@ -165,8 +168,8 @@ define([
 	 * @memberOf keys
 	 */
 	function shortcutHandler(meta, keycode, shortcutHandlers) {
-		// try to resolve special keys outside the 40 (delete)
-		// to 91 (meta) range. this range might need tweaking!
+		// Try to resolve special keys outside the 40 (delete) to 91 (meta)
+		// range. This range might need tweaking!
 		var key = keycode <= 46 || keycode >= 91
 		        ? CODE_KEY[keycode] || keycode
 		        : String.fromCharCode(keycode).toLowerCase();

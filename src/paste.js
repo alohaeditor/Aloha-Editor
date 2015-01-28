@@ -45,7 +45,7 @@ define([
 	 * Mime types
 	 *
 	 * @private
-	 * @type {Object<string, string>}
+	 * @type {Object.<string, string>}
 	 */
 	var Mime = {
 		plain : 'text/plain',

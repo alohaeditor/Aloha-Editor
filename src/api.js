@@ -33,6 +33,7 @@ define([
 	'maps',
 	'markers',
 	'metaview',
+	'mobile',
 	'mouse',
 	'overrides',
 	'paste',
@@ -73,6 +74,7 @@ define([
 	Maps,
 	Markers,
 	Metaview,
+	Mobile,
 	Mouse,
 	Overrides,
 	Paste,
@@ -410,6 +412,11 @@ define([
 	exports['metaview'] = {};
 	exports['metaview']['toggle'] = Metaview.toggle;
 
+	exports['mobile'] = {};
+	exports['mobile']['shift']   = Mobile.shift;
+	exports['mobile']['capture'] = Mobile.capture;
+	exports['mobile']['context'] = Mobile.context;
+
 	exports['mouse'] = {};
 	exports['mouse']['middleware'] = Mouse.middleware;
 	exports['mouse']['EVENTS']     = Mouse.EVENTS;
@@ -449,6 +456,7 @@ define([
 	exports['selections']['show']             = Selections.show;
 	exports['selections']['focus']            = Selections.focus;
 	exports['selections']['select']           = Selections.select;
+	exports['selections']['update']           = Selections.update;
 	exports['selections']['middleware']       = Selections.middleware;
 	exports['selections']['Context']          = Selections.Context;
 	exports['selections']['selectionEvent']   = Selections.selectionEvent;
