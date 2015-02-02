@@ -16,7 +16,7 @@
 
 ## Build
 
-Run ```./build.sh --help``` from the project directory root. (Requires Google Closure Compiler)
+Run ```build/build.sh --help``` from the project directory root. (Requires Google Closure Compiler and Node.js)
 
 ## Contributors
 Meet the "A"-Team

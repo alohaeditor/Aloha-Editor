@@ -1,8 +1,8 @@
 {
   "name": "aloha-editor",
-  "version": "1.0.1",
-  "description": "Aloha Editor a HTML editing library and tools.",
-  "homepage": "http://www.aloha-editor.org",
+  "version": "2.0.0",
+  "description": "Aloha Editor | Content Editing JavaScript Libary.",
+  "homepage": "http://www.alohaeditor.org",
   "repository": {
     "type": "git",
     "url": "http://github.com/alohaeditor/Aloha-Editor"

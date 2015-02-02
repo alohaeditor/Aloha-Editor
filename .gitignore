@@ -9,7 +9,7 @@
 target
 dist
 node_modules
-build
+tmp
 .classpath
-aloha.versioned.js
+alohaeditor.js
 api
