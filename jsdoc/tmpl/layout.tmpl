@@ -56,6 +56,8 @@
         <h1 class="page-title" data-filename="<?js= filename ?>"><?js= title ?></h1>
         <?js= content ?>
 
+		<script>var disqus_url = 'http://www.alohaeditor.org/api/<?js= filename ?>';</script>
+
         <?js if (env.conf.templates.disqus) { ?>
         <!-- disqus code -->
         <div id="disqus_thread"></div>

@@ -10,7 +10,9 @@
 <?js } else { ?>
 
 <section>
-    
+
+<script>var disqus_identifier = 'api_<?js= doc.name ?>';</script>
+
 <header>
     <h2><?js if (doc.ancestors && doc.ancestors.length) { ?>
         <span class="ancestors"><?js= doc.ancestors.join('') ?></span>
