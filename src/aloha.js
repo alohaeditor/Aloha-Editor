@@ -1,6 +1,6 @@
 /**
  * ┌───────────────────────────────────────────────────────────────┐
- * │ Aloha Editor 2.0.0 - JavaScript Content Editing Library       │
+ * │ Aloha Editor 2.0.0 ● JavaScript Content Editing Library       │
  * ├───────────────────────────────────────────────────────────────┤
  * │ Copyright © 2010-2015 Gentics Software GmbH, Vienna, Austria. │
  * ├───────────────────────────────────────────────────────────────┤

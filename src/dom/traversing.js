@@ -88,17 +88,17 @@ define([
 	 * DIV root node in the DOM tree below:
 	 * <pre>
 	 * <div>
-     *     "one"
-     *     <b>
-     *         "two"
-     *         <u>
-     *             <i>
-     *                 "three"
-     *             </i>
-     *         </u>
-     *         "four"
-     *     </b>
-     *     "five"
+	 *     "one"
+	 *     <b>
+	 *         "two"
+	 *         <u>
+	 *             <i>
+	 *                 "three"
+	 *             </i>
+	 *         </u>
+	 *         "four"
+	 *     </b>
+	 *     "five"
 	 * </div>
 	 * </pre>
 	 * backward() will return nodes in the following order:
