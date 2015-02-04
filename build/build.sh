@@ -1,8 +1,19 @@
+root=$(pwd)
+src=$root/src
+tmp=$root/build/tmp
+target=$tmp/aloha
+entry=aloha
+versioned=alohaeditor
+optimization=ADVANCED_OPTIMIZATIONS
+dot=" \e[0;32m•\e[0m"
+tick=" \e[0;32m✔\e[0m"
+ish=$(echo "https:\/\/github.com\/alohaeditor\/Aloha-Editor\/commit\/$(git rev-parse HEAD)")
+
 function help {
 	echo -e "
 Aloha Editor build script
 
---none       build with no optimizations
+--none       build with no optimization
 --simple     build with simple optimization
 --source-map creates a source-mapped output in build directory
 --docs       build api docs
@@ -15,20 +26,8 @@ Your .env file should define CLOSURE_PATH=$CLOSURE_PATH.
 Building without optimizations (--none) and building docs require nodejs.
 Building all other build options (eg: --simple) require Google Closure Compiler
 and Java.
-
 	"
 }
-
-root=$(pwd)
-src=$root/src
-tmp=$root/build/tmp
-target=$tmp/aloha
-entry=aloha
-versioned=alohaeditor
-optimization=ADVANCED_OPTIMIZATIONS
-dot=" \e[0;32m•\e[0m"
-tick=" \e[0;32m✔\e[0m"
-ish=$(echo "https:\/\/github.com\/alohaeditor\/Aloha-Editor\/commit\/$(git rev-parse HEAD)")
 
 function clean {
 	if [ -d $tmp ]; then
@@ -51,20 +50,20 @@ function build {
 	cd $src
 	sed s/%buildcommit%/$ish/ <(cat $entry.js) > $versioned.js
 
-	find ./ -name "*.js" | \
-		grep -v require-pronto.js | \
-		grep -v require-pronto.dev.js | \
-		xargs java -jar $CLOSURE_PATH/compiler.jar \
-			--compilation_level=$optimization \
-			--common_js_entry_module=$versioned.js \
-			--manage_closure_dependencies \
-			--process_common_js_modules \
-			--transform_amd_modules \
-			--output_wrapper="(function () {%output%}())" \
-			--only_closure_dependencies \
-			--externs $root/externs.js \
-			$sourcemap \
-		> $target.min.js
+	find ./ -name "*.js" |                                \
+	    grep -v require-pronto.js |                       \
+	    grep -v require-pronto.dev.js |                   \
+	    xargs java -jar $CLOSURE_PATH/compiler.jar        \
+	        --compilation_level=$optimization             \
+	        --common_js_entry_module=$versioned.js        \
+	        --manage_closure_dependencies                 \
+	        --process_common_js_modules                   \
+	        --transform_amd_modules                       \
+	        --output_wrapper="(function () {%output%}())" \
+	        --only_closure_dependencies                   \
+	        --externs $root/externs.js                    \
+	        $sourcemap                                    \
+	    > $target.min.js
 
 	if [[ -n $sourcemap ]]; then
 		echo -e "\n//# sourceMappingURL=aloha.js.map" >> $target.min.js
