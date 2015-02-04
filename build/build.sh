@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 function help {
 	echo -e "
 Aloha Editor build script
