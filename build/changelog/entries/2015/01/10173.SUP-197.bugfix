@@ -1,0 +1,1 @@
+When moving the cursor between two blocks a &amp;lt;div&amp;gt; was inserted to make the space visible for editing. This &amp;lt;div&amp;gt; was not cleaned up after editing. Now the &amp;lt;div&amp;gt; will be safely removed, keeping its content.
