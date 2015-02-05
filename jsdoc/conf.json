@@ -11,7 +11,7 @@
 		"default": {
 			"outputSourceFiles" : true
 		},
-		"applicationName": "Aloha Editor API",
+		"applicationName": "API - Aloha Editor",
 		"disqus": "alohaeditor",
 		"googleAnalytics": "",
 		"openGraph": {

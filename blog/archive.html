@@ -9,7 +9,7 @@
 		<meta name='og:image' content='../assets/froggy.png'>
 		<meta name='author' content='Team Aloha'>
 		<link rel='icon' type='image/png' href='../assets/favicon.png'>
-		<title>Aloha Editor: Blog</title>
+		<title>Blog - Aloha Editor</title>
 		<link href='../assets/base.css' rel='stylesheet'>
 		<link href='../assets/blog.css' rel='stylesheet'>
 	</head>
@@ -72,6 +72,15 @@
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<script src="../assets/aloha.min.js"></script>
 		<script src="../assets/background.js"></script>
+
+		<script>
+			var disqus_identifier = 'blog';
+			var disqus_url = 'http://www.alohaeditor.org/blog';
+			(function(d) {
+				var q=d.createElement('script');q.async=1;q.src='//alohaeditor.disqus.com/embed.js';
+				(d.getElementsByTagName('head')[0]||d.getElementsByTagName('body')[0]).appendChild(q);
+			})(document);
+		</script>
 
 		<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
