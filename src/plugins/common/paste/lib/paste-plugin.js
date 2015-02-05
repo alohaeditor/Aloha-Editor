@@ -124,10 +124,6 @@ define([
 	 * @param {WrappedRange} range The range to restore.
 	 */
 	function restoreSelection(range) {
-		var editable = CopyPaste.getEditableAt(range);
-		if (editable) {
-			editable.obj.focus();
-		}
 		CopyPaste.setSelectionAt(range);
 		window.scrollTo(
 			scrollPositionBeforePaste.x,
