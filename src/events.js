@@ -159,10 +159,6 @@ define([
 		add(doc, 'drop',       editor);
 		add(doc, 'dragend',    editor);
 		add(doc, 'paste',      editor);
-
-		add(doc, 'touchstart', editor);
-		add(doc, 'touchend',   editor);
-		add(doc, 'touchmove',  editor);
 	}
 
 	/**

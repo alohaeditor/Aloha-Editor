@@ -1049,16 +1049,17 @@ define([
 	 * @memberOf selections
 	 */
 	function Context(doc) {
-		var hidden = doc.createElement('div');
+		var hidden = doc.createElement('textarea');
 		Maps.extend(hidden.style, {
-			'overflow' : 'hidden',
-			'width'    : '1px',
-			'height'   : '1px',
-			'outline'  : '0'
+			'overflow'  : 'hidden',
+			'width'     : '1px',
+			'height'    : '1px',
+			'outline'   : '0',
+			'opacity'   : '0.01'
 		});
-		Dom.setAttr(hidden, 'contentEditable', 'true');
 		var caret = doc.createElement('div');
 		Maps.extend(caret.style, {
+			'overflow' : 'hidden',
 			'cursor'   : 'text',
 			'color'    : '#000',
 			'zIndex'   : '9999',
@@ -1418,6 +1419,9 @@ define([
 	}
 
 	function isMobileField(node, selection) {
+		if (node === selection.caret) {
+			return true;
+		}
 		var parent = node.parentNode;
 		return (parent.parentNode === selection.caret)
 		    && ('true' === Dom.getAttr(parent, 'contentEditable'));

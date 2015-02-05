@@ -224,8 +224,10 @@ define([
 	function capture(event, mobile) {
 		var ctx = context(event.selection.boundaries);
 		var offset = ctx.offsets[0] || 0;
-		mobile.field.innerHTML = ctx.content;
-		Boundaries.select(Boundaries.create(mobile.field.firstChild, offset));
+		mobile.field.focus();
+		mobile.field.value = ctx.content;
+		mobile.field.selectionEnd = offset;
+		mobile.field.selectionStart = offset;
 		return {
 			'offset'     : offset,
 			'field'      : mobile.field,
@@ -235,17 +237,7 @@ define([
 	}
 
 	function shift(event, mobile) {
-		var boundaries = event.selection.boundaries;
-		Selections.select(event.selection, boundaries[0], boundaries[1]);
-		event.preventSelection = true;
-		var offset = mobile.offset + 1;
-		Boundaries.select(Boundaries.create(mobile.field.firstChild, offset));
-		return {
-			'offset'     : offset,
-			'field'      : mobile.field,
-			'editable'   : event.editable,
-			'boundaries' : boundaries
-		};
+		return mobile;
 	}
 
 	return {
