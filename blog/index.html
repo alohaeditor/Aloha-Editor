@@ -146,10 +146,13 @@ ga('create', 'UA-17460389-2', 'auto'); ga('require', 'displayfeatures');
 ga('send', 'pageview');</script>
 
 		<script>
-			(function(d) {
-				var q=d.createElement('script');q.async=1;q.src='//alohaeditor.disqus.com/embed.js';
-				(d.getElementsByTagName('head')[0]||d.getElementsByTagName('body')[0]).appendChild(q);
-			})(document);
+			var disqus_url = '';
+			if (disqus_url) {
+				(function(d) {
+					var q=d.createElement('script');q.async=1;q.src='//alohaeditor.disqus.com/embed.js';
+					(d.getElementsByTagName('head')[0]||d.getElementsByTagName('body')[0]).appendChild(q);
+				})(document);
+			}
 		</script>
 
 		<script>
