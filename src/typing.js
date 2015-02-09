@@ -70,11 +70,14 @@ define([
 	 * @return {Array.<Boundary>}
 	 */
 	function removeUnrenderedContainers(boundaries) {
-		function remove (node) {
+		function remove(node) {
 			boundaries = Mutation.removeNode(node, boundaries);
 		}
+		function isRendered(node) {
+			return Html.isRendered(node) || Dom.isEditingHost(node);
+		}
 		for (var i = 0; i < boundaries.length; i++) {
-			Dom.climbUntil(Boundaries.container(boundaries[i]), remove, Html.isRendered);
+			Dom.climbUntil(Boundaries.container(boundaries[i]), remove, isRendered);
 		}
 		return boundaries;
 	}
