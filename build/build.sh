@@ -97,8 +97,9 @@ function noopt {
 
 function docs {
 	printf "$dot Building API docs\n"
+	cd $root
 	rm -rf api; mkdir api
-	jsdoc --verbose -r -d api/ -c jsdoc/conf.json src -t jsdoc # -R README.md
+	jsdoc --verbose -r -d api/ -c jsdoc/conf.json src -t jsdoc -R README.md
 	printf "$tick Done!\n"
 }
 
