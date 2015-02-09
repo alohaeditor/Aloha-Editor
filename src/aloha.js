@@ -164,6 +164,8 @@ define([
 	 * @memberOf aloha
 	 */
 	function mahalo(element) {
+		editor.selection.blinking.stop();
+		Selections.hideCarets(element.ownerDocument);
 		return Editables.destroy(editor, element);
 	}
 

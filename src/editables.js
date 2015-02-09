@@ -36,9 +36,9 @@ define([
 	/**
 	 * Returns an editable object for the given boundary.
 	 *
-	 * @param  {Editor}   editor
-	 * @param  {Boundary} boundary
-	 * @return {?Editable}
+	 * @param    {Editor}   editor
+	 * @param    {Boundary} boundary
+	 * @return   {?Editable}
 	 * @memberOf editables
 	 */
 	function fromBoundary(editor, boundary) {
@@ -50,16 +50,18 @@ define([
 	}
 
 	/**
-	 * This function is missing documentation.
-	 * @TODO Complete documentation.
+	 * Prepares the given element to be an editing host.
 	 *
+	 * @param    {!Element} elem
+	 * @return   {Editable}
 	 * @memberOf editables
 	 */
 	function Editable(elem) {
-		Dom.addClass(elem, 'aloha-editable');
 		if (!Dom.getStyle(elem, 'min-height')) {
 			Dom.setStyle(elem, 'min-height', '1em');
 		}
+		Dom.setStyle(elem, 'cursor', 'text');
+		Dom.addClass(elem, 'aloha-editable');
 		var undoContext = Undo.Context(elem);
 		var id = Dom.ensureExpandoId(elem);
 		var editable = {
@@ -102,7 +104,6 @@ define([
 	 */
 	function create(editor, element, options) {
 		var editable = Editable(element);
-		Dom.setStyle(element, 'cursor', 'text');
 		editable.settings = Maps.merge({}, DEFAULTS, options);
 		assocIntoEditor(editor, editable);
 		Undo.enter(editable.undoContext, {
@@ -113,15 +114,26 @@ define([
 	}
 
 	/**
-	 * This function is missing documentation.
-	 * @TODO Complete documentation.
+	 * Undos the scaffolding that was placed around the given element if the
+	 * given element is an editable.
 	 *
+	 * @param    {!Editor}  editor
+	 * @param    {!Element} element
+	 * @return   {?Editable}
 	 * @memberOf editables
 	 */
 	function destroy(editor, element)  {
 		var editable = fromElem(editor, element);
+		if (!editable) {
+			return null;
+		}
 		close(editable);
 		dissocFromEditor(editor, editable);
+		if ('1em' === Dom.getStyle(element, 'min-height')) {
+			Dom.setStyle(element, 'min-height', '');
+		}
+		Dom.setStyle(element, 'cursor', '');
+		Dom.removeClass(element, 'aloha-editable');
 		return editable;
 	}
 
