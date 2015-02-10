@@ -2,9 +2,9 @@
 
 > Aloha Editor is a JavaScript library that replaces ContentEditable with a new way to do content editing.
 
-### [Website](http://aloha-editor.org)&nbsp;&nbsp;&nbsp;[Getting Started](http://aloha-editor.org/docs)&nbsp;&nbsp;&nbsp;[Demo](http://aloha-editor.org/demo/aloha-ui)&nbsp;&nbsp;&nbsp;[API](http://aloha-editor.org/api)
+### [Website](http://www.alohaeditor.org)&nbsp;&nbsp;&nbsp;[Getting Started](http://www.alohaeditor.org/docs)&nbsp;&nbsp;&nbsp;[Demo](http://www.alohaeditor.org/demo/aloha-ui)&nbsp;&nbsp;&nbsp;[API](http://www.alohaeditor.org/api)
 
-[![Aloha Editor](https://avatars0.githubusercontent.com/u/302655?v=2&s=200)](http://aloha-editor.org)
+[![Aloha Editor](https://avatars0.githubusercontent.com/u/302655?v=2&s=200)](http://www.alohaeditor.org)
 
 ## Use
 

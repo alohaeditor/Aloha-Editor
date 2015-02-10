@@ -1,8 +1,8 @@
-/* dom/traversing.js is part of Aloha Editor project http://aloha-editor.org
+/* dom/traversing.js is part of Aloha Editor project http://www.alohaeditor.org
  *
- * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://aloha-editor.org/contribution.php
+ * Aloha Editor ● JavaScript Content Editing Library
+ * Copyright (c) 2010-2015 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://www.alohaeditor.org/docs/contributing.html
  *
  * @reference:
  * 	http://www.w3.org/TR/DOM-Level-3-Core/glossary.html#dt-document-order

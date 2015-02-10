@@ -14,7 +14,7 @@
 	}
 
 	test('Remove Anchors', function () {
-		var href = 'http://www.aloha-editor.org';
+		var href = 'http://www.alohaeditor.org';
 		[
 			[
 				'<p>S<a href="' + href + '">ome T[]e</a>xt</p>',

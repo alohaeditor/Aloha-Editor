@@ -11,7 +11,7 @@ module.exports = function (grunt) {
 
 		banner: '/* Aloha Editor <%= pkg.version %>'
 		      + ' | Copyright 2011-<%= grunt.template.today("yyyy") %> Gentics Software GmbH'
-		      + ' | http://aloha-editor.org/license'
+		      + ' | http://www.alohaeditor.org/license'
 		      + ' */\n',
 
 		'closure-compiler': {

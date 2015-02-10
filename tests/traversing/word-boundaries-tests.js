@@ -1,9 +1,9 @@
 /**
- * tests/traversing/word-boundaries.js is part of Aloha Editor project http://aloha-editor.org
+ * tests/traversing/word-boundaries.js is part of Aloha Editor project http://www.alohaeditor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://aloha-editor.org/contribution.php
+ * Copyright (c) 2010-2015 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://www.alohaeditor.org/contributing.html
  *
  * Runs tests on a random DOM structure that contains (only) inline nodes to
  * check traversing with word-boundary stepss.

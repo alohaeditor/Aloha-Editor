@@ -14,7 +14,7 @@
 	}
 
 	test('Create Anchors', function () {
-		var href = 'http://www.aloha-editor.org';
+		var href = 'http://www.alohaeditor.org';
 		[
 			[
 				'<p>Some Te[]xt</p>',
