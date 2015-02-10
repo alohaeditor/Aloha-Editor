@@ -271,3 +271,11 @@ footer {
 	padding: 20px;
 	color: #adada8;
 }
+header {
+	height: auto;
+	color: #333;
+}
+@media (max-width: 768px) {
+	header h1,
+	header h2 { text-align: left; }
+}
