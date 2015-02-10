@@ -92,6 +92,8 @@ h1, h2, h3 {
 }
 .title h1 { margin: 6rem auto 0.5rem; }
 
+header h2 { font-size: 3rem; }
+
 code { font-weight: bold; }
 
 .title { min-height: 100vh; }
