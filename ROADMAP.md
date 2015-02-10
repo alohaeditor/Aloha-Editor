@@ -1,5 +1,0 @@
-									ROADMAP
-									~~~~~~~
-
-~ QA
-~ Documentation

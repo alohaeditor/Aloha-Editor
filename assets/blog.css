@@ -1,54 +1,9 @@
-.wrapper>* {
-	max-width: 1024px;
-	margin: 0 auto;
-	padding: 0 30px;
-}
-
-.centered {
-	position: relative;
-	display: table;
-	width: 100%;
-}
-.centered>* {
-	display: table-cell;
-	vertical-align: middle;
-}
-
 .top { background: #3ad; }
 .top::after {
 	display: block;
 	content: '';
 	height: 10vh;
 }
-
-header {
-	height: 80vh;
-	color: #fff;
-}
-header h1 {
-	font-weight: 700;
-	font-size: 3.5em;
-}
-header h2 {
-	opacity: 0.5;
-	font-size: 2em;
-}
-
-@media (max-width: 768px) {
-	header h1 {
-		font-size: 3em;
-		text-align: center;
-	}
-	header h2 { text-align: center; }
-}
-@media (max-width: 480px) { header h1 { font-size: 2.3em; } }
-
-.wrapper nav {
-	top: 30px;
-	margin-bottom: 30px;
-}
-@media (max-width: 480px) { .wrapper nav { padding: 0 10px; } }
-
 .archive {
 	min-height: 90vh;
 	padding: 10vh 30px;

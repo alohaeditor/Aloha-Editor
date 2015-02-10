@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+		<meta charset='utf-8'>
+		<meta http-equiv='X-UA-Compatible' content='IE=edge'>
+		<meta name='viewport' content='width=device-width, initial-scale=1'>
+		<meta name='og:description' content='Contributing to Aloha Editor'>
+		<meta name='og:image' content='../assets/social-share.jpg'>
+		<meta name='author' content='Team Aloha'>
+
+		<meta name="twitter:card" content="summary">
+		<meta name="twitter:site" content="@alohaeditor">
+		<meta name="twitter:title" content="Contributing to Aloha Editor">
+		<meta name="twitter:description" content="No more than 200 chars">
+		<meta name="twitter:creator" content="@alohaeditor">
+		<meta name="twitter:image" content="../assets/social-share.jpg">
+
+		<link href='../assets/favicon.png' rel='icon' type='image/png'>
+		<link href='../assets/base.css' rel='stylesheet'>
+		<link href='../assets/blog.css' rel='stylesheet'>
+
+		<title>Contributing to Aloha Editor</title>
+	</head>
+
+	<body>
+		<div class="wrapper rainbow intro short">
+			<div class="bg"></div>
+
+			<nav>
+				<div class="brand"><a href="/"><span><b>aloha</b>editor</span></a><span>docs</span></div>
+				<ul>
+					<li><a href="/demo">Demo</a></li>
+					<li class="active"><a href="/docs">Docs</a></li>
+					<li><a href="/api">API</a></li>
+					<li><a href="/blog">Blog</a></li>
+					<li><a href="https://github.com/alohaeditor/Aloha-Editor/tree/howling-mad">GitHub</a></li>
+				</ul>
+			</nav>
+
+			<header class="centered"><div>
+				<h1>Contributing</h1>
+				<h2>to Aloha Editor</h2>
+			</div></header>
+		</div>
+
+		<article>
+
+			<p>
+				Thank you for taking an interest in contributing to the Aloha
+				Editor project.
+			</p>
+
+			<p>
+				In order to develop Aloha Editor as open source project in a proper
+				legal way, all contributors need to sign a contribution agreement
+				similar to the one from the Apache Software Foundation, if their
+				contributions should be included into the core code base.
+			</p>
+
+			<p>
+				Only pull requests of contributors who have signed the CLA may
+				be merged.
+			</p>
+
+			<p>
+				If you want to contribute please read the Aloha Editor
+				<a href="/docs/aloha-editor-contributor-agreement.pdf">contribution agreement</a>
+				and send a proper filled and signed copy to
+				<script>
+					var a='office';var b='alohaeditor.org';
+					document.write('<a href=\"mailto:'+a+'@'+b+'\">'+a+'@'+b+'</a>');
+				</script>
+				<noscript>office&nbsp;[at]&nbsp;alohaeditor&nbsp;&middot;&nbsp;org</noscript>
+			</p>
+
+		</article>
+
+		<footer>
+			&copy; 2015 Gentics Software GmbH, Inc.
+			&nbsp;&bull;&nbsp;
+			<a href="/Content.Node/privacy.html">Privacy</a>
+			&nbsp;&bull;&nbsp;
+			<a href="/Content.Node/terms.html">Terms</a>
+			&nbsp;&bull;&nbsp;
+			<a href="https://twitter.com/alohaeditor">#followTheFrog</a>
+		</footer>
+
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="http://www.alohaeditor.org/downloads/aloha.min.js"></script>
+		<script src="../assets/background.js"></script>
+
+		<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+ (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-17460389-2', 'auto'); ga('require', 'displayfeatures');
+ga('send', 'pageview');</script>
+
+		<script>
+			setTimeout(function () {
+				'use strict';
+				aloha.dom.query('header', document).map(aloha);
+				var boundary = aloha.boundaries.fromEndOfNode(
+					aloha.dom.query('header h1', document)[0]
+				);
+				aloha.editor.selection = aloha.selections.select(
+					aloha.editor.selection,
+					boundary,
+					boundary
+				);
+			}, 500);
+		</script>
+
+	</body>
+</html>

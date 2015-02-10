@@ -51,6 +51,11 @@ a:hover {
 }
 
 .centered { display: table; }
+.centered {
+	position: relative;
+	display: table;
+	width: 100%;
+}
 .centered>* {
 	display: table-cell;
 	vertical-align: middle;
@@ -275,10 +280,48 @@ nav>ul>li a:hover {
 }
 
 footer {
-	padding: 100px 0 30px;
+	padding: 100px 30px 30px;
 	background-image: url(froggy.png);
 	background-position: center 30px;
 	background-repeat: no-repeat;
 	background-size: 80px auto;
 	text-align: center;
 }
+
+header {
+	height: 80vh;
+	color: #fff;
+}
+header h1 {
+	font-weight: 700;
+	font-size: 3.5em;
+}
+header h2 {
+	opacity: 0.5;
+	font-size: 2em;
+}
+
+.short header {
+	height: 30vh;
+	padding: 60px 30px;
+}
+
+@media (max-width: 768px) {
+	header h1 {
+		font-size: 3em;
+		text-align: center;
+	}
+	header h2 { text-align: center; }
+}
+@media (max-width: 480px) { header h1 { font-size: 2.3em; } }
+
+.wrapper>* {
+	max-width: 1024px;
+	margin: 0 auto;
+	padding: 0 30px;
+}
+.wrapper nav {
+	top: 30px;
+	margin-bottom: 30px;
+}
+@media (max-width: 480px) { .wrapper nav { padding: 0 10px; } }
