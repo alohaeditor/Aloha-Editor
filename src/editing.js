@@ -2,7 +2,7 @@
  *
  * Aloha Editor ● JavaScript Content Editing Library
  * Copyright (c) 2010-2015 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://www.alohaeditor.org/contributing.html
+ * Contributors http://www.alohaeditor.org/docs/contributing.html
  *
  * @TODO formatStyle: in the following case the outer "font-family:
  * arial" span should be removed.  Can be done similar to how

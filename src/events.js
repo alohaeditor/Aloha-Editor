@@ -3,7 +3,7 @@
  *
  * Aloha Editor ● JavaScript Content Editing Library
  * Copyright (c) 2010-2015 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://www.alohaeditor.org/contributing.html
+ * Contributors http://www.alohaeditor.org/docs/contributing.html
  *
  * @see
  * http://www.w3.org/TR/DOM-Level-3-Events/#idl-interface-MouseEvent-initializers

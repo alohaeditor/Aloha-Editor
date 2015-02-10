@@ -3,7 +3,7 @@
  *
  * Aloha Editor ● JavaScript Content Editing Library
  * Copyright (c) 2010-2015 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://www.alohaeditor.org/contributing.html
+ * Contributors http://www.alohaeditor.org/docs/contributing.html
  *
  * @see:
  * https://lists.webkit.org/pipermail/webkit-dev/2007-December/002992.html

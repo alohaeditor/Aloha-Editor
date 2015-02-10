@@ -3,7 +3,7 @@
  *
  * Aloha Editor ● JavaScript Content Editing Library
  * Copyright (c) 2010-2015 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://www.alohaeditor.org/contributing.html
+ * Contributors http://www.alohaeditor.org/docs/contributing.html
  *
  * This module exports the Aloha Editor API in a way that will be safe from
  * mungling by the Google Closure Compiler when comipling in advanced
