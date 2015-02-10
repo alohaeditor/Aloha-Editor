@@ -1,9 +1,9 @@
 /**
- * keys.js is part of Aloha Editor project http://aloha-editor.org
+ * keys.js is part of Aloha Editor project http://www.alohaeditor.org
  *
  * Aloha Editor ● JavaScript Content Editing Library
  * Copyright (c) 2010-2015 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://aloha-editor.org/contribution.php
+ * Contributors http://www.alohaeditor.org/contributing.html
  *
  * @see:
  * https://lists.webkit.org/pipermail/webkit-dev/2007-December/002992.html

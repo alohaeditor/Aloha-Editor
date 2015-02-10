@@ -1,9 +1,9 @@
 /**
- * assert.js is part of Aloha Editor project http://aloha-editor.org
+ * assert.js is part of Aloha Editor project http://www.alohaeditor.org
  *
  * Aloha Editor ● JavaScript Content Editing Library
  * Copyright (c) 2010-2015 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://aloha-editor.org/contribution.php
+ * Contributors http://www.alohaeditor.org/contributing.html
  */
 define([], function () {
 	'use strict';
@@ -16,7 +16,7 @@ define([], function () {
 	 * @return {string}
 	 */
 	function errorLink(type) {
-		return '✘ Error (' + type + '). See http://www.aloha-editor.org/docs/errors/' + type;
+		return '✘ Error (' + type + '). See http://www.alohaeditor.org/docs/errors/' + type;
 	}
 
 	var NOT_IMPLEMENTED = 0;

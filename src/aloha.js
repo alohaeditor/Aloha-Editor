@@ -4,7 +4,7 @@
  * ├───────────────────────────────────────────────────────────────┤
  * │ Copyright © 2010-2015 Gentics Software GmbH, Vienna, Austria. │
  * ├───────────────────────────────────────────────────────────────┤
- * │ aloha-editor.org | github.com/alohaeditor                     │
+ * │ alohaeditor.org | github.com/alohaeditor                      │
  * └───────────────────────────────────────────────────────────────┘
  * @preserve
  */

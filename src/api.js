@@ -1,9 +1,9 @@
 /**
- * api.js is part of Aloha Editor project http://aloha-editor.org
+ * api.js is part of Aloha Editor project http://www.alohaeditor.org
  *
  * Aloha Editor ● JavaScript Content Editing Library
  * Copyright (c) 2010-2015 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://aloha-editor.org/contribution.php
+ * Contributors http://www.alohaeditor.org/contributing.html
  *
  * This module exports the Aloha Editor API in a way that will be safe from
  * mungling by the Google Closure Compiler when comipling in advanced
@@ -580,7 +580,7 @@ define([
 	 * @return {string}
 	 */
 	function apiLink(args, pack, func) {
-		return 'See http://aloha-editor.org/api/' + pack + '.html'
+		return 'See http://www.alohaeditor.org/api/' + pack + '.html'
 		     + '?types=' + args.map(typeOf).join('-') + '#' + func;
 	}
 

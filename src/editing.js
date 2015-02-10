@@ -1,8 +1,8 @@
-/** editing.js is part of Aloha Editor project http://aloha-editor.org
+/** editing.js is part of Aloha Editor project http://www.alohaeditor.org
  *
  * Aloha Editor ● JavaScript Content Editing Library
  * Copyright (c) 2010-2015 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://aloha-editor.org/contribution.php
+ * Contributors http://www.alohaeditor.org/contributing.html
  *
  * @TODO formatStyle: in the following case the outer "font-family:
  * arial" span should be removed.  Can be done similar to how

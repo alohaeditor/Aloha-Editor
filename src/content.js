@@ -1,9 +1,9 @@
 /**
- * content.js is part of Aloha Editor project http://aloha-editor.org
+ * content.js is part of Aloha Editor project http://www.alohaeditor.org
  *
  * Aloha Editor ● JavaScript Content Editing Library
  * Copyright (c) 2010-2015 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://aloha-editor.org/contribution.php
+ * Contributors http://www.alohaeditor.org/contributing.html
  *
  * @todo consider moving this into html/
  * @namespace content
