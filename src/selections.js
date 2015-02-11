@@ -830,22 +830,6 @@ define([
 	movements['meta+shift+right'] = end;
 
 	/**
-	 * Processes a keypress event.
-	 *
-	 * @private
-	 * @param  {Event}            event
-	 * @param  {Array.<Boundary>} range
-	 * @param  {string}           focus
-	 * @return {Object}
-	 */
-	function keypress(event, boundaries, focus) {
-		return {
-			boundaries : boundaries,
-			focus      : focus
-		};
-	}
-
-	/**
 	 * Processes a keydown event.
 	 *
 	 * @private
@@ -860,7 +844,10 @@ define([
 			Events.preventDefault(event.nativeEvent);
 			return handler(event, boundaries, focus);
 		}
-		return keypress(event, boundaries, focus);
+		return {
+			boundaries : boundaries,
+			focus      : focus
+		};
 	}
 
 	/**
@@ -967,7 +954,6 @@ define([
 	 */
 	var handlers = {
 		'keydown'        : keydown,
-		'keypress'       : keypress,
 		'aloha.dblclick' : dblclick,
 		'aloha.tplclick' : tplclick,
 		'aloha.mouseup'  : mouseup,
@@ -1130,8 +1116,8 @@ define([
 	 * An object with overrides mapped against their names.
 	 *
 	 * @private
-	 * @param  {Node}      node
-	 * @param  {Selection} selectoin
+	 * @param  {!Node}      node
+	 * @param  {!Selection} selection
 	 * @return {Object}
 	 */
 	function mapOverrides(node, selection) {
