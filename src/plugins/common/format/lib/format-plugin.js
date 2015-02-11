@@ -30,6 +30,7 @@ define('format/format-plugin', [
 	'aloha/state-override',
 	'jquery',
 	'util/arrays',
+	'util/browser',
 	'util/maps',
 	'ui/ui',
 	'ui/toggleButton',
@@ -44,6 +45,7 @@ define('format/format-plugin', [
 	StateOverride,
 	jQuery,
 	Arrays,
+	Browser,
 	Maps,
 	Ui,
 	ToggleButton,
@@ -221,7 +223,7 @@ define('format/format-plugin', [
 		var formatPlugin = this;
 		var markup = jQuery('<'+button+'>');
 		var rangeObject = Aloha.Selection.rangeObject;
-		
+
 		if ( typeof button === "undefined" || button == "" ) {
 			return;
 		}
@@ -310,6 +312,65 @@ define('format/format-plugin', [
 				formatPlugin.multiSplitButton.setActiveItem(null);
 			}
 		}
+
+		handlePreformattedText(rangeObject.commonAncestorContainer);
+	}
+	/**
+	 * Handles preformatted text.
+	 * Adds empty paragraphs as landing stripes before and after a preformatted text.
+	 *
+	 * @private
+	 * @param {Element} element a Dom element
+	 */
+	function handlePreformattedText(element) {
+		var $element = $(element);
+
+		if ($element.is('.aloha-editing-p.aloha-placeholder')) {
+			//remove all other placeholders
+			$element[0].className = '';
+			removePlaceholders();
+			$element[0].className = 'aloha-editing-p aloha-placeholder';
+			return;
+		}
+
+		removePlaceholders();
+
+		if ($element.is('pre')) {
+			//add placeholder before and after the preformatted text element
+			var nextSibling = $element[0].nextSibling;
+			var previousSibling = $element[0].previousSibling;
+			if (!previousSibling || !nextSibling) {
+				if (!previousSibling) {
+					$element.before(createLanding());
+				}
+				if (!nextSibling) {
+					$element.after(createLanding());
+				}
+			}
+		}
+	}
+
+	/**
+	 * Helper function to create the placeholder jQuery element
+	 *
+	 * @private
+	 * @returns {Object} the landing jQuery element
+	 */
+	function createLanding() {
+		//IE: add a "word joiner" character instead of a <br>
+		var landing = Browser.ie
+		            ? '<p class="aloha-editing-p aloha-placeholder">&#x2060;</p>'
+		            : '<p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p>';
+		return $(landing);
+	}
+
+	/**
+	 * Remove editing placeholders
+	 *
+	 * @private
+	 */
+	function removePlaceholders(){
+		Aloha.activeEditable.removePlaceholder(Aloha.activeEditable.obj);
 	}
 
 	/**
