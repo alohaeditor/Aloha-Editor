@@ -182,7 +182,7 @@ define([
 	 *
 	 * @private
 	 * @param  {!Boundary} start
-	 * @param  {!Boundary} end
+	 * @param  {Boundary=} end
 	 * @param  {augment=}  augment
 	 * @return {string}
 	 */
@@ -264,7 +264,7 @@ define([
 	function hint(selection, augment) {
 		if (Misc.defined(selection.length)) {
 			return ('string' === typeof selection[0].nodeName)
-			     ? show(selection, augment)
+			     ? show(selection, selection, augment)
 			     : show(selection[0], selection[1], augment);
 		}
 		var boundaries = rawBoundariesFromRange(selection);
