@@ -217,6 +217,25 @@ define([
 	}
 
 	/**
+	 * Checks whether or not we find ourselves in a situation in Chrome where it
+	 * reports incorrect values when calling `boundingRect` with a collapsed
+	 * range that is at a soft visual break.
+	 *
+	 * @private
+	 * @param  {!Object.<string, int>} rect
+	 * @param  {!Range}                range
+	 * @return {boolean}
+	 */
+	function isChromeBug(rect, range) {
+		if (!Browsers.chrome || !range.collapsed) {
+			return false;
+		}
+		var element = Dom.upWhile(range.startContainer, Dom.isTextNode);
+		var size = parseInt(Dom.getComputedStyle(element, 'font-size'), 10);
+		return rect.width > size;
+	}
+
+	/**
 	 * Attempts to calculates the bounding rectangle offsets for the given
 	 * range.
 	 *
@@ -232,13 +251,8 @@ define([
 		var expanded = expandRight(range);
 		if (expanded) {
 			rect = boundingRect(expanded);
-			if (rect.width) {
-				// Because Chrome reports incorrect values when calling
-				// `boundingRect` with a collapsed range that is at a soft break
-				var requiresChromeHack = Browsers.chrome && range.collapsed;
-				if (!requiresChromeHack || rect.width < 10) {
-					return rect;
-				}
+			if (rect.width && !isChromeBug(rect, range)) {
+				return rect;
 			}
 		}
 		expanded = expandLeft(range);
