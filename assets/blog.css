@@ -34,11 +34,11 @@
 	text-align: left;
 	line-height: 1em;
 }
-.archive a>div>div { opacity: 0.6; }
 .archive .details {
 	padding-left: 10px;
 	transition: transform 250ms ease-out;
 }
+.archive .details>div { opacity: 0.6; }
 .archive .photo {
 	transform-style: preserve-3d;
 	transform: rotate3d(0,1,0,10deg);
