@@ -34,6 +34,7 @@
 	text-align: left;
 	line-height: 1em;
 }
+.archive a>div>div { opacity: 0.6; }
 .archive .details {
 	padding-left: 10px;
 	transition: transform 250ms ease-out;
