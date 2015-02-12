@@ -14,6 +14,7 @@ define([
 	'jquery',
 	'aloha/plugin',
 	'aloha/contenthandlermanager',
+	'contenthandler/basiccontenthandler',
 	'contenthandler/wordcontenthandler',
 	'contenthandler/genericcontenthandler',
 	'contenthandler/sanitizecontenthandler',
@@ -22,6 +23,7 @@ define([
 	$,
 	Plugin,
 	ContentHandlerManager,
+	BasicContentHandler,
 	WordContentHandler,
 	GenericContentHandler,
 	SanitizeContentHandler,
@@ -37,6 +39,7 @@ define([
 	 * @const
 	 */
 	var DEFAULT_HANDLERS = {
+		basic: BasicContentHandler,
 		word: WordContentHandler,
 		generic: GenericContentHandler,
 		sanitize: SanitizeContentHandler,

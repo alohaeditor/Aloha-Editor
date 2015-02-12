@@ -1,0 +1,1 @@
+Fixed empty text semantic inline elements being left behind in the DOM structure when deleting their text only. They are now cleaned up in the basicontenthandler.
