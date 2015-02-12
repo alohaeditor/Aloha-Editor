@@ -10,12 +10,14 @@ define([
 	'dom',
 	'html',
 	'maps',
+	'browsers',
 	'traversing',
 	'boundaries'
 ], function (
 	Dom,
 	Html,
 	Maps,
+	Browsers,
 	Traversing,
 	Boundaries
 ) {
@@ -230,8 +232,13 @@ define([
 		var expanded = expandRight(range);
 		if (expanded) {
 			rect = boundingRect(expanded);
-			if (rect.width > 0) {
-				return rect;
+			if (rect.width) {
+				// Because Chrome reports incorrect values when calling
+				// `boundingRect` with a collapsed range that is at a soft break
+				var requiresChromeHack = Browsers.chrome && range.collapsed;
+				if (!requiresChromeHack || rect.width < 10) {
+					return rect;
+				}
 			}
 		}
 		expanded = expandLeft(range);
@@ -258,6 +265,7 @@ define([
 		if (!end) {
 			end = start;
 		}
+
 		var range = Boundaries.range(start, end);
 		var rect = bounds(range);
 		var doc = range.commonAncestorContainer.ownerDocument;
@@ -292,6 +300,7 @@ define([
 
 		// <li>{}</li>
 		node = Boundaries.container(start);
+
 		return {
 			top    : node.offsetTop + Dom.scrollTop(doc),
 			left   : node.offsetLeft + Dom.scrollLeft(doc),
