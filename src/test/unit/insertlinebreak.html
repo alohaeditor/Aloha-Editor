@@ -263,13 +263,14 @@
 						start: '<p>foo[]bar</p>',
 						execResult: '<p>foo<br/>{}bar</p>'
 					},
-					{  	exclude: ['mozilla'],
+					{  	exclude: ['mozilla','msie'],
 						start: '<pre>[]foo</pre>',
-						execResult: '<pre><br/>{}foo</pre>'
+						execResult: '<p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p><pre><br/>{}foo</pre><p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p>'
 					},
 					{  	include: ['mozilla'],
+						exclude: ['msie'],
 						start: '<pre>[]foo</pre>',
-						execResult: '<pre><br/>{}foo</pre>'
+						execResult: '<p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p><pre><br/>{}foo</pre><p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p>'
 					},
 					/*
 					{  	start: '<pre>foo[]</pre>',
@@ -277,22 +278,26 @@
 					},
 					*/
 					// command 40
-					{  	start: '<pre>foo[]<br></pre>',
-						execResult: '<pre>foo<br/>{}<br></pre>'
+					{  	exclude: ['msie'],
+						start: '<pre>foo[]<br></pre>',
+						execResult: '<p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p><pre>foo<br/>{}<br></pre><p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p>'
 					},
-					{  	exclude: ['mozilla'],
+					{  	exclude: ['mozilla','msie'],
 						start: '<pre>foo[]bar</pre>',
-						execResult: '<pre>foo<br/>{}bar</pre>'
+						execResult: '<p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p><pre>foo<br/>{}bar</pre><p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p>'
 					},
 					{  	include: ['mozilla'],
+						exclude: ['msie'],
 						start: '<pre>foo[]bar</pre>',
-						execResult: '<pre>foo<br/>{}bar</pre>'
+						execResult: '<p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p><pre>foo<br/>{}bar</pre><p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p>'
 					},
-					{  	start: '<pre>foo[]<br><br></pre>',
-						execResult: '<pre>foo<br/>{}<br><br></pre>'
+					{  	exclude: ['msie'],
+						start: '<pre>foo[]<br><br></pre>',
+						execResult: '<p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p><pre>foo<br/>{}<br><br></pre><p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p>'
 					},
-					{  	start: '<pre>foo<br>{}<br></pre>',
-						execResult: '<pre>foo<br><br/>{}<br></pre>'
+					{  	exclude: ['msie'],
+						start: '<pre>foo<br>{}<br></pre>',
+						execResult: '<p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p><pre>foo<br><br/>{}<br></pre><p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p>'
 					},
 					/*
 					{  	exclude: ['msie'], // FF error
@@ -300,25 +305,27 @@
 						execResult: '<pre>foo<br/>[]&#10;</pre>'
 					},
 					*/
-					{  	include: ['msie'], 
+					{  	include: ['msie'],
 						start: '<pre>foo&#10;[]</pre>',
-						execResult: '<pre>foo&#10;<br/>{}</pre>'
+						execResult: '<p class="aloha-editing-p aloha-placeholder">\u2060</p><pre>foo&#10;<br/>{}</pre><p class="aloha-editing-p aloha-placeholder">\u2060</p>'
 					},
-					{  	exclude: ['mozilla'],
+					{  	exclude: ['mozilla','msie'],
 						start: '<pre>foo[]&#10;</pre>',
-						execResult: '<pre>foo<br/>{}&#10;</pre>'
+						execResult: '<p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p><pre>foo<br/>{}&#10;</pre><p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p>'
 					},
 					{  	include: ['mozilla'],
+						exclude: ['msie'],
 						start: '<pre>foo[]&#10;</pre>',
-						execResult: '<pre>foo<br/>{}&#10;</pre>'
+						execResult: '<p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p><pre>foo<br/>{}&#10;</pre><p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p>'
 					},
-					{  	exclude: ['mozilla'],
+					{  	exclude: ['mozilla','msie'],
 						start: '<pre>foo&#10;[]&#10;</pre>',
-						execResult: '<pre>foo&#10;<br/>{}&#10;</pre>'
+						execResult: '<p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p><pre>foo&#10;<br/>{}&#10;</pre><p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p>'
 					},
 					{  	include: ['mozilla'],
+						exclude: ['msie'],
 						start: '<pre>foo&#10;[]&#10;</pre>',
-						execResult: '<pre>foo&#10;<br/>{}&#10;</pre>'
+						execResult: '<p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p><pre>foo&#10;<br/>{}&#10;</pre><p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p>'
 					},
 					{  	start: '<ol><li>{}<br></li></ol>',
 						execResult: '<ol><li><br/>{}<br></li></ol>'

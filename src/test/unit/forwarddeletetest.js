@@ -322,8 +322,9 @@ var alltests = {
 		{	start: '<div>foo[]</div><div>bar</div>',
 			execResult: '<div>foo[]bar</div>'
 		},
-		{	start: '<pre>foo[]</pre>bar',
-			execResult: '<pre>foo[]bar</pre>'
+		{	exclude: 'msie',
+			start: '<pre>foo[]</pre>bar',
+			execResult: '<p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p><pre>foo[]bar</pre>'
 		},
 		{	start: 'foo[]<br>bar',
 			execResult: 'foo[]bar'
@@ -417,14 +418,17 @@ var alltests = {
 		{	start: '<b>foo[] </b> bar',
 			execResult: '<b>foo[]</b>bar'
 		},
-		{	start: '<pre>foo []&nbsp;</pre>',
-			execResult: '<pre>foo []</pre>'
+		{	exclude: 'msie',
+			start: '<pre>foo []&nbsp;</pre>',
+			execResult: '<p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p><pre>foo []</pre><p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p>'
 		},
-		{	start: '<pre>[]&nbsp; foo</pre>',
-			execResult: '<pre>[] foo</pre>'
+		{	exclude: 'msie',
+			start: '<pre>[]&nbsp; foo</pre>',
+			execResult: '<p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p><pre>[] foo</pre><p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p>'
 		},
-		{	start: '<pre>foo[]&nbsp; bar</pre>',
-			execResult: '<pre>foo[] bar</pre>'
+		{	exclude: 'msie',
+			start: '<pre>foo[]&nbsp; bar</pre>',
+			execResult: '<p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p><pre>foo[] bar</pre><p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p>'
 		},
 		{	start: '[]&nbsp; foo',
 			execResult: '[]&nbsp;foo'
@@ -594,11 +598,13 @@ var alltests = {
 		{	start: 'foo[]<span><a>bar</a></span>',
 			execResult: 'foo<span><a>[]ar</a></span>'
 		},
-		{	start: '<pre>foo[]  bar</pre>',
-			execResult: '<pre>foo[] bar</pre>'
+		{	exclude: 'msie',
+			start: '<pre>foo[]  bar</pre>',
+			execResult: '<p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p><pre>foo[] bar</pre><p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p>'
 		},
-		{	start: '<pre>foo[] &nbsp;bar</pre>',
-			execResult: '<pre>foo[]&nbsp;bar</pre>'
+		{	exclude: 'msie',
+			start: '<pre>foo[] &nbsp;bar</pre>',
+			execResult: '<p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p><pre>foo[]&nbsp;bar</pre><p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p>'
 		},
 		{	exclude: 'msie',
 			start: 'foo<blockquote><ol><li>bar[]</li><ol><li>baz</ol><li>quz</ol></blockquote><p>extra',
