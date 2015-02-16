@@ -5319,6 +5319,72 @@ define([
 		}
 	}
 
+	/**
+	 * Remove the node if it doesn't have any children or 1 empty text node.
+	 * This function doesn't handle all cases of unrendered nodes.
+	 * In the following cases the node will not be removed:
+	 * * The node contains multiple empty nodes
+	 * * The child text node contains zero width characters
+	 * * The child text node contains unrendered characters
+	 *
+	 * @param  {Text}  node   The node to check
+	 * @param  {Element}  range  Range object to set the position
+	 * @return {boolean} True if node got removed, false otherwise
+	 */
+	function removeNodeIfEmptyAndCorrectRange(node, range) {
+		var
+			removeNode = false,
+			parentNode,
+			nodeChildNodesLength,
+			offsetInParent,
+			firstChildNode;
+
+		if (!node || !range) {
+			return false;
+		}
+
+		parentNode = node.parentNode;
+
+		if (!parentNode) {
+			return false;
+		}
+
+		// Check if the node is empty
+		nodeChildNodesLength = node.childNodes.length;
+		if (nodeChildNodesLength === 0) {
+			removeNode = true;
+		}
+
+		// If the inline node only contains an empty text node,
+		// it is also considered being empty.
+		if (nodeChildNodesLength === 1) {
+			firstChildNode = node.childNodes[0];
+
+			if (firstChildNode.nodeType === $_.Node.TEXT_NODE
+					&& firstChildNode.nodeValue.length === 0) {
+				removeNode = true;
+			}
+		}
+
+		// Don't continue if node should not be removed or has no parent
+		if (!removeNode) {
+			return false;
+		}
+
+		// Before removing, remember the offset of node in its parent
+		offsetInParent = Dom.getIndexInParent(node);
+
+		// I'm not gonna comment this, it's clear what it does.
+		parentNode.removeChild(node);
+
+		// Now the cursor has to be set at the position where the
+		// removed parent was before.
+		range.setStart(parentNode, offsetInParent);
+		range.setEnd(parentNode, offsetInParent);
+
+		return true;
+	}
+
 	//@}
 	///// Deleting the contents of a range /////
 	//@{
@@ -5517,11 +5583,16 @@ define([
 			// "Canonicalize whitespace at (start node, start offset)."
 			canonicalizeWhitespace(startNode, startOffset);
 
-			// "Set range's end to its start."
-			// Ok, also set the range's start to its start, because modifying the text
-			// might have somehow corrupted the range
-			range.setStart(range.startContainer, range.startOffset);
-			range.setEnd(range.startContainer, range.startOffset);
+			// Remove the parent node, if it is an inline node and empty
+			// If the node is inline and empty, range correction will happen inside
+			// removeNodeIfEmptyAndCorrectRange, otherwise it'will be done below.
+			if (!isInlineNode(parent_) || !removeNodeIfEmptyAndCorrectRange(parent_, range)) {
+				// "Set range's end to its start."
+				// Ok, also set the range's start to its start, because modifying the text
+				// might have somehow corrupted the range
+				range.setStart(range.startContainer, range.startOffset);
+				range.setEnd(range.startContainer, range.startOffset);
+			}
 
 			// "Restore states and values from overrides."
 			restoreStatesAndValues(overrides, range);
@@ -5592,6 +5663,11 @@ define([
 		// it."
 		if (isEditable(endNode) && endNode.nodeType == $_.Node.TEXT_NODE) {
 			endNode.deleteData(0, endOffset);
+		}
+
+		// Remove parentNode, if it is an empty inline node
+		if (isInlineNode(startNode.parentNode)) {
+			removeNodeIfEmptyAndCorrectRange(startNode.parentNode, range);
 		}
 
 		// "Canonicalize whitespace at range's start."
@@ -6610,7 +6686,9 @@ define([
 	 */
 	commands["delete"] = {
 		action: function (value, range) {
-			var i;
+			var
+				i,
+				deleteContentsRange;
 
 			// special behaviour for skipping zero-width whitespaces in IE7
 			if (Aloha.browser.msie && Aloha.browser.version <= 7) {
@@ -6707,7 +6785,13 @@ define([
 			if (node.nodeType == $_.Node.TEXT_NODE && offset != 0) {
 				range.setStart(node, offset - 1);
 				range.setEnd(node, offset - 1);
-				deleteContents(node, offset - 1, node, offset);
+				deleteContentsRange = deleteContents(node, offset - 1, node, offset);
+				if (deleteContentsRange) {
+					// The new range position can only be determined inside deleteContents,
+					// that's why it's necessary to take over the range if one was returned.
+					range.setStart(deleteContentsRange.startContainer, deleteContentsRange.startOffset);
+					range.setEnd(deleteContentsRange.endContainer, deleteContentsRange.endOffset);
+				}
 				return;
 			}
 

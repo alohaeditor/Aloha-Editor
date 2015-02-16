@@ -634,32 +634,32 @@
 					},
 					{  	include: ['mozilla'],
 						start: 'foo<a href=foo>[]bar</a>',
-						execResult: 'foo<br/><a href=foo>{}bar</a>'
+						execResult: 'foo<a href=foo><br/>{}bar</a>'
 					},
 					{  	exclude: ['mozilla'],
 						start: '<p>foo<span style=color:#aBcDeF>[bar]</span>baz</p>',
-						execResult: '<p>foo<span style=color:#aBcDeF><br/>{}</span>baz</p>'
+						execResult: '<p>foo<br/>{}baz</p>'
 					},
 					{  	include: ['mozilla'],
 						start: '<p>foo<span style=color:#aBcDeF>[bar]</span>baz</p>',
-						execResult: '<p>foo<span style=color:#aBcDeF><br/>{}</span>baz</p>' // correct?
+						execResult: '<p>foo<br/>{}baz</p>' // correct?
 					},
 					{  	exclude: ['mozilla'],
 						start: '<p>foo<span style=color:#aBcDeF>{bar}</span>baz</p>',
-						execResult: '<p>foo<span style=color:#aBcDeF><br/>{}</span>baz</p>'
+						execResult: '<p>foo<br/>{}baz</p>'
 					},
 					{  	include: ['mozilla'],
 						start: '<p>foo<span style=color:#aBcDeF>{bar}</span>baz</p>',
-						execResult: '<p>foo<span style=color:#aBcDeF><br/>{}</span>baz</p>' // correct?
+						execResult: '<p>foo<br/>{}baz</p>' // correct?
 					},
 					// command 100
 					{  	exclude: ['mozilla'],
 						start: '<p>foo{<span style=color:#aBcDeF>bar</span>}baz</p>',
-						execResult: '<p>foo<span style=color:#aBcDeF><br/>{}</span>baz</p>'
+						execResult: '<p>foo<br/>{}baz</p>'
 					},
 					{  	include: ['mozilla'],
 						start: '<p>foo{<span style=color:#aBcDeF>bar</span>}baz</p>',
-						execResult: '<p>foo<span style=color:#aBcDeF><br/>{}</span>baz</p>' // correct?
+						execResult: '<p>foo<br/>{}baz</p>' // correct?
 					},
 					{  	exclude: ['mozilla'],
 						start: '<p>[foo<span style=color:#aBcDeF>bar]</span>baz</p>',
@@ -699,11 +699,11 @@
 					},
 					{  	exclude: ['mozilla'],
 						start: '<p>foo<span style=color:#aBcDeF>[bar</span><span style=color:#fEdCbA>baz]</span>quz</p>',
-						execResult: '<p>foo<span style=color:#aBcDeF><br/>{}</span>quz</p>'
+						execResult: '<p>foo<br/>{}quz</p>'
 					},
 					{  	include: ['mozilla'],
 						start: '<p>foo<span style=color:#aBcDeF>[bar</span><span style=color:#fEdCbA>baz]</span>quz</p>',
-						execResult: '<p>foo<span style=color:#aBcDeF><br/>{}</span>quz</p>' // correct?
+						execResult: '<p>foo<br/>{}quz</p>' // correct?
 					}
 			]
 	}

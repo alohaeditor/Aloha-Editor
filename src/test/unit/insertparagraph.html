@@ -70,7 +70,7 @@
 //					},
 					{  	include: [ 'mozilla' ],
 						start: '[]foo',
-						execResult: '<p><br class="aloha-end-br" /></p><p>{}foo</p>'
+						execResult: '<p><br /></p><p>{}foo</p>'
 					},
 //					{  	start: 'foo[]',
 //						execResult: '<p>foo</p><p>{}<br class="aloha-end-br" data-test-exclude="msie"></p>'
@@ -123,7 +123,7 @@
 //					},
 					{  	include: [ 'mozilla' ],
 						start: '<div>[]foo</div>',
-						execResult: '<div><br class="aloha-end-br" data-test-exclude="msie"></div><div>{}foo</div>'
+						execResult: '<div><br data-test-exclude="msie"></div><div>{}foo</div>'
 					},
 //					{  	start: '<div>foo[]</div>',
 //						execResult: '<div>foo</div><div>{}<br class="aloha-end-br" data-test-exclude="msie"></div>'
@@ -145,7 +145,7 @@
 //					},
 					{  	include: [ 'mozilla' ],
 						start: '<dl><dt>[]foo</dt><dd>bar</dd></dl>',
-						execResult: '<dl><dt><br class="aloha-end-br" data-test-exclude="msie"></dt><dt>{}foo</dt><dd>bar</dd></dl>'
+						execResult: '<dl><dt><br data-test-exclude="msie"></dt><dt>{}foo</dt><dd>bar</dd></dl>'
 					},
 //					{  	start: '<dl><dt>foo[]</dt><dd>bar</dd></dl>',
 //						execResult: '<dl><dt>foo</dt><dd>{}<br class="aloha-end-br" data-test-exclude="msie"></dd><dd>bar</dd></dl>'
@@ -530,7 +530,7 @@
 					},
 					{  	exclude: ['mozilla'],
 						start: '<p>foo<span style=color:#aBcDeF>[bar]</span>baz</p>',
-						execResult: '<p>foo<span style="color:#aBcDeF"></span></p><p>{}baz</p>'
+						execResult: '<p>foo</p><p>{}baz</p>'
 					},
 					{  	include: ['mozilla'],
 						start: '<p>foo<span style=color:#aBcDeF>[bar]</span>baz</p>',
@@ -538,15 +538,15 @@
 					},
 					{  	exclude: ['mozilla'],
 						start: '<p>foo<span style=color:#aBcDeF>{bar}</span>baz</p>',
-						execResult: '<p>foo<span style="color:#aBcDeF"></span></p><p>{}baz</p>'
+						execResult: '<p>foo</p><p>{}baz</p>'
 					},
 					{  	include: ['mozilla'],
 						start: '<p>foo<span style=color:#aBcDeF>{bar}</span>baz</p>',
-						execResult: '<p>foo<span style="color:#aBcDeF"></span></p><p>{}baz</p>'
+						execResult: '<p>foo</p><p>{}baz</p>'
 					},
 					{  	exclude: ['mozilla'],
 						start: '<p>foo{<span style=color:#aBcDeF>bar</span>}baz</p>',
-						execResult: '<p>foo<span style="color:#aBcDeF"></span></p><p>{}baz</p>'
+						execResult: '<p>foo</p><p>{}baz</p>'
 					},
 					{  	include: ['mozilla'],
 						start: '<p>foo{<span style=color:#aBcDeF>bar</span>}baz</p>',
