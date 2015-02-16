@@ -114,7 +114,7 @@ define([
 
 		var first = nodes[0];
 
-		// Because (unlike plain-text), pasted html will contain an unintended
+		// Because (unlike plain-text) pasted html will contain an unintended
 		// linebreak caused by the wrapper inwhich the pasted content is placed
 		// (P in most cases). We therefore unfold this wrapper whenever is valid
 		// to do so (ie: we cannot unfold grouping elements like 'ul', 'table',
@@ -200,7 +200,8 @@ define([
 	 * @memberOf paste
 	 */
 	function middleware(event) {
-		if ('paste' !== event.type || 'undefined' === typeof event.nativeEvent.clipboardData) {
+		if ('paste' !== event.type ||
+		    'undefined' === typeof event.nativeEvent.clipboardData) {
 			return event;
 		}
 		Events.suppress(event.nativeEvent);
