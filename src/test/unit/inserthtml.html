@@ -89,15 +89,15 @@
 				    },
 				    {  	exclude: ['mozilla'],
 						start: 'foo<span>[bar]</span>baz',
-				       	execResult: 'foo<span>bam{}</span>baz'
+				       	execResult: 'foobam[]baz'
 				    },
 				    {  	include: ['mozilla'],
 						start: 'foo<span>[bar]</span>baz',
-				       	execResult: 'foo<span>bam{}</span>baz' 
+				       	execResult: 'foobam[]baz' 
 				    },
 				    {  	exclude: ['mozilla'],
 						start: 'foo<span>[bar]</span>baz',
-				       	execResult: 'foo<span>bam{}</span>baz'
+				       	execResult: 'foobam[]baz'
 				    },
 					{  	start: 'foo[<span>bar</span>]baz',
 				       	execResult: 'foobam[]baz' 
@@ -123,11 +123,11 @@
 				    },
 					{  	exclude: ['mozilla'],
 						start: 'foo<span>[bar</span>baz]',
-				       	execResult: 'foo<span>bam{}</span>'
+				       	execResult: 'foobam{}'
 				    },
 					{  	include: ['mozilla'],
 						start: 'foo<span>[bar</span>baz]',
-				       	execResult: 'foo<span>bam{}</span>' 
+				       	execResult: 'foobam{}' 
 				    },
 //					{  	exclude: ['mozilla'],
 //						start: 'foo<span>bar[</span>baz]',
@@ -147,11 +147,11 @@
 				    },
 					{  	exclude: ['mozilla'],
 						start: 'foo<span>[bar</span><span>baz]</span>baz',
-				       	execResult: 'foo<span>bam{}</span>baz'
+				       	execResult: 'foobam[]baz'
 				    },				    
 					{  	include: ['mozilla'],
 						start: 'foo<span>[bar</span><span>baz]</span>baz',
-				       	execResult: 'foo<span>bam{}</span>baz' 
+				       	execResult: 'foobam[]baz' 
 				    },				    
 //				    {  	exclude: ['mozilla'],
 //						start: 'foo<p>[bar]</p>baz',
@@ -159,7 +159,7 @@
 //				    },
 				    {  	include: ['mozilla'],
 						start: 'foo<p>[bar]</p>baz',
-				       	execResult: 'foo<p>bam{}</p>baz' 
+				       	execResult: 'foo<p>bam{}<br /></p>baz' 
 				    },
 					{  	start: 'foo[<p>bar</p>]baz',
 				       	execResult: 'foobam[]baz'
@@ -211,7 +211,7 @@
 				       	value: '<span>bam</span>' 
 				    },
 				    {  	start: 'foo<span>[bar]</span>baz',
-				       	execResult: 'foo<span><span>bam</span>{}</span>baz',
+				       	execResult: 'foo<span>bam</span>{}baz',
 				       	value: '<span>bam</span>' 
 				    },
 //					{  	start: 'foo[<span>bam</span>]baz',
