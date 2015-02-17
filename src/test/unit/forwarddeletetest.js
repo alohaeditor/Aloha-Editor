@@ -815,7 +815,7 @@ var alltests = {
 		},
 		{	exclude: 'msie',
 			start: '<p>foo<span style=color:#aBcDeF>[bar</span><span style=color:#fEdCbA>baz]</span>quz</p>',
-			execResult: '<p>foo<span style="color:#aBcDeF">[]</span>quz</p>'
+			execResult: '<p>foo[]quz</p>'
 		},
 		{	include: 'msie',
 			start: '<p>foo<span style=color:#aBcDeF>[bar</span><span style=color:#fEdCbA>baz]</span>quz</p>',
@@ -980,11 +980,11 @@ var alltests = {
 		},
 		{	exclude: 'msie',	
 			start: '<p>foo<span style=color:#aBcDeF>[bar]</span>baz',
-			execResult: '<p>foo<span style="color:#aBcDeF">[]</span>baz</p>'
+			execResult: '<p>foo[]baz</p>'
 		},
 		{	include: 'msie',	
 			start: '<p>foo<span style=color:#aBcDeF>[bar]</span>baz',
-			execResult: '<p>foo<span style="color:#aBcDeF"></span>[]baz</p>'
+			execResult: '<p>foo[]baz</p>'
 		},
 		/*
 		{	start: '<p>foo<span style=color:#aBcDeF>{bar}</span>baz',
@@ -1099,7 +1099,7 @@ var alltests = {
 		},
 		{	exclude: ['msie', 'mozilla'],
 			start: 'foo<b>[bar]</b>baz',
-			execResult: 'foo<b>[]</b>baz'
+			execResult: 'foo[]baz'
 		},
 		{	include: 'msie',
 			start: 'foo<b>[bar]</b>baz',
@@ -1273,7 +1273,7 @@ var alltests = {
 		},
 		{	exclude: 'msie',
 			start: 'foo{<b>bar</b>}baz',
-			execResult: 'foo<b>[]</b>baz'
+			execResult: 'foo[]baz'
 		},
 		{	include: 'msie',
 			start: 'foo{<b>bar</b>}baz',
@@ -1281,11 +1281,11 @@ var alltests = {
 		},
 		{	exclude: 'msie',
 			start: 'foo<span>[bar]</span>baz',
-			execResult: 'foo<span>[]</span>baz'
+			execResult: 'foo[]baz'
 		},
 		{	include: 'msie',
 			start: 'foo<span>[bar]</span>baz',
-			execResult: 'foo<span></span>[]baz'
+			execResult: 'foo[]baz'
 		},
 		/*
 		{	exclude: 'msie',
@@ -1413,8 +1413,20 @@ var alltests = {
 		{
 			start: 'foo [bar] baz',
 			execResult: 'foo&nbsp;[] baz'
+		},
+		{
+			start: 'foo <a>[bar]</a> baz',
+			execResult: 'foo []baz'
+		},
+		{
+			start: 'foo <a>[bar</a> b]az',
+			execResult: 'foo []az'
+		},
+		{
+			start: 'f[oo <a>bar]</a> baz',
+			execResult: 'f[] baz'
 		}
-	
+
 
 // Tests with no expected result
 //			{	start: '<p><font color=blue>foo[]</font><p>bar',
