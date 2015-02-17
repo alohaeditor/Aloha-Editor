@@ -437,22 +437,10 @@ define('format/format-plugin', [
 	}
 
 	function addMarkup(button) {
-<<<<<<< HEAD
 		var formatPlugin = this,
 			markup = jQuery('<'+button+'>'),
 			rangeObject = Selection.rangeObject;
 
-||||||| merged common ancestors
-		var formatPlugin = this;
-		var markup = jQuery('<'+button+'>');
-		var rangeObject = Aloha.Selection.rangeObject;
-		
-=======
-		var formatPlugin = this;
-		var markup = jQuery('<'+button+'>');
-		var rangeObject = Aloha.Selection.rangeObject;
-
->>>>>>> hotfix-0.25.x
 		if ( typeof button === "undefined" || button == "" ) {
 			return;
 		}
