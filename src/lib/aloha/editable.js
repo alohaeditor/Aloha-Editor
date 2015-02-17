@@ -229,32 +229,11 @@ define([
 	}
 
 	/**
-	 * Safely removes a placeholder and leaves its content at its place.
-	 * This function is a helper to be passed to a jQuery each() invocation.
-	 *
-	 * @private
-	 * @param {index}   index (Unused) index of placeholder element in jQuery collection.
-	 * @param {Element} placeholder DOM Element
-	 */
-	function removePlaceholder(index, placeholder) {
-		var $placeholder = $(placeholder);
-		if ($placeholder.hasClass('aloha-editing-div')) {
-			removeDivPlaceholder(placeholder,$placeholder);
-			return;
-		}
-		if ($placeholder.hasClass('aloha-editing-p')) {
-			removePPlaceholder(placeholder);
-			return;
-		}
-		$placeholder.remove();
-	}
-
-	/**
 	 * Helper function for safely removing a placeholder that is a div
 	 * @private
 	 * @param {Element} placeholder DOM Element
 	 */
-	function removeDivPlaceholder(placeholder){
+	function removeDivPlaceholder(placeholder) {
 		var $placeholder = $(placeholder);
 		var child = placeholder.firstChild;
 
@@ -279,6 +258,24 @@ define([
 	}
 
 	/**
+	 * Checks if the element given is an unmodified aloha placeholder
+	 *
+	 * @private
+	 * @param {HTMLElement} node
+	 * @return {Boolean} True if the given element is an aloha-editing-paragraph.
+	 */
+	function isUnmodifiedAlohaEditingP(node) {
+		return Browser.ie
+		       ? (node.className === 'aloha-editing-p aloha-placeholder'
+		         && node.children.length === 0
+		         && (!node.firstChild || node.firstChild.data === '\u2060'))
+		       : (node.className === 'aloha-editing-p aloha-placeholder'
+		         && node.children.length >= 1
+		         && node.children[0].nodeName === 'BR'
+		         && node.children[0].className === 'aloha-end-br');
+	}
+
+	/**
 	 * Helper function for safely removing a placeholder that is a paragraph
 	 *
 	 * @private
@@ -300,22 +297,26 @@ define([
 		}
 	}
 
+
 	/**
-	 * Checks if the element given is an unmodified aloha placeholder
+	 * Safely removes a placeholder and leaves its content at its place.
+	 * This function is a helper to be passed to a jQuery each() invocation.
 	 *
 	 * @private
-	 * @param {HTMLElement} node
-	 * @return {Boolean} True if the given element is an aloha-editing-paragraph.
+	 * @param {index}   index (Unused) index of placeholder element in jQuery collection.
+	 * @param {Element} placeholder DOM Element
 	 */
-	function isUnmodifiedAlohaEditingP(node) {
-		return Browser.ie
-		       ? (node.className === 'aloha-editing-p aloha-placeholder'
-		         && node.children.length === 0
-		         && (!node.firstChild || node.firstChild.data === '\u2060'))
-		       : (node.className === 'aloha-editing-p aloha-placeholder'
-		         && node.children.length >= 1
-		         && node.children[0].nodeName === 'BR'
-		         && node.children[0].className === 'aloha-end-br');
+	function removePlaceholder(index, placeholder) {
+		var $placeholder = $(placeholder);
+		if ($placeholder.hasClass('aloha-editing-div')) {
+			removeDivPlaceholder(placeholder);
+			return;
+		}
+		if ($placeholder.hasClass('aloha-editing-p')) {
+			removePPlaceholder(placeholder);
+			return;
+		}
+		$placeholder.remove();
 	}
 
 	$(document).keydown(onKeydown);
