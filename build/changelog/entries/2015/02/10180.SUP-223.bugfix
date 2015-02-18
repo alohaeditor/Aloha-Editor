@@ -1,0 +1,1 @@
+When deleting text, inline text elements like links or bold elements (or any other inline elements) were not deleted in most cases. This has been fixed now.
