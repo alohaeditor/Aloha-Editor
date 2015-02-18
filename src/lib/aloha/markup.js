@@ -219,7 +219,7 @@ define([
 		var sibling = isGoingLeft ? prevVisibleNode(block) : nextVisibleNode(block);
 
 		if (!sibling || isBlock(sibling)) {
-			var $landing = jQuery('<div class="aloha-placeholder aloha-editable-div">&nbsp;</div>');
+			var $landing = jQuery('<div class="aloha-placeholder aloha-editing-div">&nbsp;</div>');
 
 			if (isGoingLeft) {
 				jQuery(block).before($landing);
