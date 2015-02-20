@@ -511,7 +511,15 @@ define(['arrays'], function (Arrays) {
 		return Arrays.unique(list.split(WHITE_SPACES)).join(' ');
 	}
 
+	function splice(str, start, count, insertion) {
+		return str.substring(0, start)
+		     + (insertion || '')
+		     + str.substring(start + count);
+	}
+
 	return {
+		splice                        : splice,
+
 		addToList                     : addToList,
 		removeFromList                : removeFromList,
 		uniqueList                    : uniqueList,

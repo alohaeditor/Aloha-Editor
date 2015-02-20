@@ -11,40 +11,48 @@
 define(['dom'], function (Dom) {
 	'use strict';
 
+	var textlevel = ['a', 'b', 'i', 'u', 's', 'span', 'code', 'pre', 'sup', 'sub'];
+	var sectioning = ['p', 'div', 'table', 'ol', 'ul'];
+	var heading = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
+
+	function join(list, prefix, suffix) {
+		prefix = prefix || '';
+		suffix = suffix || '';
+		return list.map(function (item) { return prefix + item + suffix; }).join(',');
+	}
+
 	var CSS
 
 		// outlines
 		= '.✪{outline:5px solid #fce05e;}'
-		+ '.✪ td,.✪ th,.✪ b,.✪ i,.✪ u,.✪ p,.✪ ul,.✪ ol,.✪ li,.✪ h1,.✪ h2,.✪ h3,.✪ h4,.✪ h5,.✪ h6,.✪ div,.✪ span{border:1px solid rgba(0,0,0,0.1)}'
-		+ '.✪ p,.✪ ul,.✪ ol,.✪ h1,.✪ h2,.✪ h3,.✪ h4,.✪ h5,.✪ h6,.✪ div{border-width:2px}'
-		+ '.✪ b{border-color:#f47d43}'
-		+ '.✪ i{border-color:#82b5e0}'
-		+ '.✪ u{border-color:#bb94b7}'
-		+ '.✪ span{border-color:#bb94b7}'
-		+ '.✪ code{border-color:#999}'
-		+ '.✪ pre{border-color:#999}'
-		+ '.✪ ul,.✪ ol{border-color:#91c9cf}'
-		+ '.✪ p{border-color:#bdd74b}'
-		+ '.✪ h1,.✪ h2,.✪ h3,.✪ h4,.✪ h5,.✪ h6{border-color:#f47d43}'
+	    + '.✪ *{border:1px solid rgba(0,0,0,0.1)}'
+		+ join(sectioning.concat(heading), '.✪ ')
+		+ '{border-style:dotted;border-width:2px}'
+		+ '.✪ b    {border-color:#f47d43}'
+		+ '.✪ i    {border-color:#82b5e0}'
+		+ '.✪ u    {border-color:#bb94b7}'
+		+ '.✪ s    {border-color:#3b94b7}'
+		+ '.✪ span {border-color:#bb94b7}'
+		+ '.✪ code {border-color:#999999}'
+		+ '.✪ pre  {border-color:#999999}'
+		+ '.✪ ul   {border-color:#91c9cf}'
+		+ '.✪ ol   {border-color:#91c9cf}'
+		+ '.✪ p    {border-color:#bdd74b}'
+		+ '.✪ h1,.✪ h2,.✪ h3,.✪ h4,.✪ h5,.✪ h6 {border-color:#f47d43}'
+		+ '.✪ br,.✪ br:after{content:"\\A↵";font-weight:700;font-style:normal}'
 
 		// tagnames
-		+ '.✪✪ td,.✪✪ th,'
-		+ '.✪✪ b,.✪✪ i,.✪✪ u,.✪✪ span,.✪✪ pre,.✪✪ code,'
-		+ '.✪✪ ul,.✪✪ ol,.✪✪ li,'
-		+ '.✪✪ h1,.✪✪ h2,.✪✪ h3,.✪✪ h4,.✪✪ h5,.✪✪ h6,'
-		+ '.✪✪ p,.✪✪ div{position:relative}'
-		+ ''
-		+ '.✪✪ td::before,.✪✪ th::before,'
-		+ '.✪✪ b::before,.✪✪ i::before,.✪✪ u::before,.✪✪ p::before,'
-		+ '.✪✪ ul::before,.✪✪ ol::before,.✪✪ li::before,'
-		+ '.✪✪ h1::before,.✪✪ h2::before,.✪✪ h3::before,.✪✪ h4::before,.✪✪ h5::before,.✪✪ h6::before,'
-		+ '.✪✪ div::before,.✪✪ span::before,.✪✪ pre::before,'
-		+ '.✪✪ code::before{position:absolute;top:-2px;left:-2px;line-height:8px;font-size:8px;font-weight:bold;font-style:normal;letter-spacing:0.5px;background:#fff;color:#111;opacity:0.5;}'
+	    + '.✪✪ *{position:relative}'
+	    + '.✪✪ *::before{position:absolute;top:-2px;left:-2px;line-height:8px;'
+		+ 'font-size:8px;font-weight:bold;font-style:normal;'
+		+ 'letter-spacing:0.5px;background:#fff;color:#111;opacity:0.5}'
 		+ '.✪✪ td::before{content:"TD"}'
 		+ '.✪✪ th::before{content:"TH"}'
+		+ '.✪✪ a::before{content:"A"}'
 		+ '.✪✪ b::before{content:"B"}'
 		+ '.✪✪ i::before{content:"I"}'
 		+ '.✪✪ u::before{content:"U"}'
+		+ '.✪✪ s::before{content:"S"}'
 		+ '.✪✪ p::before{content:"P"}'
 		+ '.✪✪ ul::before{content:"UL"}'
 		+ '.✪✪ ol::before{content:"OL"}'
@@ -56,13 +64,16 @@ define(['dom'], function (Dom) {
 		+ '.✪✪ h5::before{content:"H5"}'
 		+ '.✪✪ h6::before{content:"H6"}'
 		+ '.✪✪ div::before{content:"DIV"}'
+		+ '.✪✪ sup::before{content:"SUP"}'
+		+ '.✪✪ sub::before{content:"SUB"}'
 		+ '.✪✪ pre::before{content:"PRE"}'
 		+ '.✪✪ span::before{content:"SPAN"}'
 		+ '.✪✪ code::before{content:"CODE"}'
 
 		// padding
 		+ '.✪✪✪{padding:10px}'
-		+ '.✪✪✪ td,.✪✪✪ th,.✪✪✪ b,.✪✪✪ i,.✪✪✪ u,.✪✪✪ p,.✪✪✪ /*xul,.✪✪✪ ol,.✪✪✪*/ li,.✪✪✪ h1,.✪✪✪ h2,.✪✪✪ h3,.✪✪✪ h4,.✪✪✪ h5,.✪✪✪ h6,.✪✪✪ div,.✪✪✪ span{padding:2px 4px;margin:2px;}';
+		+ '.✪✪✪ *{padding:2px 4px;margin:2px}'
+		+ join(textlevel, '.✪✪✪ ') + '{display:inline-block}';
 
 	/**
 	 * Insertes the necessary styles into the given document head.
@@ -72,7 +83,7 @@ define(['dom'], function (Dom) {
 	 */
 	function insertStyle(doc) {
 		var metaview = doc.createElement('style');
-		Dom.setAttr(metaview, 'id', 'metaview');
+		Dom.setAttr(metaview, 'id', 'aloha-metaview');
 		Dom.append(metaview, doc['head']);
 		Dom.append(doc.createTextNode(CSS), metaview);
 	}
@@ -96,7 +107,7 @@ define(['dom'], function (Dom) {
 	 * @memberOf metaview
 	 */
 	function toggle(editable, opts) {
-		if (!editable.ownerDocument.querySelector('style#metaview')) {
+		if (!editable.ownerDocument.querySelector('style#aloha-metaview')) {
 			insertStyle(editable.ownerDocument);
 		}
 		opts = opts || {};

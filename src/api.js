@@ -43,6 +43,7 @@ define([
 	'selection-change',
 	'selections',
 	'searching',
+	'sequences',
 	'strings',
 	'transform',
 	'traversing',
@@ -84,6 +85,7 @@ define([
 	SelectionChange,
 	Selections,
 	Searching,
+	Sequences,
 	Strings,
 	Transform,
 	Traversing,
@@ -95,6 +97,16 @@ define([
 	'use strict';
 
 	var exports = {};
+
+	exports['sequences'] = {};
+	exports['sequences']['is']             = Sequences.is;
+	exports['sequences']['hint']           = Sequences.hint;
+	exports['sequences']['create']         = Sequences.create;
+	exports['sequences']['remove']         = Sequences.remove;
+	exports['sequences']['update']         = Sequences.update;
+	exports['sequences']['insertAfter']    = Sequences.insertAfter;
+	exports['sequences']['insertBefore']   = Sequences.insertBefore;
+	exports['sequences']['VOID_CHARACTER'] = Sequences.VOID_CHARACTER;
 
 	exports['Boromir'] = Boromir;
 	exports['Record'] = Record;
@@ -436,6 +448,7 @@ define([
 	exports['paste']['middleware'] = Paste.middleware;
 
 	exports['paths'] = {};
+	exports['paths']['equals']       = Paths.equals;
 	exports['paths']['toBoundary']   = Paths.toBoundary;
 	exports['paths']['fromBoundary'] = Paths.fromBoundary;
 
@@ -467,6 +480,7 @@ define([
 	exports['searching']['backward'] = Searching.backward;
 
 	exports['strings'] = {};
+	exports['strings']['splice']                        = Strings.splice;
 	exports['strings']['addToList']                     = Strings.addToList;
 	exports['strings']['removeFromList']                = Strings.removeFromList;
 	exports['strings']['uniqueList']                    = Strings.uniqueList;
@@ -623,6 +637,9 @@ define([
 		if (Selections.isSelectionEvent(obj)) {
 			return 'AlohaEvent';
 		}
+		if (Sequences.is(obj)) {
+			return 'Sequence';
+		}
 		if (obj instanceof RegExp) {
 			return 'RegExp';
 		}
@@ -632,7 +649,7 @@ define([
 	var api = {};
 	for (var pack in exports) {
 		api[pack] = {};
-		if (pack === 'Boromir' || pack === 'Record') {
+		if (true || pack === 'Boromir' || pack === 'Record') {
 			api[pack] = exports[pack];
 		} else {
 			for (var func in exports[pack]) {

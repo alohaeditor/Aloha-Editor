@@ -19,10 +19,10 @@ define([
 
 	/**
 	 * Returns a "path" from the given boundary position, up to the specified
-	 * node.  The `limit` node must contain the given boundary position.
+	 * node. The `limit` node must contain the given boundary position.
 	 *
-	 * @param  {Node}     limit
-	 * @param  {Boundary} boundary
+	 * @param  {!Node}     limit
+	 * @param  {!Boundary} boundary
 	 * @return {Array.<number>}
 	 * @memberOf paths
 	 */
@@ -44,7 +44,7 @@ define([
 	 * Resolves the given path to a boundary positioned inside DOM tree whose
 	 * root is `container`.
 	 *
-	 * @param  {Node}           container
+	 * @param  {!Node}          container
 	 * @param  {Array.<number>} path
 	 * @return {Boundary}
 	 * @memberOf paths
@@ -56,7 +56,27 @@ define([
 		return Boundaries.raw(node, Arrays.last(path) || 0);
 	}
 
+	/**
+	 * Checkes whether the given paths are equal.
+	 *
+	 * @param  {!Path} a
+	 * @param  {!Path} b
+	 * @return {boolean}
+	 */
+	function equals(a, b) {
+		if (a.length !== b.length) {
+			return false;
+		}
+		for (var i = 0; i < a.length; i++) {
+			if (b[i] !== a[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	return {
+		equals       : equals,
 		toBoundary   : toBoundary,
 		fromBoundary : fromBoundary
 	};
