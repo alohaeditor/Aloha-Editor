@@ -131,6 +131,20 @@ define([
 			Aloha.OSName = 'Linux';
 		}
 
+		// Fix inconsistent browser behavior in Internet Explorer:
+		// per default the Internet Explorer's own feature AutoUrlDetect is turned on.
+		// When this feature is active the "editor will automatically create a hyperlink
+		// for any text that is formatted as a URL."
+		// https://msdn.microsoft.com/en-us/library/aa769893(v=vs.85).aspx
+		// http://blogs.msdn.com/b/ieinternals/archive/2010/09/15/ie9-beta-minor-change-list.aspx
+		//
+		// Since this behavior is different to all other browsers we will
+		// turn this feature off in Internet Explorer >= 9 (turning it off is supported
+		// starting from IE9)
+		if (Aloha.browser.msie && parseFloat(Aloha.browser.version) >= 9.0 && typeof document.execCommand === 'function') {
+			document.execCommand('AutoUrlDetect', false, false);
+		}
+
 		registerEvents();
 		Aloha.settings.base = Aloha.getAlohaUrl();
 		Aloha.Log.init();
@@ -633,6 +647,8 @@ define([
 					/(webkit)[ \/]([\w.]+)/.exec(ua) ||
 					/(opera)(?:.*version|)[ \/]([\w.]+)/.exec(ua) ||
 					/(msie) ([\w.]+)/.exec(ua) ||
+					// IE11 will only identify itself via its Trident rendering engine
+					/(trident)(?:.*? rv:([\w.]+))/.exec(ua) ||
 					(ua.indexOf("compatible") < 0 && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec(ua)) || [];
 
 				return {
@@ -654,6 +670,10 @@ define([
 				browser.webkit = true;
 			} else if (browser.webkit) {
 				browser.safari = true;
+			}
+			// Browsers using the Trident rendering engine are also Internet Explorer
+			if (browser.trident) {
+				browser.msie = true;
 			}
 
 			return browser;
