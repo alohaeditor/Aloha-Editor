@@ -1,0 +1,1 @@
+Deactivate the Internet Explorer feature "autoURL detection" in IE to ensure consistent cross browser behavior and fix browser detection for IE11.
