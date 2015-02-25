@@ -459,6 +459,7 @@ div.repository-browser-modal-window {
 	left: 0;
 	z-index: 9999;
 	font-family: Arial, sans-serif;
+	direction: ltr;
 }
 
 .repository-browser-modal-window .ui-widget {
