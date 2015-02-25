@@ -540,7 +540,7 @@ define('format/format-plugin', [
 	 * @param {Element} element a Dom element
 	 */
 	function handlePreformattedText(element) {
-		var $element = $(element);
+		var $element = jQuery(element);
 
 		if ($element.is('.aloha-editing-p.aloha-placeholder')) {
 			//remove all other placeholders
@@ -578,7 +578,7 @@ define('format/format-plugin', [
 		var landing = Browser.ie
 		            ? '<p class="aloha-editing-p aloha-placeholder">&#x2060;</p>'
 		            : '<p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p>';
-		return $(landing);
+		return jQuery(landing);
 	}
 
 	/**

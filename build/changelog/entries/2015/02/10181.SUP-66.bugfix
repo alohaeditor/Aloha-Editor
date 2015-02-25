@@ -1,0 +1,4 @@
+When editing pages having the style "direction" set to "rtl", the aloha editor controls like
+the toolbar, sidebar and repository browser were also affected, so its layout and some functionality were broken.
+This has been changed, so that all aloha editor controls will have "direction" set to "ltr" regardless of the
+page setting.
