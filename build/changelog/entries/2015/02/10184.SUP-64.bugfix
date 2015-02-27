@@ -1,0 +1,3 @@
+It was not possible to delete a single paragraph right before a non-editable block or after a non-editable block.
+This has been fixed now. The "delete" action with the cursor placed in an empty block level element will now
+delete that element, as if the whole element had been selected.
