@@ -7302,6 +7302,17 @@ define([
 			var isBr = false;
 			var isHr = false;
 
+			// special behaviour: if we are in an empty block-level element (empty, but for the single ending br), we just remove that
+			// this will fix situations where it was not possible to delete an empty block level element right before a non-editable part
+			if (Dom.isEmptyBlockLevelElement(node)) {
+				range.startContainer = node.parentElement;
+				range.startOffset = Dom.getIndexInParent(node);
+				range.endContainer = node.parentElement;
+				range.endOffset = range.startOffset + 1;
+				deleteContents(range);
+				return;
+			}
+
 			// "Repeat the following steps:"
 			while (true) {
 				// check whether the next element is a br or hr

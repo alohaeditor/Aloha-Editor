@@ -894,11 +894,11 @@ var alltests = {
 		},
     	{  	exclude: 'msie',
 			start: '<p>{}<br></p>foo',
-			execResult: '<p>{}foo</p>'
+			execResult: '{}foo'
 		},
     	{  	include: 'msie',
 			start: '<p>{}<br></p>foo',
-			execResult: '<p>{}</p>foo'
+			execResult: '{}foo'
 		},
 		/*
 		{  	exclude: 'msie',
