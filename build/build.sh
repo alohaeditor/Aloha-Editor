@@ -48,7 +48,7 @@ function build {
 	fi
 
 	cd $src
-	sed s/%buildcommit%/$ish/ <(cat $entry.js) > $versioned.js
+	sed s/%buildcommit%/$ish/ $entry.js > $versioned.js
 
 	find ./ -name "*.js" |                                \
 	    grep -v require-pronto.js |                       \
@@ -79,7 +79,7 @@ function build {
 function noopt {
 	clean
 
-	sed s/%buildcommit%/$ish/ <(cat $src/$entry.js) > $src/$versioned.js
+	sed s/%buildcommit%/$ish/ $src/$entry.js > $src/$versioned.js
 
 	node build/r.js -o                        \
 	    baseUrl=$src                          \
