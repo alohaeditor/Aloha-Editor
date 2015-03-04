@@ -1900,6 +1900,44 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 				offsetHeight = node.offsetHeight;
 			}
 			return offsetHeight;
+		},
+
+		/**
+		 * Check whether the given node is an empty block level element.
+		 * A block level element is considered empty, if it does not contain other children than
+		 * <ol>
+		 * <li>empty text nodes</li>
+		 * <li>a final break</li>
+		 * </ol>
+		 * @param {DOMObject} node to check
+		 * @return {boolean} true for empty block level elements
+		 */
+		isEmptyBlockLevelElement: function (node) {
+			if (!this.isBlockLevelElement(node)) {
+				return false;
+			}
+
+			if (!node.childNodes) {
+				return true;
+			}
+
+			var len = node.childNodes.length, breakFound = false, i, child;
+			for (i = 0; i < len; i++) {
+				child = node.childNodes[i];
+				if (child.nodeName === 'BR') {
+					if (breakFound) {
+						// we found another break, so the element is not empty
+						return false;
+					} else {
+						// first break found, no harm done (so far)
+						breakFound = true;
+					}
+				} else if (!this.isEmpty(child)) {
+					return false;
+				}
+			}
+
+			return true;
 		}
 	});
 
