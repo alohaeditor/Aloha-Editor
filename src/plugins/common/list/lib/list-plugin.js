@@ -129,11 +129,11 @@ define([
 			}
 		});
 
-		var $dlIcon = $('.aloha-icon-definitionlist').parent('.aloha-ui-menubutton-container');
-		var $olIcon = $('.aloha-icon-orderedlist').parent('.aloha-ui-menubutton-container');
-		var $ulIcon = $('.aloha-icon-unorderedlist').parent('.aloha-ui-menubutton-container');
-
 		PubSub.sub('aloha.selection.context-change', function (message) {
+			var $dlIcon = $('.aloha-icon-definitionlist').parents('.aloha-ui-menubutton-container');
+			var $olIcon = $('.aloha-icon-orderedlist').parents('.aloha-ui-menubutton-container');
+			var $ulIcon = $('.aloha-icon-unorderedlist').parents('.aloha-ui-menubutton-container');
+
 			$dlIcon.removeClass('aloha-button-active');
 			$olIcon.removeClass('aloha-button-active');
 			$ulIcon.removeClass('aloha-button-active');
