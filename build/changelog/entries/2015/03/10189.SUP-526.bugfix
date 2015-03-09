@@ -1,0 +1,4 @@
+The event handler for "selection changed" in the format plugin sometimes
+cause a javascript error in internet explorer, which stopped processing of further event handlers.
+This happened for instance, when choosing a link target in the repository browser. As a consequence
+of the javascript error, the repository browser was not closed.
