@@ -221,7 +221,7 @@ define([
 		var node = Dom.forward(container);
 		while (node) {
 			//skip over node if it is a aloha-block, because we want to keep elements inside
-			if (jQuery(node).hasClass('aloha-block')) {
+			if ($(node).hasClass('aloha-block')) {
 				node = node.nextSibling || Dom.forward(node.lastChild || node);
 			} else {
 				var translation = translate(editable, node.nodeName);
