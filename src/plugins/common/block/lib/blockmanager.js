@@ -224,6 +224,11 @@ define([
 			Aloha.bind('aloha-command-will-execute', function (e, data) {
 				var commandId = data.commandId;
 
+				// workaround for selection problem in tables: we never delete table blocks this way
+				if (that._activeBlock && that._activeBlock.$element.hasClass('aloha-table-wrapper')) {
+					return true;
+				}
+
 				// Internet Explorer *magically* sets the range to the "Body" object after deselecting everything. yeah :-D
 				var selection = Aloha.getSelection(),
 				    rangeCount = selection.getRangeCount(),
