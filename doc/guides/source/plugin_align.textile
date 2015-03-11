@@ -15,13 +15,20 @@ Editable denoted by ID 'three', has both horizontal and vertical alignment optio
 
 <javascript>
 	Aloha.settings.plugins = {
-		alignment: {
-			config: [ 'right', 'left', 'center', 'justify' ],
-
+		align: {
+			config: {
+				alignment: ['right', 'left', 'center', 'justify'],
+			},
 			editables: {
-				'#one': [ 'right', 'left' ],
-				'#two': [ ],
-				'#three': [ 'left', 'right', 'top', 'middle', 'bottom' ]
+				'#one': {
+					alignment: [ 'right', 'left' ]
+				},
+				'#two': { 
+					alignment: [ ]
+				},
+				'#three': { 
+					alignment: [ 'left', 'right', 'top', 'middle', 'bottom' ]
+				},
 			}
 		}
 	};

@@ -587,7 +587,9 @@ define('format/format-plugin', [
 	 * @private
 	 */
 	function removePlaceholders(){
-		Aloha.activeEditable.removePlaceholder(Aloha.activeEditable.obj);
+		if (Aloha.activeEditable) {
+			Aloha.activeEditable.removePlaceholder(Aloha.activeEditable.obj);
+		}
 	}
 
 	/**

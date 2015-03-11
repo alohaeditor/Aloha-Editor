@@ -1,0 +1,3 @@
+When using the block plugin and the table plugin, sometimes when selecting something
+in a table cell and pressing either "delete" or "backspace", the whole table was deleted.
+This has been fixed now.
