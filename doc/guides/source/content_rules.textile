@@ -120,6 +120,7 @@ Aloha.settings.contentRules = {
 NOTE: Text nodes (@#text@) are automatically permitted unless explicitly
 specified in a blacklist setting.
 
+NOTE: Aloha Blocks (@.aloha-block@) and elements inside blocks automatically skip the check and are permitted by default.
 
 h3. Translation
 
