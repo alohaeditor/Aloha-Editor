@@ -524,7 +524,16 @@ define([
 			// However, when the user clicked inside a nested editable, we will not remove the cursor (as the user wants to start typing then)
 			// small HACK: we also do not deactivate if we are inside an aloha-table-cell-editable.
 			if (jQuery(eventTarget).closest('.aloha-editable,.aloha-block,.aloha-table-cell-editable,.aloha-table-cell_active').first().hasClass('aloha-block')) {
-				this._isInsideNestedEditable = false;
+				var range = new Aloha.Selection.SelectionRange(true);
+				// we check whether the start of the selection was inside an editable
+				// this handles situations, where the user started selecting inside an editable (in a block)
+				// and stopped selecting outside the editable but still inside the block
+				if (jQuery(range.startContainer).closest('.aloha-editable,.aloha-block,.aloha-table-cell-editable,.aloha-table-cell_active').first().hasClass('aloha-editable') && event) {
+					this._isInsideNestedEditable = true;
+					Aloha.Selection.updateSelection(event);
+				} else {
+					this._isInsideNestedEditable = false;
+				}
 			} else {
 				this._isInsideNestedEditable = true;
 				if (event) {

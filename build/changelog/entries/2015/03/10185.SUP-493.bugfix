@@ -1,0 +1,2 @@
+Content Rules now skip .aloha-blocks inside an editable. So markup inside blocks is not changed by Content Rules.
+See the "Content Rules feature":http://www.alohaeditor.org/guides/content_rules.html for further details.

@@ -1819,9 +1819,10 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 		 * Get the first visible child of the given node.
 		 * @param node node
 		 * @param includeNode when set to true, the node itself may be returned, otherwise only children are allowed
+		 * @param stopElements optional list of node names (upper case) of elements where to stop searching
 		 * @return first visible child or null if none found
 		 */
-		getFirstVisibleChild: function (node, includeNode) {
+		getFirstVisibleChild: function (node, includeNode, stopElements) {
 			// no node -> no child
 			if (!node) {
 				return null;
@@ -1837,10 +1838,15 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 				return includeNode ? node : null;
 			}
 
+			// when we find one of the stop elements, we return it
+			if (jQuery.isArray(stopElements) && jQuery.inArray(node.nodeName, stopElements) >= 0) {
+				return includeNode ? node : null;
+			}
+
 			// otherwise traverse through the children
 			var i;
 			for (i = 0; i < node.childNodes.length; ++i) {
-				var visibleChild = this.getFirstVisibleChild(node.childNodes[i], true);
+				var visibleChild = this.getFirstVisibleChild(node.childNodes[i], true, stopElements);
 				if (visibleChild != null) {
 					return visibleChild;
 				}
@@ -1853,9 +1859,10 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 		 * Get the last visible child of the given node.
 		 * @param node node
 		 * @param includeNode when set to true, the node itself may be returned, otherwise only children are allowed
+		 * @param stopElements optional list of node names (upper case) of elements where to stop searching
 		 * @return last visible child or null if none found
 		 */
-		getLastVisibleChild: function (node, includeNode) {
+		getLastVisibleChild: function (node, includeNode, stopElements) {
 			// no node -> no child
 			if (!node) {
 				return null;
@@ -1871,10 +1878,15 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 				return includeNode ? node : null;
 			}
 
+			// when we find one of the stop elements, we return it
+			if (jQuery.isArray(stopElements) && jQuery.inArray(node.nodeName, stopElements) >= 0) {
+				return includeNode ? node : null;
+			}
+
 			// otherwise traverse through the children
 			var i;
 			for (i = node.childNodes.length - 1; i >= 0; --i) {
-				var visibleChild = this.getLastVisibleChild(node.childNodes[i], true);
+				var visibleChild = this.getLastVisibleChild(node.childNodes[i], true, stopElements);
 				if (visibleChild != null) {
 					return visibleChild;
 				}
@@ -1900,6 +1912,44 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 				offsetHeight = node.offsetHeight;
 			}
 			return offsetHeight;
+		},
+
+		/**
+		 * Check whether the given node is an empty block level element.
+		 * A block level element is considered empty, if it does not contain other children than
+		 * <ol>
+		 * <li>empty text nodes</li>
+		 * <li>a final break</li>
+		 * </ol>
+		 * @param {DOMObject} node to check
+		 * @return {boolean} true for empty block level elements
+		 */
+		isEmptyBlockLevelElement: function (node) {
+			if (!this.isBlockLevelElement(node)) {
+				return false;
+			}
+
+			if (!node.childNodes) {
+				return true;
+			}
+
+			var len = node.childNodes.length, breakFound = false, i, child;
+			for (i = 0; i < len; i++) {
+				child = node.childNodes[i];
+				if (child.nodeName === 'BR') {
+					if (breakFound) {
+						// we found another break, so the element is not empty
+						return false;
+					} else {
+						// first break found, no harm done (so far)
+						breakFound = true;
+					}
+				} else if (!this.isEmpty(child)) {
+					return false;
+				}
+			}
+
+			return true;
 		}
 	});
 

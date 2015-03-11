@@ -52,6 +52,7 @@ define([
 
 			if (0 === buttons.length) {
 				element.hide();
+				this.visible = false;
 			}
 
 			for (var i = 0; i < buttons.length; i++) {
@@ -189,6 +190,7 @@ define([
 				this.buttons[name].visible = true;
 				// since we show at least one button now, we need to show the multisplit button
 				this.element.show();
+				this.visible = true;
 			}
 		},
 
@@ -212,6 +214,7 @@ define([
 					if (this.buttons.hasOwnProperty(button)) {
 						if (this.buttons[button].visible) {
 							this.element.show();
+							this.visible = true;
 							visible = true;
 							break;
 						}
@@ -220,6 +223,7 @@ define([
 
 				if (!visible) {
 					this.element.hide();
+					this.visible = false;
 				}
 			}
 		}

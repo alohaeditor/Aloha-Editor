@@ -1,0 +1,2 @@
+The methods Dom.getFirstVisibleChild and Dom.getLastVisibleChild have a new optional parameter
+for elements where to stop searching.
