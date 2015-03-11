@@ -187,6 +187,8 @@ define([
 					FormatlessPasteHandler.enabled = false;
 				}
 
+				FormatlessPasteHandler.strippedElements = config.strippedElements || Html.TEXT_LEVEL_SEMANTIC_ELEMENTS;
+
 				pasteButton.show(false !== config.button);
 			});
 		}

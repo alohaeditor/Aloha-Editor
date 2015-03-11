@@ -17,38 +17,6 @@ define([
 	var idCounter = 0;
 	var slottedComponents = {};
 
-	function hasVisibleComponents(tab) {
-		var i, slot, component, hasVisible = false;
-
-		// the problem is, a container component had a button to expand the options
-		if ($(
-				'button:not(.aloha-multisplit-toggle)',
-				tab.panel
-			).length !== 0
-		) {
-			hasVisible = true;
-		}
-
-		/*
-		// @todo this algorithm must be enhanced, asking each component if is visible
-		// this is the longest aproach, I iterate the components registered in
-		// this tab
-		for (i = 0; i < tab._slotsList.length; i++){
-			if(undefined !== slottedComponents[slotName]){
-				if($(
-						'button:not(.aloha-multisplit-toggle)',
-						slottedComponents[slotName].element
-					).length !== 0
-				){
-					hasVisible = true;
-					break;
-				}
-			}
-		}
-		*/
-		return hasVisible;
-	}
-
 	/**
 	 * Defines a Container object that represents a collection of related
 	 * component groups to be rendered together on the toolbar.  Tabs are
@@ -224,7 +192,7 @@ define([
 		 * @override
 		 */
 		show: function () {
-			if (!this.list.children().length || !hasVisibleComponents(this)) {
+			if (!this.list.children().length || !this.hasVisibleComponents()) {
 				return;
 			}
 
