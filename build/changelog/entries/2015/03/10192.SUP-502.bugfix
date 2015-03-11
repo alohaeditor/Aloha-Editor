@@ -1,0 +1,3 @@
+When a selection is started inside of an editable, which is nested in a block
+and finished outside of the editable, but still inside the block, the toolbar
+was not shown. This has been fixed now.
