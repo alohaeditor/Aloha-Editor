@@ -1,0 +1,3 @@
+When using ENTER to submit a search in the repository browser, the ENTER
+possible bubbled to the page and caused something to happen there as well.
+Bubbling of the ENTER from the search field is now prevented.
