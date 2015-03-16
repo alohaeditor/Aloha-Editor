@@ -73,6 +73,18 @@ Aloha.settings.plugins.link = {
 		} else {
 			jQuery(obj).removeAttr("data-name");
 		}
-	}
+	},
+
+	// Add additional properties of the link target to the sidebar (if the link
+	// target is fetched from a repository)
+	sidebar: [
+		{
+			"attr": "path",
+			"title": {
+				"en": "Path",
+				"de": "Pfad"
+			}
+		}
+	]
 };
 </javascript>
