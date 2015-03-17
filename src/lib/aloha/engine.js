@@ -1169,7 +1169,7 @@ define([
 			ref.contentEditable = 'false';
 		}
 
-		var origHeight = ref.offsetHeight;
+		var origHeight = Dom.getOffsetHeight(ref);
 		if (origHeight == 0) {
 			throw "isExtraneousLineBreak: original height is zero, bug?";
 		}

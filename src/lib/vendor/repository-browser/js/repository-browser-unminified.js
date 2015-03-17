@@ -328,6 +328,7 @@
 			var $search = $title.find('.repository-browser-search-field').keypress(function (event) {
 				// ENTER ←┘
 				if (13 === event.keyCode) {
+					event.preventDefault();
 					browser._triggerSearch();
 				}
 			});
