@@ -250,12 +250,18 @@ define([
 		var top = offset.top;
 		var left = offset.left;
 		var scrollTop = $WINDOW.scrollTop();
+		var scrollLeft = $WINDOW.scrollLeft();
 		var availableSpace = top - scrollTop - topGutter;
+		// consider horizontal scrolling (important for rtl pages that are scrolled to the left)
+		left = left - scrollLeft;
 		var horizontalOverflow = left + $surface.width() - $WINDOW.width();
 
 		if (horizontalOverflow > 0) {
 			left = Math.max(0, left - horizontalOverflow);
 		}
+
+		// never ever float outside of the visible area (to the left)
+		left = Math.max(0, left);
 
 		if (availableSpace >= $surface.height()) {
 			floatAbove($surface, {
