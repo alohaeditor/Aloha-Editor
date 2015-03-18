@@ -1,0 +1,3 @@
+Fixed floating of toolbar next to a surface with direction set to rtl:
+Horizontal scrolling is now considered correctly and the toolbar is prevented
+from floating out of the visible area.

@@ -188,6 +188,36 @@ define([
 		editable.obj.unbind('.aloha-link.meta-click-link');
 	}
 
+	/**
+	 * Get the translation from the given i18n object.
+	 * The object should be composed like:
+	 * {
+	 *   "en": "Path",
+	 *   "de": "Pfad"
+	 * }
+	 * 
+	 * If the translation in the current language is not found,
+	 * the first translation will be returned
+	 * @param i18nObject {Object} i18n Object
+	 * @return translation {String}
+	 */
+	function _i18n(i18nObject) {
+		if (!i18nObject) {
+			return '';
+		}
+		if (i18nObject.hasOwnProperty(Aloha.settings.locale)) {
+			return i18nObject[Aloha.settings.locale];
+		}
+
+		for (var lang in i18nObject) {
+			if (i18nObject.hasOwnProperty(lang)) {
+				return i18nObject[lang];
+			}
+		}
+
+		return '';
+	}
+
 	return Plugin.create('link', {
 		/**
 		 * Default configuration allows links everywhere
@@ -360,6 +390,13 @@ define([
 				onInit: function () {
 					initHrefLang(pl, this);
 
+					var infoFields = '';
+					if (jQuery.isArray(pl.settings.sidebar)) {
+						jQuery.each(pl.settings.sidebar, function () {
+							infoFields += '<div class="' + pl.nsClass('title-container') + '"><fieldset><legend>' + _i18n(this.title) + '</legend><span class="' + pl.nsClass( this.attr ) + '"></span></fieldset></div>';
+						});
+					}
+
 					 var that = this,
 						 content = this.setContent(
 							'<div class="' + pl.nsClass( 'target-container' ) + '"><fieldset><legend>' + i18n.t( 'link.target.legend' ) + '</legend><ul><li><input type="radio" name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '" value="_self" /><span>' + i18n.t( 'link.target.self' ) + '</span></li>' + 
@@ -369,7 +406,8 @@ define([
 							'<li><input type="radio" name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '" value="framename" /><span>' + i18n.t( 'link.target.framename' ) + '</span></li>' + 
 							'<li><input type="text" class="' + pl.nsClass( 'framename' ) + '" /></li></ul></fieldset></div>' + 
 							'<div class="' + pl.nsClass( 'title-container' ) + '" ><fieldset><legend>' + i18n.t( 'link.title.legend' ) + '</legend><input type="text" class="' + pl.nsClass( 'linkTitle' ) + '" /></fieldset></div>' +
-							'<div class="' + pl.nsClass( 'href-lang-container' ) + '" ><fieldset><legend>' + i18n.t( 'href.lang.legend' ) + '</legend></fieldset></div>'
+							'<div class="' + pl.nsClass( 'href-lang-container' ) + '" ><fieldset><legend>' + i18n.t( 'href.lang.legend' ) + '</legend></fieldset></div>' +
+							infoFields
 						).content; 
 					 
 					 jQuery(hrefLangField.getInputElem()).addClass(pl.nsClass( 'hrefLang' ));
@@ -1015,6 +1053,17 @@ define([
 				hrefLangField.setValue('');
 				this.hrefField.setAttribute('hreflang', '');
 				hrefLangField.disableInput();
+			}
+
+			// fill all info fields
+			if (jQuery.isArray(that.settings.sidebar)) {
+				jQuery.each(that.settings.sidebar, function () {
+					if (hrefFieldItem && hrefFieldItem.hasOwnProperty(this.attr)) {
+						jQuery(that.nsSel(this.attr)).text(hrefFieldItem[this.attr]);
+					} else {
+						jQuery(that.nsSel(this.attr)).text("");
+					}
+				});
 			}
 		}
 	});
