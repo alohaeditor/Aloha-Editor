@@ -10,5 +10,6 @@ define({
 	"link.target.framename": "Framename",
 	"link.target.legend": "Ziel",
 	"link.title.legend": "Titel",
+	"href.lang.legend": "Sprache",
 	"insertLink": "Ctrl+k"
 });
