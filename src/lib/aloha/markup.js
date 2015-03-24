@@ -495,6 +495,14 @@ define([
 				return true;
 			}
 
+			// Internet Explorer hack: IE would allow to move the cursor into non-editable areas.
+			// we cannot prevent this, without breaking the selection & copy/paste functionality.
+			// so we simply prevent any keypress events that would insert text into non-editable areas
+			// keypresses with the ctrl-key are allowed, because they trigger functionality like copying
+			if (Aloha.browser.msie && !Aloha.Selection.isSelectionEditable() && !event.ctrlKey) {
+				return false;
+			}
+
 			// BACKSPACE
 			if (event.keyCode === 8) {
 				event.preventDefault(); // prevent history.back() even on exception
