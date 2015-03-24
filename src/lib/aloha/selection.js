@@ -732,7 +732,9 @@ define([
 						jQuery(range.commonAncestorContainer)
 							.closest('.aloha-editable').length > 0;
 
-				if (inEditable && !rangeStartInBlock(range)) {
+				// we only will move the selection out of the non-editable area (in an editable)
+				// if the range is collapsed (blinking cursor)
+				if (inEditable && range.isCollapsed()) {
 					var validStartPosition = this._validEditablePosition(range.startContainer);
 					var validEndPosition = this._validEditablePosition(range.endContainer);
 					var newPos;
