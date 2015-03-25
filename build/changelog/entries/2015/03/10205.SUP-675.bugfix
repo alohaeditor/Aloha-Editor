@@ -1,0 +1,3 @@
+Improve text of tooltips for the buttons which increase/decrease indentation
+in lists. Escpecially the German tooltips where unclear in regard to the
+expected action of the buttons.
