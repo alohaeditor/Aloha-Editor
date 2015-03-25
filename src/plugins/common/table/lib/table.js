@@ -474,20 +474,38 @@ define([
 			return false;
 		}
 
+		/**
+		 * Get the next sibling of the parent that is not null.
+		 * If the parent has no sibling, get the next sibling of it's parent.
+		 * Repeat until a sibling is found or the parent is null
+		 * @param  {Node} node
+		 * @return {Node}
+		 */
+		function getNextParentSiblingRecur(node) {
+			if (node.parentNode) {
+				return node.parentNode.nextSibling || getNextParentSiblingRecur(node.parentNode);
+			} else {
+				return null;
+			}
+		}
+
 		Aloha.bind('aloha-command-will-execute', function (_, event){
 			var range = Aloha.getSelection().getRangeAt(0);
-			var adjacent;
+			var adjacent = null;
+			//if forwarddelete is invoked before the table, jump into first table cell instead of deleting the table
 			if ('forwarddelete' === event.commandId) {
 				if (!range.collapsed || !isRangeVisiblyAtRightBoundary(range)) {
 					return;
 				}
 				var node = range.commonAncestorContainer;
 				if (3 === node.nodeType) {
-					adjacent = node.parentNode
-					        && Html.findNodeLeft(
-								node.parentNode.nextSibling,
-								isNotUnrenderedNode
-							);
+					if(node.nextSibling === null) {
+						adjacent = node.parentNode
+						        && Html.findNodeLeft(
+						           getNextParentSiblingRecur(node),
+									isNotUnrenderedNode
+								);
+					}
 				} else if (1 === node.nodeType) {
 					adjacent = Html.findNodeLeft(
 						node.nextSibling,
@@ -747,7 +765,6 @@ define([
 		thisWai.removeClass(waiGreen + ' ' + waiRed);
 
 		// Y U NO explain why we must check that summary is longer than 5 characters?
-		// http://cdn3.knowyourmeme.com/i/000/089/665/original/tumblr_l96b01l36p1qdhmifo1_500.jpg
 
 		if (jQuery.trim(this.obj[0].summary) !== '') {
 			thisWai.addClass(waiGreen);
