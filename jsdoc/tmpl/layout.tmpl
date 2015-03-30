@@ -90,7 +90,6 @@
     </div>
 </div>
 <script>prettyPrint();</script>
-<script>$('.notice span').on('click', function () { $(this).parent().hide(); })</script>
 <script src="scripts/linenumber.js"></script>
 <script src="scripts/main.js"></script>
 <script src="scripts/typehint.js"></script>
@@ -99,5 +98,15 @@
  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 })(window,document,'script','//www.google-analytics.com/analytics.js','ga'); ga('create', 'UA-17460389-2', 'auto'); ga('require', 'displayfeatures'); ga('send', 'pageview');</script>
+
+<script src='../assets/jquery.cookie.js'></script>
+<script>
+	if ('consented' !== $.cookie('cookies')) {
+		$('.notice').show().find('span').on('click', function () {
+			$(this).parent().hide();
+			$.cookie('cookies', 'consented', {path:'/'});
+		});
+	}
+</script>
 </body>
 </html>

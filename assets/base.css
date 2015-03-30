@@ -328,6 +328,7 @@ header h2 {
 @media (max-width: 480px) { .wrapper nav { padding: 0 10px; } }
 
 .notice {
+	display: none;
 	position: fixed;
 	z-index: 9999;
 	bottom: 0;

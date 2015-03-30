@@ -159,7 +159,6 @@ ga('send', 'pageview');</script>
 		<script src="http://www.alohaeditor.org/download/aloha.min.js"></script>
 		<script src="js/aloha-ui-links.js"></script>
 		<script src="../../assets/background.js"></script>
-		<script>$('.notice span').on('click', function () { $(this).parent().hide(); })</script>
 		<script>
 			(function () {
 				'use strict';
@@ -190,6 +189,16 @@ ga('send', 'pageview');</script>
 				// "href='#'" which causes the page to jump to the top
 				$('.aloha-ui .dropdown-menu').on('click', function (event) { event.preventDefault(); });
 			}());
+		</script>
+
+		<script src='../../assets/jquery.cookie.js'></script>
+		<script>
+			if ('consented' !== $.cookie('cookies')) {
+				$('.notice').show().find('span').on('click', function () {
+					$(this).parent().hide();
+					$.cookie('cookies', 'consented', {path:'/'});
+				});
+			}
 		</script>
 	</body>
 </html>

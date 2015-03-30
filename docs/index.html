@@ -553,11 +553,19 @@ ga('send', 'pageview');</script>
 			}, 500);
 		</script>
 
-		<script>$('.notice span').on('click', function () { $(this).parent().hide(); })</script>
-
 		<script src="codemirror-4.2/lib/codemirror.js"></script>
 		<script src="codemirror-4.2/mode/javascript/javascript.js"></script>
 		<script src="codemirror-4.2/mode/xml/xml.js"></script>
 		<script src="docs.js"></script>
+
+		<script src='../assets/jquery.cookie.js'></script>
+		<script>
+			if ('consented' !== $.cookie('cookies')) {
+				$('.notice').show().find('span').on('click', function () {
+					$(this).parent().hide();
+					$.cookie('cookies', 'consented', {path:'/'});
+				});
+			}
+		</script>
 	</body>
 </html>
