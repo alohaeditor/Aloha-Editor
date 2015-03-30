@@ -17,6 +17,12 @@
 	</head>
 
 	<body>
+		<div class="notice">
+			We use cookies to make our website more effective. By using our
+			website you agree to our
+			<a href="Content.Node/privacy.html">privacy statement</a>.
+			<span title="Consent and close">✕</span>
+		</div>
 		<div class="★">
 			<header class="title intro rainbow"><div>
 				<div class="bg"></div>
@@ -546,6 +552,8 @@ ga('send', 'pageview');</script>
 				);
 			}, 500);
 		</script>
+
+		<script>$('.notice span').on('click', function () { $(this).parent().hide(); })</script>
 
 		<script src="codemirror-4.2/lib/codemirror.js"></script>
 		<script src="codemirror-4.2/mode/javascript/javascript.js"></script>

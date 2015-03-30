@@ -20,6 +20,12 @@
 		<link href='../../assets/demo.css' rel='stylesheet' type='text/css'>
 	</head>
 	<body>
+		<div class="notice">
+			We use cookies to make our website more effective. By using our
+			website you agree to our
+			<a href="Content.Node/privacy.html">privacy statement</a>.
+			<span title="Consent and close">✕</span>
+		</div>
 
 	    <nav class="rainbow-static navbar navbar-fixed-top" role="navigation">
 	    	<div class="container">
@@ -153,6 +159,7 @@ ga('send', 'pageview');</script>
 		<script src="http://www.alohaeditor.org/download/aloha.min.js"></script>
 		<script src="js/aloha-ui-links.js"></script>
 		<script src="../../assets/background.js"></script>
+		<script>$('.notice span').on('click', function () { $(this).parent().hide(); })</script>
 		<script>
 			(function () {
 				'use strict';

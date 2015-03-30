@@ -11,6 +11,7 @@
 
 body {
 	margin: 0 auto;
+	padding: 0 0 50px;
 	-moz-osx-font-smoothing: grayscale;
 	 -webkit-font-smoothing: antialiased;
 	    -moz-font-smoothing: antialiased;
@@ -325,3 +326,54 @@ header h2 {
 	margin-bottom: 30px;
 }
 @media (max-width: 480px) { .wrapper nav { padding: 0 10px; } }
+
+.notice {
+	position: fixed;
+	z-index: 9999;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	overflow: hidden;
+	padding: 1em;
+	line-height: 1em;
+	background: #333;
+	color: #ccc;
+	text-align: center;
+}
+.notice a { border-bottom: 2px solid rgba(255,255,255,0.1); }
+.notice a:hover {
+	color: #ddd;
+	border-color: rgba(255,255,255,0.2);
+}
+.notice::before {
+	content: '';
+	z-index: -1;
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-image: url(letters.png);
+	background-size: 500px;
+	background-position: -20px -5px;
+	opacity: 0.1;
+}
+.notice span {
+	display: inline-block;
+	width: 24px;
+	height: 24px;
+	line-height: 24px;
+	border-radius: 15px;
+	background: rgba(255,255,255,0.2);
+	color: rgba(255,255,255,0.5);
+	font-weight: bold;
+	font-size: 12px;
+	text-align: center;
+	margin-left: 6px;
+	cursor: pointer;
+}
+.notice span:hover {
+	background: rgba(255,255,255,0.9);
+	color: #333;
+}

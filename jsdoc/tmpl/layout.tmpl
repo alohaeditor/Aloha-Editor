@@ -50,6 +50,13 @@
     <?js } ?>
 </head>
 <body>
+<div class="notice">
+	We use cookies to make our website more effective. By using our
+	website you agree to our
+	<a href="Content.Node/privacy.html">privacy statement</a>.
+	<span title="Consent and close">✕</span>
+</div>
+
 <div id="wrap" class="clearfix">
     <?js= this.partial('navigation.tmpl', this) ?>
     <div class="main">
@@ -83,6 +90,7 @@
     </div>
 </div>
 <script>prettyPrint();</script>
+<script>$('.notice span').on('click', function () { $(this).parent().hide(); })</script>
 <script src="scripts/linenumber.js"></script>
 <script src="scripts/main.js"></script>
 <script src="scripts/typehint.js"></script>
