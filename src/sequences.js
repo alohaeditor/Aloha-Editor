@@ -606,10 +606,14 @@ define([
 	 * @private
 	 * @param {!Span} a
 	 * @param {!Span} b
-	 * return {boolean}
+	 * return {number} -1, 0, or 1
 	 */
 	function compareSpans(a, b) {
-		return (a[0] > b[0]) || ((a[0] === b[0]) && (a[1] < b[1]));
+		return (a[0] === b[0] && a[1] === b[1])
+		     ? 0
+		     : ((a[0] > b[0]) || ((a[0] === b[0]) && (a[1] < b[1])))
+		     ? 1
+		     : -1;
 	}
 
 	/**
@@ -641,15 +645,15 @@ define([
 			var nested = nestedSpans(formatting, span);
 			if (nested.length > 0) {
 				kids.push({
-					ref  : span[2],
-					name : span[2].nodeName,
-					kids : buildReferenceStructure(content, nested, span)
+					reference : span[2],
+					name      : span[2].nodeName,
+					kids      : buildReferenceStructure(content, nested, span)
 				});
 			} else {
 				kids.push({
-					ref  : span[2],
-					name : span[2].nodeName,
-					kids : [{ text: content.substring(span[0], span[1]) }]
+					reference : span[2],
+					name      : span[2].nodeName,
+					kids      : [{ text: content.substring(span[0], span[1]) }]
 				});
 			}
 			offset = span[1];
@@ -778,6 +782,33 @@ define([
 		}
 		return changes;
 	}
+
+	// `test
+
+	[
+
+		['a b c d', 'a b * c d'    , [  0,  0,  1,  0,  0         ]],
+		['a b c d', 'a b d'        , [  0,  0, -1,  0             ]],
+		['a b c d', 'a * b c'      , [  0,  1,  0,  0, -1         ]],
+		['a b c d', '* a b c *'    , [  1,  0,  0,  0, -1,  1     ]],
+		['a b c d', 'b * c'        , [ -1,  0,  1,  0, -1         ]],
+		['a b c d', 'b d c'        , [ -1,  0, -2,  0,            ]],
+		['a b c d', 'a b c d * *'  , [  0,  0,  0,  0,  1,  1     ]],
+		['a b c d', '* * * a b c d', [  1,  1,  1,  0,  0,  0,  0 ]]
+
+	].forEach(function (test) {
+		return;
+		var changes = sequenceChanges(
+			test[0].split(' '),
+			test[1].split(' '),
+			function (a, b) { return a === b; },
+			Arrays.contains
+		);
+		if (changes.join(',') !== test[2].join(',')) {
+			console.error(changes, test[2]);
+		}
+	});
+
 
 	/**
 	 * Updates the DOM given as `oldTree` with changes represented in `newTree`.

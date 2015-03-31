@@ -29,20 +29,22 @@
 	// `compareSpans `test
 
 	[
-		['[abcde]{1234}', false],
-		['{abcde}[1234]', true],
-		['[ab{cde]1234}', false],
-		['ab{cde[12}34]', true],
-		['[ab{cde12}34]', false],
-		['{ab[cde12]34}', true]
+		['ab[{cde12}]34',  0], // a == b
+		['[abcde]{1234}', -1], // a < b
+		['{abcde}[1234]',  1], // a > b
+		['[ab{cde]1234}', -1], // a < b
+		['ab{cde[12}34]',  1], // a > b
+		['[ab{cde12}34]', -1], // a < b
+		['{ab[cde12]34}',  1]  // a > b
 	].forEach(function (test) {
 		var markers = readMarkers(test[0]);
 		var a = markers.brackets;
 		var b = markers.braces;
-		if (test[1] !== compareSpans(a, b)) {
+		var result = compareSpans(a, b);
+		if (test[1] !== result) {
 			console.error(
-				'compareSpan([' + a + '], [' + b + '])'
-				+ ' should have returned ' + (test[1] ? 'true' : 'false')
+				'compareSpan(a[' + a + '], b[' + b + '])'
+				+ ' expected ' + test[1] + ' but got ' + result
 			);
 		}
 	});
