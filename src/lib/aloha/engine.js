@@ -7284,6 +7284,7 @@ define([
 	//@{
 	commands.forwarddelete = {
 		action: function (value, range) {
+			var deleteContentsRange;
 			// special behaviour for skipping zero-width whitespaces in IE7
 			if (Aloha.browser.msie && Aloha.browser.version <= 7) {
 				moveOverZWSP(range, true);
@@ -7402,8 +7403,14 @@ define([
 
 				// "Delete the contents of the range with start (node, offset) and
 				// end (node, end offset)."
-				deleteContents(node, offset, node, endOffset);
+				deleteContentsRange = deleteContents(node, offset, node, endOffset);
 
+				if (deleteContentsRange) {
+					// The new range position can only be determined inside deleteContents,
+					// that's why it's necessary to take over the range if one was returned.
+					range.setStart(deleteContentsRange.startContainer, deleteContentsRange.startOffset);
+					range.setEnd(deleteContentsRange.endContainer, deleteContentsRange.endOffset);
+				}
 				// "Abort these steps."
 				return;
 			}
