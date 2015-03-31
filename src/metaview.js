@@ -21,6 +21,17 @@ define(['dom'], function (Dom) {
 		return list.map(function (item) { return prefix + item + suffix; }).join(',');
 	}
 
+	var brStyles = 'content:"↵" !important;'
+	             + 'white-space:initial !important;'
+	             + 'line-height:inherit !important;'
+	             + 'font-size:inherit !important;'
+	             + 'font-style:normal !important;'
+	             + 'font-weight:700 !important;'
+	             + 'left:0 !important;'
+	             + 'top:0 !important;'
+	             + 'border:0;'
+	             + 'opacity:.5;';
+
 	var CSS
 
 		// outlines
@@ -39,7 +50,8 @@ define(['dom'], function (Dom) {
 		+ '.✪ ol   {border-color:#91c9cf}'
 		+ '.✪ p    {border-color:#bdd74b}'
 		+ '.✪ h1,.✪ h2,.✪ h3,.✪ h4,.✪ h5,.✪ h6 {border-color:#f47d43}'
-		+ '.✪ br,.✪ br:after{content:"\\A↵";font-weight:700;font-style:normal}'
+		+ '.✪ br,.✪ br:before{' + brStyles + '}'
+		+ '.✪ br:after {content:"\\A" !important;white-space:pre-line}'
 
 		// tagnames
 	    + '.✪✪ *{position:relative}'
