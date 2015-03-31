@@ -366,4 +366,9 @@
 		}
 	})();
 
+	(function () {
+		var seq = create(Html.parse('<p contentEditable="true">one <br> two</p>', document)[0]);
+		console.log(seq.element.innerHTML === update(seq).element.innerHTML);
+	})();
+
 }(window.aloha));

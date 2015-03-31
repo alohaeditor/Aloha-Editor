@@ -139,6 +139,9 @@ define([
 	 */
 	function compare(a, b) { return a - b; }
 
+	function isVoidType(node) {
+		return node.parentNode ? Html.isVoidType(node) : Html.isVoidNode(node);
+	}
 
 	// `extract
 
@@ -192,7 +195,7 @@ define([
 				snippets.push(node.data);
 				length = node.data.length;
 				wasText = true;
-			} else if (Html.isVoidType(node)) {
+			} else if (isVoidType(node)) {
 				formatting.push([offset, offset + 1, node]);
 				snippets.push(VOID_CHARACTER);
 				length = 1;
@@ -333,6 +336,12 @@ define([
 		function reduceSpan(list, span) {
 			var a = span[0];
 			var b = span[1];
+			var node = span[2];
+			if (node && isVoidType(node)) {
+				shouldUpdate = function (boundary, insert) {
+					return insert < boundary;
+				};
+			}
 			return list.concat([[
 				shouldUpdate(a, index) ? a + diff : a,
 				shouldUpdate(b, index) ? b + diff : b
@@ -642,20 +651,21 @@ define([
 			if (span[0] > offset) {
 				kids.push({ text: content.substring(offset, span[0]) });
 			}
+			var grandkids;
+			var node = span[2];
 			var nested = nestedSpans(formatting, span);
 			if (nested.length > 0) {
-				kids.push({
-					reference : span[2],
-					name      : span[2].nodeName,
-					kids      : buildReferenceStructure(content, nested, span)
-				});
+				grandkids = buildReferenceStructure(content, nested, span);
+			} else if (isVoidType(node)) {
+				grandkids = [];
 			} else {
-				kids.push({
-					reference : span[2],
-					name      : span[2].nodeName,
-					kids      : [{ text: content.substring(span[0], span[1]) }]
-				});
+				grandkids = [{ text: content.substring(span[0], span[1]) }];
 			}
+			kids.push({
+				reference : node,
+				name      : node.nodeName,
+				kids      : grandkids
+			});
 			offset = span[1];
 		});
 		last = Arrays.last(siblingSpans);
@@ -678,7 +688,7 @@ define([
 		var doc = element.ownerDocument;
 		var nodes = references.reduce(function (list, item) {
 			var node;
-			if (item.text) {
+			if (!Fn.isNou(item.text)) {
 				node = doc.createTextNode(item.text);
 			} else {
 				node = doc.createElement(item.name);
@@ -782,33 +792,6 @@ define([
 		}
 		return changes;
 	}
-
-	// `test
-
-	[
-
-		['a b c d', 'a b * c d'    , [  0,  0,  1,  0,  0         ]],
-		['a b c d', 'a b d'        , [  0,  0, -1,  0             ]],
-		['a b c d', 'a * b c'      , [  0,  1,  0,  0, -1         ]],
-		['a b c d', '* a b c *'    , [  1,  0,  0,  0, -1,  1     ]],
-		['a b c d', 'b * c'        , [ -1,  0,  1,  0, -1         ]],
-		['a b c d', 'b d c'        , [ -1,  0, -2,  0,            ]],
-		['a b c d', 'a b c d * *'  , [  0,  0,  0,  0,  1,  1     ]],
-		['a b c d', '* * * a b c d', [  1,  1,  1,  0,  0,  0,  0 ]]
-
-	].forEach(function (test) {
-		return;
-		var changes = sequenceChanges(
-			test[0].split(' '),
-			test[1].split(' '),
-			function (a, b) { return a === b; },
-			Arrays.contains
-		);
-		if (changes.join(',') !== test[2].join(',')) {
-			console.error(changes, test[2]);
-		}
-	});
-
 
 	/**
 	 * Updates the DOM given as `oldTree` with changes represented in `newTree`.
@@ -941,13 +924,14 @@ define([
 	 * @param  {!Sequence} sequence
 	 */
 	function update(sequence) {
-		console.log(__);
 		sequence.formatting = format(sequence, sequence.boundaries[0], __.pop());
 		var seq = returnWhitespaces(sequence);
 		var oldTree = seq.element;
-		var newTree = buildReferenceTree(
+		var newTree = oldTree.ownerDocument.createElement(oldTree.nodeName);
+		Dom.setAttr(newTree, 'contentEditable', 'true');
+		newTree = buildReferenceTree(
 			buildReferenceStructure(seq.content, seq.formatting),
-			oldTree.ownerDocument.createElement(oldTree.nodeName)
+			newTree
 		);
 		updateDom(oldTree, newTree, insertNode, removeNode);
 		return seq;
