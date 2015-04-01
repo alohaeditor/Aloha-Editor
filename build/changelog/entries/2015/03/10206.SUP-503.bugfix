@@ -1,0 +1,5 @@
+Selecting cells in tables has been improved:
+When dragging the mouse over table cells, it is no
+longer necessary to drag over the editable element in the cell.
+Also selecting a cell range by clicking with the mouse (while holding
+the SHIFT-key) has been improved when using Internet Explorer.
