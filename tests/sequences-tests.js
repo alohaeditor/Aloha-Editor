@@ -369,6 +369,14 @@
 	(function () {
 		var seq = create(Html.parse('<p contentEditable="true">one <br> two</p>', document)[0]);
 		console.log(seq.element.innerHTML === update(seq).element.innerHTML);
+		seq = create(Html.parse('<p contentEditable="true">one<br>two</p>', document)[0]);
+		seq = insertAfter(seq, 4, '>');
+		seq = insertAfter(seq, 3, '<');
+		console.log(hint(seq, seq.formatting[0]));
+		seq = create(Html.parse('<p contentEditable="true">one<br>two</p>', document)[0]);
+		seq = insertBefore(seq, 4, '>');
+		seq = insertBefore(seq, 3, '<');
+		console.log(hint(seq, seq.formatting[0]));
 	})();
 
 }(window.aloha));

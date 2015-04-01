@@ -27,6 +27,11 @@
  * </pre>
  *
  * @namespace sequences
+ * @todo
+ *		- don't replace nested reusable containers
+ *		- don't replace text resuable nodes
+ *		- multi line sequences (array of sequences)
+ *		- preserve boundaries
  */
 define([
 	'functions',
@@ -54,7 +59,7 @@ define([
 	/**
 	 * The private-use unicode character that denotes void elements in the
 	 * content string of a sequence. Void elements are line-breaking elements,
-	 * but unlike container element, they contain no children.
+	 * but unlike container elements, they contain no children.
 	 *
 	 * @todo: Consider using U+E000 () instead of the popular U+F8FF ()
 	 * (https://en.wikipedia.org/wiki/Private_Use_Areas#U.2BF8FF).
@@ -161,8 +166,8 @@ define([
 		trail  = trail  || [];
 		var paired = pairPaths(pairs || []);
 		var wasText = false;
-		var snippets = [];
 		var formatting = [];
+		var snippets = [];
 		var pairings = {};
 		function putPair(pairing, offset) {
 			if (!pairings[pairing]) {
@@ -337,14 +342,21 @@ define([
 			var a = span[0];
 			var b = span[1];
 			var node = span[2];
+			var shouldUpdateLeft, shouldUpdateRight;
 			if (node && isVoidType(node)) {
-				shouldUpdate = function (boundary, insert) {
+				shouldUpdateLeft = function (boundary, insert) {
+					return insert <= boundary;
+				};
+				shouldUpdateRight = function (boundary, insert) {
 					return insert < boundary;
 				};
+			} else {
+				shouldUpdateLeft = shouldUpdateRight = shouldUpdate;
+
 			}
 			return list.concat([[
-				shouldUpdate(a, index) ? a + diff : a,
-				shouldUpdate(b, index) ? b + diff : b
+				shouldUpdateLeft(a, index) ? a + diff : a,
+				shouldUpdateRight(b, index) ? b + diff : b
 			].concat(span.slice(2))]);
 		}
 		function reduceOffset(list, offset) {
