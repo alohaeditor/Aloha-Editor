@@ -1,0 +1,3 @@
+When having the cursor on a link (in an editable that allows links) and
+then clicking into an editable, that does not allow links, the "Insert Link"
+button was shown in the "Insert" tab of the toolbar. This has been fixed now.
