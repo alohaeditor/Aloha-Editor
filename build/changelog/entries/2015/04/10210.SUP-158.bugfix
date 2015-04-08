@@ -1,0 +1,5 @@
+If content in an editable changes in a way that moves the
+current selection out of the viewport, the window will now
+be scrolled to put the selection into the viewport again.
+This may happen e.g. when pressing enter at the end of an
+editable or pasting large contents.
