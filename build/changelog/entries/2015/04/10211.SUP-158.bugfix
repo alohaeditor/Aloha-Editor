@@ -1,0 +1,5 @@
+The behaviour of rendering empty block-level elements in
+Internet Explorer 11 has changed to be more consistent with
+the HTML specification and other browsers. Empty block-level
+elements in Internet Explorer 11 will now contain end breaks.
+This fixes the sudden disappearance of paragraphs when editing in IE 11.
