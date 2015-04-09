@@ -1,0 +1,5 @@
+When using Internet Explorer, it was possible to navigate the cursor
+into non-editable areas (blocks), because the contenteditable implementation
+of IE is broken. This fix will move the cursor out of the non-editable area in
+such cases. Additionally, it prevents inserting text into non-editable areas with
+the keyboard, in cases where moving the cursor out did not work for some reasons.

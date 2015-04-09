@@ -1,0 +1,4 @@
+Errors in table-plugin:
+* When pressing delete in a paragraph right before a link with a table after the paragraph, the cursor will jump into the first table cell.
+* When pressing delete in a link in the last position before a table, the cursor will not jump into the first table cell but the table gets deleted.
+Both errors have been fixed.

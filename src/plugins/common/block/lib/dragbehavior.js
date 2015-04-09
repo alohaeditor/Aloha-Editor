@@ -464,6 +464,11 @@ define([
 			if (this.$overElement &&
 				!this._isAllowedOverElement(this.$overElement[0])) {
 				this.enableInsertBeforeOrAfter(this.$overElement[0]);
+				// prevent dragging the block into a position, where it should not be
+				// when _isAllowedOverElement() return false, insertBeforeOrAfterMode must not be false
+				if (this.insertBeforeOrAfterMode === false) {
+					this.insertBeforeOrAfterMode = 'AFTER';
+				}
 			}
 
 			if (this.insertBeforeOrAfterMode !== false) {
