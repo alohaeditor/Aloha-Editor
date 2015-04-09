@@ -53,6 +53,7 @@
 			maxWidth          : 2000,
 			treeWidth         : 300,
 			listWidth         : 'auto',
+			listShrinkToFit   : true,
 			pageSize          : 10,
 			adaptPageSize     : false,
 			rowHeight         : 24,
@@ -409,7 +410,7 @@
 			$list.jqGrid({
 				datatype      : 'local',
 				width         : $container.width(),
-				shrinkToFit   : true,
+				shrinkToFit   : browser.listShrinkToFit,
 				colNames      : names,
 				colModel      : model,
 				caption       : '&nbsp;',
