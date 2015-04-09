@@ -11,7 +11,6 @@
 define(['dom'], function (Dom) {
 	'use strict';
 
-	var textlevel = ['a', 'b', 'i', 'u', 's', 'span', 'code', 'pre', 'sup', 'sub'];
 	var sectioning = ['p', 'div', 'table', 'ol', 'ul'];
 	var heading = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
 
@@ -84,11 +83,10 @@ define(['dom'], function (Dom) {
 
 		// padding
 		+ '.✪✪✪{padding:10px}'
-		+ '.✪✪✪ *{padding:2px 4px;margin:2px}'
-		+ join(textlevel, '.✪✪✪ ') + '{display:inline-block}';
+		+ '.✪✪✪ *{padding:2px 4px;margin:2px}';
 
 	/**
-	 * Insertes the necessary styles into the given document head.
+	 * Inserts the necessary styles into the given document head.
 	 *
 	 * @private
 	 * @param {!Document} doc
