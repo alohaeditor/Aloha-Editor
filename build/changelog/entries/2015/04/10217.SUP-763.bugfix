@@ -1,0 +1,4 @@
+Highlighting of the dropzones when dragging blocks has been improved.
+When dragging a block-level element between other block-level elements,
+the dropzone will now be highlighted between the elements, not at the
+end or start of one of them.
