@@ -1,0 +1,2 @@
+Moving the cursor between blocks using the LEFT or RIGHT key
+did not work reliably when using Internet Explorer and has been fixed.
