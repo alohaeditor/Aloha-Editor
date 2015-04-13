@@ -744,7 +744,7 @@ define([
 						return true;
 					}
 
-				} else {
+				} else if (node.childNodes.length > 0) {
 					node = node.childNodes[offset === nodeLength(node) ? offset - 1 : offset];
 				}
 
