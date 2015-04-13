@@ -4499,7 +4499,7 @@ define([
 			return;
 		}
 
-		if (!Aloha.browser.msie) {
+		if (!Aloha.browser.msie || parseInt(Aloha.browser.version, 10) >= 11) {
 			// for normal browsers, the end-br will do
 			container.appendChild(createEndBreak());
 		} else if (Aloha.browser.msie && Aloha.browser.version <= 7 && isHtmlElementInArray(container, ["p", "h1", "h2", "h3", "h4", "h5", "h6", "pre", "blockquote"])) {

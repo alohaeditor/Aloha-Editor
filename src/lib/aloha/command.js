@@ -138,6 +138,8 @@ define([
 				rangeObject.select();
 			}
 
+			Aloha.scrollToSelection();
+
 			Aloha.trigger('aloha-command-executed', commandId);
 		},
 

@@ -2683,6 +2683,52 @@ define([
 		return window.rangy.createRange(givenWindow);
 	};
 
+	/**
+	 * Method to scroll the window to move the current collapsed selection into
+	 * the viewport. If the selection is not collapsed or some browser functionality
+	 * for detecting the position of the current selection is not available, nothing
+	 * will be done. This applies e.g. to older IE versions.
+	 */
+	Aloha.scrollToSelection = function () {
+		var sel = Aloha.getSelection();
+		// no selection, do nothing
+		if (sel.getRangeCount() === 0) {
+			return;
+		}
+		var range = sel.getRangeAt(0);
+		if (!range.collapsed) {
+			return;
+		}
+
+		// check for necessary browser functionality
+		if (!range.nativeRange) {
+			return;
+		}
+		if (!range.nativeRange.getClientRects) {
+			return;
+		}
+
+		// determine the position of the current selection as close as possible
+		var rect;
+		if (range.nativeRange.getClientRects().length === 0) {
+			if (range.startContainer.nodeType === 3) {
+				rect = range.startContainer.parentNode.getBoundingClientRect();
+			} else {
+				rect = range.startContainer.getBoundingClientRect();
+			}
+		} else {
+			rect = range.nativeRange.getClientRects()[0];
+		}
+
+		// scroll if necessary
+		var $win = jQuery(window);
+		if (rect.top < 0) {
+			$win.scrollTop($win.scrollTop() + rect.top);
+		} else if (rect.bottom > $win.height()) {
+			$win.scrollTop($win.scrollTop() + (rect.bottom - $win.height()));
+		}
+	};
+
 	var selection = new Selection();
 	Aloha.Selection = selection;
 
