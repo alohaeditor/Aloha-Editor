@@ -201,8 +201,12 @@ define([
 	 */
 	function execute(command, boundaries, editor, event) {
 		if (command.action) {
-			boundaries = command.action(boundaries, editor.selection, command)
-			          || boundaries;
+			boundaries = command.action(
+				boundaries,
+				editor.selection,
+				command,
+				event
+			) || boundaries;
 		} else {
 			var action = Html.isBlockNode({nodeName: command.node.toUpperCase()})
 			           ? formatBlock

@@ -449,27 +449,28 @@ function <&middleware&>(<&event&>) {
 
 					<p>
 						You do this by specifying your own
-						<span data-snippet-link="custom-command.1,custom-command.6,custom-command.9">command object</span>
+						<span data-snippet-link="custom-command.1,custom-command.6,custom-command.10">command object</span>
 						that contains an
 						<span data-snippet-link="custom-command.3">action</span>
 						function, and any other
-						<span data-snippet-link="custom-command.2,custom-command.7">properties</span>
+						<span data-snippet-link="custom-command.2,custom-command.8">properties</span>
 						you want. When the event to which this
-						<a href="/api/ui.html#command" data-snippet-link="custom-command.9">command is bound</a>
+						<a href="/api/ui.html#command" data-snippet-link="custom-command.10">command is bound</a>
 						is fired, this command's action function will be called,
 						and will receive an
-						<a href="/api/boundaries.html" data-snippet-link="custom-command.4,custom-command.8">array of boundaries</a>
+						<a href="/api/boundaries.html" data-snippet-link="custom-command.4,custom-command.9">array of boundaries</a>
 						that represent the current boundary selection, the
 						<a href="/api/aloha.html#editor.selection" data-snippet-link="custom-command.5">selection context object</a>,
-						and the
-						<span data-snippet-link="custom-command.6">the command</span>
-						itself.
+						and the <span data-snippet-link="custom-command.6">the command</span> itself.
+						<span data-snippet-link="custom-command.7">The last parameter</span>
+						is the <span data-snippet-link="custom-command.7">event</span> which trigger
+						the command to be executed.
 					</p>
 
 					<div class="snippet" data-snippet="custom-command">
 var <&command&> = {
 	<&crazyCoolProperty&>: 'You selected: ',
-	<&action&>: function (<&boundaries&>, <&selection&>, <&command&>) {
+	<&action&>: function (<&boundaries&>, <&selection&>, <&command&>, <&event&>) {
 		console.log(<&command.crazyCoolProperty&> + aloha.markers.hint(<&boundaries&>));
 	}
 };
@@ -484,7 +485,7 @@ $('#crazy-cool-custom-command')
 						<script>
 							var command = {
 								crazyCoolProperty: 'You selected:',
-								action: function (boundaries, selection, command) {
+								action: function (boundaries, selection, command, events) {
 									var source = aloha.markers.hint(boundaries, true)
 									           .replace(/[\n\r]/g, '')
 									           .replace(/^.*?▓([^▓]+)▓.*$/, '$1')
