@@ -53,6 +53,7 @@
 			maxWidth          : 2000,
 			treeWidth         : 300,
 			listWidth         : 'auto',
+			listShrinkToFit   : true,
 			pageSize          : 10,
 			adaptPageSize     : false,
 			rowHeight         : 24,
@@ -385,6 +386,17 @@
 				hidden	       : true
 			}];
 
+			var shrinkToFit = browser.listShrinkToFit;
+			// check if the configured schrinkToFit value is a boolean or a number
+			if (typeof shrinkToFit !== 'number' &&  typeof shrinkToFit !== 'boolean') {
+				// if not try to convert it to a number
+				shrinkToFit = parseInt(shrinkToFit, 10);
+				// otherwise check if the original value is 'false' or default to true
+				if (isNaN(shrinkToFit)) {
+					shrinkToFit = browser.listShrinkToFit !== 'false';
+				}
+			}
+
 			$.each(browser.columns, function (key, value) {
 				names.push(value.title || '&nbsp;');
 				model.push({
@@ -409,7 +421,7 @@
 			$list.jqGrid({
 				datatype      : 'local',
 				width         : $container.width(),
-				shrinkToFit   : true,
+				shrinkToFit   : shrinkToFit,
 				colNames      : names,
 				colModel      : model,
 				caption       : '&nbsp;',
