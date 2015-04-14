@@ -60,6 +60,38 @@ define([
 	var HASH_HREF = /^#(.*)/;
 
 	/**
+	 * Matches numbering or bullet
+	 *
+	 * @type {RegExp}
+	 * @const
+	 */
+	var NUMBER_OR_BULLET = /^(([0-9]{1,3}\.)|([0-9]{1,3}\))|([a-zA-Z]{1,5}\.)|([a-zA-Z]{1,5}\))|(.))$/;
+
+	/**
+	 * Matches numbering
+	 *
+	 * @type {RegExp}
+	 * @const
+	 */
+	var NUMBER = /^([0-9]{1,3}\.)|([0-9]{1,3}\)|([a-zA-Z]{1,5}\.)|([a-zA-Z]{1,5}\)))$/
+
+	/**
+	 * Class used to mark span's that contain the bullet info
+	 *
+	 * @type {String}
+	 * @const
+	 */
+	var BULLET_CLASS = 'aloha-list-bullet';
+
+	/**
+	 * Class used to mark list items
+	 *
+	 * @type {String}
+	 * @const
+	 */
+	var LIST_ELEMENT_CLASS = 'aloha-list-element';
+
+	/**
 	 * Checks whether the given node is empty, ignoring white spaces.
 	 *
 	 * @param {jQuery.<HTMLElement>} $node
@@ -219,17 +251,47 @@ define([
 		},
 
 		/**
+		 * Try to detect the list type (ordered or bulleted).
+		 * Remove the elements that were used to render the numbering or bullets
+		 * @param {jQuery.<HTMLElement>} jqElem
+		 * @return true for numbered list, false for bulleted list
+		 */
+		detectListType: function (jqElem) {
+			var ordered = false;
+			// get the first span in the element
+			var firstSpan = jQuery(jqElem.find('span.' + BULLET_CLASS));
+			if (firstSpan.length === 0) {
+				firstSpan = jqElem.find('span').eq(0);
+			}
+			if ($.trim(firstSpan.text()).length !== 0) {
+				// use the span to detect whether the list shall be ordered or unordered
+				ordered = this.isOrderedList(firstSpan);
+				// finally remove the span (numbers, bullets are rendered by the browser)
+				firstSpan.remove();
+			} else {
+				firstSpan.remove();
+				var f = function (index) {
+					var el = jQuery(this);
+					if (NUMBER_OR_BULLET.test($.trim(el.text()))) {
+						ordered = NUMBER.test($.trim(el.text()));
+						el.remove();
+						return false;
+					}
+					el.contents().each(f);
+				};
+				jqElem.contents().each(f);
+			}
+			return ordered;
+		},
+
+		/**
 		 * Transform lists pasted from word
 		 * @param content
 		 */
 		transformListsFromWord: function (content) {
 			var that = this,
 				negateDetectionFilter, detectionFilter, spans,
-				paragraphs, bulletClass, listElementClass;
-
-			// this will be the class to mark paragraphs that will be transformed to lists
-			listElementClass = 'aloha-list-element';
-			bulletClass = 'aloha-list-bullet';
+				paragraphs;
 
 			// first step is to find all paragraphs which will be converted into list elements and mark them by adding the class 'aloha-list-element'
 			detectionFilter = 'p.MsoListParagraphCxSpFirst,p.MsoListParagraphCxSpMiddle,p.MsoListParagraphCxSpLast,p.MsoListParagraph,p span';
@@ -242,15 +304,15 @@ define([
 
 				// detect special classes
 				if (jqElem.hasClass('MsoListParagraphCxSpFirst') || jqElem.hasClass('MsoListParagraph')) {
-					jqElem.addClass(listElementClass);
+					jqElem.addClass(LIST_ELEMENT_CLASS);
 				} else if (fontFamily.indexOf('Symbol') >= 0) {
-					jqElem.closest('p').addClass(listElementClass);
+					jqElem.closest('p').addClass(LIST_ELEMENT_CLASS);
 				} else if (fontFamily.indexOf('Wingdings') >= 0) {
-					jqElem.closest('p').addClass(listElementClass);
+					jqElem.closest('p').addClass(LIST_ELEMENT_CLASS);
 				} else if (msoList !== '') {
-					jqElem.closest('p').addClass(listElementClass);
+					jqElem.closest('p').addClass(LIST_ELEMENT_CLASS);
 				} else if (style.indexOf('mso-list') >= 0) {
-					jqElem.closest('p').addClass(listElementClass);
+					jqElem.closest('p').addClass(LIST_ELEMENT_CLASS);
 				}
 			});
 
@@ -275,15 +337,15 @@ define([
 					// I.
 					// i.
 					// o § (or any other single character)
-					if (outerText.match(/^(([0-9]{1,3}\.)|([0-9]{1,3}\))|([a-zA-Z]{1,5}\.)|([a-zA-Z]{1,5}\))|(.))$/)) {
-						jqElem.closest('p').addClass(listElementClass);
-						jqElem.parent().parent().addClass(bulletClass);
+					if (NUMBER_OR_BULLET.test(outerText)) {
+						jqElem.closest('p').addClass(LIST_ELEMENT_CLASS);
+						jqElem.parent().parent().addClass(BULLET_CLASS);
 					}
 				}
 			});
 
 			// no detect all marked paragraphs and transform into lists
-			detectionFilter = 'p.' + listElementClass;
+			detectionFilter = 'p.' + LIST_ELEMENT_CLASS;
 			// We also have to include font because if IE9
 			negateDetectionFilter = ':not(' + detectionFilter + ', font)';
 			paragraphs = content.find(detectionFilter);
@@ -293,7 +355,7 @@ define([
 					var jqElem = jQuery(this),
 						jqNewLi, jqList, ordered, firstSpan, following, lists, margin, nestLevel;
 
-					jqElem.removeClass(listElementClass);
+					jqElem.removeClass(LIST_ELEMENT_CLASS);
 					// first remove all font tags
 					jqElem.find('font').each(function () {
 						jQuery(this).contents().unwrap();
@@ -312,15 +374,7 @@ define([
 					// get all following list elements
 					following = jqElem.nextUntil(negateDetectionFilter);
 
-					// get the first span in the element
-					firstSpan = jQuery(jqElem.find('span.' + bulletClass));
-					if (firstSpan.length === 0) {
-						firstSpan = jqElem.find('span').eq(0);
-					}
-					// use the span to detect whether the list shall be ordered or unordered
-					ordered = that.isOrderedList(firstSpan);
-					// finally remove the span (numbers, bullets are rendered by the browser)
-					firstSpan.remove();
+					ordered = that.detectListType(jqElem);
 
 					// create the list element
 					jqList = jQuery(ordered ? '<ol></ol>' : '<ul></ul>');
@@ -355,17 +409,8 @@ define([
 						if (isNaN(newMargin)) {
 							newMargin = 0;
 						}
-						
-						// get the first span
-						firstSpan = jQuery(jqElem.find('span.' + bulletClass));
-						if (firstSpan.length === 0) {
-							firstSpan = jqElem.find('span').eq(0);
-						}
-						// ... and use it to detect ordered/unordered list elements (this
-						// information will only be used at the start of a new list anyway)
-						ordered = that.isOrderedList(firstSpan);
-						// remove the span
-						firstSpan.remove();
+
+						ordered = that.detectListType(jqElem);
 
 						// check for nested lists by comparing the margins
 						if (newMargin > margin) {

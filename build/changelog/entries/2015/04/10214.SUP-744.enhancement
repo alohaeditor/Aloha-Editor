@@ -1,0 +1,1 @@
+Make the shrinktofit option for the jqGrid (the object list) in the repository browser configurable. This option can be used to make the repository browsers width bigger on smaller screens while keeping the benefits of the dynamic resizing of the column widths.
