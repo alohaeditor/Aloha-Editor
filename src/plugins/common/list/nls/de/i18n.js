@@ -1,7 +1,7 @@
 define({
 	"button.createulist.tooltip": "Unsortierte Liste einfügen",
 	"button.createolist.tooltip": "Sortierte Liste einfügen",
-	"button.indentlist.tooltip": "Liste einrücken",
-	"button.outdentlist.tooltip": "Liste ausrücken",
+	"button.indentlist.tooltip": "Einzug vergrößern",
+	"button.outdentlist.tooltip": "Einzug verkleinern",
 	"floatingmenu.tab.list": "Listen"
 });

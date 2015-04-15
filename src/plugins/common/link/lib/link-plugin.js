@@ -590,7 +590,19 @@ define([
 			}
 			this._isScopeActive = show;
 			this._isScopeActive_editableId = Aloha.activeEditable && Aloha.activeEditable.getId();
-			if ( show ) {
+			if (!configurations[this._isScopeActive_editableId]) {
+				this.hrefField.hide();
+				this._insertLinkButton.hide();
+				this._removeLinkButton.hide();
+				this._formatLinkButton.setState(false);
+				// The calls to enterScope and leaveScope by the link
+				// plugin are not balanced.
+				// When the selection is changed from one link to
+				// another, the link scope is incremented more than
+				// decremented, which necessitates the force=true
+				// argument to leaveScope.
+				Scopes.leaveScope(this.name, 'link', true);
+			} else if ( show ) {
 				this.hrefField.show();
 				this._insertLinkButton.hide();
 				// Never show the removeLinkButton when the link itself

@@ -106,7 +106,11 @@ define([
 		this.blockObject = blockObject;
 		this.$element = blockObject.$element;
 		this.insertBeforeOrAfterMode = false;
-		this.setDraggable();
+		if (this.$element[0].nodeName === 'DIV') {
+			// this drag/drop behaviour is only suitable for DIV-blocks
+			// inline drag/drop is initialized somewhere else (block.js)
+			this.setDraggable();
+		}
 	}
 
 	PubSub.sub('aloha.block.initialized', function (data) {
@@ -229,7 +233,7 @@ define([
 				IESelectionState.save();
 			})
 			.on('mouseup', function () {
-				dragBehavior._getHiglightElement().hide();
+				dragBehavior._getHiglightElement().appendTo('body').css({position: 'absolute'}).hide();
 				dragBehavior.stopListenMouseOver();
 			});
 
@@ -249,7 +253,7 @@ define([
 				event.stopImmediatePropagation();
 			},
 			stop: function (event, ui) {
-				dragBehavior._getHiglightElement().hide();
+				dragBehavior._getHiglightElement().appendTo('body').css({position: 'absolute'}).hide();
 				dragBehavior.stopListenMouseOver();
 				dragBehavior.onDragStop();
 				ui.helper.remove();
@@ -340,7 +344,7 @@ define([
 		}
 
 		var $elm = $(elm),
-			$hElm = this._getHiglightElement().show();
+			$hElm = this._getHiglightElement().appendTo('body').css({position: 'absolute'}).show();
 
 
 		$hElm
@@ -400,23 +404,21 @@ define([
 	 */
 	DragBehavior.prototype.highlightEdge = function (elm) {
 		var $elm = $(elm),
-			$hElm = this._getHiglightElement().show(),
-			offset;
+			$hElm = this._getHiglightElement().css({position: 'relative', top: 'auto', left: 'auto'}).show(),
+			edgeHeight = 4;
 
 		if (this.insertBeforeOrAfterMode === 'BEFORE') {
 			$hElm
 				.css('zIndex', parseInt($elm.zIndex(), 10) + 1)
-				.offset($elm.offset())
 				.width($elm.outerWidth())
-				.height(10);
+				.height(edgeHeight);
+			$elm.before($hElm);
 		} else {
-			offset = $elm.offset();
-			offset.top = (offset.top + $elm.outerHeight()) - 10;
 			$hElm
 				.css('zIndex', parseInt($elm.zIndex(), 10) + 1)
-				.offset(offset)
 				.width($elm.outerWidth())
-				.height(10);
+				.height(edgeHeight);
+			$elm.after($hElm);
 		}
 	};
 

@@ -1,0 +1,4 @@
+It was not possible to drag and drop inline blocks (spans)
+between words of editables. Instead inline blocks could be dropped
+between block-level elements (like paragraphs).
+This has been fixed now.
