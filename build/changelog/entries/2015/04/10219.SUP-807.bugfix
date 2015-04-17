@@ -1,0 +1,5 @@
+When custom attributes of linked repository items are
+shown in the sidebar, the fields would not change when selecting an
+external link after a link to a repository item had been selected.
+This has been fixed now. The customer attribute fields in the sidebar
+will be emptied for external links.
