@@ -1,0 +1,4 @@
+The Word content handler now replaces unnecessary new line characters 
+added by Word with spaces. This fixes bug SUP-845, in which spaces got 
+lost, because new line characters are automatically stripped when using
+the Text/HTML GCN tag part type.
