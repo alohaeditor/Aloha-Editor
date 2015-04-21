@@ -1,0 +1,4 @@
+When a URL was pasted into the input field of the toolbar
+using the context menu, the URL was not stored into the link, unless
+a key was also pressed.
+This has been fixed now.
