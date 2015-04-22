@@ -1,0 +1,4 @@
+Fix multiple issues with placement of the caret before and after inline aloha-blocks. It was not possible to place the caret: 
+* next to an inline block (before or after) when the inline block was alone in a line (no paragraph)
+* after the block when it is the last element in a pragraph
+* between two inline aloha-blocks
