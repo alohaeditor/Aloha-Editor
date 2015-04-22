@@ -1,0 +1,15 @@
+{
+  "version": "1.1.15",
+  "date": "15.04.2015",
+  "changeLogEntryFileNames": [
+    "10217.SUP-763.bugfix",
+    "10216.SUP-749.bugfix",
+    "10210.SUP-158.bugfix",
+    "10214.SUP-744.enhancement",
+    "10211.SUP-158.bugfix",
+    "10218.SUP-763.bugfix",
+    "10213.SUP-143.bugfix",
+    "10212.SUP-740.bugfix"
+  ],
+  "genericProperties": {}
+}

@@ -131,7 +131,8 @@ define([
 			.bind("focus", onFocus)
 			.bind("blur", onBlur)
 			.bind("keydown", onKeyDown)
-			.bind("keyup", onKeyup);
+			.bind("keyup", onKeyup)
+			.bind("change", onChange);
 
 		setPlaceholder();
 
@@ -139,6 +140,25 @@ define([
 		// is deactivated and the toolbar disappears (other browsers do).
 		// TODO unbind, otherwise mermory leak
 		Aloha.bind('aloha-editable-deactivated', onBlur);
+
+		/**
+		 * Update the attribute in the target element
+		 */
+		function updateTarget() {
+			// If this attribute field currently refers to a repository
+			// item, and the user edits the contents of the input field,
+			// this attribute field seizes to refer to the repository item.
+			if (resourceItem && resourceValue !== getValue()) {
+				resourceItem = null;
+				resourceValue = null;
+			}
+
+			// This handles attribute updates for non-repository, literal urls typed into the input field.
+			// Input values that refer to a repository item are handled via setItem().
+			if ( ! resourceItem ) {
+				setAttribute(targetAttribute, getValue());
+			}
+		}
 
 		function onSelect(event, ui) {
 			if (ui.item) {
@@ -180,25 +200,17 @@ define([
 		}
 
 		function onKeyup(event) {
-			// If this attribute field currently refers to a repository
-			// item, and the user edits the contents of the input field,
-			// this attribute field seizes to refer to the repository item.
-			if (resourceItem && resourceValue !== getValue()) {
-				resourceItem = null;
-				resourceValue = null;
-			}
-
-			// This handles attribute updates for non-repository, literal urls typed into the input field.
-			// Input values that refer to a repository item are handled via setItem().
-			if ( ! resourceItem ) {
-				setAttribute(targetAttribute, getValue());
-			}
+			updateTarget();
 
 			if ( ( event.keyCode == 13 || event.keyCode == 27 ) ) {
 				// Set focus to link element and select the object
 				Selection.getRangeObject().select();
 				finishEditing();
 			}
+		}
+
+		function onChange(event) {
+			updateTarget();
 		}
 
 		function finishEditing() {
