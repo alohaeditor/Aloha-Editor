@@ -50,6 +50,11 @@ define([
 		return node;
 	}
 
+	/**
+	 * Check if a node is an Aloha-Block
+	 * @param  {HTMLElement}  node the HTML-node to check
+	 * @return {boolean}      true if the node is a block
+	 */
 	function isAlohaBlock(node) {
 		return $(node).data('aloha-block-type') || false;
 	}
@@ -73,10 +78,24 @@ define([
 		}
 	}
 
+	/**
+	 * When creating the padding for inline blocks this function is used to determine how far to go
+	 * forward or backward in the dom structure.
+	 *
+	 * @param  {HTMLElement} node the HTML-node to check
+	 * @return {boolean}      true if the node is line-break ('br'), a block element or the editing host itself
+	 */
 	function untilNode(node) {
 		return node.nodeName.toLowerCase() === 'br' || Html.isBlock(node) || DomLegacy.isEditingHost(node);
 	}
 
+	/**
+	 * When creating the padding for inline blocks this function is used to determine how far to go
+	 * forward in the dom structure. This function calls untilNode() internally.
+	 *
+	 * @param  {HTMLElement} node the HTML-node to check
+	 * @return {boolean}      true if untilNode() returns true or the node is an Aloha-Block
+	 */
 	function untilNodeForward(node) {
 		return untilNode(node) || (node.previousSibling && DomLegacy.isEditingHost(node.previousSibling)) || isAlohaBlock(node);
 	}
