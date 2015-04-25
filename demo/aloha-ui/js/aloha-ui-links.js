@@ -63,6 +63,14 @@
 		query('a.aloha-link-follow', doc, Dom.setAttr, 'href', href);
 		query('.aloha-action-target', doc, Dom.toggleClass, 'active', '_blank' === target);
 		Dom.addClass(anchor, 'aloha-active');
+		
+		// href property is editable in firefox if the link text is selected
+		var range = document.createRange();
+		range.selectNodeContents(anchor);
+		var sel = window.getSelection();
+		sel.removeAllRanges();
+		sel.addRange(range);
+		
 		Dom.addClass(toolbar, 'active');
 		positionToolbar(toolbar, anchor);
 		toolbar.querySelector('input').value = href;
