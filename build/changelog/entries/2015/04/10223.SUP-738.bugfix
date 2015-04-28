@@ -1,0 +1,4 @@
+Drag & Drop behaviour of blocks has been improved:
+* It is now possible to drop blocks into empty editables
+* When dragging and dropping a block into another editable, the editable will get activated
+* During dragging, the toolbar will be hidden
