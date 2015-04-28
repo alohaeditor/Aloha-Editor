@@ -432,8 +432,15 @@ define([
 		}
 
 		var rect = this._getSelectedRect();
-
 		var table = this.tableObj;
+		// if the range contains a single cell only, and no cells were selected before,
+		// we do not select the whole cell. This enables selecting text in a single cell
+		// without selecting the whole cell, even if - while selecting the text - the user
+		// moves the mouse out of the text wrapper into the cell itself
+		if (rect.top === rect.bottom && rect.left === rect.right && table.selection.selectedCells.length === 0) {
+			return;
+		}
+
 		var $rows = table.obj.children().children('tr');
 		var grid = Utils.makeGrid($rows);
 
