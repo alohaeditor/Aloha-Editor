@@ -28,7 +28,7 @@ define([
 		return 'SPAN' === node.nodeName &&
 			(node.childNodes.length === 0 || node.innerHTML === '&nbsp;');
 	}
-	
+
 	/**
 	 * Creates unique class name for `$blockELement`.
 	 */
@@ -44,10 +44,19 @@ define([
 		var node = document.createElement('span');
 		node.className = createLandingClassName($blockElement);
 		node.appendChild(document.createTextNode('\u00A0'));
-		
+
 		Ephemera.markWhiteSpaceWrapper(node);
-		
+
 		return node;
+	}
+
+	/**
+	 * Check if a node is an Aloha-Block
+	 * @param  {HTMLElement}  node the HTML-node to check
+	 * @return {boolean}      true if the node is a block
+	 */
+	function isAlohaBlock(node) {
+		return $(node).data('aloha-block-type') || false;
 	}
 
 	function isVisibleNode(node) {
@@ -55,8 +64,40 @@ define([
 			!Html.isUnrenderedNode(node);
 	}
 
+	/**
+	 * Go forward in the dom while ignoring the starting node completely
+	 *
+	 * @param  {HTMLElement} node the element to start from
+	 * @return {HTMLElement}      the next element
+	 */
 	function skipNodeForward(node) {
-		return Dom.forward(node.lastChild || node);
+		if (node.lastChild) {
+			return skipNodeForward(node.lastChild);
+		} else {
+			return Dom.forward(node);
+		}
+	}
+
+	/**
+	 * When creating the padding for inline blocks this function is used to determine how far to go
+	 * forward or backward in the dom structure.
+	 *
+	 * @param  {HTMLElement} node the HTML-node to check
+	 * @return {boolean}      true if the node is line-break ('br'), a block element or the editing host itself
+	 */
+	function untilNode(node) {
+		return node.nodeName.toLowerCase() === 'br' || Html.isBlock(node) || DomLegacy.isEditingHost(node);
+	}
+
+	/**
+	 * When creating the padding for inline blocks this function is used to determine how far to go
+	 * forward in the dom structure. This function calls untilNode() internally.
+	 *
+	 * @param  {HTMLElement} node the HTML-node to check
+	 * @return {boolean}      true if untilNode() returns true or the node is an Aloha-Block
+	 */
+	function untilNodeForward(node) {
+		return untilNode(node) || (node.previousSibling && DomLegacy.isEditingHost(node.previousSibling)) || isAlohaBlock(node);
 	}
 
 	/**
@@ -70,9 +111,7 @@ define([
 		var previous = Dom.findBackward(
 			Dom.backward($block[0]),
 			isVisibleNode,
-			function (node) {
-				return Html.isBlock(node) || DomLegacy.isEditingHost(node);
-			}
+			untilNode
 		);
 		if (!previous) {
 			$block.before(createLandingElement($block));
@@ -80,12 +119,7 @@ define([
 		var next = Dom.findForward(
 			skipNodeForward($block[0]),
 			isVisibleNode,
-			function (node) {
-				return Html.isBlock(node) || DomLegacy.isEditingHost(node) || (
-					node.previousSibling &&
-					DomLegacy.isEditingHost(node.previousSibling)
-				);
-			}
+			untilNodeForward
 		);
 		if (!next) {
 			$block.after(createLandingElement($block));

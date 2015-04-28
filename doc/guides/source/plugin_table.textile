@@ -18,6 +18,17 @@ In order to create a table move a cursor to your desired position, open the "Ins
 The whole table is wrapped into a +<table>+ tag and each row consists of +<tr>+ and each cell of a +<td>+ tag.
 Every table has a WAI (Web Accessibility Initiative) icon which will turn green if a summary is added.
 
+h4. Selecting text and cells
+
+* Dragging the mouse in a single cell will select contents (but not the cell itself)
+* Dragging the mouse over multiple cells will select a "rectangular" cell-range covering the area between the start position and the current position (see note below about Internet Explorer)
+* Clicking into cells while holding the SHIFT-key will add the cell to the selected cell-range, which will then cover the "rectangular" area between the first and the last SHIFT-clicked cell.
+* Clicking into the grey area above a column will select the column
+* SHIFT-Clicking into the grey area above a column will extend the current column selection to cover the area between the first and last SHIFT-clicked column
+* Clicking or SHIFT-clicking the grey area besides a row will select the row similar to selection of columns
+
+NOTE: In Internet Explorer it is not possible to select cells when you select a cell (the text in it) and drag the mouse over the other cells you want to select -- you'll have to click and drag on the table cell border which is sometimes quite tricky. In that case you can click into the first cell and then "shift-click" into the last cell of the coherent cell range you want to select.
+
 h4. Add and delete rows and columns
 
 Move the mouse pointer into the grey area beside or above the row or column (the mouse standard pointer turn into a little black arrow) and click. To mark two or more rows or columns just press shift and hold it down while clicking beside other rows or columns to mark them as well. Now you can click on the desired button to add a cell or row before or after or delete the selected rows.
@@ -32,7 +43,6 @@ In order to merge two or more cells select the desired cells, rows or columns an
 
 NOTE: All contents will be merged into the first cell and all other previously split cells will be empty.
 
-NOTE: In Internet Explorer it is not possible to select cells when you select a cell (the text in it) and drag the mouse over the other cells you want to select -- you'll have to click and drag on the table cell border which is sometimes quite tricky. In that case you can click into the first cell and then "shift-click" into the last cell of the coherent cell range you want to select.
 
 h4. Resizing rows and columns
 
