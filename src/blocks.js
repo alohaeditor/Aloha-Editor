@@ -8,12 +8,14 @@
  */
 define([
 	'dom',
+	'arrays',
 	'events',
 	'dragdrop',
 	'browsers',
 	'editables'
 ], function (
 	Dom,
+	Arrays,
 	Events,
 	DragDrop,
 	Browsers,
@@ -25,7 +27,7 @@ define([
 	 * List of style property/value pairs.
 	 *
 	 * @private
-	 * @type {Object.<string, string>}
+	 * @type {Array.<Array.<string, string>>}
 	 */
 	var draggingStyles = [
 		[
@@ -69,10 +71,10 @@ define([
 	}
 
 	/**
-	 * Whether or not the given event is an event targeting an Aloha Block
-	 * element.
+	 * Checks whether or not the given event is an event targeting an Aloha
+	 * Block element.
 	 *
-	 * @param  {AlohaEvent}   event
+	 * @param  {AlohaEvent} event
 	 * @return {boolean}
 	 */
 	function isBlockEvent(event) {
@@ -80,9 +82,17 @@ define([
 		    || Dom.hasClass(event.nativeEvent.target, 'aloha-block');
 	}
 
+	/**
+	 * Prepares all images, and any elements with the class "aloha-block", to be
+	 * handled as Aloha Blocks--non-editable regions within editables.
+	 *
+	 * @param  {Element} editale
+	 * @return {Array.<Element>}
+	 */
 	function initializeBlocks(editable) {
-		var blocks = Dom.query('.aloha-block img', editable.ownerDocument);
+		var blocks = Arrays.coerce(editable.querySelectorAll('.aloha-block, img'));
 		blocks.forEach(function (block) {
+			block.setAttribute('draggable', 'true');
 			block.setAttribute('contentEditable', 'false');
 			Dom.setStyle(block, 'cursor', Browsers.VENDOR_PREFIX + 'grab');
 		});
@@ -132,8 +142,8 @@ define([
 	/**
 	 * Updates editable
 	 *
-	 * @param  {AlohaEvent} event
-	 * @return {AlohaEvent}
+	 * @param    {AlohaEvent} event
+	 * @return   {AlohaEvent}
 	 * @memberOf blocks
 	 */
 	function middleware(event) {
