@@ -133,6 +133,7 @@ define([
 				var grid = Utils.makeGrid($rows);
 
 				table.selection.selectedCells = [];
+				table.selection.currentRectangle = rect;
 				var selectClass = table.get('classCellSelected');
 				Utils.walkGrid(grid, function (cellInfo, j, i) {
 					if (Utils.containsDomCell(cellInfo)) {
@@ -218,6 +219,7 @@ define([
 
 				table.selection.selectedCells = [];
 				var selectClass = table.get('classCellSelected');
+				table.selection.currentRectangle = rect;
 				Utils.walkGrid(grid, function (cellInfo, j, i) {
 					if (Utils.containsDomCell(cellInfo)) {
 						if (i >= rect.top && i <= rect.bottom && j >= rect.left && j <= rect.right) {
@@ -421,7 +423,7 @@ define([
 			"left": left
 		};
 	};
-
+	
 	/**
 	 * Toggles selection of cell.
 	 * This works only when cell selection mode is active.
@@ -438,12 +440,14 @@ define([
 		var grid = Utils.makeGrid($rows);
 
 		table.selection.selectedCells = [];
+		table.selection.currentRectangle = rect;
 		var selectClass = table.get('classCellSelected');
 		Utils.walkGrid(grid, function (cellInfo, j, i) {
 			if (Utils.containsDomCell(cellInfo)) {
 				if (i >= rect.top && i <= rect.bottom && j >= rect.left && j <= rect.right) {
 					jQuery(cellInfo.cell).addClass(selectClass);
 					table.selection.selectedCells.push(cellInfo.cell);
+
 				} else {
 					jQuery(cellInfo.cell).removeClass(selectClass);
 				}
