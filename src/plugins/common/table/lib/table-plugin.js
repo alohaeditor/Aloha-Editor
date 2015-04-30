@@ -1121,6 +1121,24 @@ define([
 			scope: this.name + '.cell'
 		});
 
+		this._deleteTableButton = Ui.adopt("deleteTable", Button, {
+			tooltip: i18n.t("button.deltable.tooltip"),
+			icon: "aloha-icon aloha-icon-deletetable",
+			scope: this.name + '.cell',
+			click: function() {
+				if (that.activeTable) {
+					var aTable = that.activeTable;
+					Dialog.confirm({
+						title: i18n.t('Table'),
+						text: i18n.t('deletetable.confirm'),
+						yes: function(){
+							aTable.deleteTable();
+						}
+					});
+				}
+			}
+		});
+
 		this._tableCaptionButton = Ui.adopt("tableCaption", ToggleButton, {
 			tooltip: i18n.t("button.caption.tooltip"),
 			icon: "aloha-icon aloha-icon-table-caption",
