@@ -1,0 +1,5 @@
+Block-plugin: When dragging inline-blocks over block-level elements (like paragraphs) containing
+only a number of whitespace characters, the whole editable will now be accepted as dropzone.
+When the inline-block is dropped into the block-level element (paragraph) containing only
+whitespace characters, the block will be dropped before the whitespace characters.
+ 

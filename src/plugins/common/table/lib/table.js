@@ -1287,10 +1287,31 @@ define([
 
 		var grid = Utils.makeGrid(rows);
 		var selectColWidth = 1; //width of the select-row column
+		var selectedColumnIdxs = this.selection.selectedColumnIdxs;
+		// if at least on whole table column was selected using cell selection
+		// it should also be possible to delete the column
+		// therefore we need to determine which columns are selected using the 
+		// current rectangle 
+		if (
+			(!selectedColumnIdxs || selectedColumnIdxs.length === 0) &&
+			// check if the current rectangle is active
+			this.selection.currentRectangle &&
+			// check if a whole column is selected
+			this.selection.currentRectangle.top === 1 &&
+			this.selection.currentRectangle.bottom >= this.numRows &&
+			// check if there are really meaningful values in the rectangle
+			this.selection.currentRectangle.right > 0 &&
+			this.selection.currentRectangle.left > 0
+		) {
+			selectedColumnIdxs = [];
+			for (var l = this.selection.currentRectangle.left; l <= this.selection.currentRectangle.right; l++) {
+				selectedColumnIdxs.push(l);
+			}
+		}
 
 		// if all columns should be deleted, remove the WHOLE table
 		// delete the whole table
-		if ( this.selection.selectedColumnIdxs.length == grid[0].length - selectColWidth ) {
+		if ( selectedColumnIdxs.length == grid[0].length - selectColWidth ) {
 
 			Dialog.confirm({
 				title : i18n.t('Table'),
@@ -1309,7 +1330,8 @@ define([
 			//x-index is selected and deleted.
 
 			//sorted so we delete from right to left to minimize interfernce of deleted rows
-			var gridColumns = this.selection.selectedColumnIdxs.sort(function(a,b){ return b - a; });
+			
+			var gridColumns = selectedColumnIdxs.sort(function(a,b){ return b - a; });
 			for (var i = 0; i < gridColumns.length; i++) {
 				var gridColumn = gridColumns[i];
 				for (var j = 0; j < rows.length; j++) {
@@ -1723,8 +1745,6 @@ define([
 
 		this.selection.notifyCellsSelected();
 		this._removeCursorSelection();
-
-		Scopes.setScope(this.tablePlugin.name + '.column');
 	};
 
 	/**
@@ -1751,8 +1771,6 @@ define([
 
 		this.selection.notifyCellsSelected();
 		this._removeCursorSelection();
-
-		Scopes.setScope(this.tablePlugin.name + '.row');
 	};
 
 	/**
