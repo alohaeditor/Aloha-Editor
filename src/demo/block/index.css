@@ -243,3 +243,12 @@ td.redwhite {
 .uneditableColumnBlock .clear {
 	clear:both;
 }
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+table td {
+	border: 1px solid;
+	padding: 3px;
+}

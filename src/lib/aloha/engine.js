@@ -7309,7 +7309,8 @@ define([
 
 			// special behaviour: if we are in an empty block-level element (empty, but for the single ending br), we just remove that
 			// this will fix situations where it was not possible to delete an empty block level element right before a non-editable part
-			if (Dom.isEmptyBlockLevelElement(node)) {
+			// but never delete the editing host itself
+			if (Dom.isEmptyBlockLevelElement(node) && !isEditingHost(node)) {
 				range.startContainer = node.parentElement;
 				range.startOffset = Dom.getIndexInParent(node);
 				range.endContainer = node.parentElement;
@@ -7495,6 +7496,10 @@ define([
 				// invisible, remove it from end node."
 				if (isEditable(endNode.childNodes[endOffset]) && isInvisible(endNode.childNodes[endOffset])) {
 					endNode.removeChild(endNode.childNodes[endOffset]);
+
+					// prevent deleting non-editable elements
+				} else if (!isEditable(endNode.childNodes[endOffset]) || jQuery(endNode.childNodes[endOffset]).hasClass('aloha-table-wrapper')) {
+					return;
 
 					// "Otherwise, set end node to its child with index end offset and
 					// set end offset to zero."

@@ -1,0 +1,2 @@
+Some issues with pressing "delete" when the cursor was placed between two tables:
+In some cases, the drag-handles of a table was removed, in other cases, both tables were removed.
