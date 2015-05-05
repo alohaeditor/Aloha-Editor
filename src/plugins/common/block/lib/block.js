@@ -845,6 +845,15 @@ define([
 					$currentDraggable = null;
 
 					editablesWhichNeedToBeCleaned = [];
+
+					// deactivate the current editable and activate the editable,
+					// the block has been dropped into. This will do necessary initializations that
+					// happen on activation of the editable
+					Aloha.deactivateEditable();
+					var editable = Aloha.getEditableHost(that.$element);
+					if (editable) {
+						editable.activate();
+					}
 				},
 				start: function () {
 					blockDroppedProperly = false;
