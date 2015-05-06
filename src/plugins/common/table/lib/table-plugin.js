@@ -24,6 +24,7 @@ define([
 	'table/table-create-layer',
 	'table/table',
 	'table/table-plugin-utils',
+	'table/table-selection',
 	'util/dom',
 	'aloha/ephemera',
 	'aloha/console'
@@ -46,6 +47,7 @@ define([
 	CreateLayer,
 	Table,
 	Utils,
+	TableSelection,
 	Dom,
 	Ephemera,
 	Console
@@ -415,6 +417,7 @@ define([
 
 			// this case probably occurs when the selection is empty?
 			if (!range.startContainer || !editable) {
+				TablePlugin.leaveTableScopes();
 				return;
 			}
 
@@ -426,6 +429,7 @@ define([
 			}
 
 			if (!that.activeTable) {
+				TablePlugin.leaveTableScopes();
 				return;
 			}
 
@@ -437,6 +441,7 @@ define([
 				TablePlugin.updateFloatingMenuScope();
 				TablePlugin.setActiveCellStyle();
 			} else {
+				TablePlugin.leaveTableScopes();
 				that.activeTable.selection.cellSelectionMode = false;
 				that.activeTable.selection.baseCellPosition = null;
 				that.activeTable.selection.lastSelectionRange = null;
@@ -1318,6 +1323,8 @@ define([
 				}
 			}
 
+			Aloha.activeEditable.smartContentChange({type: 'block-change'});
+
 			// The selection starts out in the first cell of the new
 			// table. The table tab/scope has to be activated
 			// accordingly.
@@ -1479,9 +1486,56 @@ define([
 		return this.prefix;
 	};
 
+	/**
+	 * Leaves all possible TableScopes in the floating menu
+	 * expect those in the retainScopes array
+	 *
+	 * @param  {array} retainScopes the name of the scopes which should not be left
+	 */
+	TablePlugin.leaveTableScopes = function(retainScopes, force) {
+		var i = 0,
+			scopes = [];
+		retainScopes = $.isArray(retainScopes) ? retainScopes : [];
+
+		scopes = TableSelection.getPossibleSelectionTypes();
+		for (i = 0; i < scopes.length; i++) {
+			// leave all possible scopes expect those in the retainScopes array
+			if ($.inArray(scopes[i], retainScopes) === -1) {
+				// always force leaving the scope because otherwise we need to keep track of how
+				// often we entered the scope and leave it accordingly
+				Scopes.leaveScope(TablePlugin.name + '.' + scopes[i], undefined, true);
+			}
+		}
+	}
+	/**
+	 * Update the current floating menu scope according to the
+	 * selected cells
+	 */
 	TablePlugin.updateFloatingMenuScope = function() {
-		if ( null != TablePlugin.activeTable && null != TablePlugin.activeTable.selection.selectionType ) {
-			Scopes.setScope(TablePlugin.name + '.' + TablePlugin.activeTable.selection.selectionType);
+		var i = 0,
+			primaryScope,
+			scopes;
+		if (
+			null != TablePlugin.activeTable &&
+			null != TablePlugin.activeTable.selection.selectionType
+		) {
+			// save the primary scope
+			primaryScope = Scopes.getPrimaryScope(),
+			// get the new scopes
+			scopes = TablePlugin.activeTable.selection.getCurrentSelectionTypes();
+			// leave all scopes except the the current ones
+			TablePlugin.leaveTableScopes(scopes);
+			// Enter all needed table scopes
+			for (i = 0; i < scopes.length; i++) {
+				Scopes.enterScope(TablePlugin.name + '.' + scopes[i]);
+			}
+			// Check if the primaryScope changed and set the first scope as the currently active one
+			if (scopes[0] !== primaryScope) {
+				Scopes.setScope(TablePlugin.name + '.' + scopes[0]);
+			}
+		} else {
+			// leave all scopes
+			TablePlugin.leaveTableScopes();
 		}
 	};
 

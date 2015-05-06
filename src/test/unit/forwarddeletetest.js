@@ -340,13 +340,13 @@ var alltests = {
 		},
 		// Collapsed selection
 		{  	start: 'foo[]',
-			execResult: 'foo{}'
+			execResult: 'foo[]'
 		},	        
 		{  	start: '<span>foo[]</span>',
-			execResult: '<span>foo</span>{}'
+			execResult: '<span>foo[]</span>'
 		},
 		{  	start: '<p>foo[]</p>',
-			execResult: '<p>foo{}</p>'
+			execResult: '<p>foo[]</p>'
 		},
 		{  	start: 'foo[]bar',
 			execResult: 'foo[]ar'

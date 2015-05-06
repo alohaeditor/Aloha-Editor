@@ -796,8 +796,7 @@ define([
 
 					if ($dropReferenceNode.is('.aloha-block-dropInlineElementIntoEmptyBlock')) {
 						// the user wanted to drop INTO an empty block!
-						$dropReferenceNode.children().remove();
-						$dropReferenceNode.append($currentDraggable);
+						$dropReferenceNode.prepend($currentDraggable);
 					} else if ($dropReferenceNode.is('.aloha-block-droppable-right')) {
 						$dropReferenceNode.html($dropReferenceNode.html() + ' ');
 
@@ -815,8 +814,19 @@ define([
 						$dropReferenceNode.before($currentDraggable);
 					}
 
+					BlockUtils.unpad($currentDraggable);
+
 					$currentDraggable.removeClass('ui-draggable').css({'left': 0, 'top': 0}); // Remove "draggable" options... somehow "Destroy" does not work
 					that._fixScrollPositionBugsInIE();
+
+					// deactivate the current editable and activate the editable,
+					// the block has been dropped into. This will do necessary initializations that
+					// happen on activation of the editable
+					Aloha.deactivateEditable();
+					var editable = Aloha.getEditableHost($currentDraggable);
+					if (editable) {
+						editable.activate();
+					}
 				}
 				jQuery('.aloha-block-dropInlineElementIntoEmptyBlock').removeClass('aloha-block-dropInlineElementIntoEmptyBlock');
 
@@ -845,6 +855,15 @@ define([
 					$currentDraggable = null;
 
 					editablesWhichNeedToBeCleaned = [];
+
+					// deactivate the current editable and activate the editable,
+					// the block has been dropped into. This will do necessary initializations that
+					// happen on activation of the editable
+					Aloha.deactivateEditable();
+					var editable = Aloha.getEditableHost(that.$element);
+					if (editable) {
+						editable.activate();
+					}
 				},
 				start: function () {
 					blockDroppedProperly = false;
@@ -880,7 +899,7 @@ define([
 
 							if (jQuery(this).is(':empty') ||
 								hasOnlyProppingBr ||
-								jQuery(this).html() === '&nbsp;') {
+								jQuery.trim(jQuery(this).text()) === '') {
 								// The user is hovering over an empty
 								// container; simply highlight the container.
 								jQuery(this).addClass(
@@ -931,6 +950,10 @@ define([
 					};
 
 					$createdDroppables = jQuery(".aloha-editable.aloha-block-dropzone").children(":not(.aloha-block)");
+
+					// add empty editables
+					$createdDroppables = $createdDroppables.add(".aloha-editable:not(:has(*))");
+
 					$createdDroppables.droppable(droppableCfg);
 					// Small HACK: Also make table cells droppable
 					jQuery('.aloha-table-cell-editable').droppable(droppableCfg);

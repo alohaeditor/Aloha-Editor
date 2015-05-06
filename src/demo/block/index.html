@@ -206,6 +206,18 @@
 				<p>Some other content here...</p>
 				<p><b>Stock Quote example:</b> When you hover over the name of the <span class="company" data-symbol="MSFT">Microsoft</span> company, the stock quotes are shown.</p>
 				<p>Some more content...</p>
+				<h3>Inline Element Caret Placement</h3>
+				<p>It should be possible to place the caret before and after Inline-Aloha-Blocks using mouse or keyboard</p>
+				<p>Some text before <span class="default-block">This are two inline blocks</span> <span class="default-block">next to each other</span>some text after.</p>
+				<p>Aloha Blocks like tables are not only possible on block-level but can also added in inline text:<br />
+					<span class="default-block">This is an Inline-Block standing alone in a line</span><br /><br />
+					<span class="default-block"><a href="#">This is an Inline-Block standing alone in a line - Content is wrapped in a html-element</a></span><br />
+				</p>
+				<p><span class="default-block">This is an Inline-Block standing alone in a paragraph</span></p>
+				<p><span class="default-block"><a href="#">This is an Inline-Block standing alone in a paragraph - Content is wrapped in a html-element</a></span></p>
+				<p><span class="default-block">This is an Inline-Block standing alone in a paragraph</span></p>
+				<p><span class="default-block"><a href="#">This is an Inline-Block alone in a paragraph - Content is wrapped in a html-element</a></span></p>
+				<p>Some text before <span class="default-block"><a href="#">This is an Inline-Block with sourrounding text - Content is wrapped in a html-element</a></span>Text after.</p>
 				<h3>Floating Element</h3>
 				<p><span class="imageBlock" data-position="right" style="float:right"><img src="blockdemo/img/stock-quote-aapl.gif" /></span>
 				Super Dodge Ball Advance,<span class="default-block">Some Text</span> released in Japan as Bakunetsu Dodgeball Fighters (爆熱ドッジボールファイターズ?, "Bakunetsu" meaning "Burning Heat"), dodge ball game based on the Super Dodge Ball. While based on the original Super Dodge Ball series, the game does not feature the Kunio-kun characters from the original game due to copyrights issues, as developer Million did not obtain the rights to the Kunio-kun characters until the following year.[citation needed] However, the game uses a remixed version of opening and ending songs from Technos Japan Corp's Super Dodge Ball games.
@@ -227,6 +239,18 @@
 				<p>Some other content here...</p>
 				<p><b>Stock Quote example:</b> When you hover over the name of the <span class="company" data-symbol="MSFT">Microsoft</span> company, the stock quotes are shown.</p>
 				<p>Some more content...</p>
+				<h3>Inline Element Caret Placement</h3>
+				<p>It should be possible to place the caret before and after Inline-Aloha-Blocks using mouse or keyboard</p>
+				<p>Some text before <span class="default-block">This are two inline blocks</span> <span class="default-block">next to each other</span>some text after.</p>
+				<p>Aloha Blocks like tables are not only possible on block-level but can also added in inline text:<br />
+					<span class="default-block">This is an Inline-Block standing alone in a line</span><br /><br />
+					<span class="default-block"><a href="#">This is an Inline-Block standing alone in a line - Content is wrapped in a html-element</a></span><br />
+				</p>
+				<p><span class="default-block">This is an Inline-Block standing alone in a paragraph</span></p>
+				<p><span class="default-block"><a href="#">This is an Inline-Block standing alone in a paragraph - Content is wrapped in a html-element</a></span></p>
+				<p><span class="default-block">This is an Inline-Block standing alone in a paragraph</span></p>
+				<p><span class="default-block"><a href="#">This is an Inline-Block alone in a paragraph - Content is wrapped in a html-element</a></span></p>
+				<p>Some text before <span class="default-block"><a href="#">This is an Inline-Block with sourrounding text - Content is wrapped in a html-element</a></span>Text after.</p>
 				<h3>Floating Element</h3>
 				<p><span class="imageBlock" data-position="right" style="float:right"><img src="blockdemo/img/stock-quote-aapl.gif" /></span>
 				Super Dodge Ball Advance,<span class="default-block">Some Text</span> released in Japan as Bakunetsu Dodgeball Fighters (爆熱ドッジボールファイターズ?, "Bakunetsu" meaning "Burning Heat"), dodge ball game based on the Super Dodge Ball. While based on the original Super Dodge Ball series, the game does not feature the Kunio-kun characters from the original game due to copyrights issues, as developer Million did not obtain the rights to the Kunio-kun characters until the following year.[citation needed] However, the game uses a remixed version of opening and ending songs from Technos Japan Corp's Super Dodge Ball games.
@@ -264,10 +288,59 @@
 				<p>Williams, and other pilots who worked for British Airways claimed that their holiday pay was too low, because it only reflected his fixed salary, and not his bonuses. Williams' comprised a fixed annual salary, a "flying pay supplement" that went up the more he flew, and a "time away from base" which went up the more he was away from home. The flying and time away allowances were capped. Properly construed, his contract suggested that his holiday pay would be at the rate of only his fixed salary. Williams, however, contended that this was contrary to the Civil Aviation Working Time Directive,[1] as implemented by the Civil Aviation (Working Time) Regulations 2004,[2] (sector-specific implementations with the same objective as the Working Time Directive and the Working Time Regulations 1998 in this respect). In absence of particular provisions, the pay while on leave should be "normal remuneration". British Airways contended that because the Employment Rights Act 1996 sections 221 to 224 did not have provisions on how to determine a week's pay, the rate should be determined with reference to the contract.
 	The Employment Appeal Tribunal allowed Williams' claim, but this was reversed in the Court of Appeal.[3] The Supreme Court made a reference to the European Court of Justice.</p>
 			</div>
-
-
-
-			<hr /><hr /><hr />
+			<h2><a name="tables-blocks-inside"></a>Tables with blocks inside</h2>
+			<div class="textcontent">
+				<h3>Tables with Inline Blocks</h3>
+				<table summary="demo content for aloha tables">
+					<tbody>
+						<tr><td>A cell with <span class="default-block">a block at the end.</span></td><td>is</td><td>a</td><td>demo</td></tr>
+						<tr><td>table</td><td colspan=2 rowspan=2>with</td><td><span class="default-block">a single block in a cell</span></td></tr>
+						<tr><td>Some text <span class="default-block">with a block</span> in the middle</td><td>column</td></tr>
+						<tr><td>and</td><td><span class="default-block">a block at the beginning</span> of a cell</td><td>span</td><td><p>a cell with a paragraph and <span class="default-block">a block at the end.</span></p></td></tr>
+					</tbody>
+					<caption>describe the table</caption>
+				</table>
+				<p>Drag this inline aloha-block into the table: <span class="default-block">a block to drag</span></p>
+				<h3>Tables with Block-Level Blocks</h3>
+				<table summary="demo content for aloha tables">
+					<tbody>
+						<tr><td >This</td><td >is</td><td>a</td><td>demo</td></tr>
+						<tr>
+							<td>table</td>
+							<td colspan=2 rowspan=2>
+								<p><div class="default-block">
+									<p>This is a block level aloha block inside of a paragraph in a cell.</p>
+								</div></p>
+							</td>
+							<td>an</td></tr>
+						<tr>
+							<td>
+								<div class="editableImageBlock">
+									<img src="blockdemo/img/stock-quote-aapl.gif" />
+									<div class="aloha-editable">This Image Caption is editable through Aloha.</div>
+								</div>
+							</td>
+							<td>
+								awesome
+							</td>
+						</tr>
+						<tr>
+							<td>and</td><td>row</td><td>span</td>
+							<td>
+								<div class="default-block">
+									<p>This is a block level aloha block inside of a cell.</p>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+					<caption>describe the table</caption>
+				</table>
+				<p>Drag this block-level aloha-block into the table</p>
+				<div class="editableImageBlock">
+					<img src="blockdemo/img/stock-quote-aapl.gif" />
+					<div class="aloha-editable">This Image Caption is editable through Aloha.</div>
+				</div>
+			</div>
 			<h2><a name="nested-blocks-editable"></a>Block which contains a variable number of editable columns</h2>
 			<h3>The following CMS systems use Aloha:</h3>
 			<div class="columnBlock" data-columns="3">

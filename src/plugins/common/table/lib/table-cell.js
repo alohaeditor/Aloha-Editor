@@ -133,6 +133,7 @@ define([
 				var grid = Utils.makeGrid($rows);
 
 				table.selection.selectedCells = [];
+				table.selection.currentRectangle = rect;
 				var selectClass = table.get('classCellSelected');
 				Utils.walkGrid(grid, function (cellInfo, j, i) {
 					if (Utils.containsDomCell(cellInfo)) {
@@ -218,6 +219,7 @@ define([
 
 				table.selection.selectedCells = [];
 				var selectClass = table.get('classCellSelected');
+				table.selection.currentRectangle = rect;
 				Utils.walkGrid(grid, function (cellInfo, j, i) {
 					if (Utils.containsDomCell(cellInfo)) {
 						if (i >= rect.top && i <= rect.bottom && j >= rect.left && j <= rect.right) {
@@ -421,7 +423,7 @@ define([
 			"left": left
 		};
 	};
-
+	
 	/**
 	 * Toggles selection of cell.
 	 * This works only when cell selection mode is active.
@@ -432,18 +434,27 @@ define([
 		}
 
 		var rect = this._getSelectedRect();
-
 		var table = this.tableObj;
+		// if the range contains a single cell only, and no cells were selected before,
+		// we do not select the whole cell. This enables selecting text in a single cell
+		// without selecting the whole cell, even if - while selecting the text - the user
+		// moves the mouse out of the text wrapper into the cell itself
+		if (rect.top === rect.bottom && rect.left === rect.right && table.selection.selectedCells.length === 0) {
+			return;
+		}
+
 		var $rows = table.obj.children().children('tr');
 		var grid = Utils.makeGrid($rows);
 
 		table.selection.selectedCells = [];
+		table.selection.currentRectangle = rect;
 		var selectClass = table.get('classCellSelected');
 		Utils.walkGrid(grid, function (cellInfo, j, i) {
 			if (Utils.containsDomCell(cellInfo)) {
 				if (i >= rect.top && i <= rect.bottom && j >= rect.left && j <= rect.right) {
 					jQuery(cellInfo.cell).addClass(selectClass);
 					table.selection.selectedCells.push(cellInfo.cell);
+
 				} else {
 					jQuery(cellInfo.cell).removeClass(selectClass);
 				}

@@ -30,13 +30,17 @@ define([
 	'aloha',
 	'PubSub',
 	'aloha/copypaste',
-	'block/block-utils'
+	'block/block-utils',
+	'aloha/console',
+	'ui/scopes'
 ], function (
 	$,
 	Aloha,
 	PubSub,
 	CopyPaste,
-	BlockUtils
+	BlockUtils,
+	Console,
+	Scopes
 ) {
 	'use strict';
 
@@ -245,7 +249,10 @@ define([
 				top: -10
 			},
 			start: function (event, ui) {
+				// set the empty scope, so that the toolbar will be hidden while dragging
+				Scopes.setScope('Aloha.empty');
 				ui.helper.css('zIndex', 100000);
+				dragBehavior._fillEmptyEditables();
 				dragBehavior.listenMouseOver();
 				event.stopImmediatePropagation();
 			},
@@ -256,6 +263,7 @@ define([
 				dragBehavior._getHiglightElement().appendTo('body').css({position: 'absolute'}).hide();
 				dragBehavior.stopListenMouseOver();
 				dragBehavior.onDragStop();
+				dragBehavior._removeFillers();
 				ui.helper.remove();
 				IESelectionState.restore();
 				return true;
@@ -279,6 +287,32 @@ define([
 		return $(elms);
 	};
 
+	/**
+	 * Fill a "filler" element into every completely empty editable.
+	 * This enables dropping blocks into empty editables (before or after the filler)
+	 */
+	DragBehavior.prototype._fillEmptyEditables = function () {
+		var i, editable, filler;
+		for (i = 0; i < Aloha.editables.length; i++) {
+			editable = Aloha.editables[i];
+			if (editable.obj.contents().length === 0) {
+				filler = $("<div class='aloha-block aloha-dragdrop-filler' style='height:inherit; min-height:inherit'></div>");
+				filler.contentEditable(false);
+				editable.obj.append(filler);
+			}
+		}
+	};
+
+	/**
+	 * Remove the "filler" elements
+	 */
+	DragBehavior.prototype._removeFillers = function () {
+		var i, editable;
+		for (i = 0; i < Aloha.editables.length; i++) {
+			editable = Aloha.editables[i];
+			editable.obj.children('.aloha-dragdrop-filler').remove();
+		}
+	};
 
 	/**
 	 * Listen the mouseOver events over all elements in the editables, since the
@@ -481,6 +515,15 @@ define([
 				}
 			} else {
 				this.$element.appendTo(this.$overElement);
+			}
+
+			// deactivate the current editable and activate the editable,
+			// the block has been dropped into. This will do necessary initializations that
+			// happen on activation of the editable
+			Aloha.deactivateEditable();
+			var editable = Aloha.getEditableHost(this.$element);
+			if (editable) {
+				editable.activate();
 			}
 		}
 
