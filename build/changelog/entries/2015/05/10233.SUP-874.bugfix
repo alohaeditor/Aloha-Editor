@@ -1,0 +1,3 @@
+When using the format plugin to change block-elements (e.g. change a paragraph to a header)
+in Internet Explorer while the scrollbar is visible, the page was sometimes unintentionally
+scrolled. This has been fixed now.
