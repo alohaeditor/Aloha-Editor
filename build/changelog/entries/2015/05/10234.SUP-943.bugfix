@@ -1,0 +1,3 @@
+The detection of lists pasted from word has been improved:
+Sometimes some regular (styled) content at the start of a list item
+was mistaken as "bullet" and was removed.
