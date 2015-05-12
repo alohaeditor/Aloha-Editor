@@ -1,0 +1,4 @@
+When opening a page to edit and first clicking on a link in an editable,
+the "Link" tab in the toolbar will not be activated.
+This has been fixed now, clicking on a link in an editable will always
+activate the "Link" tab in the toolbar.

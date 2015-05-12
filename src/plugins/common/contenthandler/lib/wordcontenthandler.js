@@ -285,6 +285,13 @@ define([
 			// get the first span in the element
 			var firstSpan = jQuery(jqElem.find('span.' + BULLET_CLASS));
 			if (firstSpan.length === 0) {
+				firstSpan = jqElem.find('span').filter(function() {
+					var $this = $(this);
+					var style = $this.attr('style') || '';
+					return style.indexOf('mso-list: Ignore') >= 0;
+				});
+			}
+			if (firstSpan.length === 0) {
 				firstSpan = jqElem.find('span').eq(0);
 			}
 			if ($.trim(firstSpan.text()).length !== 0) {
