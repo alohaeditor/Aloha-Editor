@@ -557,7 +557,12 @@ define([
 					// first time the user enters the link scope to avoid
 					// intefering with the user's manual tab selection
 					if (enteredLinkScope && insideLinkScope !== enteredLinkScope) {
-						plugin.hrefField.foreground();
+						// put the field into foreground with a timeout, so that this
+						// overrules other plugins that change the active toolbar tab
+						// by setting the scope
+						setTimeout(function () {
+							plugin.hrefField.foreground();
+						}, 10);
 					}
 				}
 				insideLinkScope = enteredLinkScope;
