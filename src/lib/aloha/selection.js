@@ -1325,7 +1325,7 @@ define([
 					}
 
 					// setting the focus is needed for mozilla and IE 7 to have a working rangeObject.select()
-					if (Aloha.activeEditable && Aloha.browser.mozilla) {
+					if (Aloha.activeEditable && Aloha.browser.mozilla && document.activeElement !== Aloha.activeEditable.obj[0]) {
 						Aloha.activeEditable.obj.focus();
 					}
 

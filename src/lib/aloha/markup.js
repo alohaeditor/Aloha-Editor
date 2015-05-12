@@ -593,7 +593,7 @@ define([
 				Aloha.Selection.rangeObject.select();
 
 				// Mozilla needs this fix or else the selection will not work
-				if (Aloha.activeEditable && jQuery.browser.mozilla) {
+				if (Aloha.activeEditable && jQuery.browser.mozilla && document.activeElement !== Aloha.activeEditable.obj[0]) {
 					Aloha.activeEditable.obj.focus();
 				}
 
@@ -638,7 +638,7 @@ define([
 				Aloha.Selection.rangeObject.select();
 
 				// Mozilla needs this fix or else the selection will not work
-				if (Aloha.activeEditable && jQuery.browser.mozilla) {
+				if (Aloha.activeEditable && jQuery.browser.mozilla && document.activeElement !== Aloha.activeEditable.obj[0]) {
 					Aloha.activeEditable.obj.focus();
 				}
 
