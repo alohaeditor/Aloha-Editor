@@ -1332,6 +1332,7 @@ define([
 					if (Engine.isEditable(rangeObject.startContainer)) {
 						Engine.copyAttributes(rangeObject.startContainer, newMarkup[0]);
 						jQuery(rangeObject.startContainer).after(newMarkup[0]).remove();
+						Engine.ensureContainerEditable(newMarkup[0]);
 					} else if (Engine.isEditingHost(rangeObject.startContainer)) {
 						jQuery(rangeObject.startContainer).append(newMarkup[0]);
 						Engine.ensureContainerEditable(newMarkup[0]);
