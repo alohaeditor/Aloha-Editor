@@ -1,0 +1,3 @@
+Fixed scrolling if editable itself has a vertical scrollbar and
+content is added in a way that the selection would be outside of the
+visible area.

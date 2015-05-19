@@ -1,0 +1,6 @@
+When transforming empty block-level elements (e.g. change a paragraph to a pre-element),
+the block-level element did not always contain an ending break to make it visible.
+This has been fixed.
+Also the handling of placeholder paragraphs (landing zones before or after the first/last element
+in an editable) has been fixed. If placeholder paragraphs are filled, the classes marking them
+as placeholders are removed.
