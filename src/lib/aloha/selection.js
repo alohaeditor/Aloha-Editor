@@ -2730,7 +2730,7 @@ define([
 		}
 
 		var $scrollable = jQuery(range.startContainer).closest(':hasScroll(y)');
-		if ($scrollable.length >= 0) {
+		if ($scrollable.length > 0) {
 			var scrollRect = $scrollable[0].getBoundingClientRect();
 			if (rect.top < scrollRect.top) {
 				// scroll up
