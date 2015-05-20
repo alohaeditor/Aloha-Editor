@@ -352,7 +352,8 @@ define([
 			return false;
 		}
 		var $el = jQuery(el), sX = $el.css('overflow-x'), sY = $el
-				.css('overflow-y'), hidden = 'hidden', visible = 'visible', scroll = 'scroll', axis = match[3];
+			.css('overflow-y'), hidden = 'hidden', visible = 'visible',
+			scroll = 'scroll', axis = match[3];
 
 		if (!axis) {
 			if (sX === sY && (sY === hidden || sY === visible)) {
@@ -373,7 +374,7 @@ define([
 				return false;
 			}
 			if (sY === scroll) {
-				return true
+				return true;
 			}
 		}
 
