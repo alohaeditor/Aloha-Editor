@@ -269,7 +269,8 @@ define([
 		if (isUnmodifiedAlohaEditingP(placeholder)) {
 			$placeholder.remove();
 		} else {
-			$placeholder.removeClass('aloha-editable-p');
+			$placeholder.removeClass('aloha-editing-p');
+			$placeholder.removeClass('aloha-placeholder');
 			if (Browser.ie) {
 				//remove trailing or leading word joiner
 				var child = $placeholder[0].firstChild;
