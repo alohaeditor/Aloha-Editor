@@ -35,7 +35,7 @@ define([
 	'jquery',
 	'aloha/plugin',
 	'aloha/ephemera',
-	'dom-to-xhtml/dom-to-xhtml'
+	'util/dom-to-xhtml'
 ], function (
 	Aloha,
 	$,

@@ -1,0 +1,3 @@
+When using an inline element (such as an anchor) as editable,
+selecting and deleting the whole contents would also remove the editable from the DOM.
+This has been fixed, so that the editable itself will never be removed.

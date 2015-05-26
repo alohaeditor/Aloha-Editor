@@ -1,0 +1,2 @@
+The file dom-to-xhtml.js has been moved from the plugin dom-to-xhtml to
+'util/dom-to-xhtml' to make it available to other plugins.
