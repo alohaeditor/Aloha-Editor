@@ -5347,6 +5347,10 @@ define([
 			return false;
 		}
 
+		if (isEditingHost(node)) {
+			return false;
+		}
+
 		parentNode = node.parentNode;
 
 		if (!parentNode) {
