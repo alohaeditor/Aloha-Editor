@@ -28,17 +28,13 @@
  * Provides public utility methods to convert DOM nodes to XHTML.
  */
 define([
-	'jquery',
 	'util/dom2',
-	'util/misc',
 	'util/browser',
 	'aloha/ephemera',
 	'aloha/console'
 ],
 function (
-	$,
 	Dom,
-	Misc,
 	Browser,
 	Ephemera,
 	console
