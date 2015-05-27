@@ -1,0 +1,3 @@
+Format-Plugin: The configuration of the checkHeadingHierarchy option would only be activated
+when a boolean "true" value was set in the settings. This has been fixed: the checkHeadingHierarchy
+option can now also be activated by using other truthy values (e.g.: string "true" or "1");
