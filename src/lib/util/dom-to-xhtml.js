@@ -24,21 +24,17 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
+/*global serialize,serializeElement */
 /**
  * Provides public utility methods to convert DOM nodes to XHTML.
  */
 define([
-	'jquery',
 	'util/dom2',
-	'util/misc',
 	'util/browser',
 	'aloha/ephemera',
 	'aloha/console'
-],
-function (
-	$,
+], function (
 	Dom,
-	Misc,
 	Browser,
 	Ephemera,
 	console
@@ -150,11 +146,11 @@ function (
 	function makeAttrString(element, ephemera) {
 		var attrs = Dom.attrs(element);
 		var str = "";
-		var i, len;
+		var i, len, bool;
 		// Dom.attrs() doesn't support some boolean attributes on IE7
 		// which we have to compensate for.
 		if (Browser.ie7) {
-			for (var bool in booleanAttrs) {
+			for (bool in booleanAttrs) {
 				if (booleanAttrs.hasOwnProperty(bool) && element[bool]) {
 					// We don't want to add duplicate attributes
 					for (i = 0, len = attrs.length; i < len; i++) {
@@ -319,7 +315,7 @@ function (
 						' value=' + node.nodeValue);
 		}
 	}
-	
+
 	return {
 		/**
 		 * Serializes a number of DOM nodes in an array-like object to an XHTML string.
