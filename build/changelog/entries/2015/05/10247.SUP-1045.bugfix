@@ -1,0 +1,2 @@
+Emptylink-Plugin: The emptylink-plugin would highlight all empty links on the whole page.
+This has been fixed now only empty links inside of editables will be hightlighted.
