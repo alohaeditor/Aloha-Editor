@@ -1,0 +1,3 @@
+When clicking on a block (in order to select it), sometimes the
+selection was moved into the editable, making it impossible to select
+the block. This has been fixed now.
