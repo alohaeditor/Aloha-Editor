@@ -1,0 +1,10 @@
+Some issues with drag & drop of inline blocks have been fixed:
+* When dragging & dropping inline blocks, sometimes a JS error
+(Uncaught Error: cannot call methods on droppable prior to initialization; attempted to call method 'destroy')
+occurred, which has been fixed now.
+* When dragging an inline block out of a block-level element (such as a paragraph),
+where the paragraph will be empty afterwards, an ending break will be added to the
+paragraph so that it will not become invisible.
+* The padding added around inline blocks (as landing areas for the cursor) was not cleared correctly when
+dragging and dropping inline blocks. This caused additional non-breakable spaces appearing around inline blocks.
+* When dragging an inline block at the end of a list entry, it was not possible to place the cursor after the inline block.
