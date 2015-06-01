@@ -59,7 +59,7 @@ define([
 	/**
 	 * Checks to see if video blocks in current editable are already initialized
 	 *
-	 * @param Dom element jQuery element with class 'aloha-video-block'
+	 * @param Dom element jQuery element with class 'aloha-block-VideoBlock'
 	 * @return Boolean
 	 */
 	function isInitialized(element) {
@@ -71,20 +71,18 @@ define([
 	 */
 	function removeVideoBlock() {
 		if (selectedBlock) {
-			selectedBlock.$element[0].remove();
+			selectedBlock.$element.remove();
 		}
 	}
 
 	return Plugin.create('videoblock', {
+		width: '640px',
 
-		/**
-		 * Default settings
-		 */
-		settings: {
-			'width': '640px',
-			'height': '360px',
-			'embedUrl': 'https://youtube.com/embed/'
-		},
+		height: '360px',
+
+		embedUrl: 'https://youtube.com/embed/',
+
+		previewUrl: 'https://i1.ytimg.com/vi/{id}/0.jpg',
 
 		/**
 		* Reference to input field in video tab
@@ -125,8 +123,9 @@ define([
 		 */
 		hrefChange: function () {
 			var videoid = ContentHandler.extractVideoId($(this.hrefField.getInputElem()).val());
-			selectedBlock.$element.find('iframe').attr('src', this.settings.embedUrl + videoid);
+			selectedBlock.$element.find('img').attr('src', this.previewUrl.replace("{id}", videoid));
 			selectedBlock.$element.data('video-id', videoid);
+			selectedBlock.$element.attr('data-video-id', videoid);
 		},
 
 		/**
@@ -134,12 +133,15 @@ define([
 		*/
 		init: function () {
 			var that = this;
-			
+
 			// Default settings can be overwritten via Aloha.settings.plugins.videoblock
 			if (Aloha.settings.plugins && Aloha.settings.plugins.videoblock) {
-				this.settings = Aloha.settings.plugins.videoblock;
+				this.width = Aloha.settings.plugins.videoblock.width || this.width;
+				this.height = Aloha.settings.plugins.videoblock.height || this.height;
+				this.embedUrl = Aloha.settings.plugins.videoblock.embedUrl || this.embedUrl;
+				this.previewUrl = Aloha.settings.plugins.videoblock.previewUrl || this.previewUrl;
 			}
-			
+
 			this.createToolbarTab();
 
 			/**
@@ -158,15 +160,47 @@ define([
 				that.setHrefField();
 			});
 
-			/**
-			 * Event listener for editable to initialize video blocks
-			 */
-			Aloha.bind('aloha-smart-content-changed', function (event, data) {
-				data.editable.obj.find('.aloha-video-block').each(function () {
+			Aloha.bind('aloha-editable-created', function (event, editable) {
+				editable.obj.find('.aloha-block-VideoBlock').each(function () {
 					if (!isInitialized(this)){
 						$(this).alohaBlock();
 					}
 				});
+			});
+
+			/**
+			 * Event listener for editable to initialize video blocks
+			 */
+			Aloha.bind('aloha-smart-content-changed', function (event, data) {
+				data.editable.obj.find('.aloha-block-VideoBlock').each(function () {
+					if (!isInitialized(this)){
+						$(this).alohaBlock();
+					}
+				});
+			});
+		},
+
+		/**
+		 * Make the given jQuery object (representing an editable) clean for saving
+		 * Replace the preview image by the video embedded in an iframe. Remove unwanted attributes and classes.
+		 * @param obj jQuery object to make clean
+		 * @return void
+		 */
+		makeClean: function (obj) {
+			var plugin = this;
+			obj.find('.aloha-block-VideoBlock').each(function () {
+				var $element = $(this), $img = $element.find("img");
+				if ($element.data('video-id')) {
+					$element.append('<iframe width="100%" height="100%" src="'
+						+ plugin.embedUrl
+						+ $element.data('video-id')
+						+ '" frameborder="0" allowfullscreen></iframe>');
+				}
+				$element.css({width: $img.css("width"), height: $img.css("height")});
+				$img.remove();
+				$element.removeClass('ui-resizable ui-draggable aloha aloha-block')
+					.removeAttr('id')
+					.removeAttr('contenteditable');
 			});
 		}
 	});
