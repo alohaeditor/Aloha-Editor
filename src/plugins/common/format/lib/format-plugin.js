@@ -363,6 +363,13 @@ define('format/format-plugin', [
 			return;
 		}
 
+		// The warning class should only be used with header tags, but the
+		// insertparagraph command for example, copies all attributes, to
+		// the new element, so the plugin has to remove them again.
+		parent.find(":not(h1,h2,h3,h4,h5,h6)").each(function() {
+			$(this).removeClass("aloha-heading-hierarchy-violated");
+		});
+
 		//set startheading to heading with smallest number available in the config
 		for (var i = 0; i < config.length; i++){
 			if (isHeading(config[i])) {
