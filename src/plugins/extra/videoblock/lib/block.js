@@ -28,11 +28,13 @@ define([
 	'jquery',
 	'block/block',
 	'block/blockmanager',
+	'aloha/ephemera',
 	'jqueryui'
 ], function (
 	$,
 	Block,
-	BlockManager
+	BlockManager,
+	Ephemera
 ) {
 	'use strict';
 
@@ -46,15 +48,6 @@ define([
 		 * Title for reference
 		 */
 		title: 'Video Block',
-		
-		/**
-		 * Default settings
-		 */
-		settings: {
-			'width': '640px',
-			'height': '360px',
-			'embedUrl': 'https://youtube.com/embed/'
-		},
 
 		/**
 		 * Block initalization
@@ -64,38 +57,27 @@ define([
 		 * @param funciton postProcessFn Aloha Block callback function
 		 */
 		init: function ($element, postProcessFn) {
+			var videoBlockPlugin = Aloha.require('videoblock/videoblock-plugin'), $img;
 
-			// Default settings can be overwritten via Aloha.settings.plugins.videoblock
-			if (Aloha.settings.plugins && Aloha.settings.plugins.videoblock) {
-				this.settings = Aloha.settings.plugins.videoblock;
+			var width = videoBlockPlugin.width;
+			var height = videoBlockPlugin.height;
+			if ($element.attr('style')) {
+				width = $element.css('width');
+				height = $element.css('height');
 			}
 
-			// Insert YouTube iframe into wrapping div
-			$element.css({'width': this.settings.width, 'height': this.settings.height})
-				.append('<iframe width="100%" height="100%" src="' + this.settings.embedUrl
-					+ $element.data('video-id')
-					+ '" frameborder="0" allowfullscreen></iframe>');
+			// remove everything in the container (especially, the iframe)
+			$element.empty();
 
-			// Insert semi-transparent overlay div so clicks don't get
-			// passed through to video in iframe.
-			$element.append('<div class="video-helper-overlay"></div>');
-			$('.video-helper-overlay', $element).css({
-				'width': '100%',
-				'height': '100%',
-				'position': 'absolute',
-				'top': 0,
-				'left': 0,
-				'display': 'block',
-				'background': '#b0b0b0',
-			    '-ms-filter': 'progid:DXImageTransform.Microsoft.Alpha(Opacity=50)',
-			    'filter': 'alpha(opacity=50)',
-			    '-moz-opacity': '0.5',
-			    '-khtml-opacity': '0.5',
-			    'opacity': '0.5'
-			});
+			// Insert YouTube preview image
+			$element.attr('style', null)
+				.append('<img src="'+videoBlockPlugin.previewUrl.replace("{id}", $element.data('video-id'))+'"/>');
+			$img = $element.find('img');
+			// set the size to the image
+			$img.css({'width': width, 'height': height});
 
-			// Use jQuery UI to make video resizable
-			$element.resizable({
+			// Use jQuery UI to make the image resizable
+			$img.resizable({
 				aspectRatio: true,
 				resize: function (event, ui) {
 					ui.element.css({
@@ -104,6 +86,13 @@ define([
 						'left': 0
 					});
 				}
+			});
+
+			$element.find('.ui-wrapper').each(function () {
+				Ephemera.markWrapper(this);
+			});
+			$element.find('.ui-resizable-handle').each(function () {
+				Ephemera.markElement(this);
 			});
 
 			postProcessFn();

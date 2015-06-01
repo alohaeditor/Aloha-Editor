@@ -183,6 +183,9 @@ define([
 				if (jQuery(event.target).closest('.aloha-block').get(0) === that.$element.get(0)) {
 					that._fixScrollPositionBugsInIE();
 					that.activate(event.target, event);
+					if (!jQuery(event.target).contentEditable()) {
+						Aloha.getSelection().removeAllRanges();
+					}
 				}
 			};
 
@@ -702,7 +705,7 @@ define([
 		 * least they do not work anymore
 		 */
 		_disableUglyInternetExplorerDragHandles: function () {
-			if (jQuery.browser.msie) {
+			if (Aloha.browser.msie) {
 				var $elem = this.$element.get(0);
 				$elem.onresizestart = Fn.returnFalse;
 				$elem.oncontrolselect = Fn.returnFalse;
