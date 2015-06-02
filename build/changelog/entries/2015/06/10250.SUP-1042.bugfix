@@ -1,0 +1,5 @@
+Several issues of the videoblock plugin have been fixed:
+* During editing, the iframe to embed the video is replaced by an image showing the preview image
+* Internet Explorer will no longer show it's own resize handles, when a video block is selected
+* When getting the contents of an editable (in order to save it), all additional markup added to make video blocks editable will cleanly be removed
+* It is now possible to paste more than just a single video URL. All URLs will be transformed to blocks, everything else will be pasted.

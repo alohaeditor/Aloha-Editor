@@ -97,7 +97,7 @@ define([
 	 * @return {boolean}      true if untilNode() returns true or the node is an Aloha-Block
 	 */
 	function untilNodeForward(node) {
-		return untilNode(node) || (node.previousSibling && DomLegacy.isEditingHost(node.previousSibling)) || isAlohaBlock(node);
+		return untilNode(node) || node.nodeName.toLowerCase() === 'li' || (node.previousSibling && DomLegacy.isEditingHost(node.previousSibling)) || isAlohaBlock(node);
 	}
 
 	/**
