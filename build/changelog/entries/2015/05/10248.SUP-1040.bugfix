@@ -1,0 +1,4 @@
+When checkHeadingHierarchy was activated in the format-plugin, and the
+hierarchy was violated, the corresponding CSS class was sometimes
+propagated to the following paragraph. This has been fixed, and the
+class is now only applied to headings.
