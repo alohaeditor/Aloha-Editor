@@ -112,11 +112,30 @@ define(['jquery'], function ($) {
 		return "" === str || null == str;
 	}
 
+	/**
+	 * Parse a boolean value from a string or any other type
+	 * this function returns true when the passed value is either
+	 * 'true', 'TRUE', '1', 1 (number) or true (boolean)
+	 *
+	 * @param  mixed value the value to parse
+	 * @return boolean     true if the value is considerd as "true"
+	 */
+	function parseBoolean(value) {
+		if (value === true || value === 1) {
+			return true;
+		} else if (typeof value === 'string' || value instanceof String) {
+			value = value.toLowerCase();
+			return value === 'true' || value === '1';
+		}
+		return false;
+	}
+
 	return {
 		words: words,
 		dashesToCamelCase: dashesToCamelCase,
 		camelCaseToDashes: camelCaseToDashes,
 		splitIncl: splitIncl,
-		empty: empty
+		empty: empty,
+		parseBoolean: parseBoolean
 	};
 });

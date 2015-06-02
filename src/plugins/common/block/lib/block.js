@@ -40,7 +40,8 @@ define([
 	'PubSub',
 	'block/block-utils',
 	'util/html',
-	'util/functions'
+	'util/functions',
+	'aloha/engine'
 ], function (
 	Aloha,
 	jQuery,
@@ -51,7 +52,8 @@ define([
 	PubSub,
 	BlockUtils,
 	Html,
-	Fn
+	Fn,
+	Engine
 ) {
 	'use strict';
 
@@ -183,6 +185,9 @@ define([
 				if (jQuery(event.target).closest('.aloha-block').get(0) === that.$element.get(0)) {
 					that._fixScrollPositionBugsInIE();
 					that.activate(event.target, event);
+					if (!jQuery(event.target).contentEditable()) {
+						Aloha.getSelection().removeAllRanges();
+					}
 				}
 			};
 
@@ -702,7 +707,7 @@ define([
 		 * least they do not work anymore
 		 */
 		_disableUglyInternetExplorerDragHandles: function () {
-			if (jQuery.browser.msie) {
+			if (Aloha.browser.msie) {
 				var $elem = this.$element.get(0);
 				$elem.onresizestart = Fn.returnFalse;
 				$elem.oncontrolselect = Fn.returnFalse;
@@ -792,7 +797,7 @@ define([
 			var dropFn = function () {
 				if (lastHoveredCharacter) {
 					// the user recently hovered over a character
-					var $dropReferenceNode = jQuery(lastHoveredCharacter);
+					var $dropReferenceNode = jQuery(lastHoveredCharacter), oldParent = $currentDraggable[0].parentNode;
 
 					if ($dropReferenceNode.is('.aloha-block-dropInlineElementIntoEmptyBlock')) {
 						// the user wanted to drop INTO an empty block!
@@ -814,27 +819,18 @@ define([
 						$dropReferenceNode.before($currentDraggable);
 					}
 
-					BlockUtils.unpad($currentDraggable);
+					Engine.ensureContainerEditable(oldParent);
 
 					$currentDraggable.removeClass('ui-draggable').css({'left': 0, 'top': 0}); // Remove "draggable" options... somehow "Destroy" does not work
 					that._fixScrollPositionBugsInIE();
-
-					// deactivate the current editable and activate the editable,
-					// the block has been dropped into. This will do necessary initializations that
-					// happen on activation of the editable
-					Aloha.deactivateEditable();
-					var editable = Aloha.getEditableHost($currentDraggable);
-					if (editable) {
-						editable.activate();
-					}
 				}
 				jQuery('.aloha-block-dropInlineElementIntoEmptyBlock').removeClass('aloha-block-dropInlineElementIntoEmptyBlock');
 
-                // clear the created droppables
-                $createdDroppables.droppable("destroy");
-                $createdDroppables = null;
+				// clear the created droppables
+				$createdDroppables.filter(":data(droppable)").droppable("destroy");
+				$createdDroppables = null;
 
-                blockDroppedProperly = true;
+				blockDroppedProperly = true;
 			};
 			var editablesWhichNeedToBeCleaned = [];
 			this.$element.draggable({
@@ -852,6 +848,9 @@ define([
 					jQuery.each(editablesWhichNeedToBeCleaned, function () {
 						that._dd_traverseDomTreeAndRemoveSpans(this);
 					});
+
+					BlockUtils.unpad($currentDraggable);
+
 					$currentDraggable = null;
 
 					editablesWhichNeedToBeCleaned = [];
@@ -866,6 +865,7 @@ define([
 					}
 				},
 				start: function () {
+					lastHoveredCharacter = null;
 					blockDroppedProperly = false;
 					editablesWhichNeedToBeCleaned = [];
 

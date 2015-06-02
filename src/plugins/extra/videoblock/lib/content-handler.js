@@ -29,7 +29,9 @@ define([
 ], function (
 	Manager
 ) {
-    'use strict';
+	'use strict';
+
+	var urlRegex = /(?:https?:\/{2})?(?:w{3}\.)?youtu(?:be)?\.(?:com|be)(?:\/watch\?v=|\/)([^\s&]+)/i;
 
 	var handler = Manager.createHandler({
 
@@ -40,7 +42,7 @@ define([
 		 * @return String or false
 		 */
 		extractVideoId: function (url) {
-			var videoid = url.match(/(?:https?:\/{2})?(?:w{3}\.)?youtu(?:be)?\.(?:com|be)(?:\/watch\?v=|\/)([^\s&]+)/);
+			var videoid = url.match(urlRegex);
 			if(videoid === null) {
 			   return false;
 			}
@@ -52,14 +54,13 @@ define([
 		 * Construct wrapping DOM element for block
 		 * @param String content the pasted video URL
 		 */
-        handleContent: function (content) {
-			var videoid = this.extractVideoId(content);
-			if (!videoid){
-				return content;
+		handleContent: function (content) {
+			while (content.match(urlRegex)) {
+				content = content.replace(urlRegex, '<div class="aloha-block-VideoBlock aloha" data-aloha-block-type="VideoBlock" data-video-id="$1"></div>');
 			}
-            return'<div class="aloha-video-block aloha" data-aloha-block-type="VideoBlock" data-video-id="' + videoid + '"></div>';
-        }
-    });
+			return content;
+		}
+	});
 
 	// Make content handler automatically available to videoblock-plugin
 	Manager.register('video', handler);
