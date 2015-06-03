@@ -31,7 +31,8 @@ define([
 	'jquery',
 	'aloha/ecma5shims',
 	'aloha/console',
-	'aloha/block-jump'
+	'aloha/block-jump',
+	'aloha/content-rules'
 ], function (
 	Aloha,
 	Class,
@@ -39,7 +40,8 @@ define([
 	jQuery,
 	shims,
 	console,
-	BlockJump
+	BlockJump,
+	ContentRules
 ) {
 	"use strict";
 
@@ -518,13 +520,18 @@ define([
 
 			// ENTER
 			if (event.keyCode === 13) {
-				if (!event.shiftKey && Html.allowNestedParagraph(Aloha.activeEditable)) {
+				if (!event.shiftKey && Html.allowNestedParagraph(Aloha.activeEditable) && ContentRules.isAllowed(Aloha.activeEditable.obj, 'p')) {
 					Aloha.execCommand('insertparagraph', false);
 					return false;
 				// if the shift key is pressed, or if the active editable is not allowed
 				// to contain paragraphs, a linebreak is inserted instead
-				} else {
+				} else if (ContentRules.isAllowed(Aloha.activeEditable.obj, 'br')) {
 					Aloha.execCommand('insertlinebreak', false);
+					return false;
+				} else if (Html.allowNestedParagraph(Aloha.activeEditable) && ContentRules.isAllowed(Aloha.activeEditable.obj, 'p')) {
+					Aloha.execCommand('insertparagraph', false);
+					return false;
+				} else {
 					return false;
 				}
 			}
