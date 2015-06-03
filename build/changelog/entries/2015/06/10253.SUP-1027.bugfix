@@ -1,0 +1,7 @@
+﻿A bug with the triggering of the item-change event caused custom sidebar info 
+fields, which have been specified in the settings for the link plugin, to not 
+be set when a link is selected and the sidebar opened afterwards. This has 
+been fixed now by triggering the item-change event also when a null item is 
+selected (that is the selection is changed from an element that has an 
+associated repository browser item to an element that does not have an 
+associated repository browser item).

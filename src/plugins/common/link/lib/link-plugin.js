@@ -473,12 +473,6 @@ define([
 					} else {
 						hrefLangField.disableInput();
 					}
-
-					if (jQuery.isArray(pl.settings.sidebar)) {
-						jQuery.each(pl.settings.sidebar, function () {
-							jQuery(pl.nsSel(this.attr)).text("");
-						});
-					}
 				}
 				
 			} );
