@@ -1320,6 +1320,11 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 						container = range.endContainer;
 						offset = range.endOffset;
 					}
+					// Sometimes the offset can be greater than the length of the
+					// container contents due to a bug. In that case adjust the offset.
+					if (offset > jQuery(container).contents().length) {
+						offset = jQuery(container).contents().length;
+					}
 					if (offset === 0) {
 						// insert right before the first element in the container
 						contents = jQuery(container).contents();
