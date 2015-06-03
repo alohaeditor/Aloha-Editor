@@ -1,0 +1,3 @@
+﻿When the metaview and emptyparagraph plugins were used at the same time, the 
+metaview plugin would override the background-color CSS rule of the 
+emptyparagraph plugin. This has been fixed now.
