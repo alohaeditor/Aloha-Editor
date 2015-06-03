@@ -360,11 +360,11 @@ define([
 				resourceValue = v;
 				setAttribute(targetAttribute, item[valueField]);
 				RepositoryManager.markObject(targetObject, item);
-				
-				element.trigger('item-change');
 			} else {
 				resourceValue = null;
 			}
+			
+			element.trigger('item-change');
 		}
 
 		function getItem() {
