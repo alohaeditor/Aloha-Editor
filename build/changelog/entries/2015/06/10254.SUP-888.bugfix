@@ -1,0 +1,2 @@
+Some issues with cursor placement and using DELETE or BACKSPACE around blocks
+in editables have been fixed.
