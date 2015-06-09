@@ -813,6 +813,7 @@ define([
 		rangeObject.endContainer = range.endContainer;
 		rangeObject.endOffset = range.endOffset;
 
+		rangeObject.correctRange();
 		rangeObject.select();
 	}
 
@@ -6698,10 +6699,8 @@ define([
 				i,
 				deleteContentsRange;
 
-			// special behaviour for skipping zero-width whitespaces in IE7
-			if (Aloha.browser.msie && Aloha.browser.version <= 7) {
-				moveOverZWSP(range, false);
-			}
+			// special behaviour for skipping zero-width whitespaces
+			moveOverZWSP(range, false);
 
 			// "If the active range is not collapsed, delete the contents of the
 			// active range and abort these steps."
@@ -7289,10 +7288,8 @@ define([
 	commands.forwarddelete = {
 		action: function (value, range) {
 			var deleteContentsRange;
-			// special behaviour for skipping zero-width whitespaces in IE7
-			if (Aloha.browser.msie && Aloha.browser.version <= 7) {
-				moveOverZWSP(range, true);
-			}
+			// special behaviour for skipping zero-width whitespaces
+			moveOverZWSP(range, true);
 
 			// "If the active range is not collapsed, delete the contents of the
 			// active range and abort these steps."

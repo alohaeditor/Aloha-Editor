@@ -3,13 +3,15 @@ define([
 	'aloha/jquery',
 	'aloha/ephemera',
 	'table/table-plugin-utils',
-	'util/browser'
+	'util/browser',
+	'util/dom'
 ], function (
 	Aloha,
 	jQuery,
 	Ephemera,
 	Utils,
-	Browser
+	Browser,
+	Dom
 ) {
 	/**
 	 * Constructs a TableCell.
@@ -343,6 +345,18 @@ define([
 
 		// remove "active class"
 		this.obj.removeClass('aloha-table-cell_active');
+
+		// if the editable wrapper in the table cell only contains a single, empty
+		// paragraph, we remove that paragraph
+		if (this.wrapper.children().length === 1) {
+			this.wrapper.find('p').filter(function (index) {
+				var clone = jQuery(this).clone();
+				// the last br in the paragraph does not count, so we remove
+				// it before checking the paragraph for emptiness
+				clone.find('br:last-child').remove();
+				return Dom.isEmpty(clone[0]);
+			}).remove();
+		}
 	};
 
 	/**
