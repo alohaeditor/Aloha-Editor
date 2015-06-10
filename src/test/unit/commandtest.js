@@ -124,8 +124,9 @@ function( TestUtils ) {
 			}
 
 			var name = check.name ||  descName;
+			var moduleName = tests.label || tests.defaultCommand;
 
-			module( tests.defaultCommand + ' ' + (i+1) + (excluded ? ' (EX)' : ''), {
+			module( moduleName + ' ' + (i+1) + (excluded ? ' (EX)' : ''), {
 				setup: function() {
 					// fill the editable area with the start value
 					editable.html(this.check.start);
