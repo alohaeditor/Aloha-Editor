@@ -741,7 +741,7 @@ define([
 					// when we are moving down (with the cursor down key), we want to position the
 					// cursor AFTER the non-editable area
 					// otherwise BEFORE the non-editable area
-					var movingDown = event && (event.keyCode === 40);
+					var movingDown = event && (event.keyCode === 40 || event.keyCode === 39);
 
 					if (!validStartPosition) {
 						newPos = this._getNearestEditablePosition(range.startContainer, movingDown);
