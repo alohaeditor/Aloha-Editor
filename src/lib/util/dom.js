@@ -1127,6 +1127,19 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 		},
 
 		/**
+		 * Check whether the given node is a hr element
+		 * @param {DOMObject} node node to check
+		 * @return {boolean} true for hr elements, false for everything else
+		 * @method
+		 */
+		isHorizontalRulerElement: function (node) {
+			if (!node) {
+				return false;
+			}
+			return node.nodeType === 1 && node.nodeName.toLowerCase() == 'hr';
+		},
+
+		/**
 		 * Check whether the given node is a list element
 		 * @param {DOMObject} node node to check
 		 * @return {boolean} true for list elements (li, ul, ol), false for everything else
@@ -1230,7 +1243,7 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 					// we found a blocklevel element, stop here
 					return false;
 				}
-				if (stopat.linebreak && this.isLineBreakElement(nextNode)) {
+				if (stopat.linebreak && (this.isLineBreakElement(nextNode) || this.isHorizontalRulerElement(nextNode))) {
 					// we found a linebreak, stop here
 					return false;
 				}
