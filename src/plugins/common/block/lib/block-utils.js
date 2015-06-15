@@ -108,21 +108,29 @@ define([
 	 * @param {jQuery<DOMElement>} $block
 	 */
 	function pad($block) {
-		var previous = Dom.findBackward(
-			Dom.backward($block[0]),
-			isVisibleNode,
-			untilNode
-		);
-		if (!previous) {
-			$block.before(createLandingElement($block));
+		// first check, whether the padding already exists (previous or next sibling with
+		// the a class named landingClassName)
+		var landingClassName = createLandingClassName($block), previous, next;
+
+		if ($block.prev('.' + landingClassName).length === 0) {
+			previous = Dom.findBackward(
+					Dom.backward($block[0]),
+					isVisibleNode,
+					untilNode
+			);
+			if (!previous) {
+				$block.before(createLandingElement($block));
+			}
 		}
-		var next = Dom.findForward(
-			skipNodeForward($block[0]),
-			isVisibleNode,
-			untilNodeForward
-		);
-		if (!next) {
-			$block.after(createLandingElement($block));
+		if ($block.next('.' + landingClassName).length === 0) {
+			next = Dom.findForward(
+					skipNodeForward($block[0]),
+					isVisibleNode,
+					untilNodeForward
+			);
+			if (!next) {
+				$block.after(createLandingElement($block));
+			}
 		}
 	}
 
