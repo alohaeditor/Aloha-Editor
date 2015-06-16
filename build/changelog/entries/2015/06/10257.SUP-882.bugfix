@@ -1,0 +1,5 @@
+The position of the floating toolbar was not correct,
+if the page was vertically scrolled and there was insufficient
+space above the activated editable. The toolbar was not positioned
+right under the editable, but with some distance.
+This has been fixed now.

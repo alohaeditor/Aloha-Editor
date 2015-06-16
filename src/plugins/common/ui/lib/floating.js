@@ -271,7 +271,7 @@ define([
 		} else if (availableSpace + $surface.height() >
 		           availableSpace + editable.obj.height()) {
 			floatBelow($surface, {
-				top: top + editable.obj.height(),
+				top: top + editable.obj.height() - scrollTop,
 				left: left
 			}, duration, callback);
 		} else {
