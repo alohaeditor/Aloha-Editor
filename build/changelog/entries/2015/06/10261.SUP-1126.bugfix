@@ -1,0 +1,3 @@
+When deleting text after a non-editable element the cursor could
+disappear in some browsers, which prevented further editing. This
+has been fixed.

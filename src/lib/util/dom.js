@@ -1176,10 +1176,14 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 		 * - list (default: true)
 		 * - linebreak (default: true)
 		 * </pre>
+		 * @param {object} options additional options to guide the search. May contain the following properties
+		 * <pre>
+		 * - acceptUntrimmed (default: false): accept a text node even if it only contains whitespace
+		 * </pre>
 		 * @return {DOMObject} the found text node or false if none found
 		 * @method
 		 */
-		searchAdjacentTextNode: function (parent, index, searchleft, stopat) {
+		searchAdjacentTextNode: function (parent, index, searchleft, stopat, options) {
 			if (!parent || parent.nodeType !== 1 || index < 0 || index > parent.childNodes.length) {
 				return false;
 			}
@@ -1205,6 +1209,8 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 			if (typeof searchleft === 'undefined') {
 				searchleft = true;
 			}
+
+			options = jQuery.extend({ acceptUntrimmed: false }, options);
 
 			var nextNode,
 			    currentParent = parent;
@@ -1235,7 +1241,8 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 					nextNode = searchleft ? currentParent.previousSibling : currentParent.nextSibling;
 					currentParent = currentParent.parentNode;
 					continue;
-				} else if (nextNode.nodeType === 3 && jQuery.trim(nextNode.data).length > 0) {
+				} else if (nextNode.nodeType === 3
+						&& (options.acceptUntrimmed ? nextNode.data : jQuery.trim(nextNode.data)).length > 0) {
 					// we are lucky and found a notempty text node
 					return nextNode;
 				}
