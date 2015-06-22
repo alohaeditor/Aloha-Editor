@@ -1,0 +1,5 @@
+The behavior when pressing DELETE before a table or BACKSPACE after a table
+was inconsistent and unexpected. Sometimes the whole table was deleted, sometimes
+the selection moved into the first/last table cell.
+This has been changed now to be consistent and conservative: When pressing DELETE before
+or BACKSPACE after a table, the selection will stay where it was and nothing will be deleted.

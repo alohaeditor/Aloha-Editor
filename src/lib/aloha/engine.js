@@ -6778,13 +6778,6 @@ define([
 				}
 			}
 
-			// if the previous node is an aloha-table we want to delete it
-			var delBlock = getBlockAtPreviousPosition(node, offset);
-			if (delBlock) {
-				delBlock.parentNode.removeChild(delBlock);
-				return;
-			}
-
 			// "If node is a Text node and offset is not zero, call collapse(node,
 			// offset) on the Selection. Then delete the contents of the range with
 			// start (node, offset − 1) and end (node, offset) and abort these
@@ -7302,6 +7295,12 @@ define([
 			// range's start offset)."
 			canonicalizeWhitespace(range.startContainer, range.startOffset);
 
+			// small selection hack: If the selection is in an empty text node, we move it after the text node
+			if (range.startContainer.nodeType === 3 && range.startContainer.data.length === 0) {
+				range.startOffset = range.endOffset = Dom.getIndexInParent(range.startContainer) + 1;
+				range.startContainer = range.endContainer = range.startContainer.parentNode;
+			}
+
 			// "Let node and offset be the active range's start node and offset."
 			var node = range.startContainer;
 			var offset = range.startOffset;
@@ -7373,13 +7372,6 @@ define([
 
 			// collapse whitespace in the node, if it is a text node
 			canonicalizeWhitespace(range.startContainer, range.startOffset);
-
-			// if the next node is an aloha-table we want to delete it
-			var delBlock = getBlockAtNextPosition(node, offset);
-			if (delBlock) {
-				delBlock.parentNode.removeChild(delBlock);
-				return;
-			}
 
 			var endOffset;
 			// "If node is a Text node and offset is not node's length:"
