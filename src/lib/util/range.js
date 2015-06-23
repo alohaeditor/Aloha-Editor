@@ -550,7 +550,7 @@ define([
 						this.startOffset = this.endOffset = adjacentTextNode.data.length;
 					}
 				} else if (this.startContainer.nodeType === 3 && (!jQuery(this.startContainer.parentNode).contentEditable())) {
-					adjacentTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(this.startContainer.parentNode, GENTICS.Utils.Dom.getIndexInParent(this.startContainer) + 1, false);
+					adjacentTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(this.startContainer.parentNode, GENTICS.Utils.Dom.getIndexInParent(this.startContainer) + 1, false, {}, { acceptUntrimmed: true });
 					if (adjacentTextNode && Aloha.activeEditable && jQuery(adjacentTextNode.parentNode).contentEditable() && jQuery(adjacentTextNode).closest(Aloha.activeEditable.obj).length > 0) {
 						this.startContainer = this.endContainer = adjacentTextNode;
 						this.startOffset = this.endOffset = 0;
