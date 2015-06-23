@@ -27,15 +27,15 @@ var alltests = {
 
 		{	
 			start: '<p>before table[]</p><div class="aloha-table-wrapper" contenteditable="false"></div><p>after table</p>',
-			execResult: '<p>before table[]</p><p>after table</p>'
+			execResult: '<p>before table[]</p><div class="aloha-table-wrapper" contenteditable="false"></div><p>after table</p>'
 		},
 		{	
 			start: '<p>before table[]</p>		<div class="aloha-table-wrapper" contenteditable="false"></div><p>after table</p>',
-			execResult: '<p>before table[]</p><p>after table</p>'
+			execResult: '<p>before table[]</p><div class="aloha-table-wrapper" contenteditable="false"></div><p>after table</p>'
 		},
 		{	
 			start: '<p>before table[]</p>	' + "\n" + '	<div class="aloha-table-wrapper" contenteditable="false"></div><p>after table</p>',
-			execResult: '<p>before table[]</p><p>after table</p>'
+			execResult: '<p>before table[]</p><div class="aloha-table-wrapper" contenteditable="false"></div><p>after table</p>'
 		},
 		{	
 			start: '<p>before table[] </p><div class="aloha-table-wrapper" contenteditable="false"></div><p>after table</p>',
@@ -47,7 +47,7 @@ var alltests = {
 		},
 		{
 			start: '<p><b>before <i>table[]</i></b></p><div class="aloha-table-wrapper" contenteditable="false"></div><p>after table</p>',
-			execResult: '<p><b>before <i>table[]</i></b></p><p>after table</p>'
+			execResult: '<p><b>before <i>table[]</i></b></p><div class="aloha-table-wrapper" contenteditable="false"></div><p>after table</p>'
 		},
 		
 //		It is impossible to get a selection like this in ie
