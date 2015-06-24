@@ -23,7 +23,7 @@ define([
 	'table/table-plugin-utils',
 	'aloha/ephemera',
 	'util/html',
-	'util/dom2',
+	'util/dom',
 	'aloha/console'
 ], function (
 	Aloha,
@@ -427,126 +427,6 @@ define([
 				}
 			}
 		} );
-
-		function isNotUnrenderedNode(node) {
-			return !Html.isUnrenderedNode(node);
-		}
-
-		/**
-		 * @param {WrappedRange} range
-		 */
-		function isRangeVisiblyAtLeftBoundary(range) {
-			var offset = range.startOffset;
-			var node = range.startContainer;
-			if (0 === offset) {
-				return true;
-			}
-			if (1 === node.nodeType) {
-				return !Html.findNodeRight(
-					node.childNodes[offset - 1],
-					isNotUnrenderedNode
-				);
-			}
-			if (3 === node.nodeType) {
-				return Html.isWSPorZWSPText(node.data.substr(0, offset));
-			}
-			return false;
-		}
-
-		/**
-		 * @param {WrappedRange} range
-		 */
-		function isRangeVisiblyAtRightBoundary(range) {
-			var offset = range.startOffset;
-			var node = range.startContainer;
-			if (Dom.nodeLength(node) === offset) {
-				return true;
-			}
-			if (1 === node.nodeType) {
-				return !Html.findNodeLeft(
-					node.childNodes[offset - 1],
-					isNotUnrenderedNode
-				);
-			}
-			if (3 === node.nodeType) {
-				return Html.isWSPorZWSPText(node.data.substr(offset));
-			}
-			return false;
-		}
-
-		/**
-		 * Get the next sibling of the parent that is not null.
-		 * If the parent has no sibling, get the next sibling of it's parent.
-		 * Repeat until a sibling is found or the parent is null
-		 * @param  {Node} node
-		 * @return {Node}
-		 */
-		function getNextParentSiblingRecur(node) {
-			if (node.parentNode) {
-				return node.parentNode.nextSibling || getNextParentSiblingRecur(node.parentNode);
-			} else {
-				return null;
-			}
-		}
-
-		Aloha.bind('aloha-command-will-execute', function (_, event){
-			var range = Aloha.getSelection().getRangeAt(0);
-			var adjacent = null;
-			//if forwarddelete is invoked before the table, jump into first table cell instead of deleting the table
-			if ('forwarddelete' === event.commandId) {
-				if (!range.collapsed || !isRangeVisiblyAtRightBoundary(range)) {
-					return;
-				}
-				var node = range.commonAncestorContainer;
-				if (3 === node.nodeType) {
-					if(node.nextSibling === null) {
-						adjacent = node.parentNode
-						        && Html.findNodeLeft(
-						           getNextParentSiblingRecur(node),
-									isNotUnrenderedNode
-								);
-					}
-				} else if (1 === node.nodeType) {
-					adjacent = Html.findNodeLeft(
-						node.nextSibling,
-						isNotUnrenderedNode
-					);
-				}
-				if (adjacent === that.tableWrapper) {
-					event.preventDefault = true;
-					Aloha.getSelection().collapse(
-						getNewSelectedElement('first', that.obj),
-						0
-					);
-				}
-			} else if ('delete' === event.commandId) {
-				if (!range.collapsed || !isRangeVisiblyAtLeftBoundary(range)) {
-					return;
-				}
-				var node = range.commonAncestorContainer;
-				if (3 === node.nodeType) {
-					adjacent = node.parentNode
-					        && Html.findNodeRight(
-								node.parentNode.previousSibling,
-								isNotUnrenderedNode
-							);
-				} else if (1 === node.nodeType) {
-					adjacent = Html.findNodeRight(
-						node.previousSibling,
-						isNotUnrenderedNode
-					);
-				}
-				if (adjacent === that.tableWrapper) {
-					var nodeToSelect = getNewSelectedElement('last', that.obj);
-					event.preventDefault = true;
-					Aloha.getSelection().collapse(
-						nodeToSelect,
-						Dom.nodeLength(nodeToSelect)
-					);
-				}
-			}
-		});
-
 
 		this.obj.on('keydown', function (jqEvent) {
 			// Delete button
@@ -1397,7 +1277,7 @@ define([
 			newRange.endContainer = this.obj.get(0).parentNode;
 			newRange.startContainer = newRange.endContainer;
 
-			newRange.endOffset = GENTICS.Utils.Dom.getIndexInParent(this.obj.get(0));
+			newRange.endOffset = Dom.getIndexInParent(this.obj.get(0));
 			newRange.startOffset = newRange.endOffset;
 
 			newRange.clearCaches();
