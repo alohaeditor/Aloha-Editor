@@ -399,7 +399,32 @@ define([
 
 		var that = this,
 		    htmlTableWrapper,
-		    tableWrapper, eventContainer;
+		    tableWrapper, eventContainer, range = new Aloha.Selection.SelectionRange(true);
+
+		// check whether the current selection is in this table
+		if (jQuery(range.startContainer).closest('table').is(this.obj)
+				|| jQuery(range.endContainer).closest('table').is(
+						this.obj)) {
+			// if the startContainer or endContainer are a tr, we move into the next td
+			if (range.startContainer
+					&& range.startContainer.nodeType === 1
+					&& range.startContainer.nodeName.toLowerCase() === 'tr') {
+				if (range.startOffset < range.startContainer.childNodes.length) {
+					range.startContainer = range.startContainer.childNodes[range.startOffset];
+					range.startOffset = 0;
+				}
+			}
+			if (range.endContainer
+					&& range.endContainer.nodeType === 1
+					&& range.endContainer.nodeName.toLowerCase() === 'tr') {
+				if (range.endOffset < range.endContainer.childNodes.length) {
+					range.endContainer = range.endContainer.childNodes[range.endOffset];
+					range.endOffset = 0;
+				}
+			}
+		} else {
+			range = null;
+		}
 
 		// alter the table attributes
 		this.obj.addClass( this.get( 'className' ) );
@@ -614,6 +639,33 @@ define([
 		this.makeCaptionEditable();
 		this.checkWai();
 		this.isActive = true;
+
+		// when we stored the range, it was in the current table,
+		// so we need to re-select (because we changed the DOM structure around the table)
+		if (range) {
+			// check whether the startContainer and/or endContainer are one of the table's cells.
+			// if yes, replace the container with the editable wrapper
+			jQuery(this.cells).each(function() {
+				if (this.obj.is(range.startContainer)) {
+					if (this.wrapper.contents().length === 0) {
+						this.wrapper.html('&nbsp;');
+					}
+					range.startContainer = this.wrapper.contents().get(0);
+					range.startOffset = 0;
+				}
+				if (this.obj.is(range.endContainer)) {
+					if (this.wrapper.contents().length === 0) {
+						this.wrapper.html('&nbsp;');
+					}
+					range.endContainer = this.wrapper.contents().get(0);
+					range.endOffset = 0;
+				}
+			});
+			this.focus();
+			window.setTimeout( function() {
+				range.select();
+			}, 1);
+		}
 
 		Aloha.trigger( 'aloha-table-activated' );
 	};

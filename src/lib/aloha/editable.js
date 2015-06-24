@@ -160,21 +160,10 @@ define([
 	function registerEvents(editable) {
 		var $editable = editable.obj;
 
-		$editable.mousedown(function (event) {
-			if (!Aloha.eventHandled) {
-				Aloha.eventHandled = true;
-				if (Aloha.activeEditable == null || typeof Aloha.activeEditable === 'undefined' || $editable[0] !== Aloha.activeEditable.obj[0]) {
-					Aloha.mouseEventChangedEditable = true;
-				}
-				return editable.activate(event);
-			}
-		});
-		$editable.mouseup(function (event) {
+		$editable.mousedown(function () {
+			Aloha.eventHandled = true;
+		}).mouseup(function () {
 			Aloha.eventHandled = false;
-		});
-
-		$editable.focus(function (event) {
-			return editable.activate(event);
 		});
 
 		$editable.keydown(function (event) {
@@ -461,12 +450,13 @@ define([
 
 				me.ready = true;
 
-				// disable object resizing.
+				// disable object resizing and inline table editing.
 				// we do this in here and with a slight delay, because
 				// starting with FF 15, this would cause a JS error
 				// if done before the first DOM object is made contentEditable.
 				window.setTimeout(function () {
 					Aloha.disableObjectResizing();
+					Aloha.disableInlineTableEditing();
 				}, 20);
 
 				// throw a new event when the editable has been created
