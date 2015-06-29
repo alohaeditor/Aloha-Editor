@@ -626,6 +626,30 @@ define([
 		},
 
 		/**
+		 * Disable native table editing
+		 */
+		disableInlineTableEditing: function () { // enableInlineTableEditing
+			try {
+				// This will disable browsers native table editing facilities in
+				// order to disable resize handles.
+				var supported;
+				try {
+					supported = document.queryCommandSupported('enableInlineTableEditing');
+				} catch (e) {
+					supported = false;
+					Aloha.Log.log('enableInlineTableEditing is not supported.');
+				}
+				if (supported) {
+					document.execCommand('enableInlineTableEditing', false, false);
+					Aloha.Log.log('enableInlineTableEditing disabled.');
+				}
+			} catch (e2) {
+				Aloha.Log.error(e2, 'Could not disable enableInlineTableEditing');
+				// this is just for others, who will not support disabling enableInlineTableEditing
+			}
+		},
+
+		/**
 		 * Human-readable string representation of this.
 		 *
 		 * @hide

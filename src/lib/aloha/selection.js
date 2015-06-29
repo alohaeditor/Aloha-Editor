@@ -616,6 +616,12 @@ define([
 					}
 					return;
 				} else {
+					// activate the editable host of the selection
+					var editable = Aloha.getEditableHost(jQuery(range.startContainer));
+					if (editable) {
+						editable.activate();
+					}
+
 					// And yet another IE workaround. Somehow the caret is not
 					// positioned inside the clicked editable. This occures only
 					// when switching editables in IE. In those cases the caret is

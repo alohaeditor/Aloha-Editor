@@ -156,6 +156,7 @@ function( TestUtils ) {
 					r.setEnd( range.endContainer, range.endOffset);
 					Aloha.getSelection().removeAllRanges();
 					Aloha.getSelection().addRange(r);
+					Aloha.getEditableHost(editable).activate();
 
 					// Start
 					if ( typeof check.indetermStart !== 'undefined' ) {
