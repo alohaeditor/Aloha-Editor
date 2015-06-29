@@ -2716,34 +2716,55 @@ define([
 		}
 
 		// determine the position of the current selection as close as possible
-		var rect;
+		var rect, top, bottom, prev, next;
 		if (range.nativeRange.getClientRects().length === 0) {
 			if (range.startContainer.nodeType === 3) {
 				rect = range.startContainer.parentNode.getBoundingClientRect();
+				top = rect.top;
+				bottom = rect.bottom;
 			} else {
+				// the start container is not a text node, so we get the bounding rectangle of the start container itself
 				rect = range.startContainer.getBoundingClientRect();
+				top = rect.top;
+				bottom = rect.bottom;
+
+				// we refine the top and bottom positions by getting the bounding rectangles of the previous and next elements
+				if (range.startOffset > 0) {
+					prev = range.startContainer.childNodes[range.startOffset - 1];
+					next = prev.nextSibling;
+				} else {
+					next = range.startContainer.firstChild;
+				}
+				if (prev && prev.nodeType === 1) {
+					top = prev.getBoundingClientRect().bottom;
+				}
+				if (next && next.nodeType === 1) {
+					bottom = next.getBoundingClientRect().top;
+				}
 			}
 		} else {
 			rect = range.nativeRange.getClientRects()[0];
+			top = rect.top;
+			bottom = rect.bottom;
 		}
 
 		// scroll the window if necessary
 		var $win = jQuery(window);
-		if (rect.top < 0) {
-			$win.scrollTop($win.scrollTop() + rect.top);
-		} else if (rect.bottom > $win.height()) {
-			$win.scrollTop($win.scrollTop() + (rect.bottom - $win.height()));
+		if (top < 0) {
+			$win.scrollTop($win.scrollTop() + top);
+		} else if (bottom > $win.height()) {
+			$win.scrollTop($win.scrollTop() + (bottom - $win.height()));
 		}
 
 		var $scrollable = jQuery(range.startContainer).closest(':hasScroll(y)');
-		if ($scrollable.length > 0) {
+		if ($scrollable.length > 0 && !$scrollable.is($win) && !$scrollable.is(jQuery('html'))) {
 			var scrollRect = $scrollable[0].getBoundingClientRect();
-			if (rect.top < scrollRect.top) {
+			if (top < scrollRect.top) {
 				// scroll up
-				$scrollable.scrollTop($scrollable.scrollTop() - (scrollRect.top - rect.top));
-			} else if (rect.bottom > scrollRect.bottom) {
+				$scrollable.scrollTop($scrollable.scrollTop() - (scrollRect.top - top));
+			} else if (bottom > scrollRect.bottom) {
 				// scroll down
-				$scrollable.scrollTop($scrollable.scrollTop() + (rect.bottom - scrollRect.bottom));
+				$scrollable.scrollTop($scrollable.scrollTop() + (bottom - scrollRect.bottom));
 			}
 		}
 	};
