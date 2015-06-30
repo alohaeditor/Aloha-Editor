@@ -285,6 +285,7 @@ define([
 			// remove the click event of the
 			this.obj.unbind('click');
 			this.obj.unbind('mousedown');
+			this.obj.get(0).onselectstart = null;
 
 			if (jQuery.trim(this.obj.attr('class')) == '') {
 				this.obj.removeAttr('class');
