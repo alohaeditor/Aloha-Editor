@@ -1,0 +1,5 @@
+The behaviour of DELETE and BACKSPACE has been fixed:
+If nothing is deleted, because the next/previous element is a block,
+the current selection is not changed. This fixes problems in Internet Explorer
+where after pressing DELETE when the cursor right before a block, the selection
+would be moved into the block, which prevented further editing.

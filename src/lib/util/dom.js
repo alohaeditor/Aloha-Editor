@@ -429,6 +429,12 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 		listElements: ['li', 'ol', 'ul'],
 
 		/**
+		 * List of nodenames of table elements
+		 * @hide
+		 */
+		tableElements: ['caption', 'colgroup', 'table', 'thead', 'tbody', 'tfoot', 'tr', 'td'],
+
+		/**
 		 * Splits a DOM element at the given position up until the limiting object(s), so that it is valid HTML again afterwards.
 		 * @param {RangeObject} range Range object that indicates the position of the splitting.
 		 *				This range will be updated, so that it represents the same range as before the split.
@@ -1114,6 +1120,22 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 		},
 
 		/**
+		 * Check whether the given node is a table element
+		 * @param {DOMObject} node node to check
+		 * @return {boolean} true if yes, false if not (or null)
+		 * @method
+		 */
+		isTableElement: function (node) {
+			if (!node) {
+				return false;
+			}
+			if (node.nodeType === 1 && jQuery.inArray(node.nodeName.toLowerCase(), this.tableElements) >= 0) {
+				return true;
+			}
+			return false;
+		},
+
+		/**
 		 * Check whether the given node is a linebreak element
 		 * @param {DOMObject} node node to check
 		 * @return {boolean} true for linebreak elements, false for everything else
@@ -1175,6 +1197,7 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 		 * - blocklevel (default: true)
 		 * - list (default: true)
 		 * - linebreak (default: true)
+		 * - table (default: true)
 		 * </pre>
 		 * @param {object} options additional options to guide the search. May contain the following properties
 		 * <pre>
@@ -1192,7 +1215,8 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 				stopat = {
 					'blocklevel': true,
 					'list': true,
-					'linebreak': true
+					'linebreak': true,
+					'table': true
 				};
 			}
 
@@ -1204,6 +1228,9 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 			}
 			if (typeof stopat.linebreak === 'undefined') {
 				stopat.linebreak = true;
+			}
+			if (typeof stopat.table === 'undefined') {
+				stopat.table = true;
 			}
 
 			if (typeof searchleft === 'undefined') {
@@ -1233,6 +1260,10 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 						// do not leave block level elements
 						return false;
 					}
+					if (stopat.table && this.isTableElement(currentParent)) {
+						// do not leave table level elements
+						return false;
+					}
 					if (stopat.list && this.isListElement(currentParent)) {
 						// do not leave list elements
 						return false;
@@ -1248,6 +1279,10 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 				}
 				if (stopat.blocklevel && this.isBlockLevelElement(nextNode)) {
 					// we found a blocklevel element, stop here
+					return false;
+				}
+				if (stopat.table && this.isTableElement(nextNode)) {
+					// we found a table element, stop here
 					return false;
 				}
 				if (stopat.linebreak && (this.isLineBreakElement(nextNode) || this.isHorizontalRulerElement(nextNode))) {

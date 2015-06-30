@@ -1,8 +1,8 @@
 /* mark all anchor elements without name and href attribute */
 .aloha-editable a:not([name]):not([href]),
-/* mark all anchor elements with empty href attribute (including '#') and the name attribute not set */
-.aloha-editable a[href='#']:not([name]),
-.aloha-editable a[href='']:not([name]),
+/* mark all anchor elements with empty href attribute (including '#') and the name and data-gentics-aloha-object-id attributes not set */
+.aloha-editable a[href='#']:not([name]):not([data-gentics-aloha-object-id]),
+.aloha-editable a[href='']:not([name]):not([data-gentics-aloha-object-id]),
 /* mark all anchor elements with empty name attribute and the href attribute not set */
 .aloha-editable a[name='']:not([href]),
 /* mark all anchor elements with empty href (including '#') and empty name attribute */
