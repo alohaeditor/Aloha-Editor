@@ -6783,6 +6783,11 @@ define([
 			// start (node, offset − 1) and end (node, offset) and abort these
 			// steps."
 			if (node.nodeType == $_.Node.TEXT_NODE && offset != 0) {
+				// if the place we found is not editable, we stop here
+				if (!isEditable(node)) {
+					return;
+				}
+
 				range.setStart(node, offset - 1);
 				range.setEnd(node, offset - 1);
 				deleteContentsRange = deleteContents(node, offset - 1, node, offset);
@@ -7376,6 +7381,11 @@ define([
 			var endOffset;
 			// "If node is a Text node and offset is not node's length:"
 			if (node.nodeType == $_.Node.TEXT_NODE && offset != getNodeLength(node)) {
+				// if the place we found (which we want to delete) is not editable, we stop here
+				if (!isEditable(node)) {
+					return;
+				}
+
 				// "Call collapse(node, offset) on the Selection."
 				range.setStart(node, offset);
 				range.setEnd(node, offset);

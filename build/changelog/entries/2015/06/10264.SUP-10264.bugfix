@@ -1,0 +1,3 @@
+﻿When a <q> element without a data-cite-id was inserted manually (without Aloha)
+into an editable, clicking on it and then formatting another element as a quote
+with Aloha would result in an infine loop. This has been fixed now.
