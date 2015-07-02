@@ -28,6 +28,8 @@ define([
 		init: function (config) {
 			this._super(config);
 
+			this.element.addClass('aloha-dialog');
+
 			var that = this;
 
 			this._linkBrowserButton = Ui.adopt('linkBrowser', Button, {
