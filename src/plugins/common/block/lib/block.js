@@ -212,6 +212,16 @@ define([
 					BlockUtils.pad(that.$element);
 				}
 
+				Aloha.bind('aloha-smart-content-changed', function (event, data) {
+					if (data.editable.isActive) {
+						var $block = data.editable.obj.find('#' + that.id);
+
+						if ($block.length > 0) {
+							BlockUtils.pad(that.$element);
+						}
+					}
+				});
+
 				Aloha.bind('aloha-editable-activated', function ($event, data) {
 					if (data.editable) {
 						var $block = data.editable.obj.find('#' + that.id);
@@ -359,11 +369,11 @@ define([
 		 * @return {Boolean} true of destruction should happen, false otherwise
 		 */
 		shouldDestroy: function () {
-			var $closest = this.$element.parent().closest('.aloha-block,.aloha-editable,.aloha-block-collection');
+			var $closest = this.$element.parent().closest('.aloha-block,.aloha-editable,.aloha-table-cell-editable,.aloha-block-collection');
 			if ($closest.hasClass('aloha-block-collection') && this.$element[0].tagName.toLowerCase() === 'div') {
 				return true;
 			} else {
-				return $closest.hasClass('aloha-editable');
+				return $closest.hasClass('aloha-editable') || $closest.hasClass('aloha-table-cell-editable');
 			}
 		},
 

@@ -4,6 +4,7 @@ define([
 	'aloha/ephemera',
 	'table/table-plugin-utils',
 	'util/browser',
+	'util/misc',
 	'util/dom'
 ], function (
 	Aloha,
@@ -11,6 +12,7 @@ define([
 	Ephemera,
 	Utils,
 	Browser,
+	Misc,
 	Dom
 ) {
 	/**
@@ -247,6 +249,13 @@ define([
 			};
 		}
 
+		Misc.addEditingHelpers($wrapper);
+		Aloha.bind('aloha-smart-content-changed', function (event, data) {
+			if (data.editable.isActive && data.triggerType === 'block-change') {
+				Misc.addEditingHelpers($wrapper);
+			}
+		});
+
 		// set contenteditable wrapper div
 		this.wrapper = $elem.children();
 		if (this.wrapper.get(0)) {
@@ -273,6 +282,8 @@ define([
 		var wrapper = jQuery(this.obj.children('.aloha-table-cell-editable'));
 
 		if (wrapper.length) {
+			Misc.removeEditingHelpers(wrapper);
+
 			// unwrap cell contents without re-creating dom nodes
 			wrapper.parent().append(
 				wrapper.contents()

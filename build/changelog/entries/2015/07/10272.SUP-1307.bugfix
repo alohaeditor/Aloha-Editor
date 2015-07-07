@@ -1,0 +1,2 @@
+Some blocklevel elements were not correctly handled when they
+were place inside of table cells. This has been fixed.

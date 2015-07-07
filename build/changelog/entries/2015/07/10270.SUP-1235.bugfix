@@ -1,0 +1,3 @@
+Some commands (like insertparagraph) could separate a block element
+and its padding element, which prevented positioning the cursor after
+the block element. This has been fixed.
