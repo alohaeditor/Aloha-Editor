@@ -44,6 +44,7 @@ public class SimpleTest {
 		suite.addQunitModule("selection3");
 //		suite.addQunitModule("table");
 		suite.addQunitModule("wailangrepo");
+		suite.addQunitModule("wordcontenthandler");
 
 		return suite;
 	}
