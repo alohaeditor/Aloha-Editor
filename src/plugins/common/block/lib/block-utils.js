@@ -86,7 +86,7 @@ define([
 	 * @return {boolean}      true if the node is line-break ('br'), a block element or the editing host itself
 	 */
 	function untilNode(node) {
-		return node.nodeName.toLowerCase() === 'br' || Html.isBlock(node) || DomLegacy.isEditingHost(node);
+		return /^(br|td|th)$/.test(node.nodeName.toLowerCase()) || Html.isBlock(node) || DomLegacy.isEditingHost(node);
 	}
 
 	/**
@@ -108,6 +108,10 @@ define([
 	 * @param {jQuery<DOMElement>} $block
 	 */
 	function pad($block) {
+		if (DomLegacy.isBlockNode($block[0])) {
+			return;
+		}
+
 		// first check, whether the padding already exists (previous or next sibling with
 		// the a class named landingClassName)
 		var landingClassName = createLandingClassName($block), previous, next;
