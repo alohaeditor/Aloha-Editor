@@ -281,7 +281,7 @@ define([
 		 * @return true if the node is enclosed in a <!--[if !supportLists]--> comment within the stopAt node, otherwise false.
 		 */
 		checkElementIsEnclosedInListsComment: function (node, stopAt) {
-			while (node !== stopAt) {
+			while (node && node !== stopAt) {
 				var sibling = node;
 				while ((sibling = sibling.previousSibling) !== null) {
 					if (Node.COMMENT_NODE === sibling.nodeType && $.trim(sibling.textContent) === '[if !supportLists]') {
