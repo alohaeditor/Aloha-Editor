@@ -180,12 +180,19 @@ define([
 			return $wrapper;
 		});
 
-		$elem.bind('mousedown', function ($event) {
+		$elem.bind('mouseup', function ($event) {
 			window.setTimeout(function () {
 				// Select the entire cell's content.
 				cell.wrapper.trigger('focus');
-				cell._selectAll($wrapper);
+				if (cell.tableObj.selection.selectedCells.length <= 1) {
+					if (!(jQuery($event.target).attr("contenteditable") === "true")) {
+						cell._selectAll($wrapper);
+					}
+				}
 			}, 1);
+		});
+
+		$elem.bind('mousedown', function ($event) {
 			cell.tableObj.selection.baseCellPosition = [cell._virtualY(), cell._virtualX()];
 
 			if (!cell.tableObj.selection.lastBaseCellPosition) {
