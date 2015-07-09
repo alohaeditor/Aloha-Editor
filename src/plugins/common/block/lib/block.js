@@ -262,8 +262,9 @@ define([
 		 * NOTE: Purely internal, "this" is not available inside this method!
 		 */
 		_preventSelectionChangedEventHandler: function ($event) {
-			if (('dblclick' !== $event.type) && 
-				!jQuery($event.target).is('.aloha-editable')) {
+			var $editable = $($event.target).closest('.aloha-editable');
+
+			if ('dblclick' !== $event.type && !this.contains($editable[0])) {
 				Aloha.Selection.preventSelectionChanged();
 			}
 		},

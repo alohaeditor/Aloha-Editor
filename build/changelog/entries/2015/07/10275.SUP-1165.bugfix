@@ -1,0 +1,3 @@
+When clicking on a nested editable, the selection-changed events where
+not triggered when the actual target of the click was not the editable
+itself (e.g. when clicking on formated text). This has been fixed.
