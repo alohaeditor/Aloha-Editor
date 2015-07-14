@@ -1294,6 +1294,12 @@ define([
 			var tableObj = createNewTable(tableReloadedFromDOM);
 
 			if (tableObj) {
+				var range = Aloha.Selection.getRangeObject();
+
+				range.startContainer = range.endContainer = tableObj.cells[0].wrapper[0];
+				range.startOffset = range.endOffset = 0;
+				range.select();
+
 				// Because without the 10ms delay, we cannot place the cursor
 				// automatically into the first cell in IE.
 				if ($.browser.msie) {

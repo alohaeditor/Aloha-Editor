@@ -1,0 +1,3 @@
+When creating a new table, the cursor was not updated properly
+into the first table cell, so inserting block elements did not
+work. This has been fixed.
