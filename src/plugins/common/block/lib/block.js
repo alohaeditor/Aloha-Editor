@@ -846,6 +846,21 @@ define([
 				blockDroppedProperly = true;
 			};
 			var editablesWhichNeedToBeCleaned = [];
+
+			// Prevent the prevention of drag inside a cell
+			var element = this.$element.get(0);
+			element.ondragstart = function (e) {
+				if (e) {
+					if (typeof e.stopPropagation === 'function') {
+						e.stopPropagation();
+					} else {
+						e.cancelBubble = true;
+					}
+				} else {
+					window.event.cancelBubble = true;
+				}
+			};
+
 			this.$element.draggable({
 				handle: '.aloha-block-draghandle',
 				scope: 'aloha-block-inlinedragdrop',
