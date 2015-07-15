@@ -1,0 +1,3 @@
+After interacting with a dialog, the Aloha editor lost the the
+link scope although the current selection was inside a link.
+This has been fixed.

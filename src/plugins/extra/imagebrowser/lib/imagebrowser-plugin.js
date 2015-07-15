@@ -56,6 +56,8 @@ define([
 		init: function ( config ) {
 			this._super( config );
 
+			this.element.addClass('aloha-dialog');
+
 			var browser = this;
 
 			this._imageBrowserButton = Ui.adopt('imageBrowser', Button, {
