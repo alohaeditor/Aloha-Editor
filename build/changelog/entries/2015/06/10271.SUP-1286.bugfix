@@ -1,0 +1,4 @@
+﻿When pasting content from Word into Aloha, which contains paragraphs that 
+are formatted as ListParagraph in Word, but have no bullet, number, letter,
+etc. at the beginning, the first of these paragraphs was removed during 
+the pasting process. This has been fixed now.
