@@ -1,0 +1,4 @@
+When doing drag&drop of blocks in tables, the table cells were also
+selected when hovering over them. Also empty table cells were not marked
+as possible drop target (although dropping worked).
+Both issues have been fixed.
