@@ -264,8 +264,9 @@ define([
 		 * NOTE: Purely internal, "this" is not available inside this method!
 		 */
 		_preventSelectionChangedEventHandler: function ($event) {
-			if (('dblclick' !== $event.type) && 
-				!jQuery($event.target).is('.aloha-editable')) {
+			var $editable = $($event.target).closest('.aloha-editable');
+
+			if ('dblclick' !== $event.type && !this.contains($editable[0])) {
 				Aloha.Selection.preventSelectionChanged();
 			}
 		},
@@ -845,6 +846,21 @@ define([
 				blockDroppedProperly = true;
 			};
 			var editablesWhichNeedToBeCleaned = [];
+
+			// Prevent the prevention of drag inside a cell
+			var element = this.$element.get(0);
+			element.ondragstart = function (e) {
+				if (e) {
+					if (typeof e.stopPropagation === 'function') {
+						e.stopPropagation();
+					} else {
+						e.cancelBubble = true;
+					}
+				} else {
+					window.event.cancelBubble = true;
+				}
+			};
+
 			this.$element.draggable({
 				handle: '.aloha-block-draghandle',
 				scope: 'aloha-block-inlinedragdrop',
