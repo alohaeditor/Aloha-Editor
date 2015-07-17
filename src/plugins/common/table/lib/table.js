@@ -1814,7 +1814,11 @@ define([
 			});
 		};
 
-		cell.bind('mousedown.resize', function() {
+		cell.bind('mousedown.resize', function($event) {
+			// prevent cell resizing, if mousedown was on a block handle
+			if (jQuery($event.target).hasClass('aloha-block-draghandle')) {
+				return;
+			}
 
 			// create a guide
 			var guide = jQuery( '<div></div>' );
@@ -1908,7 +1912,11 @@ define([
 			expandingRow.css( 'height', expandToHeight );
 		};
 
-		cell.bind( 'mousedown.resize', function(){
+		cell.bind('mousedown.resize', function($event) {
+			// prevent cell selection, if mousedown was on a block handle
+			if (jQuery($event.target).hasClass('aloha-block-draghandle')) {
+				return;
+			}
 
 			// create a guide
 			var guide = jQuery( '<div></div>' );
