@@ -1,0 +1,2 @@
+Drag & drop of blocks sometimes caused a JavaScript error,
+which will be prevented now.
