@@ -103,6 +103,11 @@ define([
 				};
 			}
 
+			// prevent cell selection, if mousedown was on a block handle
+			if (jQuery($event.target).hasClass('aloha-block-draghandle')) {
+				return;
+			}
+
 			cell._editableMouseDown($event);
 
 			cell.tableObj.selection.baseCellPosition = [cell._virtualY(), cell._virtualX()];
@@ -181,6 +186,11 @@ define([
 		});
 
 		$elem.bind('mousedown', function ($event) {
+			// prevent cell selection, if mousedown was on a block handle
+			if (jQuery($event.target).hasClass('aloha-block-draghandle')) {
+				return;
+			}
+
 			window.setTimeout(function () {
 				// Select the entire cell's content.
 				cell.wrapper.trigger('focus');
