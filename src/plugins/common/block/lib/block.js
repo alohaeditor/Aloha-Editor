@@ -877,7 +877,9 @@ define([
 						that._dd_traverseDomTreeAndRemoveSpans(this);
 					});
 
-					BlockUtils.unpad($currentDraggable);
+					if ($currentDraggable) {
+						BlockUtils.unpad($currentDraggable);
+					}
 
 					$currentDraggable = null;
 
