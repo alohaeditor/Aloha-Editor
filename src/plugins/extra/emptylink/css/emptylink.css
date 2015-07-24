@@ -3,10 +3,12 @@
 /* mark all anchor elements with empty href attribute (including '#') and the name and data-gentics-aloha-object-id attributes not set */
 .aloha-editable a[href='#']:not([name]):not([data-gentics-aloha-object-id]),
 .aloha-editable a[href='']:not([name]):not([data-gentics-aloha-object-id]),
+.aloha-editable a[href='http://']:not([name]):not([data-gentics-aloha-object-id]),
 /* mark all anchor elements with empty name attribute and the href attribute not set */
 .aloha-editable a[name='']:not([href]),
 /* mark all anchor elements with empty href (including '#') and empty name attribute */
 .aloha-editable a[href='#'][name=''],
+.aloha-editable a[href='http://'][name=''],
 .aloha-editable a[href=''][name=''] {
 	background-color: red;
 }
