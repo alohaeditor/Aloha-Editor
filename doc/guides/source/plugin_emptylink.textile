@@ -7,4 +7,4 @@ endprologue.
 h3. Functional Description
 
 The Plugin relies on CSS selectors to highlight the empty link elements (see https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors).
-The CSS selector highlights links which its link target attribute ('href') is either '#' or empty.
+The CSS selector highlights links which its link target attribute ('href') is either '#', 'http://' or empty.
