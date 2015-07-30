@@ -378,6 +378,13 @@ define([
 		var doc = $editable[0].ownerDocument;
 		if (isIEorDocModeGreater9(doc)) {
 			$editable.bind('beforepaste', function ($event) {
+				if ($event.target.nodeName === 'INPUT' ||
+						$event.target.nodeName === 'TEXTAREA') {
+					// We have to let the browser handle most events concerning
+					// text input telements.
+					return;
+				}
+
 				scrollPositionBeforePaste.x = window.scrollX ||
 					document.documentElement.scrollLeft;
 				scrollPositionBeforePaste.y = window.scrollY ||
@@ -389,6 +396,11 @@ define([
 			});
 		} else {
 			$editable.bind('paste', function ($event) {
+				if ($event.target.nodeName === 'INPUT' ||
+						$event.target.nodeName === 'TEXTAREA') {
+					return;
+				}
+
 				scrollPositionBeforePaste.x = window.scrollX ||
 					document.documentElement.scrollLeft;
 				scrollPositionBeforePaste.y = window.scrollY ||

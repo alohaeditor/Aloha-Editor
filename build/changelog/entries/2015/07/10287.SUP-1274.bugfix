@@ -1,0 +1,3 @@
+When clicking on a text input or textarea element nested inside an editable,
+the selection was immediately removed from the input element, so no text could
+be entered in the input element. This has been fixed.

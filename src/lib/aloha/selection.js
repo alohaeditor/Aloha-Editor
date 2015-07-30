@@ -598,6 +598,21 @@ define([
 				window.clearTimeout(this.updateSelectionTimeout);
 			}
 
+			// We get no valid selection from IE it the event target was
+			// a text input element, so the following setTimeout() approach
+			// would never terminate. We let the browser handle all events
+			// in such elements, but we still have to make sure the
+			// editable containing the event target is active.
+			if (event && (event.target.nodeName === 'INPUT' || event.target.nodeName === 'TEXTAREA')) {
+				var editable = Aloha.getEditableHost(objectClicked);
+
+				if (editable && Aloha.activeEditable !== editable) {
+					editable.activate();
+				}
+
+				return;
+			}
+
 			// We have to update the selection in a timeout due to an IE
 			// bug that is is caused by selecting some text and then
 			// clicking once inside the selection (which collapses the
@@ -706,9 +721,11 @@ define([
 		 * @hide
 		 */
 		_updateSelection: function (event, range) {
-			if (event && event.originalEvent &&
-					true === event.originalEvent.stopSelectionUpdate) {
-				return false;
+			if (event) {
+				if (event.target.nodeName === 'INPUT' || event.target.nodeName === 'TEXTAREA'
+						|| (event.originalEvent && true === event.originalEvent.stopSelectionUpdate)) {
+					return false;
+				}
 			}
 
 			if (typeof range === 'undefined') {

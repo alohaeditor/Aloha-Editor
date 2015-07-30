@@ -186,8 +186,11 @@ define([
 					that._fixScrollPositionBugsInIE();
 					that.activate(event.target, event);
 					// remove the selection, if the clicked element itself is not editable, but don't do this, if the clicked
-					// element is the active table cell, because in that case, the selection is in the editable wrapper of the cell (which is ok)
-					if (!jQuery(event.target).contentEditable() && !jQuery(event.target).hasClass("aloha-table-cell_active")) {
+					// element is the active table cell, because in that case, the selection is in the editable wrapper of the
+					// cell (which is ok). We also leave the selection alone if the target was a text input element.
+					var $target = jQuery(event.target);
+
+					if (!$target.is('textarea, input') && !$target.contentEditable() && !$target.hasClass("aloha-table-cell_active")) {
 						Aloha.getSelection().removeAllRanges();
 					}
 				}
