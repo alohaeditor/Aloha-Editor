@@ -455,6 +455,13 @@ define([
 		 * @return "Aloha.Selection"
 		 */
 		preProcessKeyStrokes: function (event) {
+			if (event.target.nodeName === 'INPUT' || event.target.nodeName === 'TEXTAREA') {
+				// Just let the browser handle all events on input fields.
+				event.stopImmediatePropagation();
+
+				return true;
+			}
+
 			if (event.type !== 'keydown') {
 				return false;
 			}
