@@ -124,6 +124,12 @@ define([
 	 * @param {WrappedRange} range The range to restore.
 	 */
 	function restoreSelection(range) {
+		var editable = CopyPaste.getEditableAt(range);
+
+		// setting the focus is needed for mozilla to have a working rangeObject.select()
+		if (editable && Aloha.browser.mozilla && document.activeElement !== editable.obj[0]) {
+			editable.obj.focus();
+		}
 		CopyPaste.setSelectionAt(range);
 		window.scrollTo(
 			scrollPositionBeforePaste.x,
