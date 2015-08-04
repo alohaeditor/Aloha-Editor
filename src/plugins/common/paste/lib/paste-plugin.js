@@ -124,6 +124,12 @@ define([
 	 * @param {WrappedRange} range The range to restore.
 	 */
 	function restoreSelection(range) {
+		var editable = CopyPaste.getEditableAt(range);
+
+		// setting the focus is needed for mozilla to have a working rangeObject.select()
+		if (editable && Aloha.browser.mozilla && document.activeElement !== editable.obj[0]) {
+			editable.obj.focus();
+		}
 		CopyPaste.setSelectionAt(range);
 		window.scrollTo(
 			scrollPositionBeforePaste.x,
@@ -378,6 +384,13 @@ define([
 		var doc = $editable[0].ownerDocument;
 		if (isIEorDocModeGreater9(doc)) {
 			$editable.bind('beforepaste', function ($event) {
+				if ($event.target.nodeName === 'INPUT' ||
+						$event.target.nodeName === 'TEXTAREA') {
+					// We have to let the browser handle most events concerning
+					// text input telements.
+					return;
+				}
+
 				scrollPositionBeforePaste.x = window.scrollX ||
 					document.documentElement.scrollLeft;
 				scrollPositionBeforePaste.y = window.scrollY ||
@@ -389,6 +402,11 @@ define([
 			});
 		} else {
 			$editable.bind('paste', function ($event) {
+				if ($event.target.nodeName === 'INPUT' ||
+						$event.target.nodeName === 'TEXTAREA') {
+					return;
+				}
+
 				scrollPositionBeforePaste.x = window.scrollX ||
 					document.documentElement.scrollLeft;
 				scrollPositionBeforePaste.y = window.scrollY ||
