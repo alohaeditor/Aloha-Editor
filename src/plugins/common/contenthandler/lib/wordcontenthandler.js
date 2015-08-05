@@ -173,7 +173,7 @@ define([
 		for (i = 0; i < $nodes.length; i++) {
 			node = $nodes[i];
 
-			if (Node.TEXT_NODE === node.nodeType) {
+			if (3 === node.nodeType) {
 				var text = node.nodeValue;
 				node.nodeValue = text.replace(/[\r\n]+/gm, ' ');
 			} else {
@@ -212,6 +212,37 @@ define([
 				// Because footnotes for example are wrapped in divs and should
 				// be unwrap.
 				$node.contents().unwrap();
+			} else if ('ul' === nodeName || 'ol' === nodeName) {
+				/*
+				 * Word renders nested lists as
+				 *
+				 * <ul>
+				 *   <li>Foo</li>
+				 *   <ul>
+				 *     <li>Bar</li>
+				 *   </ul>
+				 * </ul>
+				 *
+				 * instead of
+				 *
+				 * <ul>
+				 *   <li>Foo
+				 *     <ul>
+				 *       <li>Bar</li>
+				 *     </ul>
+				 *   </li>
+				 * </ul>
+				 *
+				 * Since the markup is not valid, the nested lists would be removed by
+				 * the generic content handler.
+				 */
+				if ($node.parent().is('ul,ol')) {
+					var prev = $node.prev('li');
+
+					if (prev.length > 0) {
+						prev.append($node)
+					}
+				}
 			} else if ('td' !== nodeName && isEmpty($node)) {
 
 				// Because any empty element (like spaces wrapped in spans) are
