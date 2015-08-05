@@ -1,0 +1,2 @@
+The action "Remove formatting" also removed the paragraph around a selection. This has been fixed.
+Now this action only removes html elements that affect the formatting and are expected to be removed.
