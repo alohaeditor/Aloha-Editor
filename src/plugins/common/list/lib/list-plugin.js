@@ -642,12 +642,14 @@ define([
 			var editable;
 			var range;
 			var selection;
+			Aloha.Selection.updateSelection();
+
 			// wrap a paragraph around the selection
 			Aloha.Selection.changeMarkupOnSelection(jQuery('<p></p>'));
 			var domToTransform = this.getStartingDomObjectToTransform();
 
 			if (!domToTransform) {
-				if ( Aloha.Selection.rangeObject.startContainer.contentEditable ) {
+				if ( jQuery(Aloha.Selection.rangeObject.startContainer).contentEditable() ) {
 					// create a new list with an empty item
 					switch (listtype) {
 						case 'ol':
@@ -665,23 +667,21 @@ define([
 					}
 
 					jqList.append(jqNewEl);
-
 					el = jqNewEl.get(0);
-					editable = Aloha.getActiveEditable().obj;
-					//IE7 requires an (empty or non-empty) text node
-					//inside the li for the selection to work.
 					el.appendChild(document.createTextNode(""));
 
-					editable.append(jqList);
-					editable.focus();
-
-					range = Aloha.createRange();
-					selection = Aloha.getSelection();
-					range.setStart( el.firstChild, 0 );
-					range.setEnd( el.firstChild, 0 );
-					selection.removeAllRanges();
-					selection.addRange( range );
-					Aloha.Selection.updateSelection();
+					if (Dom.insertIntoDOM(jqList, Aloha.Selection.rangeObject)) {
+						range = Aloha.createRange();
+						selection = Aloha.getSelection();
+						range.setStart( el.firstChild, 0 );
+						range.setEnd( el.firstChild, 0 );
+						selection.removeAllRanges();
+						selection.addRange( range );
+						Aloha.Selection.updateSelection();
+						domToTransform = jqList.get(0);
+					} else {
+						Aloha.Log.error(this, 'Could not transform selection into a list');
+					}
 				} else {
 					Aloha.Log.error(this, 'Could not transform selection into a list');
 				}
@@ -703,8 +703,13 @@ define([
 			this._outdentListButton.show(true);
 			this._indentListButton.show(true);
 
-			if (!domToTransform) {
+			if (!domToTransform || !domToTransform.parentNode) {
 				domToTransform = this.prepareNewList(listtype);
+				this.refreshSelection();
+
+				if (domToTransform && domToTransform.nodeName.toLowerCase() === listtype) {
+					return;
+				}
 			}
 
 			// check the dom object

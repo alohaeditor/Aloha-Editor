@@ -904,9 +904,10 @@ define('format/format-plugin', [
 		 */
 		removeFormat: function() {
 			var formats = [
-				'u', 'strong', 'em', 'b', 'i', 'q', 'del', 's', 'code', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'quote', 'blockquote',
-				'section', 'article', 'aside', 'header', 'footer', 'address', 'main', 'hr', 'figure', 'figcaption', 'div', 'small', 'cite', 'dfn',
-				'abbr', 'data', 'time', 'var', 'samp', 'kbd', 'mark', 'span', 'wbr', 'ins'
+				'u', 'strong', 'em', 'b', 'i', 'q', 'del', 's', 'code', 'sub', 'sup',
+				'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'quote', 'blockquote',
+				'address', 'small', 'cite', 'dfn',
+				'abbr', 'time', 'var', 'samp', 'kbd', 'mark', 'span', 'ins'
 				],
 			    rangeObject = Selection.rangeObject,
 			    i;
