@@ -1039,15 +1039,21 @@ define([
 				handleSmartContentChange(me);
 
 			} else if (event && event.type === 'block-change') {
-				Aloha.trigger('aloha-smart-content-changed', {
-					'editable': me,
-					'keyIdentifier': null,
-					'keyCode': null,
-					'char': null,
-					'triggerType': 'block-change',
-					'getSnapshotContent': getSnapshotContent
-				});
-				handleSmartContentChange(me);
+				clearTimeout(this.sccTimerIdle);
+				clearTimeout(this.sccTimerDelay);
+
+				this.sccTimerDelay = window.setTimeout(function () {
+					Aloha.trigger('aloha-smart-content-changed', {
+						'editable': me,
+						'keyIdentifier': null,
+						'keyCode': null,
+						'char': null,
+						'triggerType': 'block-change',
+						'getSnapshotContent': getSnapshotContent
+					});
+					handleSmartContentChange(me);
+
+				}, this.sccDelay);
 
 			} else if (uniChar !== null) {
 				// in the rare case idle time is lower then delay time
