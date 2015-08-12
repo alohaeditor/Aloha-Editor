@@ -185,7 +185,12 @@ define([
 				if (jQuery(event.target).closest('.aloha-block').get(0) === that.$element.get(0)) {
 					that._fixScrollPositionBugsInIE();
 					that.activate(event.target, event);
-					if (!jQuery(event.target).contentEditable()) {
+					// remove the selection, if the clicked element itself is not editable, but don't do this, if the clicked
+					// element is the active table cell, because in that case, the selection is in the editable wrapper of the
+					// cell (which is ok). We also leave the selection alone if the target was a text input element.
+					var $target = jQuery(event.target);
+
+					if (!$target.is('textarea, input') && !$target.contentEditable() && !$target.hasClass("aloha-table-cell_active")) {
 						Aloha.getSelection().removeAllRanges();
 					}
 				}
@@ -262,8 +267,9 @@ define([
 		 * NOTE: Purely internal, "this" is not available inside this method!
 		 */
 		_preventSelectionChangedEventHandler: function ($event) {
-			if (('dblclick' !== $event.type) && 
-				!jQuery($event.target).is('.aloha-editable')) {
+			var $editable = jQuery($event.target).closest('.aloha-editable');
+
+			if ('dblclick' !== $event.type && !this.contains($editable[0])) {
 				Aloha.Selection.preventSelectionChanged();
 			}
 		},
@@ -843,6 +849,21 @@ define([
 				blockDroppedProperly = true;
 			};
 			var editablesWhichNeedToBeCleaned = [];
+
+			// Prevent the prevention of drag inside a cell
+			var element = this.$element.get(0);
+			element.ondragstart = function (e) {
+				if (e) {
+					if (typeof e.stopPropagation === 'function') {
+						e.stopPropagation();
+					} else {
+						e.cancelBubble = true;
+					}
+				} else {
+					window.event.cancelBubble = true;
+				}
+			};
+
 			this.$element.draggable({
 				handle: '.aloha-block-draghandle',
 				scope: 'aloha-block-inlinedragdrop',
@@ -859,7 +880,9 @@ define([
 						that._dd_traverseDomTreeAndRemoveSpans(this);
 					});
 
-					BlockUtils.unpad($currentDraggable);
+					if ($currentDraggable) {
+						BlockUtils.unpad($currentDraggable);
+					}
 
 					$currentDraggable = null;
 

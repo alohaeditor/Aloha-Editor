@@ -1,0 +1,1 @@
+Fixed an error in the block plugin that was caused by a bad function call.
