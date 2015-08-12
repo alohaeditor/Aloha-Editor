@@ -843,8 +843,10 @@ define([
 				jQuery('.aloha-block-dropInlineElementIntoEmptyBlock').removeClass('aloha-block-dropInlineElementIntoEmptyBlock');
 
 				// clear the created droppables
-				$createdDroppables.filter(":data(droppable)").droppable("destroy");
-				$createdDroppables = null;
+				if ($createdDroppables) {
+					$createdDroppables.filter(":data(droppable)").droppable("destroy");
+					$createdDroppables = null;
+				}
 
 				blockDroppedProperly = true;
 			};
@@ -987,9 +989,11 @@ define([
 					// add empty editables
 					$createdDroppables = $createdDroppables.add(".aloha-editable:not(:has(*))");
 
-					$createdDroppables.droppable(droppableCfg);
 					// Small HACK: Also make table cells droppable
-					jQuery('.aloha-table-cell-editable').droppable(droppableCfg);
+					$createdDroppables = $createdDroppables.add('.aloha-table-cell-editable');
+					$createdDroppables = $createdDroppables.add(jQuery('.aloha-editable.aloha-block-dropzone .aloha-table-cell-editable').children(":not(.aloha-block)"));
+
+					$createdDroppables.droppable(droppableCfg);
 				}
 			});
 		},
