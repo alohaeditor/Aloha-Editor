@@ -1,0 +1,3 @@
+When a block in an editable is activated, the container editable is also activated,
+unless the block itself contains an editable, that was clicked. In the latter case, the
+nested editable will be activated.

@@ -562,6 +562,15 @@ define([
 					Aloha.Selection.updateSelection(event);
 				}
 			}
+
+			// activate the editable host of the block
+			if (!this._isInsideNestedEditable) {
+				var editable = Aloha.getEditableHost(this.$element);
+				if (editable) {
+					editable.activate();
+				}
+			}
+
 			// Trigger block activate & selection change events.
 			BlockManager.trigger('block-activate', highlightedBlocks);
 			BlockManager.trigger('block-selection-change', highlightedBlocks);
