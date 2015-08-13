@@ -1,0 +1,2 @@
+Sometimes, clicking in the editable wrapper of a table cell
+selected the whole cell. This has been fixed now.

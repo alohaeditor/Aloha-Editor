@@ -191,6 +191,12 @@ define([
 				return;
 			}
 
+			// when clicked on something nested, prevent selection of whole cell
+			if ($event.target != $elem[0]) {
+				$event.stopPropagation();
+				return;
+			}
+
 			window.setTimeout(function () {
 				// Select the entire cell's content.
 				cell.wrapper.trigger('focus');
