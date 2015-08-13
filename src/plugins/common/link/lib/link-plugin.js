@@ -500,19 +500,18 @@ define([
 				setupMetaClickLink(message.editable);
 			});
 
-			var insideLinkScope = false;
-
 			PubSub.sub('aloha.selection.context-change', function (message) {
 				if (!Aloha.activeEditable) {
+					plugin.lastActiveLink = false;
 					return;
 				}
-				var enteredLinkScope = false;
+				var activeLink = false;
 				if (configurations[Aloha.activeEditable.getId()]) {
-					enteredLinkScope = selectionChangeHandler(plugin, message.range);
+					activeLink = selectionChangeHandler(plugin, message.range);
 					// Only foreground the tab containing the href field the
 					// first time the user enters the link scope to avoid
 					// intefering with the user's manual tab selection
-					if (enteredLinkScope && insideLinkScope !== enteredLinkScope) {
+					if (activeLink !== false && activeLink !== plugin.lastActiveLink) {
 						// put the field into foreground with a timeout, so that this
 						// overrules other plugins that change the active toolbar tab
 						// by setting the scope
@@ -521,22 +520,22 @@ define([
 						}, 10);
 					}
 				}
-				insideLinkScope = enteredLinkScope;
+				plugin.lastActiveLink = activeLink;
 			});
 
 			// Fixes problem: if one clicks from inside an aloha link outside
 			// the editable and thereby deactivates the editable, the link scope
 			// will remain active
 			PubSub.sub('aloha.editable.deactivated', function (message) {
-				if (insideLinkScope) {
+				if (plugin.lastActiveLink !== false) {
 					// Leave the link scope lazily to avoid flickering when
 					// switching between anchor element editables
 					setTimeout(function () {
-						if (!insideLinkScope) {
+						if (!plugin.lastActiveLink) {
 							plugin.toggleLinkScope(false);
 						}
 					}, 100);
-					insideLinkScope = false;
+					plugin.lastActiveLink = false;
 				}
 				teardownMetaClickLink(message.editable);
 			});
@@ -1055,7 +1054,7 @@ define([
 	 *
 	 * @param {LinkPlugin} that This Link Plugin object
 	 * @param {RangeObject} rangeObject Selection Range
-	 * @returns {boolean} True if the link Scope was activated,
+	 * @returns {boolean|DomObject} The Dom Object if a link was selected,
 	 *                    False otherwise
 	 */
 	function selectionChangeHandler(that, rangeObject) {
@@ -1113,6 +1112,6 @@ define([
 		}
 		
 		that.ignoreNextSelectionChangedEvent = false;
-		return enteredLinkScope;
+		return enteredLinkScope ? foundMarkup : false;
 	}
 } );
