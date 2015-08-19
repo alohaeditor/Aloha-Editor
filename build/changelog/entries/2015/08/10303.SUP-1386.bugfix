@@ -1,0 +1,3 @@
+When deleting an empty block level element (like a paragraph) with the "delete" key,
+the selection was probably left in an invalid state, which could cause subsequent editing errors.
+This has been fixed now.

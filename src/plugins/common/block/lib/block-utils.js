@@ -41,7 +41,19 @@ define([
 	 * @return {HTMLElement}
 	 */
 	function createLandingElement($blockElement) {
-		var node = document.createElement('span');
+		var node;
+
+		// This is a bit of an ugly hack, but since we allow tags
+		// consisting of inline-block DIVs we have to wrap those
+		// with other DIVs to ensure valid HTML markup and not
+		// disturb for example the autoparagraph plugin.
+		if ($blockElement.is('div')) {
+			node = document.createElement('div');
+			node.style.display = 'inline-block';
+		} else {
+			node = document.createElement('span');
+		}
+
 		node.className = createLandingClassName($blockElement);
 		node.appendChild(document.createTextNode('\u00A0'));
 
