@@ -1,0 +1,2 @@
+When changing between two links in the same editable,
+the link tab does not get activated. This has been fixed now.
