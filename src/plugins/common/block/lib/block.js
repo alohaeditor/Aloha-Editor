@@ -39,7 +39,7 @@ define([
 	'util/class',
 	'PubSub',
 	'block/block-utils',
-	'util/html',
+	'util/dom',
 	'util/functions',
 	'aloha/engine'
 ], function (
@@ -51,7 +51,7 @@ define([
 	Class,
 	PubSub,
 	BlockUtils,
-	Html,
+	Dom,
 	Fn,
 	Engine
 ) {
@@ -211,8 +211,8 @@ define([
 
 			// Only for inline element.
 			// It is not possible to insert text after or before a Block span
-			// when after or before the Block there is not elements
-			if (Html.isInlineFormattable($element[0])) {
+			// when there are not elements after or before the Block.
+			if (!Dom.isBlockNode($element[0])) {
 				if ($element.closest('.aloha-editable-active').length > 0) {
 					BlockUtils.pad(that.$element);
 				}
