@@ -1,0 +1,3 @@
+When backspace or forward delete was pressed with a selection of exactly one
+breadth (eg: a single character selected) inside an editable in block, the whole
+containing block would be deleted. This behavior has now been fixed.
