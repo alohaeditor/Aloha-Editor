@@ -1,0 +1,2 @@
+Attempting to resize the leftmost margin of a table had caused the resize handle
+to be left as an artifact in the document. This problem has now been fixed.
