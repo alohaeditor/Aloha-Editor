@@ -1425,6 +1425,22 @@ var alltests = {
 		{
 			start: 'f[oo <a>bar]</a> baz',
 			execResult: 'f[] baz'
+		},
+		{
+			start: '<p>one</p><p>{}<br/></p><p>two</p>',
+			execResult: '<p>one</p><p>[]two</p>'
+		},
+		{
+			start: '<p>one</p><p>{}<br/></p><p><br/></p><p>two</p>',
+			execResult: '<p>one</p><p>{}<br/></p><p>two</p>'
+		},
+		{
+			start: '<p>one</p><p>{}<br/></p><ol><li>two</li></ol>',
+			execResult: '<p>one</p><ol><li>[]two</li></ol>'
+		},
+		{
+			start: '<p>one</p><p>{}<br/></p><div class="aloha-table-wrapper" contenteditable="false"><table><tr><td></td></tr></table></div>',
+			execResult: '<p>one[]</p><div class="aloha-table-wrapper" contenteditable="false"><table><tr><td></td></tr></table></div>'
 		}
 
 

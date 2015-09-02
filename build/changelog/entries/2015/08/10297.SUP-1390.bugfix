@@ -1,0 +1,2 @@
+@DIV@ elements with a display style of @inline-block@ where not padded correctly,
+so sometimes the selection could not be placed next to them. This has been fixed.

@@ -7321,6 +7321,31 @@ define([
 				range.endContainer = node.parentElement;
 				range.endOffset = range.startOffset + 1;
 				deleteContents(range);
+
+				// currently, the selection would probably be put in between two paragraphs, which is not suitable
+				// try to move the cursor into the next text node
+				var nextText = Dom.searchAdjacentTextNode(range.startContainer, range.startOffset, false, {blocklevel: false, list: false});
+				if (nextText) {
+					range.startContainer = range.endContainer = nextText;
+					range.startOffset = range.endOffset = 0;
+					return;
+				}
+
+				// check whether the next element is an editable blocklevel element, if yes, put the cursor into it
+				var nextElement = range.startContainer.childNodes.length > range.startOffset ? range.startContainer.childNodes[range.startOffset] : null;
+				if (Dom.isBlockLevelElement(nextElement) && Dom.isEditable(nextElement)) {
+					range.startContainer = range.endContainer = nextElement;
+					range.startOffset = range.endOffset = 0;
+					return;
+				}
+
+				// try the previous text node
+				nextText = Dom.searchAdjacentTextNode(range.startContainer, range.startOffset, true, {blocklevel: false, list: false});
+				if (nextText) {
+					range.startContainer = range.endContainer = nextText;
+					range.startOffset = range.endOffset = nextText.data.length;
+				}
+
 				return;
 			}
 

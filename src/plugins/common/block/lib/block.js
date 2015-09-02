@@ -39,7 +39,7 @@ define([
 	'util/class',
 	'PubSub',
 	'block/block-utils',
-	'util/html',
+	'util/dom',
 	'util/functions',
 	'aloha/engine'
 ], function (
@@ -51,7 +51,7 @@ define([
 	Class,
 	PubSub,
 	BlockUtils,
-	Html,
+	Dom,
 	Fn,
 	Engine
 ) {
@@ -211,8 +211,8 @@ define([
 
 			// Only for inline element.
 			// It is not possible to insert text after or before a Block span
-			// when after or before the Block there is not elements
-			if (Html.isInlineFormattable($element[0])) {
+			// when there are not elements after or before the Block.
+			if (!Dom.isBlockNode($element[0])) {
 				if ($element.closest('.aloha-editable-active').length > 0) {
 					BlockUtils.pad(that.$element);
 				}
@@ -562,6 +562,15 @@ define([
 					Aloha.Selection.updateSelection(event);
 				}
 			}
+
+			// activate the editable host of the block
+			if (!this._isInsideNestedEditable) {
+				var editable = Aloha.getEditableHost(this.$element);
+				if (editable) {
+					editable.activate();
+				}
+			}
+
 			// Trigger block activate & selection change events.
 			BlockManager.trigger('block-activate', highlightedBlocks);
 			BlockManager.trigger('block-selection-change', highlightedBlocks);
@@ -843,8 +852,10 @@ define([
 				jQuery('.aloha-block-dropInlineElementIntoEmptyBlock').removeClass('aloha-block-dropInlineElementIntoEmptyBlock');
 
 				// clear the created droppables
-				$createdDroppables.filter(":data(droppable)").droppable("destroy");
-				$createdDroppables = null;
+				if ($createdDroppables) {
+					$createdDroppables.filter(":data(droppable)").droppable("destroy");
+					$createdDroppables = null;
+				}
 
 				blockDroppedProperly = true;
 			};
@@ -987,9 +998,11 @@ define([
 					// add empty editables
 					$createdDroppables = $createdDroppables.add(".aloha-editable:not(:has(*))");
 
-					$createdDroppables.droppable(droppableCfg);
 					// Small HACK: Also make table cells droppable
-					jQuery('.aloha-table-cell-editable').droppable(droppableCfg);
+					$createdDroppables = $createdDroppables.add('.aloha-table-cell-editable');
+					$createdDroppables = $createdDroppables.add(jQuery('.aloha-editable.aloha-block-dropzone .aloha-table-cell-editable').children(":not(.aloha-block)"));
+
+					$createdDroppables.droppable(droppableCfg);
 				}
 			});
 		},
