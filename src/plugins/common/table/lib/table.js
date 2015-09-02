@@ -1820,22 +1820,11 @@ define([
 				return;
 			}
 
-			// create a guide
-			var guide = jQuery( '<div></div>' );
-			var $cell = jQuery(cell);
-			var width = $cell.outerWidth() - $cell.innerWidth();
-			var height = $cell.closest( 'tbody' ).innerHeight();
-			guide.css({
-				'height': (height < 1) ? 1 : height,
-				'width': (width < 1) ? 1 : width,
-				'top': $cell.closest( 'tbody' ).offset().top,
-				'left': $cell.offset().left,
-				'position': 'absolute',
-				'background-color': '#80B5F2'
-			});
-			jQuery('body').append(guide);
+			var $guide = jQuery('<div></div>');
+			var isResizing = false;
 
 			Utils.getCellResizeBoundaries(gridId, rows, function(maxPageX, minPageX) {
+				isResizing = true;
 
 				// unset the selection type
 				that.selection.resizeMode = true;
@@ -1844,7 +1833,7 @@ define([
 				jQuery( 'body' ).bind( 'mousemove.dnd_col_resize', function(e) {
 					// limit the maximum resize
 					if ( e.pageX > minPageX && e.pageX < maxPageX ) {
-						guide.css( 'left', e.pageX );
+						$guide.css('left', e.pageX);
 					}
 				});
 
@@ -1870,11 +1859,25 @@ define([
 					// unset the selection resize mode
 					that.selection.resizeMode = false;
 
-					guide.remove();
+					$guide.remove();
 				});
-
 			});
 
+			if (!isResizing) {
+				return;
+			}
+
+			var $cell = jQuery(cell);
+			var width = $cell.outerWidth() - $cell.innerWidth();
+			var height = $cell.closest('tbody').innerHeight();
+			$guide.css({
+				'height': (height < 1) ? 1 : height,
+				'width': (width < 1) ? 1 : width,
+				'top': $cell.closest('tbody').offset().top,
+				'left': $cell.offset().left,
+				'position': 'absolute',
+				'background-color': '#80B5F2'
+			}).appendTo('body');
 		});
 
 	};
