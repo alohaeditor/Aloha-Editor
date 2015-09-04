@@ -56,6 +56,7 @@ define([
 					click: function () {
 						plugin.transformList('dl');
 					},
+					tooltip: i18n.t('button.createdlist.tooltip'),
 					html: '<span class="ui-button-icon-primary ui-icon aloha-icon aloha-icon-definitionlist"></span>',
 					menu: (plugin.definitionListStyleButtons.length) ? plugin.definitionListStyleButtons : null
 				}
@@ -74,6 +75,7 @@ define([
 					click: function () {
 						plugin.transformList('ol');
 					},
+					tooltip: i18n.t('button.createolist.tooltip'),
 					html: '<span class="ui-button-icon-primary ui-icon aloha-icon aloha-icon-orderedlist"></span>',
 					menu: (plugin.orderedListStyleButtons.length) ? plugin.orderedListStyleButtons : null
 				}
@@ -92,6 +94,7 @@ define([
 					click: function () {
 						plugin.transformList('ul');
 					},
+					tooltip: i18n.t('button.createulist.tooltip'),
 					html: '<span class="ui-button-icon-primary ui-icon aloha-icon aloha-icon-unorderedlist"></span>',
 					menu: (plugin.unorderedListStyleButtons.length) ? plugin.unorderedListStyleButtons : null
 				}
