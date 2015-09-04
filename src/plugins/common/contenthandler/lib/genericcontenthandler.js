@@ -118,6 +118,22 @@ define([
 		);
 	}
 
+	/**
+	 * Replaces unnecessary new line characters within text nodes in Word HTML
+	 * with a space.
+	 *
+	 * @param {jQuery.<HTMLElement>} $content
+	 */
+	function replaceNewlines($content) {
+		$content.contents().each(function (index, node) {
+			if (3 === node.nodeType) {
+				node.nodeValue = node.nodeValue.replace(/[\r\n]+/gm, ' ');
+			} else {
+				replaceNewlines($(node));
+			}
+		});
+	}
+
 	var GenericContentHandler = Manager.createHandler({
 
 		/**
@@ -162,6 +178,8 @@ define([
 			if (transformFormatting) {
 			    this.transformFormattings($content);
 			}
+
+			replaceNewlines($content);
 
 			return $content.html();
 		},
