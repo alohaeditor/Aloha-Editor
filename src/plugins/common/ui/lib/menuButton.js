@@ -119,6 +119,18 @@ define([
 			'select': onSelect
 		});
 
+		if (props.tooltip) {
+			wrapper
+				.attr('title', props.tooltip)
+				.tooltip({
+					tooltipClass: 'aloha aloha-ui-tooltip',
+					position: {
+						my: 'left top',
+						at: 'right bottom'
+					}
+				});
+		}
+
 		return wrapper;
 	};
 
