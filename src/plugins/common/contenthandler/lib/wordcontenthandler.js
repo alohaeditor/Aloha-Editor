@@ -160,29 +160,6 @@ define([
 	}
 
 	/**
-	 * Replaces unnecessary new line characters within text nodes in Word HTML 
-	 * with a space.
-	 *
-	 * @param {jQuery.<HTMLElement>} $content
-	 */
-	function replaceWordNewLines($content) {
-		var i;
-		var $nodes = $content.contents();
-		var node;
-
-		for (i = 0; i < $nodes.length; i++) {
-			node = $nodes[i];
-
-			if (3 === node.nodeType) {
-				var text = node.nodeValue;
-				node.nodeValue = text.replace(/[\r\n]+/gm, ' ');
-			} else {
-				replaceWordNewLines($nodes.eq(i));
-			}
-		}
-	}
-
-	/**
 	 * Cleanup MS Word HTML.
 	 *
 	 * @param {jQuery.<HTMLElement>} $content
@@ -252,7 +229,6 @@ define([
 		}
 
 		removeUnrenderedChildNodes($content);
-		replaceWordNewLines($content);
 	}
 
 	/**
