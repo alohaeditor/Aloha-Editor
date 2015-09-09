@@ -119,6 +119,17 @@ define([
 			// set the dropzones for the initialized editable
 			Aloha.bind('aloha-editable-created', function (e, editable) {
 				that.setDropzones(editable.obj);
+
+				// Because we don't want non-contentEditable regions inside of
+				// editables to be resizable through the browser-built
+				// interfaces. IE 11 requires this additional muzzling to be
+				// done on the body in order to thoroughly prevent
+				// objectResizing.
+				// @see Block._disableUglyInternetExplorerDragHandles
+				// @see https://connect.microsoft.com/IE/feedback/details/742593/please-respect-execcommand-enableobjectresizing-in-contenteditable-elements
+				editable.obj.on('mscontrolselect', function (event) {
+					event.preventDefault();
+				});
 			});
 
 			// apply specific configuration if an editable has been activated

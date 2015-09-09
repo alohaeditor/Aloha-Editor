@@ -1,0 +1,5 @@
+Some content that was pasted in Internet Explorer 11 coming from newer versions
+of Microsoft Word resulted in newlines instead of white space being inserted
+into the editables. These newlines get removed during saving as is required for
+perticular part types resulting in unintended join of words at times.
+This issue has now been fixed.
