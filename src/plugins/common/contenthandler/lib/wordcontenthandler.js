@@ -445,10 +445,13 @@ define([
 
 					// add a new list item
 					jqNewLi = jQuery('<li></li>');
+
 					// add the li into the list
 					jqList.append(jqNewLi);
+
 					// append the contents of the old dom element to the li
 					jqElem.contents().appendTo(jqNewLi);
+
 					// replace the old dom element with the new list
 					jqElem.replaceWith(jqList);
 
@@ -501,6 +504,7 @@ define([
 						jqNewLi = jQuery('<li></li>');
 						// add the li into the list
 						jqList.append(jqNewLi);
+
 						// append the contents of the old dom element to the li
 						jqElem.contents().appendTo(jqNewLi);
 						// remove the old dom element
@@ -509,7 +513,7 @@ define([
 				});
 			}
 		},
-		
+
 		/**
 		 * Remove paragraph numbering from TOC feature
 		 * @param content
