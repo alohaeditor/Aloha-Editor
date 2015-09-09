@@ -197,6 +197,18 @@ define([
 		 */
 		cleanLists: function ($content) {
 			$content.find('ul,ol').find('>:not(li)').remove();
+
+			// Remove paragraphs inside list elements, if they are
+			// the only child. e.g.: li > p > text
+			// This has been observed to happen with Word documents
+			$content.find("li").each(function() {
+				var $li = $(this);
+				var $children = $li.children();
+				if ($children.length === 1 && $children.is("p")) {
+					$children.contents().appendTo($li);
+					$children.remove();
+				}
+			});
 		},
 
 		/**
