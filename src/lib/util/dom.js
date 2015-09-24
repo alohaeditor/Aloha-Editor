@@ -746,9 +746,15 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 		 * @param {GENTICS.Utils.RangeObject} rangeObject range from which the markup shall be removed
 		 * @param {jQuery} markup markup to be removed as jQuery object
 		 * @param {jQuery} limit Limiting node(s) as jQuery object
+		 * @param {boolean} removeNonEditables Whether to remove nodes which are
+		 *		not content editable (default: true)
 		 * @method
 		 */
-		removeMarkup: function (rangeObject, markup, limit) {
+		removeMarkup: function (rangeObject, markup, limit, removeNonEditables) {
+			if (typeof removeNonEditables == 'undefined') {
+				removeNonEditables = true;
+			}
+
 			var nodeName = markup.get(0).nodeName,
 				startSplitLimit = this.findHighestElement(rangeObject.startContainer, nodeName, limit),
 				endSplitLimit = this.findHighestElement(rangeObject.endContainer, nodeName, limit),
@@ -789,7 +795,7 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 				rangeTree = rangeObject.getRangeTree(root);
 
 				// remove the markup from the range tree
-				this.recursiveRemoveMarkup(rangeTree, markup);
+				this.recursiveRemoveMarkup(rangeTree, markup, removeNonEditables);
 
 				// cleanup DOM
 				this.doCleanup({
@@ -804,28 +810,39 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 		 * Recursive helper method to remove the given markup from the range
 		 * @param rangeTree rangetree at the current level
 		 * @param markup markup to be applied
+		 * @param removeNonEditables whether to remove nodes which are not
+		 *		content editable.
 		 * @hide
 		 */
-		recursiveRemoveMarkup: function (rangeTree, markup) {
+		recursiveRemoveMarkup: function (rangeTree, markup, removeNonEditables) {
 			var i, rangeLength, content;
+			var nodeName = markup[0].nodeName;
+
 			// iterate over the rangetree objects of this level
 			for (i = 0, rangeLength = rangeTree.length; i < rangeLength; ++i) {
+				var curTree = rangeTree[i];
+				var obj = curTree.domobj;
+
 				// check whether the object is the markup to be removed and is fully into the range
-				if (rangeTree[i].type == 'full' && rangeTree[i].domobj.nodeName == markup.get(0).nodeName) {
+				if (curTree.type == 'full'
+						&& obj.nodeName == nodeName
+						&& (removeNonEditables || this.isEditable(obj))) {
+					var $obj = jQuery(obj);
+
 					// found the markup, so remove it
-					content = jQuery(rangeTree[i].domobj).contents();
+					content = $obj.contents();
 					if (content.length > 0) {
 						// when the object has children, we unwrap them
 						content.first().unwrap();
 					} else {
 						// obj has no children, so just remove it
-						jQuery(rangeTree[i].domobj).remove();
+						$obj.remove();
 					}
 				}
 
-				// if the object has children, we do the recursion now
-				if (rangeTree[i].children) {
-					this.recursiveRemoveMarkup(rangeTree[i].children, markup);
+				// if the object has children, we do the recurTreesion now
+				if (curTree.children) {
+					this.recursiveRemoveMarkup(curTree.children, markup, removeNonEditables);
 				}
 			}
 		},
