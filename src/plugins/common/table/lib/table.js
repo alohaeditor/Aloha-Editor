@@ -460,6 +460,8 @@ define([
 					that.deleteRows();
 				} else if (that.selection.selectionType === 'column') {
 					that.deleteColumns();
+				} else {
+					return;
 				}
 
 				// jqEvent.stopPropagation doesn't support cancelBubble
