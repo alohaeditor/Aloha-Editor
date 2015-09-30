@@ -1,0 +1,5 @@
+Pressing delete before an aloha-block inside a table would delete the block.
+This is wrong because the block should be safe from accidental deletion and the
+same thing does not happen outside of a table.
+This has been fixed so that pressing delete inside a table works the same as
+outside of a table.
