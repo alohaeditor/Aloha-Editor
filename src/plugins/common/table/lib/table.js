@@ -1812,6 +1812,10 @@ define([
 
 				return true;
 			});
+
+			if (that.tablePlugin.colResize == '%') {
+				Utils.convertCellWidthToPercent(rows);
+			}
 		};
 
 		cell.bind('mousedown.resize', function($event) {
@@ -2042,6 +2046,9 @@ define([
 
 				return true;
 			});
+			if (that.tablePlugin.colResize == '%') {
+				Utils.convertCellWidthToPercent(rows);
+			}
 		};
 
 		lastColumn.bind( 'mousedown.resize', function() {
