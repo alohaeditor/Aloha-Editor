@@ -742,6 +742,7 @@ define([
 						tableObj.find('tr').each(function() {
 							jQuery(this).css('height', '');
 						});
+						tableObj.css('width','');
 					}
 				}
 			});

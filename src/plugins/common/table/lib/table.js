@@ -1812,6 +1812,10 @@ define([
 
 				return true;
 			});
+
+			if (that.tablePlugin.colResize == '%') {
+				Utils.convertCellWidthToPercent(rows);
+			}
 		};
 
 		cell.bind('mousedown.resize', function($event) {
@@ -2024,24 +2028,42 @@ define([
 			                      rows.index( lastCellRow ),
 			                      lastCellRow.children().index( lastCell )
 			                   );
-			var expandToWidth = pixelsMoved - Utils.getCellBorder(lastCell) - Utils.getCellPadding(lastCell);
+			var expandToWidth = pixelsMoved - Utils.getCellBorder(lastCell) - Utils.getCellPadding(lastCell),
+				cellChanges = [],
+				gridCellWidthBefore = 0,
+				tableWidthBefore = table.width();
 
 			Utils.walkCells(rows, function(ri, ci, gridCi, colspan, rowspan) {
-				var currentCell = jQuery( jQuery( rows[ri] ).children()[ ci ] )
+				var currentCell = jQuery( jQuery( rows[ri] ).children()[ ci ] );
 
 				// skip the select cells and cells with colspans
 				if ( currentCell.hasClass( 'aloha-table-selectrow' ) || currentCell.closest( 'tr' ).hasClass( 'aloha-table-selectcolumn' ) || colspan > 1 ) {
 					return true;
 				}
 
+				// we keep a list of changes an apply them in a second run
+				// in order to not change the values we are calculating with during the process
 				if (gridCi === gridId ) {
-					Utils.resizeCellWidth( currentCell, expandToWidth );
+					gridCellWidthBefore = currentCell.width();
+					cellChanges.push({cell : currentCell, width : expandToWidth});
 				} else {
-					Utils.resizeCellWidth( currentCell, currentCell.width() );
+					cellChanges.push({cell : currentCell, width : currentCell.width()});
 				}
-
 				return true;
 			});
+
+			// now we apply the changes to the table cells
+			jQuery.each(cellChanges, function(index, item) {
+				Utils.resizeCellWidth( item.cell, item.width );
+			});
+
+			// set the width on the table to ensure that the table actually shrinks
+			// and that we can use percent values on the columns
+			table.css('width', (tableWidthBefore + (expandToWidth - gridCellWidthBefore)) + 'px');
+
+			if (that.tablePlugin.colResize == '%') {
+				Utils.convertCellWidthToPercent(rows);
+			}
 		};
 
 		lastColumn.bind( 'mousedown.resize', function() {
@@ -2088,7 +2110,6 @@ define([
 				} else if ( e.pageX > maxPageX ) {
 				  pixelsMoved = maxPageX - lastCell.offset().left;
 				}
-
 				// set the table width
 				resizeColumns( pixelsMoved );
 

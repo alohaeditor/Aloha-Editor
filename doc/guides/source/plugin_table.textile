@@ -50,20 +50,28 @@ WARNING: This feature is not available for IE 7 or below.
 
 Table columns and rows can be resized using drag & drop. When hovering over a cells bottom or right edge the cursor will change to indicate that the cell can be resized.
 
+The width of columns can be set in pixel or percent. Please use the *colResize* option in your configuration to specify either *true/"px"* for pixel values or *"%"* for percent values.
+
+NOTE: A size (either in percent or pixel) has to be set on the table tag in order for the column resize to work properly.
+
+NOTE: If *"%"* is set for *colResize*, all widths in px that are already set on columns, will be converted to percent values.
+
 To enable table resizing the following options are available:
 
 <javascript>
 Aloha.settings.plugins.table: {
-	// allow resizing the table width (default: false)
+	// allow resizing the table width (options: "px", false, default: false)
 	tableResize: true,
-	// allow resizing the column width (default: false)
+	// allow resizing the column width. (options: "px", "%",  false, default: false)
 	colResize: true,
-	// allow resizing the row height (default: false)
+	// allow resizing the row height (options: "px", false, default: false)
 	rowResize: true
 };
 </javascript>
 
 NOTE: Cell resizing won't allow you to resize a cell *smaller* than the size of its contents. You might need to increase the width of the table first before resizing cells is possible.
+
+NOTE: When resizing the whole table, the width value is being added to the table element.
 
 To reset a table's size, after it has been resized, use the "reset size" button from the toolbar.
 
@@ -112,11 +120,11 @@ Aloha.settings.plugins: {
 				{ name: 'table-style-bigbold',  iconClass: 'aloha-button-row-bigbold' },
 				{ name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite' }
 		],
-		// allow resizing the table width (default: true)
+		// allow resizing the table width (options: "px", false, default: false)
 		tableResize: true,
-		// allow resizing the column width (default: true)
+		// allow resizing the column width. (options: "px", "%",  false, default: false)
 		colResize: true,
-		// allow resizing the row height (default: true)
+		// allow resizing the row height (options: "px", false, default: false)
 		rowResize: true
 	}
 };
