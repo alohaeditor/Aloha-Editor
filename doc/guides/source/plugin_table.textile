@@ -71,6 +71,8 @@ Aloha.settings.plugins.table: {
 
 NOTE: Cell resizing won't allow you to resize a cell *smaller* than the size of its contents. You might need to increase the width of the table first before resizing cells is possible.
 
+NOTE: When resizing the whole table, the width value is being added to the table element.
+
 To reset a table's size, after it has been resized, use the "reset size" button from the toolbar.
 
 h4. Table layout
@@ -118,11 +120,11 @@ Aloha.settings.plugins: {
 				{ name: 'table-style-bigbold',  iconClass: 'aloha-button-row-bigbold' },
 				{ name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite' }
 		],
-		// allow resizing the table width (default: true)
+		// allow resizing the table width (options: "px", false, default: false)
 		tableResize: true,
-		// allow resizing the column width (default: true)
+		// allow resizing the column width. (options: "px", "%",  false, default: false)
 		colResize: true,
-		// allow resizing the row height (default: true)
+		// allow resizing the row height (options: "px", false, default: false)
 		rowResize: true
 	}
 };
