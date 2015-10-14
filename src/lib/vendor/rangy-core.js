@@ -140,7 +140,11 @@
 				testRange.detach();
 			}
 
-			var body = isHostObject(document, "body") ? document.body : document.getElementsByTagName("body")[0];
+			// this was patched due to a performance problem in IE: When creating a TextRange for a body that contains
+			// lots of DOM elements, calculating the bounding rectangle (or getting the bounding... properties) is
+			// extremely slow (starting with IE8 and up to and including IE11)
+//			var body = isHostObject(document, "body") ? document.body : document.getElementsByTagName("body")[0];
+			var body = document.createElement("body");
 
 			if (body && isHostMethod(body, "createTextRange")) {
 				testRange = body.createTextRange();
