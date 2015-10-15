@@ -31,6 +31,7 @@
 define([
 	'aloha',
 	'aloha/plugin',
+	'aloha/ephemera',
 	'jquery',
 	'aloha/contenthandlermanager',
 	'block/blockmanager',
@@ -48,6 +49,7 @@ define([
 ], function (
 	Aloha,
 	Plugin,
+	Ephemera,
 	jQuery,
 	ContentHandlerManager, 
 	BlockManager,
@@ -85,6 +87,9 @@ define([
 			if (!this.settings.rootTags) {
 				this.settings.rootTags = defaultRootTags;
 			}
+
+			Ephemera.classes('aloha-block-active');
+			Ephemera.classes('aloha-block-highlighted');
 
 			// Register default block types			
 			BlockManager.registerBlockType('DebugBlock', block.DebugBlock);
@@ -317,6 +322,16 @@ define([
 					jQuery(this).removeClass("aloha-block-draghandle");
 				}
 			});
+		},
+
+		/**
+		 * Make the given jQuery object (representing an editable) clean for saving
+		 * Remove classes marking draggable aloha blocks
+		 */
+		makeClean: function (obj) {
+			// these classes are not made ephemeral, because this would remove them from every DOM node
+			// we only want to remove those classes from root elements of blocks.
+			obj.find(".aloha-block").removeClass('ui-draggable ui-draggable-disabled');
 		}
 	});
 
