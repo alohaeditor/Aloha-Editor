@@ -381,9 +381,7 @@ define([
 		function setAttribute(attr, value, regex, reference) {
 			if (targetObject) {
 				// check if a reference value is submitted to check against with a regex
-				if (typeof reference !== 'undefined' && !reference.match(new RegExp(regex))) {
-					$(targetObject).removeAttr(attr);
-				} else {
+				if (typeof reference === 'undefined' || reference.match(new RegExp(regex))) {
 					executeForTargets(function (target) {
 						target.attr(attr, value);
 					});
@@ -401,14 +399,17 @@ define([
 			targetObject = obj;
 			targetAttribute = attr;
 			additionalTargetObjects = [];
-
-			setItem(null);
 			
 			if (obj && attr) {
 				lastAttributeValue = $(obj).attr(attr);
 				setValue($(targetObject).attr(targetAttribute));
+
+				setItem(null);
 			} else {
 				setValue('');
+
+				setItem(null);
+
 				return;
 			}
 
