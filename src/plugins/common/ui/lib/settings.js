@@ -34,7 +34,7 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function ($, Arrays
 			{
 				label: 'tab.link.label',
 				showOn: { scope: 'link' },
-				components: [ 'editLink', 'removeLink', 'linkBrowser' ]
+				components: [ 'editLink', 'toggleAnchor', 'editAnchor', 'removeLink', 'linkBrowser' ]
 			},
 			// Cite Tab
 			{

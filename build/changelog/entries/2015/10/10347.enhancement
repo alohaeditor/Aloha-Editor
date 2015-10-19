@@ -1,0 +1,4 @@
+The link plugin has been extended to handle anchors in URLs. The feature is
+disabled by default and has to be activated via the @anchorLinks@ setting
+for the link plugin.
+
