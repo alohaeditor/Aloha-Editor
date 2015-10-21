@@ -1,0 +1,6 @@
+The block plugin did not remove some internal classes marking active blocks
+or blocks prepared for drag & drop when making the contents of an editable clean
+for saving.
+This caused the method Aloha.isModified() to always return true, even if no content
+was changed before.
+This has been fixed now.
