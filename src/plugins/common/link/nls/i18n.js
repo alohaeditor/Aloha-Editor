@@ -2,6 +2,7 @@ define({
 	"root":  {
 		"button.addlink.tooltip": "Insert Link",
 		"button.removelink.tooltip": "Remove Link",
+		"button.toggleanchor.tooltip": "Add/Remove anchor",
 		"newlink.defaulttext": "New Link",
 		"floatingmenu.tab.link": "Link",
 		"link.target.self": "Self",
