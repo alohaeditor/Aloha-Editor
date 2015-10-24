@@ -67,7 +67,7 @@ define([
 	 * @memberOf dom
 	 */
 	function has(node, value) {
-		return Nodes.isElementNode(node)
+		return Nodes.isElementNode(node) && typeof node.className === 'string'
 		    && node.className.trim().split(Strings.WHITE_SPACES).indexOf(value) >= 0;
 	}
 
