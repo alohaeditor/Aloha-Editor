@@ -133,38 +133,18 @@ define([
 			end   : boundaries[1]
 		});
 		var loc = Zip.go(zip.loc, zip.markers.start);
-		nodes.forEach(function (child) {
+		
+		// reverse the new nodes as we're inserting them at the beginning of the right hand content each time
+		nodes.reverse().map(function (child) {
 			loc = Zip.split(loc, function (loc) {
 				return Content.allowsNesting(Zip.after(loc).name(), child.nodeName);
 			});
 			loc = Zip.insert(loc, Boromir(child));
 		});
+		
 		var markers = Zip.update(loc);
 
 		return [markers.start, markers.end];
-
-		var result = MutationTrees.update(tree);
-		boundaries = result[1].map(Fn.partial(Paths.toBoundary, result[0].domNode()));
-
-		var last = Arrays.last(nodes);
-		var next = Boundaries.nodeAfter(boundaries[1]);
-
-		// Because we want to remove the unintentional line added at the end of
-		// the pasted content
-		if (next && ('P' === last.nodeName || 'DIV' === last.nodeName)) {
-			if (Html.hasInlineStyle(next)) {
-				boundaries[1] = Boundaries.fromEndOfNode(last);
-				// Move the next inline nodes into the last element
-				Dom.move(Dom.nodeAndNextSiblings(next, Html.hasLinebreakingStyle), last);
-			} else if (!Html.isVoidType(next) && !Html.isGroupContainer(next)) {
-				// Move the children of the last element into the beginning of
-				// the next block element
-				boundaries[1] = Dom.children(last).reduce(moveBeforeBoundary, Boundaries.create(next, 0));
-				Dom.remove(last);
-			}
-		}
-
-		return boundaries;
 	}
 
 	/**
