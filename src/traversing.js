@@ -191,7 +191,7 @@ define([
 		});
 		var node = Arrays.last(ancestors);
 		var len = Dom.nodeLength(node);
-		return [Boundaries.create(node, 0), next(Boundaries.create(node, len))];
+		return [Boundaries.create(node, 0), Boundaries.create(node, len)];
 	}
 
 	/**
