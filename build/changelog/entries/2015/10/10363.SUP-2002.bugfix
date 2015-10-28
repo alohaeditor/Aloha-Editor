@@ -1,0 +1,2 @@
+If a table was deleted with IE the focus jumped up to the beginning of the
+editable. This has been fixed.
