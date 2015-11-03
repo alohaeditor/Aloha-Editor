@@ -77,7 +77,7 @@ define([
 		Ephemera.markWrapper($wrapper);
 
 		// attach events to the editable div-object
-		$wrapper.bind('focus', function ($event) {
+		$wrapper.on('focus', function ($event) {
 			// activate the button for splitting cells if the clicked cell has an active row- or colspan
 			if (Utils.colspan(cell.obj) > 1 || Utils.rowspan(cell.obj) > 1) {
 				cell.tableObj.tablePlugin._splitcellsButton.enable(true);
@@ -95,7 +95,7 @@ define([
 			cell._editableFocus($event);
 		});
 
-		$wrapper.bind('mousedown', function ($event) {
+		$wrapper.on('mousedown', function ($event) {
 			// ugly workaround for ext-js-adapter problem in ext-jquery-adapter-debug.js:1020
 			if ($event.currentTarget) {
 				$event.currentTarget.indexOf = function () {
@@ -163,19 +163,19 @@ define([
 			}
 		});
 
-		$wrapper.bind('blur', function ($event) {
+		$wrapper.on('blur', function ($event) {
 			cell._editableBlur($event);
 		});
-		$wrapper.bind('keyup', function ($event) {
+		$wrapper.on('keyup', function ($event) {
 			cell._editableKeyUp($event);
 		});
-		$wrapper.bind('keydown', function ($event) {
+		$wrapper.on('keydown', function ($event) {
 			cell._editableKeyDown($event);
 		});
-		$wrapper.bind('mouseover', function ($event) {
+		$wrapper.on('mouseover', function ($event) {
 			cell._selectCellRange();
 		});
-		$elem.bind('mouseover', function ($event) {
+		$elem.on('mouseover', function ($event) {
 			cell._selectCellRange();
 		});
 
@@ -185,7 +185,7 @@ define([
 			return $wrapper;
 		});
 
-		$elem.bind('mousedown', function ($event) {
+		$elem.on('mousedown', function ($event) {
 			// prevent cell selection, if mousedown was on a block handle
 			if (jQuery($event.target).hasClass('aloha-block-draghandle')) {
 				return;
@@ -259,13 +259,19 @@ define([
 			$event.stopPropagation();
 		});
 
-		if ($elem.get(0)) {
-			$elem.get(0).onselectstart = function () {
+		if ($elem[0]) {
+			$elem[0].onselectstart = function () {
 				return false;
 			};
 		}
 
-		Misc.addEditingHelpers($wrapper);
+		$elem.on('mouseenter', function (evt) {
+			Misc.addEditingHelpers($wrapper);
+		});
+		$elem.on('mouseleave', function (evt) {
+			Misc.removeEditingHelpers($wrapper);
+		});
+
 		Aloha.bind('aloha-smart-content-changed', function (event, data) {
 			if (data.editable.isActive && data.triggerType === 'block-change') {
 				Misc.addEditingHelpers($wrapper);
@@ -273,14 +279,16 @@ define([
 		});
 
 		// set contenteditable wrapper div
-		this.wrapper = $elem.children();
-		if (this.wrapper.get(0)) {
-			this.wrapper.get(0).onselectstart = function () {
+		this.wrapper = $wrapper;
+		if ($wrapper[0]) {
+			var wrapper = $wrapper[0];
+
+			wrapper.onselectstart = function () {
 				window.event.cancelBubble = true;
 			};
 			// Disabled the dragging of content, since it makes cell selection
 			// difficult.
-			this.wrapper.get(0).ondragstart = function () {
+			wrapper.ondragstart = function () {
 				return false
 			};
 		}
@@ -312,6 +320,8 @@ define([
 			// remove the click event of the
 			this.obj.unbind('click');
 			this.obj.unbind('mousedown');
+			this.obj.unbind('mouseenter');
+			this.obj.unbind('mouseleave');
 			this.obj.get(0).onselectstart = null;
 
 			if (jQuery.trim(this.obj.attr('class')) == '') {
