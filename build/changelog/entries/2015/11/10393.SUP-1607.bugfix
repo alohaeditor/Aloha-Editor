@@ -1,0 +1,2 @@
+Drag and drop of aloha-block elements did not work in nested editables and
+table cells. This has been fixed.

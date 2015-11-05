@@ -348,18 +348,36 @@ define([
 	 * @return {Boolean}
 	 */
 	DragBehavior.prototype.onMouseover = function (elm, event) {
-		this.disableInsertBeforeOrAfter(this.$overElement);
-		this.$overElement = $(elm);
-		if (!this._isAllowedOverElement(elm)) {
-			this.enableInsertBeforeOrAfter(elm);
-
-			return true; // to continue bubbling to find a element where can insert the block
-		} else {
-			this.highlightElement(elm);
+		if (this.$element.find(elm).length || this.$element.is(elm)) {
+			// The mouse is still over the element which is
+			// being dragged.
 			event.stopImmediatePropagation();
+
 			return false;
 		}
 
+		var $elm = $(elm);
+
+		if (!this._isAllowedOverElement(elm)) {
+			this.disableInsertBeforeOrAfter(this.$overElement);
+			this.enableInsertBeforeOrAfter(elm);
+			this.$overElement = $elm;
+
+			// Let the event bubble up to find a better place for a drop.
+			return true;
+		}
+
+		if (!$elm.is('.aloha-editable, .aloha-table-cell-editable') || !$elm.children().length) {
+			// We only do this for non-editables, because otherwise
+			// the whole editable would be marked as a drop zone.
+			this.disableInsertBeforeOrAfter(this.$overElement);
+			this.$overElement = $elm;
+			this.highlightElement(elm);
+		}
+
+		event.stopImmediatePropagation();
+
+		return false;
 	};
 
 	/**
