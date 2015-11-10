@@ -772,7 +772,10 @@ define('format/format-plugin', [
 			len = this.multiSplitItems.length;
 			for (i = 0; i < len; i++) {
 				var name = this.multiSplitItems[i].name;
-				if (!ContentRules.isAllowed(editable, name)) {
+
+				// Currently removeFormat is the only button, that would not
+				// insert tags, and can therefore ignore the content rules.
+				if (name != 'removeFormat' && !ContentRules.isAllowed(editable, name)) {
 					this.multiSplitButton.hideItem(name);
 				} else if (jQuery.inArray(name, config) !== -1) {
 					this.multiSplitButton.showItem(name);
