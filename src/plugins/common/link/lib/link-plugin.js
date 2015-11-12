@@ -281,7 +281,7 @@ define([
 		 * to ignore one selectionchanged event when we set our own selection.
 		 */
 		ignoreNextSelectionChangedEvent: false,
-		
+
 		/**
 		 * Internal update interval reference to work around an ExtJS bug
 		 */
@@ -998,8 +998,12 @@ define([
 		 * Updates the link object depending on the src field
 		 */
 		hrefChange: function () {
+			var hrefTargetObject = this.hrefField.getTargetObject();
+			var setAutoValues = hrefTargetObject && !hrefTargetObject.getAttribute('data-ignore-auto-values');
 			var that = this;
 
+			// No need to check setAutoValues here, since the title will not be
+			// changed anyway once a custom title has been set.
 			this.automaticallySetTitle(
 				this.hrefField,
 				this.title,
@@ -1009,7 +1013,7 @@ define([
 			// For now hard coded attribute handling with regex.
 			// Avoid creating the target attribute, if it's unnecessary, so
 			// that XSS scanners (AntiSamy) don't complain.
-			if ( this.target != '' ) {
+			if (setAutoValues && this.target) {
 				this.hrefField.setAttribute(
 					'target',
 					this.target,
@@ -1017,8 +1021,8 @@ define([
 					this.hrefField.getValue()
 				);
 			}
-			
-			if (null != this.cssclassregex) {
+
+			if (setAutoValues && this.cssclassregex) {
 				this.hrefField.setAttribute(
 					'class',
 					this.cssclass,
@@ -1125,7 +1129,9 @@ define([
 				that.toggleLinkScope(true);
 
 				// now we are ready to set the target object
+				foundMarkup.setAttribute('data-ignore-auto-values', 'true');
 				that.hrefField.setTargetObject(foundMarkup, 'href');
+				foundMarkup.removeAttribute('data-ignore-auto-values');
 				addAdditionalTargetObject(rangeObject, that.hrefField);
 				// if the selection-changed event was raised by the first click interaction on this page
 				// the hrefField component might not be initialized. When the user switches to the link
