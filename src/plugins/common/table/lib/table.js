@@ -460,6 +460,8 @@ define([
 					that.deleteRows();
 				} else if (that.selection.selectionType === 'column') {
 					that.deleteColumns();
+				} else {
+					return;
 				}
 
 				// jqEvent.stopPropagation doesn't support cancelBubble
@@ -1309,6 +1311,7 @@ define([
 	 * @return void
 	 */
 	Table.prototype.deleteTable = function() {
+
 		var deleteIndex = -1;
 		for (var i = 0; i < this.tablePlugin.TableRegistry.length; i++){
 			if (this.tablePlugin.TableRegistry[i].obj.attr('id') == this.obj.attr('id')) {
@@ -1335,7 +1338,12 @@ define([
 			newRange.clearCaches();
 
 			this.obj.remove();
-			this.parentEditable.obj.focus();
+
+			// IE needs a timeout to work properly
+			window.setTimeout( function() {
+				this.parentEditable.obj.focus();
+			}, 5);
+
 			// select the new range
 			newRange.correctRange();
 			newRange.select();

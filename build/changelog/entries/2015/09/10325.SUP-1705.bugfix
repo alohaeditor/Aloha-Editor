@@ -1,0 +1,4 @@
+The remove formatting action of the format plugin would remove &lt;span&gt;
+elements which were aloha-blocks. Also removing the formatting from a list
+could sometimes remove list items or insert superfluous paragraphs. These
+issues have been fixed.

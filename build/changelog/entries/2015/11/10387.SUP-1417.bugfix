@@ -1,0 +1,3 @@
+When a plugin using the repository browser was used, navigating with CTRL-LEFT (jumping wordwise to the left)
+did not work. This was because the repository browser would use CTRL-LEFT to close/open the tree pane.
+Handling of hotkeys for the tree pane has been disabled now, so that CTRL-LEFT will now work in editables.

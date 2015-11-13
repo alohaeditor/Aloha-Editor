@@ -160,29 +160,6 @@ define([
 	}
 
 	/**
-	 * Replaces unnecessary new line characters within text nodes in Word HTML 
-	 * with a space.
-	 *
-	 * @param {jQuery.<HTMLElement>} $content
-	 */
-	function replaceWordNewLines($content) {
-		var i;
-		var $nodes = $content.contents();
-		var node;
-
-		for (i = 0; i < $nodes.length; i++) {
-			node = $nodes[i];
-
-			if (3 === node.nodeType) {
-				var text = node.nodeValue;
-				node.nodeValue = text.replace(/[\r\n]+/gm, ' ');
-			} else {
-				replaceWordNewLines($nodes.eq(i));
-			}
-		}
-	}
-
-	/**
 	 * Cleanup MS Word HTML.
 	 *
 	 * @param {jQuery.<HTMLElement>} $content
@@ -244,7 +221,6 @@ define([
 		}
 
 		removeUnrenderedChildNodes($content);
-		replaceWordNewLines($content);
 	}
 
 	/**
@@ -461,10 +437,13 @@ define([
 
 					// add a new list item
 					jqNewLi = jQuery('<li></li>');
+
 					// add the li into the list
 					jqList.append(jqNewLi);
+
 					// append the contents of the old dom element to the li
 					jqElem.contents().appendTo(jqNewLi);
+
 					// replace the old dom element with the new list
 					jqElem.replaceWith(jqList);
 
@@ -517,6 +496,7 @@ define([
 						jqNewLi = jQuery('<li></li>');
 						// add the li into the list
 						jqList.append(jqNewLi);
+
 						// append the contents of the old dom element to the li
 						jqElem.contents().appendTo(jqNewLi);
 						// remove the old dom element
@@ -525,7 +505,7 @@ define([
 				});
 			}
 		},
-		
+
 		/**
 		 * Remove paragraph numbering from TOC feature
 		 * @param content

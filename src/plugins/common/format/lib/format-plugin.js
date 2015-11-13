@@ -123,7 +123,7 @@ define('format/format-plugin', [
 	function expandRange(range) {
 		var cac = range.commonAncestorContainer;
 
-		if (isInlineNode(cac)) {
+		if (isInlineNode(cac) && cac.parentNode) {
 			var parent = cac.parentNode;
 			range.startContainer = parent;
 			range.endContainer = parent;
@@ -204,24 +204,27 @@ define('format/format-plugin', [
 		var nextNodes = jQuery(range.endContainer.parentNode).nextAll();
 		var listName = range.startContainer.parentNode.parentNode.nodeName;
 
-		// first list item
-		if (selectedNodes.length === 1 && prevNodes.length === 0) { 
-			selectedNodes.each(function(){
-				jQuery(this).addClass('_moved');
-			}).remove().insertBefore(nextNodes.parent());
-		}
-		// last list item
-		else if (selectedNodes.length === 1 && nextNodes.length === 0) {
-			selectedNodes.each(function(){
-				jQuery(this).addClass('_moved');
-			}).remove().insertAfter(prevNodes.parent());
-		} 
-		// one list item in middle
-		else if (selectedNodes.length === 1 && nextNodes.length > 1) {
-			selectedNodes.each(function(){
-				jQuery(this).addClass('_moved');
-			}).remove().insertAfter(prevNodes.parent());
-			jQuery('<' + listName.toLowerCase() + '>').append(nextNodes).insertAfter(jQuery(range.endContainer));
+		// Only one item selected
+		if (selectedNodes.length == 1) {
+			// Last item in list
+			if (prevNodes.length == 0 && nextNodes.length == 0) {
+				// The first unwrap removes the parent list tag,
+				// the second one the list item tag.
+				selectedNodes.unwrap().contents().unwrap().wrap('<p>');
+			}
+			// first list item
+			else if (prevNodes.length === 0) {
+				selectedNodes.addClass('_moved').remove().insertBefore(nextNodes.parent());
+			}
+			// last list item
+			else if (nextNodes.length === 0) {
+				selectedNodes.addClass('_moved').remove().insertAfter(prevNodes.parent());
+			}
+			// one list item in middle
+			else {
+				selectedNodes.addClass('_moved').remove().insertAfter(prevNodes.parent());
+				jQuery('<' + listName.toLowerCase() + '>').append(nextNodes).insertAfter(jQuery(range.endContainer));
+			}
 		}
 		// multiple list items up to whole list
 		else {
@@ -236,7 +239,11 @@ define('format/format-plugin', [
 
 		// unwrap moved list elements
 		jQuery('._moved').each(function() {
-			jQuery(this).contents().unwrap().wrap('<p>');
+			var $p = jQuery('<p>');
+			var $this = jQuery(this);
+
+			$this.after($p);
+			$this.contents().unwrap().appendTo($p);
 		});
 
 
@@ -765,7 +772,10 @@ define('format/format-plugin', [
 			len = this.multiSplitItems.length;
 			for (i = 0; i < len; i++) {
 				var name = this.multiSplitItems[i].name;
-				if (!ContentRules.isAllowed(editable, name)) {
+
+				// Currently removeFormat is the only button, that would not
+				// insert tags, and can therefore ignore the content rules.
+				if (name != 'removeFormat' && !ContentRules.isAllowed(editable, name)) {
 					this.multiSplitButton.hideItem(name);
 				} else if (jQuery.inArray(name, config) !== -1) {
 					this.multiSplitButton.showItem(name);
@@ -922,7 +932,11 @@ define('format/format-plugin', [
 			}
 
 			for (i = 0; i < formats.length; i++) {
-				Dom.removeMarkup(rangeObject, jQuery('<' + formats[i] + '>'), Aloha.activeEditable.obj);
+				Dom.removeMarkup(
+					rangeObject,
+					jQuery('<' + formats[i] + '>'),
+					Aloha.activeEditable.obj,
+					false);
 			}
 			unformatList(rangeObject);
 

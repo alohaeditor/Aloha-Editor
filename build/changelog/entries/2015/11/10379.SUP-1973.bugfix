@@ -1,0 +1,3 @@
+The editing helpers in table cells are now added and removed individually in
+@mouseenter@ and @mouseleave@ events instead of doing this for all cells
+at once. This speeds up the initialization of big tables.

@@ -1296,6 +1296,8 @@ define([
 				hrefLangField.disableInput();
 			}
 
+			Aloha.Sidebar.right.checkActivePanels(Aloha.Selection.getRangeObject());
+
 			// fill all info fields
 			if (jQuery.isArray(that.settings.sidebar)) {
 				jQuery.each(that.settings.sidebar, function () {
