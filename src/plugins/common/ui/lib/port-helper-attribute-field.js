@@ -385,6 +385,8 @@ define([
 					executeForTargets(function (target) {
 						target.attr(attr, value);
 					});
+				} else {
+					$(targetObject).removeAttr(attr);
 				}
 			}
 		}
@@ -413,10 +415,20 @@ define([
 				return;
 			}
 
+			var ignoreAutoValues = targetObject.getAttribute('data-ignore-auto-values');
+
 			// check whether a repository item is linked to the object
 			RepositoryManager.getObject( obj, function ( items ) {
 				if (items && items.length > 0) {
+					if (ignoreAutoValues) {
+						targetObject.setAttribute('data-ignore-auto-values', ignoreAutoValues);
+					}
+
 					setItem(items[0]);
+
+					if (ignoreAutoValues) {
+						targetObject.removeAttribute('data-ignore-auto-values');
+					}
 				}
 			} );
 		}
