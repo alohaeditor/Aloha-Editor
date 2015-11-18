@@ -1215,8 +1215,12 @@ define([
 		 * Updates the link object depending on the src field
 		 */
 		hrefChange: function () {
+			var hrefTargetObject = this.hrefField.getTargetObject();
+			var setAutoValues = hrefTargetObject && !hrefTargetObject.getAttribute('data-ignore-auto-values');
 			var that = this;
 
+			// No need to check setAutoValues here, since the title will not be
+			// changed anyway once a custom title has been set.
 			this.automaticallySetTitle(
 				this.hrefField,
 				this.title,
@@ -1226,7 +1230,7 @@ define([
 			// For now hard coded attribute handling with regex.
 			// Avoid creating the target attribute, if it's unnecessary, so
 			// that XSS scanners (AntiSamy) don't complain.
-			if ( this.target != '' ) {
+			if (setAutoValues && this.target) {
 				this.hrefField.setAttribute(
 					'target',
 					this.target,
@@ -1235,7 +1239,7 @@ define([
 				);
 			}
 
-			if (null != this.cssclassregex) {
+			if (setAutoValues && null != this.cssclassregex) {
 				this.hrefField.setAttribute(
 					'class',
 					this.cssclass,
@@ -1352,7 +1356,9 @@ define([
 				that.prepareAnchor(foundMarkup.href);
 
 				// now we are ready to set the target object
+				foundMarkup.setAttribute('data-ignore-auto-values', 'true');
 				that.hrefField.setTargetObject(foundMarkup, 'href');
+				foundMarkup.removeAttribute('data-ignore-auto-values');
 				addAdditionalTargetObject(rangeObject, that.hrefField);
 				that.stripAnchor();
 				if (that.hrefField.getItem()) {

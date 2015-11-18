@@ -1,0 +1,6 @@
+When using the targetregex, cssclassregex and titleregex settings of the link plugin,
+the corresponding attribute was not removed, when the current href did not match the
+pattern. This has been fixed, and the behavior of this settings has been changed so
+that the automatically set values will only be set, when the href of the currently
+selected link changes, but not if another link is selected, which means that manual
+changes to these attributes will be preserved, so long as the link href does not change.
