@@ -968,20 +968,14 @@ define([
 		 */
 		smartContentChange: function (event) {
 			var me = this,
-				uniChar = null,
-				re,
-				match;
+				uniChar = null;
 
 			// ignore meta keys like crtl+v or crtl+l and so on
 			if (event && (event.metaKey || event.crtlKey || event.altKey)) {
 				return false;
 			}
 
-			if (event && event.originalEvent) {
-				// regex to strip unicode
-				re = new RegExp("U\\+(\\w{4})");
-				match = re.exec(event.originalEvent.keyIdentifier);
-
+			if (event) {
 				// Use among browsers reliable which http://api.jquery.com/keypress
 				uniChar = (this.keyCodeMap[this.keyCode] || String.fromCharCode(event.which) || 'unknown');
 			}
@@ -1056,6 +1050,16 @@ define([
 				}, this.sccDelay);
 
 			} else if (uniChar !== null) {
+				var range = Aloha.Selection.getRangeObject();
+
+				if (range.startContainer == range.endContainer) {
+					var $children = $(range.startContainer).children();
+
+					if ($children.length == 1 && $children.is('br')) {
+						$children.remove();
+					}
+				}
+
 				// in the rare case idle time is lower then delay time
 				clearTimeout(this.sccTimerDelay);
 				clearTimeout(this.sccTimerIdle);
