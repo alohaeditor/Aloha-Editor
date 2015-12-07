@@ -415,22 +415,22 @@ define([
 				return;
 			}
 
-			var ignoreAutoValues = targetObject.getAttribute('data-ignore-auto-values');
+			var ignoreAutoValues = targetObject.attr('data-ignore-auto-values');
 
 			// check whether a repository item is linked to the object
 			RepositoryManager.getObject( obj, function ( items ) {
 				if (items && items.length > 0) {
 					if (ignoreAutoValues) {
-						targetObject.setAttribute('data-ignore-auto-values', ignoreAutoValues);
+						targetObject.attr('data-ignore-auto-values', ignoreAutoValues);
 					}
 
 					setItem(items[0]);
 
 					if (ignoreAutoValues) {
-						targetObject.removeAttribute('data-ignore-auto-values');
+						targetObject.removeAttr('data-ignore-auto-values');
 					}
 				}
-			} );
+			});
 		}
 
 		function addAdditionalTargetObject(targetObj) {
