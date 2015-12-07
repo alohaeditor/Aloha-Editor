@@ -1,0 +1,2 @@
+When clicking in a table, the respective menu would not open in the ribbon. This problem
+was introduced in the last hotfix, and has been fixed now.
