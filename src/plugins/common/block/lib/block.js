@@ -676,7 +676,6 @@ define([
 		_postProcessElementIfNeeded: function () {
 			this.createEditablesIfNeeded();
 			this._checkThatNestedBlocksAreStillConsistent();
-			this._makeNestedBlockCollectionsSortable();
 
 			this.renderBlockHandlesIfNeeded();
 			if (this.isDraggable()) {
@@ -706,23 +705,6 @@ define([
 				var block = BlockManager.getBlock(this);
 				if (block && block.$element[0] !== this) {
 					block._connectThisBlockToDomElement(this);
-				}
-			});
-		},
-
-		/**
-		 * If a nested element is marked as "aloha-block-collection",
-		 * we want to make it sortable, by calling the appropriate Block Manager
-		 * function.
-		 */
-		_makeNestedBlockCollectionsSortable: function () {
-			var that = this;
-			this.$element.find('.aloha-block-collection').each(function () {
-				var $blockCollection = jQuery(this);
-				if ($blockCollection.closest('.aloha-block').get(0) === that.$element.get(0)) {
-					// We are only responsible for one-level-down Block Collections, not
-					// for nested ones.
-					BlockManager.createBlockLevelSortableForEditableOrBlockCollection($blockCollection);
 				}
 			});
 		},
