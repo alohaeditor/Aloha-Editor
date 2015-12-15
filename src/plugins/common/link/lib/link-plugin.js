@@ -1215,8 +1215,8 @@ define([
 		 * Updates the link object depending on the src field
 		 */
 		hrefChange: function () {
-			var hrefTargetObject = this.hrefField.getTargetObject();
-			var setAutoValues = hrefTargetObject && !hrefTargetObject.getAttribute('data-ignore-auto-values');
+			var hrefTargetObject = jQuery(this.hrefField.getTargetObject());
+			var setAutoValues = hrefTargetObject && !hrefTargetObject.attr('data-ignore-auto-values');
 			var that = this;
 
 			// No need to check setAutoValues here, since the title will not be
@@ -1348,17 +1348,17 @@ define([
 			Aloha.Selection.isSelectionEditable() &&
 			Aloha.activeEditable != null ) {
 
-			foundMarkup = that.findLinkMarkup(rangeObject);
+			foundMarkup = jQuery(that.findLinkMarkup(rangeObject));
 
-			if (foundMarkup) {
+			if (foundMarkup.length > 0) {
 				that.toggleLinkScope(true);
 
 				that.prepareAnchor(foundMarkup.href);
 
 				// now we are ready to set the target object
-				foundMarkup.setAttribute('data-ignore-auto-values', 'true');
+				foundMarkup.attr('data-ignore-auto-values', 'true');
 				that.hrefField.setTargetObject(foundMarkup, 'href');
-				foundMarkup.removeAttribute('data-ignore-auto-values');
+				foundMarkup.removeAttr('data-ignore-auto-values');
 				addAdditionalTargetObject(rangeObject, that.hrefField);
 				that.stripAnchor();
 				if (that.hrefField.getItem()) {
@@ -1411,6 +1411,6 @@ define([
 		}
 
 		that.ignoreNextSelectionChangedEvent = false;
-		return enteredLinkScope ? foundMarkup : false;
+		return enteredLinkScope ? foundMarkup.length > 0 : false;
 	}
 } );
