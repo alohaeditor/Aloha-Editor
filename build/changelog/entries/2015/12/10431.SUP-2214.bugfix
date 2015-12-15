@@ -1,0 +1,1 @@
+Native drag and drop handling by the browser causes unwanted style elements to be added around text. Drag and drop of text is now disabled.

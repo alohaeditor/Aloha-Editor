@@ -184,6 +184,12 @@ define([
 			Aloha.activeEditable.smartContentChange(event);
 		});
 
+		// native drag and drop adds unwanted style elements so we need to
+		// disable it
+		$editable.on('dragstart', function (event) {
+			return false;
+		});
+
 		$editable.keyup(function (event) {
 			if (event.keyCode === 27) {
 				Aloha.deactivateEditable();
