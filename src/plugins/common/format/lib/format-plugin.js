@@ -223,16 +223,14 @@ define('format/format-plugin', [
 			// one list item in middle
 			else {
 				selectedNodes.addClass('_moved').remove().insertAfter(prevNodes.parent());
-				jQuery('<' + listName.toLowerCase() + '>').append(nextNodes).insertAfter(jQuery(range.endContainer));
+				jQuery('<' + listName.toLowerCase() + '>').append(nextNodes).insertAfter(selectedNodes);
 			}
 		}
 		// multiple list items up to whole list
 		else {
-			selectedNodes.each(function(){
-				jQuery(this).addClass('_moved');
-			}).remove().insertAfter(cac);
+			selectedNodes.addClass('_moved').remove().insertAfter(cac);
 			if (nextNodes.length > 0) {
-				jQuery('<' + listName.toLowerCase() + '>').append(nextNodes).insertAfter(jQuery(range.endContainer));
+				jQuery('<' + listName.toLowerCase() + '>').append(nextNodes).insertAfter(selectedNodes.last());
 			}
 		}
 

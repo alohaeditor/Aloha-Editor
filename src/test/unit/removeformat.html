@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Aloha Editor contenthandler Test Suite</title>
+		<!-- include qunit -->
+		<link rel="stylesheet" href="../vendor/qunit.css"/>
+
+		<script src="../vendor/qunit.js"></script>
+
+		<!-- include jquery -->
+		<script	src="../../lib/vendor/jquery-1.7.2.js" ></script>
+		<script src="../vendor/jquery.simulate.js"></script>
+
+		<!-- include aloha -->
+		<script>
+			var Aloha = {
+				settings: {
+					jQuery: $,
+					baseUrl: '../../lib'
+				}
+			};
+		</script>
+		<script src="../../lib/require.js"></script>
+		<script src="../../lib/aloha.js" data-aloha-plugins="common/ui,common/list,common/format,common/commands,common/paste,common/contenthandler"></script>
+
+		<script>
+			// define realtive baseUrl path to requireJS
+			// and paths back to aloha path
+			require( [ 'commandtest' ] );
+		</script>
+	</head>
+	<body>
+		<!-- include the tests -->
+		<script>
+		var files, elements,
+			tests = {
+				defaultCommand: 'removeFormat',
+				label: 'removeformat',
+				tests: []
+		};
+
+		// now add tests for copy & paste from different sources
+		// (from './removeformat/<name>-[start|expected].html' files)
+		files = [
+			'1-unformat-list-first-item',
+			'2-unformat-list-single-middle-item',
+			'3-unformat-list-last-item',
+			'4-unformat-list-several-middle-items',
+			'5-unformat-list-whole-list',
+			'6-unformat-list-other-formating',
+			'7-remove-format-non-editable',
+			'8-remove-format-nested-editable'
+		];
+		elements = [ 'div' ];
+
+		for (i = 0; i < files.length; i++) {
+			var dataStart,
+				dataExpected,
+				fileExpected,
+				index;
+
+			file = files[i];
+
+			if (Aloha.settings.sanitize) {
+				fileExpected = file + '-' + Aloha.settings.sanitize;
+			} else {
+				fileExpected = file;
+			}
+
+			var urlPrefix = 'removeformat/';
+			var testUrl = urlPrefix + file +'-start.html';
+
+			jQuery.ajax({
+				url: urlPrefix + file +'-start.html',
+				async: false,
+				success: function(data) {
+					dataStart = data;
+				}
+			});
+
+			jQuery.ajax({
+				url: urlPrefix + file +'-expected.html',
+				async: false,
+				success: function(data) {
+					dataExpected = data;
+				}
+			});
+
+			for (j = 0; j < elements.length; j++) {
+				tests.tests.push({
+					start: '<' + elements[j] + '>' + dataStart + '</' + elements[j] + '>',
+					execResult: '<' + elements[j] + '>' + dataExpected + '</' + elements[j] + '>'
+				});
+			}
+
+		};
+
+		</script>
+		<h1 id="qunit-header">Aloha Editor Paste Test Suite</h1>
+		<h2 id="qunit-banner"></h2>
+		<div id="qunit-testrunner-toolbar"></div>
+		<h2 id="qunit-userAgent"></h2>
+		<ol id="qunit-tests"></ol>
+		<div id="qunit-fixture"></div>
+		<div id="edit" style="margin:20px; border:1px solid #000000;"></div>
+		<div id="logBody"></div>
+		</div>
+	</body>
+</html>

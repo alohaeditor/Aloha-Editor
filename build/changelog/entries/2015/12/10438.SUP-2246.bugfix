@@ -1,0 +1,3 @@
+Several plugins used the port-helper-attribute-field with HTML DOM elements instead of
+jQuery objects resulting in errors like "X.attr() is not a function". This has been
+fixed.

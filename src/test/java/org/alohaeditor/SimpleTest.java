@@ -36,6 +36,7 @@ public class SimpleTest {
 		suite.addQunitModule("outdent");
 		suite.addQunitModule("pluginapi");
 		suite.addQunitModule("plugin-blocks");
+		suite.addQunitModule("removeformat");
 		suite.addQunitModule("removemarkup");
 		suite.addQunitModule("repository2");
 		suite.addQunitModule("repository");

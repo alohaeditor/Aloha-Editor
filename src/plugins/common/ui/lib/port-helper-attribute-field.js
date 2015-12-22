@@ -398,13 +398,14 @@ define([
 		 * @void
 		 */
 		function setTargetObject(obj, attr) {
+			var $obj = $(obj); // Just to be sure, we have a jQuery object.
 			targetObject = obj;
 			targetAttribute = attr;
 			additionalTargetObjects = [];
 			
 			if (obj && attr) {
-				lastAttributeValue = $(obj).attr(attr);
-				setValue($(targetObject).attr(targetAttribute));
+				lastAttributeValue = $obj.attr(attr);
+				setValue(lastAttributeValue);
 
 				setItem(null);
 			} else {
@@ -415,19 +416,19 @@ define([
 				return;
 			}
 
-			var ignoreAutoValues = targetObject.attr('data-ignore-auto-values');
+			var ignoreAutoValues = $obj.attr('data-ignore-auto-values');
 
 			// check whether a repository item is linked to the object
 			RepositoryManager.getObject( obj, function ( items ) {
 				if (items && items.length > 0) {
 					if (ignoreAutoValues) {
-						targetObject.attr('data-ignore-auto-values', ignoreAutoValues);
+						$obj.attr('data-ignore-auto-values', ignoreAutoValues);
 					}
 
 					setItem(items[0]);
 
 					if (ignoreAutoValues) {
-						targetObject.removeAttr('data-ignore-auto-values');
+						$obj.removeAttr('data-ignore-auto-values');
 					}
 				}
 			});
