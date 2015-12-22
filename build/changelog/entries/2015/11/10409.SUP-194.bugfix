@@ -1,0 +1,3 @@
+A styling that is intended for the style buttons of the list plugin was
+also applied to certain other list constucts. The respective CSS selector
+has been fixed.
