@@ -61,13 +61,13 @@
    list-style-position: inside;
 }
 
-.aloha-list-templates ul ul, ol ul {
+.aloha-list-templates ul ul, .aloha-list-templates ol ul {
    list-style-type: circle;
    list-style-position: inside;
    margin-left: 15px;
 }
 
-.aloha-list-templates ol ol, ul ol {
+.aloha-list-templates ol ol, .aloha-list-templates ul ol {
    list-style-type: lower-latin;
    list-style-position: inside;
    margin-left: 15px;
