@@ -181,6 +181,8 @@ function( TestUtils ) {
 						//Aloha.execCommand( command, false, check.value, range );
 						if (command === 'bold') {
 							FormatPlugin.addMarkup('b');
+						} else if (command === 'removeFormat') {
+							FormatPlugin.removeFormat();
 						} else if (command === 'outdent') {
 							ListPlugin.outdentList()
 						} else if (command === 'indent') {
