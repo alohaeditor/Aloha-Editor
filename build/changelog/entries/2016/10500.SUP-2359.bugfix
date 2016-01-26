@@ -1,0 +1,2 @@
+When clicking on a link the @aloha.link.selected@ event was not published due to
+a type error. This bug was introduced in Aloha Editor 1.4.2 and has been fixed now.

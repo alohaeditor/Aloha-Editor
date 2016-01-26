@@ -1398,7 +1398,7 @@ define([
 
 				PubSub.pub('aloha.link.selected', {
 					input: that.hrefField.getInputElem(),
-					href: that.hrefField.getTargetObject().getAttribute('href'),
+					href: that.hrefField.getTargetObject().attr('href'),
 					element: that.hrefField.getTargetObject()
 				});
 			} else {
