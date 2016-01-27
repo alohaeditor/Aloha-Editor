@@ -31,6 +31,7 @@ public class SimpleTest {
 		suite.addQunitModule("insertlinebreak");
 		suite.addQunitModule("insertorderedlist");
 		suite.addQunitModule("insertparagraph");
+		suite.addQunitModule("insertparagraphinlist");
 		suite.addQunitModule("insertunorderedlist");
 		suite.addQunitModule("list");
 		suite.addQunitModule("outdent");

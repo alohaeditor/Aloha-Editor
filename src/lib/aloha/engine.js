@@ -4761,11 +4761,24 @@ define([
 		var startOffset = range.startOffset;
 		var endNode = range.endContainer;
 		var endOffset = range.endOffset;
-
+		
 		// "If some ancestor container of start node is an li, set start offset to
 		// the index of the last such li in tree order, and set start node to that
 		// li's parent."
-		var liAncestors = $_(getAncestors(startNode).concat(startNode)).filter(function (ancestor) { return isNamedHtmlElement(ancestor, 'li'); }).slice(-1);
+		var ancestors = $_(getAncestors(startNode).concat(startNode));
+		var closestEditableIndex, currNode;
+		
+		// We must limit the search for <li> elements to the scope of the closest
+		// editable in the DOM tree.
+		for(var index = 0; index < ancestors.length; index ++ ) {
+			currNode = ancestors[index];
+			if (isEditable(currNode)) {
+				closestEditableIndex = index;
+			}
+		}
+		var liAncestors = ancestors.filter(function (ancestor, index) {
+			return closestEditableIndex < index && isNamedHtmlElement(ancestor, 'li');
+		}).slice(-1);
 		if (liAncestors.length) {
 			startOffset = Dom.getIndexInParent(liAncestors[0]);
 			startNode = liAncestors[0].parentNode;
