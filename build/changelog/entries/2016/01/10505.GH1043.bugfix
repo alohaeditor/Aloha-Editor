@@ -1,0 +1,2 @@
+When an editable was inside an <li> element, one was not able to add new paragraphs using the Enter key.
+This was reported in "GitHub issue 1043":https://github.com/alohaeditor/Aloha-Editor/issues/1043 and is fixed with this change.
