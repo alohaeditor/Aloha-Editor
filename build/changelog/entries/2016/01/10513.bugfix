@@ -1,0 +1,1 @@
+Fixes issue with table plugin where the createTable button would not display if the editable is inside a list.
