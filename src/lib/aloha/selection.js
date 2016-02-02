@@ -428,7 +428,8 @@ define([
 					'del': true,
 					'ins': true,
 					'u': true,
-					'a': true
+					'a': true,
+					'table': true
 				},
 				'tr': {
 					'td': true,
