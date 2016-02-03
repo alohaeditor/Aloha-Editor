@@ -146,10 +146,17 @@
 	color:          #000000;
 	font-weight:    bold;
 }
+.aloha-sidebar-panel-content-inner .input-label {
+	color:          inherit;
+	font-weight:    normal;
+}
 .aloha-sidebar-panel-content input, .aloha-sidebar-panel-content textarea {
 	width:          180px;
 	margin:         3px;
 	padding:        2px;
+}
+.aloha-sidebar-panel-content input[type=radio], .aloha-sidebar-panel-content input[type=checkbox] {
+	width:          auto;
 }
 .aloha-sidebar-panel-content textarea {
 	height:         57px;

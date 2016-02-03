@@ -93,8 +93,17 @@
 	display: none;
 }
 
+.aloha-block-editor fieldset {
+	border: 2px groove threedface!important;
+	padding-bottom: 5px;
+}
+
 .aloha-block-editor label {
 	display:block;
+}
+
+.aloha-block-editor .input-label {
+	display: inline;
 }
 
 .aloha-block-dropInlineElementIntoEmptyBlock {
