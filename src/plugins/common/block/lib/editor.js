@@ -147,13 +147,23 @@ function (jQuery, Observable, Class) {
 
 		/**
 		 * Render the label and form element
+		 *
 		 * @return {jQuery}
 		 */
 		render: function () {
 			var $wrapper = jQuery('<div class="aloha-block-editor" />');
 			var guid = GENTICS.Utils.guid();
-			$wrapper.append(this.renderLabel().attr('id', guid));
-			$wrapper.append(this.renderFormElement().attr('id', guid));
+			var $label = this.renderLabel().attr('id', guid);
+			var $formElement = this.renderFormElement().attr('id', guid);
+
+			if (this.schema.fieldsetLabel) {
+				// When using a fieldset, the actual input element has to be
+				// placed in that instead of the wrapper element.
+				$label.append($formElement).appendTo($wrapper);
+			} else {
+				$wrapper.append($label).append($formElement);
+			}
+
 			return $wrapper;
 		},
 
@@ -161,11 +171,21 @@ function (jQuery, Observable, Class) {
 		 * Render the label for the editor, by using the "label" property
 		 * from the schema.
 		 *
+		 * When <code>this.schema.fieldsetLabel</code> is true the
+		 * label will be rendered as a <code>legend</code> tag inside
+		 * a <code>fieldset</code>.
+		 *
 		 * @return {jQuery}
 		 */
 		renderLabel: function () {
-			var element = jQuery('<label />');
-			element.html(this.schema.label);
+			var element;
+
+			if (this.schema.fieldsetLabel) {
+				element = jQuery('<fieldset>').append(jQuery('<legend>', { text: this.schema.label }));
+			} else {
+				element = jQuery('<label>', { text: this.schema.label });
+			}
+
 			return element;
 		},
 
@@ -302,6 +322,42 @@ function (jQuery, Observable, Class) {
 	});
 
 	/**
+	 * @name block.editor.RadioButtonEditor
+	 * @class An editor for a radio button group
+	 * @extends block.editor.AbstractFormElementEditor
+	 */
+	var RadioButtonEditor = AbstractFormElementEditor.extend(
+	/** @lends block.editor.RadioButtonEditor */
+	{
+			formInputElementDefinition: '<ul />',
+			afterRenderFormElement: function ($formElement) {
+				var groupName = 'rb_' + GENTICS.Utils.guid();
+
+				jQuery.each(this.schema.values, function (idx, el) {
+					var inputId = groupName + '_' + el.key;
+					var $input = $('<input>', {
+						type: 'radio',
+						value: el.key,
+						name: groupName,
+						id: inputId
+					});
+					var $label = $('<label>', {
+						'for': inputId,
+						'class': 'input-label',
+						text: el.label
+					});
+
+					$('<li>').append($input).append($label).appendTo($formElement);
+				})
+			},
+			getValue: function () {
+				return this._$formInputElement.find(':checked').val();
+			},
+			setValue: function (value) {
+				this._$formInputElement.find('[value=' + value + ']').prop('checked', true);
+			}
+	});
+	/**
 	 * @name block.editor.ButtonEditor
 	 * @class An editor for buttons, executing a custom supplied callback "callback"
 	 * @extends block.editor.AbstractFormElementEditor
@@ -328,6 +384,7 @@ function (jQuery, Observable, Class) {
 		UrlEditor: UrlEditor,
 		EmailEditor: EmailEditor,
 		SelectEditor: SelectEditor,
+		RadioButtonEditor: RadioButtonEditor,
 		ButtonEditor: ButtonEditor
 	}
 });
