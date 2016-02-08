@@ -865,6 +865,8 @@ define([
 			Aloha.activeEditable.smartContentChange({
 				type: 'blur'
 			}, null);
+
+			Selection.resetPrevSelectionContexts();
 		},
 
 		/**
