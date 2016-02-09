@@ -273,13 +273,14 @@ getSchema: function() {
 	return {
 		symbol: {
 			type: 'string',
-			label: 'Stock Quote Name'
+			label: 'Stock Quote Name',
+			fieldsetLabel: true
 		}
 	};
 },		
 </javascript>
 
-It just defines that the block attribute +symbol+ is of type @string@ and has a certain label.
+It just defines that the block attribute +symbol+ is of type @string@ and has a certain label. Setting the optional field +fieldsetLabel+ to @true@ will result in an editor that is sorrounded by a +<fieldset>+ element with @label@ as the +<legend>+ element.
 
 Additionally, the Aloha Block needs a title, which is shown in the sidebar. Just set the +title+ property of your block, or for more advanced computations override the @getTitle()@ method.
 
@@ -362,6 +363,27 @@ h5. select
 </javascript>
 
 Output: +<select>...</select>+ (with the correctly active option pre-selected)
+
+h5. radio
+
+<javascript>
+{
+	type: 'radio',
+	label: 'Position',
+	values: [{
+		key: '',
+		label: 'No Float'
+	}, {
+		key: 'left',
+		label: 'Float left'
+	}, {
+		key: 'right',
+		label: 'Float right'
+	}]
+}
+</javascript>
+
+Output: +<ul>...</ul>+ where each item contains +<input type=radio ...>+ and corresponding +<label>+ tags.
 
 h5. button
 

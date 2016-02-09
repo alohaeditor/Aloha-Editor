@@ -1,0 +1,2 @@
+When clicking outside of an editable, and clicking inside on the same element again, the 'aloha.selection.context-change' was not triggered, which for example also prevented the link UI from being activated. This has been fixed.
+

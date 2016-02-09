@@ -2171,6 +2171,14 @@ define([
 		},
 
 		/**
+		 * Sets prevStartContext & prevEndContext to null
+		 */
+		resetPrevSelectionContexts: function () {
+			prevStartContext = null;
+			prevEndContext   = null;
+		},
+
+		/**
 		 * String representation
 		 * @return "Aloha.Selection"
 		 * @hide
