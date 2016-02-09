@@ -102,6 +102,7 @@ define([
 			EditorManager.register('url', editor.UrlEditor);
 			EditorManager.register('email', editor.EmailEditor);
 			EditorManager.register('select', editor.SelectEditor);
+			EditorManager.register('radio', editor.RadioButtonEditor);
 			EditorManager.register('button', editor.ButtonEditor);
 
 			// register content handler for block plugin
