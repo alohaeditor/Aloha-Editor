@@ -777,10 +777,10 @@ define([
 
 						var hrefItem = that.hrefField.getItem();
 						var href = hrefItem
-						? hrefItem.url ? hrefItem.url : ''
+							? hrefItem.url ? hrefItem.url : ''
 							: that.hrefField.getValue();
 
-						that.lastActiveLink.setAttribute(
+						that.lastActiveLink.attr(
 								'href',
 								href + (!href || anchor ? '#' : '') + anchor);
 						that.hrefChange();
@@ -845,7 +845,7 @@ define([
 		 * currently selected links href attribute. Called
 		 * when the href field is changed.
 		 *
-		 * @param {HTMLLinkElement} link Optional. The link for which
+		 * @param {jQuery} link Optional. The link for which
 		 *		the href attribute should be updated. If no link is
 		 *		supplied <code>this.lastActiveLink</code> is used.
 		 */
@@ -864,9 +864,9 @@ define([
 				// We cannot use the href attribute of the node element
 				// directly because the browser could add the address
 				// of the current page at the beginning.
-				link.setAttribute(
+				link.attr(
 					'href',
-					link.getAttribute('href') + '#' + anchor);
+					link.attr('href') + '#' + anchor);
 			}
 		},
 
@@ -1353,7 +1353,7 @@ define([
 			if (foundMarkup.length > 0) {
 				that.toggleLinkScope(true);
 
-				that.prepareAnchor(foundMarkup.href);
+				that.prepareAnchor(foundMarkup.attr('href'));
 
 				// now we are ready to set the target object
 				foundMarkup.attr('data-ignore-auto-values', 'true');
@@ -1381,7 +1381,7 @@ define([
 					// register a timeout that will set the value as soon as the href field was initialized
 					that.hrefUpdateInt = setInterval( function () {
 						if (jQuery( '#' + that.hrefField.getInputId()).length > 0) { // the object was finally created
-							that.prepareAnchor(foundMarkup.href);
+							that.prepareAnchor(foundMarkup.attr('href'));
 							that.hrefField.setTargetObject(foundMarkup, 'href');
 							that.stripAnchor();
 							if (that.hrefField.getItem()) {
@@ -1411,6 +1411,6 @@ define([
 		}
 
 		that.ignoreNextSelectionChangedEvent = false;
-		return enteredLinkScope ? foundMarkup.length > 0 : false;
+		return enteredLinkScope ? foundMarkup : false;
 	}
 } );
