@@ -1,0 +1,3 @@
+The link-plugin did not treat found link markup as a jQuery object resulting
+in errors like "X.attr() is not a function" and undefined references. This
+has been fixed.
