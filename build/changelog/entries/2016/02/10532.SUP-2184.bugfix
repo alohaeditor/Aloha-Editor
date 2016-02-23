@@ -1,0 +1,7 @@
+When Drag & Drop was disabled, blocks with duplicate IDs inside nested editables
+would sometimes get the class @ui-state-disabled@ preventing any interaction
+with them.
+
+Note that blocks with duplicate IDs are not supported in Aloha-Editor since this
+implies invalid HTML markup. This fix is just intended to prevent certain subsequent
+errors when duplicate blocks are already present.
