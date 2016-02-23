@@ -5284,7 +5284,14 @@ define([
 		// node follows a line break, and false otherwise. non-breaking end is true
 		// if end offset is end node's length and end node precedes a line break,
 		// and false otherwise."
-		var replacementWhitespace = canonicalSpaceSequence(length, startOffset == 0 && followsLineBreak(startNode), endOffset == getNodeLength(endNode) && precedesLineBreak(endNode));
+		// Correction: The above specification rule has been implemented slightly different,
+		// because the line breaks at start/end should not be taken in account if startNode
+		// or endNode are editing hosts.
+		var isNonBreakingStart    = startOffset == 0 &&
+				(followsLineBreak(startNode) || isEditingHost(startNode));
+		var isNonBreakingEnd      = endOffset == getNodeLength(endNode)
+				&& (precedesLineBreak(endNode) || isEditingHost(endNode));
+		var replacementWhitespace = canonicalSpaceSequence(length, isNonBreakingStart, isNonBreakingEnd);
 
 		// "While (start node, start offset) is before (end node, end offset):"
 		while (getPosition(startNode, startOffset, endNode, endOffset) == "before") {

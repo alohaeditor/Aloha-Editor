@@ -1,0 +1,2 @@
+Fixed whitespaces at the start or end of an inline editable not being properly handled when deleting text.
+

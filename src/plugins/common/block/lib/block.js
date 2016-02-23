@@ -680,9 +680,12 @@ define([
 			this.renderBlockHandlesIfNeeded();
 			if (this.isDraggable()) {
 				var nodeName = this.$element[0].nodeName;
-				if (nodeName === 'SPAN') {
+				if (nodeName === 'SPAN' && !this.$element.data('dd-setup-done')) {
+					// Unfortunately _setupDragDropForInlineElements() is not
+					// idempotent because $.draggable() isn't.
 					this._setupDragDropForInlineElements();
 					this._disableUglyInternetExplorerDragHandles();
+					this.$element.data('dd-setup-done', true);
 				} else if (nodeName === 'DIV') {
 					this._setupDragDropForBlockElements();
 					this._disableUglyInternetExplorerDragHandles();
