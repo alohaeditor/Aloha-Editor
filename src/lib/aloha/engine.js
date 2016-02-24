@@ -5586,7 +5586,7 @@ define([
 			// if deleting the text moved two spaces together, we replace the left one by a &nbsp;, which makes the two spaces a visible
 			// two space sequence
 			if (startOffset > 0 && startNode.data.substr(startOffset - 1, 1) === ' ' && startOffset < startNode.data.length && startNode.data.substr(startOffset, 1) === ' ') {
-				startNode.replaceData(startOffset - 1, 1, '\xa0');
+				startNode.replaceData(startOffset, 1, '\xa0');
 			}
 
 			// "Canonicalize whitespace at (start node, start offset)."
