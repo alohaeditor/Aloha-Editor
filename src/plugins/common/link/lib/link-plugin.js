@@ -549,7 +549,7 @@ define([
 					// Only foreground the tab containing the href field the
 					// first time the user enters the link scope to avoid
 					// intefering with the user's manual tab selection
-					if (activeLink !== false && activeLink !== plugin.lastActiveLink) {
+					if (activeLink !== false && !activeLink.is(plugin.lastActiveLink)) {
 						// put the field into foreground with a timeout, so that this
 						// overrules other plugins that change the active toolbar tab
 						// by setting the scope
@@ -774,6 +774,15 @@ define([
 					range.startContainer = range.endContainer;
 					range.startOffset = range.endOffset;
 					range.select();
+
+					// At least Mozilla still has the focus on the href input field.
+					// TODO: Should Range.select() perhaps ensure that the editable
+					// actually has the focus?
+					var editable = $(range.startContainer).closest('.aloha-editable,.aloha-table-cell-editable');
+
+					if (editable.length > 0 && Aloha.browser.mozilla && document.activeElement !== editable[0]) {
+						editable.focus();
+					}
 
 					var hrefValue = jQuery( that.hrefField.getInputElem() ).attr( 'value' );
 					
@@ -1169,6 +1178,6 @@ define([
 		}
 		
 		that.ignoreNextSelectionChangedEvent = false;
-		return enteredLinkScope ? foundMarkup.length > 0 : false;
+		return enteredLinkScope ? foundMarkup : false;
 	}
 } );
