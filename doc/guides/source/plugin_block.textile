@@ -511,7 +511,7 @@ Aloha.settings.plugins.block.editables = {
 
 In the above example, blocks defined in "#editable-1" can be dragged to either "#editable-1" or "#editable-2". However, blocks in "#editable-2" can only be dragged within itself.
 
-You can also define the dropzones globally.
+You can also define the dropzones globally for all editables which do not have a specific configuration.
 
 <javascript>
 Aloha.settings.plugins.block.dropzones = [ '#editable-1', '#editable-2' ];
