@@ -357,6 +357,21 @@ define([
 		}
 
 		var $elm = $(elm);
+		var $srcEditable = this.$element.closest('.aloha-editable');
+		var $dstEditable = $elm.closest('.aloha-editable');
+		var dropzones = ($srcEditable.data('block-dropzones') || ['.aloha-editable']).join();
+
+		if (!$dstEditable.is(dropzones)) {
+			if (Aloha.Log.isDebugEnabled()) {
+				Aloha.Log.debug(
+					'block-plugin',
+					'Preventing drop because of defined dropzones: [ ' + dropzones + ' ]');
+			}
+
+			event.stopImmediatePropagation();
+
+			return false;
+		}
 
 		if (!this._isAllowedOverElement(elm)) {
 			this.disableInsertBeforeOrAfter(this.$overElement);

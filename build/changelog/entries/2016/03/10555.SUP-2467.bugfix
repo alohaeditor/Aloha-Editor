@@ -1,0 +1,1 @@
+The configuration of "dropzones":http://www.alohaeditor.org/guides/plugin_block.html#defining-dropzones in the block plugin was not taken into account when dragging blocks. This has been fixed.
