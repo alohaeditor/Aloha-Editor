@@ -780,6 +780,11 @@ define([
 							? hrefItem.url ? hrefItem.url : ''
 							: that.hrefField.getValue();
 
+						if (/^https?:\/\/$/.test(href) && anchor) {
+							href = '';
+							that.hrefField.setValue('');
+						}
+
 						that.lastActiveLink.attr(
 								'href',
 								href + (!href || anchor ? '#' : '') + anchor);
