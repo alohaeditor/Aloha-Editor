@@ -1,0 +1,1 @@
+When the href field for a link contained only the default value @"http://"@, it had to be cleared manually when adding an anchor to avoid invalid URLs. This behavior has been changed so that the href field is automatically cleared, when it contains only @"http://"@ or @"https://"@ and the anchor field is changed.
