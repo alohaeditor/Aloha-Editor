@@ -420,6 +420,8 @@ define([
 				Aloha.settings.contentHandler.initEditable = Aloha.defaults.contentHandler.initEditable;
 			}
 
+			Ephemera.markAttr(me.obj, 'style');
+
 			var content = me.obj.html();
 			content = ContentHandlerManager.handleContent(content, {
 				contenthandler: Aloha.settings.contentHandler.initEditable,
