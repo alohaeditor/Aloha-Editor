@@ -100,7 +100,7 @@
 				<artifactId>maven-release-plugin</artifactId>
 				<version>2.2</version>
 				<configuration>
-					<goals>deploy -Dskip.unit.tests=true</goals>
+					<goals>deploy -DskipTests=true</goals>
 					<completionGoals>scm:checkin -Dmessage="Added generated changelog mapping" -Dbasedir=${project.basedir}/ -Dincludes=build/changelog/mappings/**</completionGoals>
 				</configuration>
 			</plugin>
