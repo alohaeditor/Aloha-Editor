@@ -122,6 +122,8 @@ Aloha.settings.plugins: {
 };
 </javascript>
 
+NOTE: If the table layout options are used alongside the sanitize-content-handler, make sure that the 'class'-attribute is included in the whitelist of allowed attributes for the elements 'table', 'tr' and 'td'. Without this entries in the sanitize-content-handler's whitelist, the content-handler will per default remove the class attribute from tables, table-rows and table-cells.
+
 h3. Components
 
 * table - insert a table into the content
