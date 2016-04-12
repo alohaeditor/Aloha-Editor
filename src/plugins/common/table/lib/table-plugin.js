@@ -342,9 +342,10 @@ define([
 		this.rowConfig    = this.checkConfig(this.rowConfig    || this.settings.rowConfig);
 		this.cellConfig   = this.checkConfig(this.cellConfig   || this.settings.cellConfig);
 
-		this.tableResize = this.settings.tableResize === undefined ? false : this.settings.tableResize;
-		this.colResize   = this.settings.colResize   === undefined ? false : this.settings.colResize;
-		this.rowResize   = this.settings.rowResize   === undefined ? false : this.settings.rowResize;
+		this.tableResize  = this.settings.tableResize === undefined ? false : this.settings.tableResize;
+		this.colResize    = this.settings.colResize   === undefined ? false : this.settings.colResize;
+		this.rowResize    = this.settings.rowResize   === undefined ? false : this.settings.rowResize;
+		this.defaultClass = this.settings.defaultClass;
 
 		// disable table resize settings on browsers below IE8
 		if (jQuery.browser.msie && parseInt(jQuery.browser.version, 10) < 8) {
@@ -1279,6 +1280,10 @@ define([
 		if ( Aloha.activeEditable && typeof Aloha.activeEditable.obj !== 'undefined' ) {
 			// create a dom-table object
 			var table = document.createElement( 'table' );
+			// set the default class
+			if (this.defaultClass) {
+				table.className = this.defaultClass;
+			}
 			var tableId = table.id = GENTICS.Utils.guid();
 			var tbody = document.createElement( 'tbody' );
 
