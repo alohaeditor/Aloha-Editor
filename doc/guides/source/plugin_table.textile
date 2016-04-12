@@ -117,7 +117,9 @@ Aloha.settings.plugins: {
 		// allow resizing the column width (default: true)
 		colResize: true,
 		// allow resizing the row height (default: true)
-		rowResize: true
+		rowResize: true,
+		//add a default class to newly created tables
+		defaultClass : 'table-responsive'
 	}
 };
 </javascript>
