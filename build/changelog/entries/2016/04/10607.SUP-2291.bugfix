@@ -1,0 +1,2 @@
+Aloha.unbind: Using this method with specifying the event name only unbinds all registered functions for this event. Most of the times, this is not the desired goal. Therefore a second parameter has been added that allows you to also specify the bound callback function. In this case only the specified callback function will be removed for this event.
+
