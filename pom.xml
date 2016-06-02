@@ -89,10 +89,9 @@
 				<configuration>
 					<verbose>true</verbose>
 					<fork>true</fork>
-					<executable>${JAVA_1_6_HOME}/bin/javac</executable>
-					<compilerVersion>6.0</compilerVersion>
-					<source>6</source>
-					<target>6</target>
+					<executable>${JAVA_1_8_HOME}/bin/javac</executable>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -511,3 +510,4 @@
 		</snapshotRepository>
 	</distributionManagement>
 </project>
+
