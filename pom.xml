@@ -47,7 +47,7 @@
 		<dependency>
 			<groupId>com.gentics</groupId>
 			<artifactId>junit-selenium-qunit-runner</artifactId>
-			<version>0.9.4</version>
+			<version>0.9.5</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
