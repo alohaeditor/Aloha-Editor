@@ -188,9 +188,17 @@ define([
 			if (null !== name && this.buttons[name] !== undefined) {
 				this.buttons[name].element.show();
 				this.buttons[name].visible = true;
-				// since we show at least one button now, we need to show the multisplit button
-				this.element.show();
-				this.visible = true;
+				// since we show at least one button now, we need to show
+				// the multisplit button if it's not already visible.
+				if (!this.visible) {
+					this.visible = true;
+					// To make sure the containing wrapper of the
+					// multisplit button is also shown/hidden, we
+					// have to use the containers childVisible()
+					// method instead of showing/hiding this
+					// element directly.
+					this.container.childVisible(this, true);
+				}
 			}
 		},
 
@@ -213,17 +221,25 @@ define([
 				for (button in this.buttons) {
 					if (this.buttons.hasOwnProperty(button)) {
 						if (this.buttons[button].visible) {
-							this.element.show();
-							this.visible = true;
 							visible = true;
 							break;
 						}
 					}
 				}
 
-				if (!visible) {
-					this.element.hide();
-					this.visible = false;
+				// To make sure the containing wrapper of the
+				// multisplit button is also shown/hidden, we
+				// have to use the containers childVisible()
+				// method instead of showing/hiding this
+				// element directly.
+				if (visible != this.visible) {
+					if (visible) {
+						this.visible = true;
+						this.container.childVisible(this, true);
+					} else {
+						this.visible = false;
+						this.container.childVisible(this, false);
+					}
 				}
 			}
 		}
