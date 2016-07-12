@@ -200,7 +200,10 @@ define([
 			this.visible = true;
 
 			// Hiding all tabs may hide the toolbar, so showing the
-			// first tab again must also show the toolbar.
+			// first tab again must also show the toolbar. While
+			// hiding the toolbar, the collapsible option had to be
+			// set to deselect all tabs.
+			this.container.tabs('option', 'collapsible', false);
 			this.container.show();
 
 			// If no tabs are selected, then select the tab which was just shown.
@@ -221,10 +224,13 @@ define([
 			this.handle.hide();
 			this.visible = false;
 
-			// If the tab we just hid was the selected tab, then we need to
-			// select another tab in its stead.  We will select the first
-			// visible tab we find, or else we deselect all tabs.
-			if (this.index === this.container.tabs('option', 'selected')) {
+			var selected = this.container.tabs('option', 'selected');
+
+			// If the tab we just hid was the selected tab or there is no
+			// selected tab, then we need to select another tab in its stead.
+			// We will select the first visible tab we find, or else we
+			// deselect all tabs.
+			if (selected == -1 || selected == this.index) {
 				tabs = this.container.data('aloha-tabs');
 
 				var i;
@@ -235,14 +241,10 @@ define([
 					}
 				}
 
-				// This does not work...
-				// this.container.tabs( 'select', -1 );
-
-				// Why do we remove this class?
-				this.handle.removeClass('ui-tabs-active');
-
 				// It doesn't make any sense to leave the toolbar
-				// visible after all tabs have been hidden.
+				// visible after all tabs have been hidden. To deselect
+				// all tabs we have to enable the collapsible option.
+				this.container.tabs({ collapsible: true, active: false });
 				this.container.hide();
 			}
 		}
