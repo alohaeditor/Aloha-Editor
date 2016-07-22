@@ -1,0 +1,3 @@
+The way the generic content handler removed newlines could produce valid markup that nonetheless lead to unexpected behaviour when deleting text. This has been fixed.
+
+Also the generic content handler has been added to the default content handlers for initialized editables.
