@@ -1,0 +1,2 @@
+When an inserted content contained an aloha-block the formatless paste handler returned "undefined" instead of the unmodified content. This was causing errors and interrupting the content handler execution chain. This has been fixed.
+

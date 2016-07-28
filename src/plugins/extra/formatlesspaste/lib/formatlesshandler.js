@@ -86,7 +86,7 @@ define([
 			// should be modified as it most probably comes from Aloha and does
 			// not need to be cleaned up.
 			if ($content.find('.aloha-block').length) {
-				return;
+				return content;
 			}
 
 			if (this.enabled) {
