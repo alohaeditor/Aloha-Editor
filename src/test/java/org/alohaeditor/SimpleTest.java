@@ -21,6 +21,7 @@ public class SimpleTest {
 		suite.addQunitModule("applymarkup");
 		suite.addQunitModule("bold");
 		suite.addQunitModule("contenthandler");
+		suite.addQunitModule("genericcontenthandler");
 		suite.addQunitModule("contenthandlermanager");
 //		suite.addQunitModule("core");
 		suite.addQunitModule("delete");
@@ -46,6 +47,7 @@ public class SimpleTest {
 //		suite.addQunitModule("table");
 		suite.addQunitModule("wailangrepo");
 		suite.addQunitModule("wordcontenthandler");
+		suite.addQunitModule("formatlesspaste");
 
 		return suite;
 	}
