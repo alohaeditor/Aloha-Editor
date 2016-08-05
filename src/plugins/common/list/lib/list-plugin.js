@@ -718,6 +718,14 @@ define([
 			// check the dom object
 			nodeName = domToTransform.nodeName.toLowerCase();
 
+			//remove all classes on list type change
+			if (nodeName !== listtype && this.templates[nodeName]) {
+				jqList = jQuery(domToTransform);
+				jQuery.each(this.templates[nodeName].classes, function (i, cssClass) {
+					jqList.removeClass(cssClass);
+				});
+			}
+
 			if (nodeName === listtype) {
 				jqList = jQuery(domToTransform);
 				jqParentList = jqList.parent();
@@ -733,10 +741,10 @@ define([
 					}
 				}
 
-			} else if (nodeName == 'ul' && listtype === 'ol') {
+			} else if (nodeName === 'ul' && listtype === 'ol') {
 				transformExistingListAndSubLists(domToTransform, 'ol');
 				this.mergeAdjacentLists(jQuery(domToTransform));
-			} else if (nodeName == 'ol' && listtype === 'ul') {
+			} else if (nodeName === 'ol' && listtype === 'ul') {
 				transformExistingListAndSubLists(domToTransform, 'ul');
 				this.mergeAdjacentLists(jQuery(domToTransform));
 			} else if (nodeName === 'ul' && listtype === 'dl') {
