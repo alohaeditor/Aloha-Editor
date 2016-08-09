@@ -44,6 +44,10 @@ define([
 	 */
 	var formattingTags = ['strong', 'em', 's', 'u', 'strike'];
 
+	var notAlohaBlockFilter = function (index) {
+		return $( this ).parents('.aloha-block').length === 0;
+	};
+
 	/**
 	 * Transforms all tables in the given content to make them ready to for
 	 * use with Aloha's table handling.
@@ -58,6 +62,7 @@ define([
 		// manipulate borders, cellspacing, cellpadding in tables.
 		// @todo what about width, height?
 		$content.find('table')
+			.filter(notAlohaBlockFilter)
 			.removeAttr('cellpadding')
 			.removeAttr('cellspacing')
 			.removeAttr('border')
@@ -66,7 +71,7 @@ define([
 			.removeAttr('border-left')
 			.removeAttr('border-right');
 
-		$content.find('td').each(function () {
+		$content.find('td').filter(notAlohaBlockFilter).each(function () {
 			var td = this;
 
 			// Because cells with a single empty <p> are rendered to appear
@@ -88,13 +93,14 @@ define([
 		// Because Aloha does not provide a means for editors to manipulate
 		// these properties.
 		$content.find('table,th,td,tr')
+			.filter(notAlohaBlockFilter)
 			.removeAttr('width')
 			.removeAttr('height')
 			.removeAttr('valign');
 
 		// Because Aloha table handling simply does not regard colgroups.
 		// @TODO Use sanitize.js?
-		$content.find('colgroup').remove();
+		$content.find('colgroup').filter(notAlohaBlockFilter).remove();
 	}
 
 	/**
@@ -149,14 +155,6 @@ define([
 				return content;
 			}
 
-			// If an aloha-block is found inside the pasted content, no modify
-			// should be made in the pasted content because it can be assumed
-			// this is content deliberately placed by Aloha and should not be
-			// cleaned.
-			if ($content.find('.aloha-block').length) {
-				return $content.html();
-			}
-
 			prepareTables($content);
 			this.cleanLists($content);
 			this.removeComments($content);
@@ -196,12 +194,12 @@ define([
 		 * @param {jQuery.<HTMLElement>} $content
 		 */
 		cleanLists: function ($content) {
-			$content.find('ul,ol').find('>:not(li)').remove();
+			$content.find('ul,ol').filter(notAlohaBlockFilter).find('>:not(li)').remove();
 
 			// Remove paragraphs inside list elements, if they are
 			// the only child. e.g.: li > p > text
 			// This has been observed to happen with Word documents
-			$content.find("li").each(function() {
+			$content.find("li").filter(notAlohaBlockFilter).each(function() {
 				var $li = $(this);
 				var $children = $li.children();
 				if ($children.length === 1 && $children.is("p")) {
@@ -228,7 +226,7 @@ define([
 				}
 			}
 
-			content.find(selectors.join(',')).each(function () {
+			content.find(selectors.join(',')).filter(notAlohaBlockFilter).each(function () {
 				if (this.nodeName === 'STRONG') {
 					// transform strong to b
 					Aloha.Markup.transformDomObject($(this), 'b');
@@ -253,7 +251,7 @@ define([
 			// find all links and remove the links without href (will be destination anchors from word table of contents)
 			// aloha is not supporting anchors at the moment -- maybe rewrite anchors in headings to "invisible"
 			// in the test document there are anchors for whole paragraphs --> the whole P appear as link
-			content.find('a').each(function () {
+			content.find('a').filter(notAlohaBlockFilter).each(function () {
 				if (typeof $(this).attr('href') === 'undefined') {
 					$(this).contents().unwrap();
 				}
@@ -288,7 +286,7 @@ define([
 			// Note: we exclude all elements (they will be spans) here, that have the class aloha-wai-lang
 			// TODO find a better solution for this (e.g. invent a more generic aloha class for all elements, that are
 			// somehow maintained by aloha, and are therefore allowed)
-			content.find('span,font,div').not('.aloha-wai-lang').each(function () {
+			content.find('span,font,div').not('.aloha-wai-lang').not(".aloha-block").filter(notAlohaBlockFilter).each(function () {
 				if (this.nodeName == 'DIV') {
 					// safari and chrome cleanup for plain text paste with working linebreaks
 					if (this.innerHTML === '<br>') {
@@ -315,7 +313,7 @@ define([
 			}).remove();
 
 			// remove style attributes and classes
-			content.children().filter(function () {
+			content.children().filter(notAlohaBlockFilter).not('.aloha-block').filter(function () {
 				return this.contentEditable !== 'false';
 			}).each(function () {
 				$(this).removeAttr('style').removeClass();

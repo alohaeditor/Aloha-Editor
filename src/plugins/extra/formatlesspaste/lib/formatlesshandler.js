@@ -42,7 +42,9 @@ define([
 	 * @param {Array.<string>} toStip A list of tags to strip from the content.
 	 */
 	function removeFormatting($content, toStrip) {
-		$content.find(toStrip.join(',')).each(function () {
+		$content.find(toStrip.join(',')).filter(function (index) {
+			return $( this ).parents('.aloha-block').length === 0;
+		}).each(function () {
 			if ($(this).contents().length === 0) {
 				$(this).remove();
 			} else {
@@ -80,13 +82,6 @@ define([
 				$content = $('<div>' + content + '</div>');
 			} else if (content instanceof $) {
 				$content = $('<div>').append(content);
-			}
-
-			// If an aloha-block is found inside the pasted content, nothing
-			// should be modified as it most probably comes from Aloha and does
-			// not need to be cleaned up.
-			if ($content.find('.aloha-block').length) {
-				return;
 			}
 
 			if (this.enabled) {
