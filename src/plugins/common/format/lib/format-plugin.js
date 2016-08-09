@@ -359,14 +359,14 @@ define('format/format-plugin', [
 	 * @returns {undefined}
 	 */
 	function checkHeadingHierarchy(config) {
+		if (!Aloha.activeEditable || config.length === 0) {
+			return;
+		}
+
 		var parent = Aloha.activeEditable.obj,
 			startHeading,
 			lastCorrectHeading,
 			currentHeading;
-
-		if (config.length === 0) {
-			return;
-		}
 
 		// The warning class should only be used with header tags, but the
 		// insertparagraph command for example, copies all attributes, to
