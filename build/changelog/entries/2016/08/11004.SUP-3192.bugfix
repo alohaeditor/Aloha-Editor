@@ -1,0 +1,2 @@
+The KeyEvent.keyIdentifier field is said to be removed in Chrome. This fix removes it's occurrence in AlohaEditor.
+
