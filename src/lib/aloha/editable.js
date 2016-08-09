@@ -999,7 +999,7 @@ define([
 				return snapshot;
 			}
 
-			// handle "Enter" -- it's not "U+1234" -- when returned via "event.originalEvent.keyIdentifier"
+			// handle "Enter" -- it's not "U+1234" -- when returned via "event.originalEvent.key"
 			// reference: http://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/keyset.html
 			if (jQuery.inArray(uniChar, this.sccDelimiters) >= 0) {
 				clearTimeout(this.sccTimerIdle);
@@ -1008,7 +1008,7 @@ define([
 				this.sccTimerDelay = window.setTimeout(function () {
 					Aloha.trigger('aloha-smart-content-changed', {
 						'editable': me,
-						'keyIdentifier': event.originalEvent.keyIdentifier,
+						'keyIdentifier': event.originalEvent.key,
 						'keyCode': event.keyCode,
 						'char': uniChar,
 						'triggerType': 'keypress', // keypress, timer, blur, paste
