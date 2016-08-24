@@ -47,7 +47,7 @@
 		<dependency>
 			<groupId>com.gentics</groupId>
 			<artifactId>junit-selenium-qunit-runner</artifactId>
-			<version>0.9.5</version>
+			<version>0.9.4</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -89,9 +89,10 @@
 				<configuration>
 					<verbose>true</verbose>
 					<fork>true</fork>
-					<executable>${JAVA_1_8_HOME}/bin/javac</executable>
-					<source>1.8</source>
-					<target>1.8</target>
+					<executable>${JAVA_1_6_HOME}/bin/javac</executable>
+					<compilerVersion>6.0</compilerVersion>
+					<source>6</source>
+					<target>6</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -99,7 +100,7 @@
 				<artifactId>maven-release-plugin</artifactId>
 				<version>2.2</version>
 				<configuration>
-					<goals>deploy -DskipTests=true</goals>
+					<goals>deploy -Dskip.unit.tests=true</goals>
 					<completionGoals>scm:checkin -Dmessage="Added generated changelog mapping" -Dbasedir=${project.basedir}/ -Dincludes=build/changelog/mappings/**</completionGoals>
 				</configuration>
 			</plugin>

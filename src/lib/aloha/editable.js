@@ -1062,9 +1062,9 @@ define([
 			} else if (uniChar !== null) {
 				var range = Aloha.Selection.getRangeObject();
 
-				//Remove break in otherwise empty children in IE and Mozilla
+				//Remove break in otherwise empty children in IE
 				//This is done automatically in Chrome and would lead to errors
-				if (Browser.ie || Browser.mozilla) {
+				if (Browser.ie) {
 					if (range.startContainer == range.endContainer) {
 						var $children = $(range.startContainer).children();
 
