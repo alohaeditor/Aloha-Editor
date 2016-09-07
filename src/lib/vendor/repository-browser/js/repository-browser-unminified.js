@@ -103,9 +103,9 @@
 		function enableSelection($elem) {
 			$elem.removeAttr('unselectable');
 			$elem.css({
-				'-webkit-user-select' : 'all',
-//				'-moz-user-select'    : 'all',  // Because this feature is broken in Firefox
-				'user-select'         : 'all'
+				'-webkit-user-select' : 'text',
+//				'-moz-user-select'    : 'text',  // Because this feature is broken in Firefox
+				'user-select'         : 'text'
 			});
 			$elem.onselectstart = null;
 		}

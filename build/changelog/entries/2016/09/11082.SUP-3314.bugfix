@@ -1,0 +1,2 @@
+Fixed clicking into and editing text in an editable not working anymore in Chrome 53 when the repository-browser plugin is loaded, because it set the CSS attribute "-webkit-user-select: all" on the body.
+
