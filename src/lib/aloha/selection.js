@@ -804,6 +804,13 @@ define([
 
 			Aloha.trigger('aloha-selection-changed-after', [this.rangeObject, event]);
 
+			// At least Mozilla still has the focus on the href input field.
+			var editable = jQuery(this.rangeObject.startContainer).closest('.aloha-editable,.aloha-table-cell-editable');
+
+			if (editable.length > 0 && Aloha.browser.mozilla && document.activeElement !== editable[0]) {
+				editable.focus();
+			}
+
 			return true;
 		},
 

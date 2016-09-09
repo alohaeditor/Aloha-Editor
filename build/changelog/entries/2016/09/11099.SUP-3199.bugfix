@@ -1,0 +1,1 @@
+Setting a language annotation would remove the focus from the editable and therefore deactivate it. This has been fixed.

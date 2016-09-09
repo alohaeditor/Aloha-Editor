@@ -80,8 +80,12 @@ define([
 	 */
 	function registerEvents() {
 		$('html').mousedown(function ($event) {
+			var uiWidget = $($event.target).closest('.ui-widget').size() > 0;
+
 			if (Aloha.activeEditable && !Aloha.eventHandled
-					&& !originatesFromDialog($event)) {
+					&& !originatesFromDialog($event)
+					&& !uiWidget) {
+				window.console.log('Deactivating editable');
 				Aloha.deactivateEditable();
 			}
 		}).mouseup(function () {

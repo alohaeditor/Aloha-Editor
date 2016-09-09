@@ -216,6 +216,12 @@ define([
 		function finishEditing() {
 			restoreTargetBackground();
 
+			// Move the selection back to the editable.
+			var range = Aloha.Selection.getRangeObject();
+
+			range.startOffset = range.endOffset;
+			range.select();
+
 			if (!targetObject || lastAttributeValue === $(targetObject).attr(targetAttribute)) {
 				return;
 			}
