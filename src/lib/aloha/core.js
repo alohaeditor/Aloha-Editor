@@ -72,6 +72,22 @@ define([
 		return $($event.target).closest('.aloha-dialog').length > 0;
 	}
 
+	
+	/**
+	 * Checks whether the given jQuery event originates from a jQuery UI
+	 * element.
+	 *
+	 * Just like originatesFromDialog() this is used to prevent deactivating
+	 * editables when interacting with UI elements in a hackish way.
+	 *
+	 * @param {jQuery<Event>} $event The processed event.
+	 * @returns {boolean} true if $event is initieated from a jQuery UI
+	 *		element, and false otherwise.
+	 */
+	function originatesFromUiWidget($event) {
+		return $($event.target).closest('.ui-widget').length > 0;
+	}
+
 	/**
 	 * Registers events on the documents to cause editables to be blurred when
 	 * clicking outside of editables.
@@ -81,7 +97,8 @@ define([
 	function registerEvents() {
 		$('html').mousedown(function ($event) {
 			if (Aloha.activeEditable && !Aloha.eventHandled
-					&& !originatesFromDialog($event)) {
+					&& !originatesFromDialog($event)
+					&& !originatesFromUiWidget($event)) {
 				Aloha.deactivateEditable();
 			}
 		}).mouseup(function () {
