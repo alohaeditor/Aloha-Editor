@@ -72,7 +72,6 @@ define([
 		return $($event.target).closest('.aloha-dialog').length > 0;
 	}
 
-	
 	/**
 	 * Checks whether the given jQuery event originates from a jQuery UI
 	 * element.
