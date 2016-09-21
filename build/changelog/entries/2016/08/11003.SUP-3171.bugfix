@@ -1,0 +1,2 @@
+list-plugin: When transforming a list to different list type, the available classes of the old list type where not removed. This has been fixed.
+

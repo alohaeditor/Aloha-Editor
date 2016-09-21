@@ -1,0 +1,1 @@
+Sometimes setting a CSS class for a list with the list plugin, a previously selected class would not be removed first. This has been fixed.
