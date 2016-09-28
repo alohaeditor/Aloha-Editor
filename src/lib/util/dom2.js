@@ -901,12 +901,13 @@ define([
 	 * <b>...</b>, "two", <u>...</u>, <i>...</i>, "three", "four", "five"
 	 *
 	 * @param {DOMObject} node
+	 * @param {Boolean} skipChildren true to skip the children of the node
 	 * @return {DOMObject}
 	 *         The succeeding node or null if the given node has no previous
 	 *         siblings and no parent.
 	 */
-	function forward(node) {
-		if (node.firstChild) {
+	function forward(node, skipChildren) {
+		if (!skipChildren && node.firstChild) {
 			return node.firstChild;
 		}
 		var next = node;
