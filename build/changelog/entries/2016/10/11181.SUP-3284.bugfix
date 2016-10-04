@@ -1,0 +1,4 @@
+The automatic tab selection of the toolbar upon scope change failed to check whether
+the tab to be selected contained any visible children. This could cause the toolbar to
+appear empty (with none of the visible tabs selected).
+This has been fixed now.
