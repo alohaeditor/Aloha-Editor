@@ -92,7 +92,7 @@ define('ui/ui-plugin', [
 		    i;
 		for (i = 0; i < tabs.length; i++) {
 			settings = tabs[i].settings;
-			if ('object' === $.type(settings.showOn) && settings.showOn.scope === primaryScope) {
+			if ('object' === $.type(settings.showOn) && settings.showOn.scope === primaryScope && tabs[i].tab.hasVisibleComponents()) {
 				tabs[i].tab.foreground();
 				break;
 			}
