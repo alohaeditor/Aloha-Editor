@@ -136,11 +136,6 @@ define([
 
 		setPlaceholder();
 
-		// Because IE7 doesn't give us the blur event when the editable
-		// is deactivated and the toolbar disappears (other browsers do).
-		// TODO unbind, otherwise mermory leak
-		Aloha.bind('aloha-editable-deactivated', onBlur);
-
 		/**
 		 * Update the attribute in the target element
 		 */
