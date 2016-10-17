@@ -606,12 +606,6 @@ define([
 		// wrap the tableWrapper around the table
 		this.obj.wrap( tableWrapper );
 
-		// Check because the aloha block plugin may not be loaded
-		var parent = this.obj.parent();
-		if (parent.alohaBlock) {
-			parent.alohaBlock();
-		}
-
 		// :HINT The outest div (Editable) of the table is still in an editable
 		// div. So IE will surround the the wrapper div with a resize-border
 		// Workaround => just disable the handles so hopefully won't happen any ugly stuff.
@@ -632,6 +626,15 @@ define([
 		jQuery( this.cells ).each( function () {
 			this.activate();
 		} );
+
+		// Check because the aloha block plugin may not be loaded
+		// This is done, after the cells were made contenteditable, so that while initialization of the block,
+		// contenteditable anchors do not get the attribute 'draggable' set to 'false' (in order to prevent browser drag'n'drop)
+		// because this would make the anchors unclickable in IE
+		var parent = this.obj.parent();
+		if (parent.alohaBlock) {
+			parent.alohaBlock();
+		}
 
 		// after the cells where replaced with contentEditables ... add selection cells
 		// first add the additional columns on the left side

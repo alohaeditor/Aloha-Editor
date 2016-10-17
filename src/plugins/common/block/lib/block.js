@@ -158,7 +158,9 @@ define([
 				$element.find('img').attr('draggable', 'false');
 
 				try {
-					$element.find('a').attr('draggable', 'false');
+					$element.find('a').filter(function () {
+						return !jQuery(this).contentEditable();
+					}).attr('draggable', 'false');
 				} catch (e) {
 					// If we get in here, it is most likely an issue with IE 10 in documentmode 7
 					// and IE10 compatibility mode. It maybe happens in older versions too.
@@ -166,7 +168,9 @@ define([
 					// https://connect.microsoft.com/IE/feedback/details/774078
 					// http://bugs.jquery.com/ticket/12577
 					// Our fallback solution:
-					$element.find('a').each(function () {
+					$element.find('a').filter(function () {
+						return !jQuery(this).contentEditable();
+					}).each(function () {
 						this.setAttribute('draggable', 'false');
 					});
 				}
