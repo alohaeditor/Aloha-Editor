@@ -1,0 +1,3 @@
+When changing a heading with the format plugin the check, whether the heading hierarchy is violated, did not work for some configurations.
+This has been fixed.
+
