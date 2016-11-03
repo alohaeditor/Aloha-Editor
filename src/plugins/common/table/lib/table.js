@@ -115,12 +115,29 @@ define([
 		this.obj = jQuery( table );
 
 		// check config if table should be wrapped
-		if( tablePlugin.settings.wrapClass !== undefined ) {
-			// add div with class from config
-			this.obj.wrap('<div class="' + tablePlugin.settings.wrapClass + '"></div>');
+		if ( tablePlugin.settings.wrapClass !== undefined ) {
+			// If config for wrapping div exists and classes match, do nothing
+			if ( this.obj.parent().attr('class') === tablePlugin.settings.wrapClass ) {
+				// do nothing with wrapper (allready there)
+			// If config for wrapping div exists and classes do not match, change classes
+			// check if there is a wrapper by checking for aloha-editable as parent
+			// a table element as a direct child of aloha-editable does not have a wrapper
+			} else if ( this.obj.parent().attr('class') !== tablePlugin.settings.wrapClass && ! this.obj.parent().hasClass('aloha-editable')) {
+				this.obj.parent().attr('class', tablePlugin.settings.wrapClass);
+
+			// If config for wrapping div exists but div is not present yet, create
+			// the wrapping div is not present when the parent of the table is the .aloha-editable
+			} else if ( this.obj.parent().hasClass('aloha-editable') ) {
+				// add div with class from config
+				this.obj.wrap('<div class="' + tablePlugin.settings.wrapClass + '"></div>');
+			}
 			// set wrappedObj for further handling
 			this.wrappedObj = this.obj.parent();
 		} else {
+			// If config for wrapping div does not exists but there is a wrapping div, remove it
+			if ( ! this.obj.parent().hasClass('aloha-editable') ) {
+				this.obj.unwrap();
+			}
 			// set table-element itself for further handling
 			this.wrappedObj = this.obj;
 		}
@@ -537,12 +554,12 @@ define([
 					var row = cell.closest( 'tr');
 					// check if it's the last row
 					if ( row.next( 'tr').length > 0 ) {
-						return false
+						return false;
 					}
 
 					var cursorOffset = e.pageY - ( row.offset().top + row.outerHeight() );
 					return cursorOffset > (mouseOffset * -1) && cursorOffset < mouseOffset;
-				}
+				};
 
 				var colResize = that.tablePlugin.colResize;
 				var rowResize = that.tablePlugin.rowResize;
@@ -625,7 +642,7 @@ define([
 		// were created dynamically before) ;)
 
 		htmlTableWrapper = this.obj.parents( '.' + this.get( 'classTableWrapper' ) );
-        htmlTableWrapperElem = this.obj.parents( '.' + this.get( 'classTableWrapper' ) ).get( 0 );
+		htmlTableWrapperElem = this.obj.parents( '.' + this.get( 'classTableWrapper' ) ).get( 0 );
 		htmlTableWrapperElem.onresizestart = function ( e ) { return false; };
 		htmlTableWrapperElem.oncontrolselect = function ( e ) { return false; };
 		htmlTableWrapperElem.ondragstart = function ( e ) { return false; };
@@ -919,7 +936,7 @@ define([
 				curNumColumns += colspan;
 			}
 
-			if( numColumns < curNumColumns ) {
+			if ( numColumns < curNumColumns ) {
 				numColumns = curNumColumns;
 			}
 		}
