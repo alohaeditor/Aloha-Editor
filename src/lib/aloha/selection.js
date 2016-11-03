@@ -962,6 +962,11 @@ define([
 						return;
 					}
 
+					// stop on iframes
+					if (this.nodeName === 'IFRAME') {
+						return;
+					}
+
 					// check is dependent on the node type
 					switch (nodeType) {
 					case 3:
