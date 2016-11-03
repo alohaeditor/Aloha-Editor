@@ -303,7 +303,7 @@ define([
 
 			colSpan = parseInt( cols.last().attr( 'colspan' ), 10 );
 
-			if ( colSpan == 0 ) {
+			if ( colSpan === 0 ) {
 				// TODO: support colspan=0
 				// http://dev.w3.org/html5/markup/td.html#td.attrs.colspan
 				// http://www.w3.org/TR/html401/struct/tables.html#adef-colspan
@@ -349,7 +349,7 @@ define([
 				);
 			}
 		}
-	};
+	}
 
 	/**
 	 * If all of the selected cells have been set to the same predefined style,
@@ -442,7 +442,7 @@ define([
 		this.obj.contentEditable( false );
 
 		// set an id to the table if not already set
-		if ( this.obj.attr( 'id' ) == '' ) {
+		if ( this.obj.attr( 'id' ) === '' ) {
 			this.obj.attr( 'id', GENTICS.Utils.guid() );
 		}
 
@@ -803,7 +803,7 @@ define([
 		this.focus();
 
 		// if no cells are selected, reset the selection-array
-		if ( this.selection.selectedCells.length == 0 ) {
+		if ( this.selection.selectedCells.length === 0 ) {
 			this.rowsToSelect = [];
 		}
 
@@ -875,7 +875,7 @@ define([
 			start = (rowIndex < this.clickedRowId) ? rowIndex : this.clickedRowId;
 			end = (rowIndex < this.clickedRowId) ? this.clickedRowId : rowIndex;
 
-			this.rowsToSelect = new Array();
+			this.rowsToSelect = [];
 			for ( i = start; i <= end; i++) {
 				this.rowsToSelect.push(i);
 			}
@@ -941,7 +941,7 @@ define([
 				this.attachColumnSelectEventsToCell(columnToInsert);
 				//set the colspan of selection column to match the colspan of first row columns
 			} else {
-				var columnToInsert = jQuery('<td>').clone();
+				columnToInsert = jQuery('<td>').clone();
 				columnToInsert.addClass(this.get('classLeftUpperCorner'));
 				var clickHandler = function (e) {
 					// select the Table
@@ -1031,7 +1031,7 @@ define([
 		this.focus();
 
 		// if no cells are selected, reset the selection-array
-		if ( this.selection.selectedCells.length == 0 ) {
+		if ( this.selection.selectedCells.length === 0 ) {
 			this.columnsToSelect = [];
 		}
 
@@ -1140,7 +1140,7 @@ define([
 			rowsToDelete[this.selection.selectedCells[i].parentNode.rowIndex] = true;
 		}
 
-	    for (rowId in rowsToDelete) {
+	    for (var rowId in rowsToDelete) {
 	       rowIDs.push(rowId);
 	    }
 
@@ -1281,7 +1281,7 @@ define([
 			for (var i = 0; i < gridColumns.length; i++) {
 				var gridColumn = gridColumns[i];
 				for (var j = 0; j < rows.length; j++) {
-					var cellInfo = grid[j][gridColumn];
+					cellInfo = grid[j][gridColumn];
 					if ( ! cellInfo ) {
 						//TODO this case occurred because of a bug somewhere which should be fixed
 						continue;
@@ -1341,19 +1341,20 @@ define([
 			// we will set the cursor right before the removed table
 			var newRange = Aloha.Selection.rangeObject;
 			// TODO set the correct range here (cursor shall be right before the removed table)
-			newRange.endContainer = this.obj.get(0).parentNode;
+			newRange.endContainer = this.wrappedObj.get(0).parentNode;
 			newRange.startContainer = newRange.endContainer;
 
-			newRange.endOffset = Dom.getIndexInParent(this.obj.get(0));
+			newRange.endOffset = Dom.getIndexInParent(this.wrappedObj.get(0));
 			newRange.startOffset = newRange.endOffset;
 
 			newRange.clearCaches();
 
-			this.obj.remove();
+			this.wrappedObj.remove();
 
+			var that = this;
 			// IE needs a timeout to work properly
 			window.setTimeout( function() {
-				this.parentEditable.obj.focus();
+				that.parentEditable.obj.focus();
 			}, 5);
 
 			// select the new range
@@ -1543,7 +1544,7 @@ define([
 			cell.html( '\u00a0' );
 
 			// on first row correct the position of the selected columns
-			if ( i == 0 ) {
+			if ( i === 0 ) {
 				// this is the first row, so make a column-selection cell
 				this.attachColumnSelectEventsToCell( cell );
 			} else {
@@ -1553,7 +1554,7 @@ define([
 			}
 
 			var leftCell = Utils.leftDomCell( grid, i, currentColIdx );
-			if ( null == leftCell ) {
+			if ( null === leftCell ) {
 				jQuery( rows[i] ).prepend( cell );
 			} else {
 				if ( 'left' === position && Utils.containsDomCell( grid[ i ][ currentColIdx ] ) ) {
@@ -1642,12 +1643,12 @@ define([
 
 		if ( !selection ||
 				!selection._nativeSelection ||
-					selection._nativeSelection._ranges.length == 0 ) {
+					selection._nativeSelection._ranges.length === 0 ) {
 			return;
 		}
 
 		var range = selection.getRangeAt( 0 );
-		if ( null == range.startContainer ) {
+		if ( null === range.startContainer ) {
 			return;
 		}
 
@@ -1664,7 +1665,7 @@ define([
 		// set the foces to the first selected cell
 		var container = TableCell.getContainer( this.selection.selectedCells[ 0 ] );
 		jQuery( container ).focus();
-	}
+	};
 
 	/**
 	 * Marks all cells of the specified column as marked (adds a special class)
