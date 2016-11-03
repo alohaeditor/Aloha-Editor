@@ -1,16 +1,16 @@
-h2. added wrapping div element for tables for responsive tables
+*added configurable wrapping div element for tables*
 
 Create responsive tables by wrapping table-elements created by Aloha-Editor in a div-element with a configurable class to make them scroll horizontally on small devices.
 This follows the example giving by "Twitter Bootstrap":http://getbootstrap.com/css/#tables-responsive
 
-h3. Configuration Example
+*Configuration Example*
 
 <pre>
 // enable the wrapping div-element and set the class to 'responsive-table'
-table.settings.wrapClass = 'responsive-table';
+Aloha.settings.plugins.table.wrapClass = 'responsive-table';
 </pre>
 
-h3. Output Example
+*Output Example*
 
 <pre>
 <div class="responsive-table">
