@@ -43,9 +43,9 @@ define([
 	var GENTICS = window.GENTICS;
 
 	/**
-	 * Returns an Array with all elements and textnodes included in the 
-	 * hierarchy of the element received. Is Similar to do 
-	 * jQuery('*', element).contents(), the diference it's this function returns the 
+	 * Returns an Array with all elements and textnodes included in the
+	 * hierarchy of the element received. Is Similar to do
+	 * jQuery('*', element).contents(), the diference it's this function returns the
 	 * array in the correct order of apparition
 	 * @example
 	 * <pre>
@@ -54,13 +54,13 @@ define([
 	 *			<b>b textnode</b>
 	 *			another text node
 	 *		&gt;/p&lt;
-	 *		
+	 *
 	 *		jQuery('*', lt).contents();
 	 *			// returns ["textnode", "<b>", "another textnode", "b textnode"]
 	 *		getPlainHierarchy(lt)
 	 *			// returns ["textnode", "<b>", "b textnode", "another textnode"]
 	 * </pre>
-	 * 
+	 *
 	 * @return {Array.<HTMLElement|TextNode>}
 	 */
 	function getPlainHierarchy(element) {
@@ -81,10 +81,10 @@ define([
 
 	/**
 	 * Find the first or the last element inside a table, even if in a td
-	 * 
+	 *
 	 * @param {String} type Accepts two values: 'first' or 'last'
 	 * @param {HTMLElement|jQuery} parent the parent element to search
-	 * 
+	 *
 	 * @return {jQuery}
 	 */
 	function getNewSelectedElement(type, parent) {
@@ -113,6 +113,44 @@ define([
 	var Table = function ( table, tablePlugin ) {
 		// set the table attribut "obj" as a jquery represenation of the dom-table
 		this.obj = jQuery( table );
+
+		// setup a class to mark wrapping divs introduced by this plugin
+		var wrapperMarkerClass = "aloha-table-container";
+		// parent before wrapping
+		var parent = this.obj.parent();
+		// check config if table should be wrapped
+		if ( tablePlugin.settings.wrapClass !== undefined ) {
+			// combine configurable class with fixed
+			var wrapClass = tablePlugin.settings.wrapClass + ' ' + wrapperMarkerClass;
+
+			// If config for wrapping div exists and classes match, do nothing
+
+			// If config for wrapping div exists,
+			// and classes do not match,
+			// and a wrapping div does exist allready,
+			// --> change classes
+			if ( parent.attr( 'class' ) !==  wrapClass && parent.hasClass( wrapperMarkerClass ) ) {
+				parent.attr('class', wrapClass);
+			// If config for wrapping div exists
+			// and classes do not match
+			// and wrapping div is not present (yet),
+			// --> create
+			} else if ( parent.attr( 'class')  !==  wrapClass ) {
+				// add div with class from config
+				this.obj.wrap( '<div class="' + wrapClass + '"></div>' );
+			}
+			// set parent of table element - the wrapping div - for further handling
+			this.wrappedObj = this.obj.parent();
+		} else {
+			// If config for wrapping div does not exists
+			// and there is a wrapping div
+			// --> remove it
+			if ( parent.hasClass( wrapperMarkerClass ) ) {
+				this.obj.unwrap();
+			}
+			// set table-element itself for further handling
+			this.wrappedObj = this.obj;
+		}
 
 		correctTableStructure( this );
 
@@ -292,7 +330,7 @@ define([
 
 			colSpan = parseInt( cols.last().attr( 'colspan' ), 10 );
 
-			if ( colSpan == 0 ) {
+			if ( colSpan === 0 ) {
 				// TODO: support colspan=0
 				// http://dev.w3.org/html5/markup/td.html#td.attrs.colspan
 				// http://www.w3.org/TR/html401/struct/tables.html#adef-colspan
@@ -338,7 +376,7 @@ define([
 				);
 			}
 		}
-	};
+	}
 
 	/**
 	 * If all of the selected cells have been set to the same predefined style,
@@ -431,7 +469,7 @@ define([
 		this.obj.contentEditable( false );
 
 		// set an id to the table if not already set
-		if ( this.obj.attr( 'id' ) == '' ) {
+		if ( this.obj.attr( 'id' ) === '' ) {
 			this.obj.attr( 'id', GENTICS.Utils.guid() );
 		}
 
@@ -526,12 +564,12 @@ define([
 					var row = cell.closest( 'tr');
 					// check if it's the last row
 					if ( row.next( 'tr').length > 0 ) {
-						return false
+						return false;
 					}
 
 					var cursorOffset = e.pageY - ( row.offset().top + row.outerHeight() );
 					return cursorOffset > (mouseOffset * -1) && cursorOffset < mouseOffset;
-				}
+				};
 
 				var colResize = that.tablePlugin.colResize;
 				var rowResize = that.tablePlugin.rowResize;
@@ -604,7 +642,7 @@ define([
 		Ephemera.markWrapper(tableWrapper);
 
 		// wrap the tableWrapper around the table
-		this.obj.wrap( tableWrapper );
+		this.wrappedObj.wrap( tableWrapper );
 
 		// :HINT The outest div (Editable) of the table is still in an editable
 		// div. So IE will surround the the wrapper div with a resize-border
@@ -614,14 +652,13 @@ define([
 		// were created dynamically before) ;)
 
 		htmlTableWrapper = this.obj.parents( '.' + this.get( 'classTableWrapper' ) );
-		htmlTableWrapper.get( 0 ).onresizestart = function ( e ) { return false; };
-		htmlTableWrapper.get( 0 ).oncontrolselect = function ( e ) { return false; };
-		htmlTableWrapper.get( 0 ).ondragstart = function ( e ) { return false; };
-		htmlTableWrapper.get( 0 ).onmovestart = function ( e ) { return false; };
+		htmlTableWrapperElem = this.obj.parents( '.' + this.get( 'classTableWrapper' ) ).get( 0 );
+		htmlTableWrapperElem.onresizestart = function ( e ) { return false; };
+		htmlTableWrapperElem.oncontrolselect = function ( e ) { return false; };
+		htmlTableWrapperElem.ondragstart = function ( e ) { return false; };
+		htmlTableWrapperElem.onmovestart = function ( e ) { return false; };
 		// the following handler prevents proper selection in the editable div in the caption!
-		// htmlTableWrapper.get( 0 ).onselectstart = function ( e ) { return false; };
-
-		this.tableWrapper = this.obj.parents( '.' + this.get( 'classTableWrapper' ) ).get( 0 );
+		// htmlTableWrapperElem.onselectstart = function ( e ) { return false; };
 
 		jQuery( this.cells ).each( function () {
 			this.activate();
@@ -631,9 +668,8 @@ define([
 		// This is done, after the cells were made contenteditable, so that while initialization of the block,
 		// contenteditable anchors do not get the attribute 'draggable' set to 'false' (in order to prevent browser drag'n'drop)
 		// because this would make the anchors unclickable in IE
-		var parent = this.obj.parent();
-		if (parent.alohaBlock) {
-			parent.alohaBlock();
+		if (htmlTableWrapper.alohaBlock) {
+			htmlTableWrapper.alohaBlock();
 		}
 
 		// after the cells where replaced with contentEditables ... add selection cells
@@ -794,7 +830,7 @@ define([
 		this.focus();
 
 		// if no cells are selected, reset the selection-array
-		if ( this.selection.selectedCells.length == 0 ) {
+		if ( this.selection.selectedCells.length === 0 ) {
 			this.rowsToSelect = [];
 		}
 
@@ -866,7 +902,7 @@ define([
 			start = (rowIndex < this.clickedRowId) ? rowIndex : this.clickedRowId;
 			end = (rowIndex < this.clickedRowId) ? this.clickedRowId : rowIndex;
 
-			this.rowsToSelect = new Array();
+			this.rowsToSelect = [];
 			for ( i = start; i <= end; i++) {
 				this.rowsToSelect.push(i);
 			}
@@ -910,7 +946,7 @@ define([
 				curNumColumns += colspan;
 			}
 
-			if( numColumns < curNumColumns ) {
+			if ( numColumns < curNumColumns ) {
 				numColumns = curNumColumns;
 			}
 		}
@@ -932,7 +968,7 @@ define([
 				this.attachColumnSelectEventsToCell(columnToInsert);
 				//set the colspan of selection column to match the colspan of first row columns
 			} else {
-				var columnToInsert = jQuery('<td>').clone();
+				columnToInsert = jQuery('<td>').clone();
 				columnToInsert.addClass(this.get('classLeftUpperCorner'));
 				var clickHandler = function (e) {
 					// select the Table
@@ -1022,7 +1058,7 @@ define([
 		this.focus();
 
 		// if no cells are selected, reset the selection-array
-		if ( this.selection.selectedCells.length == 0 ) {
+		if ( this.selection.selectedCells.length === 0 ) {
 			this.columnsToSelect = [];
 		}
 
@@ -1131,7 +1167,7 @@ define([
 			rowsToDelete[this.selection.selectedCells[i].parentNode.rowIndex] = true;
 		}
 
-	    for (rowId in rowsToDelete) {
+	    for (var rowId in rowsToDelete) {
 	       rowIDs.push(rowId);
 	    }
 
@@ -1227,8 +1263,8 @@ define([
 		var selectedColumnIdxs = this.selection.selectedColumnIdxs;
 		// if at least on whole table column was selected using cell selection
 		// it should also be possible to delete the column
-		// therefore we need to determine which columns are selected using the 
-		// current rectangle 
+		// therefore we need to determine which columns are selected using the
+		// current rectangle
 		if (
 			(!selectedColumnIdxs || selectedColumnIdxs.length === 0) &&
 			// check if the current rectangle is active
@@ -1267,12 +1303,12 @@ define([
 			//x-index is selected and deleted.
 
 			//sorted so we delete from right to left to minimize interfernce of deleted rows
-			
+
 			var gridColumns = selectedColumnIdxs.sort(function(a,b){ return b - a; });
 			for (var i = 0; i < gridColumns.length; i++) {
 				var gridColumn = gridColumns[i];
 				for (var j = 0; j < rows.length; j++) {
-					var cellInfo = grid[j][gridColumn];
+					cellInfo = grid[j][gridColumn];
 					if ( ! cellInfo ) {
 						//TODO this case occurred because of a bug somewhere which should be fixed
 						continue;
@@ -1332,19 +1368,20 @@ define([
 			// we will set the cursor right before the removed table
 			var newRange = Aloha.Selection.rangeObject;
 			// TODO set the correct range here (cursor shall be right before the removed table)
-			newRange.endContainer = this.obj.get(0).parentNode;
+			newRange.endContainer = this.wrappedObj.get(0).parentNode;
 			newRange.startContainer = newRange.endContainer;
 
-			newRange.endOffset = Dom.getIndexInParent(this.obj.get(0));
+			newRange.endOffset = Dom.getIndexInParent(this.wrappedObj.get(0));
 			newRange.startOffset = newRange.endOffset;
 
 			newRange.clearCaches();
 
-			this.obj.remove();
+			this.wrappedObj.remove();
 
+			var that = this;
 			// IE needs a timeout to work properly
 			window.setTimeout( function() {
-				this.parentEditable.obj.focus();
+				that.parentEditable.obj.focus();
 			}, 5);
 
 			// select the new range
@@ -1534,7 +1571,7 @@ define([
 			cell.html( '\u00a0' );
 
 			// on first row correct the position of the selected columns
-			if ( i == 0 ) {
+			if ( i === 0 ) {
 				// this is the first row, so make a column-selection cell
 				this.attachColumnSelectEventsToCell( cell );
 			} else {
@@ -1544,7 +1581,7 @@ define([
 			}
 
 			var leftCell = Utils.leftDomCell( grid, i, currentColIdx );
-			if ( null == leftCell ) {
+			if ( null === leftCell ) {
 				jQuery( rows[i] ).prepend( cell );
 			} else {
 				if ( 'left' === position && Utils.containsDomCell( grid[ i ][ currentColIdx ] ) ) {
@@ -1633,12 +1670,12 @@ define([
 
 		if ( !selection ||
 				!selection._nativeSelection ||
-					selection._nativeSelection._ranges.length == 0 ) {
+					selection._nativeSelection._ranges.length === 0 ) {
 			return;
 		}
 
 		var range = selection.getRangeAt( 0 );
-		if ( null == range.startContainer ) {
+		if ( null === range.startContainer ) {
 			return;
 		}
 
@@ -1655,7 +1692,7 @@ define([
 		// set the foces to the first selected cell
 		var container = TableCell.getContainer( this.selection.selectedCells[ 0 ] );
 		jQuery( container ).focus();
-	}
+	};
 
 	/**
 	 * Marks all cells of the specified column as marked (adds a special class)
@@ -1724,21 +1761,21 @@ define([
 	 */
 	Table.prototype.deactivate = function() {
 		// unblockify the table wrapper
-		var parent = this.obj.parent();
+		var parent = this.wrappedObj.parent();
 		if (parent.mahaloBlock) {
 			parent.mahaloBlock();
 		}
 
 		this.obj.removeClass(this.get('className'));
-		if (jQuery.trim(this.obj.attr('class')) == '') {
+		if (jQuery.trim(this.obj.attr('class')) === '') {
 			this.obj.removeAttr('class');
 		}
 		this.obj.removeAttr('contenteditable');
 	//	this.obj.removeAttr('id');
 
 		// unwrap the selectionLeft-div if available
-		if (this.obj.parents('.' + this.get('classTableWrapper')).length){
-			this.obj.unwrap();
+		if (this.wrappedObj.parents('.' + this.get('classTableWrapper')).length){
+			this.wrappedObj.unwrap();
 		}
 
 		// remove the selection row
