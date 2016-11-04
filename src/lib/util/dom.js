@@ -907,6 +907,11 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 					return;
 				}
 
+				// stop on iframes
+				if (this.nodeName === 'IFRAME') {
+					return;
+				}
+
 				// decide further actions by node type
 				switch (nodeType) {
 				// found a non-text node

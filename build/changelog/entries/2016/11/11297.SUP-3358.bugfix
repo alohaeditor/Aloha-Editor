@@ -1,0 +1,4 @@
+When an editable contained a block with an iframe,
+some editing actions (like transforming a paragraph to a header)
+could fail with a security error (logged in the console).
+This has been fixed now.
