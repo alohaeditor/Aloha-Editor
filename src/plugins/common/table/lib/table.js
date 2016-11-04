@@ -146,7 +146,7 @@ define([
 			// and there is a wrapping div
 			// and their is only one child of the parent (expected default behaviour - no interfernce by other markup altering plugins)
 			// --> remove it
-			if ( parent.hasClass( wrapperMarkerClass ) && parent.find(':only-child' ).length === 1 ) {
+			if ( parent.hasClass( wrapperMarkerClass ) ) {
 				this.obj.unwrap();
 			}
 			// set table-element itself for further handling
