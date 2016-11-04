@@ -114,28 +114,39 @@ define([
 		// set the table attribut "obj" as a jquery represenation of the dom-table
 		this.obj = jQuery( table );
 
+		// setup a class to mark wrapping divs introduced by this plugin
+		var wrapperMarkerClass = "aloha-table-container";
+		// parent before wrapping
+		var parent = this.obj.parent();
 		// check config if table should be wrapped
 		if ( tablePlugin.settings.wrapClass !== undefined ) {
-			// If config for wrapping div exists and classes match, do nothing
-			if ( this.obj.parent().attr('class') === tablePlugin.settings.wrapClass ) {
-				// do nothing with wrapper (allready there)
-			// If config for wrapping div exists and classes do not match, change classes
-			// check if there is a wrapper by checking for aloha-editable as parent
-			// a table element as a direct child of aloha-editable does not have a wrapper
-			} else if ( this.obj.parent().attr('class') !== tablePlugin.settings.wrapClass && ! this.obj.parent().hasClass('aloha-editable')) {
-				this.obj.parent().attr('class', tablePlugin.settings.wrapClass);
+			// combine configurable class with fixed
+			var wrapClass = tablePlugin.settings.wrapClass + ' ' + wrapperMarkerClass;
 
-			// If config for wrapping div exists but div is not present yet, create
-			// the wrapping div is not present when the parent of the table is the .aloha-editable
-			} else if ( this.obj.parent().hasClass('aloha-editable') ) {
+			// If config for wrapping div exists and classes match, do nothing
+
+			// If config for wrapping div exists,
+			// and classes do not match,
+			// and a wrapping div does exist allready,
+			// --> change classes
+			if ( parent.attr( 'class' ) !==  wrapClass && parent.hasClass( wrapperMarkerClass ) ) {
+				parent.attr('class', wrapClass);
+			// If config for wrapping div exists
+			// and classes do not match
+			// and wrapping div is not present (yet),
+			// --> create
+			} else if ( parent.attr( 'class')  !==  wrapClass ) {
 				// add div with class from config
-				this.obj.wrap('<div class="' + tablePlugin.settings.wrapClass + '"></div>');
+				this.obj.wrap( '<div class="' + wrapClass + '"></div>' );
 			}
-			// set wrappedObj for further handling
+			// set parent of table element - the wrapping div - for further handling
 			this.wrappedObj = this.obj.parent();
 		} else {
-			// If config for wrapping div does not exists but there is a wrapping div, remove it
-			if ( ! this.obj.parent().hasClass('aloha-editable') ) {
+			// If config for wrapping div does not exists
+			// and there is a wrapping div
+			// and their is only one child of the parent (expected default behaviour - no interfernce by other markup altering plugins)
+			// --> remove it
+			if ( parent.hasClass( wrapperMarkerClass ) && parent.find(':only-child' ).length === 1 ) {
 				this.obj.unwrap();
 			}
 			// set table-element itself for further handling
