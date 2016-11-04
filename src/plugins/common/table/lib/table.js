@@ -144,7 +144,6 @@ define([
 		} else {
 			// If config for wrapping div does not exists
 			// and there is a wrapping div
-			// and their is only one child of the parent (expected default behaviour - no interfernce by other markup altering plugins)
 			// --> remove it
 			if ( parent.hasClass( wrapperMarkerClass ) ) {
 				this.obj.unwrap();
