@@ -66,6 +66,8 @@ define([
 	 * anchor text and the value of the href attribute.
 	 *
 	 * Will pass newly created anchor elements to optional `created` array.
+     *
+     * If the link href looks like an email, `mailto:` will be prepended to it.
 	 *
 	 * @todo
 	 * - This function should return a list of newly created anchor elements.
@@ -80,6 +82,7 @@ define([
 	 */
 	function create(href, start, end, created) {
 		var anchors;
+        var emailRe = /^[^@]+@[^@]+\.[^@]+$/; // very simple regex to match emails
 		if (Html.isBoundariesEqual(start, end)) {
 			var a = Boundaries.document(start).createElement('a');
 			a.innerHTML = href;
@@ -88,6 +91,9 @@ define([
 		} else {
 			anchors = createAnchors(start, end);
 		}
+        if (emailRe.exec(href) !== null) {
+            href = "mailto:" + href;
+        }
 		anchors.forEach(function (anchor) {Dom.setAttr(anchor, 'href', href);});
 		if (created) {
 			anchors.reduce(function (list, a) {list.push(a); return list;}, created);
