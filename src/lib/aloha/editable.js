@@ -838,9 +838,11 @@ define([
 		 * handle the blur event
 		 * this must not be attached to the blur event, which will trigger far too often
 		 * eg. when a table within an editable is selected
+		 * 
+		 * @param {Aloha.Editable} editable optional new editable
 		 * @hide
 		 */
-		blur: function () {
+		blur: function (editable) {
 			this.obj.blur();
 			this.isActive = false;
 			this.initPlaceholder();
@@ -852,12 +854,14 @@ define([
 			 * @param {Event} e the event object
 			 * @param {Array} a an array which contains a reference to this editable
 			 */
-			Aloha.trigger('aloha-editable-deactivated', {editable: this});
+			Aloha.trigger('aloha-editable-deactivated', {editable: this, newEditable: editable});
 			PubSub.pub('aloha.editable.deactivated', {
 				editable: this,
+				newEditable: editable,
 				// deprecated
 				data: {
-					editable: this
+					editable: this,
+					newEditable: editable
 				}
 			});
 

@@ -426,7 +426,7 @@ define([
 			var i;
 			for (i = 0; i < editables.length; i++) {
 				if (editables[i] !== editable && editables[i].isActive) {
-					editables[i].blur();
+					editables[i].blur(editable);
 				}
 			}
 			Aloha.activeEditable = editable;
