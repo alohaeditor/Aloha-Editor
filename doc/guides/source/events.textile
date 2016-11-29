@@ -118,6 +118,7 @@ When an editable has been deactivated by clicking on a non editable part of the 
 <javascript>
 Aloha.trigger( 'aloha-editable-deactivated', {
 	'editable'		: , //object of the editable
+	'newEditable'	: , // object of the new editable (may be null)
 } );
 </javascript>
 
