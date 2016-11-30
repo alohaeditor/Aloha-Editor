@@ -1,6 +1,5 @@
 # [Aloha Editor - The HTML5 WYSIWYG Editor](http://aloha-editor.org/)
-
-## New Documentation
+# 所见即所得的HTML5编辑器
 
 We're currently writing new [new guides](http://aloha-editor.org/guides). You can find these at **<repos>/doc/guides/output** and on our website: [http://aloha-editor.org](http://aloha-editor.org)
 
