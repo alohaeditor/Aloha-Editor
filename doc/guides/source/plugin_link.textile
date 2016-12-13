@@ -85,6 +85,10 @@ Aloha.settings.plugins.link = {
 				"de": "Pfad"
 			}
 		}
-	]
+	],
+
+	// Adds an anchor button and an additional text field to the ui for editing the link anchor.
+	// This enables users to set anchors to pages from the repository.
+	anchorLinks: true
 };
 </javascript>
