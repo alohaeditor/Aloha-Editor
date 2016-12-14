@@ -726,7 +726,19 @@ define([
 				cls: 'aloha-link-href-field',
 				scope: 'Aloha.continuoustext',
 				noTargetHighlight: false,
-				targetHighlightClass: 'aloha-focus'
+				targetHighlightClass: 'aloha-focus',
+				modifyValue: function (href) {
+					if (!that.anchorLinks) {
+						return href;
+					}
+
+					// append the anchor from the anchorField
+					var anchor = that.anchorField.getValue();
+					if (anchor) {
+						href = href + '#' + anchor;
+					}
+					return href;
+				}
 			});
 			this.hrefField.setTemplate('<span><b>{name}</b><br/>{url}</span>');
 			this.hrefField.setObjectTypeFilter( this.objectTypeFilter );
@@ -749,6 +761,15 @@ define([
 				});
 
 				this.anchorField = Ui.adopt('editAnchor', Text, {
+					init: function () {
+						this._super();
+						this.element.bind("keyup", function onKeyup(event) {
+							if ((event.keyCode == 13 || event.keyCode == 27)) {
+								that.hrefField.finishEditing(true);
+							}
+						});
+					},
+
 					clear: function() {
 						this.setInputValue('');
 						this.updateValue('');
@@ -771,23 +792,15 @@ define([
 					// focus). updateValue() is intended to be called for
 					// every keystroke.
 					updateValue: function(anchor) {
-						if (!that.lastActiveLink) {
-							return;
+						var repoItem = that.hrefField.getItem();
+						if (repoItem) {
+							// when a repository item is selected, we "reselect" it, so that the anchor will
+							// be updated in the href field
+							that.hrefField.setItem(repoItem);
+						} else {
+							// updatetarget will update the href field (include the new anchor value)
+							that.hrefField.updateTarget();
 						}
-
-						var hrefItem = that.hrefField.getItem();
-						var href = hrefItem
-							? hrefItem.url ? hrefItem.url : ''
-							: that.hrefField.getValue();
-
-						if (/^https?:\/\/$/.test(href) && anchor) {
-							href = '';
-							that.hrefField.setValue('');
-						}
-
-						that.lastActiveLink.attr(
-								'href',
-								href + (!href || anchor ? '#' : '') + anchor);
 						that.hrefChange();
 					}
 				});
@@ -846,36 +859,6 @@ define([
 		},
 
 		/**
-		 * Add the anchor from the anchor field to the
-		 * currently selected links href attribute. Called
-		 * when the href field is changed.
-		 *
-		 * @param {jQuery} link Optional. The link for which
-		 *		the href attribute should be updated. If no link is
-		 *		supplied <code>this.lastActiveLink</code> is used.
-		 */
-		addAnchor: function(link) {
-			if (!this.anchorLinks) {
-				return;
-			}
-
-			var anchor = this.anchorField.getValue();
-
-			if (anchor) {
-				if (!link) {
-					link = this.lastActiveLink;
-				}
-
-				// We cannot use the href attribute of the node element
-				// directly because the browser could add the address
-				// of the current page at the beginning.
-				link.attr(
-					'href',
-					link.attr('href') + '#' + anchor);
-			}
-		},
-
-		/**
 		 * Move a possible anchor from the href field to the
 		 * anchor field. Called when a link is pasted into
 		 * the href field.
@@ -920,10 +903,6 @@ define([
 			});
 
 			if (this.anchorLinks) {
-				this.hrefField.addListener('change', function() {
-					that.addAnchor();
-				});
-
 				this.hrefField.addListener('keypress', function(event) {
 					if (String.fromCharCode(event.charCode || event.keyCode) == '#') {
 						if (!that.anchorField.isVisible()) {
@@ -954,7 +933,7 @@ define([
 			// update link object when src changes
 			this.hrefField.addListener( 'keyup', function ( event ) {
 				if (Keys.getToken(event.keyCode) === 'escape') {
-					var curval = that.hrefField.getValue();
+					var curval = that.hrefField.getValue(true);
 					if ( curval[ 0 ] == '/' || // local link
 						 curval[ 0 ] == '#' || // inner document link
 						 curval.match( /^.*\.([a-z]){2,4}$/i ) || // local file with extension
@@ -975,7 +954,6 @@ define([
 					}
 				}
 
-				that.addAnchor();
 				that.hrefChange();
 
 				// Terminate the link scope and show the final link.
@@ -1250,16 +1228,8 @@ define([
 				);
 			}
 
-			var href = that.hrefField.getValue();
+			var href = that.hrefField.getValue(true);
 			var element = that.hrefField.getTargetObject();
-
-			if (this.anchorLinks) {
-				var anchor = that.anchorField.getValue();
-
-				if (anchor) {
-					href += '#' + anchor;
-				}
-			}
 
 			Aloha.trigger('aloha-link-href-change', {
 				 href: href,
@@ -1363,11 +1333,6 @@ define([
 				foundMarkup.removeAttr('data-ignore-auto-values');
 				addAdditionalTargetObject(rangeObject, that.hrefField);
 				that.stripAnchor();
-				if (that.hrefField.getItem()) {
-					// If the currently selected link is for a repository item
-					/// setTargetObject() has stripped the anchor from the URL.
-					that.addAnchor(foundMarkup);
-				}
 				that.hrefChange();
 
 				// if the selection-changed event was raised by the first click interaction on this page
@@ -1386,9 +1351,6 @@ define([
 							that.prepareAnchor(foundMarkup.attr('href'));
 							that.hrefField.setTargetObject(foundMarkup, 'href');
 							that.stripAnchor();
-							if (that.hrefField.getItem()) {
-								that.addAnchor(foundMarkup);
-							}
 							that.hrefChange();
 
 							clearInterval(that.hrefUpdateInt);

@@ -88,7 +88,8 @@
 					} else {
 						jQuery( obj ).removeAttr( 'data-name' );
 					}
-				}
+				},
+				anchorLinks: true
 			},
 			table: {
 				// all elements with no specific configuration are not allowed to insert tables
