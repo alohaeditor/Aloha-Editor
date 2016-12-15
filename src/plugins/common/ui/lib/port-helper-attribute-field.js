@@ -76,7 +76,8 @@ define([
 			targetObject,
 			targetAttribute,
 			lastAttributeValue,
-			additionalTargetObjects = [];
+			additionalTargetObjects = [],
+			modifyValue;
 
 		if (props.cls) {
 			element.addClass(props.cls);
@@ -124,6 +125,10 @@ define([
 					"open": props.open,
 					"select": onSelect
 				});
+
+				if (typeof props.modifyValue === "function") {
+					modifyValue = props.modifyValue;
+				}
 			}
 		});
 
@@ -143,7 +148,7 @@ define([
 			// If this attribute field currently refers to a repository
 			// item, and the user edits the contents of the input field,
 			// this attribute field seizes to refer to the repository item.
-			if (resourceItem && resourceValue !== getValue()) {
+			if (resourceItem && resourceValue !== getValue(false)) {
 				resourceItem = null;
 				resourceValue = null;
 			}
@@ -151,7 +156,7 @@ define([
 			// This handles attribute updates for non-repository, literal urls typed into the input field.
 			// Input values that refer to a repository item are handled via setItem().
 			if ( ! resourceItem ) {
-				setAttribute(targetAttribute, getValue());
+				setAttribute(targetAttribute, getValue(true));
 			}
 		}
 
@@ -159,11 +164,11 @@ define([
 			if (ui.item) {
 				setItem(ui.item.obj);
 			}
-			finishEditing();
+			finishEditing(true);
 		}
 
 		function onBlur() {
-			finishEditing();
+			finishEditing(false);
 		}
 
 		function onFocus(event, ui) {
@@ -198,9 +203,7 @@ define([
 			updateTarget();
 
 			if ( ( event.keyCode == 13 || event.keyCode == 27 ) ) {
-				// Set focus to link element and select the object
-				Selection.getRangeObject().select();
-				finishEditing();
+				finishEditing(true);
 			}
 		}
 
@@ -208,14 +211,16 @@ define([
 			updateTarget();
 		}
 
-		function finishEditing() {
+		function finishEditing(select) {
 			restoreTargetBackground();
 
-			// Move the selection back to the editable.
-			var range = Aloha.Selection.getRangeObject();
+			if (select) {
+				// Move the selection back to the editable.
+				var range = Aloha.Selection.getRangeObject();
 
-			range.startOffset = range.endOffset;
-			range.select();
+				range.startOffset = range.endOffset;
+				range.select();
+			}
 
 			if (!targetObject || lastAttributeValue === $(targetObject).attr(targetAttribute)) {
 				return;
@@ -340,8 +345,12 @@ define([
 			element.bind(eventName, $.proxy(handler, attrField));
 		}
 
-		function getValue() {
-			return element.val();
+		function getValue(allowModification) {
+			var v = element.val();
+			if (allowModification && typeof modifyValue === "function") {
+				v = modifyValue(v);
+			}
+			return v;
 		}
 
 		function setValue(value) {
@@ -354,12 +363,17 @@ define([
 
 			if (item) {
 				// TODO split display field by '.' and get corresponding attribute, because it could be a properties attribute.
-				var v = item[displayField];
+				var v = item[displayField], fieldValue = item[valueField];
 				// set the value into the field
 				setValue(v);
 				// store the value to be the "reference" value for the currently selected resource item
 				resourceValue = v;
-				setAttribute(targetAttribute, item[valueField]);
+
+				if (typeof modifyValue === "function") {
+					fieldValue = modifyValue(fieldValue);
+				}
+
+				setAttribute(targetAttribute, fieldValue);
 				RepositoryManager.markObject(targetObject, item);
 			} else {
 				resourceValue = null;
@@ -512,7 +526,9 @@ define([
 			setPlaceholder: setPlaceholder,
 			getInputJQuery: getInputJQuery,
 			enableInput: enableInput,
-			disableInput: disableInput
+			disableInput: disableInput,
+			updateTarget: updateTarget,
+			finishEditing: finishEditing
 		};
 
 		return attrField;
