@@ -1330,10 +1330,10 @@ define([
 				// now we are ready to set the target object
 				foundMarkup.attr('data-ignore-auto-values', 'true');
 				that.hrefField.setTargetObject(foundMarkup, 'href');
-				foundMarkup.removeAttr('data-ignore-auto-values');
 				addAdditionalTargetObject(rangeObject, that.hrefField);
 				that.stripAnchor();
 				that.hrefChange();
+				foundMarkup.removeAttr('data-ignore-auto-values');
 
 				// if the selection-changed event was raised by the first click interaction on this page
 				// the hrefField component might not be initialized. When the user switches to the link

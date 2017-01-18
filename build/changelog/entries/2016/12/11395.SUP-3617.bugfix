@@ -1,0 +1,2 @@
+When the link-plugin was configured with a @targetregex@ and @target@, the target was automatically set when a link was clicked, but not actually changed.
+This has been fixed now, the target will only be set automatically - according to the setting - when a link href is actually changed.
