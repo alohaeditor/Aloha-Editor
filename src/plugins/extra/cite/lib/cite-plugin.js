@@ -515,9 +515,11 @@ define([
 			if (Aloha.activeEditable) {
 				Aloha.activeEditable.obj.click();
 			}
-			var markup = $('<blockquote class="aloha-cite-wrapper aloha-cite-'
+			var cite = this.settings.defaultCite ? 'cite="' + this.settings.defaultCite + '"' : '';
+
+			var markup = $(supplant('<blockquote class="aloha-cite-wrapper aloha-cite-'
 			           + (++uid) + '" ' + 'data-cite-id="'
-			           + uid + '"></blockquote>');
+			           + uid + '" {cite}></blockquote>', { cite: cite }));
 			Aloha.Selection.changeMarkupOnSelection(markup);
 			if (this.referenceContainer) {
 				this.addCiteToReferences(uid);
@@ -582,10 +584,11 @@ define([
 
 		addInlineQuote: function () {
 			var classes = [nsClass('wrapper'), nsClass(++uid)].join(' ');
-			
+			var cite = this.settings.defaultCite ? 'cite="' + this.settings.defaultCite + '"' : '';
+
 			var markup = $(supplant(
-					'<q class="{classes}" data-cite-id="{uid}"></q>',
-					{ uid: uid, classes: classes }
+					'<q class="{classes}" data-cite-id="{uid}" {cite}></q>',
+					{ uid: uid, classes: classes, cite: cite }
 			));
 
 			var rangeObject = Aloha.Selection.rangeObject;

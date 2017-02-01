@@ -56,6 +56,7 @@ Aloha.settings.plugins: {
 			'#one': [ 'quote' ],
 			'#two': [ ]
 		},
+		defaultCite: 'http://www.orf.at/', // default value for the cite link (Default is empty)
 		showOnToolbar: true   // will display cite form inputs (link, note) inside the Aloha-editor toolbar. (Default false)
 	}
 };
