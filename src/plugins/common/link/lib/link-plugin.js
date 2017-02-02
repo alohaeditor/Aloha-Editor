@@ -798,6 +798,11 @@ define([
 							// be updated in the href field
 							that.hrefField.setItem(repoItem);
 						} else {
+							var href = that.hrefField.getValue();
+							// if the href only contains http:// (or https://), we remove the href when an anchor has been set
+							if (/^https?:\/\/$/.test(href) && anchor) {
+								that.hrefField.setValue('');
+							}
 							// updatetarget will update the href field (include the new anchor value)
 							that.hrefField.updateTarget();
 						}
