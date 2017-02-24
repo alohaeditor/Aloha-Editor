@@ -11,7 +11,7 @@ public class SimpleTest {
 	public static Test suite() throws Exception {
 
 		Properties settings = new Properties();
-		settings.put("hub_location", "http://selenium-hub.office:4444/wd/hub");
+		settings.put("hub_location", "http://gemini.office:4444/wd/hub");
 		settings.put("browser", "chrome");
 		settings.put("platform", "LINUX");
 		settings.put("basePath", "/src/test/unit");
