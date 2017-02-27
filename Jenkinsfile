@@ -25,10 +25,11 @@ pipeline {
 	}
 
 	parameters {
-        booleanParam(name: 'release', defaultValue: false, description: 'Whether to perform a release')
-        booleanParam(name: 'unitTests', defaultValue: true, description: 'Whether to run the unit tests')
-        booleanParam(name: 'cleanupWorkspace', defaultValue: true, description: 'Whether to clean the workspace afterwards')
-    }
+		booleanParam(name: 'unitTests', defaultValue: true, description: 'Whether to run the unit tests')
+		booleanParam(name: 'release', defaultValue: false, description: 'Whether to perform a release')
+		booleanParam(name: 'releaseWithNewChangesOnly', defaultValue: true, description: 'Release: Abort the build if there are no new changes')
+		booleanParam(name: 'cleanupWorkspace', defaultValue: true, description: 'Whether to clean the workspace afterwards')
+	}
 
 	stages {
 		stage('Checkout') {
@@ -65,7 +66,7 @@ pipeline {
 
 						currentBuild.description += ' - Release'
 
-						if (Boolean.valueOf(releaseWithNewChangesOnly)) {
+						if (Boolean.valueOf(params.releaseWithNewChangesOnly)) {
 							def lastCommitMessage = GitHelper.getLastCommitMessage().trim()
 
 							if (lastCommitMessage.startsWith(gitCommitTag)) {
@@ -86,9 +87,19 @@ pipeline {
 					}
 				}
 			}
+
+			post {
+				always {
+					script {
+						if (Boolean.valueOf(params.unitTests)) {
+							junit  "**/target/surefire-reports/*.xml"
+						}
+					}
+				}
+			}
 		}
 
-		stage("Git push") {
+		stage("Publish release") {
 			when {
 				expression {
 					return Boolean.valueOf(release)
@@ -96,10 +107,16 @@ pipeline {
 			}
 
 			steps {
+				echo "Please move the contents of the Artifactory repository 'lan.releases.staging.alohaeditor' to 'lan.releases' now or the next step will fail"
+				input message: 'Publish the release now?', ok: 'Yes, I have moved the Artifactory files, publish the release now'
+				build job: 'alohaeditor-uploadrelease', parameters: [[$class: 'MavenMetadataParameterValue', artifactId: '',
+					artifactUrl: '', classifier: '', description: '', groupId: '', name: 'ALOHAEDITOR', packaging: '', version: version]]
+
 				sshagent([sshAgent]) {
 					script {
 						GitHelper.pushBranch(branchName)
 						GitHelper.pushTag(tagName)
+						
 					}
 				}
 			}

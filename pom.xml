@@ -47,7 +47,7 @@
 		<dependency>
 			<groupId>com.gentics</groupId>
 			<artifactId>junit-selenium-qunit-runner</artifactId>
-			<version>0.9.6</version>
+			<version>0.9.7-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -499,9 +499,9 @@
     </repositories>
 	<distributionManagement>
 		<repository>
-			<id>lan.releases</id>
+			<id>lan.releases.staging.alohaeditor</id>
 			<name>Gentics Internal Repository Stage</name>
-			<url>http://artifactory.office/repository/lan.releases</url>
+			<url>http://artifactory.office/repository/lan.releases.staging.alohaeditor</url>
 		</repository>
 		<snapshotRepository>
 			<id>lan.snapshots</id>
