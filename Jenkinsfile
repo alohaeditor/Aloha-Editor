@@ -1,8 +1,7 @@
 #!groovy
 
 // The GIT repository for this pipeline lib is defined in the global Jenkins setting
-@org.jenkinsci.plugins.workflow.libs.Library('jenkins-pipeline-library')
-import com.gentics.*
+@Library('jenkins-pipeline-library') import com.gentics.*
 
 // Make the helpers aware of this jobs environment
 JobContext.set(this)
@@ -11,7 +10,7 @@ JobContext.set(this)
 
 final def sshAgent          = '601b6ce9-37f7-439a-ac0b-8e368947d98d'
 final def gitCommitTag      = '[Jenkins | ' + env.JOB_BASE_NAME + ']';
-final def mattermostChannel = "#testjenkins"
+final def mattermostChannel = "#jenkins"
 
 
 
