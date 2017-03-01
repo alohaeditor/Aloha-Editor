@@ -8,7 +8,7 @@ JobContext.set(this)
 
 
 
-final def mattermostChannel = "#testjenkins"
+final def mattermostChannel = "#jenkins"
 
 
 
