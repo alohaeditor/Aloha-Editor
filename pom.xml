@@ -47,7 +47,7 @@
 		<dependency>
 			<groupId>com.gentics</groupId>
 			<artifactId>junit-selenium-qunit-runner</artifactId>
-			<version>0.9.4</version>
+			<version>0.9.7</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -85,14 +85,13 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
+				<version>3.6.1</version>
 				<configuration>
 					<verbose>true</verbose>
 					<fork>true</fork>
-					<executable>${JAVA_1_6_HOME}/bin/javac</executable>
-					<compilerVersion>6.0</compilerVersion>
-					<source>6</source>
-					<target>6</target>
+					<executable>${JAVA_1_8_HOME}/bin/javac</executable>
+					<source>8</source>
+					<target>8</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -500,9 +499,9 @@
     </repositories>
 	<distributionManagement>
 		<repository>
-			<id>lan.releases</id>
+			<id>lan.releases.staging.alohaeditor</id>
 			<name>Gentics Internal Repository Stage</name>
-			<url>http://artifactory.office/repository/lan.releases</url>
+			<url>http://artifactory.office/repository/lan.releases.staging.alohaeditor</url>
 		</repository>
 		<snapshotRepository>
 			<id>lan.snapshots</id>
