@@ -1,0 +1,1 @@
+word-contenthandler: When pasting a link (a-tag) from Word that contains a file:// href, it will be removed now. The link content will be preserved.
