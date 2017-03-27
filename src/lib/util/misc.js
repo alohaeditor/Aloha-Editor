@@ -117,10 +117,47 @@ define([
 		});
 	}
 
+	/**
+	 * Stops the propagation of an Event (cancel bubble) in a backward compatible way.
+	 * This method tries to first call stopPropagation() on the event object and has a
+	 * fallback which sets the cancelBubble property to true (either on the event
+	 * itself or the or the current window.event object)
+	 *
+	 * @param {Event} event the event which propagation to stop
+	 */
+	function eventStopPropagation(event) {
+		event = event || window.event;
+
+		if (event.stopPropagation) {
+			event.stopPropagation();
+		} else {
+			event.cancelBubble = true;
+		}
+	}
+
+	/**
+	 * Prevents the default action on an event. If the browser does not support the native
+	 * Event.preventDefault() false is returned.
+	 *
+	 * @param {Event} event the event for which the default action should be canceled
+	 * @returns {boolean} false if the browser does not support the Event.preventDefault() method
+	 */
+	function eventPreventDefault(event) {
+		// check if we can call preventDefault on the event
+		if (event && event.preventDefault) {
+			event.preventDefault();
+		} else {
+			// if the event or preventDefault() does not exist we return false
+			return false;
+		}
+	}
+
 
 	return {
 		anyRx: anyRx,
 		addEditingHelpers: addEditingHelpers,
-		removeEditingHelpers: removeEditingHelpers
+		removeEditingHelpers: removeEditingHelpers,
+		eventStopPropagation: eventStopPropagation,
+		eventPreventDefault: eventPreventDefault
 	};
 });

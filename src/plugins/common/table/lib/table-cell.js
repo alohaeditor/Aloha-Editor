@@ -260,9 +260,7 @@ define([
 		});
 
 		if ($elem[0]) {
-			$elem[0].onselectstart = function () {
-				return false;
-			};
+			$elem[0].onselectstart = Misc.eventPreventDefault;
 		}
 
 		$elem.on('mouseenter', function (evt) {
@@ -283,14 +281,10 @@ define([
 		if ($wrapper[0]) {
 			var wrapper = $wrapper[0];
 
-			wrapper.onselectstart = function () {
-				window.event.cancelBubble = true;
-			};
+			wrapper.onselectstart = Misc.eventStopPropagation;
 			// Disabled the dragging of content, since it makes cell selection
 			// difficult.
-			wrapper.ondragstart = function () {
-				return false
-			};
+			wrapper.ondragstart = Misc.eventPreventDefault;
 		}
 
 		return this;

@@ -32,7 +32,8 @@ define([
 	'aloha/copypaste',
 	'block/block-utils',
 	'aloha/console',
-	'ui/scopes'
+	'ui/scopes',
+	'util/misc'
 ], function (
 	$,
 	Aloha,
@@ -40,7 +41,8 @@ define([
 	CopyPaste,
 	BlockUtils,
 	Console,
-	Scopes
+	Scopes,
+	Misc
 ) {
 	'use strict';
 
@@ -215,22 +217,10 @@ define([
 		var $handle = $('>.aloha-block-draghandle', this.$element);
 		var element = this.$element.get(0);
 
-		element.onselectstart = function () {
-			window.event.cancelBubble = true;
-		};
+		element.onselectstart = Misc.eventStopPropagation;
 
 		// Prevent the prevention of drag inside a cell
-		element.ondragstart = function (e) {
-			if (e) {
-				if (typeof e.stopPropagation === 'function') {
-					e.stopPropagation();
-				} else {
-					e.cancelBubble = true;
-				}
-			} else {
-				window.event.cancelBubble = true;
-			}
-		};
+		element.ondragstart = Misc.eventStopPropagation;
 
 		$handle
 			.on('mousedown', function () {
