@@ -2599,24 +2599,16 @@
 				collapsedNonEditableSelectionsSupported = (sel.rangeCount == 1);
 				sel.removeAllRanges();
 
-				// Test whether the native selection is capable of supporting multiple ranges
-				var r2 = r1.cloneRange();
-				r1.setStart(textNode, 0);
-				r2.setEnd(textNode, 2);
-				sel.addRange(r1);
-				sel.addRange(r2);
-
-				selectionSupportsMultipleRanges = (sel.rangeCount == 2);
-
 				// Clean up
 				r1.detach();
-				r2.detach();
 
 				body.removeChild(iframe);
 			})();
 		}
 
-		api.features.selectionSupportsMultipleRanges = selectionSupportsMultipleRanges;
+		// set the selection support for multiple ranges to false since this feature is only
+		// supported by FireFox and would require extra effort to get it to work in Aloha-Editor
+		api.features.selectionSupportsMultipleRanges = false;
 		api.features.collapsedNonEditableSelectionsSupported = collapsedNonEditableSelectionsSupported;
 
 		// ControlRanges
