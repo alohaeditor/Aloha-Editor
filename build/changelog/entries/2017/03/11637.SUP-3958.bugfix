@@ -1,0 +1,3 @@
+In some situations, when switching between editables, an empty toolbar was shown
+instead of hiding it.
+This has been fixed now.
