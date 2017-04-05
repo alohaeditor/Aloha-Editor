@@ -111,15 +111,17 @@ pipeline {
 				build job: 'alohaeditor-uploadrelease', parameters: [[$class: 'MavenMetadataParameterValue', artifactId: '',
 					artifactUrl: '', classifier: '', description: '', groupId: '', name: 'ALOHAEDITOR', packaging: '', version: version]]
 
-				version = MavenHelper.getNextSnapShotVersion(version)
-				MavenHelper.setVersion(version)
-				GitHelper.addCommit('.', gitCommitTag + ' Prepare for the next development iteration (' + version + ')')
+				script {
+					version = MavenHelper.getNextSnapShotVersion(version)
+					MavenHelper.setVersion(version)
+					GitHelper.addCommit('.', gitCommitTag + ' Prepare for the next development iteration (' + version + ')')
 
-				sshagent([sshAgent]) {
-					script {
-						GitHelper.pushBranch(branchName)
-						GitHelper.pushTag(tagName)
-						
+					sshagent([sshAgent]) {
+						script {
+							GitHelper.pushBranch(branchName)
+							GitHelper.pushTag(tagName)
+							
+						}
 					}
 				}
 			}
