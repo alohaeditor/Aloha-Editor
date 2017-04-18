@@ -19,7 +19,7 @@ define({
 	"button.h4.tooltip": "Überschrift 4",
 	"button.h5.tooltip": "Überschrift 5",
 	"button.h6.tooltip": "Überschrift 6",
-	"button.pre.tooltip": "Vorformatierter text",
+	"button.pre.tooltip": "Vorformatierter Text",
 	"button.title.tooltip": "Titel",
 	"button.removeFormat.tooltip": "Formatierung entfernen",
 	"button.removeFormat.text": "Formatierung entfernen",
