@@ -1,2 +1,1 @@
-word-contenthandler: fixed error when pasting a link (a-tag) where the href attribute is missing
-
+word-contenthandler: Fixed an error when pasting a link (a-tag) where the href attribute is missing.
