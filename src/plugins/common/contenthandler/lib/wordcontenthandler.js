@@ -218,7 +218,7 @@ define([
 				// not needed, except table cells.
 				$node.contents().unwrap();
 			} else if (nodeName === 'a'
-					&& $node.attr('href').match("^file://")) {
+					&& $node.attr('href') && $node.attr('href').match("^file://")) {
 				$node.contents().unwrap();
 			}
 		}
