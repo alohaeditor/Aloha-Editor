@@ -515,7 +515,7 @@ define([
 	//Creates string with this component's namepsace prefixed the each classname
 	function nsClass() {
 		var stringBuilder = [], prefix = tableNamespace;
-		jQuery.each(arguments, function () { 
+		jQuery.each(arguments, function () {
 			stringBuilder.push(this == '' ? prefix : prefix + '-' + this);
 		});
 		return jQuery.trim(stringBuilder.join(' '));
@@ -1685,9 +1685,13 @@ define([
 	function cleanupAfterInsertion () {
 		var dirty = jQuery( '.aloha-table-cleanme' ).removeClass(
 						'aloha-table-cleanme' );
-
+		// check all children of the element we want
 		for ( var i = 0; i < dirty.length; i++ ) {
-			if ( jQuery.trim( jQuery( dirty[ i ] ).html() ) == '' &&
+			// is the element empty
+			// is the first child <br class="aloha-end-br"> - placeholder element
+			// is the element not the editing Host
+			if ( ( jQuery.trim( jQuery( dirty[ i ] ).html() ) == '' ||
+					jQuery( dirty[ i ] ).children.first('br.aloha-end-br') ) &&
 					!GENTICS.Utils.Dom.isEditingHost( dirty[ i ] ) ) {
 				jQuery( dirty[ i ] ).remove();
 
