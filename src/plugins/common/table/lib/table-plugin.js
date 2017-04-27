@@ -1691,7 +1691,7 @@ define([
 			// is the first child <br class="aloha-end-br"> - placeholder element
 			// is the element not the editing Host
 			if ( ( jQuery.trim( jQuery( dirty[ i ] ).html() ) == '' ||
-					jQuery( dirty[ i ] ).children.first('br.aloha-end-br') ) &&
+					jQuery( dirty[ i ] ).children().first('br.aloha-end-br') ) &&
 					!GENTICS.Utils.Dom.isEditingHost( dirty[ i ] ) ) {
 				jQuery( dirty[ i ] ).remove();
 
