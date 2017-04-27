@@ -1687,11 +1687,14 @@ define([
 						'aloha-table-cleanme' );
 		// check all children of the element we want
 		for ( var i = 0; i < dirty.length; i++ ) {
+			// get the children of the to be cleaned element for some checks
+			var dirtyChildren = jQuery( dirty[ i ] ).children();
 			// is the element empty
 			// is the first child <br class="aloha-end-br"> - placeholder element
 			// is the element not the editing Host
 			if ( ( jQuery.trim( jQuery( dirty[ i ] ).html() ) == '' ||
-					jQuery( dirty[ i ] ).children().first('br.aloha-end-br') ) &&
+					( dirtyChildren.length === 1 &&
+						dirtyChildren.first('br.aloha-end-br') ) ) &&
 					!GENTICS.Utils.Dom.isEditingHost( dirty[ i ] ) ) {
 				jQuery( dirty[ i ] ).remove();
 
