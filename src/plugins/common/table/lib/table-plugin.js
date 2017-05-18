@@ -24,6 +24,7 @@ define([
 	'table/table-create-layer',
 	'table/table',
 	'table/table-plugin-utils',
+	'table/table-selection',
 	'util/dom',
 	'aloha/ephemera',
 	'aloha/console'
@@ -46,6 +47,7 @@ define([
 	CreateLayer,
 	Table,
 	Utils,
+	TableSelection,
 	Dom,
 	Ephemera,
 	Console
@@ -340,9 +342,10 @@ define([
 		this.rowConfig    = this.checkConfig(this.rowConfig    || this.settings.rowConfig);
 		this.cellConfig   = this.checkConfig(this.cellConfig   || this.settings.cellConfig);
 
-		this.tableResize = this.settings.tableResize === undefined ? false : this.settings.tableResize;
-		this.colResize   = this.settings.colResize   === undefined ? false : this.settings.colResize;
-		this.rowResize   = this.settings.rowResize   === undefined ? false : this.settings.rowResize;
+		this.tableResize  = this.settings.tableResize === undefined ? false : this.settings.tableResize;
+		this.colResize    = this.settings.colResize   === undefined ? false : this.settings.colResize;
+		this.rowResize    = this.settings.rowResize   === undefined ? false : this.settings.rowResize;
+		this.defaultClass = this.settings.defaultClass;
 
 		// disable table resize settings on browsers below IE8
 		if (jQuery.browser.msie && parseInt(jQuery.browser.version, 10) < 8) {
@@ -415,6 +418,7 @@ define([
 
 			// this case probably occurs when the selection is empty?
 			if (!range.startContainer || !editable) {
+				TablePlugin.leaveTableScopes();
 				return;
 			}
 
@@ -426,6 +430,7 @@ define([
 			}
 
 			if (!that.activeTable) {
+				TablePlugin.leaveTableScopes();
 				return;
 			}
 
@@ -437,6 +442,7 @@ define([
 				TablePlugin.updateFloatingMenuScope();
 				TablePlugin.setActiveCellStyle();
 			} else {
+				TablePlugin.leaveTableScopes();
 				that.activeTable.selection.cellSelectionMode = false;
 				that.activeTable.selection.baseCellPosition = null;
 				that.activeTable.selection.lastSelectionRange = null;
@@ -509,7 +515,7 @@ define([
 	//Creates string with this component's namepsace prefixed the each classname
 	function nsClass() {
 		var stringBuilder = [], prefix = tableNamespace;
-		jQuery.each(arguments, function () { 
+		jQuery.each(arguments, function () {
 			stringBuilder.push(this == '' ? prefix : prefix + '-' + this);
 		});
 		return jQuery.trim(stringBuilder.join(' '));
@@ -737,6 +743,7 @@ define([
 						tableObj.find('tr').each(function() {
 							jQuery(this).css('height', '');
 						});
+						tableObj.css('width','');
 					}
 				}
 			});
@@ -1121,6 +1128,24 @@ define([
 			scope: this.name + '.cell'
 		});
 
+		this._deleteTableButton = Ui.adopt("deleteTable", Button, {
+			tooltip: i18n.t("button.deltable.tooltip"),
+			icon: "aloha-icon aloha-icon-deletetable",
+			scope: this.name + '.cell',
+			click: function() {
+				if (that.activeTable) {
+					var aTable = that.activeTable;
+					Dialog.confirm({
+						title: i18n.t('Table'),
+						text: i18n.t('deletetable.confirm'),
+						yes: function(){
+							aTable.deleteTable();
+						}
+					});
+				}
+			}
+		});
+
 		this._tableCaptionButton = Ui.adopt("tableCaption", ToggleButton, {
 			tooltip: i18n.t("button.caption.tooltip"),
 			icon: "aloha-icon aloha-icon-table-caption",
@@ -1256,6 +1281,10 @@ define([
 		if ( Aloha.activeEditable && typeof Aloha.activeEditable.obj !== 'undefined' ) {
 			// create a dom-table object
 			var table = document.createElement( 'table' );
+			// set the default class
+			if (this.defaultClass) {
+				table.className = this.defaultClass;
+			}
 			var tableId = table.id = GENTICS.Utils.guid();
 			var tbody = document.createElement( 'tbody' );
 
@@ -1289,6 +1318,12 @@ define([
 			var tableObj = createNewTable(tableReloadedFromDOM);
 
 			if (tableObj) {
+				var range = Aloha.Selection.getRangeObject();
+
+				range.startContainer = range.endContainer = tableObj.cells[0].wrapper[0];
+				range.startOffset = range.endOffset = 0;
+				range.select();
+
 				// Because without the 10ms delay, we cannot place the cursor
 				// automatically into the first cell in IE.
 				if ($.browser.msie) {
@@ -1299,6 +1334,8 @@ define([
 					tableObj.cells[0].wrapper.get(0).focus();
 				}
 			}
+
+			Aloha.activeEditable.smartContentChange({type: 'block-change'});
 
 			// The selection starts out in the first cell of the new
 			// table. The table tab/scope has to be activated
@@ -1461,9 +1498,56 @@ define([
 		return this.prefix;
 	};
 
+	/**
+	 * Leaves all possible TableScopes in the floating menu
+	 * expect those in the retainScopes array
+	 *
+	 * @param  {array} retainScopes the name of the scopes which should not be left
+	 */
+	TablePlugin.leaveTableScopes = function(retainScopes, force) {
+		var i = 0,
+			scopes = [];
+		retainScopes = $.isArray(retainScopes) ? retainScopes : [];
+
+		scopes = TableSelection.getPossibleSelectionTypes();
+		for (i = 0; i < scopes.length; i++) {
+			// leave all possible scopes expect those in the retainScopes array
+			if ($.inArray(scopes[i], retainScopes) === -1) {
+				// always force leaving the scope because otherwise we need to keep track of how
+				// often we entered the scope and leave it accordingly
+				Scopes.leaveScope(TablePlugin.name + '.' + scopes[i], undefined, true);
+			}
+		}
+	}
+	/**
+	 * Update the current floating menu scope according to the
+	 * selected cells
+	 */
 	TablePlugin.updateFloatingMenuScope = function() {
-		if ( null != TablePlugin.activeTable && null != TablePlugin.activeTable.selection.selectionType ) {
-			Scopes.setScope(TablePlugin.name + '.' + TablePlugin.activeTable.selection.selectionType);
+		var i = 0,
+			primaryScope,
+			scopes;
+		if (
+			null != TablePlugin.activeTable &&
+			null != TablePlugin.activeTable.selection.selectionType
+		) {
+			// save the primary scope
+			primaryScope = Scopes.getPrimaryScope(),
+			// get the new scopes
+			scopes = TablePlugin.activeTable.selection.getCurrentSelectionTypes();
+			// leave all scopes except the the current ones
+			TablePlugin.leaveTableScopes(scopes);
+			// Enter all needed table scopes
+			for (i = 0; i < scopes.length; i++) {
+				Scopes.enterScope(TablePlugin.name + '.' + scopes[i]);
+			}
+			// Check if the primaryScope changed and set the first scope as the currently active one
+			if (scopes[0] !== primaryScope) {
+				Scopes.setScope(TablePlugin.name + '.' + scopes[0]);
+			}
+		} else {
+			// leave all scopes
+			TablePlugin.leaveTableScopes();
 		}
 	};
 
@@ -1601,9 +1685,16 @@ define([
 	function cleanupAfterInsertion () {
 		var dirty = jQuery( '.aloha-table-cleanme' ).removeClass(
 						'aloha-table-cleanme' );
-
+		// check all children of the element we want
 		for ( var i = 0; i < dirty.length; i++ ) {
-			if ( jQuery.trim( jQuery( dirty[ i ] ).html() ) == '' &&
+			// get the children of the to be cleaned element for some checks
+			var dirtyChildren = jQuery( dirty[ i ] ).children();
+			// is the element empty
+			// is the first child <br class="aloha-end-br"> - placeholder element
+			// is the element not the editing Host
+			if ( ( jQuery.trim( jQuery( dirty[ i ] ).html() ) == '' ||
+					( dirtyChildren.length === 1 &&
+						dirtyChildren.first('br.aloha-end-br') ) ) &&
 					!GENTICS.Utils.Dom.isEditingHost( dirty[ i ] ) ) {
 				jQuery( dirty[ i ] ).remove();
 

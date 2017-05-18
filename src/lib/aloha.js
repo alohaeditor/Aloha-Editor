@@ -435,7 +435,7 @@
 						fn();
 						break;
 					case 'normal':
-						$(Aloha, 'body').bind(event, fn);
+						$(Aloha).bind(event, fn);
 						break;
 					default:
 						throw 'Unknown readiness';
@@ -457,7 +457,7 @@
 							phase.deferred = null;
 						}
 					}
-					$(Aloha, 'body').trigger(type, data);
+					$(Aloha).trigger(type, data);
 					return this;
 				};
 				Aloha.trigger(type, data);
@@ -465,12 +465,17 @@
 			return this;
 		};
 
-		Aloha.unbind = function (typeOrEvent) {
+		/**
+		 * Unbinds a bound event handler from Aloha Editor.
+		 * Passing the handler function used to bind the event is highly recommended,
+		 * all bound handlers will be de-registered otherwise.
+		 *
+		 * @param {string}   event    The event name.
+		 * @param {function} handler  Optional: An event handler callback function
+		 */
+		Aloha.unbind = function (typeOrEvent, handler) {
 			Aloha.require(['aloha/jquery'], function ($) {
-				Aloha.unbind = function (typeOrEvent) {
-					$(Aloha, 'body').unbind(typeOrEvent);
-				};
-				Aloha.unbind(typeOrEvent);
+				$(Aloha).unbind(typeOrEvent, handler);
 			});
 		};
 

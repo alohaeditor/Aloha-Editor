@@ -1,0 +1,2 @@
+When calling .pad() for a block twice, it could happen, that
+two adjacent landing spans were added. This will be avoided now.

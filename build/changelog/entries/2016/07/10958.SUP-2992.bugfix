@@ -1,0 +1,1 @@
+When the @checkHeadingHierarchy@ feature of the format plugin was activated the plugin would try to access a null object when an editable contained blocks. This has been fixed.

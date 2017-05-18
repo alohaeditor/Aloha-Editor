@@ -1,0 +1,3 @@
+In Firefox clicking into a table cell sometimes threw an error because a property on the non-standard window.event
+object was accessed. This has been fixed. The Aloha-Editor table plugin will now always use the event object passed to
+the event handler by the browser.

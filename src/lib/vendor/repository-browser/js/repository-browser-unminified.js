@@ -103,9 +103,9 @@
 		function enableSelection($elem) {
 			$elem.removeAttr('unselectable');
 			$elem.css({
-				'-webkit-user-select' : 'all',
-//				'-moz-user-select'    : 'all',  // Because this feature is broken in Firefox
-				'user-select'         : 'all'
+				'-webkit-user-select' : 'text',
+//				'-moz-user-select'    : 'text',  // Because this feature is broken in Firefox
+				'user-select'         : 'text'
 			});
 			$elem.onselectstart = null;
 		}
@@ -499,14 +499,15 @@
 			var $tree = tree(browser, $grid.find('.ui-layout-west'), $grid.height());
 			var $list = list(browser, $grid.find('.ui-layout-center'), $grid.height());
 			var $layout = $grid.layout({
-				west__size    : opts.treeWidth - 1,
-				west__minSize : 0,
-				west__maxSize : opts.maxWidth,
-				center__size  : 'auto',
-				paneClass     : 'ui-layout-pane',
-				resizerClass  : 'ui-layout-resizer',
-				togglerClass  : 'ui-layout-toggler',
-				onresize      : function (name, elem) {
+				west__size               : opts.treeWidth - 1,
+				west__minSize            : 0,
+				west__maxSize            : opts.maxWidth,
+				west__enableCursorHotkey : false,
+				center__size             : 'auto',
+				paneClass                : 'ui-layout-pane',
+				resizerClass             : 'ui-layout-resizer',
+				togglerClass             : 'ui-layout-toggler',
+				onresize                 : function (name, elem) {
 					if ('center' === name) {
 						$list.setGridWidth(elem.width());
 					}

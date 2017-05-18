@@ -1,0 +1,3 @@
+After adding a paragraph in Chrome the cursor would jump back before the paragraph as soon as you type a character.
+This has been fixed.
+

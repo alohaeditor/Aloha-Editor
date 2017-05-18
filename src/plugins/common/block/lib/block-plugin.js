@@ -31,6 +31,7 @@
 define([
 	'aloha',
 	'aloha/plugin',
+	'aloha/ephemera',
 	'jquery',
 	'aloha/contenthandlermanager',
 	'block/blockmanager',
@@ -48,6 +49,7 @@ define([
 ], function (
 	Aloha,
 	Plugin,
+	Ephemera,
 	jQuery,
 	ContentHandlerManager, 
 	BlockManager,
@@ -86,6 +88,9 @@ define([
 				this.settings.rootTags = defaultRootTags;
 			}
 
+			Ephemera.classes('aloha-block-active');
+			Ephemera.classes('aloha-block-highlighted');
+
 			// Register default block types			
 			BlockManager.registerBlockType('DebugBlock', block.DebugBlock);
 			BlockManager.registerBlockType('DefaultBlock', block.DefaultBlock);
@@ -97,6 +102,7 @@ define([
 			EditorManager.register('url', editor.UrlEditor);
 			EditorManager.register('email', editor.EmailEditor);
 			EditorManager.register('select', editor.SelectEditor);
+			EditorManager.register('radio', editor.RadioButtonEditor);
 			EditorManager.register('button', editor.ButtonEditor);
 
 			// register content handler for block plugin
@@ -119,6 +125,17 @@ define([
 			// set the dropzones for the initialized editable
 			Aloha.bind('aloha-editable-created', function (e, editable) {
 				that.setDropzones(editable.obj);
+
+				// Because we don't want non-contentEditable regions inside of
+				// editables to be resizable through the browser-built
+				// interfaces. IE 11 requires this additional muzzling to be
+				// done on the body in order to thoroughly prevent
+				// objectResizing.
+				// @see Block._disableUglyInternetExplorerDragHandles
+				// @see https://connect.microsoft.com/IE/feedback/details/742593/please-respect-execcommand-enableobjectresizing-in-contenteditable-elements
+				editable.obj.on('mscontrolselect', function (event) {
+					event.preventDefault();
+				});
 			});
 
 			// apply specific configuration if an editable has been activated
@@ -306,6 +323,16 @@ define([
 					jQuery(this).removeClass("aloha-block-draghandle");
 				}
 			});
+		},
+
+		/**
+		 * Make the given jQuery object (representing an editable) clean for saving
+		 * Remove classes marking draggable aloha blocks
+		 */
+		makeClean: function (obj) {
+			// these classes are not made ephemeral, because this would remove them from every DOM node
+			// we only want to remove those classes from root elements of blocks.
+			obj.find(".aloha-block").removeClass('ui-draggable ui-draggable-disabled');
 		}
 	});
 

@@ -31,7 +31,8 @@ define([
 	'jquery',
 	'aloha/ecma5shims',
 	'aloha/console',
-	'aloha/block-jump'
+	'aloha/block-jump',
+	'aloha/content-rules'
 ], function (
 	Aloha,
 	Class,
@@ -39,7 +40,8 @@ define([
 	jQuery,
 	shims,
 	console,
-	BlockJump
+	BlockJump,
+	ContentRules
 ) {
 	"use strict";
 
@@ -453,6 +455,13 @@ define([
 		 * @return "Aloha.Selection"
 		 */
 		preProcessKeyStrokes: function (event) {
+			if (event.target.nodeName === 'INPUT' || event.target.nodeName === 'TEXTAREA') {
+				// Just let the browser handle all events on input fields.
+				event.stopImmediatePropagation();
+
+				return true;
+			}
+
 			if (event.type !== 'keydown') {
 				return false;
 			}
@@ -518,13 +527,18 @@ define([
 
 			// ENTER
 			if (event.keyCode === 13) {
-				if (!event.shiftKey && Html.allowNestedParagraph(Aloha.activeEditable)) {
+				if (!event.shiftKey && Html.allowNestedParagraph(Aloha.activeEditable) && ContentRules.isAllowed(Aloha.activeEditable.obj, 'p')) {
 					Aloha.execCommand('insertparagraph', false);
 					return false;
 				// if the shift key is pressed, or if the active editable is not allowed
 				// to contain paragraphs, a linebreak is inserted instead
-				} else {
+				} else if (ContentRules.isAllowed(Aloha.activeEditable.obj, 'br')) {
 					Aloha.execCommand('insertlinebreak', false);
+					return false;
+				} else if (Html.allowNestedParagraph(Aloha.activeEditable) && ContentRules.isAllowed(Aloha.activeEditable.obj, 'p')) {
+					Aloha.execCommand('insertparagraph', false);
+					return false;
+				} else {
 					return false;
 				}
 			}
@@ -593,7 +607,7 @@ define([
 				Aloha.Selection.rangeObject.select();
 
 				// Mozilla needs this fix or else the selection will not work
-				if (Aloha.activeEditable && jQuery.browser.mozilla) {
+				if (Aloha.activeEditable && jQuery.browser.mozilla && document.activeElement !== Aloha.activeEditable.obj[0]) {
 					Aloha.activeEditable.obj.focus();
 				}
 
@@ -638,7 +652,7 @@ define([
 				Aloha.Selection.rangeObject.select();
 
 				// Mozilla needs this fix or else the selection will not work
-				if (Aloha.activeEditable && jQuery.browser.mozilla) {
+				if (Aloha.activeEditable && jQuery.browser.mozilla && document.activeElement !== Aloha.activeEditable.obj[0]) {
 					Aloha.activeEditable.obj.focus();
 				}
 

@@ -57,12 +57,34 @@ define([
 			      .addClass('aloha-ui-menubutton-single');
 		}
 
+		if (props.tooltip) {
+			wrapper.children('[title]').removeAttr('title').end()
+				.attr('title', props.tooltip)
+				.tooltip({
+					tooltipClass: 'aloha aloha-ui-tooltip',
+					position: {
+						my: 'left top',
+						at: 'right bottom'
+					}
+				});
+
+			if (props.menu) {
+				wrapper.on('menushown', function() {
+					wrapper.tooltip('disable');
+				});
+				wrapper.on('menuhidden', function() {
+					wrapper.tooltip('enable');
+				});
+			}
+		}
+
 		if (!props.menu) {
 			return wrapper.append(action);
 		}
 
 		function hideMenu(menu) {
 			menu.hide().parent().removeClass('aloha-ui-menubutton-pressed');
+			wrapper.trigger('menuhidden');
 		}
 
 		expand.click(function () {
@@ -88,6 +110,7 @@ define([
 					at: 'left bottom',
 					of: action || expand
 				});
+				wrapper.trigger('menushown');
 
 				// In order to prevent the floating menu from being partially
 				// covered by the ribbon, we use "position: relative" and an
@@ -102,13 +125,20 @@ define([
 				menu.css('top', target.height() + target.offset().top + bodyOffset);
 				*/
 
-				$(document).bind('click', function (event) {
-					$(this).unbind(event);
-					menu.hide();
-					wrapper.removeClass('aloha-ui-menubutton-pressed');
-				});
+				// This click event will bubble up to the document (preventing
+				// this would leave a menu open when clicking on another menu
+				// button), but this one event should be ignored. So we wrap
+				// the actual handler, that will close the menu in a separate
+				// click handler.
+				var $doc = $(document);
 
-				return false;
+				$doc.one('click', function () {
+					$doc.one('click', function() {
+						menu.hide();
+						wrapper.removeClass('aloha-ui-menubutton-pressed')
+							.trigger('menuhidden');
+					});
+				});
 			});
 
 		wrapper.append(buttonset || expand).append(menu);

@@ -1,0 +1,3 @@
+Editing anchors of links in a separate field, adding an anchor by typing '#' in the link field did not always work.
+Also when pressing 'ENTER' in the link field, an already added anchor was sometimes removed.
+Both issues have been fixed.

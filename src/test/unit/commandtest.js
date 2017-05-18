@@ -124,8 +124,9 @@ function( TestUtils ) {
 			}
 
 			var name = check.name ||  descName;
+			var moduleName = tests.label || tests.defaultCommand;
 
-			module( tests.defaultCommand + ' ' + (i+1) + (excluded ? ' (EX)' : ''), {
+			module( moduleName + ' ' + (i+1) + (excluded ? ' (EX)' : ''), {
 				setup: function() {
 					// fill the editable area with the start value
 					editable.html(this.check.start);
@@ -155,6 +156,7 @@ function( TestUtils ) {
 					r.setEnd( range.endContainer, range.endOffset);
 					Aloha.getSelection().removeAllRanges();
 					Aloha.getSelection().addRange(r);
+					Aloha.getEditableHost(editable).activate();
 
 					// Start
 					if ( typeof check.indetermStart !== 'undefined' ) {
@@ -179,6 +181,8 @@ function( TestUtils ) {
 						//Aloha.execCommand( command, false, check.value, range );
 						if (command === 'bold') {
 							FormatPlugin.addMarkup('b');
+						} else if (command === 'removeFormat') {
+							FormatPlugin.removeFormat();
 						} else if (command === 'outdent') {
 							ListPlugin.outdentList()
 						} else if (command === 'indent') {

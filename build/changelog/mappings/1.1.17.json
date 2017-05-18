@@ -1,0 +1,10 @@
+{
+  "version": "1.1.17",
+  "date": "29.04.2015",
+  "changeLogEntryFileNames": [
+    "10223.SUP-738.bugfix",
+    "10224.SUP-836.bugfix",
+    "10222.SUP-841.bugfix"
+  ],
+  "genericProperties": {}
+}

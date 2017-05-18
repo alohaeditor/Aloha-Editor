@@ -1,0 +1,1 @@
+Table Plugin: Added the configuration option "defaultClass". If set, the default class will be set as the className property of the newly created table. See the "documentation":http://www.alohaeditor.org/guides/plugin_table.html#configuration-settings of the plugin for configuration settings.

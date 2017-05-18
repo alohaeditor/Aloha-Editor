@@ -11,7 +11,7 @@ public class SimpleTest {
 	public static Test suite() throws Exception {
 
 		Properties settings = new Properties();
-		settings.put("hub_location", "http://selenium-hub.office:4444/wd/hub");
+		settings.put("hub_location", "http://gemini.office:4444/wd/hub");
 		settings.put("browser", "chrome");
 		settings.put("platform", "LINUX");
 		settings.put("basePath", "/src/test/unit");
@@ -21,6 +21,7 @@ public class SimpleTest {
 		suite.addQunitModule("applymarkup");
 		suite.addQunitModule("bold");
 		suite.addQunitModule("contenthandler");
+		suite.addQunitModule("genericcontenthandler");
 		suite.addQunitModule("contenthandlermanager");
 //		suite.addQunitModule("core");
 		suite.addQunitModule("delete");
@@ -36,6 +37,7 @@ public class SimpleTest {
 		suite.addQunitModule("outdent");
 		suite.addQunitModule("pluginapi");
 		suite.addQunitModule("plugin-blocks");
+		suite.addQunitModule("removeformat");
 		suite.addQunitModule("removemarkup");
 		suite.addQunitModule("repository2");
 		suite.addQunitModule("repository");
@@ -44,6 +46,10 @@ public class SimpleTest {
 		suite.addQunitModule("selection3");
 //		suite.addQunitModule("table");
 		suite.addQunitModule("wailangrepo");
+		suite.addQunitModule("wordcontenthandler");
+		suite.addQunitModule("formatlesspaste");
+		suite.addQunitModule("contentruleswhitelist");
+		suite.addQunitModule("contentrulesblacklist");
 
 		return suite;
 	}

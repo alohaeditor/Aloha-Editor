@@ -1,0 +1,4 @@
+The formatless paste contenthandler (used by the formatless paste plugin) and the generic contenthandler
+did not clean any content, when an aloha block was found in the pasted contents.
+This has been changed, so that the content handlers will clean everything else, but will still leave the
+aloha blocks (identified by the class aloha-block) untouched.

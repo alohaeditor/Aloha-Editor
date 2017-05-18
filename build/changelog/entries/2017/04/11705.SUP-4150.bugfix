@@ -1,0 +1,1 @@
+table-plugin: when inserting a new table an additional paragraph was inserted after the table. This won't happen anymore.

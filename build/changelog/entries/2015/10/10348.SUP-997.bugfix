@@ -1,0 +1,4 @@
+Opening a page containing many DOM elements with Aloha Editor with Internet Explorer (starting with IE8)
+was slow due to a feature check during the initialization phase, that used an Internet Explorer function,
+which seems to be badly implemented.
+The feature check has been modify to circumvent the performance problem.

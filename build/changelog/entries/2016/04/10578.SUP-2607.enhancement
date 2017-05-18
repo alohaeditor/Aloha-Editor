@@ -1,0 +1,1 @@
+When the table layout options of the table-plugin are used alongside the sanitize content-handler (with it's default configuration) the classes on table, tr and td elements are removed by the content-handler. This behaviour is now documented in the guides page of the table-plugin.

@@ -160,29 +160,6 @@ define([
 	}
 
 	/**
-	 * Replaces unnecessary new line characters within text nodes in Word HTML 
-	 * with a space.
-	 *
-	 * @param {jQuery.<HTMLElement>} $content
-	 */
-	function replaceWordNewLines($content) {
-		var i;
-		var $nodes = $content.contents();
-		var node;
-
-		for (i = 0; i < $nodes.length; i++) {
-			node = $nodes[i];
-
-			if (Node.TEXT_NODE === node.nodeType) {
-				var text = node.nodeValue;
-				node.nodeValue = text.replace(/[\r\n]+/gm, ' ');
-			} else {
-				replaceWordNewLines($nodes.eq(i));
-			}
-		}
-	}
-
-	/**
 	 * Cleanup MS Word HTML.
 	 *
 	 * @param {jQuery.<HTMLElement>} $content
@@ -204,16 +181,49 @@ define([
 				// Because footnotes for example are wrapped in divs and should
 				// be unwrap.
 				$node.contents().unwrap();
+			} else if ('ul' === nodeName || 'ol' === nodeName) {
+				/*
+				 * Word renders nested lists as
+				 *
+				 * <ul>
+				 *   <li>Foo</li>
+				 *   <ul>
+				 *     <li>Bar</li>
+				 *   </ul>
+				 * </ul>
+				 *
+				 * instead of
+				 *
+				 * <ul>
+				 *   <li>Foo
+				 *     <ul>
+				 *       <li>Bar</li>
+				 *     </ul>
+				 *   </li>
+				 * </ul>
+				 *
+				 * Since the markup is not valid, the nested lists would be removed by
+				 * the generic content handler.
+				 */
+				if ($node.parent().is('ul,ol')) {
+					var prev = $node.prev('li');
+
+					if (prev.length > 0) {
+						prev.append($node)
+					}
+				}
 			} else if ('td' !== nodeName && isEmpty($node)) {
 
 				// Because any empty element (like spaces wrapped in spans) are
 				// not needed, except table cells.
 				$node.contents().unwrap();
+			} else if (nodeName === 'a'
+					&& $node.attr('href') && $node.attr('href').match("^file://")) {
+				$node.contents().unwrap();
 			}
 		}
 
 		removeUnrenderedChildNodes($content);
-		replaceWordNewLines($content);
 	}
 
 	/**
@@ -265,6 +275,25 @@ define([
 			// otherwise check for a number, letter or '(' as first character
 			return $.trim(listSpan.text()).match(/^([0-9]{1,3}\.)|([0-9]{1,3}\)|([a-zA-Z]{1,5}\.)|([a-zA-Z]{1,5}\)))$/) ? true : false;
 		},
+		
+		/**
+		 * Checks if the specified node is enclosed in a <!--[if !supportLists]--> comment.
+		 * @param node The Node, whose position should be checked.
+		 * @param stopAt An ancestor Node of node, where the search will be stopped (this node will not be searched any more).
+		 * @return true if the node is enclosed in a <!--[if !supportLists]--> comment within the stopAt node, otherwise false.
+		 */
+		checkElementIsEnclosedInListsComment: function (node, stopAt) {
+			while (node && node !== stopAt) {
+				var sibling = node;
+				while ((sibling = sibling.previousSibling) !== null) {
+					if (Node.COMMENT_NODE === sibling.nodeType && $.trim(sibling.textContent) === '[if !supportLists]') {
+						return true;
+					}
+				}
+				node = node.parentNode;
+			}
+			return false;
+		},
 
 		/**
 		 * Try to detect the list type (ordered or bulleted).
@@ -274,16 +303,29 @@ define([
 		 */
 		detectListType: function (jqElem) {
 			var ordered = false;
+			var removeSpan = true;
 			// get the first span in the element
 			var firstSpan = jQuery(jqElem.find('span.' + BULLET_CLASS));
 			if (firstSpan.length === 0) {
+				firstSpan = jqElem.find('span').filter(function() {
+					var $this = $(this);
+					var style = $this.attr('style') || '';
+					return style.indexOf('mso-list: Ignore') >= 0 || style.indexOf('mso-list:Ignore') >= 0;
+				});
+			}
+			if (firstSpan.length === 0) {
 				firstSpan = jqElem.find('span').eq(0);
+				if (firstSpan.length > 0) {
+					removeSpan = WordContentHandler.checkElementIsEnclosedInListsComment(firstSpan.get(0), jqElem.get(0));
+				}
 			}
 			if ($.trim(firstSpan.text()).length !== 0) {
 				// use the span to detect whether the list shall be ordered or unordered
 				ordered = this.isOrderedList(firstSpan);
 				// finally remove the span (numbers, bullets are rendered by the browser)
-				firstSpan.remove();
+				if (removeSpan) {
+					firstSpan.remove();
+				}
 			} else {
 				firstSpan.remove();
 				var f = function (index) {
@@ -398,10 +440,13 @@ define([
 
 					// add a new list item
 					jqNewLi = jQuery('<li></li>');
+
 					// add the li into the list
 					jqList.append(jqNewLi);
+
 					// append the contents of the old dom element to the li
 					jqElem.contents().appendTo(jqNewLi);
+
 					// replace the old dom element with the new list
 					jqElem.replaceWith(jqList);
 
@@ -454,6 +499,7 @@ define([
 						jqNewLi = jQuery('<li></li>');
 						// add the li into the list
 						jqList.append(jqNewLi);
+
 						// append the contents of the old dom element to the li
 						jqElem.contents().appendTo(jqNewLi);
 						// remove the old dom element
@@ -462,7 +508,7 @@ define([
 				});
 			}
 		},
-		
+
 		/**
 		 * Remove paragraph numbering from TOC feature
 		 * @param content

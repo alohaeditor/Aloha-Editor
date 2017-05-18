@@ -1,0 +1,11 @@
+{
+  "version": "1.4.3",
+  "date": "22.12.2015",
+  "changeLogEntryFileNames": [
+    "10409.SUP-194.bugfix",
+    "10448.SUP-2263.bugfix",
+    "10330.SUP-1705.bugfix",
+    "10438.SUP-2246.bugfix"
+  ],
+  "genericProperties": {}
+}

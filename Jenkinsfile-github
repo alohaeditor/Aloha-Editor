@@ -1,0 +1,67 @@
+#!groovy
+
+// The GIT repository for this pipeline lib is defined in the global Jenkins setting
+@Library('jenkins-pipeline-library') import com.gentics.*
+
+// Make the helpers aware of this jobs environment
+JobContext.set(this)
+
+
+
+final def mattermostChannel = "#jenkins"
+
+
+
+pipeline {
+	agent {
+		label 'alohaeditor'
+	}
+
+	stages {
+		stage('Checkout') {
+			steps {
+				sh 'rm -rf *; rm -rf .git'
+
+				echo 'Gitlab triggered build - ' +
+					' Source branch: ' + env.GITHUB_PR_SOURCE_BRANCH +
+					' Target branch: ' + env.GITHUB_PR_TARGET_BRANCH
+
+				checkout scm
+			}
+		}
+
+		stage('Build, Test') {
+			steps {
+				sh "mvn -B -U clean package"
+			}
+
+			post {
+				always {
+					echo "test"
+					junit  "**/target/surefire-reports/*.xml"
+				}
+			}
+		}
+	}
+
+	post {
+		always {
+			step([$class: 'WsCleanup'])
+
+			script {
+				if (currentBuild.result == null) {
+					currentBuild.result = 'SUCCESS'
+				}
+
+				// Notify
+				MattermostHelper.sendStatusNotificationMessage(mattermostChannel)
+			}
+
+			step([$class: 'GitHubPRBuildStatusPublisher', buildMessage: [
+				failureMsg: [content: 'Can\'t set status; build failed.'],
+				successMsg: [content: 'Can\'t set status; build succeeded.']],
+				statusMsg: [content: '${GITHUB_PR_COND_REF} run ended'],
+				unstableAs: 'FAILURE'])
+		}
+	}
+}

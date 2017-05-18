@@ -38,6 +38,7 @@
 		tests = {
 			defaultValue: 'bam',
 			defaultCommand: 'inserthtml',
+			label: 'contenthandler',
 			tests: [		        
 					{  	start: '[]foo',
 						execResult: 'bam[]foo',
@@ -52,11 +53,11 @@
 				       	value: '<h2>bam</h2>' 
 					},
 					{	start: '<table><tr><td>foo[]</td></tr></table>',
-						execResult: '<table><tr><td>foobam{}</td></tr></table>',
+						execResult: '<table><tr><td>foobam[]</td></tr></table>',
 						value: 'bam' 
 					},
 					{	start: '<h1>hello</h1><p>bar[]</p><table><tr><td>foo</td></tr></table>',
-						execResult: '<h1>hello</h1><p>barbam{}</p><table><tr><td>foo</td></tr></table>',
+						execResult: '<h1>hello</h1><p>barbam[]</p><table><tr><td>foo</td></tr></table>',
 						value: 'bam' 
 					},
 					{	start: '<h1>hello</h1><p>bar[]</p>',
@@ -64,11 +65,11 @@
 						value: '<table><tr><td>foo</td></tr></table>' 
 					},
 					{	start: 'foo[]bar',
-						execResult: 'foo<div>bam</div>{}bar',
+						execResult: 'foo<div>bam</div>[]bar',
 						value: '<div style="background-color:red">bam</div>'
 					},
 					{	start: 'foo[]bar',
-						execResult: 'foo<div contentEditable="false" style="background-color:red">bam</div>{}bar',
+						execResult: 'foo<div contentEditable="false" style="background-color:red">bam</div>[]bar',
 						value: '<div contentEditable="false" style="background-color:red">bam</div>'
 					}
 			]

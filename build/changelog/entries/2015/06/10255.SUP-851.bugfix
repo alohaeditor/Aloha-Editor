@@ -1,0 +1,4 @@
+When removing all contents of a table cell, an empty paragraph
+may be left behind, which is impossible to remove. In such cases,
+the empty paragraph will be removed now when the focus leaves the table
+cell.

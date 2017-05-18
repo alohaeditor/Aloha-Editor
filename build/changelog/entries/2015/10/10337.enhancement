@@ -1,0 +1,2 @@
+Added the possibility to resize table columns and set the width values in percent instead of pixel. This allows for more dynamic layouts.
+Adding width values to the table element when resizing the whole table. This is needed to shrink a table.

@@ -69,9 +69,22 @@ define([
 	 *                   dialog element.
 	 */
 	function originatesFromDialog($event) {
-		var $target = $($event.target);
-		return $target.is('.aloha-dialog')
-			|| $target.closest('.aloha').length;
+		return $($event.target).closest('.aloha-dialog').length > 0;
+	}
+
+	/**
+	 * Checks whether the given jQuery event originates from a jQuery UI
+	 * element.
+	 *
+	 * Just like originatesFromDialog() this is used to prevent deactivating
+	 * editables when interacting with UI elements in a hackish way.
+	 *
+	 * @param {jQuery<Event>} $event The processed event.
+	 * @returns {boolean} true if $event is initieated from a jQuery UI
+	 *		element, and false otherwise.
+	 */
+	function originatesFromUiWidget($event) {
+		return $($event.target).closest('.ui-widget').length > 0;
 	}
 
 	/**
@@ -83,7 +96,8 @@ define([
 	function registerEvents() {
 		$('html').mousedown(function ($event) {
 			if (Aloha.activeEditable && !Aloha.eventHandled
-					&& !originatesFromDialog($event)) {
+					&& !originatesFromDialog($event)
+					&& !originatesFromUiWidget($event)) {
 				Aloha.deactivateEditable();
 			}
 		}).mouseup(function () {
@@ -412,7 +426,7 @@ define([
 			var i;
 			for (i = 0; i < editables.length; i++) {
 				if (editables[i] !== editable && editables[i].isActive) {
-					editables[i].blur();
+					editables[i].blur(editable);
 				}
 			}
 			Aloha.activeEditable = editable;
@@ -622,6 +636,30 @@ define([
 			} catch (e2) {
 				Aloha.Log.error(e2, 'Could not disable enableObjectResizing');
 				// this is just for others, who will not support disabling enableObjectResizing
+			}
+		},
+
+		/**
+		 * Disable native table editing
+		 */
+		disableInlineTableEditing: function () { // enableInlineTableEditing
+			try {
+				// This will disable browsers native table editing facilities in
+				// order to disable resize handles.
+				var supported;
+				try {
+					supported = document.queryCommandSupported('enableInlineTableEditing');
+				} catch (e) {
+					supported = false;
+					Aloha.Log.log('enableInlineTableEditing is not supported.');
+				}
+				if (supported) {
+					document.execCommand('enableInlineTableEditing', false, false);
+					Aloha.Log.log('enableInlineTableEditing disabled.');
+				}
+			} catch (e2) {
+				Aloha.Log.error(e2, 'Could not disable enableInlineTableEditing');
+				// this is just for others, who will not support disabling enableInlineTableEditing
 			}
 		},
 

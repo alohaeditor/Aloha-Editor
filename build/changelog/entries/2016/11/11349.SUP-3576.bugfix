@@ -1,0 +1,2 @@
+When an editable is deactivated, because another editable is activated, the event @aloha-editable-deactivated@
+will contain the new editable as event parameter @newEditable@.

@@ -427,9 +427,11 @@
 .aloha .ui-state-default .aloha-icon-columnheader   { background-position: -368px 0; }
 .aloha .ui-state-default .aloha-icon-mergecells     { background-position: -384px 0; }
 .aloha .ui-state-default .aloha-icon-splitcells     { background-position: -400px 0; }
+.aloha .ui-state-default .aloha-icon-deletetable    { background-position: -448px 0; }
 .aloha .ui-state-default .aloha-icon-orderedlist    { background-position: -272px 0; }
 .aloha .ui-state-default .aloha-icon-unorderedlist  { background-position: -256px 0; }
 .aloha .ui-state-default .aloha-icon-link           { background-position: -288px 0; }
+.aloha .ui-state-default .aloha-icon-anchor         { background: url(../img/anchor.png) no-repeat; }
 .aloha .ui-state-default .aloha-icon-unlink         { background-position: -304px 0; }
 .aloha .ui-state-default .aloha-icon-abbr           { background-position: -336px 0; }
 .aloha .ui-state-default .aloha-icon-emphasis       { background-image: url(../img/em.png); }

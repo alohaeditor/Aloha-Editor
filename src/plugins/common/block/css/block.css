@@ -93,11 +93,24 @@
 	display: none;
 }
 
+.aloha-block-editor fieldset {
+	border: 2px groove threedface!important;
+	padding-bottom: 5px;
+}
+
 .aloha-block-editor label {
 	display:block;
 }
 
+.aloha-block-editor .input-label {
+	display: inline;
+}
+
 .aloha-block-dropInlineElementIntoEmptyBlock {
+	border: 1px solid red;
+}
+
+.aloha-table-wrapper div.aloha-table-cell-editable.aloha-block-dropInlineElementIntoEmptyBlock {
 	border: 1px solid red;
 }
 

@@ -515,14 +515,14 @@ define([
 					if (this.startOffset > 0 && this.startContainer.childNodes[this.startOffset - 1].nodeType === 1) {
 						// search for the next text node to the left
 						adjacentTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(this.startContainer, this.startOffset, true);
-						if (adjacentTextNode) {
+						if (adjacentTextNode && jQuery(adjacentTextNode.parentNode).contentEditable()) {
 							this.startContainer = this.endContainer = adjacentTextNode;
 							this.startOffset = this.endOffset = adjacentTextNode.data.length;
 							return;
 						}
 						// search for the next text node to the right
 						adjacentTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(this.startContainer, this.startOffset, false);
-						if (adjacentTextNode) {
+						if (adjacentTextNode && jQuery(adjacentTextNode.parentNode).contentEditable()) {
 							this.startContainer = this.endContainer = adjacentTextNode;
 							this.startOffset = this.endOffset = 0;
 							return;
@@ -545,9 +545,15 @@ define([
 					adjacentTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(this.startContainer.parentNode, GENTICS.Utils.Dom.getIndexInParent(this.startContainer), true);
 					//only move the selection if the adjacentTextNode is inside the current editable
 					//the cursor should not be outside the editable
-					if (adjacentTextNode && Aloha.activeEditable && jQuery(adjacentTextNode).closest(Aloha.activeEditable.obj).length > 0) {
+					if (adjacentTextNode && Aloha.activeEditable && jQuery(adjacentTextNode.parentNode).contentEditable() && jQuery(adjacentTextNode).closest(Aloha.activeEditable.obj).length > 0) {
 						this.startContainer = this.endContainer = adjacentTextNode;
 						this.startOffset = this.endOffset = adjacentTextNode.data.length;
+					}
+				} else if (this.startContainer.nodeType === 3 && (!jQuery(this.startContainer.parentNode).contentEditable())) {
+					adjacentTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(this.startContainer.parentNode, GENTICS.Utils.Dom.getIndexInParent(this.startContainer) + 1, false, {}, { acceptUntrimmed: true });
+					if (adjacentTextNode && Aloha.activeEditable && jQuery(adjacentTextNode.parentNode).contentEditable() && jQuery(adjacentTextNode).closest(Aloha.activeEditable.obj).length > 0) {
+						this.startContainer = this.endContainer = adjacentTextNode;
+						this.startOffset = this.endOffset = 0;
 					}
 				}
 			} else {

@@ -56,6 +56,7 @@ define([
 					click: function () {
 						plugin.transformList('dl');
 					},
+					tooltip: i18n.t('button.createdlist.tooltip'),
 					html: '<span class="ui-button-icon-primary ui-icon aloha-icon aloha-icon-definitionlist"></span>',
 					menu: (plugin.definitionListStyleButtons.length) ? plugin.definitionListStyleButtons : null
 				}
@@ -74,6 +75,7 @@ define([
 					click: function () {
 						plugin.transformList('ol');
 					},
+					tooltip: i18n.t('button.createolist.tooltip'),
 					html: '<span class="ui-button-icon-primary ui-icon aloha-icon aloha-icon-orderedlist"></span>',
 					menu: (plugin.orderedListStyleButtons.length) ? plugin.orderedListStyleButtons : null
 				}
@@ -92,6 +94,7 @@ define([
 					click: function () {
 						plugin.transformList('ul');
 					},
+					tooltip: i18n.t('button.createulist.tooltip'),
 					html: '<span class="ui-button-icon-primary ui-icon aloha-icon aloha-icon-unorderedlist"></span>',
 					menu: (plugin.unorderedListStyleButtons.length) ? plugin.unorderedListStyleButtons : null
 				}
@@ -340,8 +343,8 @@ define([
 
 			if (listtype === nodeName) {
 				// remove all classes
-				jQuery.each(this.templates[nodeName].classes, function () {
-					listToStyle.removeClass(this);
+				jQuery.each(this.templates[nodeName].classes, function (i, cssClass) {
+					listToStyle.removeClass(cssClass);
 				});
 
 				listToStyle.addClass(style);
@@ -350,8 +353,8 @@ define([
 				listToStyle.find(listtype).each(function () {
 					if (isListInSelection(this)) {
 						var listToStyle = jQuery(this);
-						jQuery.each(plugin.templates[listtype].classes, function () {
-							listToStyle.removeClass(this);
+						jQuery.each(plugin.templates[listtype].classes, function (i, cssClass) {
+							listToStyle.removeClass(cssClass);
 						});
 						listToStyle.addClass(style);
 					}
@@ -642,12 +645,14 @@ define([
 			var editable;
 			var range;
 			var selection;
+			Aloha.Selection.updateSelection();
+
 			// wrap a paragraph around the selection
 			Aloha.Selection.changeMarkupOnSelection(jQuery('<p></p>'));
 			var domToTransform = this.getStartingDomObjectToTransform();
 
 			if (!domToTransform) {
-				if ( Aloha.Selection.rangeObject.startContainer.contentEditable ) {
+				if ( jQuery(Aloha.Selection.rangeObject.startContainer).contentEditable() ) {
 					// create a new list with an empty item
 					switch (listtype) {
 						case 'ol':
@@ -665,23 +670,21 @@ define([
 					}
 
 					jqList.append(jqNewEl);
-
 					el = jqNewEl.get(0);
-					editable = Aloha.getActiveEditable().obj;
-					//IE7 requires an (empty or non-empty) text node
-					//inside the li for the selection to work.
 					el.appendChild(document.createTextNode(""));
 
-					editable.append(jqList);
-					editable.focus();
-
-					range = Aloha.createRange();
-					selection = Aloha.getSelection();
-					range.setStart( el.firstChild, 0 );
-					range.setEnd( el.firstChild, 0 );
-					selection.removeAllRanges();
-					selection.addRange( range );
-					Aloha.Selection.updateSelection();
+					if (Dom.insertIntoDOM(jqList, Aloha.Selection.rangeObject)) {
+						range = Aloha.createRange();
+						selection = Aloha.getSelection();
+						range.setStart( el.firstChild, 0 );
+						range.setEnd( el.firstChild, 0 );
+						selection.removeAllRanges();
+						selection.addRange( range );
+						Aloha.Selection.updateSelection();
+						domToTransform = jqList.get(0);
+					} else {
+						Aloha.Log.error(this, 'Could not transform selection into a list');
+					}
 				} else {
 					Aloha.Log.error(this, 'Could not transform selection into a list');
 				}
@@ -703,12 +706,25 @@ define([
 			this._outdentListButton.show(true);
 			this._indentListButton.show(true);
 
-			if (!domToTransform) {
+			if (!domToTransform || !domToTransform.parentNode) {
 				domToTransform = this.prepareNewList(listtype);
+				this.refreshSelection();
+
+				if (domToTransform && domToTransform.nodeName.toLowerCase() === listtype) {
+					return;
+				}
 			}
 
 			// check the dom object
 			nodeName = domToTransform.nodeName.toLowerCase();
+
+			//remove all classes on list type change
+			if (nodeName !== listtype && this.templates[nodeName]) {
+				jqList = jQuery(domToTransform);
+				jQuery.each(this.templates[nodeName].classes, function (i, cssClass) {
+					jqList.removeClass(cssClass);
+				});
+			}
 
 			if (nodeName === listtype) {
 				jqList = jQuery(domToTransform);
@@ -725,10 +741,10 @@ define([
 					}
 				}
 
-			} else if (nodeName == 'ul' && listtype === 'ol') {
+			} else if (nodeName === 'ul' && listtype === 'ol') {
 				transformExistingListAndSubLists(domToTransform, 'ol');
 				this.mergeAdjacentLists(jQuery(domToTransform));
-			} else if (nodeName == 'ol' && listtype === 'ul') {
+			} else if (nodeName === 'ol' && listtype === 'ul') {
 				transformExistingListAndSubLists(domToTransform, 'ul');
 				this.mergeAdjacentLists(jQuery(domToTransform));
 			} else if (nodeName === 'ul' && listtype === 'dl') {

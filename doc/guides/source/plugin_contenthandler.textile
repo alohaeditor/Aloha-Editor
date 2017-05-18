@@ -134,6 +134,7 @@ The Word Content Handler will detect content pasted from Microsoft Word 2003 and
 * convert bullet points to unordered lists
 * transform titles to h1 and subtitles to h2 tags
 * keep bold and italic formatting, headlines, tables and lists but get rid of all other formattings
+* Remove links to local files (with file :// URLs), but it preserves the link contents
 
 h4. Generic Content Handler
 
