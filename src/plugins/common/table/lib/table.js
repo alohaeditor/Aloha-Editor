@@ -1760,6 +1760,9 @@ define([
 	 * @return void
 	 */
 	Table.prototype.deactivate = function() {
+		// preserve the current selection
+		var range = new Aloha.Selection.SelectionRange(true);
+
 		// unblockify the table wrapper
 		var parent = this.wrappedObj.parent();
 		if (parent.mahaloBlock) {
@@ -1809,6 +1812,11 @@ define([
 
 		// better unset ;-) otherwise activate() may think you're activated.
 		this.isActive = false;
+
+		// select the selection, because the dom around the selection might have changed (e.g. when an editable in the table was clicked)
+		if (typeof range.startContainer !== 'undefined' && typeof range.endContainer !== 'undefined') {
+			range.select();
+		}
 	};
 
 	/**

@@ -1,0 +1,3 @@
+table-plugin: When an editable in a block in a table was clicked, the selection was not
+correctly set in the clicked editable, if the editable containing the table was selected before.
+This has been fixed now.
