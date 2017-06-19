@@ -1,0 +1,2 @@
+format-plugin: Checking the heading hierarchy could not be disabled by setting
+checkHeadingHierarchy to "false" (as string). This has been fixed now.
