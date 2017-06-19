@@ -106,7 +106,7 @@ define([
 		case 'tr':
 			return 0 === $node.find('td,th').length;
 		default:
-			return '' === $.trim($node.text());
+			return '' === $.trim($node.text()) && $node.html().indexOf('&nbsp;') < 0;
 		}
 	}
 
@@ -179,7 +179,7 @@ define([
 			if ('div' === nodeName || 'span' === nodeName) {
 
 				// Because footnotes for example are wrapped in divs and should
-				// be unwrap.
+				// be unwrapped.
 				$node.contents().unwrap();
 			} else if ('ul' === nodeName || 'ol' === nodeName) {
 				/*
