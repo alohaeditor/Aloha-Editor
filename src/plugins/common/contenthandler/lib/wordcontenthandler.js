@@ -212,7 +212,10 @@ define([
 						prev.append($node)
 					}
 				}
-			} else if ('td' !== nodeName && isEmpty($node)) {
+				if (isEmpty($node)) {
+					$node.remove();
+				}
+			} else if ('td' !== nodeName && 'li' !== nodeName && isEmpty($node)) {
 
 				// Because any empty element (like spaces wrapped in spans) are
 				// not needed, except table cells.
