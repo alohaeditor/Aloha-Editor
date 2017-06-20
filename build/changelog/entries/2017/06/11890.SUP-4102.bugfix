@@ -1,0 +1,3 @@
+paste-plugin: When pasting content from Word with paragraphs that only contained non-breakable spaces,
+the non-breakable spaces were unwrapped.
+This has been changed now, so that the paragraphs will be pasted together with the non-breakable spaces.
