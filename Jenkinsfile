@@ -8,7 +8,6 @@ JobContext.set(this)
 
 
 
-final def sshAgent          = '601b6ce9-37f7-439a-ac0b-8e368947d98d'
 final def gitCommitTag      = '[Jenkins | ' + env.JOB_BASE_NAME + ']';
 final def mattermostChannel = "#jenkins"
 
@@ -20,34 +19,21 @@ String tagName = null
 
 pipeline {
 	agent {
-		label 'alohaeditor'
+		label 'jenkins-slave-and-selenium'
 	}
 
 	parameters {
-		booleanParam(name: 'unitTests', defaultValue: true, description: 'Whether to run the unit tests')
-		booleanParam(name: 'release', defaultValue: false, description: 'Whether to perform a release')
-		booleanParam(name: 'releaseWithNewChangesOnly', defaultValue: true, description: 'Release: Abort the build if there are no new changes')
-		booleanParam(name: 'cleanupWorkspace', defaultValue: true, description: 'Whether to clean the workspace afterwards')
+		booleanParam(name: 'unitTests',                 defaultValue: true,  description: 'Whether to run the unit tests')
+		booleanParam(name: 'release',                   defaultValue: false, description: 'Whether to perform a release')
+		booleanParam(name: 'releaseWithNewChangesOnly', defaultValue: true,  description: 'Release: Abort the build if there are no new changes')
 	}
 
 	stages {
-		stage('Checkout') {
-			steps {
-				sh "rm -rf *"
-
-				sshagent([sshAgent]) {
-					checkout scm
-
-					script {
-						branchName = GitHelper.fetchCurrentBranchName()
-					}
-				}
-			}
-		}
-
 		stage('Build, Deploy') {
 			steps {
 				script {
+					branchName = GitHelper.fetchCurrentBranchName()
+
 					if (!version && Boolean.valueOf(params.release)) {
 						version = MavenHelper.getVersion()
 					}
@@ -116,7 +102,7 @@ pipeline {
 					MavenHelper.setVersion(version)
 					GitHelper.addCommit('.', gitCommitTag + ' Prepare for the next development iteration (' + version + ')')
 
-					sshagent([sshAgent]) {
+					sshagent(["git"]) {
 						script {
 							GitHelper.pushBranch(branchName)
 							GitHelper.pushTag(tagName)
@@ -130,13 +116,6 @@ pipeline {
 
 	post {
 		always {
-			script {
-				if (Boolean.valueOf(params.cleanupWorkspace)) {
-					// Cleanup
-					step([$class: 'WsCleanup'])
-				}
-			}
-
 			script {
 				// Notify
 				MattermostHelper.sendStatusNotificationMessage(mattermostChannel)
