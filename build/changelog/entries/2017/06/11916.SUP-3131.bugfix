@@ -1,0 +1,3 @@
+paste-plugin: When pasting content from Word to Edge, the paste plugin failed to detect and transform
+Word specific formatting due to missing classes. The wordcontenthandler is now modified to always treat content
+as if coming from Word when used in Edge.
