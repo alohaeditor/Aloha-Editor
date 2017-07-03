@@ -6,16 +6,18 @@ import junit.framework.Test;
 
 import com.gentics.testutils.maven.selenium.qunit.SeleniumQUnitTestSuite;
 
+/**
+ * docker run -d -p 4444:4444 selenium/standalone-chrome
+ */
 public class SimpleTest {
 
 	public static Test suite() throws Exception {
-
 		Properties settings = new Properties();
-		settings.put("hub_location", "http://gemini.office:4444/wd/hub");
-		settings.put("browser", "chrome");
-		settings.put("platform", "LINUX");
-		settings.put("basePath", "/src/test/unit");
-		settings.put("webdriver.chrome.driver", "/opt/selenium/chromedriver");
+		settings.put("hub_location", System.getProperty("hub_location", "http://localhost:4444/wd/hub"));
+		settings.put("browser", System.getProperty("browser", "chrome"));
+		settings.put("platform", System.getProperty("platform", "LINUX"));
+		settings.put("basePath", System.getProperty("basePath", "/src/test/unit"));
+		settings.put("webdriver.chrome.driver", System.getProperty("webdriver.chrome.driver", "/opt/selenium/chromedriver"));
 		SeleniumQUnitTestSuite suite = new SeleniumQUnitTestSuite(settings);
 
 		suite.addQunitModule("applymarkup");
