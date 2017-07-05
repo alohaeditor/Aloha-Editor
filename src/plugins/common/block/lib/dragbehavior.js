@@ -548,6 +548,8 @@ define([
 			if (editable) {
 				editable.activate();
 			}
+
+			PubSub.pub('aloha.drop.block.in.editable', {element: this.$element, editable: editable});
 		}
 
 		this.disableInsertBeforeOrAfter(this.$overElement);

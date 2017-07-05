@@ -872,8 +872,10 @@ define([
 						that._dd_traverseDomTreeAndRemoveSpans(this);
 					});
 
+					var editable = Aloha.getEditableHost(that.$element);
 					if ($currentDraggable) {
 						BlockUtils.unpad($currentDraggable);
+						PubSub.pub('aloha.drop.block.in.editable', {element: $currentDraggable, editable: editable });
 					}
 
 					$currentDraggable = null;
@@ -884,7 +886,6 @@ define([
 					// the block has been dropped into. This will do necessary initializations that
 					// happen on activation of the editable
 					Aloha.deactivateEditable();
-					var editable = Aloha.getEditableHost(that.$element);
 					if (editable) {
 						editable.activate();
 					}
