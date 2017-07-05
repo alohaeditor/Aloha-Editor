@@ -119,6 +119,11 @@ define([
 	 *         office document.
 	 */
 	function isWordContent($content) {
+		// Edge does not paste the mso classes anymore, so we need to treat everything
+		// as if coming from word
+		if (Aloha.browser.edge) {
+			return true;
+		}
 		// Because reading the html of the content is way faster than iterating
 		// its entire node tree, therefore we attempt this first.
 		if (0 === $content.length || !MSO.test($content[0].outerHTML)) {
