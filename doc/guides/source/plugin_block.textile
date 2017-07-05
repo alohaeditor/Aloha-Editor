@@ -178,6 +178,19 @@ methods are:
 
 When an attribute is changed through @attr@, the block is re-rendered automatically.
 
+h3. Events
+
+When a draggable block is dropped into an editable part, the block plugin will publish the event 'aloha.drop.block.in.editable' with PubSub:
+
+<javascript>
+define(['PubSub'], function (PubSub) {
+    PubSub.sub('aloha.drop.block.in.editable', function (eventArgument) {
+    	// eventArgument.element contains the block that was dropped
+    	// eventArgument.editable contains the target editable
+    });
+});
+</javascript>
+
 h3. Writing a Custom Aloha Block
 
 When writing a custom block, you should do so in your own *aloha plugin*.
