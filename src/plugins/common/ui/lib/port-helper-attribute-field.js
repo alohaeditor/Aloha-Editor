@@ -436,13 +436,15 @@ define([
 			// check whether a repository item is linked to the object
 			RepositoryManager.getObject( obj, function ( items ) {
 				if (items && items.length > 0) {
-					if (ignoreAutoValues) {
+					var needResetIgnoreAutoValues = false;
+					if (ignoreAutoValues && !$obj.attr('data-ignore-auto-values')) {
 						$obj.attr('data-ignore-auto-values', ignoreAutoValues);
+						needResetIgnoreAutoValues = true;
 					}
 
 					setItem(items[0]);
 
-					if (ignoreAutoValues) {
+					if (needResetIgnoreAutoValues) {
 						$obj.removeAttr('data-ignore-auto-values');
 					}
 				}

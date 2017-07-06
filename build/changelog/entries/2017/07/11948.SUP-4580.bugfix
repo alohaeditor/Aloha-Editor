@@ -1,0 +1,4 @@
+Link-Plugin: When targetregex and target were set, the target was automatically changed
+when a link to a repository item was selected, even if the item was not changed.
+This has been fixed now, the target must only be automatically changed according to the settings,
+when the href (for external links) or the item (when linking to a repository item) is actually changed.
