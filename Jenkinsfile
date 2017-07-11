@@ -32,6 +32,8 @@ pipeline {
 		stage('Build, Deploy') {
 			steps {
 				script {
+					GithubHelper.createCommitStatus("Jenkins build")
+
 					branchName = GitHelper.fetchCurrentBranchName()
 
 					if (!version && Boolean.valueOf(params.release)) {
@@ -74,6 +76,7 @@ pipeline {
 			}
 
 			post {
+
 				always {
 					script {
 						if (Boolean.valueOf(params.unitTests)) {
@@ -84,7 +87,7 @@ pipeline {
 			}
 		}
 
-		stage("Publish release") {
+		stage("Publish") {
 			when {
 				expression {
 					return Boolean.valueOf(release)
@@ -117,6 +120,8 @@ pipeline {
 	post {
 		always {
 			script {
+				GithubHelper.setCommitStatus("Jenkins build")
+
 				// Notify
 				MattermostHelper.sendStatusNotificationMessage(mattermostChannel)
 			}
