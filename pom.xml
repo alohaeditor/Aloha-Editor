@@ -501,12 +501,12 @@
 		<repository>
 			<id>lan.releases.staging.alohaeditor</id>
 			<name>Gentics Internal Repository Stage</name>
-			<url>http://artifactory.office/repository/lan.releases.staging.alohaeditor</url>
+			<url>https://repo.gentics.com/artifactory/lan.releases.staging.alohaeditor</url>
 		</repository>
 		<snapshotRepository>
 			<id>lan.snapshots</id>
 			<name>Gentics Internal Snapshots Repository Stage</name>
-			<url>http://artifactory.office/repository/lan.snapshots</url>
+			<url>https://repo.gentics.com/artifactory/lan.snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 </project>
