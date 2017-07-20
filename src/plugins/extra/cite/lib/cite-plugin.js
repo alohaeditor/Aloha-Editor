@@ -596,6 +596,13 @@ define([
 			}
 
 			domUtils.addMarkup(rangeObject, markup);
+			domUtils.doCleanup({
+				'merge': true,
+				'removeempty': true,
+				'mergeable': function (obj) {
+					return obj.nodeName == 'Q';
+				}
+			}, rangeObject);
 
 			// If the cite is not found, it was not created. Probably for
 			// a incorrect caret position.

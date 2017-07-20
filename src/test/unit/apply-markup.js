@@ -204,6 +204,11 @@ define( ['testutils'], function( TestUtils ) {
 			doMarkupTest(this.edit, this.edit.find('i').contents().get(0), 4, this.edit.contents().get(2), 3, jQuery('<i></i>'), '#ref-crossmarkup', '#ref-crossmarkup-end-italic-nesting', true);
 		});
 
+		// Test applying bold adjacent to italic
+		test('Italic adjacent to Bold', function() {
+			doMarkupTest(this.edit, this.edit.contents().get(0), 5, this.edit.contents().get(0), 7, jQuery('<b></b>'), '#ref-crossmarkup', '#ref-crossmarkup-adjacent', true);
+		});
+
 		module('Header Handling', {
 			setup: function() {
 				// get the editable area and the reference

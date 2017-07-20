@@ -669,9 +669,8 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 				// check whether the rangetree object is fully contained and the markup may be wrapped around the object
 				if (rangeTree[i].type == 'full' && this.allowsNesting(markup.get(0), rangeTree[i].domobj)) {
 					// we wrap the object, when
-					// 1. nesting of markup is allowed or the node is not of the markup to be added
-					// 2. the node an element node or a non-empty text node
-					if ((nesting || rangeTree[i].domobj.nodeName != markup.get(0).nodeName) && (rangeTree[i].domobj.nodeType !== 3 || jQuery.trim(rangeTree[i].domobj.data).length !== 0)) {
+					// nesting of markup is allowed or the node is not of the markup to be added
+					if ((nesting || rangeTree[i].domobj.nodeName != markup.get(0).nodeName)) {
 						// wrap the object
 						jQuery(rangeTree[i].domobj).wrap(markup);
 
