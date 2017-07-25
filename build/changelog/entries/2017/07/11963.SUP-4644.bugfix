@@ -1,0 +1,2 @@
+Cite-Plugin: Adding inline quotations around formatted text will no longer create separate quotations around each formatted part,
+but will create a single quotation containing all the text.

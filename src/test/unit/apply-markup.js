@@ -204,6 +204,27 @@ define( ['testutils'], function( TestUtils ) {
 			doMarkupTest(this.edit, this.edit.find('i').contents().get(0), 4, this.edit.contents().get(2), 3, jQuery('<i></i>'), '#ref-crossmarkup', '#ref-crossmarkup-end-italic-nesting', true);
 		});
 
+        module('Adjacent Markup Handling', {
+			setup: function() {
+				// get the editable area and the reference
+				this.edit = Aloha.jQuery('#edit');
+				this.ref = Aloha.jQuery('#ref-adjacent');
+				// fill the editable area with the reference
+				this.edit.html(this.ref.html());
+				// aloha'fy the editable
+				this.edit.aloha();
+			},
+			teardown: function() {
+				// de-aloha'fy the editable
+				this.edit.mahalo();
+			}
+		});
+
+		// Test applying bold adjacent to italic
+		test('Italic adjacent to Bold', function() {
+			doMarkupTest(this.edit, this.edit.contents().get(0), 0, this.edit.contents().get(4), 5, jQuery('<b></b>'), '#ref-adjacent', '#ref-adjacent-bold', true);
+		});
+
 		module('Header Handling', {
 			setup: function() {
 				// get the editable area and the reference
