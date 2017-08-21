@@ -84,7 +84,7 @@ define([
 			// Pinning behaviour is global in that if one toolbar is pinned,
 			// then all other toolbars will be pinned to that position.
 			if (isFloatingEnabled()) {
-				floating.makeFloating(this, Toolbar);
+				floating.makeFloating(this, Toolbar, 'absolute');
 			}
 		},
 
@@ -117,12 +117,11 @@ define([
 			}
 			toolbar._moveTimeout = window.setTimeout(function () {
 				toolbar._moveTimeout = null;
-				if (Aloha.activeEditable && Toolbar.isFloatingMode) {
+				if (Aloha.activeEditable) {
 					floating.floatSurface(
 						toolbar,
 						Aloha.activeEditable,
-						duration,
-						Toolbar.setFloatingPosition
+						false
 					);
 				}
 				// 20ms should be small enough to appear instantaneous to the
@@ -133,38 +132,9 @@ define([
 		},
 
 		addPin: function () {
-			var $pin = $('<div class="aloha-ui-pin">');
-			var $element = this.$element;
-			$element.find('.ui-tabs').append($pin);
-			$element.find('.ui-tabs').hover(function () {
-				$element.addClass('aloha-ui-hover');
-			}, function () {
-				$element.removeClass('aloha-ui-hover');
-			});
-
-			if (!Toolbar.isFloatingMode) {
-				$pin.addClass('aloha-ui-pin-down');
-			}
-
-			var surface = this;
-
-			$pin.click(function () {
-				Toolbar.isFloatingMode = !Toolbar.isFloatingMode;
-				var position;
-
-				if (Toolbar.isFloatingMode) {
-					position = {
-						top: Toolbar.pinTop,
-						left: Toolbar.pinLeft
-					};
-				} else {
-					position = surface.$element.offset();
-					position.top -= $(window).scrollTop();
-				}
-
-				Toolbar.setFloatingPosition(position);
-				floating.togglePinSurface(surface, position, Toolbar.isFloatingMode);
-			});
+			// TODO: function needs to stay (because it's called from floating,
+			// but content should be removed, once styles have been updated.
+			this.$element.addClass('aloha-ui-hover');
 		},
 
 		/**
@@ -204,24 +174,6 @@ define([
 		$surfaceContainer: null,
 
 		/**
-		 * Whether or not floating toolbar surfaces should be pinned.
-		 * @type {boolean}
-		 */
-		isFloatingMode: true,
-
-		/**
-		 * Left position of pinned toolbars.
-		 * @type {number}
-		 */
-		pinLeft: 0,
-
-		/**
-		 * Top position of pinned toolbars.
-		 * @type {number}
-		 */
-		pinTop: 0,
-
-		/**
 		 * Initializes the toolbar manager.  Adds the surface container
 		 * element, and sets up floating behaviour settings.
 		 */
@@ -238,21 +190,15 @@ define([
 				Toolbar.$surfaceContainer.appendTo('body');
 			});
 			Surface.trackRange(Toolbar.$surfaceContainer);
-			var pinState = floating.getPinState();
-			Toolbar.pinTop = pinState.top;
-			Toolbar.pinLeft = pinState.left;
-			Toolbar.isFloatingMode = !pinState.isPinned;
 		},
 
 		setFloatingPosition: function (position) {
-			Toolbar.pinTop = position.top;
-			Toolbar.pinLeft = position.left;
 		},
 
 		getFloatingPosition: function () {
 			return {
-				top: Toolbar.pinTop,
-				left: Toolbar.pinLeft
+				top: null,
+				left: null
 			};
 		}
 	});

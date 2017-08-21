@@ -119,12 +119,8 @@ define([
 
 		POSITION.offset = position;
 
-		$element.stop().animate(position, duration, function () {
-			callback(position);
-			PubSub.pub('aloha.floating.changed', {
-				position: $.extend({}, POSITION)
-			});
-		});
+		$element.css('top', position.top + 'px');
+		$element.css('left', position.left + 'px');
 	}
 
 	/**
@@ -181,6 +177,8 @@ define([
 
 	/**
 	 * Retreive the persisted pinned position of the FloatingMenu surface.
+	 *
+	 * TODO: can this be removed?
 	 *
 	 * @return {object}
 	 */
@@ -239,6 +237,7 @@ define([
 	 *                            is completed.
 	 */
 	function floatSurface(surface, editable, duration, callback) {
+		var sticky = duration === false;
 		if (typeof duration !== 'number') {
 			duration = DURATION;
 		}
@@ -263,22 +262,40 @@ define([
 		// never ever float outside of the visible area (to the left)
 		left = Math.max(0, left);
 
-		if (availableSpace >= $surface.height()) {
-			floatAbove($surface, {
-				top: top - scrollTop,
-				left: left
-			}, duration, callback);
-		} else if (availableSpace + $surface.height() >
-		           availableSpace + editable.obj.height()) {
-			floatBelow($surface, {
-				top: top + editable.obj.height() - scrollTop,
-				left: left
-			}, duration, callback);
+		if (sticky) {
+			if (availableSpace >= $surface.height()) {
+				$surface.css('position', 'absolute');
+				$surface.css('top', (top - $surface.height() - DISTANCE) + 'px');
+			} else if ($surface.height() > editable.obj.outerHeight()
+				// TODO: decide whether to remove or enable to fixate the toolbar.
+				//	&& top + editable.obj.outerHeight() + DISTANCE - scrollTop >= topGutter
+				) {
+				$surface.css('position', 'absolute');
+				$surface.css('top', top + editable.obj.outerHeight() + DISTANCE + 'px');
+			} else {
+				$surface.css('position', 'fixed');
+				$surface.css('top', topGutter + 'px');
+			}
+
+			$surface.css('left', left + 'px');
 		} else {
-			floatBelow($surface, {
-				top: topGutter,
-				left: left
-			}, duration, callback);
+			if (availableSpace >= $surface.height()) {
+				floatAbove($surface, {
+					top: top - scrollTop,
+					left: left
+				}, duration, callback);
+			} else if (availableSpace + $surface.height() >
+			           availableSpace + editable.obj.height()) {
+				floatBelow($surface, {
+					top: top + editable.obj.height() - scrollTop,
+					left: left
+				}, duration, callback);
+			} else {
+				floatBelow($surface, {
+					top: topGutter,
+					left: left
+				}, duration, callback);
+			}
 		}
 	}
 
@@ -327,18 +344,22 @@ define([
 	 *
 	 * @param {Surface} surface
 	 */
-	function setPositionStyleToFixed(surface) {
+	function setPositionStyleToFixed(surface, positionStyle) {
+		if (typeof positionStyle == 'undefined') {
+			positionStyle = POSITION_STYLE;
+		}
+
 		if ($.browser.msie) {
 			var $parent = surface.$element.parent();
 			surface.$element.appendTo('body');
-			surface.$element.css('position', POSITION_STYLE);
+			surface.$element.css('position', positionStyle);
 			if ($parent.length) {
 				surface.$element.appendTo($parent);
 			} else {
 				surface.$element.detach();
 			}
 		} else {
-			surface.$element.css('position', POSITION_STYLE);
+			surface.$element.css('position', positionStyle);
 		}
 	}
 
@@ -352,7 +373,7 @@ define([
 	 * @param {Surface} surface A UI Surface instance.
 	 * @param {object} SurfaceTypeManager
 	 */
-	function makeFloating(surface, SurfaceTypeManager) {
+	function makeFloating(surface, SurfaceTypeManager, positionStyle) {
 		subguarded([
 			'aloha-selection-changed',
 			'aloha.ui.container.selected'
@@ -384,21 +405,23 @@ define([
 		});
 
 		surface.addPin();
-		setPositionStyleToFixed(surface);
+		setPositionStyleToFixed(surface, positionStyle);
 
 		if (!SurfaceTypeManager.isFloatingMode) {
 			updateSurfacePosition();
 		}
 
-		surface.$element.css('z-index', 10100).draggable({
-			distance: 20,
-			stop: function (event, ui) {
-				SurfaceTypeManager.setFloatingPosition(ui.position);
-				if (!SurfaceTypeManager.isFloatingMode) {
-					storePinPosition(ui.position);
+		if (typeof positionStyle == 'undefined') {
+			surface.$element.css('z-index', 10100).draggable({
+				distance: 20,
+				stop: function (event, ui) {
+					SurfaceTypeManager.setFloatingPosition(ui.position);
+					if (!SurfaceTypeManager.isFloatingMode) {
+						storePinPosition(ui.position);
+					}
 				}
-			}
-		});
+			});
+		}
 	}
 
 	return {
