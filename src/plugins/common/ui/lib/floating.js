@@ -178,18 +178,12 @@ define([
 	/**
 	 * Retreive the persisted pinned position of the FloatingMenu surface.
 	 *
-	 * TODO: can this be removed?
+	 * <strong>NOTE:</strong> pinning is no longer possible. This method is still here for backwards
+	 * compatibility, but will always return that pinning is not active.
 	 *
 	 * @return {object}
 	 */
 	function getPinState() {
-		if (amplifyStore.store('Aloha.FloatingMenu.pinned') === 'true') {
-			return {
-				top: parseInt(amplifyStore.store('Aloha.FloatingMenu.top'), 10),
-				left: parseInt(amplifyStore.store('Aloha.FloatingMenu.left'), 10),
-				isPinned: true
-			};
-		}
 		return {
 			top: null,
 			left: null,
@@ -262,14 +256,26 @@ define([
 		// never ever float outside of the visible area (to the left)
 		left = Math.max(0, left);
 
+		var editableVisible = top - scrollTop < $WINDOW.height()
+			&& top + editable.obj.height() >= scrollTop;
+
+		if (editableVisible) {
+			if (!$surface.is(':visible')) {
+				$surface.show();
+			}
+		} else {
+			if ($surface.is(':visible')) {
+				$surface.hide();
+			}
+
+			return;
+		}
+
 		if (sticky) {
 			if (availableSpace >= $surface.height()) {
 				$surface.css('position', 'absolute');
 				$surface.css('top', (top - $surface.height() - DISTANCE) + 'px');
-			} else if ($surface.height() > editable.obj.outerHeight()
-				// TODO: decide whether to remove or enable to fixate the toolbar.
-				//	&& top + editable.obj.outerHeight() + DISTANCE - scrollTop >= topGutter
-				) {
+			} else if ($surface.height() > editable.obj.outerHeight()) {
 				$surface.css('position', 'absolute');
 				$surface.css('top', top + editable.obj.outerHeight() + DISTANCE + 'px');
 			} else {
