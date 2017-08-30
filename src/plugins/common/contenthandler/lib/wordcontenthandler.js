@@ -366,7 +366,8 @@ define([
 				var jqElem = jQuery(this),
 					fontFamily = jqElem.css('font-family') || '',
 					msoList = jqElem.css('mso-list') || '',
-					style = jqElem.attr('style') || '';
+					style = jqElem.attr('style') || '',
+					parentStyle = jqElem.parent().attr('style') || '';
 
 				// detect special classes
 				if (jqElem.hasClass('MsoListParagraphCxSpFirst') || jqElem.hasClass('MsoListParagraph')) {
@@ -378,6 +379,8 @@ define([
 				} else if (msoList !== '') {
 					jqElem.closest('p').addClass(LIST_ELEMENT_CLASS);
 				} else if (style.indexOf('mso-list') >= 0) {
+					jqElem.closest('p').addClass(LIST_ELEMENT_CLASS);
+				} else if (jqElem.prop("tagName") === "SPAN" && parentStyle.indexOf('mso-list') >= 0) {
 					jqElem.closest('p').addClass(LIST_ELEMENT_CLASS);
 				}
 			});
