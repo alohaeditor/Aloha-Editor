@@ -52,10 +52,9 @@ pipeline {
 				if (currentBuild.result == null) {
 					currentBuild.result = 'SUCCESS'
 				}
-
-				// Notify
-				MattermostHelper.sendStatusNotificationMessage(mattermostChannel)
 			}
+
+			notifyMattermostUsers()
 
 			step([$class: 'GitHubPRBuildStatusPublisher', buildMessage: [
 				failureMsg: [content: 'Can\'t set status; build failed.'],

@@ -116,10 +116,7 @@ pipeline {
 
 	post {
 		always {
-			script {
-				// Notify
-				MattermostHelper.sendStatusNotificationMessage(mattermostChannel)
-			}
+			notifyMattermostUsers()
 		}
 	}
 }
