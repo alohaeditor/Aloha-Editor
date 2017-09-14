@@ -1,16 +1,10 @@
 #!groovy
-
-// The GIT repository for this pipeline lib is defined in the global Jenkins setting
 @Library('jenkins-pipeline-library') import com.gentics.*
-
-// Make the helpers aware of this jobs environment
 JobContext.set(this)
 
 
 
 final def gitCommitTag      = '[Jenkins | ' + env.JOB_BASE_NAME + ']';
-final def mattermostChannel = "#jenkins"
-
 
 
 def branchName = null
@@ -28,9 +22,15 @@ pipeline {
 		booleanParam(name: 'releaseWithNewChangesOnly', defaultValue: true,  description: 'Release: Abort the build if there are no new changes')
 	}
 
+    triggers {
+        githubPush()
+    }
+
 	stages {
 		stage('Build, Deploy') {
 			steps {
+				githubBuildStarted()
+
 				script {
 					branchName = GitHelper.fetchCurrentBranchName()
 
@@ -116,6 +116,7 @@ pipeline {
 
 	post {
 		always {
+			githubBuildEnded()
 			notifyMattermostUsers()
 		}
 	}
