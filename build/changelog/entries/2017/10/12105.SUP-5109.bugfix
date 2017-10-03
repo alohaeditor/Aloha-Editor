@@ -1,0 +1,1 @@
+numerated headers plugin: The header numerations will now be initialized when the editable is created instead of when the editable is activated.
