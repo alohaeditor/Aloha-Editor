@@ -1,0 +1,1 @@
+format plugin: When selecting a headline text that has a class attribute set, the related button was not selected in the UI. This has been fixed.

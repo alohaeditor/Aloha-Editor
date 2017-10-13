@@ -500,13 +500,14 @@ define('format/format-plugin', [
 		var effectiveMarkup,
 		    foundMultiSplit, i, j, multiSplitItem;
 
+		// Normal format buttons like bold
 		jQuery.each(formatPlugin.buttons, function (index, button) {
 			var statusWasSet = false;
 			var nodeNames = interchangeableNodeNames[button.markup[0].nodeName] || [button.markup[0].nodeName];
 			for (i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 				effectiveMarkup = rangeObject.markupEffectiveAtStart[i];
 				for (j = 0; j < nodeNames.length; j++) {
-					if (Selection.standardTextLevelSemanticsComparator(effectiveMarkup, jQuery('<' + nodeNames[j] + '>'))) {
+					if (Selection.standardTagNameComparator(effectiveMarkup, jQuery('<' + nodeNames[j] + '>'))) {
 						button.handle.setState(true);
 						statusWasSet = true;
 					}
@@ -517,6 +518,7 @@ define('format/format-plugin', [
 			}
 		});
 
+		// Multisplit buttons like headlines
 		if (formatPlugin.multiSplitItems.length > 0) {
 			foundMultiSplit = false;
 
@@ -532,7 +534,7 @@ define('format/format-plugin', [
 					}
 
 					// now check whether one of the multiSplitItems fits to the effective markup
-					if (Selection.standardTextLevelSemanticsComparator(effectiveMarkup, multiSplitItem.markup)) {
+					if (Selection.standardTagNameComparator(effectiveMarkup, multiSplitItem.markup)) {
 						formatPlugin.multiSplitButton.setActiveItem(multiSplitItem.name);
 						foundMultiSplit = true;
 					}
