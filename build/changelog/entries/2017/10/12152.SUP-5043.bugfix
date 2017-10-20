@@ -1,0 +1,2 @@
+format plugin: When changing the formatting on block-level inside a table caption in Internet Explorer the browser scrolled to the beginning of the editable. This has been fixed.
+

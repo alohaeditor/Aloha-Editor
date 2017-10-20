@@ -294,7 +294,7 @@ define('format/format-plugin', [
 		formatPlugin.changeMarkup( button );
 
 		// setting the focus is needed for mozilla to have a working rangeObject.select()
-		if (Aloha.activeEditable && jQuery.browser.mozilla && document.activeElement !== Aloha.activeEditable.obj[0]) {
+		if (Aloha.activeEditable && Aloha.browser.mozilla && document.activeElement !== Aloha.activeEditable.obj[0]) {
 			Aloha.activeEditable.obj.focus();
 		}
 		
