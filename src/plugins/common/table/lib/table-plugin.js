@@ -367,7 +367,16 @@ define([
 			configurations[editable.getId()] = !!enabled;
 
 			editable.obj.bind('mousedown', function () {
+				if (!TablePlugin.activeTable) {
+					return;
+				}
+
 				TablePlugin.setFocusedTable(undefined);
+				
+				// Make sure the table tabs in the toolbar are hidden, since
+				// we no longer have an active table.
+				TablePlugin.leaveTableScopes();
+				Scopes.setScope('Aloha.continuoustext');
 			});
 
 			editable.obj.find('table').each(function (index, elem) {
