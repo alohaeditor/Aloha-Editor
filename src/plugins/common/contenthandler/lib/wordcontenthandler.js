@@ -360,29 +360,18 @@ define([
 				paragraphs;
 
 			// first step is to find all paragraphs which will be converted into list elements and mark them by adding the class 'aloha-list-element'
-			detectionFilter = 'p.MsoListParagraphCxSpFirst,p.MsoListParagraphCxSpMiddle,p.MsoListParagraphCxSpLast,p.MsoListParagraph,p span';
+			detectionFilter = 'p[style*="mso-list"], p[class*="MsoListParagraph"]';
 			paragraphs = content.find(detectionFilter);
 			paragraphs.each(function () {
-				var jqElem = jQuery(this),
-					fontFamily = jqElem.css('font-family') || '',
-					msoList = jqElem.css('mso-list') || '',
-					style = jqElem.attr('style') || '',
-					parentStyle = jqElem.parent().attr('style') || '';
+				var $elem = jQuery(this);
 
-				// detect special classes
-				if (jqElem.hasClass('MsoListParagraphCxSpFirst') || jqElem.hasClass('MsoListParagraph')) {
-					jqElem.addClass(LIST_ELEMENT_CLASS);
-				} else if (fontFamily.indexOf('Symbol') >= 0) {
-					jqElem.closest('p').addClass(LIST_ELEMENT_CLASS);
-				} else if (fontFamily.indexOf('Wingdings') >= 0) {
-					jqElem.closest('p').addClass(LIST_ELEMENT_CLASS);
-				} else if (msoList !== '') {
-					jqElem.closest('p').addClass(LIST_ELEMENT_CLASS);
-				} else if (style.indexOf('mso-list') >= 0) {
-					jqElem.closest('p').addClass(LIST_ELEMENT_CLASS);
-				} else if (jqElem.prop("tagName") === "SPAN" && parentStyle.indexOf('mso-list') >= 0) {
-					jqElem.closest('p').addClass(LIST_ELEMENT_CLASS);
+				// IE special: IE automatically inserts <ul> <ol> & <li>
+				// If the parent of the elemnt is already <li>, we don't create a another list item
+				if ($elem.parent().prop("tagName") === "LI") {
+					return;
 				}
+
+				$elem.addClass(LIST_ELEMENT_CLASS);
 			});
 
 			// now we search for paragraphs with three levels of nested spans, where the innermost span contains nothing but &nbsp;
