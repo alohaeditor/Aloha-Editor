@@ -1057,6 +1057,7 @@ define([
 						'keyCode': null,
 						'char': null,
 						'triggerType': 'block-change',
+						'plugin': event.plugin,
 						'getSnapshotContent': getSnapshotContent
 					});
 					handleSmartContentChange(me);

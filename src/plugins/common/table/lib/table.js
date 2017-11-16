@@ -1238,6 +1238,8 @@ define([
 			// finally unselect the marked cells
 			this.selection.unselectCells();
 		}
+
+		Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'table-plugin'});
 	};
 
 	/**
@@ -1342,6 +1344,8 @@ define([
 
 			this.selection.unselectCells();
 		}
+
+		Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'table-plugin'});
 	};
 
 	/**
@@ -1492,6 +1496,8 @@ define([
 
 		this.numRows += rowsToInsert;
 
+		Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'table-plugin'});
+
 		return $insertionRow[0];
 	};
 
@@ -1593,6 +1599,8 @@ define([
 
 			this.numCols++;
 		}
+
+		Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'table-plugin'});
 	};
 
 	/**
