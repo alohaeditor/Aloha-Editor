@@ -1344,7 +1344,7 @@ define([
 				}
 			}
 
-			Aloha.activeEditable.smartContentChange({type: 'block-change'});
+			Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'table-plugin'});
 
 			// The selection starts out in the first cell of the new
 			// table. The table tab/scope has to be activated
