@@ -247,6 +247,8 @@ define([
 
 		// the element itself
 		Aloha.Markup.transformDomObject(domToTransform, transformTo, Aloha.Selection.rangeObject);
+
+		Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'list-plugin'});
 	}
 
 	/**
@@ -508,6 +510,8 @@ define([
 
 			// unwrap the elements (remove the enclosing list)
 			jqToTransform.children().unwrap();
+
+			Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'list-plugin'});
 		},
 
 		/**
@@ -631,6 +635,8 @@ define([
 				selection.addRange( range );
 				Aloha.Selection.updateSelection();
 			}
+
+			Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'list-plugin'});
 		},
 
 		/**
@@ -811,6 +817,7 @@ define([
 				// refresh the selection
 				this.refreshSelection();
 
+				Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'list-plugin'});
 				return false;
 			}
 
@@ -888,6 +895,7 @@ define([
 					this.refreshSelection();
 				}
 
+				Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'list-plugin'});
 				return false;
 			}
 
@@ -971,8 +979,8 @@ define([
 			// TODO
 		},
 		state: function () {
-			for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
-				effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
+			for (var i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
+				var effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
 				if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ul></ul>'))) {
 					return false;
 				}
@@ -1003,8 +1011,8 @@ define([
 			// TODO
 		},
 		state: function () {
-			for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
-				effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
+			for (var i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
+				var effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
 				if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ul></ul>'))) {
 					return false;
 				}
@@ -1034,8 +1042,8 @@ define([
 			// TODO
 		},
 		state: function () {
-			for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
-				effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
+			for (var i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
+				var effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
 				if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ul></ul>'))) {
 					return true;
 				}

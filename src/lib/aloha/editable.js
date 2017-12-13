@@ -1003,28 +1003,7 @@ define([
 				return snapshot;
 			}
 
-			// handle "Enter" -- it's not "U+1234" -- when returned via "event.originalEvent.key"
-			// reference: http://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/keyset.html
-			if (jQuery.inArray(uniChar, this.sccDelimiters) >= 0) {
-				clearTimeout(this.sccTimerIdle);
-				clearTimeout(this.sccTimerDelay);
-
-				this.sccTimerDelay = window.setTimeout(function () {
-					Aloha.trigger('aloha-smart-content-changed', {
-						'editable': me,
-						'keyIdentifier': event.originalEvent.key,
-						'keyCode': event.keyCode,
-						'char': uniChar,
-						'triggerType': 'keypress', // keypress, timer, blur, paste
-						'getSnapshotContent': getSnapshotContent
-					});
-					handleSmartContentChange(me);
-
-					console.debug('Aloha.Editable',
-							'smartContentChanged: event type keypress triggered');
-				}, this.sccDelay);
-
-			} else if (event && event.type === 'paste') {
+			if (event && event.type === 'paste') {
 				Aloha.trigger('aloha-smart-content-changed', {
 					'editable': me,
 					'keyIdentifier': null,
@@ -1062,6 +1041,27 @@ define([
 					});
 					handleSmartContentChange(me);
 
+				}, this.sccDelay);
+
+			} else if (jQuery.inArray(uniChar, this.sccDelimiters) >= 0) {
+				// handle "Enter" -- it's not "U+1234" -- when returned via "event.originalEvent.key"
+				// reference: http://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/keyset.html
+				clearTimeout(this.sccTimerIdle);
+				clearTimeout(this.sccTimerDelay);
+
+				this.sccTimerDelay = window.setTimeout(function () {
+					Aloha.trigger('aloha-smart-content-changed', {
+						'editable': me,
+						'keyIdentifier': event.originalEvent && event.originalEvent.key,
+						'keyCode': event.keyCode,
+						'char': uniChar,
+						'triggerType': 'keypress', // keypress, timer, blur, paste
+						'getSnapshotContent': getSnapshotContent
+					});
+					handleSmartContentChange(me);
+
+					console.debug('Aloha.Editable',
+						'smartContentChanged: event type keypress triggered');
 				}, this.sccDelay);
 
 			} else if (uniChar !== null) {
