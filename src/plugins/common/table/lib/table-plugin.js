@@ -291,6 +291,8 @@ define([
 				}, 1);
 			});
 		}
+
+		Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'table-plugin'});
 	}
 
 	/**
