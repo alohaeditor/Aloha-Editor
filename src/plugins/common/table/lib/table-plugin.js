@@ -680,8 +680,11 @@ define([
 						activeCell = TablePlugin.selectedOrActiveCells();
 						if (activeCell.length > 0) {
 							Utils.splitCell(activeCell, function () {
-								return TablePlugin.activeTable.newActiveCell().obj;
+								return TablePlugin.activeTable.newActiveCell(Utils.copyCellMarkup(activeCell[0])).obj;
 							});
+
+
+							Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'table-plugin'});
 							Aloha.trigger('aloha-table-selection-changed');
 						}
 					}
@@ -1601,10 +1604,12 @@ define([
 		// set the active cell as the selected cell.
 		if (!sc || sc.length < 1) {
 			var activeCell = function() {
-			var range = Aloha.Selection.getRangeObject();
+				var range = Aloha.Selection.getRangeObject();
 				if (Aloha.activeEditable) {
 					return range.findMarkup( function() {
-							return this.nodeName.toLowerCase() === 'td';
+						var nodeName = this.nodeName.toLowerCase();
+
+						return nodeName === 'td' || nodeName === 'th';
 					}, Aloha.activeEditable.obj );
 				} else {
 					return null;

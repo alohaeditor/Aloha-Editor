@@ -39,6 +39,31 @@ define([
 
 	var Utils = {
 		/**
+		 * Creates markup for the jQuery constructor to create a copy of
+		 * the specified cell.
+		 *
+		 * The cell type (td or th) as well as the classes are copied.
+		 *
+		 * @param cell The original table cell to copy
+		 * @return A string containing markup for the copied from the specified cell
+		 */
+		'copyCellMarkup': function (cell) {
+			if (!cell) {
+				return '<td></td>';
+			}
+
+			var nodeName = cell.nodeName.toLowerCase();
+			var classes = cell.classList;
+
+			if (classes) {
+				classes.remove('aloha-cell-selected');
+				return '<' + nodeName + ' class="' + classes + '"></' + nodeName + '>';
+			}
+
+			return '<' + nodeName + '></' + nodeName + '>';
+		},
+
+		/**
 		 * Translates the DOM-Element column offset of a table-cell to the
 		 * column offset of a grid-cell, which is the column index adjusted
 		 * by other cells' rowspan and colspan values.
