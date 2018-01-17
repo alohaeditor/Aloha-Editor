@@ -1459,6 +1459,8 @@ define([
 		for (var j = 0; j < rowsToInsert; j++) {
 			$insertionRow = jQuery('<tr>');
 
+			$insertionRow.addClass(this.tablePlugin.defaultRowClass);
+
 			// create the first column, the "select row" column
 			var $selectionColumn = jQuery('<td>');
 			$selectionColumn.addClass(classSelectionColumn);

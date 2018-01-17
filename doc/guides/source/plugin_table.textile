@@ -102,7 +102,15 @@ Aloha.settings.plugins: {
 		// the following settings allow the user to apply specific classes to
 		// either the whole table or a column or row. The name is used as a
 		// class attribute, while the iconClass is applied as a class attribute
-		// to style the buttons
+		// to style the buttons.
+		//
+		// The full list of options are as follows:
+		// - name:      a unique name for the style (required)
+    // - tooltip:   a tooltip string for the button
+    // - iconClass: the css class of the icon to use for the toggle button.
+    //              If not set, defaults to 'aloha-icon-<name>'.
+    // - cssClass:  the css class to toggle on the table/row/cell.
+    //              If not set, defaults to the value of `name`.
 		tableConfig : [
 			{ name:'hor-minimalist-a' },
 			{ name:'box-table-a' },
@@ -126,8 +134,16 @@ Aloha.settings.plugins: {
 		colResize: true,
 		// allow resizing the row height (options: "px", false, default: false)
 		rowResize: true,
-		//add a default class to newly created tables
-		defaultClass : 'table-responsive'
+		// add a class to newly-created tables (or multiple space-separated classes)
+		defaultClass: 'table-responsive'
+		// add a class to all rows
+		defaultRowClass: 'c-table__row',
+		// add a class to all header rows
+    defaultHeaderRowClass: 'c-table__row c-table__header',
+    // add a class to all cells
+    defaultCellClass: 'c-table__cell',
+    // add a class to all header cells
+    defaultHeaderCellClass: 'c-table__cell c-table__header'
 	}
 };
 </javascript>

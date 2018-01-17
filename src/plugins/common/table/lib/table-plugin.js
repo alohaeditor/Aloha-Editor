@@ -272,6 +272,10 @@ define([
 			}
 
 			if (cell != null) {
+				if (!allHeaders) {
+					$(bufferCell).addClass(table.tablePlugin.defaultHeaderCellClass);
+				}
+
 				// assign the changed dom-element to the table-cell
 				cell.obj[0] = bufferCell;
 
@@ -293,6 +297,51 @@ define([
 		}
 
 		Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'table-plugin'});
+		applyDefaultHeaderRowClass(table);
+	}
+
+	/**
+	 * Checks each row of the table and toggles the defaultHeaderRowClass on any rows containing
+	 * only <th> cells.
+	 * @param {Table} table
+	 */
+	function applyDefaultHeaderRowClass(table) {
+		$.each(table.getRows(), function(index, row) {
+			if (isHeaderRow(row)) {
+				$(row).addClass(table.tablePlugin.defaultHeaderRowClass);
+			} else {
+				$(row).removeClass(table.tablePlugin.defaultHeaderRowClass);
+			}
+		});
+	}
+
+	/**
+	 * Returns true if all the (non-ephemeral) cells in a given row are TH elements
+	 * @param {HTMLTableRowElement} row
+	 * @return {boolean}
+	 */
+	function isHeaderRow(row) {
+		if (isEphemeral(row)) {
+			return false;
+		}
+		for (var i = 0; i < row.cells.length; i++) {
+			var cell = row.cells[i];
+			var isTH = cell.tagName === 'TH';
+			if (!isEphemeral(cell) && !isTH) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Returns true if the element has the aloha-ephemeral class
+	 * @param {HTMLElement} element
+	 * @return {boolean}
+	 */
+	function isEphemeral(element) {
+		var ephemeraClass = 'aloha-ephemera';
+		return -1 < element.className.indexOf(ephemeraClass);
 	}
 
 	/**
@@ -347,7 +396,11 @@ define([
 		this.tableResize  = this.settings.tableResize === undefined ? false : this.settings.tableResize;
 		this.colResize    = this.settings.colResize   === undefined ? false : this.settings.colResize;
 		this.rowResize    = this.settings.rowResize   === undefined ? false : this.settings.rowResize;
-		this.defaultClass = this.settings.defaultClass;
+		this.defaultClass = this.settings.defaultClass || '';
+		this.defaultRowClass = this.settings.defaultRowClass || '';
+		this.defaultHeaderRowClass = this.settings.defaultHeaderRowClass || '';
+		this.defaultCellClass = this.settings.defaultCellClass || '';
+		this.defaultHeaderCellClass = this.settings.defaultHeaderCellClass || '';
 
 		// disable table resize settings on browsers below IE8
 		if (jQuery.browser.msie && parseInt(jQuery.browser.version, 10) < 8) {
@@ -1305,10 +1358,12 @@ define([
 			// create "rows"-number of rows
 			for ( var i = 0; i < rows; i++ ) {
 				var tr = document.createElement( 'tr' );
+				$(tr).addClass(this.defaultRowClass);
 				// create "cols"-number of columns
 				for ( var j = 0; j < cols; j++ ) {
 					var text = document.createTextNode('');
 					var td = document.createElement( 'td' );
+					$(td).addClass(this.defaultCellClass);
 					td.appendChild( text );
 					tr.appendChild( td );
 				}
