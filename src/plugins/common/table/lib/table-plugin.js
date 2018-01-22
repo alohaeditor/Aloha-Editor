@@ -273,7 +273,11 @@ define([
 
 			if (cell != null) {
 				if (!allHeaders) {
+					$(bufferCell).removeClass(table.tablePlugin.defaultCellClass);
 					$(bufferCell).addClass(table.tablePlugin.defaultHeaderCellClass);
+				} else {
+					$(bufferCell).removeClass(table.tablePlugin.defaultHeaderCellClass);
+					$(bufferCell).addClass(table.tablePlugin.defaultCellClass);
 				}
 
 				// assign the changed dom-element to the table-cell
@@ -308,9 +312,11 @@ define([
 	function applyDefaultHeaderRowClass(table) {
 		$.each(table.getRows(), function(index, row) {
 			if (isHeaderRow(row)) {
+				$(row).removeClass(table.tablePlugin.defaultRowClass);
 				$(row).addClass(table.tablePlugin.defaultHeaderRowClass);
 			} else {
 				$(row).removeClass(table.tablePlugin.defaultHeaderRowClass);
+				$(row).addClass(table.tablePlugin.defaultRowClass);
 			}
 		});
 	}

@@ -134,7 +134,17 @@ Aloha.settings.plugins: {
 		colResize: true,
 		// allow resizing the row height (options: "px", false, default: false)
 		rowResize: true,
-		// add a class to newly-created tables (or multiple space-separated classes)
+		// default classes may be assigned to tables, rows and cells. The value should be a string containing a class
+		// name (or multiple space-separated class names) which will be automatically applied.
+		//
+		// When a row or cell is a header, then the "regular" default class will not be applied, only the "header"
+		// default class. If a certain class should apply to a row or cell in both header and regular states, then
+		// that class should be included in both states, e.g.:
+		//
+		// defaultRowClass: 'table-row',
+		// defaultHeaderRowClass: 'table-row header-row'
+		//
+		// add a class to all tables
 		defaultClass: 'table-responsive'
 		// add a class to all rows
 		defaultRowClass: 'c-table__row',
