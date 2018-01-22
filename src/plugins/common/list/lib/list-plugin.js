@@ -179,6 +179,10 @@ define([
 		Aloha.Markup.addKeyHandler(9, function (event) {
 			return plugin.processTab(event);
 		});
+
+		Aloha.Markup.addKeyHandler(8, function (event) {
+			return plugin.processBackspace(event);
+		});
 	}
 
 	/**
@@ -246,7 +250,8 @@ define([
 		});
 
 		// the element itself
-		Aloha.Markup.transformDomObject(domToTransform, transformTo, Aloha.Selection.rangeObject);
+		var newList = Aloha.Markup.transformDomObject(domToTransform, transformTo, Aloha.Selection.rangeObject);
+		ListPlugin.addDefaultClassesToList(newList);
 
 		Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'list-plugin'});
 	}
@@ -291,8 +296,8 @@ define([
 		transformableElements: {'p' : true, 'h1' : true, 'h2' : true, 'h3' : true, 'h4' : true, 'h5' : true, 'h6' : true, 'ul' : true, 'ol' : true, 'dl': true},
 
 		/**
-		* Default list styles
-		*/
+		 * Default list styles
+		 */
 		templates: {
 			ul: {
 				classes: ['aloha-list-disc', 'aloha-list-circle', 'aloha-list-square'],
@@ -319,6 +324,24 @@ define([
 					fallback: {first: 'first item', second: 'second item'},
 					de: {first: 'erstes Element', second: 'zweites Element'}
 				}
+			}
+		},
+
+		/**
+		 * Default classes to apply to lists and list items
+		 */
+		defaultClasses: {
+			ul: {
+				list: [],
+				item: []
+			},
+			ol: {
+				list: [],
+				item: []
+			},
+			dl: {
+				list: [],
+				item: []
 			}
 		},
 
@@ -433,8 +456,13 @@ define([
 				}
 			});
 
-			if (Aloha.settings.plugins && Aloha.settings.plugins.list && Aloha.settings.plugins.list.templates) {
-				plugin.templates = Aloha.settings.plugins.list.templates;
+			if (Aloha.settings.plugins && Aloha.settings.plugins.list) {
+				if (Aloha.settings.plugins.list.templates) {
+					plugin.templates = Aloha.settings.plugins.list.templates;
+				}
+				if (Aloha.settings.plugins.list.defaultClasses) {
+					plugin.defaultClasses = Aloha.settings.plugins.list.defaultClasses;
+				}
 			}
 
 			initializeTemplates(plugin);
@@ -451,6 +479,46 @@ define([
 					return this.outdentList();
 				} else {
 					return this.indentList();
+				}
+			}
+			return true;
+		},
+
+		/**
+		 * If the backspace key is pressed while at position 0 of a list item, the list will be transformed into a paragraph.
+		 * This transformation does not occur within this plugin, so the usual methods (transformList() etc) are not called.
+		 *
+		 * This method is used to ensure that default classes are correctly removed when a list is transformed into a paragraph
+		 * by a press of the backspace key.
+		 *
+		 * @param {KeyboardEvent} event
+		 * @return {boolean}
+		 */
+		processBackspace: function(event) {
+			if (event.keyCode === 8) {
+				var range = Aloha.Selection.rangeObject;
+				var textNode = range.startContainer;
+				var listItem = textNode.parentElement;
+				var list = listItem.parentElement;
+
+				var isFirstChildOfParent = textNode.parentNode.firstChild == textNode;
+				var isNestedList = list.parentElement.tagName === 'LI';
+				if (isFirstChildOfParent && range.startOffset == 0) {
+					if (isNestedList) {
+						// the list is nested and therefore will be incorporated into the parent list. In this case we just need
+						// to re-calculate the default classes for the parent list. The setTimeout is needed because this function
+						// is being called prior to `Engine.commands["delete"].action()` which is the method which actually
+						// modifies the DOM structure.
+						var listPlugin = this;
+						var parentList = list.parentElement.parentElement;
+						setTimeout(function() {
+							listPlugin.addDefaultClassesToList(parentList);
+						}, 0);
+					} else {
+						// the list is being removed and converted into a paragraph, so we can safely remove all
+						// default classes.
+						this.removeAllDefaultItemClasses(listItem);
+					}
 				}
 			}
 			return true;
@@ -501,10 +569,12 @@ define([
 		transformListToParagraph: function (domToTransform, listElement) {
 			var newPara;
 			var jqToTransform = jQuery(domToTransform);
+			var listPlugin = this;
 			jQuery.each(jqToTransform.children(listElement), function (index, el) {
 				newPara = Aloha.Markup.transformDomObject(el, 'p', Aloha.Selection.rangeObject);
 				// if any lists are in the paragraph, move the to after the paragraph
 				newPara.after(newPara.children('ol,ul,dl'));
+				listPlugin.removeAllDefaultItemClasses(newPara);
 				Engine.ensureContainerEditable(newPara.get(0));
 			});
 
@@ -529,6 +599,7 @@ define([
 				});
 				// inner list is nested in a li (this conforms to the html5 spec)
 				jqParentList.after(jqList.children());
+				this.addDefaultClassesToList(jqParentList.parent());
 				jqList.remove();
 			} else {
 				// inner list is nested in the outer list directly (this violates the html5 spec)
@@ -547,7 +618,6 @@ define([
 			var jqNewEl;
 			var lastAppendedEl;
 			var el;
-			var listElement;
 
 			// create a new list
 			switch (listtype) {
@@ -618,8 +688,21 @@ define([
 				}
 			}
 
+			this.addDefaultClassesToList(jqList);
 			// merge adjacent lists
 			this.mergeAdjacentLists(jqList);
+
+			var nestingLevel = this.getListNestingLevel(jqList);
+			var $list = $(jqList);
+			var elNodeName = $list.get(0).nodeName;
+			var listType = elNodeName.toLowerCase();
+			var listPlugin = this;
+			listPlugin.removeAllDefaultListClasses($list);
+			$list.addClass(this.getDefaultListClass(listType, nestingLevel));
+			$list.children().each(function(index, item) {
+				listPlugin.removeAllDefaultItemClasses(item);
+				$(item).addClass(listPlugin.getDefaultItemClass(listType, nestingLevel));
+			});
 
 			//use rangy to change the selection to the contents of
 			//the last li that was appended to the list
@@ -704,9 +787,10 @@ define([
 		 */
 		transformList: function (listtype) {
 			var domToTransform = this.getStartingDomObjectToTransform();
-			var jqList;
+			var jqList = jQuery(domToTransform);
 			var jqParentList;
 			var	nodeName;
+			var listPlugin = this;
 
 			// visible is set to true, but the button is not visible
 			this._outdentListButton.show(true);
@@ -726,14 +810,17 @@ define([
 
 			//remove all classes on list type change
 			if (nodeName !== listtype && this.templates[nodeName]) {
-				jqList = jQuery(domToTransform);
 				jQuery.each(this.templates[nodeName].classes, function (i, cssClass) {
 					jqList.removeClass(cssClass);
 				});
 			}
+			// remove default classes
+			listPlugin.removeAllDefaultListClasses(jqList);
+			jqList.children().each(function (index, item) {
+				listPlugin.removeAllDefaultItemClasses(item);
+			});
 
 			if (nodeName === listtype) {
-				jqList = jQuery(domToTransform);
 				jqParentList = jqList.parent();
 				if (jqParentList.length > 0 && Dom.isListElement(jqParentList.get(0))) {
 					// we are in a nested list
@@ -810,6 +897,8 @@ define([
 						jqNewList.append(jQuery(selectedSiblings[i]));
 					}
 				}
+
+				this.addDefaultClassesToList(jqNewList);
 
 				// merge adjacent lists
 				this.mergeAdjacentLists(jqNewList, true);
@@ -893,6 +982,8 @@ define([
 
 					// refresh the selection
 					this.refreshSelection();
+
+					this.addDefaultClassesToList(jqParentList);
 				}
 
 				Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'list-plugin'});
@@ -961,6 +1052,136 @@ define([
 				return toCheck.nodeName.toLowerCase() == 'ul' || toCheck.nodeName.toLowerCase() == 'ol';
 			} else {
 				return toCheck.nodeName == mergeInto.nodeName;
+			}
+		},
+
+		/**
+		 * Adds the correct defaultClasses (as defined in the Aloha config) to the given list element and its LI children.
+		 *
+		 * @param {HTMLUListElement|HTMLOListElement|HTMLDListElement|$} list
+		 */
+		addDefaultClassesToList: function(list) {
+			var nestingLevel = this.getListNestingLevel(list);
+			var $list = $(list).first();
+			var elNodeName = $list.get(0).nodeName;
+			var listType = elNodeName.toLowerCase();
+			var listPlugin = this;
+			listPlugin.removeAllDefaultListClasses($list);
+			$list.addClass(this.getDefaultListClass(listType, nestingLevel));
+			$list.children().each(function(index, item) {
+				listPlugin.removeAllDefaultItemClasses(item);
+				$(item).addClass(listPlugin.getDefaultItemClass(listType, nestingLevel));
+			});
+		},
+
+		/**
+		 * Returns a 0-indexed nesting level for the given list or list item. A nesting of 0 === a top-level list in
+		 * this editable.
+		 *
+		 * @param {HTMLOListElement|HTMLUListElement|HTMLLIElement} listEl
+		 * @return {number}
+		 */
+		getListNestingLevel: function (listEl) {
+			// wrap with jQuery to normalize HTMLElements and jQuery objects
+			var $element = $(listEl);
+			var elNodeName = $element.get(0).nodeName;
+			var $list = elNodeName === 'LI' || elNodeName === 'DT' || elNodeName === 'DD' ? $element.parent() : $element;
+			var nestingLevel = 0;
+			var maxSteps = 50; // set a maximum to prevent infinite loops
+			var steps = 0;
+			var parent = $list.get(0);
+			var editable = $list.closest('.aloha-editable').get(0);
+
+			while (editable && parent !== editable && steps < maxSteps) {
+				parent = parent.parentElement;
+				if (parent.nodeName === 'OL' || parent.nodeName === 'UL') {
+					nestingLevel++;
+				}
+				if (parent === editable) {
+					return nestingLevel;
+				}
+				steps++;
+			}
+			return nestingLevel;
+		},
+
+		/**
+		 * Returns the default class for a list of a given nesting level.
+		 *
+		 * @param {'ol'|'ul'|'dl'} listType
+		 * @param {number} nestingLevel
+		 * @return {string}
+		 */
+		getDefaultListClass: function (listType, nestingLevel) {
+			var listClasses = this.getDefaultClasses(listType).list;
+			var index = Math.min(listClasses.length - 1, nestingLevel);
+			return listClasses[index];
+		},
+
+		/**
+		 * Returns the default class for a list item of a given nesting level.
+		 *
+		 * @param {'ol'|'ul'|'dl'} listType
+		 * @param {number} nestingLevel
+		 * @return {string}
+		 */
+		getDefaultItemClass: function (listType, nestingLevel) {
+			var listClasses = this.getDefaultClasses(listType).item;
+			var index = Math.min(listClasses.length - 1, nestingLevel);
+			return listClasses[index];
+		},
+
+		/**
+		 * Removes all defaultClasses associated with list items.
+		 *
+		 * @param {HTMLLIElement} item
+		 */
+		removeAllDefaultItemClasses: function(item) {
+			this.removeAllDefaultListOrItemClasses(item, 'item');
+		},
+
+		/**
+		 * Removes all defaultClasses associated with list elements.
+		 *
+		 * @param {HTMLUListElement|HTMLOListElement|HTMLDListElement} list
+		 */
+		removeAllDefaultListClasses: function(list) {
+			this.removeAllDefaultListOrItemClasses(list, 'list');
+		},
+
+		/**
+		 * Removes all defaultClasses associated with list items or list elements.
+		 *
+		 * @param {HTMLElement} element
+		 * @param {string} itemOrList
+		 */
+		removeAllDefaultListOrItemClasses: function (element, itemOrList) {
+			if (itemOrList !== 'item' && itemOrList !== 'list') {
+				throw new Error('expected either "item" or "list", got "' + itemOrList.toString() + '"');
+			}
+			var listPlugin = this;
+			$.each(['ul', 'ol', 'dl'], function (index, listType) {
+				var allClasses = listPlugin.getDefaultClasses(listType)[itemOrList].join(' ');
+				$(element).removeClass(allClasses);
+			});
+		},
+
+		/**
+		 * Returns the default list an item classes for a given list type
+		 *
+		 * @param {'ol'|'ul'|'dl'} listType
+		 * @return {{ list: Array<number>, item: Array<number> }}
+		 */
+		getDefaultClasses: function (listType) {
+			switch (listType.toLowerCase()) {
+				case 'ol':
+					return this.defaultClasses.ol;
+				case 'ul':
+					return this.defaultClasses.ul;
+				case 'dl':
+					return this.defaultClasses.dl;
+				default:
+					throw new Error('Invalid listType: ' + listType.toString());
 			}
 		}
 	});

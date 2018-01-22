@@ -91,7 +91,35 @@ To define custom list styles use the following syntax:
     				de: {first: 'erstes Element', second: 'zweites Element'}
     			}
     		},
-    	}
+    	},
+    	// defaultClasses are optional classes which will be applied to all lists and list items for which they are defined.
+    	// The classes to be added are provided as an array of class names (multiple classes may be separated by a space)
+    	// and are applied in order or nesting.
+    	//
+    	// For example, in the "ol" definition below, the class "my-numbered-list" will be applied to all non-nested OL elements.
+    	// Any nested OL lists will have the classes "my-numbered-list" & "my-numbered-list--nested" applied.
+    	// The items of the root list will have the class "my-numbered-list__item" applied, and items of list nested 1-level deep
+    	// will have the classes "my-numbered-list__item" & "my-numbered-list__item--lvl-1" applied, and so on. The last item in the
+    	// list "--lvl-4" will then be used for all further nesting levels beyond that point.
+    	defaultClasses: {
+      	ul: {
+      		list: ['my-bullet-list'],
+      		item: ['my-bullet-list__item']
+      	},
+      	ol: {
+      		list: ['my-numbered-list', 'my-numbered-list my-numbered-list--nested'],
+      		item: [
+      			'my-numbered-list__item',
+      			'my-numbered-list__item my-numbered-list__item--lvl-1',
+      			'my-numbered-list__item my-numbered-list__item--lvl-2',
+      			'my-numbered-list__item my-numbered-list__item--lvl-3',
+      			'my-numbered-list__item my-numbered-list__item--lvl-4'
+      		]
+      	},
+      	dl: {
+      		list: ['my-dl-list'],
+      		item: ['my-dl-item']
+      	}
     }
 </javascript>
 
