@@ -1,0 +1,1 @@
+Merged table cells could not be split when they where marked as table headers. Also the @aloha-smart-content-changed@ event was not triggered properly when cells where merged or splitted. These issures have been fixed.

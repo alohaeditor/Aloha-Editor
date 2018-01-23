@@ -395,6 +395,8 @@ define([
 		this.selectionType = 'cell';
 
 		Aloha.trigger( 'aloha-table-selection-changed' );
+
+		Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'table-plugin'});
 	};
 
 	/**
@@ -410,8 +412,10 @@ define([
 		if (cells_to_split.length > 0) {
 
 			$(cells_to_split).each(function(){
+				var cell = this;
+
 				Utils.splitCell(this, function () {
-					return selection.table.newActiveCell().obj;
+					return selection.table.newActiveCell(Utils.copyCellMarkup(cell)).obj;
 				});
 			});
 
@@ -422,6 +426,7 @@ define([
 			this.selectionType = 'cell';
 
 			Aloha.trigger( 'aloha-table-selection-changed' );
+			Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'table-plugin'});
 		}
 	};
 
