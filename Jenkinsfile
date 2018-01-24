@@ -94,22 +94,20 @@ pipeline {
 			steps {
 				echo "Please move the contents of the Artifactory repository 'lan.releases.staging.alohaeditor' to 'lan.releases' now or the next step will fail"
 				input message: 'Publish the release now?', ok: 'Yes, I have moved the Artifactory files, publish the release now'
-				build job: 'alohaeditor-uploadrelease', parameters: [[$class: 'MavenMetadataParameterValue', artifactId: '',
-					artifactUrl: '', classifier: '', description: '', groupId: '', name: 'ALOHAEDITOR', packaging: '', version: version]]
 
 				script {
-					version = MavenHelper.getNextSnapShotVersion(version)
-					MavenHelper.setVersion(version)
-					GitHelper.addCommit('.', gitCommitTag + ' Prepare for the next development iteration (' + version + ')')
+					def newVersion = MavenHelper.getNextSnapShotVersion(version)
+					MavenHelper.setVersion(newVersion)
+					GitHelper.addCommit('.', gitCommitTag + ' Prepare for the next development iteration (' + newVersion + ')')
 
 					sshagent(["git"]) {
-						script {
-							GitHelper.pushBranch(branchName)
-							GitHelper.pushTag(tagName)
-							
-						}
+						GitHelper.pushBranch(branchName)
+						GitHelper.pushTag(tagName)
 					}
 				}
+
+				build job: 'alohaeditor-uploadrelease', parameters: [[$class: 'MavenMetadataParameterValue', artifactId: '',
+					artifactUrl: '', classifier: '', description: '', groupId: '', name: 'ALOHAEDITOR', packaging: '', version: version]]
 			}
 		}
 	}
