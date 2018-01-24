@@ -251,7 +251,7 @@ define([
 
 		// the element itself
 		var newList = Aloha.Markup.transformDomObject(domToTransform, transformTo, Aloha.Selection.rangeObject);
-		ListPlugin.addDefaultClassesToList(newList);
+		ListPlugin.applyDefaultClassesToList(newList);
 
 		Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'list-plugin'});
 	}
@@ -461,13 +461,52 @@ define([
 					plugin.templates = Aloha.settings.plugins.list.templates;
 				}
 				if (Aloha.settings.plugins.list.defaultClasses) {
-					plugin.defaultClasses = Aloha.settings.plugins.list.defaultClasses;
+					plugin.defaultClasses = plugin.normalizeDefaultClasses(Aloha.settings.plugins.list.defaultClasses);
 				}
 			}
 
 			initializeTemplates(plugin);
 			registerEventHandlers(plugin);
 			Scopes.createScope('Aloha.List', 'Aloha.continuoustext');
+		},
+
+		/**
+		 * The defaultClasses may be specified as a string or an array of strings. This method takes the user-defined
+		 * config and normalizes it to always be an array of strings.
+		 *
+		 * @param {Object} defaultClasses
+		 * @return {Object}
+		 */
+		normalizeDefaultClasses: function(defaultClasses) {
+			if (!defaultClasses) {
+				return;
+			}
+			var listPlugin = this;
+			var normalizedDefaultClasses = {};
+			$.each(['ul', 'ol', 'dl'], function(index, type) {
+				var defaultForType = defaultClasses[type] || {};
+				normalizedDefaultClasses[type] = {
+					list: listPlugin.normalizeDefaultClassValue(defaultForType.list),
+					item: listPlugin.normalizeDefaultClassValue(defaultForType.item)
+				};
+			});
+
+			return normalizedDefaultClasses;
+		},
+
+		/**
+		 * Takes a value which can be a string or and array, and normalizes to an array.
+		 * @param {string|Array<string>} value
+		 * @return {Array<string>}
+		 */
+		normalizeDefaultClassValue: function(value) {
+			if (!value) {
+				return [];
+			} else if (typeof value === 'string') {
+				return [value];
+			} else {
+				return value;
+			}
 		},
 
 		/**
@@ -512,7 +551,7 @@ define([
 						var listPlugin = this;
 						var parentList = list.parentElement.parentElement;
 						setTimeout(function() {
-							listPlugin.addDefaultClassesToList(parentList);
+							listPlugin.applyDefaultClassesToList(parentList);
 						}, 0);
 					} else {
 						// the list is being removed and converted into a paragraph, so we can safely remove all
@@ -599,7 +638,7 @@ define([
 				});
 				// inner list is nested in a li (this conforms to the html5 spec)
 				jqParentList.after(jqList.children());
-				this.addDefaultClassesToList(jqParentList.parent());
+				this.applyDefaultClassesToList(jqParentList.parent());
 				jqList.remove();
 			} else {
 				// inner list is nested in the outer list directly (this violates the html5 spec)
@@ -688,7 +727,7 @@ define([
 				}
 			}
 
-			this.addDefaultClassesToList(jqList);
+			this.applyDefaultClassesToList(jqList);
 			// merge adjacent lists
 			this.mergeAdjacentLists(jqList);
 
@@ -898,7 +937,7 @@ define([
 					}
 				}
 
-				this.addDefaultClassesToList(jqNewList);
+				this.applyDefaultClassesToList(jqNewList);
 
 				// merge adjacent lists
 				this.mergeAdjacentLists(jqNewList, true);
@@ -983,7 +1022,7 @@ define([
 					// refresh the selection
 					this.refreshSelection();
 
-					this.addDefaultClassesToList(jqParentList);
+					this.applyDefaultClassesToList(jqParentList);
 				}
 
 				Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'list-plugin'});
@@ -1056,22 +1095,33 @@ define([
 		},
 
 		/**
-		 * Adds the correct defaultClasses (as defined in the Aloha config) to the given list element and its LI children.
+		 * Adds the correct defaultClasses (as defined in the Aloha config) to the given list element and its
+		 * LI children, recursively for all nested lists below the starting list.
 		 *
 		 * @param {HTMLUListElement|HTMLOListElement|HTMLDListElement|$} list
 		 */
-		addDefaultClassesToList: function(list) {
-			var nestingLevel = this.getListNestingLevel(list);
-			var $list = $(list).first();
-			var elNodeName = $list.get(0).nodeName;
-			var listType = elNodeName.toLowerCase();
+		applyDefaultClassesToList: function(list) {
 			var listPlugin = this;
-			listPlugin.removeAllDefaultListClasses($list);
-			$list.addClass(this.getDefaultListClass(listType, nestingLevel));
-			$list.children().each(function(index, item) {
-				listPlugin.removeAllDefaultItemClasses(item);
-				$(item).addClass(listPlugin.getDefaultItemClass(listType, nestingLevel));
-			});
+
+			function recur(list, nestingLevel) {
+				var $list = $(list).first();
+				var elNodeName = $list.get(0).nodeName;
+				var listType = elNodeName.toLowerCase();
+				listPlugin.removeAllDefaultListClasses($list);
+				$list.addClass(listPlugin.getDefaultListClass(listType, nestingLevel));
+				$list.children().each(function (index, item) {
+					var $item = $(item);
+					listPlugin.removeAllDefaultItemClasses(item);
+					$item.addClass(listPlugin.getDefaultItemClass(listType, nestingLevel));
+
+					$item.children('ul,ol,dl').each(function (index, childList) {
+						recur(childList, nestingLevel + 1);
+					});
+				});
+			}
+
+			var nestingLevel = this.getListNestingLevel(list);
+			recur(list, nestingLevel);
 		},
 
 		/**

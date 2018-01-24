@@ -93,8 +93,12 @@ To define custom list styles use the following syntax:
     		},
     	},
     	// defaultClasses are optional classes which will be applied to all lists and list items for which they are defined.
-    	// The classes to be added are provided as an array of class names (multiple classes may be separated by a space)
-    	// and are applied in order or nesting.
+    	// The classes to be added are provided as a string or as an array of strings.
+    	//
+    	// - If defined as a string, then that class (or multiple classes separated by a space) will be applied to all
+    	// lists or items of that type.
+    	// - If defined as an array of strings, then those classes will be applied according to the nesting level of
+    	// the list.
     	//
     	// For example, in the "ol" definition below, the class "my-numbered-list" will be applied to all non-nested OL elements.
     	// Any nested OL lists will have the classes "my-numbered-list" & "my-numbered-list--nested" applied.
@@ -103,8 +107,8 @@ To define custom list styles use the following syntax:
     	// list "--lvl-4" will then be used for all further nesting levels beyond that point.
     	defaultClasses: {
     		ul: {
-    			list: ['my-bullet-list'],
-    			item: ['my-bullet-list__item']
+    			list: 'my-bullet-list',
+    			item: 'list-item my-bullet-list__item'
     		},
     		ol: {
     			list: ['my-numbered-list', 'my-numbered-list my-numbered-list--nested'],
