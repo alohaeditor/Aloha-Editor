@@ -436,9 +436,6 @@ define([
 
 				registerEvents(me);
 
-				// mark the editable as unmodified
-				me.setUnmodified();
-
 				// we don't do the sanitizing on aloha ready, since some plugins add elements into the content and bind
 				// events to it. If we sanitize by replacing the html, all events would get lost. TODO: think about a
 				// better solution for the sanitizing, without destroying the events  apply content handler to clean up content
@@ -479,6 +476,11 @@ define([
 					editable: me,
 					data: me // deprecated
 				});
+			});
+
+			// mark the editable unmodified, when aloha is ready
+			Aloha.bind('aloha-ready', function () {
+				me.setUnmodified();
 			});
 		},
 
