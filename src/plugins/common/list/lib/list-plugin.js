@@ -600,7 +600,7 @@ define([
 					// setTimeout is needed because the processBackspace() method is executed prior to the DOM
 					// changes taking place. This deferred code will therefore execute after the DOM updates
 					// and the selection can be assumed to be in the correct place.
-					var newParentElement = Aloha.Selection.rangeObject.startContainer.parentElement;
+					var newParentElement = Aloha.Selection.rangeObject.startContainer.parentNode;
 					var closestList$ = $(newParentElement).closest('ol,ul,dl');
 					if (closestList$.get(0)) {
 						plugin.applyDefaultClassesToList(closestList$)
@@ -1233,7 +1233,7 @@ define([
 			var parent = $list.get(0);
 			var editable = $list.closest('.aloha-editable').get(0);
 
-			while (editable && parent !== editable && steps < maxSteps) {
+			while (parent && editable && parent !== editable && steps < maxSteps) {
 				parent = parent.parentElement;
 				if (parent.nodeName === 'OL' || parent.nodeName === 'UL' || parent.nodeName === 'DL') {
 					nestingLevel++;

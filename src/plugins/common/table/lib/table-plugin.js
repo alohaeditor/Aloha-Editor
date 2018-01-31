@@ -314,8 +314,11 @@ define([
 		}
 		for (var i = 0; i < table.rows.length; i++) {
 			var row = table.rows[i];
+			if (isEphemeral(row)) {
+				continue;
+			}
 			var $row = $(row);
-			var isHeader = isHeaderRow(row)
+			var isHeader = isHeaderRow(row);
 			if (isHeader) {
 				$row.removeClass(TablePlugin.defaultRowClass);
 				$row.addClass(TablePlugin.defaultHeaderRowClass);
