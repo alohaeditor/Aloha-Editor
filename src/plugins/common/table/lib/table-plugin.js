@@ -230,6 +230,7 @@ define([
 			table.parentEditable = Aloha.getEditableById($host.attr('id'));
 			TablePlugin.TableRegistry.push(table);
 			checkForNestedTables($table);
+			applyDefaultClassesToTable($table.get(0));
 			if (Aloha.activeEditable === table.parentEditable) {
 				table.activate();
 			}
@@ -272,6 +273,8 @@ define([
 			}
 
 			if (cell != null) {
+				setCellDefaultClass(bufferCell, allHeaders);
+
 				// assign the changed dom-element to the table-cell
 				cell.obj[0] = bufferCell;
 
@@ -293,6 +296,81 @@ define([
 		}
 
 		Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'table-plugin'});
+		var tableElement = table.obj && table.obj.get && table.obj.get(0);
+		if (tableElement) {
+			applyDefaultClassesToTable(tableElement);
+		}
+	}
+
+	/**
+	 * Apply the default classes as specified in the plugin config to the table.
+	 *
+	 * @param {HTMLTableElement} table
+	 */
+	function applyDefaultClassesToTable(table) {
+		// set the default class
+		if (TablePlugin.defaultClass) {
+			$(table).addClass(TablePlugin.defaultClass);
+		}
+		for (var i = 0; i < table.rows.length; i++) {
+			var row = table.rows[i];
+			if (isEphemeral(row)) {
+				continue;
+			}
+			var $row = $(row);
+			var isHeader = isHeaderRow(row);
+			if (isHeader) {
+				$row.removeClass(TablePlugin.defaultRowClass);
+				$row.addClass(TablePlugin.defaultHeaderRowClass);
+			} else {
+				$row.removeClass(TablePlugin.defaultHeaderRowClass);
+				$row.addClass(TablePlugin.defaultRowClass);
+			}
+			for (var j = 0; j < row.cells.length; j++) {
+				var cell = row.cells[j];
+				setCellDefaultClass(cell, isHeader);
+			}
+		}
+	}
+
+	function setCellDefaultClass(cell, isHeader) {
+		var $cell = $(cell);
+		if (isHeader) {
+			$cell.removeClass(TablePlugin.defaultCellClass);
+			$cell.addClass(TablePlugin.defaultHeaderCellClass);
+		} else {
+			$cell.removeClass(TablePlugin.defaultHeaderCellClass);
+			$cell.addClass(TablePlugin.defaultCellClass);
+		}
+	}
+
+	/**
+	 * Returns true if all the (non-ephemeral) cells in a given row are TH elements
+	 * @param {HTMLTableRowElement} row
+	 * @return {boolean}
+	 */
+	function isHeaderRow(row) {
+		if (isEphemeral(row)) {
+			return false;
+		}
+		for (var i = 0; i < row.cells.length; i++) {
+			var cell = row.cells[i];
+			var isTH = cell.tagName === 'TH';
+			if (!isEphemeral(cell) && !isTH) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Returns true if the element has the aloha-ephemeral class
+	 * @param {HTMLElement} element
+	 * @return {boolean}
+	 */
+	function isEphemeral(element) {
+		var ephemeraClass = 'aloha-ephemera';
+		return -1 < element.className.indexOf(ephemeraClass);
 	}
 
 	/**
@@ -347,7 +425,11 @@ define([
 		this.tableResize  = this.settings.tableResize === undefined ? false : this.settings.tableResize;
 		this.colResize    = this.settings.colResize   === undefined ? false : this.settings.colResize;
 		this.rowResize    = this.settings.rowResize   === undefined ? false : this.settings.rowResize;
-		this.defaultClass = this.settings.defaultClass;
+		this.defaultClass = this.settings.defaultClass || '';
+		this.defaultRowClass = this.settings.defaultRowClass || '';
+		this.defaultHeaderRowClass = this.settings.defaultHeaderRowClass || '';
+		this.defaultCellClass = this.settings.defaultCellClass || '';
+		this.defaultHeaderCellClass = this.settings.defaultHeaderCellClass || '';
 
 		// disable table resize settings on browsers below IE8
 		if (jQuery.browser.msie && parseInt(jQuery.browser.version, 10) < 8) {
@@ -494,7 +576,7 @@ define([
 			}
 		});
 
-		Aloha.bind('aloha-smart-content-changed', function () {
+		Aloha.bind('aloha-smart-content-changed', function (event, data) {
 			if (Aloha.activeEditable) {
 				Aloha.activeEditable.obj.find('table').each(function () {
 					if (TablePlugin.indexOfTableInRegistry(this) == -1) {
@@ -1295,10 +1377,6 @@ define([
 		if ( Aloha.activeEditable && typeof Aloha.activeEditable.obj !== 'undefined' ) {
 			// create a dom-table object
 			var table = document.createElement( 'table' );
-			// set the default class
-			if (this.defaultClass) {
-				table.className = this.defaultClass;
-			}
 			var tableId = table.id = GENTICS.Utils.guid();
 			var tbody = document.createElement( 'tbody' );
 
@@ -1314,6 +1392,7 @@ define([
 				}
 				tbody.appendChild( tr );
 			}
+			applyDefaultClassesToTable(table);
 			table.appendChild( tbody );
 
 			prepareRangeContainersForInsertion(

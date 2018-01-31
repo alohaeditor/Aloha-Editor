@@ -31,11 +31,16 @@ define([
 
 		//original Td must be a DOM node so that the this.obj.context property is available
 		//this transformation will properly handle jQuery objects as well as DOM nodes
-		originalTd = jQuery(originalTd).get(0);
+		var $td = jQuery(originalTd);
+		originalTd = $td.get(0);
 
-		this.obj = jQuery(originalTd);
+		this.obj = $td;
 		this.tableObj = tableObj;
-
+		var ephemeraClass = 'aloha-ephemera';
+		var isEphemeral = $td.hasClass(ephemeraClass) || $td.parent().hasClass(ephemeraClass);
+		if (!isEphemeral) {
+			jQuery(originalTd).addClass(this.tableObj.tablePlugin.defaultCellClass);
+		}
 		tableObj.cells.push(this);
 	};
 
