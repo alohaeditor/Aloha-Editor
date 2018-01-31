@@ -301,6 +301,7 @@ define('format/format-plugin', [
 		// triggered for numerated-headers plugin
 		if (Aloha.activeEditable) {
 			Aloha.trigger( 'aloha-format-block' );
+			Aloha.activeEditable.smartContentChange({type: 'block-change'});
 		}
 	}
 
@@ -430,6 +431,9 @@ define('format/format-plugin', [
 	}
 
 	function updateUiAfterMutation(formatPlugin, rangeObject) {
+		if (Aloha.activeEditable) {
+			Aloha.activeEditable.smartContentChange({type: 'block-change'});
+		}
 		// select the modified range
 		rangeObject.select();
 		// update Button toggle state. We take Selection.getRangeObject()
