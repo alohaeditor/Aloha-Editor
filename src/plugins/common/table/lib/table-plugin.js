@@ -230,6 +230,7 @@ define([
 			table.parentEditable = Aloha.getEditableById($host.attr('id'));
 			TablePlugin.TableRegistry.push(table);
 			checkForNestedTables($table);
+			applyDefaultClassesToTable($table.get(0));
 			if (Aloha.activeEditable === table.parentEditable) {
 				table.activate();
 			}
@@ -272,13 +273,7 @@ define([
 			}
 
 			if (cell != null) {
-				if (!allHeaders) {
-					$(bufferCell).removeClass(table.tablePlugin.defaultCellClass);
-					$(bufferCell).addClass(table.tablePlugin.defaultHeaderCellClass);
-				} else {
-					$(bufferCell).removeClass(table.tablePlugin.defaultHeaderCellClass);
-					$(bufferCell).addClass(table.tablePlugin.defaultCellClass);
-				}
+				setCellDefaultClass(bufferCell, allHeaders);
 
 				// assign the changed dom-element to the table-cell
 				cell.obj[0] = bufferCell;
@@ -301,24 +296,49 @@ define([
 		}
 
 		Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'table-plugin'});
-		applyDefaultHeaderRowClass(table);
+		var tableElement = table.obj && table.obj.get && table.obj.get(0);
+		if (tableElement) {
+			applyDefaultClassesToTable(tableElement);
+		}
 	}
 
 	/**
-	 * Checks each row of the table and toggles the defaultHeaderRowClass on any rows containing
-	 * only <th> cells.
-	 * @param {Table} table
+	 * Apply the default classes as specified in the plugin config to the table.
+	 *
+	 * @param {HTMLTableElement} table
 	 */
-	function applyDefaultHeaderRowClass(table) {
-		$.each(table.getRows(), function(index, row) {
-			if (isHeaderRow(row)) {
-				$(row).removeClass(table.tablePlugin.defaultRowClass);
-				$(row).addClass(table.tablePlugin.defaultHeaderRowClass);
+	function applyDefaultClassesToTable(table) {
+		// set the default class
+		if (TablePlugin.defaultClass) {
+			$(table).addClass(TablePlugin.defaultClass);
+		}
+		for (var i = 0; i < table.rows.length; i++) {
+			var row = table.rows[i];
+			var $row = $(row);
+			var isHeader = isHeaderRow(row)
+			if (isHeader) {
+				$row.removeClass(TablePlugin.defaultRowClass);
+				$row.addClass(TablePlugin.defaultHeaderRowClass);
 			} else {
-				$(row).removeClass(table.tablePlugin.defaultHeaderRowClass);
-				$(row).addClass(table.tablePlugin.defaultRowClass);
+				$row.removeClass(TablePlugin.defaultHeaderRowClass);
+				$row.addClass(TablePlugin.defaultRowClass);
 			}
-		});
+			for (var j = 0; j < row.cells.length; j++) {
+				var cell = row.cells[j];
+				setCellDefaultClass(cell, isHeader);
+			}
+		}
+	}
+
+	function setCellDefaultClass(cell, isHeader) {
+		var $cell = $(cell);
+		if (isHeader) {
+			$cell.removeClass(TablePlugin.defaultCellClass);
+			$cell.addClass(TablePlugin.defaultHeaderCellClass);
+		} else {
+			$cell.removeClass(TablePlugin.defaultHeaderCellClass);
+			$cell.addClass(TablePlugin.defaultCellClass);
+		}
 	}
 
 	/**
@@ -553,7 +573,7 @@ define([
 			}
 		});
 
-		Aloha.bind('aloha-smart-content-changed', function () {
+		Aloha.bind('aloha-smart-content-changed', function (event, data) {
 			if (Aloha.activeEditable) {
 				Aloha.activeEditable.obj.find('table').each(function () {
 					if (TablePlugin.indexOfTableInRegistry(this) == -1) {
@@ -1354,27 +1374,22 @@ define([
 		if ( Aloha.activeEditable && typeof Aloha.activeEditable.obj !== 'undefined' ) {
 			// create a dom-table object
 			var table = document.createElement( 'table' );
-			// set the default class
-			if (this.defaultClass) {
-				table.className = this.defaultClass;
-			}
 			var tableId = table.id = GENTICS.Utils.guid();
 			var tbody = document.createElement( 'tbody' );
 
 			// create "rows"-number of rows
 			for ( var i = 0; i < rows; i++ ) {
 				var tr = document.createElement( 'tr' );
-				$(tr).addClass(this.defaultRowClass);
 				// create "cols"-number of columns
 				for ( var j = 0; j < cols; j++ ) {
 					var text = document.createTextNode('');
 					var td = document.createElement( 'td' );
-					$(td).addClass(this.defaultCellClass);
 					td.appendChild( text );
 					tr.appendChild( td );
 				}
 				tbody.appendChild( tr );
 			}
+			applyDefaultClassesToTable(table);
 			table.appendChild( tbody );
 
 			prepareRangeContainersForInsertion(
