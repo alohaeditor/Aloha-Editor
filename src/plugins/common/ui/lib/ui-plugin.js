@@ -58,6 +58,7 @@ define('ui/ui-plugin', [
 
 	Aloha.bind('aloha-editable-activated', function (event, alohaEvent) {
 		Surface.show(context);
+		toolbar.setWidth();
 		Container.showContainersForContext(context, event);
 	});
 

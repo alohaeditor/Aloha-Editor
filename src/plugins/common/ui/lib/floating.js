@@ -56,6 +56,13 @@ define([
 	var DISTANCE = 10;
 
 	/**
+	 * The width of viewport below which we consider the device to have a "small screen", i.e. a mobile device.
+	 * @type {number}
+	 * @const
+	 */
+	var SMALL_SCREEN_WIDTH = 400;
+
+	/**
 	 * The duration of the floating animation in milliseconds.
 	 *
 	 * @type {number}
@@ -238,6 +245,9 @@ define([
 
 		var topGutter = (parseInt($('body').css('marginTop'), 10) || 0)
 		              + (parseInt($('body').css('paddingTop'), 10) || 0);
+		if ($WINDOW.width() <= SMALL_SCREEN_WIDTH) {
+			topGutter = 0;
+		}
 		var $surface = surface.$element;
 		var offset = editable.obj.offset();
 		var top = offset.top;

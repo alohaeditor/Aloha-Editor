@@ -80,7 +80,8 @@
 
 .aloha .aloha-ui-toolbar {
 	text-align: left;
-	width: 609px;
+	min-width: 200px;
+	max-width: 100%;
 	-webkit-user-select: none; 
 	-moz-user-select: none; 
 	-ms-user-select: none;
@@ -196,7 +197,6 @@
 	background-image:     -ms-linear-gradient(bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0) 10%);
 }
 .aloha .aloha-ui-toolbar.aloha-ui-hover .ui-widget-header {
-	cursor: move;
 	background: #777;
 	background: rgba(0,0,0,0.3);
 	background-image:         linear-gradient(bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.3) 20%);

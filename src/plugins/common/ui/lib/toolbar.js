@@ -161,6 +161,16 @@ define([
 			Toolbar.$surfaceContainer.stop().fadeOut(200, function () {
 				Toolbar.$surfaceContainer.children().detach();
 			});
+		},
+
+		/**
+		 * Sets the width of the toolbar to match the Editable. On small screens, full width is used.
+		 */
+		setWidth: function() {
+			var windowMinWidth = 600;
+			var editableWidth = parseInt(Aloha.activeEditable.obj.width());
+			var width = (window.innerWidth < windowMinWidth) ? '100%' : editableWidth + 'px';
+			this.$element.css('width', width);
 		}
 	});
 
