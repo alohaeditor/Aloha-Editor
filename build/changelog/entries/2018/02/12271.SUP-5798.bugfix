@@ -1,0 +1,1 @@
+When the "Remove link" button was clicked while two consecutive links were selected, only the first one was actually removed. This behaviour has been changed, so that all links in the current selection are removed.
