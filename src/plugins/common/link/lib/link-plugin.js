@@ -1060,7 +1060,15 @@ define([
 				range = Aloha.Selection.getRangeObject();
 			}
 
-			return range.findAllMarkupByTagName('a', range);
+			var markup = range.findAllMarkupByTagName('a', range);
+
+			if (markup.length > 0) {
+				return markup;
+			}
+
+			markup = this.findLinkMarkup(range);
+
+			return markup ? [ markup ] : [];
 		},
 
 		/**
