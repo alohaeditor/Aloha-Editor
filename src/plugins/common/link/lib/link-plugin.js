@@ -1050,6 +1050,28 @@ define([
 		},
 
 		/**
+		 * Find all link markup in the specified range
+		 * @param {RangeObject} range range to search link markup in
+		 * @return {Array} markup An array containing all found link markup
+		 * @hide
+		 */
+		findAllLinkMarkup: function ( range ) {
+			if ( typeof range == 'undefined' ) {
+				range = Aloha.Selection.getRangeObject();
+			}
+
+			var markup = range.findAllMarkupByTagName('a', range);
+
+			if (markup.length > 0) {
+				return markup;
+			}
+
+			markup = this.findLinkMarkup(range);
+
+			return markup ? [ markup ] : [];
+		},
+
+		/**
 		 * Format the current selection or if collapsed the current word as
 		 * link. If inside a link tag the link is removed.
 		 */
@@ -1138,7 +1160,7 @@ define([
 		 */
 		removeLink: function ( terminateLinkScope ) {
 			var	range = Aloha.Selection.getRangeObject(),
-				foundMarkup = this.findLinkMarkup();
+				foundMarkup = this.findAllLinkMarkup();
 			var linkText;
 
 			// clear the current item from the href field
@@ -1147,10 +1169,15 @@ define([
 				this.anchorField.clear();
 			}
 
-			if ( foundMarkup ) {
-				linkText = jQuery(foundMarkup).text();
+			var that = this;
+			var maxIdx = foundMarkup.length - 1;
+
+			$.each(foundMarkup, function (idx, link) {
+				that.ignoreNextSelectionChangedEvent = idx < maxIdx;
+
+				linkText = jQuery(link).text();
 				// remove the link
-				Dom.removeFromDOM( foundMarkup, range, true );
+				Dom.removeFromDOM( link, range, true );
 
 				range.startContainer = range.endContainer;
 				range.startOffset = range.endOffset;
@@ -1172,7 +1199,7 @@ define([
 					range: apiRange,
 					text: linkText
 				});
-			}
+			});
 		},
 
 		/**
