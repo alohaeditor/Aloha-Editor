@@ -54,7 +54,7 @@ define('ui/ui-plugin', [
 	'use strict';
 
 	var context = new Context(),
-		toolbar = new Toolbar(context, getToolbarSettings());
+		toolbar = new Toolbar(context, getToolbarSettings(), getResponsiveMode());
 
 	Aloha.bind('aloha-editable-activated', function (event, alohaEvent) {
 		Surface.show(context);
@@ -84,6 +84,14 @@ define('ui/ui-plugin', [
 			defaultSettings.tabs,
 			userSettings.exclude || []
 		);
+	}
+
+	function getResponsiveMode() {
+		var userSettings = Aloha.settings.toolbar;
+		if (userSettings && userSettings.hasOwnProperty('responsiveMode')) {
+			return userSettings.responsiveMode;
+		}
+		return false;
 	}
 
 	function primaryScopeForegroundTab() {

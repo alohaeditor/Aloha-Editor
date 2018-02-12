@@ -45,9 +45,18 @@ define([
 	 */
 	var Toolbar = Surface.extend({
 		_moveTimeout: null,
+		_repositionTimeout: null,
 		$_container: null,
 		_tabBySlot: null,
 		_tabs: [],
+
+		/**
+		 * Returns true if the "responsiveMode" setting has been set to true. Indicates
+		 * that the toolbar should not float and should have certain behaviour
+		 * modified in order to work better on mobile devices.
+		 * @type {boolean}
+		 */
+		_isResponsiveMode: false,
 
 		/**
 		 * Toolbar constructor.
@@ -56,7 +65,7 @@ define([
 		 * @constructor
 		 * @override
 		 */
-		_constructor: function (context, tabs) {
+		_constructor: function (context, tabs, responsiveMode) {
 			var tabSettings,
 			    tabInstance,
 			    i,
@@ -65,6 +74,7 @@ define([
 			this.$element = $('<div>', {'class': 'aloha-ui aloha-ui-toolbar', 'unselectable': 'on'});
 			this.$_container = Tab.createContainer().appendTo(this.$element);
 			this._tabBySlot = {};
+			this._isResponsiveMode = responsiveMode;
 
 			for (i = 0; i < tabs.length; i++) {
 				tabSettings = tabs[i];
@@ -84,7 +94,12 @@ define([
 			// Pinning behaviour is global in that if one toolbar is pinned,
 			// then all other toolbars will be pinned to that position.
 			if (isFloatingEnabled()) {
-				floating.makeFloating(this, Toolbar, 'absolute');
+				var positionStyle = this._isResponsiveMode ? 'absolute' : undefined;
+				floating.makeFloating(this, Toolbar, positionStyle);
+			}
+
+			if (this._isResponsiveMode) {
+				this.$element.addClass('responsive');
 			}
 		},
 
@@ -118,11 +133,20 @@ define([
 			toolbar._moveTimeout = window.setTimeout(function () {
 				toolbar._moveTimeout = null;
 				if (Aloha.activeEditable) {
-					floating.floatSurface(
-						toolbar,
-						Aloha.activeEditable,
-						false
-					);
+					if (toolbar._isResponsiveMode) {
+						floating.floatSurface(
+							toolbar,
+							Aloha.activeEditable,
+							false
+						);
+					} else if (Toolbar.isFloatingMode) {
+						floating.floatSurface(
+							toolbar,
+							Aloha.activeEditable,
+							duration,
+							Toolbar.setFloatingPosition
+						);
+					}
 				}
 				// 20ms should be small enough to appear instantaneous to the
 				// user but large enough to avoid doing unnecessary work when
@@ -132,9 +156,38 @@ define([
 		},
 
 		addPin: function () {
-			// TODO: function needs to stay (because it's called from floating,
-			// but content should be removed, once styles have been updated.
-			this.$element.addClass('aloha-ui-hover');
+			var $pin = $('<div class="aloha-ui-pin">');
+			var $element = this.$element;
+			$element.find('.ui-tabs').append($pin);
+			$element.find('.ui-tabs').hover(function () {
+				$element.addClass('aloha-ui-hover');
+			}, function () {
+				$element.removeClass('aloha-ui-hover');
+			});
+
+			if (!Toolbar.isFloatingMode) {
+				$pin.addClass('aloha-ui-pin-down');
+			}
+
+			var surface = this;
+
+			$pin.click(function () {
+				Toolbar.isFloatingMode = !Toolbar.isFloatingMode;
+				var position;
+
+				if (Toolbar.isFloatingMode) {
+					position = {
+						top: Toolbar.pinTop,
+						left: Toolbar.pinLeft
+					};
+				} else {
+					position = surface.$element.offset();
+					position.top -= $(window).scrollTop();
+				}
+
+				Toolbar.setFloatingPosition(position);
+				floating.togglePinSurface(surface, position, Toolbar.isFloatingMode);
+			});
 		},
 
 		/**
@@ -167,10 +220,27 @@ define([
 		 * Sets the width of the toolbar to match the Editable. On small screens, full width is used.
 		 */
 		setWidth: function() {
-			var windowMinWidth = 600;
-			var editableWidth = parseInt(Aloha.activeEditable.obj.width());
-			var width = (window.innerWidth < windowMinWidth) ? '100%' : editableWidth + 'px';
-			this.$element.css('width', width);
+			if (this._isResponsiveMode && Aloha.activeEditable) {
+				var windowMinWidth = 600;
+				var editableWidth = parseInt(Aloha.activeEditable.obj.width());
+				var width = (window.innerWidth < windowMinWidth) ? '100%' : editableWidth + 'px';
+				this.$element.css('width', width);
+			}
+		},
+
+		/**
+		 * Recalculates the width and position of the toolbar. Should be called when the window is resized.
+		 */
+		reposition: function() {
+			var toolbar = this;
+			if (toolbar._repositionTimeout) {
+				window.clearTimeout(toolbar._repositionTimeout);
+			}
+			toolbar._repositionTimeout = setTimeout(function() {
+				toolbar._repositionTimeout = null;
+				toolbar.setWidth();
+				toolbar._move();
+			}, 20);
 		}
 	});
 
@@ -182,6 +252,24 @@ define([
 		 * @type {jQuery.<HTMLElement>}
 		 */
 		$surfaceContainer: null,
+
+		/**
+		 * Whether or not floating toolbar surfaces should be pinned.
+		 * @type {boolean}
+		 */
+		isFloatingMode: true,
+
+		/**
+		 * Left position of pinned toolbars.
+		 * @type {number}
+		 */
+		pinLeft: 0,
+
+		/**
+		 * Top position of pinned toolbars.
+		 * @type {number}
+		 */
+		pinTop: 0,
 
 		/**
 		 * Initializes the toolbar manager.  Adds the surface container
@@ -200,15 +288,21 @@ define([
 				Toolbar.$surfaceContainer.appendTo('body');
 			});
 			Surface.trackRange(Toolbar.$surfaceContainer);
+			var pinState = floating.getPinState();
+			Toolbar.pinTop = pinState.top;
+			Toolbar.pinLeft = pinState.left;
+			Toolbar.isFloatingMode = !pinState.isPinned;
 		},
 
 		setFloatingPosition: function (position) {
+			Toolbar.pinTop = position.top;
+			Toolbar.pinLeft = position.left;
 		},
 
 		getFloatingPosition: function () {
 			return {
-				top: null,
-				left: null
+				top: Toolbar.pinTop,
+				left: Toolbar.pinLeft
 			};
 		}
 	});

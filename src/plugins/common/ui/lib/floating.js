@@ -60,7 +60,7 @@ define([
 	 * @type {number}
 	 * @const
 	 */
-	var SMALL_SCREEN_WIDTH = 400;
+	var SMALL_SCREEN_WIDTH = 600;
 
 	/**
 	 * The duration of the floating animation in milliseconds.
@@ -126,8 +126,12 @@ define([
 
 		POSITION.offset = position;
 
-		$element.css('top', position.top + 'px');
-		$element.css('left', position.left + 'px');
+		$element.stop().animate(position, duration, function () {
+			callback(position);
+			PubSub.pub('aloha.floating.changed', {
+				position: $.extend({}, POSITION)
+			});
+		});
 	}
 
 	/**
@@ -183,14 +187,18 @@ define([
 	}
 
 	/**
-	 * Retreive the persisted pinned position of the FloatingMenu surface.
-	 *
-	 * <strong>NOTE:</strong> pinning is no longer possible. This method is still here for backwards
-	 * compatibility, but will always return that pinning is not active.
+	 * Retrieve the persisted pinned position of the FloatingMenu surface.
 	 *
 	 * @return {object}
 	 */
 	function getPinState() {
+		if (amplifyStore.store('Aloha.FloatingMenu.pinned') === 'true') {
+			return {
+				top: parseInt(amplifyStore.store('Aloha.FloatingMenu.top'), 10),
+				left: parseInt(amplifyStore.store('Aloha.FloatingMenu.left'), 10),
+				isPinned: true
+			};
+		}
 		return {
 			top: null,
 			left: null,
@@ -382,12 +390,9 @@ define([
 	/**
 	 * Binds floating facilities on a surface.
 	 *
-	 * @TODO:
-	 * Resizable toolbars are possible, and would be a nice feature:
-	 * surface.$element.resizable();
-	 *
 	 * @param {Surface} surface A UI Surface instance.
 	 * @param {object} SurfaceTypeManager
+	 * @param {string} positionStyle - A valid CSS position value - "fixed", "absolute", "relative".
 	 */
 	function makeFloating(surface, SurfaceTypeManager, positionStyle) {
 		subguarded([
@@ -418,6 +423,7 @@ define([
 			if (!SurfaceTypeManager.isFloatingMode) {
 				updateSurfacePosition();
 			}
+			surface.reposition();
 		});
 
 		surface.addPin();
@@ -427,7 +433,7 @@ define([
 			updateSurfacePosition();
 		}
 
-		if (typeof positionStyle == 'undefined') {
+		if (typeof positionStyle === 'undefined') {
 			surface.$element.css('z-index', 10100).draggable({
 				distance: 20,
 				stop: function (event, ui) {

@@ -105,7 +105,8 @@ Aloha.settings.toolbar = {
     		components: [ 'editlink' ]
     	}
     ],
-    exclude: [ 'strong', 'emphasis', 'strikethrough' ]
+    exclude: [ 'strong', 'emphasis', 'strikethrough' ],
+    responsiveMode: false
 };
 </javascript>
 
@@ -125,3 +126,6 @@ The merge rules are as follows
   a components property, and unless the exclusive property on a tab is
   true, append all remaining components from the default tab to the
   user's tab configuration.
+
+Setting responsiveMode to true will replace the default float & pin behavior of the toolbar so that it stays fixed
+above the active editable and will resize to fit on devices with small screens.
