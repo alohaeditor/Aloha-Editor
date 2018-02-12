@@ -85,6 +85,7 @@
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+    z-index: 10001;
 }
 
 .aloha .aloha-ui-toolbar.responsive {
