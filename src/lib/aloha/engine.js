@@ -4654,14 +4654,26 @@ define([
 					// so we unwrap now
 					newStartOffset = range.startOffset;
 					newEndOffset = range.endOffset;
+					// if the unwrapped element is a non-empty block-level element, we will append a <br> Tag,
+					// in order to retain the line break
+					var insertBr = Dom.isBlockLevelElement(node) && !isEmptyNode(node) && !isNamedHtmlElement(node.lastChild, 'br');
 
 					if (range.startContainer === node.parentNode && range.startOffset > Dom.getIndexInParent(node)) {
 						// the node (1 element) will be replaced by its contents (contents().length elements)
 						newStartOffset = range.startOffset + (jQuery(node).contents().length - 1);
+						if (insertBr) {
+							newStartOffset++;
+						}
 					}
 					if (range.endContainer === node.parentNode && range.endOffset > Dom.getIndexInParent(node)) {
 						// the node (1 element) will be replaced by its contents (contents().length elements)
 						newEndOffset = range.endOffset + (jQuery(node).contents().length - 1);
+						if (insertBr) {
+							newEndOffset++;
+						}
+					}
+					if (insertBr) {
+						jQuery(node).append("<br>");
 					}
 					jQuery(node).contents().unwrap();
 					range.startOffset = newStartOffset;

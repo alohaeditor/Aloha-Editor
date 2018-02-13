@@ -31,6 +31,7 @@ public class SimpleTest {
 		suite.addQunitModule("forwarddelete");
 		suite.addQunitModule("indent");
 		suite.addQunitModule("inserthtml");
+		suite.addQunitModule("inserthtmlspan");
 		suite.addQunitModule("insertlinebreak");
 		suite.addQunitModule("insertorderedlist");
 		suite.addQunitModule("insertparagraph");

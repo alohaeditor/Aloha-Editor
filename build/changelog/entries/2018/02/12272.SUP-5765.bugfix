@@ -1,0 +1,5 @@
+When pasting markup containing block level elements (like paragraphs or headers) into
+an editable, that does not allow block level elements, AlohaEditor unwrapped the contents,
+which resulted in consecutive text blocks (without visible line break).
+This has been fixed now, so that after each unwrapped block level element a <br> tag will be inserted to
+retain the line breaks.
