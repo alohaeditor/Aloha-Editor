@@ -390,6 +390,16 @@ define([
 		},
 
 		/**
+		 * Function which is executed when a user tries to delete a block with the keyboard.
+		 * Implementations may let the user confirm, whether the block shall really be destroyed
+		 * 
+		 * @param {Function} destroyFn function, that is executed, if the block shall be destroyed
+		 */
+		confirmedDestroy: function (destroyFn) {
+			destroyFn();
+		},
+
+		/**
 		 * Destroy this block instance completely. Removes the element from the DOM,
 		 * unregisters it, and triggers a block-delete event on the BlockManager.
 		 *

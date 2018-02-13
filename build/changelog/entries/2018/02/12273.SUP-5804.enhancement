@@ -1,0 +1,2 @@
+block-plugin: Block implementations can now implement the method confirmedDestroy(), which allows to add a confirmation
+before a block is deleted via the keyboard.
