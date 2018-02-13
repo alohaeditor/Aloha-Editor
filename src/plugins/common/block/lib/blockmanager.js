@@ -274,9 +274,11 @@ define([
 				var isDeleteOperation = 'delete' === cmd || 'forwarddelete' === cmd;
 
 				if (that._activeBlock && isDeleteOperation && isOnlyBlockSelected) {
-					// In this case, the default command shall not be executed.
-					data.preventDefault = true;
-					that._activeBlock.destroy();
+					that._activeBlock.confirmedDestroy( function () {
+						// In this case, the default command shall not be executed.
+						data.preventDefault = true;
+						that._activeBlock.destroy();
+					});
 				} else if (
 					!that._activeBlock &&
 					isDeleteOperation &&
