@@ -1,7 +1,7 @@
 /* image-plugin.js is part of the Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2018 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  * License http://aloha-editor.org/license.php
  */
@@ -100,7 +100,8 @@ define([
 			ui: {
 				meta		: true, // If imageResizeWidth and imageResizeHeight are displayed, then you will want to set this to true, so that the width and height text fields are updated automatically.
 				crop		: true, // If imageCropButton is displayed, then you have to enable this.
-				resizable	: true	// Resizable ui-drag image
+				resizable	: true,	// Resizable ui-drag image
+				focalpoint  : true  // Whether to display the focalpoint button or not
 			},
 			handles     : 'ne, se, sw, nw',   // set handles for resize
 
@@ -1149,6 +1150,9 @@ define([
 			var config = this.config;
 			var ratio = plugin.keepAspectRatio ? aspectRatioValue : false;
 
+			if (this.settings.ui.focalpoint) {
+				this.disableFocalPointMode();
+			}
 			this.ui._imageCropButton.setState(true);
 
 			plugin.initCropButtons();
@@ -1172,6 +1176,73 @@ define([
 			plugin._disableSelection($('#imageContainer'));
 			plugin._disableSelection($('#aloha-CropNResize-btns'));
 			$('body').trigger('aloha-image-crop-start', [plugin.imageObj]);
+		},
+
+		_drawFocalPoint: function(fpX, fpY) {
+			var lineX = jQuery(".aloha-image-box-active").find('.fpx-line')[0];
+			var lineY = jQuery(".aloha-image-box-active").find('.fpy-line')[0];
+			jQuery(lineX).attr("x1", fpX - 10);
+			jQuery(lineX).attr("y1", fpY);
+
+			jQuery(lineX).attr("x2", fpX + 10);
+			jQuery(lineX).attr("y2", fpY);
+
+			jQuery(lineY).attr("x1", fpX);
+			jQuery(lineY).attr("y1", fpY - 10);
+
+			jQuery(lineY).attr("x2", fpX);
+			jQuery(lineY).attr("y2", fpY + 10);
+		},
+
+		setFocalPoint: function(fpXFactor, fpYFactor) {
+			var svg = jQuery(".img-overlay-wrap").find('svg')[0];
+			if (svg != undefined) {
+				var height = svg.getBoundingClientRect().height;
+				var width = svg.getBoundingClientRect().width;
+				var fpX = width * fpXFactor;
+				var fpY = height * fpYFactor;
+				this._drawFocalPoint(fpX, fpY);
+			}
+		},
+
+		_setFocalPoint: function(event) {
+			var fpX = event.offsetX;
+			var fpY = event.offsetY;
+			var svg = jQuery(".img-overlay-wrap").find('svg')[0];
+
+			this._drawFocalPoint(fpX, fpY);
+
+			// Calculate the focal point factors
+			var height = svg.getBoundingClientRect().height;
+			var width = svg.getBoundingClientRect().width;
+			var fpXFactor = fpX / width;
+			var fpYFactor = fpY / height;
+			$('body').trigger('aloha-image-focalpoint', [{ "fpx": fpXFactor, "fpy": fpYFactor }]);
+
+		},
+
+		enableFocalPointMode: function() {
+			var plugin = this;
+			var ratio = plugin.keepAspectRatio ? aspectRatioValue : false;
+
+			jQuery(".ui-resizable-handle").hide();
+			if (!jQuery(".aloha-image-box-active").find(".img-overlay-wrap").length) {
+				jQuery(".aloha-image-box-active")
+				.append("<div class=\"img-overlay-wrap\">" +
+						"<svg width=\"100%\" height=\"100%\">" +
+						"<line class=\"fpx-line\"/>" +
+						"<line class=\"fpy-line\"/>" +
+						"</svg></div>");
+			}
+			$('body').trigger('aloha-image-focalpoint-start');
+			jQuery(".img-overlay-wrap").click(this._setFocalPoint.bind(this))
+		},
+
+		disableFocalPointMode: function() {
+			jQuery(".ui-resizable-handle").show();
+			jQuery(".img-overlay-wrap").remove();
+			this.ui._imageFocalPointButton.setState(false);
+			$('body').trigger('aloha-image-focalpoint-stop');
 		},
 
 		/**
@@ -1351,6 +1422,10 @@ define([
 
 			if (this.settings.ui.resizable) {
 				this.endResize();
+			}
+
+			if (this.settings.ui.focalpoint) {
+				this.disableFocalPointMode();
 			}
 
 			externalReset = this._onReset(this.imageObj);
