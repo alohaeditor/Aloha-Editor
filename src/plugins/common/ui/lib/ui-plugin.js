@@ -87,9 +87,9 @@ define('ui/ui-plugin', [
 	}
 
 	function getResponsiveMode() {
-		var userSettings = Aloha.settings.toolbar;
-		if (userSettings && userSettings.hasOwnProperty('responsiveMode')) {
-			return userSettings.responsiveMode;
+		if (Aloha.settings.toolbar && Aloha.settings.toolbar.hasOwnProperty('responsiveMode')) {
+			var value = Aloha.settings.toolbar.responsiveMode;
+			return value.toString() === '1' || value === true || value.toString().toLowerCase() === 'true';
 		}
 		return false;
 	}
