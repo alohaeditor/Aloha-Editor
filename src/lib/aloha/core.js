@@ -159,6 +159,18 @@ define([
 			document.execCommand('AutoUrlDetect', false, false);
 		}
 
+		// Add hacky workaround for IE problem when editing in a frameset:
+		// Sometimes it is necessary to click into an editable multiple times to activate it (for the first time)
+		if (Aloha.browser.msie && document.body && document.body.children.length > 0) {
+			var sel = window.getSelection();
+			var range = document.createRange();
+			range.setStart(document.body.children[0], 0);
+			range.collapse(true);
+			sel.removeAllRanges();
+			sel.addRange(range);
+			sel.removeAllRanges();
+		}
+
 		registerEvents();
 		Aloha.settings.base = Aloha.getAlohaUrl();
 		Aloha.Log.init();
