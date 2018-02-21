@@ -61,7 +61,9 @@ define([
 		/**
 		 * Toolbar constructor.
 		 *
+		 * @param context
 		 * @param {!Array.<(Object|Array|string)>} tabs
+		 * @param {boolean} responsiveMode
 		 * @constructor
 		 * @override
 		 */
@@ -214,6 +216,9 @@ define([
 			Toolbar.$surfaceContainer.stop().fadeOut(200, function () {
 				Toolbar.$surfaceContainer.children().detach();
 			});
+			if (this._isResponsiveMode) {
+				floating.removeResponsiveStyles();
+			}
 		},
 
 		/**

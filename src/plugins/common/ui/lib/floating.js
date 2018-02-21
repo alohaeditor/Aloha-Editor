@@ -107,6 +107,27 @@ define([
 	};
 
 	/**
+	 * Data attributes used to restore the css styles of the <body> element after it has
+	 * been adjusted to accomodate the responsive floating toolbar.
+	 */
+	var BODY_ORIGINAL_MARGIN_TOP_KEY = 'aloha-editable-original-margin-top';
+	var BODY_ORIGINAL_TRANSFORM_KEY = 'aloha-editable-original-transform';
+	var BODY_ORIGINAL_TRANSITION_KEY = 'aloha-editable-original-transition';
+
+	/**
+	 * Keeps track of the adjustment made to the <body> marginTop css style.
+	 * @type {number}
+	 */
+	var bodyMarginTopAdjustment = 0;
+
+	/**
+	 * Timer value used in cancelling the setTimeout which is used to properly synchronize
+	 * the removal of adjusted css values on the <body> element.
+	 * @type {number}
+	 */
+	var resetBodyTransitionTimeout = 0;
+
+	/**
 	 * Animates a surface element to the given position.
 	 *
 	 * @param {jQuery.<HTMLElement>} $element jQuery unit set of the DOM
@@ -252,7 +273,7 @@ define([
 		}
 
 		var topGutter = (parseInt($('body').css('marginTop'), 10) || 0)
-		              + (parseInt($('body').css('paddingTop'), 10) || 0);
+			+ (parseInt($('body').css('paddingTop'), 10) || 0);
 		if ($WINDOW.width() <= SMALL_SCREEN_WIDTH) {
 			topGutter = 0;
 		}
@@ -262,7 +283,7 @@ define([
 		var left = offset.left;
 		var scrollTop = $WINDOW.scrollTop();
 		var scrollLeft = $WINDOW.scrollLeft();
-		var availableSpace = top - scrollTop - topGutter;
+		var availableSpace = top - scrollTop - topGutter - bodyMarginTopAdjustment;
 		// consider horizontal scrolling (important for rtl pages that are scrolled to the left)
 		left = left - scrollLeft;
 		var horizontalOverflow = left + $surface.width() - $WINDOW.width();
@@ -290,17 +311,38 @@ define([
 		}
 
 		if (sticky) {
+			var $editableElement = editable.obj;
+			var $body = $(document.body);
+			$surface.css('margin-top', '0');
+			resetBodyStyles();
+
+			var recalculatedTop = editable.obj.offset().top;
+
 			if (availableSpace >= $surface.height()) {
 				$surface.css('position', 'absolute');
-				$surface.css('top', (top - $surface.height() - DISTANCE) + 'px');
+				$surface.css('top', (recalculatedTop - $surface.height() - DISTANCE) + 'px');
 			} else if ($surface.height() > editable.obj.outerHeight()) {
+				if (bodyMarginTopAdjustment) {
+					// the body css had been adjusted but now is reverting to the initial state after a timeout.
+					bodyMarginTopAdjustment = 0;
+					recalculatedTop -= $surface.height();
+				}
 				$surface.css('position', 'absolute');
-				$surface.css('top', top + editable.obj.outerHeight() + DISTANCE + 'px');
+				$surface.css('top', recalculatedTop + editable.obj.outerHeight() + DISTANCE + 'px');
 			} else {
-				$surface.css('position', 'fixed');
-				$surface.css('top', topGutter + 'px');
+				var bodyOriginalMarginTop = parseInt($body.data(BODY_ORIGINAL_MARGIN_TOP_KEY) || 0);
+				var editableTop = $editableElement.offset().top - parseInt($body.css('margin-top')) - bodyOriginalMarginTop;
+				var toolbarHeight = $surface.height();
+				if (editableTop < toolbarHeight && window.scrollY === 0) {
+					clearTimeout(resetBodyTransitionTimeout);
+					adjustBodyStyles(toolbarHeight);
+					$surface.css('margin-top', (toolbarHeight * -1) + 'px');
+					$surface.css('top', '0');
+				} else {
+					$surface.css('position', 'fixed');
+					$surface.css('top', topGutter + 'px');
+				}
 			}
-
 			$surface.css('left', left + 'px');
 		} else {
 			if (availableSpace >= $surface.height()) {
@@ -309,7 +351,7 @@ define([
 					left: left
 				}, duration, callback);
 			} else if (availableSpace + $surface.height() >
-			           availableSpace + editable.obj.height()) {
+				availableSpace + editable.obj.height()) {
 				floatBelow($surface, {
 					top: top + editable.obj.height() - scrollTop,
 					left: left
@@ -321,6 +363,54 @@ define([
 				}, duration, callback);
 			}
 		}
+	}
+
+	function removeResponsiveStyles() {
+		resetBodyStyles();
+	}
+
+	/**
+	 * When in responsiveMode, the toolbar's position cannot be adjusted by the user with drag & drop.
+	 * @param toolbarHeight
+	 */
+	function adjustBodyStyles(toolbarHeight) {
+		var body = document.body;
+		var $body = $(body);
+		if ($body.data(BODY_ORIGINAL_MARGIN_TOP_KEY) === undefined) {
+			$body.data(BODY_ORIGINAL_MARGIN_TOP_KEY, body.style.marginTop);
+		}
+		if ($body.data(BODY_ORIGINAL_TRANSFORM_KEY) === undefined) {
+			$body.data(BODY_ORIGINAL_TRANSFORM_KEY, body.style.transform);
+		}
+		if ($body.data(BODY_ORIGINAL_TRANSITION_KEY) === undefined) {
+			$body.data(BODY_ORIGINAL_TRANSITION_KEY, body.style.transition);
+		}
+		$body.css('margin-top', toolbarHeight + 'px');
+		$body.css('transform','translateZ(0)');
+		$body.css('transition', 'margin-top 0.3s');
+		bodyMarginTopAdjustment = toolbarHeight;
+	}
+
+	/**
+	 * When in responsiveMode, the <body> css may have been adjusted in order to allow the toolbar to fit above
+	 * the editable without overlapping. If so, this method ensures those css adjustments are cleaned up and
+	 * the <body> element is returned to its original state.
+	 */
+	function resetBodyStyles() {
+		var $body = $(document.body);
+		var initialMarginTop = $body.data(BODY_ORIGINAL_MARGIN_TOP_KEY);
+		var initialTransform = $body.data(BODY_ORIGINAL_TRANSFORM_KEY);
+		var initialTransition = $body.data(BODY_ORIGINAL_TRANSITION_KEY);
+		if (typeof initialMarginTop !== 'undefined') {
+			$body.css('margin-top', initialMarginTop);
+		}
+		clearTimeout(resetBodyTransitionTimeout);
+		// Wrap in a setTimeout to allow time for the margin to animate
+		resetBodyTransitionTimeout = setTimeout(function() {
+			$body.css('transition', initialTransition);
+			$body.css('transform', initialTransform);
+			bodyMarginTopAdjustment = 0;
+		}, 300);
 	}
 
 	/**
@@ -450,6 +540,7 @@ define([
 		getPinState: getPinState,
 		makeFloating: makeFloating,
 		floatSurface: floatSurface,
+		removeResponsiveStyles: removeResponsiveStyles,
 		togglePinSurface: togglePinSurface,
 		POSITION_STYLE: POSITION_STYLE
 	};

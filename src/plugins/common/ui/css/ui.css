@@ -93,6 +93,17 @@
 	max-width: 100%;
 }
 
+@media screen and (min-width: 425px) {
+	.aloha .aloha-ui-toolbar.responsive {
+		min-width: 425px;
+	}
+}
+@media screen and (min-width: 500px) {
+	.aloha .aloha-ui-toolbar.responsive {
+		min-width: 500px;
+	}
+}
+
 .aloha input:focus {
 	outline-width: medium;
 }
