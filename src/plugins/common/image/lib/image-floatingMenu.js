@@ -276,7 +276,7 @@ function (
 			Scopes.createScope('Aloha.img', ['Aloha.global']);
 
 			this._imageFocalPointButton = Ui.adopt("imageFocalPointButton", ToggleButton, {
-				tooltip: i18n.t('FocalPoint'),
+				tooltip: i18n.t('focalpoint'),
 				icon: 'aloha-img aloha-image-set-focalpoint',
 				scope: plugin.name,
 				click: function () {
