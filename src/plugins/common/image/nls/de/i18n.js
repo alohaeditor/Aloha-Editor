@@ -21,6 +21,7 @@ define({
 	"size.decrease ": "Bild verkleinern",
 	"Resize": "Größe anpassen",
 	"Crop": "Zuschneiden",
+	"focalpoint": "Fokus Punkt setzen",
 	"Reset": "Zurücksetzen",
 	"Accept": "Bestätigen",
 	"Cancel": "Abbrechen",
