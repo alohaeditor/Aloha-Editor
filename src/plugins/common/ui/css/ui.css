@@ -222,9 +222,18 @@
 	background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.3) 20%);
 	background-image:     -ms-linear-gradient(bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.3) 20%);
 }
-.aloha .aloha-ui-toolbar.responsive .ui-widget-header {
+.aloha .aloha-ui-toolbar.responsive .ui-widget-header,
+.aloha .aloha-ui-toolbar.responsive.aloha-ui-hover .ui-widget-header {
 	cursor: default;
+	background: #777;
+	background: rgba(0,0,0,0.3);
+	background-image:         linear-gradient(bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.3) 20%);
+	background-image:      -o-linear-gradient(bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.3) 20%);
+	background-image:    -moz-linear-gradient(bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.3) 20%);
+	background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.3) 20%);
+	background-image:     -ms-linear-gradient(bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.3) 20%);
 }
+
 .aloha .aloha-ui-toolbar .ui-tabs-panel {
 	padding: 2px;
 	background: #f0f0f0;
