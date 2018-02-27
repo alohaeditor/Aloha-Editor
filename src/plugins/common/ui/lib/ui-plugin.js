@@ -54,10 +54,11 @@ define('ui/ui-plugin', [
 	'use strict';
 
 	var context = new Context(),
-		toolbar = new Toolbar(context, getToolbarSettings());
+		toolbar = new Toolbar(context, getToolbarSettings(), getResponsiveMode());
 
 	Aloha.bind('aloha-editable-activated', function (event, alohaEvent) {
 		Surface.show(context);
+		toolbar.setWidth();
 		Container.showContainersForContext(context, event);
 	});
 
@@ -83,6 +84,14 @@ define('ui/ui-plugin', [
 			defaultSettings.tabs,
 			userSettings.exclude || []
 		);
+	}
+
+	function getResponsiveMode() {
+		if (Aloha.settings.toolbar && Aloha.settings.toolbar.hasOwnProperty('responsiveMode')) {
+			var value = Aloha.settings.toolbar.responsiveMode;
+			return value.toString() === '1' || value === true || value.toString().toLowerCase() === 'true';
+		}
+		return false;
 	}
 
 	function primaryScopeForegroundTab() {
