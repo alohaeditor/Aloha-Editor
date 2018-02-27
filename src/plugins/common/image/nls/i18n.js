@@ -22,6 +22,7 @@ define({
 		"size.decrease ": "Decrease Size",
 		"Resize": "Resize",
 		"Crop": "Crop",
+		"focalpoint": "Set focal point",
 		"Reset": "Reset",
 		"Accept": "Accept",
 		"Cancel": "Cancel",
