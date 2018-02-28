@@ -1,0 +1,2 @@
+list-plugin: The list plugin allowed to insert paragraphs or headers into list items, which caused unexpected editing behaviour.
+This is now changed, so it is no longer possible to insert paragraphs or headers into list items.

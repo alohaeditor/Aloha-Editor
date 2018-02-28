@@ -215,6 +215,8 @@ define([
 
 					if (prev.length > 0) {
 						prev.append($node)
+					} else {
+						$node.contents().unwrap();
 					}
 				}
 				if (isEmpty($node)) {

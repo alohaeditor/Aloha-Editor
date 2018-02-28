@@ -196,16 +196,16 @@ define([
 		cleanLists: function ($content) {
 			$content.find('ul,ol').filter(notAlohaBlockFilter).find('>:not(li)').remove();
 
-			// Remove paragraphs inside list elements, if they are
-			// the only child. e.g.: li > p > text
+			// Remove paragraphs and headers inside list elements
 			// This has been observed to happen with Word documents
-			$content.find("li").filter(notAlohaBlockFilter).each(function() {
-				var $li = $(this);
-				var $children = $li.children();
-				if ($children.length === 1 && $children.is("p")) {
-					$children.contents().appendTo($li);
-					$children.remove();
+			$content.find("li").filter(notAlohaBlockFilter).find('p,h1,h2,h3,h4,h5,h6').each(function() {
+				var $elem = $(this);
+				// when the paragraph has a sibling and it's content does not have a <br> as last child, we append a <br>
+				// in order to preserve the line break
+				if (!$elem.is(':last-child') && !$elem.contents().last().is('br')) {
+					$elem.append('<br>');
 				}
+				$elem.contents().unwrap();
 			});
 		},
 
