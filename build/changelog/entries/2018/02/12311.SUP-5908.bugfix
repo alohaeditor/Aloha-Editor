@@ -1,0 +1,3 @@
+paste-plugin: When a list was pasted from Word, where items started a new list beginning at a level greater than 1, the list item was removed, because Aloha Editor
+does not allow lists that start at a nesting level greater than 1.
+The behaviour has been changed now, so that such lists will be pasted, so that the first item starts at level 1.
