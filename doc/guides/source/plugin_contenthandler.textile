@@ -136,6 +136,11 @@ The Word Content Handler will detect content pasted from Microsoft Word 2003 and
 * keep bold and italic formatting, headlines, tables and lists but get rid of all other formattings
 * Remove links to local files (with file :// URLs), but it preserves the link contents
 
+WARNING: Word supports much more formatting options than Aloha Editor. Therefore the content pasted from Word into Aloha Editor will be different, if its formatting or
+structure in Word is not supported by Aloha Editor.
+Additionally, the HTML produced by Word when doing Copy & Paste is generally of poor quality (or even invalid) and different depending on the used browser version. Therefore,
+the resulting content can also be different across browsers and may not reflect the formatting or structure of the original content in Word.
+
 h4. Generic Content Handler
 
 The Generic Content Handler is a bit less generic than his name might suggest as he will apply the following cleaning actions:
