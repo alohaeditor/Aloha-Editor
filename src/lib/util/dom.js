@@ -1078,7 +1078,7 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 					// if this is the last text node in a sequence, we remove any zero-width spaces in the text node,
 					// unless it is the only character
 					var prevNodeNextSibling = prevNode.nextSibling;
-					if (prevNode && (!prevNodeNextSibling || prevNodeNextSibling.nodeType !== 3)) {
+					if (prevNode && prevNode.nodeType === 3 && (!prevNodeNextSibling || prevNodeNextSibling.nodeType !== 3)) {
 						var pos;
 						var prevNodeData = prevNode.data;
 						var prevNodeDataLength = prevNodeData.length;
