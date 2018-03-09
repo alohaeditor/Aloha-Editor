@@ -1,6 +1,15 @@
 var tests = {
 	defaultCommand: 'delete',
 	tests: [
+		{	start: '<p>&nbsp; []<b>foo</b>',
+			execResult: '<p>&nbsp;[]<b>foo</b></p>'
+		},
+		{	start: '<p> &nbsp;[]<b>foo</b>',
+			execResult: '<p>&nbsp;[]<b>foo</b></p>'
+		},
+		{	start: '<p>&nbsp;&nbsp;[]<b>foo</b>',
+			execResult: '<p>&nbsp;[]<b>foo</b></p>'
+		},
 		{	start: '[]foo',
 			execResult: '[]foo'
 		},
