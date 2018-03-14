@@ -1,0 +1,4 @@
+When a row of a table was transformed into a header, and afterwards all rows were deleted,
+the table itself was not deleted. This has been fixed now.
+Also, after the selected rows/columns were deleted, the floating menu still showed table related tabs, which was
+incorrect, because the table was not selected any more.
