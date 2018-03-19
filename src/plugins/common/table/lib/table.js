@@ -247,7 +247,7 @@ define([
 		// find the dimensions of the table
 		this.numCols = this.countVirtualCols();
 
-		var rows = this.getRows();
+		var rows = this.getRows(true);
 		this.numRows = rows.length;
 
 		// init the cell-attribute with an empty array
@@ -2225,13 +2225,20 @@ define([
 	};
 
 	/**
+	 * @param {Boolean} filterSelectionRow filter selection row
 	 * @return the rows of the table as an array of DOM nodes
 	 */
-	Table.prototype.getRows = function () {
+	Table.prototype.getRows = function (filterSelectionRow) {
 		//W3C DOM property .rows supported by all modern browsers
 		var rows = this.obj.get( 0 ).rows;
 		//converts the HTMLCollection to a real array
-		return jQuery.makeArray( rows );
+		rows = jQuery.makeArray(rows);
+		if (filterSelectionRow) {
+			rows = rows.filter(function(elt, i, array) {
+				return !jQuery(elt).hasClass('aloha-ephemera');
+			});
+		}
+		return rows;
 	};
 
 	return Table;
