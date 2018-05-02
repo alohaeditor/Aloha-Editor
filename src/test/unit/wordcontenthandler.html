@@ -43,16 +43,19 @@
 			defaultCommand: 'inserthtml',
 			label: 'wordcontenthandler',
 			tests: [ ]
-	}
+		},
+		defaultAttributes = ['class','id']
 
 	// now add tests for copy & paste from different sources (from './wordcontenthandler/<name>-[start|expected|value].html' files)
-	files = [ 'word1', 'word2', 'word3', 'word4', 'word5', 'word6', 'word7', 'word8', 'word9', 'word10', 'word11', 'word12', 'word13', 'word14', 'word15', 'word16' ];
+	files = [ 'word1', 'word2', 'word3', 'word4', 'word5', 'word6', 'word7', 'word8', 'word9', 'word10', 'word11', 'word12', 'word13', 'word14', 'word15', 'word16', 'word17' ];
+
 	elements = [ 'div' ];
 
 	for ( i=0; i<files.length; i++ ) {
 		var data_start, 
 			data_expected,
 			data_value,
+			data_attributes,
 			file_expected,
 			index;
 
@@ -78,11 +81,21 @@
 				data_value = data;
 		}} );
 
+		jQuery.ajax( {url: 'wordcontenthandler/' + file +'-attributes.html', async: false, success: function(data) {
+				data_attributes = data.split(',');
+				data_attributes.concat(defaultAttributes);
+		}} );
+
+		if (typeof data_attributes == undefined) {
+			data_attributes = defaultAttributes;
+		}
+
 		for ( j=0; j<elements.length; j++ ) {
 			tests.tests.push({
 				start: '<' + elements[ j ] + '>' + data_start + '</' + elements[ j ] + '>',
 				execResult: '<' + elements[ j ] + '>' + data_expected + '</' + elements[ j ] + '>',
-				value: data_value
+				value: data_value,
+				attributes: data_attributes
 			});
 		}
 		

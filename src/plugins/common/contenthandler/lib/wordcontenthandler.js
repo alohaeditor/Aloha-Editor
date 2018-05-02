@@ -230,6 +230,8 @@ define([
 			} else if (nodeName === 'a'
 					&& $node.attr('href') && $node.attr('href').match("^file://")) {
 				$node.contents().unwrap();
+			} else if (nodeName === 'p' && $node.attr('align')) {
+				$node.removeAttr('align');
 			}
 		}
 
