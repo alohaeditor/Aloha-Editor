@@ -1333,7 +1333,7 @@ define([
 			reference = previousNode(reference);
 
 			// "If reference is a block node or a br, return true."
-			if (isBlockNode(reference) || isNamedHtmlElement(reference, 'br')) {
+			if (reference != ancestor && (isBlockNode(reference) || isNamedHtmlElement(reference, 'br'))) {
 				return true;
 			}
 

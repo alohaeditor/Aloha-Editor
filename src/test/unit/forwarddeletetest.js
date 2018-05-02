@@ -24,7 +24,10 @@ var alltests = {
 		defaultCommand: 'forwarddelete',
 		tests: [
 
-
+		{
+			start: '<p>[]&nbsp;<b>Text</b></p>',
+			execResult: '<p>[]<b>Text</b></p>'
+		},
 		{	
 			start: '<p>before table[]</p><div class="aloha-table-wrapper" contenteditable="false"></div><p>after table</p>',
 			execResult: '<p>before table[]</p><div class="aloha-table-wrapper" contenteditable="false"></div><p>after table</p>'

@@ -238,14 +238,7 @@ define([
 			this.selectedColumnIdxs = [];
 			this.selectedRowIdxs = [];
 			this.currentRectangle = {};
-
-			//we keep 'cell' as the default selection type instead of
-			//unsetting the selectionType to avoid an edge-case where a
-			//click into a cell doesn't trigger a call to
-			//TableCell.editableFocs (which would set the 'cell'
-			//selection type) which would result in the FloatingMenu
-			//losing the table scope.
-			this.selectionType = 'cell';
+			this.selectionType = undefined;
 
 			this._notifyCellsUnselected();
 		}

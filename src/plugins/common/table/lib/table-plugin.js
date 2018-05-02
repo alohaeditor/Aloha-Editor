@@ -1641,6 +1641,7 @@ define([
 		} else {
 			// leave all scopes
 			TablePlugin.leaveTableScopes();
+			Scopes.setScope('Aloha.continuoustext');
 		}
 	};
 
