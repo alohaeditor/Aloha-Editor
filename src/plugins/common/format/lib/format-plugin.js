@@ -728,7 +728,7 @@ define('format/format-plugin', [
 
 			// check settings for locale de
 			if(Aloha.settings.locale === "de") {
-				var css = "/**/\n.aloha .ui-state-default .aloha-large-icon {background-position-y: -40 px;}",
+				var css = ".aloha .ui-state-default .aloha-large-icon {background-position-y: -40px;}",
 					// to support < IE 8
 					head = document.head || document.getElementsByTagName('head')[0],
 					style = document.createElement('style');
