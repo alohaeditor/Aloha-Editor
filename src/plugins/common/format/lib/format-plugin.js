@@ -731,6 +731,22 @@ define('format/format-plugin', [
 			PubSub.sub('aloha.editable.deactivated', function (message) {
 				message.editable.obj.unbind('keydown.aloha.format');
 			});
+
+			// check settings for locale de
+			if (Aloha.settings.locale === "de") {
+				var css = "/**/\n.aloha .ui-state-default .aloha-large-icon {background-position-y: -40px;}",
+					// to support < IE 8
+					head = document.head || document.getElementsByTagName('head')[0],
+					style = document.createElement('style');
+
+				style.type = 'text/css';
+				if (style.styleSheet) {
+					style.styleSheet.cssText = css;
+				} else {
+					style.appendChild(document.createTextNode(css));
+				}
+				head.appendChild(style);
+			}
 		},
 
 		/**
