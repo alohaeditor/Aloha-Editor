@@ -1,0 +1,4 @@
+When using an input field in the toolbar to add some metainformation (e.g. the Author of a citation) with
+a selection covering differently formatted sections, pressing ENTER sometimes caused an "Uncaught DOMException" and
+failed to collapse the selection at its end.
+This has been fixed now.
