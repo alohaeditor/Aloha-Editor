@@ -401,6 +401,7 @@ define([
 					if (prev_rank === null && current_rank !== base_rank) {
 						// when the first found header has a rank
 						// different from the base rank, we omit it
+						that._safeRemoveAnnotations($(this).find('div.aloha-numerated-headers-annotation-wrapper>span[role=annotation]').parent());
 						that._safeRemoveAnnotations($(this).find('span[role=annotation]'));
 						return;
 					} else if (prev_rank === null) {
@@ -445,12 +446,14 @@ define([
 					//to separate the annotation from the heading's text.
 					annotation_result += '&nbsp;';
 					if (that.hasNote(this)) {
+						that._safeRemoveAnnotations($(this).find('div.aloha-numerated-headers-annotation-wrapper>span[role=annotation]').parent());
 						that._safeRemoveAnnotations($(this).find('span[role=annotation]'));
 					}
 					that._prependAnnotation(annotation_result, this);
 				} else {
 					// no Content, so remove the Note, if there is one
 					if (that.hasNote(this)) {
+						that._safeRemoveAnnotations($(this).find('div.aloha-numerated-headers-annotation-wrapper>span[role=annotation]').parent());
 						that._safeRemoveAnnotations($(this).find('span[role=annotation]'));
 					}
 				}

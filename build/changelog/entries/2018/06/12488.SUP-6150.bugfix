@@ -1,0 +1,3 @@
+When numerated headers and meta view was switched on for an editable, additional (empty) div's where
+created inside the headers every time the editable was activated.
+This has been fixed now.
