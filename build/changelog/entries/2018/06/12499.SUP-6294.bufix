@@ -1,0 +1,3 @@
+When using copy and paste to insert text: class attributes on list elements (ul, ol) where removed per default. This caused 
+styling which users added via Aloha-Editor to lists to be lost when pasting a list. This fix will preserve the class attributes 
+on list elements per default.

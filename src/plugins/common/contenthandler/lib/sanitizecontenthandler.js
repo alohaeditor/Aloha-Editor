@@ -91,14 +91,14 @@ function ( Aloha, jQuery, ContentHandlerManager, Plugin, console ) {
 			'col': ['span', 'width'],
 			'colgroup': ['span', 'width'],
 			'img': ['align', 'alt', 'height', 'src', 'title', 'width', 'class', 'data-caption', 'data-align', 'data-width', 'data-original-image'],
-			'ol': ['start', 'type'],
+			'ol': ['start', 'type', 'class'],
 			'p': ['class', 'style', 'id'],
 			'q': ['cite'],
 			'table': ['summary', 'width'],
 									// For IE7 it matters the uppercase 'S' in rowSpan, colSpan
 			'td': ['abbr', 'axis', 'colSpan', 'rowSpan', 'colspan', 'rowspan', 'width'],
 			'th': ['abbr', 'axis', 'colSpan', 'rowSpan', 'colspan', 'rowspan', 'scope', 'width'],
-			'ul': ['type'],
+			'ul': ['type', 'class'],
 			'span': ['class','style','lang','xml:lang','role']
 		},
 

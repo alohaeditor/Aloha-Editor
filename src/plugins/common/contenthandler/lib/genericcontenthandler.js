@@ -307,16 +307,22 @@ define([
 		removeStyles: function (content) {
 			var that = this;
 
-			// completely remove style tags
-			content.children('style').filter(function () {
-				return this.contentEditable !== 'false';
-			}).remove();
+			var filteredChildren = content.children()
+				.filter(function () {
+					return this.contentEditable !== 'false' && notAlohaBlockFilter(this);
+				})
+				.not('.aloha-block');
 
-			// remove style attributes and classes
-			content.children().filter(notAlohaBlockFilter).not('.aloha-block').filter(function () {
-				return this.contentEditable !== 'false';
-			}).each(function () {
-				$(this).removeAttr('style').removeClass();
+			// completely remove style tags
+			filteredChildren.find('style').remove();
+
+			filteredChildren
+				.removeAttr('style')
+				// don't remove classes on ul or ol elements
+				.not('ul,ol')
+				.removeClass();
+
+			filteredChildren.each(function () {
 				that.removeStyles($(this));
 			});
 		},
