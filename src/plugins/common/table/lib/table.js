@@ -158,9 +158,6 @@ define([
 			this.obj.attr( 'id', GENTICS.Utils.guid() );
 		}
 
-		// mark table id as ephemeral
-		Ephemera.markAttr(this.obj, 'id');
-
 		this.tablePlugin = tablePlugin;
 		this.selection = new TableSelection( this );
 		this.refresh();

@@ -1,0 +1,2 @@
+An editable with a table could be marked as modified even if it wasn't changed.
+This has been fixed now.
