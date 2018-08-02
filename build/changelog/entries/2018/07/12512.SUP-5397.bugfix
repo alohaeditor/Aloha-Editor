@@ -1,0 +1,3 @@
+When pasting content from a word document, that was modified using the word correction mode
+the wordcontenthandler pasted the ins and del elements.
+This has been fixed now, the wordcontenthandler will remove del elements and unwrap the contents of ins elements.
