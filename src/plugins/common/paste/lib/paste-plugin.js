@@ -35,7 +35,7 @@ define([
 	'aloha/core',
 	'aloha/plugin',
 	'aloha/command',
-	'contenthandler/contenthandler-utils',
+	'util/contenthandler',
 	'aloha/console',
 	'aloha/copypaste',
 	'aloha/contenthandlermanager',

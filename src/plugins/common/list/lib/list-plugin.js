@@ -16,7 +16,7 @@ define([
 	'ui/scopes',
 	'ui/button',
 	'ui/menuButton',
-	'contenthandler/contenthandler-utils',
+	'util/contenthandler',
 	'PubSub',
 	'i18n!list/nls/i18n'
 ], function (

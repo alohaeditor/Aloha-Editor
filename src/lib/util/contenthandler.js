@@ -63,7 +63,7 @@ define([
 		return !$elem.hasClass('aloha-block') && $elem.parents('.aloha-block').length === 0;
 	};
 
-
+	
 	/**
 	 * Transforms all tables in the given content to make them ready to for
 	 * use with Aloha's table handling.
@@ -74,13 +74,18 @@ define([
 	 * @param {jQuery.<HTMLElement>} $elem the element
 	 */
 	function prepareTables($elem) {
+		if ($elem.is('p') && $elem.parent().is('td') && $elem.siblings().length == 0) {
+			// Because a single <p> wrapping the contents of a <td> is
+			// initially superfluous and should be stripped out.
+			$elem.contents().unwrap();
+		}
 		// Because Aloha table handling simply does not regard colgroups.
 		// @TODO Use sanitize.js?
 		if ($elem.is('colgroup')) {
 			$elem.remove();
 			return;
 		}
-		if (!$elem.is('table,th,td,tr')) {
+		if (!$elem.is('table,tbody,th,td,tr')) {
 			return;
 		}
 		$elem
@@ -101,13 +106,6 @@ define([
 			// instead.
 			if (isProppedParagraph($elem.html())) {
 				$elem.html('&nbsp;');
-			}
-
-			// Because a single <p> wrapping the contents of a <td> is
-			// initially superfluous and should be stripped out.
-			var $p = $('>p', $elem);
-			if (1 === $p.length) {
-				$p.contents().unwrap();
 			}
 		}
 	}
@@ -314,16 +312,17 @@ define([
 		// TODO: move to table plugin (when the table plugin is not available we should unwarp the tables contents)
 		prepareTables($elem);
 		removeComments($elem);
-		// we unwrap list elements in the generic cleanup because Aloha-Editor has no way of handling
-		// lists wihtout the list plugin   
+		// TODO we should unwrap list elements in the generic cleanup because Aloha-Editor has no way of handling
+		// lists without the list plugin   
 		unwrapTags($elem, 'div, span, font');
 		cleanLists($elem);
 		removeStyles($elem);
 		removeNamespacedElements($elem);
+		replaceNewlines($elem);
 		if (isTransformFormattings) {
 			transformFormattings($elem);
 		}
-		replaceNewlines($elem);
+		
 	}
 	/**
 	 * Remove all attributes from an element, but preserving those
