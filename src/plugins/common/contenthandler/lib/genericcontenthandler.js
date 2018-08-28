@@ -29,7 +29,7 @@ define([
 	'aloha',
 	'aloha/contenthandlermanager',
 	'aloha/plugincontenthandlermanager',
-	'contenthandler/contenthandler-utils'
+	'util/contenthandler'
 ], function (
 	$,
 	Aloha,
@@ -83,7 +83,7 @@ define([
 				if (isApplyGenericHandler) {
 					Utils.doGenericCleanup($elem, transformFormatting);
 				}
-				return that.applyHandlerToElements($contents, options, editable);
+				return that.applyHandlerToElements($contents, options, editable, transformFormatting);
 			});
 		},
 		/**
