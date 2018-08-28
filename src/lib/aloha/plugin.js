@@ -118,6 +118,14 @@ define([
 		init: function () {},
 
 		/**
+		 * A map of custom contenthandler mapping a selector to a 
+		 * set of handler functions. For an working example see the list plugin.
+		 * 
+		 * @return {Object.<string, Array.<function>>} the content handler
+		 */
+		getPluginContentHandler: function () {},
+
+		/**
 		 * Get the configuration settings for an editable obj.
 		 * Handles both conf arrays or conf objects
 		 * <ul>

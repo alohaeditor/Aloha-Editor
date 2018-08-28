@@ -15,4 +15,4 @@ node_modules
 .classpath
 src/css/aloha.css
 .idea
-
+.vscode

@@ -15,7 +15,8 @@ define([
 	'ui/ui',
 	'ui/scopes',
 	'ui/button',
-    'ui/menuButton',
+	'ui/menuButton',
+	'util/contenthandler',
 	'PubSub',
 	'i18n!list/nls/i18n'
 ], function (
@@ -29,6 +30,7 @@ define([
 	Scopes,
 	Button,
 	MenuButton,
+	ContentHandlerUtils,
 	PubSub,
 	i18n
 ) {
@@ -36,6 +38,28 @@ define([
 
 	var jQuery = $;
 	var configurations = {};
+
+	function getListTypeFromElement($elem) {
+		if ($elem.is('ol')) {
+			return 'ol';
+		} else if ($elem.is('ul')) {
+			return 'ul';
+		} else if ($elem.is('dl')) {
+			return 'dl';
+		} 
+		return false;
+	}
+
+	function calculateNestingLevel($elem, $root) {
+		var nestingLevel = 0;
+		while ($elem.parent().length > 0 && !$elem.parent().is($root)) {
+			$elem = $elem.parent();
+			if ($elem.is('ol,ul,dl')) {
+				nestingLevel++;
+			}
+		}
+		return nestingLevel;
+	}
 
 	/**
 	 * Initializes the list templates button menus.
@@ -494,6 +518,63 @@ define([
 			initializeTemplates(plugin);
 			registerEventHandlers(plugin);
 			Scopes.createScope('Aloha.List', 'Aloha.continuoustext');
+		},
+
+
+		getPluginContentHandler: function () {
+			var that = this;
+			return {
+				'ol,ul,dl': function ($elem, options, editable) {
+					// check which list-types are allowed in this editable
+					// if the list type is not allowed we have to remove the 
+					// element by unwrapping its contents
+					var config = configurations[editable.getId()],
+						listType = getListTypeFromElement($elem);
+					if (!listType || (config && (
+							(listType === 'ol' && !config.ol) || 
+							(listType === 'ul' && !config.ul) || 
+							(listType === 'dl' && !config.dl)
+						))) {
+						$elem.contents().unwrap();
+						return false;
+					}
+					ContentHandlerUtils.removeAttributes($elem, ['class']);
+					// only keep classes which are in the list of allowed classes 
+					var classList = $elem.attr('class');
+					if (typeof classList === 'string') {
+						jQuery.each(classList.split(/\s+/), function (i, className) {
+							if (!that.templates[listType] || 
+								!Array.isArray(that.templates[listType].classes) ||
+								that.templates[listType].classes.indexOf(className) === -1) {
+								$elem.removeClass(className);
+							}
+						})
+					}
+					// add default classes
+					$elem.addClass(that.getDefaultListClass(listType, calculateNestingLevel($elem, editable.obj)));
+					// cleanup empty class attributes
+					if (!$elem.attr('class')) {
+						$elem.removeAttr('class');
+					}
+					// return false to not apply other handlers and skip the generic cleanup on this element
+					return false;
+				},
+				'li,dt,dd': function ($elem, $options, editable) {
+					// if li,dt,dd elements are not properly nested
+					// we have to remove them entirely
+					var $parent = $elem.parent(),
+						listType = getListTypeFromElement($parent);
+					if (!listType || ($elem.is('li') && listType !== 'ol' && listType !== 'ul') || 
+							($elem.is('dt,dd') && listType !== 'dl')) {
+						$elem.contents().unwrap();
+						return false;
+					}
+					ContentHandlerUtils.removeAttributes($elem);
+					$elem.addClass(that.getDefaultItemClass(listType, calculateNestingLevel($parent, editable.obj)));
+					// return false to not apply other handlers and skip the generic cleanup on this element
+					return false;
+				}
+			}
 		},
 
 		/**
