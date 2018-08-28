@@ -43,7 +43,7 @@ function( TestUtils ) {
 	}
 	browserversion = browser + jQuery.browser.version;
 
-	function executeTest(check, globalEditable, tests) {
+	function executeTest(check, globalEditable, tests, i) {
 		var	excluded = false;
 		var converterResult = jQuery('<div>'),
 			converter = jQuery('<div>');
@@ -290,7 +290,7 @@ function( TestUtils ) {
 		globalEditable.aloha();
 		
 		for ( var i = 0; i < tests.tests.length; i++ ) {
-			executeTest(tests.tests[i], globalEditable, tests)
+			executeTest(tests.tests[i], globalEditable, tests, i)
 		}
 	});
 });
