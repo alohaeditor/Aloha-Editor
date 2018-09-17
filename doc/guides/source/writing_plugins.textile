@@ -311,7 +311,7 @@ The PluginContentHandler-function will be called every time the GenericContentHa
 an HTML-Element which matches the given CSS-selector. The function will get the current element, 
 options and editable (similiar to a "regular" ContentHandler) and can then perform DOM-manipulation 
 on the current element. A PluginContentHandler-function should only change the the element itself 
-and not it's children or parents.
+and not its children or parents.
 
 A working implementation of the PluginContentHandler can be found in the List-plugin.
 

@@ -40,8 +40,9 @@ define([
     var handlers = {};
 
     /**
+     * Register the content handler for a plugin.
      * 
-     * @param {Plugin} plugin 
+     * @param {Plugin} plugin the plugin
      */
     function registerPluginContentHandler(plugin) {
         if (typeof plugin.getPluginContentHandler !== 'function') {
@@ -68,7 +69,10 @@ define([
     }
 
     /**
-     * @param {jQuery.<HTMLElement>}
+     * Get all plugin contenthandler for a certain element.
+     * 
+     * @param {jQuery.<HTMLElement>} $elem element
+     * @returns {Array.<Function>} an array of plugin contenhandler functions for the current element
      */
     function getHandlerForElement($elem) {
         var result = [];
@@ -82,6 +86,11 @@ define([
 
     return Object.freeze({
         registerPluginContentHandler: registerPluginContentHandler,
+        /**
+         * Get all plugin contenthandlers.
+         * 
+         * @returns {Object.<string, Array.<Function>} all registered plugin contenthandlers
+         */
         getPluginContentHandlers: function () {
             return handlers;
         },

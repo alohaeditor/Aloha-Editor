@@ -73,6 +73,7 @@ define([
 		 * @param {object} options Used to filter limit which content handlers
 		 *                         should be used.
 		 * @param {Aloha.Editable} editable The editable whose content is currently being handled.
+		 * @param {boolean} transformFormatting true if formatting should be transformed
 		 */
 		applyHandlerToElements: function ($elements, options, editable, transformFormatting) {
 			var that = this;
@@ -100,20 +101,6 @@ define([
 			}
 			this.applyHandlerToElements($content.contents(), options, editable, Utils.isTransformFormatting());
 			return $content.html();
-		},
-		/**
-		 * Transform links
-		 * @param content
-		 */
-		transformLinks: function (content) {
-			// find all links and remove the links without href (will be destination anchors from word table of contents)
-			// aloha is not supporting anchors at the moment -- maybe rewrite anchors in headings to "invisible"
-			// in the test document there are anchors for whole paragraphs --> the whole P appear as link
-			content.find('a').filter(notAlohaBlockFilter).each(function () {
-				if (typeof $(this).attr('href') === 'undefined') {
-					$(this).contents().unwrap();
-				}
-			});
 		}
 	});
 

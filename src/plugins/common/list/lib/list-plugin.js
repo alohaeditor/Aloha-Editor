@@ -561,7 +561,7 @@ define([
 				},
 				'li,dt,dd': function ($elem, $options, editable) {
 					// if li,dt,dd elements are not properly nested
-					// we have to remove them entirely
+					// we have to unwrap their contents
 					var $parent = $elem.parent(),
 						listType = getListTypeFromElement($parent);
 					if (!listType || ($elem.is('li') && listType !== 'ol' && listType !== 'ul') || 

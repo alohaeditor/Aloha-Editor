@@ -48,6 +48,12 @@ define([
 		return $visible.length === 1 && $visible[0].nodeName === 'BR';
 	}
 
+	/**
+	 * Wrap contents in a div.
+	 * 
+	 * @param {string|jQuery.<HTMLElement>} content the content to wrap
+	 * @returns {jQuery.<HTMLElement>} the content wrapped in a div
+	 */
 	function wrapContent(content) {
 		if (typeof content === 'string') {
 			return $('<div>' + content + '</div>');
@@ -58,6 +64,11 @@ define([
 		return null;
 	}
 
+	/**
+	 * jQuery Filter function to determine if an element is an aloha-block.
+	 * 
+	 * @returns true when $(this) or one of its parents is an aloha-block element
+	 */
 	function notAlohaBlockFilter() {
 		var $elem = $(this);
 		return !$elem.hasClass('aloha-block') && $elem.parents('.aloha-block').length === 0;
@@ -111,8 +122,9 @@ define([
 	}
 
 	/**
-	 * Remove all comments
-	 * @param content
+	 * Remove comment elements.
+	 * 
+	 * @param {jQuery.<HTMLElement>} $elem the element
 	 */
 	function removeComments($elem) {
 		if ($elem[0].nodeType === 8) {
@@ -121,8 +133,9 @@ define([
 	}
 
 	/**
-	 * Remove styles
-	 * @param content
+	 * Remove style elements, and class and style attributes on elements.
+	 * 
+	 * @param {jQuery.<HTMLElement>} $elem the element
 	 */
 	function removeStyles($elem) {
 		if ($elem.is('style')) {
@@ -135,11 +148,11 @@ define([
 	
 
 	/**
-	 * Remove some unwanted tags from content paste
+	 * Unwrap elements matching the given selector.
+	 * 
 	 * @param {jQuery.<HTMLElement>} $elem The HTMLElement which will be
 	 *                         		handled.
-	 * @param selector the tags to unwrap
-	 * @return boolean false when the element
+	 * @param {string} selector a selector for elements to unwrap
 	 */
 	function unwrapTags($elem, selector) {
 		// Note: we exclude all elements (they will be spans) here, that have the class aloha-wai-lang
@@ -160,13 +173,13 @@ define([
 
 
 	/**
-	 * Remove all list elements and leave only its contents.
+	 * Remove list elements and leave only its contents.
 	 *
 	 * See http://validator.w3.org/check with following invalid markup for
 	 * example:
 	 * <!DOCTYPE html><head><title></title></head><ul><li>ok</li><ol></ol></ul>
 	 *
-	 * @param {jQuery.<HTMLElement>} $content
+	 * @param {jQuery.<HTMLElement>} $elem the element
 	 */
 	function cleanLists($elem) {
 		if ($elem.parent().is('ul,ol') && !$elem.is('li')) {
@@ -184,8 +197,8 @@ define([
 	}
 
 	/**
-	 * Remove all elements which are in different namespaces
-	 * @param content
+	 * Remove elements which are in different namespaces
+ 	 * @param {jQuery.<HTMLElement>} $elem the element
 	 */
 	function removeNamespacedElements($elem) {
 		// get all elements
@@ -234,7 +247,7 @@ define([
 
 	/**
 	 * Transform formattings
-	 * @param content
+	 * @param {jQuery.<HTMLElement>} $elem the element
 	 */
 	function transformFormattings($elem) {
 		// find all formattings we will transform
@@ -271,7 +284,7 @@ define([
 	 * Replaces unnecessary new line characters within text nodes in Word HTML
 	 * with a space.
 	 *
-	 * @param {jQuery.<HTMLElement>} $content
+	 * @param {jQuery.<HTMLElement>} $elem
 	 */
 	function replaceNewlines($elem) {
 		if ($elem[0].nodeType === 3) {
@@ -279,6 +292,11 @@ define([
 		}
 	}
 
+	/**
+	 * Check if formattiongs should be transformed.
+	 * 
+	 * @returns true if formattings should be transformed
+	 */
 	function isTransformFormatting() {
 		if (Aloha.settings.contentHandler &&
 			Aloha.settings.contentHandler.handler &&
@@ -288,19 +306,7 @@ define([
 			return false;
 		}
 		return true;
-	}	
-	/**
-	 * Do generic cleanup recursivley
-	 */
-	function doGenericCleanupRecursivley($elements) {
-		var transformFormatting = isTransformFormatting();
-		$elements.filter(notAlohaBlockFilter).each(function () {
-			var $elem = $(this);
-			var $contents = $elem.contents();
-			doGenericCleanup($elem, transformFormatting);
-			doGenericCleanupRecursivley($contents);
-		});
-	} 
+	}
 	/**
 	 * Apply the generic content cleanup to an HTMLElement.
 	 * 
@@ -309,7 +315,7 @@ define([
 	 * @param {boolean} isTransformFormattings if formattings should be transformed
 	 */
 	function doGenericCleanup($elem, isTransformFormattings) {
-		// TODO: move to table plugin (when the table plugin is not available we should unwarp the tables contents)
+		// TODO: move to table plugin (when the table plugin is not available we should unwrap the tables contents)
 		prepareTables($elem);
 		removeComments($elem);
 		// TODO we should unwrap list elements in the generic cleanup because Aloha-Editor has no way of handling
@@ -354,7 +360,6 @@ define([
 		wrapContent: wrapContent,
 		isProppedParagraph: isProppedParagraph,
 		doGenericCleanup: doGenericCleanup,
-		doGenericCleanupRecursivley: doGenericCleanupRecursivley,
 		notAlohaBlockFilter: notAlohaBlockFilter,
 		isTransformFormatting: isTransformFormatting,
 		removeAttributes: removeAttributes
