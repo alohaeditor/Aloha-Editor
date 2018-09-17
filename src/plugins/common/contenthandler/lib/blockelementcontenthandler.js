@@ -13,7 +13,7 @@ define([
 	'jquery',
 	'aloha/core',
 	'aloha/contenthandlermanager',
-	'contenthandler/contenthandler-utils',
+	'util/contenthandler',
 	'util/functions',
 	'util/html',
 	'util/arrays'

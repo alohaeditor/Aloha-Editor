@@ -53,6 +53,7 @@ public class SimpleTest {
 		suite.addQunitModule("formatlesspaste");
 		suite.addQunitModule("contentruleswhitelist");
 		suite.addQunitModule("contentrulesblacklist");
+		suite.addQunitModule("listcontenthandler");
 
 		return suite;
 	}

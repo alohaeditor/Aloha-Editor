@@ -28,7 +28,7 @@ define([
 	'jquery',
 	'aloha',
 	'aloha/contenthandlermanager',
-	'contenthandler/contenthandler-utils',
+	'util/contenthandler',
 	'util/dom2',
 	'util/html'
 ], function (
