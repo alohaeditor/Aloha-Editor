@@ -531,8 +531,8 @@ define([
 					var config = configurations[editable.getId()],
 						listType = getListTypeFromElement($elem);
 					if (!listType || (config && (
-							(listType === 'ol' && !config.ol) || 
-							(listType === 'ul' && !config.ul) || 
+							(listType === 'ol' && !config.ol) ||
+							(listType === 'ul' && !config.ul) ||
 							(listType === 'dl' && !config.dl)
 						))) {
 						$elem.contents().unwrap();
@@ -543,12 +543,14 @@ define([
 					var classList = $elem.attr('class');
 					if (typeof classList === 'string') {
 						jQuery.each(classList.split(/\s+/), function (i, className) {
-							if (!that.templates[listType] || 
-								!Array.isArray(that.templates[listType].classes) ||
-								that.templates[listType].classes.indexOf(className) === -1) {
+							if (
+								!that.templates[listType] ||
+									!Array.isArray(that.templates[listType].classes) ||
+									that.templates[listType].classes.indexOf(className) === -1
+							) {
 								$elem.removeClass(className);
 							}
-						})
+						});
 					}
 					// add default classes
 					$elem.addClass(that.getDefaultListClass(listType, calculateNestingLevel($elem, editable.obj)));
@@ -564,8 +566,10 @@ define([
 					// we have to unwrap their contents
 					var $parent = $elem.parent(),
 						listType = getListTypeFromElement($parent);
-					if (!listType || ($elem.is('li') && listType !== 'ol' && listType !== 'ul') || 
-							($elem.is('dt,dd') && listType !== 'dl')) {
+					if (
+						!listType || ($elem.is('li') && listType !== 'ol' && listType !== 'ul') ||
+							($elem.is('dt,dd') && listType !== 'dl')
+					) {
 						$elem.contents().unwrap();
 						return false;
 					}
@@ -574,7 +578,7 @@ define([
 					// return false to not apply other handlers and skip the generic cleanup on this element
 					return false;
 				}
-			}
+			};
 		},
 
 		/**

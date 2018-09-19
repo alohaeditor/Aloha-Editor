@@ -9,9 +9,13 @@
 */
 define([
 	'jquery',
+	'aloha/core',
+	'aloha/markup',
 	'util/html'
 ], function (
 	$,
+	Aloha,
+	Markup,
 	Html
 ) {
 	'use strict';
@@ -50,7 +54,7 @@ define([
 
 	/**
 	 * Wrap contents in a div.
-	 * 
+	 *
 	 * @param {string|jQuery.<HTMLElement>} content the content to wrap
 	 * @returns {jQuery.<HTMLElement>} the content wrapped in a div
 	 */
@@ -67,14 +71,15 @@ define([
 	/**
 	 * jQuery Filter function to determine if an element is an aloha-block.
 	 * 
+	 * @param {number} idx the index of the element
+	 * @param {HTMLElement} elem the element
 	 * @returns true when $(this) or one of its parents is an aloha-block element
 	 */
-	function notAlohaBlockFilter() {
-		var $elem = $(this);
+	function notAlohaBlockFilter(idx, elem) {
+		var $elem = $(elem);
 		return !$elem.hasClass('aloha-block') && $elem.parents('.aloha-block').length === 0;
-	};
+	}
 
-	
 	/**
 	 * Transforms all tables in the given content to make them ready to for
 	 * use with Aloha's table handling.
@@ -100,7 +105,7 @@ define([
 			return;
 		}
 		$elem
-			.removeAttr('width heigth valign')
+			.removeAttr('width heigth valign');
 
 		// Because Aloha does not provide a way for the editor to
 		// manipulate borders, cellspacing, cellpadding in tables.
@@ -109,7 +114,7 @@ define([
 			$elem
 				.removeAttr('cellpadding cellspacing border border-top border-bottom border-left border-right');
 		}
-		
+
 		if ($elem.is('td')) {
 			// Because cells with a single empty <p> are rendered to appear
 			// like empty cells, it simplifies the handeling of cells to
@@ -123,7 +128,7 @@ define([
 
 	/**
 	 * Remove comment elements.
-	 * 
+	 *
 	 * @param {jQuery.<HTMLElement>} $elem the element
 	 */
 	function removeComments($elem) {
@@ -134,24 +139,23 @@ define([
 
 	/**
 	 * Remove style elements, and class and style attributes on elements.
-	 * 
+	 *
 	 * @param {jQuery.<HTMLElement>} $elem the element
 	 */
 	function removeStyles($elem) {
 		if ($elem.is('style')) {
 			$elem.remove();
 			return;
-		};
+		}
 		// remove style attributes and classes
 		$elem.removeAttr('style').removeClass();
 	}
-	
+
 
 	/**
 	 * Unwrap elements matching the given selector.
-	 * 
-	 * @param {jQuery.<HTMLElement>} $elem The HTMLElement which will be
-	 *                         		handled.
+	 *
+	 * @param {jQuery.<HTMLElement>} $elem The HTMLElement which will be handled.
 	 * @param {string} selector a selector for elements to unwrap
 	 */
 	function unwrapTags($elem, selector) {
@@ -159,13 +163,13 @@ define([
 		if (!$elem.is(selector) || $elem.hasClass('.aloha-wai-lang')) {
 			return;
 		}
-		
+
 		// TODO find a better solution for this (e.g. invent a more generic aloha class for all elements, that are
 		// somehow maintained by aloha, and are therefore allowed)
 		if ($elem.is('div')) {
 			// safari and chrome cleanup for plain text paste with working linebreaks
 			if ($elem[0].innerHTML !== '<br>') {
-				$elem = Aloha.Markup.transformDomObject($elem, 'p').append('<br>');
+				$elem = Markup.transformDomObject($elem, 'p').append('<br>');
 			}
 		}
 		$elem.contents().unwrap();
@@ -198,12 +202,11 @@ define([
 
 	/**
 	 * Remove elements which are in different namespaces
- 	 * @param {jQuery.<HTMLElement>} $elem the element
+	 * @param {jQuery.<HTMLElement>} $elem the element
 	 */
 	function removeNamespacedElements($elem) {
 		// get all elements
-		var nsPrefix = $elem[0].prefix ? $elem[0].prefix
-				: ($elem[0].scopeName ? $elem[0].scopeName : undefined);
+		var nsPrefix = $elem[0].prefix || ($elem[0].scopeName || undefined);
 		// when the prefix is set (and different from 'HTML'), we remove the
 		// element
 		if ((nsPrefix && nsPrefix !== 'HTML') || $elem[0].nodeName.indexOf(':') >= 0) {
@@ -223,13 +226,13 @@ define([
 	 * @see GenericContentHandler#transformFormattings
 	 */
 	var formattingTags = ['strong', 'em', 's', 'u', 'strike'];
-	
+
 	/**
 	 * Return true if the nodeType is allowed in the settings,
 	 * Aloha.settings.contentHandler.allows.elements
-	 * 
+	 *
 	 * @param {String} nodeType	The tag name of the element to evaluate
-	 * 
+	 *
 	 * @return {Boolean}
 	 */
 	function isAllowedNodeName(nodeType) {
@@ -237,11 +240,7 @@ define([
 			Aloha.settings.contentHandler &&
 			Aloha.settings.contentHandler.allows &&
 			Aloha.settings.contentHandler.allows.elements &&
-			($.inArray(
-		              nodeType.toLowerCase(), 
-				      Aloha.settings.contentHandler.allows.elements
-				         ) !== -1
-			   )
+			($.inArray(nodeType.toLowerCase(), Aloha.settings.contentHandler.allows.elements) !== -1)
 		);
 	}
 
@@ -265,13 +264,13 @@ define([
 		if ($elem.is(selectors.join(','))) {
 			if ($elem[0].nodeName === 'STRONG') {
 				// transform strong to b
-				Aloha.Markup.transformDomObject($elem, 'b');
+				Markup.transformDomObject($elem, 'b');
 			} else if ($elem[0].nodeName === 'EM') {
 				// transform em to i
-				Aloha.Markup.transformDomObject($elem, 'i');
+				Markup.transformDomObject($elem, 'i');
 			} else if ($elem[0].nodeName === 'S' || $elem[0].nodeName == 'STRIKE') {
 				// transform s and strike to del
-				Aloha.Markup.transformDomObject($elem, 'del');
+				Markup.transformDomObject($elem, 'del');
 			} else if ($elem[0].nodeName === 'U') {
 				// transform u?
 				$elem.contents().unwrap();
@@ -294,24 +293,25 @@ define([
 
 	/**
 	 * Check if formattiongs should be transformed.
-	 * 
+	 *
 	 * @returns true if formattings should be transformed
 	 */
 	function isTransformFormatting() {
-		if (Aloha.settings.contentHandler &&
-			Aloha.settings.contentHandler.handler &&
-			Aloha.settings.contentHandler.handler.generic &&
-			typeof Aloha.settings.contentHandler.handler.generic.transformFormattings !== 'undefinded' &&
-			!Aloha.settings.contentHandler.handler.generic.transformFormattings) {
+		if (
+			Aloha.settings.contentHandler &&
+				Aloha.settings.contentHandler.handler &&
+				Aloha.settings.contentHandler.handler.generic &&
+				typeof Aloha.settings.contentHandler.handler.generic.transformFormattings !== 'undefinded' &&
+				!Aloha.settings.contentHandler.handler.generic.transformFormattings
+		) {
 			return false;
 		}
 		return true;
 	}
 	/**
 	 * Apply the generic content cleanup to an HTMLElement.
-	 * 
- 	 * @param {jQuery.<HTMLElement>} $elem The HTMLElement which will be
-	 *                         		handled.
+	 *
+	 * @param {jQuery.<HTMLElement>} $elem The HTMLElement which will be handled.
 	 * @param {boolean} isTransformFormattings if formattings should be transformed
 	 */
 	function doGenericCleanup($elem, isTransformFormattings) {
@@ -319,7 +319,7 @@ define([
 		prepareTables($elem);
 		removeComments($elem);
 		// TODO we should unwrap list elements in the generic cleanup because Aloha-Editor has no way of handling
-		// lists without the list plugin   
+		// lists without the list plugin
 		unwrapTags($elem, 'div, span, font');
 		cleanLists($elem);
 		removeStyles($elem);
@@ -328,13 +328,13 @@ define([
 		if (isTransformFormattings) {
 			transformFormattings($elem);
 		}
-		
+
 	}
 	/**
 	 * Remove all attributes from an element, but preserving those
 	 * which are explicitly allowed.
-	 * 
- 	 * @param {jQuery.<HTMLElement>} $elem The HTMLElement for which the attributes should be removed
+	 *
+	 * @param {jQuery.<HTMLElement>} $elem The HTMLElement for which the attributes should be removed
 	 * @param {Array.<string>} allowed a list of allowed attributes which will not be removed
 	 */
 	function removeAttributes($elem, allowed) {
@@ -350,10 +350,10 @@ define([
 			return true;
 		});
 		$.each(attributes, function (idx, attrName) {
-			$elem.removeAttr(attrName)
+			$elem.removeAttr(attrName);
 		});
 	}
-	   
+
 
 
 	return {

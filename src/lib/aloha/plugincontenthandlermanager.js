@@ -27,8 +27,10 @@
 // Do not add dependencies that require depend on aloha/core
 define([
     'jquery',
+    'aloha/console'
 ], function (
-    $
+    $,
+    Log
 ) {
     'use strict';
      /**
@@ -41,7 +43,7 @@ define([
 
     /**
      * Register the content handler for a plugin.
-     * 
+     *
      * @param {Plugin} plugin the plugin
      */
     function registerPluginContentHandler(plugin) {
@@ -53,15 +55,16 @@ define([
             return;
         }
         Object.keys(pluginContentHandler).forEach(function (selector) {
+            var i;
             var selectorHandlers = pluginContentHandler[selector];
             handlers[selector] = handlers[selector] || [];
             if (!Array.isArray(selectorHandlers)) {
                 selectorHandlers = [selectorHandlers];
             }
-            for (var i = 0; i < selectorHandlers.length; i++) {
+            for (i = 0; i < selectorHandlers.length; i++) {
                 if (typeof selectorHandlers[i] !== 'function') {
-                    Aloha.Log.warn(plugin, 'Cannot register a handler that is not a function!');
-                    return
+                    Log.warn(plugin, 'Cannot register a handler that is not a function!');
+                    return;
                 }
                 handlers[selector].push(selectorHandlers[i]);
             }
@@ -70,7 +73,7 @@ define([
 
     /**
      * Get all plugin contenthandler for a certain element.
-     * 
+     *
      * @param {jQuery.<HTMLElement>} $elem element
      * @returns {Array.<Function>} an array of plugin contenhandler functions for the current element
      */
@@ -88,7 +91,7 @@ define([
         registerPluginContentHandler: registerPluginContentHandler,
         /**
          * Get all plugin contenthandlers.
-         * 
+         *
          * @returns {Object.<string, Array.<Function>} all registered plugin contenthandlers
          */
         getPluginContentHandlers: function () {

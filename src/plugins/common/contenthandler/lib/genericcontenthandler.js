@@ -42,10 +42,8 @@ define([
 	/**
 	 * Apply the plugin content handler to an HTMLElement.
 	 * 
-	 * @param {jQuery.<HTMLElement>} $element The HTMLElement which will be
-     *                         		handled.
-	 * @param {object} options Used to filter limit which content handlers
- 	 *                         should be used.
+	 * @param {jQuery.<HTMLElement>} $element The HTMLElement which will be handled.
+	 * @param {object} options Used to filter limit which content handlers should be used.
 	 * @param {Aloha.Editable} editable The editable whose content is currently being handled.
 	 * @return {boolean} true if the generic cleanup should be applied to the element and its children
 	 */
@@ -59,7 +57,7 @@ define([
 		do {
 			resumeNext = handler[i]($element, options, editable);
 			i++;
-		} while(typeof handler[i] === 'function' && (typeof resumeNext === 'undefined' || resumeNext));
+		} while (typeof handler[i] === 'function' && (typeof resumeNext === 'undefined' || resumeNext));
 
 		return (typeof resumeNext === 'undefined' || resumeNext);
 	}
@@ -68,10 +66,8 @@ define([
 		/**
 		 * Apply the generic and the plugin content handler to HTMLElements and their children.
 		 * 
-		 * @param {jQuery.<Array.<HTMLElement>>} $element The HTMLElements which will be
-		 *                         		handled.
-		 * @param {object} options Used to filter limit which content handlers
-		 *                         should be used.
+		 * @param {jQuery.<Array.<HTMLElement>>} $element The HTMLElements which will be handled.
+		 * @param {object} options Used to filter limit which content handlers should be used.
 		 * @param {Aloha.Editable} editable The editable whose content is currently being handled.
 		 * @param {boolean} transformFormatting true if formatting should be transformed
 		 */

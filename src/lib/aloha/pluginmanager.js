@@ -105,7 +105,7 @@ define([
 			}
 			if (plugin.settings.enabled && plugin.checkDependencies()) {
 				ret = plugin.init();
-				PluginContentHandlerManager.registerPluginContentHandler(plugin);				
+				PluginContentHandlerManager.registerPluginContentHandler(plugin);
 				if (ret && typeof ret.done === 'function') {
 					ret.done(onInit);
 				} else {
