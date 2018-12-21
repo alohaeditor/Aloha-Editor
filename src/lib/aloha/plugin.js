@@ -201,8 +201,8 @@ define([
 
 				// when obj does not exist in the DOM anymore, fetch from DOM again 
 				// so that nested selectors with parent elements will match against obj as well
-				if(!document.body.contains(obj[0])){
-					obj = jQuery('#'+obj[0].id);
+				if (!document.body.contains(obj[0]) && typeof obj[0] != "undefined" && typeof obj[0].id != "undefined") {
+					obj = jQuery('#' + obj[0].id);
 				}
 
 				// check if the editable's selector matches and if so add its configuration to object configuration
