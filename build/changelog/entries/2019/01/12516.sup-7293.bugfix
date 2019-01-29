@@ -1,0 +1,2 @@
+Contenthandler Plugin: After sanitizing the content could contain useless link tags without any attributes. This has been fixed.
+
