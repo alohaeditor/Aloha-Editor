@@ -199,6 +199,12 @@ define([
 				// When editable is an input or textarea we need the original object.
 				obj = getEditableOriginalObj(obj);
 
+				// when obj does not exist in the DOM anymore, fetch from DOM again 
+				// so that nested selectors with parent elements will match against obj as well
+				if (!document.body.contains(obj[0]) && typeof obj[0] != "undefined" && typeof obj[0].id != "undefined") {
+					obj = jQuery('#' + obj[0].id);
+				}
+
 				// check if the editable's selector matches and if so add its configuration to object configuration
 				jQuery.each(this.settings.editables, function (selector, selectorConfig) {
 					var k;
