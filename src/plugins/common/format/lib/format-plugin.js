@@ -948,20 +948,32 @@ define('format/format-plugin', [
 			}
 
 			if (rangeObject.isCollapsed()) {
-				return;
+				for (i = 0; i < formats.length; i++) {
+					var format = formats[i],
+						markup = jQuery('<'+format+'>');
+
+					// check whether the markup is found in the range (at the start of the range)
+					var nodeNames = interchangeableNodeNames[markup[0].nodeName] || [markup[0].nodeName];
+					var foundMarkup = rangeObject.findMarkup(function() {
+						return -1 !== Arrays.indexOf(nodeNames, this.nodeName);
+					}, Aloha.activeEditable.obj);
+
+					if (foundMarkup) {
+						Dom.removeFromDOM(foundMarkup, rangeObject, true);
+					}
+				}
+			} else {
+				for (i = 0; i < formats.length; i++) {
+					Dom.removeMarkup(
+						rangeObject,
+						jQuery('<' + formats[i] + '>'),
+						Aloha.activeEditable.obj,
+						false);
+				}
+				unformatList(rangeObject);
 			}
 
-			for (i = 0; i < formats.length; i++) {
-				Dom.removeMarkup(
-					rangeObject,
-					jQuery('<' + formats[i] + '>'),
-					Aloha.activeEditable.obj,
-					false);
-			}
-			unformatList(rangeObject);
-
-			// select the modified range
-			rangeObject.select();
+			updateUiAfterMutation(this, rangeObject);
 			Aloha.activeEditable.smartContentChange({type: 'block-change'});
 		},
 
