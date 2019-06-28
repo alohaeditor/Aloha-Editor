@@ -299,3 +299,47 @@ dependent plugin is actually loaded, and outpus an error message if not.
 When everything is loaded, we can access a module from the other plugin
 by using the requireAloha() statement, as shown for the +pluginB+ in the
 example above.
+
+h3. PluginContentHandler
+
+Plugins can register their own ContentHandler to customize the behavior of
+the GenericContentHandler for certain Html-Elements. 
+
+To register a PluginContentHandler, the Plugin must implement a "getPluginContentHandler" 
+method. The method must return a map which maps a CSS-selector to a PluginContentHandler-function. 
+The PluginContentHandler-function will be called every time the GenericContentHandler encounters 
+an HTML-Element which matches the given CSS-selector. The function will get the current element, 
+options and editable (similiar to a "regular" ContentHandler) and can then perform DOM-manipulation 
+on the current element. A PluginContentHandler-function should only change the the element itself 
+and not its children or parents.
+
+A working implementation of the PluginContentHandler can be found in the List-plugin.
+
+
+<javascript filename="pluginA/lib/pluginA-plugin.js">
+define(['aloha/plugin'], function (Plugin) {
+    'use strict';
+
+    return Plugin.create('pluginA', {
+        init: function () {},
+        getPluginContentHandler: function () {
+            return {
+                'plugin-css-selector': function ($elem, options, editable) {
+                    // do cleanup / manipulation of the $elem
+                    ...
+                    // return false to prevent the execution of other PluginContentHandler 
+                    // and the GenericContentHandler on this element.
+                    return false;
+                },
+                'another-plugin-css-selector': function ($elem, options, editable) {
+                    // do cleanup / manipulation of the $elem
+                    ...
+                    // return true (or undefined) to allow the execution of other PluginContentHandler 
+                    // and the GenericContentHandler on this element.
+                    return true;
+                }
+            }
+        }
+    });
+});
+</javascript>

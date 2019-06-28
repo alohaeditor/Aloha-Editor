@@ -3,7 +3,7 @@
 
 	<groupId>org.alohaeditor</groupId>
 	<artifactId>alohaeditor</artifactId>
-	<version>1.4.47-SNAPSHOT</version>
+	<version>1.4.54-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Aloha Editor</name>
 	<url>http://aloha-editor.org</url>
@@ -501,12 +501,12 @@
 		<repository>
 			<id>lan.releases.staging.alohaeditor</id>
 			<name>Gentics Internal Repository Stage</name>
-			<url>https://repo.gentics.com/artifactory/lan.releases.staging.alohaeditor</url>
+			<url>https://repo.apa-it.at/artifactory/gtx-maven-releases-staging-alohaeditor</url>
 		</repository>
 		<snapshotRepository>
 			<id>lan.snapshots</id>
 			<name>Gentics Internal Snapshots Repository Stage</name>
-			<url>https://repo.gentics.com/artifactory/lan.snapshots</url>
+			<url>https://repo.apa-it.at/artifactory/gtx-maven-snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 </project>

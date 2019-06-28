@@ -27,10 +27,12 @@
 // Do not add dependencies that require depend on aloha/core
 define([
 	'jquery',
-	'util/class'
+	'util/class',
+	'aloha/plugincontenthandlermanager'
 ], function (
 	$,
-	Class
+	Class,
+	PluginContentHandlerManager
 ) {
 	'use strict';
 
@@ -103,6 +105,7 @@ define([
 			}
 			if (plugin.settings.enabled && plugin.checkDependencies()) {
 				ret = plugin.init();
+				PluginContentHandlerManager.registerPluginContentHandler(plugin);
 				if (ret && typeof ret.done === 'function') {
 					ret.done(onInit);
 				} else {

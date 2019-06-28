@@ -28,7 +28,7 @@ define([
 	'jquery',
 	'aloha',
 	'aloha/contenthandlermanager',
-	'contenthandler/contenthandler-utils',
+	'util/contenthandler',
 	'util/dom2',
 	'util/html'
 ], function (
@@ -249,6 +249,19 @@ define([
 		});
 		$content.find('p.MsoSubtitle').each(function () {
 			Aloha.Markup.transformDomObject($(this), 'h2');
+		});
+	}
+
+	/**
+	 * Fix content, that apparently comes from word's correction mode:
+	 * 
+	 * * Remove 'del' elements
+	 * * Unwrap contents of 'ins' elements
+	 */
+	function fixCorrections($content) {
+		$content.find('del').remove();
+		$content.find('ins').each(function() {
+			jQuery(this).contents().unwrap();
 		});
 	}
 
@@ -582,6 +595,7 @@ define([
 		 * @param {jQuery.<HTMLElement>} $content
 		 */
 		transformWordContent: function ($content) {
+			fixCorrections($content);
 			this.transformToc($content);
 			this.removeParagraphNumbering($content);
 			this.transformListsFromWord($content);

@@ -91,14 +91,14 @@ function ( Aloha, jQuery, ContentHandlerManager, Plugin, console ) {
 			'col': ['span', 'width'],
 			'colgroup': ['span', 'width'],
 			'img': ['align', 'alt', 'height', 'src', 'title', 'width', 'class', 'data-caption', 'data-align', 'data-width', 'data-original-image'],
-			'ol': ['start', 'type'],
+			'ol': ['start', 'type', 'class'],
 			'p': ['class', 'style', 'id'],
 			'q': ['cite'],
 			'table': ['summary', 'width'],
 									// For IE7 it matters the uppercase 'S' in rowSpan, colSpan
 			'td': ['abbr', 'axis', 'colSpan', 'rowSpan', 'colspan', 'rowspan', 'width'],
 			'th': ['abbr', 'axis', 'colSpan', 'rowSpan', 'colspan', 'rowspan', 'scope', 'width'],
-			'ul': ['type'],
+			'ul': ['type', 'class'],
 			'span': ['class','style','lang','xml:lang','role']
 		},
 
@@ -154,6 +154,7 @@ function ( Aloha, jQuery, ContentHandlerManager, Plugin, console ) {
 
 			var sanitizeConfig;
 			var contentHandlerConfig;
+			var $content;
 
 			if (Aloha.settings.contentHandler &&
 			    Aloha.settings.contentHandler.handler &&
@@ -181,15 +182,36 @@ function ( Aloha, jQuery, ContentHandlerManager, Plugin, console ) {
 				initSanitize(sanitizeConfig);
 			}
 
-			if (typeof content === 'string'){
+			if (typeof content === 'string') {
 				content = jQuery('<div>' + content + '</div>').get(0);
 			} else if (content instanceof jQuery) {
 				content = jQuery('<div>').append(content).get(0);
 			}
-
-			return jQuery('<div>').append(sanitize.clean_node(content)).html();
+			//Sanitize content
+			content = sanitize.clean_node(content);
+			//Postprocessing
+			$content = jQuery('<div>').append(content);
+			sanitizeLinktags($content);
+			return $content.html();
 		}
 	});
+
+	/**
+	 * Clean content from empty link tags and link tags, that have no attributes.
+	 * @param {jQuery.<HTMLElement>} $content
+	 */
+	function sanitizeLinktags($content) {
+		$content.find('a').each(function() {
+			var $element = jQuery(this);
+			if (!this.hasAttributes() || !jQuery.trim($element.html())) {
+				if ($element.contents().length > 0) {
+					$element.contents().unwrap();
+				} else {
+					$element.remove();
+				}
+			}
+		});
+	}
 
 	return SanitizeContentHandler;
 });

@@ -218,6 +218,8 @@ define([
 				// Move the selection back to the editable.
 				var range = Aloha.Selection.getRangeObject();
 
+				// collapse at end
+				range.startContainer = range.endContainer;
 				range.startOffset = range.endOffset;
 				range.select();
 			}
