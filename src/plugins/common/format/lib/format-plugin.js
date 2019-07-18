@@ -948,6 +948,9 @@ define('format/format-plugin', [
 			}
 
 			if (rangeObject.isCollapsed()) {
+				var rangeEditingHost = Dom.getEditingHostOf(rangeObject.startContainer);
+				var limit = rangeEditingHost ? jQuery(rangeEditingHost) : Aloha.activeEditable.obj;
+
 				for (i = 0; i < formats.length; i++) {
 					var format = formats[i],
 						markup = jQuery('<'+format+'>');
@@ -956,18 +959,20 @@ define('format/format-plugin', [
 					var nodeNames = interchangeableNodeNames[markup[0].nodeName] || [markup[0].nodeName];
 					var foundMarkup = rangeObject.findMarkup(function() {
 						return -1 !== Arrays.indexOf(nodeNames, this.nodeName);
-					}, Aloha.activeEditable.obj);
+					}, limit);
 
 					if (foundMarkup) {
 						Dom.removeFromDOM(foundMarkup, rangeObject, true);
 					}
 				}
 			} else {
+				var rangeEditingHost = Dom.getEditingHostOf(rangeObject.startContainer);
+				var limit = rangeEditingHost ? jQuery(rangeEditingHost) : Aloha.activeEditable.obj;
 				for (i = 0; i < formats.length; i++) {
 					Dom.removeMarkup(
 						rangeObject,
 						jQuery('<' + formats[i] + '>'),
-						Aloha.activeEditable.obj,
+						limit,
 						false);
 				}
 				unformatList(rangeObject);

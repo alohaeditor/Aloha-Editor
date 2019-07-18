@@ -1,0 +1,2 @@
+Format Plugin: The action "Remove formatting" would remove the editable wrapper in a table cell, when "div" was added to the "removeFormats" settings.
+This has been fixed, remove formatting will stop at the nearest editable host object now.
