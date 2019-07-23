@@ -60,7 +60,29 @@ h4. Using Configuration
 		},
 		handler: {
 			generic: {
-				transformFormattings: false // this will disable the transformFormattings method in the generic content handler
+				// this will disable the transformFormattings method in the generic content handler
+				transformFormattings: false,
+				// this elements (to counter Chrome copy&paste bug) on styled elements
+				transformFormattingsMapping: [
+					// this will make sure a copied b element will be be pasted again as a b element
+					// Chrome would try to change it to a span with a style attribute of 'font-weight: 700'
+					{
+						nodeNameIs: 'span',
+						nodeNameShould: 'b',
+						attribute: {
+							name: 'style',
+							value: 'font-weight: 700' 
+						}
+					},
+					{
+						nodeNameIs: 'span',
+						nodeNameShould: 'sup',
+						attribute: {
+							name: 'style',
+							value: 'font-size: 12.6px'
+						}
+					}
+				]
 			},
 			sanitize: {
 				'.aloha-captioned-image-caption': { elements: [ 'em', 'strong' ] }
