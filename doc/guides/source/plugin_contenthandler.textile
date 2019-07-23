@@ -190,7 +190,7 @@ The Generic Content Handler is a bit less generic than his name might suggest as
 
 h5. Use Generic Content Handler to repair Chrome copy & paste issues
 
-The generic content handler now allows configuration to transform elements with specific attributes into other elements.
+The generic content handler allows can be configured to transform elements with specific attributes into other elements.
 This is used to counter Chrome 75's copy paste issues in contenteditable.
 
 Chrome will try to maintain styling on the copied range.
@@ -199,7 +199,7 @@ As of now Chrome is unable to copy <sub> and <sup> elements in contenteditable. 
 
 h6. Example Styling
 
-bc..
+<javascript>
 b {
 	font-weight: 700;
 }
@@ -210,6 +210,7 @@ sup {
 	/* only needed in editmode - use to to tell difference by carried over style attribute */
 	font-size: 75.01%
 }
+</javascript>
 
 h6. Example config for repairing Chrome copy paste issues
 
