@@ -1,0 +1,14 @@
+<settings>
+	<servers>
+		<server>
+			<id>lan.snapshots</id>
+			<username>${env.repoUsername}</username>
+			<password>${env.repoPassword}</password>
+		</server>
+		<server>
+			<id>lan.releases.staging.alohaeditor</id>
+			<username>${env.repoUsername}</username>
+			<password>${env.repoPassword}</password>
+		</server>
+	</servers>
+</settings>

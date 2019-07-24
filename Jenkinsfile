@@ -13,7 +13,60 @@ String tagName = null
 
 pipeline {
 	agent {
-		label 'jenkins-slave-and-selenium'
+		kubernetes {
+			label env.BUILD_TAG
+			defaultContainer 'build'
+			yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  volumes:
+  - name: cache
+    hostPath:
+      path: /opt/kubernetes/cache
+  containers:
+  - name: build
+    image: """ + buildEnvironmentDockerImage("build/Dockerfile", null, "build") + """
+    imagePullPolicy: Always
+    command:
+    - cat
+    tty: true
+    resources:
+      requests:
+        cpu: 1
+        memory: 256Mi
+    volumeMounts:
+    - mountPath: /home/jenkins/.m2/repository
+      name: cache
+      subPath: maven
+    - mountPath: /home/jenkins/.cache/npm
+      name: cache
+      subPath: npm
+    env:
+      - name: DOCKER_HOST
+        value: tcp://127.0.0.1:2375
+  - name: selenium
+    image: selenium/standalone-chrome:3.141.59
+    imagePullPolicy: Always
+    tty: true
+    ports:
+    - containerPort: 4444
+      name: selenium
+      protocol: TCP
+    resources:
+      requests:
+        cpu: 1
+        memory: 1024Mi
+  - name: docker
+    image: docker:18-dind
+    imagePullPolicy: Always
+    securityContext:
+      privileged: true
+    tty: true
+  imagePullSecrets:
+  - name: docker-jenkinsbuilds-apa-it
+"""
+		}
 	}
 
 	parameters {
@@ -22,9 +75,16 @@ pipeline {
 		booleanParam(name: 'releaseWithNewChangesOnly', defaultValue: true,  description: 'Release: Abort the build if there are no new changes')
 	}
 
-    triggers {
-        githubPush()
-    }
+	triggers {
+		githubPush()
+	}
+
+	options {
+		withCredentials([usernamePassword(credentialsId: 'repo.gentics.com', usernameVariable: 'repoUsername', passwordVariable: 'repoPassword')])
+		timestamps()
+		timeout(time: 4, unit: 'HOURS')
+		ansiColor('xterm')
+	}
 
 	stages {
 		stage('Build, Deploy') {
