@@ -1065,6 +1065,10 @@ define([
 					}
 				}
 
+				// when the selection ends in this node, we leave the selection now
+				if (rangeObject.endContainer === this) {
+					that.inselection = false;
+				}
 				childCount++;
 			});
 

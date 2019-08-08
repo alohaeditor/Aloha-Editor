@@ -1060,5 +1060,9 @@ var tests = {
 			start: '<p>before table</p><div class="aloha-table-wrapper" contenteditable="false"></div><p>aft[]er table</p>',
 			execResult: '<p>before table</p><div class="aloha-table-wrapper" contenteditable="false"></div><p>af[]er table</p>'
 		},
+		{
+			start: '<div class="aloha-block" contenteditable="false">block before</div><p>start[</p><div class="aloha-block" contenteditable="false">selected block</div><div class="aloha-table-wrapper" contenteditable="false"><table><tr><td></td></tr></table>}</div><p>after table</p><div class="aloha-block" contenteditable="false">block after</div>',
+			execResult: '<div class="aloha-block" contenteditable="false">block before</div><p>start[]</p><p>after table</p><div class="aloha-block" contenteditable="false">block after</div>'
+		},
 	]
 }
