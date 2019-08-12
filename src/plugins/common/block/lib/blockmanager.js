@@ -293,7 +293,7 @@ define([
 						var el;
 						for (var i = 0, l = selectionTree.length; i < l; i++) {
 							el = selectionTree[i];
-							if (el.domobj.nodeType === 1) { // DOM node
+							if (el.domobj && el.domobj.nodeType === 1) { // DOM node
 								var $el = jQuery(el.domobj);
 								if (el.selection === 'full' && $el.is('.aloha-block')) {
 									$el.remove();

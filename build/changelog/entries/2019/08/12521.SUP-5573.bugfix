@@ -1,0 +1,3 @@
+Block plugin, Table plugin: Under special circumstances, when deleting a table by selecting over it, and pressing "delete" or "backspace"
+blocks and tables after the selection would also be deleted.
+This has been fixed now.
