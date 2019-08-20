@@ -1,0 +1,5 @@
+Block plugin: When clicking into an already active editable inside a block, the block was activated again and the scope was changed
+to "block" and then to "text" again, which caused the toolbar to switch to the default tab for "text" (which normally is "Format"),
+even if another tab was active before.
+This has been changed now, if the block is already active, it will not be activated again, and the scope will not be changed, so that
+the currently active tab will not change.

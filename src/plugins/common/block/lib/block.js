@@ -533,6 +533,9 @@ define([
 		 * @api
 		 */
 		activate: function (eventTarget, event) {
+			if (this.isActive()) {
+				return;
+			}
 			var highlightedBlocks = [];
 
 			// Deactivate currently highlighted blocks
