@@ -352,16 +352,18 @@ define([
 		if (
 			Aloha.settings.contentHandler &&
 			Aloha.settings.contentHandler.handler &&
-			Aloha.settings.contentHandler.handler.generic &&
-			typeof Aloha.settings.contentHandler.handler.generic.transformFormattingsMapping === 'undefined' || 
-			(
-				typeof Aloha.settings.contentHandler.handler.generic.transformFormattingsMapping !== 'undefined' &&
-				Aloha.settings.contentHandler.handler.generic.transformFormattingsMapping.length < 1
-			)
+			Aloha.settings.contentHandler.handler.generic
 		) {
-			return false;
-		}
-		return true;
+			if (typeof Aloha.settings.contentHandler.handler.generic.transformFormattingsMapping === 'undefined' || 
+				(
+					typeof Aloha.settings.contentHandler.handler.generic.transformFormattingsMapping !== 'undefined' &&
+					Aloha.settings.contentHandler.handler.generic.transformFormattingsMapping.length < 1
+				)
+			) {
+				return true;
+			}
+		} 
+		return false;
 	}
 	/**
 	 * Check if formattiongs should be transformed.
