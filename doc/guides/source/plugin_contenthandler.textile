@@ -62,7 +62,9 @@ h4. Using Configuration
 			generic: {
 				// this will disable the transformFormattings method in the generic content handler
 				transformFormattings: false,
-				// this elements (to counter Chrome copy&paste bug) on styled elements
+				// settings this configuration properteis will
+				// enable conversion of copyied elements to specified elements in the clipboard
+				// this can be used to counter Chrome's copy&paste bug on styled elements
 				transformFormattingsMapping: [
 					// this will make sure a copied b element will be be pasted again as a b element
 					// Chrome would try to change it to a span with a style attribute of 'font-weight: 700'
