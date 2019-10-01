@@ -297,7 +297,7 @@ define([
 	 *		{
 	 *			nodeNameIs: 'span',
 	 *			nodeNameShould: 'sup',
-	 *			attributes: {
+	 *			attribute: {
 	 *				name: 'style',
 	 *				value: 'top: -0.5em'
 	 *			}
@@ -305,7 +305,7 @@ define([
 	 *		{
 	 *			nodeNameIs: 'span',
 	 *			nodeNameShould: 'sub',
-	 *			attributes: {
+	 *			attribute: {
 	 *				name: 'style',
 	 *				value: 'bottom: -0.5em'
 	 *			}
@@ -354,11 +354,8 @@ define([
 			Aloha.settings.contentHandler.handler &&
 			Aloha.settings.contentHandler.handler.generic
 		) {
-			if (typeof Aloha.settings.contentHandler.handler.generic.transformFormattingsMapping === 'undefined' || 
-				(
-					typeof Aloha.settings.contentHandler.handler.generic.transformFormattingsMapping !== 'undefined' &&
-					Aloha.settings.contentHandler.handler.generic.transformFormattingsMapping.length < 1
-				)
+			if (typeof Aloha.settings.contentHandler.handler.generic.transformFormattingsMapping !== 'undefined' &&
+					Aloha.settings.contentHandler.handler.generic.transformFormattingsMapping.length > 1
 			) {
 				return true;
 			}
