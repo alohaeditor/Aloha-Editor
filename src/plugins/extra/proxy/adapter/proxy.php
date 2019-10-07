@@ -31,7 +31,7 @@ $request = array(
 
 // read url parameter
 if (array_key_exists('url', $_GET)) {
-	$request['url'] = urldecode($_GET['url']);
+	$request['url'] = htmlentities(urldecode($_GET['url']), ENT_QUOTES | ENT_HTML5, 'UTF-8');
 } else {
 	header("HTTP/1.0 400 Bad Request");
 	echo "Aloha Editor AJAX Gateway failed because parameter url is missing.";
