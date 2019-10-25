@@ -355,7 +355,7 @@ define([
 			Aloha.settings.contentHandler.handler.generic
 		) {
 			if (typeof Aloha.settings.contentHandler.handler.generic.transformFormattingsMapping !== 'undefined' &&
-					Aloha.settings.contentHandler.handler.generic.transformFormattingsMapping.length > 1
+					Aloha.settings.contentHandler.handler.generic.transformFormattingsMapping.length >= 1
 			) {
 				return true;
 			}
