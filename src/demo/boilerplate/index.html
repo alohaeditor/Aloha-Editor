@@ -103,6 +103,25 @@
 	<script src="fake-jquery.js"></script>
     <script src="ribbon-example.js"></script>
 	<link rel="stylesheet" href="css/style.css">
+	<style>
+		b {
+			font-weight: 700;
+		}
+		sub, sup {
+			position: relative;
+			font-size: 75%;
+			line-height: 0;
+			vertical-align: baseline;
+		}
+		/* only needed in editmode - use to to tell difference by carried over style attribute */
+		sup {
+			top: -.5em;
+			font-size: 75.01%
+		}
+		sub {
+			bottom: -.5em
+		}
+	</style>
 	<script src="js/aloha-boilerplate.js"></script>
 </head>
 <body>
@@ -202,6 +221,7 @@
 				</div>
 				<!-- Stage area end -->
 				<div id="content">
+					<p>Here <b>bold</b> <strong>strong</strong> <i>italic</i> <sup>sup</sup> <sub>sub</sub> some</p>
 					<p>Here you'll find some <b>example content</b> to show Aloha's <i>possibilities</i> regarding any kind of formatting.</p>
 					<h1>Headline 1</h1>
 					<h2>Headline 2</h2>

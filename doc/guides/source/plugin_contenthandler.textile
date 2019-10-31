@@ -60,7 +60,34 @@ h4. Using Configuration
 		},
 		handler: {
 			generic: {
-				transformFormattings: false // this will disable the transformFormattings method in the generic content handler
+				// this will disable the transformFormattings method in the generic content handler
+				transformFormattings: false,
+				// settings this configuration properteis will
+				// enable conversion of copyied elements to specified elements in the clipboard
+				// this can be used to counter Chrome's copy&paste bug on styled elements
+				transformFormattingsMapping: [
+					// this will make sure a copied b element will be be pasted again as a b element
+					// Chrome would try to change it to a span with a style attribute of 'font-weight: 700'
+					//
+					// Note: the attributes to check for are dependent on the style applied to the copied element.
+					// for example to detect sup and sub elemenst it is suggested to add detectable font-size values (75% and 75.01%)
+					{
+						nodeNameIs: 'span',
+						nodeNameShould: 'b',
+						attribute: {
+							name: 'style',
+							value: 'font-weight: 700' 
+						}
+					},
+					{
+						nodeNameIs: 'span',
+						nodeNameShould: 'sup',
+						attribute: {
+							name: 'style',
+							value: 'font-size: 12.6px'
+						}
+					}
+				]
 			},
 			sanitize: {
 				'.aloha-captioned-image-caption': { elements: [ 'em', 'strong' ] }
@@ -162,6 +189,61 @@ The Generic Content Handler is a bit less generic than his name might suggest as
 ** +<em>+ to +<i>+
 ** +<s>+ and +<strike>+ to +<del>+
 ** and by removing +<u>+ tags (as underline text decoration should solely be used for links)
+
+h5. Use Generic Content Handler to repair Chrome copy & paste issues
+
+The generic content handler allows can be configured to transform elements with specific attributes into other elements.
+This is used to counter Chrome 75's copy paste issues in contenteditable.
+
+Chrome will try to maintain styling on the copied range.
+Depending on the styling of the copied element this may lead to +<b>+ elements turning into +<span style="font-size: 700">+
+As of now Chrome is unable to copy <sub> and <sup> elements in contenteditable. This leads to <sub> and <sup> elements turning into spans.
+
+h6. Example Styling
+
+<javascript>
+b {
+	font-weight: 700;
+}
+sub, sup {
+	font-size: 75%;
+}
+sup {
+	/* only needed in editmode - use to to tell difference by carried over style attribute */
+	font-size: 75.01%
+}
+</javascript>
+
+h6. Example config for repairing Chrome copy paste issues
+
+<javascript>
+Aloha.settings.contentHandler.handler.generic.transformFormattingsMapping: [
+    {
+        nodeNameIs: 'span',
+        nodeNameShould: 'b',
+        attribute: {
+            name: 'style',
+            value: 'font-weight: 700' 
+        }
+    },
+    {
+        nodeNameIs: 'span',
+        nodeNameShould: 'sup',
+        attribute: {
+            name: 'style',
+            value: 'font-size: 12.6017px'
+        }
+    },
+    {
+        nodeNameIs: 'span',
+        nodeNameShould: 'sub',
+        attribute: {
+            name: 'style',
+            value: 'font-size: 12.6px'
+        }
+    }
+];
+</javascript>
 
 h4. Sanitize Content Handler
 

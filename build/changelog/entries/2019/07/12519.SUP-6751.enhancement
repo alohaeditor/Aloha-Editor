@@ -1,0 +1,37 @@
+The generic content handler now allows configuration to transform elements with specific attributes into other elements.
+This is used to counter an issue introduced in Chrome 75.
+
+Chrome will try to maintain styling on the copied range.
+Depending on the styling of the copied element this may lead to @<b>@ elements turning into @<span style="font-size: 700">@
+As of now Chrome is unable to copy <sub> and <sup> elements in contenteditable. This leads to <sub> and <sup> elements turning into spans.
+
+Example config for these cases:
+
+<javascript>
+Aloha.settings.contentHandler.handler.generic.transformFormattingsMapping: [
+    {
+        nodeNameIs: 'span',
+        nodeNameShould: 'b',
+        attribute: {
+            name: 'style',
+            value: 'font-weight: 700' 
+        }
+    },
+    {
+        nodeNameIs: 'span',
+        nodeNameShould: 'sup',
+        attribute: {
+            name: 'style',
+            value: 'font-size: 12.6017px'
+        }
+    },
+    {
+        nodeNameIs: 'span',
+        nodeNameShould: 'sub',
+        attribute: {
+            name: 'style',
+            value: 'font-size: 12.6px'
+        }
+    }
+];
+</javascript>
