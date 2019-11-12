@@ -337,12 +337,11 @@ define([
 		if (isTransformFormattingsByMapping()) {
 			Aloha.settings.contentHandler.handler.generic.transformFormattingsMapping.forEach(function (mapping) {
 				if (typeof mapping.nodeNameIs !== 'undefined' &&
-					typeof mapping.nodeNameShould !== 'undefined' &&
-					typeof mapping.attribute !== 'undefined' &&
-					$elem[0].nodeName.toLowerCase() === mapping.nodeNameIs &&
-					$elem[0].hasAttribute(mapping.attribute.name) &&
-					$elem[0].getAttribute(mapping.attribute.name).indexOf(mapping.attribute.value) >= 0
-				        ) {
+						typeof mapping.nodeNameShould !== 'undefined' &&
+						typeof mapping.attribute !== 'undefined' &&
+						$elem[0].nodeName.toLowerCase() === mapping.nodeNameIs &&
+						$elem[0].hasAttribute(mapping.attribute.name) &&
+						$elem[0].getAttribute(mapping.attribute.name).indexOf(mapping.attribute.value) >= 0) {
 					return Markup.transformDomObject($elem, mapping.nodeNameShould);
 				}
 			});
