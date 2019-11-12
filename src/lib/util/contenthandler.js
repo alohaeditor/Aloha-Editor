@@ -279,6 +279,26 @@ define([
 	}
 
 	/**
+	 * Check elements should be transformed.
+	 *
+	 * @returns true if elements should be transformed
+	 */
+	function isTransformFormattingsByMapping() {
+		if (
+			Aloha.settings.contentHandler &&
+			    Aloha.settings.contentHandler.handler &&
+			    Aloha.settings.contentHandler.handler.generic
+		) {
+			if (typeof Aloha.settings.contentHandler.handler.generic.transformFormattingsMapping !== 'undefined' &&
+					Aloha.settings.contentHandler.handler.generic.transformFormattingsMapping.length >= 1
+			        ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Transform elements according to mapping set in configuration
 	 * Example config used for fixing Chrome 75 copy paste issues in contenteditable
 	 * Chrome will try to maintain styling on the copied range.
@@ -314,7 +334,7 @@ define([
 	 * @param {jQuery.<HTMLElement>} $elem the element
 	 */
 	function transformFormattingsByMapping($elem) {
-		if(isTransformFormattingsByMapping()) {
+		if (isTransformFormattingsByMapping()) {
 			Aloha.settings.contentHandler.handler.generic.transformFormattingsMapping.forEach(function (mapping) {
 				if (typeof mapping.nodeNameIs !== 'undefined' &&
 					typeof mapping.nodeNameShould !== 'undefined' &&
@@ -322,7 +342,7 @@ define([
 					$elem[0].nodeName.toLowerCase() === mapping.nodeNameIs &&
 					$elem[0].hasAttribute(mapping.attribute.name) &&
 					$elem[0].getAttribute(mapping.attribute.name).indexOf(mapping.attribute.value) >= 0
-				) {
+				        ) {
 					return Markup.transformDomObject($elem, mapping.nodeNameShould);
 				}
 			});
@@ -343,25 +363,6 @@ define([
 		}
 	}
 
-	/**
-	 * Check elements should be transformed.
-	 *
-	 * @returns true if elements should be transformed
-	 */
-	function isTransformFormattingsByMapping() {
-		if (
-			Aloha.settings.contentHandler &&
-			Aloha.settings.contentHandler.handler &&
-			Aloha.settings.contentHandler.handler.generic
-		) {
-			if (typeof Aloha.settings.contentHandler.handler.generic.transformFormattingsMapping !== 'undefined' &&
-					Aloha.settings.contentHandler.handler.generic.transformFormattingsMapping.length >= 1
-			) {
-				return true;
-			}
-		} 
-		return false;
-	}
 	/**
 	 * Check if formattiongs should be transformed.
 	 *
