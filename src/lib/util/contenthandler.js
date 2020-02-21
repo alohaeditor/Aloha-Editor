@@ -372,7 +372,7 @@ define([
 			Aloha.settings.contentHandler &&
 				Aloha.settings.contentHandler.handler &&
 				Aloha.settings.contentHandler.handler.generic &&
-				typeof Aloha.settings.contentHandler.handler.generic.transformFormattings !== 'undefinded' &&
+				typeof Aloha.settings.contentHandler.handler.generic.transformFormattings !== 'undefined' &&
 				!Aloha.settings.contentHandler.handler.generic.transformFormattings
 		) {
 			return false;
