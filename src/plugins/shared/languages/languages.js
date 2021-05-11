@@ -89,7 +89,12 @@ define([
 			
 			
 			var data = ISO_MAP[this.iso + '-' + this.locale];
-			
+
+			// do fallback, if locale is not known
+			if (typeof data ==='undefined') {
+				data = ISO_MAP[this.iso + '-de'];
+			}
+
 			this.storeLanguageCodes(data);
 			this.languageData = data;
 		},
