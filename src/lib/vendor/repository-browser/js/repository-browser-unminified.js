@@ -1464,6 +1464,7 @@
 	}
 
 	if ('function' === typeof define) {
+		// start i18n-de
 		define('repository-browser-i18n-de', [], function () {
 			return {
 				'Browsing'                       : 'Durchsuchen',
@@ -1479,6 +1480,8 @@
 				'button.switch-metaview.tooltip' : 'Zwischen Metaansicht und normaler Ansicht umschalten'
 			};
 		});
+		// end i18n-de
+		// start i18n-en
 		define('repository-browser-i18n-en', [], function () {
 			return {
 				'Browsing'                       : 'Browsing',
@@ -1494,6 +1497,8 @@
 				'button.switch-metaview.tooltip' : 'Switch between meta and normal view'
 			};
 		});
+		// end i18n-en
+		// add translations here
 		define('RepositoryBrowser', [
 			'jquery',
 			'Class',
