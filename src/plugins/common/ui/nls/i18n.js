@@ -9,8 +9,6 @@ define({
 		"button.underline.label": "Underline",
 		"button.yes.label": "Yes",
 		"button.no.label": "No",
-
-		// paragraph
 		"button.p.label": "Paragraph",
 		"button.h1.label": "Heading 1",
 		"button.h2.label": "Heading 2",
@@ -20,8 +18,6 @@ define({
 		"button.h6.label": "Heading 6",
 		"button.pre.label": "Preformatted text",
 		"button.removeFormatting.label": "Remove formatting",
-
-		// list
 		"button.ol.label": "Insert ordered list",
 		"button.ul.label": "Insert unordered list",
 		"button.indent.label": "Indent list",
@@ -30,24 +26,10 @@ define({
 		"button.removeLink.label": "Remove link",
 		"button.createAbbr.label": "Insert abbreviation",
 		"button.characterPicker.label": "Pick special characters",
-
-		// link
-		"button.createLink.label": "Insert link",
-		"button.removeLink.label": "Remove link",
-
-		// abbr
-		"button.createAbbr.label": "Insert abbreviation",
-
-		// character picker
-		"button.characterPicker.label": "Pick special characters",
-
-		// justify
 		"button.justifyLeft.label": "Align to the left",
 		"button.justifyRight.label": "Align to the right",
 		"button.justifyCenter.label": "Center",
 		"button.justifyFull.label": "Justify",
-
-		// horizontal rule
 		"button.horizontalRule.label": "Insert horizontal rule",
 		"button.createLanguageAnnotation.label": "Insert language annotation",
 		"button.metaview.label": "Switch between meta and normal view",
