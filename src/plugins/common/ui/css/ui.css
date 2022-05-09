@@ -14,7 +14,8 @@
  * http://docs.jquery.com/UI/Dialog#theming
  */
 
-.aloha-ui { direction: ltr; }
+.aloha-ui { direction: ltr!important; }
+.aloha-sidebar-panel-title { text-align: left; }
 
 .aloha.ui-dialog { position: absolute; padding: .2em; width: 300px; overflow: hidden; }
 .aloha.ui-dialog .ui-dialog-titlebar { padding: .4em 1em; position: relative;  }
