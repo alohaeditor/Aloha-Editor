@@ -214,6 +214,47 @@ define([
 		_registerEventHandlersForBlockDeletion: function () {
 			var that = this;
 
+			/**
+			 * A block selection is a 'virtual selection' (ie: not a real
+			 * browser selection on the document). We can be certain that we
+			 * have the entire block selected when there is an activeBlock but
+			 * no document selection.
+			 *
+			 * However, IE tends to set the selection to the document body when
+			 * we programmatically deselect everything. We need to detect this
+			 * situation and treat it as though there is no browser selection.
+			 * This check is designed to double check against this false
+			 * positive.
+			 *
+			 * @private
+			 * @param  {!Selection} selection
+			 * @return {boolean}
+			 */
+			function checkIsOnlyBlockSelected(selection) {
+				if (selection.getRangeCount() === 0) {
+					return true;
+				}
+				if (!$.browser.msie) {
+					return false;
+				}
+				var range = selection.getRangeAt(0);
+				var sc = range.startContainer;
+				var ec = range.endContainer;
+				if (sc !== ec) {
+					return false;
+				}
+				// IE has placed the selection on the body element
+				if ($('body').is(sc)) {
+					return true;
+				}
+				// IE has placed the selection around the selected block?
+				if (range.startOffset + 1 === range.endOffset && 1 === node.nodeType) {
+					var node = node.childNodes[range.startOffset];
+					return $(node).is('.aloha-block');
+				}
+				return false;
+			}
+
 			// This case executes in:
 			// - Chrome
 			// - Firefox
@@ -222,39 +263,37 @@ define([
 			// it does NOT execute in the following cases:
 			// - IE7+8 for block-level blocks which are NOT part of a bigger selection. This case is handled separately below.
 			Aloha.bind('aloha-command-will-execute', function (e, data) {
-				var commandId = data.commandId;
-
 				// workaround for selection problem in tables: we never delete table blocks this way
 				if (that._activeBlock && that._activeBlock.$element.hasClass('aloha-table-wrapper')) {
 					return true;
 				}
 
-				// Internet Explorer *magically* sets the range to the "Body" object after deselecting everything. yeah :-D
-				var selection = Aloha.getSelection(),
-				    rangeCount = selection.getRangeCount(),
-				    range = selection.getRangeAt(0),
-				    rangeEndContainer = range.endContainer,
-				    rangeStartContainer = range.startContainer,
+				var cmd = data.commandId;
+				var selection = Aloha.getSelection();
+				var isOnlyBlockSelected = checkIsOnlyBlockSelected(selection);
+				var isDeleteOperation = 'delete' === cmd || 'forwarddelete' === cmd;
 
-				    onlyBlockSelected = (rangeCount === 0) || // Firefox / Chrome
-					       (rangeCount === 1 && rangeEndContainer === rangeStartContainer && rangeEndContainer === jQuery('body')[0]) || // Internet explorer: Inline Elements
-					       (rangeCount === 1 && rangeEndContainer === rangeStartContainer && range.startOffset + 1 === range.endOffset); // Internet explorer: Block level elements
-
-				if (that._activeBlock && (commandId === 'delete' || commandId === 'forwarddelete') && onlyBlockSelected) {
-					// Deletion when a block is currently selected
-
-					// In this case, the default command shall not be executed.
-					data.preventDefault = true;
-					that._activeBlock.destroy();
-				} else if (!that._activeBlock && (commandId === 'delete' || commandId === 'forwarddelete') && rangeCount === 1 && range.collapsed === false) {
-					// Deletion when a block is inside a bigger selection currently
-					// In this case, we check if we find an aloha-block. If yes, we delete it right away as the browser does not delete it correctly by default
-					var traverseSelectionTree;
-					traverseSelectionTree = function (selectionTree) {
+				if (that._activeBlock && isDeleteOperation && isOnlyBlockSelected) {
+					that._activeBlock.confirmedDestroy( function () {
+						// In this case, the default command shall not be executed.
+						data.preventDefault = true;
+						that._activeBlock.destroy();
+					});
+				} else if (
+					!that._activeBlock &&
+					isDeleteOperation &&
+					selection.getRangeCount() === 1 &&
+					selection.getRangeAt(0).collapsed === false
+				) {
+					// Deletion when a block is inside a bigger selection
+					// currently In this case, we check if we find an
+					// aloha-block. If yes, we delete it right away as the
+					// browser does not delete it correctly by default
+					(function traverseSelectionTree(selectionTree) {
 						var el;
 						for (var i = 0, l = selectionTree.length; i < l; i++) {
 							el = selectionTree[i];
-							if (el.domobj.nodeType === 1) { // DOM node
+							if (el.domobj && el.domobj.nodeType === 1) { // DOM node
 								var $el = jQuery(el.domobj);
 								if (el.selection === 'full' && $el.is('.aloha-block')) {
 									$el.remove();
@@ -263,8 +302,7 @@ define([
 								}
 							}
 						}
-					};
-					traverseSelectionTree(Aloha.Selection.getSelectionTree());
+					}(Aloha.Selection.getSelectionTree()));
 				}
 			});
 

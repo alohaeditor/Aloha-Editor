@@ -3,13 +3,17 @@ define([
 	'aloha/jquery',
 	'aloha/ephemera',
 	'table/table-plugin-utils',
-	'util/browser'
+	'util/browser',
+	'util/misc',
+	'util/dom'
 ], function (
 	Aloha,
 	jQuery,
 	Ephemera,
 	Utils,
-	Browser
+	Browser,
+	Misc,
+	Dom
 ) {
 	/**
 	 * Constructs a TableCell.
@@ -27,11 +31,16 @@ define([
 
 		//original Td must be a DOM node so that the this.obj.context property is available
 		//this transformation will properly handle jQuery objects as well as DOM nodes
-		originalTd = jQuery(originalTd).get(0);
+		var $td = jQuery(originalTd);
+		originalTd = $td.get(0);
 
-		this.obj = jQuery(originalTd);
+		this.obj = $td;
 		this.tableObj = tableObj;
-
+		var ephemeraClass = 'aloha-ephemera';
+		var isEphemeral = $td.hasClass(ephemeraClass) || $td.parent().hasClass(ephemeraClass);
+		if (!isEphemeral) {
+			jQuery(originalTd).addClass(this.tableObj.tablePlugin.defaultCellClass);
+		}
 		tableObj.cells.push(this);
 	};
 
@@ -73,7 +82,7 @@ define([
 		Ephemera.markWrapper($wrapper);
 
 		// attach events to the editable div-object
-		$wrapper.bind('focus', function ($event) {
+		$wrapper.on('focus', function ($event) {
 			// activate the button for splitting cells if the clicked cell has an active row- or colspan
 			if (Utils.colspan(cell.obj) > 1 || Utils.rowspan(cell.obj) > 1) {
 				cell.tableObj.tablePlugin._splitcellsButton.enable(true);
@@ -91,12 +100,17 @@ define([
 			cell._editableFocus($event);
 		});
 
-		$wrapper.bind('mousedown', function ($event) {
+		$wrapper.on('mousedown', function ($event) {
 			// ugly workaround for ext-js-adapter problem in ext-jquery-adapter-debug.js:1020
 			if ($event.currentTarget) {
 				$event.currentTarget.indexOf = function () {
 					return -1;
 				};
+			}
+
+			// prevent cell selection, if mousedown was on a block handle
+			if (jQuery($event.target).hasClass('aloha-block-draghandle')) {
+				return;
 			}
 
 			cell._editableMouseDown($event);
@@ -133,6 +147,7 @@ define([
 				var grid = Utils.makeGrid($rows);
 
 				table.selection.selectedCells = [];
+				table.selection.currentRectangle = rect;
 				var selectClass = table.get('classCellSelected');
 				Utils.walkGrid(grid, function (cellInfo, j, i) {
 					if (Utils.containsDomCell(cellInfo)) {
@@ -153,19 +168,19 @@ define([
 			}
 		});
 
-		$wrapper.bind('blur', function ($event) {
+		$wrapper.on('blur', function ($event) {
 			cell._editableBlur($event);
 		});
-		$wrapper.bind('keyup', function ($event) {
+		$wrapper.on('keyup', function ($event) {
 			cell._editableKeyUp($event);
 		});
-		$wrapper.bind('keydown', function ($event) {
+		$wrapper.on('keydown', function ($event) {
 			cell._editableKeyDown($event);
 		});
-		$wrapper.bind('mouseover', function ($event) {
+		$wrapper.on('mouseover', function ($event) {
 			cell._selectCellRange();
 		});
-		$elem.bind('mouseover', function ($event) {
+		$elem.on('mouseover', function ($event) {
 			cell._selectCellRange();
 		});
 
@@ -175,7 +190,18 @@ define([
 			return $wrapper;
 		});
 
-		$elem.bind('mousedown', function ($event) {
+		$elem.on('mousedown', function ($event) {
+			// prevent cell selection, if mousedown was on a block handle
+			if (jQuery($event.target).hasClass('aloha-block-draghandle')) {
+				return;
+			}
+
+			// when clicked on something nested, prevent selection of whole cell
+			if ($event.target != $elem[0]) {
+				$event.stopPropagation();
+				return;
+			}
+
 			window.setTimeout(function () {
 				// Select the entire cell's content.
 				cell.wrapper.trigger('focus');
@@ -218,6 +244,7 @@ define([
 
 				table.selection.selectedCells = [];
 				var selectClass = table.get('classCellSelected');
+				table.selection.currentRectangle = rect;
 				Utils.walkGrid(grid, function (cellInfo, j, i) {
 					if (Utils.containsDomCell(cellInfo)) {
 						if (i >= rect.top && i <= rect.bottom && j >= rect.left && j <= rect.right) {
@@ -237,23 +264,32 @@ define([
 			$event.stopPropagation();
 		});
 
-		if ($elem.get(0)) {
-			$elem.get(0).onselectstart = function () {
-				return false;
-			};
+		if ($elem[0]) {
+			$elem[0].onselectstart = Misc.eventPreventDefault;
 		}
 
+		$elem.on('mouseenter', function (evt) {
+			Misc.addEditingHelpers($wrapper);
+		});
+		$elem.on('mouseleave', function (evt) {
+			Misc.removeEditingHelpers($wrapper);
+		});
+
+		Aloha.bind('aloha-smart-content-changed', function (event, data) {
+			if (data.editable.isActive && data.triggerType === 'block-change') {
+				Misc.addEditingHelpers($wrapper);
+			}
+		});
+
 		// set contenteditable wrapper div
-		this.wrapper = $elem.children();
-		if (this.wrapper.get(0)) {
-			this.wrapper.get(0).onselectstart = function () {
-				window.event.cancelBubble = true;
-			};
+		this.wrapper = $wrapper;
+		if ($wrapper[0]) {
+			var wrapper = $wrapper[0];
+
+			wrapper.onselectstart = Misc.eventStopPropagation;
 			// Disabled the dragging of content, since it makes cell selection
 			// difficult.
-			this.wrapper.get(0).ondragstart = function () {
-				return false
-			};
+			wrapper.ondragstart = Misc.eventPreventDefault;
 		}
 
 		return this;
@@ -269,6 +305,8 @@ define([
 		var wrapper = jQuery(this.obj.children('.aloha-table-cell-editable'));
 
 		if (wrapper.length) {
+			Misc.removeEditingHelpers(wrapper);
+
 			// unwrap cell contents without re-creating dom nodes
 			wrapper.parent().append(
 				wrapper.contents()
@@ -281,6 +319,9 @@ define([
 			// remove the click event of the
 			this.obj.unbind('click');
 			this.obj.unbind('mousedown');
+			this.obj.unbind('mouseenter');
+			this.obj.unbind('mouseleave');
+			this.obj.get(0).onselectstart = null;
 
 			if (jQuery.trim(this.obj.attr('class')) == '') {
 				this.obj.removeAttr('class');
@@ -341,6 +382,18 @@ define([
 
 		// remove "active class"
 		this.obj.removeClass('aloha-table-cell_active');
+
+		// if the editable wrapper in the table cell only contains a single, empty
+		// paragraph, we remove that paragraph
+		if (this.wrapper.children().length === 1) {
+			this.wrapper.find('p').filter(function (index) {
+				var clone = jQuery(this).clone();
+				// the last br in the paragraph does not count, so we remove
+				// it before checking the paragraph for emptiness
+				clone.find('br:last-child').remove();
+				return Dom.isEmpty(clone[0]);
+			}).remove();
+		}
 	};
 
 	/**
@@ -421,7 +474,7 @@ define([
 			"left": left
 		};
 	};
-
+	
 	/**
 	 * Toggles selection of cell.
 	 * This works only when cell selection mode is active.
@@ -432,18 +485,27 @@ define([
 		}
 
 		var rect = this._getSelectedRect();
-
 		var table = this.tableObj;
+		// if the range contains a single cell only, and no cells were selected before,
+		// we do not select the whole cell. This enables selecting text in a single cell
+		// without selecting the whole cell, even if - while selecting the text - the user
+		// moves the mouse out of the text wrapper into the cell itself
+		if (rect.top === rect.bottom && rect.left === rect.right && table.selection.selectedCells.length === 0) {
+			return;
+		}
+
 		var $rows = table.obj.children().children('tr');
 		var grid = Utils.makeGrid($rows);
 
 		table.selection.selectedCells = [];
+		table.selection.currentRectangle = rect;
 		var selectClass = table.get('classCellSelected');
 		Utils.walkGrid(grid, function (cellInfo, j, i) {
 			if (Utils.containsDomCell(cellInfo)) {
 				if (i >= rect.top && i <= rect.bottom && j >= rect.left && j <= rect.right) {
 					jQuery(cellInfo.cell).addClass(selectClass);
 					table.selection.selectedCells.push(cellInfo.cell);
+
 				} else {
 					jQuery(cellInfo.cell).removeClass(selectClass);
 				}

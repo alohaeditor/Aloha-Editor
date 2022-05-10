@@ -35,7 +35,7 @@ define([
 	'aloha/core',
 	'aloha/plugin',
 	'aloha/command',
-	'contenthandler/contenthandler-utils',
+	'util/contenthandler',
 	'aloha/console',
 	'aloha/copypaste',
 	'aloha/contenthandlermanager',
@@ -124,6 +124,12 @@ define([
 	 * @param {WrappedRange} range The range to restore.
 	 */
 	function restoreSelection(range) {
+		var editable = CopyPaste.getEditableAt(range);
+
+		// setting the focus is needed for mozilla to have a working rangeObject.select()
+		if (editable && Aloha.browser.mozilla && document.activeElement !== editable.obj[0]) {
+			editable.obj.focus();
+		}
 		CopyPaste.setSelectionAt(range);
 		window.scrollTo(
 			scrollPositionBeforePaste.x,
@@ -238,41 +244,6 @@ define([
 	}
 
 	/**
-	 * Delete the first match in a string
-	 *
-	 * @param {String} string String to modify
-	 * @param {String} match Match string must be replaced
-	 * @returns {string} Original string with the first match replaced.
-	 */
-	function deleteFirstMatch(string, match) {
-		return string.replace(match, '');
-	}
-
-	/**
-	 * Delete the first Header tag if exists.
-	 *
-	 * @param htmlString
-	 * @returns {XML|string}
-	 */
-	function deleteFirstHeaderTag(htmlString) {
-		var matchFirstHeaderTag = /^<h\d+.*?>/i.exec(htmlString),
-		    startHeaderTag,
-		    endHeaderTag;
-
-		if (matchFirstHeaderTag === null) {
-			return htmlString;
-		}
-
-		startHeaderTag = matchFirstHeaderTag[0];
-		endHeaderTag = '</' + startHeaderTag.substr(1);
-
-		return deleteFirstMatch(
-			deleteFirstMatch(htmlString, startHeaderTag),
-			endHeaderTag
-		);
-	}
-
-	/**
 	 * Checks if browser and document mode are 9 or above versions.
 	 * @param  {Document} doc
 	 * @return {boolean}
@@ -300,7 +271,7 @@ define([
 			return;
 		}
 
-		var content = deleteFirstHeaderTag($clipboard.html());
+		var content = $clipboard.html();
 		var handler = ContentHandlerManager.get('formatless');
 
 		content = handler ? handler.handleContent(content) : content;
@@ -378,6 +349,13 @@ define([
 		var doc = $editable[0].ownerDocument;
 		if (isIEorDocModeGreater9(doc)) {
 			$editable.bind('beforepaste', function ($event) {
+				if ($event.target.nodeName === 'INPUT' ||
+						$event.target.nodeName === 'TEXTAREA') {
+					// We have to let the browser handle most events concerning
+					// text input telements.
+					return;
+				}
+
 				scrollPositionBeforePaste.x = window.scrollX ||
 					document.documentElement.scrollLeft;
 				scrollPositionBeforePaste.y = window.scrollY ||
@@ -389,6 +367,11 @@ define([
 			});
 		} else {
 			$editable.bind('paste', function ($event) {
+				if ($event.target.nodeName === 'INPUT' ||
+						$event.target.nodeName === 'TEXTAREA') {
+					return;
+				}
+
 				scrollPositionBeforePaste.x = window.scrollX ||
 					document.documentElement.scrollLeft;
 				scrollPositionBeforePaste.y = window.scrollY ||

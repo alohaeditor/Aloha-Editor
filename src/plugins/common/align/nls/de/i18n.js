@@ -1,5 +1,5 @@
 define({
-	"button.alignright.tooltip": "Rechtsbünding",
+	"button.alignright.tooltip": "Rechtsbündig",
 	"button.alignleft.tooltip": "Linksbündig",
 	"button.aligncenter.tooltip": "Zentriert",
 	"button.alignjustify.tooltip": "Blocksatz",

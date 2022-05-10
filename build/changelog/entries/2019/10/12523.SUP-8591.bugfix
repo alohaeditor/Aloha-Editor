@@ -1,0 +1,2 @@
+A Reflected XSS vulnerability is fixed now. When using the proxy plugin users could enter malicious code in the url, which would be printed in the document.
+https://github.com/alohaeditor/Aloha-Editor/issues/1560

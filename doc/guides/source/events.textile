@@ -24,7 +24,7 @@ module; forces a map argument; no event object).
 <javascript>
 define(['PubSub'], function (PubSub) {
     PubSub.sub('event.name', function (eventArgument) {});
-    PusSub.pub('event.name', {key: value});
+    PubSub.pub('event.name', {key: value});
 });
 </javascript>
 
@@ -118,6 +118,7 @@ When an editable has been deactivated by clicking on a non editable part of the 
 <javascript>
 Aloha.trigger( 'aloha-editable-deactivated', {
 	'editable'		: , //object of the editable
+	'newEditable'	: , // object of the new editable (may be null)
 } );
 </javascript>
 
@@ -407,3 +408,18 @@ Aloha.trigger( 'aloha-link-selected-in-linkbrowser' , // Aloha );
 </script>
 </body>
 </html>
+
+h3. Plugin: Block
+
+Events provided by the Block Plugin.
+
+h4. aloha.drop.block.in.editable Event
+
+Is published when a draggable block is dropped into an editable part.
+
+<javascript>
+PubSub.pub('aloha.drop.block.in.editable', {
+  element   : , // object of dropped block
+  editable  : , // object of target editable
+});
+</javascript>

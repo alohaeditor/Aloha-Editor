@@ -69,9 +69,22 @@ define([
 	 *                   dialog element.
 	 */
 	function originatesFromDialog($event) {
-		var $target = $($event.target);
-		return $target.is('.aloha-dialog')
-			|| $target.closest('.aloha').length;
+		return $($event.target).closest('.aloha-dialog').length > 0;
+	}
+
+	/**
+	 * Checks whether the given jQuery event originates from a jQuery UI
+	 * element.
+	 *
+	 * Just like originatesFromDialog() this is used to prevent deactivating
+	 * editables when interacting with UI elements in a hackish way.
+	 *
+	 * @param {jQuery<Event>} $event The processed event.
+	 * @returns {boolean} true if $event is initieated from a jQuery UI
+	 *		element, and false otherwise.
+	 */
+	function originatesFromUiWidget($event) {
+		return $($event.target).closest('.ui-widget').length > 0;
 	}
 
 	/**
@@ -83,7 +96,8 @@ define([
 	function registerEvents() {
 		$('html').mousedown(function ($event) {
 			if (Aloha.activeEditable && !Aloha.eventHandled
-					&& !originatesFromDialog($event)) {
+					&& !originatesFromDialog($event)
+					&& !originatesFromUiWidget($event)) {
 				Aloha.deactivateEditable();
 			}
 		}).mouseup(function () {
@@ -143,6 +157,18 @@ define([
 		// starting from IE9)
 		if (Aloha.browser.msie && parseFloat(Aloha.browser.version) >= 9.0 && typeof document.execCommand === 'function') {
 			document.execCommand('AutoUrlDetect', false, false);
+		}
+
+		// Add hacky workaround for IE problem when editing in a frameset:
+		// Sometimes it is necessary to click into an editable multiple times to activate it (for the first time)
+		if (Aloha.browser.msie && document.body && document.body.children.length > 0) {
+			var sel = window.getSelection();
+			var range = document.createRange();
+			range.setStart(document.body.children[0], 0);
+			range.collapse(true);
+			sel.removeAllRanges();
+			sel.addRange(range);
+			sel.removeAllRanges();
 		}
 
 		registerEvents();
@@ -412,7 +438,7 @@ define([
 			var i;
 			for (i = 0; i < editables.length; i++) {
 				if (editables[i] !== editable && editables[i].isActive) {
-					editables[i].blur();
+					editables[i].blur(editable);
 				}
 			}
 			Aloha.activeEditable = editable;
@@ -626,6 +652,30 @@ define([
 		},
 
 		/**
+		 * Disable native table editing
+		 */
+		disableInlineTableEditing: function () { // enableInlineTableEditing
+			try {
+				// This will disable browsers native table editing facilities in
+				// order to disable resize handles.
+				var supported;
+				try {
+					supported = document.queryCommandSupported('enableInlineTableEditing');
+				} catch (e) {
+					supported = false;
+					Aloha.Log.log('enableInlineTableEditing is not supported.');
+				}
+				if (supported) {
+					document.execCommand('enableInlineTableEditing', false, false);
+					Aloha.Log.log('enableInlineTableEditing disabled.');
+				}
+			} catch (e2) {
+				Aloha.Log.error(e2, 'Could not disable enableInlineTableEditing');
+				// this is just for others, who will not support disabling enableInlineTableEditing
+			}
+		},
+
+		/**
 		 * Human-readable string representation of this.
 		 *
 		 * @hide
@@ -643,7 +693,8 @@ define([
 			function uaMatch(ua) {
 				ua = ua.toLowerCase();
 
-				var match = /(chrome)[ \/]([\w.]+)/.exec(ua) ||
+				var match = /(edge)[ \/]([\w.]+)/.exec(ua) ||
+					/(chrome)[ \/]([\w.]+)/.exec(ua) ||
 					/(webkit)[ \/]([\w.]+)/.exec(ua) ||
 					/(opera)(?:.*version|)[ \/]([\w.]+)/.exec(ua) ||
 					/(msie) ([\w.]+)/.exec(ua) ||

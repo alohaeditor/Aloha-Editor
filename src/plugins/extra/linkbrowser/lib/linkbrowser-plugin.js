@@ -28,6 +28,18 @@ define([
 		init: function (config) {
 			this._super(config);
 
+			// If the link plugin tries to display any special attributes
+			// in the sidebar, make sure the repository does not filter
+			// them out.
+			if (Links.settings.sidebar && config.filter) {
+				jQuery.each(Links.settings.sidebar, function (idx, val) {
+					config.filter.push(val.attr);
+				});
+			}
+
+
+			this.element.addClass('aloha-dialog');
+
 			var that = this;
 
 			this._linkBrowserButton = Ui.adopt('linkBrowser', Button, {

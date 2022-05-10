@@ -88,7 +88,8 @@
 					} else {
 						jQuery( obj ).removeAttr( 'data-name' );
 					}
-				}
+				},
+				anchorLinks: true
 			},
 			table: {
 				// all elements with no specific configuration are not allowed to insert tables
@@ -145,7 +146,7 @@
 				showOnToolbar: true
 			},
 			formatlesspaste :{
-				formatlessPasteOption : true,
+				formatlessPasteOption : false,
 				strippedElements : [
 				"em",
 				"strong",
@@ -213,6 +214,37 @@
 	};
 
 	Aloha.settings.contentHandler = {
-		insertHtml: [ 'word', 'generic', 'oembed', 'sanitize' ]
+		insertHtml: [ 'word', 'generic', 'oembed', 'sanitize' ],
+		handler: {
+			generic: {
+				transformFormattings: false,
+				transformFormattingsMapping: [
+					{
+						nodeNameIs: 'span',
+						nodeNameShould: 'b',
+						attribute: {
+							name: 'style',
+							value: 'font-weight: 700' 
+						}
+					},
+					{
+						nodeNameIs: 'span',
+						nodeNameShould: 'sup',
+						attribute: {
+							name: 'style',
+							value: 'font-size: 12.6017px'
+						}
+					},
+					{
+						nodeNameIs: 'span',
+						nodeNameShould: 'sub',
+						attribute: {
+							name: 'style',
+							value: 'font-size: 12.6px'
+						}
+					}
+				]
+			}
+		}
 	};
 } )( window );

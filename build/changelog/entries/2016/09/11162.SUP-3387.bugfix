@@ -1,0 +1,3 @@
+Sometimes, when editables with configured content rules contained blocks, the content rules
+were also applied to the block contents.
+This has been fixed now.

@@ -1,0 +1,1 @@
+When all plugins were disabled for a certain editable, the empty floating toolbar was shown nevertheless. This has been fixed.

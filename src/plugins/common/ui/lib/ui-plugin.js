@@ -54,10 +54,11 @@ define('ui/ui-plugin', [
 	'use strict';
 
 	var context = new Context(),
-		toolbar = new Toolbar(context, getToolbarSettings());
+		toolbar = new Toolbar(context, getToolbarSettings(), getResponsiveMode());
 
 	Aloha.bind('aloha-editable-activated', function (event, alohaEvent) {
 		Surface.show(context);
+		toolbar.setWidth();
 		Container.showContainersForContext(context, event);
 	});
 
@@ -85,6 +86,14 @@ define('ui/ui-plugin', [
 		);
 	}
 
+	function getResponsiveMode() {
+		if (Aloha.settings.toolbar && Aloha.settings.toolbar.hasOwnProperty('responsiveMode')) {
+			var value = Aloha.settings.toolbar.responsiveMode;
+			return value.toString() === '1' || value === true || value.toString().toLowerCase() === 'true';
+		}
+		return false;
+	}
+
 	function primaryScopeForegroundTab() {
 		var tabs = toolbar._tabs,
 		    primaryScope = Scopes.getPrimaryScope(),
@@ -92,7 +101,7 @@ define('ui/ui-plugin', [
 		    i;
 		for (i = 0; i < tabs.length; i++) {
 			settings = tabs[i].settings;
-			if ('object' === $.type(settings.showOn) && settings.showOn.scope === primaryScope) {
+			if ('object' === $.type(settings.showOn) && settings.showOn.scope === primaryScope && tabs[i].tab.hasVisibleComponents()) {
 				tabs[i].tab.foreground();
 				break;
 			}

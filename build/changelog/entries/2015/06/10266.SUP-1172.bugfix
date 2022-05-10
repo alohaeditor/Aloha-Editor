@@ -1,0 +1,4 @@
+﻿When the emptylink plugin was used together with a plugin that would set a
+link's href attribute to '#' after selecting an item from the repository 
+browser, the emptylink plugin would incorrectly classify that link as empty.
+This has been fixed now.

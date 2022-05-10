@@ -1,0 +1,7 @@
+The generic content handler now allows configuration to transform elements with specific attributes into other elements. This is used to counter an issue introduced in Chrome 75.
+
+Chrome will try to maintain styling on the copied range.
+Depending on the styling of the copied element this may lead to **&amp;lt;b&amp;gt;** elements turning into **&amp;lt;span style="font-size: 700"&amp;gt;**
+As of now Chrome is unable to copy **&amp;lt;sub&amp;gt;** and **&amp;lt;sup&amp;gt;** elements in contenteditable. This leads to **&amp;lt;sub&amp;gt;** and **&amp;lt;sup&amp;gt;** elements turning into spans.
+
+You can find an example configuration in the <a href="https://www.alohaeditor.org/guides/plugin_contenthandler.html#using-configuration">documenation</a>.

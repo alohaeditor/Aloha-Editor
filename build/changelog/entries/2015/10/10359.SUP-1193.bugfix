@@ -1,0 +1,3 @@
+The linkbrowser plugin would filter out attributes from repository elements,
+even if the link plugin was configured to display them in the sidebar. This
+has been fixed.

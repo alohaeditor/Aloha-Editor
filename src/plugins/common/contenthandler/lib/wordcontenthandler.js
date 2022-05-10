@@ -28,7 +28,7 @@ define([
 	'jquery',
 	'aloha',
 	'aloha/contenthandlermanager',
-	'contenthandler/contenthandler-utils',
+	'util/contenthandler',
 	'util/dom2',
 	'util/html'
 ], function (
@@ -106,7 +106,7 @@ define([
 		case 'tr':
 			return 0 === $node.find('td,th').length;
 		default:
-			return '' === $.trim($node.text());
+			return '' === $.trim($node.text()) && $node.html().indexOf('&nbsp;') < 0;
 		}
 	}
 
@@ -119,6 +119,11 @@ define([
 	 *         office document.
 	 */
 	function isWordContent($content) {
+		// Edge does not paste the mso classes anymore, so we need to treat everything
+		// as if coming from word
+		if (Aloha.browser.edge) {
+			return true;
+		}
 		// Because reading the html of the content is way faster than iterating
 		// its entire node tree, therefore we attempt this first.
 		if (0 === $content.length || !MSO.test($content[0].outerHTML)) {
@@ -160,29 +165,6 @@ define([
 	}
 
 	/**
-	 * Replaces unnecessary new line characters within text nodes in Word HTML 
-	 * with a space.
-	 *
-	 * @param {jQuery.<HTMLElement>} $content
-	 */
-	function replaceWordNewLines($content) {
-		var i;
-		var $nodes = $content.contents();
-		var node;
-
-		for (i = 0; i < $nodes.length; i++) {
-			node = $nodes[i];
-
-			if (Node.TEXT_NODE === node.nodeType) {
-				var text = node.nodeValue;
-				node.nodeValue = text.replace(/[\r\n]+/gm, ' ');
-			} else {
-				replaceWordNewLines($nodes.eq(i));
-			}
-		}
-	}
-
-	/**
 	 * Cleanup MS Word HTML.
 	 *
 	 * @param {jQuery.<HTMLElement>} $content
@@ -202,18 +184,58 @@ define([
 			if ('div' === nodeName || 'span' === nodeName) {
 
 				// Because footnotes for example are wrapped in divs and should
-				// be unwrap.
+				// be unwrapped.
 				$node.contents().unwrap();
-			} else if ('td' !== nodeName && isEmpty($node)) {
+			} else if ('ul' === nodeName || 'ol' === nodeName) {
+				/*
+				 * Word renders nested lists as
+				 *
+				 * <ul>
+				 *   <li>Foo</li>
+				 *   <ul>
+				 *     <li>Bar</li>
+				 *   </ul>
+				 * </ul>
+				 *
+				 * instead of
+				 *
+				 * <ul>
+				 *   <li>Foo
+				 *     <ul>
+				 *       <li>Bar</li>
+				 *     </ul>
+				 *   </li>
+				 * </ul>
+				 *
+				 * Since the markup is not valid, the nested lists would be removed by
+				 * the generic content handler.
+				 */
+				if ($node.parent().is('ul,ol')) {
+					var prev = $node.prev('li');
+
+					if (prev.length > 0) {
+						prev.append($node)
+					} else {
+						$node.contents().unwrap();
+					}
+				}
+				if (isEmpty($node)) {
+					$node.remove();
+				}
+			} else if ('td' !== nodeName && 'li' !== nodeName && isEmpty($node)) {
 
 				// Because any empty element (like spaces wrapped in spans) are
 				// not needed, except table cells.
 				$node.contents().unwrap();
+			} else if (nodeName === 'a'
+					&& $node.attr('href') && $node.attr('href').match("^file://")) {
+				$node.contents().unwrap();
+			} else if (nodeName === 'p' && $node.attr('align')) {
+				$node.removeAttr('align');
 			}
 		}
 
 		removeUnrenderedChildNodes($content);
-		replaceWordNewLines($content);
 	}
 
 	/**
@@ -227,6 +249,19 @@ define([
 		});
 		$content.find('p.MsoSubtitle').each(function () {
 			Aloha.Markup.transformDomObject($(this), 'h2');
+		});
+	}
+
+	/**
+	 * Fix content, that apparently comes from word's correction mode:
+	 * 
+	 * * Remove 'del' elements
+	 * * Unwrap contents of 'ins' elements
+	 */
+	function fixCorrections($content) {
+		$content.find('del').remove();
+		$content.find('ins').each(function() {
+			jQuery(this).contents().unwrap();
 		});
 	}
 
@@ -265,6 +300,25 @@ define([
 			// otherwise check for a number, letter or '(' as first character
 			return $.trim(listSpan.text()).match(/^([0-9]{1,3}\.)|([0-9]{1,3}\)|([a-zA-Z]{1,5}\.)|([a-zA-Z]{1,5}\)))$/) ? true : false;
 		},
+		
+		/**
+		 * Checks if the specified node is enclosed in a <!--[if !supportLists]--> comment.
+		 * @param node The Node, whose position should be checked.
+		 * @param stopAt An ancestor Node of node, where the search will be stopped (this node will not be searched any more).
+		 * @return true if the node is enclosed in a <!--[if !supportLists]--> comment within the stopAt node, otherwise false.
+		 */
+		checkElementIsEnclosedInListsComment: function (node, stopAt) {
+			while (node && node !== stopAt) {
+				var sibling = node;
+				while ((sibling = sibling.previousSibling) !== null) {
+					if (Node.COMMENT_NODE === sibling.nodeType && $.trim(sibling.textContent) === '[if !supportLists]') {
+						return true;
+					}
+				}
+				node = node.parentNode;
+			}
+			return false;
+		},
 
 		/**
 		 * Try to detect the list type (ordered or bulleted).
@@ -274,16 +328,29 @@ define([
 		 */
 		detectListType: function (jqElem) {
 			var ordered = false;
+			var removeSpan = true;
 			// get the first span in the element
 			var firstSpan = jQuery(jqElem.find('span.' + BULLET_CLASS));
 			if (firstSpan.length === 0) {
+				firstSpan = jqElem.find('span').filter(function() {
+					var $this = $(this);
+					var style = $this.attr('style') || '';
+					return style.indexOf('mso-list: Ignore') >= 0 || style.indexOf('mso-list:Ignore') >= 0;
+				});
+			}
+			if (firstSpan.length === 0) {
 				firstSpan = jqElem.find('span').eq(0);
+				if (firstSpan.length > 0) {
+					removeSpan = WordContentHandler.checkElementIsEnclosedInListsComment(firstSpan.get(0), jqElem.get(0));
+				}
 			}
 			if ($.trim(firstSpan.text()).length !== 0) {
 				// use the span to detect whether the list shall be ordered or unordered
 				ordered = this.isOrderedList(firstSpan);
 				// finally remove the span (numbers, bullets are rendered by the browser)
-				firstSpan.remove();
+				if (removeSpan) {
+					firstSpan.remove();
+				}
 			} else {
 				firstSpan.remove();
 				var f = function (index) {
@@ -310,26 +377,18 @@ define([
 				paragraphs;
 
 			// first step is to find all paragraphs which will be converted into list elements and mark them by adding the class 'aloha-list-element'
-			detectionFilter = 'p.MsoListParagraphCxSpFirst,p.MsoListParagraphCxSpMiddle,p.MsoListParagraphCxSpLast,p.MsoListParagraph,p span';
+			detectionFilter = 'p[style*="mso-list"], p[class*="MsoListParagraph"]';
 			paragraphs = content.find(detectionFilter);
 			paragraphs.each(function () {
-				var jqElem = jQuery(this),
-					fontFamily = jqElem.css('font-family') || '',
-					msoList = jqElem.css('mso-list') || '',
-					style = jqElem.attr('style') || '';
+				var $elem = jQuery(this);
 
-				// detect special classes
-				if (jqElem.hasClass('MsoListParagraphCxSpFirst') || jqElem.hasClass('MsoListParagraph')) {
-					jqElem.addClass(LIST_ELEMENT_CLASS);
-				} else if (fontFamily.indexOf('Symbol') >= 0) {
-					jqElem.closest('p').addClass(LIST_ELEMENT_CLASS);
-				} else if (fontFamily.indexOf('Wingdings') >= 0) {
-					jqElem.closest('p').addClass(LIST_ELEMENT_CLASS);
-				} else if (msoList !== '') {
-					jqElem.closest('p').addClass(LIST_ELEMENT_CLASS);
-				} else if (style.indexOf('mso-list') >= 0) {
-					jqElem.closest('p').addClass(LIST_ELEMENT_CLASS);
+				// IE special: IE automatically inserts <ul> <ol> & <li>
+				// If the parent of the elemnt is already <li>, we don't create a another list item
+				if ($elem.parent().prop("tagName") === "LI") {
+					return;
 				}
+
+				$elem.addClass(LIST_ELEMENT_CLASS);
 			});
 
 			// now we search for paragraphs with three levels of nested spans, where the innermost span contains nothing but &nbsp;
@@ -398,10 +457,13 @@ define([
 
 					// add a new list item
 					jqNewLi = jQuery('<li></li>');
+
 					// add the li into the list
 					jqList.append(jqNewLi);
+
 					// append the contents of the old dom element to the li
 					jqElem.contents().appendTo(jqNewLi);
+
 					// replace the old dom element with the new list
 					jqElem.replaceWith(jqList);
 
@@ -454,6 +516,7 @@ define([
 						jqNewLi = jQuery('<li></li>');
 						// add the li into the list
 						jqList.append(jqNewLi);
+
 						// append the contents of the old dom element to the li
 						jqElem.contents().appendTo(jqNewLi);
 						// remove the old dom element
@@ -462,7 +525,7 @@ define([
 				});
 			}
 		},
-		
+
 		/**
 		 * Remove paragraph numbering from TOC feature
 		 * @param content
@@ -532,6 +595,7 @@ define([
 		 * @param {jQuery.<HTMLElement>} $content
 		 */
 		transformWordContent: function ($content) {
+			fixCorrections($content);
 			this.transformToc($content);
 			this.removeParagraphNumbering($content);
 			this.transformListsFromWord($content);

@@ -39,6 +39,31 @@ define([
 
 	var Utils = {
 		/**
+		 * Creates markup for the jQuery constructor to create a copy of
+		 * the specified cell.
+		 *
+		 * The cell type (td or th) as well as the classes are copied.
+		 *
+		 * @param cell The original table cell to copy
+		 * @return A string containing markup for the copied from the specified cell
+		 */
+		'copyCellMarkup': function (cell) {
+			if (!cell) {
+				return '<td></td>';
+			}
+
+			var nodeName = cell.nodeName.toLowerCase();
+			var classes = cell.classList;
+
+			if (classes) {
+				classes.remove('aloha-cell-selected');
+				return '<' + nodeName + ' class="' + classes + '"></' + nodeName + '>';
+			}
+
+			return '<' + nodeName + '></' + nodeName + '>';
+		},
+
+		/**
 		 * Translates the DOM-Element column offset of a table-cell to the
 		 * column offset of a grid-cell, which is the column index adjusted
 		 * by other cells' rowspan and colspan values.
@@ -404,6 +429,28 @@ define([
 			$( cell ).find('.aloha-table-cell-editable').eq(0).css({
 				'width': width,
 				'word-wrap': 'break-word'
+			});
+		},
+
+		'convertCellWidthToPercent' : function(rows) {
+			var changes = [];
+			//we have to make two runs to not change the withs the calculations are based on
+			Utils.walkCells(rows, function(ri, ci, gridCi, colspan, rowspan) {
+				var currentRow = $(rows[ri]),
+					selectorWidth = currentRow.find('.aloha-table-selectrow').outerWidth(),
+					rowWidth = currentRow.width() - selectorWidth,
+					currentCell = $(currentRow.children()[ci]),
+					cellWidth = currentCell.outerWidth();
+
+				// skip the select & cells with colspans
+				if (currentCell.hasClass('aloha-table-selectrow') || currentRow.hasClass('aloha-table-selectcolumn') || colspan > 1) {
+					return true;
+				}
+				changes.push({cell : currentCell, width : Math.round( (cellWidth / rowWidth) * 100) + '%'});
+			});
+			//make the actual css changes to the dom elements
+			$.each(changes, function(index, change){
+				change.cell.css('width', change.width);
 			});
 		},
 

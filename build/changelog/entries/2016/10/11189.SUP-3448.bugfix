@@ -1,0 +1,4 @@
+When the link or wai-lang plugin was loaded, switching between editables by clicking
+into them did not always work. In those cases, the focus continuously changed between two
+editables while typing.
+This issue has been fixed.

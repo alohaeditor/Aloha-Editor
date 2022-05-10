@@ -1,0 +1,5 @@
+Insertion of br Tags was still possible (by pressing Shift-Enter),
+if br was forbidden by content rules. This has been fixed now.
+When br tags are forbidden, but p Tags are allowed,
+pressing Enter or Shift-Enter will insert a paragraph (if possible without violating the HTML specification).
+If both p and br are forbidden (or not possible), Enter or Shift-Enter will just be ignored.

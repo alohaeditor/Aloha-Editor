@@ -1,0 +1,4 @@
+The tooltip of menu buttons did not disappear when the corresponding
+drop down menu was opened and part of the menu was concealed. Also
+sometimes when open drop down menu would not close, when another
+menu button was clicked. These issues have been fixed.

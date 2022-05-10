@@ -1,0 +1,2 @@
+﻿A bug with the selection sometimes caused an object not to be inserted into 
+the DOM. The insertion problem has been fixed now.

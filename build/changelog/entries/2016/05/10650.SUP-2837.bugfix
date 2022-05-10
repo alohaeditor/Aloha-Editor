@@ -1,0 +1,1 @@
+Removed a special character from one of the block plugin files, that prevented Aloha Editor from loading in the unminified version.

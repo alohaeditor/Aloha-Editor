@@ -1,0 +1,2 @@
+Clicking into a table of an inactive editable did not work as expected
+when using Internet Explorer and has been fixed now.

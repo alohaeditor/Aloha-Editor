@@ -1,0 +1,4 @@
+When using both the table-plugin and the block-plugin, selecting
+text in a table cell using the mouse did not work, when the mouse button
+was released while hovering of the cell, but not the editable in the cell.
+In such cases, the selection was removed, which has been fixed now.

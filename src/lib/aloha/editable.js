@@ -160,21 +160,10 @@ define([
 	function registerEvents(editable) {
 		var $editable = editable.obj;
 
-		$editable.mousedown(function (event) {
-			if (!Aloha.eventHandled) {
-				Aloha.eventHandled = true;
-				if (Aloha.activeEditable == null || typeof Aloha.activeEditable === 'undefined' || $editable[0] !== Aloha.activeEditable.obj[0]) {
-					Aloha.mouseEventChangedEditable = true;
-				}
-				return editable.activate(event);
-			}
-		});
-		$editable.mouseup(function (event) {
+		$editable.mousedown(function () {
+			Aloha.eventHandled = true;
+		}).mouseup(function () {
 			Aloha.eventHandled = false;
-		});
-
-		$editable.focus(function (event) {
-			return editable.activate(event);
 		});
 
 		$editable.keydown(function (event) {
@@ -193,6 +182,12 @@ define([
 			// triggers a smartContentChange to get the right charcode
 			// To test try http://www.w3.org/2002/09/tests/keys.html
 			Aloha.activeEditable.smartContentChange(event);
+		});
+
+		// native drag and drop adds unwanted style elements so we need to
+		// disable it
+		$editable.on('dragstart', function (event) {
+			return false;
 		});
 
 		$editable.keyup(function (event) {
@@ -269,7 +264,8 @@ define([
 		if (isUnmodifiedAlohaEditingP(placeholder)) {
 			$placeholder.remove();
 		} else {
-			$placeholder.removeClass('aloha-editable-p');
+			$placeholder.removeClass('aloha-editing-p');
+			$placeholder.removeClass('aloha-placeholder');
 			if (Browser.ie) {
 				//remove trailing or leading word joiner
 				var child = $placeholder[0].firstChild;
@@ -424,6 +420,8 @@ define([
 				Aloha.settings.contentHandler.initEditable = Aloha.defaults.contentHandler.initEditable;
 			}
 
+			Ephemera.markAttr(me.obj, 'style');
+
 			var content = me.obj.html();
 			content = ContentHandlerManager.handleContent(content, {
 				contenthandler: Aloha.settings.contentHandler.initEditable,
@@ -437,9 +435,6 @@ define([
 				me.obj.addClass('aloha-editable').contentEditable(true);
 
 				registerEvents(me);
-
-				// mark the editable as unmodified
-				me.setUnmodified();
 
 				// we don't do the sanitizing on aloha ready, since some plugins add elements into the content and bind
 				// events to it. If we sanitize by replacing the html, all events would get lost. TODO: think about a
@@ -460,12 +455,13 @@ define([
 
 				me.ready = true;
 
-				// disable object resizing.
+				// disable object resizing and inline table editing.
 				// we do this in here and with a slight delay, because
 				// starting with FF 15, this would cause a JS error
 				// if done before the first DOM object is made contentEditable.
 				window.setTimeout(function () {
 					Aloha.disableObjectResizing();
+					Aloha.disableInlineTableEditing();
 				}, 20);
 
 				// throw a new event when the editable has been created
@@ -480,6 +476,11 @@ define([
 					editable: me,
 					data: me // deprecated
 				});
+			});
+
+			// mark the editable unmodified, when aloha is ready
+			Aloha.bind('aloha-ready', function () {
+				me.setUnmodified();
 			});
 		},
 
@@ -839,9 +840,11 @@ define([
 		 * handle the blur event
 		 * this must not be attached to the blur event, which will trigger far too often
 		 * eg. when a table within an editable is selected
+		 * 
+		 * @param {Aloha.Editable} editable optional new editable
 		 * @hide
 		 */
-		blur: function () {
+		blur: function (editable) {
 			this.obj.blur();
 			this.isActive = false;
 			this.initPlaceholder();
@@ -853,12 +856,14 @@ define([
 			 * @param {Event} e the event object
 			 * @param {Array} a an array which contains a reference to this editable
 			 */
-			Aloha.trigger('aloha-editable-deactivated', {editable: this});
+			Aloha.trigger('aloha-editable-deactivated', {editable: this, newEditable: editable});
 			PubSub.pub('aloha.editable.deactivated', {
 				editable: this,
+				newEditable: editable,
 				// deprecated
 				data: {
-					editable: this
+					editable: this,
+					newEditable: editable
 				}
 			});
 
@@ -868,6 +873,8 @@ define([
 			Aloha.activeEditable.smartContentChange({
 				type: 'blur'
 			}, null);
+
+			Selection.resetPrevSelectionContexts();
 		},
 
 		/**
@@ -977,20 +984,14 @@ define([
 		 */
 		smartContentChange: function (event) {
 			var me = this,
-				uniChar = null,
-				re,
-				match;
+				uniChar = null;
 
 			// ignore meta keys like crtl+v or crtl+l and so on
 			if (event && (event.metaKey || event.crtlKey || event.altKey)) {
 				return false;
 			}
 
-			if (event && event.originalEvent) {
-				// regex to strip unicode
-				re = new RegExp("U\\+(\\w{4})");
-				match = re.exec(event.originalEvent.keyIdentifier);
-
+			if (event) {
 				// Use among browsers reliable which http://api.jquery.com/keypress
 				uniChar = (this.keyCodeMap[this.keyCode] || String.fromCharCode(event.which) || 'unknown');
 			}
@@ -1004,28 +1005,7 @@ define([
 				return snapshot;
 			}
 
-			// handle "Enter" -- it's not "U+1234" -- when returned via "event.originalEvent.keyIdentifier"
-			// reference: http://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/keyset.html
-			if (jQuery.inArray(uniChar, this.sccDelimiters) >= 0) {
-				clearTimeout(this.sccTimerIdle);
-				clearTimeout(this.sccTimerDelay);
-
-				this.sccTimerDelay = window.setTimeout(function () {
-					Aloha.trigger('aloha-smart-content-changed', {
-						'editable': me,
-						'keyIdentifier': event.originalEvent.keyIdentifier,
-						'keyCode': event.keyCode,
-						'char': uniChar,
-						'triggerType': 'keypress', // keypress, timer, blur, paste
-						'getSnapshotContent': getSnapshotContent
-					});
-					handleSmartContentChange(me);
-
-					console.debug('Aloha.Editable',
-							'smartContentChanged: event type keypress triggered');
-				}, this.sccDelay);
-
-			} else if (event && event.type === 'paste') {
+			if (event && event.type === 'paste') {
 				Aloha.trigger('aloha-smart-content-changed', {
 					'editable': me,
 					'keyIdentifier': null,
@@ -1048,17 +1028,59 @@ define([
 				handleSmartContentChange(me);
 
 			} else if (event && event.type === 'block-change') {
-				Aloha.trigger('aloha-smart-content-changed', {
-					'editable': me,
-					'keyIdentifier': null,
-					'keyCode': null,
-					'char': null,
-					'triggerType': 'block-change',
-					'getSnapshotContent': getSnapshotContent
-				});
-				handleSmartContentChange(me);
+				clearTimeout(this.sccTimerIdle);
+				clearTimeout(this.sccTimerDelay);
+
+				this.sccTimerDelay = window.setTimeout(function () {
+					Aloha.trigger('aloha-smart-content-changed', {
+						'editable': me,
+						'keyIdentifier': null,
+						'keyCode': null,
+						'char': null,
+						'triggerType': 'block-change',
+						'plugin': event.plugin,
+						'getSnapshotContent': getSnapshotContent
+					});
+					handleSmartContentChange(me);
+
+				}, this.sccDelay);
+
+			} else if (jQuery.inArray(uniChar, this.sccDelimiters) >= 0) {
+				// handle "Enter" -- it's not "U+1234" -- when returned via "event.originalEvent.key"
+				// reference: http://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/keyset.html
+				clearTimeout(this.sccTimerIdle);
+				clearTimeout(this.sccTimerDelay);
+
+				this.sccTimerDelay = window.setTimeout(function () {
+					Aloha.trigger('aloha-smart-content-changed', {
+						'editable': me,
+						'keyIdentifier': event.originalEvent && event.originalEvent.key,
+						'keyCode': event.keyCode,
+						'char': uniChar,
+						'triggerType': 'keypress', // keypress, timer, blur, paste
+						'getSnapshotContent': getSnapshotContent
+					});
+					handleSmartContentChange(me);
+
+					console.debug('Aloha.Editable',
+						'smartContentChanged: event type keypress triggered');
+				}, this.sccDelay);
 
 			} else if (uniChar !== null) {
+				var range = Aloha.Selection.getRangeObject();
+
+				//Remove break in otherwise empty children in IE
+				//This is done automatically in Chrome and would lead to errors
+				if (Browser.ie) {
+					if (range.startContainer == range.endContainer) {
+						var $children = $(range.startContainer).children();
+
+						if ($children.length == 1 && $children.is('br')) {
+							$children.remove();
+						}
+					}
+				}
+
 				// in the rare case idle time is lower then delay time
 				clearTimeout(this.sccTimerDelay);
 				clearTimeout(this.sccTimerIdle);

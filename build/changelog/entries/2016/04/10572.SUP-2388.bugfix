@@ -1,0 +1,1 @@
+When using the "highlighteditables plugin":http://www.alohaeditor.org/guides/plugin_highlighteditables.html on a document with nested editables, the fade-out animation of the editable outlines could cause an editable to appear modified _directly after_ it has been saved. This has been fixed.

@@ -1,0 +1,4 @@
+When multiple rows or columns where selected in a table, the "row" or "column" tab was not
+always shown in the floating menu. This has been fixed: the appropriate tabs are now
+always shown when a whole row or column is selected. Either through column or row selection
+or through selection of multiple cells.

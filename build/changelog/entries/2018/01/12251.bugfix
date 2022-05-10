@@ -1,0 +1,4 @@
+The initial snapshot of editables were taken too early (before plugins were initialized),
+which sometimes caused the editables to be marked as "modified" right from the start (before any actual changes were done by editors).
+This has been fixed now.
+Also the format plugin will now trigger @aloha-smart-content-changed@ events when formatting is changed.

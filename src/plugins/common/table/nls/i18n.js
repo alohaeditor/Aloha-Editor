@@ -26,7 +26,8 @@ define({
 		"table.sidebar.title": "Table",
 		"table.mergeCells.notRectangular": "Only a rectangular selection can be merged",
 		"table.addColumns.nonConsecutive": "Please select a single column or a consecutive range of columns",
-		"table.createTable.nestedTablesNoSupported": "Sorry, nested tables are not supported"
+		"table.createTable.nestedTablesNoSupported": "Sorry, nested tables are not supported",
+		"button.deltable.tooltip": "Delete table"
 	},
 		"ca": true,
 		"de": true,

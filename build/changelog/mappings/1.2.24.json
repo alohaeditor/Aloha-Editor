@@ -1,0 +1,12 @@
+{
+  "version": "1.2.24",
+  "date": "01.07.2015",
+  "changeLogEntryFileNames": [
+    "10264.SUP-10264.bugfix",
+    "10267.SUP-1241.bugfix",
+    "10266.SUP-1172.bugfix",
+    "10265.SUP-1198.bugfix",
+    "10268.SUP-1229.bugfix"
+  ],
+  "genericProperties": {}
+}

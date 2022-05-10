@@ -44,6 +44,25 @@ of the Aloha-Editor UI.
 Please see the ui/ui module and the individual component modules
 (src/plugins/common/ui/lib) for more information.
 
+h4. Arena
+
+Arenas can be used to to group buttons of one specific plugin or functionality together.
+The arena must be defined in the toolbar configuration (eg. in the Configuration section) first and can then be referenced by a plugin.
+Don't forget to load Arena and Button in your plugin!
+
+<javascript>
+var arena = Ui.adopt("myArena", Arena);
+var button =  Ui.adopt('myButton', Button, {
+	tooltip: "My tooltip",
+	scope: 'Aloha.continuoustext',
+	click: function() {
+		alert("Click!");
+	}
+});
+arena.adopt(button);
+</javascript>
+
+
 h3. Configuration
 
 The Toolbar is made up of *tabs* and *groups*. The following example
@@ -78,6 +97,7 @@ Aloha.settings.toolbar = {
             exclusive: true,
 			components: [
                 "createTable", "characterPicker", "insertLink",
+                [ "myArena" ]
             ]
     	},
     	{
@@ -85,7 +105,8 @@ Aloha.settings.toolbar = {
     		components: [ 'editlink' ]
     	}
     ],
-    exclude: [ 'strong', 'emphasis', 'strikethrough' ]
+    exclude: [ 'strong', 'emphasis', 'strikethrough' ],
+    responsiveMode: false
 };
 </javascript>
 
@@ -105,3 +126,6 @@ The merge rules are as follows
   a components property, and unless the exclusive property on a tab is
   true, append all remaining components from the default tab to the
   user's tab configuration.
+
+Setting responsiveMode to true will replace the default float & pin behavior of the toolbar so that it stays fixed
+above the active editable and will resize to fit on devices with small screens.

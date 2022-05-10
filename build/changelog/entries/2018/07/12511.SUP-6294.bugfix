@@ -1,0 +1,4 @@
+When copying lists which are styled with custom classes (via the list plugin), the custom classes where not preserved on paste. To fix this
+issue the generic content handler was rewritten: plugins can now register a PluginContentHandler and are able to define which parts of a
+pasted content should be handled by a PluginContentHandler instead of the GenericContentHandler. For the list plugin a PluginContentHandler
+was implemented which preserves the configured classes and also adds the configured default classes.

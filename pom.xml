@@ -3,7 +3,7 @@
 
 	<groupId>org.alohaeditor</groupId>
 	<artifactId>alohaeditor</artifactId>
-	<version>1.2.14-SNAPSHOT</version>
+	<version>1.4.60-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Aloha Editor</name>
 	<url>http://aloha-editor.org</url>
@@ -47,7 +47,7 @@
 		<dependency>
 			<groupId>com.gentics</groupId>
 			<artifactId>junit-selenium-qunit-runner</artifactId>
-			<version>0.9.2</version>
+			<version>0.9.7</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -85,14 +85,13 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
+				<version>3.6.1</version>
 				<configuration>
 					<verbose>true</verbose>
 					<fork>true</fork>
-					<executable>${JAVA_1_6_HOME}/bin/javac</executable>
-					<compilerVersion>6.0</compilerVersion>
-					<source>6</source>
-					<target>6</target>
+					<executable>${JAVA_1_8_HOME}/bin/javac</executable>
+					<source>8</source>
+					<target>8</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -100,6 +99,7 @@
 				<artifactId>maven-release-plugin</artifactId>
 				<version>2.2</version>
 				<configuration>
+					<goals>deploy -Dskip.unit.tests=true</goals>
 					<completionGoals>scm:checkin -Dmessage="Added generated changelog mapping" -Dbasedir=${project.basedir}/ -Dincludes=build/changelog/mappings/**</completionGoals>
 				</configuration>
 			</plugin>
@@ -499,14 +499,14 @@
     </repositories>
 	<distributionManagement>
 		<repository>
-			<id>lan.releases</id>
+			<id>lan.releases.staging.alohaeditor</id>
 			<name>Gentics Internal Repository Stage</name>
-			<url>http://artifactory.office/repository/lan.releases</url>
+			<url>https://repo.apa-it.at/artifactory/gtx-maven-releases-staging-alohaeditor</url>
 		</repository>
 		<snapshotRepository>
 			<id>lan.snapshots</id>
 			<name>Gentics Internal Snapshots Repository Stage</name>
-			<url>http://artifactory.office/repository/lan.snapshots</url>
+			<url>https://repo.apa-it.at/artifactory/gtx-maven-snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 </project>

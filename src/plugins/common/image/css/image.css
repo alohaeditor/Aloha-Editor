@@ -40,6 +40,10 @@
 	background: url(../img/size-decrease.gif);
 }
 
+.aloha-img.aloha-image-set-focalpoint {
+	background: url(../img/set-focalpoint.png);
+}
+
 .aloha-default-file-icon {
 	background: url(../img/page.png);
 
@@ -128,6 +132,11 @@
 	   height labeled input elements will align vertically */
 	display: inline-block;
 	width: 31px;
+}
+
+.fpx-line, .fpy-line {
+	stroke: rgb(34, 39, 185);
+	stroke-width: 1.5;
 }
 
 @import	"../vendor/jcrop/jquery.jcrop.css";

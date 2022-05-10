@@ -1,0 +1,15 @@
+{
+  "version": "1.2.19",
+  "date": "03.06.2015",
+  "changeLogEntryFileNames": [
+    "10250.SUP-1042.bugfix",
+    "10245.SUP-1028.bugfix",
+    "10249.SUP-1042.bugfix",
+    "10248.SUP-1040.bugfix",
+    "10238.SUP-982.bugfix",
+    "10247.SUP-1045.bugfix",
+    "10251.SUP-1043.bugfix",
+    "10253.SUP-1027.bugfix"
+  ],
+  "genericProperties": {}
+}

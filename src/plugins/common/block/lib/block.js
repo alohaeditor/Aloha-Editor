@@ -37,10 +37,12 @@ define([
 	'aloha/observable',
 	'ui/scopes',
 	'util/class',
+	'util/misc',
 	'PubSub',
 	'block/block-utils',
-	'util/html',
-	'util/functions'
+	'util/dom',
+	'util/functions',
+	'aloha/engine'
 ], function (
 	Aloha,
 	jQuery,
@@ -48,10 +50,12 @@ define([
 	Observable,
 	Scopes,
 	Class,
+	Misc,
 	PubSub,
 	BlockUtils,
-	Html,
-	Fn
+	Dom,
+	Fn,
+	Engine
 ) {
 	'use strict';
 
@@ -156,7 +160,9 @@ define([
 				$element.find('img').attr('draggable', 'false');
 
 				try {
-					$element.find('a').attr('draggable', 'false');
+					$element.find('a').filter(function () {
+						return !jQuery(this).contentEditable();
+					}).attr('draggable', 'false');
 				} catch (e) {
 					// If we get in here, it is most likely an issue with IE 10 in documentmode 7
 					// and IE10 compatibility mode. It maybe happens in older versions too.
@@ -164,7 +170,9 @@ define([
 					// https://connect.microsoft.com/IE/feedback/details/774078
 					// http://bugs.jquery.com/ticket/12577
 					// Our fallback solution:
-					$element.find('a').each(function () {
+					$element.find('a').filter(function () {
+						return !jQuery(this).contentEditable();
+					}).each(function () {
 						this.setAttribute('draggable', 'false');
 					});
 				}
@@ -183,6 +191,14 @@ define([
 				if (jQuery(event.target).closest('.aloha-block').get(0) === that.$element.get(0)) {
 					that._fixScrollPositionBugsInIE();
 					that.activate(event.target, event);
+					// remove the selection, if the clicked element itself is not editable, but don't do this, if the clicked
+					// element is the active table cell, because in that case, the selection is in the editable wrapper of the
+					// cell (which is ok). We also leave the selection alone if the target was a text input element.
+					var $target = jQuery(event.target);
+
+					if (!$target.is('textarea, input') && !$target.contentEditable() && !$target.hasClass("aloha-table-cell_active")) {
+						Aloha.getSelection().removeAllRanges();
+					}
 				}
 			};
 
@@ -201,11 +217,21 @@ define([
 
 			// Only for inline element.
 			// It is not possible to insert text after or before a Block span
-			// when after or before the Block there is not elements
-			if (Html.isInlineFormattable($element[0])) {
+			// when there are not elements after or before the Block.
+			if (!Dom.isBlockNode($element[0])) {
 				if ($element.closest('.aloha-editable-active').length > 0) {
 					BlockUtils.pad(that.$element);
 				}
+
+				Aloha.bind('aloha-smart-content-changed', function (event, data) {
+					if (data.editable.isActive) {
+						var $block = data.editable.obj.find('#' + that.id);
+
+						if ($block.length > 0) {
+							BlockUtils.pad(that.$element);
+						}
+					}
+				});
 
 				Aloha.bind('aloha-editable-activated', function ($event, data) {
 					if (data.editable) {
@@ -247,8 +273,9 @@ define([
 		 * NOTE: Purely internal, "this" is not available inside this method!
 		 */
 		_preventSelectionChangedEventHandler: function ($event) {
-			if (('dblclick' !== $event.type) && 
-				!jQuery($event.target).is('.aloha-editable')) {
+			var $editable = jQuery($event.target).closest('.aloha-editable');
+
+			if ('dblclick' !== $event.type && !this.contains($editable[0])) {
 				Aloha.Selection.preventSelectionChanged();
 			}
 		},
@@ -354,12 +381,22 @@ define([
 		 * @return {Boolean} true of destruction should happen, false otherwise
 		 */
 		shouldDestroy: function () {
-			var $closest = this.$element.parent().closest('.aloha-block,.aloha-editable,.aloha-block-collection');
+			var $closest = this.$element.parent().closest('.aloha-block,.aloha-editable,.aloha-table-cell-editable,.aloha-block-collection');
 			if ($closest.hasClass('aloha-block-collection') && this.$element[0].tagName.toLowerCase() === 'div') {
 				return true;
 			} else {
-				return $closest.hasClass('aloha-editable');
+				return $closest.hasClass('aloha-editable') || $closest.hasClass('aloha-table-cell-editable');
 			}
+		},
+
+		/**
+		 * Function which is executed when a user tries to delete a block with the keyboard.
+		 * Implementations may let the user confirm, whether the block shall really be destroyed
+		 * 
+		 * @param {Function} destroyFn function, that is executed, if the block shall be destroyed
+		 */
+		confirmedDestroy: function (destroyFn) {
+			destroyFn();
 		},
 
 		/**
@@ -496,6 +533,9 @@ define([
 		 * @api
 		 */
 		activate: function (eventTarget, event) {
+			if (this.isActive()) {
+				return;
+			}
 			var highlightedBlocks = [];
 
 			// Deactivate currently highlighted blocks
@@ -541,6 +581,15 @@ define([
 					Aloha.Selection.updateSelection(event);
 				}
 			}
+
+			// activate the editable host of the block
+			if (!this._isInsideNestedEditable) {
+				var editable = Aloha.getEditableHost(this.$element);
+				if (editable) {
+					editable.activate();
+				}
+			}
+
 			// Trigger block activate & selection change events.
 			BlockManager.trigger('block-activate', highlightedBlocks);
 			BlockManager.trigger('block-selection-change', highlightedBlocks);
@@ -646,14 +695,16 @@ define([
 		_postProcessElementIfNeeded: function () {
 			this.createEditablesIfNeeded();
 			this._checkThatNestedBlocksAreStillConsistent();
-			this._makeNestedBlockCollectionsSortable();
 
 			this.renderBlockHandlesIfNeeded();
 			if (this.isDraggable()) {
 				var nodeName = this.$element[0].nodeName;
-				if (nodeName === 'SPAN') {
+				if (nodeName === 'SPAN' && !this.$element.data('dd-setup-done')) {
+					// Unfortunately _setupDragDropForInlineElements() is not
+					// idempotent because $.draggable() isn't.
 					this._setupDragDropForInlineElements();
 					this._disableUglyInternetExplorerDragHandles();
+					this.$element.data('dd-setup-done', true);
 				} else if (nodeName === 'DIV') {
 					this._setupDragDropForBlockElements();
 					this._disableUglyInternetExplorerDragHandles();
@@ -681,28 +732,11 @@ define([
 		},
 
 		/**
-		 * If a nested element is marked as "aloha-block-collection",
-		 * we want to make it sortable, by calling the appropriate Block Manager
-		 * function.
-		 */
-		_makeNestedBlockCollectionsSortable: function () {
-			var that = this;
-			this.$element.find('.aloha-block-collection').each(function () {
-				var $blockCollection = jQuery(this);
-				if ($blockCollection.closest('.aloha-block').get(0) === that.$element.get(0)) {
-					// We are only responsible for one-level-down Block Collections, not
-					// for nested ones.
-					BlockManager.createBlockLevelSortableForEditableOrBlockCollection($blockCollection);
-				}
-			});
-		},
-
-		/**
 		 * Helper which disables the ugly IE drag handles. They are still shown, but at
 		 * least they do not work anymore
 		 */
 		_disableUglyInternetExplorerDragHandles: function () {
-			if (jQuery.browser.msie) {
+			if (Aloha.browser.msie) {
 				var $elem = this.$element.get(0);
 				$elem.onresizestart = Fn.returnFalse;
 				$elem.oncontrolselect = Fn.returnFalse;
@@ -792,12 +826,11 @@ define([
 			var dropFn = function () {
 				if (lastHoveredCharacter) {
 					// the user recently hovered over a character
-					var $dropReferenceNode = jQuery(lastHoveredCharacter);
+					var $dropReferenceNode = jQuery(lastHoveredCharacter), oldParent = $currentDraggable[0].parentNode;
 
 					if ($dropReferenceNode.is('.aloha-block-dropInlineElementIntoEmptyBlock')) {
 						// the user wanted to drop INTO an empty block!
-						$dropReferenceNode.children().remove();
-						$dropReferenceNode.append($currentDraggable);
+						$dropReferenceNode.prepend($currentDraggable);
 					} else if ($dropReferenceNode.is('.aloha-block-droppable-right')) {
 						$dropReferenceNode.html($dropReferenceNode.html() + ' ');
 
@@ -815,18 +848,27 @@ define([
 						$dropReferenceNode.before($currentDraggable);
 					}
 
+					Engine.ensureContainerEditable(oldParent);
+
 					$currentDraggable.removeClass('ui-draggable').css({'left': 0, 'top': 0}); // Remove "draggable" options... somehow "Destroy" does not work
 					that._fixScrollPositionBugsInIE();
 				}
 				jQuery('.aloha-block-dropInlineElementIntoEmptyBlock').removeClass('aloha-block-dropInlineElementIntoEmptyBlock');
 
-                // clear the created droppables
-                $createdDroppables.droppable("destroy");
-                $createdDroppables = null;
+				// clear the created droppables
+				if ($createdDroppables) {
+					$createdDroppables.filter(":data(droppable)").droppable("destroy");
+					$createdDroppables = null;
+				}
 
-                blockDroppedProperly = true;
+				blockDroppedProperly = true;
 			};
 			var editablesWhichNeedToBeCleaned = [];
+
+			// Prevent the prevention of drag inside a cell
+			var element = this.$element.get(0);
+			element.ondragstart = Misc.eventStopPropagation;
+
 			this.$element.draggable({
 				handle: '.aloha-block-draghandle',
 				scope: 'aloha-block-inlinedragdrop',
@@ -842,11 +884,27 @@ define([
 					jQuery.each(editablesWhichNeedToBeCleaned, function () {
 						that._dd_traverseDomTreeAndRemoveSpans(this);
 					});
+
+					var editable = Aloha.getEditableHost(that.$element);
+					if ($currentDraggable) {
+						BlockUtils.unpad($currentDraggable);
+						PubSub.pub('aloha.drop.block.in.editable', {element: $currentDraggable, editable: editable });
+					}
+
 					$currentDraggable = null;
 
 					editablesWhichNeedToBeCleaned = [];
+
+					// deactivate the current editable and activate the editable,
+					// the block has been dropped into. This will do necessary initializations that
+					// happen on activation of the editable
+					Aloha.deactivateEditable();
+					if (editable) {
+						editable.activate();
+					}
 				},
 				start: function () {
+					lastHoveredCharacter = null;
 					blockDroppedProperly = false;
 					editablesWhichNeedToBeCleaned = [];
 
@@ -880,7 +938,7 @@ define([
 
 							if (jQuery(this).is(':empty') ||
 								hasOnlyProppingBr ||
-								jQuery(this).html() === '&nbsp;') {
+								jQuery.trim(jQuery(this).text()) === '') {
 								// The user is hovering over an empty
 								// container; simply highlight the container.
 								jQuery(this).addClass(
@@ -931,9 +989,15 @@ define([
 					};
 
 					$createdDroppables = jQuery(".aloha-editable.aloha-block-dropzone").children(":not(.aloha-block)");
-					$createdDroppables.droppable(droppableCfg);
+
+					// add empty editables
+					$createdDroppables = $createdDroppables.add(".aloha-editable:not(:has(*))");
+
 					// Small HACK: Also make table cells droppable
-					jQuery('.aloha-table-cell-editable').droppable(droppableCfg);
+					$createdDroppables = $createdDroppables.add('.aloha-table-cell-editable');
+					$createdDroppables = $createdDroppables.add(jQuery('.aloha-editable.aloha-block-dropzone .aloha-table-cell-editable').children(":not(.aloha-block)"));
+
+					$createdDroppables.droppable(droppableCfg);
 				}
 			});
 		},

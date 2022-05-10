@@ -44,6 +44,12 @@ define([
 			));
 	}
 
+	var POSSIBLE_SELECTION_TYPES = [ 'cell', 'column', 'row' ];
+
+	TableSelection.getPossibleSelectionTypes = function () {
+		return POSSIBLE_SELECTION_TYPES;
+	};
+
 	/**
 	 * Gives the type of the cell-selection
 	 * possible values are "cell", "row", "column" or "all".
@@ -52,19 +58,24 @@ define([
 	TableSelection.prototype.selectionType = undefined;
 
 	/**
+	 * Stores the currently selected rectangle
+	 * @type {Object} the rectangle object
+	 */
+	TableSelection.prototype.currentRectangle = {};
+	/**
 	 * Holds all currently selected table cells as an array of DOM "td" representations
 	 */
-	TableSelection.prototype.selectedCells = new Array();
+	TableSelection.prototype.selectedCells = [];
 
 	/**
 	 * Holds all table columnIdx if selectiontype is column
 	 */
-	TableSelection.prototype.selectedColumnIdxs = new Array();
+	TableSelection.prototype.selectedColumnIdxs = [];
 
 	/**
 	 * Holds all table rowIds if selectiontype is column
 	 */
-	TableSelection.prototype.selectedRowIdxs = new Array();
+	TableSelection.prototype.selectedRowIdxs = [];
 
 	/**
 	 * Holds the active/disabled state of cell selection mode 
@@ -108,7 +119,7 @@ define([
 				}
 			}
 		}
-
+		this.currentRectangle.columns = this.selectedColumnIdxs;
 		this.selectionType = 'column';
 	};
 	
@@ -123,7 +134,6 @@ define([
 		var rows = this.table.getRows();
 		
  	    rowsToSelect.sort( function ( a, b ) { return a - b; } );
-
 		for (var i = 0; i < rowsToSelect.length; i++) {
 			if ( rows[ rowsToSelect[i] ] ) {
 				// check if this row is already selected.
@@ -141,6 +151,7 @@ define([
 			    }
 			}
 		}
+		this.currentRectangle.rows = this.selectedRowIdxs;
 
 	    this.selectionType = 'row';
 	};
@@ -223,17 +234,11 @@ define([
 				$(cells[i]).removeClass(classCellSelected);
 			}
 
-			this.selectedCells = new Array();
-			this.selectedColumnIdxs = new Array();
-			this.selectedRowIdxs = new Array();
-
-			//we keep 'cell' as the default selection type instead of
-			//unsetting the selectionType to avoid an edge-case where a
-			//click into a cell doesn't trigger a call to
-			//TableCell.editableFocs (which would set the 'cell'
-			//selection type) which would result in the FloatingMenu
-			//losing the table scope.
-			this.selectionType = 'cell';
+			this.selectedCells = [];
+			this.selectedColumnIdxs = [];
+			this.selectedRowIdxs = [];
+			this.currentRectangle = {};
+			this.selectionType = undefined;
 
 			this._notifyCellsUnselected();
 		}
@@ -383,6 +388,8 @@ define([
 		this.selectionType = 'cell';
 
 		Aloha.trigger( 'aloha-table-selection-changed' );
+
+		Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'table-plugin'});
 	};
 
 	/**
@@ -398,8 +405,10 @@ define([
 		if (cells_to_split.length > 0) {
 
 			$(cells_to_split).each(function(){
+				var cell = this;
+
 				Utils.splitCell(this, function () {
-					return selection.table.newActiveCell().obj;
+					return selection.table.newActiveCell(Utils.copyCellMarkup(cell)).obj;
 				});
 			});
 
@@ -410,6 +419,7 @@ define([
 			this.selectionType = 'cell';
 
 			Aloha.trigger( 'aloha-table-selection-changed' );
+			Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'table-plugin'});
 		}
 	};
 
@@ -458,7 +468,7 @@ define([
 					splitable++;
 				}
 			});
-			
+
 			if ( splitable > 0 ) {
 				return true;
 			} else {
@@ -467,6 +477,51 @@ define([
 		} else {
 			return false;
 		}
+	};
+
+	/**
+	 * Gets the currenty active selection type from the selected
+	 * rectangle or the selected rows/columns.
+	 * The first element in the array is the selection type which is
+	 * most likely to be the most important one to the user.
+	 * (e.g. "table" if a whole table was selected or "row" when the whole row was selected)
+	 *
+	 * @return {array} an array of currently active selection types
+	 */
+	TableSelection.prototype.getCurrentSelectionTypes = function () {
+		var rect = this.currentRectangle;
+		var table = this.table;
+		var selectionTypes = [];
+
+		// check if a whole row was selected with row or cell selection
+		if (rect.rows || (rect.left === 1 && rect.right >= table.numCols)) {
+			selectionTypes.push('row');
+		}
+		// check if a whole column was selected with column or cell selection
+		if (rect.columns || (rect.top === 1 && rect.bottom >= table.numRows)) {
+			selectionTypes.push('column');
+		}
+		// if all rows and columns are selected using row, column or cell selection mark the whole table as selected
+		// put the "cell" selection type on the first position in the array to make sure it is selected
+		// as active tab in the toolbar
+		if (
+			// check if the whole table is selected with row selection
+			(rect.rows && rect.rows.length === table.numRows) ||
+			// check if the whole table is selected with column selection
+			(rect.columns && rect.columns.length === table.numCols) ||
+			// check if the whole table is selected with cell selection
+			($.inArray('row', selectionTypes) !== -1 && $.inArray('column', selectionTypes) !== -1)
+		) {
+			selectionTypes.unshift('cell');
+		// if row and column selection was not used, we know the cell selection was used and need to add this type in the array
+		} else if (!rect.rows && !rect.columns) {
+			selectionTypes.push('cell');
+		}
+		// as fallback use the selection type set with the old logic
+		if (selectionTypes.length === 0) {
+			selectionTypes.push(this.selectionType);
+		}
+		return selectionTypes;
 	};
 
 	return TableSelection;

@@ -14,7 +14,8 @@
  * http://docs.jquery.com/UI/Dialog#theming
  */
 
-.aloha-ui { direction: ltr; }
+.aloha-ui { direction: ltr!important; }
+.aloha-sidebar-panel-title { text-align: left; }
 
 .aloha.ui-dialog { position: absolute; padding: .2em; width: 300px; overflow: hidden; }
 .aloha.ui-dialog .ui-dialog-titlebar { padding: .4em 1em; position: relative;  }
@@ -81,6 +82,27 @@
 .aloha .aloha-ui-toolbar {
 	text-align: left;
 	width: 609px;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+    z-index: 10001;
+}
+
+.aloha .aloha-ui-toolbar.responsive {
+	min-width: 200px;
+	max-width: 100%;
+}
+
+@media screen and (min-width: 425px) {
+	.aloha .aloha-ui-toolbar.responsive {
+		min-width: 425px;
+	}
+}
+@media screen and (min-width: 500px) {
+	.aloha .aloha-ui-toolbar.responsive {
+		min-width: 500px;
+	}
 }
 
 .aloha input:focus {
@@ -201,6 +223,18 @@
 	background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.3) 20%);
 	background-image:     -ms-linear-gradient(bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.3) 20%);
 }
+.aloha .aloha-ui-toolbar.responsive .ui-widget-header,
+.aloha .aloha-ui-toolbar.responsive.aloha-ui-hover .ui-widget-header {
+	cursor: default;
+	background: #777;
+	background: rgba(0,0,0,0.3);
+	background-image:         linear-gradient(bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.3) 20%);
+	background-image:      -o-linear-gradient(bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.3) 20%);
+	background-image:    -moz-linear-gradient(bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.3) 20%);
+	background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.3) 20%);
+	background-image:     -ms-linear-gradient(bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.3) 20%);
+}
+
 .aloha .aloha-ui-toolbar .ui-tabs-panel {
 	padding: 2px;
 	background: #f0f0f0;
@@ -234,6 +268,9 @@
 }
 .aloha .aloha-ui-toolbar.aloha-ui-hover .aloha-ui-pin {
 	display: block;
+}
+.aloha .aloha-ui-toolbar.aloha-ui-hover.responsive .aloha-ui-pin {
+	display: none;
 }
 
 
@@ -398,6 +435,80 @@
 }
 /* === /menubutton === */
 
+/* === accordion menu === */
+.aloha .aloha-ui-accordion-menu-container {
+	height: 24px;
+	font-size: 11px;
+	border: 1px solid transparent;
+	float: left;
+	-moz-border-radius:    4px;
+	-khtml-border-radius:  4px;
+	-webkit-border-radius: 4px;
+	border-radius:         4px;
+}
+
+.aloha .aloha-ui-toolbar .aloha-ui-accordion-menu-wrapper {
+    background-color: rgb(240, 240, 240);
+	border: 1px solid #d0d0d0;
+	box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+	position: absolute !important;
+}
+
+.aloha-ui-accordion-menu-expand {
+
+}
+
+.aloha .aloha-ui-accordion-menu-category {
+    cursor: pointer;
+	background-color: rgb(240, 240, 240);
+	transition: background-color 0.1s;
+}
+
+.aloha .aloha-ui-accordion-menu-category:hover {
+    background-color: rgb(230, 230, 230);
+}
+
+.aloha .aloha-ui-accordion-menu-category:not(:last-child) {
+    border-bottom: 1px solid #c7c7c7;
+}
+
+.aloha-ui-accordion-menu-category .category-label {
+    padding: 10px;
+}
+
+.aloha-ui-accordion-menu-category .category-items-wrapper {
+    max-height: 0;
+    padding: 0 10px;
+    opacity: 0;
+    overflow: hidden;
+    border-top: 1px dashed #c7c7c7;
+    transition: max-height 0.3s, opacity 0.2s;
+}
+
+.aloha-ui-accordion-menu-category .category-items-wrapper.items-visible {
+    opacity: 1;
+    overflow-y: auto;
+}
+
+.aloha-ui-accordion-menu-category ul.category-items {
+    margin: 5px 0;
+}
+
+.aloha-ui-accordion-menu-category ul.category-items li {
+    padding: 5px 0;
+}
+
+.aloha-ui-accordion-menu-category ul.category-items li a {
+    display: flex;
+    align-items: center;
+}
+
+.aloha-ui-accordion-menu-category ul.category-items li a img {
+    margin-right: 5px;
+}
+/* === /accordion menu === */
+
+
 
 
 /* === icons === */
@@ -427,9 +538,11 @@
 .aloha .ui-state-default .aloha-icon-columnheader   { background-position: -368px 0; }
 .aloha .ui-state-default .aloha-icon-mergecells     { background-position: -384px 0; }
 .aloha .ui-state-default .aloha-icon-splitcells     { background-position: -400px 0; }
+.aloha .ui-state-default .aloha-icon-deletetable    { background-position: -448px 0; }
 .aloha .ui-state-default .aloha-icon-orderedlist    { background-position: -272px 0; }
 .aloha .ui-state-default .aloha-icon-unorderedlist  { background-position: -256px 0; }
 .aloha .ui-state-default .aloha-icon-link           { background-position: -288px 0; }
+.aloha .ui-state-default .aloha-icon-anchor         { background: url(../img/anchor.png) no-repeat; }
 .aloha .ui-state-default .aloha-icon-unlink         { background-position: -304px 0; }
 .aloha .ui-state-default .aloha-icon-abbr           { background-position: -336px 0; }
 .aloha .ui-state-default .aloha-icon-emphasis       { background-image: url(../img/em.png); }

@@ -30,13 +30,19 @@ define([
 	'aloha',
 	'PubSub',
 	'aloha/copypaste',
-	'block/block-utils'
+	'block/block-utils',
+	'aloha/console',
+	'ui/scopes',
+	'util/misc'
 ], function (
 	$,
 	Aloha,
 	PubSub,
 	CopyPaste,
-	BlockUtils
+	BlockUtils,
+	Console,
+	Scopes,
+	Misc
 ) {
 	'use strict';
 
@@ -211,22 +217,10 @@ define([
 		var $handle = $('>.aloha-block-draghandle', this.$element);
 		var element = this.$element.get(0);
 
-		element.onselectstart = function () {
-			window.event.cancelBubble = true;
-		};
+		element.onselectstart = Misc.eventStopPropagation;
 
 		// Prevent the prevention of drag inside a cell
-		element.ondragstart = function (e) {
-			if (e) {
-				if (typeof e.stopPropagation === 'function') {
-					e.stopPropagation();
-				} else {
-					e.cancelBubble = true;
-				}
-			} else {
-				window.event.cancelBubble = true;
-			}
-		};
+		element.ondragstart = Misc.eventStopPropagation;
 
 		$handle
 			.on('mousedown', function () {
@@ -245,7 +239,10 @@ define([
 				top: -10
 			},
 			start: function (event, ui) {
+				// set the empty scope, so that the toolbar will be hidden while dragging
+				Scopes.setScope('Aloha.empty');
 				ui.helper.css('zIndex', 100000);
+				dragBehavior._fillEmptyEditables();
 				dragBehavior.listenMouseOver();
 				event.stopImmediatePropagation();
 			},
@@ -256,6 +253,7 @@ define([
 				dragBehavior._getHiglightElement().appendTo('body').css({position: 'absolute'}).hide();
 				dragBehavior.stopListenMouseOver();
 				dragBehavior.onDragStop();
+				dragBehavior._removeFillers();
 				ui.helper.remove();
 				IESelectionState.restore();
 				return true;
@@ -279,6 +277,32 @@ define([
 		return $(elms);
 	};
 
+	/**
+	 * Fill a "filler" element into every completely empty editable.
+	 * This enables dropping blocks into empty editables (before or after the filler)
+	 */
+	DragBehavior.prototype._fillEmptyEditables = function () {
+		var i, editable, filler;
+		for (i = 0; i < Aloha.editables.length; i++) {
+			editable = Aloha.editables[i];
+			if (editable.obj.contents().length === 0) {
+				filler = $("<div class='aloha-block aloha-dragdrop-filler' style='height:inherit; min-height:inherit'></div>");
+				filler.contentEditable(false);
+				editable.obj.append(filler);
+			}
+		}
+	};
+
+	/**
+	 * Remove the "filler" elements
+	 */
+	DragBehavior.prototype._removeFillers = function () {
+		var i, editable;
+		for (i = 0; i < Aloha.editables.length; i++) {
+			editable = Aloha.editables[i];
+			editable.obj.children('.aloha-dragdrop-filler').remove();
+		}
+	};
 
 	/**
 	 * Listen the mouseOver events over all elements in the editables, since the
@@ -314,18 +338,51 @@ define([
 	 * @return {Boolean}
 	 */
 	DragBehavior.prototype.onMouseover = function (elm, event) {
-		this.disableInsertBeforeOrAfter(this.$overElement);
-		this.$overElement = $(elm);
-		if (!this._isAllowedOverElement(elm)) {
-			this.enableInsertBeforeOrAfter(elm);
-
-			return true; // to continue bubbling to find a element where can insert the block
-		} else {
-			this.highlightElement(elm);
+		if (this.$element.find(elm).length || this.$element.is(elm)) {
+			// The mouse is still over the element which is
+			// being dragged.
 			event.stopImmediatePropagation();
+
 			return false;
 		}
 
+		var $elm = $(elm);
+		var $srcEditable = this.$element.closest('.aloha-editable');
+		var $dstEditable = $elm.closest('.aloha-editable');
+		var dropzones = ($srcEditable.data('block-dropzones') || ['.aloha-editable']).join();
+
+		if (!$dstEditable.is(dropzones)) {
+			if (Aloha.Log.isDebugEnabled()) {
+				Aloha.Log.debug(
+					'block-plugin',
+					'Preventing drop because of defined dropzones: [ ' + dropzones + ' ]');
+			}
+
+			event.stopImmediatePropagation();
+
+			return false;
+		}
+
+		if (!this._isAllowedOverElement(elm)) {
+			this.disableInsertBeforeOrAfter(this.$overElement);
+			this.enableInsertBeforeOrAfter(elm);
+			this.$overElement = $elm;
+
+			// Let the event bubble up to find a better place for a drop.
+			return true;
+		}
+
+		if (!$elm.is('.aloha-editable, .aloha-table-cell-editable') || !$elm.children().length) {
+			// We only do this for non-editables, because otherwise
+			// the whole editable would be marked as a drop zone.
+			this.disableInsertBeforeOrAfter(this.$overElement);
+			this.$overElement = $elm;
+			this.highlightElement(elm);
+		}
+
+		event.stopImmediatePropagation();
+
+		return false;
 	};
 
 	/**
@@ -482,6 +539,17 @@ define([
 			} else {
 				this.$element.appendTo(this.$overElement);
 			}
+
+			// deactivate the current editable and activate the editable,
+			// the block has been dropped into. This will do necessary initializations that
+			// happen on activation of the editable
+			Aloha.deactivateEditable();
+			var editable = Aloha.getEditableHost(this.$element);
+			if (editable) {
+				editable.activate();
+			}
+
+			PubSub.pub('aloha.drop.block.in.editable', {element: this.$element, editable: editable});
 		}
 
 		this.disableInsertBeforeOrAfter(this.$overElement);

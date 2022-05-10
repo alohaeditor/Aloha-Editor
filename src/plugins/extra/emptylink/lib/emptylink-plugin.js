@@ -31,9 +31,13 @@
  * @namespace emptylink plugin
  */
 define([
+	'jquery',
+	'aloha/core',
 	'aloha/plugin',
 	'css!emptylink/css/emptylink.css'
 ], function (
+	$,
+	Aloha,
 	Plugin
 ) {
 	'use strict';
@@ -53,7 +57,14 @@ define([
 		 * Initialize the plugin
 		 */
 		init: function () {
-		}
+			var plugin = this;
 
+			Aloha.bind('aloha-editable-created', function (event, editable) {
+				var config = plugin.getEditableConfig(editable.obj);
+				if (config && $.inArray(PLUGIN_NAME, config) > -1) {
+					editable.obj.addClass('aloha-emptylink-plugin');
+				}
+			});
+		}
 	});
 });

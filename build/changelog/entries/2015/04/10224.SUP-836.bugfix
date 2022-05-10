@@ -1,0 +1,4 @@
+Table-plugin: When selecting text in a table cell using the mouse,
+the whole cell will no longer be selected when moving the mouse cursor over areas of the cell,
+that do not have contents (e.g. near the cell borders or between paragraphs).
+In order to select a single cell, the user needs to hold the SHIFT-key while clicking into the cell.

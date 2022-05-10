@@ -1,0 +1,1 @@
+Added CSS properties to the UI toolbar to not be selectable anymore in order to fix an issue with selection detection with newer Chrome versions when using Aloha.execCommand.

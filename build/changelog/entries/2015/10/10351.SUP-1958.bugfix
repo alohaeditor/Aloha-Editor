@@ -1,0 +1,4 @@
+The target and title attributes of links were sometimes not correctly
+updated in the sidebar. Also when the @targetregex@ or @titleregex@
+were configured, the link plugin would sometimes match against the
+wrong URL. These issues have been fixed.

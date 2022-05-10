@@ -1,0 +1,3 @@
+When pasting content using Firefox, the selection was left in
+an invalid state, which caused the characters to appear in reverse order when typing.
+This has been fixed now.

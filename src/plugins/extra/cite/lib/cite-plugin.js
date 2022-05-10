@@ -276,12 +276,7 @@ define([
 				 * quotation, then one will be created for it first.
 				 */
 				onActivate: function (effective) {
-					var activeUid = effective.attr('data-cite-id');
-					if (!activeUid) {
-						activeUid = ++uid;
-						effective.addClass([nsClass('wrapper')].join(' '));
-						effective.attr('data-cite-id', activeUid);
-					}
+					var activeUid = assureCitationHasId(effective);
 					var index = plugin.getIndexOfCitation(activeUid);
 					this.content.attr('data-cite-id', activeUid);
 					this.content.find(nsSel('link-field input'))
@@ -292,6 +287,22 @@ define([
 			});
 			plugin.sideBarPanel = Sidebars.right.getPanelById(nsClass('sidebar-panel'));
 		});
+	}
+	
+	/**
+	 * Checks if an element has a data-cite-id and, if not, adds one.
+	 * @param {effective} JQuery object representing the element to be checked.
+	 * @return {number} The cite-id for this element.
+	 */
+	function assureCitationHasId(effective) {
+		var activeUid = effective.attr('data-cite-id');
+		if (!activeUid) {
+			activeUid = ++uid;
+			effective.addClass([nsClass('wrapper')].join(' '));
+			effective.addClass('aloha-cite-' + activeUid);
+			effective.attr('data-cite-id', activeUid);
+		}
+		return activeUid;
 	}
 
 	return Plugin.create('cite', {
@@ -358,7 +369,7 @@ define([
 				icon: nsClass('button', 'block-button'),
 				click: function () {
 					if (!plugin.removeQuote()) {
-						that.addBlockQuote();
+						plugin.addBlockQuote();
 					}
 				}
 			});
@@ -412,9 +423,11 @@ define([
 					nodeName = effective[--i].nodeName;
 					if (nodeName === 'Q') {
 						quoteFound = true;
+						assureCitationHasId($(effective[i]));
 						$.merge(plugin.effective, $(effective[i]));
 					} else if (nodeName === 'BLOCKQUOTE') {
 						blockquoteFound = true;
+						assureCitationHasId($(effective[i]));
 						$.merge(plugin.effective, $(effective[i]));
 					}
 				}
@@ -583,6 +596,13 @@ define([
 			}
 
 			domUtils.addMarkup(rangeObject, markup);
+			domUtils.doCleanup({
+				'merge': true,
+				'removeempty': true,
+				'mergeable': function (obj) {
+					return obj.nodeName == 'Q';
+				}
+			}, rangeObject);
 
 			// If the cite is not found, it was not created. Probably for
 			// a incorrect caret position.

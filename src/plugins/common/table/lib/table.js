@@ -23,7 +23,7 @@ define([
 	'table/table-plugin-utils',
 	'aloha/ephemera',
 	'util/html',
-	'util/dom2',
+	'util/dom',
 	'aloha/console'
 ], function (
 	Aloha,
@@ -43,9 +43,9 @@ define([
 	var GENTICS = window.GENTICS;
 
 	/**
-	 * Returns an Array with all elements and textnodes included in the 
-	 * hierarchy of the element received. Is Similar to do 
-	 * jQuery('*', element).contents(), the diference it's this function returns the 
+	 * Returns an Array with all elements and textnodes included in the
+	 * hierarchy of the element received. Is Similar to do
+	 * jQuery('*', element).contents(), the diference it's this function returns the
 	 * array in the correct order of apparition
 	 * @example
 	 * <pre>
@@ -54,13 +54,13 @@ define([
 	 *			<b>b textnode</b>
 	 *			another text node
 	 *		&gt;/p&lt;
-	 *		
+	 *
 	 *		jQuery('*', lt).contents();
 	 *			// returns ["textnode", "<b>", "another textnode", "b textnode"]
 	 *		getPlainHierarchy(lt)
 	 *			// returns ["textnode", "<b>", "b textnode", "another textnode"]
 	 * </pre>
-	 * 
+	 *
 	 * @return {Array.<HTMLElement|TextNode>}
 	 */
 	function getPlainHierarchy(element) {
@@ -81,10 +81,10 @@ define([
 
 	/**
 	 * Find the first or the last element inside a table, even if in a td
-	 * 
+	 *
 	 * @param {String} type Accepts two values: 'first' or 'last'
 	 * @param {HTMLElement|jQuery} parent the parent element to search
-	 * 
+	 *
 	 * @return {jQuery}
 	 */
 	function getNewSelectedElement(type, parent) {
@@ -113,6 +113,44 @@ define([
 	var Table = function ( table, tablePlugin ) {
 		// set the table attribut "obj" as a jquery represenation of the dom-table
 		this.obj = jQuery( table );
+
+		// setup a class to mark wrapping divs introduced by this plugin
+		var wrapperMarkerClass = "aloha-table-container";
+		// parent before wrapping
+		var parent = this.obj.parent();
+		// check config if table should be wrapped
+		if ( tablePlugin.settings.wrapClass !== undefined ) {
+			// combine configurable class with fixed
+			var wrapClass = tablePlugin.settings.wrapClass + ' ' + wrapperMarkerClass;
+
+			// If config for wrapping div exists and classes match, do nothing
+
+			// If config for wrapping div exists,
+			// and classes do not match,
+			// and a wrapping div does exist allready,
+			// --> change classes
+			if ( parent.attr( 'class' ) !==  wrapClass && parent.hasClass( wrapperMarkerClass ) ) {
+				parent.attr('class', wrapClass);
+			// If config for wrapping div exists
+			// and classes do not match
+			// and wrapping div is not present (yet),
+			// --> create
+			} else if ( parent.attr( 'class')  !==  wrapClass ) {
+				// add div with class from config
+				this.obj.wrap( '<div class="' + wrapClass + '"></div>' );
+			}
+			// set parent of table element - the wrapping div - for further handling
+			this.wrappedObj = this.obj.parent();
+		} else {
+			// If config for wrapping div does not exists
+			// and there is a wrapping div
+			// --> remove it
+			if ( parent.hasClass( wrapperMarkerClass ) ) {
+				this.obj.unwrap();
+			}
+			// set table-element itself for further handling
+			this.wrappedObj = this.obj;
+		}
 
 		correctTableStructure( this );
 
@@ -209,7 +247,7 @@ define([
 		// find the dimensions of the table
 		this.numCols = this.countVirtualCols();
 
-		var rows = this.getRows();
+		var rows = this.getRows(true);
 		this.numRows = rows.length;
 
 		// init the cell-attribute with an empty array
@@ -292,7 +330,7 @@ define([
 
 			colSpan = parseInt( cols.last().attr( 'colspan' ), 10 );
 
-			if ( colSpan == 0 ) {
+			if ( colSpan === 0 ) {
 				// TODO: support colspan=0
 				// http://dev.w3.org/html5/markup/td.html#td.attrs.colspan
 				// http://www.w3.org/TR/html401/struct/tables.html#adef-colspan
@@ -338,7 +376,7 @@ define([
 				);
 			}
 		}
-	};
+	}
 
 	/**
 	 * If all of the selected cells have been set to the same predefined style,
@@ -399,14 +437,39 @@ define([
 
 		var that = this,
 		    htmlTableWrapper,
-		    tableWrapper, eventContainer;
+		    tableWrapper, eventContainer, range = new Aloha.Selection.SelectionRange(true);
+
+		// check whether the current selection is in this table
+		if (jQuery(range.startContainer).closest('table').is(this.obj)
+				|| jQuery(range.endContainer).closest('table').is(
+						this.obj)) {
+			// if the startContainer or endContainer are a tr, we move into the next td
+			if (range.startContainer
+					&& range.startContainer.nodeType === 1
+					&& range.startContainer.nodeName.toLowerCase() === 'tr') {
+				if (range.startOffset < range.startContainer.childNodes.length) {
+					range.startContainer = range.startContainer.childNodes[range.startOffset];
+					range.startOffset = 0;
+				}
+			}
+			if (range.endContainer
+					&& range.endContainer.nodeType === 1
+					&& range.endContainer.nodeName.toLowerCase() === 'tr') {
+				if (range.endOffset < range.endContainer.childNodes.length) {
+					range.endContainer = range.endContainer.childNodes[range.endOffset];
+					range.endOffset = 0;
+				}
+			}
+		} else {
+			range = null;
+		}
 
 		// alter the table attributes
 		this.obj.addClass( this.get( 'className' ) );
 		this.obj.contentEditable( false );
 
 		// set an id to the table if not already set
-		if ( this.obj.attr( 'id' ) == '' ) {
+		if ( this.obj.attr( 'id' ) === '' ) {
 			this.obj.attr( 'id', GENTICS.Utils.guid() );
 		}
 
@@ -428,126 +491,6 @@ define([
 			}
 		} );
 
-		function isNotUnrenderedNode(node) {
-			return !Html.isUnrenderedNode(node);
-		}
-
-		/**
-		 * @param {WrappedRange} range
-		 */
-		function isRangeVisiblyAtLeftBoundary(range) {
-			var offset = range.startOffset;
-			var node = range.startContainer;
-			if (0 === offset) {
-				return true;
-			}
-			if (1 === node.nodeType) {
-				return !Html.findNodeRight(
-					node.childNodes[offset - 1],
-					isNotUnrenderedNode
-				);
-			}
-			if (3 === node.nodeType) {
-				return Html.isWSPorZWSPText(node.data.substr(0, offset));
-			}
-			return false;
-		}
-
-		/**
-		 * @param {WrappedRange} range
-		 */
-		function isRangeVisiblyAtRightBoundary(range) {
-			var offset = range.startOffset;
-			var node = range.startContainer;
-			if (Dom.nodeLength(node) === offset) {
-				return true;
-			}
-			if (1 === node.nodeType) {
-				return !Html.findNodeLeft(
-					node.childNodes[offset - 1],
-					isNotUnrenderedNode
-				);
-			}
-			if (3 === node.nodeType) {
-				return Html.isWSPorZWSPText(node.data.substr(offset));
-			}
-			return false;
-		}
-
-		/**
-		 * Get the next sibling of the parent that is not null.
-		 * If the parent has no sibling, get the next sibling of it's parent.
-		 * Repeat until a sibling is found or the parent is null
-		 * @param  {Node} node
-		 * @return {Node}
-		 */
-		function getNextParentSiblingRecur(node) {
-			if (node.parentNode) {
-				return node.parentNode.nextSibling || getNextParentSiblingRecur(node.parentNode);
-			} else {
-				return null;
-			}
-		}
-
-		Aloha.bind('aloha-command-will-execute', function (_, event){
-			var range = Aloha.getSelection().getRangeAt(0);
-			var adjacent = null;
-			//if forwarddelete is invoked before the table, jump into first table cell instead of deleting the table
-			if ('forwarddelete' === event.commandId) {
-				if (!range.collapsed || !isRangeVisiblyAtRightBoundary(range)) {
-					return;
-				}
-				var node = range.commonAncestorContainer;
-				if (3 === node.nodeType) {
-					if(node.nextSibling === null) {
-						adjacent = node.parentNode
-						        && Html.findNodeLeft(
-						           getNextParentSiblingRecur(node),
-									isNotUnrenderedNode
-								);
-					}
-				} else if (1 === node.nodeType) {
-					adjacent = Html.findNodeLeft(
-						node.nextSibling,
-						isNotUnrenderedNode
-					);
-				}
-				if (adjacent === that.tableWrapper) {
-					event.preventDefault = true;
-					Aloha.getSelection().collapse(
-						getNewSelectedElement('first', that.obj),
-						0
-					);
-				}
-			} else if ('delete' === event.commandId) {
-				if (!range.collapsed || !isRangeVisiblyAtLeftBoundary(range)) {
-					return;
-				}
-				var node = range.commonAncestorContainer;
-				if (3 === node.nodeType) {
-					adjacent = node.parentNode
-					        && Html.findNodeRight(
-								node.parentNode.previousSibling,
-								isNotUnrenderedNode
-							);
-				} else if (1 === node.nodeType) {
-					adjacent = Html.findNodeRight(
-						node.previousSibling,
-						isNotUnrenderedNode
-					);
-				}
-				if (adjacent === that.tableWrapper) {
-					var nodeToSelect = getNewSelectedElement('last', that.obj);
-					event.preventDefault = true;
-					Aloha.getSelection().collapse(
-						nodeToSelect,
-						Dom.nodeLength(nodeToSelect)
-					);
-				}
-			}
-		});
-
-
 		this.obj.on('keydown', function (jqEvent) {
 			// Delete button
 			if (jqEvent.keyCode === 46) {
@@ -555,6 +498,8 @@ define([
 					that.deleteRows();
 				} else if (that.selection.selectionType === 'column') {
 					that.deleteColumns();
+				} else {
+					return;
 				}
 
 				// jqEvent.stopPropagation doesn't support cancelBubble
@@ -619,12 +564,12 @@ define([
 					var row = cell.closest( 'tr');
 					// check if it's the last row
 					if ( row.next( 'tr').length > 0 ) {
-						return false
+						return false;
 					}
 
 					var cursorOffset = e.pageY - ( row.offset().top + row.outerHeight() );
 					return cursorOffset > (mouseOffset * -1) && cursorOffset < mouseOffset;
-				}
+				};
 
 				var colResize = that.tablePlugin.colResize;
 				var rowResize = that.tablePlugin.rowResize;
@@ -697,13 +642,7 @@ define([
 		Ephemera.markWrapper(tableWrapper);
 
 		// wrap the tableWrapper around the table
-		this.obj.wrap( tableWrapper );
-
-		// Check because the aloha block plugin may not be loaded
-		var parent = this.obj.parent();
-		if (parent.alohaBlock) {
-			parent.alohaBlock();
-		}
+		this.wrappedObj.wrap( tableWrapper );
 
 		// :HINT The outest div (Editable) of the table is still in an editable
 		// div. So IE will surround the the wrapper div with a resize-border
@@ -713,18 +652,25 @@ define([
 		// were created dynamically before) ;)
 
 		htmlTableWrapper = this.obj.parents( '.' + this.get( 'classTableWrapper' ) );
-		htmlTableWrapper.get( 0 ).onresizestart = function ( e ) { return false; };
-		htmlTableWrapper.get( 0 ).oncontrolselect = function ( e ) { return false; };
-		htmlTableWrapper.get( 0 ).ondragstart = function ( e ) { return false; };
-		htmlTableWrapper.get( 0 ).onmovestart = function ( e ) { return false; };
+		htmlTableWrapperElem = this.obj.parents( '.' + this.get( 'classTableWrapper' ) ).get( 0 );
+		htmlTableWrapperElem.onresizestart = function ( e ) { return false; };
+		htmlTableWrapperElem.oncontrolselect = function ( e ) { return false; };
+		htmlTableWrapperElem.ondragstart = function ( e ) { return false; };
+		htmlTableWrapperElem.onmovestart = function ( e ) { return false; };
 		// the following handler prevents proper selection in the editable div in the caption!
-		// htmlTableWrapper.get( 0 ).onselectstart = function ( e ) { return false; };
-
-		this.tableWrapper = this.obj.parents( '.' + this.get( 'classTableWrapper' ) ).get( 0 );
+		// htmlTableWrapperElem.onselectstart = function ( e ) { return false; };
 
 		jQuery( this.cells ).each( function () {
 			this.activate();
 		} );
+
+		// Check because the aloha block plugin may not be loaded
+		// This is done, after the cells were made contenteditable, so that while initialization of the block,
+		// contenteditable anchors do not get the attribute 'draggable' set to 'false' (in order to prevent browser drag'n'drop)
+		// because this would make the anchors unclickable in IE
+		if (htmlTableWrapper.alohaBlock) {
+			htmlTableWrapper.alohaBlock();
+		}
 
 		// after the cells where replaced with contentEditables ... add selection cells
 		// first add the additional columns on the left side
@@ -734,6 +680,33 @@ define([
 		this.makeCaptionEditable();
 		this.checkWai();
 		this.isActive = true;
+
+		// when we stored the range, it was in the current table,
+		// so we need to re-select (because we changed the DOM structure around the table)
+		if (range) {
+			// check whether the startContainer and/or endContainer are one of the table's cells.
+			// if yes, replace the container with the editable wrapper
+			jQuery(this.cells).each(function() {
+				if (this.obj.is(range.startContainer)) {
+					if (this.wrapper.contents().length === 0) {
+						this.wrapper.html('&nbsp;');
+					}
+					range.startContainer = this.wrapper.contents().get(0);
+					range.startOffset = 0;
+				}
+				if (this.obj.is(range.endContainer)) {
+					if (this.wrapper.contents().length === 0) {
+						this.wrapper.html('&nbsp;');
+					}
+					range.endContainer = this.wrapper.contents().get(0);
+					range.endOffset = 0;
+				}
+			});
+			this.focus();
+			window.setTimeout( function() {
+				range.select();
+			}, 1);
+		}
 
 		Aloha.trigger( 'aloha-table-activated' );
 	};
@@ -857,7 +830,7 @@ define([
 		this.focus();
 
 		// if no cells are selected, reset the selection-array
-		if ( this.selection.selectedCells.length == 0 ) {
+		if ( this.selection.selectedCells.length === 0 ) {
 			this.rowsToSelect = [];
 		}
 
@@ -929,7 +902,7 @@ define([
 			start = (rowIndex < this.clickedRowId) ? rowIndex : this.clickedRowId;
 			end = (rowIndex < this.clickedRowId) ? this.clickedRowId : rowIndex;
 
-			this.rowsToSelect = new Array();
+			this.rowsToSelect = [];
 			for ( i = start; i <= end; i++) {
 				this.rowsToSelect.push(i);
 			}
@@ -973,7 +946,7 @@ define([
 				curNumColumns += colspan;
 			}
 
-			if( numColumns < curNumColumns ) {
+			if ( numColumns < curNumColumns ) {
 				numColumns = curNumColumns;
 			}
 		}
@@ -995,7 +968,7 @@ define([
 				this.attachColumnSelectEventsToCell(columnToInsert);
 				//set the colspan of selection column to match the colspan of first row columns
 			} else {
-				var columnToInsert = jQuery('<td>').clone();
+				columnToInsert = jQuery('<td>').clone();
 				columnToInsert.addClass(this.get('classLeftUpperCorner'));
 				var clickHandler = function (e) {
 					// select the Table
@@ -1085,7 +1058,7 @@ define([
 		this.focus();
 
 		// if no cells are selected, reset the selection-array
-		if ( this.selection.selectedCells.length == 0 ) {
+		if ( this.selection.selectedCells.length === 0 ) {
 			this.columnsToSelect = [];
 		}
 
@@ -1194,7 +1167,7 @@ define([
 			rowsToDelete[this.selection.selectedCells[i].parentNode.rowIndex] = true;
 		}
 
-	    for (rowId in rowsToDelete) {
+	    for (var rowId in rowsToDelete) {
 	       rowIDs.push(rowId);
 	    }
 
@@ -1265,6 +1238,8 @@ define([
 			// finally unselect the marked cells
 			this.selection.unselectCells();
 		}
+
+		Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'table-plugin'});
 	};
 
 	/**
@@ -1287,10 +1262,31 @@ define([
 
 		var grid = Utils.makeGrid(rows);
 		var selectColWidth = 1; //width of the select-row column
+		var selectedColumnIdxs = this.selection.selectedColumnIdxs;
+		// if at least on whole table column was selected using cell selection
+		// it should also be possible to delete the column
+		// therefore we need to determine which columns are selected using the
+		// current rectangle
+		if (
+			(!selectedColumnIdxs || selectedColumnIdxs.length === 0) &&
+			// check if the current rectangle is active
+			this.selection.currentRectangle &&
+			// check if a whole column is selected
+			this.selection.currentRectangle.top === 1 &&
+			this.selection.currentRectangle.bottom >= this.numRows &&
+			// check if there are really meaningful values in the rectangle
+			this.selection.currentRectangle.right > 0 &&
+			this.selection.currentRectangle.left > 0
+		) {
+			selectedColumnIdxs = [];
+			for (var l = this.selection.currentRectangle.left; l <= this.selection.currentRectangle.right; l++) {
+				selectedColumnIdxs.push(l);
+			}
+		}
 
 		// if all columns should be deleted, remove the WHOLE table
 		// delete the whole table
-		if ( this.selection.selectedColumnIdxs.length == grid[0].length - selectColWidth ) {
+		if ( selectedColumnIdxs.length == grid[0].length - selectColWidth ) {
 
 			Dialog.confirm({
 				title : i18n.t('Table'),
@@ -1309,11 +1305,12 @@ define([
 			//x-index is selected and deleted.
 
 			//sorted so we delete from right to left to minimize interfernce of deleted rows
-			var gridColumns = this.selection.selectedColumnIdxs.sort(function(a,b){ return b - a; });
+
+			var gridColumns = selectedColumnIdxs.sort(function(a,b){ return b - a; });
 			for (var i = 0; i < gridColumns.length; i++) {
 				var gridColumn = gridColumns[i];
 				for (var j = 0; j < rows.length; j++) {
-					var cellInfo = grid[j][gridColumn];
+					cellInfo = grid[j][gridColumn];
 					if ( ! cellInfo ) {
 						//TODO this case occurred because of a bug somewhere which should be fixed
 						continue;
@@ -1347,6 +1344,8 @@ define([
 
 			this.selection.unselectCells();
 		}
+
+		Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'table-plugin'});
 	};
 
 	/**
@@ -1355,6 +1354,7 @@ define([
 	 * @return void
 	 */
 	Table.prototype.deleteTable = function() {
+
 		var deleteIndex = -1;
 		for (var i = 0; i < this.tablePlugin.TableRegistry.length; i++){
 			if (this.tablePlugin.TableRegistry[i].obj.attr('id') == this.obj.attr('id')) {
@@ -1372,16 +1372,22 @@ define([
 			// we will set the cursor right before the removed table
 			var newRange = Aloha.Selection.rangeObject;
 			// TODO set the correct range here (cursor shall be right before the removed table)
-			newRange.endContainer = this.obj.get(0).parentNode;
+			newRange.endContainer = this.wrappedObj.get(0).parentNode;
 			newRange.startContainer = newRange.endContainer;
 
-			newRange.endOffset = GENTICS.Utils.Dom.getIndexInParent(this.obj.get(0));
+			newRange.endOffset = Dom.getIndexInParent(this.wrappedObj.get(0));
 			newRange.startOffset = newRange.endOffset;
 
 			newRange.clearCaches();
 
-			this.obj.remove();
-			this.parentEditable.obj.focus();
+			this.wrappedObj.remove();
+
+			var that = this;
+			// IE needs a timeout to work properly
+			window.setTimeout( function() {
+				that.parentEditable.obj.focus();
+			}, 5);
+
 			// select the new range
 			newRange.correctRange();
 			newRange.select();
@@ -1453,6 +1459,8 @@ define([
 		for (var j = 0; j < rowsToInsert; j++) {
 			$insertionRow = jQuery('<tr>');
 
+			$insertionRow.addClass(this.tablePlugin.defaultRowClass);
+
 			// create the first column, the "select row" column
 			var $selectionColumn = jQuery('<td>');
 			$selectionColumn.addClass(classSelectionColumn);
@@ -1489,6 +1497,8 @@ define([
 		}
 
 		this.numRows += rowsToInsert;
+
+		Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'table-plugin'});
 
 		return $insertionRow[0];
 	};
@@ -1569,7 +1579,7 @@ define([
 			cell.html( '\u00a0' );
 
 			// on first row correct the position of the selected columns
-			if ( i == 0 ) {
+			if ( i === 0 ) {
 				// this is the first row, so make a column-selection cell
 				this.attachColumnSelectEventsToCell( cell );
 			} else {
@@ -1579,7 +1589,7 @@ define([
 			}
 
 			var leftCell = Utils.leftDomCell( grid, i, currentColIdx );
-			if ( null == leftCell ) {
+			if ( null === leftCell ) {
 				jQuery( rows[i] ).prepend( cell );
 			} else {
 				if ( 'left' === position && Utils.containsDomCell( grid[ i ][ currentColIdx ] ) ) {
@@ -1591,6 +1601,8 @@ define([
 
 			this.numCols++;
 		}
+
+		Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'table-plugin'});
 	};
 
 	/**
@@ -1668,12 +1680,12 @@ define([
 
 		if ( !selection ||
 				!selection._nativeSelection ||
-					selection._nativeSelection._ranges.length == 0 ) {
+					selection._nativeSelection._ranges.length === 0 ) {
 			return;
 		}
 
 		var range = selection.getRangeAt( 0 );
-		if ( null == range.startContainer ) {
+		if ( null === range.startContainer ) {
 			return;
 		}
 
@@ -1690,7 +1702,7 @@ define([
 		// set the foces to the first selected cell
 		var container = TableCell.getContainer( this.selection.selectedCells[ 0 ] );
 		jQuery( container ).focus();
-	}
+	};
 
 	/**
 	 * Marks all cells of the specified column as marked (adds a special class)
@@ -1723,8 +1735,6 @@ define([
 
 		this.selection.notifyCellsSelected();
 		this._removeCursorSelection();
-
-		Scopes.setScope(this.tablePlugin.name + '.column');
 	};
 
 	/**
@@ -1751,8 +1761,6 @@ define([
 
 		this.selection.notifyCellsSelected();
 		this._removeCursorSelection();
-
-		Scopes.setScope(this.tablePlugin.name + '.row');
 	};
 
 	/**
@@ -1762,22 +1770,25 @@ define([
 	 * @return void
 	 */
 	Table.prototype.deactivate = function() {
+		// preserve the current selection
+		var range = new Aloha.Selection.SelectionRange(true);
+
 		// unblockify the table wrapper
-		var parent = this.obj.parent();
+		var parent = this.wrappedObj.parent();
 		if (parent.mahaloBlock) {
 			parent.mahaloBlock();
 		}
 
 		this.obj.removeClass(this.get('className'));
-		if (jQuery.trim(this.obj.attr('class')) == '') {
+		if (jQuery.trim(this.obj.attr('class')) === '') {
 			this.obj.removeAttr('class');
 		}
 		this.obj.removeAttr('contenteditable');
 	//	this.obj.removeAttr('id');
 
 		// unwrap the selectionLeft-div if available
-		if (this.obj.parents('.' + this.get('classTableWrapper')).length){
-			this.obj.unwrap();
+		if (this.wrappedObj.parents('.' + this.get('classTableWrapper')).length){
+			this.wrappedObj.unwrap();
 		}
 
 		// remove the selection row
@@ -1811,6 +1822,11 @@ define([
 
 		// better unset ;-) otherwise activate() may think you're activated.
 		this.isActive = false;
+
+		// select the selection, because the dom around the selection might have changed (e.g. when an editable in the table was clicked)
+		if (typeof range.startContainer !== 'undefined' && typeof range.endContainer !== 'undefined') {
+			range.select();
+		}
 	};
 
 	/**
@@ -1862,26 +1878,23 @@ define([
 
 				return true;
 			});
+
+			if (that.tablePlugin.colResize == '%') {
+				Utils.convertCellWidthToPercent(rows);
+			}
 		};
 
-		cell.bind('mousedown.resize', function() {
+		cell.bind('mousedown.resize', function($event) {
+			// prevent cell resizing, if mousedown was on a block handle
+			if (jQuery($event.target).hasClass('aloha-block-draghandle')) {
+				return;
+			}
 
-			// create a guide
-			var guide = jQuery( '<div></div>' );
-			var $cell = jQuery(cell);
-			var width = $cell.outerWidth() - $cell.innerWidth();
-			var height = $cell.closest( 'tbody' ).innerHeight();
-			guide.css({
-				'height': (height < 1) ? 1 : height,
-				'width': (width < 1) ? 1 : width,
-				'top': $cell.closest( 'tbody' ).offset().top,
-				'left': $cell.offset().left,
-				'position': 'absolute',
-				'background-color': '#80B5F2'
-			});
-			jQuery('body').append(guide);
+			var $guide = jQuery('<div></div>');
+			var isResizing = false;
 
 			Utils.getCellResizeBoundaries(gridId, rows, function(maxPageX, minPageX) {
+				isResizing = true;
 
 				// unset the selection type
 				that.selection.resizeMode = true;
@@ -1890,7 +1903,7 @@ define([
 				jQuery( 'body' ).bind( 'mousemove.dnd_col_resize', function(e) {
 					// limit the maximum resize
 					if ( e.pageX > minPageX && e.pageX < maxPageX ) {
-						guide.css( 'left', e.pageX );
+						$guide.css('left', e.pageX);
 					}
 				});
 
@@ -1916,11 +1929,25 @@ define([
 					// unset the selection resize mode
 					that.selection.resizeMode = false;
 
-					guide.remove();
+					$guide.remove();
 				});
-
 			});
 
+			if (!isResizing) {
+				return;
+			}
+
+			var $cell = jQuery(cell);
+			var width = $cell.outerWidth() - $cell.innerWidth();
+			var height = $cell.closest('tbody').innerHeight();
+			$guide.css({
+				'height': (height < 1) ? 1 : height,
+				'width': (width < 1) ? 1 : width,
+				'top': $cell.closest('tbody').offset().top,
+				'left': $cell.offset().left,
+				'position': 'absolute',
+				'background-color': '#80B5F2'
+			}).appendTo('body');
 		});
 
 	};
@@ -1958,7 +1985,11 @@ define([
 			expandingRow.css( 'height', expandToHeight );
 		};
 
-		cell.bind( 'mousedown.resize', function(){
+		cell.bind('mousedown.resize', function($event) {
+			// prevent cell selection, if mousedown was on a block handle
+			if (jQuery($event.target).hasClass('aloha-block-draghandle')) {
+				return;
+			}
 
 			// create a guide
 			var guide = jQuery( '<div></div>' );
@@ -2063,24 +2094,42 @@ define([
 			                      rows.index( lastCellRow ),
 			                      lastCellRow.children().index( lastCell )
 			                   );
-			var expandToWidth = pixelsMoved - Utils.getCellBorder(lastCell) - Utils.getCellPadding(lastCell);
+			var expandToWidth = pixelsMoved - Utils.getCellBorder(lastCell) - Utils.getCellPadding(lastCell),
+				cellChanges = [],
+				gridCellWidthBefore = 0,
+				tableWidthBefore = table.width();
 
 			Utils.walkCells(rows, function(ri, ci, gridCi, colspan, rowspan) {
-				var currentCell = jQuery( jQuery( rows[ri] ).children()[ ci ] )
+				var currentCell = jQuery( jQuery( rows[ri] ).children()[ ci ] );
 
 				// skip the select cells and cells with colspans
 				if ( currentCell.hasClass( 'aloha-table-selectrow' ) || currentCell.closest( 'tr' ).hasClass( 'aloha-table-selectcolumn' ) || colspan > 1 ) {
 					return true;
 				}
 
+				// we keep a list of changes an apply them in a second run
+				// in order to not change the values we are calculating with during the process
 				if (gridCi === gridId ) {
-					Utils.resizeCellWidth( currentCell, expandToWidth );
+					gridCellWidthBefore = currentCell.width();
+					cellChanges.push({cell : currentCell, width : expandToWidth});
 				} else {
-					Utils.resizeCellWidth( currentCell, currentCell.width() );
+					cellChanges.push({cell : currentCell, width : currentCell.width()});
 				}
-
 				return true;
 			});
+
+			// now we apply the changes to the table cells
+			jQuery.each(cellChanges, function(index, item) {
+				Utils.resizeCellWidth( item.cell, item.width );
+			});
+
+			// set the width on the table to ensure that the table actually shrinks
+			// and that we can use percent values on the columns
+			table.css('width', (tableWidthBefore + (expandToWidth - gridCellWidthBefore)) + 'px');
+
+			if (that.tablePlugin.colResize == '%') {
+				Utils.convertCellWidthToPercent(rows);
+			}
 		};
 
 		lastColumn.bind( 'mousedown.resize', function() {
@@ -2127,7 +2176,6 @@ define([
 				} else if ( e.pageX > maxPageX ) {
 				  pixelsMoved = maxPageX - lastCell.offset().left;
 				}
-
 				// set the table width
 				resizeColumns( pixelsMoved );
 
@@ -2177,13 +2225,20 @@ define([
 	};
 
 	/**
+	 * @param {Boolean} filterSelectionRow filter selection row
 	 * @return the rows of the table as an array of DOM nodes
 	 */
-	Table.prototype.getRows = function () {
+	Table.prototype.getRows = function (filterSelectionRow) {
 		//W3C DOM property .rows supported by all modern browsers
 		var rows = this.obj.get( 0 ).rows;
 		//converts the HTMLCollection to a real array
-		return jQuery.makeArray( rows );
+		rows = jQuery.makeArray(rows);
+		if (filterSelectionRow) {
+			rows = rows.filter(function(elt, i, array) {
+				return !jQuery(elt).hasClass('aloha-ephemera');
+			});
+		}
+		return rows;
 	};
 
 	return Table;

@@ -1,0 +1,3 @@
+Internet Explorer 11 showed undesired resize handles around block elements.
+Since block elements should not be resized through the browser's in-built
+interface, this has been disabled.

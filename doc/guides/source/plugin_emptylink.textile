@@ -7,4 +7,24 @@ endprologue.
 h3. Functional Description
 
 The Plugin relies on CSS selectors to highlight the empty link elements (see https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors).
-The CSS selector highlights links which its link target attribute ('href') is either '#' or empty.
+The CSS selector highlights links which its link target attribute ('href') is either '#', 'http://' or empty.
+
+h3. Configuration settings
+
+The Empty Link plugin provides the following config options:
+
+<javascript>
+Aloha.settings.plugins.emptylink = {
+	// default configuration for all editables (set to empty array to deactivate per default)
+	config : ["emptylink"],
+	// specific configuration for each editable identified by css selectors
+	editables : {
+		// deactivate for "teaser"
+		"#teaser" : [],
+		// activate for "content"
+		"#content" : ["emptylink"]
+	}
+};
+</javascript>
+
+If no configuration is set, the plugin will be activated for all editables.

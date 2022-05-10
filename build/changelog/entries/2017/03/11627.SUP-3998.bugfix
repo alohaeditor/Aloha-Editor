@@ -1,0 +1,3 @@
+Feature detection for selection of multiple ranges in rangy-core caused a deprecation warning in Chrome. Since selection
+of multiple ranges is only available in FireFox and is not supported in Aloha-Editor, detecting this feature has been
+removed altogether.

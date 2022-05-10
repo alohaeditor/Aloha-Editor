@@ -25,5 +25,6 @@ define({
 	"table.sidebar.title": "Tabelle",
 	"table.mergeCells.notRectangular": "Es kann nur eine rechteckige Auswahl verknüpft werden",
 	"table.addColumns.nonConsecutive": "Bitte einzelne oder aufeinanderfolgende Reihen auswählen",
-	"table.createTable.nestedTablesNoSupported": "Verschachtelte Tabellen werden nicht unterstützt"
+	"table.createTable.nestedTablesNoSupported": "Verschachtelte Tabellen werden nicht unterstützt",
+	"button.deltable.tooltip": "Tabelle löschen"
 });

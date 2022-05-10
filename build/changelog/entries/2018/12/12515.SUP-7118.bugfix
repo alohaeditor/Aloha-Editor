@@ -1,0 +1,3 @@
+When a tag with an inline editable was reloaded and its configuration in alohaeditor config used a nested selector that includes a parent element, the tagtype whitelist did not apply anymore and the floating menu allowed all tags to be inserted. 
+
+This bugfix gets the editable object again from DOM if it is not part of it anymore. This way nested selectors that include parent elements are working even after tag reload. 

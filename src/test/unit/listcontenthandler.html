@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Aloha Editor contenthandler Test Suite</title>
+	<!-- include qunit -->
+	<link rel="stylesheet" href="../vendor/qunit.css" type="text/css"/>
+
+	<script type="text/javascript" src="../vendor/qunit.js"></script>
+
+	<!-- include jquery -->
+	<script	src="../../lib/vendor/jquery-1.7.2.js" ></script>
+	<script type="text/javascript" src="../vendor/jquery.simulate.js"></script>
+
+	<!-- include aloha -->
+	<script>
+		var Aloha = {
+			settings: {
+				jQuery: $,
+				baseUrl: '../../lib',
+				contentHandler: {
+					insertHtml: [ 'generic' ]
+				},
+				plugins: {
+					list: {
+						config: [ ],
+						templates: {
+							'ul': {
+								classes: ['allowed-ul'],
+								template: '',
+								locale: {
+									fallback: {}
+								}
+							},
+							'ol': {
+								classes: ['allowed-ol'],
+								template: '',
+								locale: {
+									fallback: {}
+								}
+							},
+							'dl': {
+								classes: ['allowed-dl'],
+								template: '',
+								locale: {
+									fallback: {}
+								}
+							}
+						},
+						editables: {
+							'#only-ul-allowed': [ 'ul' ],
+							'#only-ul-allowed-nested': [ 'ul' ],
+							'#allowed-classes': ['ul', 'ol', 'dl'],
+							'#nested-default': [ 'ul' ]
+						},
+						defaultClasses: {
+							ul: {
+								list: ['default-ul', 'default-ul default-ul-nested'],
+								item: [
+									'default-ul-item',
+									'default-ul-item default-ul-item--lvl-1',
+									'default-ul-item default-ul-item--lvl-2',
+									'default-ul-item default-ul-item--lvl-3',
+									'default-ul-item default-ul-item--lvl-4'
+								]
+							},
+							ol: {
+								list: ['default-ol'],
+								item: ['default-ol-item']
+							},
+							dl: {
+								list: ['default-dl'],
+								item: ['default-dl-item']
+							}
+						}
+					}
+				}
+			}
+		};
+	</script>
+	<script src="../../lib/require.js"></script>
+	<script src="../../lib/aloha.js" data-aloha-plugins="common/ui,common/list,common/format,common/commands,common/paste,common/contenthandler"></script>
+
+	<script>
+		// define realtive baseUrl path to requireJS
+		// and paths back to aloha path
+		require( [ 'commandtest' ] );
+		//require( [ 'contenthandlertest' ] );
+	</script>
+	<style>
+		.test-container {
+			margin:20px;
+			border:1px solid #000000;
+		}
+	</style>
+</head>
+<body>
+	<!-- include the tests -->
+	<script>
+	var files, elements,
+		tests = {
+			defaultValue: 'bam',
+			defaultCommand: 'inserthtml',
+			label: 'listcontenthandler',
+			tests: [ ]
+	}
+
+	// now add tests for copy & paste from different sources (from './genericcontenthandler/<name>-[start|expected|value].html' files)
+	files = [ 'no-lists', 'only-ul-allowed', 'only-ul-allowed-nested', 'allowed-classes', 'nested-default' ];
+	elements = [ 'div' ];
+
+	function prepareTest(file) {
+		var data_start, 
+			data_expected,
+			data_value,
+			file_expected;
+
+		file = files[ i ];
+
+		if (Aloha.settings.sanitize) {
+			file_expected = file + '-' + Aloha.settings.sanitize;
+		} else {
+			file_expected = file;
+		}
+		
+		var testUrl = 'listcontenthandler/' + file +'-start.html';
+
+		jQuery.ajax( {url: 'listcontenthandler/' + file +'-start.html', async: false, success: function(data) { 
+				data_start = data;
+		}} );
+
+		jQuery.ajax( {url: 'listcontenthandler/' + file +'-expected.html', async: false, success: function(data) { 
+				data_expected = data;
+		}} );
+
+		jQuery.ajax( {url: 'listcontenthandler/' + file +'-value.html', async: false, success: function(data) { 
+				data_value = data;
+		}} );
+
+		tests.defaultAttributes = ['border', 'cellpadding', 'cellspacing', 'style', 'class'];
+
+		for ( j=0; j<elements.length; j++ ) {
+			tests.tests.push({
+				start: '<' + elements[ j ] + '>' + data_start + '</' + elements[ j ] + '>',
+				execResult: '<' + elements[ j ] + '>' + data_expected + '</' + elements[ j ] + '>',
+				value: data_value,
+				editableSelector: '#' + file
+			});
+		}
+	}
+
+	for ( i=0; i<files.length; i++ ) {
+		prepareTest(files[ i ])
+	};
+
+	</script>
+	<h1 id="qunit-header">Aloha Editor Paste Test Suite</h1>
+	<h2 id="qunit-banner"></h2>
+	<div id="qunit-testrunner-toolbar"></div>
+	<h2 id="qunit-userAgent"></h2>
+	<ol id="qunit-tests"></ol>
+	<div id="qunit-fixture"></div>
+	<div id="no-lists" class="test-container"></div>
+	<div id="only-ul-allowed" class="test-container"></div>
+	<div id="only-ul-allowed-nested" class="test-container"></div>
+	<div id="allowed-classes" class="test-container"></div>
+	<div id="nested-default" class="test-container"></div>
+	<div id="logBody"></div>
+	</div>
+</body>
+</html>

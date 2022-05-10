@@ -1,0 +1,10 @@
+{
+  "version": "1.4.15",
+  "date": "09.08.2016",
+  "changeLogEntryFileNames": [
+    "11004.SUP-3192.bugfix",
+    "11002.SUP-3154.bugfix",
+    "10958.SUP-2992.bugfix"
+  ],
+  "genericProperties": {}
+}

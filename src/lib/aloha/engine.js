@@ -813,6 +813,7 @@ define([
 		rangeObject.endContainer = range.endContainer;
 		rangeObject.endOffset = range.endOffset;
 
+		rangeObject.correctRange();
 		rangeObject.select();
 	}
 
@@ -1332,7 +1333,7 @@ define([
 			reference = previousNode(reference);
 
 			// "If reference is a block node or a br, return true."
-			if (isBlockNode(reference) || isNamedHtmlElement(reference, 'br')) {
+			if (reference != ancestor && (isBlockNode(reference) || isNamedHtmlElement(reference, 'br'))) {
 				return true;
 			}
 
@@ -4653,14 +4654,26 @@ define([
 					// so we unwrap now
 					newStartOffset = range.startOffset;
 					newEndOffset = range.endOffset;
+					// if the unwrapped element is a non-empty block-level element, we will append a <br> Tag,
+					// in order to retain the line break
+					var insertBr = Dom.isBlockLevelElement(node) && !isEmptyNode(node) && !isNamedHtmlElement(node.lastChild, 'br');
 
 					if (range.startContainer === node.parentNode && range.startOffset > Dom.getIndexInParent(node)) {
 						// the node (1 element) will be replaced by its contents (contents().length elements)
 						newStartOffset = range.startOffset + (jQuery(node).contents().length - 1);
+						if (insertBr) {
+							newStartOffset++;
+						}
 					}
 					if (range.endContainer === node.parentNode && range.endOffset > Dom.getIndexInParent(node)) {
 						// the node (1 element) will be replaced by its contents (contents().length elements)
 						newEndOffset = range.endOffset + (jQuery(node).contents().length - 1);
+						if (insertBr) {
+							newEndOffset++;
+						}
+					}
+					if (insertBr) {
+						jQuery(node).append("<br>");
 					}
 					jQuery(node).contents().unwrap();
 					range.startOffset = newStartOffset;
@@ -5283,7 +5296,14 @@ define([
 		// node follows a line break, and false otherwise. non-breaking end is true
 		// if end offset is end node's length and end node precedes a line break,
 		// and false otherwise."
-		var replacementWhitespace = canonicalSpaceSequence(length, startOffset == 0 && followsLineBreak(startNode), endOffset == getNodeLength(endNode) && precedesLineBreak(endNode));
+		// Correction: The above specification rule has been implemented slightly different,
+		// because the line breaks at start/end should not be taken in account if startNode
+		// or endNode are editing hosts.
+		var isNonBreakingStart    = startOffset == 0 &&
+				(followsLineBreak(startNode) || isEditingHost(startNode));
+		var isNonBreakingEnd      = endOffset == getNodeLength(endNode)
+				&& (precedesLineBreak(endNode) || isEditingHost(endNode));
+		var replacementWhitespace = canonicalSpaceSequence(length, isNonBreakingStart, isNonBreakingEnd);
 
 		// "While (start node, start offset) is before (end node, end offset):"
 		while (getPosition(startNode, startOffset, endNode, endOffset) == "before") {
@@ -5344,6 +5364,10 @@ define([
 			firstChildNode;
 
 		if (!node || !range) {
+			return false;
+		}
+
+		if (isEditingHost(node)) {
 			return false;
 		}
 
@@ -6694,10 +6718,8 @@ define([
 				i,
 				deleteContentsRange;
 
-			// special behaviour for skipping zero-width whitespaces in IE7
-			if (Aloha.browser.msie && Aloha.browser.version <= 7) {
-				moveOverZWSP(range, false);
-			}
+			// special behaviour for skipping zero-width whitespaces
+			moveOverZWSP(range, false);
 
 			// "If the active range is not collapsed, delete the contents of the
 			// active range and abort these steps."
@@ -6775,18 +6797,16 @@ define([
 				}
 			}
 
-			// if the previous node is an aloha-table we want to delete it
-			var delBlock = getBlockAtPreviousPosition(node, offset);
-			if (delBlock) {
-				delBlock.parentNode.removeChild(delBlock);
-				return;
-			}
-
 			// "If node is a Text node and offset is not zero, call collapse(node,
 			// offset) on the Selection. Then delete the contents of the range with
 			// start (node, offset − 1) and end (node, offset) and abort these
 			// steps."
 			if (node.nodeType == $_.Node.TEXT_NODE && offset != 0) {
+				// if the place we found is not editable, we stop here
+				if (!isEditable(node)) {
+					return;
+				}
+
 				range.setStart(node, offset - 1);
 				range.setEnd(node, offset - 1);
 				deleteContentsRange = deleteContents(node, offset - 1, node, offset);
@@ -7285,10 +7305,8 @@ define([
 	commands.forwarddelete = {
 		action: function (value, range) {
 			var deleteContentsRange;
-			// special behaviour for skipping zero-width whitespaces in IE7
-			if (Aloha.browser.msie && Aloha.browser.version <= 7) {
-				moveOverZWSP(range, true);
-			}
+			// special behaviour for skipping zero-width whitespaces
+			moveOverZWSP(range, true);
 
 			// "If the active range is not collapsed, delete the contents of the
 			// active range and abort these steps."
@@ -7301,6 +7319,12 @@ define([
 			// range's start offset)."
 			canonicalizeWhitespace(range.startContainer, range.startOffset);
 
+			// small selection hack: If the selection is in an empty text node, we move it after the text node
+			if (range.startContainer.nodeType === 3 && range.startContainer.data.length === 0) {
+				range.startOffset = range.endOffset = Dom.getIndexInParent(range.startContainer) + 1;
+				range.startContainer = range.endContainer = range.startContainer.parentNode;
+			}
+
 			// "Let node and offset be the active range's start node and offset."
 			var node = range.startContainer;
 			var offset = range.startOffset;
@@ -7309,12 +7333,38 @@ define([
 
 			// special behaviour: if we are in an empty block-level element (empty, but for the single ending br), we just remove that
 			// this will fix situations where it was not possible to delete an empty block level element right before a non-editable part
-			if (Dom.isEmptyBlockLevelElement(node)) {
+			// but never delete the editing host itself
+			if (Dom.isEmptyBlockLevelElement(node) && !isEditingHost(node)) {
 				range.startContainer = node.parentElement;
 				range.startOffset = Dom.getIndexInParent(node);
 				range.endContainer = node.parentElement;
 				range.endOffset = range.startOffset + 1;
 				deleteContents(range);
+
+				// currently, the selection would probably be put in between two paragraphs, which is not suitable
+				// try to move the cursor into the next text node
+				var nextText = Dom.searchAdjacentTextNode(range.startContainer, range.startOffset, false, {blocklevel: false, list: false});
+				if (nextText) {
+					range.startContainer = range.endContainer = nextText;
+					range.startOffset = range.endOffset = 0;
+					return;
+				}
+
+				// check whether the next element is an editable blocklevel element, if yes, put the cursor into it
+				var nextElement = range.startContainer.childNodes.length > range.startOffset ? range.startContainer.childNodes[range.startOffset] : null;
+				if (Dom.isBlockLevelElement(nextElement) && Dom.isEditable(nextElement)) {
+					range.startContainer = range.endContainer = nextElement;
+					range.startOffset = range.endOffset = 0;
+					return;
+				}
+
+				// try the previous text node
+				nextText = Dom.searchAdjacentTextNode(range.startContainer, range.startOffset, true, {blocklevel: false, list: false});
+				if (nextText) {
+					range.startContainer = range.endContainer = nextText;
+					range.startOffset = range.endOffset = nextText.data.length;
+				}
+
 				return;
 			}
 
@@ -7372,16 +7422,14 @@ define([
 			// collapse whitespace in the node, if it is a text node
 			canonicalizeWhitespace(range.startContainer, range.startOffset);
 
-			// if the next node is an aloha-table we want to delete it
-			var delBlock = getBlockAtNextPosition(node, offset);
-			if (delBlock) {
-				delBlock.parentNode.removeChild(delBlock);
-				return;
-			}
-
 			var endOffset;
 			// "If node is a Text node and offset is not node's length:"
 			if (node.nodeType == $_.Node.TEXT_NODE && offset != getNodeLength(node)) {
+				// if the place we found (which we want to delete) is not editable, we stop here
+				if (!isEditable(node)) {
+					return;
+				}
+
 				// "Call collapse(node, offset) on the Selection."
 				range.setStart(node, offset);
 				range.setEnd(node, offset);
@@ -7495,6 +7543,10 @@ define([
 				// invisible, remove it from end node."
 				if (isEditable(endNode.childNodes[endOffset]) && isInvisible(endNode.childNodes[endOffset])) {
 					endNode.removeChild(endNode.childNodes[endOffset]);
+
+					// prevent deleting non-editable elements
+				} else if (!isEditable(endNode.childNodes[endOffset]) || jQuery(endNode.childNodes[endOffset]).hasClass('aloha-table-wrapper')) {
+					return;
 
 					// "Otherwise, set end node to its child with index end offset and
 					// set end offset to zero."

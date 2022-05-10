@@ -1,0 +1,3 @@
+When editing with Internet Explorer in a frameset, it sometimes was necessary to click an
+editable twice in order to activate it.
+This has been fixed now.

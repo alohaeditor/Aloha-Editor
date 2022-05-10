@@ -1,0 +1,1 @@
+When pressing ENTER in the href field of the link-plugin, the focus was not properly updated in some browsers. This has been fixed.

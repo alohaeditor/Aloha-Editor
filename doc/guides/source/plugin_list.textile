@@ -17,6 +17,8 @@ You can use the tab key to indent unordered and ordered lists or use shift-tab t
 
 You can remove lists by clicking the applied list type a second time, which will turn individual list items back into paragraphs.
 
+NOTE: Although allowed by the HTML specification, Aloha Editor will not allow nesting of paragraphs or headers in list items.
+
 h4. List styles
 
 If you open the dropdown next to the respective list icon, you can choose from a list of pre-defined list styles.
@@ -43,7 +45,7 @@ h5. Definition list styles
 * blue
 * green
 * red
-  
+
 h3. Configuration settings
 
 Add the available components +'ol', 'ul', 'dl'+ to the editables where you want to use them:
@@ -91,7 +93,39 @@ To define custom list styles use the following syntax:
     				de: {first: 'erstes Element', second: 'zweites Element'}
     			}
     		},
-    	}
+    	},
+    	// defaultClasses are optional classes which will be applied to all lists and list items for which they are defined.
+    	// The classes to be added are provided as a string or as an array of strings.
+    	//
+    	// - If defined as a string, then that class (or multiple classes separated by a space) will be applied to all
+    	// lists or items of that type.
+    	// - If defined as an array of strings, then those classes will be applied according to the nesting level of
+    	// the list.
+    	//
+    	// For example, in the "ol" definition below, the class "my-numbered-list" will be applied to all non-nested OL elements.
+    	// Any nested OL lists will have the classes "my-numbered-list" & "my-numbered-list--nested" applied.
+    	// The items of the root list will have the class "my-numbered-list__item" applied, and items of list nested 1-level deep
+    	// will have the classes "my-numbered-list__item" & "my-numbered-list__item--lvl-1" applied, and so on. The last item in the
+    	// list "--lvl-4" will then be used for all further nesting levels beyond that point.
+    	defaultClasses: {
+    		ul: {
+    			list: 'my-bullet-list',
+    			item: 'list-item my-bullet-list__item'
+    		},
+    		ol: {
+    			list: ['my-numbered-list', 'my-numbered-list my-numbered-list--nested'],
+    			item: [
+    				'my-numbered-list__item',
+    				'my-numbered-list__item my-numbered-list__item--lvl-1',
+    				'my-numbered-list__item my-numbered-list__item--lvl-2',
+    				'my-numbered-list__item my-numbered-list__item--lvl-3',
+    				'my-numbered-list__item my-numbered-list__item--lvl-4'
+    			]
+    		},
+    		dl: {
+    			list: ['my-dl-list'],
+    			item: ['my-dl-item']
+    		}
     }
 </javascript>
 

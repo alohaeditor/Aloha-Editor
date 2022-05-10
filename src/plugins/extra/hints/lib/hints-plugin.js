@@ -34,13 +34,13 @@ function( Aloha, jquery, plugin, tipsy ) {
 		delayOut:   0.5,    // delay before hiding tooltip (ms)
 		fade:       true,   // fade tooltips in/out?
 		fallback:   '',     // fallback text to use when no tooltip text
-		gravity:    'w',    // gravity
+		gravity:    's',    // gravity
 		html:       false,  // is tooltip content HTML?
 		live:       false,  // use live event support?
 		offset:     0,      // pixel offset of tooltip from element
 		opacity:    0.7,    // opacity of tooltip
 		title:      'title',// attribute/callback containing tooltip text
-		trigger:    'focus',// how tooltip is triggered - hover | focus | manual
+		trigger:    'hover',// how tooltip is triggered - hover | focus | manual
 
 		// initialize plugin
 		init: function() {

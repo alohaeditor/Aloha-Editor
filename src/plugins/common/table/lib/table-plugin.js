@@ -24,6 +24,7 @@ define([
 	'table/table-create-layer',
 	'table/table',
 	'table/table-plugin-utils',
+	'table/table-selection',
 	'util/dom',
 	'aloha/ephemera',
 	'aloha/console'
@@ -46,6 +47,7 @@ define([
 	CreateLayer,
 	Table,
 	Utils,
+	TableSelection,
 	Dom,
 	Ephemera,
 	Console
@@ -228,6 +230,7 @@ define([
 			table.parentEditable = Aloha.getEditableById($host.attr('id'));
 			TablePlugin.TableRegistry.push(table);
 			checkForNestedTables($table);
+			applyDefaultClassesToTable($table.get(0));
 			if (Aloha.activeEditable === table.parentEditable) {
 				table.activate();
 			}
@@ -270,6 +273,8 @@ define([
 			}
 
 			if (cell != null) {
+				setCellDefaultClass(bufferCell, allHeaders);
+
 				// assign the changed dom-element to the table-cell
 				cell.obj[0] = bufferCell;
 
@@ -289,6 +294,83 @@ define([
 				}, 1);
 			});
 		}
+
+		Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'table-plugin'});
+		var tableElement = table.obj && table.obj.get && table.obj.get(0);
+		if (tableElement) {
+			applyDefaultClassesToTable(tableElement);
+		}
+	}
+
+	/**
+	 * Apply the default classes as specified in the plugin config to the table.
+	 *
+	 * @param {HTMLTableElement} table
+	 */
+	function applyDefaultClassesToTable(table) {
+		// set the default class
+		if (TablePlugin.defaultClass) {
+			$(table).addClass(TablePlugin.defaultClass);
+		}
+		for (var i = 0; i < table.rows.length; i++) {
+			var row = table.rows[i];
+			if (isEphemeral(row)) {
+				continue;
+			}
+			var $row = $(row);
+			var isHeader = isHeaderRow(row);
+			if (isHeader) {
+				$row.removeClass(TablePlugin.defaultRowClass);
+				$row.addClass(TablePlugin.defaultHeaderRowClass);
+			} else {
+				$row.removeClass(TablePlugin.defaultHeaderRowClass);
+				$row.addClass(TablePlugin.defaultRowClass);
+			}
+			for (var j = 0; j < row.cells.length; j++) {
+				var cell = row.cells[j];
+				setCellDefaultClass(cell, isHeader);
+			}
+		}
+	}
+
+	function setCellDefaultClass(cell, isHeader) {
+		var $cell = $(cell);
+		if (isHeader) {
+			$cell.removeClass(TablePlugin.defaultCellClass);
+			$cell.addClass(TablePlugin.defaultHeaderCellClass);
+		} else {
+			$cell.removeClass(TablePlugin.defaultHeaderCellClass);
+			$cell.addClass(TablePlugin.defaultCellClass);
+		}
+	}
+
+	/**
+	 * Returns true if all the (non-ephemeral) cells in a given row are TH elements
+	 * @param {HTMLTableRowElement} row
+	 * @return {boolean}
+	 */
+	function isHeaderRow(row) {
+		if (isEphemeral(row)) {
+			return false;
+		}
+		for (var i = 0; i < row.cells.length; i++) {
+			var cell = row.cells[i];
+			var isTH = cell.tagName === 'TH';
+			if (!isEphemeral(cell) && !isTH) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Returns true if the element has the aloha-ephemeral class
+	 * @param {HTMLElement} element
+	 * @return {boolean}
+	 */
+	function isEphemeral(element) {
+		var ephemeraClass = 'aloha-ephemera';
+		return -1 < element.className.indexOf(ephemeraClass);
 	}
 
 	/**
@@ -340,9 +422,14 @@ define([
 		this.rowConfig    = this.checkConfig(this.rowConfig    || this.settings.rowConfig);
 		this.cellConfig   = this.checkConfig(this.cellConfig   || this.settings.cellConfig);
 
-		this.tableResize = this.settings.tableResize === undefined ? false : this.settings.tableResize;
-		this.colResize   = this.settings.colResize   === undefined ? false : this.settings.colResize;
-		this.rowResize   = this.settings.rowResize   === undefined ? false : this.settings.rowResize;
+		this.tableResize  = this.settings.tableResize === undefined ? false : this.settings.tableResize;
+		this.colResize    = this.settings.colResize   === undefined ? false : this.settings.colResize;
+		this.rowResize    = this.settings.rowResize   === undefined ? false : this.settings.rowResize;
+		this.defaultClass = this.settings.defaultClass || '';
+		this.defaultRowClass = this.settings.defaultRowClass || '';
+		this.defaultHeaderRowClass = this.settings.defaultHeaderRowClass || '';
+		this.defaultCellClass = this.settings.defaultCellClass || '';
+		this.defaultHeaderCellClass = this.settings.defaultHeaderCellClass || '';
 
 		// disable table resize settings on browsers below IE8
 		if (jQuery.browser.msie && parseInt(jQuery.browser.version, 10) < 8) {
@@ -364,7 +451,16 @@ define([
 			configurations[editable.getId()] = !!enabled;
 
 			editable.obj.bind('mousedown', function () {
+				if (!TablePlugin.activeTable) {
+					return;
+				}
+
 				TablePlugin.setFocusedTable(undefined);
+				
+				// Make sure the table tabs in the toolbar are hidden, since
+				// we no longer have an active table.
+				TablePlugin.leaveTableScopes();
+				Scopes.setScope('Aloha.continuoustext');
 			});
 
 			editable.obj.find('table').each(function (index, elem) {
@@ -415,6 +511,7 @@ define([
 
 			// this case probably occurs when the selection is empty?
 			if (!range.startContainer || !editable) {
+				TablePlugin.leaveTableScopes();
 				return;
 			}
 
@@ -426,6 +523,7 @@ define([
 			}
 
 			if (!that.activeTable) {
+				TablePlugin.leaveTableScopes();
 				return;
 			}
 
@@ -437,6 +535,7 @@ define([
 				TablePlugin.updateFloatingMenuScope();
 				TablePlugin.setActiveCellStyle();
 			} else {
+				TablePlugin.leaveTableScopes();
 				that.activeTable.selection.cellSelectionMode = false;
 				that.activeTable.selection.baseCellPosition = null;
 				that.activeTable.selection.lastSelectionRange = null;
@@ -477,7 +576,7 @@ define([
 			}
 		});
 
-		Aloha.bind('aloha-smart-content-changed', function () {
+		Aloha.bind('aloha-smart-content-changed', function (event, data) {
 			if (Aloha.activeEditable) {
 				Aloha.activeEditable.obj.find('table').each(function () {
 					if (TablePlugin.indexOfTableInRegistry(this) == -1) {
@@ -509,7 +608,7 @@ define([
 	//Creates string with this component's namepsace prefixed the each classname
 	function nsClass() {
 		var stringBuilder = [], prefix = tableNamespace;
-		jQuery.each(arguments, function () { 
+		jQuery.each(arguments, function () {
 			stringBuilder.push(this == '' ? prefix : prefix + '-' + this);
 		});
 		return jQuery.trim(stringBuilder.join(' '));
@@ -665,8 +764,11 @@ define([
 						activeCell = TablePlugin.selectedOrActiveCells();
 						if (activeCell.length > 0) {
 							Utils.splitCell(activeCell, function () {
-								return TablePlugin.activeTable.newActiveCell().obj;
+								return TablePlugin.activeTable.newActiveCell(Utils.copyCellMarkup(activeCell[0])).obj;
 							});
+
+
+							Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'table-plugin'});
 							Aloha.trigger('aloha-table-selection-changed');
 						}
 					}
@@ -737,6 +839,7 @@ define([
 						tableObj.find('tr').each(function() {
 							jQuery(this).css('height', '');
 						});
+						tableObj.css('width','');
 					}
 				}
 			});
@@ -1121,6 +1224,24 @@ define([
 			scope: this.name + '.cell'
 		});
 
+		this._deleteTableButton = Ui.adopt("deleteTable", Button, {
+			tooltip: i18n.t("button.deltable.tooltip"),
+			icon: "aloha-icon aloha-icon-deletetable",
+			scope: this.name + '.cell',
+			click: function() {
+				if (that.activeTable) {
+					var aTable = that.activeTable;
+					Dialog.confirm({
+						title: i18n.t('Table'),
+						text: i18n.t('deletetable.confirm'),
+						yes: function(){
+							aTable.deleteTable();
+						}
+					});
+				}
+			}
+		});
+
 		this._tableCaptionButton = Ui.adopt("tableCaption", ToggleButton, {
 			tooltip: i18n.t("button.caption.tooltip"),
 			icon: "aloha-icon aloha-icon-table-caption",
@@ -1271,6 +1392,7 @@ define([
 				}
 				tbody.appendChild( tr );
 			}
+			applyDefaultClassesToTable(table);
 			table.appendChild( tbody );
 
 			prepareRangeContainersForInsertion(
@@ -1289,6 +1411,12 @@ define([
 			var tableObj = createNewTable(tableReloadedFromDOM);
 
 			if (tableObj) {
+				var range = Aloha.Selection.getRangeObject();
+
+				range.startContainer = range.endContainer = tableObj.cells[0].wrapper[0];
+				range.startOffset = range.endOffset = 0;
+				range.select();
+
 				// Because without the 10ms delay, we cannot place the cursor
 				// automatically into the first cell in IE.
 				if ($.browser.msie) {
@@ -1299,6 +1427,8 @@ define([
 					tableObj.cells[0].wrapper.get(0).focus();
 				}
 			}
+
+			Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'table-plugin'});
 
 			// The selection starts out in the first cell of the new
 			// table. The table tab/scope has to be activated
@@ -1461,9 +1591,57 @@ define([
 		return this.prefix;
 	};
 
+	/**
+	 * Leaves all possible TableScopes in the floating menu
+	 * expect those in the retainScopes array
+	 *
+	 * @param  {array} retainScopes the name of the scopes which should not be left
+	 */
+	TablePlugin.leaveTableScopes = function(retainScopes, force) {
+		var i = 0,
+			scopes = [];
+		retainScopes = $.isArray(retainScopes) ? retainScopes : [];
+
+		scopes = TableSelection.getPossibleSelectionTypes();
+		for (i = 0; i < scopes.length; i++) {
+			// leave all possible scopes expect those in the retainScopes array
+			if ($.inArray(scopes[i], retainScopes) === -1) {
+				// always force leaving the scope because otherwise we need to keep track of how
+				// often we entered the scope and leave it accordingly
+				Scopes.leaveScope(TablePlugin.name + '.' + scopes[i], undefined, true);
+			}
+		}
+	}
+	/**
+	 * Update the current floating menu scope according to the
+	 * selected cells
+	 */
 	TablePlugin.updateFloatingMenuScope = function() {
-		if ( null != TablePlugin.activeTable && null != TablePlugin.activeTable.selection.selectionType ) {
-			Scopes.setScope(TablePlugin.name + '.' + TablePlugin.activeTable.selection.selectionType);
+		var i = 0,
+			primaryScope,
+			scopes;
+		if (
+			null != TablePlugin.activeTable &&
+			null != TablePlugin.activeTable.selection.selectionType
+		) {
+			// save the primary scope
+			primaryScope = Scopes.getPrimaryScope(),
+			// get the new scopes
+			scopes = TablePlugin.activeTable.selection.getCurrentSelectionTypes();
+			// leave all scopes except the the current ones
+			TablePlugin.leaveTableScopes(scopes);
+			// Enter all needed table scopes
+			for (i = 0; i < scopes.length; i++) {
+				Scopes.enterScope(TablePlugin.name + '.' + scopes[i]);
+			}
+			// Check if the primaryScope changed and set the first scope as the currently active one
+			if (scopes[0] !== primaryScope) {
+				Scopes.setScope(TablePlugin.name + '.' + scopes[0]);
+			}
+		} else {
+			// leave all scopes
+			TablePlugin.leaveTableScopes();
+			Scopes.setScope('Aloha.continuoustext');
 		}
 	};
 
@@ -1508,10 +1686,12 @@ define([
 		// set the active cell as the selected cell.
 		if (!sc || sc.length < 1) {
 			var activeCell = function() {
-			var range = Aloha.Selection.getRangeObject();
+				var range = Aloha.Selection.getRangeObject();
 				if (Aloha.activeEditable) {
 					return range.findMarkup( function() {
-							return this.nodeName.toLowerCase() === 'td';
+						var nodeName = this.nodeName.toLowerCase();
+
+						return nodeName === 'td' || nodeName === 'th';
 					}, Aloha.activeEditable.obj );
 				} else {
 					return null;
@@ -1601,9 +1781,16 @@ define([
 	function cleanupAfterInsertion () {
 		var dirty = jQuery( '.aloha-table-cleanme' ).removeClass(
 						'aloha-table-cleanme' );
-
+		// check all children of the element we want
 		for ( var i = 0; i < dirty.length; i++ ) {
-			if ( jQuery.trim( jQuery( dirty[ i ] ).html() ) == '' &&
+			// get the children of the to be cleaned element for some checks
+			var dirtyChildren = jQuery( dirty[ i ] ).children();
+			// is the element empty
+			// is the first child <br class="aloha-end-br"> - placeholder element
+			// is the element not the editing Host
+			if ( ( jQuery.trim( jQuery( dirty[ i ] ).html() ) == '' ||
+					( dirtyChildren.length === 1 &&
+						dirtyChildren.first('br.aloha-end-br') ) ) &&
 					!GENTICS.Utils.Dom.isEditingHost( dirty[ i ] ) ) {
 				jQuery( dirty[ i ] ).remove();
 

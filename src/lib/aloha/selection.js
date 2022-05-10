@@ -418,13 +418,6 @@ define([
 					'img': true,
 					'ul': true,
 					'ol': true,
-					'h1': true,
-					'h2': true,
-					'h3': true,
-					'h4': true,
-					'h5': true,
-					'h6': true,
-					'p': true,
 					'del': true,
 					'ins': true,
 					'u': true,
@@ -598,6 +591,21 @@ define([
 				window.clearTimeout(this.updateSelectionTimeout);
 			}
 
+			// We get no valid selection from IE it the event target was
+			// a text input element, so the following setTimeout() approach
+			// would never terminate. We let the browser handle all events
+			// in such elements, but we still have to make sure the
+			// editable containing the event target is active.
+			if (event && (event.target.nodeName === 'INPUT' || event.target.nodeName === 'TEXTAREA')) {
+				var editable = Aloha.getEditableHost(objectClicked);
+
+				if (editable && Aloha.activeEditable !== editable) {
+					editable.activate();
+				}
+
+				return;
+			}
+
 			// We have to update the selection in a timeout due to an IE
 			// bug that is is caused by selecting some text and then
 			// clicking once inside the selection (which collapses the
@@ -616,6 +624,12 @@ define([
 					}
 					return;
 				} else {
+					// activate the editable host of the selection
+					var editable = Aloha.getEditableHost(jQuery(range.startContainer));
+					if (editable) {
+						editable.activate();
+					}
+
 					// And yet another IE workaround. Somehow the caret is not
 					// positioned inside the clicked editable. This occures only
 					// when switching editables in IE. In those cases the caret is
@@ -700,9 +714,11 @@ define([
 		 * @hide
 		 */
 		_updateSelection: function (event, range) {
-			if (event && event.originalEvent &&
-					true === event.originalEvent.stopSelectionUpdate) {
-				return false;
+			if (event) {
+				if (event.target.nodeName === 'INPUT' || event.target.nodeName === 'TEXTAREA'
+						|| (event.originalEvent && true === event.originalEvent.stopSelectionUpdate)) {
+					return false;
+				}
 			}
 
 			if (typeof range === 'undefined') {
@@ -741,7 +757,7 @@ define([
 					// when we are moving down (with the cursor down key), we want to position the
 					// cursor AFTER the non-editable area
 					// otherwise BEFORE the non-editable area
-					var movingDown = event && (event.keyCode === 40);
+					var movingDown = event && (event.keyCode === 40 || event.keyCode === 39);
 
 					if (!validStartPosition) {
 						newPos = this._getNearestEditablePosition(range.startContainer, movingDown);
@@ -780,6 +796,13 @@ define([
 			triggerSelectionContextChanged(this.rangeObject, event);
 
 			Aloha.trigger('aloha-selection-changed-after', [this.rangeObject, event]);
+
+			// At least Mozilla still has the focus on the href input field.
+			var editable = jQuery(this.rangeObject.startContainer).closest('.aloha-editable,.aloha-table-cell-editable');
+
+			if (editable.length > 0 && Aloha.browser.mozilla && document.activeElement !== editable[0]) {
+				editable.focus();
+			}
 
 			return true;
 		},
@@ -932,6 +955,11 @@ define([
 						return;
 					}
 
+					// stop on iframes
+					if (this.nodeName === 'IFRAME') {
+						return;
+					}
+
 					// check is dependent on the node type
 					switch (nodeType) {
 					case 3:
@@ -1037,6 +1065,10 @@ define([
 					}
 				}
 
+				// when the selection ends in this node, we leave the selection now
+				if (rangeObject.endContainer === this) {
+					that.inselection = false;
+				}
 				childCount++;
 			});
 
@@ -1325,13 +1357,14 @@ define([
 					}
 
 					// setting the focus is needed for mozilla and IE 7 to have a working rangeObject.select()
-					if (Aloha.activeEditable && Aloha.browser.mozilla) {
+					if (Aloha.activeEditable && Aloha.browser.mozilla && document.activeElement !== Aloha.activeEditable.obj[0]) {
 						Aloha.activeEditable.obj.focus();
 					}
 
 					if (Engine.isEditable(rangeObject.startContainer)) {
 						Engine.copyAttributes(rangeObject.startContainer, newMarkup[0]);
 						jQuery(rangeObject.startContainer).after(newMarkup[0]).remove();
+						Engine.ensureContainerEditable(newMarkup[0]);
 					} else if (Engine.isEditingHost(rangeObject.startContainer)) {
 						jQuery(rangeObject.startContainer).append(newMarkup[0]);
 						Engine.ensureContainerEditable(newMarkup[0]);
@@ -2147,6 +2180,14 @@ define([
 		},
 
 		/**
+		 * Sets prevStartContext & prevEndContext to null
+		 */
+		resetPrevSelectionContexts: function () {
+			prevStartContext = null;
+			prevEndContext   = null;
+		},
+
+		/**
 		 * String representation
 		 * @return "Aloha.Selection"
 		 * @hide
@@ -2709,23 +2750,56 @@ define([
 		}
 
 		// determine the position of the current selection as close as possible
-		var rect;
+		var rect, top, bottom, prev, next;
 		if (range.nativeRange.getClientRects().length === 0) {
 			if (range.startContainer.nodeType === 3) {
 				rect = range.startContainer.parentNode.getBoundingClientRect();
+				top = rect.top;
+				bottom = rect.bottom;
 			} else {
+				// the start container is not a text node, so we get the bounding rectangle of the start container itself
 				rect = range.startContainer.getBoundingClientRect();
+				top = rect.top;
+				bottom = rect.bottom;
+
+				// we refine the top and bottom positions by getting the bounding rectangles of the previous and next elements
+				if (range.startOffset > 0) {
+					prev = range.startContainer.childNodes[range.startOffset - 1];
+					next = prev.nextSibling;
+				} else {
+					next = range.startContainer.firstChild;
+				}
+				if (prev && prev.nodeType === 1) {
+					top = prev.getBoundingClientRect().bottom;
+				}
+				if (next && next.nodeType === 1) {
+					bottom = next.getBoundingClientRect().top;
+				}
 			}
 		} else {
 			rect = range.nativeRange.getClientRects()[0];
+			top = rect.top;
+			bottom = rect.bottom;
 		}
 
-		// scroll if necessary
+		// scroll the window if necessary
 		var $win = jQuery(window);
-		if (rect.top < 0) {
-			$win.scrollTop($win.scrollTop() + rect.top);
-		} else if (rect.bottom > $win.height()) {
-			$win.scrollTop($win.scrollTop() + (rect.bottom - $win.height()));
+		if (top < 0) {
+			$win.scrollTop($win.scrollTop() + top);
+		} else if (bottom > $win.height()) {
+			$win.scrollTop($win.scrollTop() + (bottom - $win.height()));
+		}
+
+		var $scrollable = jQuery(range.startContainer).closest(':hasScroll(y)');
+		if ($scrollable.length > 0 && !$scrollable.is($win) && !$scrollable.is(jQuery('html'))) {
+			var scrollRect = $scrollable[0].getBoundingClientRect();
+			if (top < scrollRect.top) {
+				// scroll up
+				$scrollable.scrollTop($scrollable.scrollTop() - (scrollRect.top - top));
+			} else if (bottom > scrollRect.bottom) {
+				// scroll down
+				$scrollable.scrollTop($scrollable.scrollTop() + (bottom - scrollRect.bottom));
+			}
 		}
 	};
 

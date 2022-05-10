@@ -429,6 +429,12 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 		listElements: ['li', 'ol', 'ul'],
 
 		/**
+		 * List of nodenames of table elements
+		 * @hide
+		 */
+		tableElements: ['caption', 'colgroup', 'table', 'thead', 'tbody', 'tfoot', 'tr', 'td'],
+
+		/**
 		 * Splits a DOM element at the given position up until the limiting object(s), so that it is valid HTML again afterwards.
 		 * @param {RangeObject} range Range object that indicates the position of the splitting.
 		 *				This range will be updated, so that it represents the same range as before the split.
@@ -663,9 +669,8 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 				// check whether the rangetree object is fully contained and the markup may be wrapped around the object
 				if (rangeTree[i].type == 'full' && this.allowsNesting(markup.get(0), rangeTree[i].domobj)) {
 					// we wrap the object, when
-					// 1. nesting of markup is allowed or the node is not of the markup to be added
-					// 2. the node an element node or a non-empty text node
-					if ((nesting || rangeTree[i].domobj.nodeName != markup.get(0).nodeName) && (rangeTree[i].domobj.nodeType !== 3 || jQuery.trim(rangeTree[i].domobj.data).length !== 0)) {
+					// nesting of markup is allowed or the node is not of the markup to be added
+					if ((nesting || rangeTree[i].domobj.nodeName != markup.get(0).nodeName)) {
 						// wrap the object
 						jQuery(rangeTree[i].domobj).wrap(markup);
 
@@ -740,9 +745,15 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 		 * @param {GENTICS.Utils.RangeObject} rangeObject range from which the markup shall be removed
 		 * @param {jQuery} markup markup to be removed as jQuery object
 		 * @param {jQuery} limit Limiting node(s) as jQuery object
+		 * @param {boolean} removeNonEditables Whether to remove nodes which are
+		 *		not content editable (default: true)
 		 * @method
 		 */
-		removeMarkup: function (rangeObject, markup, limit) {
+		removeMarkup: function (rangeObject, markup, limit, removeNonEditables) {
+			if (typeof removeNonEditables == 'undefined') {
+				removeNonEditables = true;
+			}
+
 			var nodeName = markup.get(0).nodeName,
 				startSplitLimit = this.findHighestElement(rangeObject.startContainer, nodeName, limit),
 				endSplitLimit = this.findHighestElement(rangeObject.endContainer, nodeName, limit),
@@ -783,7 +794,7 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 				rangeTree = rangeObject.getRangeTree(root);
 
 				// remove the markup from the range tree
-				this.recursiveRemoveMarkup(rangeTree, markup);
+				this.recursiveRemoveMarkup(rangeTree, markup, removeNonEditables);
 
 				// cleanup DOM
 				this.doCleanup({
@@ -798,28 +809,39 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 		 * Recursive helper method to remove the given markup from the range
 		 * @param rangeTree rangetree at the current level
 		 * @param markup markup to be applied
+		 * @param removeNonEditables whether to remove nodes which are not
+		 *		content editable.
 		 * @hide
 		 */
-		recursiveRemoveMarkup: function (rangeTree, markup) {
+		recursiveRemoveMarkup: function (rangeTree, markup, removeNonEditables) {
 			var i, rangeLength, content;
+			var nodeName = markup[0].nodeName;
+
 			// iterate over the rangetree objects of this level
 			for (i = 0, rangeLength = rangeTree.length; i < rangeLength; ++i) {
+				var curTree = rangeTree[i];
+				var obj = curTree.domobj;
+
 				// check whether the object is the markup to be removed and is fully into the range
-				if (rangeTree[i].type == 'full' && rangeTree[i].domobj.nodeName == markup.get(0).nodeName) {
+				if (curTree.type == 'full'
+						&& obj.nodeName == nodeName
+						&& (removeNonEditables || this.isEditable(obj))) {
+					var $obj = jQuery(obj);
+
 					// found the markup, so remove it
-					content = jQuery(rangeTree[i].domobj).contents();
+					content = $obj.contents();
 					if (content.length > 0) {
 						// when the object has children, we unwrap them
 						content.first().unwrap();
 					} else {
 						// obj has no children, so just remove it
-						jQuery(rangeTree[i].domobj).remove();
+						$obj.remove();
 					}
 				}
 
-				// if the object has children, we do the recursion now
-				if (rangeTree[i].children) {
-					this.recursiveRemoveMarkup(rangeTree[i].children, markup);
+				// if the object has children, we do the recurTreesion now
+				if (curTree.children) {
+					this.recursiveRemoveMarkup(curTree.children, markup, removeNonEditables);
 				}
 			}
 		},
@@ -881,6 +903,11 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 				try {
 					nodeType = this.nodeType;
 				} catch (e) {
+					return;
+				}
+
+				// stop on iframes
+				if (this.nodeName === 'IFRAME') {
 					return;
 				}
 
@@ -1051,7 +1078,7 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 					// if this is the last text node in a sequence, we remove any zero-width spaces in the text node,
 					// unless it is the only character
 					var prevNodeNextSibling = prevNode.nextSibling;
-					if (prevNode && (!prevNodeNextSibling || prevNodeNextSibling.nodeType !== 3)) {
+					if (prevNode && prevNode.nodeType === 3 && (!prevNodeNextSibling || prevNodeNextSibling.nodeType !== 3)) {
 						var pos;
 						var prevNodeData = prevNode.data;
 						var prevNodeDataLength = prevNodeData.length;
@@ -1114,6 +1141,22 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 		},
 
 		/**
+		 * Check whether the given node is a table element
+		 * @param {DOMObject} node node to check
+		 * @return {boolean} true if yes, false if not (or null)
+		 * @method
+		 */
+		isTableElement: function (node) {
+			if (!node) {
+				return false;
+			}
+			if (node.nodeType === 1 && jQuery.inArray(node.nodeName.toLowerCase(), this.tableElements) >= 0) {
+				return true;
+			}
+			return false;
+		},
+
+		/**
 		 * Check whether the given node is a linebreak element
 		 * @param {DOMObject} node node to check
 		 * @return {boolean} true for linebreak elements, false for everything else
@@ -1124,6 +1167,19 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 				return false;
 			}
 			return node.nodeType === 1 && node.nodeName.toLowerCase() == 'br';
+		},
+
+		/**
+		 * Check whether the given node is a hr element
+		 * @param {DOMObject} node node to check
+		 * @return {boolean} true for hr elements, false for everything else
+		 * @method
+		 */
+		isHorizontalRulerElement: function (node) {
+			if (!node) {
+				return false;
+			}
+			return node.nodeType === 1 && node.nodeName.toLowerCase() == 'hr';
 		},
 
 		/**
@@ -1162,11 +1218,16 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 		 * - blocklevel (default: true)
 		 * - list (default: true)
 		 * - linebreak (default: true)
+		 * - table (default: true)
+		 * </pre>
+		 * @param {object} options additional options to guide the search. May contain the following properties
+		 * <pre>
+		 * - acceptUntrimmed (default: false): accept a text node even if it only contains whitespace
 		 * </pre>
 		 * @return {DOMObject} the found text node or false if none found
 		 * @method
 		 */
-		searchAdjacentTextNode: function (parent, index, searchleft, stopat) {
+		searchAdjacentTextNode: function (parent, index, searchleft, stopat, options) {
 			if (!parent || parent.nodeType !== 1 || index < 0 || index > parent.childNodes.length) {
 				return false;
 			}
@@ -1175,7 +1236,8 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 				stopat = {
 					'blocklevel': true,
 					'list': true,
-					'linebreak': true
+					'linebreak': true,
+					'table': true
 				};
 			}
 
@@ -1188,10 +1250,15 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 			if (typeof stopat.linebreak === 'undefined') {
 				stopat.linebreak = true;
 			}
+			if (typeof stopat.table === 'undefined') {
+				stopat.table = true;
+			}
 
 			if (typeof searchleft === 'undefined') {
 				searchleft = true;
 			}
+
+			options = jQuery.extend({ acceptUntrimmed: false }, options);
 
 			var nextNode,
 			    currentParent = parent;
@@ -1214,6 +1281,10 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 						// do not leave block level elements
 						return false;
 					}
+					if (stopat.table && this.isTableElement(currentParent)) {
+						// do not leave table level elements
+						return false;
+					}
 					if (stopat.list && this.isListElement(currentParent)) {
 						// do not leave list elements
 						return false;
@@ -1222,7 +1293,8 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 					nextNode = searchleft ? currentParent.previousSibling : currentParent.nextSibling;
 					currentParent = currentParent.parentNode;
 					continue;
-				} else if (nextNode.nodeType === 3 && jQuery.trim(nextNode.data).length > 0) {
+				} else if (nextNode.nodeType === 3
+						&& (options.acceptUntrimmed ? nextNode.data : jQuery.trim(nextNode.data)).length > 0) {
 					// we are lucky and found a notempty text node
 					return nextNode;
 				}
@@ -1230,7 +1302,11 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 					// we found a blocklevel element, stop here
 					return false;
 				}
-				if (stopat.linebreak && this.isLineBreakElement(nextNode)) {
+				if (stopat.table && this.isTableElement(nextNode)) {
+					// we found a table element, stop here
+					return false;
+				}
+				if (stopat.linebreak && (this.isLineBreakElement(nextNode) || this.isHorizontalRulerElement(nextNode))) {
 					// we found a linebreak, stop here
 					return false;
 				}
@@ -1319,6 +1395,11 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 					if (atEnd) {
 						container = range.endContainer;
 						offset = range.endOffset;
+					}
+					// Sometimes the offset can be greater than the length of the
+					// container contents due to a bug. In that case adjust the offset.
+					if (offset > jQuery(container).contents().length) {
+						offset = jQuery(container).contents().length;
 					}
 					if (offset === 0) {
 						// insert right before the first element in the container

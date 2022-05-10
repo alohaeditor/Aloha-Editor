@@ -68,6 +68,7 @@ function (
 			this._addUICropButtons();
 			this._addUIResizeButtons();
 			this._addUIAspectRatioToggleButton();
+			this._addFocalPointButton();
 
 //			 TODO fix the function and reenable this button 
 //			this._addNaturalSizeButton();
@@ -267,6 +268,26 @@ function (
 			});
 			this.imgResizeWidthField.maxValue = plugin.settings.maxWidth;
 			this.imgResizeWidthField.minValue = plugin.settings.minWidth;
+		},
+
+		_addFocalPointButton: function() {
+			var plugin = this.plugin;
+
+			Scopes.createScope('Aloha.img', ['Aloha.global']);
+
+			this._imageFocalPointButton = Ui.adopt("imageFocalPointButton", ToggleButton, {
+				tooltip: i18n.t('focalpoint'),
+				icon: 'aloha-img aloha-image-set-focalpoint',
+				scope: plugin.name,
+				click: function () {
+					if (this.getState()) {
+						plugin.enableFocalPointMode();
+					} else {
+						plugin.disableFocalPointMode();
+					}
+				}
+			});
+
 		},
 
 		/**
