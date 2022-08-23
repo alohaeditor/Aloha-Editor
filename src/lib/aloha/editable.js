@@ -101,6 +101,37 @@ define([
 		65: 'a'
 	};
 
+	var IGNOREABLE_KEY_CODES = [
+		9, /* Tab */
+		16, /* shift */
+		17, /* ctrl */
+		18, /* alt */
+		20, /* capslock */
+		33, /* Page up */
+		34, /* Page down */
+		35, /* End */
+		36, /* Home */
+		37, /* Arrow left */
+		38, /* Arrow Up */
+		39, /* Arrow right */
+		40, /* Arrow down */
+		91, /* windows/super */
+		/* F1-12 */
+		112,
+		113,
+		114,
+		115,
+		116,
+		117,
+		118,
+		119,
+		120,
+		121,
+		122,
+		123,
+		192 /* Escape */
+	];
+
 	/**
 	 * Handlers for various key combos.
 	 * Each handler ought to return false if they do not want the event to
@@ -135,19 +166,27 @@ define([
 	/**
 	 * Handles keydown events that are fired on the page's document.
 	 *
-	 * @param {jQuery.Event) $event
+	 * @param {jQuery.Event) event
 	 * @return {boolean} Returns false to stop propagation; undefined otherwise.
 	 */
-	function onKeydown($event) {
+	function onKeydown(event) {
+		// If the event has already been prevented and stopped, then we return false as well.
+		if (typeof event.isDefaultPrevented === 'function' && typeof event.isPropagationStopped === 'function') {
+			if (event.isDefaultPrevented() && event.isPropagationStopped()) {
+				return false;
+			}
+		}
+
 		if (!Aloha.activeEditable) {
 			return;
 		}
-		var key = KEYCODES[$event.which];
+
+		var key = KEYCODES[event.which];
 		if (key) {
-			var modifier = keyModifier($event);
+			var modifier = keyModifier(event);
 			var combo = (modifier ? modifier + '+' : '') + key;
 			if (keyBindings[combo]) {
-				return keyBindings[combo]($event);
+				return keyBindings[combo](event);
 			}
 		}
 	}
@@ -166,15 +205,85 @@ define([
 			Aloha.eventHandled = false;
 		});
 
+		// Events which can override/replace the current selection
+		$editable.on('keydown input paste cut', function (event) {
+			// If the event has already been prevented and stopped, then we return false as well.
+			if (typeof event.isDefaultPrevented === 'function' && typeof event.isPropagationStopped === 'function') {
+				if (event.isDefaultPrevented() && event.isPropagationStopped()) {
+					return false;
+				}
+			}
+
+			// It's a key press which can be safely used
+			if (event.keyCode != null && IGNOREABLE_KEY_CODES.indexOf(event.keyCode) !== -1) {
+				return true;
+			}
+			
+			var replacedEditables = [];
+			var range = Selection.rangeObject;
+			var tree = Selection.getSelectionTree(Selection.rangeObject) || [];
+
+			// Search for any editable in the selection. If one has been found, trigger an event.
+			for (var idx = 0; idx < tree.length; idx++) {
+				var elem = tree[idx];
+				// Ignore not selected elements
+				if (elem.selection === 'none') {
+					continue;
+				}
+
+				var domObjects = [];
+				var item = $(elem.domobj);
+				if (item.is('.aloha-block,.aloha-editable')) {
+					domObjects = [elem.domobj];
+				} else {
+					$.each(item.children('.aloha-block,.aloah-editable'), function() {
+						domObjects.push(this);
+					});
+				}
+
+				for (var objIdx = 0; objIdx < domObjects.length; objIdx++) {
+					var triggerEventObj = {
+						element: domObjects[objIdx],
+						range: range,
+						_prevented: false,
+						preventDefault: function() {
+							this._prevented = true;
+						},
+						isDefaultPrevented: function() {
+							return this._prevented;
+						},
+					};
+					Aloha.trigger('aloha-editable-delete', triggerEventObj);
+
+					if (triggerEventObj.isDefaultPrevented()) {
+						replacedEditables.push(domObjects[objIdx]);
+					}
+				}
+    		}
+
+			if (replacedEditables.length > 0) {
+				event.preventDefault();
+				event.stopPropagation();
+				return false;
+			}
+		});
+
 		$editable.keydown(function (event) {
+			// If the event has already been prevented and stopped, then we return false as well.
+			if (typeof event.isDefaultPrevented === 'function' && typeof event.isPropagationStopped === 'function') {
+				if (event.isDefaultPrevented() && event.isPropagationStopped()) {
+					return false;
+				}
+			}
+
 			var letEventPass = Markup.preProcessKeyStrokes(event);
 			editable.keyCode = event.which;
 			if (!letEventPass) {
 				// the event will not proceed to key press, therefore trigger
 				// smartContentChange
 				editable.smartContentChange(event);
+				return false;
 			}
-			return letEventPass;
 		});
 
 		$editable.keypress(StateOverride.keyPressHandler);
