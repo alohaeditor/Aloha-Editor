@@ -251,7 +251,7 @@ define([
 						},
 						isDefaultPrevented: function() {
 							return this._prevented;
-						},
+						}
 					};
 					Aloha.trigger('aloha-editable-delete', triggerEventObj);
 
