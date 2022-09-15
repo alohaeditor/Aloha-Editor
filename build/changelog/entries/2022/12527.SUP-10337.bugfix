@@ -1,0 +1,4 @@
+When nesting editables into blocks, which were nested into other blocks, in some situations, pressing the "delete" or "forwarddelete" key
+would call the confirmedDestroy() method of the inner block (which would show a dialog to ask, whether the block should be deleted),
+although the shouldDestroy() method of the block returned false (effectively preventing the block from being deleted).
+This has been fixed now, so that confirmedDestroy() is only called, when the block actually can be deleted (shouldDestroy() returns true).
