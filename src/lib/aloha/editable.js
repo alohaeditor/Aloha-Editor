@@ -219,10 +219,25 @@ define([
 				return true;
 			}
 
+			// check whether there is a selection at all
+			var sel = Aloha.getSelection();
+			if (sel.getRangeCount() == 0) {
+				return true;
+			}
 			var replacedEditables = [];
 			var range = Selection.rangeObject;
-			var tree = Selection.getSelectionTree(Selection.rangeObject) || [];
+			var tree = Selection.getSelectionTree(range) || [];
 			var idx;
+			var domObjects = [];
+			var pushToDomObjects = function () {
+				domObjects.push(this);
+			};
+			var preventDefault = function () {
+				this._prevented = true;
+			};
+			var isDefaultPrevented = function () {
+				return this._prevented;
+			};
 
 			// Search for any editable in the selection. If one has been found, trigger an event.
 			for (idx = 0; idx < tree.length; idx++) {
@@ -232,14 +247,12 @@ define([
 					continue;
 				}
 
-				var domObjects = [];
+				domObjects = [];
 				var item = $(elem.domobj);
 				if (item.is('.aloha-block,.aloha-editable')) {
 					domObjects = [elem.domobj];
 				} else {
-					$.each(item.children('.aloha-block,.aloah-editable'), function () {
-						domObjects.push(this);
-					});
+					$.each(item.children('.aloha-block,.aloah-editable'), pushToDomObjects);
 				}
 
 				var objIdx;
@@ -248,12 +261,8 @@ define([
 						element: domObjects[objIdx],
 						range: range,
 						_prevented: false,
-						preventDefault: function () {
-							this._prevented = true;
-						},
-						isDefaultPrevented: function () {
-							return this._prevented;
-						}
+						preventDefault: preventDefault,
+						isDefaultPrevented: isDefaultPrevented
 					};
 					Aloha.trigger('aloha-editable-delete', triggerEventObj);
 
