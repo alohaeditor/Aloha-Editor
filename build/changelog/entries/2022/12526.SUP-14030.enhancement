@@ -1,0 +1,2 @@
+When a selection intersects with an block/editable, and a deletion (keypress, paste, cut) would occur, each block/editable emits a cancelable event.
+If one of these events is canceled, the event causing the deletion is canceled.
