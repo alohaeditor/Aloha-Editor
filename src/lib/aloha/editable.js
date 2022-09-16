@@ -218,13 +218,14 @@ define([
 			if (event.keyCode != null && IGNOREABLE_KEY_CODES.indexOf(event.keyCode) !== -1) {
 				return true;
 			}
-			
+
 			var replacedEditables = [];
 			var range = Selection.rangeObject;
 			var tree = Selection.getSelectionTree(Selection.rangeObject) || [];
+			var idx;
 
 			// Search for any editable in the selection. If one has been found, trigger an event.
-			for (var idx = 0; idx < tree.length; idx++) {
+			for (idx = 0; idx < tree.length; idx++) {
 				var elem = tree[idx];
 				// Ignore not selected elements
 				if (elem.selection === 'none') {
@@ -236,20 +237,21 @@ define([
 				if (item.is('.aloha-block,.aloha-editable')) {
 					domObjects = [elem.domobj];
 				} else {
-					$.each(item.children('.aloha-block,.aloah-editable'), function() {
+					$.each(item.children('.aloha-block,.aloah-editable'), function () {
 						domObjects.push(this);
 					});
 				}
 
-				for (var objIdx = 0; objIdx < domObjects.length; objIdx++) {
+				var objIdx;
+				for (objIdx = 0; objIdx < domObjects.length; objIdx++) {
 					var triggerEventObj = {
 						element: domObjects[objIdx],
 						range: range,
 						_prevented: false,
-						preventDefault: function() {
+						preventDefault: function () {
 							this._prevented = true;
 						},
-						isDefaultPrevented: function() {
+						isDefaultPrevented: function () {
 							return this._prevented;
 						}
 					};
@@ -259,7 +261,7 @@ define([
 						replacedEditables.push(domObjects[objIdx]);
 					}
 				}
-    		}
+			}
 
 			if (replacedEditables.length > 0) {
 				event.preventDefault();
