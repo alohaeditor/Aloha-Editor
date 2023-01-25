@@ -1289,6 +1289,7 @@ define([
 		this.summary = AttributeField( {
 			width : 275,
 			name  : 'tableSummary',
+			placeholder : i18n.t('table.label.target'),
 			noTargetHighlight: true,
 			scope: this.name + '.cell',
 			element: jQuery('<input id="aloha-attribute-field-tableSummary" class="aloha-wai-red" style="color: black; padding-left: 32px; background-color: white"/>')
