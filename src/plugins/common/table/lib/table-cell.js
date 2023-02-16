@@ -417,7 +417,7 @@ define([
 	 * Starts the cell selection mode
 	 */
 	TableCell.prototype._startCellSelection = function () {
-		if(!this.tableObj.selection.cellSelectionMode) {
+		if (!this.tableObj.selection.cellSelectionMode) {
 
 			//unselect currently selected cells
 			this.tableObj.selection.unselectCells();
@@ -427,7 +427,7 @@ define([
 
 			//bind a global mouseup event handler to stop cell selection
 			var that = this;
-			jQuery('body').bind('mouseup.cellselection', function(event) {
+			jQuery('body').bind('mouseup.cellselection', function (event) {
 				that._endCellSelection();
 			});
 
@@ -438,7 +438,7 @@ define([
 	/**
 	 * Ends the cell selection mode
 	 */
-	TableCell.prototype._endCellSelection = function() {
+	TableCell.prototype._endCellSelection = function () {
 		if (this.tableObj.selection.cellSelectionMode) {
 			Utils.selectAnchorContents(this.tableObj.selection.selectedCells);
 
@@ -474,13 +474,13 @@ define([
 			"left": left
 		};
 	};
-	
+
 	/**
 	 * Toggles selection of cell.
 	 * This works only when cell selection mode is active.
 	 */
-	TableCell.prototype._selectCellRange = function() {
-		if(this.tableObj.selection.resizeMode || !this.tableObj.selection.cellSelectionMode) {
+	TableCell.prototype._selectCellRange = function () {
+		if (this.tableObj.selection.resizeMode || !this.tableObj.selection.cellSelectionMode) {
 			return;
 		}
 
@@ -528,7 +528,7 @@ define([
 		if (!jQuery.browser.msie) {
 			var s = window.getSelection();
 			// WebKit
-			if (s.setBaseAndExtent /*&& e> 0 */ ) {
+			if (s.setBaseAndExtent /*&& e> 0 */) {
 				s.setBaseAndExtent(e, 0, e, Math.max(0, e.innerText.length - 1));
 			}
 			// Firefox and Opera
@@ -605,7 +605,7 @@ define([
 	 */
 	TableCell.prototype._editableKeyDown = function (jqEvent) {
 		var KEYCODE_TAB = 9;
-		this._checkForEmptyEvent(jqEvent);
+
 		if (this.obj[0] === this.tableObj.obj.find('tr:last td:last')[0]) {
 			// only add a row on a single key-press of tab (so check that alt-,
 			// shift- or ctrl-key are NOT pressed)
