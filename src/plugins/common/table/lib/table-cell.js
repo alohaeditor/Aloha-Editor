@@ -582,22 +582,16 @@ define([
 	};
 
 	/**
-	 * The key-up event for the editable-div in the td-field. Just check if the div
-	 * is empty and insert an &nbsp;
+	 * The key-up event for the editable-div in the td-field.
 	 *
 	 * @param jqEvent
 	 *            the jquery-event object
 	 * @return void
 	 */
-	TableCell.prototype._editableKeyUp = function (jqEvent) {
-		//TODO do we need to check for empty cells and insert a space?
-		//this._checkForEmptyEvent(jqEvent);
-	};
+	TableCell.prototype._editableKeyUp = function (jqEvent) {};
 
 	/**
-	 * The key-down event for the ediable-div in the td-field. Check if the the div
-	 * is empty and insert an &nbsp. Furthermore if cells are selected, unselect
-	 * them.
+	 * The key-down event for the ediable-div in the td-field.
 	 *
 	 * @param jqEvent
 	 *            the jquery-event object
@@ -621,30 +615,6 @@ define([
 					$(lastInsertedRow).find('td:nth-child(2) .aloha-table-cell-editable').focus();
 				}
 			}
-		}
-	};
-
-	/**
-	 * The custom keyup event for a table-cell Checks if the cell is empty and
-	 * inserts a space (\u00a0)
-	 *
-	 * @param e
-	 *            the event object which is given by jquery
-	 * @return void
-	 */
-	TableCell.prototype._checkForEmptyEvent = function (jqEvent) {
-		var $wrapper = jQuery(this.wrapper),
-			text = $wrapper.text();
-
-		if ($wrapper.children().length > 0) {
-			return;
-		}
-
-		// if empty insert a blank space and blur and focus the wrapper
-		if (text === '') {
-			this.wrapper.text('');
-			this.wrapper.get(0).blur();
-			this.wrapper.get(0).focus();
 		}
 	};
 
