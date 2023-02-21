@@ -34,9 +34,6 @@ spec:
       limits:
         cpu: '0'
         memory: '0'
-    env:
-      - name: DOCKER_HOST
-        value: tcp://127.0.0.1:2375
   - name: docker
   - name: jnlp
   - name: selenium
