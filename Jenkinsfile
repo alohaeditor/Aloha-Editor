@@ -19,26 +19,7 @@ pipeline {
 			yaml ocpWorker("""
 apiVersion: v1
 kind: Pod
-metadata:
-  labels:
-    jenkinsbuild: true
 spec:
-  affinity:
-    podAntiAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 100
-        podAffinityTerm:
-          labelSelector:
-            matchExpressions:
-            - key: jenkinsbuild
-              operator: In
-              values:
-              - true
-          topologyKey: kubernetes.io/hostname
-  volumes:
-  - name: cache
-    hostPath:
-      path: /opt/kubernetes/cache
   containers:
   - name: build
     image: """ + buildEnvironmentDockerImage("build/Dockerfile", null, "build") + """
@@ -47,39 +28,33 @@ spec:
     - cat
     tty: true
     resources:
-        requests:
-          cpu: '0'
-          memory: '0'
-        limits:
-          cpu: '0'
-          memory: '0'
-    volumeMounts:
-    - mountPath: /home/jenkins/.m2/repository
-      name: cache
-      subPath: maven
-    - mountPath: /home/jenkins/.cache/npm
-      name: cache
-      subPath: npm
+      requests:
+        cpu: '0'
+        memory: '0'
+      limits:
+        cpu: '0'
+        memory: '0'
     env:
       - name: DOCKER_HOST
         value: tcp://127.0.0.1:2375
+  - name: docker
+  - name: jnlp
   - name: selenium
     image: selenium/standalone-chrome:3.141.59
-    imagePullPolicy: Always
     tty: true
     ports:
-    - containerPort: 4444
-      name: selenium
-      protocol: TCP
+      - containerPort: 4444
+        name: selenium
+        protocol: TCP
     resources:
-        requests:
-          cpu: '0'
-          memory: '0'
-        limits:
-          cpu: '0'
-          memory: '0'
+      requests:
+        cpu: '0'
+        memory: '0'
+      limits:
+        cpu: '0'
+        memory: '0'
   imagePullSecrets:
-  - name: docker-jenkinsbuilds-apa-it
+    - name: docker-jenkinsbuilds-apa-it
 """)
 		}
 	}
