@@ -47,9 +47,12 @@ spec:
     - cat
     tty: true
     resources:
-      requests:
-        cpu: 1
-        memory: 256Mi
+        requests:
+          cpu: '0'
+          memory: '0'
+        limits:
+          cpu: '0'
+          memory: '0'
     volumeMounts:
     - mountPath: /home/jenkins/.m2/repository
       name: cache
@@ -69,9 +72,12 @@ spec:
       name: selenium
       protocol: TCP
     resources:
-      requests:
-        cpu: 1
-        memory: 1024Mi
+        requests:
+          cpu: '0'
+          memory: '0'
+        limits:
+          cpu: '0'
+          memory: '0'
   imagePullSecrets:
   - name: docker-jenkinsbuilds-apa-it
 """)
