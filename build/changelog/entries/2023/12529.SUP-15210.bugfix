@@ -1,0 +1,2 @@
+When a list element contains a break at the end you could not end the list by pressing enter two times. This is because the cursor could not be placed after the break, because the break is invisible. This fix makes breaks as last elements visible.
+
