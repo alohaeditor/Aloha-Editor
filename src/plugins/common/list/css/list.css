@@ -74,6 +74,13 @@
 }
 
 /**
+* Make <br> visible on line ending of <li> elements
+*/
+.aloha-block li:after {
+   content:'\0200B'
+}
+
+/**
 * Predefined list styles
 **/
 .aloha-list-templates ul.aloha-list-disc, ul.aloha-list-disc 									{ list-style-type: disc; }
