@@ -6,14 +6,20 @@
 	padding: 4px;
 	width: 100%;
 }
-.aloha-editable-active .aloha-block, .aloha-block.aloha-block-highlighted {
+
+.aloha-block {
+	outline: #0096dc dotted 2px;
 	cursor: pointer;
-	box-shadow: 0 0 0px 3px #FFE767; /* We use box-shadow because of a Firefox rendering bug with "outline" */
-}
-.aloha-block.aloha-block-active, .aloha-block.aloha-block-active:hover {
-	box-shadow: 0 0 0px 3px #80B5F2; /* We use box-shadow because of a Firefox rendering bug with "outline" */
 }
 
+.aloha-editable .aloha-block {
+	outline-color: #d6d6d6;
+}
+
+.aloha-block.aloha-block-active {
+	/* box-shadow: 0 0 0px 3px #80B5F2; /* We use box-shadow because of a Firefox rendering bug with "outline" */
+	outline-style: solid;
+}
 
 /* IE8 will use outline for highlighting */
 .aloha-ie8 .aloha-block:hover {
