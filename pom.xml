@@ -258,7 +258,7 @@
 			<plugin>
 				<groupId>ro.isdc.wro4j</groupId>
 				<artifactId>wro4j-maven-plugin</artifactId>
-				<version>1.4.7</version>
+				<version>1.6.3</version>
 				<executions>
 					<!-- Full version of aloha (With jquery and requirejs) -->
 					<execution>
