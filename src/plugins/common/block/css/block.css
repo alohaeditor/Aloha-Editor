@@ -8,17 +8,7 @@
 }
 
 .aloha-block {
-	outline: #0096dc dotted 2px;
-	cursor: pointer;
-}
-
-.aloha-editable .aloha-block {
-	outline-color: #d6d6d6;
-}
-
-.aloha-block.aloha-block-active {
-	/* box-shadow: 0 0 0px 3px #80B5F2; /* We use box-shadow because of a Firefox rendering bug with "outline" */
-	outline-style: solid;
+    cursor: pointer;
 }
 
 /* IE8 will use outline for highlighting */

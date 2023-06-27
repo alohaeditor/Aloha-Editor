@@ -4,3 +4,19 @@
 * aloha-sales@gentics.com
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
+
+.aloha-editable,
+.aloha-block {
+    outline: #0096dc dotted 2px;
+}
+
+.aloha-editable .aloha-editable,
+.aloha-editable .aloha-block {
+	outline-color: #d6d6d6;
+}
+
+.aloha-editable-active,
+.aloha-editable-active[contenteditable=true]:focus,
+.aloha-block.aloha-block-active {
+	outline-style: solid;
+}

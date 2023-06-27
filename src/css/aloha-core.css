@@ -4,16 +4,6 @@
 
 .aloha-editable {
 	min-height: 1.2em;
-	outline: #0096dc dotted 2px;
-}
-
-.aloha-editable .aloha-editable {
-	outline-color: #d6d6d6;
-}
-
-.aloha-editable-active,
-.aloha-editable-active[contenteditable=true]:focus {
-	outline-style: solid;
 }
 
 .aloha-editable ::selection,
