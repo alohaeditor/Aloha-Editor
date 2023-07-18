@@ -1,0 +1,34 @@
+{
+  "name": "aloha-editor",
+  "version": "1.0.0",
+  "description": "The HTML5 WYSIWYG Edito",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "cypress:open": "cypress open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alohaeditor/Aloha-Editor.git"
+  },
+  "keywords": [
+    "wysiwyg",
+    "editor",
+    "rte",
+    "html5",
+    "contenteditable"
+  ],
+  "author": {
+    "name": "The Aloha Editor Team",
+    "email": "team@aloha-editor.org",
+    "web": "https://aloha-editor.org"
+  },
+  "bugs": {
+    "url": "https://github.com/alohaeditor/Aloha-Editor/issues"
+  },
+  "homepage": "https://github.com/alohaeditor/Aloha-Editor#readme",
+  "devDependencies": {
+    "cypress": "^12.17.1"
+  }
+}
