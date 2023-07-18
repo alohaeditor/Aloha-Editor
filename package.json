@@ -6,7 +6,8 @@
     "doc": "doc"
   },
   "scripts": {
-    "cypress:open": "cypress open"
+    "cypress:open": "cypress open",
+    "demo:start": "http-server cypress/demo -p 8080"
   },
   "repository": {
     "type": "git",
@@ -29,6 +30,7 @@
   },
   "homepage": "https://github.com/alohaeditor/Aloha-Editor#readme",
   "devDependencies": {
-    "cypress": "^12.17.1"
+    "cypress": "^12.17.1",
+    "http-server": "^14.1.1"
   }
 }
