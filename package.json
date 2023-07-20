@@ -7,7 +7,8 @@
   },
   "scripts": {
     "cypress:open": "cypress open",
-    "demo:start": "http-server cypress/demo -p 8080"
+    "demo:start": "http-server target/build-profile-with-common-extra-plugins/rjs-output -p 8080",
+    "demo:build": "node build/r.js -o build/aloha/build-profile-with-common-extra-plugins.js"
   },
   "repository": {
     "type": "git",
