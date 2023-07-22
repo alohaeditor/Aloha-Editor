@@ -32,6 +32,7 @@
   "homepage": "https://github.com/alohaeditor/Aloha-Editor#readme",
   "devDependencies": {
     "cypress": "^12.17.1",
+    "cypress-real-events": "^1.9.1",
     "http-server": "^14.1.1"
   }
 }
