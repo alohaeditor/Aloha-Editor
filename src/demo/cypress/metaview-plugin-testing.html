@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Metaview Plugin - Aloha Editor</title>
+    <link rel="stylesheet" href="../../css/aloha-reset.css" type="text/css" />
+    <link rel="stylesheet" href="../../css/aloha-core.css" type="text/css" />
+    <link rel="stylesheet" href="metaview-plugin-testing.css" type="text/css" />
+    <link
+      rel="stylesheet"
+      href="../../css/aloha-common-extra.css"
+      type="text/css"
+    />
+    <script src="../../lib/require.js"></script>
+    <script src="../../lib/vendor/jquery-1.7.2.js"></script>
+    <script
+      src="../../lib/aloha.js"
+      data-aloha-plugins="common/ui,extra/metaview, common/align, common/highlighteditables,common/link"
+    ></script>
+  </head>
+  <body>
+    <div id="main">
+      <div>
+        <h1>This is 1st level heading</h1>
+        <p>This is a test paragraph.</p>
+      </div>
+      <div>
+        <h2>This is 2nd level heading</h2>
+        <p id="lang-test" lang="en">This is a paragraph in english.</p>
+      </div>
+      <div>
+        <h3>
+          This is
+          <span
+            ><abbr title='This is the abbreviation of "third"'>3rd</abbr></span
+          >
+          level heading
+        </h3>
+        <p>
+          This is a test
+          <span
+            ><dfn title="This is the definition of paragraph"
+              >paragraph</dfn
+            ></span
+          >.
+        </p>
+      </div>
+      <div>
+        <h4>This is 4th level heading</h4>
+        <p>This is a paragraph with a <q>quote</q></p>
+        <h5>This is 5th level heading</h5>
+        <p>This is a paragraph with an <a>hyperlink</a></p>
+        <h6>This is 6th level heading</h6>
+      </div>
+      <div>
+        <ol>
+          <li>Item 1</li>
+          <li>Item 2</li>
+          <li>Item 3</li>
+        </ol>
+        <ul>
+          <li>Item 1</li>
+          <li>Item 2</li>
+          <li>Item 3</li>
+        </ul>
+        <div style="text-align: center">
+          <table>
+            <caption>
+              This is a caption
+            </caption>
+            <tr>
+              <th>----</th>
+              <td>First Column</td>
+              <td>Second Column</td>
+            </tr>
+            <tr>
+              <td>First Row</td>
+              <td>1 / 1</td>
+              <td>1 / 2</td>
+            </tr>
+            <tr>
+              <td>Second Row</td>
+              <td>2 / 1</td>
+              <td>2 / 2</td>
+            </tr>
+          </table>
+        </div>
+        <div>
+          <dl>
+            <dt>Description term 1</dt>
+            <dd>Definition Description 1</dd>
+
+            <dt>Description term 2</dt>
+            <dd>Definition Description 2</dd>
+
+            <dt>Description term 3</dt>
+            <dd>Definition Description 3</dd>
+          </dl>
+        </div>
+        <hr />
+        <hr />
+        <hr />
+        <div>
+          <blockquote>This is a blockquote</blockquote>
+        </div>
+      </div>
+
+      <script type="text/javascript">
+        Aloha.ready(function () {
+          Aloha.jQuery("#main").aloha();
+        });
+      </script>
+    </div>
+  </body>
+</html>
