@@ -1,4 +1,4 @@
-describe('list plugin', () => {
+describe('core library', () => {
 
     const URL = 'http://localhost:8080/demo/cypress/core-library.html'
 
