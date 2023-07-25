@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>List Enforcer Plugin - Aloha Editor</title>
+    <link rel="stylesheet" href="../../css/aloha-reset.css" type="text/css" />
+    <link rel="stylesheet" href="../../css/aloha-core.css" type="text/css" />
+    <link
+      rel="stylesheet"
+      href="listenforcer-plugin-testing.css"
+      type="text/css"
+    />
+    <link
+      rel="stylesheet"
+      href="../../css/aloha-common-extra.css"
+      type="text/css"
+    />
+    <script src="../../lib/require.js"></script>
+    <script src="../../lib/vendor/jquery-1.7.2.js"></script>
+    <script
+      src="../../lib/aloha.js"
+      data-aloha-plugins="common/ui,extra/listenforcer, common/highlighteditables,common/link"
+    ></script>
+  </head>
+  <body>
+    <div id="main">
+      <h1 class="content">List Enforcer Plugin</h1>
+      <div id="test1" class="aloha-enforce-lists">Empty div</div>
+      <div id="test2" class="aloha-enforce-lists">
+        <ul>
+          <li>Test 1</li>
+          <li>Test 2</li>
+        </ul>
+        <hr />
+        <ul>
+          <li>
+            Test 3
+            <ul>
+              <li>Test A</li>
+              <li>Test B</li>
+            </ul>
+          </li>
+          <li>
+            Test 4
+            <ul>
+              <li>Test C</li>
+              <li>Test D</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <div id="test3" class="aloha-enforce-lists">
+        <ol>
+          <li>List Item 1</li>
+          <li>List Item 2</li>
+          <li>List Item 3</li>
+        </ol>
+        <p>Extra paragraph</p>
+      </div>
+    </div>
+    <script type="text/javascript">
+      Aloha.ready(function () {
+        Aloha.jQuery(".aloha-enforce-lists").aloha();
+      });
+      Aloha.settings.plugins = {
+        listenforcer: {
+          editables: [".aloha-enforce-lists"],
+        },
+      };
+    </script>
+  </body>
+</html>
