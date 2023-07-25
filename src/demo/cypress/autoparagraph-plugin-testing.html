@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Autoparagraph Plugin - Aloha Editor</title>
+    <link rel="stylesheet" href="../../css/aloha-reset.css" type="text/css" />
+    <link rel="stylesheet" href="../../css/aloha-core.css" type="text/css" />
+    <link
+      rel="stylesheet"
+      href="autoparagraph-plugin-testing.css"
+      type="text/css"
+    />
+    <link
+      rel="stylesheet"
+      href="../../css/aloha-common-extra.css"
+      type="text/css"
+    />
+    <script src="../../lib/require.js"></script>
+    <script src="../../lib/vendor/jquery-1.7.2.js"></script>
+    <script
+      src="../../lib/aloha.js"
+      data-aloha-plugins="common/ui,common/autoparagraph,common/highlighteditables,common/link"
+    ></script>
+  </head>
+  <body>
+    <div id="main">
+      <h1 class="content">Autoparagraph Plugin</h1>
+      
+      <div id="test1" class="content">
+        Test with <b>bold</b> and <i>italic</i> inbetween
+      </div>
+      <div id="test2" class="content">
+        Test with a line
+        <hr />
+        inbetween
+      </div>
+      <div id="test3" class="content">
+        Test with <br />
+        a space inbetween
+      </div>
+    </div>
+    <script type="text/javascript">
+      Aloha.ready(function () {
+        Aloha.jQuery(".content").aloha();
+      });
+    </script>
+    </div>
+  </body>
+</html>
