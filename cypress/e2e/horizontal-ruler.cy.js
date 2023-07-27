@@ -1,6 +1,6 @@
 describe('horizontalruler plugin', () => {
 
-    const URL = 'http://localhost:8080/demo/cypress/horizontalruler-plugin.html'
+    const URL = 'http://localhost:8080/demo/modules/horizontalruler-plugin.html'
 
     it('Verify the existance of the "Add a horizontal ruler" button on "Insert" tab', () => {
         cy.visit(URL)

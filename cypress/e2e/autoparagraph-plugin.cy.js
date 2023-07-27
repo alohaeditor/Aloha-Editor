@@ -1,6 +1,6 @@
 describe("Autoparagraph Plugin", () => {
   beforeEach(() => {
-    cy.visit("http://localhost:8080/demo/cypress/autoparagraph-plugin-testing");
+    cy.visit("http://localhost:8080/demo/modules/autoparagraph-plugin-testing");
   });
 
   describe("transforms content not contained in block level elements into paragraphs", () => {

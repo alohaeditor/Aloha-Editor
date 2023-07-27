@@ -1,5 +1,5 @@
 describe('highlighteditables plugin', () => {
-    const URL = 'http://localhost:8080/demo/cypress/highlighteditables-plugin.html'
+    const URL = 'http://localhost:8080/demo/modules/highlighteditables-plugin.html'
 
     it('Check if content is editable', () => {
         cy.visit(URL)

@@ -1,6 +1,6 @@
 describe("Table plugin", () => {
   beforeEach(() => {
-    cy.visit("http://localhost:8080/demo/cypress/table-plugin-testing");
+    cy.visit("http://localhost:8080/demo/modules/table-plugin-testing");
     cy.get("#main").click();
   });
   it("opens Aloha Editor UI when clicked", () => {

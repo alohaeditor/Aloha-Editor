@@ -1,7 +1,7 @@
 describe("CharacterPicker Plugin", () => {
   beforeEach(() => {
     cy.visit(
-      "http://localhost:8080/demo/cypress/characterpicker-plugin-testing"
+      "http://localhost:8080/demo/modules/characterpicker-plugin-testing"
     );
     cy.get("#main").click();
     cy.get("#ui-id-2").click();

@@ -1,7 +1,7 @@
 describe("CharacterPicker Plugin", () => {
   beforeEach(() => {
     cy.visit(
-      "http://localhost:8080/demo/cypress/numerated-headers-plugin-testing"
+      "http://localhost:8080/demo/modules/numerated-headers-plugin-testing"
     );
     cy.get("#main").click();
   });

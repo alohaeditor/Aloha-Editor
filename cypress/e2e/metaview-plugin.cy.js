@@ -1,6 +1,6 @@
 describe("Metaview Plugin", () => {
   beforeEach(() => {
-    cy.visit("http://localhost:8080/demo/cypress/metaview-plugin-testing");
+    cy.visit("http://localhost:8080/demo/modules/metaview-plugin-testing");
     cy.get("#main").click();
   });
 

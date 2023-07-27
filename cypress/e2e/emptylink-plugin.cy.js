@@ -1,6 +1,6 @@
 describe("Emptylink Plugin", () => {
   beforeEach(() => {
-    cy.visit("http://localhost:8080/demo/cypress/emptylink-plugin-testing");
+    cy.visit("http://localhost:8080/demo/modules/emptylink-plugin-testing");
   });
 
   it('changes the background-color when a <a> tag does not have an "href" attribute', () => {

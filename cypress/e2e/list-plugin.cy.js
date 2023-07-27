@@ -1,6 +1,6 @@
 describe('list plugin', () => {
 
-    const URL = 'http://localhost:8080/demo/cypress/list-plugin.html'
+    const URL = 'http://localhost:8080/demo/modules/list-plugin.html'
 
     it('Verify the existence of the "Insert Ordered List" button', () => {
         cy.visit(URL)

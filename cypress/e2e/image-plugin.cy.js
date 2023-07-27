@@ -1,6 +1,6 @@
 describe("Image Plugin", () => {
   beforeEach(() => {
-    cy.visit("http://localhost:8080/demo/cypress/image-plugin-testing");
+    cy.visit("http://localhost:8080/demo/modules/image-plugin-testing");
     cy.get("h1").click();
     cy.get("img").click();
   });

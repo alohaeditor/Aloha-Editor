@@ -1,6 +1,6 @@
 describe("Table of Contents Plugin", () => {
   beforeEach(() => {
-    cy.visit("http://localhost:8080/demo/cypress/toc-plugin-testing");
+    cy.visit("http://localhost:8080/demo/modules/toc-plugin-testing");
     cy.get("#main").click();
     cy.get("#ui-id-2").click();
   });

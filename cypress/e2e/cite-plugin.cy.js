@@ -1,5 +1,5 @@
 describe('cite plugin', () => {
-    const URL = 'http://localhost:8080/demo/cypress/cite-plugin.html'
+    const URL = 'http://localhost:8080/demo/modules/cite-plugin.html'
 
     it('Check if the buttons works', () => {
         cy.visit(URL)
