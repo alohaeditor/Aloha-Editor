@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Emptyparagraph Plugin - Aloha Editor</title>
+    <link rel="stylesheet" href="../../css/aloha-reset.css" type="text/css" />
+    <link rel="stylesheet" href="../../css/aloha-core.css" type="text/css" />
+    <link
+      rel="stylesheet"
+      href="emptyparagraph-plugin-testing.css"
+      type="text/css"
+    />
+    <link
+      rel="stylesheet"
+      href="../../css/aloha-common-extra.css"
+      type="text/css"
+    />
+    <script src="../../lib/require.js"></script>
+    <script src="../../lib/vendor/jquery-1.7.2.js"></script>
+    <script
+      src="../../lib/aloha.js"
+      data-aloha-plugins="common/ui,extra/emptyparagraph,common/highlighteditables,common/link"
+    ></script>
+  </head>
+  <body>
+    <div id="main">
+      <h1>Emptyparagraph Plugin</h1>
+
+      <p id="test1"></p>
+      <p id="test2"><br /><br /></p>
+
+      <script type="text/javascript">
+        Aloha.ready(function () {
+          Aloha.jQuery("#main").aloha();
+        });
+      </script>
+    </div>
+  </body>
+</html>
