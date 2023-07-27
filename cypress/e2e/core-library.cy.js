@@ -1,6 +1,6 @@
 describe('core library', () => {
 
-    const URL = 'http://localhost:8080/demo/modules/core-library.html'
+    const URL = 'http://localhost:8080/demo/modules/core.html'
 
     it('Check if content is editable', () => {
         cy.visit(URL)

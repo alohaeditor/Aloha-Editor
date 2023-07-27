@@ -1,6 +1,6 @@
 describe("List Enforcer Plugin", () => {
   beforeEach(() => {
-    cy.visit("http://localhost:8080/demo/modules/listenforcer-plugin-testing");
+    cy.visit("http://localhost:8080/demo/modules/listenforcer.html");
   });
 
   describe("transforms editable content:", () => {

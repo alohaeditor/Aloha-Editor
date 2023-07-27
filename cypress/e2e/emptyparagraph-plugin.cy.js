@@ -1,7 +1,7 @@
 describe("Emptyparagraph Plugin", () => {
   beforeEach(() => {
     cy.visit(
-      "http://localhost:8080/demo/modules/emptyparagraph-plugin-testing"
+      "http://localhost:8080/demo/modules/emptyparagraph.html"
     );
   });
 

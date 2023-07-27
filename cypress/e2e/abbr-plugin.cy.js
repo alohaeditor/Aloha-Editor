@@ -1,6 +1,6 @@
 describe("Abbr Plugin", () => {
   beforeEach(() => {
-    cy.visit("http://localhost:8080/demo/modules/abbr-plugin-testing");
+    cy.visit("http://localhost:8080/demo/modules/abbr.html");
     cy.get("#main").click();
   });
 

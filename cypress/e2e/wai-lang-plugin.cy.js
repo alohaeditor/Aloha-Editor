@@ -1,6 +1,6 @@
 describe("Wai-Lang Plugin", () => {
   beforeEach(() => {
-    cy.visit("http://localhost:8080/demo/modules/wai-lang-plugin-testing");
+    cy.visit("http://localhost:8080/demo/modules/wai-lang.html");
     cy.get("#main").click();
     cy.get("h1").type("{leftarrow}");
   });

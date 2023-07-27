@@ -1,6 +1,6 @@
 describe("Align Plugin", () => {
   beforeEach(() => {
-    cy.visit("http://localhost:8080/demo/modules/align-plugin-testing");
+    cy.visit("http://localhost:8080/demo/modules/align.html");
     cy.get("#main").click();
   });
 

@@ -1,6 +1,6 @@
 describe('format plugin', () => {
 
-    const URL = 'http://localhost:8080/demo/modules/format-plugin.html'
+    const URL = 'http://localhost:8080/demo/modules/format.html'
 
     it('Check if format buttons extist', () => {
         cy.visit(URL)

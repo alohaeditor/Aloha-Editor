@@ -7,10 +7,10 @@
       content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
     />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Table Plugin - Aloha Editor</title>
+    <title>Table of Contents Plugin - Aloha Editor</title>
     <link rel="stylesheet" href="../../css/aloha-reset.css" type="text/css" />
     <link rel="stylesheet" href="../../css/aloha-core.css" type="text/css" />
-    <link rel="stylesheet" href="table-plugin-testing.css" type="text/css" />
+    <link rel="stylesheet" href="index.css" type="text/css" />
     <link
       rel="stylesheet"
       href="../../css/aloha-common-extra.css"
@@ -20,12 +20,27 @@
     <script src="../../lib/vendor/jquery-1.7.2.js"></script>
     <script
       src="../../lib/aloha.js"
-      data-aloha-plugins="common/ui,common/table,common/highlighteditables,common/link"
+      data-aloha-plugins="common/ui,extra/toc, common/format, common/highlighteditables,common/link"
     ></script>
   </head>
   <body>
     <div id="main">
-      <h1>Table Plugin</h1>
+      <h1>This is 1st level heading</h1>
+      <p>This is a test paragraph.</p>
+      <h2>This is 2nd level heading</h2>
+      <p id="test-paragraph">This is a test paragraph.</p>
+      <h3>This is 3rd level heading</h3>
+      <p>This is a test paragraph.</p>
+      <h1>This is another 1st level heading</h1>
+      <h4>This is 4th level heading</h4>
+      <p>This is a test paragraph.</p>
+      <h4>This is another 4th level heading</h4>
+      <h5>This is 5th level heading</h5>
+      <p>This is a test paragraph.</p>
+      <h4>This is the third 4th level heading</h4>
+      <h6>This is 6th level heading</h6>
+      <p>This is a test paragraph.</p>
+
       <script type="text/javascript">
         Aloha.ready(function () {
           Aloha.jQuery("#main").aloha();

@@ -1,6 +1,6 @@
 describe('list plugin', () => {
 
-    const URL = 'http://localhost:8080/demo/modules/link-plugin.html'
+    const URL = 'http://localhost:8080/demo/modules/link.html'
 
     it('Verify the existence of the "Link" button in Format tab', () => {
         cy.visit(URL)
