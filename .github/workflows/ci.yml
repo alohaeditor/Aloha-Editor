@@ -17,3 +17,5 @@ jobs:
           build: npm run demo:build
           start: npm run demo:start
           record: true
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
