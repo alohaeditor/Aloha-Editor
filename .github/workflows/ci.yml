@@ -1,7 +1,7 @@
-name: Cypress Tests (PR)
+name: Cypress Tests (Dev)
 
 on:
-  pull_request:
+  push:
     branches: [ jq3 ]
 
 jobs:
@@ -16,3 +16,4 @@ jobs:
         with:
           build: npm run demo:build
           start: npm run demo:start
+          record: true
