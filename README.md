@@ -1,3 +1,5 @@
+[![Aloha Editor jQuery Upgrade](https://img.shields.io/endpoint?url=https://cloud.cypress.io/badge/simple/ehtsn9&style=flat&logo=cypress)](https://cloud.cypress.io/projects/ehtsn9/runs)
+
 # [Aloha Editor - The HTML5 WYSIWYG Editor](http://aloha-editor.org/)
 
 ## New Documentation
