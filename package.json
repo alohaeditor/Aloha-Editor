@@ -8,7 +8,7 @@
   "scripts": {
     "cypress:open": "cypress open",
     "demo:start": "http-server target/build-profile-with-common-extra-plugins/rjs-output -p 8080",
-    "demo:build": "node build/r.js -o build/aloha/build-profile-with-common-extra-plugins.js"
+    "demo:build": "node build/r.js -o build/aloha/build-profile-with-common-extra-plugins.js && node build/aloha/copy-dependencies.js"
   },
   "repository": {
     "type": "git",
@@ -34,5 +34,8 @@
     "cypress": "^12.17.1",
     "cypress-real-events": "^1.9.1",
     "http-server": "^14.1.1"
+  },
+  "dependencies": {
+    "fs-extra": "^11.1.1"
   }
 }
