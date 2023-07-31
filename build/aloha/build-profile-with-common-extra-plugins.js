@@ -44,7 +44,7 @@
 
 		// We do include Aloha's patched jquery-ui by default, but the
 		// user can override it if he is adventurous.
-		"jqueryui": 'vendor/jquery-ui-1.9.0.custom-aloha',
+		"jqueryui": 'vendor/jquery-ui-1.13.2',
 
 		// For the repository browser
 		'PubSub': 'vendor/pubsub/js/pubsub-unminified',
