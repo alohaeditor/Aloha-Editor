@@ -893,7 +893,7 @@ define('format/format-plugin', [
 
 					var content = this.setContent(html).content;
 
-					jQuery( pl.nsSel( 'framename' ) ).live( 'keyup', function () {
+					jQuery( pl.nsSel( 'framename' ) ).on( 'keyup', function () {
 						jQuery( that.effective ).attr( 'target', jQuery( this ).val().replace( '\"', '&quot;' ).replace( "'", "&#39;" ) );
 					} );
 

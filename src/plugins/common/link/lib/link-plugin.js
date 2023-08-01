@@ -426,11 +426,11 @@ define([
 					 jQuery(hrefLangField.getInputElem()).addClass(pl.nsClass( 'hrefLang' ));
 					 jQuery(content).find("." + pl.nsClass( 'href-lang-container' ) + " fieldset").append(hrefLangField.getInputElem());
 					 
-					 jQuery( pl.nsSel( 'framename' ) ).live( 'keyup', function () {
+					 jQuery( pl.nsSel( 'framename' ) ).on( 'keyup', function () {
 						jQuery( that.effective ).attr( 'target', jQuery( this ).val().replace( '\"', '&quot;' ).replace( "'", "&#39;" ) );
 					 } );
 					 
-					 jQuery( pl.nsSel( 'radioTarget' ) ).live( 'change', function () {
+					 jQuery( pl.nsSel( 'radioTarget' ) ).on( 'change', function () {
 						if ( jQuery( this ).val() == 'framename' ) {
 							jQuery( pl.nsSel( 'framename' ) ).slideDown();
 						} else {
@@ -439,7 +439,7 @@ define([
 						}
 					 } );
 					 
-					 jQuery( pl.nsSel( 'linkTitle' ) ).live( 'keyup', function () {
+					 jQuery( pl.nsSel( 'linkTitle' ) ).on( 'keyup', function () {
 						jQuery( that.effective ).attr( 'title', jQuery( this ).val().replace( '\"', '&quot;' ).replace( "'", "&#39;" ) );
 					 } );
 				},

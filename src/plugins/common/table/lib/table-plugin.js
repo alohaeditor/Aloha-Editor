@@ -631,7 +631,7 @@ define([
 	                '<label class="' + nsClass('label') + '" for="' + nsClass('textarea') + '" >' + i18n.t('table.label.target') + '</label>' +
 	                	'<textarea id="' + nsClass('textarea') + '" class="' + nsClass('textarea') + '" />').content;
 
-				jQuery(nsSel('textarea')).live('keyup', function () {
+				jQuery(nsSel('textarea')).on('keyup', function () {
 					//The original developer thought that escaping the
 					//quote characters of the textarea value are
 					//necessary to work around a bug in IE. I could not

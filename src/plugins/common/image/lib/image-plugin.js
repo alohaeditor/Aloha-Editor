@@ -667,13 +667,13 @@ define([
 			 */
 			var $heightField = $('#' + plugin.ui.imgResizeHeightField.getInputId());
 			var heightEventData = {fieldName: 'height', maxValue: plugin.ui.imgResizeHeightField.maxValue, minValue: plugin.ui.imgResizeHeightField.minValue };
-			$heightField.live('keyup', heightEventData, handleKeyUpEventOnField);
-			$heightField.live('mousewheel', heightEventData, handleMouseWheelEventOnField);
+			$heightField.on('keyup', heightEventData, handleKeyUpEventOnField);
+			$heightField.on('mousewheel', heightEventData, handleMouseWheelEventOnField);
 
 			var $widthField = $('#' + plugin.ui.imgResizeWidthField.getInputId());
 			var widthEventData = {fieldName: 'width', maxValue: plugin.ui.imgResizeWidthField.maxValue, minValue: plugin.ui.imgResizeWidthField.minValue};
-			$widthField.live('keyup', widthEventData, handleKeyUpEventOnField);
-			$widthField.live('mousewheel', widthEventData, handleMouseWheelEventOnField);
+			$widthField.on('keyup', widthEventData, handleKeyUpEventOnField);
+			$widthField.on('mousewheel', widthEventData, handleMouseWheelEventOnField);
 
 		},
 
