@@ -172,4 +172,7 @@ describe("Image Plugin", () => {
       cy.get("img").should("have.css", "width", "400px");
     });
   });
+  it('Verify if the icon exists', () => {
+    cy.get(".ui-button-icon-primary").should("exist").should('be.visible');
+  });
 });

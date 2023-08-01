@@ -37,4 +37,11 @@ describe('list plugin', () => {
         cy.get('#tab-ui-container-3 button[title="Remove Link"]').should('exist').click()
         cy.get('#content p a').should('not.exist');
     });
+
+    it('Verify if the icon exists', () => {
+        cy.visit(URL)
+        cy.get('#content').click()
+        cy.get(".ui-button-icon-primary").should("exist").should('be.visible');
+    });
+ 
 })

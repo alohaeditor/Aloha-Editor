@@ -53,4 +53,8 @@ describe("Align Plugin", () => {
     });
     cy.get("h1").invoke("attr", "style").should("contain", "text-align: left;");
   });
+  
+  it('Verify if the icon exists', () => {
+    cy.get(".ui-button-icon-primary").should("exist").should('be.visible');
+});
 });

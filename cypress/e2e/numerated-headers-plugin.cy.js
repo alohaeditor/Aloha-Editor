@@ -60,4 +60,8 @@ describe("CharacterPicker Plugin", () => {
       .should("contain", "1.2");
     cy.get("h3").first().find("div").find("span").should("contain", "1.2.1");
   });
+
+  it('Verify if the icon exists', () => {
+    cy.get(".ui-button-icon-primary").should("exist").should('be.visible');
+  });
 });

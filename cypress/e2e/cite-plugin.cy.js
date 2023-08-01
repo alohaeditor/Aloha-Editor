@@ -28,4 +28,10 @@ describe('cite plugin', () => {
         cy.get('[title="Format selection as blockquote"]').should('exist').click();
         cy.get('#content blockquote').should('be.visible');
     })
+
+    it('Verify if the icon exists', () => {
+        cy.visit(URL)
+        cy.get('#content').click()
+        cy.get(".ui-button-icon-primary").should("exist").should('be.visible');
+    });
 })

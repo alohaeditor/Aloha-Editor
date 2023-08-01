@@ -69,4 +69,8 @@ describe("Metaview Plugin", () => {
       ).should("have.css", "background-image", "none");
     });
   });
+
+  it('Verify if the icon exists', () => {
+    cy.get(".ui-button-icon-primary").should("exist").should('be.visible');
+});
 });

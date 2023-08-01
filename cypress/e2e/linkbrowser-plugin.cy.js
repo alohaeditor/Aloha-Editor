@@ -56,4 +56,10 @@ describe('linkbrowser plugin', () => {
             cy.get('a').contains('link-languages').should('exist').should('be.visible')
         });
     });
+
+    it('Verify if the icon exists', () => {
+        cy.visit(URL)
+        cy.get('#content').click()
+        cy.get(".ui-button-icon-primary").should("exist").should('be.visible');
+    });
 })

@@ -70,4 +70,7 @@ describe("Wai-Lang Plugin", () => {
     });
     cy.get("h1").find("span").should("not.exist");
   });
+  it('Verify if the icon exists', () => {
+    cy.get(".ui-button-icon-primary").should("exist").should('be.visible');
+});
 });

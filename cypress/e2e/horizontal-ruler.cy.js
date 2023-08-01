@@ -11,4 +11,10 @@ describe('horizontalruler plugin', () => {
 
         cy.get('#content hr').should('exist')
     })
+
+    it('Verify if the icon exists', () => {
+        cy.visit(URL)
+        cy.get('#content').click()
+        cy.get(".ui-button-icon-primary").should("exist").should('be.visible');
+    });
 })
