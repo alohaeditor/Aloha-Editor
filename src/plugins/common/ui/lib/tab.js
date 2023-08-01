@@ -145,7 +145,7 @@ define([
 		},
 
 		foreground: function () {
-			this.container.tabs('select', this.index);
+			this.container.tabs('option', 'active', this.index);
 		},
 
 		childForeground: function (childComponent) {
