@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+	<title>Getting Started with Aloha Editor</title>
+	<link rel="stylesheet" href="index.css" type="text/css">
+	<link rel="stylesheet" href="../../css/aloha-reset.css" type="text/css">
+	<link rel="stylesheet" href="../../css/aloha-core.css" type="text/css">
+	<link rel="stylesheet" href="../../css/aloha-common-extra.css" type="text/css">
+	<script src="../../lib/require.js"></script>
+	<script src="../../lib/vendor/jquery-1.7.2.js"></script>
+
+	<script src="../../lib/aloha.js"></script>
+</head>
+
+<body>
+
+	<h1>Testing Aloha Editor commands</h1>
+
+	<button id="bold">Bold</button>
+
+	<div class="edit">This is some content</div>
+
+	<div class="edit">
+		<h1 id="test1">Hello there</h1>
+		<p id="test2">{Some content to <i>select}</i> with Aloha selection.</p>
+	</div>
+
+	<script src="./command-example.js"></script>
+	<script type="text/javascript">
+		Aloha.ready(function () {
+			Aloha.jQuery(".edit").aloha();
+		});
+	</script>
+
+</body>
+
+</html>
