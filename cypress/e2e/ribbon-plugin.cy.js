@@ -72,4 +72,8 @@ describe("Ribbon Plugin", () => {
       cy.get("#ui-id-43").should("be.visible");
     });
   });
+
+  it('Verify if the icon exists', () => {
+    cy.get(".ui-button-icon-primary").should("exist").should('be.visible');
+});
 });

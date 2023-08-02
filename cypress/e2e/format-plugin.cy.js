@@ -100,4 +100,10 @@ describe('format plugin', () => {
         cy.get('#content').should('not.contain', 'pre');
         cy.get('#content').should('contain', 'Preformatted text');
     })
+
+    it('Verify if the icon exists', () => {
+        cy.visit(URL)
+        cy.get('#content').click()
+        cy.get(".ui-button-icon-primary").should("exist").should('be.visible');
+    });
 })
