@@ -361,7 +361,7 @@
 
 		var defaultPaths = {
 			jquery: 'vendor/jquery-3.7.0',
-			jqueryui: 'vendor/jquery-ui-1.9.0.custom-aloha',
+			jqueryui: 'vendor/jquery-ui-1.13.2',
 		};
 
 		var browserPaths = {
