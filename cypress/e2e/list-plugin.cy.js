@@ -181,5 +181,11 @@ describe('list plugin', () => {
           clickAndCheckClass(item.id, item.cssClass);
         }
     });
+
+    it('Verify if the icon exists', () => {
+      cy.visit(URL)
+      cy.get('#content').click()
+      cy.get(".ui-button-text .ui-button-icon-primary").should("exist").should('be.visible');
+  });
 })
    

@@ -287,7 +287,13 @@ describe("Table plugin", () => {
       countCells(42);
     });
   });
+
+  it('Verify if the icon exists', () => {
+    cy.get(".ui-button-icon-primary").should("exist").should('be.visible');
+  });
 });
+
+
 
 /*---------------------------------------------------------------------------------------------*/
 

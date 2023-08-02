@@ -40,4 +40,7 @@ describe("CharacterPicker Plugin", () => {
     cy.get("table").find("tr").eq(10).find("td").eq(8).click();
     cy.get("#main").should("contain", "Δ");
   });
+  it('Verify if the icon exists', () => {
+    cy.get(".ui-button-icon-primary").should("exist").should('be.visible');
+});
 });

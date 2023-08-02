@@ -109,4 +109,8 @@ describe("Abbr Plugin", () => {
     });
     cy.get("h1").find("abbr").should("not.exist");
   });
+
+  it('Verify if the icon exists', () => {
+    cy.get(".ui-button-icon-primary").should("exist").should('be.visible');
+});
 });

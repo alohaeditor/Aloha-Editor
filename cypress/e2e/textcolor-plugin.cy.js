@@ -76,4 +76,7 @@ describe("TextColor Plugin", () => {
       .should("equal", "background-color: rgb(204, 51, 204);");
     cy.get("h1").click();
   });
+  it('Verify if the icon exists', () => {
+    cy.get(".ui-button-icon-primary").should("exist").should('be.visible');
+});
 });

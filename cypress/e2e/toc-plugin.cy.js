@@ -46,7 +46,11 @@ describe("Table of Contents Plugin", () => {
       .find("a")
       .should("contain", "This is a test paragraph.");
   });
+  it('Verify if the icon exists', () => {
+    cy.get(".ui-button-icon-primary").should("exist").should('be.visible');
+  });
 });
+
 
 function createTableOfContents() {
   cy.get("h1").first().click().type("{home}");
