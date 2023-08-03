@@ -332,7 +332,7 @@ define([
 						var hLevels = ['h6', 'h5', 'h4', 'h3', 'h2', 'h1'];
 						var currLevel = $.inArray(nodeName, hLevels);
 						var higherEq = hLevels.slice(currLevel).join(',');
-						var $section = $heading.nextUntil(higherEq).andSelf();
+						var $section = $heading.nextUntil(higherEq).addBack();
 						var node = [$section];
 						var parent = detect(potentialParents, function (parent) {
 							var parentSection = parent[0];

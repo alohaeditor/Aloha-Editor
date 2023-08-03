@@ -199,7 +199,7 @@ define('format/format-plugin', [
 			return;
 		}
 
-		var selectedNodes = jQuery(range.startContainer.parentNode).nextUntil(jQuery(range.endContainer.parentNode).next()).andSelf();
+		var selectedNodes = jQuery(range.startContainer.parentNode).nextUntil(jQuery(range.endContainer.parentNode).next()).addBack();
 		var prevNodes = jQuery(range.startContainer.parentNode).prevAll();
 		var nextNodes = jQuery(range.endContainer.parentNode).nextAll();
 		var listName = range.startContainer.parentNode.parentNode.nodeName;
