@@ -52,7 +52,7 @@
 		'RepositoryBrowser': 'vendor/repository-browser/js/repository-browser-unminified',
 		'jstree': 'vendor/jquery.jstree',              // Mutates jquery
 		'jqgrid': 'vendor/jquery.jqgrid',              // Mutates jquery
-		'jquery-layout': 'vendor/jquery.layout-1.3.0-rc29.14',     // Mutates jquery
+		'jquery-layout': 'vendor/jquery.layout',     // Mutates jquery
 		'jqgrid-locale-en': 'vendor/grid.locale.en', // Mutates jqgrid
 		'jqgrid-locale-de': 'vendor/grid.locale.de', // Mutates jqgrid
 		'repository-browser-i18n-de': 'vendor/repository-browser/js/repository-browser-unminified',

@@ -2,19 +2,7 @@ define('jstree', ['jquery'], function (jQuery) {
 var $ = jQuery;
 
 	/*globals jQuery, define, module, exports, require, window, document, postMessage */
-	(function (factory) {
-		"use strict";
-		if (typeof define === 'function' && define.amd) {
-			define(['jquery'], factory);
-		}
-		else if(typeof module !== 'undefined' && module.exports) {
-			module.exports = factory(require('jquery'));
-		}
-		else {
-			factory(jQuery);
-		}
-	}(function ($, undefined) {
-		"use strict";
+	(function ($, undefined) {
 		/*!
  * jsTree 3.3.15
  * http://jstree.com/
@@ -8738,6 +8726,6 @@ var $ = jQuery;
 			} catch (ignore) { }
 		}
 
-	}));
+	})(jQuery);
 
 }); // define()
