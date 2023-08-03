@@ -1,0 +1,75 @@
+<!doctype html>
+
+<html lang="en" > 
+<head>
+	<title>captioned-image Plugin - Aloha Editor</title>
+
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="description" content="The Aloha Editor Captioned Image Demo">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../../css/aloha-reset.css" type="text/css">
+	<link rel="stylesheet" href="../../css/aloha-core.css" type="text/css">
+	<link rel="stylesheet" href="../../css/aloha-common-extra.css" type="text/css">
+    <link rel="shortcut icon" href="/favicon.ico">
+	<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="stylesheet" href="index.css" type="text/css" />
+
+	<style>#content { margin: 30px; }</style>
+
+	<script src="../../lib/vendor/jquery-1.7.2.js"></script>
+	<script src="../../lib/require.js"></script>
+    <script>
+		var Aloha = {
+			settings: {
+				jQuery: $,
+				toolbar: {
+					tabs: [{
+						label: 'Captioned Image',
+						showOn: { scope: '__hidden__' },
+						components: [
+							'imgAlignLeft',
+							'imgAlignRight',
+							'imgAlignCenter',
+							'imgAlignClear'
+						]
+					}]
+				}
+			}
+		};
+    </script>
+	<script src="../../lib/aloha.js"
+	        data-aloha-plugins="common/ui,
+	                            common/format,
+	                            common/block,
+	                            common/align,
+	                            extra/captioned-image"></script>
+</head>
+<body>
+	<div id="content">
+            <h1>captioned-image plugin</h1>
+			<img src="https://img.freepik.com/foto-gratis/imagen-primer-plano-programador-trabajando-su-escritorio-oficina_1098-18707.jpg?t=st=1691026580~exp=1691027180~hmac=b4f317d7dbf3981c8f79434c6bf8046ab8ad5336dba07f94a894ebcba553eafa"
+				alt="Sample alt text"
+				data-caption="Short ."
+				class="aloha-captioned-image" />
+			<p>
+			Vestibulum molestie velit volutpat magna molestie non condimentum
+			metus tincidunt. Curabitur imperdiet lacus eget est hendrerit in
+			aliquam elit hendrerit. Nullam porttitor urna ac ante volutpat
+			feugiat semper quam volutpat. Donec auctor odio ut dui lobortis
+			euismod imperdiet purus pellentesque. Quisque lacinia sem ac lacus
+			commodo eu congue nisl porttitor. Aenean et velit quis urna
+			porttitor dignissim consequat eu lectus. Nam interdum elit a lacus
+			blandit porttitor. Integer id libero sed lectus tempus pulvinar ac
+			sit amet lacus. Curabitur lobortis magna a est ultrices sagittis
+			non eget nibh. In lobortis arcu odio.
+			</p>
+
+	</div>
+	<script type="text/javascript">
+		Aloha.ready( function(){
+			Aloha.jQuery('#content').aloha();
+		});
+	</script>
+</body>
+</html>
