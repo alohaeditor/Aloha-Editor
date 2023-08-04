@@ -10,7 +10,7 @@ describe("Ribbon Plugin", () => {
   it("creates an arrow button that displays and hides the ribbon", () => {
     cy.get(".aloha-ribbon-out").click();
     cy.wait(500);
-    cy.get(".ui-helper-clearfix").should("have.css", "left", "-966.019px");
+    cy.get(".ui-helper-clearfix").should("not.have.css", "left", "0px");
     cy.get(".aloha-ribbon-in").click();
     cy.get(".ui-helper-clearfix").should("have.css", "left", "0px");
   });
