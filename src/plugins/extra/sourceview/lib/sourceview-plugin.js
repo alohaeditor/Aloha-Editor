@@ -149,7 +149,7 @@ define([
 				});
 			this.title.find('#aloha-devtool-source-viewer-widen-ckbx')
 				.click(function () {
-					sidebar.width = jQuery(this).attr('checked')
+					sidebar.width = jQuery(this).prop('checked')
 						? 600
 						: originalWidth;
 					sidebar.container.width(sidebar.width)
@@ -158,7 +158,7 @@ define([
 				});
 			this.title.find('#aloha-devtool-source-viewer-entire-ckbx')
 				.change(function () {
-					showEntireEditableSource = !!jQuery(this).attr('checked');
+					showEntireEditableSource = !!jQuery(this).prop('checked');
 				});
 
 			Aloha.bind('aloha-selection-changed', function (event, range) {
