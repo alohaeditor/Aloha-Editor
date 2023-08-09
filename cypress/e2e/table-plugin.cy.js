@@ -21,13 +21,13 @@ describe("Table plugin", () => {
     it('creates "Delete Table" button when a table is selected that deletes it upon confirmation', () => {
       cy.get("table").find(".aloha-wai-red").click();
       cy.get("#tab-ui-container-8").find(".aloha-icon-deletetable").click();
-      cy.get(".ui-dialog-buttons")
+      cy.get(".ui-dialog-buttonset")
         .should("exist")
-        .contains("span", "No")
+        .contains("No")
         .click();
       cy.get("#main").find("tbody").should("exist");
       cy.get("#tab-ui-container-8").find(".aloha-icon-deletetable").click();
-      cy.get(".ui-dialog-buttons").contains("span", "Yes").click();
+      cy.get(".ui-dialog-buttonset").contains("Yes").click();
       cy.get("#main").find("tbody").should("not.exist");
     });
 
@@ -192,13 +192,13 @@ describe("Table plugin", () => {
       cy.get("#tab-ui-container-10").within(() => {
         cy.get("span").contains("Delete Rows").click();
       });
-      cy.get(".ui-dialog-buttons")
+      cy.get(".ui-dialog-buttonset")
         .should("exist")
-        .contains("span", "No")
+        .contains("No")
         .click();
       countCells(42);
       cy.get("span").contains("Delete Rows").click();
-      cy.get(".ui-dialog-buttons").contains("span", "Yes").click();
+      cy.get(".ui-dialog-buttonset").contains("Yes").click();
       countCells(28);
       cy.get("tbody")
         .find("tr")
@@ -222,13 +222,13 @@ describe("Table plugin", () => {
       cy.get("#tab-ui-container-9").within(() => {
         cy.get("span").contains("Delete Columns").click();
       });
-      cy.get(".ui-dialog-buttons")
+      cy.get(".ui-dialog-buttonset")
         .should("exist")
-        .contains("span", "No")
+        .contains("No")
         .click();
       countCells(42);
       cy.get("span").contains("Delete Columns").click();
-      cy.get(".ui-dialog-buttons").contains("span", "Yes").click();
+      cy.get(".ui-dialog-buttonset").contains("Yes").click();
       countCells(30);
       cy.get("tbody")
         .find("tr")

@@ -763,7 +763,7 @@ define([
 		emptyCell.html('\u00a0');
 
 		that = this;
-		rows = this.obj.context.rows;
+		rows = this.obj[0].rows;
 
 		// add a column before each first cell of each row
 		for ( i = 0; i < rows.length; i++) {
@@ -938,11 +938,11 @@ define([
 		// get the number of columns in the table (first row)
 		// iterate through all rows and find the maximum number of columns to add
 		var numColumns = 0;
-		for( var i = 0; i < this.obj.context.rows.length; i++ ){
+		for( var i = 0; i < this.obj[0].rows.length; i++ ){
 			var curNumColumns = 0;
 
-			for( var j = 0; j < this.obj.context.rows[i].cells.length; j++ ){
-				var colspan = Utils.colspan( this.obj.context.rows[i].cells[j] );
+			for( var j = 0; j < this.obj[0].rows[i].cells.length; j++ ){
+				var colspan = Utils.colspan( this.obj[0].rows[i].cells[j] );
 				curNumColumns += colspan;
 			}
 
@@ -1177,6 +1177,7 @@ define([
 			deleteTable = true;
 		}
 
+
 		// delete the whole table
 		if (deleteTable) {
 			var that = this;
@@ -1287,7 +1288,6 @@ define([
 		// if all columns should be deleted, remove the WHOLE table
 		// delete the whole table
 		if ( selectedColumnIdxs.length == grid[0].length - selectColWidth ) {
-
 			Dialog.confirm({
 				title : i18n.t('Table'),
 				text : i18n.t('deletetable.confirm'),
@@ -1795,7 +1795,7 @@ define([
 		this.obj.find('tr.' + this.get('classSelectionRow') + ':first').remove();
 		// remove the selection column (first column left)
 		var that = this;
-		jQuery.each(this.obj.context.rows, function(){
+		jQuery.each(this.obj[0].rows, function(){
 			jQuery(this).children('td.' + that.get('classSelectionColumn')).remove();
 		});
 

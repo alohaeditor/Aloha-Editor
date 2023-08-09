@@ -58,7 +58,7 @@ describe("Ribbon Plugin", () => {
           cy.get("span").contains("confirm").should("be.visible").click();
         });
       cy.get("#ui-id-41").should("be.visible");
-      cy.get("span").contains("Close").click();
+      cy.get("span").contains("Close").realType("{enter}");
       cy.get(".aloha-ui-menubutton-container")
         .eq(5)
         .within(() => {

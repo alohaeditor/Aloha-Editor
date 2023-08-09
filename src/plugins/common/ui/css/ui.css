@@ -17,7 +17,7 @@
 .aloha-ui { direction: ltr!important; }
 .aloha-sidebar-panel-title { text-align: left; }
 
-.aloha.ui-dialog { position: absolute; padding: .2em; width: 300px; overflow: hidden; }
+.aloha.ui-dialog { position: absolute; padding: .2em; width: 300px; overflow: hidden; z-index:1200 }
 .aloha.ui-dialog .ui-dialog-titlebar { padding: .4em 1em; position: relative;  }
 .aloha.ui-dialog .ui-dialog-title { float: left; margin: .1em 16px .1em 0; } 
 .aloha.ui-dialog .ui-dialog-titlebar-close { position: absolute; right: .3em; top: 50%; width: 19px; margin: -10px 0 0 0; padding: 1px; height: 18px; }
@@ -761,6 +761,11 @@
 }
 .aloha.aloha-dialog .ui-icon-closethick {
 	background: url(../img/jqueryui/ui-icons_222222_256x240.png) no-repeat -80px -128px;
+}
+
+span.ui-button-icon-primary.ui-icon.ui-icon-closethick {
+    margin-top: -7px;
+	margin-left: -8px;
 }
 
 .aloha-ui-hidden {
