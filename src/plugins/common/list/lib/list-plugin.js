@@ -60,7 +60,6 @@ define([
 		}
 		return nestingLevel;
 	}
-
 	/**
 	 * Initializes the list templates button menus.
 	 *

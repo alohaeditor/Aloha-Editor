@@ -14,7 +14,7 @@ describe('list plugin', () => {
           cy.contains('button', 'Increase Indent').should('exist').should('be.visible');
           cy.contains('button', 'Decrease Indent').should('exist').should('be.visible');
           
-        cy.get('div.aloha-ui-menubutton-container[title="Insert Ordered List"]')
+        cy.get('div.aloha-ui-menubutton-container').eq(0)
         .find('button.aloha-ui-menubutton-expand')
         .click()
         cy.get('ul#ui-id-16').should('exist').should('be.visible');
@@ -32,7 +32,7 @@ describe('list plugin', () => {
           cy.contains('button', 'Increase Indent').should('exist').should('be.visible');
           cy.contains('button', 'Decrease Indent').should('exist').should('be.visible');
         
-        cy.get('div.aloha-ui-menubutton-container[title="Insert Unordered List"]')
+        cy.get('div.aloha-ui-menubutton-container').eq(1)
           .find('button.aloha-ui-menubutton-expand')
           .click()
           cy.get('ul#ui-id-24').should('exist').should('be.visible');
@@ -50,7 +50,7 @@ describe('list plugin', () => {
           cy.contains('button', 'Increase Indent').should('exist').should('be.hidden');
           cy.contains('button', 'Decrease Indent').should('exist').should('be.hidden');
 
-        cy.get('div.aloha-ui-menubutton-container[title="Insert Definition List"]').should('exist')
+        cy.get('div.aloha-ui-menubutton-container').eq(2)
           .find('button.aloha-ui-menubutton-expand')
           .click()
           cy.get('ul#ui-id-12').should('exist').should('be.visible');
@@ -150,7 +150,7 @@ describe('list plugin', () => {
 
     it('Verify the functionality of the "Insert Definition List" button', () => {
       let clickAndCheckClass = function(id, cssClass) {
-        cy.get('div.aloha-ui-menubutton-container[title="Insert Definition List"]')
+        cy.get('div.aloha-ui-menubutton-container').eq(2)
           .find('button.aloha-ui-menubutton-expand')
           .click();
       
