@@ -219,21 +219,4 @@ Aloha.ready(function () {
       });
     }
   );
-
-  $(".aloha-ui-menubutton-container").each(function() {
-    var menuButtonText = $(this).find(".ui-button-text");
-
-    if (menuButtonText.text() === "menu button") {
-      $(this).find(".ui-icon.ui-icon-triangle-1-s").addClass("menu-button-arrow");
-      menuButtonText.css("margin-bottom","4px");
-    }
-    if (menuButtonText.text() === "split button") {
-      menuButtonText.addClass("split-button-text");
-    }
-  });
-
-  $(".ui-menu-item-wrapper:has(+ ul)").each(function() {
-    var newSpan = $("<span>").addClass("ui-menu-icon ui-icon ui-icon-carat-1-e");
-    $(this).append(newSpan);
-});
 })

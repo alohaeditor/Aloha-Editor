@@ -4984,7 +4984,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 			delay: 300,
 			options: {
 				icons: {
-					submenu: "ui-icon-caret-1-e"
+					submenu: "ui-icon-carat-1-e"
 				},
 				items: "> *",
 				menus: "ul",
