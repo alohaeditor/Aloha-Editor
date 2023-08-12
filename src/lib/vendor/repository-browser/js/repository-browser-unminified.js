@@ -292,8 +292,11 @@
 		 */
 		function grid(browser, $container) {
 			var $grid = $('<div class="repository-browser-grid repository-browser-shadow repository-browser-top">'
-			          + '<div class="ui-layout-west"></div>'
-			          + '<div class="ui-layout-center"></div>'
+			          + '<div class="ui-layout-west ui-layout-pane ui-layout-pane-west"></div>'
+			          + '<div class="ui-layout-center ui-layout-pane ui-layout-pane-center"></div>'
+					  + '<div class="ui-layout-resize ui-layout-resizer ui-layout-resizer-west ui-layout-resizer-open ui-layout-resizer-west-open" title="Resize">'
+					  + '<div class="ui-layout-resize-close ui-layout-toggler ui-layout-toggler-west ui-layout-toggler-open ui-layout-toggler-west-open" title="Close">'
+					  +'</div>'
 			          + '</div>');
 			$container.append($grid);
 			return $grid;
