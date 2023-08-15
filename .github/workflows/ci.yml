@@ -2,7 +2,7 @@ name: Cypress Tests (Dev)
 
 on:
   push:
-    branches: [ jq3 ]
+    branches: [ jq3, feature/jq3-migration ]
 
 jobs:
   cypress-run:
