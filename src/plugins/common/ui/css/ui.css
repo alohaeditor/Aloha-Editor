@@ -685,7 +685,7 @@
 .aloha .aloha-multisplit .aloha-ui-multisplit-fullwidth {
 	display: block;
 	width: 100%;
-	background: #f0f0f0 url('../img/removeformat.png') no-repeat 6px 3px;
+	background: #f0f0f0 url('../img/removeformat.png') no-repeat 0px 0px;
 	border: 1px solid #bbb;
 	padding-left: 18px;
 	text-align: left;

@@ -12,7 +12,7 @@
 define(['jquery'],function(jQuery){
 (function($) {
 
-var types = ['DOMMouseScroll', 'mousewheel'];
+var types = ['DOMMouseScroll', 'wheel'];
 
 if ($.event.fixHooks) {
     for ( var i=types.length; i; ) {
@@ -20,14 +20,14 @@ if ($.event.fixHooks) {
     }
 }
 
-$.event.special.mousewheel = {
+$.event.special.wheel = {
     setup: function() {
         if ( this.addEventListener ) {
             for ( var i=types.length; i; ) {
                 this.addEventListener( types[--i], handler, false );
             }
         } else {
-            this.onmousewheel = handler;
+            this.onwheel = handler;
         }
     },
     
@@ -37,18 +37,18 @@ $.event.special.mousewheel = {
                 this.removeEventListener( types[--i], handler, false );
             }
         } else {
-            this.onmousewheel = null;
+            this.onwheel = null;
         }
     }
 };
 
 $.fn.extend({
-    mousewheel: function(fn) {
-        return fn ? this.bind("mousewheel", fn) : this.trigger("mousewheel");
+    wheel: function(fn) {
+        return fn ? this.bind("wheel", fn) : this.trigger("wheel");
     },
     
-    unmousewheel: function(fn) {
-        return this.unbind("mousewheel", fn);
+    unwheel: function(fn) {
+        return this.unbind("wheel", fn);
     }
 });
 
@@ -56,7 +56,7 @@ $.fn.extend({
 function handler(event) {
     var orgEvent = event || window.event, args = [].slice.call( arguments, 1 ), delta = 0, returnValue = true, deltaX = 0, deltaY = 0;
     event = $.event.fix(orgEvent);
-    event.type = "mousewheel";
+    event.type = "wheel";
     
     // Old school scrollwheel delta
     if ( orgEvent.wheelDelta ) { delta = orgEvent.wheelDelta/120; }
