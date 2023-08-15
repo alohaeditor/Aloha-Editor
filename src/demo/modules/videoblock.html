@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>Videoblock Plugin - Aloha Editor</title>
+	<link rel="stylesheet" href="index.css" type="text/css">
+	<link rel="stylesheet" href="../../css/aloha-reset.css" type="text/css">
+	<link rel="stylesheet" href="../../css/aloha-core.css" type="text/css">
+	<link rel="stylesheet" href="../../css/aloha-common-extra.css" type="text/css">
+	<script src="../../lib/require.js"></script>
+	<script src="../../lib/vendor/jquery-3.7.0.js"></script>
+	<script src="../../lib/aloha.js" data-aloha-plugins="common/ui,common/format,common/highlighteditables,common/link,common/block,common/contenthandler,common/paste,extra/videoblock"></script>
+</head>
+<body>
+	<div id="main">
+		<div id="content">
+            <p>
+            VIDEOBLOCK PLUGIN
+            </p>
+    </div>
+	</div>
+	<script type="text/javascript">
+	Aloha.ready( function() {
+		Aloha.jQuery('#content').aloha();
+	});
+	Aloha.settings = {
+    contentHandler: {
+        insertHtml: [ 'word', 'generic', 'oembed', 'sanitize', 'video' ]
+    },
+    toolbar: {
+        tabs: [
+            {
+                label: 'Video',
+                showOn: {scope: 'Aloha.Block.VideoBlock'},
+                components: [
+                    [ 'video-url', 'remove-video' ]
+                ]
+            }
+        ]
+         
+    },
+    plugins: {
+        videoblock: {
+            'width': '800px',
+            'height': '600px',
+            'embedUrl': 'https://youtube.com/embed/'
+        }
+    }
+};
+	</script>
+</body>
+</html>
