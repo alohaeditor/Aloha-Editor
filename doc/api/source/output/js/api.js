@@ -84,7 +84,7 @@
     zebraStripeList();
     filterList();
 
-    $(window).bind( 'hashchange', function(e) {
+    $(window).on( 'hashchange', function(e) {
       setPage();
     })
     $("[role=search] a").click(function() {

@@ -151,7 +151,7 @@ define([
 	Ephemera.classes('aloha-link-pointer', 'aloha-link-text');
 
 	function setupMousePointerFix() {
-		jQuery(document).bind('keydown.aloha-link.pointer-fix', function (e) {
+		jQuery(document).on('keydown.aloha-link.pointer-fix', function (e) {
 				// metaKey for OSX, 17 for PC (we can't check
 				// e.ctrlKey because it's only set on keyup or
 				// keypress, not on keydown).
@@ -159,7 +159,7 @@ define([
 					jQuery('body').addClass('aloha-link-pointer');
 				}
 			})
-			.bind('keyup.aloha-link.pointer-fix', function (e) {
+			.on('keyup.aloha-link.pointer-fix', function (e) {
 				if (e.metaKey || Keys.getToken(e.keyCode) === 'control') {
 					jQuery('body').removeClass('aloha-link-pointer');
 				}
@@ -358,7 +358,7 @@ define([
 			this.subscribeEvents();
 			this.bindInteractions();
 
-			Aloha.bind('aloha-plugins-loaded', function () {
+			Aloha.on('aloha-plugins-loaded', function () {
 				plugin.initSidebar(Aloha.Sidebar.right);
 				PubSub.pub('aloha.link.ready', {
 					plugin: plugin
@@ -514,7 +514,7 @@ define([
 				}
 
 				// enable hotkey for inserting links
-				editable.obj.bind('keydown.aloha-link', plugin.hotKey.insertLink, function () {
+				editable.obj.on('keydown.aloha-link', plugin.hotKey.insertLink, function () {
 					if (plugin.findLinkMarkup()) {
 						plugin.hrefField.foreground();
 						plugin.hrefField.focus();
@@ -763,7 +763,7 @@ define([
 				this.anchorField = Ui.adopt('editAnchor', Text, {
 					init: function () {
 						this._super();
-						this.element.bind("keyup", function onKeyup(event) {
+						this.element.on("keyup", function onKeyup(event) {
 							if ((event.keyCode == 13 || event.keyCode == 27)) {
 								that.hrefField.finishEditing(true);
 							}

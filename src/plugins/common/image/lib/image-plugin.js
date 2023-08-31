@@ -364,7 +364,7 @@ define([
 				delete configurations[message.editable.getId()];
 			});
 
-			Aloha.bind('aloha-drop-files-in-editable', function (event, data) {
+			Aloha.on('aloha-drop-files-in-editable', function (event, data) {
 				var img, len = data.filesObjs.length, fileObj, config;
 
 				while (--len >= 0) {
@@ -390,7 +390,7 @@ define([
 
 			});
 
-			Aloha.bind('aloha-selection-changed', function (event, rangeObject, originalEvent) {
+			Aloha.on('aloha-selection-changed', function (event, rangeObject, originalEvent) {
 				if (originalEvent && originalEvent.target) {
 					// Check if the element is currently being resized
 					if (plugin.settings.ui.resizable && !jQuery(originalEvent.target).hasClass('ui-resizable-handle')) {
@@ -433,7 +433,7 @@ define([
 				plugin.ui.doLayout();
 			});
 
-			Aloha.bind('aloha-editable-created', function (event, editable) {
+			Aloha.on('aloha-editable-created', function (event, editable) {
 				try {
 					// this disables mozillas image resizing facilities
 					document.execCommand('enableObjectResizing', false, false);
@@ -1392,10 +1392,10 @@ define([
 					display: 'inline-block',
 					'float': plugin.imageObj.css('float')
 				})
-				.bind('resizestart', function (e) {
+				.on('resizestart', function (e) {
 					e.preventDefault();
 				})
-				.bind('mouseup', function (e) {
+				.on('mouseup', function (e) {
 					e.originalEvent.stopSelectionUpdate = true;
 				});
 		},

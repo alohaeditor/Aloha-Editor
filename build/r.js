@@ -13691,7 +13691,7 @@ function (file,           pragma,   parse,   lang,   logger,   commonJs) {
 
                 moduleProto.init = function(depMaps) {
                     if (context.needFullExec[this.map.id]) {
-                        lang.each(depMaps, lang.bind(this, function (depMap) {
+                        lang.each(depMaps, lang.on(this, function (depMap) {
                             if (typeof depMap === 'string') {
                                 depMap = context.makeModuleMap(depMap,
                                                (this.map.isDefine ? this.map : this.map.parentMap));

@@ -80,7 +80,7 @@ You may also require module or Aloha itself on demand
 	Aloha.require( function( Aloha ) {
 		// localAloha is available here
 		// but not neccessarily fully initialized
-		Aloha.jQuery('body').bind('aloha', function() {
+		Aloha.jQuery('body').on('aloha', function() {
 			// Aloha is initialized here
 		});  
 	});

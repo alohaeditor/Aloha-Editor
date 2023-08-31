@@ -551,7 +551,7 @@ define([
 
 			// Because editables can only properly be initialized when Aloha
 			// plugins are loaded.
-			Aloha.bind('aloha-plugins-loaded', function () {
+			Aloha.on('aloha-plugins-loaded', function () {
 				me.obj.addClass('aloha-editable').contentEditable(true);
 
 				registerEvents(me);
@@ -599,7 +599,7 @@ define([
 			});
 
 			// mark the editable unmodified, when aloha is ready
-			Aloha.bind('aloha-ready', function () {
+			Aloha.on('aloha-ready', function () {
 				me.setUnmodified();
 			});
 		},

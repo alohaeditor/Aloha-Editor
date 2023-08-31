@@ -1522,7 +1522,7 @@ $.fn.layout = function (opts) {
 		initHotkeys();
 
 		// bind window.onunload
-		$(window).bind("unload."+ sID, unload);
+		$(window).on("unload."+ sID, unload);
 
 		// init plugins for this layout, if there are any (eg: customButtons)
 		runPluginCallbacks( Instance, $.layout.onLoad );
@@ -1591,7 +1591,7 @@ $.fn.layout = function (opts) {
 			o.resizeWithWindow = false;
 		// bind resizeAll() for 'this layout instance' to window.resize event
 		else if (o.resizeWithWindow)
-			$(window).bind("resize."+ sID, windowResize);
+			$(window).on("resize."+ sID, windowResize);
 
 		delete state.creatingLayout;
 		state.initialized = true;
@@ -1825,7 +1825,7 @@ $.fn.layout = function (opts) {
 		};
 		// loop hash and bind all methods - include layoutID namespacing
 		for (name in layoutMethods) {
-			$N.bind("layout"+ name.toLowerCase() +"."+ sID, Instance[ layoutMethods[name] || name ]);
+			$N.on("layout"+ name.toLowerCase() +"."+ sID, Instance[ layoutMethods[name] || name ]);
 		}
 
 		// if this container is another layout's 'pane', then set child/parent pointers
@@ -1968,7 +1968,7 @@ $.fn.layout = function (opts) {
 		$.each(panes, function (i, pane) {
 			var o = options[pane];
 			if (o.enableCursorHotkey || o.customHotkey) {
-				$(document).bind("keydown."+ sID, keyDown); // only need to bind this ONCE
+				$(document).on("keydown."+ sID, keyDown); // only need to bind this ONCE
 				return false; // BREAK - binding was done
 			}
 		});
@@ -2235,8 +2235,8 @@ $.fn.layout = function (opts) {
 			.css(c.cssReq).css("zIndex", options.zIndexes.pane_normal)
 			.css(o.applyDemoStyles ? c.cssDemo : {}) // demo styles
 			.addClass( o.paneClass +" "+ o.paneClass+"-"+pane ) // default = "ui-layout-pane ui-layout-pane-west" - may be a dupe of 'paneSelector'
-			.bind("mouseenter."+ sID, addHover )
-			.bind("mouseleave."+ sID, removeHover )
+			.on("mouseenter."+ sID, addHover )
+			.on("mouseleave."+ sID, removeHover )
 			;
 		var paneMethods = {
 				hide:				''
@@ -2270,7 +2270,7 @@ $.fn.layout = function (opts) {
 		,	name;
 		// loop hash and bind all methods - include layoutID namespacing
 		for (name in paneMethods) {
-			$P.bind("layoutpane"+ name.toLowerCase() +"."+ sID, Instance[ paneMethods[name] || name ]);
+			$P.on("layoutpane"+ name.toLowerCase() +"."+ sID, Instance[ paneMethods[name] || name ]);
 		}
 
 		// see if this pane has a 'scrolling-content element'
@@ -2465,7 +2465,7 @@ $.fn.layout = function (opts) {
 				.appendTo($N) // append DIV to container
 			;
 			if (o.resizerDblClickToggle)
-				$R.bind("dblclick."+ sID, toggle );
+				$R.on("dblclick."+ sID, toggle );
 
 			if ($T) {
 				$T	// if paneSelector is an ID, then create a matching ID for the resizer, eg: "#paneLeft" => "#paneLeft-toggler"
@@ -2480,7 +2480,7 @@ $.fn.layout = function (opts) {
 					.css(o.applyDemoStyles ? _c.togglers.cssDemo : {}) // add demo styles
 					.addClass(tClass +" "+ tClass+_pane)
 					.hover(addHover, removeHover) // ALWAYS add hover-classes, even if toggling is not enabled - handle with CSS instead
-					.bind("mouseenter", onResizerEnter) // NEED toggler.mouseenter because mouseenter MAY NOT fire on resizer
+					.on("mouseenter", onResizerEnter) // NEED toggler.mouseenter because mouseenter MAY NOT fire on resizer
 					.appendTo($R) // append SPAN to resizer DIV
 				;
 				// ADD INNER-SPANS TO TOGGLER
@@ -4542,7 +4542,7 @@ $.fn.layout = function (opts) {
 		;
 		if (!$T) return;
 		o.closable = true;
-		$T	.bind("click."+ sID, function(evt){ evt.stopPropagation(); toggle(pane); })
+		$T	.on("click."+ sID, function(evt){ evt.stopPropagation(); toggle(pane); })
 			.css("visibility", "visible")
 			.css("cursor", "pointer")
 			.attr("title", state[pane].isClosed ? o.tips.Open : o.tips.Close) // may be blank
@@ -5825,7 +5825,7 @@ $.layout.buttons = {
 		// ADD Button methods to Layout Instance
 		// Note: sel = jQuery Selector string
 		$.extend( inst, {
-			bindButton:		function (sel, action, pane) { return _.bind(inst, sel, action, pane); }
+			bindButton:		function (sel, action, pane) { return _.on(inst, sel, action, pane); }
 		//	DEPRECATED METHODS
 		,	addToggleBtn:	function (sel, pane, slide) { return _.addToggle(inst, sel, pane, slide); }
 		,	addOpenBtn:		function (sel, pane, slide) { return _.addOpen(inst, sel, pane, slide); }

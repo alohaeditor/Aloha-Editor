@@ -100,7 +100,7 @@ function (jQuery, Component, Utils) {
 			this.element = this.buttonElement = button;
 
 			var that = this;
-			button.bind('mouseleave', function () {
+			button.on('mouseleave', function () {
 				that.closeTooltip();
 			});
 

@@ -80,11 +80,11 @@ function (jQuery) {
 					td.addClass('hover');
 				}
 
-				td.bind('mouseover', {rowId: i, colId: j}, function(e) {
+				td.on('mouseover', {rowId: i, colId: j}, function(e) {
 					that.handleMouseOver(e, table);
 				});
 
-				td.bind('click', {rowId: i, colId: j}, function(e){
+				td.on('click', {rowId: i, colId: j}, function(e){
 					var rows = e.data.rowId + 1;
 					var cols = e.data.colId + 1;
 
@@ -103,7 +103,7 @@ function (jQuery) {
 		this.setPosition();
 
 		// stop bubbling the click on the create-dialog up to the body event
-		layer.bind('click', function(e) {
+		layer.on('click', function(e) {
 			e.stopPropagation();
 		}).mousedown(function(e) {
 			e.stopPropagation();
@@ -111,7 +111,7 @@ function (jQuery) {
 
 		// append layer to body and
 		// hide the create layer if user clicks anywhere in the body
-		jQuery('body').append(layer).bind('click', function(e) {
+		jQuery('body').append(layer).on('click', function(e) {
 			// If the layer is visible and the event target is not the
 			// button itself or a descendant of the button, hide the
 			// layer.

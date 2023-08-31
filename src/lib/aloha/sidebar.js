@@ -224,7 +224,7 @@ define([
 				that.lastRange = message.range;
 			});
 
-			Aloha.bind('aloha-editable-deactivated', function (event, params) {
+			Aloha.on('aloha-editable-deactivated', function (event, params) {
 				if (that.isOpen) {
 					that.checkActivePanels();
 				}

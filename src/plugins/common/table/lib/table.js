@@ -482,7 +482,7 @@ define([
 			eventContainer = this.obj;
 		}
 
-		eventContainer.bind( 'keydown', function ( jqEvent ) {
+		eventContainer.on( 'keydown', function ( jqEvent ) {
 			if ( !jqEvent.ctrlKey && !jqEvent.shiftKey ) {
 				if ( that.selection.selectedCells.length > 0 &&
 						that.selection.selectedCells[ 0 ].length > 0 ) {
@@ -517,7 +517,7 @@ define([
 		We need to make sure that when the user has selected text inside a
 		table cell we do not delete the entire row, before we activate this
 
-		this.obj.bind( 'keyup', function ( $event ) {
+		this.obj.on( 'keyup', function ( $event ) {
 			if ( $event.keyCode == 46 ) {
 				if ( that.selection.selectedColumnIdxs.length ) {
 					that.deleteColumns();
@@ -533,7 +533,7 @@ define([
 		*/
 
 		// handle click event of the table
-	//	this.obj.bind('click', function(e){
+	//	this.obj.on('click', function(e){
 	//		// stop bubbling the event to the outer divs, a click in the table
 	//		// should only be handled in the table
 	//		e.stopPropagation();
@@ -589,7 +589,7 @@ define([
 				}
 			});
 
-			eventContainer.bind( 'mousemove', function( e ) {
+			eventContainer.on( 'mousemove', function( e ) {
 
 				var jqObj = jQuery( this ).closest( 'table' );
 
@@ -606,7 +606,7 @@ define([
 
 			});
 
-		eventContainer.bind( 'mousedown', function ( jqEvent ) {
+		eventContainer.on( 'mousedown', function ( jqEvent ) {
 			// focus the table if not already done
 			if ( !that.hasFocus ) {
 				that.focus();
@@ -801,7 +801,7 @@ define([
 		// prevent ie from selecting the contents of the table
 		cell.get(0).onselectstart = function() { return false; };
 
-		cell.bind('mousedown', function(e) {
+		cell.on('mousedown', function(e) {
 			// set flag that the mouse is pressed
 //TODO to implement the mousedown-select effect not only must the
 //mousedown be set here but also be unset when the mouse button is
@@ -810,7 +810,7 @@ define([
 			return that.rowSelectionMouseDown(e);
 		});
 
-		cell.bind('mouseover', function(e){
+		cell.on('mouseover', function(e){
 			// only select more crows if the mouse is pressed
 			if ( that.mousedown ) {
 				return that.rowSelectionMouseOver(e);
@@ -1020,7 +1020,7 @@ define([
 		}
 
 		// global mouseup event to reset the selection properties
-		jQuery(document).bind('mouseup', function(e) { that.columnSelectionMouseUp(e) } );
+		jQuery(document).on('mouseup', function(e) { that.columnSelectionMouseUp(e) } );
 
 		this.obj.find('tr:first').before( selectionRow );
 	};
@@ -1042,8 +1042,8 @@ define([
 		// prevent ie from selecting the contents of the table
 		cell.get( 0 ).onselectstart = function () { return false; };
 
-		cell.bind( 'mousedown',  function ( e ) { that.columnSelectionMouseDown( e ) } );
-		cell.bind( 'mouseover',  function ( e ) { that.columnSelectionMouseOver( e ) } );
+		cell.on( 'mousedown',  function ( e ) { that.columnSelectionMouseDown( e ) } );
+		cell.on( 'mouseover',  function ( e ) { that.columnSelectionMouseOver( e ) } );
 	};
 
 	/**
@@ -1884,7 +1884,7 @@ define([
 			}
 		};
 
-		cell.bind('mousedown.resize', function($event) {
+		cell.on('mousedown.resize', function($event) {
 			// prevent cell resizing, if mousedown was on a block handle
 			if (jQuery($event.target).hasClass('aloha-block-draghandle')) {
 				return;
@@ -1900,7 +1900,7 @@ define([
 				that.selection.resizeMode = true;
 
 				// move the guide while dragging
-				jQuery( 'body' ).bind( 'mousemove.dnd_col_resize', function(e) {
+				jQuery( 'body' ).on( 'mousemove.dnd_col_resize', function(e) {
 					// limit the maximum resize
 					if ( e.pageX > minPageX && e.pageX < maxPageX ) {
 						$guide.css('left', e.pageX);
@@ -1908,7 +1908,7 @@ define([
 				});
 
 				// do the actual resizing after drag stops
-				jQuery( 'body' ).bind( 'mouseup.dnd_col_resize', function(e) {
+				jQuery( 'body' ).on( 'mouseup.dnd_col_resize', function(e) {
 					var pixelsMoved = 0;
 
 					if ( e.pageX < minPageX ) {
@@ -1985,7 +1985,7 @@ define([
 			expandingRow.css( 'height', expandToHeight );
 		};
 
-		cell.bind('mousedown.resize', function($event) {
+		cell.on('mousedown.resize', function($event) {
 			// prevent cell selection, if mousedown was on a block handle
 			if (jQuery($event.target).hasClass('aloha-block-draghandle')) {
 				return;
@@ -2028,14 +2028,14 @@ define([
 			that.selection.resizeMode = true;
 
 			// move the guide while dragging
-			jQuery( 'body' ).bind( 'mousemove.dnd_row_resize', function(e) {
+			jQuery( 'body' ).on( 'mousemove.dnd_row_resize', function(e) {
 				if ( e.pageY > minHeight() ) {
 					guide.css( 'top', e.pageY );
 				}
 			});
 
 			// do the actual resizing after drag stops
-			jQuery( 'body' ).bind( 'mouseup.dnd_row_resize', function(e) {
+			jQuery( 'body' ).on( 'mouseup.dnd_row_resize', function(e) {
 
 				var pixelsMoved = 0;
 
@@ -2132,7 +2132,7 @@ define([
 			}
 		};
 
-		lastColumn.bind( 'mousedown.resize', function() {
+		lastColumn.on( 'mousedown.resize', function() {
 
 			// create a guide
 			var guide = jQuery( '<div></div>' );
@@ -2158,7 +2158,7 @@ define([
 			that.selection.resizeMode = true;
 
 			// move the guide while dragging
-			jQuery( 'body' ).bind( 'mousemove.dnd_col_resize', function(e) {
+			jQuery( 'body' ).on( 'mousemove.dnd_col_resize', function(e) {
 				// limit the maximum resize
 				if ( e.pageX > minPageX && e.pageX < maxPageX ) {
 					guide.css( 'left', e.pageX );
@@ -2166,7 +2166,7 @@ define([
 			});
 
 			// do the actual resizing after drag stops
-			jQuery( 'body' ).bind( 'mouseup.dnd_col_resize', function(e) {
+			jQuery( 'body' ).on( 'mouseup.dnd_col_resize', function(e) {
 				var pixelsMoved = 0;
 
 				if ( e.pageX <= minPageX ) {

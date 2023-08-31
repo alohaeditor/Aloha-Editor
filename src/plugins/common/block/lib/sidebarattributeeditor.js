@@ -53,7 +53,7 @@ define([ 'jquery', 'block/blockmanager', 'aloha/sidebar', 'block/editormanager',
 		init: function() {
 			this._sidebar = Sidebar.right.show();
 
-			BlockManager.bind('block-selection-change', this._onBlockSelectionChange, this);
+			BlockManager.on('block-selection-change', this._onBlockSelectionChange, this);
 		},
 
 		/**
@@ -98,12 +98,12 @@ define([ 'jquery', 'block/blockmanager', 'aloha/sidebar', 'block/editormanager',
 							var editor = EditorManager.createEditor(definition);
 
 							// Editor -> Block binding
-							editor.bind('change', function(value) {
+							editor.on('change', function(value) {
 								block.attr(attributeName, value);
 								});
 
 								// Block -> Editor binding
-								block.bind('change', function () {
+								block.on('change', function () {
 									editor.setValue(block.attr(attributeName));
 							});
 

@@ -6,7 +6,7 @@ Add and remove HotKey handler for keyboard events supporting almost any key comb
 
 The syntax is as follows:
 <javascript>
-    $(document).bind('keydown', 'ctrl+a', fn);
+    $(document).on('keydown', 'ctrl+a', fn);
 </javascript>
 
 

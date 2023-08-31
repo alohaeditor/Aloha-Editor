@@ -1981,7 +1981,7 @@ jQuery.each( ("blur,focus,load,resize,scroll,unload,click,dblclick," +
 	
 	// Handle event binding
 	jQuery.fn[o] = function(f){
-		return f ? this.bind(o, f) : this.trigger(o);
+		return f ? this.on(o, f) : this.trigger(o);
 	};
 });
 
@@ -2040,7 +2040,7 @@ function bindReady(){
 jQuery.fn.extend({
 	load: function( url, params, callback ) {
 		if ( jQuery.isFunction( url ) )
-			return this.bind("load", url);
+			return this.on("load", url);
 
 		var off = url.indexOf(" ");
 		if ( off >= 0 ) {
@@ -2128,7 +2128,7 @@ jQuery.fn.extend({
 // Attach a bunch of functions for handling common AJAX events
 jQuery.each( "ajaxStart,ajaxStop,ajaxComplete,ajaxError,ajaxSuccess,ajaxSend".split(","), function(i,o){
 	jQuery.fn[o] = function(f){
-		return this.bind(o, f);
+		return this.on(o, f);
 	};
 });
 

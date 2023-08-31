@@ -133,11 +133,11 @@ define([
 		});
 
 		element
-			.bind("focus", onFocus)
-			.bind("blur", onBlur)
-			.bind("keydown", onKeyDown)
-			.bind("keyup", onKeyup)
-			.bind("change", onChange);
+			.on("focus", onFocus)
+			.on("blur", onBlur)
+			.on("keydown", onKeyDown)
+			.on("keyup", onKeyup)
+			.on("change", onChange);
 
 		setPlaceholder();
 
@@ -344,7 +344,7 @@ define([
 		 * @param {function} handler The function that should be called when the event happens.
 		 */
 		function addListener(eventName, handler) {
-			element.bind(eventName, $.proxy(handler, attrField));
+			element.on(eventName, $.proxy(handler, attrField));
 		}
 
 		function getValue(allowModification) {

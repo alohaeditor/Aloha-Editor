@@ -314,7 +314,7 @@ define([
 			$elms = this._getEditableChilds();
 		// @todo use the DOM Events for this, jQuery is very slow
 
-		$elms.bind('mouseover.blockbehavior', function (e) {
+		$elms.on('mouseover.blockbehavior', function (e) {
 			return dragBehavior.onMouseover(this, e);
 		});
 	};
@@ -429,7 +429,7 @@ define([
 			return;
 		}
 
-		$elm.bind('mousemove.brIBOA', function (event) {
+		$elm.on('mousemove.brIBOA', function (event) {
 			var top = event.pageY - elmTop;
 			if (top >= halfHeight) {
 				dragBehavior.insertBeforeOrAfterMode = 'AFTER';

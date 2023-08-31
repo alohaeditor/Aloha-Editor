@@ -112,7 +112,7 @@ define([
 			BlockManager.registerEventHandlers();
 			BlockManager.initializeBlockLevelDragDrop();
 
-			Aloha.bind('aloha-plugins-loaded', function () {
+			Aloha.on('aloha-plugins-loaded', function () {
 				that._createBlocks();
 				if (false !== that.settings['sidebarAttributeEditor']) {
 					SidebarAttributeEditor.init();
@@ -123,7 +123,7 @@ define([
 			this.createButtons();
 
 			// set the dropzones for the initialized editable
-			Aloha.bind('aloha-editable-created', function (e, editable) {
+			Aloha.on('aloha-editable-created', function (e, editable) {
 				that.setDropzones(editable.obj);
 
 				// Because we don't want non-contentEditable regions inside of
@@ -139,7 +139,7 @@ define([
 			});
 
 			// apply specific configuration if an editable has been activated
-			Aloha.bind('aloha-editable-activated', function (e, params) {
+			Aloha.on('aloha-editable-activated', function (e, params) {
 				that.applyButtonConfig(params.editable);
 			});
 

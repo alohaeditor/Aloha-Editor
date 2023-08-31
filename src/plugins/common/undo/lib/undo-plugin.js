@@ -109,8 +109,8 @@ function (Aloha, jQuery, Plugin) {
 				// update UI
 			};
 
-			Aloha.bind('aloha-editable-created', function (e, editable) {
-				editable.obj.bind('keydown', 'ctrl+z shift+ctrl+z', function (event) {
+			Aloha.on('aloha-editable-created', function (e, editable) {
+				editable.obj.on('keydown', 'ctrl+z shift+ctrl+z', function (event) {
 					event.preventDefault();
 					if (event.shiftKey) {
 						that.redo();
@@ -120,7 +120,7 @@ function (Aloha, jQuery, Plugin) {
 				});
 			});
 
-			Aloha.bind('aloha-smart-content-changed', function (jevent, aevent) {
+			Aloha.on('aloha-smart-content-changed', function (jevent, aevent) {
 				// The editable only actually makes a snapshot when
 				// getSnapshotContent is called, so we need to call it now
 				// to ensure such a snapshot is made at all times, even when

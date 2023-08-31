@@ -194,7 +194,7 @@
   function escape() {
     var that = this
     if ( this.isShown && this.settings.keyboard ) {
-      $(document).bind('keyup.modal', function ( e ) {
+      $(document).on('keyup.modal', function ( e ) {
         if ( e.which == 27 ) {
           that.hide()
         }

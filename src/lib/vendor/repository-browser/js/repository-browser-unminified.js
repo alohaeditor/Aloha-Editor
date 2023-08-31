@@ -227,7 +227,7 @@
 
 			$tree.height(height - $header.outerHeight(true));
 
-			$tree.bind('loaded.jstree', function (event, data) {
+			$tree.on('loaded.jstree', function (event, data) {
 				$(this).find('>ul>li:first').css('padding-top', 5);
 				// Because jstree `open_node' will add substree items to every
 				// item matched by the selector, we need to ensure that
@@ -237,7 +237,7 @@
 				});
 			});
 
-			$tree.bind('select_node.jstree', function (event, data) {
+			$tree.on('select_node.jstree', function (event, data) {
 				// Suppresses a bug in jsTree
 				if (data.args[0].context) {
 					return;
@@ -245,11 +245,11 @@
 				browser.treeNodeSelected(data.rslt.obj);
 			});
 
-			$tree.bind('open_node.jstree', function ($event, data) {
+			$tree.on('open_node.jstree', function ($event, data) {
 				browser.folderOpened(data.rslt.obj);
 			});
 
-			$tree.bind('close_node.jstree', function ($event, data) {
+			$tree.on('close_node.jstree', function ($event, data) {
 				browser.folderClosed(data.rslt.obj);
 			});
 

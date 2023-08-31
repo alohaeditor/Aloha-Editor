@@ -1353,10 +1353,10 @@ $.fn.layout = function (opts) {
 
 		// bind resizeAll() for 'this layout instance' to window.resize event
 		if (o.resizeWithWindow && !$Container.data("layoutRole")) // skip if 'nested' inside a pane
-			$(window).bind("resize."+ sID, windowResize);
+			$(window).on("resize."+ sID, windowResize);
 
 		// bind window.onunload
-		$(window).bind("unload."+ sID, unload);
+		$(window).on("unload."+ sID, unload);
 
 		state.initialized = true;
 
@@ -1491,7 +1491,7 @@ $.fn.layout = function (opts) {
 		$.each(panes.split(","), function (i, pane) {
 			var o = options[pane];
 			if (o.enableCursorHotkey || o.customHotkey) {
-				$(document).bind("keydown."+ sID, keyDown); // only need to bind this ONCE
+				$(document).on("keydown."+ sID, keyDown); // only need to bind this ONCE
 				return false; // BREAK - binding was done
 			}
 		});
@@ -1749,8 +1749,8 @@ $.fn.layout = function (opts) {
 			.css(c.cssReq).css("zIndex", _c.zIndex.pane_normal)
 			.css(o.applyDemoStyles ? c.cssDemo : {}) // demo styles
 			.addClass( o.paneClass +" "+ o.paneClass+"-"+pane ) // default = "ui-layout-pane ui-layout-pane-west" - may be a dupe of 'paneSelector'
-			.bind("mouseenter."+ sID, addHover )
-			.bind("mouseleave."+ sID, removeHover )
+			.on("mouseenter."+ sID, addHover )
+			.on("mouseleave."+ sID, removeHover )
 		;
 
 		// see if this pane has a 'scrolling-content element'
@@ -2034,8 +2034,8 @@ $.fn.layout = function (opts) {
 					.css("cursor", o.resizerCursor) // n-resize, s-resize, etc
 				;
 
-			$R.bind("mouseenter."+ sID, onResizerEnter)
-			  .bind("mouseleave."+ sID, onResizerLeave);
+			$R.on("mouseenter."+ sID, onResizerEnter)
+			  .on("mouseleave."+ sID, onResizerLeave);
 
 			$R.draggable({
 				containment:	$Container[0] // limit resizing to layout container
@@ -2690,7 +2690,7 @@ $.fn.layout = function (opts) {
 			$R.removeClass( rClass+_sliding +" "+ rClass+_pane+_sliding )
 
 		if (o.resizerDblClickToggle)
-			$R.bind("dblclick", toggle );
+			$R.on("dblclick", toggle );
 		removeHover( 0, $R ); // remove hover classes
 		if (o.resizable && typeof $.fn.draggable == "function") {
 			$R
@@ -3528,9 +3528,9 @@ $.fn.layout = function (opts) {
 		var $T = $Ts[pane], o = options[pane];
 		if (!$T) return;
 		o.closable = true;
-		$T	.bind("click."+ sID, function(evt){ evt.stopPropagation(); toggle(pane); })
-			.bind("mouseenter."+ sID, addHover)
-			.bind("mouseleave."+ sID, removeHover)
+		$T	.on("click."+ sID, function(evt){ evt.stopPropagation(); toggle(pane); })
+			.on("mouseenter."+ sID, addHover)
+			.on("mouseleave."+ sID, removeHover)
 			.css("visibility", "visible")
 			.css("cursor", "pointer")
 			.attr("title", state[pane].isClosed ? o.togglerTip_closed : o.togglerTip_open) // may be blank
@@ -3581,8 +3581,8 @@ $.fn.layout = function (opts) {
 		if (!$R || !$R.data('draggable')) return;
 		o.resizable = true; 
 		$R	.draggable("enable")
-			.bind("mouseenter."+ sID, onResizerEnter)
-			.bind("mouseleave."+ sID, onResizerLeave)
+			.on("mouseenter."+ sID, onResizerEnter)
+			.on("mouseleave."+ sID, onResizerLeave)
 		;
 		if (!state[pane].isClosed)
 			$R	.css("cursor", o.resizerCursor)
