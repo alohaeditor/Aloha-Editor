@@ -151,7 +151,7 @@ define([
 
 			// After successful cropping, the aspect ratio value has to be recalculated
 			if (this.keepAspectRatio) {
-				aspectRatioValue = this.imageObj.width() / this.imageObj.height();
+				aspectRatioValue = this.imageObj.width() / parseInt(this.imageObj.css("height"));
 			}
 
 			// Call the custom onCropped function
@@ -178,7 +178,7 @@ define([
 			// No default behaviour defined besides event triggering
 			$('body').trigger('aloha-image-resize', $image);
 
-			this._applyValuesToFields($image.width(), $image.height());
+			this._applyValuesToFields($image.width(), parseInt($image.css("height")));
 
 			// Call the custom resize function
 			this.onResize($image);
@@ -191,7 +191,7 @@ define([
 
 			$('body').trigger('aloha-image-resized', $image);
 
-			this._applyValuesToFields($image.width(), $image.height());
+			this._applyValuesToFields($image.width(), parseInt($image.css("height")));
 
 			// Call the custom resize function
 			this.onResized($image);
@@ -472,7 +472,7 @@ define([
 			var heightField = jQuery("#" + that.ui.imgResizeHeightField.getInputId());
 
 			var width = that.imageObj.width();
-			var height = that.imageObj.height();
+			var height = parseInt(that.imageObj.css("height"));
 			var resize = false;
 
 			// Only normalize the field values if the image exceeds the defined bounds
@@ -532,7 +532,7 @@ define([
 						if (selection.w / selection.h > 0) {
 							cropRatioValue = selection.w / selection.h;
 						} else {
-							cropRatioValue = this.imageObj.width() / this.imageObj.height();
+							cropRatioValue = this.imageObj.width() / parseInt(this.imageObj.css("height"));
 						}
 					} else {
 						cropRatioValue = this.settings.fixedAspectRatio;
@@ -549,7 +549,7 @@ define([
 					aspectRatioValue = false;
 				} else {
 					if ( typeof this.settings.fixedAspectRatio !== 'number' ) {
-						aspectRatioValue = this.imageObj.width() / this.imageObj.height();
+						aspectRatioValue = this.imageObj.width() / parseInt(this.imageObj.css("height"));
 					} else {
 						aspectRatioValue = this.settings.fixedAspectRatio;
 					}
@@ -715,9 +715,9 @@ define([
 
 			var plugin = this;
 			plugin.imageObj.width(width);
-			plugin.imageObj.height(height);
+			plugin.imageObj.css("height", height + "px");
 			var $wrapper = plugin.imageObj.closest('.Aloha_Image_Resize');
-			$wrapper.height(height);
+			$wrapper.css("height", height + "px");
 			$wrapper.width(width);
 
 			plugin._onResize(plugin.imageObj);
@@ -756,11 +756,11 @@ define([
 				obj : plugin.imageObj,
 				src : plugin.imageObj.attr('src'),
 				width : plugin.imageObj.width(),
-				height : plugin.imageObj.height()
+				height : parseInt(plugin.imageObj.css("height"))
 			});
 
 			// Update the resize input fields with the new width and height
-			plugin._applyValuesToFields(plugin.imageObj.width(), plugin.imageObj.height());
+			plugin._applyValuesToFields(plugin.imageObj.width(), parseInt(plugin.imageObj.css("height")));
 
 			if (plugin.settings.ui.meta) {
 				plugin.ui.imgSrcField.setTargetObject(plugin.imageObj, 'src');
@@ -774,7 +774,7 @@ define([
 			}
 
 			//to handle switching between images, aspect ratio is recalculated on click
-			cropRatioValue = aspectRatioValue = plugin.imageObj.width() / plugin.imageObj.height();
+			cropRatioValue = aspectRatioValue = plugin.imageObj.width() / parseInt(plugin.imageObj.css("height"));
 
 			if (plugin.settings.ui.resizable) {
 				plugin.startResize();
@@ -1091,7 +1091,7 @@ define([
 				off = jt.offset(),
 				jtt = off.top,
 				jtl = off.left,
-				jth = jt.height(),
+				jth = parseInt(jt.css("height")),
 				jtw = jt.width();
 
 			var oldLeft = 0,
@@ -1324,7 +1324,7 @@ define([
 			$('body').trigger('aloha-image-crop-stop', [this.imageObj]);
 
 			//after cropping, field values are set to (once again) contain image width/height
-			this._applyValuesToFields(this.imageObj.width(), this.imageObj.height());
+			this._applyValuesToFields(this.imageObj.width(), parseInt(this.imageObj.css("height")));
 		},
 
 		/**
@@ -1344,7 +1344,7 @@ define([
 			var ratio = plugin.keepAspectRatio ? aspectRatioValue : false;
 
 			currentImageObj = this.imageObj.css({
-				height		: this.imageObj.height(),
+				height		: parseInt(this.imageObj.css("height")),
 				width		: this.imageObj.width(),
 				position	: 'relative',
 				'max-height': '',
@@ -1469,14 +1469,14 @@ define([
 					if (this.imageObj.get(0) === this.restoreProps[i].obj.get(0)) {
 						this.imageObj.attr('src', this.restoreProps[i].src);
 						this.imageObj.width(this.restoreProps[i].width);
-						this.imageObj.height(this.restoreProps[i].height);
+						this.imageObj.css("height", this.restoreProps[i].height + "px");
 						break;
 					}
 				}
 			}
 
 			// readjust inputfields to show correct height/width
-			this._applyValuesToFields(this.imageObj.width(), this.imageObj.height());
+			this._applyValuesToFields(this.imageObj.width(), parseInt(this.imageObj.css("height")));
 		}
 	});
 

@@ -1011,7 +1011,7 @@ define([
 
 					return false;
 				};
-				this.wai = jQuery('<div/>').width(25).height(12).click(clickHandler);
+				this.wai = jQuery('<div/>').width(25).css("height", 12+"px").click(clickHandler);
 				columnToInsert.append(this.wai);
 			}
 
@@ -1974,7 +1974,7 @@ define([
 				expandingRow = cell.closest( 'tr' ).prev( 'tr' );
 			}
 
-			var currentRowHeight = expandingRow.height();
+			var currentRowHeight = parseInt(expandingRow.css("height"));
 			var expandToHeight = currentRowHeight + pixelsMoved;
 
 			// correct if the height is a minus value

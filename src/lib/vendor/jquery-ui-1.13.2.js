@@ -802,14 +802,14 @@ define('jqueryui', ['jquery'], function (jQuery) {
 				if ( raw.nodeType === 9 ) {
 					return {
 						width: elem.width(),
-						height: elem.height(),
+						height: parseInt(elem.css("height")),
 						offset: { top: 0, left: 0 }
 					};
 				}
 				if ( isWindow( raw ) ) {
 					return {
 						width: elem.width(),
-						height: elem.height(),
+						height: parseInt(elem.css("height")),
 						offset: { top: elem.scrollTop(), left: elem.scrollLeft() }
 					};
 				}
@@ -2348,7 +2348,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 							// Store the size in case width/height are defined in % - Fixes #5245
 							size = {
 								width: element.width(),
-								height: element.height()
+								height: parseInt(element.css("height")),
 							},
 							active = document.activeElement;
 
@@ -2447,7 +2447,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 						y = direction !== "vertical" ? ( ( percent || 100 ) / 100 ) : 1;
 
 					return {
-						height: element.height() * y,
+						height: parseInt(element.css("height")) * y,
 						width: element.width() * x,
 						outerHeight: element.outerHeight() * y,
 						outerWidth: element.outerWidth() * x
@@ -4669,7 +4669,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 				this._setupEvents( options.event );
 
 				if ( heightStyle === "fill" ) {
-					maxHeight = parent.height();
+					maxHeight = parseInt(parent.css("height"));
 					this.element.siblings( ":visible" ).each( function() {
 						var elem = $( this ),
 							position = elem.css( "position" );
@@ -4686,8 +4686,8 @@ define('jqueryui', ['jquery'], function (jQuery) {
 
 					this.headers.next()
 						.each( function() {
-							$( this ).height( Math.max( 0, maxHeight -
-								$( this ).innerHeight() + $( this ).height() ) );
+							$( this ).css("height", (Math.max( 0, maxHeight -
+								$( this ).innerHeight() + parseInt($( this ).css("height"))) ) +"px");
 						} )
 						.css( "overflow", "auto" );
 				} else if ( heightStyle === "auto" ) {
@@ -4698,12 +4698,12 @@ define('jqueryui', ['jquery'], function (jQuery) {
 							if ( !isVisible ) {
 								$( this ).show();
 							}
-							maxHeight = Math.max( maxHeight, $( this ).css( "height", "" ).height() );
+							maxHeight = Math.max( maxHeight, parseInt($( this ).css( "height", "" ).css("height") ));
 							if ( !isVisible ) {
 								$( this ).hide();
 							}
 						} )
-						.height( maxHeight );
+						.css("height", maxHeight+"px" );
 				}
 			},
 
@@ -5387,7 +5387,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					paddingTop = parseFloat( $.css( this.activeMenu[ 0 ], "paddingTop" ) ) || 0;
 					offset = item.offset().top - this.activeMenu.offset().top - borderTop - paddingTop;
 					scroll = this.activeMenu.scrollTop();
-					elementHeight = this.activeMenu.height();
+					elementHeight = parseInt(this.activeMenu.css("height"));
 					itemHeight = item.outerHeight();
 
 					if ( offset < 0 ) {
@@ -10301,7 +10301,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 						$( window ).scrollLeft() + $( window ).width() -
 						this.helperProportions.width - this.margins.left,
 						$( window ).scrollTop() +
-						( $( window ).height() || document.body.parentNode.scrollHeight ) -
+						( parseInt($( window ).css("height")) || document.body.parentNode.scrollHeight ) -
 						this.helperProportions.height - this.margins.top
 					];
 					return;
@@ -10312,7 +10312,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 						0,
 						0,
 						$( document ).width() - this.helperProportions.width - this.margins.left,
-						( $( document ).height() || document.body.parentNode.scrollHeight ) -
+						( parseInt($( document ).css("height")) || document.body.parentNode.scrollHeight ) -
 						this.helperProportions.height - this.margins.top
 					];
 					return;
@@ -10838,7 +10838,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					if ( !o.axis || o.axis !== "x" ) {
 						if ( event.pageY - $( document ).scrollTop() < o.scrollSensitivity ) {
 							scrolled = $( document ).scrollTop( $( document ).scrollTop() - o.scrollSpeed );
-						} else if ( $( window ).height() - ( event.pageY - $( document ).scrollTop() ) <
+						} else if ( parseInt($( window ).css("height")) - ( event.pageY - $( document ).scrollTop() ) <
 							o.scrollSensitivity ) {
 							scrolled = $( document ).scrollTop( $( document ).scrollTop() + o.scrollSpeed );
 						}
@@ -11411,10 +11411,10 @@ define('jqueryui', ['jquery'], function (jQuery) {
 
 				this.size = this._helper ? {
 					width: this.helper.width(),
-					height: this.helper.height()
+					height: parseInt(this.helper.css("height"))
 				} : {
 					width: el.width(),
-					height: el.height()
+					height: parseInt(el.css("height"))
 				};
 
 				this.originalSize = this._helper ? {
@@ -11422,12 +11422,12 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					height: el.outerHeight()
 				} : {
 					width: el.width(),
-					height: el.height()
+					height: parseInt(el.css("height"))
 				};
 
 				this.sizeDiff = {
 					width: el.outerWidth() - el.width(),
-					height: el.outerHeight() - el.height()
+					height: el.outerHeight() - parseInt(el.css("height"))
 				};
 
 				this.originalPosition = { left: curleft, top: curtop };
@@ -11503,7 +11503,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 
 					s = {
 						width: ( that.helper.width()  - soffsetw ),
-						height: ( that.helper.height() - soffseth )
+						height: ( parseInt(that.helper.css("height")) - soffseth )
 					};
 					left = ( parseFloat( that.element.css( "left" ) ) +
 						( that.position.left - that.originalPosition.left ) ) || null;
@@ -11514,7 +11514,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 						this.element.css( $.extend( s, { top: top, left: left } ) );
 					}
 
-					that.helper.height( that.size.height );
+					that.helper.css("height", that.size.height +"px");
 					that.helper.width( that.size.width );
 
 					if ( this._helper && !o.animate ) {
@@ -11736,7 +11736,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					}
 
 					prel.css( {
-						height: ( element.height() - this.outerDimensions.height ) || 0,
+						height: ( parseInt(element.css("height")) - this.outerDimensions.height ) || 0,
 						width: ( element.width() - this.outerDimensions.width ) || 0
 					} );
 
@@ -11912,7 +11912,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 						left: 0,
 						top: 0,
 						width: $( document ).width(),
-						height: $( document ).height() || document.body.parentNode.scrollHeight
+						height: parseInt($( document ).css("height")) || document.body.parentNode.scrollHeight
 					};
 				} else {
 					element = $( ce );
@@ -12071,7 +12071,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 				$( o.alsoResize ).each( function() {
 					var el = $( this );
 					el.data( "ui-resizable-alsoresize", {
-						width: parseFloat( el.width() ), height: parseFloat( el.height() ),
+						width: parseFloat( el.width() ), height: parseFloat( parseInt(el.css("height")) ),
 						left: parseFloat( el.css( "left" ) ), top: parseFloat( el.css( "top" ) )
 					} );
 				} );
@@ -12829,7 +12829,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 							left = offset.left - that.document.scrollLeft(),
 							top = offset.top - that.document.scrollTop();
 
-						options.height = that.uiDialog.height();
+						options.height = parseInt(that.uiDialog.css("height"));
 						options.width = that.uiDialog.width();
 						options.position = {
 							my: "left top",
@@ -13026,7 +13026,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 						height: "auto"
 					} );
 				} else {
-					this.element.height( Math.max( 0, options.height - nonContentHeight ) );
+					this.element.css("height", Math.max( 0, options.height - nonContentHeight )+"px" );
 				}
 
 				if ( this.uiDialog.is( ":data(ui-resizable)" ) ) {
@@ -14987,7 +14987,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 				this._clickOffset = mouseOverHandle ? { left: 0, top: 0 } : {
 					left: event.pageX - offset.left - ( closestHandle.width() / 2 ),
 					top: event.pageY - offset.top -
-						( closestHandle.height() / 2 ) -
+						( parseInt(closestHandle.css("height")) / 2 ) -
 						( parseInt( closestHandle.css( "borderTopWidth" ), 10 ) || 0 ) -
 						( parseInt( closestHandle.css( "borderBottomWidth" ), 10 ) || 0 ) +
 						( parseInt( closestHandle.css( "marginTop" ), 10 ) || 0 )
@@ -15878,7 +15878,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 
 					if ( event.pageY - this.document.scrollTop() < o.scrollSensitivity ) {
 						scrolled = this.document.scrollTop( this.document.scrollTop() - o.scrollSpeed );
-					} else if ( this.window.height() - ( event.pageY - this.document.scrollTop() ) <
+					} else if ( parseInt(this.window.css("height")) - ( event.pageY - this.document.scrollTop() ) <
 						o.scrollSensitivity ) {
 						scrolled = this.document.scrollTop( this.document.scrollTop() + o.scrollSpeed );
 					}
@@ -16457,12 +16457,12 @@ define('jqueryui', ['jquery'], function (jQuery) {
 							// be the correct height on their own if the row heights are dynamic, so we'll
 							// always assign the height of the dragged item given forcePlaceholderSize
 							// is true.
-							if ( !p.height() || ( o.forcePlaceholderSize &&
+							if ( !parseInt(p.css("height")) || ( o.forcePlaceholderSize &&
 								( nodeName === "tbody" || nodeName === "tr" ) ) ) {
-								p.height(
-									that.currentItem.innerHeight() -
+								p.css("height",
+									(that.currentItem.innerHeight() -
 									parseInt( that.currentItem.css( "paddingTop" ) || 0, 10 ) -
-									parseInt( that.currentItem.css( "paddingBottom" ) || 0, 10 ) );
+									parseInt( that.currentItem.css( "paddingBottom" ) || 0, 10 ))+"px" );
 							}
 							if ( !p.width() ) {
 								p.width(
@@ -16644,7 +16644,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					helper.width( this.currentItem.width() );
 				}
 				if ( !helper[ 0 ].style.height || o.forceHelperSize ) {
-					helper.height( this.currentItem.height() );
+					helper.css("height", praseInt(this.currentItem.css("height")) +"px");
 				}
 
 				return helper;
@@ -16751,8 +16751,8 @@ define('jqueryui', ['jquery'], function (jQuery) {
 							this.document.width() :
 							this.window.width() - this.helperProportions.width - this.margins.left,
 						( o.containment === "document" ?
-								( this.document.height() || document.body.parentNode.scrollHeight ) :
-								this.window.height() || this.document[ 0 ].body.parentNode.scrollHeight
+								( parseInt(this.document.css("height")) || document.body.parentNode.scrollHeight ) :
+								parseInt(this.window.css("height")) || this.document[ 0 ].body.parentNode.scrollHeight
 						) - this.helperProportions.height - this.margins.top
 					];
 				}
@@ -17365,9 +17365,9 @@ define('jqueryui', ['jquery'], function (jQuery) {
 
 				// IE 6 doesn't understand height: 50% for the buttons
 				// unless the wrapper has an explicit height
-				if ( this.buttons.height() > Math.ceil( this.uiSpinner.height() * 0.5 ) &&
-					this.uiSpinner.height() > 0 ) {
-					this.uiSpinner.height( this.uiSpinner.height() );
+				if ( parseInt(this.buttons.css("height")) > Math.ceil( parseInt(this.uiSpinner.css("height")) * 0.5 ) &&
+					parseInt(this.uiSpinner.css("height")) > 0 ) {
+					this.uiSpinner.css("height", parseInt(this.uiSpinner.css("height"))+"px" );
 				}
 			},
 
@@ -18208,8 +18208,8 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					parent = this.element.parent();
 
 				if ( heightStyle === "fill" ) {
-					maxHeight = parent.height();
-					maxHeight -= this.element.outerHeight() - this.element.height();
+					maxHeight = parseInt(parent.css("height"));
+					maxHeight -= this.element.outerHeight() - parseInt(this.element.css("height"));
 
 					this.element.siblings( ":visible" ).each( function() {
 						var elem = $( this ),
@@ -18226,15 +18226,15 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					} );
 
 					this.panels.each( function() {
-						$( this ).height( Math.max( 0, maxHeight -
-							$( this ).innerHeight() + $( this ).height() ) );
+						$( this ).css( "height", (Math.max( 0, maxHeight -
+							$( this ).innerHeight() + parseInt($( this ).css("height")) ))+"px" );
 					} )
 						.css( "overflow", "auto" );
 				} else if ( heightStyle === "auto" ) {
 					maxHeight = 0;
 					this.panels.each( function() {
-						maxHeight = Math.max( maxHeight, $( this ).height( "" ).height() );
-					} ).height( maxHeight );
+						maxHeight = Math.max( maxHeight, parseInt($( this ).css("height", "" ).css("height")) );
+					} ).css( "height",maxHeight+"px" );
 				}
 			},
 

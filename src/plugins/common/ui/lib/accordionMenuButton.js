@@ -108,7 +108,7 @@ define([
 				at: 'left bottom',
 				of: triggerButton
 			});
-			heightWithAllCollapsed = $accordionWrapper.height();
+			heightWithAllCollapsed = parseInt($accordionWrapper.css("height"));
 			container.tooltip('disable');
 			$(document).on('click', closeAccordion);
 			$accordionWrapper.css('max-width', $accordionWrapper.width());

@@ -353,7 +353,7 @@ $.layout = {
 ,	scrollbarHeight:	function () { return window.scrollbarHeight || $.layout.getScrollbarSize('height'); }
 ,	getScrollbarSize:	function (dim) {
 		var $c	= $('<div style="position: absolute; top: -10000px; left: -10000px; width: 100px; height: 100px; overflow: scroll;"></div>').appendTo("body");
-		var d	= { width: $c.css("width") - $c[0].clientWidth, height: $c.height() - $c[0].clientHeight };
+		var d	= { width: $c.css("width") - $c[0].clientWidth, height: parseInt($c.css("height")) - $c[0].clientHeight };
 		$c.remove();
 		window.scrollbarWidth	= d.width;
 		window.scrollbarHeight	= d.height;
@@ -410,8 +410,8 @@ $.layout = {
 			i[ei] = d.inset[ei] + b; // total offset of content from outer side
 		});
 
-		x.width		= $E.css("width");
-		x.height	= $E.height();
+		x.width		= parseInt($E.css("width"));
+		x.height	= parseInt($E.css("height"));
 		x.top		= N($E,"top",true);
 		x.bottom	= N($E,"bottom",true);
 		x.left		= N($E,"left",true);

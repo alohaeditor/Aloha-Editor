@@ -257,7 +257,7 @@ define([
 				return;
 			}
 
-			var viewportHeight = $(window).height();
+			var viewportHeight = parseInt($(window).css("height"));
 			var activePanelIds = [];
 			var panels = [];
 			var panelId;
@@ -283,7 +283,7 @@ define([
 			previousViewportHeight = viewportHeight;
 			previousActivePanelIds = activePanelIds;
 
-			var height = this.container.find('.aloha-sidebar-inner').height();
+			var height = parseInt(this.container.find('.aloha-sidebar-inner').css("height"));
 			var remainingHeight = height - ((panels[0].title.outerHeight() + 10) * panels.length);
 			var panel;
 			var targetHeight;
@@ -304,15 +304,15 @@ define([
 					panelInner = panel.content.find('.aloha-sidebar-panel-content-inner');
 
 					targetHeight = math.min(
-						panelInner.height('auto').height(),
+						parseInt(panelInner.css("height",'auto').css("height")),
 						math.floor(remainingHeight / (j + 1))
 					);
 
-					panelInner.height(targetHeight);
+					panelInner.css("height", targetHeight + "px");
 					remainingHeight -= targetHeight;
 					panelText = panelInner.find('.aloha-sidebar-panel-content-inner-text');
 
-					if (panelText.height() > targetHeight) {
+					if (parseInt(panelText.css("height")) > targetHeight) {
 						undone.push(panel);
 						toadd += targetHeight;
 						panelInner.css({
@@ -483,8 +483,8 @@ define([
 		 * whenever the viewport is resized.
 		 */
 		updateHeight: function () {
-			var h = $(window).height();
-			this.container.height(h).find('.aloha-sidebar-inner').height(h);
+			var h = parseInt($(window).css("height"));
+			this.container.css("height",h+"px").find('.aloha-sidebar-inner').css("height",h+"px");
 		},
 
 		/**
@@ -776,7 +776,7 @@ define([
 			var li = this.element = $('<li id="' + this.id + '">').append(this.title, this.content);
 
 			if (this.expanded) {
-				this.content.height('auto');
+				this.content.css("height",'auto');
 			}
 
 			this.toggleTitleIcon(this.expanded);
@@ -884,9 +884,9 @@ define([
 		expand: function (callback) {
 			var that = this;
 			var el = this.content;
-			var old_h = el.height();
-			var new_h = el.height('auto').height();
-			el.height(old_h).stop().animate(
+			var old_h = parseInt(el.css("height"));
+			var new_h = parseInt(el.css("height",'auto').css("height"));
+			el.css("height",old_h+"px").stop().animate(
 				{height: new_h},
 				500,
 				'easeOutExpo',
@@ -1020,7 +1020,7 @@ define([
 				}
 			});
 
-			this.content.height('auto').find('.aloha-sidebar-panel-content-inner').height('auto');
+			this.content.css("height",'auto').find('.aloha-sidebar-panel-content-inner').css("height",'auto');
 		}
 
 	});

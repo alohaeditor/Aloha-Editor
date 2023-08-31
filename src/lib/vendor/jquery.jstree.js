@@ -354,7 +354,7 @@ define('jstree', ['jquery'], function (jQuery) {
 						this.get_container().addClass("jstree-rtl").css("direction", "rtl");
 					}
 					this.get_container().html("<ul><li class='jstree-last jstree-leaf'><ins>&#160;</ins><a class='jstree-loading' href='#'><ins class='jstree-icon'>&#160;</ins>" + this._get_string("loading") + "</a></li></ul>");
-					this.data.core.li_height = this.get_container_ul().find("li.jstree-closed, li.jstree-leaf").eq(0).height() || 18;
+					this.data.core.li_height = parseInt(this.get_container_ul().find("li.jstree-closed, li.jstree-leaf").eq(0).css("height")) || 18;
 	
 					this.get_container()
 						.on("click.jstree","li > ins",  $.proxy(function (event) {
@@ -2229,7 +2229,7 @@ define('jstree', ['jquery'], function (jQuery) {
 					else { 
 						if(sti && dir1 === "up") { clearInterval(sti); sti = false; }
 					}
-					if($(window).height() - (e.pageY - t) < 20) {
+					if(parseInt($(window).css("height")) - (e.pageY - t) < 20) {
 						if(sti && dir1 === "up") { clearInterval(sti); sti = false; }
 						if(!sti) { dir1 = "down"; sti = setInterval(function () { $(document).scrollTop($(document).scrollTop() + $.vakata.dnd.scroll_spd); }, 150); }
 					}
@@ -2494,7 +2494,7 @@ define('jstree', ['jquery'], function (jQuery) {
 							var cnt = this.get_container();
 							this.data.dnd.cof = cnt.offset();
 							this.data.dnd.cw = parseInt(cnt.width(),10);
-							this.data.dnd.ch = parseInt(cnt.height(),10);
+							this.data.dnd.ch = parseInt(parseInt(cnt.css("height")),10);
 							this.data.dnd.foreign = true;
 							e.preventDefault();
 						}, this));
@@ -2680,7 +2680,7 @@ define('jstree', ['jquery'], function (jQuery) {
 					}
 					this.data.dnd.cof = cnt.offset();
 					this.data.dnd.cw = parseInt(cnt.width(),10);
-					this.data.dnd.ch = parseInt(cnt.height(),10);
+					this.data.dnd.ch = parseInt(parseInt(cnt.css("height")),10);
 					this.data.dnd.active = true;
 				}
 			}
@@ -3527,13 +3527,13 @@ define('jstree', ['jquery'], function (jQuery) {
 						.one("mouseleave", function(e) { $.vakata.context.hide(); });
 				}
 	
-				h = $.vakata.context.cnt.height();
+				h = parseInt($.vakata.context.cnt.css("height"));
 				w = $.vakata.context.cnt.width();
 				if(x + w > $(document).width()) { 
 					x = $(document).width() - (w + 5); 
 					$.vakata.context.cnt.find("li > ul").addClass("right"); 
 				}
-				if(y + h > $(document).height()) { 
+				if(y + h > parseInt($(document).css("height"))) { 
 					y = y - (h + t[0].offsetHeight); 
 					$.vakata.context.cnt.find("li > ul").addClass("bottom"); 
 				}
@@ -3543,10 +3543,10 @@ define('jstree', ['jquery'], function (jQuery) {
 					.find("li:has(ul)")
 						.on("mouseenter", function (e) { 
 							var w = $(document).width(),
-								h = $(document).height(),
+								h = parseInt($(document).css("height")),
 								ul = $(this).children("ul").show(); 
 							if(w !== $(document).width()) { ul.toggleClass("right"); }
-							if(h !== $(document).height()) { ul.toggleClass("bottom"); }
+							if(h !== parseInt($(document).css("height"))) { ul.toggleClass("bottom"); }
 						})
 						.on("mouseleave", function (e) { 
 							$(this).children("ul").hide(); 
@@ -4446,7 +4446,7 @@ define('jstree', ['jquery'], function (jQuery) {
 							o.clone().removeClass("jstree-wholerow-real")
 								.wrapAll("<div class='jstree-wholerow' />").parent()
 								.width(o.parent()[0].scrollWidth)
-								.css("top", (o.height() + ( is_ie7 ? 5 : 0)) * -1 )
+								.css("top", (parseInt(o.css("height")) + ( is_ie7 ? 5 : 0)) * -1 )
 								.find("li[id]").each(function () { this.removeAttribute("id"); }).end()
 						);
 					}

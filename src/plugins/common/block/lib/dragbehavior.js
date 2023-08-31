@@ -408,7 +408,7 @@ define([
 			.css('zIndex', parseInt($elm.zIndex(), 10) + 1)
 			.offset($elm.offset())
 			.width($elm.outerWidth())
-			.height($elm.outerHeight());
+			.css("height", $elm.outerHeight() + "px");
 
 	};
 
@@ -468,13 +468,13 @@ define([
 			$hElm
 				.css('zIndex', parseInt($elm.zIndex(), 10) + 1)
 				.width($elm.outerWidth())
-				.height(edgeHeight);
+				.css("height", edgeHeight+"px");
 			$elm.before($hElm);
 		} else {
 			$hElm
 				.css('zIndex', parseInt($elm.zIndex(), 10) + 1)
 				.width($elm.outerWidth())
-				.height(edgeHeight);
+				.css("height",edgeHeight + "px");
 			$elm.after($hElm);
 		}
 	};

@@ -122,7 +122,7 @@ define([
 				/*
 				var target = action || expand;
 				var bodyOffset = parseInt($('body').css('border-top-width'), 10) || 0;
-				menu.css('top', target.height() + target.offset().top + bodyOffset);
+				menu.css('top', parseInt(target.css("height")) + target.offset().top + bodyOffset);
 				*/
 
 				// This click event will bubble up to the document (preventing

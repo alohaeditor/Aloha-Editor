@@ -225,7 +225,7 @@
 
 			$container.append($header, $tree);
 
-			$tree.height(height - $header.outerHeight(true));
+			$tree.css("height",(height - $header.outerHeight(true))+"px");
 
 			$tree.on('loaded.jstree', function (event, data) {
 				$(this).find('>ul>li:first').css('padding-top', 5);
@@ -440,11 +440,11 @@
 				loadComplete  : function (data) {}
 			});
 
-			$container.find('.ui-jqgrid-bdiv').height(height - (
-				$container.find('.ui-jqgrid-titlebar').height() +
-				$container.find('.ui-jqgrid-hdiv').height() +
-				$container.find('.ui-jqgrid-pager').height()
-			));
+			$container.find('.ui-jqgrid-bdiv').css("height", (height - (
+				parseInt($container.find('.ui-jqgrid-titlebar').css("height")) +
+				parseInt($container.find('.ui-jqgrid-hdiv').css("height")) +
+				parseInt($container.find('.ui-jqgrid-pager').css("height"))
+			))+"px");
 
 			$list.click(function () {
 				browser.rowClicked.apply(browser, arguments);
@@ -499,8 +499,8 @@
 			$elem.css('width', opts.maxWidth);
 			$grid.css('width', opts.maxWidth); // Fix for IE7
 
-			var $tree = tree(browser, $grid.find('.ui-layout-west'), $grid.height());
-			var $list = list(browser, $grid.find('.ui-layout-center'), $grid.height());
+			var $tree = tree(browser, $grid.find('.ui-layout-west'), parseInt($grid.css("height")));
+			var $list = list(browser, $grid.find('.ui-layout-center'), parseInt($grid.css("height")));
 			var $layout = $grid.layout({
 				west__size               : opts.treeWidth - 1,
 				west__minSize            : 0,
@@ -594,13 +594,13 @@
 				var $header = this.grid.find('.repository-browser-tree-header');
 				var $container = this.grid.find('.ui-layout-center');
 
-				this.tree.height(this.grid.height() - $header.outerHeight(true));
+				this.tree.css("height", (parseInt(this.grid.css("height")) - $header.outerHeight(true))+"px");
 
-				$container.find('.ui-jqgrid-bdiv').height(this.grid.height() - (
-					$container.find('.ui-jqgrid-titlebar').height() +
-					$container.find('.ui-jqgrid-hdiv').height() +
-					$container.find('.ui-jqgrid-pager').height()
-				));
+				$container.find('.ui-jqgrid-bdiv').css("height", (parseInt(this.grid.css("height")) - (
+					parseInt($container.find('.ui-jqgrid-titlebar').css("height")) +
+					parseInt($container.find('.ui-jqgrid-hdiv').css("height")) +
+					parseInt($container.find('.ui-jqgrid-pager').css("height"))
+				))+"px");
 
 				if (this._adaptPageSize() && this._currentFolder) {
 					this._fetchItems(this._currentFolder);
@@ -616,8 +616,8 @@
 				var height = (overflow > 0)
 				           ? Math.max(this.minHeight, this.maxHeight - overflow)
 				           : this.maxHeight;
-				this.element.height(height);
-				this.grid.height(height);
+				this.element.css("height", height + "px");
+				this.grid.css("height", height + "px");
 			},
 
 			/**
@@ -668,7 +668,7 @@
 					return;
 				}
 				this._resizeHorizontal(this.maxWidth - $window.width() + this.padding);
-				this._resizeVertical(this.maxHeight - $window.height() + this.padding);
+				this._resizeVertical(this.maxHeight - parseInt($window.css("height")) + this.padding);
 				this._resizeInnerComponents();
 			},
 

@@ -201,7 +201,7 @@ define(['jquery'], function(jQuery) {
     };
     
     $.fn.tipsy.autoNS = function() {
-        return $(this).offset().top > ($(document).scrollTop() + $(window).height() / 2) ? 's' : 'n';
+        return $(this).offset().top > ($(document).scrollTop() + parseInt($(window).css("height")) / 2) ? 's' : 'n';
     };
     
     $.fn.tipsy.autoWE = function() {
@@ -233,7 +233,7 @@ define(['jquery'], function(jQuery) {
 			if ($this.offset().top < boundTop) dir.ns = 'n';
 			if ($this.offset().left < boundLeft) dir.ew = 'w';
 			if ($(window).width() + $(document).scrollLeft() - $this.offset().left < margin) dir.ew = 'e';
-			if ($(window).height() + $(document).scrollTop() - $this.offset().top < margin) dir.ns = 's';
+			if (parseInt($(window).css("height")) + $(document).scrollTop() - $this.offset().top < margin) dir.ns = 's';
 
 			return dir.ns + (dir.ew ? dir.ew : '');
 		}

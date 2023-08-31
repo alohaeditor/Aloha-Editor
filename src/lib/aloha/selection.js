@@ -2786,8 +2786,8 @@ define([
 		var $win = jQuery(window);
 		if (top < 0) {
 			$win.scrollTop($win.scrollTop() + top);
-		} else if (bottom > $win.height()) {
-			$win.scrollTop($win.scrollTop() + (bottom - $win.height()));
+		} else if (bottom > parseInt($win.css("height"))) {
+			$win.scrollTop($win.scrollTop() + (bottom - parseInt($win.css("height"))));
 		}
 
 		var $scrollable = jQuery(range.startContainer).closest(':hasScroll(y)');

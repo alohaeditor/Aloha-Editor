@@ -833,7 +833,7 @@ var $ = jQuery;
 					populateVisible: function() {
 						if (grid.timer) { clearTimeout(grid.timer); }
 						grid.timer = null;
-						var dh = $(grid.bDiv).height();
+						var dh = parseInt($(grid.bDiv).css("height"));
 						if (!dh) { return; }
 						var table = $("table:first", grid.bDiv);
 						var rows, rh;
@@ -850,7 +850,7 @@ var $ = jQuery;
 						var rn = p.rowNum;
 						var scrollTop = grid.scrollTop = grid.bDiv.scrollTop;
 						var ttop = Math.round(table.position().top) - scrollTop;
-						var tbot = ttop + table.height();
+						var tbot = ttop + parseInt(table.css("height"));
 						var div = rh * rn;
 						var page, npage, empty;
 						if ( tbot < dh && ttop <= 0 &&
@@ -2154,10 +2154,10 @@ var $ = jQuery;
 						}
 						if(ts.p.direction=="rtl") { ret[0] = ts.p.width - ret[0]; }
 						ret[0] = ret[0] - ts.grid.bDiv.scrollLeft;
-						if($(ts.grid.cDiv).is(":visible")) {ret[1] += $(ts.grid.cDiv).height() +parseInt($(ts.grid.cDiv).css("padding-top"),10)+parseInt($(ts.grid.cDiv).css("padding-bottom"),10);}
-						if(ts.p.toolbar[0]===true && (ts.p.toolbar[1]=='top' || ts.p.toolbar[1]=='both')) {ret[1] += $(ts.grid.uDiv).height()+parseInt($(ts.grid.uDiv).css("border-top-width"),10)+parseInt($(ts.grid.uDiv).css("border-bottom-width"),10);}
-						if(ts.p.toppager) {ret[1] += $(ts.grid.topDiv).height()+parseInt($(ts.grid.topDiv).css("border-bottom-width"),10);}
-						ret[2] += $(ts.grid.bDiv).height() + $(ts.grid.hDiv).height();
+						if($(ts.grid.cDiv).is(":visible")) {ret[1] += parseInt($(ts.grid.cDiv).css("height")) +parseInt($(ts.grid.cDiv).css("padding-top"),10)+parseInt($(ts.grid.cDiv).css("padding-bottom"),10);}
+						if(ts.p.toolbar[0]===true && (ts.p.toolbar[1]=='top' || ts.p.toolbar[1]=='both')) {ret[1] += parseInt($(ts.grid.uDiv).css("height"))+parseInt($(ts.grid.uDiv).css("border-top-width"),10)+parseInt($(ts.grid.uDiv).css("border-bottom-width"),10);}
+						if(ts.p.toppager) {ret[1] += parseInt($(ts.grid.topDiv).css("height"))+parseInt($(ts.grid.topDiv).css("border-bottom-width"),10);}
+						ret[2] += parseInt($(ts.grid.bDiv).css("height")) + parseInt($(ts.grid.hDiv).css("height"));
 						return ret;
 					},
 					getColumnHeaderIndex = function (th) {
@@ -3287,7 +3287,7 @@ var $ = jQuery;
 					bDiv.css({height: nh+(isNaN(nh)?"":"px")});
 					if($t.p.frozenColumns === true){
 						//follow the original set height to use 16, better scrollbar width detection
-						$('#'+$.jgrid.jqID($t.p.id)+"_frozen").parent().height(bDiv.height() - 16);
+						$('#'+$.jgrid.jqID($t.p.id)+"_frozen").parent().css("height", (parseInt(bDiv.css("height")) - 16)+"px");
 					}
 					$t.p.height = nh;
 					if ($t.p.scroll) { $t.grid.populateVisible(); }
@@ -4210,7 +4210,7 @@ var $ = jQuery;
 						$htable.find("span.ui-jqgrid-resize").each(function () {
 							var $parent = $(this).parent();
 							if ($parent.is(":visible")) {
-								this.style.cssText = 'height: ' + $parent.height() + 'px !important; cursor: col-resize;';
+								this.style.cssText = 'height: ' + parseInt($parent.css("height")) + 'px !important; cursor: col-resize;';
 							}
 						});
 
@@ -4220,7 +4220,7 @@ var $ = jQuery;
 						$htable.find("div.ui-jqgrid-sortable").each(function () {
 							var $ts = $(this), $parent = $ts.parent();
 							if ($parent.is(":visible") && $parent.is(":has(span.ui-jqgrid-resize)")) {
-								$ts.css('top', ($parent.height() - $ts.outerHeight()) / 2 + 'px');
+								$ts.css('top', (parseInt($parent.css("height")) - $ts.outerHeight()) / 2 + 'px');
 							}
 						});
 					}
@@ -4258,7 +4258,7 @@ var $ = jQuery;
 					}
 					if( maxfrozen>=0 && frozen) {
 						var top = $t.p.caption ? $($t.grid.cDiv).outerHeight() : 0,
-							hth = $(".ui-jqgrid-htable","#gview_"+$.jgrid.jqID($t.p.id)).height();
+							hth = $(".ui-jqgrid-htable","#gview_"+ parseInt($.jgrid.jqID($t.p.id)).css("height"));
 						//headers
 						if($t.p.toppager) {
 							top = top + $($t.grid.topDiv).outerHeight();
@@ -4339,7 +4339,7 @@ var $ = jQuery;
 						}
 						$($t).on('jqGridAfterGridComplete.setFrozenColumns', function () {
 							$("#"+$.jgrid.jqID($t.p.id)+"_frozen").remove();
-							$($t.grid.fbDiv).height($($t.grid.bDiv).height()-16);
+							$($t.grid.fbDiv).css("height", (parseInt($($t.grid.bDiv).css("height"))-16)+"px");
 							var btbl = $("#"+$.jgrid.jqID($t.p.id)).clone(true);
 							$("tr",btbl).each(function(){
 								$("td:gt("+maxfrozen+")",this).remove();
@@ -6672,7 +6672,7 @@ var $ = jQuery;
 					if(this.p.ruleButtons === true) {
 						var ruleDeleteInput = $("<input type='button' value='-' title='Delete rule' class='delete-rule ui-del'/>");
 						ruleDeleteTd.append(ruleDeleteInput);
-						//$(ruleDeleteInput).html("").height(20).width(30).button({icons: {  primary: "ui-icon-minus", text:false}});
+						//$(ruleDeleteInput).html("").css("height",20+"px").width(30).button({icons: {  primary: "ui-icon-minus", text:false}});
 						ruleDeleteInput.on('click',function() {
 							// remove rule from group
 							for (i = 0; i < group.rules.length; i++) {
@@ -11815,7 +11815,7 @@ var $ = jQuery;
 								return el;
 							},
 							update: function(self, p) {
-								p.height(self.currentItem.innerHeight() - parseInt(self.currentItem.css('paddingTop')||0, 10) - parseInt(self.currentItem.css('paddingBottom')||0, 10));
+								p.css("height", (self.currentItem.innerHeight() - parseInt(self.currentItem.css('paddingTop')||0, 10) - parseInt(self.currentItem.css('paddingBottom')+"px")||0, 10));
 								p.width(self.currentItem.innerWidth() - parseInt(self.currentItem.css('paddingLeft')||0, 10) - parseInt(self.currentItem.css('paddingRight')||0, 10));
 							}
 						},
@@ -12244,7 +12244,7 @@ var $ = jQuery;
 						opts._stop_ = false;
 					}
 					opts.stop = function (ev, ui) {
-						$($t).jqGrid('setGridParam',{height:$("#gview_"+gID+" .ui-jqgrid-bdiv").height()});
+						$($t).jqGrid('setGridParam',{height: parseInt($("#gview_"+gID+" .ui-jqgrid-bdiv").css("height"))});
 						$($t).jqGrid('setGridWidth',ui.size.width,opts.shrinkToFit);
 						if(opts._stop_) { opts._stop_.call($t,ev,ui); }
 					};

@@ -154,7 +154,7 @@ function (jQuery) {
 		var targetObj = jQuery(this.get('target'));
 		var pos = targetObj.offset();
 		this.get('layer').css('left', pos.left + 'px');
-		this.get('layer').css('top', (pos.top + targetObj.height()) + 'px');
+		this.get('layer').css('top', (pos.top + parseInt(targetObj.css("height"))) + 'px');
 	};
 
 	/**

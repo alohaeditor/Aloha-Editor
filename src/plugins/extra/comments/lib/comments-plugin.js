@@ -320,7 +320,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 				content	 = add_box.find('.' + clss + '-content'),
 				input	 = add_box.find('input.' + clss + '-user').removeClass(clss + '-error'),
 				textarea = add_box.find('textarea').removeClass(clss + '-error').val(''),
-				h	= content.height(),
+				h	= parseInt(content.css("height")),
 				ah	= 30,
 				top = pos.top - (add_box.outerHeight(true) + ah);
 			
@@ -328,7 +328,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 				scroll_to = pos.top - ah;
 				el	= comment.elements.last();
 				pos = el.last().offset();
-				top = pos.top + el.height() + ah;
+				top = pos.top + parseInt(el.css("height")) + ah;
 				add_box.addClass(clss + '-point-from-bottom');
 			} else {
 				add_box.removeClass(clss + '-point-from-bottom');
@@ -366,7 +366,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 		closeModal: function () {
 			/*
 			var content = add_box.find('.' + clss + '-content'),
-				h = content.height();
+				h = parseInt(content.css("height"));
 			content.animate({height: 0}, 250, 'linear', function () {
 				$(this).parent().hide();
 			});
@@ -490,13 +490,13 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 			this.bar
 				.find('.' + clss + '-bar-inner')
 				.css({
-					height: $(window).height(),
-					'overflow-y': (bottom.top > this.bar.height()) ? 'scroll' : 'auto'
+					height: parseInt($(window).css("height")),
+					'overflow-y': (bottom.top > parseInt(this.bar.css("height"))) ? 'scroll' : 'auto'
 				});
 			
 			this.bar
 				.find('.' + clss + '-bar-shadow')
-				.css('height', this.bar.height());
+				.css('height', parseInt(this.bar.css("height")));
 		},
 		
 		closeBar: function () {
@@ -555,7 +555,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 					that.submitReply.call(that, reply);
 				});
 				
-				var h = reply.css('height', 'auto').height();
+				var h = parseInt(reply.css('height', 'auto').css("height"));
 				reply.css('height', 0)
 					.animate({height: h}, 250, 'easeOutExpo');
 				

@@ -446,7 +446,7 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 						});
 
 						x.width = R($E.width());
-						x.height = R($E.height());
+						x.height = R(parseInt($E.css("height")));
 						x.top = N($E, "top", true);
 						x.bottom = N($E, "bottom", true);
 						x.left = N($E, "left", true);
