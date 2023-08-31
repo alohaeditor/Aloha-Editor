@@ -534,7 +534,7 @@ define([
 
 			Aloha.on('aloha-editable-created', function ($event, editable) {
 				initializeImageBlocks(editable.obj);
-				editable.obj.delegate('.aloha-captioned-image-block', 'click',
+				editable.obj.on( 'click','.aloha-captioned-image-block',
 					showComponents);
 			});
 			Aloha.on('aloha-editable-destroyed', function ($event, editable) {

@@ -542,7 +542,7 @@ define([
 	//
 
 	 // handle column/row resize
-			eventContainer.delegate( 'th, td', 'mousemove', function( e ) {
+			eventContainer.on( 'mousemove', 'th, td', function( e ) {
 
 				var jqObj = jQuery( this );
 				// offset to be used for activating the resize cursor near a table border

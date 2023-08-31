@@ -357,7 +357,7 @@ define('jstree', ['jquery'], function (jQuery) {
 					this.data.core.li_height = this.get_container_ul().find("li.jstree-closed, li.jstree-leaf").eq(0).height() || 18;
 	
 					this.get_container()
-						.delegate("li > ins", "click.jstree", $.proxy(function (event) {
+						.on("click.jstree","li > ins",  $.proxy(function (event) {
 								var trgt = $(event.target);
 								if(trgt.is("ins") && event.pageY - trgt.offset().top < this.data.core.li_height) { this.toggle_node(trgt); }
 							}, this))
@@ -1005,19 +1005,19 @@ define('jstree', ['jquery'], function (jQuery) {
 				this.data.ui.to_select = this.get_settings().ui.initially_select;
 	
 				this.get_container()
-					.delegate("a", "click.jstree", $.proxy(function (event) {
+					.on( "click.jstree","a", $.proxy(function (event) {
 							event.preventDefault();
 							event.currentTarget.blur();
 							if(!$(event.currentTarget).hasClass("jstree-loading")) {
 								this.select_node(event.currentTarget, true, event);
 							}
 						}, this))
-					.delegate("a", "mouseenter.jstree", $.proxy(function (event) {
+					.on( "mouseenter.jstree","a", $.proxy(function (event) {
 							if(!$(event.currentTarget).hasClass("jstree-loading")) {
 								this.hover_node(event.target);
 							}
 						}, this))
-					.delegate("a", "mouseleave.jstree", $.proxy(function (event) {
+					.on( "mouseleave.jstree","a", $.proxy(function (event) {
 							if(!$(event.currentTarget).hasClass("jstree-loading")) {
 								this.dehover_node(event.target);
 							}
@@ -2387,18 +2387,18 @@ define('jstree', ['jquery'], function (jQuery) {
 								ml.hide();
 							}
 						}, this))
-					.delegate("a", "mousedown.jstree", $.proxy(function (e) { 
+					.on( "mousedown.jstree","a", $.proxy(function (e) { 
 							if(e.which === 1) {
 								this.start_drag(e.currentTarget, e);
 								return false;
 							}
 						}, this))
-					.delegate("a", "mouseenter.jstree", $.proxy(function (e) { 
+					.on( "mouseenter.jstree","a", $.proxy(function (e) { 
 							if($.vakata.dnd.is_drag && $.vakata.dnd.user_data.jstree) {
 								this.dnd_enter(e.currentTarget);
 							}
 						}, this))
-					.delegate("a", "mousemove.jstree", $.proxy(function (e) { 
+					.on( "mousemove.jstree","a", $.proxy(function (e) { 
 							if($.vakata.dnd.is_drag && $.vakata.dnd.user_data.jstree) {
 								if(!r || !r.length || r.children("a")[0] !== e.currentTarget) {
 									this.dnd_enter(e.currentTarget);
@@ -2409,7 +2409,7 @@ define('jstree', ['jquery'], function (jQuery) {
 								this.dnd_show();
 							}
 						}, this))
-					.delegate("a", "mouseleave.jstree", $.proxy(function (e) { 
+					.on( "mouseleave.jstree","a", $.proxy(function (e) { 
 							if($.vakata.dnd.is_drag && $.vakata.dnd.user_data.jstree) {
 								if(e.relatedTarget && e.relatedTarget.id && e.relatedTarget.id === "jstree-marker-line") {
 									return false; 
@@ -2429,7 +2429,7 @@ define('jstree', ['jquery'], function (jQuery) {
 								0);
 							}
 						}, this))
-					.delegate("a", "mouseup.jstree", $.proxy(function (e) { 
+					.on("mouseup.jstree","a",  $.proxy(function (e) { 
 							if($.vakata.dnd.is_drag && $.vakata.dnd.user_data.jstree) {
 								this.dnd_finish(e);
 							}
@@ -2482,7 +2482,7 @@ define('jstree', ['jquery'], function (jQuery) {
 				var s = this._get_settings().dnd;
 				if(s.drag_target) {
 					$(document)
-						.delegate(s.drag_target, "mousedown.jstree-" + this.get_index(), $.proxy(function (e) {
+						.on( "mousedown.jstree-" + this.get_index(),s.drag_target, $.proxy(function (e) {
 							o = e.target;
 							$.vakata.dnd.drag_start(e, { jstree : true, obj : e.target }, "<ins class='jstree-icon'></ins>" + $(e.target).text() );
 							if(this.data.themes) { 
@@ -2501,17 +2501,17 @@ define('jstree', ['jquery'], function (jQuery) {
 				}
 				if(s.drop_target) {
 					$(document)
-						.delegate(s.drop_target, "mouseenter.jstree-" + this.get_index(), $.proxy(function (e) {
+						.on("mouseenter.jstree-" + this.get_index(),s.drop_target,  $.proxy(function (e) {
 								if(this.data.dnd.active && this._get_settings().dnd.drop_check.call(this, { "o" : o, "r" : $(e.target), "e" : e })) {
 									$.vakata.dnd.helper.children("ins").attr("class","jstree-ok");
 								}
 							}, this))
-						.delegate(s.drop_target, "mouseleave.jstree-" + this.get_index(), $.proxy(function (e) {
+						.on( "mouseleave.jstree-" + this.get_index(),s.drop_target, $.proxy(function (e) {
 								if(this.data.dnd.active) {
 									$.vakata.dnd.helper.children("ins").attr("class","jstree-invalid");
 								}
 							}, this))
-						.delegate(s.drop_target, "mouseup.jstree-" + this.get_index(), $.proxy(function (e) {
+						.on("mouseup.jstree-" + this.get_index(),s.drop_target,  $.proxy(function (e) {
 								if(this.data.dnd.active && $.vakata.dnd.helper.children("ins").hasClass("jstree-ok")) {
 									this._get_settings().dnd.drop_finish.call(this, { "o" : o, "r" : $(e.target), "e" : e });
 								}
@@ -2763,7 +2763,7 @@ define('jstree', ['jquery'], function (jQuery) {
 					.on("loaded.jstree", $.proxy(function (e) {
 							this._prepare_checkboxes();
 						}, this))
-					.delegate( (this.data.ui && this.data.checkbox.noui ? "a" : "ins.jstree-checkbox") , "click.jstree", $.proxy(function (e) {
+					.on(  "click.jstree",(this.data.ui && this.data.checkbox.noui ? "a" : "ins.jstree-checkbox") , $.proxy(function (e) {
 							e.preventDefault();
 							if(this._get_node(e.target).hasClass("jstree-checked")) { this.uncheck_node(e.target); }
 							else { this.check_node(e.target); }
@@ -3622,14 +3622,14 @@ define('jstree', ['jquery'], function (jQuery) {
 				'#vakata-contextmenu li.vakata-separator { min-height:0; height:1px; line-height:1px; font-size:1px; overflow:hidden; margin:0 2px; background:silver; /* border-top:1px solid #fefefe; */ padding:0; } ';
 			$.vakata.css.add_sheet({ str : css_string, title : "vakata" });
 			$.vakata.context.cnt
-				.delegate("a","click", function (e) { e.preventDefault(); })
-				.delegate("a","mouseup", function (e) {
+				.on("click","a", function (e) { e.preventDefault(); })
+				.on("mouseup","a", function (e) {
 					if(!$(this).parent().hasClass("jstree-contextmenu-disabled") && $.vakata.context.exec($(this).attr("rel"))) {
 						$.vakata.context.hide();
 					}
 					else { $(this).blur(); }
 				})
-				.delegate("a","mouseover", function () {
+				.on("mouseover","a", function () {
 					$.vakata.context.cnt.find(".vakata-hover").removeClass("vakata-hover");
 				})
 				.appendTo("body");
@@ -3682,13 +3682,13 @@ define('jstree', ['jquery'], function (jQuery) {
 		$.jstree.plugin("contextmenu", {
 			__init : function () {
 				this.get_container()
-					.delegate("a", "contextmenu.jstree", $.proxy(function (e) {
+					.on( "contextmenu.jstree","a", $.proxy(function (e) {
 							e.preventDefault();
 							if(!$(e.currentTarget).hasClass("jstree-loading")) {
 								this.show_contextmenu(e.currentTarget, e.pageX, e.pageY);
 							}
 						}, this))
-					.delegate("a", "click.jstree", $.proxy(function (e) {
+					.on( "click.jstree","a", $.proxy(function (e) {
 							if(this.data.contextmenu) {
 								$.vakata.context.hide();
 							}
@@ -4152,12 +4152,12 @@ define('jstree', ['jquery'], function (jQuery) {
 				this.get_container()
 					.addClass("ui-widget-content")
 					.addClass("jstree-themeroller")
-					.delegate("a","mouseenter.jstree", function (e) {
+					.on("mouseenter.jstree","a", function (e) {
 						if(!$(e.currentTarget).hasClass("jstree-loading")) {
 							$(this).addClass(s.item_h);
 						}
 					})
-					.delegate("a","mouseleave.jstree", function () {
+					.on("mouseleave.jstree","a", function () {
 						$(this).removeClass(s.item_h);
 					})
 					.on("init.jstree", $.proxy(function (e, data) { 
@@ -4398,19 +4398,19 @@ define('jstree', ['jquery'], function (jQuery) {
 								ref.children("a").attr("class",data.rslt.obj.children(".jstree-hovered").attr("class"));
 							}
 						}, this))
-					.delegate(".jstree-wholerow-span, ins.jstree-icon, li", "click.jstree", function (e) {
+					.on("click.jstree",".jstree-wholerow-span, ins.jstree-icon, li",  function (e) {
 							var n = $(e.currentTarget);
 							if(e.target.tagName === "A" || (e.target.tagName === "INS" && n.closest("li").is(".jstree-open, .jstree-closed"))) { return; }
 							n.closest("li").children("a:visible:eq(0)").click();
 							e.stopImmediatePropagation();
 						})
-					.delegate("li", "mouseover.jstree", $.proxy(function (e) {
+					.on("mouseover.jstree","li",  $.proxy(function (e) {
 							e.stopImmediatePropagation();
 							if($(e.currentTarget).children(".jstree-hovered, .jstree-clicked").length) { return false; }
 							this.hover_node(e.currentTarget);
 							return false;
 						}, this))
-					.delegate("li", "mouseleave.jstree", $.proxy(function (e) {
+					.on("mouseleave.jstree","li",  $.proxy(function (e) {
 							if($(e.currentTarget).children("a").hasClass("jstree-hovered").length) { return; }
 							this.dehover_node(e.currentTarget);
 						}, this));

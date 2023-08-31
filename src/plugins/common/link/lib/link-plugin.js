@@ -171,7 +171,7 @@ define([
 	}
 
 	function setupMetaClickLink(editable) {
-		editable.obj.delegate('a', 'click.aloha-link.meta-click-link', function (e) {
+		editable.obj.on('click.aloha-link.meta-click-link','a',  function (e) {
 			// Use metaKey for OSX and ctrlKey for PC
 			if (e.metaKey || e.ctrlKey) {
 				// blur current editable. user is waiting for the link to load

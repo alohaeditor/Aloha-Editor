@@ -241,12 +241,12 @@ define([
 
 		overlay.$tbody.empty().append(table.join(''));
 
-		overlay.$element.delegate('td', 'mouseover', function () {
+		overlay.$element.on('mouseover','td',  function () {
 			overlay.$element.find('.focused').removeClass('focused');
 			$(this).addClass('focused');
-		}).delegate('td', 'mouseout', function () {
+		}).on('mouseout','td',  function () {
 			$(this).removeClass('focused');
-		}).delegate('td', 'click', function () {
+		}).on('click','td',  function () {
 			overlay.$element.hide();
 			overlay.onSelect($(this).text());
 		});

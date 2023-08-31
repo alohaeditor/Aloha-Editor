@@ -768,7 +768,7 @@ define([
         _attachDropzoneHighlightEvents: function () {
             var that = this;
 
-            this.$element.delegate(".aloha-block-draghandle", "mousedown", function () {
+            this.$element.on( "mousedown", ".aloha-block-draghandle",function () {
                 var dropzones = that.$element.parents(".aloha-editable").first().data("block-dropzones") || [];
                 jQuery.each(dropzones, function (i, editable_selector) {
                     var editables = jQuery(editable_selector);

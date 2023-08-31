@@ -57,7 +57,7 @@
   var Modal = function ( content, options ) {
     this.settings = $.extend({}, $.fn.modal.defaults, options)
     this.$element = $(content)
-      .delegate('.close', 'click.modal', $.proxy(this.hide, this))
+      .on('click.modal','.close',  $.proxy(this.hide, this))
 
     if ( this.settings.show ) {
       this.show()
@@ -250,7 +250,7 @@
   * ========================== */
 
   $(document).ready(function () {
-    $('body').delegate('[data-controls-modal]', 'click', function (e) {
+    $('body').on( 'click','[data-controls-modal]', function (e) {
       e.preventDefault()
       var $this = $(this).data('show', true)
       $('#' + $this.attr('data-controls-modal')).modal( $this.data() )

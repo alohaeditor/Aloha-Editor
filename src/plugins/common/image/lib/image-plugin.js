@@ -446,7 +446,7 @@ define([
 				// editable.obj.find('img').attr('_moz_resizing', false);
 				// editable.obj.find('img').contentEditable(false);
 
-				editable.obj.delegate('img', 'mouseup', function (event) {
+				editable.obj.on('mouseup','img',  function (event) {
 					if (!resizing) {
 						plugin.clickImage(event);
 						event.stopPropagation();

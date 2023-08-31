@@ -57,7 +57,7 @@
     if (options == 'close') return this.close.call(content)
     this.settings = $.extend({}, $.fn.alert.defaults, options)
     this.$element = $(content)
-      .delegate(this.settings.selector, 'click', this.close)
+      .on( 'click', this.settings.selector,this.close)
   }
 
   Alert.prototype = {
