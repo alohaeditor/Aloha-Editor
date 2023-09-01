@@ -150,12 +150,12 @@ define([
 
 			bar.hide().appendTo($('body')).click(function () {
 				that.barClicked.apply(that, arguments);
-			}).find('.aloha-sidebar-panels').width(this.width);
+			}).find('.aloha-sidebar-panels').css("width", this.width + "px");
 
 			// IE7 needs us to explicitly set the container width, since it is
 			// unable to determine it on its own.
-			bar.width(this.width);
-			this.width = bar.width();
+			bar.css("width", this.width + "px");
+			this.width = parseInt(bar.css("width"));
 
 			this.updateHeight();
 			this.initToggler();

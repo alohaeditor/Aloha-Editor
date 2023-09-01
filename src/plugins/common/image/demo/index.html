@@ -20,7 +20,7 @@
 			ratio.img.h = img.height;// image natural height
 			ratio.img.w = img.width;// image natural width
 			ratio.disp.h = parseInt(image.css("height")); // image diplay heigth
-			ratio.disp.w = image.width(); // image diplay width
+			ratio.disp.w = parseInt(image.css("width")); // image diplay width
 			ratio.h = (ratio.img.h / ratio.disp.h);
 			ratio.w = (ratio.img.w / ratio.disp.w);
 

@@ -423,7 +423,7 @@
 
 			$list.jqGrid({
 				datatype      : 'local',
-				width         : $container.width(),
+				width         : parseInt($container.css("width")),
 				shrinkToFit   : shrinkToFit,
 				colNames      : names,
 				colModel      : model,
@@ -512,7 +512,7 @@
 				togglerClass             : 'ui-layout-toggler',
 				onresize                 : function (name, elem) {
 					if ('center' === name) {
-						$list.setGridWidth(elem.width());
+						$list.setGridWidth(parseInt(elem.css("width")));
 					}
 				}
 			});
@@ -629,8 +629,8 @@
 				var width = (overflow > 0)
 						  ? Math.max(this.minWidth, this.maxWidth - overflow)
 						  : this.maxWidth;
-				this.element.width(width);
-				this.grid.width(width);
+				this.element.css("width", width + "px");
+				this.grid.css("width", width+"px");
 			},
 
 			/**
@@ -667,7 +667,7 @@
 				if (!this._isResizeAllowed()) {
 					return;
 				}
-				this._resizeHorizontal(this.maxWidth - $window.width() + this.padding);
+				this._resizeHorizontal(this.maxWidth - parseInt($window.css("width")) + this.padding);
 				this._resizeVertical(this.maxHeight - parseInt($window.css("height")) + this.padding);
 				this._resizeInnerComponents();
 			},

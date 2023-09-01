@@ -224,7 +224,7 @@ define([
 			width = parseInt($img.attr('width'), 10);
 		} else {
 			// NOTE: this assumes the image has already loaded!
-			width = parseInt($img.width(), 10);
+			width = parseInt(parseInt($img.css("width")), 10);
 		}
 
 		if (typeof width === 'number' && !isNaN(width)) {

@@ -987,13 +987,13 @@ define('jstree', ['jquery'], function (jQuery) {
 			if (/msie/.test(navigator.userAgent.toLowerCase())) {
 				e1 = $('<textarea cols="10" rows="2"></textarea>').css({ position: 'absolute', top: -1000, left: 0 }).appendTo('body');
 				e2 = $('<textarea cols="10" rows="2" style="overflow: hidden;"></textarea>').css({ position: 'absolute', top: -1000, left: 0 }).appendTo('body');
-				scrollbar_width = e1.width() - e2.width();
+				scrollbar_width = parseInt(e1.css("width")) - parseInt(e2.css("width"));
 				e1.add(e2).remove();
 			} 
 			else {
 				e1 = $('<div />').css({ width: 100, height: 100, overflow: 'auto', position: 'absolute', top: -1000, left: 0 })
 						.prependTo('body').append('<div />').find('div').css({ width: '100%', height: 200 });
-				scrollbar_width = 100 - e1.width();
+				scrollbar_width = 100 - parseInt(e1.css("width"));
 				e1.parent().remove();
 			}
 		});
@@ -1265,8 +1265,8 @@ define('jstree', ['jquery'], function (jQuery) {
 					obj = this._get_node(obj);
 					var rtl = this._get_settings().core.rtl,
 						w = this._get_settings().crrm.input_width_limit,
-						w1 = obj.children("ins").width(),
-						w2 = obj.find("> a:visible > ins").width() * obj.find("> a:visible > ins").length,
+						w1 = parseInt(obj.children("ins").css("width")),
+						w2 = parseInt(obj.find("> a:visible > ins").css("width")) * obj.find("> a:visible > ins").length,
 						t = this.get_text(obj),
 						h1 = $("<div />", { css : { "position" : "absolute", "top" : "-200px", "left" : (rtl ? "0px" : "-1000px"), "visibility" : "hidden" } }).appendTo("body"),
 						h2 = obj.css("position","relative").append(
@@ -1301,7 +1301,7 @@ define('jstree', ['jquery'], function (jQuery) {
 								if(key == 27) { this.value = t; this.blur(); return; }
 								else if(key == 13) { this.blur(); return; }
 								else {
-									h2.width(Math.min(h1.text("pW" + this.value).width(),w));
+									h2.css("width",Math.min( parseInt(h1.text("pW" + this.value).css("width")),w) + "px");
 								}
 							},
 							"keypress" : function(event) {
@@ -1321,7 +1321,7 @@ define('jstree', ['jquery'], function (jQuery) {
 							letterSpacing	: h2.css('letterSpacing')	|| '',
 							wordSpacing		: h2.css('wordSpacing')		|| ''
 					});
-					h2.width(Math.min(h1.text("pW" + h2[0].value).width(),w))[0].select();
+					h2.css("width",Math.min(parseInt(h1.text("pW" + h2[0].value).css("width")),w)+"px")[0].select();
 				},
 				rename : function (obj) {
 					obj = this._get_node(obj);
@@ -2244,7 +2244,7 @@ define('jstree', ['jquery'], function (jQuery) {
 					else { 
 						if(sli && dir2 === "left") { clearInterval(sli); sli = false; }
 					}
-					if($(window).width() - (e.pageX - l) < 20) {
+					if(parseInt($(window).css("width")) - (e.pageX - l) < 20) {
 						if(sli && dir2 === "left") { clearInterval(sli); sli = false; }
 						if(!sli) { dir2 = "right"; sli = setInterval(function () { $(document).scrollLeft($(document).scrollLeft() + $.vakata.dnd.scroll_spd); }, 150); }
 					}
@@ -2493,7 +2493,7 @@ define('jstree', ['jquery'], function (jQuery) {
 							$.vakata.dnd.helper.children("ins").attr("class","jstree-invalid");
 							var cnt = this.get_container();
 							this.data.dnd.cof = cnt.offset();
-							this.data.dnd.cw = parseInt(cnt.width(),10);
+							this.data.dnd.cw = parseInt(parseInt(cnt.css("width")),10);
 							this.data.dnd.ch = parseInt(parseInt(cnt.css("height")),10);
 							this.data.dnd.foreign = true;
 							e.preventDefault();
@@ -2534,7 +2534,7 @@ define('jstree', ['jquery'], function (jQuery) {
 					if(!r || !r.length) { return; }
 					this.data.dnd.off = r.offset();
 					if(this._get_settings().core.rtl) {
-						this.data.dnd.off.right = this.data.dnd.off.left + r.width();
+						this.data.dnd.off.right = this.data.dnd.off.left + parseInt(r.css("width"));
 					}
 					if(this.data.dnd.foreign) {
 						var a = this._get_settings().dnd.drag_check.call(this, { "o" : o, "r" : r });
@@ -2679,7 +2679,7 @@ define('jstree', ['jquery'], function (jQuery) {
 						$.vakata.dnd.helper.attr("class", "jstree-dnd-helper jstree-" + this.data.themes.theme); 
 					}
 					this.data.dnd.cof = cnt.offset();
-					this.data.dnd.cw = parseInt(cnt.width(),10);
+					this.data.dnd.cw = parseInt(parseInt(cnt.css("width")),10);
 					this.data.dnd.ch = parseInt(parseInt(cnt.css("height")),10);
 					this.data.dnd.active = true;
 				}
@@ -3528,9 +3528,9 @@ define('jstree', ['jquery'], function (jQuery) {
 				}
 	
 				h = parseInt($.vakata.context.cnt.css("height"));
-				w = $.vakata.context.cnt.width();
-				if(x + w > $(document).width()) { 
-					x = $(document).width() - (w + 5); 
+				w = parseInt($.vakata.context.cnt.css("width"));
+				if(x + w > parseInt($(document).css("width"))) { 
+					x = parseInt($(document).css("width")) - (w + 5); 
 					$.vakata.context.cnt.find("li > ul").addClass("right"); 
 				}
 				if(y + h > parseInt($(document).css("height"))) { 
@@ -3542,10 +3542,10 @@ define('jstree', ['jquery'], function (jQuery) {
 					.css({ "left" : x, "top" : y })
 					.find("li:has(ul)")
 						.on("mouseenter", function (e) { 
-							var w = $(document).width(),
+							var w = parseInt($(document).css("width")),
 								h = parseInt($(document).css("height")),
 								ul = $(this).children("ul").show(); 
-							if(w !== $(document).width()) { ul.toggleClass("right"); }
+							if(w !== parseInt($(document).css("width"))) { ul.toggleClass("right"); }
 							if(h !== parseInt($(document).css("height"))) { ul.toggleClass("bottom"); }
 						})
 						.on("mouseleave", function (e) { 
@@ -4445,7 +4445,7 @@ define('jstree', ['jquery'], function (jQuery) {
 						this.get_container().append(
 							o.clone().removeClass("jstree-wholerow-real")
 								.wrapAll("<div class='jstree-wholerow' />").parent()
-								.width(o.parent()[0].scrollWidth)
+								.css("width",o.parent()[0].scrollWidth+"px")
 								.css("top", (parseInt(o.css("height")) + ( is_ie7 ? 5 : 0)) * -1 )
 								.find("li[id]").each(function () { this.removeAttribute("id"); }).end()
 						);

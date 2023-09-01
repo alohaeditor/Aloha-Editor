@@ -245,8 +245,8 @@ define([
 
 		if (left < 0) {
 			left = 0;
-		} else if (left > $WINDOW.width()) {
-			left = $WINDOW.width() / 2;
+		} else if (left > parseInt($WINDOW.css("width"))) {
+			left = parseInt($WINDOW.css("width")) / 2;
 		}
 
 		return {
@@ -274,7 +274,7 @@ define([
 
 		var topGutter = (parseInt($('body').css('marginTop'), 10) || 0)
 			+ (parseInt($('body').css('paddingTop'), 10) || 0);
-		if ($WINDOW.width() <= SMALL_SCREEN_WIDTH) {
+		if (parseInt($WINDOW.css("width")) <= SMALL_SCREEN_WIDTH) {
 			topGutter = 0;
 		}
 		var $surface = surface.$element;
@@ -286,7 +286,7 @@ define([
 		var availableSpace = top - scrollTop - topGutter - bodyMarginTopAdjustment;
 		// consider horizontal scrolling (important for rtl pages that are scrolled to the left)
 		left = left - scrollLeft;
-		var horizontalOverflow = left + $surface.width() - $WINDOW.width();
+		var horizontalOverflow = left + parseInt($surface.css("width")) - parseInt($WINDOW.css("width"));
 
 		if (horizontalOverflow > 0) {
 			left = Math.max(0, left - horizontalOverflow);

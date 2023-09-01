@@ -16,7 +16,7 @@
 				onCropped : function (image, props) {
 					// invoke the image cropper crop.php
 					image
-						.width(props.w) // set width
+						.css("width", props.w + "px") // set width
 						.css("height",props.h + "px") // and height to new values
 						.attr("src", "crop.php?src=" // and adjust src to the cropped image
 							+ image.attr('src')

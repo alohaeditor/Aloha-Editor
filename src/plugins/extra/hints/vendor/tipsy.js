@@ -205,7 +205,7 @@ define(['jquery'], function(jQuery) {
     };
     
     $.fn.tipsy.autoWE = function() {
-        return $(this).offset().left > ($(document).scrollLeft() + $(window).width() / 2) ? 'e' : 'w';
+        return $(this).offset().left > ($(document).scrollLeft() + parseInt($(window).css("width")) / 2) ? 'e' : 'w';
     };
     
     /**
@@ -232,7 +232,7 @@ define(['jquery'], function(jQuery) {
 
 			if ($this.offset().top < boundTop) dir.ns = 'n';
 			if ($this.offset().left < boundLeft) dir.ew = 'w';
-			if ($(window).width() + $(document).scrollLeft() - $this.offset().left < margin) dir.ew = 'e';
+			if (parseInt($(window).css("width")) + $(document).scrollLeft() - $this.offset().left < margin) dir.ew = 'e';
 			if (parseInt($(window).css("height")) + $(document).scrollTop() - $this.offset().top < margin) dir.ns = 's';
 
 			return dir.ns + (dir.ew ? dir.ew : '');

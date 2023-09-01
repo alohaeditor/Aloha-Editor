@@ -625,7 +625,7 @@ $.layout = {
 				+	'<ul style="font-size: 13px; font-weight: none; list-style: none; margin: 0; padding: 0 0 2px;"></ul>'
 				+ '</div>'
 				).appendTo("body");
-			$e.css('left', $(window).width() - $e.outerWidth() - 5)
+			$e.css('left', parseInt($(window).css("width")) - $e.outerWidth() - 5)
 			if ($.ui.draggable) $e.draggable({ handle: ':first-child' });
 			return $e;
 		};
@@ -3068,7 +3068,7 @@ $.fn.layout = function (opts) {
 			// the nested layout will reset its 'container' CSS when/if it is destroyed
 			if (hasChildren && $C) {
 				// a content-div may not have a specific width, so give it one to contain the Layout
-				$C.width( $C.width() );
+				$C.css("width", parseInt($C.css("width")) +"px" );
 				$.each( pC, function (key, child) {
 					child.resizeAll(); // resize the Layout
 				});

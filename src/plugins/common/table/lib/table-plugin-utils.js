@@ -438,7 +438,7 @@ define([
 			Utils.walkCells(rows, function(ri, ci, gridCi, colspan, rowspan) {
 				var currentRow = $(rows[ri]),
 					selectorWidth = currentRow.find('.aloha-table-selectrow').outerWidth(),
-					rowWidth = currentRow.width() - selectorWidth,
+					rowWidth = parseInt(currentRow.css("width")) - selectorWidth,
 					currentCell = $(currentRow.children()[ci]),
 					cellWidth = currentCell.outerWidth();
 
@@ -500,7 +500,7 @@ define([
 
 			$( cell ).append( fakeCell );
 
-			var width = fakeCell.width();
+			var width = parseInt(fakeCell.css("width"));
 
 			$( fakeCell ).remove();
 
@@ -531,7 +531,7 @@ define([
 				};
 
 				if (gridCi === gridId && colspan === 1) {
-					maxPageX = currentCell.offset().left + Utils.getCellBorder(currentCell) + currentCell.width() - Utils.getMinColWidth( currentCell );
+					maxPageX = currentCell.offset().left + Utils.getCellBorder(currentCell) + parseInt(currentCell.css("width")) - Utils.getMinColWidth( currentCell );
 				}
 
 				if (gridCi === gridId - 1 && colspan === 1) {
@@ -570,7 +570,7 @@ define([
 		 * 				the padding as an integer value
 		 */
 		'getCellPadding': function(cell) {
-			return ( cell.innerWidth() - cell.width() );
+			return ( cell.innerWidth() - parseInt(cell.css("width")));
 		},
 
 		selectAnchorContents: function(selection) {

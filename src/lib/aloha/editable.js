@@ -668,7 +668,7 @@ define([
 				// Populate the div with the value of the textarea
 				// Then, hide the textarea
 				
-				div.css("height", parseInt(obj.css("height"))+"px").width(obj.width()).html(obj.val());
+				div.css("height", parseInt(obj.css("height"))+"px").css("width", parseInt(obj.css("width"))+"px").html(obj.val());
 
 				obj.hide();
 

@@ -187,9 +187,9 @@ var $ = jQuery;
 			},
 			cellWidth : function () {
 				var $testDiv = $("<div class='ui-jqgrid' style='left:10000px'><table class='ui-jqgrid-btable' style='width:5px;'><tr class='jqgrow'><td style='width:5px;'></td></tr></table></div>"),
-					testCell = $testDiv.appendTo("body")
+					testCell = parseInt($testDiv.appendTo("body")
 						.find("td")
-						.width();
+						.css("width"));
 				$testDiv.remove();
 				return testCell !== 5;
 			},
@@ -1951,11 +1951,11 @@ var $ = jQuery;
 						$("td#"+pgid+"_"+ts.p.pagerpos,"#"+pgcnt).append(pgl);
 						tdw = $(".ui-jqgrid").css("font-size") || "11px";
 						$(document.body).append("<div id='testpg' class='ui-jqgrid ui-widget ui-widget-content' style='font-size:"+tdw+";visibility:hidden;' ></div>");
-						twd = $(pgl).clone().appendTo("#testpg").width();
+						twd = parseInt($(pgl).clone().appendTo("#testpg").css("width"));
 						$("#testpg").remove();
 						if(twd > 0) {
 							if(pginp !== "") { twd += 50; } //should be param
-							$("td#"+pgid+"_"+ts.p.pagerpos,"#"+pgcnt).width(twd);
+							$("td#"+pgid+"_"+ts.p.pagerpos,"#"+pgcnt).css("width", twd + "px");
 						}
 						ts.p._nvtd = [];
 						ts.p._nvtd[0] = twd ? Math.floor((ts.p.width - twd)/2) : Math.floor(ts.p.width/3);
@@ -2565,7 +2565,7 @@ var $ = jQuery;
 						$(grid.ubDiv).insertAfter(grid.hDiv).addClass("ui-userdata ui-state-default").attr("id","tb_"+this.id);
 						if(hg)  {$(grid.ubDiv).hide();}
 					} else {
-						$(grid.uDiv).width(grid.width).addClass("ui-userdata ui-state-default").attr("id","t_"+this.id);
+						$(grid.uDiv).css("width",grid.width+"px").addClass("ui-userdata ui-state-default").attr("id","t_"+this.id);
 					}
 					if(hg) {$(grid.uDiv).hide();}
 				}
@@ -2573,13 +2573,13 @@ var $ = jQuery;
 					ts.p.toppager = $.jgrid.jqID(ts.p.id)+"_toppager";
 					grid.topDiv = $("<div id='"+ts.p.toppager+"'></div>")[0];
 					ts.p.toppager = "#"+ts.p.toppager;
-					$(grid.topDiv).insertBefore(grid.hDiv).addClass('ui-state-default ui-jqgrid-toppager').width(grid.width);
+					$(grid.topDiv).insertBefore(grid.hDiv).addClass('ui-state-default ui-jqgrid-toppager').css("width",grid.width+"px");
 					setPager(ts.p.toppager,'_t');
 				}
 				if(ts.p.footerrow) {
 					grid.sDiv = $("<div class='ui-jqgrid-sdiv'></div>")[0];
 					hb = $("<div class='ui-jqgrid-hbox"+(dir=="rtl"?"-rtl":"")+"'></div>");
-					$(grid.sDiv).append(hb).insertAfter(grid.hDiv).width(grid.width);
+					$(grid.sDiv).append(hb).insertAfter(grid.hDiv).css("width",grid.width+"px");
 					$(hb).append(tfoot);
 					grid.footers = $(".ui-jqgrid-ftable",grid.sDiv)[0].rows[0].cells;
 					if(ts.p.rownumbers) { grid.footers[0].className = 'ui-state-default jqgrid-rownum'; }
@@ -4071,7 +4071,7 @@ var $ = jQuery;
 					for (i = 0, l = headers.length; i < l; i++) {
 						hc = cm[i].hidden ? "none" : "";
 						$th = $(headers[i].el)
-							.width(headers[i].width)
+							.css("width", headers[i].width+"px")
 							.css('display',hc);
 						try {
 							$th.removeAttr("rowSpan");
@@ -4227,7 +4227,7 @@ var $ = jQuery;
 
 					$firstRow = $theadInTable.find("tr.jqg-first-row-header");
 					$(ts).on('jqGridResizeStop.setGroupHeaders', function (e, nw, idx) {
-						$firstRow.find('th').eq(idx).width(nw);
+						$firstRow.find('th').eq(idx).css("width", nw+"px");
 					});
 				});
 			},
@@ -4299,7 +4299,7 @@ var $ = jQuery;
 								$("th:gt("+maxfrozen+")",this).remove();
 							});
 						}
-						$(htbl).width(1);
+						$(htbl).css("width", 1 + "px");
 						// resizing stuff
 						$($t.grid.fhDiv).append(htbl)
 							.mousemove(function (e) {
@@ -4307,9 +4307,9 @@ var $ = jQuery;
 							});
 						$($t).on('jqGridResizeStop.setFrozenColumns', function (e, w, index) {
 							var rhth = $(".ui-jqgrid-htable",$t.grid.fhDiv);
-							$("th:eq("+index+")",rhth).width( w );
+							$("th:eq("+index+")",rhth).css("width", w+"px" );
 							var btd = $(".ui-jqgrid-btable",$t.grid.fbDiv);
-							$("tr:first td:eq("+index+")",btd).width( w );
+							$("tr:first td:eq("+index+")",btd).css("width", w+"px" );
 						});
 						// sorting stuff
 						$($t).on('jqGridOnSortCol.setFrozenColumns', function (index, idxcol) {
@@ -4345,7 +4345,7 @@ var $ = jQuery;
 								$("td:gt("+maxfrozen+")",this).remove();
 							});
 
-							$(btbl).width(1).attr("id",$t.p.id+"_frozen");
+							$(btbl).css("width",1+"px").attr("id",$t.p.id+"_frozen");
 							$($t.grid.fbDiv).append(btbl);
 							if($t.p.hoverrows === true) {
 								$("tr.jqgrow", btbl).hover(
@@ -5599,7 +5599,7 @@ var $ = jQuery;
 				}
 				var rtlt = 0;
 				if( rtlsup && coord.left && !appendsel) {
-					rtlt = $(p.gbox).width()- (!isNaN(p.width) ? parseInt(p.width,10) :0) - 8; // to do
+					rtlt = parseInt($(p.gbox).css("width"))- (!isNaN(p.width) ? parseInt(p.width,10) :0) - 8; // to do
 					// just in case
 					coord.left = parseInt(coord.left,10) + parseInt(rtlt,10);
 				}
@@ -6556,7 +6556,7 @@ var $ = jQuery;
 						$(".selectopts",trpar)[0].selectedIndex = 0;
 						if( $.browser.msie && $.browser.version < 9) {
 							var sw = parseInt($("select.selectopts",trpar)[0].offsetWidth, 10) + 1;
-							$(".selectopts",trpar).width( sw );
+							$(".selectopts",trpar).css("width", sw + "px" );
 							$(".selectopts",trpar).css("width","auto");
 						}
 						// data
@@ -6672,7 +6672,7 @@ var $ = jQuery;
 					if(this.p.ruleButtons === true) {
 						var ruleDeleteInput = $("<input type='button' value='-' title='Delete rule' class='delete-rule ui-del'/>");
 						ruleDeleteTd.append(ruleDeleteInput);
-						//$(ruleDeleteInput).html("").css("height",20+"px").width(30).button({icons: {  primary: "ui-icon-minus", text:false}});
+						//$(ruleDeleteInput).html("").css("height",20+"px").css("width", 30+ "px").button({icons: {  primary: "ui-icon-minus", text:false}});
 						ruleDeleteInput.on('click',function() {
 							// remove rule from group
 							for (i = 0; i < group.rules.length; i++) {
@@ -8869,12 +8869,12 @@ var $ = jQuery;
 						}
 						tdw = $(".ui-jqgrid").css("font-size") || "11px";
 						$('body').append("<div id='testpg2' class='ui-jqgrid ui-widget ui-widget-content' style='font-size:"+tdw+";visibility:hidden;' ></div>");
-						twd = $(navtbl).clone().appendTo("#testpg2").width();
+						twd = parseInt($(navtbl).clone().appendTo("#testpg2").css("width"));
 						$("#testpg2").remove();
 						$(pgid+"_"+o.position,pgid).append(navtbl);
 						if($t.p._nvtd) {
 							if(twd > $t.p._nvtd[0] ) {
-								$(pgid+"_"+o.position,pgid).width(twd);
+								$(pgid+"_"+o.position,pgid).css("width",twd + "px");
 								$t.p._nvtd[0] = twd;
 							}
 							$t.p._nvtd[1] = twd;
@@ -9084,7 +9084,7 @@ var $ = jQuery;
 									$.jgrid.bindEv( elc, opt, $t);
 									//Again IE
 									if(cm[i].edittype == "select" && cm[i].editoptions!==undefined && cm[i].editoptions.multiple===true  && cm[i].editoptions.dataUrl===undefined && $.browser.msie) {
-										$(elc).width($(elc).width());
+										$(elc).css("width", parseInt($(elc).css("width"))+"px");
 									}
 									cnt++;
 								}
@@ -10177,7 +10177,7 @@ var $ = jQuery;
 						for (i = 0; i<ts.p.subGridModel[0].name.length; i++) {
 							tddiv = $("<th class='ui-state-default ui-th-subgrid ui-th-column ui-th-"+ts.p.direction+"'></th>");
 							$(tddiv).html(ts.p.subGridModel[0].name[i]);
-							$(tddiv).width( ts.p.subGridModel[0].width[i]);
+							$(tddiv).css( "width", ts.p.subGridModel[0].width[i] +"px");
 							$(trdiv).append(tddiv);
 						}
 						$(dummy).append(trdiv);
@@ -10213,7 +10213,7 @@ var $ = jQuery;
 						for (i = 0; i<ts.p.subGridModel[0].name.length; i++) {
 							tddiv = $("<th class='ui-state-default ui-th-subgrid ui-th-column ui-th-"+ts.p.direction+"'></th>");
 							$(tddiv).html(ts.p.subGridModel[0].name[i]);
-							$(tddiv).width( ts.p.subGridModel[0].width[i]);
+							$(tddiv).css( "width", ts.p.subGridModel[0].width[i]+"px");
 							$(trdiv).append(tddiv);
 						}
 						$(dummy).append(trdiv);
@@ -11815,8 +11815,8 @@ var $ = jQuery;
 								return el;
 							},
 							update: function(self, p) {
-								p.css("height", (parseInt(self.currentItem.css("height"))-parseInt(self.currentItem.css("padding-top"))-parseInt(self.currentItem.css("padding-bottom")) - parseInt(self.currentItem.css('paddingTop')||0, 10) - parseInt(self.currentItem.css('paddingBottom')+"px")||0, 10));
-								p.width(self.currentItem.innerWidth() - parseInt(self.currentItem.css('paddingLeft')||0, 10) - parseInt(self.currentItem.css('paddingRight')||0, 10));
+								p.css("height", ((parseInt(self.currentItem.css("height"))-parseInt(self.currentItem.css("padding-top"))-parseInt(self.currentItem.css("padding-bottom")) - parseInt(self.currentItem.css('paddingTop')||0, 10) - parseInt(self.currentItem.css('paddingBottom')))+"px"||0, 10));
+								p.css("width", ((self.currentItem.innerWidth() - parseInt(self.currentItem.css('paddingLeft')||0, 10) - parseInt(self.currentItem.css('paddingRight')))+"px"||0, 10));
 							}
 						},
 						"update": function(event, ui) {
@@ -12271,8 +12271,8 @@ var $ = jQuery;
 		jQuery(selector).each(function() {
 			if(this.grid) {return;} //Adedd from Tony Tomov
 			// This is a small "hack" to make the width of the jqGrid 100%
-			jQuery(this).width("99%");
-			var w = jQuery(this).width();
+			jQuery(this).css("width", "99%");
+			var w = parseInt(jQuery(this).css("width"));
 
 			// Text whether we have single or multi select
 			var inputCheckbox = jQuery('tr td:first-child input[type=checkbox]:first', jQuery(this));
@@ -12298,7 +12298,7 @@ var $ = jQuery;
 					colModel.push({
 						name: jQuery(this).attr("id") || jQuery.trim(jQuery.jgrid.stripHtml(jQuery(this).html())).split(' ').join('_'),
 						index: jQuery(this).attr("id") || jQuery.trim(jQuery.jgrid.stripHtml(jQuery(this).html())).split(' ').join('_'),
-						width: jQuery(this).width() || 150
+						width: parseInt(jQuery(this).css("width")) || 150
 					});
 					colNames.push(jQuery(this).html());
 				}

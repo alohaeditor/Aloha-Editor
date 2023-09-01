@@ -1011,7 +1011,7 @@ define([
 
 					return false;
 				};
-				this.wai = jQuery('<div/>').width(25).css("height", 12+"px").click(clickHandler);
+				this.wai = jQuery('<div/>').css("width", 25 + "px").css("height", 12+"px").click(clickHandler);
 				columnToInsert.append(this.wai);
 			}
 
@@ -1862,14 +1862,14 @@ define([
 
 				if (gridCi === gridId ) {
 					if (!reduceToWidth) {
-						reduceToWidth = currentCell.width() - pixelsMoved;
+						reduceToWidth = parseInt(currentCell.css("width")) - pixelsMoved;
 					}
 
 					Utils.resizeCellWidth( currentCell, reduceToWidth );
 
 				} else if (gridCi === gridId - 1) {
 					if (!expandToWidth) {
-						expandToWidth = currentCell.width() + pixelsMoved;
+						expandToWidth = parseInt(currentCell.css("width"))+ pixelsMoved;
 					}
 
 					Utils.resizeCellWidth( currentCell, expandToWidth );
@@ -2097,7 +2097,7 @@ define([
 			var expandToWidth = pixelsMoved - Utils.getCellBorder(lastCell) - Utils.getCellPadding(lastCell),
 				cellChanges = [],
 				gridCellWidthBefore = 0,
-				tableWidthBefore = table.width();
+				tableWidthBefore = parseInt(table.css("width"));
 
 			Utils.walkCells(rows, function(ri, ci, gridCi, colspan, rowspan) {
 				var currentCell = jQuery( jQuery( rows[ri] ).children()[ ci ] );
@@ -2110,10 +2110,10 @@ define([
 				// we keep a list of changes an apply them in a second run
 				// in order to not change the values we are calculating with during the process
 				if (gridCi === gridId ) {
-					gridCellWidthBefore = currentCell.width();
+					gridCellWidthBefore = parseInt(currentCell.css("width"));
 					cellChanges.push({cell : currentCell, width : expandToWidth});
 				} else {
-					cellChanges.push({cell : currentCell, width : currentCell.width()});
+					cellChanges.push({cell : currentCell, width : parseInt(currentCell.css("width"))});
 				}
 				return true;
 			});
@@ -2151,8 +2151,8 @@ define([
 			jQuery('body').append( guide );
 
 			// set the maximum and minimum resize
-			var maxPageX = tableContainer.offset().left + tableContainer.width();
-			var minPageX = lastCell.offset().left + ( lastCell.innerWidth() - lastCell.width() ) + Utils.getMinColWidth( lastCell );
+			var maxPageX = tableContainer.offset().left + parseInt(tableContainer.css("width"));
+			var minPageX = lastCell.offset().left + ( lastCell.innerWidth() - parseInt(lastCell.css("width")) ) + Utils.getMinColWidth( lastCell );
 
 			// unset the selection type
 			that.selection.resizeMode = true;

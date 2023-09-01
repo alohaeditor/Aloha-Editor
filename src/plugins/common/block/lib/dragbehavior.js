@@ -407,7 +407,7 @@ define([
 		$hElm
 			.css('zIndex', parseInt($elm.zIndex(), 10) + 1)
 			.offset($elm.offset())
-			.width($elm.outerWidth())
+			.css("width", $elm.outerWidth() + "px")
 			.css("height", $elm.outerHeight() + "px");
 
 	};
@@ -467,13 +467,13 @@ define([
 		if (this.insertBeforeOrAfterMode === 'BEFORE') {
 			$hElm
 				.css('zIndex', parseInt($elm.zIndex(), 10) + 1)
-				.width($elm.outerWidth())
+				.css("width", $elm.outerWidth() + "px")
 				.css("height", edgeHeight+"px");
 			$elm.before($hElm);
 		} else {
 			$hElm
 				.css('zIndex', parseInt($elm.zIndex(), 10) + 1)
-				.width($elm.outerWidth())
+				.css("width",$elm.outerWidth() + "px")
 				.css("height",edgeHeight + "px");
 			$elm.after($hElm);
 		}

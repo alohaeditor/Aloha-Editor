@@ -83,7 +83,7 @@ define([
 			element.addClass(props.cls);
 		}
 		if (props.width) {
-			element.width(props.width);
+			element.css("width",props.width + "px");
 		}
 
 		component = Ui.adopt(props.name, Component, {

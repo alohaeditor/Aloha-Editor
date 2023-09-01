@@ -336,7 +336,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 			}
 			
 			add_box.css({
-				left : pos.left + (el.width() / 2) - (add_box.outerWidth(true) / 2),
+				left : pos.left + (parseInt(el.css("width")) / 2) - (add_box.outerWidth(true) / 2),
 				top  : top,
 				marginTop : h,
 				opacity	  : 0
@@ -560,7 +560,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 					.animate({height: h}, 250, 'easeOutExpo');
 				
 				reply.find('input, textarea')
-					.css('width', reply.width() - 12);
+					.css('width', parseInt(reply.css("width")) - 12);
 				
 				reply.find('input').select();
 				
