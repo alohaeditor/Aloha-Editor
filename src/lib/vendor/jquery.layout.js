@@ -453,7 +453,7 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 						x.right = N($E, "right", true);
 
 						d.outerWidth = R($E.outerWidth());
-						d.outerHeight = R($E.outerHeight());
+						d.outerHeight = R(parseInt($E.css("height"))+parseInt($E.css("padding-top"))+parseInt($E.css("padding-bottom")));
 						// calc the TRUE inner-dimensions, even in quirks-mode!
 						d.innerWidth = max(0, d.outerWidth - i.left - i.right);
 						d.innerHeight = max(0, d.outerHeight - i.top - i.bottom);
@@ -605,7 +605,7 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 							, T = d.top
 							, L = d.left
 							, R = L + $E.outerWidth()
-							, B = T + $E.outerHeight()
+							, B = T + parseInt($E.css("height"))+parseInt($E.css("padding-top"))+parseInt($E.css("padding-bottom"))
 							, x = evt.pageX // evt.clientX ?
 							, y = evt.pageY // evt.clientY ?
 						;
@@ -1411,7 +1411,7 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 								$P.css(dim, "auto");
 								if ($C)
 									$C.css(dim, "auto");
-								size = (dim === "height") ? $P.outerHeight() : $P.outerWidth(); // MEASURE
+								size = (dim === "height") ? parseInt($P.css("height"))+parseInt($P.css("padding-top"))+parseInt($P.css("padding-bottom")) : $P.outerWidth(); // MEASURE
 								$P.css(dim, szP).css(vis); // RESET size & visibility
 								if ($C)
 									$C.css(dim, szC);
@@ -1439,7 +1439,7 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 							else if (s.isClosed || (s.isSliding && inclSpace))
 								return cSp;
 							else if (_c[pane].dir === "horz")
-								return $P.outerHeight() + oSp;
+								return parseInt($P.css("height"))+parseInt($P.css("padding-top"))+parseInt($P.css("padding-bottom")) + oSp;
 							else // dir === "vert"
 								return $P.outerWidth() + oSp;
 						}
@@ -1466,7 +1466,7 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 								, altPane = _c.oppositeEdge[pane]
 								, altS = state[altPane]
 								, $altP = $Ps[altPane]
-								, altPaneSize = (!$altP || altS.isVisible === false || altS.isSliding ? 0 : (dir == "horz" ? $altP.outerHeight() : $altP.outerWidth()))
+								, altPaneSize = (!$altP || altS.isVisible === false || altS.isSliding ? 0 : (dir == "horz" ? parseInt($altP.css("height"))+parseInt($altP.css("padding-top"))+parseInt($altP.css("padding-bottom")) : $altP.outerWidth()))
 								, altPaneSpacing = ((!$altP || altS.isHidden ? 0 : options[altPane][altS.isClosed !== false ? "spacing_closed" : "spacing_open"]) || 0)
 								// limitSize prevents this pane from 'overlapping' opposite pane
 								, containerSize = (dir == "horz" ? sC.innerHeight : sC.innerWidth)
@@ -3923,7 +3923,7 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 								showMasks(pane, {animation: true, objectsOnly: true});
 								$P.css({zIndex: z.pane_animate}); // overlay all elements during animation
 								if (pane == "south")
-									$P.css({top: sC.inset.top + sC.innerHeight - $P.outerHeight()});
+									$P.css({top: sC.inset.top + sC.innerHeight - (parseInt($P.css("height"))+parseInt($P.css("padding-top"))+parseInt($P.css("padding-bottom")))});
 								else if (pane == "east")
 									$P.css({left: sC.inset.left + sC.innerWidth - $P.outerWidth()});
 							} else { // animation DONE - RESET CSS
@@ -4246,7 +4246,7 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 								/* Panes are sometimes not sized precisely in some browsers!?
                  * This code will resize the pane up to 3 times to nudge the pane to the correct size
                  */
-								var actual = dimName === 'width' ? $P.outerWidth() : $P.outerHeight()
+								var actual = dimName === 'width' ? $P.outerWidth() : parseInt($P.css("height"))+parseInt($P.css("padding-top"))+parseInt($P.css("padding-bottom"))
 									, tries = [{
 										pane: pane
 										, count: 1
@@ -4271,7 +4271,7 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 									thisTry.cssSize = cssSize(pane, thisTry.attempt);
 									$P.css(dimName, thisTry.cssSize);
 
-									thisTry.actual = dimName == 'width' ? $P.outerWidth() : $P.outerHeight();
+									thisTry.actual = dimName == 'width' ? $P.outerWidth() : parseInt($P.css("height"))+parseInt($P.css("padding-top"))+parseInt($P.css("padding-bottom"));
 									thisTry.correct = (size === thisTry.actual);
 
 									// log attempts and alert the user of this *non-fatal error* (if showDebugMessages)
@@ -4720,7 +4720,7 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 									;
 									m = {
 										top: $C[0].offsetTop
-										, height: $C.outerHeight()
+										, height: parseInt($C.css("height"))+parseInt($C.css("padding-top"))+parseInt($C.css("padding-bottom"))
 										, numFooters: $Fs.length
 										, hiddenFooters: $Fs.length - $Fs_vis.length
 										, spaceBelow: 0 // correct if no content footer ($E)
@@ -4729,7 +4729,7 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 									m.bottom = m.top + m.height;
 									if ($F.length)
 										//spaceBelow = (LastFooter.top + LastFooter.height) [footerBottom] - Content.bottom + max(LastFooter.marginBottom, pane.paddingBotom)
-										m.spaceBelow = ($F[0].offsetTop + $F.outerHeight()) - m.bottom + _below($F);
+										m.spaceBelow = ($F[0].offsetTop + parseInt($F.css("height"))+parseInt($F.css("padding-top"))+parseInt($F.css("padding-bottom"))) - m.bottom + _below($F);
 									else // no footer - check marginBottom on Content element itself
 										m.spaceBelow = _below($C);
 								}
@@ -4789,7 +4789,7 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 										, left: left > -9999 ? left : sC.inset.left // handle offscreen-panes
 									});
 								} else { // east/west
-									paneLen = $P.outerHeight(); // s.outerHeight ||
+									paneLen = parseInt($P.css("height"))+parseInt($P.css("padding-top"))+parseInt($P.css("padding-bottom")); // s.outerHeight ||
 									s.resizerLength = paneLen;
 									$R.css({
 										height: cssH($R, paneLen) // account for borders & padding
@@ -4861,7 +4861,7 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 										// CENTER the toggler content SPAN
 										$T.children(".content").each(function () {
 											$TC = $(this);
-											$TC.css("marginTop", round((height - $TC.outerHeight()) / 2)); // could be negative
+											$TC.css("marginTop", round((height - (parseInt($TC.css("height"))+parseInt($TC.css("padding-top"))+parseInt($TC.css("padding-bottom")))) / 2)); // could be negative
 										});
 									}
 

@@ -132,7 +132,7 @@ $.layout = {
 		d.offsetWidth	= parseInt($E.css("width"))-parseInt($E.css("padding-left"))-parseInt($E.css("padding-right"));
 		d.offsetHeight	= parseInt($E.css("height"))-parseInt($E.css("padding-top"))-parseInt($E.css("padding-bottom"));
 		d.outerWidth	= $E.outerWidth();
-		d.outerHeight	= $E.outerHeight();
+		d.outerHeight	= parseInt($E.css("height"))+parseInt($E.css("padding-top"))+parseInt($E.css("padding-bottom"));
 		d.innerWidth	= d.outerWidth  - i.Left - i.Right;
 		d.innerHeight	= d.outerHeight - i.Top  - i.Bottom;
 
@@ -256,7 +256,7 @@ $.layout = {
 		,	T	= d.top
 		,	L	= d.left
 		,	R	= L + $E.outerWidth()
-		,	B	= T + $E.outerHeight()
+		,	B	= T + parseInt($E.css("height"))+parseInt($E.css("padding-top"))+parseInt($E.css("padding-bottom"))
 		,	x	= evt.pageX
 		,	y	= evt.pageY
 		;
@@ -898,7 +898,7 @@ $.fn.layout = function (opts) {
 		,	$E	= str ? $Ps[el] : $(el)
 		;
 		if (isNaN(outerHeight)) // not specified
-			outerHeight = str ? getPaneSize(el) : $E.outerHeight();
+			outerHeight = str ? getPaneSize(el) : parseInt($E.css("height"))+parseInt($E.css("padding-top"))+parseInt($E.css("padding-bottom"));
 
 		// a 'calculated' outerHeight can be passed so borders and/or padding are removed if needed
 		if (outerHeight <= 0) return 0;
@@ -1046,7 +1046,7 @@ $.fn.layout = function (opts) {
 			,	s	= $P.css(dim); // SAVE current size
 			;
 			$P.css(dim, "auto");
-			size = (dim == "height") ? $P.outerHeight() : $P.outerWidth(); // MEASURE
+			size = (dim == "height") ? parseInt($P.css("height"))+parseInt($P.css("padding-top"))+parseInt($P.css("padding-bottom")) : $P.outerWidth(); // MEASURE
 			$P.css(dim, s).css(vis); // RESET size & visibility
 			return size;
 		}
@@ -1072,7 +1072,7 @@ $.fn.layout = function (opts) {
 		else if (s.isClosed || (s.isSliding && inclSpace))
 			return cSp;
 		else if (_c[pane].dir == "horz")
-			return $P.outerHeight() + oSp;
+			return parseInt($P.css("height"))+parseInt($P.css("padding-top"))+parseInt($P.css("padding-bottom")) + oSp;
 		else // dir == "vert"
 			return $P.outerWidth() + oSp;
 	};
@@ -1098,7 +1098,7 @@ $.fn.layout = function (opts) {
 		,	altPane			= _c.altSide[pane]
 		,	altS			= state[altPane]
 		,	$altP			= $Ps[altPane]
-		,	altPaneSize		= (!$altP || altS.isVisible===false || altS.isSliding ? 0 : (dir=="horz" ? $altP.outerHeight() : $altP.outerWidth()))
+		,	altPaneSize		= (!$altP || altS.isVisible===false || altS.isSliding ? 0 : (dir=="horz" ? parseInt($altP.css("height"))+parseInt($altP.css("padding-top"))+parseInt($altP.css("padding-bottom")) : $altP.outerWidth()))
 		,	altPaneSpacing	= ((!$altP || altS.isHidden ? 0 : options[altPane][ altS.isClosed !== false ? "spacing_closed" : "spacing_open" ]) || 0)
 		//	limitSize prevents this pane from 'overlapping' opposite pane
 		,	containerSize	= (dir=="horz" ? sC.innerHeight : sC.innerWidth)
@@ -1192,7 +1192,7 @@ $.fn.layout = function (opts) {
 		d.offsetWidth	= parseInt($E.css("width"))-parseInt($E.css("padding-left"))-parseInt($E.css("padding-right")); // true=include Padding
 		d.offsetHeight	= parseInt($E.css("height"))-parseInt($E.css("padding-top"))-parseInt($E.css("padding-bottom"));
 		d.outerWidth	= $E.outerWidth();
-		d.outerHeight	= $E.outerHeight();
+		d.outerHeight	= parseInt($E.css("height"))+parseInt($E.css("padding-top"))+parseInt($E.css("padding-bottom"));
 		d.innerWidth	= d.outerWidth  - i.Left - i.Right;
 		d.innerHeight	= d.outerHeight - i.Top  - i.Bottom;
 
@@ -2822,7 +2822,7 @@ $.fn.layout = function (opts) {
 		if (doLock) {
 			$P.css({ zIndex: _c.zIndex.pane_animate }); // overlay all elements during animation
 			if (pane=="south")
-				$P.css({ top: sC.insetTop + sC.innerHeight - $P.outerHeight() });
+				$P.css({ top: sC.insetTop + sC.innerHeight - parseInt($P.css("height"))+parseInt($P.css("padding-top"))+parseInt($P.css("padding-bottom")) });
 			else if (pane=="east")
 				$P.css({ left: sC.insetLeft + sC.innerWidth - $P.outerWidth() });
 		}
@@ -3370,7 +3370,7 @@ $.fn.layout = function (opts) {
 				;
 				m = {
 					top:			$C[0].offsetTop
-				,	height:			$C.outerHeight()
+				,	height:			parseInt($C.css("height"))+parseInt($C.css("padding-top"))+parseInt($C.css("padding-bottom"))
 				,	numFooters:		$Fs.length
 				,	hiddenFooters:	$Fs.length - $Fs_vis.length
 				,	spaceBelow:		0 // correct if no content footer ($E)
@@ -3379,7 +3379,7 @@ $.fn.layout = function (opts) {
 					m.bottom		= m.top + m.height;
 				if ($F.length)
 					//spaceBelow = (LastFooter.top + LastFooter.height) [footerBottom] - Content.bottom + max(LastFooter.marginBottom, pane.paddingBotom)
-					m.spaceBelow = ($F[0].offsetTop + $F.outerHeight()) - m.bottom + _below($F);
+					m.spaceBelow = ($F[0].offsetTop + parseInt($F.css("height"))+parseInt($F.css("padding-top"))+parseInt($F.css("padding-bottom"))) - m.bottom + _below($F);
 				else // no footer - check marginBottom on Content element itself
 					m.spaceBelow = _below($C);
 			};
@@ -3436,7 +3436,7 @@ $.fn.layout = function (opts) {
 				});
 			}
 			else { // east/west
-				paneLen = $P.outerHeight(); // s.outerHeight || 
+				paneLen = parseInt($P.css("height"))+parseInt($P.css("padding-top"))+parseInt($P.css("padding-bottom")); // s.outerHeight || 
 				s.resizerLength = paneLen;
 				$R.css({
 					height:	max(1, cssH($R, paneLen)) // account for borders & padding
@@ -3507,7 +3507,7 @@ $.fn.layout = function (opts) {
 					// CENTER the toggler content SPAN
 					$T.children(".content").each(function(){
 						$TC = $(this);
-						$TC.css("marginTop", Math.floor((height-$TC.outerHeight())/2)); // could be negative
+						$TC.css("marginTop", Math.floor((height-(parseInt($TC.css("height"))+parseInt($TC.css("padding-top"))+parseInt($TC.css("padding-bottom"))))/2)); // could be negative
 					});
 				}
 

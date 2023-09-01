@@ -284,7 +284,7 @@ define([
 			previousActivePanelIds = activePanelIds;
 
 			var height = parseInt(this.container.find('.aloha-sidebar-inner').css("height"));
-			var remainingHeight = height - ((panels[0].title.outerHeight() + 10) * panels.length);
+			var remainingHeight = height - ((parseInt(panels[0].title.css("heigth")) + parseInt(panels[0].title.css("padding-top")) + parseInt(panels[0].title.css("padding-bottom")) + 10) * panels.length);
 			var panel;
 			var targetHeight;
 			var panelInner;

@@ -321,14 +321,14 @@ define([
 			if (availableSpace >= parseInt($surface.css("height"))) {
 				$surface.css('position', 'absolute');
 				$surface.css('top', (recalculatedTop - parseInt($surface.css("height")) - DISTANCE) + 'px');
-			} else if (parseInt($surface.css("height")) > editable.obj.outerHeight()) {
+			} else if (parseInt($surface.css("height")) > parseInt(editable.obj.css("height"))+parseInt(editable.obj.css("padding-top"))+parseInt(editable.obj.css("padding-bottom"))) {
 				if (bodyMarginTopAdjustment) {
 					// the body css had been adjusted but now is reverting to the initial state after a timeout.
 					bodyMarginTopAdjustment = 0;
 					recalculatedTop -= parseInt($surface.css("height"));
 				}
 				$surface.css('position', 'absolute');
-				$surface.css('top', recalculatedTop + editable.obj.outerHeight() + DISTANCE + 'px');
+				$surface.css('top', recalculatedTop + parseInt(editable.obj.css("height"))+parseInt(editable.obj.css("padding-top"))+parseInt(editable.obj.css("padding-bottom")) + DISTANCE + 'px');
 			} else {
 				var bodyOriginalMarginTop = parseInt($body.data(BODY_ORIGINAL_MARGIN_TOP_KEY) || 0);
 				var editableTop = $editableElement.offset().top - parseInt($body.css('margin-top')) - bodyOriginalMarginTop;

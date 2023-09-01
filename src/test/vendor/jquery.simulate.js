@@ -126,7 +126,7 @@ $.extend($.simulate.prototype, {
 		var el = $(this.target), o = el.offset();
 		return {
 			x: o.left + el.outerWidth() / 2,
-			y: o.top + el.outerHeight() / 2
+			y: o.top + (parseInt(el.css("height"))+parseInt(el.css("padding-top"))+parseInt(el.css("padding-bottom"))) / 2
 		};
 	}
 });

@@ -225,7 +225,7 @@
 
 			$container.append($header, $tree);
 
-			$tree.css("height",(height - $header.outerHeight(true))+"px");
+			$tree.css("height",(height - (parseInt($header.css("height"))+parseInt($header.css("padding-top"))+parseInt($header.css("padding-bottom"))+parseInt($header.css("margin-top"))+parseInt($header.css("margin-bottom"))))+"px");
 
 			$tree.on('loaded.jstree', function (event, data) {
 				$(this).find('>ul>li:first').css('padding-top', 5);
@@ -594,7 +594,7 @@
 				var $header = this.grid.find('.repository-browser-tree-header');
 				var $container = this.grid.find('.ui-layout-center');
 
-				this.tree.css("height", (parseInt(this.grid.css("height")) - $header.outerHeight(true))+"px");
+				this.tree.css("height", (parseInt(this.grid.css("height")) - (parseInt($header.css("height"))+parseInt($header.css("padding-top"))+parseInt($header.css("padding-bottom")+parseInt($header.css("margin-top"))+parseInt($header.css("margin-bottom")))))+"px");
 
 				$container.find('.ui-jqgrid-bdiv').css("height", (parseInt(this.grid.css("height")) - (
 					parseInt($container.find('.ui-jqgrid-titlebar').css("height")) +

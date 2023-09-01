@@ -567,7 +567,7 @@ define([
 						return false;
 					}
 
-					var cursorOffset = e.pageY - ( row.offset().top + row.outerHeight() );
+					var cursorOffset = e.pageY - ( row.offset().top + parseInt(row.css("height"))+parseInt(row.css("padding-top"))+parseInt(row.css("padding-bottom")) );
 					return cursorOffset > (mouseOffset * -1) && cursorOffset < mouseOffset;
 				};
 
@@ -1996,14 +1996,14 @@ define([
 
 			var guideTop = function() {
 				if (lastRow) {
-					return cell.offset().top + cell.outerHeight();
+					return cell.offset().top + parseInt(cell.css("height"))+parseInt(cell.css("padding-top"))+parseInt(cell.css("padding-bottom"));
 				} else {
 					return cell.offset().top;
 				}
 			};
 
 			var width = parseInt(cell.closest('tbody').css("width"))-parseInt(cell.closest('tbody').css("padding-left"))-parseInt(cell.closest('tbody').css("padding-right"));
-			var height = cell.outerHeight() - parseInt(cell.css("height"))-parseInt(cell.css("padding-top"))-parseInt(cell.css("padding-bottom"));
+			var height = parseInt(cell.css("height"))+parseInt(cell.css("padding-top"))+parseInt(cell.css("padding-bottom")) - parseInt(cell.css("height"))-parseInt(cell.css("padding-top"))-parseInt(cell.css("padding-bottom"));
 
 			guide.css({
 				'width': (width < 1) ? 1 : width,
@@ -2040,7 +2040,7 @@ define([
 				var pixelsMoved = 0;
 
 				if (lastRow) {
-					pixelsMoved = e.pageY - ( cell.offset().top + cell.outerHeight() );
+					pixelsMoved = e.pageY - ( cell.offset().top + parseInt(cell.css("height"))+parseInt(toHide.css("padding-top"))+parseInt(cell.css("padding-bottom")) );
 				} else {
 					pixelsMoved = e.pageY - cell.offset().top;
 				}

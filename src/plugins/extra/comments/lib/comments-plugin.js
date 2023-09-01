@@ -322,7 +322,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 				textarea = add_box.find('textarea').removeClass(clss + '-error').val(''),
 				h	= parseInt(content.css("height")),
 				ah	= 30,
-				top = pos.top - (add_box.outerHeight(true) + ah);
+				top = pos.top - (parseInt(add_box.css("height"))+parseInt(add_box.css("padding-top"))+parseInt(add_box.css("padding-bottom"))+parseInt(add_box.css("margin-top"))+parseInt(add_box.css("margin-bottom")) + ah);
 			
 			if (top <= 0) {
 				scroll_to = pos.top - ah;

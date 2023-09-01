@@ -822,7 +822,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 				}
 				return {
 					width: elem.outerWidth(),
-					height: elem.outerHeight(),
+					height: parseInt(elem.css("heigth")) + parseInt(elem.css("padding-top")) + parseInt(elem.css("padding-bottom")),
 					offset: elem.offset()
 				};
 			}
@@ -879,7 +879,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 						scrollLeft: withinElement.scrollLeft(),
 						scrollTop: withinElement.scrollTop(),
 						width: withinElement.outerWidth(),
-						height: withinElement.outerHeight()
+						height: parseInt(withinElement.css("heigth")) + parseInt(withinElement.css("padding-top")) + parseInt(withinElement.css("padding-bottom"))
 					};
 				}
 			};
@@ -974,7 +974,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					var collisionPosition, using,
 						elem = $( this ),
 						elemWidth = elem.outerWidth(),
-						elemHeight = elem.outerHeight(),
+						elemHeight = parseInt(elem.css("heigth")) + parseInt(elem.css("padding-top")) + parseInt(elem.css("padding-bottom")),
 						marginLeft = parseCss( this, "marginLeft" ),
 						marginTop = parseCss( this, "marginTop" ),
 						collisionWidth = elemWidth + marginLeft + parseCss( this, "marginRight" ) +
@@ -982,7 +982,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 						collisionHeight = elemHeight + marginTop + parseCss( this, "marginBottom" ) +
 							scrollInfo.height,
 						position = $.extend( {}, basePosition ),
-						myOffset = getOffsets( offsets.my, elem.outerWidth(), elem.outerHeight() );
+						myOffset = getOffsets( offsets.my, elem.outerWidth(), parseInt(elem.css("heigth")) + parseInt(elem.css("padding-top")) + parseInt(elem.css("padding-bottom")) );
 
 					if ( options.my[ 0 ] === "right" ) {
 						position.left -= elemWidth;
@@ -2332,7 +2332,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 						// Wrap the element
 						var props = {
 								width: element.outerWidth( true ),
-								height: element.outerHeight( true ),
+								height: parseInt(element.css("heigth")) + parseInt(element.css("padding-top")) + parseInt(element.css("padding-bottom")) + parseInt(elem.css("margin-top")) + parseInt(elem.css("margin-bottom")),
 								"float": element.css( "float" )
 							},
 							wrapper = $( "<div></div>" )
@@ -2449,7 +2449,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					return {
 						height: parseInt(element.css("height")) * y,
 						width: parseInt(element.css("width")) * x,
-						outerHeight: element.outerHeight() * y,
+						outerHeight: parseInt(element.css("heigth")) + parseInt(element.css("padding-top")) + parseInt(element.css("padding-bottom")) * y,
 						outerWidth: element.outerWidth() * x
 					};
 
@@ -2551,7 +2551,9 @@ define('jqueryui', ['jquery'], function (jQuery) {
 						marginRight: element.css( "marginRight" )
 					} )
 						.outerWidth( element.outerWidth() )
-						.outerHeight( element.outerHeight() );
+						.css("height", parseInt(element.css("heigth")))
+						.css("padding-top", parseInt(element.css("padding-top")))
+						.css("padding-bottom", parseInt(element.css("padding-bottom")) );
 
 					if ( /^(static|relative)/.test( cssPosition ) ) {
 						cssPosition = "absolute";
@@ -2573,7 +2575,9 @@ define('jqueryui', ['jquery'], function (jQuery) {
 							"float": element.css( "float" )
 						} )
 							.outerWidth( element.outerWidth() )
-							.outerHeight( element.outerHeight() )
+							.css("height", parseInt(element.css("heigth")))
+							.css("padding-top", parseInt(element.css("padding-top")))
+							.css("padding-bottom", parseInt(element.css("padding-bottom")) )
 							.addClass( "ui-effects-placeholder" );
 
 						element.data( dataSpace + "placeholder", placeholder );
@@ -2899,7 +2903,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 
 			function parseClip( str, element ) {
 				var outerWidth = element.outerWidth(),
-					outerHeight = element.outerHeight(),
+					outerHeight = parseInt(element.css("height"))+parseInt(element.css("padding-top"))+parseInt(element.css("padding-bottom")),
 					clipRegex = /^rect\((-?\d*\.?\d*px|-?\d+%|auto),?\s*(-?\d*\.?\d*px|-?\d+%|auto),?\s*(-?\d*\.?\d*px|-?\d+%|auto),?\s*(-?\d*\.?\d*px|-?\d+%|auto)\)$/,
 					values = clipRegex.exec( str ) || [ "", 0, outerWidth, outerHeight, 0 ];
 
@@ -3272,7 +3276,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 
 				// Width and height of a piece
 				width = Math.ceil( element.outerWidth() / cells ),
-				height = Math.ceil( element.outerHeight() / rows ),
+				height = Math.ceil( (parseInt(element.css("height"))+parseInt(element.css("padding-top"))+parseInt(element.css("padding-bottom"))) / rows ),
 				pieces = [];
 
 			// Children animate complete:
@@ -4677,11 +4681,11 @@ define('jqueryui', ['jquery'], function (jQuery) {
 						if ( position === "absolute" || position === "fixed" ) {
 							return;
 						}
-						maxHeight -= elem.outerHeight( true );
+						maxHeight -= parseInt(elem.css("height"))+parseInt(elem.css("padding-top"))+parseInt(elem.css("padding-bottom")) + parseInt(elem.css("margin-top"))+parseInt(elem.css("margin-bottom"));
 					} );
 
 					this.headers.each( function() {
-						maxHeight -= $( this ).outerHeight( true );
+						maxHeight -= parseInt($(this).css("height"))+parseInt($(this).css("padding-top"))+parseInt($(this).css("padding-bottom")) + parseInt($(this).css("margin-top"))+parseInt($(this).css("margin-bottom"));
 					} );
 
 					this.headers.next()
@@ -4884,7 +4888,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					return toHide.animate( this.hideProps, duration, easing, complete );
 				}
 
-				total = toShow.show().outerHeight();
+				total = parseInt(toShow.show().css("height"))+parseInt(toShow.show().css("padding-top"))+parseInt(toShow.show().css("padding-bottom")) 
 				toHide.animate( this.hideProps, {
 					duration: duration,
 					easing: easing,
@@ -4905,7 +4909,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 									adjust += fx.now;
 								}
 							} else if ( that.options.heightStyle !== "content" ) {
-								fx.now = Math.round( total - toHide.outerHeight() - adjust );
+								fx.now = Math.round( total - parseInt(toHide.css("height"))+parseInt(toHide.css("padding-top"))+parseInt(toHide.css("padding-bottom")) - adjust );
 								adjust = 0;
 							}
 						}
@@ -5388,7 +5392,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					offset = item.offset().top - this.activeMenu.offset().top - borderTop - paddingTop;
 					scroll = this.activeMenu.scrollTop();
 					elementHeight = parseInt(this.activeMenu.css("height"));
-					itemHeight = item.outerHeight();
+					itemHeight = parseInt(item.css("height"))+parseInt(item.css("padding-top"))+parseInt(item.css("padding-bottom"));
 
 					if ( offset < 0 ) {
 						this.activeMenu.scrollTop( scroll + offset );
@@ -5574,7 +5578,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 
 					// jQuery 3.2 doesn't include scrollbars in innerHeight, add it back.
 					if ( $.fn.jquery.indexOf( "3.2." ) === 0 ) {
-						height += this.element[ 0 ].offsetHeight - this.element.outerHeight();
+						height += this.element[ 0 ].offsetHeight - parseInt(this.element.css("height"))+parseInt(this.element.css("padding-top"))+parseInt(this.element.css("padding-bottom"));
 					}
 
 					this.active.nextAll( ".ui-menu-item" ).each( function() {
@@ -5604,7 +5608,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 
 					// jQuery 3.2 doesn't include scrollbars in innerHeight, add it back.
 					if ( $.fn.jquery.indexOf( "3.2." ) === 0 ) {
-						height += this.element[ 0 ].offsetHeight - this.element.outerHeight();
+						height += this.element[ 0 ].offsetHeight - parseInt(this.element.css("height"))+parseInt(this.element.css("padding-top"))+parseInt(this.element.css("padding-bottom"));
 					}
 
 					this.active.prevAll( ".ui-menu-item" ).each( function() {
@@ -5619,7 +5623,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 			},
 
 			_hasScroll: function() {
-				return this.element.outerHeight() < this.element.prop( "scrollHeight" );
+				return parseInt(this.element.css("height"))+parseInt(this.element.css("padding-top"))+parseInt(this.element.css("padding-bottom")) < this.element.prop( "scrollHeight" );
 			},
 
 			select: function( event ) {
@@ -8223,9 +8227,9 @@ define('jqueryui', ['jquery'], function (jQuery) {
 			/* Check positioning to remain on screen. */
 			_checkOffset: function( inst, offset, isFixed ) {
 				var dpWidth = inst.dpDiv.outerWidth(),
-					dpHeight = inst.dpDiv.outerHeight(),
+					dpHeight = parseInt(inst.dpDiv.css("height"))+parseInt(inst.dpDiv.css("padding-top"))+parseInt(inst.dpDiv.css("padding-bottom")),
 					inputWidth = inst.input ? inst.input.outerWidth() : 0,
-					inputHeight = inst.input ? inst.input.outerHeight() : 0,
+					inputHeight = inst.input ? parseInt(inst.input.css("height"))+parseInt(inst.input.css("padding-top"))+parseInt(inst.input.css("padding-bottom")) : 0,
 					viewWidth = document.documentElement.clientWidth + ( isFixed ? 0 : $( document ).scrollLeft() ),
 					viewHeight = document.documentElement.clientHeight + ( isFixed ? 0 : $( document ).scrollTop() );
 
@@ -9919,7 +9923,9 @@ define('jqueryui', ['jquery'], function (jQuery) {
 						.css( "position", "absolute" )
 						.appendTo( iframe.parent() )
 						.outerWidth( iframe.outerWidth() )
-						.outerHeight( iframe.outerHeight() )
+						.css("height", parseInt(iframe.css("height")))
+						.css("padding-top", parseInt(iframe.css("padding-top")))
+						.css("padding-bottom", parseInt(iframe.css("padding-bottom")) )
 						.offset( iframe.offset() )[ 0 ];
 				} );
 			},
@@ -10277,7 +10283,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 			_cacheHelperProportions: function() {
 				this.helperProportions = {
 					width: this.helper.outerWidth(),
-					height: this.helper.outerHeight()
+					height: parseInt(this.hepler.css("height"))+parseInt(this.hepler.css("padding-top"))+parseInt(this.hepler.css("padding-bottom"))
 				};
 			},
 
@@ -10880,7 +10886,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 						if ( this !== i.element[ 0 ] ) {
 							i.snapElements.push( {
 								item: this,
-								width: $t.outerWidth(), height: $t.outerHeight(),
+								width: $t.outerWidth(), height: parseInt($t.css("height"))+parseInt($t.css("padding-top"))+parseInt($t.css("padding-bottom")),
 								top: $o.top, left: $o.left
 							} );
 						}
@@ -11152,7 +11158,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 							overflow: "hidden",
 							position: this.element.css( "position" ),
 							width: this.element.outerWidth(),
-							height: this.element.outerHeight(),
+							height: parseInt(this.element.css("height"))+parseInt(this.element.css("padding-top"))+parseInt(this.element.css("padding-bottom")),
 							top: this.element.css( "top" ),
 							left: this.element.css( "left" )
 						} )
@@ -11237,7 +11243,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					this.originalElement.css( {
 						position: wrapper.css( "position" ),
 						width: wrapper.outerWidth(),
-						height: wrapper.outerHeight(),
+						height: parseInt(wrapper.css("height"))+parseInt(wrapper.css("padding-top"))+parseInt(wrapper.css("padding-bottom")),
 						top: wrapper.css( "top" ),
 						left: wrapper.css( "left" )
 					} ).insertAfter( wrapper );
@@ -11332,7 +11338,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 							axis = $( this.handles[ i ], this.element );
 
 							padWrapper = /sw|ne|nw|se|n|s/.test( i ) ?
-								axis.outerHeight() :
+								parseInt(axis.css("height"))+parseInt(axis.css("padding-top"))+parseInt(axis.css("padding-bottom")) :
 								axis.outerWidth();
 
 							padPos = [ "padding",
@@ -11419,7 +11425,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 
 				this.originalSize = this._helper ? {
 					width: el.outerWidth(),
-					height: el.outerHeight()
+					height: parseInt(el.css("height"))+parseInt(el.css("padding-top"))+parseInt(el.css("padding-bottom"))
 				} : {
 					width: parseInt(el.css("width")),
 					height: parseInt(el.css("height"))
@@ -11427,7 +11433,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 
 				this.sizeDiff = {
 					width: el.outerWidth() - parseInt(el.css("width")),
-					height: el.outerHeight() - parseInt(el.css("height"))
+					height: parseInt(el.css("height"))+parseInt(el.css("padding-top"))+parseInt(el.css("padding-bottom")) - parseInt(el.css("height"))
 				};
 
 				this.originalPosition = { left: curleft, top: curtop };
@@ -11756,7 +11762,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					this._addClass( this.helper, this._helper );
 					this.helper.css( {
 						width: this.element.outerWidth(),
-						height: this.element.outerHeight(),
+						height: parseInt(this.element.css("height"))+parseInt(this.element.css("padding-top"))+parseInt(this.element.css("padding-bottom")),
 						position: "absolute",
 						left: this.elementOffset.left + "px",
 						top: this.elementOffset.top + "px",
@@ -12042,7 +12048,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					helper = $( that.helper ),
 					ho = helper.offset(),
 					w = helper.outerWidth() - that.sizeDiff.width,
-					h = helper.outerHeight() - that.sizeDiff.height;
+					h = parseInt(helper.css("height"))+parseInt(helper.css("padding-top"))+parseInt(helper.css("padding-bottom")) - that.sizeDiff.height;
 
 				if ( that._helper && !o.animate && ( /relative/ ).test( ce.css( "position" ) ) ) {
 					$( this ).css( {
@@ -13009,11 +13015,11 @@ define('jqueryui', ['jquery'], function (jQuery) {
 
 				// Reset wrapper sizing
 				// determine the height of all the non-content elements
-				nonContentHeight = this.uiDialog.css( {
+				nonContentHeight = parseInt(this.uiDialog.css( {
 					height: "auto",
 					width: options.width
 				} )
-					.outerHeight();
+					.css("height"));
 				minContentHeight = Math.max( 0, options.minHeight - nonContentHeight );
 				maxContentHeight = typeof options.maxHeight === "number" ?
 					Math.max( 0, options.maxHeight - nonContentHeight ) :
@@ -13042,7 +13048,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 						.css( {
 							position: "absolute",
 							width: iframe.outerWidth(),
-							height: iframe.outerHeight()
+							height: parseInt(iframe.css("height"))+parseInt(iframe.css("padding-top"))+parseInt(iframe.css("padding-bottom"))
 						} )
 						.appendTo( iframe.parent() )
 						.offset( iframe.offset() )[ 0 ];
@@ -13871,7 +13877,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 							left: pos.left,
 							top: pos.top,
 							right: pos.left + $this.outerWidth(),
-							bottom: pos.top + $this.outerHeight(),
+							bottom: pos.top + parseInt($this.css("height"))+parseInt($this.css("padding-top"))+parseInt($this.css("padding-bottom")),
 							startselected: false,
 							selected: $this.hasClass( "ui-selected" ),
 							selecting: $this.hasClass( "ui-selecting" ),
@@ -14953,7 +14959,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 
 				this.elementSize = {
 					width: this.element.outerWidth(),
-					height: this.element.outerHeight()
+					height: parseInt(this.element.css("height"))+parseInt(this.element.css("padding-top"))+parseInt(this.element.css("padding-bottom"))
 				};
 				this.elementOffset = this.element.offset();
 
@@ -16363,7 +16369,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 
 					if ( !fast ) {
 						item.width = t.outerWidth();
-						item.height = t.outerHeight();
+						item.height = parseInt(t.css("height"))+parseInt(t.css("padding-top"))+parseInt(t.css("padding-bottom"));
 					}
 
 					p = t.offset();
@@ -16399,7 +16405,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 						this.containers[ i ].containerCache.width =
 							this.containers[ i ].element.outerWidth();
 						this.containers[ i ].containerCache.height =
-							this.containers[ i ].element.outerHeight();
+						parseInt(this.containers[i].element.css("height"))+parseInt(this.containers[i].element.css("padding-top"))+parseInt(this.containers[i].element.css("padding-bottom"));
 					}
 				}
 
@@ -16732,7 +16738,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 			_cacheHelperProportions: function() {
 				this.helperProportions = {
 					width: this.helper.outerWidth(),
-					height: this.helper.outerHeight()
+					height: parseInt(this.helper.css("height"))+parseInt(this.helper.css("padding-top"))+parseInt(this.helper.css("padding-bottom"))
 				};
 			},
 
@@ -18209,7 +18215,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 
 				if ( heightStyle === "fill" ) {
 					maxHeight = parseInt(parent.css("height"));
-					maxHeight -= this.element.outerHeight() - parseInt(this.element.css("height"));
+					maxHeight -= parseInt(this.element.css("height"))+parseInt(this.element.css("padding-top"))+parseInt(this.element.css("padding-bottom")) - parseInt(this.element.css("height"));
 
 					this.element.siblings( ":visible" ).each( function() {
 						var elem = $( this ),
@@ -18218,11 +18224,11 @@ define('jqueryui', ['jquery'], function (jQuery) {
 						if ( position === "absolute" || position === "fixed" ) {
 							return;
 						}
-						maxHeight -= elem.outerHeight( true );
+						maxHeight -= parseInt(elem.css("height"))+parseInt(elem.css("padding-top"))+parseInt(elem.css("padding-bottom"))+parseInt(elem.css("margin-top"))+parseInt(elem.css("margin-bottom"));
 					} );
 
 					this.element.children().not( this.panels ).each( function() {
-						maxHeight -= $( this ).outerHeight( true );
+						maxHeight -= parseInt($(this).css("height"))+parseInt($(this).css("padding-top"))+parseInt($(this).css("padding-bottom"))+parseInt($(this).css("margin-top"))+parseInt($(this).css("margin-bottom"));
 					} );
 
 					this.panels.each( function() {

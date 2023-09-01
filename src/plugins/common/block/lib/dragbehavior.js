@@ -408,7 +408,7 @@ define([
 			.css('zIndex', parseInt($elm.zIndex(), 10) + 1)
 			.offset($elm.offset())
 			.css("width", $elm.outerWidth() + "px")
-			.css("height", $elm.outerHeight() + "px");
+			.css("height", parseInt($elm.css("height"))+parseInt($elm.css("padding-top"))+parseInt($elm.css("padding-bottom"))+ "px");
 
 	};
 
@@ -423,7 +423,7 @@ define([
 		var $elm = $(elm),
 			dragBehavior = this,
 			elmTop = $elm.offset().top,
-			halfHeight = $elm.outerHeight() / 2;
+			halfHeight = (parseInt($elm.css("height"))+parseInt($elm.css("padding-top"))+parseInt($elm.css("padding-bottom"))) / 2;
 
 		if (!allowDropRegions($elm, this.$element)) {
 			return;

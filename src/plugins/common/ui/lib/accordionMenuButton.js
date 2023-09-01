@@ -159,7 +159,8 @@ define([
 
 		function expand(wrapperHeight) {
 			var MARGIN = 10;
-			var itemsListHeight = parseInt($listWrapper.find('.' + CATEGORY_ITEMS_LIST_CLASS).outerHeight(true));
+			var itemsList = $listWrapper.find('.' + CATEGORY_ITEMS_LIST_CLASS)
+			var itemsListHeight = parseInt(itemsList.css("height"))+parseInt(itemsList.css("padding-top"))+parseInt(itemsList.css("padding-bottom"))+parseInt(itemsList.css("margin-top"))+parseInt(itemsList.css("margin-bottom"));
 			var wrapperRect = $listWrapper.closest('.' + ACCORDION_WRAPPER_CLASS).get(0).getBoundingClientRect();
 			var availableHeight = window.innerHeight - wrapperRect.top - wrapperHeight - MARGIN;
 			var maxHeight = itemsListHeight < availableHeight ? itemsListHeight : availableHeight;

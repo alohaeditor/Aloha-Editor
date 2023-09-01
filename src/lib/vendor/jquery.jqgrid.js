@@ -840,7 +840,7 @@ var $ = jQuery;
 						if(table[0].rows.length) {
 							try {
 								rows = table[0].rows[1];
-								rh = rows ? $(rows).outerHeight() || grid.prevRowHeight : grid.prevRowHeight;
+								rh = rows ? parseInt($(rows).css("height"))+parseInt($(rows).css("padding-top"))+parseInt($(rows).css("padding-bottom")) || grid.prevRowHeight : grid.prevRowHeight;
 							} catch (pv) {
 								rh = grid.prevRowHeight;
 							}
@@ -1667,7 +1667,7 @@ var $ = jQuery;
 							var rows = $("tbody:first > tr:gt(0)", ts.grid.bDiv);
 							base = to - rows.length;
 							ts.p.reccount = rows.length;
-							var rh = rows.outerHeight() || ts.grid.prevRowHeight;
+							var rh = parseInt(rows.css("height"))+parseInt(rows.css("padding-top"))+parseInt(rows.css("padding-bottom")) || ts.grid.prevRowHeight;
 							if (rh) {
 								var top = base * rh;
 								var height = parseInt(ts.p.records,10) * rh;
@@ -4220,7 +4220,7 @@ var $ = jQuery;
 						$htable.find("div.ui-jqgrid-sortable").each(function () {
 							var $ts = $(this), $parent = $ts.parent();
 							if ($parent.is(":visible") && $parent.is(":has(span.ui-jqgrid-resize)")) {
-								$ts.css('top', (parseInt($parent.css("height")) - $ts.outerHeight()) / 2 + 'px');
+								$ts.css('top', (parseInt($parent.css("height")) - parseInt($ts.css("height"))+parseInt($ts.css("padding-top"))+parseInt($ts.css("padding-bottom"))) / 2 + 'px');
 							}
 						});
 					}
@@ -4257,15 +4257,15 @@ var $ = jQuery;
 						i++;
 					}
 					if( maxfrozen>=0 && frozen) {
-						var top = $t.p.caption ? $($t.grid.cDiv).outerHeight() : 0,
+						var top = $t.p.caption ? parseInt($(t.grid.cDiv).css("height"))+parseInt($(t.grid.cDiv).css("padding-top"))+parseInt($(t.grid.cDiv).css("padding-bottom")) : 0,
 							hth = $(".ui-jqgrid-htable","#gview_"+ parseInt($.jgrid.jqID($t.p.id)).css("height"));
 						//headers
 						if($t.p.toppager) {
-							top = top + $($t.grid.topDiv).outerHeight();
+							top = top + parseInt($(t.grid.topDiv).css("height"))+parseInt($(t.grid.topDiv).css("padding-top"))+parseInt($(t.grid.topDiv).css("padding-bottom"));
 						}
 						if($t.p.toolbar[0] === true) {
 							if($t.p.toolbar[1] != "bottom") {
-								top = top + $($t.grid.uDiv).outerHeight();
+								top = top + parseInt($(t.grid.uDiv).css("height"))+parseInt($(t.grid.uDiv).css("padding-top"))+parseInt($(t.grid.uDiv).css("padding-bottom"));
 							}
 						}
 						$t.grid.fhDiv = $('<div style="position:absolute;left:0px;top:'+top+'px;height:'+hth+'px;" class="frozen-div ui-state-default ui-jqgrid-hdiv"></div>');
