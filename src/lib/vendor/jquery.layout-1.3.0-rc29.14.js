@@ -130,7 +130,7 @@ $.layout = {
 		});
 
 		d.offsetWidth	= $E.innerWidth();
-		d.offsetHeight	= $E.innerHeight();
+		d.offsetHeight	= parseInt($E.css("height"))-parseInt($E.css("padding-top"))-parseInt($E.css("padding-bottom"));
 		d.outerWidth	= $E.outerWidth();
 		d.outerHeight	= $E.outerHeight();
 		d.innerWidth	= d.outerWidth  - i.Left - i.Right;
@@ -961,7 +961,7 @@ $.fn.layout = function (opts) {
 		w = cssW($E, outerWidth);
 		$E.css({ width: w });
 		if (w > 0) {
-			if (autoHide && $E.data('autoHidden') && $E.innerHeight() > 0) {
+			if (autoHide && $E.data('autoHidden') && parseInt($E.css("height"))-parseInt($E.css("padding-top"))-parseInt($E.css("padding-bottom")) > 0) {
 				$E.show().data('autoHidden', false);
 				if (!state.browser.mozilla) // FireFox refreshes iframes - IE doesn't
 					// make hidden, then visible to 'refresh' display after animation
@@ -1190,7 +1190,7 @@ $.fn.layout = function (opts) {
 		});
 
 		d.offsetWidth	= $E.innerWidth(); // true=include Padding
-		d.offsetHeight	= $E.innerHeight();
+		d.offsetHeight	= parseInt($E.css("height"))-parseInt($E.css("padding-top"))-parseInt($E.css("padding-bottom"));
 		d.outerWidth	= $E.outerWidth();
 		d.outerHeight	= $E.outerHeight();
 		d.innerWidth	= d.outerWidth  - i.Left - i.Right;
@@ -1470,7 +1470,7 @@ $.fn.layout = function (opts) {
 				}
 				$C.css( CSS );
 
-				if ($C.is(":visible") && $C.innerHeight() < 2)
+				if ($C.is(":visible") && parseInt($C.css("height"))-parseInt($C.css("padding-top"))-parseInt($C.css("padding-bottom")) < 2)
 					alert( lang.errContainerHeight.replace(/CONTAINER/, sC.ref) );
 			}
 		} catch (ex) {}
@@ -1699,7 +1699,7 @@ $.fn.layout = function (opts) {
 			}
 		});
 
-		if ($Container.innerHeight() < 2)
+		if (parseInt($Container.css("height"))-parseInt($Container.css("padding-top"))-parseInt($Container.css("padding-bottom")) < 2)
 			alert( lang.errContainerHeight.replace(/CONTAINER/, sC.ref) );
 	};
 

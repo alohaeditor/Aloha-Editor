@@ -1220,7 +1220,7 @@ $.fn.layout = function (opts) {
 		w = cssW($E, outerWidth);
 		$E.css({ width: w });
 		if (w > 0) {
-			if (autoHide && $E.data('autoHidden') && $E.innerHeight() > 0) {
+			if (autoHide && $E.data('autoHidden') && parseInt($E.css("height"))-parseInt($E.css("padding-top"))-parseInt($E.css("padding-bottom")) > 0) {
 				$E.show().data('autoHidden', false);
 				if (!browser.mozilla) // FireFox refreshes iframes - IE does not
 					// make hidden, then visible to 'refresh' display after animation

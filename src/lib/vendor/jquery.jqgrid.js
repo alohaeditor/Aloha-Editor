@@ -8657,7 +8657,7 @@ var $ = jQuery;
 						if(!o.alerttop && !o.alertleft) {
 							if (window.innerWidth !== undefined) {
 								o.alertleft = window.innerWidth;
-								o.alerttop = window.innerHeight;
+								o.alerttop = parseInt(window.css("height"))-parseInt(window.css("padding-top"))-parseInt(window.css("padding-bottom"));
 							} else if (document.documentElement !== undefined && document.documentElement.clientWidth !== undefined && document.documentElement.clientWidth !== 0) {
 								o.alertleft = document.documentElement.clientWidth;
 								o.alerttop = document.documentElement.clientHeight;
@@ -11815,7 +11815,7 @@ var $ = jQuery;
 								return el;
 							},
 							update: function(self, p) {
-								p.css("height", (self.currentItem.innerHeight() - parseInt(self.currentItem.css('paddingTop')||0, 10) - parseInt(self.currentItem.css('paddingBottom')+"px")||0, 10));
+								p.css("height", (parseInt(self.currentItem.css("height"))-parseInt(self.currentItem.css("padding-top"))-parseInt(self.currentItem.css("padding-bottom")) - parseInt(self.currentItem.css('paddingTop')||0, 10) - parseInt(self.currentItem.css('paddingBottom')+"px")||0, 10));
 								p.width(self.currentItem.innerWidth() - parseInt(self.currentItem.css('paddingLeft')||0, 10) - parseInt(self.currentItem.css('paddingRight')||0, 10));
 							}
 						},

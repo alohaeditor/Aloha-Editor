@@ -2872,7 +2872,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 						animation = {
 							top: endPosition.top - fixTop,
 							left: endPosition.left - fixLeft,
-							height: target.innerHeight(),
+							height: parseInt(target.css("height"))-parseInt(target.css("padding-top"))-parseInt(target.css("padding-bottom")),
 							width: target.innerWidth()
 						},
 						startPosition = element.offset(),
@@ -2884,7 +2884,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 						.css( {
 							top: startPosition.top - fixTop,
 							left: startPosition.left - fixLeft,
-							height: element.innerHeight(),
+							height: parseInt(element.css("height"))-parseInt(element.css("padding-top"))-parseInt(element.css("padding-bottom")),
 							width: element.innerWidth(),
 							position: targetFixed ? "fixed" : "absolute"
 						} )
@@ -4687,7 +4687,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					this.headers.next()
 						.each( function() {
 							$( this ).css("height", (Math.max( 0, maxHeight -
-								$( this ).innerHeight() + parseInt($( this ).css("height"))) ) +"px");
+								parseInt($(this).css("height"))-parseInt($(this).css("padding-top"))-parseInt($(this).css("padding-bottom")) + parseInt($( this ).css("height"))) ) +"px");
 						} )
 						.css( "overflow", "auto" );
 				} else if ( heightStyle === "auto" ) {
@@ -5570,7 +5570,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 				}
 				if ( this._hasScroll() ) {
 					base = this.active.offset().top;
-					height = this.element.innerHeight();
+					height = parseInt(this.element.css("height"))-parseInt(this.element.css("padding-top"))-parseInt(this.element.css("padding-bottom"));
 
 					// jQuery 3.2 doesn't include scrollbars in innerHeight, add it back.
 					if ( $.fn.jquery.indexOf( "3.2." ) === 0 ) {
@@ -5600,7 +5600,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 				}
 				if ( this._hasScroll() ) {
 					base = this.active.offset().top;
-					height = this.element.innerHeight();
+					height = parseInt(this.element.css("height"))-parseInt(this.element.css("padding-top"))-parseInt(this.element.css("padding-bottom"));
 
 					// jQuery 3.2 doesn't include scrollbars in innerHeight, add it back.
 					if ( $.fn.jquery.indexOf( "3.2." ) === 0 ) {
@@ -11924,7 +11924,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					that.containerOffset = element.offset();
 					that.containerPosition = element.position();
 					that.containerSize = {
-						height: ( element.innerHeight() - p[ 3 ] ),
+						height: ( parseInt(element.css("height"))-parseInt(element.css("padding-top"))-parseInt(element.css("padding-bottom")) - p[ 3 ] ),
 						width: ( element.innerWidth() - p[ 1 ] )
 					};
 
@@ -16460,7 +16460,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 							if ( !parseInt(p.css("height")) || ( o.forcePlaceholderSize &&
 								( nodeName === "tbody" || nodeName === "tr" ) ) ) {
 								p.css("height",
-									(that.currentItem.innerHeight() -
+									(parseInt(that.currentItem.css("height"))-parseInt(that.currentItem.css("padding-top"))-parseInt(that.currentItem.css("padding-bottom")) -
 									parseInt( that.currentItem.css( "paddingTop" ) || 0, 10 ) -
 									parseInt( that.currentItem.css( "paddingBottom" ) || 0, 10 ))+"px" );
 							}
@@ -18227,7 +18227,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 
 					this.panels.each( function() {
 						$( this ).css( "height", (Math.max( 0, maxHeight -
-							$( this ).innerHeight() + parseInt($( this ).css("height")) ))+"px" );
+							parseInt($(this).css("height"))-parseInt($(this).css("padding-top"))-parseInt($(this).css("padding-bottom")) + parseInt($( this ).css("height")) ))+"px" );
 					} )
 						.css( "overflow", "auto" );
 				} else if ( heightStyle === "auto" ) {

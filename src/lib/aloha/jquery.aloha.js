@@ -381,7 +381,7 @@ define([
 		// Compare client and scroll dimensions to see if a scrollbar is
 		// needed
 
-		return $el.innerHeight() < el.scrollHeight
+		return parseInt($el.css("height"))-parseInt($el.css("padding-top"))-parseInt($el.css("padding-bottom")) < el.scrollHeight
 				|| $el.innerWidth() < el.scrollWidth;
 	}
 

@@ -708,7 +708,7 @@
 				}
 				var $container = this.grid.find('.ui-jqgrid-bdiv');
 				// reduce by 20 px to leave place for a scrollbar
-				var height = $container.innerHeight() - 20;
+				var height = parseInt($container.css("height"))-parseInt($container.css("padding-top"))-parseInt($container.css("padding-bottom")) - 20;
 				if (height) {
 					var newPageSize = Math.floor(height / this.rowHeight);
 					if (newPageSize <= 0) {

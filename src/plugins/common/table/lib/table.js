@@ -1939,7 +1939,7 @@ define([
 
 			var $cell = jQuery(cell);
 			var width = $cell.outerWidth() - $cell.innerWidth();
-			var height = $cell.closest('tbody').innerHeight();
+			var height = parseInt($cell.closest('tbody').css("height"))-parseInt($cell.closest('tbody').css("padding-top"))-parseInt($cell.closest('tbody').css("padding-bottom"))
 			$guide.css({
 				'height': (height < 1) ? 1 : height,
 				'width': (width < 1) ? 1 : width,
@@ -2003,7 +2003,7 @@ define([
 			};
 
 			var width = cell.closest( 'tbody' ).innerWidth();
-			var height = cell.outerHeight() - cell.innerHeight();
+			var height = cell.outerHeight() - parseInt(cell.css("height"))-parseInt(cell.css("padding-top"))-parseInt(cell.css("padding-bottom"));
 
 			guide.css({
 				'width': (width < 1) ? 1 : width,
@@ -2137,7 +2137,7 @@ define([
 			// create a guide
 			var guide = jQuery( '<div></div>' );
 
-			var height = table.children( 'tbody' ).innerHeight();
+			var height = parseInt(table.children('tbody').css("height"))-parseInt(table.children('tbody').css("padding-top"))-parseInt(table.children('tbody').css("padding-bottom"));
 			var width = lastCell.outerWidth() - lastCell.innerWidth();
 
 			guide.css({

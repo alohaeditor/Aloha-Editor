@@ -460,7 +460,7 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 						// layoutWidth/Height is used in calcs for manual resizing
 						// layoutW/H only differs from innerW/H when in quirks-mode - then is like outerW/H
 						d.layoutWidth = R($E.innerWidth());
-						d.layoutHeight = R($E.innerHeight());
+						d.layoutHeight = R(parseInt($E.css("height"))-parseInt($E.css("padding-top"))-parseInt($E.css("padding-bottom")));
 
 						//if ($E.prop('tagName') === 'BODY') { debugData( d, $E.prop('tagName') ); } // DEBUG
 
@@ -1331,7 +1331,7 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 							w = cssW($E, outerWidth);
 							$E.css({width: w});
 							if (w > 0) {
-								if (autoHide && $E.data('autoHidden') && $E.innerHeight() > 0) {
+								if (autoHide && $E.data('autoHidden') && parseInt($E.css("height"))-parseInt($E.css("padding-top"))-parseInt($E.css("padding-bottom")) > 0) {
 									$E.show().data('autoHidden', false);
 									if (!browser.mozilla) // FireFox refreshes iframes - IE does not
 										// make hidden, then visible to 'refresh' display after animation
