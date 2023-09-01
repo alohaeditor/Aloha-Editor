@@ -2319,7 +2319,7 @@ var $ = jQuery;
 				}
 
 				if(ts.p.autowidth===true) {
-					var pw = $(eg).innerWidth();
+					var pw = parseInt($(eg).css("width"))-parseInt($(eg).css("padding-left"))-parseInt($(eg).css("padding-right"));
 					ts.p.width = pw > 0?  pw: 'nw';
 				}
 				setColWidth();
@@ -11816,7 +11816,7 @@ var $ = jQuery;
 							},
 							update: function(self, p) {
 								p.css("height", ((parseInt(self.currentItem.css("height"))-parseInt(self.currentItem.css("padding-top"))-parseInt(self.currentItem.css("padding-bottom")) - parseInt(self.currentItem.css('paddingTop')||0, 10) - parseInt(self.currentItem.css('paddingBottom')))+"px"||0, 10));
-								p.css("width", ((self.currentItem.innerWidth() - parseInt(self.currentItem.css('paddingLeft')||0, 10) - parseInt(self.currentItem.css('paddingRight')))+"px"||0, 10));
+								p.css("width", ((parseInt(self.currentItem.css("width"))-parseInt(self.currentItem.css("padding-left"))-parseInt(self.currentItem.css("padding-right")) - parseInt(self.currentItem.css('paddingLeft')||0, 10) - parseInt(self.currentItem.css('paddingRight')))+"px"||0, 10));
 							}
 						},
 						"update": function(event, ui) {

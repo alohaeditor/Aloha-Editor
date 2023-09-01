@@ -1938,7 +1938,7 @@ define([
 			}
 
 			var $cell = jQuery(cell);
-			var width = $cell.outerWidth() - $cell.innerWidth();
+			var width = $cell.outerWidth() - parseInt($cell.css("width"))-parseInt($cell.css("padding-left"))-parseInt($cell.css("padding-right"));
 			var height = parseInt($cell.closest('tbody').css("height"))-parseInt($cell.closest('tbody').css("padding-top"))-parseInt($cell.closest('tbody').css("padding-bottom"))
 			$guide.css({
 				'height': (height < 1) ? 1 : height,
@@ -2002,7 +2002,7 @@ define([
 				}
 			};
 
-			var width = cell.closest( 'tbody' ).innerWidth();
+			var width = parseInt(cell.closest('tbody').css("width"))-parseInt(cell.closest('tbody').css("padding-left"))-parseInt(cell.closest('tbody').css("padding-right"));
 			var height = cell.outerHeight() - parseInt(cell.css("height"))-parseInt(cell.css("padding-top"))-parseInt(cell.css("padding-bottom"));
 
 			guide.css({
@@ -2138,7 +2138,7 @@ define([
 			var guide = jQuery( '<div></div>' );
 
 			var height = parseInt(table.children('tbody').css("height"))-parseInt(table.children('tbody').css("padding-top"))-parseInt(table.children('tbody').css("padding-bottom"));
-			var width = lastCell.outerWidth() - lastCell.innerWidth();
+			var width = lastCell.outerWidth() - parseInt(lastCell.css("width"))-parseInt(lastCell.css("padding-left"))-parseInt(lastCell.css("padding-right"));
 
 			guide.css({
 				'height': (height < 1) ? 1 : height,
@@ -2152,7 +2152,7 @@ define([
 
 			// set the maximum and minimum resize
 			var maxPageX = tableContainer.offset().left + parseInt(tableContainer.css("width"));
-			var minPageX = lastCell.offset().left + ( lastCell.innerWidth() - parseInt(lastCell.css("width")) ) + Utils.getMinColWidth( lastCell );
+			var minPageX = lastCell.offset().left + ( parseInt(lastCell.css("width"))-parseInt(lastCell.css("padding-left"))-parseInt(lastCell.css("padding-right")) - parseInt(lastCell.css("width")) ) + Utils.getMinColWidth( lastCell );
 
 			// unset the selection type
 			that.selection.resizeMode = true;

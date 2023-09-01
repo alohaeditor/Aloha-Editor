@@ -382,7 +382,7 @@ define([
 		// needed
 
 		return parseInt($el.css("height"))-parseInt($el.css("padding-top"))-parseInt($el.css("padding-bottom")) < el.scrollHeight
-				|| $el.innerWidth() < el.scrollWidth;
+				|| parseInt($el.css("width"))-parseInt($el.css("padding-left"))-parseInt($el.css("padding-right")) < el.scrollWidth;
 	}
 
 	jQuery.expr[':'].hasScroll = hasScroll;

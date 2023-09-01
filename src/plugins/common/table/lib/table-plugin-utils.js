@@ -557,7 +557,7 @@ define([
 		 * 				the border width as an integer value
 		 */
 		'getCellBorder': function(cell) {
-			return ( (cell.outerWidth() - cell.innerWidth()) / 2 );
+			return ( (cell.outerWidth() - parseInt(cell.css("width"))-parseInt(cell.css("padding-left"))-parseInt(cell.css("padding-right"))) / 2 );
 		},
 
 		/**
@@ -570,7 +570,7 @@ define([
 		 * 				the padding as an integer value
 		 */
 		'getCellPadding': function(cell) {
-			return ( cell.innerWidth() - parseInt(cell.css("width")));
+			return ( parseInt(cell.css("width"))-parseInt(cell.css("padding-left"))-parseInt(cell.css("padding-right")) - parseInt(cell.css("width")));
 		},
 
 		selectAnchorContents: function(selection) {

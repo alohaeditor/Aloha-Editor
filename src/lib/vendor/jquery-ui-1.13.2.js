@@ -2873,7 +2873,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 							top: endPosition.top - fixTop,
 							left: endPosition.left - fixLeft,
 							height: parseInt(target.css("height"))-parseInt(target.css("padding-top"))-parseInt(target.css("padding-bottom")),
-							width: target.innerWidth()
+							width: parseInt(target.css("width"))-parseInt(target.css("padding-left"))-parseInt(target.css("padding-right"))
 						},
 						startPosition = element.offset(),
 						transfer = $( "<div class='ui-effects-transfer'></div>" );
@@ -2885,7 +2885,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 							top: startPosition.top - fixTop,
 							left: startPosition.left - fixLeft,
 							height: parseInt(element.css("height"))-parseInt(element.css("padding-top"))-parseInt(element.css("padding-bottom")),
-							width: element.innerWidth(),
+							width: parseInt(element.css("width"))-parseInt(element.css("padding-left"))-parseInt(element.css("padding-right")),
 							position: targetFixed ? "fixed" : "absolute"
 						} )
 						.animate( animation, options.duration, options.easing, function() {
@@ -11925,7 +11925,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					that.containerPosition = element.position();
 					that.containerSize = {
 						height: ( parseInt(element.css("height"))-parseInt(element.css("padding-top"))-parseInt(element.css("padding-bottom")) - p[ 3 ] ),
-						width: ( element.innerWidth() - p[ 1 ] )
+						width: ( parseInt(element.css("width"))-parseInt(element.css("padding-left"))-parseInt(element.css("padding-right")) - p[ 1 ] )
 					};
 
 					co = that.containerOffset;
@@ -16466,7 +16466,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 							}
 							if ( !parseInt(p.css("width")) ) {
 								p.css("width",
-									(that.currentItem.innerWidth() -
+									(parseInt(that.currentItem.css("width"))-parseInt(that.currentItem.css("padding-left"))-parseInt(that.currentItem.css("padding-right")) -
 									parseInt( that.currentItem.css( "paddingLeft" ) || 0, 10 ) -
 									parseInt( that.currentItem.css( "paddingRight" ) || 0, 10 )) + "px" );
 							}

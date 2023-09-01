@@ -129,7 +129,7 @@ $.layout = {
 			*/
 		});
 
-		d.offsetWidth	= $E.innerWidth();
+		d.offsetWidth	= parseInt($E.css("width"))-parseInt($E.css("padding-left"))-parseInt($E.css("padding-right"));
 		d.offsetHeight	= parseInt($E.css("height"))-parseInt($E.css("padding-top"))-parseInt($E.css("padding-bottom"));
 		d.outerWidth	= $E.outerWidth();
 		d.outerHeight	= $E.outerHeight();
@@ -983,7 +983,7 @@ $.fn.layout = function (opts) {
 		else if (!el.jquery) $E = $(el);
 		h = cssH($E, outerHeight);
 		$E.css({ height: h, visibility: "visible" }); // may have been 'hidden' by sizeContent
-		if (h > 0 && $E.innerWidth() > 0) {
+		if (h > 0 && parseInt($E.css("width"))-parseInt($E.css("padding-left"))-parseInt($E.css("padding-right")) > 0) {
 			if (autoHide && $E.data('autoHidden')) {
 				$E.show().data('autoHidden', false);
 				if (!state.browser.mozilla) // FireFox refreshes iframes - IE doesn't
@@ -1189,7 +1189,7 @@ $.fn.layout = function (opts) {
 			*/
 		});
 
-		d.offsetWidth	= $E.innerWidth(); // true=include Padding
+		d.offsetWidth	= parseInt($E.css("width"))-parseInt($E.css("padding-left"))-parseInt($E.css("padding-right")); // true=include Padding
 		d.offsetHeight	= parseInt($E.css("height"))-parseInt($E.css("padding-top"))-parseInt($E.css("padding-bottom"));
 		d.outerWidth	= $E.outerWidth();
 		d.outerHeight	= $E.outerHeight();
