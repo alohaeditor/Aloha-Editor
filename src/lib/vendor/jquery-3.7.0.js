@@ -10617,7 +10617,7 @@ jQuery.holdReady = function( hold ) {
 	}
 };
 jQuery.isArray = Array.isArray;
-jQuery.parseJSON = JSON.parse;
+
 jQuery.nodeName = nodeName;
 jQuery.isFunction = isFunction;
 jQuery.isWindow = isWindow;

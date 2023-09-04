@@ -5489,14 +5489,14 @@ console.data( stateData, 'loadState - stateData' );
 		};
 	}
 
-	/**
-	 *	Convert stringified JSON back to a hash object
-	 *	@see		$.parseJSON(), adding in jQuery 1.4.1
-	 */
+	
 ,	decodeJSON: function (str) {
-		try { return $.parseJSON ? $.parseJSON(str) : window["eval"]("("+ str +")") || {}; }
-		catch (e) { return {}; }
-	}
+    try {
+        return JSON.parse(str);
+    } catch (e) {
+        return {};
+    }
+}
 
 
 ,	_create: function (inst) {
