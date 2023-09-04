@@ -923,11 +923,11 @@ var requirejs, require, define;
                 //ask the plugin to load it now.
                 if (this.shim) {
                     makeRequire(this, true)(this.shim.deps || [], bind(this, function () {
-                        return map.prefix ? this.callPlugin() : this.load();
+                        return map.prefix ? this.callPlugin() : this.trigger("load");
                     }));
                 } else {
                     //Regular dependency.
-                    return map.prefix ? this.callPlugin() : this.load();
+                    return map.prefix ? this.callPlugin() : this.trigger("load");
                 }
             },
 
@@ -937,7 +937,7 @@ var requirejs, require, define;
                 //Regular dependency.
                 if (!urlFetched[url]) {
                     urlFetched[url] = true;
-                    context.load(this.map.id, url);
+                    context.on("load",this.map.id, url);
                 }
             },
 
@@ -1142,7 +1142,7 @@ var requirejs, require, define;
                     //Use parentName here since the plugin's name is not reliable,
                     //could be some weird string with no path that actually wants to
                     //reference the parentName's path.
-                    plugin.load(map.name, makeRequire(map.parentMap, true, function (deps, cb, er) {
+                    plugin.on("load",map.name, makeRequire(map.parentMap, true, function (deps, cb, er) {
                         deps.rjsSkipMap = true;
                         return context.require(deps, cb, er);
                     }), load, config);
@@ -1668,7 +1668,7 @@ var requirejs, require, define;
             //Delegates to req.load. Broken out as a separate function to
             //allow overriding in the optimizer.
             load: function (id, url) {
-                req.load(context, id, url);
+                req.on("load",context, id, url);
             },
 
             /**

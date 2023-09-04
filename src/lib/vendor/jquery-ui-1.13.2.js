@@ -17770,7 +17770,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 				this._refresh();
 
 				if ( this.active.length ) {
-					this.load( options.active );
+					this.on("load", options.active );
 				}
 			},
 
@@ -18290,7 +18290,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 				}
 
 				if ( toShow.length ) {
-					this.load( this.tabs.index( tab ), event );
+					this.on("load", this.tabs.index( tab ), event );
 				}
 				this._toggle( event, eventData );
 			},
