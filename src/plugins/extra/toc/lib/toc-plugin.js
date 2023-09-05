@@ -210,7 +210,7 @@ define([
 					}).each(function () {
 						var $container = $(this);
 						$container.data(namespace + '.' + self.id + '.listening', true);
-						$container.bind('blur', function () {
+						$container.on('blur', function () {
 							self.cleanupIds($container.get(0));
 							self.update($container);
 						});

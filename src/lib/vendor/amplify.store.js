@@ -163,14 +163,14 @@ if ( window.globalStorage ) {
 	// so we need to load the data as well
 	try {
 		div.addBehavior( "#default#userdata" );
-		div.load( attrKey );
+		div.on("load", attrKey );
 	} catch( e ) {
 		div.parentNode.removeChild( div );
 		return;
 	}
 
 	store.addType( "userData", function( key, value, options ) {
-		div.load( attrKey );
+		div.on("load", attrKey );
 		var attr, parsed, prevValue, i, remove,
 			ret = value,
 			now = (new Date()).getTime();

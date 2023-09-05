@@ -139,7 +139,7 @@ define([
 	 */
 	jQuery.fn.aloha = function () {
 		var $elements = this;
-		Aloha.bind('aloha-plugins-loaded', function () {
+		Aloha.on('aloha-plugins-loaded', function () {
 			$elements.each(function (_, elem) {
 				if (!Aloha.isEditable(elem)) {
 					new Aloha.Editable(jQuery(elem)).init();
@@ -381,8 +381,8 @@ define([
 		// Compare client and scroll dimensions to see if a scrollbar is
 		// needed
 
-		return $el.innerHeight() < el.scrollHeight
-				|| $el.innerWidth() < el.scrollWidth;
+		return parseInt($el.css("height"))-parseInt($el.css("padding-top"))-parseInt($el.css("padding-bottom")) < el.scrollHeight
+				|| parseInt($el.css("width"))-parseInt($el.css("padding-left"))-parseInt($el.css("padding-right")) < el.scrollWidth;
 	}
 
 	jQuery.expr.pseudos.hasScroll = hasScroll;

@@ -354,17 +354,17 @@ define('jstree', ['jquery'], function (jQuery) {
 						this.get_container().addClass("jstree-rtl").css("direction", "rtl");
 					}
 					this.get_container().html("<ul><li class='jstree-last jstree-leaf'><ins>&#160;</ins><a class='jstree-loading' href='#'><ins class='jstree-icon'>&#160;</ins>" + this._get_string("loading") + "</a></li></ul>");
-					this.data.core.li_height = this.get_container_ul().find("li.jstree-closed, li.jstree-leaf").eq(0).height() || 18;
+					this.data.core.li_height = parseInt(this.get_container_ul().find("li.jstree-closed, li.jstree-leaf").eq(0).css("height")) || 18;
 	
 					this.get_container()
-						.delegate("li > ins", "click.jstree", $.proxy(function (event) {
+						.on("click.jstree","li > ins",  $.proxy(function (event) {
 								var trgt = $(event.target);
 								if(trgt.is("ins") && event.pageY - trgt.offset().top < this.data.core.li_height) { this.toggle_node(trgt); }
 							}, this))
-						.bind("mousedown.jstree", $.proxy(function () { 
+						.on("mousedown.jstree", $.proxy(function () { 
 								this.set_focus(); // This used to be setTimeout(set_focus,0) - why?
 							}, this))
-						.bind("dblclick.jstree", function (event) { 
+						.on("dblclick.jstree", function (event) { 
 							var sel;
 							if(document.selection && document.selection.empty) { document.selection.empty(); }
 							else {
@@ -379,7 +379,7 @@ define('jstree', ['jquery'], function (jQuery) {
 						});
 					if(this._get_settings().core.notify_plugins) {
 						this.get_container()
-							.bind("load_node.jstree", $.proxy(function (e, data) { 
+							.on("load_node.jstree", $.proxy(function (e, data) { 
 									var o = this._get_node(data.rslt.obj),
 										t = this;
 									if(o === -1) { o = this.get_container_ul(); }
@@ -398,7 +398,7 @@ define('jstree', ['jquery'], function (jQuery) {
 					}
 					if(this._get_settings().core.load_open) {
 						this.get_container()
-							.bind("load_node.jstree", $.proxy(function (e, data) { 
+							.on("load_node.jstree", $.proxy(function (e, data) { 
 									var o = this._get_node(data.rslt.obj),
 										t = this;
 									if(o === -1) { o = this.get_container_ul(); }
@@ -987,13 +987,13 @@ define('jstree', ['jquery'], function (jQuery) {
 			if (/msie/.test(navigator.userAgent.toLowerCase())) {
 				e1 = $('<textarea cols="10" rows="2"></textarea>').css({ position: 'absolute', top: -1000, left: 0 }).appendTo('body');
 				e2 = $('<textarea cols="10" rows="2" style="overflow: hidden;"></textarea>').css({ position: 'absolute', top: -1000, left: 0 }).appendTo('body');
-				scrollbar_width = e1.width() - e2.width();
+				scrollbar_width = parseInt(e1.css("width")) - parseInt(e2.css("width"));
 				e1.add(e2).remove();
 			} 
 			else {
 				e1 = $('<div />').css({ width: 100, height: 100, overflow: 'auto', position: 'absolute', top: -1000, left: 0 })
 						.prependTo('body').append('<div />').find('div').css({ width: '100%', height: 200 });
-				scrollbar_width = 100 - e1.width();
+				scrollbar_width = 100 - parseInt(e1.css("width"));
 				e1.parent().remove();
 			}
 		});
@@ -1005,34 +1005,34 @@ define('jstree', ['jquery'], function (jQuery) {
 				this.data.ui.to_select = this.get_settings().ui.initially_select;
 	
 				this.get_container()
-					.delegate("a", "click.jstree", $.proxy(function (event) {
+					.on( "click.jstree","a", $.proxy(function (event) {
 							event.preventDefault();
 							event.currentTarget.blur();
 							if(!$(event.currentTarget).hasClass("jstree-loading")) {
 								this.select_node(event.currentTarget, true, event);
 							}
 						}, this))
-					.delegate("a", "mouseenter.jstree", $.proxy(function (event) {
+					.on( "mouseenter.jstree","a", $.proxy(function (event) {
 							if(!$(event.currentTarget).hasClass("jstree-loading")) {
 								this.hover_node(event.target);
 							}
 						}, this))
-					.delegate("a", "mouseleave.jstree", $.proxy(function (event) {
+					.on( "mouseleave.jstree","a", $.proxy(function (event) {
 							if(!$(event.currentTarget).hasClass("jstree-loading")) {
 								this.dehover_node(event.target);
 							}
 						}, this))
-					.bind("reopen.jstree", $.proxy(function () { 
+					.on("reopen.jstree", $.proxy(function () { 
 							this.reselect();
 						}, this))
-					.bind("get_rollback.jstree", $.proxy(function () { 
+					.on("get_rollback.jstree", $.proxy(function () { 
 							this.dehover_node();
 							this.save_selected();
 						}, this))
-					.bind("set_rollback.jstree", $.proxy(function () { 
+					.on("set_rollback.jstree", $.proxy(function () { 
 							this.reselect();
 						}, this))
-					.bind("close_node.jstree", $.proxy(function (event, data) { 
+					.on("close_node.jstree", $.proxy(function (event, data) { 
 							var s = this._get_settings().ui,
 								obj = this._get_node(data.rslt.obj),
 								clk = (obj && obj.length) ? obj.children("ul").find("a.jstree-clicked") : $(),
@@ -1043,7 +1043,7 @@ define('jstree', ['jquery'], function (jQuery) {
 								if(s.selected_parent_close === "select_parent") { _this.select_node(obj); }
 							});
 						}, this))
-					.bind("delete_node.jstree", $.proxy(function (event, data) { 
+					.on("delete_node.jstree", $.proxy(function (event, data) { 
 							var s = this._get_settings().ui.select_prev_on_delete,
 								obj = this._get_node(data.rslt.obj),
 								clk = (obj && obj.length) ? obj.find("a.jstree-clicked") : [],
@@ -1055,7 +1055,7 @@ define('jstree', ['jquery'], function (jQuery) {
 								});
 							}
 						}, this))
-					.bind("move_node.jstree", $.proxy(function (event, data) { 
+					.on("move_node.jstree", $.proxy(function (event, data) { 
 							if(data.rslt.cy) { 
 								data.rslt.oc.find("a.jstree-clicked").removeClass("jstree-clicked");
 							}
@@ -1242,7 +1242,7 @@ define('jstree', ['jquery'], function (jQuery) {
 		$.jstree.plugin("crrm", { 
 			__init : function () {
 				this.get_container()
-					.bind("move_node.jstree", $.proxy(function (e, data) {
+					.on("move_node.jstree", $.proxy(function (e, data) {
 						if(this._get_settings().crrm.move.open_onmove) {
 							var t = this;
 							data.rslt.np.parentsUntil(".jstree").addBack().filter(".jstree-closed").each(function () {
@@ -1265,8 +1265,8 @@ define('jstree', ['jquery'], function (jQuery) {
 					obj = this._get_node(obj);
 					var rtl = this._get_settings().core.rtl,
 						w = this._get_settings().crrm.input_width_limit,
-						w1 = obj.children("ins").width(),
-						w2 = obj.find("> a:visible > ins").width() * obj.find("> a:visible > ins").length,
+						w1 = parseInt(obj.children("ins").css("width")),
+						w2 = parseInt(obj.find("> a:visible > ins").css("width")) * obj.find("> a:visible > ins").length,
 						t = this.get_text(obj),
 						h1 = $("<div />", { css : { "position" : "absolute", "top" : "-200px", "left" : (rtl ? "0px" : "-1000px"), "visibility" : "hidden" } }).appendTo("body"),
 						h2 = obj.css("position","relative").append(
@@ -1301,7 +1301,7 @@ define('jstree', ['jquery'], function (jQuery) {
 								if(key == 27) { this.value = t; this.blur(); return; }
 								else if(key == 13) { this.blur(); return; }
 								else {
-									h2.width(Math.min(h1.text("pW" + this.value).width(),w));
+									h2.css("width",Math.min( parseInt(h1.text("pW" + this.value).css("width")),w) + "px");
 								}
 							},
 							"keypress" : function(event) {
@@ -1321,7 +1321,7 @@ define('jstree', ['jquery'], function (jQuery) {
 							letterSpacing	: h2.css('letterSpacing')	|| '',
 							wordSpacing		: h2.css('wordSpacing')		|| ''
 					});
-					h2.width(Math.min(h1.text("pW" + h2[0].value).width(),w))[0].select();
+					h2.css("width",Math.min(parseInt(h1.text("pW" + h2[0].value).css("width")),w)+"px")[0].select();
 				},
 				rename : function (obj) {
 					obj = this._get_node(obj);
@@ -1418,13 +1418,13 @@ define('jstree', ['jquery'], function (jQuery) {
 		$.jstree.plugin("themes", {
 			__init : function () { 
 				this.get_container()
-					.bind("init.jstree", $.proxy(function () {
+					.on("init.jstree", $.proxy(function () {
 							var s = this._get_settings().themes;
 							this.data.themes.dots = s.dots; 
 							this.data.themes.icons = s.icons; 
 							this.set_theme(s.theme, s.url);
 						}, this))
-					.bind("loaded.jstree", $.proxy(function () {
+					.on("loaded.jstree", $.proxy(function () {
 							// bound here too, as simple HTML tree's won't honor dots & icons otherwise
 							if(!this.data.themes.dots) { this.hide_dots(); }
 							else { this.show_dots(); }
@@ -1505,15 +1505,15 @@ define('jstree', ['jquery'], function (jQuery) {
 				if(!this.data.ui) { throw "jsTree hotkeys: jsTree UI plugin not included."; }
 				$.each(this._get_settings().hotkeys, function (i, v) {
 					if(v !== false && $.inArray(i, bound) == -1) {
-						$(document).bind("keydown", i, function (event) { return exec(i, event); });
+						$(document).on("keydown", i, function (event) { return exec(i, event); });
 						bound.push(i);
 					}
 				});
 				this.get_container()
-					.bind("lock.jstree", $.proxy(function () {
+					.on("lock.jstree", $.proxy(function () {
 							if(this.data.hotkeys.enabled) { this.data.hotkeys.enabled = false; this.data.hotkeys.revert = true; }
 						}, this))
-					.bind("unlock.jstree", $.proxy(function () {
+					.on("unlock.jstree", $.proxy(function () {
 							if(this.data.hotkeys.revert) { this.data.hotkeys.enabled = true; }
 						}, this));
 				this.enable_hotkeys();
@@ -1635,7 +1635,7 @@ define('jstree', ['jquery'], function (jQuery) {
 			__init : function() {
 				var s = this._get_settings().json_data;
 				if(s.progressive_unload) {
-					this.get_container().bind("after_close.jstree", function (e, data) {
+					this.get_container().on("after_close.jstree", function (e, data) {
 						data.rslt.obj.children("ul").remove();
 					});
 				}
@@ -2072,7 +2072,7 @@ define('jstree', ['jquery'], function (jQuery) {
 				this.get_container()
 					.one( ( this.data.ui ? "reselect" : "reopen" ) + ".jstree", $.proxy(function () {
 						this.get_container()
-							.bind("open_node.jstree close_node.jstree select_node.jstree deselect_node.jstree", $.proxy(function (e) { 
+							.on("open_node.jstree close_node.jstree select_node.jstree deselect_node.jstree", $.proxy(function (e) { 
 									if(this._get_settings().cookies.auto_save) { this.save_cookie((e.handleObj.namespace + e.handleObj.type).replace("jstree","")); }
 								}, this));
 					}, this));
@@ -2139,15 +2139,15 @@ define('jstree', ['jquery'], function (jQuery) {
 		$.jstree.plugin("sort", {
 			__init : function () {
 				this.get_container()
-					.bind("load_node.jstree", $.proxy(function (e, data) {
+					.on("load_node.jstree", $.proxy(function (e, data) {
 							var obj = this._get_node(data.rslt.obj);
 							obj = obj === -1 ? this.get_container().children("ul") : obj.children("ul");
 							this.sort(obj);
 						}, this))
-					.bind("rename_node.jstree create_node.jstree create.jstree", $.proxy(function (e, data) {
+					.on("rename_node.jstree create_node.jstree create.jstree", $.proxy(function (e, data) {
 							this.sort(data.rslt.obj.parent());
 						}, this))
-					.bind("move_node.jstree", $.proxy(function (e, data) {
+					.on("move_node.jstree", $.proxy(function (e, data) {
 							var m = data.rslt.np == -1 ? this.get_container() : data.rslt.np;
 							this.sort(m.children("ul"));
 						}, this));
@@ -2204,8 +2204,8 @@ define('jstree', ['jquery'], function (jQuery) {
 				$.vakata.dnd.user_data = data;
 				$.vakata.dnd.is_down = true;
 				$.vakata.dnd.helper = $("<div id='vakata-dragged' />").html(html); //.fadeTo(10,0.25);
-				$(document).bind("mousemove", $.vakata.dnd.drag);
-				$(document).bind("mouseup", $.vakata.dnd.drag_stop);
+				$(document).on("mousemove", $.vakata.dnd.drag);
+				$(document).on("mouseup", $.vakata.dnd.drag_stop);
 				return false;
 			},
 			drag : function (e) { 
@@ -2229,7 +2229,7 @@ define('jstree', ['jquery'], function (jQuery) {
 					else { 
 						if(sti && dir1 === "up") { clearInterval(sti); sti = false; }
 					}
-					if($(window).height() - (e.pageY - t) < 20) {
+					if(parseInt($(window).css("height")) - (e.pageY - t) < 20) {
 						if(sti && dir1 === "up") { clearInterval(sti); sti = false; }
 						if(!sti) { dir1 = "down"; sti = setInterval(function () { $(document).scrollTop($(document).scrollTop() + $.vakata.dnd.scroll_spd); }, 150); }
 					}
@@ -2244,7 +2244,7 @@ define('jstree', ['jquery'], function (jQuery) {
 					else { 
 						if(sli && dir2 === "left") { clearInterval(sli); sli = false; }
 					}
-					if($(window).width() - (e.pageX - l) < 20) {
+					if(parseInt($(window).css("width")) - (e.pageX - l) < 20) {
 						if(sli && dir2 === "left") { clearInterval(sli); sli = false; }
 						if(!sli) { dir2 = "right"; sli = setInterval(function () { $(document).scrollLeft($(document).scrollLeft() + $.vakata.dnd.scroll_spd); }, 150); }
 					}
@@ -2295,7 +2295,7 @@ define('jstree', ['jquery'], function (jQuery) {
 					mto : false
 				};
 				this.get_container()
-					.bind("mouseenter.jstree", $.proxy(function (e) {
+					.on("mouseenter.jstree", $.proxy(function (e) {
 							if($.vakata.dnd.is_drag && $.vakata.dnd.user_data.jstree) {
 								if(this.data.themes) {
 									m.attr("class", "jstree-" + this.data.themes.theme); 
@@ -2320,7 +2320,7 @@ define('jstree', ['jquery'], function (jQuery) {
 								}
 							}
 						}, this))
-					.bind("mouseup.jstree", $.proxy(function (e) {
+					.on("mouseup.jstree", $.proxy(function (e) {
 							//if($.vakata.dnd.is_drag && $.vakata.dnd.user_data.jstree && $(e.currentTarget).find("> ul > li").length === 0) {
 							if($.vakata.dnd.is_drag && $.vakata.dnd.user_data.jstree && e.currentTarget === e.target && $.vakata.dnd.user_data.obj && $($.vakata.dnd.user_data.obj).length && $($.vakata.dnd.user_data.obj).parents(".jstree:eq(0)")[0] !== e.target) { // node should not be from the same tree
 								var tr = $.jstree._reference(e.currentTarget), dc;
@@ -2335,7 +2335,7 @@ define('jstree', ['jquery'], function (jQuery) {
 								}
 							}
 						}, this))
-					.bind("mouseleave.jstree", $.proxy(function (e) {
+					.on("mouseleave.jstree", $.proxy(function (e) {
 							if(e.relatedTarget && e.relatedTarget.id && e.relatedTarget.id === "jstree-marker-line") {
 								return false; 
 							}
@@ -2349,7 +2349,7 @@ define('jstree', ['jquery'], function (jQuery) {
 								}
 							}
 						}, this))
-					.bind("mousemove.jstree", $.proxy(function (e) {
+					.on("mousemove.jstree", $.proxy(function (e) {
 							if($.vakata.dnd.is_drag && $.vakata.dnd.user_data.jstree) {
 								var cnt = this.get_container()[0];
 	
@@ -2381,24 +2381,24 @@ define('jstree', ['jquery'], function (jQuery) {
 	
 							}
 						}, this))
-					.bind("scroll.jstree", $.proxy(function (e) { 
+					.on("scroll.jstree", $.proxy(function (e) { 
 							if($.vakata.dnd.is_drag && $.vakata.dnd.user_data.jstree && m && ml) {
 								m.hide();
 								ml.hide();
 							}
 						}, this))
-					.delegate("a", "mousedown.jstree", $.proxy(function (e) { 
+					.on( "mousedown.jstree","a", $.proxy(function (e) { 
 							if(e.which === 1) {
 								this.start_drag(e.currentTarget, e);
 								return false;
 							}
 						}, this))
-					.delegate("a", "mouseenter.jstree", $.proxy(function (e) { 
+					.on( "mouseenter.jstree","a", $.proxy(function (e) { 
 							if($.vakata.dnd.is_drag && $.vakata.dnd.user_data.jstree) {
 								this.dnd_enter(e.currentTarget);
 							}
 						}, this))
-					.delegate("a", "mousemove.jstree", $.proxy(function (e) { 
+					.on( "mousemove.jstree","a", $.proxy(function (e) { 
 							if($.vakata.dnd.is_drag && $.vakata.dnd.user_data.jstree) {
 								if(!r || !r.length || r.children("a")[0] !== e.currentTarget) {
 									this.dnd_enter(e.currentTarget);
@@ -2409,7 +2409,7 @@ define('jstree', ['jquery'], function (jQuery) {
 								this.dnd_show();
 							}
 						}, this))
-					.delegate("a", "mouseleave.jstree", $.proxy(function (e) { 
+					.on( "mouseleave.jstree","a", $.proxy(function (e) { 
 							if($.vakata.dnd.is_drag && $.vakata.dnd.user_data.jstree) {
 								if(e.relatedTarget && e.relatedTarget.id && e.relatedTarget.id === "jstree-marker-line") {
 									return false; 
@@ -2429,14 +2429,14 @@ define('jstree', ['jquery'], function (jQuery) {
 								0);
 							}
 						}, this))
-					.delegate("a", "mouseup.jstree", $.proxy(function (e) { 
+					.on("mouseup.jstree","a",  $.proxy(function (e) { 
 							if($.vakata.dnd.is_drag && $.vakata.dnd.user_data.jstree) {
 								this.dnd_finish(e);
 							}
 						}, this));
 	
 				$(document)
-					.bind("drag_stop.vakata", $.proxy(function () {
+					.on("drag_stop.vakata", $.proxy(function () {
 							if(this.data.dnd.to1) { clearTimeout(this.data.dnd.to1); }
 							if(this.data.dnd.to2) { clearTimeout(this.data.dnd.to2); }
 							if(this.data.dnd.i1) { clearInterval(this.data.dnd.i1); }
@@ -2456,7 +2456,7 @@ define('jstree', ['jquery'], function (jQuery) {
 							if(m) { m.css({ "top" : "-2000px" }); }
 							if(ml) { ml.css({ "top" : "-2000px" }); }
 						}, this))
-					.bind("drag_start.vakata", $.proxy(function (e, data) {
+					.on("drag_start.vakata", $.proxy(function (e, data) {
 							if(data.data.jstree) { 
 								var et = $(data.event.target);
 								if(et.closest(".jstree").hasClass("jstree-" + this.get_index())) {
@@ -2465,7 +2465,7 @@ define('jstree', ['jquery'], function (jQuery) {
 							}
 						}, this));
 					/*
-					.bind("keydown.jstree-" + this.get_index() + " keyup.jstree-" + this.get_index(), $.proxy(function(e) {
+					.on("keydown.jstree-" + this.get_index() + " keyup.jstree-" + this.get_index(), $.proxy(function(e) {
 							if($.vakata.dnd.is_drag && $.vakata.dnd.user_data.jstree && !this.data.dnd.foreign) {
 								var h = $.vakata.dnd.helper.children("ins");
 								if(e[this._get_settings().dnd.copy_modifier + "Key"] && h.hasClass("jstree-ok")) {
@@ -2482,7 +2482,7 @@ define('jstree', ['jquery'], function (jQuery) {
 				var s = this._get_settings().dnd;
 				if(s.drag_target) {
 					$(document)
-						.delegate(s.drag_target, "mousedown.jstree-" + this.get_index(), $.proxy(function (e) {
+						.on( "mousedown.jstree-" + this.get_index(),s.drag_target, $.proxy(function (e) {
 							o = e.target;
 							$.vakata.dnd.drag_start(e, { jstree : true, obj : e.target }, "<ins class='jstree-icon'></ins>" + $(e.target).text() );
 							if(this.data.themes) { 
@@ -2493,25 +2493,25 @@ define('jstree', ['jquery'], function (jQuery) {
 							$.vakata.dnd.helper.children("ins").attr("class","jstree-invalid");
 							var cnt = this.get_container();
 							this.data.dnd.cof = cnt.offset();
-							this.data.dnd.cw = parseInt(cnt.width(),10);
-							this.data.dnd.ch = parseInt(cnt.height(),10);
+							this.data.dnd.cw = parseInt(parseInt(cnt.css("width")),10);
+							this.data.dnd.ch = parseInt(parseInt(cnt.css("height")),10);
 							this.data.dnd.foreign = true;
 							e.preventDefault();
 						}, this));
 				}
 				if(s.drop_target) {
 					$(document)
-						.delegate(s.drop_target, "mouseenter.jstree-" + this.get_index(), $.proxy(function (e) {
+						.on("mouseenter.jstree-" + this.get_index(),s.drop_target,  $.proxy(function (e) {
 								if(this.data.dnd.active && this._get_settings().dnd.drop_check.call(this, { "o" : o, "r" : $(e.target), "e" : e })) {
 									$.vakata.dnd.helper.children("ins").attr("class","jstree-ok");
 								}
 							}, this))
-						.delegate(s.drop_target, "mouseleave.jstree-" + this.get_index(), $.proxy(function (e) {
+						.on( "mouseleave.jstree-" + this.get_index(),s.drop_target, $.proxy(function (e) {
 								if(this.data.dnd.active) {
 									$.vakata.dnd.helper.children("ins").attr("class","jstree-invalid");
 								}
 							}, this))
-						.delegate(s.drop_target, "mouseup.jstree-" + this.get_index(), $.proxy(function (e) {
+						.on("mouseup.jstree-" + this.get_index(),s.drop_target,  $.proxy(function (e) {
 								if(this.data.dnd.active && $.vakata.dnd.helper.children("ins").hasClass("jstree-ok")) {
 									this._get_settings().dnd.drop_finish.call(this, { "o" : o, "r" : $(e.target), "e" : e });
 								}
@@ -2534,7 +2534,7 @@ define('jstree', ['jquery'], function (jQuery) {
 					if(!r || !r.length) { return; }
 					this.data.dnd.off = r.offset();
 					if(this._get_settings().core.rtl) {
-						this.data.dnd.off.right = this.data.dnd.off.left + r.width();
+						this.data.dnd.off.right = this.data.dnd.off.left + parseInt(r.css("width"));
 					}
 					if(this.data.dnd.foreign) {
 						var a = this._get_settings().dnd.drag_check.call(this, { "o" : o, "r" : r });
@@ -2679,8 +2679,8 @@ define('jstree', ['jquery'], function (jQuery) {
 						$.vakata.dnd.helper.attr("class", "jstree-dnd-helper jstree-" + this.data.themes.theme); 
 					}
 					this.data.dnd.cof = cnt.offset();
-					this.data.dnd.cw = parseInt(cnt.width(),10);
-					this.data.dnd.ch = parseInt(cnt.height(),10);
+					this.data.dnd.cw = parseInt(parseInt(cnt.css("width")),10);
+					this.data.dnd.ch = parseInt(parseInt(cnt.css("height")),10);
 					this.data.dnd.active = true;
 				}
 			}
@@ -2700,7 +2700,7 @@ define('jstree', ['jquery'], function (jQuery) {
 				'';
 			$.vakata.css.add_sheet({ str : css_string, title : "jstree" });
 			m = $("<div />").attr({ id : "jstree-marker" }).hide().html("&raquo;")
-				.bind("mouseleave mouseenter", function (e) { 
+				.on("mouseleave mouseenter", function (e) { 
 					m.hide();
 					ml.hide();
 					e.preventDefault(); 
@@ -2709,7 +2709,7 @@ define('jstree', ['jquery'], function (jQuery) {
 				})
 				.appendTo("body");
 			ml = $("<div />").attr({ id : "jstree-marker-line" }).hide()
-				.bind("mouseup", function (e) { 
+				.on("mouseup", function (e) { 
 					if(r && r.length) { 
 						r.children("a").trigger(e); 
 						e.preventDefault(); 
@@ -2717,7 +2717,7 @@ define('jstree', ['jquery'], function (jQuery) {
 						return false; 
 					} 
 				})
-				.bind("mouseleave", function (e) { 
+				.on("mouseleave", function (e) { 
 					var rt = $(e.relatedTarget);
 					if(rt.is(".jstree") || rt.closest(".jstree").length === 0) {
 						if(r && r.length) { 
@@ -2731,10 +2731,10 @@ define('jstree', ['jquery'], function (jQuery) {
 					}
 				})
 				.appendTo("body");
-			$(document).bind("drag_start.vakata", function (e, data) {
+			$(document).on("drag_start.vakata", function (e, data) {
 				if(data.data.jstree) { m.show(); if(ml) { ml.show(); } }
 			});
-			$(document).bind("drag_stop.vakata", function (e, data) {
+			$(document).on("drag_stop.vakata", function (e, data) {
 				if(data.data.jstree) { m.hide(); if(ml) { ml.hide(); } }
 			});
 		});
@@ -2757,13 +2757,13 @@ define('jstree', ['jquery'], function (jQuery) {
 				}
 	
 				this.get_container()
-					.bind("open_node.jstree create_node.jstree clean_node.jstree refresh.jstree", $.proxy(function (e, data) { 
+					.on("open_node.jstree create_node.jstree clean_node.jstree refresh.jstree", $.proxy(function (e, data) { 
 							this._prepare_checkboxes(data.rslt.obj);
 						}, this))
-					.bind("loaded.jstree", $.proxy(function (e) {
+					.on("loaded.jstree", $.proxy(function (e) {
 							this._prepare_checkboxes();
 						}, this))
-					.delegate( (this.data.ui && this.data.checkbox.noui ? "a" : "ins.jstree-checkbox") , "click.jstree", $.proxy(function (e) {
+					.on(  "click.jstree",(this.data.ui && this.data.checkbox.noui ? "a" : "ins.jstree-checkbox") , $.proxy(function (e) {
 							e.preventDefault();
 							if(this._get_node(e.target).hasClass("jstree-checked")) { this.uncheck_node(e.target); }
 							else { this.check_node(e.target); }
@@ -3415,12 +3415,12 @@ define('jstree', ['jquery'], function (jQuery) {
 				this.data.search.result = $();
 				if(this._get_settings().search.show_only_matches) {
 					this.get_container()
-						.bind("search.jstree", function (e, data) {
+						.on("search.jstree", function (e, data) {
 							$(this).children("ul").find("li").hide().removeClass("jstree-last");
 							data.rslt.nodes.parentsUntil(".jstree").addBack().show()
 								.filter("ul").each(function () { $(this).children("li:visible").eq(-1).addClass("jstree-last"); });
 						})
-						.bind("clear_search.jstree", function () {
+						.on("clear_search.jstree", function () {
 							$(this).children("ul").find("li").css("display","").end().end().jstree("clean_node", -1);
 						});
 				}
@@ -3527,13 +3527,13 @@ define('jstree', ['jquery'], function (jQuery) {
 						.one("mouseleave", function(e) { $.vakata.context.hide(); });
 				}
 	
-				h = $.vakata.context.cnt.height();
-				w = $.vakata.context.cnt.width();
-				if(x + w > $(document).width()) { 
-					x = $(document).width() - (w + 5); 
+				h = parseInt($.vakata.context.cnt.css("height"));
+				w = parseInt($.vakata.context.cnt.css("width"));
+				if(x + w > parseInt($(document).css("width"))) { 
+					x = parseInt($(document).css("width")) - (w + 5); 
 					$.vakata.context.cnt.find("li > ul").addClass("right"); 
 				}
-				if(y + h > $(document).height()) { 
+				if(y + h > parseInt($(document).css("height"))) { 
 					y = y - (h + t[0].offsetHeight); 
 					$.vakata.context.cnt.find("li > ul").addClass("bottom"); 
 				}
@@ -3541,14 +3541,14 @@ define('jstree', ['jquery'], function (jQuery) {
 				$.vakata.context.cnt
 					.css({ "left" : x, "top" : y })
 					.find("li:has(ul)")
-						.bind("mouseenter", function (e) { 
-							var w = $(document).width(),
-								h = $(document).height(),
+						.on("mouseenter", function (e) { 
+							var w = parseInt($(document).css("width")),
+								h = parseInt($(document).css("height")),
 								ul = $(this).children("ul").show(); 
-							if(w !== $(document).width()) { ul.toggleClass("right"); }
-							if(h !== $(document).height()) { ul.toggleClass("bottom"); }
+							if(w !== parseInt($(document).css("width"))) { ul.toggleClass("right"); }
+							if(h !== parseInt($(document).css("height"))) { ul.toggleClass("bottom"); }
 						})
-						.bind("mouseleave", function (e) { 
+						.on("mouseleave", function (e) { 
 							$(this).children("ul").hide(); 
 						})
 						.end()
@@ -3622,21 +3622,21 @@ define('jstree', ['jquery'], function (jQuery) {
 				'#vakata-contextmenu li.vakata-separator { min-height:0; height:1px; line-height:1px; font-size:1px; overflow:hidden; margin:0 2px; background:silver; /* border-top:1px solid #fefefe; */ padding:0; } ';
 			$.vakata.css.add_sheet({ str : css_string, title : "vakata" });
 			$.vakata.context.cnt
-				.delegate("a","click", function (e) { e.preventDefault(); })
-				.delegate("a","mouseup", function (e) {
+				.on("click","a", function (e) { e.preventDefault(); })
+				.on("mouseup","a", function (e) {
 					if(!$(this).parent().hasClass("jstree-contextmenu-disabled") && $.vakata.context.exec($(this).attr("rel"))) {
 						$.vakata.context.hide();
 					}
 					else { $(this).blur(); }
 				})
-				.delegate("a","mouseover", function () {
+				.on("mouseover","a", function () {
 					$.vakata.context.cnt.find(".vakata-hover").removeClass("vakata-hover");
 				})
 				.appendTo("body");
-			$(document).bind("mousedown", function (e) { if($.vakata.context.vis && !$.contains($.vakata.context.cnt[0], e.target)) { $.vakata.context.hide(); } });
+			$(document).on("mousedown", function (e) { if($.vakata.context.vis && !$.contains($.vakata.context.cnt[0], e.target)) { $.vakata.context.hide(); } });
 			if(typeof $.hotkeys !== "undefined") {
 				$(document)
-					.bind("keydown", "up", function (e) { 
+					.on("keydown", "up", function (e) { 
 						if($.vakata.context.vis) { 
 							var o = $.vakata.context.cnt.find("ul:visible").last().children(".vakata-hover").removeClass("vakata-hover").prevAll("li:not(.vakata-separator)").first();
 							if(!o.length) { o = $.vakata.context.cnt.find("ul:visible").last().children("li:not(.vakata-separator)").last(); }
@@ -3645,7 +3645,7 @@ define('jstree', ['jquery'], function (jQuery) {
 							e.preventDefault();
 						} 
 					})
-					.bind("keydown", "down", function (e) { 
+					.on("keydown", "down", function (e) { 
 						if($.vakata.context.vis) { 
 							var o = $.vakata.context.cnt.find("ul:visible").last().children(".vakata-hover").removeClass("vakata-hover").nextAll("li:not(.vakata-separator)").first();
 							if(!o.length) { o = $.vakata.context.cnt.find("ul:visible").last().children("li:not(.vakata-separator)").first(); }
@@ -3654,25 +3654,25 @@ define('jstree', ['jquery'], function (jQuery) {
 							e.preventDefault();
 						} 
 					})
-					.bind("keydown", "right", function (e) { 
+					.on("keydown", "right", function (e) { 
 						if($.vakata.context.vis) { 
 							$.vakata.context.cnt.find(".vakata-hover").children("ul").show().children("li:not(.vakata-separator)").removeClass("vakata-hover").first().addClass("vakata-hover");
 							e.stopImmediatePropagation(); 
 							e.preventDefault();
 						} 
 					})
-					.bind("keydown", "left", function (e) { 
+					.on("keydown", "left", function (e) { 
 						if($.vakata.context.vis) { 
 							$.vakata.context.cnt.find(".vakata-hover").children("ul").hide().children(".vakata-separator").removeClass("vakata-hover");
 							e.stopImmediatePropagation(); 
 							e.preventDefault();
 						} 
 					})
-					.bind("keydown", "esc", function (e) { 
+					.on("keydown", "esc", function (e) { 
 						$.vakata.context.hide(); 
 						e.preventDefault();
 					})
-					.bind("keydown", "space", function (e) { 
+					.on("keydown", "space", function (e) { 
 						$.vakata.context.cnt.find(".vakata-hover").last().children("a").click();
 						e.preventDefault();
 					});
@@ -3682,24 +3682,24 @@ define('jstree', ['jquery'], function (jQuery) {
 		$.jstree.plugin("contextmenu", {
 			__init : function () {
 				this.get_container()
-					.delegate("a", "contextmenu.jstree", $.proxy(function (e) {
+					.on( "contextmenu.jstree","a", $.proxy(function (e) {
 							e.preventDefault();
 							if(!$(e.currentTarget).hasClass("jstree-loading")) {
 								this.show_contextmenu(e.currentTarget, e.pageX, e.pageY);
 							}
 						}, this))
-					.delegate("a", "click.jstree", $.proxy(function (e) {
+					.on( "click.jstree","a", $.proxy(function (e) {
 							if(this.data.contextmenu) {
 								$.vakata.context.hide();
 							}
 						}, this))
-					.bind("destroy.jstree", $.proxy(function () {
+					.on("destroy.jstree", $.proxy(function () {
 							// TODO: move this to descruct method
 							if(this.data.contextmenu) {
 								$.vakata.context.hide();
 							}
 						}, this));
-				$(document).bind("context_hide.vakata", $.proxy(function () { this.data.contextmenu = false; }, this));
+				$(document).on("context_hide.vakata", $.proxy(function () { this.data.contextmenu = false; }, this));
 			},
 			defaults : { 
 				select_node : false, // requires UI plugin
@@ -3794,7 +3794,7 @@ define('jstree', ['jquery'], function (jQuery) {
 				var s = this._get_settings().types;
 				this.data.types.attach_to = [];
 				this.get_container()
-					.bind("init.jstree", $.proxy(function () { 
+					.on("init.jstree", $.proxy(function () { 
 							var types = s.types, 
 								attr  = s.type_attr, 
 								icons_css = "", 
@@ -3816,7 +3816,7 @@ define('jstree', ['jquery'], function (jQuery) {
 							});
 							if(icons_css !== "") { $.vakata.css.add_sheet({ 'str' : icons_css, title : "jstree-types" }); }
 						}, this))
-					.bind("before.jstree", $.proxy(function (e, data) { 
+					.on("before.jstree", $.proxy(function (e, data) { 
 							var s, t, 
 								o = this._get_settings().types.use_data ? this._get_node(data.args[0]) : false, 
 								d = o && o !== -1 && o.length ? o.data("jstree") : false;
@@ -3838,7 +3838,7 @@ define('jstree', ['jquery'], function (jQuery) {
 						}, this));
 				if(is_ie6) {
 					this.get_container()
-						.bind("load_node.jstree set_type.jstree", $.proxy(function (e, data) {
+						.on("load_node.jstree set_type.jstree", $.proxy(function (e, data) {
 								var r = data && data.rslt && data.rslt.obj && data.rslt.obj !== -1 ? this._get_node(data.rslt.obj).parent() : this.get_container_ul(),
 									c = false,
 									s = this._get_settings().types;
@@ -4152,31 +4152,31 @@ define('jstree', ['jquery'], function (jQuery) {
 				this.get_container()
 					.addClass("ui-widget-content")
 					.addClass("jstree-themeroller")
-					.delegate("a","mouseenter.jstree", function (e) {
+					.on("mouseenter.jstree","a", function (e) {
 						if(!$(e.currentTarget).hasClass("jstree-loading")) {
 							$(this).addClass(s.item_h);
 						}
 					})
-					.delegate("a","mouseleave.jstree", function () {
+					.on("mouseleave.jstree","a", function () {
 						$(this).removeClass(s.item_h);
 					})
-					.bind("init.jstree", $.proxy(function (e, data) { 
+					.on("init.jstree", $.proxy(function (e, data) { 
 							data.inst.get_container().find("> ul > li > .jstree-loading > ins").addClass("ui-icon-refresh");
 							this._themeroller(data.inst.get_container().find("> ul > li"));
 						}, this))
-					.bind("open_node.jstree create_node.jstree", $.proxy(function (e, data) { 
+					.on("open_node.jstree create_node.jstree", $.proxy(function (e, data) { 
 							this._themeroller(data.rslt.obj);
 						}, this))
-					.bind("loaded.jstree refresh.jstree", $.proxy(function (e) {
+					.on("loaded.jstree refresh.jstree", $.proxy(function (e) {
 							this._themeroller();
 						}, this))
-					.bind("close_node.jstree", $.proxy(function (e, data) {
+					.on("close_node.jstree", $.proxy(function (e, data) {
 							this._themeroller(data.rslt.obj);
 						}, this))
-					.bind("delete_node.jstree", $.proxy(function (e, data) {
+					.on("delete_node.jstree", $.proxy(function (e, data) {
 							this._themeroller(data.rslt.parent);
 						}, this))
-					.bind("correct_state.jstree", $.proxy(function (e, data) {
+					.on("correct_state.jstree", $.proxy(function (e, data) {
 							data.rslt.obj
 								.children("ins.jstree-icon").removeClass(s.opened + " " + s.closed + " ui-icon").end()
 								.find("> a > ins.ui-icon")
@@ -4186,23 +4186,23 @@ define('jstree', ['jquery'], function (jQuery) {
 											.indexOf("ui-icon-") === -1; 
 									}).removeClass(s.item_open + " " + s.item_clsd).addClass(s.item_leaf || "jstree-no-icon");
 						}, this))
-					.bind("select_node.jstree", $.proxy(function (e, data) {
+					.on("select_node.jstree", $.proxy(function (e, data) {
 							data.rslt.obj.children("a").addClass(s.item_a);
 						}, this))
-					.bind("deselect_node.jstree deselect_all.jstree", $.proxy(function (e, data) {
+					.on("deselect_node.jstree deselect_all.jstree", $.proxy(function (e, data) {
 							this.get_container()
 								.find("a." + s.item_a).removeClass(s.item_a).end()
 								.find("a.jstree-clicked").addClass(s.item_a);
 						}, this))
-					.bind("dehover_node.jstree", $.proxy(function (e, data) {
+					.on("dehover_node.jstree", $.proxy(function (e, data) {
 							data.rslt.obj.children("a").removeClass(s.item_h);
 						}, this))
-					.bind("hover_node.jstree", $.proxy(function (e, data) {
+					.on("hover_node.jstree", $.proxy(function (e, data) {
 							this.get_container()
 								.find("a." + s.item_h).not(data.rslt.obj).removeClass(s.item_h);
 							data.rslt.obj.children("a").addClass(s.item_h);
 						}, this))
-					.bind("move_node.jstree", $.proxy(function (e, data) {
+					.on("move_node.jstree", $.proxy(function (e, data) {
 							this._themeroller(data.rslt.o);
 							this._themeroller(data.rslt.op);
 						}, this));
@@ -4290,7 +4290,7 @@ define('jstree', ['jquery'], function (jQuery) {
 		$.jstree.plugin("unique", {
 			__init : function () {
 				this.get_container()
-					.bind("before.jstree", $.proxy(function (e, data) { 
+					.on("before.jstree", $.proxy(function (e, data) { 
 							var nms = [], res = true, p, t;
 							if(data.func == "move_node") {
 								// obj, ref, position, is_copy, is_prepared, skip_check
@@ -4370,27 +4370,27 @@ define('jstree', ['jquery'], function (jQuery) {
 				this.data.wholerow.html = false;
 				this.data.wholerow.to = false;
 				this.get_container()
-					.bind("init.jstree", $.proxy(function (e, data) { 
+					.on("init.jstree", $.proxy(function (e, data) { 
 							this._get_settings().core.animation = 0;
 						}, this))
-					.bind("open_node.jstree create_node.jstree clean_node.jstree loaded.jstree", $.proxy(function (e, data) { 
+					.on("open_node.jstree create_node.jstree clean_node.jstree loaded.jstree", $.proxy(function (e, data) { 
 							this._prepare_wholerow_span( data && data.rslt && data.rslt.obj ? data.rslt.obj : -1 );
 						}, this))
-					.bind("search.jstree clear_search.jstree reopen.jstree after_open.jstree after_close.jstree create_node.jstree delete_node.jstree clean_node.jstree", $.proxy(function (e, data) { 
+					.on("search.jstree clear_search.jstree reopen.jstree after_open.jstree after_close.jstree create_node.jstree delete_node.jstree clean_node.jstree", $.proxy(function (e, data) { 
 							if(this.data.to) { clearTimeout(this.data.to); }
 							this.data.to = setTimeout( (function (t, o) { return function() { t._prepare_wholerow_ul(o); }; })(this,  data && data.rslt && data.rslt.obj ? data.rslt.obj : -1), 0);
 						}, this))
-					.bind("deselect_all.jstree", $.proxy(function (e, data) { 
+					.on("deselect_all.jstree", $.proxy(function (e, data) { 
 							this.get_container().find(" > .jstree-wholerow .jstree-clicked").removeClass("jstree-clicked " + (this.data.themeroller ? this._get_settings().themeroller.item_a : "" ));
 						}, this))
-					.bind("select_node.jstree deselect_node.jstree ", $.proxy(function (e, data) { 
+					.on("select_node.jstree deselect_node.jstree ", $.proxy(function (e, data) { 
 							data.rslt.obj.each(function () { 
 								var ref = data.inst.get_container().find(" > .jstree-wholerow li:visible:eq(" + ( parseInt((($(this).offset().top - data.inst.get_container().offset().top + data.inst.get_container()[0].scrollTop) / data.inst.data.core.li_height),10)) + ")");
 								// ref.children("a")[e.type === "select_node" ? "addClass" : "removeClass"]("jstree-clicked");
 								ref.children("a").attr("class",data.rslt.obj.children("a").attr("class"));
 							});
 						}, this))
-					.bind("hover_node.jstree dehover_node.jstree", $.proxy(function (e, data) { 
+					.on("hover_node.jstree dehover_node.jstree", $.proxy(function (e, data) { 
 							this.get_container().find(" > .jstree-wholerow .jstree-hovered").removeClass("jstree-hovered " + (this.data.themeroller ? this._get_settings().themeroller.item_h : "" ));
 							if(e.type === "hover_node") {
 								var ref = this.get_container().find(" > .jstree-wholerow li:visible:eq(" + ( parseInt(((data.rslt.obj.offset().top - this.get_container().offset().top + this.get_container()[0].scrollTop) / this.data.core.li_height),10)) + ")");
@@ -4398,19 +4398,19 @@ define('jstree', ['jquery'], function (jQuery) {
 								ref.children("a").attr("class",data.rslt.obj.children(".jstree-hovered").attr("class"));
 							}
 						}, this))
-					.delegate(".jstree-wholerow-span, ins.jstree-icon, li", "click.jstree", function (e) {
+					.on("click.jstree",".jstree-wholerow-span, ins.jstree-icon, li",  function (e) {
 							var n = $(e.currentTarget);
 							if(e.target.tagName === "A" || (e.target.tagName === "INS" && n.closest("li").is(".jstree-open, .jstree-closed"))) { return; }
 							n.closest("li").children("a:visible:eq(0)").click();
 							e.stopImmediatePropagation();
 						})
-					.delegate("li", "mouseover.jstree", $.proxy(function (e) {
+					.on("mouseover.jstree","li",  $.proxy(function (e) {
 							e.stopImmediatePropagation();
 							if($(e.currentTarget).children(".jstree-hovered, .jstree-clicked").length) { return false; }
 							this.hover_node(e.currentTarget);
 							return false;
 						}, this))
-					.delegate("li", "mouseleave.jstree", $.proxy(function (e) {
+					.on("mouseleave.jstree","li",  $.proxy(function (e) {
 							if($(e.currentTarget).children("a").hasClass("jstree-hovered").length) { return; }
 							this.dehover_node(e.currentTarget);
 						}, this));
@@ -4445,8 +4445,8 @@ define('jstree', ['jquery'], function (jQuery) {
 						this.get_container().append(
 							o.clone().removeClass("jstree-wholerow-real")
 								.wrapAll("<div class='jstree-wholerow' />").parent()
-								.width(o.parent()[0].scrollWidth)
-								.css("top", (o.height() + ( is_ie7 ? 5 : 0)) * -1 )
+								.css("width",o.parent()[0].scrollWidth+"px")
+								.css("top", (parseInt(o.css("height")) + ( is_ie7 ? 5 : 0)) * -1 )
 								.find("li[id]").each(function () { this.removeAttribute("id"); }).end()
 						);
 					}

@@ -29,7 +29,7 @@
     this.$topbar = $(topbar)
     this.selector = selector || 'li > a'
     this.refresh()
-    this.$topbar.delegate(this.selector, 'click', processScroll)
+    this.$topbar.on( 'click',this.selector, processScroll)
     $window.scroll(processScroll)
     this.processScroll()
   }

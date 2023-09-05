@@ -444,22 +444,22 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 							i[ei] = d.inset[ei] + b; // total offset of content from outer side
 						});
 
-						x.width = R($E.width());
-						x.height = R($E.height());
+						x.width = R(parseInt($E.css("width")));
+						x.height = R(parseInt($E.css("height")));
 						x.top = N($E, "top", true);
 						x.bottom = N($E, "bottom", true);
 						x.left = N($E, "left", true);
 						x.right = N($E, "right", true);
 
-						d.outerWidth = R($E.outerWidth());
-						d.outerHeight = R($E.outerHeight());
+						d.outerWidth = R(parseInt($E.css("width")) + parseInt($E.css("padding-left")) + parseInt($E.css("padding-right")));
+						d.outerHeight = R(parseInt($E.css("height"))+parseInt($E.css("padding-top"))+parseInt($E.css("padding-bottom")));
 						// calc the TRUE inner-dimensions, even in quirks-mode!
 						d.innerWidth = max(0, d.outerWidth - i.left - i.right);
 						d.innerHeight = max(0, d.outerHeight - i.top - i.bottom);
 						// layoutWidth/Height is used in calcs for manual resizing
 						// layoutW/H only differs from innerW/H when in quirks-mode - then is like outerW/H
-						d.layoutWidth = R($E.innerWidth());
-						d.layoutHeight = R($E.innerHeight());
+						d.layoutWidth = R(parseInt($E.css("width"))-parseInt($E.css("padding-left"))-parseInt($E.css("padding-right")));
+						d.layoutHeight = R(parseInt($E.css("height"))-parseInt($E.css("padding-top"))-parseInt($E.css("padding-bottom")));
 
 						//if ($E.prop('tagName') === 'BODY') { debugData( d, $E.prop('tagName') ); } // DEBUG
 
@@ -603,8 +603,8 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 							, d = $E.offset()
 							, T = d.top
 							, L = d.left
-							, R = L + $E.outerWidth()
-							, B = T + $E.outerHeight()
+							, R = L + parseInt($E.css("width")) + parseInt($E.css("padding-left")) + parseInt($E.css("padding-right"))
+							, B = T + parseInt($E.css("height"))+parseInt($E.css("padding-top"))+parseInt($E.css("padding-bottom"))
 							, x = evt.pageX // evt.clientX ?
 							, y = evt.pageY // evt.clientY ?
 						;
@@ -661,7 +661,7 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 								+ '<ul style="font-size: 13px; font-weight: none; list-style: none; margin: 0; padding: 0 0 2px;"></ul>'
 								+ '</div>'
 							).appendTo("body");
-							$e.css('left', $(window).width() - $e.outerWidth() - 5);
+							$e.css('left', parseInt($(window).css("width")) - (parseInt($e.css("width")) + parseInt($e.css("padding-left")) + parseInt($e.css("padding-right"))) - 5);
 							if ($.ui.draggable)
 								$e.draggable({handle: ':first-child'});
 							return $e;
@@ -1330,7 +1330,7 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 							w = cssW($E, outerWidth);
 							$E.css({width: w});
 							if (w > 0) {
-								if (autoHide && $E.data('autoHidden') && $E.innerHeight() > 0) {
+								if (autoHide && $E.data('autoHidden') && parseInt($E.css("height"))-parseInt($E.css("padding-top"))-parseInt($E.css("padding-bottom")) > 0) {
 									$E.show().data('autoHidden', false);
 									if (!browser.mozilla) // FireFox refreshes iframes - IE does not
 										// make hidden, then visible to 'refresh' display after animation
@@ -1353,7 +1353,7 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 								$E = $(el);
 							h = cssH($E, outerHeight);
 							$E.css({height: h, visibility: "visible"}); // may have been 'hidden' by sizeContent
-							if (h > 0 && $E.innerWidth() > 0) {
+							if (h > 0 && parseInt($E.css("width"))-parseInt($E.css("padding-left"))-parseInt($E.css("padding-right")) > 0) {
 								if (autoHide && $E.data('autoHidden')) {
 									$E.show().data('autoHidden', false);
 									if (!browser.mozilla) // FireFox refreshes iframes - IE does not
@@ -1410,7 +1410,7 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 								$P.css(dim, "auto");
 								if ($C)
 									$C.css(dim, "auto");
-								size = (dim === "height") ? $P.outerHeight() : $P.outerWidth(); // MEASURE
+								size = (dim === "height") ? parseInt($P.css("height"))+parseInt($P.css("padding-top"))+parseInt($P.css("padding-bottom")) : parseInt($P.css("width")) + parseInt($P.css("padding-left")) + parseInt($P.css("padding-right")); // MEASURE
 								$P.css(dim, szP).css(vis); // RESET size & visibility
 								if ($C)
 									$C.css(dim, szC);
@@ -1438,9 +1438,9 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 							else if (s.isClosed || (s.isSliding && inclSpace))
 								return cSp;
 							else if (_c[pane].dir === "horz")
-								return $P.outerHeight() + oSp;
+								return parseInt($P.css("height"))+parseInt($P.css("padding-top"))+parseInt($P.css("padding-bottom")) + oSp;
 							else // dir === "vert"
-								return $P.outerWidth() + oSp;
+								return parseInt($P.css("width")) + parseInt($P.css("padding-left")) + parseInt($P.css("padding-right")) + oSp;
 						}
 
 						/**
@@ -1465,7 +1465,7 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 								, altPane = _c.oppositeEdge[pane]
 								, altS = state[altPane]
 								, $altP = $Ps[altPane]
-								, altPaneSize = (!$altP || altS.isVisible === false || altS.isSliding ? 0 : (dir == "horz" ? $altP.outerHeight() : $altP.outerWidth()))
+								, altPaneSize = (!$altP || altS.isVisible === false || altS.isSliding ? 0 : (dir == "horz" ? parseInt($altP.css("height"))+parseInt($altP.css("padding-top"))+parseInt($altP.css("padding-bottom")) : parseInt($altP.css("width")) + parseInt($altP.css("padding-left")) + parseInt($altP.css("padding-right"))))
 								, altPaneSpacing = ((!$altP || altS.isHidden ? 0 : options[altPane][altS.isClosed !== false ? "spacing_closed" : "spacing_open"]) || 0)
 								// limitSize prevents this pane from 'overlapping' opposite pane
 								, containerSize = (dir == "horz" ? sC.innerHeight : sC.innerWidth)
@@ -3263,7 +3263,7 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 								// the nested layout will reset its 'container' CSS when/if it is destroyed
 								if (hasChildren && $C) {
 									// a content-div may not have a specific width, so give it one to contain the Layout
-									$C.width($C.width());
+									$C.css("width", parseInt($C.css("width"))+"px");
 									$.each(pC, function (key, child) {
 										child.resizeAll(); // resize the Layout
 									});
@@ -3922,9 +3922,9 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 								showMasks(pane, {animation: true, objectsOnly: true});
 								$P.css({zIndex: z.pane_animate}); // overlay all elements during animation
 								if (pane == "south")
-									$P.css({top: sC.inset.top + sC.innerHeight - $P.outerHeight()});
+									$P.css({top: sC.inset.top + sC.innerHeight - (parseInt($P.css("height"))+parseInt($P.css("padding-top"))+parseInt($P.css("padding-bottom")))});
 								else if (pane == "east")
-									$P.css({left: sC.inset.left + sC.innerWidth - $P.outerWidth()});
+									$P.css({left: sC.inset.left + sC.innerWidth - (parseInt($P.css("width")) + parseInt($P.css("padding-left")) + parseInt($P.css("padding-right")))});
 							} else { // animation DONE - RESET CSS
 								hideMasks();
 								$P.css({zIndex: (s.isSliding ? z.pane_sliding : z.pane_normal)});
@@ -4245,7 +4245,7 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 								/* Panes are sometimes not sized precisely in some browsers!?
                  * This code will resize the pane up to 3 times to nudge the pane to the correct size
                  */
-								var actual = dimName === 'width' ? $P.outerWidth() : $P.outerHeight()
+								var actual = dimName === 'width' ? parseInt($P.css("width")) + parseInt($P.css("padding-left")) + parseInt($P.css("padding-right")) : parseInt($P.css("height"))+parseInt($P.css("padding-top"))+parseInt($P.css("padding-bottom"))
 									, tries = [{
 										pane: pane
 										, count: 1
@@ -4270,7 +4270,7 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 									thisTry.cssSize = cssSize(pane, thisTry.attempt);
 									$P.css(dimName, thisTry.cssSize);
 
-									thisTry.actual = dimName == 'width' ? $P.outerWidth() : $P.outerHeight();
+									thisTry.actual = dimName == 'width' ? parseInt($P.css("width")) + parseInt($P.css("padding-left")) + parseInt($P.css("padding-right")) : parseInt($P.css("height"))+parseInt($P.css("padding-top"))+parseInt($P.css("padding-bottom"));
 									thisTry.correct = (size === thisTry.actual);
 
 									// log attempts and alert the user of this *non-fatal error* (if showDebugMessages)
@@ -4530,7 +4530,7 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 
 								var paneResponsive = false;
 								var paneRespondedState = false;
-								var windowWidth = $(window).width();
+								var windowWidth = parseInt($(window).css("width"));
 
 								if ((o !== null && o !== 'undefined') && o.responsive && o.responsive.enabled) {
 									//if(s.size >= o.responsive.sizes.lg)
@@ -4719,7 +4719,7 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 									;
 									m = {
 										top: $C[0].offsetTop
-										, height: $C.outerHeight()
+										, height: parseInt($C.css("height"))+parseInt($C.css("padding-top"))+parseInt($C.css("padding-bottom"))
 										, numFooters: $Fs.length
 										, hiddenFooters: $Fs.length - $Fs_vis.length
 										, spaceBelow: 0 // correct if no content footer ($E)
@@ -4728,7 +4728,7 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 									m.bottom = m.top + m.height;
 									if ($F.length)
 										//spaceBelow = (LastFooter.top + LastFooter.height) [footerBottom] - Content.bottom + max(LastFooter.marginBottom, pane.paddingBotom)
-										m.spaceBelow = ($F[0].offsetTop + $F.outerHeight()) - m.bottom + _below($F);
+										m.spaceBelow = ($F[0].offsetTop + parseInt($F.css("height"))+parseInt($F.css("padding-top"))+parseInt($F.css("padding-bottom"))) - m.bottom + _below($F);
 									else // no footer - check marginBottom on Content element itself
 										m.spaceBelow = _below($C);
 								}
@@ -4788,7 +4788,7 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 										, left: left > -9999 ? left : sC.inset.left // handle offscreen-panes
 									});
 								} else { // east/west
-									paneLen = $P.outerHeight(); // s.outerHeight ||
+									paneLen = parseInt($P.css("height"))+parseInt($P.css("padding-top"))+parseInt($P.css("padding-bottom")); // s.outerHeight ||
 									s.resizerLength = paneLen;
 									$R.css({
 										height: cssH($R, paneLen) // account for borders & padding
@@ -4847,7 +4847,7 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 										// CENTER the toggler content SPAN
 										$T.children(".content").each(function () {
 											$TC = $(this);
-											$TC.css("marginLeft", round((width - $TC.outerWidth()) / 2)); // could be negative
+											$TC.css("marginLeft", round((width - (parseInt($TC.css("width")) + parseInt($TC.css("padding-left")) + parseInt($TC.css("padding-right")))) / 2)); // could be negative
 										});
 									} else { // east/west
 										var height = cssH($T, togLen);
@@ -4860,7 +4860,7 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 										// CENTER the toggler content SPAN
 										$T.children(".content").each(function () {
 											$TC = $(this);
-											$TC.css("marginTop", round((height - $TC.outerHeight()) / 2)); // could be negative
+											$TC.css("marginTop", round((height - (parseInt($TC.css("height"))+parseInt($TC.css("padding-top"))+parseInt($TC.css("padding-bottom")))) / 2)); // could be negative
 										});
 									}
 
@@ -5548,7 +5548,7 @@ define('jquery-layout', ['jquery'], function(jQuery) {
 		/**
      Persist-JS
 		 */
-		(function(){if(window.google&&google.gears){return}var a=null;if(typeof GearsFactory!="undefined"){a=new GearsFactory()}else{try{a=new ActiveXObject("Gears.Factory");if(a.getBuildInfo().indexOf("ie_mobile")!=-1){a.privateSetGlobalObject(this)}}catch(b){if((typeof navigator.mimeTypes!="undefined")&&navigator.mimeTypes["application/x-googlegears"]){a=document.createElement("object");a.style.display="none";a.width=0;a.height=0;a.type="application/x-googlegears";document.documentElement.appendChild(a)}}}if(!a){return}if(!window.google){google={}}if(!google.gears){google.gears={factory:a}}})();Persist=(function(){var i="0.3.1",d,b,g,h,e,f;f=(function(){var q="Thu, 01-Jan-1970 00:00:01 GMT",k=1000*60*60*24,r=["expires","path","domain"],m=escape,l=unescape,p=document,n;var s=function(){var t=new Date();t.setTime(t.getTime());return t};var j=function(x,A){var w,v,z,y=[],u=(arguments.length>2)?arguments[2]:{};y.push(m(x)+"="+m(A));for(var t=0;t<r.length;t++){v=r[t];z=u[v];if(z){y.push(v+"="+z)}}if(u.secure){y.push("secure")}return y.join("; ")};var o=function(){return navigator.cookieEnabled};n={set:function(B,x){var u=(arguments.length>2)?arguments[2]:{},v=s(),A,z={};if(u.expires){if(u.expires==-1){z.expires=-1}else{var w=u.expires*k;z.expires=new Date(v.getTime()+w);z.expires=z.expires.toGMTString()}}var C=["path","domain","secure"];for(var y=0;y<C.length;y++){if(u[C[y]]){z[C[y]]=u[C[y]]}}var t=j(B,x,z);p.cookie=t;return x},has:function(u){u=m(u);var x=p.cookie,w=x.indexOf(u+"="),t=w+u.length+1,v=x.substring(0,u.length);return((!w&&u!=v)||w<0)?false:true},get:function(v){v=m(v);var y=p.cookie,x=y.indexOf(v+"="),t=x+v.length+1,w=y.substring(0,v.length),u;if((!x&&v!=w)||x<0){return null}u=y.indexOf(";",t);if(u<0){u=y.length}return l(y.substring(t,u))},remove:function(t){var v=n.get(t),u={expires:q};p.cookie=j(t,"",u);return v},keys:function(){var y=p.cookie,x=y.split("; "),u,w,v=[];for(var t=0;t<x.length;t++){w=x[t].split("=");v.push(l(w[0]))}return v},all:function(){var y=p.cookie,x=y.split("; "),u,w,v=[];for(var t=0;t<x.length;t++){w=x[t].split("=");v.push([l(w[0]),l(w[1])])}return v},version:"0.2.1",enabled:false};n.enabled=o.call(n);return n}());var c=(function(){if(Array.prototype.indexOf){return function(j,k){return Array.prototype.indexOf.call(j,k)}}else{return function(o,p){var n,m;for(var k=0,j=o.length;k<j;k++){if(o[k]==p){return k}}return -1}}})();e=function(){};g=function(j){return"PS"+j.replace(/_/g,"__").replace(/ /g,"_s")};var a={search_order:["localstorage","globalstorage","gears","cookie","ie","flash"],name_re:/^[a-z][a-z0-9_ \-]+$/i,methods:["init","get","set","remove","load","save","iterate"],sql:{version:"1",create:"CREATE TABLE IF NOT EXISTS persist_data (k TEXT UNIQUE NOT NULL PRIMARY KEY, v TEXT NOT NULL)",get:"SELECT v FROM persist_data WHERE k = ?",set:"INSERT INTO persist_data(k, v) VALUES (?, ?)",remove:"DELETE FROM persist_data WHERE k = ?",keys:"SELECT * FROM persist_data"},flash:{div_id:"_persist_flash_wrap",id:"_persist_flash",path:"persist.swf",size:{w:1,h:1},params:{autostart:true}}};b={gears:{size:-1,test:function(){return(window.google&&window.google.gears)?true:false},methods:{init:function(){var j;j=this.db=google.gears.factory.create("beta.database");j.open(g(this.name));j.execute(a.sql.create).close()},get:function(l){var m,n=a.sql.get;var j=this.db;var k;j.execute("BEGIN").close();m=j.execute(n,[l]);k=m.isValidRow()?m.field(0):null;m.close();j.execute("COMMIT").close();return k},set:function(m,p){var k=a.sql.remove,o=a.sql.set,n;var j=this.db;var l;j.execute("BEGIN").close();j.execute(k,[m]).close();j.execute(o,[m,p]).close();j.execute("COMMIT").close();return p},remove:function(l){var n=a.sql.get,p=a.sql.remove,m,o=null,j=false;var k=this.db;k.execute("BEGIN").close();k.execute(p,[l]).close();k.execute("COMMIT").close();return true},iterate:function(m,l){var k=a.sql.keys;var n;var j=this.db;n=j.execute(k);while(n.isValidRow()){m.call(l||this,n.field(0),n.field(1));n.next()}n.close()}}},globalstorage:{size:5*1024*1024,test:function(){if(window.globalStorage){var j="127.0.0.1";if(this.o&&this.o.domain){j=this.o.domain}try{var l=globalStorage[j];return true}catch(k){if(window.console&&window.console.warn){console.warn("globalStorage exists, but couldn't use it because your browser is running on domain:",j)}return false}}else{return false}},methods:{key:function(j){return g(this.name)+g(j)},init:function(){this.store=globalStorage[this.o.domain]},get:function(j){j=this.key(j);return this.store.getItem(j)},set:function(j,k){j=this.key(j);this.store.setItem(j,k);return k},remove:function(j){var k;j=this.key(j);k=this.store.getItem[j];this.store.removeItem(j);return k}}},localstorage:{size:-1,test:function(){try{if(window.localStorage&&window.localStorage.setItem("persistjs_test_local_storage",null)==undefined){window.localStorage.removeItem("persistjs_test_local_storage");if(/Firefox[\/\s](\d+\.\d+)/.test(navigator.userAgent)){var k=RegExp.$1;if(k>=9){return true}if(window.location.protocol=="file:"){return false}}else{return true}}else{return false}return window.localStorage?true:false}catch(j){return false}},methods:{key:function(j){return this.name+">"+j},init:function(){this.store=localStorage},get:function(j){j=this.key(j);return this.store.getItem(j)},set:function(j,k){j=this.key(j);this.store.setItem(j,k);return k},remove:function(j){var k;j=this.key(j);k=this.store.getItem(j);this.store.removeItem(j);return k},iterate:function(o,n){var j=this.store,m,p;for(var k=0;k<j.length;k++){m=j.key(k);p=m.split(">");if((p.length==2)&&(p[0]==this.name)){o.call(n||this,p[1],j.getItem(m))}}}}},ie:{prefix:"_persist_data-",size:64*1024,test:function(){return window.ActiveXObject?true:false},make_userdata:function(k){var j=document.createElement("div");j.id=k;j.style.display="none";j.addBehavior("#default#userdata");document.body.appendChild(j);return j},methods:{init:function(){var j=b.ie.prefix+g(this.name);this.el=b.ie.make_userdata(j);if(this.o.defer){this.load()}},get:function(j){var k;j=g(j);if(!this.o.defer){this.load()}k=this.el.getAttribute(j);return k},set:function(j,k){j=g(j);this.el.setAttribute(j,k);if(!this.o.defer){this.save()}return k},remove:function(j){var k;j=g(j);if(!this.o.defer){this.load()}k=this.el.getAttribute(j);this.el.removeAttribute(j);if(!this.o.defer){this.save()}return k},load:function(){this.el.load(g(this.name))},save:function(){this.el.save(g(this.name))}}},cookie:{delim:":",size:4000,test:function(){return d.Cookie.enabled?true:false},methods:{key:function(j){return this.name+b.cookie.delim+j},get:function(j,k){var l;j=this.key(j);l=f.get(j);return l},set:function(j,l,k){j=this.key(j);f.set(j,l,this.o);return l},remove:function(j,k){var k;j=this.key(j);k=f.remove(j);return k}}},flash:{test:function(){try{if(!swfobject){return false}}catch(k){return false}var j=swfobject.getFlashPlayerVersion().major;return(j>=8)?true:false},methods:{init:function(){if(!b.flash.el){var l,m,k,j=a.flash;m=document.createElement("div");m.id=j.div_id;k=document.createElement("div");k.id=j.id;m.appendChild(k);document.body.appendChild(m);b.flash.el=swfobject.createSWF({id:j.id,data:this.o.swf_path||j.path,width:j.size.w,height:j.size.h},j.params,j.id)}this.el=b.flash.el},get:function(j){var k;j=g(j);k=this.el.get(this.name,j);return k},set:function(k,l){var j;k=g(k);j=this.el.set(this.name,k,l);return j},remove:function(j){var k;j=g(j);k=this.el.remove(this.name,j);return k}}}};h=function(){var n,j,p,r,s=a.methods,t=a.search_order;for(var q=0,o=s.length;q<o;q++){d.Store.prototype[s[q]]=e}d.type=null;d.size=-1;for(var m=0,k=t.length;!d.type&&m<k;m++){p=b[t[m]];if(p.test()){d.type=t[m];d.size=p.size;for(r in p.methods){d.Store.prototype[r]=p.methods[r]}}}d._init=true};d={VERSION:i,type:null,size:0,add:function(j){b[j.id]=j;a.search_order=[j.id].concat(a.search_order);h()},remove:function(k){var j=c(a.search_order,k);if(j<0){return}a.search_order.splice(j,1);delete b[k];h()},Cookie:f,Store:function(j,k){if(!a.name_re.exec(j)){throw new Error("Invalid name")}if(!d.type){throw new Error("No suitable storage found")}k=k||{};this.name=j;k.domain=k.domain||location.hostname||"localhost";k.domain=k.domain.replace(/:\d+$/,"");k.domain=(k.domain=="localhost")?"":k.domain;this.o=k;k.expires=k.expires||365*2;k.path=k.path||"/";if(this.o.search_order){a.search_order=this.o.search_order;h()}this.init()}};h();return d})();
+		(function(){if(window.google&&google.gears){return}var a=null;if(typeof GearsFactory!="undefined"){a=new GearsFactory()}else{try{a=new ActiveXObject("Gears.Factory");if(a.getBuildInfo().indexOf("ie_mobile")!=-1){a.privateSetGlobalObject(this)}}catch(b){if((typeof navigator.mimeTypes!="undefined")&&navigator.mimeTypes["application/x-googlegears"]){a=document.createElement("object");a.style.display="none";a.width=0;a.height=0;a.type="application/x-googlegears";document.documentElement.appendChild(a)}}}if(!a){return}if(!window.google){google={}}if(!google.gears){google.gears={factory:a}}})();Persist=(function(){var i="0.3.1",d,b,g,h,e,f;f=(function(){var q="Thu, 01-Jan-1970 00:00:01 GMT",k=1000*60*60*24,r=["expires","path","domain"],m=escape,l=unescape,p=document,n;var s=function(){var t=new Date();t.setTime(t.getTime());return t};var j=function(x,A){var w,v,z,y=[],u=(arguments.length>2)?arguments[2]:{};y.push(m(x)+"="+m(A));for(var t=0;t<r.length;t++){v=r[t];z=u[v];if(z){y.push(v+"="+z)}}if(u.secure){y.push("secure")}return y.join("; ")};var o=function(){return navigator.cookieEnabled};n={set:function(B,x){var u=(arguments.length>2)?arguments[2]:{},v=s(),A,z={};if(u.expires){if(u.expires==-1){z.expires=-1}else{var w=u.expires*k;z.expires=new Date(v.getTime()+w);z.expires=z.expires.toGMTString()}}var C=["path","domain","secure"];for(var y=0;y<C.length;y++){if(u[C[y]]){z[C[y]]=u[C[y]]}}var t=j(B,x,z);p.cookie=t;return x},has:function(u){u=m(u);var x=p.cookie,w=x.indexOf(u+"="),t=w+u.length+1,v=x.substring(0,u.length);return((!w&&u!=v)||w<0)?false:true},get:function(v){v=m(v);var y=p.cookie,x=y.indexOf(v+"="),t=x+v.length+1,w=y.substring(0,v.length),u;if((!x&&v!=w)||x<0){return null}u=y.indexOf(";",t);if(u<0){u=y.length}return l(y.substring(t,u))},remove:function(t){var v=n.get(t),u={expires:q};p.cookie=j(t,"",u);return v},keys:function(){var y=p.cookie,x=y.split("; "),u,w,v=[];for(var t=0;t<x.length;t++){w=x[t].split("=");v.push(l(w[0]))}return v},all:function(){var y=p.cookie,x=y.split("; "),u,w,v=[];for(var t=0;t<x.length;t++){w=x[t].split("=");v.push([l(w[0]),l(w[1])])}return v},version:"0.2.1",enabled:false};n.enabled=o.call(n);return n}());var c=(function(){if(Array.prototype.indexOf){return function(j,k){return Array.prototype.indexOf.call(j,k)}}else{return function(o,p){var n,m;for(var k=0,j=o.length;k<j;k++){if(o[k]==p){return k}}return -1}}})();e=function(){};g=function(j){return"PS"+j.replace(/_/g,"__").replace(/ /g,"_s")};var a={search_order:["localstorage","globalstorage","gears","cookie","ie","flash"],name_re:/^[a-z][a-z0-9_ \-]+$/i,methods:["init","get","set","remove","load","save","iterate"],sql:{version:"1",create:"CREATE TABLE IF NOT EXISTS persist_data (k TEXT UNIQUE NOT NULL PRIMARY KEY, v TEXT NOT NULL)",get:"SELECT v FROM persist_data WHERE k = ?",set:"INSERT INTO persist_data(k, v) VALUES (?, ?)",remove:"DELETE FROM persist_data WHERE k = ?",keys:"SELECT * FROM persist_data"},flash:{div_id:"_persist_flash_wrap",id:"_persist_flash",path:"persist.swf",size:{w:1,h:1},params:{autostart:true}}};b={gears:{size:-1,test:function(){return(window.google&&window.google.gears)?true:false},methods:{init:function(){var j;j=this.db=google.gears.factory.create("beta.database");j.open(g(this.name));j.execute(a.sql.create).close()},get:function(l){var m,n=a.sql.get;var j=this.db;var k;j.execute("BEGIN").close();m=j.execute(n,[l]);k=m.isValidRow()?m.field(0):null;m.close();j.execute("COMMIT").close();return k},set:function(m,p){var k=a.sql.remove,o=a.sql.set,n;var j=this.db;var l;j.execute("BEGIN").close();j.execute(k,[m]).close();j.execute(o,[m,p]).close();j.execute("COMMIT").close();return p},remove:function(l){var n=a.sql.get,p=a.sql.remove,m,o=null,j=false;var k=this.db;k.execute("BEGIN").close();k.execute(p,[l]).close();k.execute("COMMIT").close();return true},iterate:function(m,l){var k=a.sql.keys;var n;var j=this.db;n=j.execute(k);while(n.isValidRow()){m.call(l||this,n.field(0),n.field(1));n.next()}n.close()}}},globalstorage:{size:5*1024*1024,test:function(){if(window.globalStorage){var j="127.0.0.1";if(this.o&&this.o.domain){j=this.o.domain}try{var l=globalStorage[j];return true}catch(k){if(window.console&&window.console.warn){console.warn("globalStorage exists, but couldn't use it because your browser is running on domain:",j)}return false}}else{return false}},methods:{key:function(j){return g(this.name)+g(j)},init:function(){this.store=globalStorage[this.o.domain]},get:function(j){j=this.key(j);return this.store.getItem(j)},set:function(j,k){j=this.key(j);this.store.setItem(j,k);return k},remove:function(j){var k;j=this.key(j);k=this.store.getItem[j];this.store.removeItem(j);return k}}},localstorage:{size:-1,test:function(){try{if(window.localStorage&&window.localStorage.setItem("persistjs_test_local_storage",null)==undefined){window.localStorage.removeItem("persistjs_test_local_storage");if(/Firefox[\/\s](\d+\.\d+)/.test(navigator.userAgent)){var k=RegExp.$1;if(k>=9){return true}if(window.location.protocol=="file:"){return false}}else{return true}}else{return false}return window.localStorage?true:false}catch(j){return false}},methods:{key:function(j){return this.name+">"+j},init:function(){this.store=localStorage},get:function(j){j=this.key(j);return this.store.getItem(j)},set:function(j,k){j=this.key(j);this.store.setItem(j,k);return k},remove:function(j){var k;j=this.key(j);k=this.store.getItem(j);this.store.removeItem(j);return k},iterate:function(o,n){var j=this.store,m,p;for(var k=0;k<j.length;k++){m=j.key(k);p=m.split(">");if((p.length==2)&&(p[0]==this.name)){o.call(n||this,p[1],j.getItem(m))}}}}},ie:{prefix:"_persist_data-",size:64*1024,test:function(){return window.ActiveXObject?true:false},make_userdata:function(k){var j=document.createElement("div");j.id=k;j.style.display="none";j.addBehavior("#default#userdata");document.body.appendChild(j);return j},methods:{init:function(){var j=b.ie.prefix+g(this.name);this.el=b.ie.make_userdata(j);if(this.o.defer){this.trigger("load")}},get:function(j){var k;j=g(j);if(!this.o.defer){this.trigger("load")}k=this.el.getAttribute(j);return k},set:function(j,k){j=g(j);this.el.setAttribute(j,k);if(!this.o.defer){this.save()}return k},remove:function(j){var k;j=g(j);if(!this.o.defer){this.trigger("load")}k=this.el.getAttribute(j);this.el.removeAttribute(j);if(!this.o.defer){this.save()}return k},load:function(){this.el.on("load",g(this.name))},save:function(){this.el.save(g(this.name))}}},cookie:{delim:":",size:4000,test:function(){return d.Cookie.enabled?true:false},methods:{key:function(j){return this.name+b.cookie.delim+j},get:function(j,k){var l;j=this.key(j);l=f.get(j);return l},set:function(j,l,k){j=this.key(j);f.set(j,l,this.o);return l},remove:function(j,k){var k;j=this.key(j);k=f.remove(j);return k}}},flash:{test:function(){try{if(!swfobject){return false}}catch(k){return false}var j=swfobject.getFlashPlayerVersion().major;return(j>=8)?true:false},methods:{init:function(){if(!b.flash.el){var l,m,k,j=a.flash;m=document.createElement("div");m.id=j.div_id;k=document.createElement("div");k.id=j.id;m.appendChild(k);document.body.appendChild(m);b.flash.el=swfobject.createSWF({id:j.id,data:this.o.swf_path||j.path,width:j.size.w,height:j.size.h},j.params,j.id)}this.el=b.flash.el},get:function(j){var k;j=g(j);k=this.el.get(this.name,j);return k},set:function(k,l){var j;k=g(k);j=this.el.set(this.name,k,l);return j},remove:function(j){var k;j=g(j);k=this.el.remove(this.name,j);return k}}}};h=function(){var n,j,p,r,s=a.methods,t=a.search_order;for(var q=0,o=s.length;q<o;q++){d.Store.prototype[s[q]]=e}d.type=null;d.size=-1;for(var m=0,k=t.length;!d.type&&m<k;m++){p=b[t[m]];if(p.test()){d.type=t[m];d.size=p.size;for(r in p.methods){d.Store.prototype[r]=p.methods[r]}}}d._init=true};d={VERSION:i,type:null,size:0,add:function(j){b[j.id]=j;a.search_order=[j.id].concat(a.search_order);h()},remove:function(k){var j=c(a.search_order,k);if(j<0){return}a.search_order.splice(j,1);delete b[k];h()},Cookie:f,Store:function(j,k){if(!a.name_re.exec(j)){throw new Error("Invalid name")}if(!d.type){throw new Error("No suitable storage found")}k=k||{};this.name=j;k.domain=k.domain||location.hostname||"localhost";k.domain=k.domain.replace(/:\d+$/,"");k.domain=(k.domain=="localhost")?"":k.domain;this.o=k;k.expires=k.expires||365*2;k.path=k.path||"/";if(this.o.search_order){a.search_order=this.o.search_order;h()}this.init()}};h();return d})();
 		var layoutStore = new Persist.Store("LayoutProperties");
 // tell Layout that the state plugin is available
 		$.layout.plugins.stateManagement = true;

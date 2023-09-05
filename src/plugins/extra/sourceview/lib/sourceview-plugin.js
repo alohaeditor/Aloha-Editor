@@ -152,8 +152,8 @@ define([
 					sidebar.width = jQuery(this).prop('checked')
 						? 600
 						: originalWidth;
-					sidebar.container.width(sidebar.width)
-						.find('.aloha-sidebar-panels').width(sidebar.width);
+					sidebar.container.css("width", sidebar.width + "px")
+						.find('.aloha-sidebar-panels').css("width", sidebar.width+"px");
 					sidebar.open(0);
 				});
 			this.title.find('#aloha-devtool-source-viewer-entire-ckbx')
@@ -161,7 +161,7 @@ define([
 					showEntireEditableSource = !!jQuery(this).prop('checked');
 				});
 
-			Aloha.bind('aloha-selection-changed', function (event, range) {
+			Aloha.on('aloha-selection-changed', function (event, range) {
 				if (!Aloha.Sidebar.right.isOpen) {
 					return;
 				}

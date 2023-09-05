@@ -224,7 +224,7 @@ define([
 			width = parseInt($img.attr('width'), 10);
 		} else {
 			// NOTE: this assumes the image has already loaded!
-			width = parseInt($img.width(), 10);
+			width = parseInt(parseInt($img.css("width")), 10);
 		}
 
 		if (typeof width === 'number' && !isNaN(width)) {
@@ -446,7 +446,7 @@ define([
 				that._processRenderedData(data);
 				postProcessCallback();
 
-				Aloha.bind('aloha-editable-activated', function ($event, data) {
+				Aloha.on('aloha-editable-activated', function ($event, data) {
 					if (data.editable.obj.is(that.$_caption)) {
 						Toolbar.$surfaceContainer.hide();
 
@@ -458,7 +458,7 @@ define([
 					}
 				});
 
-				Aloha.bind('aloha-editable-deactivated', function ($event, data) {
+				Aloha.on('aloha-editable-deactivated', function ($event, data) {
 					//if (data.editable.obj.is(that.$_caption)) {
 						// this should work like above at aloha-editable-activated,
 						// but it seems there is a proplem in the block implementation / this plugin
@@ -504,7 +504,7 @@ define([
 			this.$_caption = this.$element.find(data.caption);
 			this.$_caption.addClass('aloha-captioned-image-caption')
 			              .addClass('aloha-editable')
-			              .bind('blur', this.onblur);
+			              .on('blur', this.onblur);
 			this.$element.removeClass('align-left align-right align-center');
 			var alignment = this.attr('align');
 
@@ -532,12 +532,12 @@ define([
 				initializeImageBlocks(Aloha.editables[j].obj);
 			}
 
-			Aloha.bind('aloha-editable-created', function ($event, editable) {
+			Aloha.on('aloha-editable-created', function ($event, editable) {
 				initializeImageBlocks(editable.obj);
-				editable.obj.delegate('.aloha-captioned-image-block', 'click',
+				editable.obj.on( 'click','.aloha-captioned-image-block',
 					showComponents);
 			});
-			Aloha.bind('aloha-editable-destroyed', function ($event, editable) {
+			Aloha.on('aloha-editable-destroyed', function ($event, editable) {
 				eachBlock(editable.obj, function (block, blockElem) {
 					cleanBlock(block, blockElem);
 					block.free();

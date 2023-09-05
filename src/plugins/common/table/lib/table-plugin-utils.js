@@ -437,10 +437,11 @@ define([
 			//we have to make two runs to not change the withs the calculations are based on
 			Utils.walkCells(rows, function(ri, ci, gridCi, colspan, rowspan) {
 				var currentRow = $(rows[ri]),
-					selectorWidth = currentRow.find('.aloha-table-selectrow').outerWidth(),
-					rowWidth = currentRow.width() - selectorWidth,
+					selector = currentRow.find('.aloha-table-selectrow')
+					selectorWidth = parseInt(selector.css("width")) + parseInt(selector.css("padding-left")) + parseInt(selector.css("padding-right")),
+					rowWidth = parseInt(currentRow.css("width")) - selectorWidth,
 					currentCell = $(currentRow.children()[ci]),
-					cellWidth = currentCell.outerWidth();
+					cellWidth = parseInt(currentCell.css("width")) + parseInt(currentCell.css("padding-left")) + parseInt(currentCell.css("padding-right"));
 
 				// skip the select & cells with colspans
 				if (currentCell.hasClass('aloha-table-selectrow') || currentRow.hasClass('aloha-table-selectcolumn') || colspan > 1) {
@@ -500,7 +501,7 @@ define([
 
 			$( cell ).append( fakeCell );
 
-			var width = fakeCell.width();
+			var width = parseInt(fakeCell.css("width"));
 
 			$( fakeCell ).remove();
 
@@ -531,7 +532,7 @@ define([
 				};
 
 				if (gridCi === gridId && colspan === 1) {
-					maxPageX = currentCell.offset().left + Utils.getCellBorder(currentCell) + currentCell.width() - Utils.getMinColWidth( currentCell );
+					maxPageX = currentCell.offset().left + Utils.getCellBorder(currentCell) + parseInt(currentCell.css("width")) - Utils.getMinColWidth( currentCell );
 				}
 
 				if (gridCi === gridId - 1 && colspan === 1) {
@@ -557,7 +558,7 @@ define([
 		 * 				the border width as an integer value
 		 */
 		'getCellBorder': function(cell) {
-			return ( (cell.outerWidth() - cell.innerWidth()) / 2 );
+			return ( ((parseInt(cell.css("width")) + parseInt(cell.css("padding-left")) + parseInt(cell.css("padding-right"))) - parseInt(cell.css("width"))-parseInt(cell.css("padding-left"))-parseInt(cell.css("padding-right"))) / 2 );
 		},
 
 		/**
@@ -570,7 +571,7 @@ define([
 		 * 				the padding as an integer value
 		 */
 		'getCellPadding': function(cell) {
-			return ( cell.innerWidth() - cell.width() );
+			return ( parseInt(cell.css("width"))-parseInt(cell.css("padding-left"))-parseInt(cell.css("padding-right")) - parseInt(cell.css("width")));
 		},
 
 		selectAnchorContents: function(selection) {

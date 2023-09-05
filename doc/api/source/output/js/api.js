@@ -33,7 +33,7 @@
       } else {
         oldUrl = "API Documentation Index";
       }
-      $("[role=main]").load( url+ " #documentation", function(){
+      $("[role=main]").on("load", url+ " #documentation", function(){
         $("body").scrollTop(0);
         var scrollTo = $("#list span").removeClass("active").filter(function() {
           return this.firstChild.firstChild.nodeValue === oldUrl;
@@ -47,7 +47,7 @@
 
     } else {
       url = "symbols/src/" + url  + ".html";
-      elem = $("[role=main] #documentation").load( url, function(){ elem.scrollTop(0); });
+      elem = $("[role=main] #documentation").on("load", url, function(){ elem.scrollTop(0); });
     }
   }
 
@@ -84,7 +84,7 @@
     zebraStripeList();
     filterList();
 
-    $(window).bind( 'hashchange', function(e) {
+    $(window).on( 'hashchange', function(e) {
       setPage();
     })
     $("[role=search] a").click(function() {

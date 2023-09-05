@@ -704,7 +704,7 @@ $.Widget.prototype = {
 				eventName = match[1] + instance.eventNamespace,
 				selector = match[2];
 			if ( selector ) {
-				instance.widget().delegate( selector, eventName, handlerProxy );
+				instance.widget().on(  eventName,selector, handlerProxy );
 			} else {
 				element.bind( eventName, handlerProxy );
 			}
@@ -8150,12 +8150,12 @@ $.extend(Datepicker.prototype, {
  */ 
 function bindHover(dpDiv) {
 	var selector = 'button, .ui-datepicker-prev, .ui-datepicker-next, .ui-datepicker-calendar td a';
-	return dpDiv.delegate(selector, 'mouseout', function() {
+	return dpDiv.on( 'mouseout',selector, function() {
 			$(this).removeClass('ui-state-hover');
 			if (this.className.indexOf('ui-datepicker-prev') != -1) $(this).removeClass('ui-datepicker-prev-hover');
 			if (this.className.indexOf('ui-datepicker-next') != -1) $(this).removeClass('ui-datepicker-next-hover');
 		})
-		.delegate(selector, 'mouseover', function(){
+		.on( 'mouseover',selector, function(){
 			if (!$.datepicker._isDisabledDatepicker( instActive.inline ? dpDiv.parent()[0] : instActive.input[0])) {
 				$(this).parents('.ui-datepicker-calendar').find('a').removeClass('ui-state-hover');
 				$(this).addClass('ui-state-hover');
@@ -10865,7 +10865,7 @@ $.widget( "ui.tabs", {
 			.addClass( "ui-tabs ui-widget ui-widget-content ui-corner-all" )
 			.toggleClass( "ui-tabs-collapsible", options.collapsible )
 			// Prevent users from focusing disabled tabs via click
-			.delegate( ".ui-tabs-nav > li", "mousedown" + this.eventNamespace, function( event ) {
+			.on( "mousedown" + this.eventNamespace, ".ui-tabs-nav > li", function( event ) {
 				if ( $( this ).is( ".ui-state-disabled" ) ) {
 					event.preventDefault();
 				}
@@ -10876,7 +10876,7 @@ $.widget( "ui.tabs", {
 			// We don't have to worry about focusing the previously focused
 			// element since clicking on a non-focusable element should focus
 			// the body anyway.
-			.delegate( ".ui-tabs-anchor", "focus" + this.eventNamespace, function() {
+			.on( "focus" + this.eventNamespace, ".ui-tabs-anchor", function() {
 				if ( $( this ).closest( "li" ).is( ".ui-state-disabled" ) ) {
 					this.blur();
 				}

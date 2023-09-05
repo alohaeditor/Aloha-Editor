@@ -161,7 +161,7 @@ define([
 			this._registerEventHandlersForEditableActivated();
 
 			// TODO: not sure if we still need the code below. it is somehow related to caret handling
-			Aloha.bind('aloha-selection-changed', function (evt, selection, originalEvent) {
+			Aloha.on('aloha-selection-changed', function (evt, selection, originalEvent) {
 				// the following line is needed to de-select blocks when navigating over them using the mouse cursors.
 				// We only want to execute it though, if we are not inside a block, as it would otherwise
 				// directly deselect the block we just selected. This is just a hotfix and not the final solution yet.
@@ -178,7 +178,7 @@ define([
 		 */
 		_registerEventHandlersForDeactivatingAlohaBlock: function () {
 			var that = this;
-			jQuery(document).bind('click', function (event) {
+			jQuery(document).on('click', function (event) {
 				if (Maps.isEmpty(that._highlightedBlocks)) {
 					return;
 				}
@@ -262,7 +262,7 @@ define([
 			// - IE7+8 for inline blocks and for block-level blocks which are part of a bigger selection
 			// it does NOT execute in the following cases:
 			// - IE7+8 for block-level blocks which are NOT part of a bigger selection. This case is handled separately below.
-			Aloha.bind('aloha-command-will-execute', function (e, data) {
+			Aloha.on('aloha-command-will-execute', function (e, data) {
 				// workaround for selection problem in tables: we never delete table blocks this way
 				if (that._activeBlock && that._activeBlock.$element.hasClass('aloha-table-wrapper')) {
 					return true;
@@ -405,7 +405,7 @@ define([
 		 */
 		_registerEventHandlersForEditableActivated: function () {
 			var that = this;
-			Aloha.bind('aloha-editable-activated', function (event, arg) {
+			Aloha.on('aloha-editable-activated', function (event, arg) {
 				if (arg.editable) {
 					var block = that.getBlock(arg.editable.obj.closest('.aloha-block'));
 					if (block) {
@@ -425,8 +425,13 @@ define([
 			jQuery.each(Aloha.editables, function (i, editable) {
 				editable.obj.data('blockDragdrop', blockmanager._dragdropEnabled);
 			});
-			Aloha.bind('aloha-editable-created', function (e, editable) {
+
+			Aloha.on('aloha-editable-created', function (e, editable) {
+				
+
+		
 				editable.obj.data('blockDragdrop', blockmanager._dragdropEnabled);
+
 			});
 		},
 

@@ -31,7 +31,7 @@ Aloha.ready(function() {
 	jQuery('#edit-page').show();
 
 
-	jQuery('#save-page').bind('click', function() {
+	jQuery('#save-page').on('click', function() {
 		//alert('Save the page content. To be done.');
 		//console.log('save page');
 		
@@ -68,7 +68,7 @@ Aloha.ready(function() {
 		jQuery('#save-page').hide();
 	});
 
-	jQuery('#edit-page').bind('click', function() {
+	jQuery('#edit-page').on('click', function() {
 		jQuery('.aloha-editor-demo-editable').aloha();
 		
 		jQuery('#edit-page').hide();

@@ -69,7 +69,7 @@
 
   $.fn.tabs = $.fn.pills = function ( selector ) {
     return this.each(function () {
-      $(this).delegate(selector || '.tabs li > a, .pills > li > a', 'click', tab)
+      $(this).on('click',selector || '.tabs li > a, .pills > li > a',  tab)
     })
   }
 

@@ -38,7 +38,7 @@ $.event.special.wheel = {
 
 $.fn.extend({
     wheel: function(fn) {
-        return fn ? this.bind("wheel", fn) : this.trigger("wheel");
+        return fn ? this.on("wheel", fn) : this.trigger("wheel");
     },
     
     unwheel: function(fn) {

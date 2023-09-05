@@ -15,7 +15,7 @@ button.click( function() {
     updateBoldColor();
 });
  
-Aloha.bind('aloha-selection-changed aloha-command-executed', function() {
+Aloha.on('aloha-selection-changed aloha-command-executed', function() {
 	updateBoldColor();
 });
 

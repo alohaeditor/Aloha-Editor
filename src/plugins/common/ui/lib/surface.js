@@ -81,7 +81,7 @@ define([
 		 *                                      it.
 		 */
 		trackRange: function (element) {
-			element.bind('mousedown', function (e) {
+			element.on('mousedown', function (e) {
 				e.originalEvent.stopSelectionUpdate = true;
 				Aloha.eventHandled = true;
 				Surface.suppressHide = true;
@@ -93,7 +93,7 @@ define([
 				}
 			});
 			
-			element.bind('mouseup', function (e) {
+			element.on('mouseup', function (e) {
 				e.originalEvent.stopSelectionUpdate = true;
 				Aloha.eventHandled = false;
 				Surface.suppressHide = false;
