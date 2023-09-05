@@ -73,7 +73,7 @@ define([
 
 			// Insert YouTube preview image
 			$element.removeAttr('style')
-				.append('<img src="'+videoBlockPlugin.previewUrl.replace("{id}", $element.data('video-id'))+'"/>');
+				.append('<img src="'+videoBlockPlugin.previewUrl.replace("{id}", $element.data('videoId'))+'"/>');
 			$img = $element.find('img');
 			// set the size to the image
 			$img.css({'width': width, 'height': height});

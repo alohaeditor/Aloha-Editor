@@ -80,12 +80,6 @@ $.layout = {
 		return dim.match(/^(width|height)$/i) ? d[dim] : d;
 	}
 
-
-	/**
-	* Returns hash container 'display' and 'visibility'
-	*
-	* @see	$.swap() - swaps CSS, runs callback, resets CSS
-	*/
 ,	showInvisibly: function ($E, force) {
 		if (!$E) return {};
 		if (!$E.jquery) $E = $($E);
@@ -795,7 +789,6 @@ $.fn.layout = function (opts) {
 	/**
 	* Returns hash container 'display' and 'visibility'
 	*
-	* @see	 $.swap() - swaps CSS, runs callback, resets CSS
 	* @param {!Object}		$E
 	* @param {boolean=}		force
 	*/

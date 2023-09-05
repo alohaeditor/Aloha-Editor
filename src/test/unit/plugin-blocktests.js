@@ -73,7 +73,7 @@ function( TestUtils) {
 				assertions: 8,
 				operation : function(testContainer, testcase) {
 					jQuery('#myDefaultBlock').alohaBlock({
-						'aloha-block-type': 'DefaultBlock'
+						'alohaBlockType': 'DefaultBlock'
 					});
 					var $block = jQuery('.aloha-block', testContainer);
 
@@ -81,7 +81,7 @@ function( TestUtils) {
 					strictEqual($block.attr('contenteditable'), 'false', 'The block div is contenteditable=false.');
 					ok($block.hasClass('aloha-block'), 'The block div has the aloha-block CSS class.');
 					ok($block.hasClass('aloha-block-DefaultBlock'), 'The block div has the aloha-block-DefaultBlock CSS class.');
-					strictEqual($block.attr('data-aloha-block-type'), 'DefaultBlock', 'The block div wrapper has the data-aloha-block-type set correctly.');
+					strictEqual($block.attr('data-alohaBlockType'), 'DefaultBlock', 'The block div wrapper has the data-alohaBlockType set correctly.');
 					equal($block.attr('data-block-type'), undefined, 'The block div wrapper does not have data-block-type set, as it shall not be used anymore by the framework.');
 
 					// content wrapper assertions
@@ -97,7 +97,7 @@ function( TestUtils) {
 				assertions: 2,
 				operation : function(testContainer, testcase) {
 					jQuery('#myDefaultBlock').alohaBlock({
-						'aloha-block-type': 'DefaultBlock'
+						'alohaBlockType': 'DefaultBlock'
 					});
 					var block = BlockManager.getBlock(jQuery('#myDefaultBlock', testContainer));
 					strictEqual(block.attr('foo'), 'Bar');
@@ -110,7 +110,7 @@ function( TestUtils) {
 				assertions: 2,
 				operation : function(testContainer, testcase) {
 					jQuery('#myDefaultBlock').alohaBlock({
-						'aloha-block-type': 'DefaultBlock',
+						'alohaBlockType': 'DefaultBlock',
 						'foo': 'someBar',
 						'baz': 'Override'
 					});
@@ -130,7 +130,7 @@ function( TestUtils) {
 				assertions: 1,
 				operation : function(testContainer, testcase) {
 					jQuery('#myDefaultBlock').alohaBlock({
-						'aloha-block-type': 'DefaultBlock'
+						'alohaBlockType': 'DefaultBlock'
 					});
 
 					strictEqual(window.thisTestExecutionCount, 0);
@@ -146,7 +146,7 @@ function( TestUtils) {
 						ok(true);
 					})
 					jQuery('#myDefaultBlock').alohaBlock({
-						'aloha-block-type': 'DefaultBlock'
+						'alohaBlockType': 'DefaultBlock'
 					});
 					jQuery('#myDefaultBlock').click();
 				}
@@ -157,7 +157,7 @@ function( TestUtils) {
 				assertions: 1,
 				operation : function(testContainer, testcase) {
 					jQuery('#myDefaultBlock').alohaBlock({
-						'aloha-block-type': 'DefaultBlock'
+						'alohaBlockType': 'DefaultBlock'
 					});
 
 					strictEqual(jQuery('.aloha-block', testContainer).length, 0, 'Image object has been blockified, although this should not happen.');
@@ -173,7 +173,7 @@ function( TestUtils) {
 				//assertions: 1,
 				operation : function(testContainer, testcase) {
 					jQuery('#myDefaultBlock').alohaBlock({
-						'aloha-block-type': 'DefaultBlock'
+						'alohaBlockType': 'DefaultBlock'
 					});
 					var block = BlockManager.getBlock(jQuery('#myDefaultBlock', testContainer));
 
@@ -189,7 +189,7 @@ function( TestUtils) {
 				assertions: 1,
 				operation : function(testContainer, testcase) {
 					jQuery('#myDefaultBlock').alohaBlock({
-						'aloha-block-type': 'DefaultBlock'
+						'alohaBlockType': 'DefaultBlock'
 					});
 					var block = BlockManager.getBlock(jQuery('#myDefaultBlock', testContainer));
 					block.attr('test', 'mytest1');
@@ -206,14 +206,14 @@ function( TestUtils) {
 				assertions: 2,
 				operation : function(testContainer, testcase) {
 					jQuery('#myDefaultBlock').alohaBlock({
-						'aloha-block-type': 'DefaultBlock'
+						'alohaBlockType': 'DefaultBlock'
 					});
 					var block = BlockManager.getBlock(jQuery('#myDefaultBlock', testContainer));
 					block.attr('aloha-block-test1', 'foo');
 					strictEqual(block.attr('aloha-block-test1'), undefined);
 
-					block.attr('aloha-block-type', 'foo');
-					strictEqual(block.attr('aloha-block-type'), 'DefaultBlock');
+					block.attr('alohaBlockType', 'foo');
+					strictEqual(block.attr('alohaBlockType'), 'DefaultBlock');
 				}
 			},
 
@@ -224,10 +224,10 @@ function( TestUtils) {
 				assertions: 8,
 				operation : function(testContainer, testcase) {
 					jQuery('#block1').alohaBlock({
-						'aloha-block-type': 'DefaultBlock'
+						'alohaBlockType': 'DefaultBlock'
 					});
 					jQuery('#block2').alohaBlock({
-						'aloha-block-type': 'DefaultBlock'
+						'alohaBlockType': 'DefaultBlock'
 					});
 
 					var block1 = BlockManager.getBlock(jQuery('#block1', testContainer));
@@ -260,7 +260,7 @@ function( TestUtils) {
 				assertions: 3,
 				operation : function(testContainer, testcase) {
 					jQuery('#myDefaultBlock').alohaBlock({
-						'aloha-block-type': 'DefaultBlock'
+						'alohaBlockType': 'DefaultBlock'
 					});
 
 					var block1 = BlockManager.getBlock(jQuery('.aloha-block', testContainer).attr('id'));
@@ -279,7 +279,7 @@ function( TestUtils) {
 				assertions: 1,
 				operation : function(testContainer, testcase) {
 					jQuery('#myDefaultBlock').alohaBlock({
-						'aloha-block-type': 'DefaultBlock'
+						'alohaBlockType': 'DefaultBlock'
 					});
 
 					strictEqual(undefined, BlockManager.getBlock('someUndefinedId'));
@@ -295,7 +295,7 @@ function( TestUtils) {
 				assertions: 7,
 				operation : function(testContainer, testcase) {
 					jQuery('#myDefaultBlock').alohaBlock({
-						'aloha-block-type': 'DefaultBlock'
+						'alohaBlockType': 'DefaultBlock'
 					});
 
 					var block = BlockManager.getBlock(jQuery('#myDefaultBlock', testContainer));
@@ -322,7 +322,7 @@ function( TestUtils) {
 					jQuery('.alohaContent').aloha();
 
 					jQuery('#myDefaultBlock').alohaBlock({
-						'aloha-block-type': 'DefaultBlock'
+						'alohaBlockType': 'DefaultBlock'
 					});
 
 					var testTimeout = window.setTimeout(function() {
@@ -391,7 +391,7 @@ function( TestUtils) {
 					jQuery('.alohaContent').aloha();
 
 					jQuery('#myDefaultBlock').alohaBlock({
-						'aloha-block-type': 'DefaultBlock'
+						'alohaBlockType': 'DefaultBlock'
 					});
 
 					var testTimeout = window.setTimeout(function() {

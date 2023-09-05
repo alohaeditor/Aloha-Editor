@@ -349,7 +349,7 @@ define([
 		var $elm = $(elm);
 		var $srcEditable = this.$element.closest('.aloha-editable');
 		var $dstEditable = $elm.closest('.aloha-editable');
-		var dropzones = ($srcEditable.data('block-dropzones') || ['.aloha-editable']).join();
+		var dropzones = ($srcEditable.data('blockDropzones') || ['.aloha-editable']).join();
 
 		if (!$dstEditable.is(dropzones)) {
 			if (Aloha.Log.isDebugEnabled()) {

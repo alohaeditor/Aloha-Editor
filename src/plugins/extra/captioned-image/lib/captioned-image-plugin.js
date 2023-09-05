@@ -369,7 +369,7 @@ define([
 
 		// Set the block type for these new Aloha Blocks to the right type.
 		$blocks.alohaBlock({
-			'aloha-block-type': 'CaptionedImageBlock'
+			'alohaBlockType': 'CaptionedImageBlock'
 		});
 	}
 

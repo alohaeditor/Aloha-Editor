@@ -111,11 +111,11 @@ define([
 		},
 
 		getActiveContainer: function () {
-			return this.$_container.data('aloha-active-container');
+			return this.$_container.data('alohaActiveContainer');
 		},
 
 		getContainers: function () {
-			return this.$_container.data('aloha-tabs');
+			return this.$_container.data('alohaTabs');
 		},
 
 		/**

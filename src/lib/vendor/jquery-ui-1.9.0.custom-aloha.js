@@ -2058,7 +2058,7 @@ $.ui.plugin.add("draggable", "connectToSortable", {
 					//Now we fake the start of dragging for the sortable instance,
 					//by cloning the list group item, appending it to the sortable and using it as inst.currentItem
 					//We can then fire the start event of the sortable with our passed browser event, and our own helper (so it doesn't create a new one)
-					this.instance.currentItem = $(that).clone().removeAttr('id').appendTo(this.instance.element).data("sortable-item", true);
+					this.instance.currentItem = $(that).clone().removeAttr('id').appendTo(this.instance.element).data("sortableItem", true);
 					this.instance.options._helper = this.instance.options.helper; //Store helper option to later restore it
 					this.instance.options.helper = function() { return ui.helper[0]; };
 
@@ -3106,7 +3106,7 @@ $.ui.plugin.add("resizable", "alsoResize", {
 		var _store = function (exp) {
 			$(exp).each(function() {
 				var el = $(this);
-				el.data("resizable-alsoresize", {
+				el.data("resizableAlsoresize", {
 					width: parseInt(el.width(), 10), height: parseInt(el.height(), 10),
 					left: parseInt(el.css('left'), 10), top: parseInt(el.css('top'), 10)
 				});
@@ -3131,7 +3131,7 @@ $.ui.plugin.add("resizable", "alsoResize", {
 
 		_alsoResize = function (exp, c) {
 			$(exp).each(function() {
-				var el = $(this), start = $(this).data("resizable-alsoresize"), style = {}, 
+				var el = $(this), start = $(this).data("resizableAlsoresize"), style = {}, 
 					css = c && c.length ? c : el.parents(ui.originalElement[0]).length ? ['width', 'height'] : ['width', 'height', 'top', 'left'];
 
 				$.each(css, function (i, prop) {
@@ -3152,7 +3152,7 @@ $.ui.plugin.add("resizable", "alsoResize", {
 	},
 
 	stop: function (event, ui) {
-		$(this).removeData("resizable-alsoresize");
+		$(this).removeData("resizableAlsoresize");
 	}
 });
 
@@ -3382,7 +3382,7 @@ $.widget("ui.selectable", $.ui.mouse, {
 			selectees.each(function() {
 				var $this = $(this);
 				var pos = $this.offset();
-				$.data(this, "selectable-item", {
+				$.data(this, "selectableItem", {
 					element: this,
 					$element: $this,
 					left: pos.left,
@@ -3408,7 +3408,7 @@ $.widget("ui.selectable", $.ui.mouse, {
 	_destroy: function() {
 		this.selectees
 			.removeClass("ui-selectee")
-			.removeData("selectable-item");
+			.removeData("selectableItem");
 		this.element
 			.removeClass("ui-selectable ui-selectable-disabled");
 		this._mouseDestroy();
@@ -3442,7 +3442,7 @@ $.widget("ui.selectable", $.ui.mouse, {
 		}
 
 		this.selectees.filter('.ui-selected').each(function() {
-			var selectee = $.data(this, "selectable-item");
+			var selectee = $.data(this, "selectableItem");
 			selectee.startselected = true;
 			if (!event.metaKey && !event.ctrlKey) {
 				selectee.$element.removeClass('ui-selected');
@@ -3457,7 +3457,7 @@ $.widget("ui.selectable", $.ui.mouse, {
 		});
 
 		$(event.target).parents().addBack().each(function() {
-			var selectee = $.data(this, "selectable-item");
+			var selectee = $.data(this, "selectableItem");
 			if (selectee) {
 				var doSelect = (!event.metaKey && !event.ctrlKey) || !selectee.$element.hasClass('ui-selected');
 				selectee.$element
@@ -3497,7 +3497,7 @@ $.widget("ui.selectable", $.ui.mouse, {
 		this.helper.css({left: x1, top: y1, width: x2-x1, height: y2-y1});
 
 		this.selectees.each(function() {
-			var selectee = $.data(this, "selectable-item");
+			var selectee = $.data(this, "selectableItem");
 			//prevent helper from being selected if appendTo: selectable
 			if (!selectee || selectee.element == that.element[0])
 				return;
@@ -3574,7 +3574,7 @@ $.widget("ui.selectable", $.ui.mouse, {
 		var options = this.options;
 
 		$('.ui-unselecting', this.element[0]).each(function() {
-			var selectee = $.data(this, "selectable-item");
+			var selectee = $.data(this, "selectableItem");
 			selectee.$element.removeClass('ui-unselecting');
 			selectee.unselecting = false;
 			selectee.startselected = false;
@@ -3583,7 +3583,7 @@ $.widget("ui.selectable", $.ui.mouse, {
 			});
 		});
 		$('.ui-selecting', this.element[0]).each(function() {
-			var selectee = $.data(this, "selectable-item");
+			var selectee = $.data(this, "selectableItem");
 			selectee.$element.removeClass('ui-selecting').addClass('ui-selected');
 			selectee.selecting = false;
 			selectee.selected = true;
@@ -5622,7 +5622,7 @@ $.widget( "ui.autocomplete", {
 
 				// back compat for _renderItem using item.autocomplete, via #7810
 				// TODO remove the fallback, see #8156
-				var item = ui.item.data( "ui-autocomplete-item" ) || ui.item.data( "item.autocomplete" );
+				var item = ui.item.data( "uiAutocompleteItem" ) || ui.item.data( "item.autocomplete" );
 				if ( false !== this._trigger( "focus", event, { item: item } ) ) {
 					// use value to match what will end up in the input, if it was a key event
 					if ( event.originalEvent && /^key/.test( event.originalEvent.type ) ) {
@@ -5640,7 +5640,7 @@ $.widget( "ui.autocomplete", {
 			menuselect: function( event, ui ) {
 				// back compat for _renderItem using item.autocomplete, via #7810
 				// TODO remove the fallback, see #8156
-				var item = ui.item.data( "ui-autocomplete-item" ) || ui.item.data( "item.autocomplete" ),
+				var item = ui.item.data( "uiAutocompleteItem" ) || ui.item.data( "item.autocomplete" ),
 					previous = this.previous;
 
 				// only trigger when focus was lost (click on menu)
@@ -5898,7 +5898,7 @@ $.widget( "ui.autocomplete", {
 	},
 
 	_renderItemData: function( ul, item ) {
-		return this._renderItem( ul, item ).data( "ui-autocomplete-item", item );
+		return this._renderItem( ul, item ).data( "uiAutocompleteItem", item );
 	},
 
 	_renderItem: function( ul, item ) {
@@ -9195,7 +9195,7 @@ $.widget( "ui.menu", {
 				.removeAttr( "aria-haspopup" )
 				.children().each( function() {
 					var elem = $( this );
-					if ( elem.data( "ui-menu-submenu-carat" ) ) {
+					if ( elem.data( "uiMenuSubmenuCarat" ) ) {
 						elem.remove();
 					}
 				});
@@ -9352,7 +9352,7 @@ $.widget( "ui.menu", {
 				item = menu.prev( "a" ),
 				submenuCarat = $( "<span>" )
 					.addClass( "ui-menu-icon ui-icon " + icon )
-					.data( "ui-menu-submenu-carat", true );
+					.data( "uiMenuSubmenuCarat", true );
 
 			item
 				.attr( "aria-haspopup", "true" )
@@ -9829,13 +9829,13 @@ $.widget( "ui.slider", $.ui.mouse, {
 			});
 
 		this.handles.each(function( i ) {
-			$( this ).data( "ui-slider-handle-index", i );
+			$( this ).data( "uiSliderHandleIndex", i );
 		});
 
 		this._on( this.handles, {
 			keydown: function( event ) {
 				var allowed, curVal, newVal, step,
-					index = $( event.target ).data( "ui-slider-handle-index" );
+					index = $( event.target ).data( "uiSliderHandleIndex" );
 
 				switch ( event.keyCode ) {
 					case $.ui.keyCode.HOME:
@@ -9897,7 +9897,7 @@ $.widget( "ui.slider", $.ui.mouse, {
 				this._slide( event, index, newVal );
 			},
 			keyup: function( event ) {
-				var index = $( event.target ).data( "ui-slider-handle-index" );
+				var index = $( event.target ).data( "uiSliderHandleIndex" );
 
 				if ( this._keySliding ) {
 					this._keySliding = false;
@@ -11224,7 +11224,7 @@ $.widget( "ui.tabs", {
 				that.panels = that.panels.add( panel );
 			}
 			if ( originalAriaControls ) {
-				tab.data( "ui-tabs-aria-controls", originalAriaControls );
+				tab.data( "uiTabsAriaControls", originalAriaControls );
 			}
 			tab.attr({
 				"aria-controls": selector.substring( 1 ),
@@ -11247,7 +11247,7 @@ $.widget( "ui.tabs", {
 		return $( "<div>" )
 			.attr( "id", id )
 			.addClass( "ui-tabs-panel ui-widget-content ui-corner-bottom" )
-			.data( "ui-tabs-destroy", true );
+			.data( "uiTabsDestroy", true );
 	},
 
 	_setupDisabled: function( disabled ) {
@@ -11505,7 +11505,7 @@ $.widget( "ui.tabs", {
 			.removeUniqueId();
 
 		this.tabs.add( this.panels ).each(function() {
-			if ( $.data( this, "ui-tabs-destroy" ) ) {
+			if ( $.data( this, "uiTabsDestroy" ) ) {
 				$( this ).remove();
 			} else {
 				$( this )
@@ -11524,7 +11524,7 @@ $.widget( "ui.tabs", {
 
 		this.tabs.each(function() {
 			var li = $( this ),
-				prev = li.data( "ui-tabs-aria-controls" );
+				prev = li.data( "uiTabsAriaControls" );
 			if ( prev ) {
 				li.attr( "aria-controls", prev );
 			} else {
@@ -11833,7 +11833,7 @@ if ( $.uiBackCompat !== false ) {
 					url.replace( "#", "" ) :
 					this._tabId( li );
 
-			li.addClass( "ui-state-default ui-corner-top" ).data( "ui-tabs-destroy", true );
+			li.addClass( "ui-state-default ui-corner-top" ).data( "uiTabsDestroy", true );
 			li.attr( "aria-controls", id );
 
 			doInsertAfter = index >= this.tabs.length;
@@ -11935,7 +11935,7 @@ if ( $.uiBackCompat !== false ) {
 			return $( this.options.panelTemplate )
 				.attr( "id", id )
 				.addClass( "ui-tabs-panel ui-widget-content ui-corner-bottom" )
-				.data( "ui-tabs-destroy", true );
+				.data( "uiTabsDestroy", true );
 		}
 	});
 
@@ -12170,19 +12170,19 @@ function addDescribedBy( elem, id ) {
 	var describedby = (elem.attr( "aria-describedby" ) || "").split( /\s+/ );
 	describedby.push( id );
 	elem
-		.data( "ui-tooltip-id", id )
+		.data( "uiTooltipId", id )
 		.attr( "aria-describedby", $.trim( describedby.join( " " ) ) );
 }
 
 function removeDescribedBy( elem ) {
-	var id = elem.data( "ui-tooltip-id" ),
+	var id = elem.data( "uiTooltipId" ),
 		describedby = (elem.attr( "aria-describedby" ) || "").split( /\s+/ ),
 		index = $.inArray( id, describedby );
 	if ( index !== -1 ) {
 		describedby.splice( index, 1 );
 	}
 
-	elem.removeData( "ui-tooltip-id" );
+	elem.removeData( "uiTooltipId" );
 	describedby = $.trim( describedby.join( " " ) );
 	if ( describedby ) {
 		elem.attr( "aria-describedby", describedby );
@@ -12257,7 +12257,7 @@ $.widget( "ui.tooltip", {
 			var element = $( this );
 			if ( element.is( "[title]" ) ) {
 				element
-					.data( "ui-tooltip-title", element.attr( "title" ) )
+					.data( "uiTooltipTitle", element.attr( "title" ) )
 					.attr( "title", "" );
 			}
 		});
@@ -12267,8 +12267,8 @@ $.widget( "ui.tooltip", {
 		// restore title attributes
 		this.element.find( this.options.items ).addBack().each(function() {
 			var element = $( this );
-			if ( element.data( "ui-tooltip-title" ) ) {
-				element.attr( "title", element.data( "ui-tooltip-title" ) );
+			if ( element.data( "uiTooltipTitle" ) ) {
+				element.attr( "title", element.data( "uiTooltipTitle" ) );
 			}
 		});
 	},
@@ -12285,7 +12285,7 @@ $.widget( "ui.tooltip", {
 		// If the tooltip is open and we're tracking then reposition the tooltip.
 		// This makes sure that a tracking tooltip doesn't obscure a focused element
 		// if the user was hovering when the element gained focused.
-		if ( this.options.track && target.data( "ui-tooltip-id" ) ) {
+		if ( this.options.track && target.data( "uiTooltipId" ) ) {
 			this._find( target ).position( $.extend({
 				of: target
 			}, this.options.position ) );
@@ -12295,10 +12295,10 @@ $.widget( "ui.tooltip", {
 		}
 
 		if ( target.attr( "title" ) ) {
-			target.data( "ui-tooltip-title", target.attr( "title" ) );
+			target.data( "uiTooltipTitle", target.attr( "title" ) );
 		}
 
-		target.data( "tooltip-open", true );
+		target.data( "tooltipOpen", true );
 
 		this._updateContent( target, event );
 	},
@@ -12314,7 +12314,7 @@ $.widget( "ui.tooltip", {
 
 		content = contentOption.call( target[0], function( response ) {
 			// ignore async response if tooltip was closed already
-			if ( !target.data( "tooltip-open" ) ) {
+			if ( !target.data( "tooltipOpen" ) ) {
 				return;
 			}
 			// IE may instantly serve a cached response for ajax requests
@@ -12419,8 +12419,8 @@ $.widget( "ui.tooltip", {
 		}
 
 		// only set title if we had one before (see comment in _open())
-		if ( target.data( "ui-tooltip-title" ) ) {
-			target.attr( "title", target.data( "ui-tooltip-title" ) );
+		if ( target.data( "uiTooltipTitle" ) ) {
+			target.attr( "title", target.data( "uiTooltipTitle" ) );
 		}
 
 		removeDescribedBy( target );
@@ -12431,7 +12431,7 @@ $.widget( "ui.tooltip", {
 			delete that.tooltips[ this.id ];
 		});
 
-		target.removeData( "tooltip-open" );
+		target.removeData( "tooltipOpen" );
 		this._off( target, "mouseleave focusout keyup" );
 		this._off( this.document, "mousemove" );
 
@@ -12461,7 +12461,7 @@ $.widget( "ui.tooltip", {
 	},
 
 	_find: function( target ) {
-		var id = target.data( "ui-tooltip-id" );
+		var id = target.data( "uiTooltipId" );
 		return id ? $( "#" + id ) : $();
 	},
 
@@ -12480,9 +12480,9 @@ $.widget( "ui.tooltip", {
 			$( "#" + id ).remove();
 
 			// Restore the title
-			if ( element.data( "ui-tooltip-title" ) ) {
-				element.attr( "title", element.data( "ui-tooltip-title" ) );
-				element.removeData( "ui-tooltip-title" );
+			if ( element.data( "uiTooltipTitle" ) ) {
+				element.attr( "title", element.data( "uiTooltipTitle" ) );
+				element.removeData( "uiTooltipTitle" );
 			}
 		});
 	}

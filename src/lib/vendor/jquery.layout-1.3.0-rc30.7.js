@@ -364,7 +364,6 @@ $.layout = {
 	/**
 	* Returns hash container 'display' and 'visibility'
 	*
-	* @see	$.swap() - swaps CSS, runs callback, resets CSS
 	* @param  {!Object}		$E				jQuery element
 	* @param  {boolean=}	[force=false]	Run even if display != none
 	* @return {!Object}						Returns current style props, if applicable

@@ -96,7 +96,7 @@ All block attributes that start with +aloha-block-+ are *internal* and can *only
 
 h4. Block Types
 
-One special block attribute is called +aloha-block-type+, which must be set to one of the block types registered at the @BlockManager@. It can be only set during construction time, and if it is not set, the @DefaultBlock@ is automatically chosen.
+One special block attribute is called +alohaBlockType+, which must be set to one of the block types registered at the @BlockManager@. It can be only set during construction time, and if it is not set, the @DefaultBlock@ is automatically chosen.
 
 Depending on the block type, a different @Block@ class will be instantiated. Later, you will be introduced to writing your own block type.
 
@@ -109,13 +109,13 @@ h4. Block Attribute Overriding Sources
 
 When calling @.alohaBlock@ on an element, the following data is merged together:
 
-* @{ aloha-block-type: 'DefaultBlock' }@
+* @{ alohaBlockType: 'DefaultBlock' }@
 * The block attributes specified in the @.alohaBlock(attr)@ function
 * All @data-@ attributes on the corresponding DOM node.
 
-That is, if a DOM node that should be blockified has a @data-aloha-block-type@ property, this property is always used. Otherwise, the @aloha-block-type@ property from the @.alohaBlock()@ function is used (if given). If nothing is specified, the @DefaultBlock@ is used.
+That is, if a DOM node that should be blockified has a @data-alohaBlockType@ property, this property is always used. Otherwise, the @alohaBlockType@ property from the @.alohaBlock()@ function is used (if given). If nothing is specified, the @DefaultBlock@ is used.
 
-The same is done for all block attributes, not only @aloha-block-type@.
+The same is done for all block attributes, not only @alohaBlockType@.
 
 h4. Default Settings
 
@@ -124,10 +124,10 @@ Block construction such as the following is very common:
 <javascript>
 Aloha.ready(function() {
 	Aloha.jQuery('.foo').alohaBlock({
-		'aloha-block-type': 'MySpecialBlock'
+		'alohaBlockType': 'MySpecialBlock'
 	});
 	Aloha.jQuery('.bar').alohaBlock({
-		'aloha-block-type': 'DebugBlock'
+		'alohaBlockType': 'DebugBlock'
 	});
 });
 </javascript>
@@ -137,10 +137,10 @@ To make such initialization code easier to write and more declarative, this can 
 <javascript>
 Aloha.settings.plugins.block.defaults {
 	'.foo': {
-		'aloha-block-type': 'MySpecialBlock'
+		'alohaBlockType': 'MySpecialBlock'
 	},
 	'.bar': {
-		'aloha-block-type': 'DebugBlock'
+		'alohaBlockType': 'DebugBlock'
 	}
 }
 </javascript>

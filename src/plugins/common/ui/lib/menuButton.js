@@ -158,7 +158,7 @@ define([
 			var elem = $('<li>');
 			elem.append($('<a>', {'href': 'javascript:void 0', 'html': Utils.makeButtonLabelWithIcon(item)}));
 			if (item.click) {
-				elem.data('aloha-ui-menubutton-select', function (){
+				elem.data('alohaUiMenubuttonSelect', function (){
 					parentCloseHandler();
 					item.click();
 				});
@@ -187,7 +187,7 @@ define([
 	}
 
 	function onSelect(event, ui) {
-		var clickHandler = ui.item.data('aloha-ui-menubutton-select');
+		var clickHandler = ui.item.data('alohaUiMenubuttonSelect');
 		if (clickHandler) {
 			clickHandler(event, ui);
 		}

@@ -4025,7 +4025,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 
 				// Wait for the form reset to actually happen before refreshing
 				setTimeout( function() {
-					var instances = form.data( "ui-form-reset-instances" );
+					var instances = form.data( "uiFormResetInstances" );
 					$.each( instances, function() {
 						this.refresh();
 					} );
@@ -4038,14 +4038,14 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					return;
 				}
 
-				var instances = this.form.data( "ui-form-reset-instances" ) || [];
+				var instances = this.form.data( "uiFormResetInstances" ) || [];
 				if ( !instances.length ) {
 
 					// We don't use _on() here because we use a single event handler per form
 					this.form.on( "reset.ui-form-reset", this._formResetHandler );
 				}
 				instances.push( this );
-				this.form.data( "ui-form-reset-instances", instances );
+				this.form.data( "uiFormResetInstances", instances );
 			},
 
 			_unbindFormResetHandler: function() {
@@ -4053,13 +4053,13 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					return;
 				}
 
-				var instances = this.form.data( "ui-form-reset-instances" );
+				var instances = this.form.data( "uiFormResetInstances" );
 				instances.splice( $.inArray( this, instances ), 1 );
 				if ( instances.length ) {
-					this.form.data( "ui-form-reset-instances", instances );
+					this.form.data( "uiFormResetInstances", instances );
 				} else {
 					this.form
-						.removeData( "ui-form-reset-instances" )
+						.removeData( "uiFormResetInstances" )
 						.off( "reset.ui-form-reset" );
 				}
 			}
@@ -5159,7 +5159,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 
 				submenus.children().each( function() {
 					var elem = $( this );
-					if ( elem.data( "ui-menu-submenu-caret" ) ) {
+					if ( elem.data( "uiMenuSubmenuCaret" ) ) {
 						elem.remove();
 					}
 				} );
@@ -5302,7 +5302,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					item = menu.prev( "a" ),
 					submenuCarat = $( "<span>" )
 						.addClass( "ui-menu-icon ui-icon " + icon )
-						.data( "ui-menu-submenu-carat", true );
+						.data( "uiMenuSubmenuCarat", true );
 
 				item
 					.attr( "aria-haspopup", "true" )
@@ -5888,7 +5888,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 							}
 						}
 
-						item = ui.item.data( "ui-autocomplete-item" );
+						item = ui.item.data( "uiAutocompleteItem" );
 						if ( false !== this._trigger( "focus", event, { item: item } ) ) {
 
 							// use value to match what will end up in the input, if it was a key event
@@ -5907,7 +5907,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 						}
 					},
 					menuselect: function( event, ui ) {
-						var item = ui.item.data( "ui-autocomplete-item" ),
+						var item = ui.item.data( "uiAutocompleteItem" ),
 							previous = this.previous;
 
 						// Only trigger when focus was lost (click on menu)
@@ -6198,7 +6198,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 			},
 
 			_renderItemData: function( ul, item ) {
-				return this._renderItem( ul, item ).data( "ui-autocomplete-item", item );
+				return this._renderItem( ul, item ).data( "uiAutocompleteItem", item );
 			},
 
 			_renderItem: function( ul, item ) {
@@ -6357,7 +6357,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 
 			_destroy: function() {
 				this._callChildMethod( "destroy" );
-				this.childWidgets.removeData( "ui-controlgroup-data" );
+				this.childWidgets.removeData( "uiControlgroupData" );
 				this.element.removeAttr( "role" );
 				if ( this.options.items.controlgroupLabel ) {
 					this.element
@@ -6440,7 +6440,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 							// Store an instance of the controlgroup to be able to reference
 							// from the outermost element for changing options and refresh
 							var widgetElement = element[ widget ]( "widget" );
-							$.data( widgetElement[ 0 ], "ui-controlgroup-data",
+							$.data( widgetElement[ 0 ], "uiControlgroupData",
 								instance ? instance : element[ widget ]( "instance" ) );
 
 							childWidgets.push( widgetElement[ 0 ] );
@@ -6454,7 +6454,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 			_callChildMethod: function( method ) {
 				this.childWidgets.each( function() {
 					var element = $( this ),
-						data = element.data( "ui-controlgroup-data" );
+						data = element.data( "uiControlgroupData" );
 					if ( data && data[ method ] ) {
 						data[ method ]();
 					}
@@ -10663,7 +10663,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 
 							sortable.currentItem = ui.helper
 								.appendTo( sortable.element )
-								.data( "ui-sortable-item", true );
+								.data( "uiSortableItem", true );
 
 							// Store helper option to later restore it
 							sortable.options._helper = sortable.options.helper;
@@ -12070,7 +12070,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 
 				$( o.alsoResize ).each( function() {
 					var el = $( this );
-					el.data( "ui-resizable-alsoresize", {
+					el.data( "uiResizableAlsoresize", {
 						width: parseFloat( el.width() ), height: parseFloat( el.height() ),
 						left: parseFloat( el.css( "left" ) ), top: parseFloat( el.css( "top" ) )
 					} );
@@ -12090,7 +12090,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					};
 
 				$( o.alsoResize ).each( function() {
-					var el = $( this ), start = $( this ).data( "ui-resizable-alsoresize" ), style = {},
+					var el = $( this ), start = $( this ).data( "uiResizableAlsoresize" ), style = {},
 						css = el.parents( ui.originalElement[ 0 ] ).length ?
 							[ "width", "height" ] :
 							[ "width", "height", "top", "left" ];
@@ -12107,7 +12107,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 			},
 
 			stop: function() {
-				$( this ).removeData( "ui-resizable-alsoresize" );
+				$( this ).removeData( "uiResizableAlsoresize" );
 			}
 		} );
 
@@ -12868,10 +12868,10 @@ define('jqueryui', ['jquery'], function (jQuery) {
 			},
 
 			_trackingInstances: function() {
-				var instances = this.document.data( "ui-dialog-instances" );
+				var instances = this.document.data( "uiDialogInstances" );
 				if ( !instances ) {
 					instances = [];
-					this.document.data( "ui-dialog-instances", instances );
+					this.document.data( "uiDialogInstances", instances );
 				}
 				return instances;
 			},
@@ -13080,7 +13080,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					isOpening = false;
 				} );
 
-				if ( !this.document.data( "ui-dialog-overlays" ) ) {
+				if ( !this.document.data( "uiDialogOverlays" ) ) {
 
 					// Prevent use of anchors and inputs
 					// This doesn't use `_on()` because it is a shared event handler
@@ -13114,8 +13114,8 @@ define('jqueryui', ['jquery'], function (jQuery) {
 				this._on( this.overlay, {
 					mousedown: "_keepFocus"
 				} );
-				this.document.data( "ui-dialog-overlays",
-					( this.document.data( "ui-dialog-overlays" ) || 0 ) + 1 );
+				this.document.data( "uiDialogOverlays",
+					( this.document.data( "uiDialogOverlays" ) || 0 ) + 1 );
 			},
 
 			_destroyOverlay: function() {
@@ -13124,13 +13124,13 @@ define('jqueryui', ['jquery'], function (jQuery) {
 				}
 
 				if ( this.overlay ) {
-					var overlays = this.document.data( "ui-dialog-overlays" ) - 1;
+					var overlays = this.document.data( "uiDialogOverlays" ) - 1;
 
 					if ( !overlays ) {
 						this.document.off( "focusin.ui-dialog" );
-						this.document.removeData( "ui-dialog-overlays" );
+						this.document.removeData( "uiDialogOverlays" );
 					} else {
-						this.document.data( "ui-dialog-overlays", overlays );
+						this.document.data( "uiDialogOverlays", overlays );
 					}
 
 					this.overlay.remove();
@@ -13865,7 +13865,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 								left: selecteeOffset.left - that.elementPos.left,
 								top: selecteeOffset.top - that.elementPos.top
 							};
-						$.data( this, "selectable-item", {
+						$.data( this, "selectableItem", {
 							element: this,
 							$element: $this,
 							left: pos.left,
@@ -13888,7 +13888,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 			},
 
 			_destroy: function() {
-				this.selectees.removeData( "selectable-item" );
+				this.selectees.removeData( "selectableItem" );
 				this._mouseDestroy();
 			},
 
@@ -13922,7 +13922,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 				}
 
 				this.selectees.filter( ".ui-selected" ).each( function() {
-					var selectee = $.data( this, "selectable-item" );
+					var selectee = $.data( this, "selectableItem" );
 					selectee.startselected = true;
 					if ( !event.metaKey && !event.ctrlKey ) {
 						that._removeClass( selectee.$element, "ui-selected" );
@@ -13939,7 +13939,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 
 				$( event.target ).parents().addBack().each( function() {
 					var doSelect,
-						selectee = $.data( this, "selectable-item" );
+						selectee = $.data( this, "selectableItem" );
 					if ( selectee ) {
 						doSelect = ( !event.metaKey && !event.ctrlKey ) ||
 							!selectee.$element.hasClass( "ui-selected" );
@@ -13990,7 +13990,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 				this.helper.css( { left: x1, top: y1, width: x2 - x1, height: y2 - y1 } );
 
 				this.selectees.each( function() {
-					var selectee = $.data( this, "selectable-item" ),
+					var selectee = $.data( this, "selectableItem" ),
 						hit = false,
 						offset = {};
 
@@ -14081,7 +14081,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 				this.dragged = false;
 
 				$( ".ui-unselecting", this.element[ 0 ] ).each( function() {
-					var selectee = $.data( this, "selectable-item" );
+					var selectee = $.data( this, "selectableItem" );
 					that._removeClass( selectee.$element, "ui-unselecting" );
 					selectee.unselecting = false;
 					selectee.startselected = false;
@@ -14090,7 +14090,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					} );
 				} );
 				$( ".ui-selecting", this.element[ 0 ] ).each( function() {
-					var selectee = $.data( this, "selectable-item" );
+					var selectee = $.data( this, "selectableItem" );
 					that._removeClass( selectee.$element, "ui-selecting" )
 						._addClass( selectee.$element, "ui-selected" );
 					selectee.selecting = false;
@@ -14261,10 +14261,10 @@ define('jqueryui', ['jquery'], function (jQuery) {
 							// will be destroyed in IE
 							that._setSelection();
 
-							that._select( ui.item.data( "ui-selectmenu-item" ), event );
+							that._select( ui.item.data( "uiSelectmenuItem" ), event );
 						},
 						focus: function( event, ui ) {
-							var item = ui.item.data( "ui-selectmenu-item" );
+							var item = ui.item.data( "uiSelectmenuItem" );
 
 							// Prevent inital focus from firing and check if its a newly focused item
 							if ( that.focusIndex != null && item.index !== that.focusIndex ) {
@@ -14301,7 +14301,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					this.buttonItem = this._renderButtonItem(
 
 						// Fall back to an empty object in case there are no options
-						this._getSelectedItem().data( "ui-selectmenu-item" ) || {}
+						this._getSelectedItem().data( "uiSelectmenuItem" ) || {}
 					)
 				);
 				if ( this.options.width === null ) {
@@ -14333,7 +14333,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 
 				// Update the menu to have the correct item focused
 				this.menuInstance.focus( null, item );
-				this._setAria( item.data( "ui-selectmenu-item" ) );
+				this._setAria( item.data( "uiSelectmenuItem" ) );
 
 				// Set disabled state
 				this._setOption( "disabled", this.element.prop( "disabled" ) );
@@ -14430,7 +14430,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 			},
 
 			_renderItemData: function( ul, item ) {
-				return this._renderItem( ul, item ).data( "ui-selectmenu-item", item );
+				return this._renderItem( ul, item ).data( "uiSelectmenuItem", item );
 			},
 
 			_renderItem: function( ul, item ) {
@@ -14606,7 +14606,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 			_selectFocusedItem: function( event ) {
 				var item = this.menuItems.eq( this.focusIndex ).parent( "li" );
 				if ( !item.hasClass( "ui-state-disabled" ) ) {
-					this._select( item.data( "ui-selectmenu-item" ), event );
+					this._select( item.data( "uiSelectmenuItem" ), event );
 				}
 			},
 
@@ -14882,7 +14882,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 
 				this.handles.each( function( i ) {
 					$( this )
-						.data( "ui-slider-handle-index", i )
+						.data( "uiSliderHandleIndex", i )
 						.attr( "tabIndex", 0 );
 				} );
 			},
@@ -15436,7 +15436,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 			_handleEvents: {
 				keydown: function( event ) {
 					var allowed, curVal, newVal, step,
-						index = $( event.target ).data( "ui-slider-handle-index" );
+						index = $( event.target ).data( "uiSliderHandleIndex" );
 
 					switch ( event.keyCode ) {
 						case $.ui.keyCode.HOME:
@@ -15501,7 +15501,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					this._slide( event, index, newVal );
 				},
 				keyup: function( event ) {
-					var index = $( event.target ).data( "ui-slider-handle-index" );
+					var index = $( event.target ).data( "uiSliderHandleIndex" );
 
 					if ( this._keySliding ) {
 						this._keySliding = false;
@@ -18119,7 +18119,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 						that.panels = that.panels.add( panel );
 					}
 					if ( originalAriaControls ) {
-						tab.data( "ui-tabs-aria-controls", originalAriaControls );
+						tab.data( "uiTabsAriaControls", originalAriaControls );
 					}
 					tab.attr( {
 						"aria-controls": panelId,
@@ -18147,7 +18147,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 			_createPanel: function( id ) {
 				return $( "<div>" )
 					.attr( "id", id )
-					.data( "ui-tabs-destroy", true );
+					.data( "uiTabsDestroy", true );
 			},
 
 			_setOptionDisabled: function( disabled ) {
@@ -18409,7 +18409,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					.removeUniqueId();
 
 				this.tabs.add( this.panels ).each( function() {
-					if ( $.data( this, "ui-tabs-destroy" ) ) {
+					if ( $.data( this, "uiTabsDestroy" ) ) {
 						$( this ).remove();
 					} else {
 						$( this )
@@ -18422,11 +18422,11 @@ define('jqueryui', ['jquery'], function (jQuery) {
 
 				this.tabs.each( function() {
 					var li = $( this ),
-						prev = li.data( "ui-tabs-aria-controls" );
+						prev = li.data( "uiTabsAriaControls" );
 					if ( prev ) {
 						li
 							.attr( "aria-controls", prev )
-							.removeData( "ui-tabs-aria-controls" );
+							.removeData( "uiTabsAriaControls" );
 					} else {
 						li.removeAttr( "aria-controls" );
 					}
@@ -18632,12 +18632,12 @@ define('jqueryui', ['jquery'], function (jQuery) {
 				var describedby = ( elem.attr( "aria-describedby" ) || "" ).split( /\s+/ );
 				describedby.push( id );
 				elem
-					.data( "ui-tooltip-id", id )
+					.data( "uiTooltipId", id )
 					.attr( "aria-describedby", String.prototype.trim.call( describedby.join( " " ) ) );
 			},
 
 			_removeDescribedBy: function( elem ) {
-				var id = elem.data( "ui-tooltip-id" ),
+				var id = elem.data( "uiTooltipId" ),
 					describedby = ( elem.attr( "aria-describedby" ) || "" ).split( /\s+/ ),
 					index = $.inArray( id, describedby );
 
@@ -18645,7 +18645,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					describedby.splice( index, 1 );
 				}
 
-				elem.removeData( "ui-tooltip-id" );
+				elem.removeData( "uiTooltipId" );
 				describedby = String.prototype.trim.call( describedby.join( " " ) );
 				if ( describedby ) {
 					elem.attr( "aria-describedby", describedby );
@@ -18712,7 +18712,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 							var element = $( this );
 							if ( element.is( "[title]" ) ) {
 								return element
-									.data( "ui-tooltip-title", element.attr( "title" ) )
+									.data( "uiTooltipTitle", element.attr( "title" ) )
 									.removeAttr( "title" );
 							}
 						} )
@@ -18724,8 +18724,8 @@ define('jqueryui', ['jquery'], function (jQuery) {
 				// restore title attributes
 				this.disabledTitles.each( function() {
 					var element = $( this );
-					if ( element.data( "ui-tooltip-title" ) ) {
-						element.attr( "title", element.data( "ui-tooltip-title" ) );
+					if ( element.data( "uiTooltipTitle" ) ) {
+						element.attr( "title", element.data( "uiTooltipTitle" ) );
 					}
 				} );
 				this.disabledTitles = $( [] );
@@ -18740,22 +18740,22 @@ define('jqueryui', ['jquery'], function (jQuery) {
 						.closest( this.options.items );
 
 				// No element to show a tooltip for or the tooltip is already open
-				if ( !target.length || target.data( "ui-tooltip-id" ) ) {
+				if ( !target.length || target.data( "uiTooltipId" ) ) {
 					return;
 				}
 
 				if ( target.attr( "title" ) ) {
-					target.data( "ui-tooltip-title", target.attr( "title" ) );
+					target.data( "uiTooltipTitle", target.attr( "title" ) );
 				}
 
-				target.data( "ui-tooltip-open", true );
+				target.data( "ui-tooltipOpen", true );
 
 				// Kill parent tooltips, custom or native, for hover
 				if ( event && event.type === "mouseover" ) {
 					target.parents().each( function() {
 						var parent = $( this ),
 							blurEvent;
-						if ( parent.data( "ui-tooltip-open" ) ) {
+						if ( parent.data( "ui-tooltipOpen" ) ) {
 							blurEvent = $.Event( "blur" );
 							blurEvent.target = blurEvent.currentTarget = this;
 							that.close( blurEvent, true );
@@ -18793,7 +18793,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					that._delay( function() {
 
 						// Ignore async response if tooltip was closed already
-						if ( !target.data( "ui-tooltip-open" ) ) {
+						if ( !target.data( "ui-tooltipOpen" ) ) {
 							return;
 						}
 
@@ -18938,11 +18938,11 @@ define('jqueryui', ['jquery'], function (jQuery) {
 				// The tooltip may already be closed
 				if ( !tooltipData ) {
 
-					// We set ui-tooltip-open immediately upon open (in open()), but only set the
+					// We set ui-tooltipOpen immediately upon open (in open()), but only set the
 					// additional data once there's actually content to show (in _open()). So even if the
-					// tooltip doesn't have full data, we always remove ui-tooltip-open in case we're in
+					// tooltip doesn't have full data, we always remove ui-tooltipOpen in case we're in
 					// the period between open() and _open().
-					target.removeData( "ui-tooltip-open" );
+					target.removeData( "ui-tooltipOpen" );
 					return;
 				}
 
@@ -18959,8 +18959,8 @@ define('jqueryui', ['jquery'], function (jQuery) {
 
 				// Only set title if we had one before (see comment in _open())
 				// If the title attribute has changed since open(), don't restore
-				if ( target.data( "ui-tooltip-title" ) && !target.attr( "title" ) ) {
-					target.attr( "title", target.data( "ui-tooltip-title" ) );
+				if ( target.data( "uiTooltipTitle" ) && !target.attr( "title" ) ) {
+					target.attr( "title", target.data( "uiTooltipTitle" ) );
 				}
 
 				this._removeDescribedBy( target );
@@ -18971,7 +18971,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					that._removeTooltip( $( this ) );
 				} );
 
-				target.removeData( "ui-tooltip-open" );
+				target.removeData( "ui-tooltipOpen" );
 				this._off( target, "mouseleave focusout keyup" );
 
 				// Remove 'remove' binding only on delegated targets
@@ -19011,7 +19011,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 			},
 
 			_find: function( target ) {
-				var id = target.data( "ui-tooltip-id" );
+				var id = target.data( "uiTooltipId" );
 				return id ? this.tooltips[ id ] : null;
 			},
 
@@ -19051,13 +19051,13 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					$( "#" + id ).remove();
 
 					// Restore the title
-					if ( element.data( "ui-tooltip-title" ) ) {
+					if ( element.data( "uiTooltipTitle" ) ) {
 
 						// If the title attribute has changed since open(), don't restore
 						if ( !element.attr( "title" ) ) {
-							element.attr( "title", element.data( "ui-tooltip-title" ) );
+							element.attr( "title", element.data( "uiTooltipTitle" ) );
 						}
-						element.removeData( "ui-tooltip-title" );
+						element.removeData( "uiTooltipTitle" );
 					}
 				} );
 				this.liveRegion.remove();

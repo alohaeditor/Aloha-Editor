@@ -113,7 +113,7 @@ define([
 		setHrefField: function () {
 			if (selectedBlock) {
 				$(this.hrefField.getInputElem()).val('http://youtube.com/watch?v='
-					+ selectedBlock.$element.data('video-id'));
+					+ selectedBlock.$element.data('videoId'));
 			}
 		},
 
@@ -124,8 +124,8 @@ define([
 		hrefChange: function () {
 			var videoid = ContentHandler.extractVideoId($(this.hrefField.getInputElem()).val());
 			selectedBlock.$element.find('img').attr('src', this.previewUrl.replace("{id}", videoid));
-			selectedBlock.$element.data('video-id', videoid);
-			selectedBlock.$element.attr('data-video-id', videoid);
+			selectedBlock.$element.data('videoId', videoid);
+			selectedBlock.$element.attr('dataVideoId', videoid);
 		},
 
 		/**
@@ -190,10 +190,10 @@ define([
 			var plugin = this;
 			obj.find('.aloha-block-VideoBlock').each(function () {
 				var $element = $(this), $img = $element.find("img");
-				if ($element.data('video-id')) {
+				if ($element.data('videoId')) {
 					$element.append('<iframe width="100%" height="100%" src="'
 						+ plugin.embedUrl
-						+ $element.data('video-id')
+						+ $element.data('videoId')
 						+ '" frameborder="0" allowfullscreen></iframe>');
 				}
 				$element.css({width: $img.css("width"), height: $img.css("height")});

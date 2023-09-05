@@ -5,4 +5,4 @@ Added a new block implementation of Aloha Editor blocks, which
 				   To use this block type, just wrap your tag content in a <div> 
 				   with the following attribute: 
 
-				   data-aloha-block-type="EmptyBlock"
+				   data-alohaBlockType="EmptyBlock"
