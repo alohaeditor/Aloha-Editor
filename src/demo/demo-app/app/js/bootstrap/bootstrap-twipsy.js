@@ -134,7 +134,7 @@
       }
 
       $.support.transition && this.$tip.hasClass('fade') ?
-        $tip.bind(transitionEnd, removeElement) :
+        $tip.on(transitionEnd, removeElement) :
         removeElement()
     }
 

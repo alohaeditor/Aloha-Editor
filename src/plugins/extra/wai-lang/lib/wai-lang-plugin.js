@@ -265,7 +265,7 @@ define([
 				return;
 			}
 
-			$editable.bind('keydown', plugin.hotKey.insertAnnotation, function () {
+			$editable.on('keydown', plugin.hotKey.insertAnnotation, function () {
 					prepareAnnotation();
 
 					// Because on a MAC Safari, cursor would otherwise
@@ -289,7 +289,7 @@ define([
 			delete configurations[message.editable.getId()];
 		});
 
-		Aloha.bind(
+		Aloha.on(
 			'aloha-selection-changed',
 			function onSelectionChanged($event, range) {
 				var markup = findWaiLangMarkup(range);

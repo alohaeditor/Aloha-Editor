@@ -482,7 +482,7 @@ define([
 			eventContainer = this.obj;
 		}
 
-		eventContainer.bind( 'keydown', function ( jqEvent ) {
+		eventContainer.on( 'keydown', function ( jqEvent ) {
 			if ( !jqEvent.ctrlKey && !jqEvent.shiftKey ) {
 				if ( that.selection.selectedCells.length > 0 &&
 						that.selection.selectedCells[ 0 ].length > 0 ) {
@@ -517,7 +517,7 @@ define([
 		We need to make sure that when the user has selected text inside a
 		table cell we do not delete the entire row, before we activate this
 
-		this.obj.bind( 'keyup', function ( $event ) {
+		this.obj.on( 'keyup', function ( $event ) {
 			if ( $event.keyCode == 46 ) {
 				if ( that.selection.selectedColumnIdxs.length ) {
 					that.deleteColumns();
@@ -533,7 +533,7 @@ define([
 		*/
 
 		// handle click event of the table
-	//	this.obj.bind('click', function(e){
+	//	this.obj.on('click', function(e){
 	//		// stop bubbling the event to the outer divs, a click in the table
 	//		// should only be handled in the table
 	//		e.stopPropagation();
@@ -542,7 +542,7 @@ define([
 	//
 
 	 // handle column/row resize
-			eventContainer.delegate( 'th, td', 'mousemove', function( e ) {
+			eventContainer.on( 'mousemove', 'th, td', function( e ) {
 
 				var jqObj = jQuery( this );
 				// offset to be used for activating the resize cursor near a table border
@@ -567,7 +567,7 @@ define([
 						return false;
 					}
 
-					var cursorOffset = e.pageY - ( row.offset().top + row.outerHeight() );
+					var cursorOffset = e.pageY - ( row.offset().top + parseInt(row.css("height"))+parseInt(row.css("padding-top"))+parseInt(row.css("padding-bottom")) );
 					return cursorOffset > (mouseOffset * -1) && cursorOffset < mouseOffset;
 				};
 
@@ -589,12 +589,12 @@ define([
 				}
 			});
 
-			eventContainer.bind( 'mousemove', function( e ) {
+			eventContainer.on( 'mousemove', function( e ) {
 
 				var jqObj = jQuery( this ).closest( 'table' );
 
 				var isTableRightBorder = function( table ) {
-					var cursorOffset = e.pageX - ( table.offset().left + table.outerWidth() );
+					var cursorOffset = e.pageX - ( table.offset().left + parseInt(table.css("width")) + parseInt(table.css("padding-left")) + parseInt(table.css("padding-right")) );
 					return cursorOffset > -5 && cursorOffset < 5;
 				};
 
@@ -606,7 +606,7 @@ define([
 
 			});
 
-		eventContainer.bind( 'mousedown', function ( jqEvent ) {
+		eventContainer.on( 'mousedown', function ( jqEvent ) {
 			// focus the table if not already done
 			if ( !that.hasFocus ) {
 				that.focus();
@@ -763,7 +763,7 @@ define([
 		emptyCell.html('\u00a0');
 
 		that = this;
-		rows = this.obj.context.rows;
+		rows = this.obj[0].rows;
 
 		// add a column before each first cell of each row
 		for ( i = 0; i < rows.length; i++) {
@@ -801,7 +801,7 @@ define([
 		// prevent ie from selecting the contents of the table
 		cell.get(0).onselectstart = function() { return false; };
 
-		cell.bind('mousedown', function(e) {
+		cell.on('mousedown', function(e) {
 			// set flag that the mouse is pressed
 //TODO to implement the mousedown-select effect not only must the
 //mousedown be set here but also be unset when the mouse button is
@@ -810,7 +810,7 @@ define([
 			return that.rowSelectionMouseDown(e);
 		});
 
-		cell.bind('mouseover', function(e){
+		cell.on('mouseover', function(e){
 			// only select more crows if the mouse is pressed
 			if ( that.mousedown ) {
 				return that.rowSelectionMouseOver(e);
@@ -938,11 +938,11 @@ define([
 		// get the number of columns in the table (first row)
 		// iterate through all rows and find the maximum number of columns to add
 		var numColumns = 0;
-		for( var i = 0; i < this.obj.context.rows.length; i++ ){
+		for( var i = 0; i < this.obj[0].rows.length; i++ ){
 			var curNumColumns = 0;
 
-			for( var j = 0; j < this.obj.context.rows[i].cells.length; j++ ){
-				var colspan = Utils.colspan( this.obj.context.rows[i].cells[j] );
+			for( var j = 0; j < this.obj[0].rows[i].cells.length; j++ ){
+				var colspan = Utils.colspan( this.obj[0].rows[i].cells[j] );
 				curNumColumns += colspan;
 			}
 
@@ -1011,7 +1011,7 @@ define([
 
 					return false;
 				};
-				this.wai = jQuery('<div/>').width(25).height(12).click(clickHandler);
+				this.wai = jQuery('<div/>').css("width", 25 + "px").css("height", 12+"px").click(clickHandler);
 				columnToInsert.append(this.wai);
 			}
 
@@ -1020,7 +1020,7 @@ define([
 		}
 
 		// global mouseup event to reset the selection properties
-		jQuery(document).bind('mouseup', function(e) { that.columnSelectionMouseUp(e) } );
+		jQuery(document).on('mouseup', function(e) { that.columnSelectionMouseUp(e) } );
 
 		this.obj.find('tr:first').before( selectionRow );
 	};
@@ -1042,8 +1042,8 @@ define([
 		// prevent ie from selecting the contents of the table
 		cell.get( 0 ).onselectstart = function () { return false; };
 
-		cell.bind( 'mousedown',  function ( e ) { that.columnSelectionMouseDown( e ) } );
-		cell.bind( 'mouseover',  function ( e ) { that.columnSelectionMouseOver( e ) } );
+		cell.on( 'mousedown',  function ( e ) { that.columnSelectionMouseDown( e ) } );
+		cell.on( 'mouseover',  function ( e ) { that.columnSelectionMouseOver( e ) } );
 	};
 
 	/**
@@ -1177,6 +1177,7 @@ define([
 			deleteTable = true;
 		}
 
+
 		// delete the whole table
 		if (deleteTable) {
 			var that = this;
@@ -1287,7 +1288,6 @@ define([
 		// if all columns should be deleted, remove the WHOLE table
 		// delete the whole table
 		if ( selectedColumnIdxs.length == grid[0].length - selectColWidth ) {
-
 			Dialog.confirm({
 				title : i18n.t('Table'),
 				text : i18n.t('deletetable.confirm'),
@@ -1795,7 +1795,7 @@ define([
 		this.obj.find('tr.' + this.get('classSelectionRow') + ':first').remove();
 		// remove the selection column (first column left)
 		var that = this;
-		jQuery.each(this.obj.context.rows, function(){
+		jQuery.each(this.obj[0].rows, function(){
 			jQuery(this).children('td.' + that.get('classSelectionColumn')).remove();
 		});
 
@@ -1862,14 +1862,14 @@ define([
 
 				if (gridCi === gridId ) {
 					if (!reduceToWidth) {
-						reduceToWidth = currentCell.width() - pixelsMoved;
+						reduceToWidth = parseInt(currentCell.css("width")) - pixelsMoved;
 					}
 
 					Utils.resizeCellWidth( currentCell, reduceToWidth );
 
 				} else if (gridCi === gridId - 1) {
 					if (!expandToWidth) {
-						expandToWidth = currentCell.width() + pixelsMoved;
+						expandToWidth = parseInt(currentCell.css("width"))+ pixelsMoved;
 					}
 
 					Utils.resizeCellWidth( currentCell, expandToWidth );
@@ -1884,7 +1884,7 @@ define([
 			}
 		};
 
-		cell.bind('mousedown.resize', function($event) {
+		cell.on('mousedown.resize', function($event) {
 			// prevent cell resizing, if mousedown was on a block handle
 			if (jQuery($event.target).hasClass('aloha-block-draghandle')) {
 				return;
@@ -1900,7 +1900,7 @@ define([
 				that.selection.resizeMode = true;
 
 				// move the guide while dragging
-				jQuery( 'body' ).bind( 'mousemove.dnd_col_resize', function(e) {
+				jQuery( 'body' ).on( 'mousemove.dnd_col_resize', function(e) {
 					// limit the maximum resize
 					if ( e.pageX > minPageX && e.pageX < maxPageX ) {
 						$guide.css('left', e.pageX);
@@ -1908,7 +1908,7 @@ define([
 				});
 
 				// do the actual resizing after drag stops
-				jQuery( 'body' ).bind( 'mouseup.dnd_col_resize', function(e) {
+				jQuery( 'body' ).on( 'mouseup.dnd_col_resize', function(e) {
 					var pixelsMoved = 0;
 
 					if ( e.pageX < minPageX ) {
@@ -1938,8 +1938,8 @@ define([
 			}
 
 			var $cell = jQuery(cell);
-			var width = $cell.outerWidth() - $cell.innerWidth();
-			var height = $cell.closest('tbody').innerHeight();
+			var width = (parseInt($cell.css("width")) + parseInt($cell.css("padding-left")) + parseInt($cell.css("padding-right"))) - parseInt($cell.css("width"))-parseInt($cell.css("padding-left"))-parseInt($cell.css("padding-right"));
+			var height = parseInt($cell.closest('tbody').css("height"))-parseInt($cell.closest('tbody').css("padding-top"))-parseInt($cell.closest('tbody').css("padding-bottom"))
 			$guide.css({
 				'height': (height < 1) ? 1 : height,
 				'width': (width < 1) ? 1 : width,
@@ -1974,7 +1974,7 @@ define([
 				expandingRow = cell.closest( 'tr' ).prev( 'tr' );
 			}
 
-			var currentRowHeight = expandingRow.height();
+			var currentRowHeight = parseInt(expandingRow.css("height"));
 			var expandToHeight = currentRowHeight + pixelsMoved;
 
 			// correct if the height is a minus value
@@ -1985,7 +1985,7 @@ define([
 			expandingRow.css( 'height', expandToHeight );
 		};
 
-		cell.bind('mousedown.resize', function($event) {
+		cell.on('mousedown.resize', function($event) {
 			// prevent cell selection, if mousedown was on a block handle
 			if (jQuery($event.target).hasClass('aloha-block-draghandle')) {
 				return;
@@ -1996,14 +1996,14 @@ define([
 
 			var guideTop = function() {
 				if (lastRow) {
-					return cell.offset().top + cell.outerHeight();
+					return cell.offset().top + parseInt(cell.css("height"))+parseInt(cell.css("padding-top"))+parseInt(cell.css("padding-bottom"));
 				} else {
 					return cell.offset().top;
 				}
 			};
 
-			var width = cell.closest( 'tbody' ).innerWidth();
-			var height = cell.outerHeight() - cell.innerHeight();
+			var width = parseInt(cell.closest('tbody').css("width"))-parseInt(cell.closest('tbody').css("padding-left"))-parseInt(cell.closest('tbody').css("padding-right"));
+			var height = parseInt(cell.css("height"))+parseInt(cell.css("padding-top"))+parseInt(cell.css("padding-bottom")) - parseInt(cell.css("height"))-parseInt(cell.css("padding-top"))-parseInt(cell.css("padding-bottom"));
 
 			guide.css({
 				'width': (width < 1) ? 1 : width,
@@ -2028,19 +2028,19 @@ define([
 			that.selection.resizeMode = true;
 
 			// move the guide while dragging
-			jQuery( 'body' ).bind( 'mousemove.dnd_row_resize', function(e) {
+			jQuery( 'body' ).on( 'mousemove.dnd_row_resize', function(e) {
 				if ( e.pageY > minHeight() ) {
 					guide.css( 'top', e.pageY );
 				}
 			});
 
 			// do the actual resizing after drag stops
-			jQuery( 'body' ).bind( 'mouseup.dnd_row_resize', function(e) {
+			jQuery( 'body' ).on( 'mouseup.dnd_row_resize', function(e) {
 
 				var pixelsMoved = 0;
 
 				if (lastRow) {
-					pixelsMoved = e.pageY - ( cell.offset().top + cell.outerHeight() );
+					pixelsMoved = e.pageY - ( cell.offset().top + parseInt(cell.css("height"))+parseInt(toHide.css("padding-top"))+parseInt(cell.css("padding-bottom")) );
 				} else {
 					pixelsMoved = e.pageY - cell.offset().top;
 				}
@@ -2097,7 +2097,7 @@ define([
 			var expandToWidth = pixelsMoved - Utils.getCellBorder(lastCell) - Utils.getCellPadding(lastCell),
 				cellChanges = [],
 				gridCellWidthBefore = 0,
-				tableWidthBefore = table.width();
+				tableWidthBefore = parseInt(table.css("width"));
 
 			Utils.walkCells(rows, function(ri, ci, gridCi, colspan, rowspan) {
 				var currentCell = jQuery( jQuery( rows[ri] ).children()[ ci ] );
@@ -2110,10 +2110,10 @@ define([
 				// we keep a list of changes an apply them in a second run
 				// in order to not change the values we are calculating with during the process
 				if (gridCi === gridId ) {
-					gridCellWidthBefore = currentCell.width();
+					gridCellWidthBefore = parseInt(currentCell.css("width"));
 					cellChanges.push({cell : currentCell, width : expandToWidth});
 				} else {
-					cellChanges.push({cell : currentCell, width : currentCell.width()});
+					cellChanges.push({cell : currentCell, width : parseInt(currentCell.css("width"))});
 				}
 				return true;
 			});
@@ -2132,33 +2132,33 @@ define([
 			}
 		};
 
-		lastColumn.bind( 'mousedown.resize', function() {
+		lastColumn.on( 'mousedown.resize', function() {
 
 			// create a guide
 			var guide = jQuery( '<div></div>' );
 
-			var height = table.children( 'tbody' ).innerHeight();
-			var width = lastCell.outerWidth() - lastCell.innerWidth();
+			var height = parseInt(table.children('tbody').css("height"))-parseInt(table.children('tbody').css("padding-top"))-parseInt(table.children('tbody').css("padding-bottom"));
+			var width = parseInt(lastCell.css("width")) + parseInt(lastCell.css("padding-left")) + parseInt(lastCell.css("padding-right")) - parseInt(lastCell.css("width"))-parseInt(lastCell.css("padding-left"))-parseInt(lastCell.css("padding-right"));
 
 			guide.css({
 				'height': (height < 1) ? 1 : height,
 				'width': (width < 1) ? 1 : width,
 				'top': table.find('tbody').offset().top,
-				'left': table.offset().left + table.outerWidth(),
+				'left': table.offset().left + parseInt(table.css("width")) + parseInt(table.css("padding-left")) + parseInt(table.css("padding-right")),
 				'position': 'absolute',
 				'background-color': '#80B5F2'
 			});
 			jQuery('body').append( guide );
 
 			// set the maximum and minimum resize
-			var maxPageX = tableContainer.offset().left + tableContainer.width();
-			var minPageX = lastCell.offset().left + ( lastCell.innerWidth() - lastCell.width() ) + Utils.getMinColWidth( lastCell );
+			var maxPageX = tableContainer.offset().left + parseInt(tableContainer.css("width"));
+			var minPageX = lastCell.offset().left + ( parseInt(lastCell.css("width"))-parseInt(lastCell.css("padding-left"))-parseInt(lastCell.css("padding-right")) - parseInt(lastCell.css("width")) ) + Utils.getMinColWidth( lastCell );
 
 			// unset the selection type
 			that.selection.resizeMode = true;
 
 			// move the guide while dragging
-			jQuery( 'body' ).bind( 'mousemove.dnd_col_resize', function(e) {
+			jQuery( 'body' ).on( 'mousemove.dnd_col_resize', function(e) {
 				// limit the maximum resize
 				if ( e.pageX > minPageX && e.pageX < maxPageX ) {
 					guide.css( 'left', e.pageX );
@@ -2166,7 +2166,7 @@ define([
 			});
 
 			// do the actual resizing after drag stops
-			jQuery( 'body' ).bind( 'mouseup.dnd_col_resize', function(e) {
+			jQuery( 'body' ).on( 'mouseup.dnd_col_resize', function(e) {
 				var pixelsMoved = 0;
 
 				if ( e.pageX <= minPageX ) {

@@ -1534,7 +1534,7 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 				// check for nodes fully in the range
 				if (rangeTree[i].type == 'full') {
 					// if the domobj is the startcontainer, or the startcontainer is inside the domobj, we need to update the rangeObject
-					if (jQuery(rangeObject.startContainer).parents().andSelf().filter(rangeTree[i].domobj).length > 0) {
+					if (jQuery(rangeObject.startContainer).parents().addBack().filter(rangeTree[i].domobj).length > 0) {
 						rangeObject.startContainer = rangeObject.endContainer = rangeTree[i].domobj.parentNode;
 						rangeObject.startOffset = rangeObject.endOffset = getIndexInParent(rangeTree[i].domobj);
 					}

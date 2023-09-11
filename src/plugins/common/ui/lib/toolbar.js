@@ -111,11 +111,11 @@ define([
 		},
 
 		getActiveContainer: function () {
-			return this.$_container.data('aloha-active-container');
+			return this.$_container.data('alohaActiveContainer');
 		},
 
 		getContainers: function () {
-			return this.$_container.data('aloha-tabs');
+			return this.$_container.data('alohaTabs');
 		},
 
 		/**
@@ -227,7 +227,7 @@ define([
 		setWidth: function() {
 			if (this._isResponsiveMode && Aloha.activeEditable) {
 				var windowMinWidth = 600;
-				var editableWidth = parseInt(Aloha.activeEditable.obj.width());
+				var editableWidth = parseInt(Aloha.activeEditable.obj.css("width"));
 				var width = (window.innerWidth < windowMinWidth) ? '100%' : editableWidth + 'px';
 				this.$element.css('width', width);
 			}

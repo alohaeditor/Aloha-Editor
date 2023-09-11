@@ -360,8 +360,8 @@
 		};
 
 		var defaultPaths = {
-			jquery: 'vendor/jquery-1.7.2',
-			jqueryui: 'vendor/jquery-ui-1.9.0.custom-aloha'
+			jquery: 'vendor/jquery-3.7.0',
+			jqueryui: 'vendor/jquery-ui-1.13.2',
 		};
 
 		var browserPaths = {
@@ -370,7 +370,7 @@
 			RepositoryBrowser: 'vendor/repository-browser/js/repository-browser-unminified',
 			jstree: 'vendor/jquery.jstree',              // Mutates jquery
 			jqgrid: 'vendor/jquery.jqgrid',              // Mutates jquery
-			'jquery-layout': 'vendor/jquery.layout-1.3.0-rc29.14',     // Mutates jquery
+			'jquery-layout': 'vendor/jquery.layout',     // Mutates jquery
 			'jqgrid-locale-en': 'vendor/grid.locale.en', // Mutates jqgrid
 			'jqgrid-locale-de': 'vendor/grid.locale.de', // Mutates jqgrid
 			'repository-browser-i18n-de': 'vendor/repository-browser/js/repository-browser-unminified',
@@ -419,10 +419,10 @@
 		 * @param {string} event Name of event
 		 * @param {function} fn Event handler
 		 */
-		Aloha.bind = function (event, fn) {
+		Aloha.on = function (event, fn) {
 			Aloha.require(['aloha/jquery'], function ($) {
 				// Because we will only need to load jQuery once
-				Aloha.bind = function (event, fn) {
+				Aloha.on = function (event, fn) {
 					switch(Initialization.getReadiness(event)) {
 					case 'deferred':
 						var phase = Initialization.getPhaseByEvent(event);
@@ -435,14 +435,14 @@
 						fn();
 						break;
 					case 'normal':
-						$(Aloha).bind(event, fn);
+						$(Aloha).on(event, fn);
 						break;
 					default:
 						throw 'Unknown readiness';
 					}
 					return this;
 				};
-				Aloha.bind(event, fn);
+				Aloha.on(event, fn);
 			});
 			return this;
 		};
@@ -480,7 +480,7 @@
 		};
 
 		Aloha.ready = function (fn) {
-			this.bind('aloha-ready', fn);
+			this.on('aloha-ready', fn);
 			return this;
 		};
 

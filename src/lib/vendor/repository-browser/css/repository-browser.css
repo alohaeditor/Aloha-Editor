@@ -179,6 +179,57 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 	top: -5px;
 }
 
+.ui-layout-west {
+	position: absolute; 
+	margin: 0px; 
+	inset: 0px auto 0px 0px; 
+	height: 913px; z-index: 1; 
+	width: 300px; 
+	visibility: visible; 
+	display: block;
+}
+.ui-layout-center {
+	position: absolute; 
+	margin: 0px; 
+	inset: 0px 0px 0px 306px; 
+	height: 913px; 
+	width: 1540px; 
+	z-index: 1; 
+	visibility: visible; 
+	display: block;
+}
+
+.ui-layout-resize {
+	position: absolute; 
+	padding: 0px; 
+	margin: 0px; 
+	font-size: 1px; 
+	text-align: left; 
+	overflow: hidden;
+	z-index: 2; 
+	cursor: w-resize; 
+	left: 300px; 
+	height: 400px; 
+	width: 6px; 
+	top: 0px
+}
+
+.ui-layout-resize-close {
+	position: absolute; 
+	display: block; 
+	padding: 0px; 
+	margin: 0px; 
+	overflow: hidden; 
+	text-align: center; 
+	font-size: 1px; 
+	cursor: pointer; 
+	z-index: 1; 
+	visibility: visible; 
+	height: 48px; 
+	width: 4px; 
+	top: 175px; 
+	left: 0px;
+}
 
 .ui-jqgrid .ui-jqgrid-htable {
 	border: 0;

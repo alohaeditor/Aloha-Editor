@@ -30,11 +30,11 @@ define([
 		}
 	}
 
-	Aloha.bind('aloha-selection-changed-before', function () {
+	Aloha.on('aloha-selection-changed-before', function () {
 		scopeSetDuringSelectionChanged = false;
 	});
 
-	Aloha.bind('aloha-selection-changed-after', function (event, range, originalEvent) {
+	Aloha.on('aloha-selection-changed-after', function (event, range, originalEvent) {
 		// I don't know why we check for originalEvent != 'undefined', here is
 		// the original comment:
 		// "Only set the specific scope if an event was provided, which means

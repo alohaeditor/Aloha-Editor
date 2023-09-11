@@ -68,7 +68,7 @@ define([
 	 * @return {boolean}      true if the node is a block
 	 */
 	function isAlohaBlock(node) {
-		return $(node).data('aloha-block-type') || false;
+		return $(node).data('alohaBlockType') || false;
 	}
 
 	function isVisibleNode(node) {
@@ -179,7 +179,7 @@ define([
 	function isDragdropEnabledForElement($element) {
 		var $editable = $element.closest('.aloha-editable');
 		if ($editable.length) {
-			return !!$editable.data('block-dragdrop');
+			return !!$editable.data('blockDragdrop');
 		}
 		// no editable specified, let's make drag & drop enabled by default.
 		return true;

@@ -110,7 +110,7 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore, console) {
 		_initEvents: function() {
 			var self = this;
 			// update suggestions with smart content change ...
-			Aloha.bind('aloha-editable-deactivated', function(event, rangeObject) {
+			Aloha.on('aloha-editable-deactivated', function(event, rangeObject) {
 				// do something ... 
 			});
 		},

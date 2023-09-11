@@ -551,7 +551,7 @@ define([
 
 			// Because editables can only properly be initialized when Aloha
 			// plugins are loaded.
-			Aloha.bind('aloha-plugins-loaded', function () {
+			Aloha.on('aloha-plugins-loaded', function () {
 				me.obj.addClass('aloha-editable').contentEditable(true);
 
 				registerEvents(me);
@@ -599,7 +599,7 @@ define([
 			});
 
 			// mark the editable unmodified, when aloha is ready
-			Aloha.bind('aloha-ready', function () {
+			Aloha.on('aloha-ready', function () {
 				me.setUnmodified();
 			});
 		},
@@ -667,7 +667,8 @@ define([
 				// Resize the div to the textarea and
 				// Populate the div with the value of the textarea
 				// Then, hide the textarea
-				div.height(obj.height()).width(obj.width()).html(obj.val());
+				
+				div.css("height", parseInt(obj.css("height"))+"px").css("width", parseInt(obj.css("width"))+"px").html(obj.val());
 
 				obj.hide();
 

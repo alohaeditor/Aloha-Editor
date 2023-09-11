@@ -16,8 +16,8 @@
 				onCropped : function (image, props) {
 					// invoke the image cropper crop.php
 					image
-						.width(props.w) // set width
-						.height(props.h) // and height to new values
+						.css("width", props.w + "px") // set width
+						.css("height",props.h + "px") // and height to new values
 						.attr("src", "crop.php?src=" // and adjust src to the cropped image
 							+ image.attr('src')
 							+ "&x=" + props.x 
@@ -50,7 +50,7 @@
 		var	$ = window.jQuery,
 			$body = $('body');
 
-		$body.bind('aloha',function(){
+		$body.on('aloha',function(){
 			$('#title').aloha();
 			$('#teaser').aloha();
 			$('#content').aloha();

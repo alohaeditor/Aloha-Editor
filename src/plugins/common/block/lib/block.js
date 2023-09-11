@@ -64,7 +64,7 @@ define([
 	/**
 	 * An aloha block has the following special properties, being readable through the
 	 * "attr" function:
-	 * - aloha-block-type -- TYPE of the AlohaBlock as registered by the BlockManager
+	 * - alohaBlockType -- TYPE of the AlohaBlock as registered by the BlockManager
 	 *
 	 * @name block.block.AbstractBlock
 	 * @class An abstract block that must be used as a base class for custom blocks
@@ -209,7 +209,7 @@ define([
 
 			// This is executed when a block is selected through caret handling
 			// TODO!
-			//Aloha.bind('aloha-block-selected', function(event,obj) {
+			//Aloha.on('aloha-block-selected', function(event,obj) {
 			//	if (that.$element.get(0) === obj) {
 			//		that.activate();
 			//	}
@@ -223,7 +223,7 @@ define([
 					BlockUtils.pad(that.$element);
 				}
 
-				Aloha.bind('aloha-smart-content-changed', function (event, data) {
+				Aloha.on('aloha-smart-content-changed', function (event, data) {
 					if (data.editable.isActive) {
 						var $block = data.editable.obj.find('#' + that.id);
 
@@ -233,7 +233,7 @@ define([
 					}
 				});
 
-				Aloha.bind('aloha-editable-activated', function ($event, data) {
+				Aloha.on('aloha-editable-activated', function ($event, data) {
 					if (data.editable) {
 						var $block = data.editable.obj.find('#' + that.id);
 						if ($block.length !== 0) {
@@ -242,7 +242,7 @@ define([
 					}
 				});
 
-				Aloha.bind('aloha-editable-deactivated', function ($event, data) {
+				Aloha.on('aloha-editable-deactivated', function ($event, data) {
 					if (data.editable) {
 						var $block = data.editable.obj.find('#' + that.id);
 						if ($block.length !== 0) {
@@ -300,10 +300,10 @@ define([
 			this._disconnectFromDomElement();
 			this.$element = $newElement;
 
-			this.$element.bind('click', this._onElementClickHandler);
-			this.$element.bind('mousedown', this._preventSelectionChangedEventHandler);
-			this.$element.bind('focus', this._preventSelectionChangedEventHandler);
-			this.$element.bind('dblclick', this._preventSelectionChangedEventHandler);
+			this.$element.on('click', this._onElementClickHandler);
+			this.$element.on('mousedown', this._preventSelectionChangedEventHandler);
+			this.$element.on('focus', this._preventSelectionChangedEventHandler);
+			this.$element.on('dblclick', this._preventSelectionChangedEventHandler);
 
 			this.init(this.$element, function () {
 				// WORKAROUND against loading order dependencies. If we have
@@ -545,7 +545,7 @@ define([
 
 			// Activate current block
 			if (this.$element.attr('data-block-skip-scope') !== 'true') {
-				Scopes.setScope('Aloha.Block.' + this.attr('aloha-block-type'));
+				Scopes.setScope('Aloha.Block.' + this.attr('alohaBlockType'));
 			}
 			this.$element.addClass('aloha-block-active');
 			this._highlight();
@@ -699,12 +699,12 @@ define([
 			this.renderBlockHandlesIfNeeded();
 			if (this.isDraggable()) {
 				var nodeName = this.$element[0].nodeName;
-				if (nodeName === 'SPAN' && !this.$element.data('dd-setup-done')) {
+				if (nodeName === 'SPAN' && !this.$element.data('ddSetupDone')) {
 					// Unfortunately _setupDragDropForInlineElements() is not
 					// idempotent because $.draggable() isn't.
 					this._setupDragDropForInlineElements();
 					this._disableUglyInternetExplorerDragHandles();
-					this.$element.data('dd-setup-done', true);
+					this.$element.data('ddSetupDone', true);
 				} else if (nodeName === 'DIV') {
 					this._setupDragDropForBlockElements();
 					this._disableUglyInternetExplorerDragHandles();
@@ -768,12 +768,15 @@ define([
         _attachDropzoneHighlightEvents: function () {
             var that = this;
 
-            this.$element.delegate(".aloha-block-draghandle", "mousedown", function () {
-                var dropzones = that.$element.parents(".aloha-editable").first().data("block-dropzones") || [];
+
+            this.$element.on( "mousedown", ".aloha-block-draghandle",function () {
+
+                var dropzones = that.$element.parents(".aloha-editable").first().data("blockDropzones") || [];
+
                 jQuery.each(dropzones, function (i, editable_selector) {
                     var editables = jQuery(editable_selector);
                     jQuery(editables).each(function () {
-                        if (jQuery(this).data("block-dragdrop")) {
+                        if (jQuery(this).data("blockDragdrop")) {
                             jQuery(this).addClass("aloha-block-dropzone");
                         }
                     });
@@ -782,7 +785,7 @@ define([
                 // Remove the dropzones as soon as the mouse is released,
                 // irrespective of where the drop took place.
                 jQuery(document).one("mouseup.aloha-block-dropzone", function () {
-                    var dropzones = that.$element.parents(".aloha-editable").first().data("block-dropzones") || [];
+                    var dropzones = that.$element.parents(".aloha-editable").first().data("blockDropzones") || [];
                     jQuery.each(dropzones, function (i, editable_selector) {
                         jQuery(editable_selector).removeClass("aloha-block-dropzone");
                     });

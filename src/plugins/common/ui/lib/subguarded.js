@@ -173,7 +173,7 @@ define([
 		for (i = 0; i < events.length; i++) {
 			event = events[i];
 			registerGuard(event, guard);
-			Aloha.bind(event, bindHandler);
+			Aloha.on(event, bindHandler);
 			PubSub.sub(event, pubsubHandler);
 		}
 	}

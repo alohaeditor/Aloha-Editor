@@ -139,7 +139,7 @@ define([
 		} else {
 			$(block).before(zeroWidthNode);
 		}
-		Aloha.bind('aloha-selection-changed', function (event) {
+		Aloha.on('aloha-selection-changed', function (event) {
 			removeZeroWidthTextNodeFix();
 			Aloha.unbind(event);
 		});

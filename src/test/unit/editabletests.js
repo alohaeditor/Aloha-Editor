@@ -55,7 +55,7 @@ define( ['testutils'], function( TestUtils ) {
 		deepEqual(result.extractHTML(), expected.extractHTML(), 'Check Operation Result');
 	}
 
-	Aloha.bind('aloha-ready', function() {
+	Aloha.on('aloha-ready', function() {
 
 		module('Plaintext Enter Handling', {
 			setup: function() {

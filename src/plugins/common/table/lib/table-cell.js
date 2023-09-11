@@ -275,7 +275,7 @@ define([
 			Misc.removeEditingHelpers($wrapper);
 		});
 
-		Aloha.bind('aloha-smart-content-changed', function (event, data) {
+		Aloha.on('aloha-smart-content-changed', function (event, data) {
 			if (data.editable.isActive && data.triggerType === 'block-change') {
 				Misc.addEditingHelpers($wrapper);
 			}
@@ -427,7 +427,7 @@ define([
 
 			//bind a global mouseup event handler to stop cell selection
 			var that = this;
-			jQuery('body').bind('mouseup.cellselection', function (event) {
+			jQuery('body').on('mouseup.cellselection', function (event) {
 				that._endCellSelection();
 			});
 

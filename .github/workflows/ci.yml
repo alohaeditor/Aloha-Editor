@@ -1,0 +1,26 @@
+name: Cypress Tests (Dev)
+
+on:
+  push:
+    branches: [ jq3, feature/jq3-migration ]
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        containers: [1, 2, 3, 4, 5]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v5
+        with:
+          build: npm run demo:build
+          start: npm run demo:start
+          record: true
+          parallel: true
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}

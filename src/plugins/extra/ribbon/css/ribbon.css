@@ -23,7 +23,9 @@
 	background-image:     -ms-linear-gradient(bottom, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.1) 90%);
 }
 .aloha .aloha-ribbon-toolbar .aloha-ui-menubutton-container {
-	margin-left: 4px;
+	
+	
+	margin-left: 15px;
 }
 .aloha .aloha-ribbon-toolbar .aloha-ribbon-in,
 .aloha .aloha-ribbon-toolbar .aloha-ribbon-out {

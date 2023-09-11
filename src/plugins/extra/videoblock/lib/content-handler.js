@@ -56,7 +56,7 @@ define([
 		 */
 		handleContent: function (content) {
 			while (content.match(urlRegex)) {
-				content = content.replace(urlRegex, '<div class="aloha-block-VideoBlock aloha" data-aloha-block-type="VideoBlock" data-video-id="$1"></div>');
+				content = content.replace(urlRegex, '<div class="aloha-block-VideoBlock aloha" data-alohaBlockType="VideoBlock" dataVideoId="$1"></div>');
 			}
 			return content;
 		}

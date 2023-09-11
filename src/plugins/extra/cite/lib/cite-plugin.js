@@ -213,8 +213,8 @@ define([
 			saveCiteDetails(plugin);
 		}
 
-		plugin.citeHrefField.getInputJQuery().bind('keyup change', onSaveInputs);
-		plugin.citeNoteField.getInputJQuery().bind('keyup change', onSaveInputs);
+		plugin.citeHrefField.getInputJQuery().on('keyup change', onSaveInputs);
+		plugin.citeNoteField.getInputJQuery().on('keyup change', onSaveInputs);
 	}
 
 	/**
@@ -252,7 +252,7 @@ define([
 						additionalReferenceContainer
 					)).content;
 
-					content.find('input, textarea').bind('keyup change', function () {
+					content.find('input, textarea').on('keyup change', function () {
 						var noteValue = panel.content.find(nsSel('note-field textarea')).val();
 						var linkValue = panel.content.find(nsSel('link-field input')).val();
 

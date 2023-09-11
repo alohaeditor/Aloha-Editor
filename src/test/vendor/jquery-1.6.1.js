@@ -2567,7 +2567,7 @@ jQuery.event = {
 		eventHandle.elem = elem;
 
 		// Handle multiple events separated by a space
-		// jQuery(...).bind("mouseover mouseout", fn);
+		// jQuery(...).on("mouseover mouseout", fn);
 		types = types.split(" ");
 
 		var type, i = 0, namespaces;
@@ -3686,7 +3686,7 @@ jQuery.each( ("blur focus focusin focusout load resize scroll unload click dblcl
 		}
 
 		return arguments.length > 0 ?
-			this.bind( name, data, fn ) :
+			this.on( name, data, fn ) :
 			this.trigger( name );
 	};
 
@@ -6822,7 +6822,7 @@ jQuery.fn.extend({
 // Attach a bunch of functions for handling common AJAX events
 jQuery.each( "ajaxStart ajaxStop ajaxComplete ajaxError ajaxSuccess ajaxSend".split( " " ), function( i, o ){
 	jQuery.fn[ o ] = function( f ){
-		return this.bind( o, f );
+		return this.on( o, f );
 	};
 });
 

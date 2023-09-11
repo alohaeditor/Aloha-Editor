@@ -314,7 +314,7 @@ define([
 			$elms = this._getEditableChilds();
 		// @todo use the DOM Events for this, jQuery is very slow
 
-		$elms.bind('mouseover.blockbehavior', function (e) {
+		$elms.on('mouseover.blockbehavior', function (e) {
 			return dragBehavior.onMouseover(this, e);
 		});
 	};
@@ -349,7 +349,7 @@ define([
 		var $elm = $(elm);
 		var $srcEditable = this.$element.closest('.aloha-editable');
 		var $dstEditable = $elm.closest('.aloha-editable');
-		var dropzones = ($srcEditable.data('block-dropzones') || ['.aloha-editable']).join();
+		var dropzones = ($srcEditable.data('blockDropzones') || ['.aloha-editable']).join();
 
 		if (!$dstEditable.is(dropzones)) {
 			if (Aloha.Log.isDebugEnabled()) {
@@ -407,8 +407,8 @@ define([
 		$hElm
 			.css('zIndex', parseInt($elm.zIndex(), 10) + 1)
 			.offset($elm.offset())
-			.width($elm.outerWidth())
-			.height($elm.outerHeight());
+			.css("width", parseInt($elm.css("width")) + parseInt($elm.css("padding-left")) + parseInt($elm.css("padding-right")) + "px")
+			.css("height", parseInt($elm.css("height"))+parseInt($elm.css("padding-top"))+parseInt($elm.css("padding-bottom"))+ "px");
 
 	};
 
@@ -423,13 +423,13 @@ define([
 		var $elm = $(elm),
 			dragBehavior = this,
 			elmTop = $elm.offset().top,
-			halfHeight = $elm.outerHeight() / 2;
+			halfHeight = (parseInt($elm.css("height"))+parseInt($elm.css("padding-top"))+parseInt($elm.css("padding-bottom"))) / 2;
 
 		if (!allowDropRegions($elm, this.$element)) {
 			return;
 		}
 
-		$elm.bind('mousemove.brIBOA', function (event) {
+		$elm.on('mousemove.brIBOA', function (event) {
 			var top = event.pageY - elmTop;
 			if (top >= halfHeight) {
 				dragBehavior.insertBeforeOrAfterMode = 'AFTER';
@@ -467,14 +467,14 @@ define([
 		if (this.insertBeforeOrAfterMode === 'BEFORE') {
 			$hElm
 				.css('zIndex', parseInt($elm.zIndex(), 10) + 1)
-				.width($elm.outerWidth())
-				.height(edgeHeight);
+				.css("width", parseInt($elm.css("width")) + parseInt($elm.css("padding-left")) + parseInt($elm.css("padding-right")) + "px")
+				.css("height", edgeHeight+"px");
 			$elm.before($hElm);
 		} else {
 			$hElm
 				.css('zIndex', parseInt($elm.zIndex(), 10) + 1)
-				.width($elm.outerWidth())
-				.height(edgeHeight);
+				.css("width", parseInt($elm.css("width")) + parseInt($elm.css("padding-left")) + parseInt($elm.css("padding-right")) + "px")
+				.css("height",edgeHeight + "px");
 			$elm.after($hElm);
 		}
 	};

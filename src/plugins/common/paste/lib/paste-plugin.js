@@ -348,7 +348,7 @@ define([
 		// is treated differently (it replaces '\n' by '<br>').
 		var doc = $editable[0].ownerDocument;
 		if (isIEorDocModeGreater9(doc)) {
-			$editable.bind('beforepaste', function ($event) {
+			$editable.on('beforepaste', function ($event) {
 				if ($event.target.nodeName === 'INPUT' ||
 						$event.target.nodeName === 'TEXTAREA') {
 					// We have to let the browser handle most events concerning
@@ -366,7 +366,7 @@ define([
 				$event.stopPropagation();
 			});
 		} else {
-			$editable.bind('paste', function ($event) {
+			$editable.on('paste', function ($event) {
 				if ($event.target.nodeName === 'INPUT' ||
 						$event.target.nodeName === 'TEXTAREA') {
 					return;
@@ -396,14 +396,14 @@ define([
 		init: function () {
 			$('body').append($CLIPBOARD);
 
-			Aloha.bind('aloha-editable-created', function ($event, editable) {
+			Aloha.on('aloha-editable-created', function ($event, editable) {
 				prepare(editable.obj);
 			});
 
 			if (isIEorDocModeGreater9($CLIPBOARD[0].ownerDocument)) {
 				// Bind a handler to the paste event of the pasteDiv to get the
 				// pasted content (but do this only once, not for every editable)
-				$CLIPBOARD.bind('paste', function ($event) {
+				$CLIPBOARD.on('paste', function ($event) {
 					onPaste($event, ieRangeBeforePaste, function () {
 						ieRangeBeforePaste = null;
 					});

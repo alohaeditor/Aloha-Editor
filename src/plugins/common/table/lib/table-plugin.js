@@ -287,7 +287,7 @@ define([
 
 			// uncommented code-segment, presumably added to force IE to target the wrapper
 			// on mouse-down by applying a timeout after event propagation
-			jQuery(table.selection.selectedCells[i]).bind('mousedown', function (jqEvent) {
+			jQuery(table.selection.selectedCells[i]).on('mousedown', function (jqEvent) {
 				var wrapper = jQuery(this).children('div').eq(0);
 				window.setTimeout(function () {
 					wrapper.trigger( 'focus' );
@@ -450,7 +450,7 @@ define([
 
 			configurations[editable.getId()] = !!enabled;
 
-			editable.obj.bind('mousedown', function () {
+			editable.obj.on('mousedown', function () {
 				if (!TablePlugin.activeTable) {
 					return;
 				}
@@ -471,7 +471,7 @@ define([
 		// initialize the table buttons
 		this.initTableButtons();
 
-		Aloha.bind( 'aloha-table-selection-changed', function () {
+		Aloha.on( 'aloha-table-selection-changed', function () {
 			// check if selected cells are split/merge able and set button status
 			if (!TablePlugin.activeTable || !TablePlugin.activeTable.selection) {
 				return;
@@ -505,7 +505,7 @@ define([
 		// This event is only thrown if the context has changed. (selection.js:126:triggerSelectionContextChanged)
 		// This makes that the scope changes to Aloha.continuoustext (scopes.js:43).
 		// This is because selection is called a least twice (selection.js:525). The second time the context has not changed.
-		Aloha.bind('aloha-selection-changed', function (event, rangeObject) {
+		Aloha.on('aloha-selection-changed', function (event, rangeObject) {
 			var range = rangeObject;
 			var editable = Aloha.activeEditable;
 
@@ -576,7 +576,7 @@ define([
 			}
 		});
 
-		Aloha.bind('aloha-smart-content-changed', function (event, data) {
+		Aloha.on('aloha-smart-content-changed', function (event, data) {
 			if (Aloha.activeEditable) {
 				Aloha.activeEditable.obj.find('table').each(function () {
 					if (TablePlugin.indexOfTableInRegistry(this) == -1) {
@@ -589,7 +589,7 @@ define([
 		});
 
 		if (this.settings.summaryinsidebar) {
-			Aloha.bind('aloha-plugins-loaded', function () {
+			Aloha.on('aloha-plugins-loaded', function () {
 				that.initSidebar(Aloha.Sidebar.right.show());
 			});
 		}
@@ -631,7 +631,7 @@ define([
 	                '<label class="' + nsClass('label') + '" for="' + nsClass('textarea') + '" >' + i18n.t('table.label.target') + '</label>' +
 	                	'<textarea id="' + nsClass('textarea') + '" class="' + nsClass('textarea') + '" />').content;
 
-				jQuery(nsSel('textarea')).live('keyup', function () {
+				jQuery(nsSel('textarea')).on('keyup', function () {
 					//The original developer thought that escaping the
 					//quote characters of the textarea value are
 					//necessary to work around a bug in IE. I could not

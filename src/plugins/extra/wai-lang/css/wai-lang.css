@@ -16,6 +16,10 @@
 	margin: 3px 5px 0px 2px;
 }
 
+.ui-front {
+	z-index: 100000;
+}
+
 .aloha .aloha-wai-lang-label-item {
 	display: inline;
 	font-weight: bold;

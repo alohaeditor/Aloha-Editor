@@ -67,8 +67,8 @@ define([
 				.button()
 				.click(function () {
 					that._toolbar.animate({
-						'left': -that._toolbar.outerWidth()
-						        + fadeIn.outerWidth()
+						'left': -(parseInt(that._toolbar.css("width")) + parseInt(that._toolbar.css("padding-left")) + parseInt(that._toolbar.css("padding-right")))
+						        + parseInt(fadeIn.css("width")) + parseInt(fadeIn.css("padding-left")) + parseInt(fadeIn.css("padding-right"))
 						        + 10
 					});
 					$('body').animate({paddingTop: 0});

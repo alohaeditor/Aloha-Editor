@@ -60,7 +60,6 @@ define([
 		}
 		return nestingLevel;
 	}
-
 	/**
 	 * Initializes the list templates button menus.
 	 *
@@ -143,7 +142,7 @@ define([
 			};
 		});
 
-		Aloha.bind('aloha-smart-content-changed', function (event, data) {
+		Aloha.on('aloha-smart-content-changed', function (event, data) {
 			if (data.triggerType === 'paste') {
 				// When a paste event occurs, we need to add the defaultClasses to any
 				// lists which were pasted in. There is no way to know what was just pasted,

@@ -1,3 +1,30 @@
+/**	jQuery.browser
+ *	@author	J.D. McKinstry (2014)
+ *	@description	Made to replicate older jQuery.browser command in jQuery versions 1.9+
+ *	@see http://jsfiddle.net/SpYk3/wsqfbe4s/
+ *
+ *	@extends	jQuery
+ *	@namespace	jQuery.browser
+ *	@example	jQuery.browser.browser == 'browserNameInLowerCase'
+ *	@example	jQuery.browser.version
+ *	@example	jQuery.browser.mobile	@returns	BOOLEAN
+ *	@example	jQuery.browser['browserNameInLowerCase']
+ *	@example	jQuery.browser.chrome	@returns	BOOLEAN
+ *	@example	jQuery.browser.safari	@returns	BOOLEAN
+ *	@example	jQuery.browser.opera	@returns	BOOLEAN
+ *	@example	jQuery.browser.msie	@returns	BOOLEAN
+ *	@example	jQuery.browser.mozilla	@returns	BOOLEAN
+ *	@example	jQuery.browser.webkit	@returns	BOOLEAN
+ *	@example	jQuery.browser.ua	@returns	navigator.userAgent String
+ */
+;;(function($){var a=$.fn.jquery.split("."),b;for(b in a)a[b]=parseInt(a[b]);if(!$.browser&&(1<a[0]||9<=a[1])){a={browser:void 0,version:void 0,mobile:!1};navigator&&navigator.userAgent&&(a.ua=navigator.userAgent,a.webkit=/WebKit/i.test(a.ua),a.browserArray="MSIE Chrome Opera Kindle Silk BlackBerry PlayBook Android Safari Mozilla Nokia".split(" "),/Sony[^ ]*/i.test(a.ua)?a.mobile="Sony":/RIM Tablet/i.test(a.ua)?a.mobile="RIM Tablet":/BlackBerry/i.test(a.ua)?a.mobile="BlackBerry":/iPhone/i.test(a.ua)?
+	a.mobile="iPhone":/iPad/i.test(a.ua)?a.mobile="iPad":/iPod/i.test(a.ua)?a.mobile="iPod":/Opera Mini/i.test(a.ua)?a.mobile="Opera Mini":/IEMobile/i.test(a.ua)?a.mobile="IEMobile":/BB[0-9]{1,}; Touch/i.test(a.ua)?a.mobile="BlackBerry":/Nokia/i.test(a.ua)?a.mobile="Nokia":/Android/i.test(a.ua)&&(a.mobile="Android"),/MSIE|Trident/i.test(a.ua)?(a.browser="MSIE",a.version=/MSIE/i.test(navigator.userAgent)&&0<parseFloat(a.ua.split("MSIE")[1].match(/[0-9\.]{1,}/)[0])?parseFloat(a.ua.split("MSIE")[1].match(/[0-9\.]{1,}/)[0]):
+	"Edge",/Trident/i.test(a.ua)&&/rv:([0-9]{1,}[\.0-9]{0,})/.test(a.ua)&&(a.version=parseFloat(a.ua.match(/rv:([0-9]{1,}[\.0-9]{0,})/)[1].match(/[0-9\.]{1,}/)[0]))):/Chrome/.test(a.ua)?(a.browser="Chrome",a.version=parseFloat(a.ua.split("Chrome/")[1].split("Safari")[0].match(/[0-9\.]{1,}/)[0])):/Opera/.test(a.ua)?(a.browser="Opera",a.version=parseFloat(a.ua.split("Version/")[1].match(/[0-9\.]{1,}/)[0])):/Kindle|Silk|KFTT|KFOT|KFJWA|KFJWI|KFSOWI|KFTHWA|KFTHWI|KFAPWA|KFAPWI/i.test(a.ua)?(a.mobile="Kindle",
+	/Silk/i.test(a.ua)?(a.browser="Silk",a.version=parseFloat(a.ua.split("Silk/")[1].split("Safari")[0].match(/[0-9\.]{1,}/)[0])):/Kindle/i.test(a.ua)&&/Version/i.test(a.ua)&&(a.browser="Kindle",a.version=parseFloat(a.ua.split("Version/")[1].split("Safari")[0].match(/[0-9\.]{1,}/)[0]))):/BlackBerry/.test(a.ua)?(a.browser="BlackBerry",a.version=parseFloat(a.ua.split("/")[1].match(/[0-9\.]{1,}/)[0])):/PlayBook/.test(a.ua)?(a.browser="PlayBook",a.version=parseFloat(a.ua.split("Version/")[1].split("Safari")[0].match(/[0-9\.]{1,}/)[0])):
+	/BB[0-9]{1,}; Touch/.test(a.ua)?(a.browser="Blackberry",a.version=parseFloat(a.ua.split("Version/")[1].split("Safari")[0].match(/[0-9\.]{1,}/)[0])):/Android/.test(a.ua)?(a.browser="Android",a.version=parseFloat(a.ua.split("Version/")[1].split("Safari")[0].match(/[0-9\.]{1,}/)[0])):/Safari/.test(a.ua)?(a.browser="Safari",a.version=parseFloat(a.ua.split("Version/")[1].split("Safari")[0].match(/[0-9\.]{1,}/)[0])):/Firefox/.test(a.ua)?(a.browser="Mozilla",a.version=parseFloat(a.ua.split("Firefox/")[1].match(/[0-9\.]{1,}/)[0])):
+		/Nokia/.test(a.ua)&&(a.browser="Nokia",a.version=parseFloat(a.ua.split("Browser")[1].match(/[0-9\.]{1,}/)[0])));if(a.browser)for(var c in a.browserArray)a[a.browserArray[c].toLowerCase()]=a.browser==a.browserArray[c];$.extend(!0,$.browser={},a)}})(jQuery);
+/* - - - - - - - - - - - - - - - - - - - */
+
 define('jquery-layout', ['jquery'], function (jQuery) {
 /**
  * @preserve
@@ -326,7 +353,7 @@ $.layout = {
 ,	scrollbarHeight:	function () { return window.scrollbarHeight || $.layout.getScrollbarSize('height'); }
 ,	getScrollbarSize:	function (dim) {
 		var $c	= $('<div style="position: absolute; top: -10000px; left: -10000px; width: 100px; height: 100px; overflow: scroll;"></div>').appendTo("body");
-		var d	= { width: $c.css("width") - $c[0].clientWidth, height: $c.height() - $c[0].clientHeight };
+		var d	= { width: $c.css("width") - $c[0].clientWidth, height: parseInt($c.css("height")) - $c[0].clientHeight };
 		$c.remove();
 		window.scrollbarWidth	= d.width;
 		window.scrollbarHeight	= d.height;
@@ -337,7 +364,6 @@ $.layout = {
 	/**
 	* Returns hash container 'display' and 'visibility'
 	*
-	* @see	$.swap() - swaps CSS, runs callback, resets CSS
 	* @param  {!Object}		$E				jQuery element
 	* @param  {boolean=}	[force=false]	Run even if display != none
 	* @return {!Object}						Returns current style props, if applicable
@@ -383,22 +409,22 @@ $.layout = {
 			i[ei] = d.inset[ei] + b; // total offset of content from outer side
 		});
 
-		x.width		= $E.css("width");
-		x.height	= $E.height();
+		x.width		= parseInt($E.css("width"));
+		x.height	= parseInt($E.css("height"));
 		x.top		= N($E,"top",true);
 		x.bottom	= N($E,"bottom",true);
 		x.left		= N($E,"left",true);
 		x.right		= N($E,"right",true);
 
-		d.outerWidth	= $E.outerWidth();
-		d.outerHeight	= $E.outerHeight();
+		d.outerWidth	= parseInt($E.css("width")) + parseInt($E.css("padding-left")) + parseInt($E.css("padding-right"));
+		d.outerHeight	= parseInt($E.css("height"))+parseInt($E.css("padding-top"))+parseInt($E.css("padding-bottom"));
 		// calc the TRUE inner-dimensions, even in quirks-mode!
 		d.innerWidth	= max(0, d.outerWidth  - i.left - i.right);
 		d.innerHeight	= max(0, d.outerHeight - i.top  - i.bottom);
 		// layoutWidth/Height is used in calcs for manual resizing
 		// layoutW/H only differs from innerW/H when in quirks-mode - then is like outerW/H
-		d.layoutWidth	= $E.innerWidth();
-		d.layoutHeight	= $E.innerHeight();
+		d.layoutWidth	= parseInt($E.css("width"))-parseInt($E.css("padding-left"))-parseInt($E.css("padding-right"));
+		d.layoutHeight	= parseInt($E.css("height"))-parseInt($E.css("padding-top"))-parseInt($E.css("padding-bottom"));
 
 		//if ($E.prop('tagName') === 'BODY') { debugData( d, $E.prop('tagName') ); } // DEBUG
 
@@ -538,8 +564,8 @@ $.layout = {
 		,	d	= $E.offset()
 		,	T	= d.top
 		,	L	= d.left
-		,	R	= L + $E.outerWidth()
-		,	B	= T + $E.outerHeight()
+		,	R	= L + parseInt($E.css("width")) + parseInt($E.css("padding-left")) + parseInt($E.css("padding-right"))
+		,	B	= T + parseInt($E.css("height"))+parseInt($E.css("padding-top"))+parseInt($E.css("padding-bottom"))
 		,	x	= evt.pageX	// evt.clientX ?
 		,	y	= evt.pageY	// evt.clientY ?
 		;
@@ -598,7 +624,7 @@ $.layout = {
 				+	'<ul style="font-size: 13px; font-weight: none; list-style: none; margin: 0; padding: 0 0 2px;"></ul>'
 				+ '</div>'
 				).appendTo("body");
-			$e.css('left', $(window).width() - $e.outerWidth() - 5)
+			$e.css('left', parseInt($(window).css("width")) - (parseInt($e.css("width")) + parseInt($e.css("padding-left")) + parseInt($e.css("padding-right"))) - 5)
 			if ($.ui.draggable) $e.draggable({ handle: ':first-child' });
 			return $e;
 		};
@@ -1193,7 +1219,7 @@ $.fn.layout = function (opts) {
 		w = cssW($E, outerWidth);
 		$E.css({ width: w });
 		if (w > 0) {
-			if (autoHide && $E.data('autoHidden') && $E.innerHeight() > 0) {
+			if (autoHide && $E.data('autoHidden') && parseInt($E.css("height"))-parseInt($E.css("padding-top"))-parseInt($E.css("padding-bottom")) > 0) {
 				$E.show().data('autoHidden', false);
 				if (!browser.mozilla) // FireFox refreshes iframes - IE does not
 					// make hidden, then visible to 'refresh' display after animation
@@ -1215,7 +1241,7 @@ $.fn.layout = function (opts) {
 		else if (!el.jquery) $E = $(el);
 		h = cssH($E, outerHeight);
 		$E.css({ height: h, visibility: "visible" }); // may have been 'hidden' by sizeContent
-		if (h > 0 && $E.innerWidth() > 0) {
+		if (h > 0 && parseInt($E.css("width"))-parseInt($E.css("padding-left"))-parseInt($E.css("padding-right")) > 0) {
 			if (autoHide && $E.data('autoHidden')) {
 				$E.show().data('autoHidden', false);
 				if (!browser.mozilla) // FireFox refreshes iframes - IE does not
@@ -1271,7 +1297,7 @@ $.fn.layout = function (opts) {
 			;
 			$P.css(dim, "auto");
 			if ($C) $C.css(dim, "auto");
-			size = (dim === "height") ? $P.outerHeight() : $P.outerWidth(); // MEASURE
+			size = (dim === "height") ? parseInt($P.css("height"))+parseInt($P.css("padding-top"))+parseInt($P.css("padding-bottom")) : parseInt($P.css("width")) + parseInt($P.css("padding-left")) + parseInt($P.css("padding-right")); // MEASURE
 			$P.css(dim, szP).css(vis); // RESET size & visibility
 			if ($C) $C.css(dim, szC);
 			return size;
@@ -1298,9 +1324,9 @@ $.fn.layout = function (opts) {
 		else if (s.isClosed || (s.isSliding && inclSpace))
 			return cSp;
 		else if (_c[pane].dir === "horz")
-			return $P.outerHeight() + oSp;
+			return parseInt($P.css("height"))+parseInt($P.css("padding-top"))+parseInt($P.css("padding-bottom")) + oSp;
 		else // dir === "vert"
-			return $P.outerWidth() + oSp;
+			return parseInt($P.css("width")) + parseInt($P.css("padding-left")) + parseInt($P.css("padding-right")) + oSp;
 	}
 
 	/**
@@ -1324,7 +1350,7 @@ $.fn.layout = function (opts) {
 		,	altPane			= _c.oppositeEdge[pane]
 		,	altS			= state[altPane]
 		,	$altP			= $Ps[altPane]
-		,	altPaneSize		= (!$altP || altS.isVisible===false || altS.isSliding ? 0 : (dir=="horz" ? $altP.outerHeight() : $altP.outerWidth()))
+		,	altPaneSize		= (!$altP || altS.isVisible===false || altS.isSliding ? 0 : (dir=="horz" ? parseInt($altP.css("height"))+parseInt($altP.css("padding-top"))+parseInt($altP.css("padding-bottom")) : parseInt($altP.css("width")) + parseInt($altP.css("padding-left")) + parseInt($altP.css("padding-right"))))
 		,	altPaneSpacing	= ((!$altP || altS.isHidden ? 0 : options[altPane][ altS.isClosed !== false ? "spacing_closed" : "spacing_open" ]) || 0)
 		//	limitSize prevents this pane from 'overlapping' opposite pane
 		,	containerSize	= (dir=="horz" ? sC.innerHeight : sC.innerWidth)
@@ -1495,7 +1521,7 @@ $.fn.layout = function (opts) {
 		initHotkeys();
 
 		// bind window.onunload
-		$(window).bind("unload."+ sID, unload);
+		$(window).on("unload."+ sID, unload);
 
 		// init plugins for this layout, if there are any (eg: customButtons)
 		runPluginCallbacks( Instance, $.layout.onLoad );
@@ -1564,7 +1590,7 @@ $.fn.layout = function (opts) {
 			o.resizeWithWindow = false;
 		// bind resizeAll() for 'this layout instance' to window.resize event
 		else if (o.resizeWithWindow)
-			$(window).bind("resize."+ sID, windowResize);
+			$(window).on("resize."+ sID, windowResize);
 
 		delete state.creatingLayout;
 		state.initialized = true;
@@ -1798,7 +1824,7 @@ $.fn.layout = function (opts) {
 		};
 		// loop hash and bind all methods - include layoutID namespacing
 		for (name in layoutMethods) {
-			$N.bind("layout"+ name.toLowerCase() +"."+ sID, Instance[ layoutMethods[name] || name ]);
+			$N.on("layout"+ name.toLowerCase() +"."+ sID, Instance[ layoutMethods[name] || name ]);
 		}
 
 		// if this container is another layout's 'pane', then set child/parent pointers
@@ -1941,7 +1967,7 @@ $.fn.layout = function (opts) {
 		$.each(panes, function (i, pane) {
 			var o = options[pane];
 			if (o.enableCursorHotkey || o.customHotkey) {
-				$(document).bind("keydown."+ sID, keyDown); // only need to bind this ONCE
+				$(document).on("keydown."+ sID, keyDown); // only need to bind this ONCE
 				return false; // BREAK - binding was done
 			}
 		});
@@ -2208,8 +2234,8 @@ $.fn.layout = function (opts) {
 			.css(c.cssReq).css("zIndex", options.zIndexes.pane_normal)
 			.css(o.applyDemoStyles ? c.cssDemo : {}) // demo styles
 			.addClass( o.paneClass +" "+ o.paneClass+"-"+pane ) // default = "ui-layout-pane ui-layout-pane-west" - may be a dupe of 'paneSelector'
-			.bind("mouseenter."+ sID, addHover )
-			.bind("mouseleave."+ sID, removeHover )
+			.on("mouseenter."+ sID, addHover )
+			.on("mouseleave."+ sID, removeHover )
 			;
 		var paneMethods = {
 				hide:				''
@@ -2243,7 +2269,7 @@ $.fn.layout = function (opts) {
 		,	name;
 		// loop hash and bind all methods - include layoutID namespacing
 		for (name in paneMethods) {
-			$P.bind("layoutpane"+ name.toLowerCase() +"."+ sID, Instance[ paneMethods[name] || name ]);
+			$P.on("layoutpane"+ name.toLowerCase() +"."+ sID, Instance[ paneMethods[name] || name ]);
 		}
 
 		// see if this pane has a 'scrolling-content element'
@@ -2438,7 +2464,7 @@ $.fn.layout = function (opts) {
 				.appendTo($N) // append DIV to container
 			;
 			if (o.resizerDblClickToggle)
-				$R.bind("dblclick."+ sID, toggle );
+				$R.on("dblclick."+ sID, toggle );
 
 			if ($T) {
 				$T	// if paneSelector is an ID, then create a matching ID for the resizer, eg: "#paneLeft" => "#paneLeft-toggler"
@@ -2453,7 +2479,7 @@ $.fn.layout = function (opts) {
 					.css(o.applyDemoStyles ? _c.togglers.cssDemo : {}) // add demo styles
 					.addClass(tClass +" "+ tClass+_pane)
 					.hover(addHover, removeHover) // ALWAYS add hover-classes, even if toggling is not enabled - handle with CSS instead
-					.bind("mouseenter", onResizerEnter) // NEED toggler.mouseenter because mouseenter MAY NOT fire on resizer
+					.on("mouseenter", onResizerEnter) // NEED toggler.mouseenter because mouseenter MAY NOT fire on resizer
 					.appendTo($R) // append SPAN to resizer DIV
 				;
 				// ADD INNER-SPANS TO TOGGLER
@@ -3041,7 +3067,7 @@ $.fn.layout = function (opts) {
 			// the nested layout will reset its 'container' CSS when/if it is destroyed
 			if (hasChildren && $C) {
 				// a content-div may not have a specific width, so give it one to contain the Layout
-				$C.width( $C.width() );
+				$C.css("width", parseInt($C.css("width")) +"px" );
 				$.each( pC, function (key, child) {
 					child.resizeAll(); // resize the Layout
 				});
@@ -3661,9 +3687,9 @@ $.fn.layout = function (opts) {
 			showMasks( pane, { objectsOnly: true });
 			$P.css({ zIndex: z.pane_animate }); // overlay all elements during animation
 			if (pane=="south")
-				$P.css({ top: sC.inset.top + sC.innerHeight - $P.outerHeight() });
+				$P.css({ top: sC.inset.top + sC.innerHeight - parseInt($P.css("height"))+parseInt($P.css("padding-top"))+parseInt($P.css("padding-bottom")) });
 			else if (pane=="east")
-				$P.css({ left: sC.inset.left + sC.innerWidth - $P.outerWidth() });
+				$P.css({ left: sC.inset.left + sC.innerWidth - parseInt($P.css("width")) + parseInt($P.css("padding-left")) + parseInt($P.css("padding-right")) });
 		}
 		else { // animation DONE - RESET CSS
 			hideMasks();
@@ -3977,7 +4003,7 @@ $.fn.layout = function (opts) {
 			/*	Panes are sometimes not sized precisely in some browsers!?
 			 *	This code will resize the pane up to 3 times to nudge the pane to the correct size
 			 */
-			var	actual	= dimName==='width' ? $P.outerWidth() : $P.outerHeight()
+			var	actual	= dimName==='width' ? parseInt($P.css("width")) + parseInt($P.css("padding-left")) + parseInt($P.css("padding-right")) : parseInt($P.css("height"))+parseInt($P.css("padding-top"))+parseInt($P.css("padding-bottom"))
 			,	tries	= [{
 						   	pane:		pane
 						,	count:		1
@@ -4002,7 +4028,7 @@ $.fn.layout = function (opts) {
 				thisTry.cssSize = cssSize(pane, thisTry.attempt);
 				$P.css( dimName, thisTry.cssSize );
 
-				thisTry.actual	= dimName=='width' ? $P.outerWidth() : $P.outerHeight();
+				thisTry.actual	= dimName=='width' ? parseInt($P.css("width")) + parseInt($P.css("padding-left")) + parseInt($P.css("padding-right")) : parseInt($P.css("height"))+parseInt($P.css("padding-top"))+parseInt($P.css("padding-bottom"));
 				thisTry.correct	= (size === thisTry.actual);
 
 				// log attempts and alert the user of this *non-fatal error* (if showDebugMessages)
@@ -4346,7 +4372,7 @@ $.fn.layout = function (opts) {
 				;
 				m = {
 					top:			$C[0].offsetTop
-				,	height:			$C.outerHeight()
+				,	height:			parseInt($C.css("height"))+parseInt($C.css("padding-top"))+parseInt($C.css("padding-bottom"))
 				,	numFooters:		$Fs.length
 				,	hiddenFooters:	$Fs.length - $Fs_vis.length
 				,	spaceBelow:		0 // correct if no content footer ($E)
@@ -4355,7 +4381,7 @@ $.fn.layout = function (opts) {
 					m.bottom		= m.top + m.height;
 				if ($F.length)
 					//spaceBelow = (LastFooter.top + LastFooter.height) [footerBottom] - Content.bottom + max(LastFooter.marginBottom, pane.paddingBotom)
-					m.spaceBelow = ($F[0].offsetTop + $F.outerHeight()) - m.bottom + _below($F);
+					m.spaceBelow = ($F[0].offsetTop + parseInt($F.css("height"))+parseInt($F.css("padding-top"))+parseInt($F.css("padding-bottom"))) - m.bottom + _below($F);
 				else // no footer - check marginBottom on Content element itself
 					m.spaceBelow = _below($C);
 			};
@@ -4416,7 +4442,7 @@ $.fn.layout = function (opts) {
 				});
 			}
 			else { // east/west
-				paneLen = $P.outerHeight(); // s.outerHeight ||
+				paneLen = parseInt($P.css("height"))+parseInt($P.css("padding-top"))+parseInt($P.css("padding-bottom")); // s.outerHeight ||
 				s.resizerLength = paneLen;
 				$R.css({
 					height:	cssH($R, paneLen) // account for borders & padding
@@ -4473,7 +4499,7 @@ $.fn.layout = function (opts) {
 					// CENTER the toggler content SPAN
 					$T.children(".content").each(function(){
 						$TC = $(this);
-						$TC.css("marginLeft", round((width-$TC.outerWidth())/2)); // could be negative
+						$TC.css("marginLeft", round((width-(parseInt($TC.css("width")) + parseInt($TC.css("padding-left")) + parseInt($TC.css("padding-right"))))/2)); // could be negative
 					});
 				}
 				else { // east/west
@@ -4487,7 +4513,7 @@ $.fn.layout = function (opts) {
 					// CENTER the toggler content SPAN
 					$T.children(".content").each(function(){
 						$TC = $(this);
-						$TC.css("marginTop", round((height-$TC.outerHeight())/2)); // could be negative
+						$TC.css("marginTop", round((height-(parseInt($TC.css("height"))+parseInt($TC.css("padding-top"))+parseInt($TC.css("padding-bottom"))))/2)); // could be negative
 					});
 				}
 
@@ -4515,7 +4541,7 @@ $.fn.layout = function (opts) {
 		;
 		if (!$T) return;
 		o.closable = true;
-		$T	.bind("click."+ sID, function(evt){ evt.stopPropagation(); toggle(pane); })
+		$T	.on("click."+ sID, function(evt){ evt.stopPropagation(); toggle(pane); })
 			.css("visibility", "visible")
 			.css("cursor", "pointer")
 			.attr("title", state[pane].isClosed ? o.tips.Open : o.tips.Close) // may be blank
@@ -5462,14 +5488,14 @@ console.data( stateData, 'loadState - stateData' );
 		};
 	}
 
-	/**
-	 *	Convert stringified JSON back to a hash object
-	 *	@see		$.parseJSON(), adding in jQuery 1.4.1
-	 */
+	
 ,	decodeJSON: function (str) {
-		try { return $.parseJSON ? $.parseJSON(str) : window["eval"]("("+ str +")") || {}; }
-		catch (e) { return {}; }
-	}
+    try {
+        return JSON.parse(str);
+    } catch (e) {
+        return {};
+    }
+}
 
 
 ,	_create: function (inst) {
@@ -5798,7 +5824,7 @@ $.layout.buttons = {
 		// ADD Button methods to Layout Instance
 		// Note: sel = jQuery Selector string
 		$.extend( inst, {
-			bindButton:		function (sel, action, pane) { return _.bind(inst, sel, action, pane); }
+			bindButton:		function (sel, action, pane) { return _.on(inst, sel, action, pane); }
 		//	DEPRECATED METHODS
 		,	addToggleBtn:	function (sel, pane, slide) { return _.addToggle(inst, sel, pane, slide); }
 		,	addOpenBtn:		function (sel, pane, slide) { return _.addOpen(inst, sel, pane, slide); }

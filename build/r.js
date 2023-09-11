@@ -2939,7 +2939,7 @@ define('rhino/file', function () {
             //Java's version of copy file.
             srcChannel = new java.io.FileInputStream(srcFileName).getChannel();
             destChannel = new java.io.FileOutputStream(destFileName).getChannel();
-            destChannel.transferFrom(srcChannel, 0, srcChannel.size());
+            destChannel.transferFrom(srcChannel, 0, srcChannel.length);
             srcChannel.close();
             destChannel.close();
 
