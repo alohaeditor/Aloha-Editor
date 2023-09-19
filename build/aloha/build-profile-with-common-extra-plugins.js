@@ -40,7 +40,7 @@
 		// We don't include Aloha's patched jquery by default, the user
 		// should do it himself.
 		"jquery": "empty:",
-    	//"jquery": 'vendor/jquery-1.7.2',
+    	//"jquery": 'vendor/jquery-3.7.0',
 
 		// We do include Aloha's patched jquery-ui by default, but the
 		// user can override it if he is adventurous.
@@ -212,7 +212,7 @@
     //The directory path to save the output. If not specified, then
     //the path will default to be a directory called "build" as a sibling
     //to the build file. All relative paths are relative to the build file.
-    dir: "../../target/build-profile-with-common-extra-plugins/rjs-output",
+    dir: "../../target/build-profile-with-common-extra-plugins",
 
     //As of RequireJS 2.0.2, the dir above will be deleted before the
     //build starts again. If you have a big build and are not doing

@@ -1,0 +1,5 @@
+require('../../target/build-profile-with-common-extra-plugins/lib/require')
+require('../../target/build-profile-with-common-extra-plugins/lib/vendor/jquery-3.7.0')
+require('../../target/build-profile-with-common-extra-plugins/lib/aloha-jquery-noconflict')
+require('./license-header.frag')
+require('../../target/build-profile-with-common-extra-plugins/lib/aloha')

@@ -7,6 +7,7 @@
 	<packaging>jar</packaging>
 	<name>Aloha Editor</name>
 	<url>http://aloha-editor.org</url>
+
 	<licenses>
 		<license>
 			<name>GPLv2 or later</name>
@@ -17,6 +18,7 @@
 			<url>http://aloha-editor.com/terms/</url>
 		</license>
 	</licenses>
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.build.timestamp.format>yyyyMMdd-HHmmss</maven.build.timestamp.format>
@@ -24,6 +26,7 @@
 		<ALOHADEPLOYMENTURL>NA</ALOHADEPLOYMENTURL>
 		<ALOHADEPLOYMENTPATH>NA</ALOHADEPLOYMENTPATH>
 		<build.profile>build-profile-with-common-extra-plugins</build.profile>
+		<guides.skip>false</guides.skip>
 	</properties>
 
 	<dependencies>
@@ -82,6 +85,7 @@
 					</execution>
 				</executions>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -94,6 +98,7 @@
 					<target>8</target>
 				</configuration>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
@@ -103,6 +108,7 @@
 					<completionGoals>scm:checkin -Dmessage="Added generated changelog mapping" -Dbasedir=${project.basedir}/ -Dincludes=build/changelog/mappings/**</completionGoals>
 				</configuration>
 			</plugin>
+
 			<plugin>
 				<groupId>com.gentics</groupId>
 				<artifactId>changelog-manager-plugin</artifactId>
@@ -129,119 +135,23 @@
 					<perMajorVersionChangelogFile>majorversion/changelog.vm</perMajorVersionChangelogFile>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>com.googlecode.jslint4java</groupId>
-				<artifactId>jslint4java-maven-plugin</artifactId>
-				<version>2.0.2</version>
-				<!-- Default configuration -->
-				<configuration>
-					<skip>${bareMode}</skip>
-					<sourceFolders>
-						<sourceFolder>${project.basedir}/src</sourceFolder>
-					</sourceFolders>
-					<excludes>
-						<exclude>**/vendor/**</exclude>
-						<exclude>**/shared/**</exclude>
-					</excludes>
-					<failOnError>false</failOnError>
-					<!-- See http://docs.jslint4java.googlecode.com/git/2.0.2/apidocs/com/googlecode/jslint4java/Option.html -->
-					<options>
-						<!-- If names may have dangling _ -->
-						<nomen>true</nomen>
-						<!-- If multiple var statements per function should be allowed -->
-						<vars>true</vars>
-						<!-- If variables can be declared out of order -->
-						<undef>true</undef>
-						<!-- If the standard browser globals should be predefined -->
-						<browser>true</browser>
-						<!-- If the continuation statement should be tolerated -->
-						<continue>true</continue>
-						<!-- If the . should be allowed in regexp literals -->
-						<regexp>true</regexp>
-						<!-- If sloppy whitespace is tolerated -->
-						<white>false</white>
-						<!-- If increment/decrement should be allowed -->
-						<plusplus>true</plusplus>
-						<!-- Allow non-strict equals -->
-						<eqeq>true</eqeq>
-						<!-- Bitwise operators -->
-						<bitwise>true</bitwise>
-					</options>
-				</configuration>
-				<executions>
-					<!-- Linting Core -->
-					<execution>
-						<id>lint-core</id>
-						<phase>test</phase>
-						<goals>
-							<goal>lint</goal>
-						</goals>
-						<configuration>
-							<options>
-								<predef>define, console</predef>
-							</options>
-							<failOnError>true</failOnError>
-							<includes>
-								<include>lib/aloha/**/*.js</include>
-								<include>lib/util/**/*.js</include>
-							</includes>
-							<excludes>
-								<exclude>lib/aloha/nls/**/*.js</exclude>
-								<exclude>lib/util/class.js</exclude>
-								<exclude>lib/util/json2.js</exclude>
-							</excludes>
-							<outputFolder>${project.build.directory}/jslint-core</outputFolder>
-						</configuration>
-					</execution>
-					<!-- Linting Plugins -->
-					<execution>
-						<id>lint-plugins</id>
-						<phase>test</phase>
-						<goals>
-							<goal>lint</goal>
-						</goals>
-						<configuration>
-							<options>
-								<predef>Aloha, window, global, process, define, require, jQuery, GCN, document, Image</predef>
-							</options>
-							<failOnError>false</failOnError>
-							<includes>
-								<include>plugins/common/**/*plugin.js</include>
-							</includes>
-							<excludes>
-								<exclude>plugins/**/extra/**</exclude>
-								<exclude>plugins/**/vendor/**</exclude>
-								<exclude>plugins/**/nls/**</exclude>
-							</excludes>
-							<outputFolder>${project.build.directory}/jslint-plugins</outputFolder>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>1.1.1</version>
 				<executions>
-					<!-- r.js optimize -->
 					<execution>
-						<phase>process-sources</phase>
-						<id>rjs-optimize-${build.profile}</id>
+						<phase>generate-sources</phase>
+						<id>build-aloha-editor</id>
 						<goals>
 							<goal>exec</goal>
 						</goals>
 						<configuration>
-							<executable>node</executable>
-							<arguments>
-								<argument>${project.basedir}/build/r.js</argument>
-								<argument>-o</argument>
-								<argument>${project.basedir}/build/aloha/${build.profile}.js</argument>
-							</arguments>
+							<executable>${project.basedir}/bin/build-aloha-editor.sh</executable>
 						</configuration>
 					</execution>
-					<!-- TODO: check filesize -->
-					<!-- TODO: cd "$TMP/aloha/css" r.js -o cssIn=aloha.css out=aloha.css -->
+
 					<execution>
 						<phase>package</phase>
 						<id>build-guides</id>
@@ -249,102 +159,13 @@
 							<goal>exec</goal>
 						</goals>
 						<configuration>
-							<skip>${bareMode}</skip>
+							<skip>${guides.skip}</skip>
 							<executable>${project.basedir}/bin/build-guide.sh</executable>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>ro.isdc.wro4j</groupId>
-				<artifactId>wro4j-maven-plugin</artifactId>
-				<version>1.6.3</version>
-				<executions>
-					<!-- Full version of aloha (With jquery and requirejs) -->
-					<execution>
-						<id>aloha-${build.profile}-minified-full</id>
-						<phase>compile</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<minimize>true</minimize>
-							<targetGroups>${build.profile}</targetGroups>
-							<destinationFolder>${project.build.directory}/${build.profile}/minified-full/</destinationFolder>
-							<jsDestinationFolder>${project.build.directory}/${build.profile}/minified-full/</jsDestinationFolder>
-						</configuration>
-					</execution>
 
-					<execution>
-						<id>aloha-${build.profile}-debug-full</id>
-						<phase>compile</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<minimize>false</minimize>
-							<targetGroups>${build.profile}</targetGroups>
-							<destinationFolder>${project.build.directory}/${build.profile}/debug-full/</destinationFolder>
-							<jsDestinationFolder>${project.build.directory}/${build.profile}/debug-full/</jsDestinationFolder>
-						</configuration>
-					</execution>
-
-					<!-- Bare version of aloha (Without jquery and requirejs) -->
-					<execution>
-						<id>aloha-${build.profile}-debug-bare</id>
-						<phase>compile</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<minimize>false</minimize>
-							<targetGroups>${build.profile}-bare</targetGroups>
-							<destinationFolder>${project.build.directory}/${build.profile}/debug-bare/</destinationFolder>
-							<jsDestinationFolder>${project.build.directory}/${build.profile}/debug-bare/</jsDestinationFolder>
-						</configuration>
-					</execution>
-
-					<execution>
-						<id>aloha-${build.profile}-minified-bare</id>
-						<phase>compile</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<minimize>true</minimize>
-							<targetGroups>${build.profile}-bare</targetGroups>
-							<destinationFolder>${project.build.directory}/${build.profile}/minified-bare/</destinationFolder>
-							<jsDestinationFolder>${project.build.directory}/${build.profile}/minified-bare/</jsDestinationFolder>
-						</configuration>
-					</execution>
-
-					<execution>
-						<id>less-css</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<targetGroups>aloha</targetGroups>
-							<minimize>true</minimize>
-							<cssDestinationFolder>${basedir}/src/css</cssDestinationFolder>
-							<contextFolder>${basedir}/src</contextFolder>
-							<buildDirectory>${basedir}/src</buildDirectory>
-							<ignoreMissingResources>false</ignoreMissingResources>
-							<wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>
-							<extraConfigFile>${basedir}/build/wro/wro.properties</extraConfigFile>
-						</configuration>
-					</execution>
-				</executions>
-				<configuration>
-					<jsDestinationFolder>${project.build.directory}/static/js/</jsDestinationFolder>
-					<contextFolder>${basedir}</contextFolder>
-					<buildDirectory>${basedir}</buildDirectory>
-					<ignoreMissingResources>false</ignoreMissingResources>
-					<wroFile>${basedir}/build/wro/wro.xml</wroFile>
-					<wroManagerFactory>ro.isdc.wro.extensions.manager.standalone.GoogleStandaloneManagerFactory</wroManagerFactory>
-				</configuration>
-			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.2.1</version>
@@ -373,7 +194,7 @@
 							<attach>true</attach>
 							<appendAssemblyId>false</appendAssemblyId>
 							<descriptors>
-								<descriptor>${project.basedir}/build/dist-package.xml</descriptor>
+								<descriptor>${project.basedir}/build/assembly/dist-package.xml</descriptor>
 							</descriptors>
 						</configuration>
 					</execution>
@@ -387,7 +208,7 @@
 							<attach>true</attach>
 							<appendAssemblyId>true</appendAssemblyId>
 							<descriptors>
-								<descriptor>${project.basedir}/build/cdn-package.xml</descriptor>
+								<descriptor>${project.basedir}/build/assembly/cdn-package.xml</descriptor>
 							</descriptors>
 						</configuration>
 					</execution>
@@ -401,7 +222,7 @@
 							<attach>true</attach>
 							<appendAssemblyId>true</appendAssemblyId>
 							<descriptors>
-								<descriptor>${project.basedir}/build/source-package.xml</descriptor>
+								<descriptor>${project.basedir}/build/assembly/source-package.xml</descriptor>
 							</descriptors>
 						</configuration>
 					</execution>
@@ -421,34 +242,11 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.eclipse.m2e</groupId>
-				<artifactId>lifecycle-mapping</artifactId>
-				<configuration>
-					<lifecycleMappingMetadata>
-						<pluginExecutions>
-							<pluginExecution>
-								<pluginExecutionFilter>
-									<groupId>ro.isdc.wro4j</groupId>
-									<artifactId>wro4j-maven-plugin</artifactId>
-									<versionRange>[1.0,)</versionRange>
-									<phase>generate-sources</phase>
-									<goals>
-										<goal>run</goal>
-									</goals>
-								</pluginExecutionFilter>
-								<action>
-									<execute />
-								</action>
-							</pluginExecution>
-						</pluginExecutions>
-					</lifecycleMappingMetadata>
-				</configuration>
-			</plugin>
 		</plugins>
+
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings 
+				<!--This plugin's configuration is used to store Eclipse m2e settings
 					only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
@@ -498,6 +296,7 @@
 			</snapshots>
 		</pluginRepository>
 	</pluginRepositories>
+
     <repositories>
        <repository>
              <id>maven.gentics.com</id>
@@ -511,6 +310,7 @@
              </snapshots>
        </repository>
     </repositories>
+
 	<distributionManagement>
 		<repository>
 			<id>lan.releases.staging.alohaeditor</id>
