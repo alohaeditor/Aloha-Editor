@@ -8,15 +8,7 @@ ARG DEBIAN_RELEASE="bullseye"
 ARG NPM_CONFIG_LOGLEVEL=info
 ARG NODE_VERSION=16.16.0
 
-ENV PATH "/usr/local/rvm/bin:$PATH"
 ENV RVM_PATH "/usr/local/rvm"
-ENV JAVA_HOME /usr/local/openjdk-8
-ENV JAVA_1_8_HOME /usr/local/openjdk-8
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
-# Workaround for Maven not outputting colors and silence download progress messages
-ENV MAVEN_OPTS "-Djansi.passthrough=true"
 
 RUN echo "deb http://ftp.at.debian.org/debian ${DEBIAN_RELEASE} main contrib non-free" > /etc/apt/sources.list \
 	&& echo "deb http://ftp.at.debian.org/debian ${DEBIAN_RELEASE}-backports main" >> /etc/apt/sources.list \
@@ -25,29 +17,8 @@ RUN echo "deb http://ftp.at.debian.org/debian ${DEBIAN_RELEASE} main contrib non
 	&& apt-get update \
 	&& apt-get upgrade --assume-yes \
 	&& apt-get install --assume-yes \
-		lsb-release curl git-core gawk sed curl build-essential less vim \
-		tar sed psmisc locales zip unzip gnupg2
-
-COPY settings.xml /usr/share/maven/conf/settings.xml
-
-# Set the locale (needed for ruby guides)
-RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \
-	&& locale-gen
-
-# Add user. The ID / GID 10000 is used by the jenkinsci/slave Dockerfile and has
-# to match here, because Jenkins does the SCM checkout in the jnlp container for
-# some reason.
-RUN groupadd --system --gid 10000 ${USER_NAME} \
-    && useradd --create-home --no-log-init --uid 10000 --gid ${USER_NAME} ${USER_NAME}
-
-# Setup Git
-RUN git config --system user.name "${GIT_USER_NAME}" \
-	&& git config --system user.email "${GIT_USER_EMAIL}"
-
-RUN echo "StrictHostKeyChecking no" > /etc/ssh/ssh_config \
-	&& echo "UserKnownHostsFile=/dev/null" >> /etc/ssh/ssh_config \
-	&& echo "BatchMode yes" >> /etc/ssh/ssh_config \
-	&& mv /usr/share/maven/conf/settings.xml /usr/share/maven/conf/settings-original.xml
+		lsb-release curl git-core gawk sed curl build-essential less vim tar sed psmisc locales zip unzip gnupg2 \
+    && rm -Rf /var/lib/apt/lists/*
 
 # Update public keys for node installs.
 RUN set -ex \
@@ -89,10 +60,38 @@ RUN mkdir /opt/node \
 	&& ln -s /opt/node/bin/npm /usr/local/bin/npm \
 	&& ln -s /opt/node/bin/npx /usr/local/bin/npx \
 	&& echo "export PATH=\$PATH:/opt/node/bin" > /etc/profile.d/nodejs.sh \
-    && chmod +x /etc/profile.d/*
+    && chmod +x /etc/profile.d/* \
+	&& chown -R 10000:10000 /opt/node
 
-# Fix nodejs permissions for jenkins user
-RUN chown -R 10000:10000 /opt/node
+# Set the locale (needed for ruby guides)
+RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \
+	&& locale-gen
+
+# Add user. The ID / GID 10000 is used by the jenkinsci/slave Dockerfile and has
+# to match here, because Jenkins does the SCM checkout in the jnlp container for
+# some reason.
+RUN groupadd --system --gid 10000 ${USER_NAME} \
+    && useradd --create-home --no-log-init --uid 10000 --gid ${USER_NAME} ${USER_NAME}
+
+# Setup Git
+RUN git config --system user.name "${GIT_USER_NAME}" \
+	&& git config --system user.email "${GIT_USER_EMAIL}"
+
+RUN echo "StrictHostKeyChecking no" > /etc/ssh/ssh_config \
+	&& echo "UserKnownHostsFile=/dev/null" >> /etc/ssh/ssh_config \
+	&& echo "BatchMode yes" >> /etc/ssh/ssh_config \
+	&& mv /usr/share/maven/conf/settings.xml /usr/share/maven/conf/settings-original.xml
+
+COPY settings.xml /usr/share/maven/conf/settings.xml
+
+ENV PATH "/usr/local/rvm/bin:$PATH"
+ENV JAVA_HOME /usr/local/openjdk-8
+ENV JAVA_1_8_HOME /usr/local/openjdk-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+# Workaround for Maven not outputting colors and silence download progress messages
+ENV MAVEN_OPTS "-Djansi.passthrough=true"
 
 USER ${USER_NAME}
 
