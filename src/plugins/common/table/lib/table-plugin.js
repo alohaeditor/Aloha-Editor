@@ -720,6 +720,8 @@ define([
 		return false;
 	};
 
+	TablePlugin.toggleHeaderStatus = toggleHeaderStatus;
+
 	TablePlugin.preventNestedTables = function () {
 		if ( this.isSelectionInTable() ) {
 			Dialog.alert({
@@ -1442,6 +1444,10 @@ define([
 				inserted!' );
 		}
 	};
+
+	TablePlugin.updateWaiImage = function() {
+		updateWaiImage(this);
+	}
 
 	TablePlugin.setFocusedTable = function(focusTable) {
 		var that = this;

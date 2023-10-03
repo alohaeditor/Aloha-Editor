@@ -1099,12 +1099,12 @@ define([
 			// There are occasions where we do not get a valid range, in such
 			// cases we should not try and add a link
 			if ( !( range.startContainer && range.endContainer ) ) {
-				return;
+				return false;
 			}
 
 			// do not nest a link inside a link
 			if ( this.findLinkMarkup( range ) ) {
-				return;
+				return false;
 			}
 
 			// activate floating menu tab
@@ -1153,6 +1153,8 @@ define([
 
 			PubSub.pub('aloha.link.insert', {range: apiRange});
 			this.hrefChange();
+
+			return true;
 		},
 
 		/**
