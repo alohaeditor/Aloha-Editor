@@ -106,7 +106,7 @@ define([
 			PubSub.sub('aloha.editable.created', setHeadingIds);
 			PubSub.sub('aloha.editable.activated', setHeadingIds);
 			PubSub.sub('aloha.editable.deactivated', setHeadingIds);
-			Aloha.on('aloha-plugins-loaded', function () {
+			Aloha.bind('aloha-plugins-loaded', function () {
 				plugin.initSidebar(Aloha.Sidebar.right);
 			});
 		},

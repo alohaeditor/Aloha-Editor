@@ -55,11 +55,11 @@ define([
 
 			this.url = Aloha.getAlohaUrl() + '/../plugins/extra/linkbrowser/';
 
-			Aloha.on('aloha-link-selected', function (event, rangeObject) {
+			Aloha.bind('aloha-link-selected', function (event, rangeObject) {
 				that._linkBrowserButton.show();
 			});
 
-			Aloha.on('aloha-link-unselected', function (event, rangeObject) {
+			Aloha.bind('aloha-link-unselected', function (event, rangeObject) {
 				that._linkBrowserButton.hide();
 			});
 		},

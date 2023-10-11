@@ -160,7 +160,7 @@ define([
 				that.setHrefField();
 			});
 
-			Aloha.on('aloha-editable-created', function (event, editable) {
+			Aloha.bind('aloha-editable-created', function (event, editable) {
 				editable.obj.find('.aloha-block-VideoBlock').each(function () {
 					if (!isInitialized(this)){
 						$(this).alohaBlock();
@@ -171,7 +171,7 @@ define([
 			/**
 			 * Event listener for editable to initialize video blocks
 			 */
-			Aloha.on('aloha-smart-content-changed', function (event, data) {
+			Aloha.bind('aloha-smart-content-changed', function (event, data) {
 				data.editable.obj.find('.aloha-block-VideoBlock').each(function () {
 					if (!isInitialized(this)){
 						$(this).alohaBlock();

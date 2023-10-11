@@ -119,11 +119,11 @@ define([
 		 */
 		init: function () {
 			var plugin = this;
-			Aloha.on('aloha-editable-created', function (event, editable) {
+			Aloha.bind('aloha-editable-created', function (event, editable) {
 				highlightDisallowedElements(plugin, editable);
 			});
 
-			Aloha.on('aloha-smart-content-changed', function (event, data) {
+			Aloha.bind('aloha-smart-content-changed', function (event, data) {
 				highlightDisallowedElements(plugin, data.editable);
 			});
 		},

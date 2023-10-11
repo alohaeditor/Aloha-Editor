@@ -209,7 +209,7 @@ define([
 
 			// This is executed when a block is selected through caret handling
 			// TODO!
-			//Aloha.on('aloha-block-selected', function(event,obj) {
+			//Aloha.bind('aloha-block-selected', function(event,obj) {
 			//	if (that.$element.get(0) === obj) {
 			//		that.activate();
 			//	}
@@ -223,7 +223,7 @@ define([
 					BlockUtils.pad(that.$element);
 				}
 
-				Aloha.on('aloha-smart-content-changed', function (event, data) {
+				Aloha.bind('aloha-smart-content-changed', function (event, data) {
 					if (data.editable.isActive) {
 						var $block = data.editable.obj.find('#' + that.id);
 
@@ -233,7 +233,7 @@ define([
 					}
 				});
 
-				Aloha.on('aloha-editable-activated', function ($event, data) {
+				Aloha.bind('aloha-editable-activated', function ($event, data) {
 					if (data.editable) {
 						var $block = data.editable.obj.find('#' + that.id);
 						if ($block.length !== 0) {
@@ -242,7 +242,7 @@ define([
 					}
 				});
 
-				Aloha.on('aloha-editable-deactivated', function ($event, data) {
+				Aloha.bind('aloha-editable-deactivated', function ($event, data) {
 					if (data.editable) {
 						var $block = data.editable.obj.find('#' + that.id);
 						if ($block.length !== 0) {

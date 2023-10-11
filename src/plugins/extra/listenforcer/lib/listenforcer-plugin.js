@@ -157,16 +157,16 @@ define( [
 				}
 			}
 
-			Aloha.on('aloha-editable-activated', function ($event, params) {
+			Aloha.bind('aloha-editable-activated', function ($event, params) {
 				enforce(params.editable.obj,
 					'<ul><li><br /></li></ul>');
 			});
 
-			Aloha.on('aloha-editable-deactivated', function ($event, params) {
+			Aloha.bind('aloha-editable-deactivated', function ($event, params) {
 				enforce(params.editable.obj, '');
 			});
 
-			Aloha.on('aloha-smart-content-changed', function ($event, params) {
+			Aloha.bind('aloha-smart-content-changed', function ($event, params) {
 				//We only want to do this is if the editable is actually active
 			 	if (Aloha.activeEditable && Aloha.activeEditable.isActive === true) {
 			 		enforce( params.editable.obj,

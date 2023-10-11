@@ -358,7 +358,7 @@ define([
 			this.subscribeEvents();
 			this.bindInteractions();
 
-			Aloha.on('aloha-plugins-loaded', function () {
+			Aloha.bind('aloha-plugins-loaded', function () {
 				plugin.initSidebar(Aloha.Sidebar.right);
 				PubSub.pub('aloha.link.ready', {
 					plugin: plugin

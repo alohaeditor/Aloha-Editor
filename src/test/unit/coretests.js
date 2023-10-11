@@ -33,7 +33,7 @@ define([], function() {
 			ok(false, 'Aloha did not trigger event "aloha-ready" within 60 seconds');
 			start();
 		}, 60000);
-		Aloha.on('aloha-ready',function() {
+		Aloha.bind('aloha-ready',function() {
 			clearTimeout(timeout);
 			ok(true, 'Event "aloha-ready" was fired');
 			start();
@@ -54,27 +54,27 @@ define([], function() {
 	});
 
 	// Test whether Aloha is properly initialized
-	asyncTest( 'Aloha.on(\'aloha-ready\'. callback ).', function() {
+	asyncTest( 'Aloha.bind(\'aloha-ready\'. callback ).', function() {
 		var timeout = setTimeout( function() {
-			ok( false, 'Aloha did not callback Aloha.on( \'aloha-ready\', cb ) within 60 seconds' );
+			ok( false, 'Aloha did not callback Aloha.bind( \'aloha-ready\', cb ) within 60 seconds' );
 			start();
 		}, 20000 );
-		Aloha.on( 'aloha-ready', function() {
+		Aloha.bind( 'aloha-ready', function() {
 			clearTimeout( timeout );
-			ok( true, 'Aloha.on( \'aloha-ready\', cb ) was called' );
+			ok( true, 'Aloha.bind( \'aloha-ready\', cb ) was called' );
 			start();
 		});
 	});
 
 	// Test whether Aloha is properly initialized
-	asyncTest( 'Aloha.on(\'test\').trigger(\'test\'. callback ).', function() {
+	asyncTest( 'Aloha.bind(\'test\').trigger(\'test\'. callback ).', function() {
 		var timeout = setTimeout( function() {
-			ok( false, 'Aloha.trigger(test) did not call Aloha.on( \'test\', cb ) within 60 seconds' );
+			ok( false, 'Aloha.trigger(test) did not call Aloha.bind( \'test\', cb ) within 60 seconds' );
 			start();
 		}, 20000 );
-		Aloha.on( 'test', function() {
+		Aloha.bind( 'test', function() {
 			clearTimeout( timeout );
-			ok( true, 'Aloha.on( \'aloha-ready\', cb ) was called' );
+			ok( true, 'Aloha.bind( \'aloha-ready\', cb ) was called' );
 			start();
 		})
 		Aloha.trigger( 'test' );
@@ -109,8 +109,8 @@ define([], function() {
 			equals( typeof Aloha.require, 'function', 'Aloha.require() is available' );
 		});
 
-		test( 'Aloha.on() test', function() {
-			equals( typeof Aloha.bind, 'function', 'Aloha.on() is available' );
+		test( 'Aloha.bind() test', function() {
+			equals( typeof Aloha.bind, 'function', 'Aloha.bind() is available' );
 		});
 
 		test( 'Aloha.trigger() test', function() {

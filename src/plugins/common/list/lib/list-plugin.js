@@ -142,7 +142,7 @@ define([
 			};
 		});
 
-		Aloha.on('aloha-smart-content-changed', function (event, data) {
+		Aloha.bind('aloha-smart-content-changed', function (event, data) {
 			if (data.triggerType === 'paste') {
 				// When a paste event occurs, we need to add the defaultClasses to any
 				// lists which were pasted in. There is no way to know what was just pasted,

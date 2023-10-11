@@ -54,7 +54,7 @@ define([
 	 */
 	var editableConfigurations = {};
 
-	Aloha.on('aloha-editable-destroyed', function (event, editable) {
+	Aloha.bind('aloha-editable-destroyed', function (event, editable) {
 		delete editableConfigurations[editable.getId()];
 	});
 
@@ -86,7 +86,7 @@ define([
 					}
 			});
 
-			Aloha.on('aloha-editable-created', function (event, editable) {
+			Aloha.bind('aloha-editable-created', function (event, editable) {
 				if (that.isNumeratingOn(editable)) {
 					that.initForEditable(editable);
 				}
@@ -94,7 +94,7 @@ define([
 
 			// We need to bind to smart-content-changed event to recognize
 			// backspace and delete interactions.
-			Aloha.on('aloha-smart-content-changed', function (event) {
+			Aloha.bind('aloha-smart-content-changed', function (event) {
 				that.cleanNumerations();
 				if (that.showNumbers()) {
 					that.createNumeratedHeaders();
@@ -104,14 +104,14 @@ define([
 			// We need to listen to that event, when a block is formatted to
 			// header format. smart-content-changed would be not fired in 
 			// that case
-			Aloha.on('aloha-format-block', function () {
+			Aloha.bind('aloha-format-block', function () {
 				that.cleanNumerations();
 				if (that.showNumbers()) {
 					that.createNumeratedHeaders();
 				}
 			});
 
-			Aloha.on('aloha-editable-activated', function (event) {
+			Aloha.bind('aloha-editable-activated', function (event) {
 				if (that.isNumeratingOn()) {
 					that._formatNumeratedHeadersButton.show();
 					that.initForEditable(Aloha.activeEditable);

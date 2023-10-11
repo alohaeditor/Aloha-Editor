@@ -419,10 +419,10 @@
 		 * @param {string} event Name of event
 		 * @param {function} fn Event handler
 		 */
-		Aloha.on = function (event, fn) {
+		Aloha.bind = function (event, fn) {
 			Aloha.require(['aloha/jquery'], function ($) {
 				// Because we will only need to load jQuery once
-				Aloha.on = function (event, fn) {
+				Aloha.bind = function (event, fn) {
 					switch(Initialization.getReadiness(event)) {
 					case 'deferred':
 						var phase = Initialization.getPhaseByEvent(event);
@@ -442,7 +442,7 @@
 					}
 					return this;
 				};
-				Aloha.on(event, fn);
+				Aloha.bind(event, fn);
 			});
 			return this;
 		};
@@ -480,7 +480,7 @@
 		};
 
 		Aloha.ready = function (fn) {
-			this.on('aloha-ready', fn);
+			this.bind('aloha-ready', fn);
 			return this;
 		};
 

@@ -89,13 +89,13 @@ function($, Plugin,DropFilesRepository) {
 					Aloha.Log.warn(that,error);
 					Aloha.Log.warn(that,"Error creating uploader, no upload will be processed");
 				}
-			Aloha.on('aloha-file-upload-prepared', function(event, data) {
+			Aloha.bind('aloha-file-upload-prepared', function(event, data) {
 				if (that.droppedFilesCount >= that.processedFiles) {
 					Aloha.trigger('aloha-allfiles-upload-prepared');
 				}
 				
 			});
-			Aloha.on('aloha-allfiles-upload-prepared', function(event, data) {
+			Aloha.bind('aloha-allfiles-upload-prepared', function(event, data) {
 				var len = that.filesObjs.length;
 				if (that.dropInEditable) {
 					Aloha.trigger('aloha-drop-files-in-editable', {

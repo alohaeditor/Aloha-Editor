@@ -289,7 +289,7 @@ define([
 			delete configurations[message.editable.getId()];
 		});
 
-		Aloha.on(
+		Aloha.bind(
 			'aloha-selection-changed',
 			function onSelectionChanged($event, range) {
 				var markup = findWaiLangMarkup(range);

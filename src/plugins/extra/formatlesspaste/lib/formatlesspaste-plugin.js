@@ -135,7 +135,7 @@ define([
 		}
 	}
 
-	Aloha.on('aloha-editable-destroyed', function ($event, data) {
+	Aloha.bind('aloha-editable-destroyed', function ($event, data) {
 		clearEditableConfig(data);
 	});
 
@@ -171,7 +171,7 @@ define([
 			applyConfiguration(plugin, parsedConfig);
 			registerFormatlessPasteHandler(plugin, parsedConfig);
 
-			Aloha.on('aloha-editable-activated', function ($event, data) {
+			Aloha.bind('aloha-editable-activated', function ($event, data) {
 				var config = getEditableConfig(plugin, data.editable);
 				if (!config) {
 					return;

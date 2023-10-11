@@ -139,7 +139,7 @@ define([
 	 */
 	jQuery.fn.aloha = function () {
 		var $elements = this;
-		Aloha.on('aloha-plugins-loaded', function () {
+		Aloha.bind('aloha-plugins-loaded', function () {
 			$elements.each(function (_, elem) {
 				if (!Aloha.isEditable(elem)) {
 					new Aloha.Editable(jQuery(elem)).init();

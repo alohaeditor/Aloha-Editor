@@ -446,7 +446,7 @@ define([
 				that._processRenderedData(data);
 				postProcessCallback();
 
-				Aloha.on('aloha-editable-activated', function ($event, data) {
+				Aloha.bind('aloha-editable-activated', function ($event, data) {
 					if (data.editable.obj.is(that.$_caption)) {
 						Toolbar.$surfaceContainer.hide();
 
@@ -458,7 +458,7 @@ define([
 					}
 				});
 
-				Aloha.on('aloha-editable-deactivated', function ($event, data) {
+				Aloha.bind('aloha-editable-deactivated', function ($event, data) {
 					//if (data.editable.obj.is(that.$_caption)) {
 						// this should work like above at aloha-editable-activated,
 						// but it seems there is a proplem in the block implementation / this plugin
@@ -532,12 +532,12 @@ define([
 				initializeImageBlocks(Aloha.editables[j].obj);
 			}
 
-			Aloha.on('aloha-editable-created', function ($event, editable) {
+			Aloha.bind('aloha-editable-created', function ($event, editable) {
 				initializeImageBlocks(editable.obj);
 				editable.obj.on( 'click','.aloha-captioned-image-block',
 					showComponents);
 			});
-			Aloha.on('aloha-editable-destroyed', function ($event, editable) {
+			Aloha.bind('aloha-editable-destroyed', function ($event, editable) {
 				eachBlock(editable.obj, function (block, blockElem) {
 					cleanBlock(block, blockElem);
 					block.free();

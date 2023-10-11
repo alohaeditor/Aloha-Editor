@@ -56,13 +56,13 @@ define('ui/ui-plugin', [
 	var context = new Context(),
 		toolbar = new Toolbar(context, getToolbarSettings(), getResponsiveMode());
 
-	Aloha.on('aloha-editable-activated', function (event, alohaEvent) {
+	Aloha.bind('aloha-editable-activated', function (event, alohaEvent) {
 		Surface.show(context);
 		toolbar.setWidth();
 		Container.showContainersForContext(context, event);
 	});
 
-	Aloha.on('aloha-editable-deactivated', function (event, alohaEvent) {
+	Aloha.bind('aloha-editable-deactivated', function (event, alohaEvent) {
 		if (!Surface.suppressHide) {
 			Surface.hide(context);
 		}

@@ -59,7 +59,7 @@ define([
 		init: function () {
 			var plugin = this;
 
-			Aloha.on('aloha-editable-created', function (event, editable) {
+			Aloha.bind('aloha-editable-created', function (event, editable) {
 				var config = plugin.getEditableConfig(editable.obj);
 				if (config && $.inArray(PLUGIN_NAME, config) > -1) {
 					editable.obj.addClass('aloha-emptylink-plugin');
