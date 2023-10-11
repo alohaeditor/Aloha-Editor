@@ -405,7 +405,7 @@ define([
 
 
 		$hElm
-			.css('zIndex', parseInt($elm.zIndex(), 10) + 1)
+			.css('zIndex', parseInt($elm.css('z-index'), 10) + 1)
 			.offset($elm.offset())
 			.css("width", parseInt($elm.css("width")) + parseInt($elm.css("padding-left")) + parseInt($elm.css("padding-right")) + "px")
 			.css("height", parseInt($elm.css("height"))+parseInt($elm.css("padding-top"))+parseInt($elm.css("padding-bottom"))+ "px");
@@ -466,13 +466,13 @@ define([
 
 		if (this.insertBeforeOrAfterMode === 'BEFORE') {
 			$hElm
-				.css('zIndex', parseInt($elm.zIndex(), 10) + 1)
+				.css('zIndex', parseInt($elm.css('z-index'), 10) + 1)
 				.css("width", parseInt($elm.css("width")) + parseInt($elm.css("padding-left")) + parseInt($elm.css("padding-right")) + "px")
 				.css("height", edgeHeight+"px");
 			$elm.before($hElm);
 		} else {
 			$hElm
-				.css('zIndex', parseInt($elm.zIndex(), 10) + 1)
+				.css('zIndex', parseInt($elm.css('z-index'), 10) + 1)
 				.css("width", parseInt($elm.css("width")) + parseInt($elm.css("padding-left")) + parseInt($elm.css("padding-right")) + "px")
 				.css("height",edgeHeight + "px");
 			$elm.after($hElm);
