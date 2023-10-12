@@ -208,7 +208,7 @@ define([
 		_getDragdropState: function (editable) {
 			return ((this.settings && this.settings.config && this.settings.config.toggleDragdropGlobal) ?
 					BlockManager.getDragDropState() :
-					editable.obj.data("blockDragdrop"));
+					editable.obj.data("block-dragdrop"));
 		},
 
 		/**
@@ -230,14 +230,14 @@ define([
 				var dragdropState = !BlockManager.getDragDropState();
 				// Setting the dragdrop state in the block manager
 				// ensures that newly created editables will receive the
-				// correct "blockDragdrop" data attribute.
+				// correct "block-dragdrop" data attribute.
 				BlockManager.setDragDropState(dragdropState);
 				for (var i = 0; i < Aloha.editables.length; i++) {
 					var editable = Aloha.editables[i];
 					this._setDragDropStateForEditable(editable.obj, dragdropState);
 				}
 			} else {
-				var toggleState = !editable.obj.data("blockDragdrop");
+				var toggleState = !editable.obj.data("block-dragdrop");
 				this._setDragDropStateForEditable(editable.obj, toggleState);
 			}
 		},
@@ -265,10 +265,10 @@ define([
 			var dropzones = (config && config.dropzones) || that.settings.dropzones;
 
 			if (dropzones) {
-				editable.data('blockDropzones', dropzones);	
+				editable.data('block-dropzones', dropzones);	
 			} else {
 				// if dropzones are undefined all editables should be dropzones
-				editable.data('blockDropzones', [".aloha-editable"]);	
+				editable.data('block-dropzones', [".aloha-editable"]);	
 			}
 		},
 
@@ -306,7 +306,7 @@ define([
 		 * Set the drag & drop state for the given editable.
 		 */
 		_setDragDropStateForEditable: function ($editable, state) {
-			$editable.data("blockDragdrop", state);
+			$editable.data("block-dragdrop", state);
 
 			if ($editable.hasClass("ui-sortable")) {
 				$editable.sortable("option", "disabled", !state);	

@@ -98,7 +98,7 @@ define([
 		 * Default settings for blocks
 		 */
 		defaults: {
-			'alohaBlockType': 'DefaultBlock'
+			'aloha-block-type': 'DefaultBlock'
 		},
 
 		/**
@@ -423,14 +423,14 @@ define([
 		initializeBlockLevelDragDrop: function () {
 			var blockmanager = this;
 			jQuery.each(Aloha.editables, function (i, editable) {
-				editable.obj.data('blockDragdrop', blockmanager._dragdropEnabled);
+				editable.obj.data('block-dragdrop', blockmanager._dragdropEnabled);
 			});
 
 			Aloha.bind('aloha-editable-created', function (e, editable) {
 				
 
 		
-				editable.obj.data('blockDragdrop', blockmanager._dragdropEnabled);
+				editable.obj.data('block-dragdrop', blockmanager._dragdropEnabled);
 
 			});
 		},
@@ -496,13 +496,13 @@ define([
 
 			attributes = this.getConfig($element, instanceDefaults);
 
-			if (!this.blockTypes.has(attributes['alohaBlockType'])) {
-				Aloha.Log.error('block/blockmanager', 'Block Type ' + attributes['alohaBlockType'] + ' not found!');
+			if (!this.blockTypes.has(attributes['aloha-block-type'])) {
+				Aloha.Log.error('block/blockmanager', 'Block Type ' + attributes['aloha-block-type'] + ' not found!');
 				return;
 			}
 
-			block = new (this.blockTypes.get(attributes['alohaBlockType']))($element, attributes);
-			block.$element.addClass('aloha-block-' + attributes['alohaBlockType']);
+			block = new (this.blockTypes.get(attributes['aloha-block-type']))($element, attributes);
+			block.$element.addClass('aloha-block-' + attributes['aloha-block-type']);
 //			jQuery.each(attributes, function (k, v) {
 //				// We use the private API here, as we need to be able to set internal properties as well, and we do not want to trigger renering.
 //				block._setAttribute(k, v);
