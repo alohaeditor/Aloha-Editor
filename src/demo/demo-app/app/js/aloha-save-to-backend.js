@@ -6,7 +6,7 @@ Aloha.ready(function() {
 	Aloha.require( ['aloha', 'jquery'], function( Aloha, jQuery) {
 
 		// start: save content on deactivation of an Aloha Editable
-		Aloha.on('aloha-editable-deactivated', function() {
+		Aloha.bind('aloha-editable-deactivated', function() {
 			var backend = 'session', // session, db, file
 				content = Aloha.activeEditable.getContents(), // this is the cleaned content of the last active editable
 				contentId = Aloha.activeEditable.getId(), // this HTML ID of the DOM element

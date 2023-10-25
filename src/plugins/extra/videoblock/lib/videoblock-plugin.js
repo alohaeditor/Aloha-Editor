@@ -113,7 +113,7 @@ define([
 		setHrefField: function () {
 			if (selectedBlock) {
 				$(this.hrefField.getInputElem()).val('http://youtube.com/watch?v='
-					+ selectedBlock.$element.data('videoId'));
+					+ selectedBlock.$element.data('video-id'));
 			}
 		},
 
@@ -124,8 +124,8 @@ define([
 		hrefChange: function () {
 			var videoid = ContentHandler.extractVideoId($(this.hrefField.getInputElem()).val());
 			selectedBlock.$element.find('img').attr('src', this.previewUrl.replace("{id}", videoid));
-			selectedBlock.$element.data('videoId', videoid);
-			selectedBlock.$element.attr('dataVideoId', videoid);
+			selectedBlock.$element.data('video-id', videoid);
+			selectedBlock.$element.attr('data-video-id', videoid);
 		},
 
 		/**
@@ -160,7 +160,7 @@ define([
 				that.setHrefField();
 			});
 
-			Aloha.on('aloha-editable-created', function (event, editable) {
+			Aloha.bind('aloha-editable-created', function (event, editable) {
 				editable.obj.find('.aloha-block-VideoBlock').each(function () {
 					if (!isInitialized(this)){
 						$(this).alohaBlock();
@@ -171,7 +171,7 @@ define([
 			/**
 			 * Event listener for editable to initialize video blocks
 			 */
-			Aloha.on('aloha-smart-content-changed', function (event, data) {
+			Aloha.bind('aloha-smart-content-changed', function (event, data) {
 				data.editable.obj.find('.aloha-block-VideoBlock').each(function () {
 					if (!isInitialized(this)){
 						$(this).alohaBlock();
@@ -190,10 +190,10 @@ define([
 			var plugin = this;
 			obj.find('.aloha-block-VideoBlock').each(function () {
 				var $element = $(this), $img = $element.find("img");
-				if ($element.data('videoId')) {
+				if ($element.data('video-id')) {
 					$element.append('<iframe width="100%" height="100%" src="'
 						+ plugin.embedUrl
-						+ $element.data('videoId')
+						+ $element.data('video-id')
 						+ '" frameborder="0" allowfullscreen></iframe>');
 				}
 				$element.css({width: $img.css("width"), height: $img.css("height")});

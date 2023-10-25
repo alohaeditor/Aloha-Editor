@@ -98,7 +98,7 @@ define([
 		 * Default settings for blocks
 		 */
 		defaults: {
-			'alohaBlockType': 'DefaultBlock'
+			'aloha-block-type': 'DefaultBlock'
 		},
 
 		/**
@@ -161,7 +161,7 @@ define([
 			this._registerEventHandlersForEditableActivated();
 
 			// TODO: not sure if we still need the code below. it is somehow related to caret handling
-			Aloha.on('aloha-selection-changed', function (evt, selection, originalEvent) {
+			Aloha.bind('aloha-selection-changed', function (evt, selection, originalEvent) {
 				// the following line is needed to de-select blocks when navigating over them using the mouse cursors.
 				// We only want to execute it though, if we are not inside a block, as it would otherwise
 				// directly deselect the block we just selected. This is just a hotfix and not the final solution yet.
@@ -262,7 +262,7 @@ define([
 			// - IE7+8 for inline blocks and for block-level blocks which are part of a bigger selection
 			// it does NOT execute in the following cases:
 			// - IE7+8 for block-level blocks which are NOT part of a bigger selection. This case is handled separately below.
-			Aloha.on('aloha-command-will-execute', function (e, data) {
+			Aloha.bind('aloha-command-will-execute', function (e, data) {
 				// workaround for selection problem in tables: we never delete table blocks this way
 				if (that._activeBlock && that._activeBlock.$element.hasClass('aloha-table-wrapper')) {
 					return true;
@@ -405,7 +405,7 @@ define([
 		 */
 		_registerEventHandlersForEditableActivated: function () {
 			var that = this;
-			Aloha.on('aloha-editable-activated', function (event, arg) {
+			Aloha.bind('aloha-editable-activated', function (event, arg) {
 				if (arg.editable) {
 					var block = that.getBlock(arg.editable.obj.closest('.aloha-block'));
 					if (block) {
@@ -423,14 +423,14 @@ define([
 		initializeBlockLevelDragDrop: function () {
 			var blockmanager = this;
 			jQuery.each(Aloha.editables, function (i, editable) {
-				editable.obj.data('blockDragdrop', blockmanager._dragdropEnabled);
+				editable.obj.data('block-dragdrop', blockmanager._dragdropEnabled);
 			});
 
-			Aloha.on('aloha-editable-created', function (e, editable) {
+			Aloha.bind('aloha-editable-created', function (e, editable) {
 				
 
 		
-				editable.obj.data('blockDragdrop', blockmanager._dragdropEnabled);
+				editable.obj.data('block-dragdrop', blockmanager._dragdropEnabled);
 
 			});
 		},
@@ -496,13 +496,13 @@ define([
 
 			attributes = this.getConfig($element, instanceDefaults);
 
-			if (!this.blockTypes.has(attributes['alohaBlockType'])) {
-				Aloha.Log.error('block/blockmanager', 'Block Type ' + attributes['alohaBlockType'] + ' not found!');
+			if (!this.blockTypes.has(attributes['aloha-block-type'])) {
+				Aloha.Log.error('block/blockmanager', 'Block Type ' + attributes['aloha-block-type'] + ' not found!');
 				return;
 			}
 
-			block = new (this.blockTypes.get(attributes['alohaBlockType']))($element, attributes);
-			block.$element.addClass('aloha-block-' + attributes['alohaBlockType']);
+			block = new (this.blockTypes.get(attributes['aloha-block-type']))($element, attributes);
+			block.$element.addClass('aloha-block-' + attributes['aloha-block-type']);
 //			jQuery.each(attributes, function (k, v) {
 //				// We use the private API here, as we need to be able to set internal properties as well, and we do not want to trigger renering.
 //				block._setAttribute(k, v);

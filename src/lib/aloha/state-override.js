@@ -124,7 +124,7 @@ define([
 	// at a given index in the selection changes to something different,
 	// the state override and value override must be unset for every
 	// command."
-	Aloha.on('aloha-selection-changed', function (event, range) {
+	Aloha.bind('aloha-selection-changed', function (event, range) {
 		if (overrideRange && !Dom.areRangesEq(overrideRange, range)) {
 			clear();
 			// Because the UI may reflect the any potentially state

@@ -161,7 +161,7 @@ define([
 					showEntireEditableSource = !!jQuery(this).prop('checked');
 				});
 
-			Aloha.on('aloha-selection-changed', function (event, range) {
+			Aloha.bind('aloha-selection-changed', function (event, range) {
 				if (!Aloha.Sidebar.right.isOpen) {
 					return;
 				}

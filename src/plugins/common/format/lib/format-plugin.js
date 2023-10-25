@@ -662,7 +662,7 @@ define('format/format-plugin', [
 
 			this.initButtons();
 
-			Aloha.on('aloha-plugins-loaded', function () {
+			Aloha.bind('aloha-plugins-loaded', function () {
 				// @todo add config option for sidebar panel
 				me.initSidebar(Aloha.Sidebar.right);
 			});
@@ -674,8 +674,8 @@ define('format/format-plugin', [
 			};
 
 			if (shouldCheckHeadingHierarchy) {
-				Aloha.on('aloha-smart-content-changed', checkHeadings);
-				Aloha.on('aloha-markup-change', checkHeadings);
+				Aloha.bind('aloha-smart-content-changed', checkHeadings);
+				Aloha.bind('aloha-markup-change', checkHeadings);
 			}
 
 			// apply specific configuration if an editable has been activated

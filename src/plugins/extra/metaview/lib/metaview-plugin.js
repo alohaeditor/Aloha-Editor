@@ -153,7 +153,7 @@ define([
 		init: function () {
 			var plugin = this;
 
-			Aloha.on('aloha-editable-activated', function () {
+			Aloha.bind('aloha-editable-activated', function () {
 				var config = getConfiguration(plugin, Aloha.activeEditable.obj);
 
 				if (isAutomaticallyEnabled(config)) {
@@ -177,7 +177,7 @@ define([
 				}
 			});
 
-			Aloha.on('aloha-editable-deactivated', function () {
+			Aloha.bind('aloha-editable-deactivated', function () {
 				Aloha.activeEditable.obj.removeClass('aloha-metaview');
 			});
 		}

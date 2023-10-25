@@ -72,10 +72,10 @@ define([
 
 			this.url = Aloha.getAlohaUrl() + '/../plugins/extra/imagebrowser/';
 
-			Aloha.on( 'aloha-image-selected', function ( event, rangeObject ) {
+			Aloha.bind( 'aloha-image-selected', function ( event, rangeObject ) {
 				browser._imageBrowserButton.show(true);
 			});
-			Aloha.on( 'aloha-image-unselected', function ( event, rangeObject ) {
+			Aloha.bind( 'aloha-image-unselected', function ( event, rangeObject ) {
 				browser._imageBrowserButton.show(false);
 			});
 		},

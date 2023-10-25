@@ -120,7 +120,7 @@ define([
 			this.panel.appendTo(this.panels);
 			this.container.tabs('refresh');
 
-			var alohaTabs = settings.container.data('alohaTabs');
+			var alohaTabs = settings.container.data('aloha-tabs');
 			this.index = alohaTabs.length;
 			alohaTabs.push(this);
 		},
@@ -237,7 +237,7 @@ define([
 			// We will select the first visible tab we find, or else we
 			// deselect all tabs.
 			var firstVisibleTabIndex = -1;
-			tabs = this.container.data('alohaTabs');
+			tabs = this.container.data('aloha-tabs');
 			var i;
 			for (i = 0; i < tabs.length; ++i) {
 				if (tabs[i].visible) {
@@ -279,11 +279,11 @@ define([
 			$container
 				.data('list', $list)
 				.data('panels', $panels)
-				.data('alohaTabs', [])
+				.data('aloha-tabs', [])
 				.tabs({
 					select: function (event, ui) {
-						var tabs = $container.data('alohaTabs');
-						$container.data('alohaActiveContainer', tabs[ui.index]);
+						var tabs = $container.data('aloha-tabs');
+						$container.data('aloha-active-container', tabs[ui.index]);
 						PubSub.pub('aloha.ui.container.selected', {data: tabs[ui.index]});
 					}
 				});

@@ -167,7 +167,7 @@ define([
 			});
 
 			// autogenerate paragraphs upon smart content change
-			Aloha.on('aloha-smart-content-changed', function (event, data) {
+			Aloha.bind('aloha-smart-content-changed', function (event, data) {
 				if (configurations[data.editable.getId()]) {
 					autogenerateParagraphs(data.editable);
 				}
