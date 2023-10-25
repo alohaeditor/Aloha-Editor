@@ -168,7 +168,7 @@ define([
 	 *                            completes.
 	 */
 	function floatAbove($element, position, duration, callback) {
-		position.top -= parseInt($element.css("height")) + DISTANCE;
+		position.top -= $element.height() + DISTANCE;
 		floatTo($element, position, duration, callback);
 	}
 
@@ -239,14 +239,14 @@ define([
 
 		if (top < 0) {
 			top = 0;
-		} else if (top > parseInt($WINDOW.css("height"))) {
-			top = parseInt($WINDOW.css("height")) / 2;
+		} else if (top > $WINDOW.height()) {
+			top = $WINDOW.height() / 2;
 		}
 
 		if (left < 0) {
 			left = 0;
-		} else if (left > parseInt($WINDOW.css("width"))) {
-			left = parseInt($WINDOW.css("width")) / 2;
+		} else if (left > $WINDOW.width()) {
+			left = $WINDOW.width() / 2;
 		}
 
 		return {
@@ -286,7 +286,7 @@ define([
 		var availableSpace = top - scrollTop - topGutter - bodyMarginTopAdjustment;
 		// consider horizontal scrolling (important for rtl pages that are scrolled to the left)
 		left = left - scrollLeft;
-		var horizontalOverflow = left + parseInt($surface.css("width")) - $WINDOW.width();
+		var horizontalOverflow = left + $surface.width() - $WINDOW.width();
 
 		if (horizontalOverflow > 0) {
 			left = Math.max(0, left - horizontalOverflow);
@@ -296,7 +296,7 @@ define([
 		left = Math.max(0, left);
 
 		var editableVisible = top - scrollTop < $WINDOW.height()
-			&& top + parseInt(editable.obj.css("height")) >= scrollTop;
+			&& top + editable.obj.height() >= scrollTop;
 
 		if (editableVisible) {
 			if (!$surface.is(':visible')) {
@@ -318,21 +318,21 @@ define([
 
 			var recalculatedTop = editable.obj.offset().top;
 
-			if (availableSpace >= parseInt($surface.css("height"))) {
+			if (availableSpace >= $surface.height()) {
 				$surface.css('position', 'absolute');
-				$surface.css('top', (recalculatedTop - parseInt($surface.css("height")) - DISTANCE) + 'px');
-			} else if (parseInt($surface.css("height")) > parseInt(editable.obj.css("height"))+parseInt(editable.obj.css("padding-top"))+parseInt(editable.obj.css("padding-bottom"))) {
+				$surface.css('top', (recalculatedTop - $surface.height() - DISTANCE) + 'px');
+			} else if ($surface.height() > editable.obj.outerHeight()) {
 				if (bodyMarginTopAdjustment) {
 					// the body css had been adjusted but now is reverting to the initial state after a timeout.
 					bodyMarginTopAdjustment = 0;
-					recalculatedTop -= parseInt($surface.css("height"));
+					recalculatedTop -= $surface.height();
 				}
 				$surface.css('position', 'absolute');
-				$surface.css('top', recalculatedTop + parseInt(editable.obj.css("height"))+parseInt(editable.obj.css("padding-top"))+parseInt(editable.obj.css("padding-bottom")) + DISTANCE + 'px');
+				$surface.css('top', recalculatedTop + editable.obj.outerHeight() + DISTANCE + 'px');
 			} else {
 				var bodyOriginalMarginTop = parseInt($body.data(BODY_ORIGINAL_MARGIN_TOP_KEY) || 0);
 				var editableTop = $editableElement.offset().top - parseInt($body.css('margin-top')) - bodyOriginalMarginTop;
-				var toolbarHeight = parseInt($surface.css("height"));
+				var toolbarHeight = $surface.height();
 				if (editableTop < toolbarHeight && window.scrollY === 0) {
 					clearTimeout(resetBodyTransitionTimeout);
 					adjustBodyStyles(toolbarHeight);
@@ -345,15 +345,15 @@ define([
 			}
 			$surface.css('left', left + 'px');
 		} else {
-			if (availableSpace >= parseInt($surface.css("height"))) {
+			if (availableSpace >= $surface.height()) {
 				floatAbove($surface, {
 					top: top - scrollTop,
 					left: left
 				}, duration, callback);
-			} else if (availableSpace + parseInt($surface.css("height")) >
-				availableSpace + parseInt(editable.obj.css("height"))) {
+			} else if (availableSpace + $surface.height() >
+				availableSpace + editable.obj.height()) {
 				floatBelow($surface, {
-					top: top + parseInt(editable.obj.css("height")) - scrollTop,
+					top: top + editable.obj.height() - scrollTop,
 					left: left
 				}, duration, callback);
 			} else {
