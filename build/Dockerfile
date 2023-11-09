@@ -8,6 +8,7 @@ ARG DEBIAN_RELEASE="bullseye"
 ARG NPM_CONFIG_LOGLEVEL=info
 ARG NODE_VERSION=16.16.0
 
+ENV PATH "/usr/local/rvm/bin:$PATH"
 ENV RVM_PATH "/usr/local/rvm"
 
 RUN echo "deb http://ftp.at.debian.org/debian ${DEBIAN_RELEASE} main contrib non-free" > /etc/apt/sources.list \
@@ -84,7 +85,6 @@ RUN echo "StrictHostKeyChecking no" > /etc/ssh/ssh_config \
 
 COPY settings.xml /usr/share/maven/conf/settings.xml
 
-ENV PATH "/usr/local/rvm/bin:$PATH"
 ENV JAVA_HOME /usr/local/openjdk-8
 ENV JAVA_1_8_HOME /usr/local/openjdk-8
 ENV LANG en_US.UTF-8
