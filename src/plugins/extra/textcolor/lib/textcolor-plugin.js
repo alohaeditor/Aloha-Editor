@@ -230,7 +230,7 @@ define([
 						$button,
 						Floating.POSITION_STYLE
 					);
-					offset.top += $button.height();
+					offset.top += parseInt($button.css("height"));
 
 					plugin.overlays[style].show(offset);
 
@@ -271,7 +271,7 @@ define([
 					button.element,
 					Floating.POSITION_STYLE
 				);
-				offset.top += button.element.height();
+				offset.top += parseInt(button.element.css("height"));
 
 				plugin.overlays[style].$element.css(offset);
 			}

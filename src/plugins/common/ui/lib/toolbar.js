@@ -227,7 +227,7 @@ define([
 		setWidth: function() {
 			if (this._isResponsiveMode && Aloha.activeEditable) {
 				var windowMinWidth = 600;
-				var editableWidth = parseInt(Aloha.activeEditable.obj.width());
+				var editableWidth = parseInt(Aloha.activeEditable.obj.css("width"));
 				var width = (window.innerWidth < windowMinWidth) ? '100%' : editableWidth + 'px';
 				this.$element.css('width', width);
 			}

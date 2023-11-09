@@ -178,7 +178,7 @@ define([
 		 */
 		_registerEventHandlersForDeactivatingAlohaBlock: function () {
 			var that = this;
-			jQuery(document).bind('click', function (event) {
+			jQuery(document).on('click', function (event) {
 				if (Maps.isEmpty(that._highlightedBlocks)) {
 					return;
 				}
@@ -425,8 +425,13 @@ define([
 			jQuery.each(Aloha.editables, function (i, editable) {
 				editable.obj.data('block-dragdrop', blockmanager._dragdropEnabled);
 			});
+
 			Aloha.bind('aloha-editable-created', function (e, editable) {
+				
+
+		
 				editable.obj.data('block-dragdrop', blockmanager._dragdropEnabled);
+
 			});
 		},
 

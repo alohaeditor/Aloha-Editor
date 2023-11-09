@@ -78,6 +78,10 @@ define([
 			this.handle = $('<li><a href="' + location.href.replace(/#.*$/, '') + '#' + this.id + '">' +
 				settings.label + '</a></li>');
 
+			// Make sure the link is marked as representational, otherwise a click on the link will cause the CMS UI
+			// to handle the click and change the edit/preview mode.
+			this.handle.find('a').attr('role', 'presentation');
+
 			for (i = 0; i < components.length; i++) {
 				if (typeof components[i] === 'string') {
 					if (1 === components[i].length && components[i].charCodeAt(0) === 10) {
@@ -145,7 +149,7 @@ define([
 		},
 
 		foreground: function () {
-			this.container.tabs('select', this.index);
+			this.container.tabs('option', 'active', this.index);
 		},
 
 		childForeground: function (childComponent) {

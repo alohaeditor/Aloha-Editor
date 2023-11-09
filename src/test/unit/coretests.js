@@ -81,14 +81,14 @@ define([], function() {
 	});
 	
 	// Test whether Aloha is properly initialized
-//	asyncTest( '$(body).bind(\'aloha-ready\'. callback ).', function() {
+//	asyncTest( '$(body).on(\'aloha-ready\'. callback ).', function() {
 //		var timeout = setTimeout( function() {
-//			ok( false, 'Aloha did not callback $(body).bind( \'aloha-ready\', cb ) within 60 seconds' );
+//			ok( false, 'Aloha did not callback $(body).on( \'aloha-ready\', cb ) within 60 seconds' );
 //			start();
 //		}, 20000 );
-//		Aloha.jQuery('body').bind( 'aloha-ready', function() {
+//		Aloha.jQuery('body').on( 'aloha-ready', function() {
 //			clearTimeout( timeout );
-//			ok( true, '$(body).bind( \'aloha-ready\', cb ) was called' );
+//			ok( true, '$(body).on( \'aloha-ready\', cb ) was called' );
 //			start();
 //		});
 //	});

@@ -224,7 +224,7 @@ define([
 			width = parseInt($img.attr('width'), 10);
 		} else {
 			// NOTE: this assumes the image has already loaded!
-			width = parseInt($img.width(), 10);
+			width = parseInt(parseInt($img.css("width")), 10);
 		}
 
 		if (typeof width === 'number' && !isNaN(width)) {
@@ -504,7 +504,7 @@ define([
 			this.$_caption = this.$element.find(data.caption);
 			this.$_caption.addClass('aloha-captioned-image-caption')
 			              .addClass('aloha-editable')
-			              .bind('blur', this.onblur);
+			              .on('blur', this.onblur);
 			this.$element.removeClass('align-left align-right align-center');
 			var alignment = this.attr('align');
 
@@ -534,7 +534,7 @@ define([
 
 			Aloha.bind('aloha-editable-created', function ($event, editable) {
 				initializeImageBlocks(editable.obj);
-				editable.obj.delegate('.aloha-captioned-image-block', 'click',
+				editable.obj.on( 'click','.aloha-captioned-image-block',
 					showComponents);
 			});
 			Aloha.bind('aloha-editable-destroyed', function ($event, editable) {

@@ -1,0 +1,53 @@
+{
+  "name": "aloha-editor",
+  "version": "1.0.0",
+  "description": "The HTML5 WYSIWYG Edito",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "cypress:open": "cypress open",
+    "demo:start": "http-server target/build-profile-with-common-extra-plugins/rjs-output -p 8080",
+    "demo:build": "node build/r.js -o build/aloha/build-profile-with-common-extra-plugins.js && node build/aloha/copy-dependencies.js",
+    "build": "r.js -o build/aloha/build-profile-with-common-extra-plugins.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alohaeditor/Aloha-Editor.git"
+  },
+  "keywords": [
+    "wysiwyg",
+    "editor",
+    "rte",
+    "html5",
+    "contenteditable"
+  ],
+  "author": {
+    "name": "The Aloha Editor Team",
+    "email": "team@aloha-editor.org",
+    "web": "https://aloha-editor.org"
+  },
+  "bugs": {
+    "url": "https://github.com/alohaeditor/Aloha-Editor/issues"
+  },
+  "homepage": "https://github.com/alohaeditor/Aloha-Editor#readme",
+  "devDependencies": {
+    "autoprefixer": "^10.4.16",
+    "cssnano": "^6.0.1",
+    "cypress": "^12.17.1",
+    "cypress-real-events": "^1.9.1",
+    "esbuild": "0.19.3",
+    "eslint": "^8.49.0",
+    "eslint-plugin-requirejs": "^4.0.1",
+    "http-server": "^14.1.1",
+    "postcss": "^8.4.29",
+    "postcss-cli": "^10.1.0",
+    "postcss-import": "^15.1.0",
+    "postcss-url": "^10.1.3",
+    "requirejs": "^2.3.6",
+    "uglify-js": "^3.17.4"
+  },
+  "dependencies": {
+    "fs-extra": "^11.1.1"
+  }
+}

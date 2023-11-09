@@ -427,7 +427,7 @@ define([
 
 			//bind a global mouseup event handler to stop cell selection
 			var that = this;
-			jQuery('body').bind('mouseup.cellselection', function (event) {
+			jQuery('body').on('mouseup.cellselection', function (event) {
 				that._endCellSelection();
 			});
 

@@ -38,18 +38,30 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 		GENTICS = window.GENTICS,
 		  Aloha	= window.Aloha;
 	
-	$.extend($.easing, {
-		easeOutExpo: function (x, t, b, c, d) {
-			return (t==d) ? b+c : c * (-Math.pow(2, -10 * t/d) + 1) + b;
-		},
-		easeOutElastic: function (x, t, b, c, d) {
-			var s=1.70158;var p=0;var a=c;
-			if (t==0) return b;  if ((t/=d)==1) return b+c;  if (!p) p=d*.3;
-			if (a < Math.abs(c)) { a=c; var s=p/4; }
-			else var s = p/(2*Math.PI) * Math.asin (c/a);
-			return a*Math.pow(2,-10*t) * Math.sin( (t*d-s)*(2*Math.PI)/p ) + c + b;
-		}
-	});
+		  $.extend($.easing, {
+			easeOutExpo: function (x) {
+				return (x === 1) ? 1 : 1 - Math.pow(2, -10 * x);
+			},
+			easeOutElastic: function (x) {
+				var s = 1.70158;
+				var p = 0;
+				var a = 1; // Assuming a default amplitude of 1
+		
+				if (x === 0) return 0;
+				if (x === 1) return 1;
+		
+				if (!p) p = 0.3;
+		
+				if (a < 1) {
+					a = 1;
+					s = p / 4;
+				} else {
+					s = p / (2 * Math.PI) * Math.asin(1 / a);
+				}
+		
+				return a * Math.pow(2, -10 * x) * Math.sin((x - s) * (2 * Math.PI) / p);
+			}
+		});
 	
 	var dom_util = GENTICS.Utils.Dom,
 		clss = 'aloha-comments',
@@ -320,15 +332,15 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 				content	 = add_box.find('.' + clss + '-content'),
 				input	 = add_box.find('input.' + clss + '-user').removeClass(clss + '-error'),
 				textarea = add_box.find('textarea').removeClass(clss + '-error').val(''),
-				h	= content.height(),
+				h	= parseInt(content.css("height")),
 				ah	= 30,
-				top = pos.top - (add_box.outerHeight(true) + ah);
+				top = pos.top - (parseInt(add_box.css("height"))+parseInt(add_box.css("padding-top"))+parseInt(add_box.css("padding-bottom"))+parseInt(add_box.css("margin-top"))+parseInt(add_box.css("margin-bottom")) + ah);
 			
 			if (top <= 0) {
 				scroll_to = pos.top - ah;
 				el	= comment.elements.last();
 				pos = el.last().offset();
-				top = pos.top + el.height() + ah;
+				top = pos.top + parseInt(el.css("height")) + ah;
 				add_box.addClass(clss + '-point-from-bottom');
 			} else {
 				add_box.removeClass(clss + '-point-from-bottom');
@@ -336,7 +348,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 			}
 			
 			add_box.css({
-				left : pos.left + (el.width() / 2) - (add_box.outerWidth(true) / 2),
+				left : pos.left + (parseInt(el.css("width")) / 2) - ((parseInt(add_box.css("width")) + parseInt(add_box.css("padding-left")) + parseInt(add_box.css("padding-right"))+ parseInt(add_box.css("margin-left")) + parseInt(add_box.css("margin-right"))) / 2),
 				top  : top,
 				marginTop : h,
 				opacity	  : 0
@@ -366,7 +378,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 		closeModal: function () {
 			/*
 			var content = add_box.find('.' + clss + '-content'),
-				h = content.height();
+				h = parseInt(content.css("height"));
 			content.animate({height: 0}, 250, 'linear', function () {
 				$(this).parent().hide();
 			});
@@ -490,13 +502,13 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 			this.bar
 				.find('.' + clss + '-bar-inner')
 				.css({
-					height: $(window).height(),
-					'overflow-y': (bottom.top > this.bar.height()) ? 'scroll' : 'auto'
+					height: parseInt($(window).css("height")),
+					'overflow-y': (bottom.top > parseInt(this.bar.css("height"))) ? 'scroll' : 'auto'
 				});
 			
 			this.bar
 				.find('.' + clss + '-bar-shadow')
-				.css('height', this.bar.height());
+				.css('height', parseInt(this.bar.css("height")));
 		},
 		
 		closeBar: function () {
@@ -555,12 +567,12 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 					that.submitReply.call(that, reply);
 				});
 				
-				var h = reply.css('height', 'auto').height();
+				var h = parseInt(reply.css('height', 'auto').css("height"));
 				reply.css('height', 0)
 					.animate({height: h}, 250, 'easeOutExpo');
 				
 				reply.find('input, textarea')
-					.css('width', reply.width() - 12);
+					.css('width', parseInt(reply.css("width")) - 12);
 				
 				reply.find('input').select();
 				

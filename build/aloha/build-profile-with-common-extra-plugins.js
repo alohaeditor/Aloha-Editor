@@ -40,11 +40,11 @@
 		// We don't include Aloha's patched jquery by default, the user
 		// should do it himself.
 		"jquery": "empty:",
-    	//"jquery": 'vendor/jquery-1.7.2',
+    	//"jquery": 'vendor/jquery-3.7.0',
 
 		// We do include Aloha's patched jquery-ui by default, but the
 		// user can override it if he is adventurous.
-		"jqueryui": 'vendor/jquery-ui-1.9.0.custom-aloha',
+		"jqueryui": 'vendor/jquery-ui-1.13.2',
 
 		// For the repository browser
 		'PubSub': 'vendor/pubsub/js/pubsub-unminified',
@@ -52,7 +52,7 @@
 		'RepositoryBrowser': 'vendor/repository-browser/js/repository-browser-unminified',
 		'jstree': 'vendor/jquery.jstree',              // Mutates jquery
 		'jqgrid': 'vendor/jquery.jqgrid',              // Mutates jquery
-		'jquery-layout': 'vendor/jquery.layout-1.3.0-rc29.14',     // Mutates jquery
+		'jquery-layout': 'vendor/jquery.layout',     // Mutates jquery
 		'jqgrid-locale-en': 'vendor/grid.locale.en', // Mutates jqgrid
 		'jqgrid-locale-de': 'vendor/grid.locale.de', // Mutates jqgrid
 		'repository-browser-i18n-de': 'vendor/repository-browser/js/repository-browser-unminified',
@@ -212,7 +212,7 @@
     //The directory path to save the output. If not specified, then
     //the path will default to be a directory called "build" as a sibling
     //to the build file. All relative paths are relative to the build file.
-    dir: "../../target/build-profile-with-common-extra-plugins/rjs-output",
+    dir: "../../target/build-profile-with-common-extra-plugins",
 
     //As of RequireJS 2.0.2, the dir above will be deleted before the
     //build starts again. If you have a big build and are not doing

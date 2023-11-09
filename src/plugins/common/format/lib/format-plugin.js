@@ -199,7 +199,7 @@ define('format/format-plugin', [
 			return;
 		}
 
-		var selectedNodes = jQuery(range.startContainer.parentNode).nextUntil(jQuery(range.endContainer.parentNode).next()).andSelf();
+		var selectedNodes = jQuery(range.startContainer.parentNode).nextUntil(jQuery(range.endContainer.parentNode).next()).addBack();
 		var prevNodes = jQuery(range.startContainer.parentNode).prevAll();
 		var nextNodes = jQuery(range.endContainer.parentNode).nextAll();
 		var listName = range.startContainer.parentNode.parentNode.nodeName;
@@ -712,20 +712,20 @@ define('format/format-plugin', [
 				};
 
 				var $editable = editable.obj;
-				$editable.bind('keydown.aloha.format',  me.hotKey.formatBold,      createAdder('b'));
-				$editable.bind('keydown.aloha.format',  me.hotKey.formatItalic,    createAdder('i'));
-				$editable.bind('keydown.aloha.format',  me.hotKey.formatUnderline, createAdder('u'));
-				$editable.bind('keydown.aloha.format',  me.hotKey.formatDel,       createAdder('del'));
-				$editable.bind('keydown.aloha.format',  me.hotKey.formatSub,       createAdder('sub'));
-				$editable.bind('keydown.aloha.format',  me.hotKey.formatSup,       createAdder('sup'));
-				$editable.bind('keydown.aloha.format',  me.hotKey.formatParagraph, createChanger('p'));
-				$editable.bind('keydown.aloha.format',  me.hotKey.formatH1,        createChanger('h1'));
-				$editable.bind('keydown.aloha.format',  me.hotKey.formatH2,        createChanger('h2'));
-				$editable.bind('keydown.aloha.format',  me.hotKey.formatH3,        createChanger('h3'));
-				$editable.bind('keydown.aloha.format',  me.hotKey.formatH4,        createChanger('h4'));
-				$editable.bind('keydown.aloha.format',  me.hotKey.formatH5,        createChanger('h5'));
-				$editable.bind('keydown.aloha.format',  me.hotKey.formatH6,        createChanger('h6'));
-				$editable.bind('keydown.aloha.format',  me.hotKey.formatPre,       createChanger('pre'));
+				$editable.on('keydown.aloha.format',  me.hotKey.formatBold,      createAdder('b'));
+				$editable.on('keydown.aloha.format',  me.hotKey.formatItalic,    createAdder('i'));
+				$editable.on('keydown.aloha.format',  me.hotKey.formatUnderline, createAdder('u'));
+				$editable.on('keydown.aloha.format',  me.hotKey.formatDel,       createAdder('del'));
+				$editable.on('keydown.aloha.format',  me.hotKey.formatSub,       createAdder('sub'));
+				$editable.on('keydown.aloha.format',  me.hotKey.formatSup,       createAdder('sup'));
+				$editable.on('keydown.aloha.format',  me.hotKey.formatParagraph, createChanger('p'));
+				$editable.on('keydown.aloha.format',  me.hotKey.formatH1,        createChanger('h1'));
+				$editable.on('keydown.aloha.format',  me.hotKey.formatH2,        createChanger('h2'));
+				$editable.on('keydown.aloha.format',  me.hotKey.formatH3,        createChanger('h3'));
+				$editable.on('keydown.aloha.format',  me.hotKey.formatH4,        createChanger('h4'));
+				$editable.on('keydown.aloha.format',  me.hotKey.formatH5,        createChanger('h5'));
+				$editable.on('keydown.aloha.format',  me.hotKey.formatH6,        createChanger('h6'));
+				$editable.on('keydown.aloha.format',  me.hotKey.formatPre,       createChanger('pre'));
 			});
 
 			PubSub.sub('aloha.editable.deactivated', function (message) {
@@ -893,7 +893,7 @@ define('format/format-plugin', [
 
 					var content = this.setContent(html).content;
 
-					jQuery( pl.nsSel( 'framename' ) ).live( 'keyup', function () {
+					jQuery( pl.nsSel( 'framename' ) ).on( 'keyup', function () {
 						jQuery( that.effective ).attr( 'target', jQuery( this ).val().replace( '\"', '&quot;' ).replace( "'", "&#39;" ) );
 					} );
 

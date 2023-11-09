@@ -287,7 +287,7 @@ define([
 
 			// uncommented code-segment, presumably added to force IE to target the wrapper
 			// on mouse-down by applying a timeout after event propagation
-			jQuery(table.selection.selectedCells[i]).bind('mousedown', function (jqEvent) {
+			jQuery(table.selection.selectedCells[i]).on('mousedown', function (jqEvent) {
 				var wrapper = jQuery(this).children('div').eq(0);
 				window.setTimeout(function () {
 					wrapper.trigger( 'focus' );
@@ -450,7 +450,7 @@ define([
 
 			configurations[editable.getId()] = !!enabled;
 
-			editable.obj.bind('mousedown', function () {
+			editable.obj.on('mousedown', function () {
 				if (!TablePlugin.activeTable) {
 					return;
 				}
@@ -631,7 +631,7 @@ define([
 	                '<label class="' + nsClass('label') + '" for="' + nsClass('textarea') + '" >' + i18n.t('table.label.target') + '</label>' +
 	                	'<textarea id="' + nsClass('textarea') + '" class="' + nsClass('textarea') + '" />').content;
 
-				jQuery(nsSel('textarea')).live('keyup', function () {
+				jQuery(nsSel('textarea')).on('keyup', function () {
 					//The original developer thought that escaping the
 					//quote characters of the textarea value are
 					//necessary to work around a bug in IE. I could not

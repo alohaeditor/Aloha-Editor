@@ -1,3 +1,4 @@
+@import	"../vendor/jcrop/jquery.jcrop.css";
 
 /* Images */
 .aloha-image-align-left {
@@ -138,5 +139,3 @@
 	stroke: rgb(34, 39, 185);
 	stroke-width: 1.5;
 }
-
-@import	"../vendor/jcrop/jquery.jcrop.css";

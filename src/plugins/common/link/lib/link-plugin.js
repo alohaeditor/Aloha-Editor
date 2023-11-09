@@ -151,7 +151,7 @@ define([
 	Ephemera.classes('aloha-link-pointer', 'aloha-link-text');
 
 	function setupMousePointerFix() {
-		jQuery(document).bind('keydown.aloha-link.pointer-fix', function (e) {
+		jQuery(document).on('keydown.aloha-link.pointer-fix', function (e) {
 				// metaKey for OSX, 17 for PC (we can't check
 				// e.ctrlKey because it's only set on keyup or
 				// keypress, not on keydown).
@@ -159,7 +159,7 @@ define([
 					jQuery('body').addClass('aloha-link-pointer');
 				}
 			})
-			.bind('keyup.aloha-link.pointer-fix', function (e) {
+			.on('keyup.aloha-link.pointer-fix', function (e) {
 				if (e.metaKey || Keys.getToken(e.keyCode) === 'control') {
 					jQuery('body').removeClass('aloha-link-pointer');
 				}
@@ -171,7 +171,7 @@ define([
 	}
 
 	function setupMetaClickLink(editable) {
-		editable.obj.delegate('a', 'click.aloha-link.meta-click-link', function (e) {
+		editable.obj.on('click.aloha-link.meta-click-link','a',  function (e) {
 			// Use metaKey for OSX and ctrlKey for PC
 			if (e.metaKey || e.ctrlKey) {
 				// blur current editable. user is waiting for the link to load
@@ -426,11 +426,11 @@ define([
 					 jQuery(hrefLangField.getInputElem()).addClass(pl.nsClass( 'hrefLang' ));
 					 jQuery(content).find("." + pl.nsClass( 'href-lang-container' ) + " fieldset").append(hrefLangField.getInputElem());
 					 
-					 jQuery( pl.nsSel( 'framename' ) ).live( 'keyup', function () {
+					 jQuery( pl.nsSel( 'framename' ) ).on( 'keyup', function () {
 						jQuery( that.effective ).attr( 'target', jQuery( this ).val().replace( '\"', '&quot;' ).replace( "'", "&#39;" ) );
 					 } );
 					 
-					 jQuery( pl.nsSel( 'radioTarget' ) ).live( 'change', function () {
+					 jQuery( pl.nsSel( 'radioTarget' ) ).on( 'change', function () {
 						if ( jQuery( this ).val() == 'framename' ) {
 							jQuery( pl.nsSel( 'framename' ) ).slideDown();
 						} else {
@@ -439,7 +439,7 @@ define([
 						}
 					 } );
 					 
-					 jQuery( pl.nsSel( 'linkTitle' ) ).live( 'keyup', function () {
+					 jQuery( pl.nsSel( 'linkTitle' ) ).on( 'keyup', function () {
 						jQuery( that.effective ).attr( 'title', jQuery( this ).val().replace( '\"', '&quot;' ).replace( "'", "&#39;" ) );
 					 } );
 				},
@@ -514,7 +514,7 @@ define([
 				}
 
 				// enable hotkey for inserting links
-				editable.obj.bind('keydown.aloha-link', plugin.hotKey.insertLink, function () {
+				editable.obj.on('keydown.aloha-link', plugin.hotKey.insertLink, function () {
 					if (plugin.findLinkMarkup()) {
 						plugin.hrefField.foreground();
 						plugin.hrefField.focus();
@@ -763,7 +763,7 @@ define([
 				this.anchorField = Ui.adopt('editAnchor', Text, {
 					init: function () {
 						this._super();
-						this.element.bind("keyup", function onKeyup(event) {
+						this.element.on("keyup", function onKeyup(event) {
 							if ((event.keyCode == 13 || event.keyCode == 27)) {
 								that.hrefField.finishEditing(true);
 							}

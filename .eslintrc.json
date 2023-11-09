@@ -1,0 +1,37 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true,
+        "amd": true,
+        "commonjs": false
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+        "ecmaVersion": "latest"
+    },
+    "rules": {
+        "no-mixed-spaces-and-tabs": "off",
+        "no-useless-escape": "off",
+        "no-unused-vars": "off",
+        "no-extra-semi": "off",
+        "no-undef": "off",
+        "no-redeclare": "off",
+        "no-fallthrough": "off",
+        "no-prototype-builtins": "off",
+        "no-empty": "off",
+        "no-unexpected-multiline": "off",
+        "no-cond-assign": "off",
+        "no-extra-boolean-cast": "off",
+        "no-self-assign": "off",
+        "no-global-assign": "off",
+        "no-control-regex": "off",
+        "no-shadow-restricted-names": "off",
+        "no-constant-condition": "off",
+        "no-misleading-character-class": "off",
+        "no-dupe-else-if": "off",
+        "valid-typeof": "off"
+    },
+    "plugins": [
+        "requirejs"
+    ]
+}

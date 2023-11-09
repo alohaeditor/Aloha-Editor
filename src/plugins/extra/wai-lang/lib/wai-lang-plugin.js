@@ -265,7 +265,7 @@ define([
 				return;
 			}
 
-			$editable.bind('keydown', plugin.hotKey.insertAnnotation, function () {
+			$editable.on('keydown', plugin.hotKey.insertAnnotation, function () {
 					prepareAnnotation();
 
 					// Because on a MAC Safari, cursor would otherwise

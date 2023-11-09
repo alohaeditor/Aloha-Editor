@@ -7,15 +7,15 @@ $(document).ready(function() {
 	$("#log").hide();
 	
 	// load navigation
-	$("#navigation").load("./sitemap.html #sitemap li");
+	$("#navigation").on("load","./sitemap.html #sitemap li");
 	// and set active navigation item
 	setTimeout("setActiveNavItem()",100);
 	
 	// load title
-	$("#brand").load("./sitemap.html #brand a");
+	$("#brand").on("load","./sitemap.html #brand a");
 
 	// load footer
-	$("#footer").load("./sitemap.html #footer p");
+	$("#footer").on("load","./sitemap.html #footer p");
 });
 
 function setActiveNavItem() {

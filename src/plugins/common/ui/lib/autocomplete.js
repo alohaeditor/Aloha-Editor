@@ -52,7 +52,7 @@ define([
 						});
 					}
 				})
-				.bind("autocompletechange", jQuery.proxy(function (event, ui) {
+				.on("autocompletechange", jQuery.proxy(function (event, ui) {
 					this.setValue(event.target.value, ui.item ? ui.item.obj : null);
 				}, this));
 		},

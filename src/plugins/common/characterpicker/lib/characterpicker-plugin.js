@@ -241,12 +241,12 @@ define([
 
 		overlay.$tbody.empty().append(table.join(''));
 
-		overlay.$element.delegate('td', 'mouseover', function () {
+		overlay.$element.on('mouseover','td',  function () {
 			overlay.$element.find('.focused').removeClass('focused');
 			$(this).addClass('focused');
-		}).delegate('td', 'mouseout', function () {
+		}).on('mouseout','td',  function () {
 			$(this).removeClass('focused');
-		}).delegate('td', 'click', function () {
+		}).on('click','td',  function () {
 			overlay.$element.hide();
 			overlay.onSelect($(this).text());
 		});
@@ -260,7 +260,7 @@ define([
 	 */
 	function getScrollBarHeight() {
 		var $outer = $('<div>').css({visibility: 'hidden', height: 100, overflow: 'scroll'}).appendTo('body');
-		var heightWithScroll = $('<div>').css({height: '100%'}).appendTo($outer).outerHeight();
+		var heightWithScroll = parseInt($('<div>').css({height: '100%'}).appendTo($outer).css("height"));
 		$outer.remove();
 		return 100 - heightWithScroll;
 	}
@@ -292,12 +292,12 @@ define([
 		var maxWidth = $WINDOW.width();
 		var maxHeight = $WINDOW.height() - SCROLL_BAR_HEIGHT;
 
-		if (maxWidth < offset.left + $overlay.width()) {
-			offset.left = maxWidth - $overlay.width();
+		if (maxWidth < offset.left + parseInt($overlay.css("width"))) {
+			offset.left = maxWidth - parseInt($overlay.css("width"));
 		}
 
-		if (maxHeight < offset.top + $overlay.height()) {
-			offset.top = maxHeight - $overlay.height();
+		if (maxHeight < offset.top + parseInt($overlay.css("height"))) {
+			offset.top = maxHeight - parseInt($overlay.css("height"));
 		}
 
 		return offset;
