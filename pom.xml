@@ -18,6 +18,8 @@
 		</license>
 	</licenses>
 	<properties>
+		<changelog.phase>package</changelog.phase>
+		<changelog.version>${project.version}</changelog.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.build.timestamp.format>yyyyMMdd-HHmmss</maven.build.timestamp.format>
 		<ALOHABUILDCONF>build/aloha</ALOHABUILDCONF>
@@ -112,7 +114,7 @@
 						<goals>
 							<goal>generate</goal>
 						</goals>
-						<phase>package</phase>
+						<phase>${changelog.phase}</phase>
 					</execution>
 				</executions>
 				<configuration>
@@ -120,7 +122,7 @@
 					<outputDirectory>${basedir}/target/output</outputDirectory>
 					<changelogTitle>Gentics Content.Node Changelog</changelogTitle>
 					<changelogTypes>note,manualchange,optional-manualchange,security,feature,enhancement,bugfix</changelogTypes>
-					<changelogVersion>${project.version}</changelogVersion>
+					<changelogVersion>${changelog.version}</changelogVersion>
 					<strictRenderMode>true</strictRenderMode>
 					<allowEmptyChangelog>true</allowEmptyChangelog>
 					<includeProjectProperties>false</includeProjectProperties>
@@ -351,7 +353,7 @@
 				<executions>
 					<execution>
 						<id>dist-changelog</id>
-						<phase>package</phase>
+						<phase>${changelog.phase}</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>

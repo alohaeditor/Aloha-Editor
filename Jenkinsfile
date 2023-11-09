@@ -60,6 +60,7 @@ spec:
 		booleanParam(name: 'unitTests',                 defaultValue: true,  description: 'Whether to run the unit tests')
 		booleanParam(name: 'release',                   defaultValue: false, description: 'Whether to perform a release')
 		booleanParam(name: 'releaseWithNewChangesOnly', defaultValue: true,  description: 'Release: Abort the build if there are no new changes')
+		booleanParam(name: 'deployTesting',             defaultValue: false, description: 'Deploy the snapshot version (only valid, if not release)')
 	}
 
 	triggers {
@@ -114,6 +115,9 @@ spec:
 
 						tagName = version
 						GitHelper.addTag(tagName, releaseMessage)
+					} else if (Boolean.valueOf(params.deployTesting)) {
+						// deploy the (snapshot) artifacts, but not the changelog
+						sh 'mvn -B -U clean deploy -Dchangelog.phase=never ' + (Boolean.valueOf(params.unitTests) ? '' : ' -DskipTests')
 					} else {
 						sh 'mvn -B -U clean package' + (Boolean.valueOf(params.unitTests) ? '' : ' -DskipTests')
 					}
