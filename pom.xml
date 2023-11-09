@@ -3,7 +3,7 @@
 
 	<groupId>org.alohaeditor</groupId>
 	<artifactId>alohaeditor</artifactId>
-	<version>1.4.61-SNAPSHOT</version>
+	<version>1.5.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Aloha Editor</name>
 	<url>http://aloha-editor.org</url>
@@ -258,7 +258,7 @@
 			<plugin>
 				<groupId>ro.isdc.wro4j</groupId>
 				<artifactId>wro4j-maven-plugin</artifactId>
-				<version>1.4.7</version>
+				<version>1.6.3</version>
 				<executions>
 					<!-- Full version of aloha (With jquery and requirejs) -->
 					<execution>
@@ -402,6 +402,20 @@
 							<appendAssemblyId>true</appendAssemblyId>
 							<descriptors>
 								<descriptor>${project.basedir}/build/source-package.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+					<execution>
+						<id>changelog</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<attach>true</attach>
+							<appendAssemblyId>true</appendAssemblyId>
+							<descriptors>
+								<descriptor>${project.basedir}/build/assembly/changelog-entries.xml</descriptor>
 							</descriptors>
 						</configuration>
 					</execution>

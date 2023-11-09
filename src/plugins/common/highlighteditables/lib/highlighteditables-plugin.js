@@ -82,20 +82,13 @@ define('highlighteditables/highlighteditables-plugin', [
 			* fades all highlighted editables
 			*/
 			fade: function () {
-				var
-					i, editable,
-					animateEnd = function () {
-						jQuery(this).css('outline', '');
-					};
+				var i,
+					editable;
 				for (i = 0; i < Aloha.editables.length; i++) {
 					editable = Aloha.editables[i].obj;
 					if (editable.hasClass('aloha-editable-highlight')) {
 						// IE8 fix - hardcode 5px because editable.css('outlineWidth') sometimes causes a javascript error
-						editable.css('outline', editable.css('outlineColor') + ' ' + editable.css('outlineStyle') + ' 5px')
-							.removeClass('aloha-editable-highlight')
-							.animate({
-								outlineWidth : '0px'
-							}, 300, 'swing', animateEnd);
+						editable.removeClass('aloha-editable-highlight');
 					}
 				}
 			}
