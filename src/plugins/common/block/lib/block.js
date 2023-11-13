@@ -64,7 +64,7 @@ define([
 	/**
 	 * An aloha block has the following special properties, being readable through the
 	 * "attr" function:
-	 * - alohaBlockType -- TYPE of the AlohaBlock as registered by the BlockManager
+	 * - aloha-block-type -- TYPE of the AlohaBlock as registered by the BlockManager
 	 *
 	 * @name block.block.AbstractBlock
 	 * @class An abstract block that must be used as a base class for custom blocks
@@ -209,7 +209,7 @@ define([
 
 			// This is executed when a block is selected through caret handling
 			// TODO!
-			//Aloha.on('aloha-block-selected', function(event,obj) {
+			//Aloha.bind('aloha-block-selected', function(event,obj) {
 			//	if (that.$element.get(0) === obj) {
 			//		that.activate();
 			//	}
@@ -223,7 +223,7 @@ define([
 					BlockUtils.pad(that.$element);
 				}
 
-				Aloha.on('aloha-smart-content-changed', function (event, data) {
+				Aloha.bind('aloha-smart-content-changed', function (event, data) {
 					if (data.editable.isActive) {
 						var $block = data.editable.obj.find('#' + that.id);
 
@@ -233,7 +233,7 @@ define([
 					}
 				});
 
-				Aloha.on('aloha-editable-activated', function ($event, data) {
+				Aloha.bind('aloha-editable-activated', function ($event, data) {
 					if (data.editable) {
 						var $block = data.editable.obj.find('#' + that.id);
 						if ($block.length !== 0) {
@@ -242,7 +242,7 @@ define([
 					}
 				});
 
-				Aloha.on('aloha-editable-deactivated', function ($event, data) {
+				Aloha.bind('aloha-editable-deactivated', function ($event, data) {
 					if (data.editable) {
 						var $block = data.editable.obj.find('#' + that.id);
 						if ($block.length !== 0) {
@@ -545,7 +545,7 @@ define([
 
 			// Activate current block
 			if (this.$element.attr('data-block-skip-scope') !== 'true') {
-				Scopes.setScope('Aloha.Block.' + this.attr('alohaBlockType'));
+				Scopes.setScope('Aloha.Block.' + this.attr('aloha-block-type'));
 			}
 			this.$element.addClass('aloha-block-active');
 			this._highlight();
@@ -699,12 +699,12 @@ define([
 			this.renderBlockHandlesIfNeeded();
 			if (this.isDraggable()) {
 				var nodeName = this.$element[0].nodeName;
-				if (nodeName === 'SPAN' && !this.$element.data('ddSetupDone')) {
+				if (nodeName === 'SPAN' && !this.$element.data('dd-setup-done')) {
 					// Unfortunately _setupDragDropForInlineElements() is not
 					// idempotent because $.draggable() isn't.
 					this._setupDragDropForInlineElements();
 					this._disableUglyInternetExplorerDragHandles();
-					this.$element.data('ddSetupDone', true);
+					this.$element.data('dd-setup-done', true);
 				} else if (nodeName === 'DIV') {
 					this._setupDragDropForBlockElements();
 					this._disableUglyInternetExplorerDragHandles();
@@ -771,12 +771,12 @@ define([
 
             this.$element.on( "mousedown", ".aloha-block-draghandle",function () {
 
-                var dropzones = that.$element.parents(".aloha-editable").first().data("blockDropzones") || [];
+                var dropzones = that.$element.parents(".aloha-editable").first().data("block-dropzones") || [];
 
                 jQuery.each(dropzones, function (i, editable_selector) {
                     var editables = jQuery(editable_selector);
                     jQuery(editables).each(function () {
-                        if (jQuery(this).data("blockDragdrop")) {
+                        if (jQuery(this).data("block-dragdrop")) {
                             jQuery(this).addClass("aloha-block-dropzone");
                         }
                     });
@@ -785,7 +785,7 @@ define([
                 // Remove the dropzones as soon as the mouse is released,
                 // irrespective of where the drop took place.
                 jQuery(document).one("mouseup.aloha-block-dropzone", function () {
-                    var dropzones = that.$element.parents(".aloha-editable").first().data("blockDropzones") || [];
+                    var dropzones = that.$element.parents(".aloha-editable").first().data("block-dropzones") || [];
                     jQuery.each(dropzones, function (i, editable_selector) {
                         jQuery(editable_selector).removeClass("aloha-block-dropzone");
                     });

@@ -113,7 +113,7 @@ Aloha.ready( function() {
 	    updateBoldColor();
 	});
 	  
-	Aloha.on('aloha-selection-changed', function() {
+	Aloha.bind('aloha-selection-changed', function() {
 	    updateBoldColor();
 	});
 	 

@@ -221,7 +221,7 @@ define([
 	function registerEvents(events) {
 		var i;
 		for (i = 0; i < events.length; i++) {
-			Aloha.on(events[i], validateActiveEditable);
+			Aloha.bind(events[i], validateActiveEditable);
 		}
 	}
 

@@ -134,7 +134,7 @@ define([
 			var that = this;
 
 			// apply specific configuration if an editable has been activated
-			Aloha.on('aloha-editable-activated', function (e, params) {
+			Aloha.bind('aloha-editable-activated', function (e, params) {
 				that.applyButtonConfig(params.editable.obj);
 			});
 

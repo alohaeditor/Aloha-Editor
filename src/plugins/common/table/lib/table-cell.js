@@ -275,7 +275,7 @@ define([
 			Misc.removeEditingHelpers($wrapper);
 		});
 
-		Aloha.on('aloha-smart-content-changed', function (event, data) {
+		Aloha.bind('aloha-smart-content-changed', function (event, data) {
 			if (data.editable.isActive && data.triggerType === 'block-change') {
 				Misc.addEditingHelpers($wrapper);
 			}

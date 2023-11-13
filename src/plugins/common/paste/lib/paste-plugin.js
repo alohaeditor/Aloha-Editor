@@ -396,7 +396,7 @@ define([
 		init: function () {
 			$('body').append($CLIPBOARD);
 
-			Aloha.on('aloha-editable-created', function ($event, editable) {
+			Aloha.bind('aloha-editable-created', function ($event, editable) {
 				prepare(editable.obj);
 			});
 

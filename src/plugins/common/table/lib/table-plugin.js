@@ -471,7 +471,7 @@ define([
 		// initialize the table buttons
 		this.initTableButtons();
 
-		Aloha.on( 'aloha-table-selection-changed', function () {
+		Aloha.bind( 'aloha-table-selection-changed', function () {
 			// check if selected cells are split/merge able and set button status
 			if (!TablePlugin.activeTable || !TablePlugin.activeTable.selection) {
 				return;
@@ -505,7 +505,7 @@ define([
 		// This event is only thrown if the context has changed. (selection.js:126:triggerSelectionContextChanged)
 		// This makes that the scope changes to Aloha.continuoustext (scopes.js:43).
 		// This is because selection is called a least twice (selection.js:525). The second time the context has not changed.
-		Aloha.on('aloha-selection-changed', function (event, rangeObject) {
+		Aloha.bind('aloha-selection-changed', function (event, rangeObject) {
 			var range = rangeObject;
 			var editable = Aloha.activeEditable;
 
@@ -576,7 +576,7 @@ define([
 			}
 		});
 
-		Aloha.on('aloha-smart-content-changed', function (event, data) {
+		Aloha.bind('aloha-smart-content-changed', function (event, data) {
 			if (Aloha.activeEditable) {
 				Aloha.activeEditable.obj.find('table').each(function () {
 					if (TablePlugin.indexOfTableInRegistry(this) == -1) {
@@ -589,7 +589,7 @@ define([
 		});
 
 		if (this.settings.summaryinsidebar) {
-			Aloha.on('aloha-plugins-loaded', function () {
+			Aloha.bind('aloha-plugins-loaded', function () {
 				that.initSidebar(Aloha.Sidebar.right.show());
 			});
 		}

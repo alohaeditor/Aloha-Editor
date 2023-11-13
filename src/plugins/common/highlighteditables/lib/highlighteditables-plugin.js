@@ -70,7 +70,7 @@ define('highlighteditables/highlighteditables-plugin', [
 				});
 
 				// mark active Editable with a css class
-				Aloha.on(
+				Aloha.bind(
 						"aloha-editable-activated",
 						function (jEvent, aEvent) {
 							that.fade();

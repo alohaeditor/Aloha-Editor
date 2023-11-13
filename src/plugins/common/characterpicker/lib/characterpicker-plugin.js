@@ -347,7 +347,7 @@ define([
 		hideOnEsc(overlay);
 		cursorMovements(overlay, onSelect);
 
-		Aloha.on('aloha-editable-deactivated', function () {
+		Aloha.bind('aloha-editable-deactivated', function () {
 			overlay.hide();
 		});
 	}
@@ -476,7 +476,7 @@ define([
 				pregenerateOverlays(0);
 			}, 100);
 
-			Aloha.on('aloha-editable-activated', function ($event, data) {
+			Aloha.bind('aloha-editable-activated', function ($event, data) {
 				characterpicker.overlay =
 						generateOverlay(characterpicker, data.editable);
 				if (characterpicker.overlay) {

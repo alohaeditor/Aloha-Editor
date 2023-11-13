@@ -10,7 +10,7 @@ The old bind/trigger mechanism uses jQuery's bind() and trigger() behind
 the scenes and currently handles most of the events fired by Aloha:
 
 <javascript>
-Aloha.on('event-name', function (jQuery.Event, eventArgument) {});
+Aloha.bind('event-name', function (jQuery.Event, eventArgument) {});
 Aloha.trigger('event-name', eventArgument);
 </javascript>
 
@@ -392,16 +392,16 @@ Aloha.trigger( 'aloha-link-selected-in-linkbrowser' , // Aloha );
    });
 
    Aloha.ready( function(){
-       Aloha.on( 'aloha-editable-created', function( jEvent, editable ) {
+       Aloha.bind( 'aloha-editable-created', function( jEvent, editable ) {
            console.log( 'editable "' + editable.getId() + '" created' );
        });
-       Aloha.on( 'aloha-editable-destroyed', function( jEvent, editable ) {
+       Aloha.bind( 'aloha-editable-destroyed', function( jEvent, editable ) {
            console.log( 'editable "' + editable.getId() + '" destroyed' );
        });
-       Aloha.on( 'aloha-editable-deactivated', function( jEvent, aEvent ) {
+       Aloha.bind( 'aloha-editable-deactivated', function( jEvent, aEvent ) {
            console.log( 'editable "' + aEvent.editable.getId() + '" deactivated' );
        });
-       Aloha.on( 'aloha-editable-activated', function( jEvent, aEvent){
+       Aloha.bind( 'aloha-editable-activated', function( jEvent, aEvent){
            console.log( 'editable "' + aEvent.editable.getId() + '" activated' );
        });
    });
