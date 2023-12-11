@@ -41,6 +41,9 @@ function (jQuery, Button) {
 			} else {
 				this.element.removeClass("aloha-button-active");
 			}
+			if (typeof this.changeNotify === 'function') {
+				this.changeNotify(this._checked);
+			}
 		},
 
 		getState: function () {
@@ -49,7 +52,12 @@ function (jQuery, Button) {
 
 		_onClick: function () {
 			this.setState(! this._checked);
+			this.touch();
 			this.click();
+		},
+
+		setValue: function(value) {
+			this.setState(value);
 		}
 	});
 

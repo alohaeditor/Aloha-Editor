@@ -25,10 +25,11 @@ define([
 	'ui/scopes',
 	'ui/button',
 	'ui/toggleButton',
-	'ui/text',
+	'ui/input',
 	'i18n!link/nls/i18n',
 	'PubSub',
 	'util/keys',
+	'ui/modal',
 	'../../../shared/languages/languages'
 ], function (
 	$,
@@ -42,10 +43,11 @@ define([
 	Scopes,
 	Button,
 	ToggleButton,
-	Text,
+	Input,
 	i18n,
 	PubSub,
 	Keys,
+	Modal,
 	LanguageRepository
 ) {
 	'use strict';
@@ -715,7 +717,31 @@ define([
 				icon: "aloha-icon aloha-icon-link",
 				scope: 'Aloha.continuoustext',
 				click: function() {
-					that.insertLink(false);
+					Modal.openDynamicModal({
+						title: 'Insert Link!',
+						controls: {
+							href: {
+								type: 'input',
+								validate: function(value) {
+									console.log('validating href', value);
+									if (value == null || value.trim().length < 1) {
+										return { 'required': true };
+									}
+									return null;
+								},
+								onChange: function(value, control) {
+									console.log('href changed!', value, control);
+								}
+							}
+						},
+						validate: function(formValue) {
+							console.log('validating form', formValue);
+							return null;
+						},
+						onChange: function(value, control) {
+							console.log('form changed!', value, control);
+						}
+					});
 				}
 			});
 
@@ -760,7 +786,7 @@ define([
 					}
 				});
 
-				this.anchorField = Ui.adopt('editAnchor', Text, {
+				this.anchorField = Ui.adopt('editAnchor', Input, {
 					init: function () {
 						this._super();
 						this.element.on("keyup", function onKeyup(event) {

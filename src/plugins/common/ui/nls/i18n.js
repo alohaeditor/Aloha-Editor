@@ -9,6 +9,8 @@ define({
 		"button.underline.label": "Underline",
 		"button.yes.label": "Yes",
 		"button.no.label": "No",
+		"button.confirm.label": "Confirm",
+		"button.cancel.label": "Cancel",
 
 		// paragraph
 		"button.p.label": "Paragraph",

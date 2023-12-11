@@ -68,19 +68,22 @@ define([
 			if ($(event.target).hasClass(ITEM_LINK_CLASS)) {
 				// A tag link was clicked
 				closeAccordion();
-			} else {
-				// An accordion category was clicked
-				$.each(categoryMenus, function (index, categoryMenu) {
-					var clickedWrapper = $(event.target).closest('.' + CATEGORY_WRAPPER_CLASS).get(0);
-					var currentWrapper = categoryMenu.$element.get(0);
-					if (currentWrapper !== clickedWrapper) {
-						categoryMenu.collapse();
-					} else {
-						categoryMenu.expand(heightWithAllCollapsed);
-					}
-				});
-				event.stopPropagation();
+				return;
 			}
+
+			// An accordion category was clicked
+			$.each(categoryMenus, function (index, categoryMenu) {
+				var clickedWrapper = $(event.target).closest('.' + CATEGORY_WRAPPER_CLASS).get(0);
+				var currentWrapper = categoryMenu.$element.get(0);
+				if (currentWrapper !== clickedWrapper) {
+					categoryMenu.collapse();
+				} else {
+					categoryMenu.expand(heightWithAllCollapsed);
+				}
+			});
+
+			event.stopPropagation();
+			this.touch();
 		});
 
 		triggerButton.click(function (event) {
@@ -90,6 +93,8 @@ define([
 				openAccordion();
 				event.stopPropagation();
 			}
+
+			this.touch();
 		});
 
 		function closeAccordion() {
@@ -160,7 +165,11 @@ define([
 		function expand(wrapperHeight) {
 			var MARGIN = 10;
 			var itemsList = $listWrapper.find('.' + CATEGORY_ITEMS_LIST_CLASS)
-			var itemsListHeight = parseInt(itemsList.css("height"))+parseInt(itemsList.css("padding-top"))+parseInt(itemsList.css("padding-bottom"))+parseInt(itemsList.css("margin-top"))+parseInt(itemsList.css("margin-bottom"));
+			var itemsListHeight = parseInt(itemsList.css("height"), 10)
+				+ parseInt(itemsList.css("padding-top"), 10)
+				+ parseInt(itemsList.css("padding-bottom"), 10)
+				+ parseInt(itemsList.css("margin-top"), 10)
+				+ parseInt(itemsList.css("margin-bottom"), 10);
 			var wrapperRect = $listWrapper.closest('.' + ACCORDION_WRAPPER_CLASS).get(0).getBoundingClientRect();
 			var availableHeight = window.innerHeight - wrapperRect.top - wrapperHeight - MARGIN;
 			var maxHeight = itemsListHeight < availableHeight ? itemsListHeight : availableHeight;

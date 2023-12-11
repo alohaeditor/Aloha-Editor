@@ -79,6 +79,7 @@ function (jQuery, Component, Utils) {
 		 */
 		_onClick: function () {
 			this.click();
+			this.touch();
 		},
 
 		/**
@@ -111,6 +112,7 @@ function (jQuery, Component, Utils) {
 		 * Shows the button in a greyed-out inactive (unclickable) state.
 		 */
 		disable: function () {
+			this.disabled = true;
 			this.element.button('option', 'disabled', false);
 		},
 
@@ -118,6 +120,7 @@ function (jQuery, Component, Utils) {
 		 * Enables the button again after it has previously been disabled.
 		 */
 		enable: function (enable_opt) {
+			this.disabled = false;
 			this.element.button('option', 'disabled', enable_opt === false);
 		}
 	});

@@ -8,6 +8,8 @@ define({
 	"button.underline.label": "Unterstrichen",
 	"button.yes.label": "Ja",
 	"button.no.label": "Nein",
+	"button.confirm.label": "Bestätigen",
+	"button.cancel.label": "Abbrechen",
 	"button.p.label": "Absatz",
 	"button.h1.label": "Überschrift 1",
 	"button.h2.label": "Überschrift 2",

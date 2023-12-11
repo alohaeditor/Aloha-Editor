@@ -47,6 +47,32 @@ define([
 		visible: true,
 
 		/**
+		 * @type {boolean} Whether this component is disabled and can be interacted with.
+		 */
+		disabled: false,
+
+		/**
+		 * @type {boolean} Whether the user has interacted/changed the value of this component.
+		 */
+		touched: false,
+
+		/**
+		 * @type {object | null} When this component is being validated, which kind of errors it has.
+		 * `null` when no errors are present, otherwise a object with potentially multiple validation errors.
+		 */
+		validationErrors: null,
+
+		/**
+		 * @type {function} Function to call when the value of the component changes.
+		 */
+		changeNotify: null,
+
+		/**
+		 * @type {function} Function to call when the user interacted with the component.
+		 */
+		touchNotify: null,
+
+		/**
 		 * The type property is set in Component.define(), so components should only ever be instantiated through define.
 		 * @constructor
 		 */
@@ -113,8 +139,33 @@ define([
 			}
 		},
 
-		enable: function (enable_opt) {},
-		disable: function () {}
+		enable: function (enable_opt) {
+			this.disabled = false;
+		},
+		disable: function () {
+			this.disabled = true;
+		},
+
+		touch: function() {
+			this.touched = true;
+			if (typeof this.touchNotify === 'function') {
+				this.touchNotify();
+			}
+		},
+		untouched: function() {
+			this.touched = false;
+		},
+
+		isValid: function() {
+			return this.validationErrors == null;
+		},
+
+		setValue: function(value) {
+			// Needs to be overritten
+		},
+		getValue: function() {
+			return null;
+		},
 	});
 
 	return Component;
