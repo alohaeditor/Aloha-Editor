@@ -34,7 +34,7 @@ loadJS( alohaEditorPath + 'lib/require.js');
 	Here we add our own jQuery version for demonstration usage.
 	You can also just use the jQuery version delivered with Aloha Editor.
 */
-loadJS( alohaEditorPath + 'lib/vendor/jquery-1.7.2.js');
+loadJS( alohaEditorPath + 'lib/vendor/jquery-3.7.0.js');
 
 /*
 	Load scripts to prepare a demo page
