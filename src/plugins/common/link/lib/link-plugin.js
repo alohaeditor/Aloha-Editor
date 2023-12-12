@@ -30,6 +30,7 @@ define([
 	'PubSub',
 	'util/keys',
 	'ui/modal',
+	'ui/dropdown',
 	'../../../shared/languages/languages'
 ], function (
 	$,
@@ -48,6 +49,7 @@ define([
 	PubSub,
 	Keys,
 	Modal,
+	Dropdown,
 	LanguageRepository
 ) {
 	'use strict';
@@ -717,31 +719,7 @@ define([
 				icon: "aloha-icon aloha-icon-link",
 				scope: 'Aloha.continuoustext',
 				click: function() {
-					Modal.openDynamicModal({
-						title: 'Insert Link!',
-						controls: {
-							href: {
-								type: 'input',
-								validate: function(value) {
-									console.log('validating href', value);
-									if (value == null || value.trim().length < 1) {
-										return { 'required': true };
-									}
-									return null;
-								},
-								onChange: function(value, control) {
-									console.log('href changed!', value, control);
-								}
-							}
-						},
-						validate: function(formValue) {
-							console.log('validating form', formValue);
-							return null;
-						},
-						onChange: function(value, control) {
-							console.log('form changed!', value, control);
-						}
-					});
+					
 				}
 			});
 

@@ -219,9 +219,9 @@ define([
 
         // Create a copy of the reference with read-only properties
         var returnValue = {};
-        Object.keys(formReference).forEach(function(referenceKey) {
+        Object.keys(formReference).forEach(function (referenceKey) {
             Object.defineProperty(returnValue, referenceKey, {
-                get: function() {
+                get: function () {
                     return formReference[referenceKey];
                 },
                 set: noopFn
@@ -240,7 +240,6 @@ define([
         changeHandler,
         touchHandler
     ) {
-        var control = {};
         var component = null;
 
         component = createComponentFromConfig(
@@ -252,6 +251,15 @@ define([
             changeHandler,
             touchHandler
         );
+
+        return {
+            component: component,
+            control: createControlFromComponent(component, validationHandler),
+        }
+    }
+
+    function createControlFromComponent(component, validationHandler) {
+        var control = {};
 
         // Readonly properties which need to be forwarded from the component
         Object.defineProperties(control, {
@@ -306,15 +314,12 @@ define([
         };
         control.markAsDirty = function () {
             component.touch();
-        },
-            control.markAsPristine = function () {
-                component.untouch();
-            };
+        };
+        control.markAsPristine = function () {
+            component.untouch();
+        };
 
-        return {
-            component: component,
-            control: control,
-        }
+        return control;
     }
 
     function createComponentFromConfig(
@@ -519,6 +524,7 @@ define([
     return {
         buildDynamicComponent: buildDynamicComponent,
         buildDynamicForm: buildDynamicForm,
+        createControlFromComponent: createControlFromComponent,
         createComponentFromConfig: createComponentFromConfig,
     };
 });
