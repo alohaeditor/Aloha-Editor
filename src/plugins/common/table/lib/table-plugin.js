@@ -15,19 +15,21 @@ define([
 	'ui/ui',
 	'ui/scopes',
 	'ui/button',
+	'ui/contextButton',
 	'ui/toggleButton',
 	'ui/dialog',
 	'ui/port-helper-attribute-field',
 	'ui/port-helper-multi-split',
 	'i18n!table/nls/i18n',
 	'i18n!aloha/nls/i18n',
-	'table/table-create-layer',
 	'table/table',
 	'table/table-plugin-utils',
 	'table/table-selection',
 	'util/dom',
 	'aloha/ephemera',
-	'aloha/console'
+	'aloha/console',
+	'ui/dynamicForm',
+	'table/table-size-select'
 ], function (
 	Aloha,
 	$,
@@ -38,19 +40,21 @@ define([
 	Ui,
 	Scopes,
 	Button,
+	ContextButton,
 	ToggleButton,
 	Dialog,
 	AttributeField,
 	MultiSplitButton,
 	i18n,
 	i18nCore,
-	CreateLayer,
 	Table,
 	Utils,
 	TableSelection,
 	Dom,
 	Ephemera,
-	Console
+	Console,
+	DynamicForm,
+	TableSizeSelect
 ) {
 	var jQuery = $;
 	var GENTICS = window.GENTICS;
@@ -407,6 +411,32 @@ define([
 		}
 	}
 
+	function createTableSizeSelectFromConfig(
+		config,
+        name,
+        applyChanges,
+        validateFn,
+        onChangeFn,
+        onTouchFn
+	) {
+		var tmpOptions = config.options || {};
+		var component = Ui.adopt(name, TableSizeSelect, {
+			maxColumns: tmpOptions.maxColumns,
+			maxRows: tmpOptions.maxRows,
+
+			changeNotify: function (value) {
+                applyChanges(value);
+                validateFn(value);
+                onChangeFn(value);
+            },
+            touchNotify: function () {
+                onTouchFn();
+            },
+		});
+
+		return component;
+	}
+
 	/**
 	 * Init method of the Table-plugin transforms all tables in the document
 	 *
@@ -414,6 +444,8 @@ define([
 	 */
 	TablePlugin.init = function() {
 		var that = this;
+
+		DynamicForm.componentFactoryRegistry['table-size-select'] = createTableSizeSelectFromConfig;
 
 		Ephemera.classes(this.get('className'), this.get('classCellSelected'));
 
@@ -437,9 +469,6 @@ define([
 			this.colResize = false;
 			this.rowResize = false;
 		}
-
-		// add reference to the create layer object
-		this.createLayer = new CreateLayer(this);
 
 		PubSub.sub('aloha.editable.created', function (message) {
 			var editable = message.editable;
@@ -1143,12 +1172,20 @@ define([
 		Scopes.createScope(this.name + '.column', 'Aloha.continuoustext');
 		Scopes.createScope(this.name + '.cell', 'Aloha.continuoustext');
 
-		this._createTableButton = Ui.adopt("createTable", Button, {
+		this._createTableButton = Ui.adopt("createTable", ContextButton, {
 			tooltip: i18n.t("button.createtable.tooltip"),
 			icon: "aloha-icon aloha-icon-createTable",
 			scope: 'Aloha.continuoustext',
-			click: function() {
-				TablePlugin.createDialog(this.element);
+			context: {
+				type: 'table-size-select',
+				options: {
+					maxColumns: 10,
+					maxRows: 10,
+				}
+			},
+			contextType: 'dropdown',
+			contextResolve: function(size) {
+				TablePlugin.createTable(size.columns, size.rows);
 			}
 		});
 
@@ -1343,22 +1380,6 @@ define([
 	};
 
 	/**
-	 * This function adds the createDialog to the calling element
-	 *
-	 * @param callingElement
-	 *            The element, which was clicked. It's needed to set the right
-	 *            position to the create-table-dialog.
-	 */
-	TablePlugin.createDialog = function(callingElement) {
-		// set the calling element to the layer the calling element mostly will be
-		// the element which was clicked on it is used to position the createLayer
-		this.createLayer.set('target', callingElement);
-
-		// show the createLayer
-		this.createLayer.show();
-	};
-
-	/**
 	 * Creates a normal html-table, "activates" this table and inserts it into the
 	 * active Editable
 	 *
@@ -1374,73 +1395,72 @@ define([
 		}
 
 		// Check if there is an active Editable and that it contains an element (= .obj)
-		if ( Aloha.activeEditable && typeof Aloha.activeEditable.obj !== 'undefined' ) {
-			// create a dom-table object
-			var table = document.createElement( 'table' );
-			var tableId = table.id = GENTICS.Utils.guid();
-			var tbody = document.createElement( 'tbody' );
-
-			// create "rows"-number of rows
-			for ( var i = 0; i < rows; i++ ) {
-				var tr = document.createElement( 'tr' );
-				// create "cols"-number of columns
-				for ( var j = 0; j < cols; j++ ) {
-					var text = document.createTextNode('');
-					var td = document.createElement( 'td' );
-					td.appendChild( text );
-					tr.appendChild( td );
-				}
-				tbody.appendChild( tr );
-			}
-			applyDefaultClassesToTable(table);
-			table.appendChild( tbody );
-
-			prepareRangeContainersForInsertion(
-				Aloha.Selection.getRangeObject(), table );
-
-			// insert the table at the current selection
-			GENTICS.Utils.Dom.insertIntoDOM(
-				jQuery( table ),
-				Aloha.Selection.getRangeObject(),
-				Aloha.activeEditable.obj
-			);
-
-			cleanupAfterInsertion();
-
-			var tableReloadedFromDOM = document.getElementById( tableId );
-			var tableObj = createNewTable(tableReloadedFromDOM);
-
-			if (tableObj) {
-				var range = Aloha.Selection.getRangeObject();
-
-				range.startContainer = range.endContainer = tableObj.cells[0].wrapper[0];
-				range.startOffset = range.endOffset = 0;
-				range.select();
-
-				// Because without the 10ms delay, we cannot place the cursor
-				// automatically into the first cell in IE.
-				if ($.browser.msie) {
-					window.setTimeout(function () {
-						tableObj.cells[0].wrapper.get(0).focus();
-					}, 20 );
-				} else {
-					tableObj.cells[0].wrapper.get(0).focus();
-				}
-			}
-
-			Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'table-plugin'});
-
-			// The selection starts out in the first cell of the new
-			// table. The table tab/scope has to be activated
-			// accordingly.
-			tableObj.focus();
-			TablePlugin.activeTable.selection.selectionType = 'cell';
-			TablePlugin.updateFloatingMenuScope();
-
-		} else {
-			this.error( 'There is no active Editable where the table can be\
-				inserted!' );
+		if (!Aloha.activeEditable || typeof Aloha.activeEditable.obj == null) {
+			this.error('There is no active Editable where the table can be inserted!');
+			return;
 		}
+
+		// create a dom-table object
+		var table = document.createElement( 'table' );
+		var tableId = table.id = GENTICS.Utils.guid();
+		var tbody = document.createElement( 'tbody' );
+
+		// create "rows"-number of rows
+		for ( var i = 0; i < rows; i++ ) {
+			var tr = document.createElement( 'tr' );
+			// create "cols"-number of columns
+			for ( var j = 0; j < cols; j++ ) {
+				var text = document.createTextNode('');
+				var td = document.createElement( 'td' );
+				td.appendChild( text );
+				tr.appendChild( td );
+			}
+			tbody.appendChild( tr );
+		}
+		applyDefaultClassesToTable(table);
+		table.appendChild( tbody );
+
+		prepareRangeContainersForInsertion(
+			Aloha.Selection.getRangeObject(), table );
+
+		// insert the table at the current selection
+		GENTICS.Utils.Dom.insertIntoDOM(
+			jQuery( table ),
+			Aloha.Selection.getRangeObject(),
+			Aloha.activeEditable.obj
+		);
+
+		cleanupAfterInsertion();
+
+		var tableReloadedFromDOM = document.getElementById( tableId );
+		var tableObj = createNewTable(tableReloadedFromDOM);
+
+		if (tableObj) {
+			var range = Aloha.Selection.getRangeObject();
+
+			range.startContainer = range.endContainer = tableObj.cells[0].wrapper[0];
+			range.startOffset = range.endOffset = 0;
+			range.select();
+
+			// Because without the 10ms delay, we cannot place the cursor
+			// automatically into the first cell in IE.
+			if ($.browser.msie) {
+				window.setTimeout(function () {
+					tableObj.cells[0].wrapper.get(0).focus();
+				}, 20 );
+			} else {
+				tableObj.cells[0].wrapper.get(0).focus();
+			}
+		}
+
+		Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'table-plugin'});
+
+		// The selection starts out in the first cell of the new
+		// table. The table tab/scope has to be activated
+		// accordingly.
+		tableObj.focus();
+		TablePlugin.activeTable.selection.selectionType = 'cell';
+		TablePlugin.updateFloatingMenuScope();
 	};
 
 	TablePlugin.setFocusedTable = function(focusTable) {

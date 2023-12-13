@@ -76,7 +76,7 @@ define([
 		 */
 		'cellIndexToGridColumn': function (rows, rowIdx, colIdx) {
 			var gridColumn = null;
-			Utils.walkCells(rows, function(ri, ci, walkedGridColumn, rowspan, colspan) {
+			Utils.walkCells(rows, function (ri, ci, walkedGridColumn, rowspan, colspan) {
 				if (ri === rowIdx && ci === colIdx) {
 					gridColumn = walkedGridColumn;
 					return false;
@@ -116,7 +116,7 @@ define([
 					}
 
 					for (var i = 0; i < colspan; i++) {
-						if (adjust[ci + skip + i] ) {
+						if (adjust[ci + skip + i]) {
 							throw "an impossible case has occurred";
 						}
 						adjust[ci + skip + i] = rowspan - 1;
@@ -151,15 +151,15 @@ define([
 		 */
 		'makeGrid': function (rows) {
 			var grid = [];
-			Utils.walkCells(rows, function(ri, ci, gridCi, colspan, rowspan) {
+			Utils.walkCells(rows, function (ri, ci, gridCi, colspan, rowspan) {
 				var cell = rows[ri].cells[ci];
 				for (var spannedY = 0; spannedY < rowspan; spannedY++) {
 					grid[ri + spannedY] = grid[ri + spannedY] || [];
 					for (var spannedX = 0; spannedX < colspan; spannedX++) {
 						grid[ri + spannedY][gridCi + spannedX] = {
-							'cell'    : cell,
-							'colspan' : colspan,
-							'rowspan' : rowspan,
+							'cell': cell,
+							'colspan': colspan,
+							'rowspan': rowspan,
 							'spannedX': spannedX,
 							'spannedY': spannedY
 						};
@@ -199,7 +199,7 @@ define([
 		'leftDomCell': function (grid, ri, gridCi) {
 			do {
 				var cellInfo = grid[ri][gridCi];
-				if ( 0 === cellInfo.spannedY ) {
+				if (0 === cellInfo.spannedY) {
 					return cellInfo.cell;
 				}
 				gridCi -= cellInfo.spannedX + 1;
@@ -216,21 +216,21 @@ define([
 		 * @param cell
 		 *        the cell to split
 		 * @param createCell
- 		 *        a callback that will be invoked rowspan * colspan - 1
+			 *        a callback that will be invoked rowspan * colspan - 1
 		 *        times, and which must return a table cell (td/th) that
 		 *        will be inserted into the table
 		 */
 		'splitCell': function (cell, createCell) {
 			var $cell = $(cell);
-			var colspan = Utils.colspan( cell );
-			var rowspan = Utils.rowspan( cell );
+			var colspan = Utils.colspan(cell);
+			var rowspan = Utils.rowspan(cell);
 
 			//catch the most common case early
 			if (1 === colspan && 1 === rowspan) {
 				return;
 			}
 
-			var $row  = $cell.parent();
+			var $row = $cell.parent();
 			var $rows = $row.parent().children();
 			var rowIdx = $row.index();
 			var colIdx = $cell.index();
@@ -242,7 +242,7 @@ define([
 					if (null == leftCell) {
 						$rows.eq(rowIdx + i).prepend(createCell());
 					} else {
-						$( leftCell ).after(createCell());
+						$(leftCell).after(createCell());
 					}
 				}
 			}
@@ -257,7 +257,7 @@ define([
 		 *        a numeric value indicating the number of rows the cell spans
 		 */
 		'rowspan': function (cell) {
-			return parseInt( $( cell ).attr('rowspan') ) || 1;
+			return parseInt($(cell).attr('rowspan'), 10) || 1;
 		},
 		/**
 		 * @param cell
@@ -266,7 +266,7 @@ define([
 		 *        a numeric value indicating the number of columns the cell spans
 		 */
 		'colspan': function (cell) {
-			return parseInt( $( cell ).attr('colspan') ) || 1;
+			return parseInt($(cell).attr('colspan'), 10) || 1;
 		},
 		/**
 		 * Calls the given callback with each object in the given
@@ -283,12 +283,12 @@ define([
 		 *        If the callback returns a value identical to false,
 		 *        the walk will be aborted early.
 		 */
-		'walkGrid': function(grid, callback) {
-			var	row;
-			for (var i = 0, gridLength = grid.length; i < gridLength; i++ ) {
+		'walkGrid': function (grid, callback) {
+			var row;
+			for (var i = 0, gridLength = grid.length; i < gridLength; i++) {
 				row = grid[i];
-				for (var j = 0, rowLength = row.length; j < rowLength; j++ ) {
-					if ( false === callback( row[ j ], j, i ) ) {
+				for (var j = 0, rowLength = row.length; j < rowLength; j++) {
+					if (false === callback(row[j], j, i)) {
 						return;
 					}
 				}
@@ -308,10 +308,10 @@ define([
 		 *        two-dimensional array. See walkGrid() for the
 		 *        specification of this parameter.
 		 */
-		'walkGridInsideRect': function ( grid, rect, callback ) {
-			Utils.walkGrid( grid, function ( cellInfo, x, y ) {
-				if ( y >= rect.top && y < rect.bottom && x >= rect.left && x < rect.right ) {
-					return callback( cellInfo, x, y );
+		'walkGridInsideRect': function (grid, rect, callback) {
+			Utils.walkGrid(grid, function (cellInfo, x, y) {
+				if (y >= rect.top && y < rect.bottom && x >= rect.left && x < rect.right) {
+					return callback(cellInfo, x, y);
 				}
 			});
 		},
@@ -323,10 +323,10 @@ define([
 		 * @return
 		 *        a new array with the remaining items
 		 */
-		'leftTrimArray': function ( array ) {
+		'leftTrimArray': function (array) {
 			for (var i = 0; i < array.length; i++) {
-				if ( null != array[i] ) {
-					return array.slice( i, array.length );
+				if (null != array[i]) {
+					return array.slice(i, array.length);
 				}
 			}
 			return [];
@@ -353,32 +353,32 @@ define([
 		 *        bottom: an array of the greatest vertical offsets
 		 *        left:   an array of the smallest horizontal offsets
 		 */
-		'makeContour': function ( grid, hasContour ) {
+		'makeContour': function (grid, hasContour) {
 			var left = [];
 			var right = [];
 			var top = [];
 			var bottom = [];
-			Utils.walkGrid( grid, function ( item, x, y ) {
-				if ( hasContour( item, x, y ) ) {
-					if ( null == left[ y ] || x < left[ y ] ) {
-						left[ y ] = x;
+			Utils.walkGrid(grid, function (item, x, y) {
+				if (hasContour(item, x, y)) {
+					if (null == left[y] || x < left[y]) {
+						left[y] = x;
 					}
-					if ( null == right[ y ] || x > right[ y ] ) {
-						right[ y ] = x;
+					if (null == right[y] || x > right[y]) {
+						right[y] = x;
 					}
-					if ( null == top[ x ] || y < top[ x ] ) {
-						top[ x ] = y;
+					if (null == top[x] || y < top[x]) {
+						top[x] = y;
 					}
-					if ( null == bottom[ x ] || y > bottom[ x ] ) {
-						bottom[ x ] = y;
+					if (null == bottom[x] || y > bottom[x]) {
+						bottom[x] = y;
 					}
 				}
 			});
-			left   = Utils.leftTrimArray(left);
-			right  = Utils.leftTrimArray(right);
-			top    = Utils.leftTrimArray(top);
+			left = Utils.leftTrimArray(left);
+			right = Utils.leftTrimArray(right);
+			top = Utils.leftTrimArray(top);
 			bottom = Utils.leftTrimArray(bottom);
-			return {'left': left, 'right': right, 'top': top, 'bottom': bottom};
+			return { 'left': left, 'right': right, 'top': top, 'bottom': bottom };
 		},
 		/**
 		 * Returns the index of the first item that doesn't match the given value
@@ -391,9 +391,9 @@ define([
 		 *        The offset of the first item in the given array that doesn't match the given value.
 		 *        If no such item was found, -1 is returned.
 		 */
-		'indexOfAnyBut': function ( array, but ) {
-			for ( var i = 0; i < array.length; i++ ) {
-				if ( but !== array[ i ] ) {
+		'indexOfAnyBut': function (array, but) {
+			for (var i = 0; i < array.length; i++) {
+				if (but !== array[i]) {
 					return i;
 				}
 			}
@@ -406,9 +406,9 @@ define([
 		 *        true if each item in the given array has a
 		 *        difference to its neighbor of exactly 1
 		 */
-		'isConsecutive': function ( array ) {
-			for ( var i = 1; i < array.length; i++ ) {
-				if ( 1 !== Math.abs( array[ i ] - array[ i - 1 ] ) ) {
+		'isConsecutive': function (array) {
+			for (var i = 1; i < array.length; i++) {
+				if (1 !== Math.abs(array[i] - array[i - 1])) {
 					return false;
 				}
 			}
@@ -424,33 +424,32 @@ define([
 		 *        an integer value indicating the desired width
 		 */
 
-		'resizeCellWidth': function(cell, width) {
-			$( cell ).css('width', width);
-			$( cell ).find('.aloha-table-cell-editable').eq(0).css({
+		'resizeCellWidth': function (cell, width) {
+			$(cell).css('width', width);
+			$(cell).find('.aloha-table-cell-editable').eq(0).css({
 				'width': width,
 				'word-wrap': 'break-word'
 			});
 		},
 
-		'convertCellWidthToPercent' : function(rows) {
+		'convertCellWidthToPercent': function (rows) {
 			var changes = [];
 			//we have to make two runs to not change the withs the calculations are based on
-			Utils.walkCells(rows, function(ri, ci, gridCi, colspan, rowspan) {
+			Utils.walkCells(rows, function (ri, ci, gridCi, colspan, rowspan) {
 				var currentRow = $(rows[ri]),
-					selector = currentRow.find('.aloha-table-selectrow')
-					selectorWidth = parseInt(selector.css("width")) + parseInt(selector.css("padding-left")) + parseInt(selector.css("padding-right")),
-					rowWidth = parseInt(currentRow.css("width")) - selectorWidth,
+					selectorWidth = currentRow.find('.aloha-table-selectrow').outerWidth(),
+					rowWidth = currentRow.width() - selectorWidth,
 					currentCell = $(currentRow.children()[ci]),
-					cellWidth = parseInt(currentCell.css("width")) + parseInt(currentCell.css("padding-left")) + parseInt(currentCell.css("padding-right"));
+					cellWidth = currentCell.outerWidth();
 
 				// skip the select & cells with colspans
 				if (currentCell.hasClass('aloha-table-selectrow') || currentRow.hasClass('aloha-table-selectcolumn') || colspan > 1) {
 					return true;
 				}
-				changes.push({cell : currentCell, width : Math.round( (cellWidth / rowWidth) * 100) + '%'});
+				changes.push({ cell: currentCell, width: Math.round((cellWidth / rowWidth) * 100) + '%' });
 			});
 			//make the actual css changes to the dom elements
-			$.each(changes, function(index, change){
+			$.each(changes, function (index, change) {
 				change.cell.css('width', change.width);
 			});
 		},
@@ -464,46 +463,48 @@ define([
 		 * @return
 		 * 				the minimum width as an integer value
 		 */
-		'getMinColWidth': function(cell) {
-			var rows = cell.closest( 'tbody' ).children( 'tr' );
-			var cellRow = cell.closest( 'tr' );
-			var gridId = Utils.cellIndexToGridColumn( rows,
-																							  rows.index( cellRow ),
-																							  cellRow.children().index( cell )
-																						  );
+		'getMinColWidth': function (cell) {
+			var rows = cell.closest('tbody').children('tr');
+			var cellRow = cell.closest('tr');
+			var gridId = Utils.cellIndexToGridColumn(
+				rows,
+				rows.index(cellRow),
+				cellRow.children().index(cell)
+			);
 
 			var largestWord = "";
 
-			Utils.walkCells(rows, function(ri, ci, gridCi, colspan, rowspan) {
-				if (gridCi === gridId) {
-					var curCell = $( $( rows[ri] ).children()[ ci ] );
+			Utils.walkCells(rows, function (ri, ci, gridCi, colspan, rowspan) {
+				if (gridCi !== gridId) {
+					return;
+				}
+				var curCell = $($(rows[ri]).children()[ci]);
 
-					// skip the cells with a colspan
-					if (colspan > 1) {
-						return;
-					}
+				// skip the cells with a colspan
+				if (colspan > 1) {
+					return;
+				}
 
-					var cellWords = curCell.text().split(" ");
+				var cellWords = curCell.text().split(" ");
 
-					// pick the largest word in the cell
-					for ( var j = 0; j < cellWords.length; j++ ) {
-						if ( cellWords[j].length > largestWord.length ) {
-							largestWord = cellWords[j];
-						}
+				// pick the largest word in the cell
+				for (var j = 0; j < cellWords.length; j++) {
+					if (cellWords[j].length > largestWord.length) {
+						largestWord = cellWords[j];
 					}
 				}
 			});
 
 			var fakeCell = $("<span></span>");
-			fakeCell.css( 'text-indent', -9999 );
-			fakeCell.css( 'display', 'inline' );
-			fakeCell.text( largestWord );
+			fakeCell.css('text-indent', -9999);
+			fakeCell.css('display', 'inline');
+			fakeCell.text(largestWord);
 
-			$( cell ).append( fakeCell );
+			$(cell).append(fakeCell);
 
-			var width = parseInt(fakeCell.css("width"));
+			var width = fakeCell.width();
 
-			$( fakeCell ).remove();
+			$(fakeCell).remove();
 
 			return width;
 		},
@@ -520,28 +521,28 @@ define([
 		 *
 		 * @return void
 		 */
-		'getCellResizeBoundaries': function(gridId, rows, callback) {
+		'getCellResizeBoundaries': function (gridId, rows, callback) {
 			var maxPageX, minPageX;
 
-			Utils.walkCells(rows, function(ri, ci, gridCi, colspan, rowspan) {
-				var currentCell = $( $( rows[ri] ).children()[ ci ] );
+			Utils.walkCells(rows, function (ri, ci, gridCi, colspan, rowspan) {
+				var currentCell = $($(rows[ri]).children()[ci]);
 
 				// skip the select cells
-				if ( currentCell.hasClass( 'aloha-table-selectrow' ) || currentCell.closest( 'tr' ).hasClass( 'aloha-table-selectcolumn' ) ) {
+				if (currentCell.hasClass('aloha-table-selectrow') || currentCell.closest('tr').hasClass('aloha-table-selectcolumn')) {
 					return true;
 				};
 
 				if (gridCi === gridId && colspan === 1) {
-					maxPageX = currentCell.offset().left + Utils.getCellBorder(currentCell) + parseInt(currentCell.css("width")) - Utils.getMinColWidth( currentCell );
+					maxPageX = currentCell.offset().left + Utils.getCellBorder(currentCell) + currentCell.width() - Utils.getMinColWidth(currentCell);
 				}
 
 				if (gridCi === gridId - 1 && colspan === 1) {
-					minPageX = currentCell.offset().left + Utils.getCellBorder(currentCell) + Utils.getCellPadding(currentCell) + Utils.getMinColWidth( currentCell );
+					minPageX = currentCell.offset().left + Utils.getCellBorder(currentCell) + Utils.getCellPadding(currentCell) + Utils.getMinColWidth(currentCell);
 				}
 
 				// if both max page x and min page x is set,
 				// stop walking over the cells.
-				if ( maxPageX && minPageX ) {
+				if (maxPageX && minPageX) {
 					callback(maxPageX, minPageX);
 					return false;
 				}
@@ -558,7 +559,7 @@ define([
 		 * 				the border width as an integer value
 		 */
 		'getCellBorder': function(cell) {
-			return ( ((parseInt(cell.css("width")) + parseInt(cell.css("padding-left")) + parseInt(cell.css("padding-right"))) - parseInt(cell.css("width"))-parseInt(cell.css("padding-left"))-parseInt(cell.css("padding-right"))) / 2 );
+			return ( (cell.outerWidth() - cell.innerWidth()) / 2 );
 		},
 
 		/**
@@ -570,11 +571,11 @@ define([
 		 * @return
 		 * 				the padding as an integer value
 		 */
-		'getCellPadding': function(cell) {
-			return ( parseInt(cell.css("width"))-parseInt(cell.css("padding-left"))-parseInt(cell.css("padding-right")) - parseInt(cell.css("width")));
+		'getCellPadding': function (cell) {
+			return (cell.innerWidth() - cell.width());
 		},
 
-		selectAnchorContents: function(selection) {
+		selectAnchorContents: function (selection) {
 			var anchor = getAnchorCell(selection);
 			if (anchor) {
 				var element = $('>.aloha-table-cell-editable', anchor)[0];

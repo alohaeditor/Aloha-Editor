@@ -20,7 +20,7 @@ define([
      * @returns {Promise.<OverlayElementControl.<T>>} - A Promise for a overlay element control.
      */
     function openDynamicModal(config) {
-        var $modalOverlay = $('<div>', { class: 'aloha aloha-modal-overlay' });
+        var $modalOverlay = $('<div>', { class: 'aloha aloha-modal-overlay ui-widget' });
 
         var $modal = $('<div>', {
             class: 'aloha aloha-ui aloha-modal',

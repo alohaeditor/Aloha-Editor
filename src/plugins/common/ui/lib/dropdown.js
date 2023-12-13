@@ -113,7 +113,7 @@ define([
     }
 
     function createDynamicDropdown(config, changeNotify) {
-        var $dropdown = $('<div>', { class: 'aloha aloha-ui aloha-dropdown' });
+        var $dropdown = $('<div>', { class: 'aloha aloha-ui aloha-dropdown ui-widget' });
         var $dropdownContainer = $('<div>', { class: 'dropdown-content-container' });
         var $dropdownContent = $('<div>', { class: 'dropdown-content' });
         var $confirmButton = $('<button>', {
@@ -175,6 +175,11 @@ define([
         if (!!config.resolveWithConfirmButton) {
             $confirmButton.show();
         }
+
+        $dropdown[0]._alohaDropdown = {
+            component: component,
+            control: control,
+        };
 
         return {
             $dropdown: $dropdown,

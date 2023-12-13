@@ -13,7 +13,6 @@ define([
 ], function (
     $,
     Ui,
-    Arena,
     Button,
     ToggleButton,
     AccordionMenuButton,
@@ -25,9 +24,20 @@ define([
 ) {
     'use strict';
 
-    var arenaCounter = 1;
     var componentCounter = 1;
     var noopFn = function () { /* Do nothing */ }
+
+    var componentFactoryRegistry = {
+        'button': createButtonFromConfig,
+        'toggle-button': createToggleButtonFromConfig,
+        'accordion-menu-button': createAccordionMenuButtonFromConfig,
+        'menu-button': createMenuButtonFromConfig,
+        'autocomplete': createAutocompleteFromConfig,
+        'input': createInputFromConfig,
+        'attribute-field': createAttributeFieldFromnConfig,
+        'multi-split': createMultiSplitFromConfig,
+        'text': createTextFromConfig,
+    };
 
     function buildDynamicForm(config, postChangeFn) {
         var $form = $('<form>', { class: 'aloha-ui aloha-dynamic-form' });
@@ -322,6 +332,275 @@ define([
         return control;
     }
 
+    function createButtonFromConfig(
+        config,
+        name,
+        applyChanges,
+        validateFn,
+        onChangeFn,
+        onTouchFn
+    ) {
+        var tmpOptions = config.options || {};
+        var component = Ui.adopt(name, Button, {
+            scope: tmpOptions.scope,
+            icon: tmpOptions.icon,
+            tooltip: tmpOptions.tooltip,
+            click: tmpOptions.onClick,
+
+            changeNotify: function () {
+                if (config.options != null && typeof config.options.onClick === 'function') {
+                    config.options.onClick();
+                }
+            },
+            touchNotify: function () {
+                onTouchFn();
+            }
+        });
+        return component;
+    }
+
+    function createToggleButtonFromConfig(
+        config,
+        name,
+        applyChanges,
+        validateFn,
+        onChangeFn,
+        onTouchFn
+    ) {
+        var tmpOptions = config.options || {};
+        var component = Ui.adopt(name, ToggleButton, {
+            scope: tmpOptions.scope,
+            icon: tmpOptions.icon,
+            tooltip: tmpOptions.tooltip,
+            click: tmpOptions.onClick,
+
+            changeNotify: function (value) {
+                applyChanges(value);
+                if (config.options != null && typeof config.options.onClick === 'function') {
+                    config.options.onClick(value);
+                }
+                validateFn(value);
+                onChangeFn(value);
+            },
+            touchNotify: function () {
+                onTouchFn();
+            }
+        });
+        return component;
+    }
+
+    function createAccordionMenuButtonFromConfig(
+        config,
+        name,
+        applyChanges,
+        validateFn,
+        onChangeFn,
+        onTouchFn
+    ) {
+        var tmpOptions = config.options || {};
+        var component = Ui.adopt(name, AccordionMenuButton, {
+            scope: tmpOptions.scope,
+            icon: tmpOptions.icon,
+            menu: tmpOptions.menu,
+            tooltip: tmpOptions.tooltip,
+            text: tmpOptions.text,
+            html: tmpOptions.html,
+            iconUrl: tmpOptions.iconUrl,
+
+            changeNotify: function (value) {
+                applyChanges(value);
+            },
+            touchNotify: function () {
+                onTouchFn();
+            },
+        });
+        return component;
+    }
+
+    function createMenuButtonFromConfig(
+        config,
+        name,
+        applyChanges,
+        validateFn,
+        onChangeFn,
+        onTouchFn
+    ) {
+        var tmpOptions = config.options || {};
+        var component = Ui.adopt(name, MenuButton, {
+            scope: tmpOptions.scope,
+            icon: tmpOptions.icon,
+            click: tmpOptions.onClick,
+            menu: tmpOptions.menu,
+            text: tmpOptions.text,
+            html: tmpOptions.html,
+            iconUrl: tmpOptions.iconUrl,
+            siblingContainer: tmpOptions.siblingContainer,
+
+            changeNotify: function (value) {
+                applyChanges(value);
+            },
+            touchNotify: function () {
+                onTouchFn();
+            },
+        });
+        return component;
+    }
+
+    function createAutocompleteFromConfig(
+        config,
+        name,
+        applyChanges,
+        validateFn,
+        onChangeFn,
+        onTouchFn
+    ) {
+        var tmpOptions = config.options || {};
+        var component = Ui.adopt(name, Autocomplete, {
+            scope: tmpOptions.scope,
+            types: tmpOptions.types,
+            template: tmpOptions.template,
+
+            changeNotify: function (value) {
+                applyChanges(value);
+                validateFn(value);
+                onChangeFn(value);
+            },
+            touchNotify: function () {
+                onTouchFn();
+            },
+        });
+        return component;
+    }
+
+    function createInputFromConfig(
+        config,
+        name,
+        applyChanges,
+        validateFn,
+        onChangeFn,
+        onTouchFn
+    ) {
+        var tmpOptions = config.options || {};
+
+        var component = Ui.adopt(name, Input, {
+            scope: tmpOptions.scope,
+            changeNotify: function (value) {
+                applyChanges(value);
+                validateFn(value);
+                onChangeFn(value);
+            },
+            touchNotify: function () {
+                onTouchFn();
+            },
+        });
+        return component;
+    }
+
+    function createAttributeFieldFromnConfig(
+        config,
+        name,
+        applyChanges,
+        validateFn,
+        onChangeFn,
+        onTouchFn
+    ) {
+        var tmpOptions = config.options || {};
+        var component = new AttributeField({
+            name: name,
+            label: tmpOptions.label,
+            targetObject: tmpOptions.targetObject,
+            labelClass: tmpOptions.labelClss,
+            valueField: tmpOptions.valueField,
+            displayField: tmpOptions.displayField,
+            objectTypeFilter: tmpOptions.objectTypeFilter,
+            placeholder: tmpOptions.placeholder,
+            noTargetHighlight: tmpOptions.noTargetHighlight,
+            targetHighlightClass: tmpOptions.targetHighlightClass,
+            cls: tmpOptions.cls,
+            element: tmpOptions.element,
+            width: tmpOptions.width,
+            scope: tmpOptions.scope,
+            open: tmpOptions.open,
+            modifyValue: tmpOptions.modifyValue,
+
+            changeNotify: function (value) {
+                applyChanges(value);
+                validateFn(value);
+                onChangeFn(value);
+            },
+            touchNotify: function () {
+                onTouchFn();
+            },
+        });
+        return component;
+    }
+
+    function createMultiSplitFromConfig(
+        config,
+        name,
+        applyChanges,
+        validateFn,
+        onChangeFn,
+        onTouchFn
+    ) {
+        var tmpOptions = config.options || {};
+        var component = new MultiSplitButton({
+            name: name,
+            scope: tmpOptions.scope,
+            items: tmpOptions.items,
+            click: tmpOptions.onClick,
+
+            changeNotify: function (value) {
+                applyChanges(value);
+            },
+            touchNotify: function () {
+                onTouchFn();
+            },
+        });
+        return component;
+    }
+
+    function createTextFromConfig(
+        config,
+        name,
+        applyChanges,
+        validateFn,
+        onChangeFn,
+        onTouchFn
+    ) {
+        return {
+            name: name,
+            textContent: '',
+            disabled: false,
+            touched: false,
+            validationErrors: null,
+            element: $('<div class="text-wrapper"></div>'),
+
+            setValue: function (value) {
+                this.textContent = value;
+                this.element.text(this.textContent);
+            },
+            getValue: function () {
+                return this.textContent;
+            },
+            enable: function () {
+                this.disabled = false;
+            },
+            disable: function () {
+                this.disabled = true;
+            },
+            touch: function () {
+                this.touched = true;
+            },
+            untouched: function () {
+                this.touched = false;
+            },
+            isValid: function () {
+                return this.validationErrors == null;
+            },
+        };
+    }
+
     function createComponentFromConfig(
         config,
         applyChanges,
@@ -329,202 +608,39 @@ define([
         onChangeFn,
         onTouchFn
     ) {
-        var tmpArena = Ui.adopt('modalArena-' + arenaCounter + '_' + config.type, Arena);
-        arenaCounter++;
         var componentName = 'modalComponent-' + componentCounter + '_' + config.type;
 
-        switch (config.type) {
-            case 'button': {
-                var component = Ui.adopt(componentName, Button, {
-                    changeNotify: function () {
-                        if (config.options != null && typeof config.options.onClick === 'function') {
-                            config.options.onClick();
-                        }
-                    },
-                    touchNotify: function () {
-                        onTouchFn();
-                    }
-                });
-                tmpArena.adopt(component);
-                return component;
-            }
-
-            case 'toggle-button': {
-                var component = Ui.adopt(componentName, ToggleButton, {
-                    changeNotify: function (value) {
-                        applyChanges(value);
-                        if (config.options != null && typeof config.options.onClick === 'function') {
-                            config.options.onClick(value);
-                        }
-                        validateFn(value);
-                        onChangeFn(value);
-                    },
-                    touchNotify: function () {
-                        onTouchFn();
-                    }
-                });
-                tmpArena.adopt(component);
-                return component;
-            }
-
-            case 'accordion-menu-button': {
-                var tmpOptions = config.options || {};
-                var component = Ui.adopt(componentName, AccordionMenuButton, {
-                    menu: tmpOptions.menu,
-                    tooltip: tmpOptions.tooltip,
-                    text: tmpOptions.text,
-                    html: tmpOptions.html,
-                    iconUrl: tmpOptions.iconUrl,
-
-                    changeNotify: function (value) {
-                        applyChanges(value);
-                    },
-                    touchNotify: function () {
-                        onTouchFn();
-                    },
-                });
-                return component;
-            }
-
-            case 'menu-button': {
-                var tmpOptions = config.options || {};
-                var component = Ui.adopt(componentName, MenuButton, {
-                    click: tmpOptions.onClick,
-                    menu: tmpOptions.menu,
-                    text: tmpOptions.text,
-                    html: tmpOptions.html,
-                    iconUrl: tmpOptions.iconUrl,
-                    siblingContainer: tmpOptions.siblingContainer,
-
-                    changeNotify: function (value) {
-                        applyChanges(value);
-                    },
-                    touchNotify: function () {
-                        onTouchFn();
-                    },
-                });
-                return component;
-            }
-
-            case 'autocomplete': {
-                var tmpOptions = config.options || {};
-                var component = Ui.adopt(componentName, Autocomplete, {
-                    types: tmpOptions.types,
-                    template: tmpOptions.template,
-
-                    changeNotify: function (value) {
-                        applyChanges(value);
-                        validateFn(value);
-                        onChangeFn(value);
-                    },
-                    touchNotify: function () {
-                        onTouchFn();
-                    },
-                });
-                return component;
-            }
-
-            case 'input': {
-                var component = Ui.adopt(componentName, Input, {
-                    changeNotify: function (value) {
-                        applyChanges(value);
-                        validateFn(value);
-                        onChangeFn(value);
-                    },
-                    touchNotify: function () {
-                        onTouchFn();
-                    },
-                });
-                return component;
-            }
-
-            case 'attribute-field': {
-                var tmpOptions = config.options || {};
-                var component = new AttributeField({
-                    name: componentName,
-                    label: tmpOptions.label,
-                    targetObject: tmpOptions.targetObject,
-                    labelClass: tmpOptions.labelClss,
-                    valueField: tmpOptions.valueField,
-                    displayField: tmpOptions.displayField,
-                    objectTypeFilter: tmpOptions.objectTypeFilter,
-                    placeholder: tmpOptions.placeholder,
-                    noTargetHighlight: tmpOptions.noTargetHighlight,
-                    targetHighlightClass: tmpOptions.targetHighlightClass,
-                    cls: tmpOptions.cls,
-                    element: tmpOptions.element,
-                    width: tmpOptions.width,
-                    scope: tmpOptions.scope,
-                    open: tmpOptions.open,
-                    modifyValue: tmpOptions.modifyValue,
-
-                    changeNotify: function (value) {
-                        applyChanges(value);
-                        validateFn(value);
-                        onChangeFn(value);
-                    },
-                    touchNotify: function () {
-                        onTouchFn();
-                    },
-                });
-                return component;
-            }
-
-            case 'multi-split': {
-                var tmpOptions = config.options || {};
-                var component = new MultiSplitButton({
-                    name: componentName,
-                    scope: tmpOptions.scope,
-                    items: tmpOptions.items,
-
-                    changeNotify: function (value) {
-                        applyChanges(value);
-                    },
-                    touchNotify: function () {
-                        onTouchFn();
-                    },
-                });
-                return component;
-            }
-
-            case 'text':
-                return {
-                    textContent: '',
-                    disabled: false,
-                    touched: false,
-                    validationErrors: null,
-                    element: $('<div class="text-wrapper"></div>'),
-
-                    setValue: function (value) {
-                        this.textContent = value;
-                        this.element.text(this.textContent);
-                    },
-                    getValue: function () {
-                        return this.textContent;
-                    },
-                    enable: function () {
-                        this.disabled = false;
-                    },
-                    disable: function () {
-                        this.disabled = true;
-                    },
-                    touch: function () {
-                        this.touched = true;
-                    },
-                    untouched: function () {
-                        this.touched = false;
-                    },
-                    isValid: function () {
-                        return this.validationErrors == null;
-                    },
-                };
+        var factoryFn = componentFactoryRegistry[config.type];
+        if (typeof factoryFn !== 'function') {
+            return null;
         }
+
+        return factoryFn(
+            config,
+            componentName,
+            applyChanges,
+            validateFn,
+            onChangeFn,
+            onTouchFn
+        );
     }
 
     return {
+        componentFactoryRegistry: componentFactoryRegistry,
         buildDynamicComponent: buildDynamicComponent,
         buildDynamicForm: buildDynamicForm,
         createControlFromComponent: createControlFromComponent,
         createComponentFromConfig: createComponentFromConfig,
+
+        // Default factory functions
+        createButtonFromConfig: createButtonFromConfig,
+        createToggleButtonFromConfig: createToggleButtonFromConfig,
+        createAccordionMenuButtonFromConfig: createAccordionMenuButtonFromConfig,
+        createMenuButtonFromConfig: createMenuButtonFromConfig,
+        createAutocompleteFromConfig: createAutocompleteFromConfig,
+        createInputFromConfig: createInputFromConfig,
+        createAttributeFieldFromnConfig: createAttributeFieldFromnConfig,
+        createMultiSplitFromConfig: createMultiSplitFromConfig,
+        createTextFromConfig: createTextFromConfig,
     };
 });

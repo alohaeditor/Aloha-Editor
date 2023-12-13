@@ -131,3 +131,29 @@ input.aloha-wai-red {
 .aloha .ui-state-default .aloha-icon-table-naturalfit {
 	background-position: -432px 0px;
 }
+
+.aloha-table-size-grid .grid-row {
+	display: grid;
+	grid-template-columns: repeat(var(--aloha-grid-columns), auto);
+}
+
+.aloha-table-size-grid .grid-row:nth-child(5n):not(:last-child) {
+	border-bottom: 1px solid #3d3d3d;
+}
+
+.aloha-table-size-grid .cell {
+	width: 1rem;
+	height: 1rem;
+	background: #d4d4d4;
+	margin: 1px;
+	transition: 150ms;
+}
+
+.aloha-table-size-grid .cell.active,
+.aloha-table-size-grid .cell:hover {
+	background: #1c94c4;
+}
+
+.aloha-table-size-grid .cell:nth-child(5n):not(:last-child) {
+	border-right: 1px solid #3d3d3d;
+}
