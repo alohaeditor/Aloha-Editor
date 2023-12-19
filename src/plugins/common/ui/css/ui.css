@@ -514,46 +514,55 @@
 
 /* === icons === */
 
-.aloha .ui-state-default .aloha-icon {
+.aloha .aloha-icon {
 	background-image: url(../img/format-inline.png);
 }
 
 /* TODO: merge with icons image file */
-.aloha .ui-state-default .aloha-icon-tree           { background-image: url(../img/tree.png); }
+.aloha .aloha-icon-tree           { background-image: url(../img/tree.png); }
 
-.aloha .ui-state-default .aloha-icon-bold           { background-position: 0 0; }
-.aloha .ui-state-default .aloha-icon-italic         { background-position: -16px 0; }
-.aloha .ui-state-default .aloha-icon-underline      { background-position: -32px 0; }
-.aloha .ui-state-default .aloha-icon-strikethrough  { background-position: -48px 0; }
-.aloha .ui-state-default .aloha-icon-subscript      { background-position: -64px 0; }
-.aloha .ui-state-default .aloha-icon-superscript    { background-position: -80px 0; }
-.aloha .ui-state-default .aloha-icon-createTable    { background-position: -96px 0; }
-.aloha .ui-state-default .aloha-icon-addcolumnleft  { background-position: -112px 0; }
-.aloha .ui-state-default .aloha-icon-addcolumnright { background-position: -128px 0; }
-.aloha .ui-state-default .aloha-icon-addrowbefore   { background-position: -144px 0; }
-.aloha .ui-state-default .aloha-icon-addrowafter    { background-position: -160px 0; }
-.aloha .ui-state-default .aloha-icon-deleterows     { background-position: -176px 0; }
-.aloha .ui-state-default .aloha-icon-deletecolumns  { background-position: -192px 0; }
-.aloha .ui-state-default .aloha-icon-table-caption  { background-position: -320px 0; }
-.aloha .ui-state-default .aloha-icon-rowheader      { background-position: -352px 0; }
-.aloha .ui-state-default .aloha-icon-columnheader   { background-position: -368px 0; }
-.aloha .ui-state-default .aloha-icon-mergecells     { background-position: -384px 0; }
-.aloha .ui-state-default .aloha-icon-splitcells     { background-position: -400px 0; }
-.aloha .ui-state-default .aloha-icon-deletetable    { background-position: -448px 0; }
-.aloha .ui-state-default .aloha-icon-orderedlist    { background-position: -272px 0; }
-.aloha .ui-state-default .aloha-icon-unorderedlist  { background-position: -256px 0; }
-.aloha .ui-state-default .aloha-icon-link           { background-position: -288px 0; }
-.aloha .ui-state-default .aloha-icon-anchor         { background: url(../img/anchor.png) no-repeat; }
-.aloha .ui-state-default .aloha-icon-unlink         { background-position: -304px 0; }
-.aloha .ui-state-default .aloha-icon-abbr           { background-position: -336px 0; }
-.aloha .ui-state-default .aloha-icon-emphasis       { background-image: url(../img/em.png); }
-.aloha .ui-state-default .aloha-icon-strong         { background-image: url(../img/strong.png); }
-.aloha .ui-state-default .aloha-icon-code           { background-image: url(../img/code.png); }
+.aloha .aloha-icon-bold           { background-position: 0 0; }
+.aloha .aloha-icon-italic         { background-position: -16px 0; }
+.aloha .aloha-icon-underline      { background-position: -32px 0; }
+.aloha .aloha-icon-strikethrough  { background-position: -48px 0; }
+.aloha .aloha-icon-subscript      { background-position: -64px 0; }
+.aloha .aloha-icon-superscript    { background-position: -80px 0; }
+.aloha .aloha-icon-createTable    { background-position: -96px 0; }
+.aloha .aloha-icon-addcolumnleft  { background-position: -112px 0; }
+.aloha .aloha-icon-addcolumnright { background-position: -128px 0; }
+.aloha .aloha-icon-addrowbefore   { background-position: -144px 0; }
+.aloha .aloha-icon-addrowafter    { background-position: -160px 0; }
+.aloha .aloha-icon-deleterows     { background-position: -176px 0; }
+.aloha .aloha-icon-deletecolumns  { background-position: -192px 0; }
+.aloha .aloha-icon-table-caption  { background-position: -320px 0; }
+.aloha .aloha-icon-rowheader      { background-position: -352px 0; }
+.aloha .aloha-icon-columnheader   { background-position: -368px 0; }
+.aloha .aloha-icon-mergecells     { background-position: -384px 0; }
+.aloha .aloha-icon-splitcells     { background-position: -400px 0; }
+.aloha .aloha-icon-deletetable    { background-position: -448px 0; }
+.aloha .aloha-icon-orderedlist    { background-position: -272px 0; }
+.aloha .aloha-icon-unorderedlist  { background-position: -256px 0; }
+.aloha .aloha-icon-link           { background-position: -288px 0; }
+.aloha .aloha-icon-anchor         { background: url(../img/anchor.png) no-repeat; }
+.aloha .aloha-icon-unlink         { background-position: -304px 0; }
+.aloha .aloha-icon-abbr           { background-position: -336px 0; }
+.aloha .aloha-icon-emphasis       { background-image: url(../img/em.png); }
+.aloha .aloha-icon-strong         { background-image: url(../img/strong.png); }
+.aloha .aloha-icon-code           { background-image: url(../img/code.png); }
+.aloha .aloha-icon-paragraph		{ background-image: url(../img/metaview/p.png); }
+.aloha .aloha-icon-h1				{ background-image: url(../img/metaview/h1.png); }
+.aloha .aloha-icon-h2				{ background-image: url(../img/metaview/h2.png); }
+.aloha .aloha-icon-h3				{ background-image: url(../img/metaview/h3.png); }
+.aloha .aloha-icon-h4				{ background-image: url(../img/metaview/h4.png); }
+.aloha .aloha-icon-h5				{ background-image: url(../img/metaview/h5.png); }
+.aloha .aloha-icon-h6				{ background-image: url(../img/metaview/h6.png); }
+.aloha .aloha-icon-pre			{ background-image: url(../img/metaview/pre.png); }
+.aloha .aloha-icon-typography		{ background-position: -336px 0; }
 
-.aloha .ui-state-default .aloha-icon-indent {
+.aloha .aloha-icon-indent {
 	background: url(../../../../img/text_indent.png) no-repeat center center;
 }
-.aloha .ui-state-default .aloha-icon-outdent {
+.aloha .aloha-icon-outdent {
 	background: url(../../../../img/text_indent_remove.png) no-repeat center center;
 }
 
@@ -836,6 +845,102 @@ span.ui-button-icon-primary.ui-icon.ui-icon-closethick {
 	margin-right: 2px;
 }
 
+/* Context Button */
+
+.aloha .ui-button.context-button {
+	width: 37px;
+}
+
+.aloha .ui-button.context-button .ui-button-icon-primary {
+	left: 2px;
+	margin-left: 0;
+}
+
+.aloha .ui-button.context-button .ui-button-icon-secondary {
+	right: 3px;
+	left: unset;
+	margin-left: 0;
+}
+
+/* Split Button */
+
+.aloha .ui-split-button {
+	display: inline-flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	border: 1px solid transparent;
+	border-radius: 2px;
+	opacity: 0.8;
+	height: 24px
+}
+
+.aloha .ui-split-button:hover {
+	border-color: #d6d6d6;
+}
+
+.aloha .ui-split-button .ui-split-button-main,
+.aloha .ui-split-button .ui-split-button-secondary {
+	background: transparent;
+	z-index: 0;
+	opacity: 0.8;
+	position: relative;
+	border: none;
+	cursor: pointer;
+}
+
+.aloha .ui-split-button .ui-split-button-main:hover,
+.aloha .ui-split-button .ui-split-button-secondary:hover {
+	opacity: 1;
+	background: #efefef;
+}
+
+.aloha .ui-split-button .ui-split-button-main {
+	opacity: 0.8;
+	width: 24px;
+	height: 26px;
+}
+
+.aloha .ui-split-button .ui-split-button-secondary {
+	width: 14px;
+	border: 1px solid transparent;
+	height: 24px;
+}
+
+.aloha .ui-icon-splitbtn-expand {
+	background-position: -64px 0px;
+	background-image: url("../img/jqueryui/ui-icons_222222_256x240.png");
+	margin-left: -2px;
+}
+
+/* Toggle Split Button */
+
+.aloha .ui-split-button.toggle-button .ui-split-button-secondary {
+	display: none;
+}
+
+.aloha .ui-split-button.toggle-button.active {
+	background-color: #fff;
+	border-color: #aaa;
+	opacity: 1;
+}
+
+.aloha .ui-split-button.toggle-button.active .ui-split-button-secondary {
+	display: inline-block;
+}
+
+.aloha .ui-split-button.toggle-button.active .ui-split-button-secondary:hover {
+	border-color: #999;
+  	background-color: #e6e6e6;
+}
+
+/* Attribute Buttons */
+
+.aloha .aloha-attribute-button > .ui-button {
+	height: 24px;
+}
+
+/* Overlay Elements */
+
 .aloha-modal-overlay,
 .aloha-dropdown-overlay {
 	position: fixed;
@@ -843,8 +948,11 @@ span.ui-button-icon-primary.ui-icon.ui-icon-closethick {
 	left: 0;
 	width: 100%;
 	height: 100%;
-	z-index: 100;
+	/* Has to be insanely high, because the toolbar is 10100 */
+	z-index: 20000;
 }
+
+/* Modals */
 
 .aloha-modal-overlay {
 	background: rgba(0,0,0,0.1);
@@ -852,22 +960,23 @@ span.ui-button-icon-primary.ui-icon.ui-icon-closethick {
 
 .aloha-modal.aloha-ui {
 	position: fixed;
-	top: 5rem;
+	top: 80px;
 	left: 10%;
 	width: 80%;
 	background: #fff;
-	padding: 1.5rem 2rem;
+	padding: 24px 32px;
 	border-radius: 2px;
 	box-shadow: 2px 2px 2px rgba(0,0,0,0.5);
 	display: flex;
 	flex-direction: column;
 	flex-wrap: nowrap;
-	z-index: 150;
+	/* Has to be insanely high, because the toolbar is 10100 */
+	z-index: 20001;
 }
 
 .aloha-modal.aloha-ui .modal-header {
 	width: 100%;
-	margin-bottom: 1rem;
+	margin-bottom: 16px;
 }
 
 .aloha-modal.aloha-ui .modal-body {
@@ -884,7 +993,7 @@ span.ui-button-icon-primary.ui-icon.ui-icon-closethick {
 
 .aloha-modal.aloha-ui .modal-footer {
 	width: 100%;
-	margin-top: 1rem;
+	margin-top: 16px;
 	display: flex;
 	flex-direction: row;
 	flex-wrap: nowrap;
@@ -893,17 +1002,18 @@ span.ui-button-icon-primary.ui-icon.ui-icon-closethick {
 
 .aloha-modal.aloha-ui .modal-footer .footer-button {
 	display: block;
-	padding: 0.5rem 1rem;
+	padding: 8px 16px;
 	border-radius: 1px;
 	box-shadow: 2px 2px 2px rgba(0,0,0,0.2);
 	cursor: pointer;
 	color: #000;
 	transition: 300ms;
+	font-size: 16px;
 }
 
 .aloha-modal.aloha-ui .modal-footer .footer-button.cancel-button {
 	background: #c0c0c0;
-	margin: 0 1rem;
+	margin: 0 16px;
 }
 
 .aloha-modal.aloha-ui .modal-footer .footer-button.cancel-button:hover {
@@ -924,26 +1034,28 @@ span.ui-button-icon-primary.ui-icon.ui-icon-closethick {
 	cursor: not-allowed;
 }
 
+/* Dropdown */
+
 .aloha-dropdown.aloha-ui {
 	position: fixed;
 	/* Has to be insanely high, because the toolbar is 10100 */
-	z-index: 20000;
+	z-index: 20002;
 	background: #fff;
 	border-radius: 2px;
 	box-shadow: 2px 2px 2px rgba(0,0,0,0.5);
-	padding: 0.5rem 1rem;
+	padding: 8px;
 }
 
 .aloha-dropdown .dropdown-confirm-button {
 	display: block;
-	padding: 0.5rem 1rem;
+	padding: 8px 16px;
 	border-radius: 1px;
 	box-shadow: 2px 2px 2px rgba(0,0,0,0.2);
 	cursor: pointer;
 	color: #000;
 	transition: 300ms;
 	background: #97f476;
-	margin-top: 0.25rem;
+	margin-top: 4px;
 }
 
 .aloha-dropdown .dropdown-confirm-button:hover {
@@ -954,4 +1066,96 @@ span.ui-button-icon-primary.ui-icon.ui-icon-closethick {
 .aloha-dropdown .dropdown-confirm-button:disabled {
 	background: #828282;
 	cursor: not-allowed;
+}
+
+/* Input Stylings */
+
+.aloha-ui .input-container,
+.aloha-ui .checkbox-container {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	width: 100%;
+	padding: 0 4px;
+  	box-sizing: border-box;
+	margin: 8px 0;
+}
+
+.aloha-ui .input-container .input-label {
+	color: #000;
+	font-size: 14px;
+}
+
+.aloha-ui .input-container .input-label:not(:empty) {
+	margin-bottom: 2px;
+}
+
+.aloha-ui .input-container .input-element {
+	margin: 0;
+	width: 100%;
+	box-sizing: border-box;
+	font-size: 16px;
+	padding: 4px;
+}
+
+.aloha-ui .checkbox-container {
+	padding: 4px;
+}
+
+.aloha-ui .checkbox-container .checkbox-label {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	align-items: flex-start;
+}
+
+.aloha-ui .checkbox-container .checkbox-element {
+	margin-left: 0px;
+	flex: 0 0;
+	height: 14px;
+	display: block;
+}
+
+.aloha-ui .checkbox-container .checkbox-label-content {
+	color: #000;
+	font-size: 14px;
+	display: block;
+	flex: 1 1 auto;
+}
+
+/* Select Menu */
+
+.aloha-select-menu .select-menu-options-container {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+}
+
+.aloha-select-menu .select-menu-options-container .select-menu-option {
+	margin: 2px 4px;
+	background: transparent;
+	border: 1px solid rgba(0,0,0,0.2);
+	cursor: pointer;
+}
+
+.aloha-select-menu .select-menu-options-container .select-menu-option:hover,
+.aloha-select-menu .select-menu-options-container .select-menu-option:focus {
+	border-color: rgba(0,0,0,0.8);
+}
+
+.aloha-select-menu .select-menu-options-container .select-menu-option.active {
+	border-color: #3B73D7;
+}
+
+.aloha-select-menu.icons-only .select-menu-options-container {
+	flex-direction: row;
+}
+
+.aloha-select-menu.icons-only .select-menu-options-container .select-menu-option {
+	width: 18px;
+	height: 18px;
+}
+
+.aloha-select-menu.icons-only .select-menu-options-container .select-menu-option .select-menu-option-label {
+	display: none;
 }

@@ -1026,6 +1026,7 @@ define([
 	});
 
 	Aloha.Sidebar = {
+		disabled: !!((Aloha.settings || {}).sidebar || {}).disabled,
 		left: left,
 		right: right
 	};

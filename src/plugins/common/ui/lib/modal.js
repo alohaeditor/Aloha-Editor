@@ -23,7 +23,7 @@ define([
         var $modalOverlay = $('<div>', { class: 'aloha aloha-modal-overlay ui-widget' });
 
         var $modal = $('<div>', {
-            class: 'aloha aloha-ui aloha-modal',
+            class: 'aloha aloha-ui aloha-modal ui-widget',
             modal: true,
         });
 

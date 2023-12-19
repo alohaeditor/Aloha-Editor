@@ -10,6 +10,11 @@ define({
 	"button.no.label": "Nein",
 	"button.confirm.label": "Bestätigen",
 	"button.cancel.label": "Abbrechen",
+
+	"split-button.secondary.label": "Kontext öffnen",
+	"link-target.target.label": "Ziel",
+	"link-target.anchor.label": "Anker",
+
 	"button.p.label": "Absatz",
 	"button.h1.label": "Überschrift 1",
 	"button.h2.label": "Überschrift 2",

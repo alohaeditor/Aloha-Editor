@@ -1,17 +1,17 @@
 define([
-	'jquery',
 	'ui/button',
 	'jqueryui'
-],
-function (jQuery, Button) {
+], function (
+	Button
+) {
 	'use strict';
 
-	var idCounter = 0;
+	var CLASS_ACTIVE = 'aloha-button-active';
 
 	/**
 	 * ToggleButton control. Extends the Button component type to provide an
-	 * easy way to create buttons that can transition between "checked" and
-	 * "unchecked" states.
+	 * easy way to create buttons that can transition between "active" and
+	 * "inactive" states.
 	 *
 	 * @class
 	 * @name ToggleButton
@@ -19,7 +19,7 @@ function (jQuery, Button) {
 	 */
 	var ToggleButton = Button.extend({
 
-		_checked: false,
+		active: false,
 
 		/**
 		 * Sets the state of the toggleButton and updates its visual display
@@ -32,32 +32,33 @@ function (jQuery, Button) {
 			// It is very common to set the button state on every
 			// selection change even if the state hasn't changed.
 			// Profiling showed that this is very inefficient.
-			if (this._checked === toggled) {
+			if (this.active === toggled) {
 				return;
 			}
-			this._checked = toggled;
+			this.active = toggled;
 			if (toggled) {
-				this.element.addClass("aloha-button-active");
+				this.element.addClass(CLASS_ACTIVE);
 			} else {
-				this.element.removeClass("aloha-button-active");
-			}
-			if (typeof this.changeNotify === 'function') {
-				this.changeNotify(this._checked);
+				this.element.removeClass(CLASS_ACTIVE);
 			}
 		},
 
 		getState: function () {
-			return this._checked;
+			return this.active;
 		},
 
 		_onClick: function () {
-			this.setState(! this._checked);
 			this.touch();
+			this.setState(!this.active);
+			this.triggerChangeNotification();
 			this.click();
 		},
 
 		setValue: function(value) {
 			this.setState(value);
+		},
+		getValue: function() {
+			return this.active;
 		}
 	});
 

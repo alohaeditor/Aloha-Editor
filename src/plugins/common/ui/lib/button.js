@@ -30,6 +30,25 @@ function (jQuery, Component, Utils) {
 	 */
 	var Button = Component.extend({
 
+		/** @type {string=} Text in the button. Only `text` or `html` may be set. */
+		text: '',
+		/** @type {string=} HTML in the button. Only `text` or `html` may be set. */
+		html: '',
+		/** @type {(string|object.<string,string>)=} The icon (CSS-Class) to use for this button. */
+		icon: '',
+		/** @type {string=} The URL to the icon to use for this button. */
+		iconUrl: '',
+		/** @type {string=} The tooltip text/content to display when the button is hovered over. */
+		tooltip: '',
+
+		// Internals
+		/**
+		 * There's an issue with changing the initial icon: it doesn't remove the initially created icon.
+		 * Therefore we have to remove this "zombie" icon after updating the icon once, or we have duplicated
+		 * icon entries which isn't really helpful for anyone.
+		 */
+		didRemoveInitialIcon: false,
+
 		/**
 		 * Initializes this button instance.
 		 * The initialization is done when the component is rendered, not when
@@ -78,8 +97,8 @@ function (jQuery, Component, Utils) {
 		 * @protected
 		 */
 		_onClick: function () {
-			this.click();
 			this.touch();
+			this.click();
 		},
 
 		/**
@@ -108,20 +127,58 @@ function (jQuery, Component, Utils) {
 			return button;
 		},
 
+		setIcon: function(icon) {
+			this.icon = icon;
+
+			// Update the icon in the create button instance
+			if (this.buttonElement) {
+				if (!this.didRemoveInitialIcon) {
+					this.didRemoveInitialIcon = true;
+					this.buttonElement.find('.ui-button-icon-primary').remove();
+				}
+
+				if (this.icon == null) {
+					this.buttonElement.button('option', 'icons', null);
+				} else if (typeof this.icon === 'object') {
+					this.buttonElement.button('option', 'icons', icon);
+				} else {
+					this.buttonElement.button('option', 'icon', icon);
+				}
+			}
+		},
+
+		setText: function(text) {
+			this.text = text;
+
+			// Update the icon in the create button instance
+			if (this.buttonElement) {
+				this.buttonElement.button('option', 'text', text);
+			}
+		},
+
+		setTooltip: function(tooltip) {
+			this.tooltip = tooltip;
+
+			// Update the icon in the create button instance
+			if (this.buttonElement) {
+				this.buttonElement.tooltip('option', 'content', tooltip);
+			}
+		},
+
 		/**
 		 * Shows the button in a greyed-out inactive (unclickable) state.
 		 */
 		disable: function () {
-			this.disabled = true;
-			this.element.button('option', 'disabled', false);
+			this._super();
+			this.buttonElement.button('option', 'disabled', true);
 		},
 
 		/**
 		 * Enables the button again after it has previously been disabled.
 		 */
-		enable: function (enable_opt) {
-			this.disabled = false;
-			this.element.button('option', 'disabled', enable_opt === false);
+		enable: function () {
+			this._super();
+			this.buttonElement.button('option', 'disabled', false);
 		}
 	});
 

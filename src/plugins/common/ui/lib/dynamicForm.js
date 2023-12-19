@@ -1,15 +1,18 @@
 define([
     'jquery',
     'ui/ui',
-    'ui/arena',
     'ui/button',
     'ui/toggleButton',
     'ui/accordionMenuButton',
     'ui/menuButton',
+    'ui/splitButton',
+    'ui/toggleSplitButton',
     'ui/autocomplete',
+    'ui/checkbox',
     'ui/input',
     'ui/port-helper-attribute-field',
-    'ui/port-helper-multi-split'
+    'ui/port-helper-multi-split',
+    'ui/selectMenu'
 ], function (
     $,
     Ui,
@@ -17,10 +20,14 @@ define([
     ToggleButton,
     AccordionMenuButton,
     MenuButton,
+    SplitButton,
+    ToggleSplitButton,
     Autocomplete,
+    Checkbox,
     Input,
     AttributeField,
-    MultiSplitButton
+    MultiSplitButton,
+    SelectMenu
 ) {
     'use strict';
 
@@ -32,11 +39,15 @@ define([
         'toggle-button': createToggleButtonFromConfig,
         'accordion-menu-button': createAccordionMenuButtonFromConfig,
         'menu-button': createMenuButtonFromConfig,
+        'split-button': createSplitButtonFromConfig,
+        'toggle-split-button': createToggleSplitButtonFromConfig,
         'autocomplete': createAutocompleteFromConfig,
+        'checkbox': createCheckboxFromConfig,
         'input': createInputFromConfig,
         'attribute-field': createAttributeFieldFromnConfig,
         'multi-split': createMultiSplitFromConfig,
         'text': createTextFromConfig,
+        'select-menu': createSelectMenuFromConfig,
     };
 
     function buildDynamicForm(config, postChangeFn) {
@@ -56,6 +67,10 @@ define([
             validationErrors: null,
             controlErrors: null,
         };
+
+        // Flag which is only set temporarily when starting the validation for the whole form.
+        // Done to only run the form validation once, and not for all controls all the time.
+        var runningAllChecks = false;
 
         function forwardPostChangeFn() {
             if (typeof postChangeFn === 'function') {
@@ -121,6 +136,24 @@ define([
             markAsPristine: function () {
                 formReference.touched = false;
             },
+            updateValueAndValidity: function() {
+                runningAllChecks = true;
+                // Run the validation on all controls, and then this validation handler again
+                Object.values(formReference.controls).forEach(function (control) {
+                    control.updateValueAndValidity();
+                });
+
+                checkForControlErrors();
+
+                if (typeof config.validate === 'function') {
+                    formReference.validationErrors = config.validate(structuredClone(formReference.value));
+                }
+
+                runningAllChecks = false;
+
+                forwardPostChangeFn();
+            },
+            controls: formReference.controls,
         };
 
         formReference.control = formControl;
@@ -176,6 +209,9 @@ define([
                 if (typeof controlConfig.validate === 'function') {
                     componentData.component.validationErrors = controlConfig.validate(value);
                 }
+                if (runningAllChecks) {
+                    return;
+                }
                 checkForControlErrors();
                 if (typeof config.validate === 'function') {
                     formReference.validationErrors = config.validate(structuredClone(formReference.value));
@@ -204,8 +240,18 @@ define([
                 changeHandler,
                 touchHandler
             );
-            var container = $('<div>');
-            container.addClass('dynamic-component-container');
+
+            if (componentData == null) {
+                return;
+            }
+
+            var container = $('<div>', {
+                class: 'dynamic-component-container',
+                attr: {
+                    'data-control-name': controlName,
+                    'data-component-type': controlConfig.type,
+                },
+            });
             container.append(componentData.component.element);
             $form.append(container);
 
@@ -227,6 +273,9 @@ define([
             }
         });
 
+        // Run the validation once initially
+        formReference.control.updateValueAndValidity();
+
         // Create a copy of the reference with read-only properties
         var returnValue = {};
         Object.keys(formReference).forEach(function (referenceKey) {
@@ -238,7 +287,7 @@ define([
             });
         });
 
-        $form._alohaForm = returnValue;
+        $form[0]._alohaForm = returnValue;
 
         return returnValue;
     }
@@ -250,9 +299,7 @@ define([
         changeHandler,
         touchHandler
     ) {
-        var component = null;
-
-        component = createComponentFromConfig(
+        var component = createComponentFromConfig(
             controlConfig,
             function (value) {
                 valueApplyFn(value);
@@ -261,6 +308,10 @@ define([
             changeHandler,
             touchHandler
         );
+
+        if (component == null) {
+            return null;
+        }
 
         return {
             component: component,
@@ -328,6 +379,9 @@ define([
         control.markAsPristine = function () {
             component.untouch();
         };
+        control.updateValueAndValidity = function() {
+            validationHandler(component.getValue());
+        };
 
         return control;
     }
@@ -376,9 +430,6 @@ define([
 
             changeNotify: function (value) {
                 applyChanges(value);
-                if (config.options != null && typeof config.options.onClick === 'function') {
-                    config.options.onClick(value);
-                }
                 validateFn(value);
                 onChangeFn(value);
             },
@@ -446,6 +497,64 @@ define([
         return component;
     }
 
+    function createSplitButtonFromConfig(
+        config,
+        name,
+        applyChanges,
+        validateFn,
+        onChangeFn,
+        onTouchFn
+    ) {
+        var tmpOptions = config.options || {};
+        var component = Ui.adopt(name, SplitButton, {
+            scope: tmpOptions.scope,
+            icon: tmpOptions.icon,
+            tooltip: tmpOptions.tooltip,
+            click: tmpOptions.click,
+            secondaryLabel: tmpOptions.secondaryLabel,
+            secondaryClick: tmpOptions.secondaryClick,
+
+            changeNotify: function () {
+                if (config.options != null && typeof config.options.onClick === 'function') {
+                    config.options.onClick();
+                }
+            },
+            touchNotify: function () {
+                onTouchFn();
+            }
+        });
+        return component;
+    }
+
+    function createToggleSplitButtonFromConfig(
+        config,
+        name,
+        applyChanges,
+        validateFn,
+        onChangeFn,
+        onTouchFn
+    ) {
+        var tmpOptions = config.options || {};
+        var component = Ui.adopt(name, ToggleSplitButton, {
+            scope: tmpOptions.scope,
+            icon: tmpOptions.icon,
+            tooltip: tmpOptions.tooltip,
+            click: tmpOptions.click,
+            secondaryLabel: tmpOptions.secondaryLabel,
+            secondaryClick: tmpOptions.secondaryClick,
+
+            changeNotify: function () {
+                if (config.options != null && typeof config.options.onClick === 'function') {
+                    config.options.onClick();
+                }
+            },
+            touchNotify: function () {
+                onTouchFn();
+            }
+        });
+        return component;
+    }
+
     function createAutocompleteFromConfig(
         config,
         name,
@@ -472,6 +581,34 @@ define([
         return component;
     }
 
+    function createCheckboxFromConfig(
+        config,
+        name,
+        applyChanges,
+        validateFn,
+        onChangeFn,
+        onTouchFn
+    ) {
+        var tmpOptions = config.options || {};
+
+        var component = Ui.adopt(name, Checkbox, {
+            scope: tmpOptions.scope,
+            checked: tmpOptions.checked,
+            label: tmpOptions.label,
+
+            changeNotify: function (value) {
+                applyChanges(value);
+                validateFn(value);
+                onChangeFn(value);
+            },
+            touchNotify: function () {
+                onTouchFn();
+            },
+        });
+
+        return component;
+    }
+
     function createInputFromConfig(
         config,
         name,
@@ -484,6 +621,9 @@ define([
 
         var component = Ui.adopt(name, Input, {
             scope: tmpOptions.scope,
+            value: tmpOptions.value,
+            label: tmpOptions.checked,
+
             changeNotify: function (value) {
                 applyChanges(value);
                 validateFn(value);
@@ -601,6 +741,34 @@ define([
         };
     }
 
+    function createSelectMenuFromConfig(
+        config,
+        name,
+        applyChanges,
+        validateFn,
+        onChangeFn,
+        onTouchFn
+    ) {
+        var tmpOptions = config.options || {};
+        var component = Ui.adopt(name, SelectMenu, {
+            scope: tmpOptions.scope,
+            options: tmpOptions.options,
+            activeOption: tmpOptions.activeOption,
+            iconsOnly: tmpOptions.iconsOnly,
+
+            changeNotify: function (value) {
+                applyChanges(value);
+                validateFn(value);
+                onChangeFn(value);
+            },
+            touchNotify: function () {
+                onTouchFn();
+            },
+        });
+
+        return component;
+    }
+
     function createComponentFromConfig(
         config,
         applyChanges,
@@ -612,6 +780,7 @@ define([
 
         var factoryFn = componentFactoryRegistry[config.type];
         if (typeof factoryFn !== 'function') {
+            console.debug('Could not find a component factory for component-type "' + config.type + '"! Component with config will be ignored:', config);
             return null;
         }
 
@@ -637,7 +806,9 @@ define([
         createToggleButtonFromConfig: createToggleButtonFromConfig,
         createAccordionMenuButtonFromConfig: createAccordionMenuButtonFromConfig,
         createMenuButtonFromConfig: createMenuButtonFromConfig,
+        createSplitButtonFromConfig: createSplitButtonFromConfig,
         createAutocompleteFromConfig: createAutocompleteFromConfig,
+        createCheckboxFromConfig: createCheckboxFromConfig,
         createInputFromConfig: createInputFromConfig,
         createAttributeFieldFromnConfig: createAttributeFieldFromnConfig,
         createMultiSplitFromConfig: createMultiSplitFromConfig,

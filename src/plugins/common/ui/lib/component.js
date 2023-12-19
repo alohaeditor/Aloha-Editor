@@ -79,6 +79,7 @@ define([
 		_constructor: function () {
 			this.id = idCounter++;
 			this.init();
+			$(this.element)[0]._alohaComponent = this;
 		},
 
 		adoptParent: function (container) {
@@ -148,12 +149,21 @@ define([
 
 		touch: function() {
 			this.touched = true;
+			this.triggerTouchNotification();
+		},
+		untouched: function() {
+			this.touched = false;
+		},
+
+		triggerTouchNotification: function() {
 			if (typeof this.touchNotify === 'function') {
 				this.touchNotify();
 			}
 		},
-		untouched: function() {
-			this.touched = false;
+		triggerChangeNotification: function() {
+			if (typeof this.changeNotify === 'function') {
+				this.changeNotify(this.getValue());
+			}
 		},
 
 		isValid: function() {

@@ -25,12 +25,14 @@ define([
 	'ui/scopes',
 	'ui/button',
 	'ui/toggleButton',
+	'ui/contextButton',
 	'ui/input',
 	'i18n!link/nls/i18n',
 	'PubSub',
 	'util/keys',
-	'ui/modal',
-	'ui/dropdown',
+	'link/link-target',
+	'ui/dynamicForm',
+	'ui/overlayElement',
 	'../../../shared/languages/languages'
 ], function (
 	$,
@@ -44,12 +46,14 @@ define([
 	Scopes,
 	Button,
 	ToggleButton,
+	ContextButton,
 	Input,
 	i18n,
 	PubSub,
 	Keys,
-	Modal,
-	Dropdown,
+	LinkTarget,
+	DynamicForm,
+	OverlayElement,
 	LanguageRepository
 ) {
 	'use strict';
@@ -224,6 +228,32 @@ define([
 		return '';
 	}
 
+	function createLinkTargetFromConfig(
+		config,
+        name,
+        applyChanges,
+        validateFn,
+        onChangeFn,
+        onTouchFn
+	) {
+		var tmpOptions = config.options || {};
+		var component = Ui.adopt(name, LinkTarget, {
+			value: tmpOptions.value,
+			targetLabel: tmpOptions.targetLabel,
+			anchorLabel: tmpOptions.anchorLabel,
+
+			changeNotify: function (value) {
+                applyChanges(value);
+                validateFn(value);
+                onChangeFn(value);
+            },
+            touchNotify: function () {
+                onTouchFn();
+            },
+		});
+		return component;
+	}
+
 	return Plugin.create('link', {
 		/**
 		 * Default configuration allows links everywhere
@@ -321,6 +351,8 @@ define([
 		 */
 		init: function () {
 			var plugin = this;
+
+			DynamicForm.componentFactoryRegistry['link-target'] = createLinkTargetFromConfig;
 
 			if ('undefined' !== typeof this.settings.title) {
 				this.title = this.settings.title;
@@ -714,13 +746,45 @@ define([
 				}
 			});
 
-			this._insertLinkButton = Ui.adopt("insertLink", Button, {
+			this._insertLinkButton = Ui.adopt("insertLink", ContextButton, {
 				tooltip: i18n.t("button.addlink.tooltip"),
 				icon: "aloha-icon aloha-icon-link",
 				scope: 'Aloha.continuoustext',
-				click: function() {
-					
-				}
+				context: {
+					title: 'Insert Link',
+					controls: {
+						url: {
+							type: 'link-target',
+							validate: function(value) {
+								return (value == null || !value.target) ? {
+									required: true
+								} : null;
+							},
+						},
+						newTab: {
+							type: 'checkbox',
+							options: {
+								label: 'Open in new Tab',
+							},
+						},
+					},
+				},
+				contextType: 'modal',
+				contextResolve: function(formData) {
+					// When modal is closed
+					console.log('Link modal successfully closed', formData);
+				},
+				contextReject: function(error) {
+					if (
+						error instanceof OverlayElement.OverlayCloseError
+						&& error.reason !== OverlayElement.ClosingReason.ERROR
+					) {
+						// Error can be safely ignored
+						return;
+					}
+	
+					console.error('Error while opening link modal', error);
+				},
 			});
 
 			this.hrefField = AttributeField({

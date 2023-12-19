@@ -12,6 +12,10 @@ define({
 		"button.confirm.label": "Confirm",
 		"button.cancel.label": "Cancel",
 
+		"split-button.secondary.label": "Open Context",
+		"link-target.target.label": "Target",
+		"link-target.anchor.label": "Anchor",
+
 		// paragraph
 		"button.p.label": "Paragraph",
 		"button.h1.label": "Heading 1",

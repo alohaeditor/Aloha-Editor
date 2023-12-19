@@ -1,4 +1,5 @@
 define([], function () {
+    'use strict';
 
     /**
      * @typedef {object} OverlayElementControl

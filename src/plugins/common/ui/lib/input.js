@@ -1,21 +1,47 @@
 define([
 	"jquery",
 	"ui/component"
-],
-function (jQuery, Component) {
+], function (
+	jQuery,
+	Component
+) {
+	'use strict';
+
+	var counter = 0;
+
 	/**
 	 * Input component type
 	 * @class
 	 * @extend {Component}
 	 */
 	var Input = Component.extend({
+		/** Label for the input */
+		label: '',
+
+		/** Type of the input */
+		type: 'text',
+
+		inputElement: null,
+
 		/**
 		 * Initializes the text component
 		 * @override
 		 */
 		init: function () {
 			this._super();
-			this.element = jQuery("<input>")
+
+			var id = 'aloha_input_' + counter;
+			counter++;
+
+			this.inputElement = jQuery('<input>', {
+				type: this.type,
+				class: 'input-element',
+				id: id,
+				attr: {
+					autocapitalize: 'off',
+					autocomplete: 'off',
+				}
+			})
 				.on('change', jQuery.proxy(function (event) {
 					this.touch();
 					var value = event.target.value;
@@ -23,9 +49,19 @@ function (jQuery, Component) {
 						this.changeNotify(value);
 					}
 				}, this))
-				.on('keyup', jQuery.proxy(function (event) {
+				.on('focus', jQuery.proxy(function (event) {
 					this.touch();
 				}, this));
+
+			this.element = $('<div>', { class: 'input-container' })
+                .append(
+                    $('<label>', {
+                        class: 'input-label',
+                        text: this.label,
+                        for: id,
+                    }),
+                    this.inputElement
+                );
 		},
 
 		/**
@@ -47,13 +83,13 @@ function (jQuery, Component) {
 		},
 
 		enable: function () {
-			this.disabled = false;
-			this.element.removeAttr('disabled');
+			this._super();
+			this.inputElement.removeAttr('disabled');
 		},
 
 		disable: function () {
-			this.disabled = true;
-			this.element.attr('disabled', 'disabled');
+			this._super();
+			this.inputElement.attr('disabled', 'disabled');
 		}
 	});
 

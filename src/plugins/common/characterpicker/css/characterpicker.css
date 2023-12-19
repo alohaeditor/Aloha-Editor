@@ -43,3 +43,40 @@
 .aloha .ui-icon.aloha-icon-characterpicker {
 	background: url('../img/icon.png');
 }
+
+.aloha .aloha-symbol-grid {
+	width: 420px;
+	display: flex;
+	box-sizing: border-box;
+}
+
+.aloha .aloha-symbol-grid .symbol-grid-container {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	overflow: hidden auto;
+	width: 100%;
+	min-height: 1px;
+	box-sizing: border-box;
+}
+
+.aloha .aloha-symbol-grid .symbol-grid-container .symbol-grid-cell {
+	border: 2px solid #efefef;
+	text-align: center;
+	width: 30px;
+	aspect-ratio: 1/1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: 200ms;
+	background: transparent;
+	user-select: none;
+	box-sizing: border-box;
+	font-size: 14px;
+}
+
+.aloha .aloha-symbol-grid .symbol-grid-container .symbol-grid-cell:hover,
+.aloha .aloha-symbol-grid .symbol-grid-container .symbol-grid-cell:focus {
+	background: rgba(0,0,0,0.1);
+	border-color: #0096DC;
+}

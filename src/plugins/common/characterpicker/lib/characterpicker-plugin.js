@@ -27,27 +27,22 @@
 
 define([
 	'aloha',
-	'jquery',
 	'aloha/plugin',
 	'ui/ui',
-	'ui/button',
-	'ui/floating',
-	'PubSub',
+	'ui/contextButton',
+	'ui/dynamicForm',
+	'characterpicker/symbol-grid',
 	'i18n!characterpicker/nls/i18n'
 ], function (
 	Aloha,
-	$,
 	Plugin,
 	Ui,
-	Button,
-	Floating,
-	PubSub,
+	ContextButton,
+	DynamicForm,
+	SymbolGrid,
 	i18n
 ) {
 	'use strict';
-
-	var $DOCUMENT = $(document);
-	var $WINDOW = $(window);
 
 	/**
 	 * Tracks the range at the point at which the editor opens the character
@@ -56,252 +51,6 @@ define([
 	 * @type {Range}
 	 */
 	var rangeAtOpen;
-
-	/**
-	 * A cache of all the overlay configurations. If all editables have the same
-	 * configuration, only a single overlay will be created that will be used by
-	 * all editables.
-	 *
-	 * @type {object<string, Overlay>}
-	 */
-	var configs = {};
-
-	/**
-	 * Checks whether the character picker overlay is visible.
-	 *
-	 * @param {Overlay} overlay
-	 * @return {boolean} True if the overlay is visible.
-	 */
-	function isOverlayVisible(overlay) {
-		return overlay.$element.css('display') === 'table';
-	}
-
-	/**
-	 * Prepares the overlay to close when a click event is triggered on the body
-	 * document.
-	 *
-	 * @param {Overlay} overlay
-	 */
-	function hideOnBodyClick(overlay) {
-		overlay.$element.click(function ($event) {
-			$event.stopPropagation();
-		});
-
-		$('body').click(function ($event) {
-			// Because click events on the overlay ui should not cause it to
-			// hide itself.
-			if (!overlay._overlayActive ||
-					($event.target === overlay.$element[0]) ||
-					$($event.target).is('.aloha-icon-characterpicker') ||
-					$($event.target).find('.aloha-icon-characterpicker').length) {
-				return;
-			}
-			overlay.hide();
-		});
-	}
-
-	/**
-	 * Prepares the given overlay to close when the ESC button is clicked.
-	 *
-	 * @param {Overlay} overlay
-	 */
-	function hideOnEsc(overlay) {
-		$DOCUMENT.keyup(function ($event) {
-			if ((27 === $event.keyCode) && isOverlayVisible(overlay)) {
-				overlay.hide();
-			}
-		});
-	}
-
-	/**
-	 * Helper function that takes the computed style-property of one element and
-	 * applies it to another one, depending on the browser implementation.
-	 *
-	 * @param {HTMLElement} source The element of which the style element is
-	 *                             taken.
-	 * @param {jQuery.<HTMLElement>} target Where the style will be applied.
-	 * @param {string} styleProp The css property which shall be copied.
-	 */
-	function copyStyle(source, $target, styleProp) {
-		// TODO: Move to strings.js
-		var camelize = function (str) {
-			return str.replace(/\-(\w)/g, function (str, letter) {
-				return letter.toUpperCase();
-			});
-		};
-
-		var style;
-
-		if (source.currentStyle) {
-			style = source.currentStyle[camelize(styleProp)];
-		} else if (document.defaultView &&
-			document.defaultView.getComputedStyle) {
-			style = document.defaultView
-			                .getComputedStyle(source, null)
-			                .getPropertyValue(styleProp);
-		} else {
-			style = source.style[camelize(styleProp)];
-		}
-
-		if (style) {
-			$target.css(styleProp, style);
-		}
-	}
-
-	/**
-	 * Enables navigation through the character table with the arrow keys and
-	 * select one with the enter key.
-	 *
-	 * @param {Overlay} overlay
-	 * @param {function} onSelect Function to invoke when Enter is pressed.
-	 */
-	function cursorMovements(overlay, onSelect) {
-		var movements = {
-			// ←┘
-			13: function select($current) {
-				overlay.hide();
-				onSelect($current.text());
-			},
-			// ←
-			37: function left($current) {
-				var $prev = $current.prev();
-				if ($prev.length) {
-					$prev.addClass('focused');
-					$current.removeClass('focused');
-				}
-			},
-			// ↑
-			38: function up($current) {
-				var $prevRow = $current.parent().prev();
-				if ($prevRow.length) {
-					var $prev = $(
-						$prevRow.children()[$current.index()]
-					).addClass('focused');
-					if ($prev.length) {
-						$current.removeClass('focused');
-					}
-				}
-			},
-			// →
-			39: function right($current) {
-				var $next = $current.next().addClass('focused');
-				if ($next.length) {
-					$current.removeClass('focused');
-				}
-			},
-			// ↓
-			40: function down($current) {
-				var $nextRow = $current.parent().next();
-				if ($nextRow.length) {
-					var $next = $(
-						$nextRow.children()[$current.index()]
-					).addClass('focused');
-					if ($next.length) {
-						$current.removeClass('focused');
-					}
-				}
-			}
-		};
-
-		$DOCUMENT.keydown(function ($event) {
-			$event.stopPropagation();
-			if (movements[$event.keyCode] && isOverlayVisible(overlay)) {
-				movements[$event.keyCode](overlay.$element.find('.focused'));
-				return false;
-			}
-		});
-	}
-
-	/**
-	 * Generates a map of the given list character on the overlay.
-	 *
-	 * @param {Overlay} overlay
-	 * @param {String} characters
-	 */
-	function generateCharacterTable(overlay, characters) {
-		var textarea = document.createElement('textarea');
-		textarea.innerHTML = characters;
-
-		var list = $.grep(textarea.value.split(' '), function (chr) {
-			return '' !== chr;
-		});
-
-		var table = ['<tr>'];
-		var i = 0;
-		var chr;
-		while ((chr = list[i])) {
-			// New row every 15 characters
-			if (0 !== i && (0 === (i % 15))) {
-				table.push('</tr><tr>');
-			}
-			table.push('<td unselectable="on">' + chr + '</td>');
-			i++;
-		}
-		table.push('</tr>');
-
-		overlay.$tbody.empty().append(table.join(''));
-
-		overlay.$element.on('mouseover','td',  function () {
-			overlay.$element.find('.focused').removeClass('focused');
-			$(this).addClass('focused');
-		}).on('mouseout','td',  function () {
-			$(this).removeClass('focused');
-		}).on('click','td',  function () {
-			overlay.$element.hide();
-			overlay.onSelect($(this).text());
-		});
-	}
-
-	/**
-	 * Returns the height of the scrollbar.
-	 *
-	 * @private
-	 * @return {number}
-	 */
-	function getScrollBarHeight() {
-		var $outer = $('<div>').css({visibility: 'hidden', height: 100, overflow: 'scroll'}).appendTo('body');
-		var heightWithScroll = parseInt($('<div>').css({height: '100%'}).appendTo($outer).css("height"));
-		$outer.remove();
-		return 100 - heightWithScroll;
-	}
-
-	/**
-	 * The user-agent's scroll bar height.
-	 *
-	 * @private
-	 * @const
-	 * @type {number}
-	 */
-	var SCROLL_BAR_HEIGHT = getScrollBarHeight();
-
-	/**
-	 * Calculates the offset at which to position the overlay element.
-	 *
-	 * @param {jQuery.<HTMLElement>} $element A DOM element around which to
-	 *                                        calculate the offset.
-	 * @param {jQuery <HTMLElement>} $overlay The overlay element
-	 */
-	function calculateOffset($element, $overlay) {
-		var offset = $element.offset();
-		if ('fixed' === Floating.POSITION_STYLE) {
-			offset.top -= $WINDOW.scrollTop();
-			offset.left -= $WINDOW.scrollLeft();
-		}
-
-		//adjust position if overlay element is overlapping window borders
-		var maxWidth = $WINDOW.width();
-		var maxHeight = $WINDOW.height() - SCROLL_BAR_HEIGHT;
-
-		if (maxWidth < offset.left + parseInt($overlay.css("width"))) {
-			offset.left = maxWidth - parseInt($overlay.css("width"));
-		}
-
-		if (maxHeight < offset.top + parseInt($overlay.css("height"))) {
-			offset.top = maxHeight - parseInt($overlay.css("height"));
-		}
-
-		return offset;
-	}
 
 	/**
 	 * Inserts the selected character, at the editor's selection.
@@ -321,103 +70,34 @@ define([
 		}
 	}
 
-	/**
-	 * The Character Picker Overlay.
-	 *
-	 * @param {function} onSelect
-	 * @type {Overlay}
-	 */
-	function Overlay(onSelect) {
-		var overlay = this;
+	function createSymbolGridFromConfig(
+		config,
+        name,
+        applyChanges,
+        validateFn,
+        onChangeFn,
+        onTouchFn
+	) {
+		var tmpOptions = config.options || {};
+		var component = Ui.adopt(name, SymbolGrid, {
+			symbols: tmpOptions.symbols,
 
-		overlay.$element = $('<table class="aloha-character-picker-overlay" ' +
-			'unselectable="on" role="dialog"><tbody></tbody></table>');
-
-		// Because if mousedown bubbles up, there won't be an activeEditable.
-		// FIXME: The above needs to be better explained.
-		overlay.$element.mousedown(function ($event) {
-			return false;
+			changeNotify: function (value) {
+                applyChanges(value);
+                validateFn(value);
+                onChangeFn(value);
+            },
+            touchNotify: function () {
+                onTouchFn();
+            },
 		});
-
-		overlay.onSelect = onSelect;
-		overlay.$tbody = overlay.$element.find('tbody');
-		overlay.$element.appendTo($('body'));
-
-		hideOnBodyClick(overlay);
-		hideOnEsc(overlay);
-		cursorMovements(overlay, onSelect);
-
-		Aloha.bind('aloha-editable-deactivated', function () {
-			overlay.hide();
-		});
-	}
-
-	Overlay.prototype = {
-
-		/**
-		 * Shows the character overlay at the insert button's position.
-		 *
-		 * @param {jQuery.<HTMLElement>} $insert Insert button.
-		 */
-		show: function ($insert) {
-			var overlay = this;
-
-			// Because the overlay needs to be reposition relative its button.
-			overlay.$element
-			       .css(calculateOffset($insert, overlay.$element))
-			       .css('position', Floating.POSITION_STYLE)
-			       .show()
-			       .find('.focused')
-			       .removeClass('focused');
-
-			overlay.$element
-			       .find('td')
-			       .eq(0)
-			       .addClass('focused');
-
-			overlay._overlayActive = true;
-		},
-
-		/**
-		 * Hides the character overlay.
-		 */
-		hide: function () {
-			this.$element.hide();
-			this._overlayActive = false;
-		}
-	};
-
-	/**
-	 * Generates an character picker overlay for the given editable.
-	 *
-	 * Because each editable may have its own configuration and therefore may
-	 * have its own overlay.
-	 *
-	 * @param {CharacterPicker} characterpicker
-	 * @param {Aloha.Editable} editable
-	 * @return {Overlay|null} The generated character picker overlay, or null
-	 *                        of the editable is not configured for the
-	 *                        character picker.
-	 */
-	function generateOverlay(characterpicker, editable) {
-		var config = characterpicker.getEditableConfig(editable.obj);
-		if (!config) {
-			return null;
-		}
-		var characters = $.isArray(config) ? config.join(' ') : config;
-		var overlay = configs[characters];
-		if (!overlay) {
-			overlay = new Overlay(onSelectCharacter);
-			generateCharacterTable(overlay, characters);
-			configs[characters] = overlay;
-		}
-		return overlay;
+		return component;
 	}
 
 	/**
 	 * @type {Plugin}
 	 */
-	var CharacterPicker =  Plugin.create('characterpicker', {
+	var CharacterPickerPlugin = Plugin.create('characterpicker', {
 
 		settings: {},
 
@@ -428,74 +108,58 @@ define([
 		},
 
 		init: function () {
-			var characterpicker = this;
-
-			if (Aloha.settings.plugins &&
-				Aloha.settings.plugins.characterpicker) {
-				characterpicker.settings = Aloha.settings.plugins.characterpicker;
+			DynamicForm.componentFactoryRegistry['symbol-grid'] = createSymbolGridFromConfig;
+			
+			if (
+				Aloha.settings.plugins &&
+				Aloha.settings.plugins.characterpicker
+			) {
+				this.settings = Aloha.settings.plugins.characterpicker;
 			}
 
-			var button = Ui.adopt('characterPicker', Button, {
+			var _this = this;
+				
+			Ui.adopt('characterPicker', ContextButton, {
 				tooltip: i18n.t('button.addcharacter.tooltip'),
 				icon: 'aloha-icon-characterpicker',
 				scope: 'Aloha.continuoustext',
-				click: function () {
-					if (characterpicker.overlay) {
-						rangeAtOpen = Aloha.Selection.rangeObject;
 
-						var from = rangeAtOpen.startContainer.parentNode;
-						var $to = characterpicker.overlay.$element;
+				contextType: 'dropdown',
+				context: function() {
+					rangeAtOpen = Aloha.Selection.rangeObject;
 
-						copyStyle(from, $to, 'font-family');
-						copyStyle(from, $to, 'font-weight');
-						copyStyle(from, $to, 'font-style');
-
-						characterpicker.overlay.show(this.element);
+					return {
+						type: 'symbol-grid',
+						options: {
+							symbols: _this.getNormalizedSymbols(),
+						},
 					}
-				}
-			});
+				},
 
-			/**
-			 * Pre-generates overlays so that they will be ready when the editor
-			 * click on an editable.
-			 *
-			 * @param {number} editableIndex
-			 */
-			function pregenerateOverlays(editableIndex) {
-				if (editableIndex < Aloha.editables.length) {
-					generateOverlay(characterpicker,
-							Aloha.editables[editableIndex]);
-					window.setTimeout(function () {
-						pregenerateOverlays(editableIndex + 1);
-					}, 100);
+				contextResolve: function(symbol) {
+					onSelectCharacter(symbol);
+				},
+			});
+		},
+
+		getNormalizedSymbols: function() {
+			var symbols = [];
+
+			if (!Array.isArray(this.config)) {
+				if (typeof this.config === 'string') {
+					symbols = this.config.split(' ');
+				} else {
+					// ... ?
 				}
+			} else {
+				symbols = this.config;
 			}
 
-			// FIXME: ... but why?
-			window.setTimeout(function () {
-				pregenerateOverlays(0);
-			}, 100);
-
-			Aloha.bind('aloha-editable-activated', function ($event, data) {
-				characterpicker.overlay =
-						generateOverlay(characterpicker, data.editable);
-				if (characterpicker.overlay) {
-					button.show();
-				} else {
-					button.hide();
-				}
-			});
-
-			PubSub.sub('aloha.floating.changed', function (message) {
-				if (characterpicker.overlay) {
-					characterpicker.overlay.$element.css(
-						calculateOffset(button.element, characterpicker.overlay.$element)
-					);
-				}
-			});
-		}
+			// TODO: Add labels?
+			return symbols;
+		},
 
 	});
 
-	return CharacterPicker;
+	return CharacterPickerPlugin;
 });

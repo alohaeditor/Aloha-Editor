@@ -13,7 +13,8 @@ define([
 
     var ContextButton = Button.extend({
         /**
-         * @type {DynamicDropdownConfiguration}
+         * @type {(DynamicDropdownConfiguration|DynamicModalConfiguration|function.<DynamicDropdownConfiguration|DynamicModalConfiguration>)}
+         * A static context/config for the dropdown/modal, or a function which returns the context/config dynamically when needed.
          */
         context: null,
 
@@ -35,6 +36,12 @@ define([
          */
         contextControl: null,
 
+        init: function() {
+            this._super();
+            this.element.addClass('context-button');
+            this.element.append('<span class="ui-button-icon-secondary ui-icon aloha-jqueryui-icon ui-icon-triangle-1-s"></span>');
+        },
+
         _onClick: function () {
             var instance = this;
             this.click();
@@ -43,10 +50,17 @@ define([
             var _this = this;
             var controlPromise;
 
+            var contextData;
+            if (typeof this.context === 'function') {
+                contextData = this.context();
+            } else {
+                contextData = this.context;
+            }
+
             if (this.contextType === 'dropdown') {
-                controlPromise = Dropdown.openDynamicDropdown(this.name, this.context);
+                controlPromise = Dropdown.openDynamicDropdown(this.name, contextData);
             } else if (this.contextType === 'modal') {
-                controlPromise = Modal.openDynamicModal(this.context);
+                controlPromise = Modal.openDynamicModal(contextData);
             } else {
                 throw new Error('Unsupported contextType "' + this.contextType + '" set!');
             }
