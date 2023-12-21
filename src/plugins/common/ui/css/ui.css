@@ -782,6 +782,10 @@ span.ui-button-icon-primary.ui-icon.ui-icon-closethick {
 	display: none;
 }
 
+.aloha .aloha-ui .aloha-ui-component-group .aloha-ui-component-slot.out-of-scope {
+	display: none;
+}
+
 /* === auto complete === */
 .aloha .ui-autocomplete.ui-widget-content {
 	background: #fff;

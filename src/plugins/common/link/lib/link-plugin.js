@@ -87,7 +87,6 @@ define([
 			name: 'hreflangfield',
 			valueField: 'id',
 			minChars: 1,
-			scope: 'Aloha.continuoustext',
 			open: function (elm, ui) {
 				// known issue http://bugs.jquery.com/ticket/10079
 				// $.css('z-index') return 1e+9, and when call partseInt, then 
@@ -740,7 +739,6 @@ define([
 			this._formatLinkButton = Ui.adopt("formatLink", ToggleButton, {
 				tooltip: i18n.t("button.addlink.tooltip"),
 				icon: "aloha-icon aloha-icon-link",
-				scope: 'Aloha.continuoustext',
 				click: function() {
 					that.formatLink();
 				}
@@ -749,7 +747,6 @@ define([
 			this._insertLinkButton = Ui.adopt("insertLink", ContextButton, {
 				tooltip: i18n.t("button.addlink.tooltip"),
 				icon: "aloha-icon aloha-icon-link",
-				scope: 'Aloha.continuoustext',
 				context: {
 					title: 'Insert Link',
 					controls: {
@@ -792,7 +789,6 @@ define([
 				width: 320,
 				valueField: 'url',
 				cls: 'aloha-link-href-field',
-				scope: 'Aloha.continuoustext',
 				noTargetHighlight: false,
 				targetHighlightClass: 'aloha-focus',
 				modifyValue: function (href) {
@@ -883,7 +879,6 @@ define([
 			this._removeLinkButton = Ui.adopt("removeLink", Button, {
 				tooltip: i18n.t("button.removelink.tooltip"),
 				icon: "aloha-icon aloha-icon-unlink",
-				scope: 'Aloha.continuoustext',
 				click: function() {
 					that.removeLink();
 				}

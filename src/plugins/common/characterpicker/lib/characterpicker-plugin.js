@@ -122,7 +122,6 @@ define([
 			Ui.adopt('characterPicker', ContextButton, {
 				tooltip: i18n.t('button.addcharacter.tooltip'),
 				icon: 'aloha-icon-characterpicker',
-				scope: 'Aloha.continuoustext',
 
 				contextType: 'dropdown',
 				context: function() {

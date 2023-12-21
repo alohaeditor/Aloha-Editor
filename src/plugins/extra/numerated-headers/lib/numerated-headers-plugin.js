@@ -75,7 +75,6 @@ define([
 				ToggleButton, {
 					tooltip: i18n.t('button.numeratedHeaders.tooltip'),
 					icon: 'aloha-icon aloha-icon-numerated-headers',
-					scope: 'Aloha.continuoustext',
 					click: function () {
 						var buttonPressed = that._formatNumeratedHeadersButton.getState();
 						if (!buttonPressed) {

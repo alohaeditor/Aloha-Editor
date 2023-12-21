@@ -106,7 +106,6 @@ define([
 	var METAVIEW_TOGGLE_BUTTON = Ui.adopt('toggleMetaView', ToggleButton, {
 		tooltip : i18n.t('button.switch-metaview.tooltip'),
 		icon: 'aloha-icon aloha-icon-metaview',
-		scope: 'Aloha.continuoustext',
 		click: function () {
 			toggle(Aloha.activeEditable.obj, this);
 		}

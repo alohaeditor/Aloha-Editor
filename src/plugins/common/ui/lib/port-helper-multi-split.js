@@ -21,7 +21,6 @@ define([
 		var component;
 
 		component = Ui.adopt(props.name, MultiSplit, {
-			scope: props.scope,
 			changeNotify: props.changeNotify,
 			touchNotify: props.touchNotify,
 

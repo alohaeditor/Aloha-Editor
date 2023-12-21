@@ -83,7 +83,6 @@ function (
 			this._imageCnrRatioButton = Ui.adopt("imageCnrRatio", ToggleButton, {
 				tooltip: i18n.t('button.toggle.tooltip'),
 				icon: 'aloha-icon-cnr-ratio',
-				scope: plugin.name,
 				click: function () {
 					plugin.toggleKeepAspectRatio();
 				}
@@ -106,7 +105,6 @@ function (
 			this._imageCnrResetButton = Ui.adopt("imageCnrReset", Button, {
 				tooltip: i18n.t('Reset'),
 				icon: 'aloha-icon-cnr-reset',
-				scope: plugin.name,
 				click: function () {
 					plugin.reset();
 				}
@@ -122,7 +120,6 @@ function (
 			this._insertImageButton = Ui.adopt("insertImage", Button, {
 				tooltip: i18n.t('button.addimg.tooltip'),
 				icon: 'aloha-button aloha-image-insert',
-				scope: 'Aloha.continuoustext',
 				click: function () {
 					plugin.insertImg();
 				}
@@ -140,7 +137,6 @@ function (
 				labelClass: 'aloha-image-input-label',
 				tooltip: i18n.t('field.img.src.tooltip'),
 				name: 'imageSource',
-				scope: plugin.name
 			});
 			this.imgSrcField.setTemplate('<span><b>{name}</b><br/>{url}</span>');
 			this.imgSrcField.setObjectTypeFilter(plugin.objectTypeFilter);
@@ -150,7 +146,6 @@ function (
 				labelClass: 'aloha-image-input-label',
 				tooltip: i18n.t('field.img.title.tooltip'),
 				name: 'imageTitle',
-				scope: plugin.name
 			});
 			this.imgTitleField.setObjectTypeFilter();
 		},
@@ -164,7 +159,6 @@ function (
 			this._imageAlignLeftButton = Ui.adopt("imageAlignLeft", Button, {
 				tooltip: i18n.t('button.img.align.left.tooltip'),
 				icon: 'aloha-img aloha-image-align-left',
-				scope: plugin.name,
 				click : function () {
 					var el = jQuery(plugin.getPluginFocus());
 					el.add(el.parent()).css('float', 'left');
@@ -174,7 +168,6 @@ function (
 			this._imageAlignRightButton = Ui.adopt("imageAlignRight", Button, {
 				tooltip: i18n.t('button.img.align.right.tooltip'),
 				icon: 'aloha-img aloha-image-align-right',
-				scope: plugin.name,
 				click : function () {
 					var el = jQuery(plugin.getPluginFocus());
 					el.add(el.parent()).css('float', 'right');
@@ -184,7 +177,6 @@ function (
 			this._imageAlignNoneButton = Ui.adopt("imageAlignNone", Button, {
 				tooltip: i18n.t('button.img.align.none.tooltip'),
 				icon: 'aloha-img aloha-image-align-none',
-				scope: plugin.name,
 				click : function () {
 					var el = jQuery(plugin.getPluginFocus());
 					el.add(el.parent()).css({
@@ -204,7 +196,6 @@ function (
 			this._imageIncPaddingButton = Ui.adopt("imageIncPadding", Button, {
 				tooltip: i18n.t('padding.increase'),
 				icon: 'aloha-img aloha-image-padding-increase',
-				scope: plugin.name,
 				click: function () {
 					jQuery(plugin.getPluginFocus()).increase('padding');
 				}
@@ -213,7 +204,6 @@ function (
 			this._imageDecPaddingButton = Ui.adopt("imageDecPadding", Button, {
 				tooltip: i18n.t('padding.decrease'),
 				icon: 'aloha-img aloha-image-padding-decrease',
-				scope: plugin.name,
 				click: function () {
 					jQuery(plugin.getPluginFocus()).decrease('padding');
 				}
@@ -231,7 +221,6 @@ function (
 			this._imageCropButton = Ui.adopt("imageCropButton", ToggleButton, {
 				tooltip: i18n.t('Crop'),
 				icon: 'aloha-icon-cnr-crop',
-				scope: plugin.name,
 				click: function () {
 					if (this.getState()) {
 						plugin.crop();
@@ -254,7 +243,6 @@ function (
 				labelClass: 'aloha-image-input-label',
 				name: "imageResizeHeight",
 				width: 50,
-				scope: plugin.name
 			});
 			this.imgResizeHeightField.maxValue = plugin.settings.maxHeight;
 			this.imgResizeHeightField.minValue = plugin.settings.minHeight;
@@ -264,7 +252,6 @@ function (
 				labelClass: 'aloha-image-input-label',
 				name: "imageResizeWidth",
 				width: 50,
-				scope: plugin.name
 			});
 			this.imgResizeWidthField.maxValue = plugin.settings.maxWidth;
 			this.imgResizeWidthField.minValue = plugin.settings.minWidth;
@@ -278,7 +265,6 @@ function (
 			this._imageFocalPointButton = Ui.adopt("imageFocalPointButton", ToggleButton, {
 				tooltip: i18n.t('focalpoint'),
 				icon: 'aloha-img aloha-image-set-focalpoint',
-				scope: plugin.name,
 				click: function () {
 					if (this.getState()) {
 						plugin.enableFocalPointMode();
@@ -301,7 +287,6 @@ function (
 			this._imageNaturalSizeButton = Ui.adopt("imageNaturalSize", Button, {
 				icon: 'aloha-img aloha-image-size-natural',
 				label: i18n.t('size.natural'),
-				scope: plugin.name,
 				click: function () {
 					plugin.resetSize();
 				}

@@ -21,11 +21,11 @@
 define([
 	'jquery',
 	'util/class',
-	'ui/scopes'
+	'ui/utils'
 ], function (
 	$,
 	Class,
-	Scopes
+	Utils
 ) {
 	'use strict';
 
@@ -63,8 +63,6 @@ define([
 		}
 	}
 
-	var scopeFns = {};
-
 	var returnTrue = function () {
 		return true;
 	};
@@ -80,16 +78,11 @@ define([
 		case 'function':
 			return showOn;
 		case 'object':
-			if (showOn.scope) {
-				if (scopeFns[showOn.scope]) {
-					return scopeFns[showOn.scope];
-				}
-				return scopeFns[showOn.scope] = function () {
-					return Scopes.isActiveScope(showOn.scope);
-				};
-			} else {
+			if (!showOn.scope) {
 				throw "Invalid showOn configuration";
 			}
+
+			return Utils.normalizeScopeToFunction(showOn.scope);			
 		default:
 			return returnTrue;
 		}

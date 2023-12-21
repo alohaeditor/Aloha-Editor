@@ -200,20 +200,17 @@ define([
 			width: 320,
 			valueField: 'id',
 			minChars: 1,
-			scope: 'Aloha.continuoustext'
 		});
 
 		plugin._wailangButton = Ui.adopt('wailang', ToggleButton, {
 			tooltip: i18n.t('button.add-wai-lang.tooltip'),
 			icon: 'aloha-icon aloha-icon-wai-lang',
-			scope: 'Aloha.continuoustext',
 			click: toggleAnnotation
 		});
 
 		removeButton = Ui.adopt('removewailang', Button, {
 			tooltip: i18n.t('button.add-wai-lang-remove.tooltip'),
 			icon: 'aloha-icon aloha-icon-wai-lang-remove',
-			scope: 'Aloha.continuoustext',
 			click: function onButtonClick() {
 				removeMarkup(Selection.getRangeObject());
 			}

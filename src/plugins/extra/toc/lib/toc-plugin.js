@@ -108,7 +108,6 @@ define([
 			plugin._insertTocButton = Ui.adopt('insertToc', Button, {
 		        tooltip: i18n.t('button.addtoc.tooltip'),
 		        icon: 'aloha-icon aloha-icon-orderedlist',
-				scope: 'Aloha.continuoustext',
 		        click: function () {
 					plugin.insertAtSelection($containers);
 				}

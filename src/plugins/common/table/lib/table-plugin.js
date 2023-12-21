@@ -771,7 +771,6 @@ define([
 		this._mergecellsButton = Ui.adopt("mergecells", Button, {
 			tooltip: i18n.t("button.mergecells.tooltip"),
 			icon: "aloha-icon aloha-icon-mergecells",
-			scope: this.name + '.cell',
 			click: function() {
 				if (TablePlugin.activeTable) {
 					TablePlugin.activeTable.selection.mergeCells();
@@ -782,7 +781,6 @@ define([
 		this._splitcellsButton = Ui.adopt("splitcells", Button, {
 			tooltip: i18n.t("button.splitcells.tooltip"),
 			icon: "aloha-icon aloha-icon-splitcells",
-			scope: this.name + '.cell',
 			click: function() {
 				var activeCell;
 				if (TablePlugin.activeTable) {
@@ -808,7 +806,6 @@ define([
 		this._mergecellsRowButton = Ui.adopt("mergecellsRow", Button, {
 			tooltip: i18n.t("button.mergecells.tooltip"),
 			icon: "aloha-icon aloha-icon-mergecells",
-			scope: this.name + '.row',
 			click: function() {
 				if (TablePlugin.activeTable) {
 					TablePlugin.activeTable.selection.mergeCells();
@@ -819,7 +816,6 @@ define([
 		this._splitcellsRowButton = Ui.adopt("splitcellsRow", Button, {
 			tooltip: i18n.t("button.splitcells.tooltip"),
 			icon: "aloha-icon aloha-icon-splitcells",
-			scope: this.name + '.row',
 			click: function() {
 				if (TablePlugin.activeTable) {
 					TablePlugin.activeTable.selection.splitCells();
@@ -830,7 +826,6 @@ define([
 		this._mergecellsColumnButton = Ui.adopt("mergecellsColumn", Button, {
 			tooltip: i18n.t("button.mergecells.tooltip"),
 			icon: "aloha-icon aloha-icon-mergecells",
-			scope: this.name + '.column',
 			click: function() {
 				if (TablePlugin.activeTable) {
 					TablePlugin.activeTable.selection.mergeCells();
@@ -841,7 +836,6 @@ define([
 		this._splitcellsColumnButton = Ui.adopt("splitcellsColumn", Button, {
 			tooltip: i18n.t("button.splitcells.tooltip"),
 			icon: "aloha-icon aloha-icon-splitcells",
-			scope: this.name + '.column',
 			click: function() {
 				if (TablePlugin.activeTable) {
 					TablePlugin.activeTable.selection.splitCells();
@@ -857,7 +851,6 @@ define([
 			this._tableNaturalFitButton = Ui.adopt("naturalFit", Button, {
 				tooltip: i18n.t("button.naturalfit.tooltip"),
 				icon: "aloha-icon aloha-icon-table-naturalfit",
-				scope: this.name + '.cell',
 				click: function() {
 					if (that.activeTable) {
 						var tableObj = that.activeTable.obj;
@@ -884,7 +877,6 @@ define([
 		this._addrowbeforeButton = Ui.adopt("addrowbefore", Button, {
 			tooltip: i18n.t( "button.addrowbefore.tooltip"),
 			icon: "aloha-icon aloha-icon-addrowbefore",
-			scope: this.name + '.row',
 			click: function() {
 				if (that.activeTable) {
 					that.activeTable.addRowBeforeSelection();
@@ -895,7 +887,6 @@ define([
 		this._addrowafterButton = Ui.adopt("addrowafter", Button, {
 			tooltip: i18n.t("button.addrowafter.tooltip"),
 			icon: "aloha-icon aloha-icon-addrowafter",
-			scope: this.name + '.row',
 			click: function() {
 				if (that.activeTable) {
 					that.activeTable.addRowAfterSelection();
@@ -906,7 +897,6 @@ define([
 		this._deleterowsButton = Ui.adopt("deleterows", Button, {
 			tooltip: i18n.t("button.delrows.tooltip"),
 			icon: "aloha-icon aloha-icon-deleterows",
-			scope: this.name + '.row',
 			click: function() {
 				if (that.activeTable) {
 					var aTable = that.activeTable;
@@ -924,7 +914,6 @@ define([
 		this._rowheaderButton = Ui.adopt("rowheader", ToggleButton, {
 			tooltip: i18n.t("button.rowheader.tooltip"),
 			icon: "aloha-icon aloha-icon-rowheader",
-			scope: this.name + '.row',
 			click: function() {
 				if (that.activeTable) {
 					that.activeTable.refresh();
@@ -984,7 +973,6 @@ define([
 			items: this.rowMSItems,
 			name: 'formatRow',
 			hideIfEmpty: true,
-			scope: this.name + '.row'
 		});
 	};
 
@@ -997,7 +985,6 @@ define([
 		this._addcolumnleftButton = Ui.adopt("addcolumnleft", Button, {
 			tooltip: i18n.t("button.addcolleft.tooltip"),
 			icon: "aloha-icon aloha-icon-addcolumnleft",
-			scope: this.name + '.column',
 			click: function() {
 				if (that.activeTable) {
 					that.activeTable.addColumnsLeft();
@@ -1008,7 +995,6 @@ define([
 		this._addcolumnrightButton = Ui.adopt("addcolumnright", Button, {
 			tooltip: i18n.t("button.addcolright.tooltip"),
 			icon: "aloha-icon aloha-icon-addcolumnright",
-			scope: this.name + '.column',
 			click: function() {
 				if (that.activeTable) {
 					that.activeTable.addColumnsRight();
@@ -1019,7 +1005,6 @@ define([
 		this._deletecolumnsButton = Ui.adopt("deletecolumns", Button, {
 			tooltip: i18n.t("button.delcols.tooltip"),
 			icon: "aloha-icon aloha-icon-deletecolumns",
-			scope: this.name + '.column',
 			click: function() {
 				if (that.activeTable) {
 					var aTable = that.activeTable;
@@ -1037,7 +1022,6 @@ define([
 		this._columnheaderButton = Ui.adopt("columnheader", ToggleButton, {
 			tooltip: i18n.t("button.columnheader.tooltip"),
 			icon: "aloha-icon aloha-icon-columnheader",
-			scope: this.name + '.column',
 			click: function() {
 				if (that.activeTable) {
 					that.activeTable.refresh();
@@ -1099,7 +1083,6 @@ define([
 			items: this.columnMSItems,
 			name: 'formatColumn',
 			hideIfEmpty: true,
-			scope: this.name + '.column'
 		});
 	};
 
@@ -1156,7 +1139,6 @@ define([
 			items: this.cellMSItems,
 			name: 'formatCell',
 			hideIfEmpty: true,
-			scope: this.name + '.cell'
 		});
 	};
 
@@ -1175,7 +1157,6 @@ define([
 		this._createTableButton = Ui.adopt("createTable", ContextButton, {
 			tooltip: i18n.t("button.createtable.tooltip"),
 			icon: "aloha-icon aloha-icon-createTable",
-			scope: 'Aloha.continuoustext',
 			context: {
 				type: 'table-size-select',
 				options: {
@@ -1258,13 +1239,11 @@ define([
 			items : this.tableMSItems,
 			name : 'formatTable',
 			hideIfEmpty: true,
-			scope: this.name + '.cell'
 		});
 
 		this._deleteTableButton = Ui.adopt("deleteTable", Button, {
 			tooltip: i18n.t("button.deltable.tooltip"),
 			icon: "aloha-icon aloha-icon-deletetable",
-			scope: this.name + '.cell',
 			click: function() {
 				if (that.activeTable) {
 					var aTable = that.activeTable;
@@ -1282,7 +1261,6 @@ define([
 		this._tableCaptionButton = Ui.adopt("tableCaption", ToggleButton, {
 			tooltip: i18n.t("button.caption.tooltip"),
 			icon: "aloha-icon aloha-icon-table-caption",
-			scope: this.name + '.cell',
 			click: function() {
 				if (that.activeTable) {
 					// look if table object has a child caption
@@ -1327,7 +1305,6 @@ define([
 			width : 275,
 			name  : 'tableSummary',
 			noTargetHighlight: true,
-			scope: this.name + '.cell',
 			element: jQuery('<input id="aloha-attribute-field-tableSummary" class="aloha-wai-red" style="color: black; padding-left: 32px; background-color: white"/>')
 		} );
 

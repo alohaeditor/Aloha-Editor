@@ -201,7 +201,6 @@ define([
 		return Ui.adopt('colorPicker', Button, {
 			tooltip: i18n.t('change-textcolor-' + style),
 			icon: 'aloha-icon-textcolor-' + style,
-			scope: 'Aloha.continuoustext',
 			click: function () {
 				if (plugin.overlays[style]) {
 					var $button = this.element;

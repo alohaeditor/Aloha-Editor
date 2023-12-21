@@ -24,8 +24,57 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define(['jquery', 'jqueryui'], function ($) {
+define([
+	'jquery',
+	'jqueryui',
+	'ui/scopes'
+], function (
+	$,
+	_, // Unused
+	Scopes
+) {
 	'use strict';
+
+	var scopeFns = {};
+
+	function normalizeScopeToFunction(scopes) {
+		if (typeof scopes === 'string') {
+			if (scopes.includes(',')) {
+				scopes = scopes.split(',').map(function(part) {
+					return part.trim();
+				});
+			} else {
+				scopes = [scopes];
+			}
+		} else if (!Array.isArray(scopes)) {
+			scopes = [];
+		}
+
+		scopes = scopes.filter(function(scope) {
+			return typeof scope === 'string' && scope.length > 0;
+		});
+
+		if (scopes.length === 0) {
+			return function() {
+				return true;
+			}
+		}
+
+		var functions = scopes.map(function(scope) {
+			if (scopeFns[scope]) {
+				return scopeFns[scope];
+			}
+			return scopeFns[scope] = function () {
+				return Scopes.isActiveScope(scope);
+			};
+		});
+
+		return function() {
+			return functions.some(function(fn) {
+				return fn();
+			});
+		}
+	}
 
 	/**
 	 * Wraps an element such that a label is displayed alongside it.
@@ -94,6 +143,8 @@ define(['jquery', 'jqueryui'], function ($) {
 	}
 
 	return {
+		normalizeScopeToFunction: normalizeScopeToFunction,
+
 		wrapWithLabel: wrapWithLabel,
 		makeButton: makeButton,
 		makeButtonElement: makeButtonElement,

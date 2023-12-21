@@ -396,7 +396,6 @@ define([
     ) {
         var tmpOptions = config.options || {};
         var component = Ui.adopt(name, Button, {
-            scope: tmpOptions.scope,
             icon: tmpOptions.icon,
             tooltip: tmpOptions.tooltip,
             click: tmpOptions.onClick,
@@ -423,7 +422,6 @@ define([
     ) {
         var tmpOptions = config.options || {};
         var component = Ui.adopt(name, ToggleButton, {
-            scope: tmpOptions.scope,
             icon: tmpOptions.icon,
             tooltip: tmpOptions.tooltip,
             click: tmpOptions.onClick,
@@ -450,7 +448,6 @@ define([
     ) {
         var tmpOptions = config.options || {};
         var component = Ui.adopt(name, AccordionMenuButton, {
-            scope: tmpOptions.scope,
             icon: tmpOptions.icon,
             menu: tmpOptions.menu,
             tooltip: tmpOptions.tooltip,
@@ -478,7 +475,6 @@ define([
     ) {
         var tmpOptions = config.options || {};
         var component = Ui.adopt(name, MenuButton, {
-            scope: tmpOptions.scope,
             icon: tmpOptions.icon,
             click: tmpOptions.onClick,
             menu: tmpOptions.menu,
@@ -507,7 +503,6 @@ define([
     ) {
         var tmpOptions = config.options || {};
         var component = Ui.adopt(name, SplitButton, {
-            scope: tmpOptions.scope,
             icon: tmpOptions.icon,
             tooltip: tmpOptions.tooltip,
             click: tmpOptions.click,
@@ -536,7 +531,6 @@ define([
     ) {
         var tmpOptions = config.options || {};
         var component = Ui.adopt(name, ToggleSplitButton, {
-            scope: tmpOptions.scope,
             icon: tmpOptions.icon,
             tooltip: tmpOptions.tooltip,
             click: tmpOptions.click,
@@ -565,7 +559,6 @@ define([
     ) {
         var tmpOptions = config.options || {};
         var component = Ui.adopt(name, Autocomplete, {
-            scope: tmpOptions.scope,
             types: tmpOptions.types,
             template: tmpOptions.template,
 
@@ -592,7 +585,6 @@ define([
         var tmpOptions = config.options || {};
 
         var component = Ui.adopt(name, Checkbox, {
-            scope: tmpOptions.scope,
             checked: tmpOptions.checked,
             label: tmpOptions.label,
 
@@ -620,7 +612,6 @@ define([
         var tmpOptions = config.options || {};
 
         var component = Ui.adopt(name, Input, {
-            scope: tmpOptions.scope,
             value: tmpOptions.value,
             label: tmpOptions.checked,
 
@@ -659,7 +650,6 @@ define([
             cls: tmpOptions.cls,
             element: tmpOptions.element,
             width: tmpOptions.width,
-            scope: tmpOptions.scope,
             open: tmpOptions.open,
             modifyValue: tmpOptions.modifyValue,
 
@@ -686,7 +676,6 @@ define([
         var tmpOptions = config.options || {};
         var component = new MultiSplitButton({
             name: name,
-            scope: tmpOptions.scope,
             items: tmpOptions.items,
             click: tmpOptions.onClick,
 
@@ -751,7 +740,6 @@ define([
     ) {
         var tmpOptions = config.options || {};
         var component = Ui.adopt(name, SelectMenu, {
-            scope: tmpOptions.scope,
             options: tmpOptions.options,
             activeOption: tmpOptions.activeOption,
             iconsOnly: tmpOptions.iconsOnly,

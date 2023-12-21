@@ -7,7 +7,7 @@ define(['jquery', 'util/arrays', 'util/maps', 'util/trees'], function ($, Arrays
 				showOn: { scope: 'Aloha.continuoustext' },
 				components: [
 					[
-						'bold', 'strong', 'italic', 'emphasis', 'underline', '\n',
+						{ slot: 'bold' }, 'strong', { slot: 'italic', scope: ['Aloha.continuoustext'] }, 'emphasis', 'underline', '\n',
 						'subscript', 'superscript', 'strikethrough', 'code', 'quote'
 					], [
 						'formatLink', 'formatAbbr', 'formatNumeratedHeaders', 'toggleDragDrop', '\n',

@@ -178,7 +178,6 @@ define([
 		plugin.removeCiteButton = Ui.adopt("removeCite", ToggleButton, {
 			tooltip: i18n.t("button.removeCite.tooltip"),
 			icon: "aloha-icon aloha-icon-unlink",
-			scope: 'Aloha.continuoustext',
 			click: function () {
 				plugin.removeQuote();
 			}
@@ -189,7 +188,6 @@ define([
 			width: 320,
 			placeholder: 'Link',
 			cls: 'aloha-cite-href-field',
-			scope: 'Aloha.continuoustext',
 			noTargetHighlight: false,
 			targetHighlightClass: 'aloha-focus'
 		});
@@ -199,7 +197,6 @@ define([
 			width: 320,
 			placeholder: 'Note',
 			cls: 'aloha-cite-note-href-field',
-			scope: 'Aloha.continuoustext',
 			noTargetHighlight: false,
 			targetHighlightClass: 'aloha-focus'
 		});
@@ -350,7 +347,6 @@ define([
 			this._quoteButton = Ui.adopt('quote', ToggleButton, {
 				tooltip: i18n.t('cite.button.add.quote'),
 				icon: nsClass('button', 'inline-button'),
-				scope: 'Aloha.continuoustext',
 				click: function () {
 					if (!plugin.removeQuote()) {
 						plugin.addInlineQuote();

@@ -7,9 +7,9 @@
   },
   "scripts": {
     "cypress:open": "cypress open",
-    "demo:start": "http-server target/build-profile-with-common-extra-plugins/rjs-output -p 8080",
-    "demo:build": "node build/r.js -o build/aloha/build-profile-with-common-extra-plugins.js && node build/aloha/copy-dependencies.js",
-    "build": "r.js -o build/aloha/build-profile-with-common-extra-plugins.js"
+    "demo:start": "http-server target/build-profile-with-common-extra-plugins -p 8080",
+    "demo:build": "node ./node_modules/requirejs/bin/r.js -o build/aloha/build-profile-with-common-extra-plugins.js && node build/aloha/copy-dependencies.js",
+    "build": "node ./node_modules/requirejs/bin/r.js -o build/aloha/build-profile-with-common-extra-plugins.js"
   },
   "repository": {
     "type": "git",

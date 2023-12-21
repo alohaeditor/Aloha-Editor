@@ -128,7 +128,6 @@ define([
 		}
 
 		component = Ui.adopt(props.name, Component, {
-			scope: props.scope,
 			changeNotify: props.changeNotify,
 			touchNotify: props.touchNotify,
 			init: function () {

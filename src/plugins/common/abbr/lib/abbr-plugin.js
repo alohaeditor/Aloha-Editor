@@ -133,7 +133,6 @@ define([
 			this._formatAbbrButton = Ui.adopt("formatAbbr", ToggleButton, {
 				tooltip: i18n.t("button.abbr.tooltip"),
 				icon: "aloha-icon aloha-icon-abbr",
-				scope: 'Aloha.continuoustext',
 				click: function () {
 					me.formatAbbr();
 				}
@@ -142,7 +141,6 @@ define([
 			this._insertAbbrButton = Ui.adopt("insertAbbr", Button, {
 				tooltip: i18n.t('button.addabbr.tooltip'),
 				icon: 'aloha-icon aloha-icon-abbr',
-				scope: 'Aloha.continuoustext',
 				click: function () {
 					me.insertAbbr(false);
 				}
@@ -151,13 +149,11 @@ define([
 			this.abbrField = new AttributeField({
 				width: 320,
 				name: 'abbrText',
-				scope: 'Aloha.continuoustext'
 			});
 
 			this.remAbbrButton = Ui.adopt("removeAbbr", Button, {
 				tooltip: i18n.t('button.remabbr.tooltip'),
 				icon: 'aloha-icon aloha-icon-abbr-rem',
-				scope: 'Aloha.continuoustext',
 				click: function () {
 					me.removeAbbr();
 				}

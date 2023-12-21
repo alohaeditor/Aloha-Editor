@@ -248,7 +248,6 @@ define([
 			this._toggleDragDropButton = Ui.adopt("toggleDragDrop", ToggleButton, {
 				tooltip: i18n.t('button.toggledragdrop.tooltip'),
 				icon: 'aloha-icon aloha-icon-toggledragdrop',
-				scope: 'Aloha.continuoustext',
 				click: function () {
 					that._toggleDragdropState(Aloha.activeEditable);
 				}

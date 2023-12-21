@@ -489,7 +489,6 @@ define([
 			plugin._indentListButton = Ui.adopt('indentList', Button, {
 				tooltip: i18n.t('button.indentlist.tooltip'),
 				icon: 'aloha-icon aloha-icon-indent',
-				scope: 'Aloha.continuoustext',
 				click: function () {
 					plugin.indentList();
 				}
@@ -498,7 +497,6 @@ define([
 			plugin._outdentListButton = Ui.adopt('outdentList', Button, {
 				tooltip: i18n.t('button.outdentlist.tooltip'),
 				icon: 'aloha-icon aloha-icon-outdent',
-				scope: 'Aloha.continuoustext',
 				click: function () {
 					plugin.outdentList();
 				}

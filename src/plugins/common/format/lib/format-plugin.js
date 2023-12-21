@@ -321,7 +321,6 @@ define('format/format-plugin', [
 		var component = Ui.adopt(componentName, ToggleButton, {
 			tooltip: i18n.t('button.' + button + '.tooltip'),
 			icon: 'aloha-icon aloha-icon-' + componentName,
-			scope: 'Aloha.continuoustext',
 			click: function () {
 				return textLevelButtonClickHandler(formatPlugin, button);
 			}
@@ -941,7 +940,6 @@ define('format/format-plugin', [
 				name: '_formatBlock',
 				items: this.multiSplitItems,
 				hideIfEmpty: true,
-				scope: 'Aloha.continuoustext'
 			});
 
 			PubSub.sub('aloha.selection.context-change', function (message) {
