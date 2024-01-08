@@ -131,6 +131,7 @@ define([
 			changeNotify: props.changeNotify,
 			touchNotify: props.touchNotify,
 			init: function () {
+				this.type = 'attribute-field';
 
 				if (props.element) {
 					this.element = element;

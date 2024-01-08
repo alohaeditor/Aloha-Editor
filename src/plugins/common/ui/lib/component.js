@@ -30,6 +30,9 @@ define([
 		 */
 		isInstance: true,
 
+		/** jQuery ref to the root element of this component. */
+		element: null,
+
 		/**
 		 * The Container instance or null if this component was not
 		 * adopted by a counter by calling Component.adopt().
@@ -84,6 +87,12 @@ define([
 
 		adoptParent: function (container) {
 			this.container = container;
+		},
+
+		destroy: function() {
+			console.warn('DESTROYING COMPONENT');
+			this.container = null;
+			this.element.remove();
 		},
 
 		/**

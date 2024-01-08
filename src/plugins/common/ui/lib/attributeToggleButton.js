@@ -17,6 +17,7 @@ define([
 
         init: function () {
             this._super();
+            this.type = 'attribute-toggle-button';
         },
 
         _onClick: function () {

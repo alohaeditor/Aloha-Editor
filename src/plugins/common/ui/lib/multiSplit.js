@@ -32,6 +32,8 @@ define([
 		 */
 		init: function () {
 			this._super();
+			this.type = 'multi-split';
+
 			var multiSplit = this;
 			var element = this.element = $('<div>', {
 				'class': 'aloha-multisplit'

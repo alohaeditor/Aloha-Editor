@@ -61,6 +61,9 @@ define([
         multistepContainerElement: null,
 
         init: function () {
+            this._super();
+            this.type = 'select-menu';
+
             this.element = $('<div>', {
                 class: 'aloha-select-menu',
             });

@@ -38,6 +38,8 @@ define([
 
         init: function() {
             this._super();
+            this.type = 'context-button';
+
             this.element.addClass('context-button');
             this.element.append('<span class="ui-button-icon-secondary ui-icon aloha-jqueryui-icon ui-icon-triangle-1-s"></span>');
         },

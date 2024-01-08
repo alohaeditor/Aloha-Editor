@@ -21,6 +21,11 @@ define([
 
 		active: false,
 
+		init: function() {
+			this._super();
+			this.type = 'toggle-button';
+		},
+
 		/**
 		 * Sets the state of the toggleButton and updates its visual display
 		 * accordingly.

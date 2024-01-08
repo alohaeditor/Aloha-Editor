@@ -60,6 +60,7 @@ function (jQuery, Component, Utils) {
 		 */
 		init: function () {
 			this._super();
+			this.type = 'button';
 			this.createButtonElement();
 			Utils.makeButton(this.buttonElement, this)
 				.button('widget')

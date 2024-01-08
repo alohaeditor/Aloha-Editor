@@ -29,6 +29,7 @@ define([
 		 */
 		init: function () {
 			this._super();
+			this.type = 'input';
 
 			var id = 'aloha_input_' + counter;
 			counter++;

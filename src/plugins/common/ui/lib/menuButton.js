@@ -13,6 +13,7 @@ define([
 	var MenuButton = Component.extend({
 		init: function () {
 			this.element = MenuButton.makeMenuButton(this);
+			this.type = 'menu-button';
 		},
 		enable: function () {
 			this.disabled = false;

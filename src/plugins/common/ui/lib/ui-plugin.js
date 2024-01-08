@@ -76,14 +76,34 @@ define('ui/ui-plugin', [
 	function getToolbarSettings() {
 		var userSettings = Aloha.settings.toolbar,
 		    defaultSettings = Settings.defaultToolbarSettings;
+		
+		var defaultTabSettings = asNormalizedResponsiveSettings(defaultSettings, 'tabs');
+
 		if (!userSettings) {
-			return defaultSettings.tabs;
+			return defaultTabSettings
 		}
+
 		return Settings.combineToolbarSettings(
-			userSettings.tabs || [],
-			defaultSettings.tabs,
-			userSettings.exclude || []
+			asNormalizedResponsiveSettings(userSettings, 'tabs'),
+			defaultTabSettings,
+			asNormalizedResponsiveSettings(userSettings, 'exclude')
 		);
+	}
+
+	function asNormalizedResponsiveSettings(settingsObj, propertyName) {
+		if (settingsObj.hasOwnProperty(propertyName)) {
+			return {
+				mobile: settingsObj[propertyName],
+				tablet: settingsObj[propertyName],
+				desktop: settingsObj[propertyName],
+			};
+		}
+
+		return {
+			mobile: (settingsObj.mobile || {})[propertyName],
+			tablet: (settingsObj.tablet || {})[propertyName],
+			desktop: (settingsObj.desktop || {})[propertyName],
+		};
 	}
 
 	function getResponsiveMode() {

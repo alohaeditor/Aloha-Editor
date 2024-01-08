@@ -26,6 +26,7 @@ define([
 
         init: function () {
             this._super();
+            this.type = 'attribute-button';
 
             var wrapper = $('<div>', {
                 class: 'aloha-attribute-button',

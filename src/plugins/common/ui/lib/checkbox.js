@@ -21,6 +21,7 @@ define([
 
         init: function () {
             this._super();
+            this.type = 'checkbox';
 
             var id = 'aloha_checkbox_' + counter;
             counter++;

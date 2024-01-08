@@ -19,6 +19,7 @@ define([
 
         init: function () {
             this._super();
+            this.type = 'split-button';
 
             // Wrap both buttons in a div for proper styling
             var $container = $('<div>', {

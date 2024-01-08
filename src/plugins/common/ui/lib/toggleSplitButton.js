@@ -19,6 +19,8 @@ define([
 
         init: function () {
             this._super();
+            this.type = 'toggle-split-button';
+
             this.element.addClass('toggle-button');
             if (this.alwaysSecondary) {
                 this.element.addClass('always-secondary');

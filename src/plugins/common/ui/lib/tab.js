@@ -13,7 +13,6 @@ define([
 	'use strict';
 
 	var idCounter = 0;
-	var slottedComponents = {};
 	var GROUP_LINE_BREAK = '\n';
 
 	/**
@@ -47,6 +46,9 @@ define([
 		_groupByComponent: null,
 		_scopeFnBySlot: null,
 		_slotInScope: null,
+	
+		_componentBySlot: {},
+		_scopeChangeSubId: null,
 
 		/**
 		 * All that this constructor does is save the components array into a
@@ -62,6 +64,7 @@ define([
 			this._groupByComponent = {};
 			this._scopeFnBySlot = {};
 			this._slotInScope = {};
+			this._componentBySlot = {};
 
 			this._slotsList = [];
 			this._super(context, settings);
@@ -90,25 +93,36 @@ define([
 			alohaTabs.push(this);
 
 			var _this = this;
-			PubSub.sub('aloha.ui.scope.change', function() {
+
+			function updateInstance() {
 				Object.keys(_this._scopeFnBySlot).forEach(function(slot) {
-					if (!slottedComponents[slot] || !_this._elemBySlot[slot]) {
+					if (!_this._componentBySlot[slot] || !_this._elemBySlot[slot]) {
 						return;
 					}
 					var $elem = $(_this._elemBySlot[slot]);
 					_this._slotInScope[slot] = _this._scopeFnBySlot[slot]();
-
+	
 					if (_this._slotInScope[slot]) {
 						$elem.removeClass('out-of-scope');
 					} else {
 						$elem.addClass('out-of-scope');
 					}
 				});
-
+	
 				if (_this.visible && !_this.hasVisibleComponents()) {
 					_this.hide();
 				}
+			}
+
+			this._scopeChangeSubId = PubSub.sub('aloha.ui.scope.change', function() {
+				updateInstance();
 			});
+
+			if (this.list.children().length < 1 || !this.hasVisibleComponents()) {
+				this.hide();
+			} else {
+				this.show();
+			}
 		},
 
 		_setupComponents: function (componentGroups) {
@@ -173,6 +187,7 @@ define([
 					_this._groupBySlot[component.slot] = groupProps;
 					_this._elemBySlot[component.slot] = $container;
 					_this._scopeFnBySlot[component.slot] = Utils.normalizeScopeToFunction(component.scope);
+					_this._slotInScope[component.slot] = _this._scopeFnBySlot[component.slot]();
 				});
 			});
 		},
@@ -183,7 +198,8 @@ define([
 			if (!elem) {
 				return false;
 			}
-			slottedComponents[slot] = component;
+			this._componentBySlot[slot] = component;
+
 			component.adoptParent(this);
 			elem.append(component.element);
 			group = this._groupBySlot[slot];
@@ -197,6 +213,12 @@ define([
 					group.visibleCounter += 1;
 				}
 			}
+
+			// If it isn't visible, check if we can make it visible now
+			if (!this.visible) {
+				this.show();
+			}
+
 			return true;
 		},
 
@@ -209,11 +231,10 @@ define([
 		},
 
 		hasVisibleComponents: function () {
-			var siblings = this._elemBySlot;
-			var slot;
-			for (slot in siblings) {
-				if (siblings.hasOwnProperty(slot) && slottedComponents[slot]) {
-					if (slottedComponents[slot].visible && this._slotInScope[slot]) {
+			var slots = Object.keys(this._elemBySlot);
+			for (var i = 0; i < slots.length; i++) {
+				if (this._componentBySlot[slots[i]]) {
+					if (this._componentBySlot[slots[i]].visible && this._slotInScope[slots[i]]) {
 						return true;
 					}
 				}
@@ -309,7 +330,16 @@ define([
 				this.container.tabs({ collapsible: true, active: false });
 				this.container.hide();
 			}
-		}
+		},
+
+		destroy: function() {
+			this._super();
+			if (this._scopeChangeSubId) {
+				PubSub.unsub(this._scopeChangeSubId);
+				this._scopeChangeSubId = null;
+			}
+			this.panel.remove();
+		},
 
 	});
 

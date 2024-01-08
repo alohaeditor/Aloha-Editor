@@ -32,6 +32,8 @@ define([
 	var Autocomplete = Component.extend({
 		init: function () {
 			this._super();
+			this.type = 'autocomplete';
+
 			var that = this;
 			this.element = jQuery("<input>")
 				.autocomplete({

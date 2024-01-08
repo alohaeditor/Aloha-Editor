@@ -15,6 +15,7 @@ define([
 	 */
 	var AccordionMenuButton = Component.extend({
 		init: function initAccordianMenuButton() {
+			this.type = 'accordion-menu-button';
 			this.element = makeAccordionMenuButton(this);
 		}
 	});
