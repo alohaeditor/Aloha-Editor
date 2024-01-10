@@ -30,9 +30,10 @@ define([
 	 * @extends {Component}
 	 */
 	var Autocomplete = Component.extend({
+		type: 'autocomplete',
+
 		init: function () {
 			this._super();
-			this.type = 'autocomplete';
 
 			var that = this;
 			this.element = jQuery("<input>")

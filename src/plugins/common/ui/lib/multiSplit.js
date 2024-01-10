@@ -23,6 +23,7 @@ define([
 	 * @extends {Component}
 	 */
 	var MultiSplit = Component.extend({
+		type: 'multi-split',
 
 		_activeButton: null,
 		_isOpen: false,
@@ -32,7 +33,6 @@ define([
 		 */
 		init: function () {
 			this._super();
-			this.type = 'multi-split';
 
 			var multiSplit = this;
 			var element = this.element = $('<div>', {

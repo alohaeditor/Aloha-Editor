@@ -90,7 +90,6 @@ define([
 		},
 
 		destroy: function() {
-			console.warn('DESTROYING COMPONENT');
 			this.container = null;
 			this.element.remove();
 		},

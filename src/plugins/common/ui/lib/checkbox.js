@@ -10,6 +10,7 @@ define([
     var counter = 0;
 
     var Checkbox = Component.extend({
+        type: 'checkbox',
 
         /** If the checkbox is currently checked */
         checked: false,
@@ -21,7 +22,6 @@ define([
 
         init: function () {
             this._super();
-            this.type = 'checkbox';
 
             var id = 'aloha_checkbox_' + counter;
             counter++;

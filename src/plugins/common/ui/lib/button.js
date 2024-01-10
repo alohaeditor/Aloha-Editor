@@ -29,6 +29,7 @@ function (jQuery, Component, Utils) {
 	 * @extends {Component}
 	 */
 	var Button = Component.extend({
+		type: 'button',
 
 		/** @type {string=} Text in the button. Only `text` or `html` may be set. */
 		text: '',
@@ -60,7 +61,6 @@ function (jQuery, Component, Utils) {
 		 */
 		init: function () {
 			this._super();
-			this.type = 'button';
 			this.createButtonElement();
 			Utils.makeButton(this.buttonElement, this)
 				.button('widget')

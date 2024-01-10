@@ -25,7 +25,7 @@ define([
 					'toggleMetaView', 'wailang', 'toggleFormatlessPaste'
 				], [
 					'alignLeft', 'alignCenter', 'alignRight', 'alignJustify', '\n',
-					'orderedListFormatSelector', 'unorderedListFormatSelector', 'definitionListFormatSelector', '\n', 'indentList', 'outdentList', 'colorPicker'
+					'orderedListFormatSelector', 'unorderedListFormatSelector', 'definitionListFormatSelector', '\n', 'indentList', 'outdentList', 'textColor', 'textBackground'
 				], [
 					'formatBlock'
 				]

@@ -14,6 +14,7 @@ define({
 	"split-button.secondary.label": "Kontext öffnen",
 	"link-target.target.label": "Ziel",
 	"link-target.anchor.label": "Anker",
+	"color-picker.clearButton.label": "Farbe entfernen",
 
 	"button.p.label": "Absatz",
 	"button.h1.label": "Überschrift 1",

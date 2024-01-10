@@ -10,6 +10,7 @@ define([
     var CLASS_SELECTED = 'selected';
 
     var SymbolGrid = Component.extend({
+        type: 'symbol-grid',
 
         /** @type {Array.<*>} Array of symbols to display */
         symbols: [],
@@ -21,6 +22,8 @@ define([
         containerElement: null,
 
         init: function () {
+            this._super();
+
             this.element = $('<div>', {
                 class: 'aloha-symbol-grid'
             });

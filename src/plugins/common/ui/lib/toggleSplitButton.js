@@ -8,6 +8,7 @@ define([
     'use strict';
 
     var ToggleSplitButton = SplitButton.extend({
+        type: 'toggle-split-button',
 
         /** @type {boolean} If this toggle button is currently active/selected */
         active: false,
@@ -19,7 +20,6 @@ define([
 
         init: function () {
             this._super();
-            this.type = 'toggle-split-button';
 
             this.element.addClass('toggle-button');
             if (this.alwaysSecondary) {

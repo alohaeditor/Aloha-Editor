@@ -12,7 +12,8 @@ define([
     'ui/input',
     'ui/port-helper-attribute-field',
     'ui/port-helper-multi-split',
-    'ui/selectMenu'
+    'ui/selectMenu',
+    'ui/colorPicker'
 ], function (
     $,
     Ui,
@@ -27,7 +28,8 @@ define([
     Input,
     AttributeField,
     MultiSplitButton,
-    SelectMenu
+    SelectMenu,
+    ColorPicker
 ) {
     'use strict';
 
@@ -48,6 +50,7 @@ define([
         'multi-split': createMultiSplitFromConfig,
         'text': createTextFromConfig,
         'select-menu': createSelectMenuFromConfig,
+        'color-picker': createColorPickerFromConfig,
     };
 
     function buildDynamicForm(config, postChangeFn) {
@@ -614,6 +617,7 @@ define([
         var component = Ui.adopt(name, Input, {
             value: tmpOptions.value,
             label: tmpOptions.checked,
+            inputType: tmpOptions.inputType,
 
             changeNotify: function (value) {
                 applyChanges(value);
@@ -743,6 +747,36 @@ define([
             options: tmpOptions.options,
             activeOption: tmpOptions.activeOption,
             iconsOnly: tmpOptions.iconsOnly,
+
+            changeNotify: function (value) {
+                applyChanges(value);
+                validateFn(value);
+                onChangeFn(value);
+            },
+            touchNotify: function () {
+                onTouchFn();
+            },
+        });
+
+        return component;
+    }
+
+    function createColorPickerFromConfig(
+        config,
+        name,
+        applyChanges,
+        validateFn,
+        onChangeFn,
+        onTouchFn
+    ) {
+        var tmpOptions = config.options || {};
+        var component = Ui.adopt(name, ColorPicker, {
+            value: tmpOptions.value,
+            palette: tmpOptions.palette,
+            allowOutsidePalette: tmpOptions.allowOutsidePalette,
+            allowCustomInput: tmpOptions.allowCustomInput,
+            allowTransparency: tmpOptions.allowTransparency,
+            allowClear: tmpOptions.allowClear,
 
             changeNotify: function (value) {
                 applyChanges(value);

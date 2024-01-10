@@ -15,11 +15,13 @@ define([
 	 * @extend {Component}
 	 */
 	var Input = Component.extend({
+		type: 'input',
+
 		/** Label for the input */
 		label: '',
 
 		/** Type of the input */
-		type: 'text',
+		inputType: 'text',
 
 		inputElement: null,
 
@@ -29,13 +31,12 @@ define([
 		 */
 		init: function () {
 			this._super();
-			this.type = 'input';
 
 			var id = 'aloha_input_' + counter;
 			counter++;
 
 			this.inputElement = jQuery('<input>', {
-				type: this.type,
+				type: this.inputType,
 				class: 'input-element',
 				id: id,
 				attr: {

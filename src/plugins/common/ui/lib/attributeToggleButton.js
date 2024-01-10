@@ -12,13 +12,9 @@ define([
     var CLASS_ACTIVE = 'active';
 
     var AttributeToggleButton = AttributeButton.extend({
+        type: 'attribute-toggle-button',
 
         active: false,
-
-        init: function () {
-            this._super();
-            this.type = 'attribute-toggle-button';
-        },
 
         _onClick: function () {
             this.click();

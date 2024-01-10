@@ -55,6 +55,10 @@ define([
         LINK_ANCHOR:                        'link-anchor',
         LINK_REMOVE:                        'link-remove',
         
+        // Textcolor
+        TEXT_COLOR:                         'text-color',
+        BACKGROUND_COLOR:                   'background-color',
+
         // Misc
         TREE:                               'tree',
     };
@@ -105,6 +109,9 @@ define([
     ClassMapping[AvailableIcons.LINK] = 'aloha-icon-link';
     ClassMapping[AvailableIcons.LINK_ANCHOR] = 'aloha-icon-anchor';
     ClassMapping[AvailableIcons.LINK_REMOVE] = 'aloha-icon-unlink';
+
+    ClassMapping[AvailableIcons.TEXT_COLOR] = 'aloha-icon-textcolor-color';
+    ClassMapping[AvailableIcons.BACKGROUND_COLOR] = 'aloha-icon-textcolor-background-color';
 
     ClassMapping[AvailableIcons.TREE] = 'aloha-icon-tree';
 

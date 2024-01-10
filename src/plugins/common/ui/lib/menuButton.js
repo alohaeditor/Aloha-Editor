@@ -11,9 +11,10 @@ define([
 	'use strict';
 
 	var MenuButton = Component.extend({
+		type: 'menu-button',
+
 		init: function () {
 			this.element = MenuButton.makeMenuButton(this);
-			this.type = 'menu-button';
 		},
 		enable: function () {
 			this.disabled = false;

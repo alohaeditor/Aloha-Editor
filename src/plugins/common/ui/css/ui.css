@@ -1129,37 +1129,279 @@ span.ui-button-icon-primary.ui-icon.ui-icon-closethick {
 
 /* Select Menu */
 
-.aloha-select-menu .select-menu-options-container {
+.aloha-ui .aloha-select-menu .select-menu-options-container {
 	display: flex;
 	flex-direction: column;
 	flex-wrap: nowrap;
 }
 
-.aloha-select-menu .select-menu-options-container .select-menu-option {
+.aloha-ui .aloha-select-menu .select-menu-options-container .select-menu-option {
 	margin: 2px 4px;
 	background: transparent;
 	border: 1px solid rgba(0,0,0,0.2);
 	cursor: pointer;
 }
 
-.aloha-select-menu .select-menu-options-container .select-menu-option:hover,
-.aloha-select-menu .select-menu-options-container .select-menu-option:focus {
+.aloha-ui .aloha-select-menu .select-menu-options-container .select-menu-option:hover,
+.aloha-ui .aloha-select-menu .select-menu-options-container .select-menu-option:focus {
 	border-color: rgba(0,0,0,0.8);
 }
 
-.aloha-select-menu .select-menu-options-container .select-menu-option.active {
+.aloha-ui .aloha-select-menu .select-menu-options-container .select-menu-option.active {
 	border-color: #3B73D7;
 }
 
-.aloha-select-menu.icons-only .select-menu-options-container {
+.aloha-ui .aloha-select-menu.icons-only .select-menu-options-container {
 	flex-direction: row;
 }
 
-.aloha-select-menu.icons-only .select-menu-options-container .select-menu-option {
+.aloha-ui .aloha-select-menu.icons-only .select-menu-options-container .select-menu-option {
 	width: 18px;
 	height: 18px;
 }
 
-.aloha-select-menu.icons-only .select-menu-options-container .select-menu-option .select-menu-option-label {
+.aloha-ui .aloha-select-menu.icons-only .select-menu-options-container .select-menu-option .select-menu-option-label {
 	display: none;
+}
+
+/* Color Picker */
+
+.aloha-ui .aloha-color-picker .aloha-color-picker-grid {
+	display: flex;
+	max-width: 400px;
+	flex-direction: row;
+	flex-wrap: wrap;
+}
+
+.aloha-ui .aloha-color-picker .aloha-color-picker-grid .color-picker-item {
+	width: 26px;
+	height: 26px;
+	border-radius: 50%;
+	border: 2px solid #000;
+	background: var(--aloha-color-palette-item);
+	transition: 200ms;
+	margin: 8px;
+	box-shadow: 0px 1px 3px #9e9e9e;
+}
+
+.aloha-ui .aloha-color-picker .aloha-color-picker-grid .color-picker-item.active {
+	border-color: #3B73D7;
+}
+
+.aloha-ui .aloha-color-picker .aloha-color-picker-grid .color-picker-item.color-palette-item:hover {
+	border-color: var(--aloha-color-palette-item);
+}
+
+.aloha-ui .aloha-color-picker .aloha-color-picker-grid .color-picker-item.clear-value {
+	display: none;
+}
+
+.aloha-ui .aloha-color-picker.with-clear .aloha-color-picker-grid .color-picker-item.clear-value {
+	display: block;
+}
+
+.aloha-ui .aloha-color-picker .aloha-color-picker-grid .color-picker-item.clear-value::after {
+	display: block;
+	content: '';
+	width: 100%;
+	transform: rotate(-45deg);
+	height: 2px;
+	background: #f00;
+}
+
+.aloha-ui .aloha-color-picker .aloha-color-picker-grid .color-picker-item.clear-value:hover {
+	border-color: #f00;
+}
+
+.aloha-ui .aloha-color-picker .color-picker-custom {
+	display: none;
+	flex-direction: row;
+	flex-wrap: nowrap;
+}
+
+.aloha-ui .aloha-color-picker.with-custom-colors .color-picker-custom {
+	display: flex;
+}
+
+.aloha-ui .aloha-color-picker .color-picker-custom .custom-color-input-container {
+	flex: 1 1 auto;
+}
+
+.aloha-ui .aloha-color-picker .color-picker-custom .custom-color.color-red .ui-slider-range {
+	background-color: rgb(206, 15, 15);
+}
+
+.aloha-ui .aloha-color-picker .color-picker-custom .custom-color.color-green .ui-slider-range {
+	background-color: rgb(24, 221, 6);
+}
+
+.aloha-ui .aloha-color-picker .color-picker-custom .custom-color.color-blue .ui-slider-range {
+	background-color: rgb(48, 30, 207);
+}
+
+.aloha-ui .aloha-color-picker .color-picker-custom .custom-color.color-transparency {
+	display: none;
+}
+
+.aloha-ui .aloha-color-picker.with-transparency .color-picker-custom .custom-color.color-transparency {
+	display: block
+}
+
+.aloha-ui .aloha-color-picker .color-picker-custom .custom-color-preview-container {
+	flex: 0 0 auto;
+	min-height: 1px;
+	margin: 6px 6px 0;
+	display: flex;
+  	flex-direction: column;
+}
+
+.aloha-ui .aloha-color-picker .color-picker-custom .custom-color-preview {
+	width: 60px;
+	height: 60px;
+	border: 1px solid #000;
+	box-shadow: 2px 2px 2px #c5c5c5;
+	margin: 0 auto auto;
+}
+
+.aloha-ui .aloha-color-picker .color-picker-custom .custom-color-input {
+	box-sizing: border-box;
+	height: 24px;
+	font-size: 14px;
+	border-radius: 2px;
+	border: 1px solid #aeaeae;
+}
+
+.aloha-ui .aloha-color-picker .color-picker-custom .custom-color-confirm {
+	flex: 0 0 auto;
+	font-size: 13px;
+	display: block;
+	box-sizing: border-box;
+	margin: auto auto 1px;
+	border: 1px solid #aeaeae;
+	padding: 3px 5px;
+}
+
+/** Slider */
+
+.aloha-ui .aloha-slider .aloha-slider-label {
+	font-size: 14px;
+	padding: 0 5px 0 3px;
+	display: block;
+}
+
+.aloha-ui .aloha-slider .slider-body {
+	margin: 2px 0;
+	display: flex;
+	width: 100%;
+	flex-direction: column;
+	flex-wrap: wrap;
+}
+
+.aloha-ui .aloha-slider .slider-main {
+	flex: 1 1 auto;
+}
+
+.aloha-ui .aloha-slider .indicator-container {
+	display: none;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	padding: 0 5px 0 3px;
+}
+
+.aloha-ui .aloha-slider.with-indicators .indicator-container {
+	display: flex;
+}
+
+.aloha-ui .aloha-slider .slider-indicator {
+	font-size: 11px;
+	flex: 1 1 50%;
+}
+
+.aloha-ui .aloha-slider .slider-indicator.indicator-min {
+	text-align: left;
+}
+
+.aloha-ui .aloha-slider .slider-indicator.indicator-max {
+	text-align: right;
+}
+
+.aloha-ui .aloha-slider .slider-container {
+	padding: 0px 4px 6px 2px;
+}
+
+.aloha-ui .aloha-slider .slider-element.ui-slider {
+	position: relative;
+	box-sizing: border-box;
+	height: 12px;
+	margin-top: 5px;
+}
+
+.aloha-ui .aloha-slider .slider-element.ui-slider .ui-slider-range {
+	height: 100%;
+  	border: none;
+}
+
+.aloha-ui .aloha-slider .slider-element.ui-slider .ui-slider-handle {
+	width: 10px;
+	display: inline-block;
+	height: 16px;
+	position: absolute;
+	margin-top: -14px;
+	margin-left: -6px;
+}
+
+.aloha-ui .aloha-slider .spinner-container {
+	display: none;
+	padding-left: 2px;
+	flex: 1 1 auto;
+}
+
+.aloha-ui .aloha-slider.with-spinner .spinner-container {
+	display: block;
+}
+
+/** Spinner */
+
+.aloha-ui .aloha-spinner.ui-spinner {
+	height: 24px;
+	display: block;
+	box-sizing: border-box;
+	position: relative;
+	font-size: 14px;
+}
+
+.aloha-ui .aloha-spinner.ui-spinner .ui-spinner-input {
+	height: 100%;
+	width: 100%;
+	padding-right: 20px;
+	box-sizing: border-box;
+	border: none;
+}
+
+.aloha-ui .aloha-spinner.ui-spinner .ui-spinner-button {
+	width: 20px;
+	height: 50%;
+	position: absolute;
+	right: 0;
+	box-sizing: border-box;
+	border: none;
+	border-left: 1px solid;
+	border-color: inherit;
+}
+
+.aloha-ui .aloha-spinner.ui-spinner .ui-spinner-button.ui-spinner-up {
+	top: 0;
+	border-bottom: 1px solid;
+}
+
+.aloha-ui .aloha-spinner.ui-spinner .ui-spinner-button.ui-spinner-up .ui-button-icon-primary {
+	margin-left: -6px;
+}
+
+.aloha-ui .aloha-spinner.ui-spinner .ui-spinner-button.ui-spinner-down {
+	bottom: 0;
+}
+
+.aloha-ui .aloha-spinner.ui-spinner .ui-spinner-button.ui-spinner-down .ui-button-icon-primary {
+	margin-left: -7px;
 }

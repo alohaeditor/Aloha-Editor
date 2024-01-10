@@ -18,12 +18,12 @@ define([
 	 * @extends {Button}
 	 */
 	var ToggleButton = Button.extend({
+		type: 'toggle-button',
 
 		active: false,
 
 		init: function() {
 			this._super();
-			this.type = 'toggle-button';
 		},
 
 		/**

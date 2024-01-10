@@ -128,10 +128,12 @@ define([
 		}
 
 		component = Ui.adopt(props.name, Component, {
+			type: 'attribute-field',
+
 			changeNotify: props.changeNotify,
 			touchNotify: props.touchNotify,
+
 			init: function () {
-				this.type = 'attribute-field';
 
 				if (props.element) {
 					this.element = element;

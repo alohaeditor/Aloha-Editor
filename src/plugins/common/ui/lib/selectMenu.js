@@ -36,6 +36,7 @@ define([
      */
 
     var SelectMenu = Component.extend({
+        type: 'select-menu',
 
         /** @type {Array.<SelectMenuOption>} The available options of this menu. */
         options: [],
@@ -62,7 +63,6 @@ define([
 
         init: function () {
             this._super();
-            this.type = 'select-menu';
 
             this.element = $('<div>', {
                 class: 'aloha-select-menu',

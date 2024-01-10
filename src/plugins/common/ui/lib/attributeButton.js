@@ -12,6 +12,7 @@ define([
     var counter = 0;
 
     var AttributeButton = Button.extend({
+        type: 'attribute-button',
 
         targetElement: null,
         targetAttribute: '',        
@@ -26,7 +27,6 @@ define([
 
         init: function () {
             this._super();
-            this.type = 'attribute-button';
 
             var wrapper = $('<div>', {
                 class: 'aloha-attribute-button',

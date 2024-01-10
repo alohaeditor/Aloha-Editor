@@ -15,6 +15,7 @@ define({
 		"split-button.secondary.label": "Open Context",
 		"link-target.target.label": "Target",
 		"link-target.anchor.label": "Anchor",
+		"color-picker.clearButton.label": "Clear color",
 
 		// paragraph
 		"button.p.label": "Paragraph",

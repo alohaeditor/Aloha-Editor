@@ -12,6 +12,8 @@ define([
     'use strict';
 
     var ContextButton = Button.extend({
+        type: 'context-button',
+
         /**
          * @type {(DynamicDropdownConfiguration|DynamicModalConfiguration|function.<DynamicDropdownConfiguration|DynamicModalConfiguration>)}
          * A static context/config for the dropdown/modal, or a function which returns the context/config dynamically when needed.
@@ -38,7 +40,6 @@ define([
 
         init: function() {
             this._super();
-            this.type = 'context-button';
 
             this.element.addClass('context-button');
             this.element.append('<span class="ui-button-icon-secondary ui-icon aloha-jqueryui-icon ui-icon-triangle-1-s"></span>');
