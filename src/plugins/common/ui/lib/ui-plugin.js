@@ -56,6 +56,11 @@ define('ui/ui-plugin', [
 	var context = new Context(),
 		toolbar = new Toolbar(context, getToolbarSettings(), getResponsiveMode());
 
+	var adoptedComponents = {};
+
+	/** @type {Aloha.Surface} Currently the active Surface implementation to use/adopt into. */
+	var activeSurface = toolbar;
+
 	Aloha.bind('aloha-editable-activated', function (event, alohaEvent) {
 		Surface.show(context);
 		toolbar.setWidth();
@@ -142,7 +147,39 @@ define('ui/ui-plugin', [
 	 * @api
 	 */
 	function adoptInto(slot, component) {
-		return toolbar.adoptInto(slot, component);
+		adoptedComponents[slot] = component;
+		return activeSurface.adoptInto(slot, component);
+	}
+
+	function unadopt(slot) {
+		delete adoptedComponents[slot];
+		activeSurface.unadopt(slot);
+	}
+
+	function getActiveSurface() {
+		return activeSurface;
+	}
+
+	/**
+	 * Sets the current active Surface to handle all UI elements.
+	 * @param {*} surface The surface instance which should be used.
+	 * @param {boolean} replayAdoption If all previously adopted component calls should be replayed/applied to this surface instance.
+	 * @param {boolean} removeFromOld If it should remove all adopted components from the old/previous surface.
+	 */
+	function setActiveSurface(surface, replayAdoption, removeFromOld) {
+		var oldSurface = activeSurface;
+		activeSurface = surface;
+
+		if (replayAdoption || removeFromOld) {
+			Object.entries(adoptedComponents).forEach(function(entry) {
+				if (removeFromOld) {
+					oldSurface.unadopt(entry[0]);
+				}
+				if (replayAdoption) {
+					surface.adoptInto(entry[0], entry[1]);
+				}
+			});
+		}
 	}
 
 	/**
@@ -193,6 +230,13 @@ define('ui/ui-plugin', [
 		 * @api
 		 */
 		adoptInto: adoptInto,
-		showToolbar: showToolbar
+		unadopt: unadopt,
+		showToolbar: showToolbar,
+		getContext: function() {
+			return context;
+		},
+		getToolbarSettings: getToolbarSettings,
+		getActiveSurface: getActiveSurface,
+		setActiveSurface: setActiveSurface,
 	};
 });

@@ -23,6 +23,19 @@ define([
 		},
 
 		/**
+		 * Function to adopt/register a component to a specific slot.
+		 * Rendering of the component should be done when the slot for it is available.
+		 * @abstract
+		 */
+		adoptInto: function (slot, component) {
+			throw Error('Implement this function!');
+		},
+
+		unadopt: function(slot) {
+			throw Error('Implement this function!');
+		},
+
+		/**
 		 * Check for whether or not this surface is active--that is, whether is
 		 * is visible and the user can interact with it.
 		 *

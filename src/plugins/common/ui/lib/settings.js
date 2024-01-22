@@ -14,7 +14,9 @@ define([
 	var _defaultTabs = [
 		// Format Tab
 		{
+			id: 'formatting',
 			label: 'tab.format.label',
+			icon: 'border_color',
 			showOn: { scope: 'Aloha.continuoustext' },
 			components: [
 				[
@@ -33,7 +35,9 @@ define([
 		},
 		// Insert Tab
 		{
+			id: 'insert',
 			label: "tab.insert.label",
+			icon: 'add',
 			showOn: { scope: 'Aloha.continuoustext' },
 			components: [
 				[ "createTable", "characterPicker", "insertLink",
@@ -43,19 +47,25 @@ define([
 		},
 		// Link Tab
 		{
+			id: 'link',
 			label: 'tab.link.label',
+			icon: 'link',
 			showOn: { scope: 'link' },
 			components: [ 'editLink', 'toggleAnchor', 'editAnchor', 'removeLink', 'linkBrowser' ]
 		},
 		// Cite Tab
 		{
+			id: 'cite',
 			label : 'tab.cite.label',
+			icon: 'quote',
 			showOn : { scope : 'cite' },
 			components : [ 'editCite', 'removeCite', '\n', 'editNote' ]
 		},
 		// Image Tab
 		{
+			id: 'image',
 			label: "tab.img.label",
+			icon: 'image',
 			showOn: {scope: 'image'},
 			components: [
 				[ "imageSource", "\n",
@@ -68,20 +78,28 @@ define([
 			]
 		},
 		// Abbr Tab
-		{   label: "tab.abbr.label",
+		{  
+			id: 'abbr',
+			label: "tab.abbr.label",
+			icon: 'text',
 			showOn: { scope: 'abbr' },
 			components: [
 				[ "abbrText", "removeAbbr" ]
 			]
 		},
 		// Wailang Tab
-		{   label: "tab.wai-lang.label",
+		{  
+			id: 'wai-lang',
+			label: "tab.wai-lang.label",
+			icon: 'language',
 			showOn: { scope: 'wai-lang' },
 			components: [ [ "wailangfield", "removewailang" ] ]
 		},
 		// Table Tabs
 		{
+			id: 'table.cell',
 			label: "tab.table.label",
+			icon: 'cell',
 			showOn: { scope: 'table.cell' },
 			components: [
 				[ "mergecells", "splitcells", "deleteTable", "tableCaption",
@@ -90,7 +108,9 @@ define([
 			]
 		},
 		{
+			id: 'table.column',
 			label: "tab.col.label",
+			icon: 'column',
 			showOn: { scope: 'table.column' },
 			components: [
 				[ "addcolumnleft", "addcolumnright", "deletecolumns",
@@ -99,7 +119,9 @@ define([
 			]
 		},
 		{
+			id: 'table.row',
 			label: "tab.row.label",
+			icon: 'row',
 			showOn: { scope: 'table.row' },
 			components: [
 				[ "addrowbefore", "addrowafter", "deleterows", "rowheader",
@@ -107,7 +129,9 @@ define([
 			]
 		},
 		{
+			id: 'table.align',
 			label: "tab.cell.label",
+			icon: 'align',
 			showOn: { scope: 'table.cell' },
 			components: [
 				[ "alignTop", "alignMiddle", "alignBottom", "formatCell" ]

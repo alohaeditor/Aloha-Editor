@@ -222,6 +222,30 @@ define([
 			return true;
 		},
 
+		unadopt: function(slot) {
+			var comp = this._componentBySlot[slot];
+			var group = this._groupBySlot[slot];
+			if (!comp) {
+				return;
+			}
+
+			delete this._componentBySlot[slot];
+			delete this._elemBySlot[slot];
+			delete this._scopeFnBySlot[slot];
+			delete this._slotInScope[slot];
+
+			var idx = this._slotsList.indexOf(slot);
+			if (idx > -1) {
+				this._slotList.splice(idx, 1);
+			}
+
+			if (group) {
+				delete this._groupBySlot[slot];
+				delete this._groupByComponent[comp.id];
+				group.visibleCounter -= 1;
+			}
+		},
+
 		foreground: function () {
 			this.container.tabs('option', 'active', this.index);
 		},

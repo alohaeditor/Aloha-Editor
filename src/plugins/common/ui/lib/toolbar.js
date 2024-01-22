@@ -238,6 +238,15 @@ define([
 			return tab && tab.adoptInto(slot, component);
 		},
 
+		unadopt: function(slot) {
+			delete this._adoptedComponents[slot];
+			var tab = this._tabBySlot[slot];
+			delete this._tabBySlot[slot];
+			if (tab) {
+				tab.unadopt(slot);
+			}
+		},
+
 		getActiveContainer: function () {
 			return this.$_container.data('aloha-active-container');
 		},
