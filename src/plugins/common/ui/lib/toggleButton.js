@@ -32,8 +32,27 @@ define([
 		 *
 		 * @param {boolean} toggled Whether the button is to be set to the
 		 *                          "toggled/checked" state.
+		 * @deprecated use `setValue` instead.
 		 */
 		setState: function (toggled) {
+			console.debug('[Deprecation] Call to ToggleButton.setState: Use "ToggleButton.setValue" instead.');
+			this.setValue(toggled);
+		},
+
+		/** @deprecated use `getValue` instead. */
+		getState: function () {
+			console.debug('[Deprecation] Call to ToggleButton.getState: Use "ToggleButton.getValue" instead.');
+			return this.active;
+		},
+
+		_onClick: function () {
+			this.touch();
+			this.setState(!this.active);
+			this.triggerChangeNotification();
+			this.click();
+		},
+
+		setValue: function(value) {
 			// It is very common to set the button state on every
 			// selection change even if the state hasn't changed.
 			// Profiling showed that this is very inefficient.
@@ -46,21 +65,6 @@ define([
 			} else {
 				this.element.removeClass(CLASS_ACTIVE);
 			}
-		},
-
-		getState: function () {
-			return this.active;
-		},
-
-		_onClick: function () {
-			this.touch();
-			this.setState(!this.active);
-			this.triggerChangeNotification();
-			this.click();
-		},
-
-		setValue: function(value) {
-			this.setState(value);
 		},
 		getValue: function() {
 			return this.active;

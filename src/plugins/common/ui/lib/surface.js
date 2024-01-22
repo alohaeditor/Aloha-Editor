@@ -25,13 +25,34 @@ define([
 		/**
 		 * Function to adopt/register a component to a specific slot.
 		 * Rendering of the component should be done when the slot for it is available.
+		 * @param {string} slot The slot that sohuld be registered for the component.
+		 * @param {*} component The component that should be registered.
 		 * @abstract
 		 */
 		adoptInto: function (slot, component) {
 			throw Error('Implement this function!');
 		},
-
+		/**
+		 * Clears a previously adopted slot.
+		 * @param {string} slot The slot that should be cleared.
+		 * @abstract
+		 */
 		unadopt: function(slot) {
+			throw Error('Implement this function!');
+		},
+
+		/**
+		 * Show the Surface and it's content
+		 * @abstract
+		 */
+		show: function() {
+			throw Error('Implement this function!');
+		},
+		/**
+		 * Hide the Surface and it's content
+		 * @abstract
+		 */
+		hide: function() {
 			throw Error('Implement this function!');
 		},
 

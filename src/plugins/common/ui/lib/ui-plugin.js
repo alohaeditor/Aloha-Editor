@@ -167,8 +167,19 @@ define('ui/ui-plugin', [
 	 * @param {boolean} removeFromOld If it should remove all adopted components from the old/previous surface.
 	 */
 	function setActiveSurface(surface, replayAdoption, removeFromOld) {
+		if (activeSurface === surface) {
+			return;
+		}
+
 		var oldSurface = activeSurface;
 		activeSurface = surface;
+
+		// Hide and show the toolbar if it is being de-/activated
+		if (oldSurface === toolbar) {
+			toolbar.hide();
+		} else if (surface === toolbar) {
+			toolbar.show();
+		}
 
 		if (replayAdoption || removeFromOld) {
 			Object.entries(adoptedComponents).forEach(function(entry) {
@@ -234,6 +245,9 @@ define('ui/ui-plugin', [
 		showToolbar: showToolbar,
 		getContext: function() {
 			return context;
+		},
+		getToolbarInstance: function() {
+			return toolbar;
 		},
 		getToolbarSettings: getToolbarSettings,
 		getActiveSurface: getActiveSurface,
