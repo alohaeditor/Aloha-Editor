@@ -18,12 +18,11 @@ define('format/format-plugin', [
 	'util/html',
 	'util/dom',
 	'util/browser',
-	'util/maps',
 	'util/strings',
 	'ui/ui',
 	'ui/toggleButton',
 	'ui/port-helper-multi-split',
-	'ui/splitButton',
+	'ui/icons',
 	'ui/attributeButton',
 	'ui/dropdown',
 	'i18n!format/nls/i18n'
@@ -40,12 +39,11 @@ define('format/format-plugin', [
 	Html,
 	Dom,
 	Browser,
-	Maps,
 	Strings,
 	Ui,
 	ToggleButton,
 	MultiSplitButton,
-	SplitButton,
+	Icons,
 	AttributeButton,
 	Dropdown,
 	i18n
@@ -102,6 +100,16 @@ define('format/format-plugin', [
 		"STRONG": ["STRONG", "B"],
 		"EM": ["EM", "I"]
 	};
+	var TYPOGRAPHY_ICONS = {
+		'p': Icons.AvailableIcons.PARAGRAPH,
+		'h1': Icons.AvailableIcons.HEADER_1,
+		'h2': Icons.AvailableIcons.HEADER_2,
+		'h3': Icons.AvailableIcons.HEADER_3,
+		'h4': Icons.AvailableIcons.HEADER_4,
+		'h5': Icons.AvailableIcons.HEADER_5,
+		'h6': Icons.AvailableIcons.HEADER_6,
+		'pre': Icons.AvailableIcons.PRE_FORMATTED,
+	}
 
 	/**
 	 * Checks if the selection spans a whole node (HTML element)
@@ -557,61 +565,10 @@ define('format/format-plugin', [
 				formatPlugin.typographyButton.deactivateInput();
 			}
 
-			formatPlugin.typographyButton.setIcon(getTypographyIcon(effectiveTypo));
-		}
-
-		// Multisplit buttons like headlines
-		if ((formatPlugin.multiSplitItems || []).length > 0) {
-			foundMultiSplit = false;
-
-			// iterate over the markup elements
-			for (i = 0; i < rangeObject.markupEffectiveAtStart.length && !foundMultiSplit; i++) {
-				effectiveMarkup = rangeObject.markupEffectiveAtStart[i];
-
-				for (j = 0; j < formatPlugin.multiSplitItems.length && !foundMultiSplit; j++) {
-					multiSplitItem = formatPlugin.multiSplitItems[j];
-
-					if (!multiSplitItem.markup) {
-						continue;
-					}
-
-					// now check whether one of the multiSplitItems fits to the effective markup
-					if (Selection.standardTagNameComparator(effectiveMarkup, multiSplitItem.markup)) {
-						formatPlugin.multiSplitButton.setActiveItem(multiSplitItem.name);
-						foundMultiSplit = true;
-					}
-				}
-			}
-
-			if (!foundMultiSplit) {
-				formatPlugin.multiSplitButton.setActiveItem(null);
-			}
+			formatPlugin.typographyButton.setIcon(Icons.ClassMapping[TYPOGRAPHY_ICONS[effectiveTypo]]);
 		}
 
 		handlePreformattedText(rangeObject.commonAncestorContainer);
-	}
-
-	function getTypographyIcon(typo) {
-		switch (typo) {
-			case 'p':
-				return 'aloha-icon-paragraph';
-			case 'h1':
-				return 'aloha-icon-h1';
-			case 'h2':
-				return 'aloha-icon-h2';
-			case 'h3':
-				return 'aloha-icon-h3';
-			case 'h4':
-				return 'aloha-icon-h4';
-			case 'h5':
-				return 'aloha-icon-h5';
-			case 'h6':
-				return 'aloha-icon-h6';
-			case 'pre':
-				return 'aloha-icon-pre';
-			default:
-				return 'aloha-icon-typography';
-		}
 	}
 
 	/**
@@ -725,11 +682,6 @@ define('format/format-plugin', [
 			}
 
 			this.initButtons();
-
-			Aloha.bind('aloha-plugins-loaded', function () {
-				// @todo add config option for sidebar panel
-				me.initSidebar(Aloha.Sidebar.right);
-			});
 
 			var shouldCheckHeadingHierarchy = Strings.parseBoolean(this.settings.checkHeadingHierarchy);
 
@@ -854,19 +806,6 @@ define('format/format-plugin', [
 
 			// and the same for multisplit items
 			len = this.multiSplitItems.length;
-			for (i = 0; i < len; i++) {
-				var name = this.multiSplitItems[i].name;
-
-				// Currently removeFormat is the only button, that would not
-				// insert tags, and can therefore ignore the content rules.
-				if (name != 'removeFormat' && !ContentRules.isAllowed(editable, name)) {
-					this.multiSplitButton.hideItem(name);
-				} else if (jQuery.inArray(name, config) !== -1) {
-					this.multiSplitButton.showItem(name);
-				} else {
-					this.multiSplitButton.hideItem(name);
-				}
-			}
 		},
 
 		/**
@@ -903,7 +842,7 @@ define('format/format-plugin', [
 			});
 
 			this.typographyButton = Ui.adopt('formatBlock', AttributeButton, {
-				icon: 'aloha-icon aloha-icon-bold',
+				icon: 'aloha-icon ' + Icons.ClassMapping[Icons.AvailableIcons.TYPOGRAPHY],
 				targetAttribute: 'id',
 				inputLabel: 'Heading Anchor',
 				panelLabel: 'Heading IDs',
@@ -917,7 +856,7 @@ define('format/format-plugin', [
 								return {
 									id: typo,
 									label: typo,
-									icon: typo,
+									icon: Icons.ClassMapping[TYPOGRAPHY_ICONS[typo]],
 								};
 							}),
 						},
@@ -936,71 +875,9 @@ define('format/format-plugin', [
 				}
 			});
 
-			this.multiSplitButton = new MultiSplitButton({
-				name: '_formatBlock',
-				items: this.multiSplitItems,
-				hideIfEmpty: true,
-			});
-
 			PubSub.sub('aloha.selection.context-change', function (message) {
 				onSelectionChanged(that, message.range);
 			});
-		},
-
-		initSidebar: function (sidebar) {
-			var pl = this;
-			pl.sidebar = sidebar;
-			sidebar.addPanel({
-
-				id: pl.nsClass('sidebar-panel-class'),
-				title: i18n.t('floatingmenu.tab.format'),
-				content: '',
-				expanded: true,
-				activeOn: this.formatOptions || false,
-
-				onInit: function () {
-				},
-
-				onActivate: function (effective) {
-					var that = this;
-					that.effective = effective;
-
-					if (!effective[0]) {
-						return;
-					}
-					that.format = effective[0].nodeName.toLowerCase();
-
-					var dom = jQuery('<div>').attr('class', pl.nsClass('target-container'));
-					var fieldset = jQuery('<fieldset>');
-					fieldset.append(jQuery('<legend>' + that.format + ' ' + i18n.t('format.class.legend')).append(jQuery('<select>')));
-
-					dom.append(fieldset);
-
-					var html =
-						'<div class="' + pl.nsClass('target-container') + '"><fieldset><legend>' + i18n.t('format.class.legend') + '</legend><select name="targetGroup" class="' + pl.nsClass('radioTarget') + '">' +
-						'<option value="">' + i18n.t('format.class.none') + '</option>';
-
-					if (pl.config[that.format] && pl.config[that.format]['class']) {
-						jQuery.each(pl.config[that.format]['class'], function (i, v) {
-							html += '<option value="' + i + '" >' + v + '</option>';
-						});
-					}
-
-					html += '</select></fieldset></div>';
-
-					var content = this.setContent(html).content;
-
-					jQuery(pl.nsSel('framename')).on('keyup', function () {
-						jQuery(that.effective).attr('target', jQuery(this).val().replace('\"', '&quot;').replace("'", "&#39;"));
-					});
-
-					that.effective = effective;
-					jQuery(pl.nsSel('linkTitle')).val(jQuery(that.effective).attr('title'));
-				}
-
-			});
-
-			sidebar.show();
 		},
 
 		// duplicated code from link-plugin

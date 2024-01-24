@@ -169,6 +169,8 @@ define([
             this.renderOptions();
         },
 
+        onSelect: function(event) {},
+
         updateElementClasses: function () {
             if (this.iconsOnly) {
                 this.element.addClass(CLASS_ICONS_ONLY);
@@ -207,6 +209,7 @@ define([
                 this.handleMultistepActivation(option);
             } else {
                 this.activeMultistepOption = null;
+                this.onSelect({ id: option.id });
                 this.triggerChangeNotification();
             }
             this.updateElementClasses();

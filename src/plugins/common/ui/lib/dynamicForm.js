@@ -46,7 +46,7 @@ define([
         'autocomplete': createAutocompleteFromConfig,
         'checkbox': createCheckboxFromConfig,
         'input': createInputFromConfig,
-        'attribute-field': createAttributeFieldFromnConfig,
+        'attribute-field': createAttributeFieldFromConfig,
         'multi-split': createMultiSplitFromConfig,
         'text': createTextFromConfig,
         'select-menu': createSelectMenuFromConfig,
@@ -631,7 +631,7 @@ define([
         return component;
     }
 
-    function createAttributeFieldFromnConfig(
+    function createAttributeFieldFromConfig(
         config,
         name,
         applyChanges,
@@ -832,7 +832,7 @@ define([
         createAutocompleteFromConfig: createAutocompleteFromConfig,
         createCheckboxFromConfig: createCheckboxFromConfig,
         createInputFromConfig: createInputFromConfig,
-        createAttributeFieldFromnConfig: createAttributeFieldFromnConfig,
+        createAttributeFieldFromConfig: createAttributeFieldFromConfig,
         createMultiSplitFromConfig: createMultiSplitFromConfig,
         createTextFromConfig: createTextFromConfig,
     };

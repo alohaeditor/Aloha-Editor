@@ -139,7 +139,7 @@ function (jQuery, Component, Utils) {
 				}
 
 				if (this.icon == null) {
-					this.buttonElement.button('option', 'icons', null);
+					this.buttonElement.button('option', 'icons', { primary: null, secondary: null });
 				} else if (typeof this.icon === 'object') {
 					this.buttonElement.button('option', 'icons', icon);
 				} else {

@@ -2,7 +2,7 @@ define([
 	"jquery",
 	"ui/component"
 ], function (
-	jQuery,
+	$,
 	Component
 ) {
 	'use strict';
@@ -35,7 +35,7 @@ define([
 			var id = 'aloha_input_' + counter;
 			counter++;
 
-			this.inputElement = jQuery('<input>', {
+			this.inputElement = $('<input>', {
 				type: this.inputType,
 				class: 'input-element',
 				id: id,
@@ -44,14 +44,14 @@ define([
 					autocomplete: 'off',
 				}
 			})
-				.on('change', jQuery.proxy(function (event) {
+				.on('change', $.proxy(function (event) {
 					this.touch();
 					var value = event.target.value;
 					if (typeof this.changeNotify === 'function') {
 						this.changeNotify(value);
 					}
 				}, this))
-				.on('focus', jQuery.proxy(function (event) {
+				.on('focus', $.proxy(function (event) {
 					this.touch();
 				}, this));
 

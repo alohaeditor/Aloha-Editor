@@ -41,11 +41,12 @@ define([
 	 */
 	var Tab = Container.extend({
 
-		_elemBySlot: null,
-		_groupBySlot: null,
-		_groupByComponent: null,
-		_scopeFnBySlot: null,
-		_slotInScope: null,
+		_elemBySlot: {},
+		_groupBySlot: {},
+		_groupByComponent: {},
+		_scopeFnBySlot: {},
+		_slotInScope: {},
+		_slotsList: [],
 	
 		_componentBySlot: {},
 		_scopeChangeSubId: null,
@@ -236,7 +237,7 @@ define([
 
 			var idx = this._slotsList.indexOf(slot);
 			if (idx > -1) {
-				this._slotList.splice(idx, 1);
+				this._slotsList.splice(idx, 1);
 			}
 
 			if (group) {

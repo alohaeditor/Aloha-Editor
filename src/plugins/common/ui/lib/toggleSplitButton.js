@@ -31,6 +31,7 @@ define([
             this._super();
             this.toggleActivation();
             this.triggerChangeNotification();
+            this.click();
             this.onToggle(this.active);
         },
 
@@ -68,8 +69,19 @@ define([
             }
         },
 
-        setValue: function (active) {
-            this.active = active;
+        setValue: function (value) {
+            // It is very common to set the button state on every
+			// selection change even if the state hasn't changed.
+			// Profiling showed that this is very inefficient.
+			if (this.active === value) {
+				return;
+			}
+			this.active = value;
+			if (value) {
+				this.element.addClass(CLASS_ACTIVE);
+			} else {
+				this.element.removeClass(CLASS_ACTIVE);
+			}
         },
         getValue: function () {
             return this.active;

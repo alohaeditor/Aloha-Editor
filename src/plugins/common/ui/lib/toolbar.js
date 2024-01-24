@@ -5,6 +5,7 @@ define([
 	'ui/tab',
 	'ui/floating',
 	'ui/scopes',
+	'ui/dynamicUi',
 	'i18n!ui/nls/i18n',
 	'jqueryui'
 ], function (
@@ -14,6 +15,7 @@ define([
 	Tab,
 	floating,
 	Scopes,
+	DynamicUi,
 	i18n
 ) {
 	'use strict';
@@ -167,11 +169,11 @@ define([
 			this._tabs = [];
 			this._tabBySlot = {};
 
-			var activeTabSettings = this._tabSettings[this._activeResponive];
+			var activeToolbarSettings = this._tabSettings[this._activeResponive];
 			var appliedSlots = [];
 
 			// Create the tabs from the now active settings
-			activeTabSettings.forEach(function(tabSettings) {
+			(activeToolbarSettings.tabs || []).forEach(function(tabSettings) {
 				var tabInstance = new Tab(_this._context, {
 					label: i18n.t(tabSettings.label, tabSettings.label),
 					showOn: tabSettings.showOn,
@@ -356,6 +358,13 @@ define([
 			if (this._isResponsiveMode) {
 				floating.removeResponsiveStyles();
 			}
+		},
+
+		openDynamicDropdown: function(componentName, config) {
+			return DynamicUi.openDynamicDropdown(componentName, config);
+		},
+		openDynamicModal: function(config) {
+			return DynamicUi.openDynamicModal(config);
 		},
 
 		/**

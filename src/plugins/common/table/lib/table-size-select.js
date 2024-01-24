@@ -4,6 +4,8 @@ define([
     Component
 ) {
     var TableSizeSelect = Component.extend({
+        type: 'table-size-select',
+
         maxColumns: 10,
         maxRows: 10,
 

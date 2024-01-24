@@ -22,6 +22,8 @@ define([
 
         inputActive: false,
 
+        // Internals
+
         panelRef: null,
         panelInputElement: null,
 

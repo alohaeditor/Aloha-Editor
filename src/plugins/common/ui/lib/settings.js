@@ -1,11 +1,9 @@
 define([
 	'jquery',
-	'util/arrays',
 	'util/maps',
 	'util/trees'
 ], function (
 	$,
-	Arrays,
 	Maps,
 	Trees
 ) {
@@ -20,7 +18,7 @@ define([
 			showOn: { scope: 'Aloha.continuoustext' },
 			components: [
 				[
-					{ slot: 'bold' }, 'strong', { slot: 'italic', scope: ['Aloha.continuoustext'] }, 'emphasis', 'underline', '\n',
+					{ slot: 'bold' }, { slot: 'italic', scope: ['Aloha.continuoustext'] }, 'underline', '\n',
 					'subscript', 'superscript', 'strikethrough', 'code', 'quote'
 				], [
 					'formatLink', 'formatAbbr', 'formatNumeratedHeaders', 'toggleDragDrop', '\n',
@@ -57,7 +55,7 @@ define([
 		{
 			id: 'cite',
 			label : 'tab.cite.label',
-			icon: 'quote',
+			icon: 'format_quote',
 			showOn : { scope : 'cite' },
 			components : [ 'editCite', 'removeCite', '\n', 'editNote' ]
 		},
@@ -81,7 +79,7 @@ define([
 		{
 			id: 'abbr',
 			label: "tab.abbr.label",
-			icon: 'text',
+			icon: 'feed',
 			showOn: { scope: 'abbr' },
 			components: [
 				[ "abbrText", "removeAbbr" ]
@@ -99,7 +97,7 @@ define([
 		{
 			id: 'table.cell',
 			label: "tab.table.label",
-			icon: 'cell',
+			icon: 'table',
 			showOn: { scope: 'table.cell' },
 			components: [
 				[ "mergecells", "splitcells", "deleteTable", "tableCaption",
@@ -110,7 +108,7 @@ define([
 		{
 			id: 'table.column',
 			label: "tab.col.label",
-			icon: 'column',
+			icon: 'view_column',
 			showOn: { scope: 'table.column' },
 			components: [
 				[ "addcolumnleft", "addcolumnright", "deletecolumns",
@@ -121,7 +119,7 @@ define([
 		{
 			id: 'table.row',
 			label: "tab.row.label",
-			icon: 'row',
+			icon: 'table_rows',
 			showOn: { scope: 'table.row' },
 			components: [
 				[ "addrowbefore", "addrowafter", "deleterows", "rowheader",
@@ -131,7 +129,7 @@ define([
 		{
 			id: 'table.align',
 			label: "tab.cell.label",
-			icon: 'align',
+			icon: 'vertical_distribute',
 			showOn: { scope: 'table.cell' },
 			components: [
 				[ "alignTop", "alignMiddle", "alignBottom", "formatCell" ]
@@ -180,23 +178,24 @@ define([
 	 */
 	function combineToolbarSettings(userTabs, defaultTabs, exclude) {
 		var responsiveKeys = ['mobile', 'tablet', 'desktop'];
-		var returnSettings = { mobile: [], tablet: [], desktop: [] };
+		var returnSettings = { mobile: { tabs: [] }, tablet: { tabs: [] }, desktop: { tabs: [] } };
 
 		function pruneDefaultComponents(form) {
 			return 'array' === $.type(form) ? !form.length : exclusionLookup[form];
 		}
 
-		for (var i = 0; i < responsiveKeys; i++) {
+		for (var i = 0; i < responsiveKeys.length; i++) {
 			var key = responsiveKeys[i];
-			var defaultTabsByLabel = Maps.fillTuples({}, Arrays.map(defaultTabs[key], function(tab) {
-				return [tab.label, tab];
-			}));
+			var defaultTabsByLabel = (defaultTabs[key] || []).reduce(function(acc, tab) {
+				acc[tab.label] = tab;
+				return acc;
+			}, {});
 
-			var exclusionLookup = makeExclusionMap(userTabs[key], exclude[key]);
+			var exclusionLookup = makeExclusionMap(userTabs[key], exclude[key] || []);
 			userTabs[key] = mergeDefaultComponents(userTabs[key], defaultTabsByLabel, pruneDefaultComponents);
 			defaultTabs[key] = remainingDefaultTabs(defaultTabs[key], exclusionLookup, pruneDefaultComponents);
 
-			returnSettings[key] = userTabs[key].concat(defaultTabs[key]);
+			returnSettings[key].tabs = userTabs[key].concat(defaultTabs[key]);
 		}
 
 		return returnSettings;
@@ -249,6 +248,9 @@ define([
 	}
 
 	function makeExclusionMap(userTabs, exclude) {
+		if (!Array.isArray(exclude)) {
+			exclude = [];
+		}
 		var i,
 		    map = Maps.fillKeys({}, exclude, true);
 		for (i = 0; i < userTabs.length; i++) {

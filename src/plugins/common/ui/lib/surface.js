@@ -57,6 +57,26 @@ define([
 		},
 
 		/**
+		 * Opens a modal with a dynamic form configuration.
+		 * @template {*} T
+		 * @param {string} componentName - The name of the component/slot to where the dropdown should be opened to.
+		 * @param {DynamicDropdownConfiguration.<T>} config - The config for how to open the dropdown and what to display.
+		 * @returns {Promise.<OverlayElementControl.<T>>} - A Promise for a overlay element control.
+		 */
+		openDynamicDropdown: function(componentName, config) {
+			throw Error("Implement this function!");
+		},
+		/**
+		 * Opens a modal with a dynamic form configuration.
+		 * @template {*} T
+		 * @param {DynamicFormModalConfiguration.<T>} config - The config for how to open the modal and what to do with it.
+		 * @returns {Promise.<OverlayElementControl.<T>>} - A Promise for a overlay element control.
+		 */
+		openDynamicModal: function(config) {
+			throw Error("Implement this function!");
+		},
+
+		/**
 		 * Check for whether or not this surface is active--that is, whether is
 		 * is visible and the user can interact with it.
 		 *

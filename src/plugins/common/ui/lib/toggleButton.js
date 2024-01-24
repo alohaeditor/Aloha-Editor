@@ -50,17 +50,38 @@ define([
 			this.setState(!this.active);
 			this.triggerChangeNotification();
 			this.click();
+			this.onToggle(this.active);
 		},
+
+		onToggle: function (isActive) { },
+
+        toggleActivation: function () {
+            if (!this.active) {
+                this.activate();
+            } else {
+                this.deactivate();
+            }
+        },
+
+        activate: function () {
+            this.active = true;
+            this.element.addClass('active');
+        },
+
+        deactivate: function () {
+            this.active = false;
+            this.element.removeClass('active');
+        },
 
 		setValue: function(value) {
 			// It is very common to set the button state on every
 			// selection change even if the state hasn't changed.
 			// Profiling showed that this is very inefficient.
-			if (this.active === toggled) {
+			if (this.active === value) {
 				return;
 			}
-			this.active = toggled;
-			if (toggled) {
+			this.active = value;
+			if (value) {
 				this.element.addClass(CLASS_ACTIVE);
 			} else {
 				this.element.removeClass(CLASS_ACTIVE);
