@@ -26,7 +26,7 @@ define([
 					'formatLink', 'formatAbbr', 'formatNumeratedHeaders', 'toggleDragDrop', '\n',
 					'toggleMetaView', 'wailang', 'toggleFormatlessPaste'
 				], [
-					'alignLeft', 'alignCenter', 'alignRight', 'alignJustify', '\n',
+					'alignMenu', '\n',
 					'orderedListFormatSelector', 'unorderedListFormatSelector', 'definitionListFormatSelector', '\n', 'indentList', 'outdentList', 'textColor', 'textBackground'
 				], [
 					'formatBlock'
@@ -78,7 +78,7 @@ define([
 			]
 		},
 		// Abbr Tab
-		{  
+		{
 			id: 'abbr',
 			label: "tab.abbr.label",
 			icon: 'text',
@@ -88,7 +88,7 @@ define([
 			]
 		},
 		// Wailang Tab
-		{  
+		{
 			id: 'wai-lang',
 			label: "tab.wai-lang.label",
 			icon: 'language',

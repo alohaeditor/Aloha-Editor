@@ -18,6 +18,15 @@ define([
         STRONG:                             'strong',
         CODE:                               'code',
 
+        // Text alignment
+        ALIGN_LEFT:                         'align-left',
+        ALIGN_CENTER:                       'align-center',
+        ALIGN_RIGHT:                        'align-right',
+        ALIGN_JUSTIFY:                      'align-justify',
+        ALIGN_TOP:                          'align-top',
+        ALIGN_MIDDLE:                       'align-middle',
+        ALIGN_BOTTOM:                       'align-bottom',
+
         // Typography
         PARAGRAPH:                          'paragraph',
         HEADER_1:                           'h1',
@@ -54,7 +63,7 @@ define([
         LINK:                               'link',
         LINK_ANCHOR:                        'link-anchor',
         LINK_REMOVE:                        'link-remove',
-        
+
         // Textcolor
         TEXT_COLOR:                         'text-color',
         BACKGROUND_COLOR:                   'background-color',
@@ -76,6 +85,14 @@ define([
     ClassMapping[AvailableIcons.EMPHASIS] = 'aloha-icon-emphasis';
     ClassMapping[AvailableIcons.STRONG] = 'aloha-icon-strong';
     ClassMapping[AvailableIcons.CODE] = 'aloha-icon-code';
+
+    ClassMapping[AvailableIcons.ALIGN_LEFT] = 'aloha-icon-align aloha-icon-align-left'
+    ClassMapping[AvailableIcons.ALIGN_CENTER] = 'aloha-icon-align aloha-icon-align-center'
+    ClassMapping[AvailableIcons.ALIGN_RIGHT] = 'aloha-icon-align aloha-icon-align-right'
+    ClassMapping[AvailableIcons.ALIGN_JUSTIFY] = 'aloha-icon-align aloha-icon-align-justify'
+    ClassMapping[AvailableIcons.ALIGN_TOP] = 'aloha-icon-align aloha-icon-align-top'
+    ClassMapping[AvailableIcons.ALIGN_MIDDLE] = 'aloha-icon-align aloha-icon-align-middle'
+    ClassMapping[AvailableIcons.ALIGN_BOTTOM] = 'aloha-icon-align aloha-icon-align-bottom'
 
     ClassMapping[AvailableIcons.PARAGRAPH] = 'aloha-icon-paragraph';
     ClassMapping[AvailableIcons.HEADER_1] = 'aloha-icon-h1';
