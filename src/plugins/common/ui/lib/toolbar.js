@@ -169,11 +169,11 @@ define([
 			this._tabs = [];
 			this._tabBySlot = {};
 
-			var activeToolbarTabs = this._tabSettings[this._activeResponive];
+			var activeTabSettings = this._tabSettings[this._activeResponive];
 			var appliedSlots = [];
 
 			// Create the tabs from the now active settings
-			(activeToolbarTabs || []).forEach(function(tabSettings) {
+			(activeTabSettings.tabs || []).forEach(function(tabSettings) {
 				var tabInstance = new Tab(_this._context, {
 					label: i18n.t(tabSettings.label, tabSettings.label),
 					showOn: tabSettings.showOn,
