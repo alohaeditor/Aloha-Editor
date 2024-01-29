@@ -21,6 +21,8 @@ define([
     }
 
     var LinkTarget = Component.extend({
+        type: 'link-target',
+
         /**
          * @typedef {object} LinkTarget
          * @property {string} target - The URL to where the link should go to. May not include the `anchor` part.

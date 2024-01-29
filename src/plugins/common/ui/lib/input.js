@@ -20,6 +20,8 @@ define([
 		/** Label for the input */
 		label: '',
 
+		value: '',
+
 		/** Type of the input */
 		inputType: 'text',
 
@@ -54,6 +56,7 @@ define([
 				.on('focus', $.proxy(function (event) {
 					this.touch();
 				}, this));
+			this.inputElement[0].value = this.value;
 
 			this.element = $('<div>', { class: 'input-container' })
                 .append(
