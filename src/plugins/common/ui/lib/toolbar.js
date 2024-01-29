@@ -114,7 +114,7 @@ define([
 			handleMedia('(max-width: 400px)', 'mobile');
 			handleMedia('(min-width: 401px) and (max-width: 1024px)', 'tablet');
 			handleMedia('(min-width: 1025px)', 'desktop');
-			
+
 			// Pinning behaviour is global in that if one toolbar is pinned,
 			// then all other toolbars will be pinned to that position.
 			if (isFloatingEnabled()) {
@@ -169,11 +169,11 @@ define([
 			this._tabs = [];
 			this._tabBySlot = {};
 
-			var activeToolbarSettings = this._tabSettings[this._activeResponive];
+			var activeToolbarTabs = this._tabSettings[this._activeResponive];
 			var appliedSlots = [];
 
 			// Create the tabs from the now active settings
-			(activeToolbarSettings.tabs || []).forEach(function(tabSettings) {
+			(activeToolbarTabs || []).forEach(function(tabSettings) {
 				var tabInstance = new Tab(_this._context, {
 					label: i18n.t(tabSettings.label, tabSettings.label),
 					showOn: tabSettings.showOn,
