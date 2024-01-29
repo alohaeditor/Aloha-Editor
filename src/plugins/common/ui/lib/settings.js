@@ -19,7 +19,7 @@ define([
 			components: [
 				[
 					{ slot: 'bold' }, { slot: 'italic', scope: ['Aloha.continuoustext'] }, 'underline', '\n',
-					'subscript', 'superscript', 'strikethrough', 'code', 'quote'
+					'subscript', 'superscript', 'strikethrough', 'code', 'quote', 'removeFormat'
 				], [
 					'formatLink', 'formatAbbr', 'formatNumeratedHeaders', 'toggleDragDrop', '\n',
 					'toggleMetaView', 'wailang', 'toggleFormatlessPaste'

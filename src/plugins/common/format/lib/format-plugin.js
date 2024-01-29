@@ -1,8 +1,8 @@
 /* format-plugin.js is part of the Aloha Editor project http://aloha-editor.org
  *
- * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://aloha-editor.org/contribution.php 
+ * Contributors http://aloha-editor.org/contribution.php
  * License http://aloha-editor.org/license.php
  */
 define('format/format-plugin', [
@@ -20,6 +20,7 @@ define('format/format-plugin', [
 	'util/browser',
 	'util/strings',
 	'ui/ui',
+	'ui/button',
 	'ui/toggleButton',
 	'ui/port-helper-multi-split',
 	'ui/icons',
@@ -41,6 +42,7 @@ define('format/format-plugin', [
 	Browser,
 	Strings,
 	Ui,
+	Button,
 	ToggleButton,
 	MultiSplitButton,
 	Icons,
@@ -349,16 +351,13 @@ define('format/format-plugin', [
 	}
 
 	function makeRemoveFormatButton(formatPlugin, button) {
-		return {
-			name: button,
-			text: i18n.t('button.' + button + '.text'),
+		return Ui.adopt('removeFormat', Button, {
 			tooltip: i18n.t('button.' + button + '.tooltip'),
-			wide: true,
-			cls: 'aloha-ui-multisplit-fullwidth',
+			iconClass: 'paragraph',
 			click: function () {
 				formatPlugin.removeFormat();
 			}
-		};
+		});
 	}
 
 	/**
@@ -526,13 +525,13 @@ define('format/format-plugin', [
 				effectiveMarkup = rangeObject.markupEffectiveAtStart[i];
 				for (j = 0; j < nodeNames.length; j++) {
 					if (Selection.standardTagNameComparator(effectiveMarkup, jQuery('<' + nodeNames[j] + '>'))) {
-						button.handle.setState(true);
+						button.handle.setValue(true);
 						statusWasSet = true;
 					}
 				}
 			}
-			if (!statusWasSet) {
-				button.handle.setState(false);
+			if (!statusWasSet && button.handle.setValue) {
+				button.handle.setValue(false);
 			}
 		});
 
@@ -835,7 +834,10 @@ define('format/format-plugin', [
 				} else if (blockLevelSemantics[button]) {
 					that.multiSplitItems.push(makeBlockLevelButton(that, button));
 				} else if ('removeFormat' === button) {
-					that.multiSplitItems.push(makeRemoveFormatButton(that, button));
+					that.buttons[button] = {
+						handle: makeRemoveFormatButton(that, button),
+						markup: jQuery('<' + button + '>', { 'class': button_config || '' })
+					};
 				} else {
 					Aloha.log('warn', that, 'Button "' + button + '" is not defined');
 				}
