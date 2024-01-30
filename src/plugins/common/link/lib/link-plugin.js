@@ -1,8 +1,8 @@
 /* link-plugin.js is part of the Aloha Editor project http://aloha-editor.org
  *
- * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://aloha-editor.org/contribution.php 
+ * Contributors http://aloha-editor.org/contribution.php
  * License http://aloha-editor.org/license.php
  */
 /* Aloha Link Plugin
@@ -89,11 +89,11 @@ define([
 			minChars: 1,
 			open: function (elm, ui) {
 				// known issue http://bugs.jquery.com/ticket/10079
-				// $.css('z-index') return 1e+9, and when call partseInt, then 
+				// $.css('z-index') return 1e+9, and when call partseInt, then
 				// parseInt($.css('z-index'), 10) returns 1.
 				// Only firefox issue
 				// Everytime is open the autocomple the z-index must be set,
-				// because is automatically changed. 
+				// because is automatically changed.
 				if (Aloha.browser.mozilla) {
 					hrefLangField.getInputJQuery().autocomplete('widget').css('z-index', '9999999999');
 				}
@@ -204,7 +204,7 @@ define([
 	 *   "en": "Path",
 	 *   "de": "Pfad"
 	 * }
-	 * 
+	 *
 	 * If the translation in the current language is not found,
 	 * the first translation will be returned
 	 * @param i18nObject {Object} i18n Object
@@ -340,12 +340,6 @@ define([
 		flags: true,
 
 		/**
-		 * Indicates whether a special input field for anchors
-		 * is visible. (default: false).
-		 */
-		anchorLinks: false,
-
-		/**
 		 * Initializes the plugin.
 		 */
 		init: function () {
@@ -382,11 +376,6 @@ define([
 			}
 			if (typeof this.settings.hrefValue != 'undefined') {
 				this.hrefValue = this.settings.hrefValue;
-			}
-			if (typeof this.settings.anchorLinks != 'undefined') {
-				var val = this.settings.anchorLinks;
-
-				this.anchorLinks = val === true || (typeof val == 'string' && val.toLowerCase() != 'false');
 			}
 
 			this.createButtons();
@@ -447,24 +436,24 @@ define([
 
 					 var that = this,
 						 content = this.setContent(
-							'<div class="' + pl.nsClass( 'target-container' ) + '"><fieldset><legend>' + i18n.t( 'link.target.legend' ) + '</legend><ul><li><input type="radio" name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '" value="_self" /><span>' + i18n.t( 'link.target.self' ) + '</span></li>' + 
-							'<li><input type="radio" name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '" value="_blank" /><span>' + i18n.t( 'link.target.blank' ) + '</span></li>' + 
-							'<li><input type="radio" name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '" value="_parent" /><span>' + i18n.t( 'link.target.parent' ) + '</span></li>' + 
-							'<li><input type="radio" name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '" value="_top" /><span>' + i18n.t( 'link.target.top' ) + '</span></li>' + 
-							'<li><input type="radio" name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '" value="framename" /><span>' + i18n.t( 'link.target.framename' ) + '</span></li>' + 
-							'<li><input type="text" class="' + pl.nsClass( 'framename' ) + '" /></li></ul></fieldset></div>' + 
+							'<div class="' + pl.nsClass( 'target-container' ) + '"><fieldset><legend>' + i18n.t( 'link.target.legend' ) + '</legend><ul><li><input type="radio" name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '" value="_self" /><span>' + i18n.t( 'link.target.self' ) + '</span></li>' +
+							'<li><input type="radio" name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '" value="_blank" /><span>' + i18n.t( 'link.target.blank' ) + '</span></li>' +
+							'<li><input type="radio" name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '" value="_parent" /><span>' + i18n.t( 'link.target.parent' ) + '</span></li>' +
+							'<li><input type="radio" name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '" value="_top" /><span>' + i18n.t( 'link.target.top' ) + '</span></li>' +
+							'<li><input type="radio" name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '" value="framename" /><span>' + i18n.t( 'link.target.framename' ) + '</span></li>' +
+							'<li><input type="text" class="' + pl.nsClass( 'framename' ) + '" /></li></ul></fieldset></div>' +
 							'<div class="' + pl.nsClass( 'title-container' ) + '" ><fieldset><legend>' + i18n.t( 'link.title.legend' ) + '</legend><input type="text" class="' + pl.nsClass( 'linkTitle' ) + '" /></fieldset></div>' +
 							'<div class="' + pl.nsClass( 'href-lang-container' ) + '" ><fieldset><legend>' + i18n.t( 'href.lang.legend' ) + '</legend></fieldset></div>' +
 							infoFields
-						).content; 
-					 
+						).content;
+
 					 jQuery(hrefLangField.getInputElem()).addClass(pl.nsClass( 'hrefLang' ));
 					 jQuery(content).find("." + pl.nsClass( 'href-lang-container' ) + " fieldset").append(hrefLangField.getInputElem());
-					 
+
 					 jQuery( pl.nsSel( 'framename' ) ).on( 'keyup', function () {
 						jQuery( that.effective ).attr( 'target', jQuery( this ).val().replace( '\"', '&quot;' ).replace( "'", "&#39;" ) );
 					 } );
-					 
+
 					 jQuery( pl.nsSel( 'radioTarget' ) ).on( 'change', function () {
 						if ( jQuery( this ).val() == 'framename' ) {
 							jQuery( pl.nsSel( 'framename' ) ).slideDown();
@@ -473,7 +462,7 @@ define([
 							jQuery(that.effective).attr('target', jQuery( this ).val());
 						}
 					 } );
-					 
+
 					 jQuery( pl.nsSel( 'linkTitle' ) ).on( 'keyup', function () {
 						jQuery( that.effective ).attr( 'title', jQuery( this ).val().replace( '\"', '&quot;' ).replace( "'", "&#39;" ) );
 					 } );
@@ -551,8 +540,7 @@ define([
 				// enable hotkey for inserting links
 				editable.obj.on('keydown.aloha-link', plugin.hotKey.insertLink, function () {
 					if (plugin.findLinkMarkup()) {
-						plugin.hrefField.foreground();
-						plugin.hrefField.focus();
+						console.log('TODO: Open link modal');
 					} else {
 						plugin.insertLink(true);
 					}
@@ -577,10 +565,8 @@ define([
 
 			PubSub.sub('aloha.editable.activated', function (message) {
 				if (configurations[message.editable.getId()]) {
-					plugin._formatLinkButton.show();
 					plugin._insertLinkButton.show();
 				} else {
-					plugin._formatLinkButton.hide();
 					plugin._insertLinkButton.hide();
 				}
 				setupMetaClickLink(message.editable);
@@ -592,20 +578,6 @@ define([
 					return;
 				}
 				var activeLink = false;
-				if (configurations[Aloha.activeEditable.getId()]) {
-					activeLink = selectionChangeHandler(plugin, message.range);
-					// Only foreground the tab containing the href field the
-					// first time the user enters the link scope to avoid
-					// intefering with the user's manual tab selection
-					if (activeLink !== false && !activeLink.is(plugin.lastActiveLink)) {
-						// put the field into foreground with a timeout, so that this
-						// overrules other plugins that change the active toolbar tab
-						// by setting the scope
-						setTimeout(function () {
-							plugin.hrefField.foreground();
-						}, 10);
-					}
-				}
 				plugin.lastActiveLink = activeLink;
 			});
 
@@ -643,15 +615,7 @@ define([
 			this._isScopeActive = show;
 			this._isScopeActive_editableId = Aloha.activeEditable && Aloha.activeEditable.getId();
 			if (!configurations[this._isScopeActive_editableId]) {
-				this.hrefField.hide();
-				if (this.anchorLinks) {
-					this.anchorField.hide();
-					this.toggleAnchor.setState(false);
-					this.toggleAnchor.hide();
-				}
-				this._insertLinkButton.hide();
 				this._removeLinkButton.hide();
-				this._formatLinkButton.setState(false);
 				// The calls to enterScope and leaveScope by the link
 				// plugin are not balanced.
 				// When the selection is changed from one link to
@@ -660,11 +624,6 @@ define([
 				// argument to leaveScope.
 				Scopes.leaveScope(this.name, 'link', true);
 			} else if ( show ) {
-				this.hrefField.show();
-				if (this.anchorLinks) {
-					this.toggleAnchor.show();
-				}
-				this._insertLinkButton.hide();
 				// Never show the removeLinkButton when the link itself
 				// is the editable.
 				if (Aloha.activeEditable && Aloha.activeEditable.obj[0].nodeName === 'A') {
@@ -672,17 +631,9 @@ define([
 				} else {
 					this._removeLinkButton.show();
 				}
-				this._formatLinkButton.setState(true);
 				Scopes.enterScope(this.name, 'link');
 			} else {
-				this.hrefField.hide();
-				if (this.anchorLinks) {
-					this.anchorField.hide();
-					this.toggleAnchor.hide();
-				}
-				this._insertLinkButton.show();
 				this._removeLinkButton.hide();
-				this._formatLinkButton.setState(false);
 				// The calls to enterScope and leaveScope by the link
 				// plugin are not balanced.
 				// When the selection is changed from one link to
@@ -736,40 +687,62 @@ define([
 		createButtons: function () {
 			var that = this;
 
-			this._formatLinkButton = Ui.adopt("formatLink", ToggleButton, {
-				tooltip: i18n.t("button.addlink.tooltip"),
-				icon: "aloha-icon aloha-icon-link",
-				click: function() {
-					that.formatLink();
-				}
-			});
-
 			this._insertLinkButton = Ui.adopt("insertLink", ContextButton, {
 				tooltip: i18n.t("button.addlink.tooltip"),
 				icon: "aloha-icon aloha-icon-link",
-				context: {
-					title: 'Insert Link',
-					controls: {
-						url: {
-							type: 'link-target',
-							validate: function(value) {
-								return (value == null || !value.target) ? {
-									required: true
-								} : null;
+				context: function () {
+					let href = 'https://';
+					let anchor = '';
+					let newTab = false;
+					let existingLink = that.findLinkMarkup();
+
+					if (existingLink) {
+						href = existingLink.getAttribute('href');
+
+						let anchorIdx = href.indexOf('#')
+
+						if (anchorIdx >= 0) {
+							anchor = href.substring(anchorIdx + 1)
+							href = href.substring(0, anchorIdx);
+						}
+
+						newTab = existingLink.getAttribute('target') === '_blank';
+					}
+
+
+					return {
+						title: 'Insert Link',
+						initialValue: {
+							url: {
+								target: href,
+								anchor: anchor,
+							},
+							newTab: {
+								checked: newTab
 							},
 						},
-						newTab: {
-							type: 'checkbox',
-							options: {
-								label: 'Open in new Tab',
+						controls: {
+							url: {
+								type: 'link-target',
+								validate: function (value) {
+									return (value == null || !value.target) ? {
+										required: true
+									} : null;
+								},
+							},
+							newTab: {
+								type: 'checkbox',
+								options: {
+									label: 'Open in new Tab',
+								},
 							},
 						},
-					},
+					};
 				},
+
 				contextType: 'modal',
 				contextResolve: function(formData) {
-					// When modal is closed
-					console.log('Link modal successfully closed', formData);
+					that.upsertLink(formData);
 				},
 				contextReject: function(error) {
 					if (
@@ -779,102 +752,10 @@ define([
 						// Error can be safely ignored
 						return;
 					}
-	
+
 					console.error('Error while opening link modal', error);
 				},
 			});
-
-			this.hrefField = AttributeField({
-				name: 'editLink',
-				width: 320,
-				valueField: 'url',
-				cls: 'aloha-link-href-field',
-				noTargetHighlight: false,
-				targetHighlightClass: 'aloha-focus',
-				modifyValue: function (href) {
-					if (!that.anchorLinks) {
-						return href;
-					}
-
-					// append the anchor from the anchorField
-					var anchor = that.anchorField.getValue();
-					if (anchor) {
-						href = href + '#' + anchor;
-					}
-					return href;
-				}
-			});
-			this.hrefField.setTemplate('<span><b>{name}</b><br/>{url}</span>');
-			this.hrefField.setObjectTypeFilter( this.objectTypeFilter );
-
-			if (this.anchorLinks) {
-				this.toggleAnchor = Ui.adopt('toggleAnchor', ToggleButton, {
-					tooltip: i18n.t('button.toggleanchor.tooltip'),
-					icon: "aloha-icon aloha-icon-anchor",
-					click: function() {
-						if (that.anchorField.isVisible()) {
-							that.anchorField.clear();
-							that.hrefField.focus();
-						} else {
-							that.anchorField.show();
-							that.anchorField.focus();
-						}
-
-						return false;
-					}
-				});
-
-				this.anchorField = Ui.adopt('editAnchor', Input, {
-					init: function () {
-						this._super();
-						this.element.on("keyup", function onKeyup(event) {
-							if ((event.keyCode == 13 || event.keyCode == 27)) {
-								that.hrefField.finishEditing(true);
-							}
-						});
-					},
-
-					clear: function() {
-						this.setInputValue('');
-						this.updateValue('');
-					},
-
-					setInputValue: function(anchor) {
-						this.element.val(anchor);
-
-						if (anchor && (!this.isVisible() || !that.toggleAnchor.getState())) {
-							this.show();
-							that.toggleAnchor.setState(true);
-						} else if (!anchor && (this.isVisible() || that.toggleAnchor.getState())) {
-							this.hide();
-							that.toggleAnchor.setState(false);
-						}
-					},
-
-					// Text provides setInput() but that is only called
-					// on the "change" event (e.g. when the element loses
-					// focus). updateValue() is intended to be called for
-					// every keystroke.
-					updateValue: function(anchor) {
-						var repoItem = that.hrefField.getItem();
-						if (repoItem) {
-							// when a repository item is selected, we "reselect" it, so that the anchor will
-							// be updated in the href field
-							that.hrefField.setItem(repoItem);
-						} else {
-							var href = that.hrefField.getValue();
-							// if the href only contains http:// (or https://), we remove the href when an anchor has been set
-							if (/^https?:\/\/$/.test(href) && anchor) {
-								that.hrefField.setValue('');
-							}
-							// updatetarget will update the href field (include the new anchor value)
-							that.hrefField.updateTarget();
-						}
-						that.hrefChange();
-					}
-				});
-				this.anchorField.hide();
-			}
 
 			this._removeLinkButton = Ui.adopt("removeLink", Button, {
 				tooltip: i18n.t("button.removelink.tooltip"),
@@ -886,179 +767,11 @@ define([
 		},
 
 		/**
-		 * Save the anchor from the selected link to the
-		 * anchor field.
-		 */
-		prepareAnchor: function (href) {
-			if (!this.anchorLinks) {
-				return;
-			}
-
-			var anchor;
-			var idx = href.indexOf('#');
-
-			if (idx < 0) {
-				anchor = '';
-			} else {
-				anchor = href.substring(idx + 1);
-			}
-
-			this.anchorField.setInputValue(anchor);
-		},
-
-		/**
-		 * Remove the anchor from the href field, when a
-		 * link is selected.
-		 */
-		stripAnchor: function () {
-			if (!this.anchorLinks || this.hrefField.getItem()) {
-				return;
-			}
-
-			var href = this.hrefField.getValue();
-			var idx = href.indexOf('#');
-
-			if (idx < 0) {
-				return;
-			}
-
-			href = href.substring(0, idx);
-			this.hrefField.setValue(href);
-		},
-
-		/**
-		 * Move a possible anchor from the href field to the
-		 * anchor field. Called when a link is pasted into
-		 * the href field.
-		 */
-		splitAnchor: function () {
-			if (!this.anchorLinks) {
-				return;
-			}
-
-			var href = this.hrefField.getValue()
-			var idx = href.indexOf('#');
-
-			if (idx < 0) {
-				if (this.anchorField.isVisible()) {
-					this.anchorField.clear();
-				}
-
-				return;
-			}
-
-			var anchor = href.substring(idx + 1);
-
-			href = href.substring(0, idx);
-			this.anchorField.setInputValue(anchor);
-			this.hrefField.setValue(href);
-
-			if (anchor) {
-				this.anchorField.element.focus();
-			}
-		},
-
-		/**
 		 * Parse a all editables for links and bind an onclick event
 		 * Add the link short cut to all edtiables
 		 */
 		bindInteractions: function () {
 			var that = this;
-
-			this.hrefField.addListener('item-change', function() {
-				// because 'hrefChange()' references 'this' object.
-				that.hrefChange();
-			});
-
-			if (this.anchorLinks) {
-				this.hrefField.addListener('keypress', function(event) {
-					if (String.fromCharCode(event.charCode || event.keyCode) == '#') {
-						if (!that.anchorField.isVisible()) {
-							that.toggleAnchor.setState(true);
-							that.anchorField.show();
-						} else {
-							that.anchorField.element.select();
-						}
-
-						that.anchorField.focus();
-
-						return false;
-					}
-
-					return true;
-				});
-
-				this.hrefField.addListener('paste', function(event) {
-					// At the time this event is processed, the pasted
-					// content is still not in the input field.
-					setTimeout(function() {
-						that.splitAnchor();
-						that.hrefChange();
-					}, 0);
-				});
-			}
-
-			// update link object when src changes
-			this.hrefField.addListener( 'keyup', function ( event ) {
-				if (Keys.getToken(event.keyCode) === 'escape') {
-					var curval = that.hrefField.getValue(true);
-					if ( curval[ 0 ] == '/' || // local link
-						 curval[ 0 ] == '#' || // inner document link
-						 curval.match( /^.*\.([a-z]){2,4}$/i ) || // local file with extension
-						 curval.match( EXTERNAL_LINK_REG_EXP ) || // external link (http(s), ftp(s), ssh, file, skype, ... )
-						 curval.match( /^(mailto|tel):.+/i ) // mailto / tel link
-					) {
-						// could be a link better leave it as it is
-					} else {
-						// the user searched for something and aborted
-						var hrefValue = that.hrefField.getValue();
-
-						// restore original value and hide combo list
-						that.hrefField.setValue( hrefValue );
-
-						if ( hrefValue == that.hrefValue || hrefValue == '' ) {
-							that.removeLink( false );
-						}
-					}
-				}
-
-				that.hrefChange();
-
-				// Terminate the link scope and show the final link.
-				if (Keys.getToken(event.keyCode) === 'enter') {
-					// Update the selection and place the cursor at the end of the link.
-					var	range = Aloha.Selection.getRangeObject();
-
-					// We have to ignore the next 2 onselectionchange events.
-					// The first one we need to ignore is the one trigger when
-					// we reposition the selection to right at the end of the
-					// link.
-
-					that.ignoreNextSelectionChangedEvent = true;
-
-					var hrefValue = jQuery( that.hrefField.getInputElem() ).attr( 'value' );
-
-					if ( hrefValue == that.hrefValue || hrefValue == '' ) {
-						that.removeLink( false );
-					}
-
-					window.setTimeout( function () {
-						Scopes.setScope('Aloha.continuoustext');
-					}, 100 );
-				} else {
-					// Check whether the value in the input field has changed
-					// because if it has, then the ui-attribute object's store
-					// needs to be cleared. The reason we need to do this
-					// clearing is because once the auto-suggeset combo box is
-					// shown and/or populated, the next enter keypress event
-					// would be handled as if the user is selecting one of the
-					// elements in the down down list.
-					newValue = jQuery( that.hrefField.getInputElem() ).attr( 'value' );
-					if ( oldValue != newValue ) {
-						oldValue = newValue;
-					}
-				}
-			});
 
 			jQuery( document )
 				.keydown( function ( e ) {
@@ -1138,12 +851,26 @@ define([
 		 * Format the current selection or if collapsed the current word as
 		 * link. If inside a link tag the link is removed.
 		 */
-		formatLink: function () {
+		upsertLink: function (linkData) {
 			if ( Aloha.activeEditable ) {
-				if ( this.findLinkMarkup( Aloha.Selection.getRangeObject() ) ) {
-					this.removeLink();
+				let existingLink = this.findLinkMarkup(Aloha.Selection.getRangeObject());
+
+				if (existingLink) {
+					let href = linkData.url.target;
+
+					if (linkData.url.anchor) {
+						href += "#" + linkData.url.anchor;
+					}
+
+					existingLink.setAttribute('href', href);
+
+					if (linkData.newTab && linkData.newTab.checked) {
+						existingLink.setAttribute('target', '_blank');
+					} else {
+						existingLink.removeAttribute('target');
+					}
 				} else {
-					this.insertLink();
+					this.insertLink(true, linkData);
 				}
 			}
 		},
@@ -1153,7 +880,9 @@ define([
 		 * collapsed, the link will have a default link text, otherwise the
 		 * selected text will be the link text.
 		 */
-		insertLink: function ( extendToWord ) {
+		insertLink: function ( extendToWord, linkData ) {
+			console.log('CREATING LINK:', linkData)
+
 			var that = this,
 			    range = Aloha.Selection.getRangeObject(),
 			    linkText,
@@ -1170,23 +899,29 @@ define([
 				return;
 			}
 
-			// activate floating menu tab
-			this.hrefField.foreground();
-
 			// if selection is collapsed then extend to the word.
 			if ( range.isCollapsed() && extendToWord !== false ) {
 				Dom.extendToWord( range );
 			}
+
+			let href = linkData.url.target;
+
+			if (linkData.url.anchor) {
+				href += '#' + linkData.url.anchor
+			}
+
+			let target = linkData.newTab ? '" target="_blank' : '';
+
 			if ( range.isCollapsed() ) {
 				// insert a link with text here
 				linkText = i18n.t( 'newlink.defaulttext' );
-				newLink = jQuery( '<a href="' + that.hrefValue + '" class="aloha-new-link">' + linkText + '</a>' );
+				newLink = jQuery( '<a href="' + href + target + '" class="aloha-new-link">' + linkText + '</a>' );
 				Dom.insertIntoDOM( newLink, range, jQuery( Aloha.activeEditable.obj ) );
 				range.startContainer = range.endContainer = newLink.contents().get( 0 );
 				range.startOffset = 0;
 				range.endOffset = linkText.length;
 			} else {
-				newLink = jQuery( '<a href="' + that.hrefValue + '" class="aloha-new-link"></a>' );
+				newLink = jQuery( '<a href="' + href + target + '" class="aloha-new-link"></a>' );
 				Dom.addMarkup( range, newLink, false );
 				Dom.doCleanup(insertLinkPostCleanup, range);
 			}
@@ -1199,16 +934,6 @@ define([
 			range.select();
 
 
-			// focus has to become before prefilling the attribute, otherwise
-			// Chrome and Firefox will not focus the element correctly.
-			this.hrefField.focus();
-
-			// prefill and select the new href
-			// We need this guard because sometimes the element has not yet been initialized
-			if ( this.hrefField.hasInputElem() ) {
-				jQuery( this.hrefField.getInputElem() ).attr( 'value', that.hrefValue ).select();
-			}
-
 			// because the Aloha Selection is deprecated I need to convert it to a ragne
 			var apiRange = Aloha.createRange();
 			apiRange.setStart(range.startContainer, range.startOffset);
@@ -1219,19 +944,12 @@ define([
 		},
 
 		/**
-		 * Remove an a tag and clear the current item from the hrefField
+		 * Remove an a tag and clear
 		 */
 		removeLink: function ( terminateLinkScope ) {
 			var	range = Aloha.Selection.getRangeObject(),
 				foundMarkup = this.findAllLinkMarkup();
 			var linkText;
-
-			// clear the current item from the href field
-			this.hrefField.setItem(null);
-			if (this.anchorLinks) {
-				this.anchorField.clear();
-			}
-
 			var that = this;
 			var maxIdx = foundMarkup.length - 1;
 
@@ -1290,72 +1008,40 @@ define([
 		 * Updates the link object depending on the src field
 		 */
 		hrefChange: function () {
-			var hrefTargetObject = jQuery(this.hrefField.getTargetObject());
+			console.log('TODO: Get target link object');
+			var href = '';
+			var hrefTargetObject = null;
 			var setAutoValues = hrefTargetObject && !hrefTargetObject.attr('data-ignore-auto-values');
-			var that = this;
 
 			// No need to check setAutoValues here, since the title will not be
 			// changed anyway once a custom title has been set.
+			console.log('TODO: Automatically set title');
+			/*
 			this.automaticallySetTitle(
 				this.hrefField,
 				this.title,
 				this.titleregex
 			);
+			 */
 
 			// For now hard coded attribute handling with regex.
 			// Avoid creating the target attribute, if it's unnecessary, so
 			// that XSS scanners (AntiSamy) don't complain.
 			if (setAutoValues && this.target) {
-				this.hrefField.setAttribute(
-					'target',
-					this.target,
-					this.targetregex,
-					this.hrefField.getValue()
-				);
+				console.log('TODO: Automatically set target');
 			}
 
 			if (setAutoValues && null != this.cssclassregex) {
-				this.hrefField.setAttribute(
-					'class',
-					this.cssclass,
-					this.cssclassregex,
-					this.hrefField.getValue()
-				);
+				console.log('TODO: Automatically set CSS class');
 			}
 
-			var href = that.hrefField.getValue(true);
-			var element = that.hrefField.getTargetObject();
-
-			Aloha.trigger('aloha-link-href-change', {
-				 href: href,
-				 obj: element,
-				 item: that.hrefField.getItem()
-			});
-
-			PubSub.pub('aloha.link.changed', {
-				href: href,
-				element: element,
-				input: that.hrefField.getInputElem()
-			});
+			console.log('TODO: Trigger aloha-link-href-change')
+			console.log('TODO: Pub aloha.link.changed');
 
 			if ( typeof this.onHrefChange == 'function' ) {
-				this.onHrefChange.call(
-					this,
-					this.hrefField.getTargetObject(),
-					href,
-					this.hrefField.getItem()
-				);
+				console.log('TODO: Call onHrefChange()');
 			}
 
-			var hrefFieldItem = this.hrefField.getItem();
-			// If href has been set to an item (Page)
-			if (hrefFieldItem && hrefFieldItem.language) {
-				var languageName = getLanguageName(hrefFieldItem.language);
-
-				this.hrefField.setAttribute('hreflang', hrefFieldItem.language);
-				hrefLangField.setValue(languageName);
-				hrefLangField.disableInput();
-			}
 			// href is an external link
 			else if (EXTERNAL_LINK_REG_EXP.test(href)){
 				hrefLangField.enableInput();
@@ -1363,22 +1049,12 @@ define([
 			// href is being defined
 			else {
 				hrefLangField.setValue('');
-				this.hrefField.setAttribute('hreflang', '');
 				hrefLangField.disableInput();
 			}
 
 			Aloha.Sidebar.right.checkActivePanels(Aloha.Selection.getRangeObject());
 
-			// fill all info fields
-			if (jQuery.isArray(that.settings.sidebar)) {
-				jQuery.each(that.settings.sidebar, function () {
-					if (hrefFieldItem && hrefFieldItem.hasOwnProperty(this.attr)) {
-						jQuery(that.nsSel(this.attr)).text(hrefFieldItem[this.attr]);
-					} else {
-						jQuery(that.nsSel(this.attr)).text("");
-					}
-				});
-			}
+			console.log('TODO: Fill sidebar info');
 		}
 	});
 
@@ -1424,45 +1100,15 @@ define([
 
 				// now we are ready to set the target object
 				foundMarkup.attr('data-ignore-auto-values', 'true');
-				that.hrefField.setTargetObject(foundMarkup, 'href');
-				addAdditionalTargetObject(rangeObject, that.hrefField);
-				that.stripAnchor();
 				that.hrefChange();
 				foundMarkup.removeAttr('data-ignore-auto-values');
 
-				// if the selection-changed event was raised by the first click interaction on this page
-				// the hrefField component might not be initialized. When the user switches to the link
-				// tab to edit the link the field would be empty. We check for that situation and add a
-				// special interval check to set the value once again
-				if (jQuery('#' + that.hrefField.getInputId()).length == 0) {
-					// there must only be one update interval running at the same time
-					if (that.hrefUpdateInt !== null) {
-						clearInterval(that.hrefUpdateInt);
-					}
-
-					// register a timeout that will set the value as soon as the href field was initialized
-					that.hrefUpdateInt = setInterval( function () {
-						if (jQuery( '#' + that.hrefField.getInputId()).length > 0) { // the object was finally created
-							that.prepareAnchor(foundMarkup.attr('href'));
-							that.hrefField.setTargetObject(foundMarkup, 'href');
-							that.stripAnchor();
-							that.hrefChange();
-
-							clearInterval(that.hrefUpdateInt);
-						}
-					}, 200);
-				}
 				Aloha.trigger('aloha-link-selected');
 				enteredLinkScope = true;
 
-				PubSub.pub('aloha.link.selected', {
-					input: that.hrefField.getInputElem(),
-					href: that.hrefField.getTargetObject().attr('href'),
-					element: that.hrefField.getTargetObject()
-				});
+				console.log('TODO: Pub aloha.link.selected');
 			} else {
 				that.toggleLinkScope(false);
-				that.hrefField.setTargetObject(null);
 				Aloha.trigger('aloha-link-unselected');
 			}
 		} else {

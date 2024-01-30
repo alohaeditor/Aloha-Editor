@@ -21,7 +21,7 @@ define([
 					{ slot: 'bold' }, { slot: 'italic', scope: ['Aloha.continuoustext'] }, 'underline', '\n',
 					'subscript', 'superscript', 'strikethrough', 'code', 'quote', 'removeFormat'
 				], [
-					'formatLink', 'formatAbbr', 'formatNumeratedHeaders', 'toggleDragDrop', '\n',
+					'removeLink', 'formatAbbr', 'formatNumeratedHeaders', 'toggleDragDrop', '\n',
 					'toggleMetaView', 'wailang', 'toggleFormatlessPaste'
 				], [
 					'alignMenu', '\n',
@@ -49,7 +49,7 @@ define([
 			label: 'tab.link.label',
 			icon: 'link',
 			showOn: { scope: 'link' },
-			components: [ 'editLink', 'toggleAnchor', 'editAnchor', 'removeLink', 'linkBrowser' ]
+			components: [ 'editLink', 'linkBrowser' ]
 		},
 		// Cite Tab
 		{

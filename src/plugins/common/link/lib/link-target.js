@@ -165,6 +165,7 @@ define([
 
         setValue: function (value) {
             this.value = value || createDefaultValue();
+            this.applyValueToInputs();
         },
         getValue: function () {
             return this.value;
