@@ -1406,3 +1406,10 @@ span.ui-button-icon-primary.ui-icon.ui-icon-closethick {
 .aloha-ui .aloha-spinner.ui-spinner .ui-spinner-button.ui-spinner-down .ui-button-icon-primary {
 	margin-left: -7px;
 }
+
+/** IFrame Component */
+
+.aloha-ui .aloha-iframe-element {
+    border: none;
+    outline: none;
+}
