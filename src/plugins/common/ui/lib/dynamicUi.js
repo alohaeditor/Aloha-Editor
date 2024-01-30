@@ -58,6 +58,7 @@ define([
         var reject = function() {}
 
         function closeDropdown() {
+            component.destroy();
             $dropdownOverlay.remove();
             $dropdown.remove();
             open = false;
@@ -266,6 +267,9 @@ define([
         var reject = function() {}
 
         function closeModal() {
+            Object.values(generatedForm.components).forEach(function(comp) {
+                comp.destroy();
+            });
             $modalOverlay.remove();
             $modal.remove();
             $(document.body).css('overflow', '');
