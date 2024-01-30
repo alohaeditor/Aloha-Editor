@@ -3,33 +3,27 @@ define([
     'ui/ui',
     'ui/button',
     'ui/toggleButton',
-    'ui/accordionMenuButton',
-    'ui/menuButton',
     'ui/splitButton',
     'ui/toggleSplitButton',
     'ui/autocomplete',
     'ui/checkbox',
     'ui/input',
-    'ui/port-helper-attribute-field',
-    'ui/port-helper-multi-split',
     'ui/selectMenu',
-    'ui/colorPicker'
+    'ui/colorPicker',
+    'ui/iframe'
 ], function (
     $,
     Ui,
     Button,
     ToggleButton,
-    AccordionMenuButton,
-    MenuButton,
     SplitButton,
     ToggleSplitButton,
     Autocomplete,
     Checkbox,
     Input,
-    AttributeField,
-    MultiSplitButton,
     SelectMenu,
-    ColorPicker
+    ColorPicker,
+    IFrameComponent
 ) {
     'use strict';
 
@@ -39,18 +33,15 @@ define([
     var componentFactoryRegistry = {
         'button': createButtonFromConfig,
         'toggle-button': createToggleButtonFromConfig,
-        'accordion-menu-button': createAccordionMenuButtonFromConfig,
-        'menu-button': createMenuButtonFromConfig,
         'split-button': createSplitButtonFromConfig,
         'toggle-split-button': createToggleSplitButtonFromConfig,
         'autocomplete': createAutocompleteFromConfig,
         'checkbox': createCheckboxFromConfig,
         'input': createInputFromConfig,
-        'attribute-field': createAttributeFieldFromConfig,
-        'multi-split': createMultiSplitFromConfig,
         'text': createTextFromConfig,
         'select-menu': createSelectMenuFromConfig,
         'color-picker': createColorPickerFromConfig,
+        'iframe': createIFrameFromConfig,
     };
 
     function buildDynamicForm(config, postChangeFn) {
@@ -441,61 +432,6 @@ define([
         return component;
     }
 
-    function createAccordionMenuButtonFromConfig(
-        config,
-        name,
-        applyChanges,
-        validateFn,
-        onChangeFn,
-        onTouchFn
-    ) {
-        var tmpOptions = config.options || {};
-        var component = Ui.adopt(name, AccordionMenuButton, {
-            icon: tmpOptions.icon,
-            menu: tmpOptions.menu,
-            tooltip: tmpOptions.tooltip,
-            text: tmpOptions.text,
-            html: tmpOptions.html,
-            iconUrl: tmpOptions.iconUrl,
-
-            changeNotify: function (value) {
-                applyChanges(value);
-            },
-            touchNotify: function () {
-                onTouchFn();
-            },
-        });
-        return component;
-    }
-
-    function createMenuButtonFromConfig(
-        config,
-        name,
-        applyChanges,
-        validateFn,
-        onChangeFn,
-        onTouchFn
-    ) {
-        var tmpOptions = config.options || {};
-        var component = Ui.adopt(name, MenuButton, {
-            icon: tmpOptions.icon,
-            click: tmpOptions.onClick,
-            menu: tmpOptions.menu,
-            text: tmpOptions.text,
-            html: tmpOptions.html,
-            iconUrl: tmpOptions.iconUrl,
-            siblingContainer: tmpOptions.siblingContainer,
-
-            changeNotify: function (value) {
-                applyChanges(value);
-            },
-            touchNotify: function () {
-                onTouchFn();
-            },
-        });
-        return component;
-    }
-
     function createSplitButtonFromConfig(
         config,
         name,
@@ -631,68 +567,6 @@ define([
         return component;
     }
 
-    function createAttributeFieldFromConfig(
-        config,
-        name,
-        applyChanges,
-        validateFn,
-        onChangeFn,
-        onTouchFn
-    ) {
-        var tmpOptions = config.options || {};
-        var component = new AttributeField({
-            name: name,
-            label: tmpOptions.label,
-            targetObject: tmpOptions.targetObject,
-            labelClass: tmpOptions.labelClss,
-            valueField: tmpOptions.valueField,
-            displayField: tmpOptions.displayField,
-            objectTypeFilter: tmpOptions.objectTypeFilter,
-            placeholder: tmpOptions.placeholder,
-            noTargetHighlight: tmpOptions.noTargetHighlight,
-            targetHighlightClass: tmpOptions.targetHighlightClass,
-            cls: tmpOptions.cls,
-            element: tmpOptions.element,
-            width: tmpOptions.width,
-            open: tmpOptions.open,
-            modifyValue: tmpOptions.modifyValue,
-
-            changeNotify: function (value) {
-                applyChanges(value);
-                validateFn(value);
-                onChangeFn(value);
-            },
-            touchNotify: function () {
-                onTouchFn();
-            },
-        });
-        return component;
-    }
-
-    function createMultiSplitFromConfig(
-        config,
-        name,
-        applyChanges,
-        validateFn,
-        onChangeFn,
-        onTouchFn
-    ) {
-        var tmpOptions = config.options || {};
-        var component = new MultiSplitButton({
-            name: name,
-            items: tmpOptions.items,
-            click: tmpOptions.onClick,
-
-            changeNotify: function (value) {
-                applyChanges(value);
-            },
-            touchNotify: function () {
-                onTouchFn();
-            },
-        });
-        return component;
-    }
-
     function createTextFromConfig(
         config,
         name,
@@ -791,6 +665,33 @@ define([
         return component;
     }
 
+    function createIFrameFromConfig(
+        config,
+        name,
+        applyChanges,
+        validateFn,
+        onChangeFn,
+        onTouchFn
+    ) {
+        var tmpOptions = config.options || {};
+        var component = Ui.adopt(name, IFrameComponent, {
+            url: tmpOptions.url,
+            value: tmpOptions.value,
+            options: tmpOptions.options,
+        
+            changeNotify: function (value) {
+                applyChanges(value);
+                validateFn(value);
+                onChangeFn(value);
+            },
+            touchNotify: function () {
+                onTouchFn();
+            },
+        });
+        
+        return component;
+    }
+
     function createComponentFromConfig(
         config,
         applyChanges,
@@ -826,14 +727,10 @@ define([
         // Default factory functions
         createButtonFromConfig: createButtonFromConfig,
         createToggleButtonFromConfig: createToggleButtonFromConfig,
-        createAccordionMenuButtonFromConfig: createAccordionMenuButtonFromConfig,
-        createMenuButtonFromConfig: createMenuButtonFromConfig,
         createSplitButtonFromConfig: createSplitButtonFromConfig,
         createAutocompleteFromConfig: createAutocompleteFromConfig,
         createCheckboxFromConfig: createCheckboxFromConfig,
         createInputFromConfig: createInputFromConfig,
-        createAttributeFieldFromConfig: createAttributeFieldFromConfig,
-        createMultiSplitFromConfig: createMultiSplitFromConfig,
         createTextFromConfig: createTextFromConfig,
     };
 });

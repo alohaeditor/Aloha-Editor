@@ -17,6 +17,7 @@ define([
         EMPHASIS:                           'emphasis',
         STRONG:                             'strong',
         CODE:                               'code',
+        CLEAR_FORMATTING:                   'clear-formatting',
 
         // Text alignment
         ALIGN_LEFT:                         'align-left',
@@ -85,6 +86,7 @@ define([
     ClassMapping[AvailableIcons.EMPHASIS] = 'aloha-icon-emphasis';
     ClassMapping[AvailableIcons.STRONG] = 'aloha-icon-strong';
     ClassMapping[AvailableIcons.CODE] = 'aloha-icon-code';
+    ClassMapping[AvailableIcons.CLEAR_FORMATTING] = 'aloha-icon-clear';
 
     ClassMapping[AvailableIcons.ALIGN_LEFT] = 'aloha-icon-align aloha-icon-align-left'
     ClassMapping[AvailableIcons.ALIGN_CENTER] = 'aloha-icon-align aloha-icon-align-center'

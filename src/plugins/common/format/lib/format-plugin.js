@@ -353,7 +353,7 @@ define('format/format-plugin', [
 	function makeRemoveFormatButton(formatPlugin, button) {
 		return Ui.adopt('removeFormat', Button, {
 			tooltip: i18n.t('button.' + button + '.tooltip'),
-			iconClass: 'paragraph',
+			icon: Icons.ClassMapping[Icons.AvailableIcons.CLEAR_FORMATTING],
 			click: function () {
 				formatPlugin.removeFormat();
 			}

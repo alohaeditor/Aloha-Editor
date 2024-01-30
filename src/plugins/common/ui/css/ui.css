@@ -558,6 +558,7 @@
 .aloha .aloha-icon-h6				{ background-image: url(../img/metaview/h6.png); }
 .aloha .aloha-icon-pre			{ background-image: url(../img/metaview/pre.png); }
 .aloha .aloha-icon-typography		{ background-position: -336px 0; }
+.aloha .aloha-icon-clear		  { background-image: url('../img/removeformat.png') no-repeat 0px 0px;}
 
 .aloha .aloha-icon-indent {
 	background: url(../../../../img/text_indent.png) no-repeat center center;
