@@ -7,7 +7,7 @@ define([
 ) {
     'use strict';
 
-    var PARAM_CACHE_BUSTING = 'aloha-iframe-id';
+    var PARAM_FRAME_ID = 'aloha-iframe-id';
 
     // Events sent from this frame to the other
     var EVENT_INIT = 'aloha.iframe-component.init';
@@ -34,12 +34,64 @@ define([
 
         _$iframeElement: null,
         _natIframe: null,
+        _messageHandler: null,
+        _currentOrigin: null,
+        _urlToLoad: null,
+        _frameId: null,
 
         init: function () {
             this.element = $('<div>', {
                 class: 'ui-widget aloha-iframe-component',
             });
+
+            var _this = this;
+            var msgHandler = function (event) {
+                // Ignore invalid messages from a different origin
+                if (event.origin !== _this._currentOrigin) {
+                    return;
+                }
+
+                // Validate it's even a message meant for this component
+                if (event.data == null || typeof event.data !== 'object' || event.data.id !== _this._frameId) {
+                    return;
+                }
+
+                switch (event.data.eventName) {
+                    case EVENT_CHANGE:
+                        _this._iframeChange(event.data.value);
+                        break;
+                    case EVENT_TOUCH:
+                        _this._iframeTouch();
+                        break
+                    case EVENT_WINDOW_SIZE:
+                        _this._iframeSize(event.data.value);
+                        break;
+                }
+            };
+            this._messageHandler = msgHandler;
+
+            // Add event listeners for change
+            window.addEventListener('message', msgHandler);
+
+            this._setupUrl();
             this._recreateIframe();
+        },
+
+        _setupUrl: function () {
+            // We need a random ID which we use as cache busting.
+            // Otherwise changes may never be properly loaded.
+            this._frameId = Math.random().toString(36).substring(2, 7);
+
+            try {
+                // Try to handle the URL nice and add the hash as param properly.
+                const parsedUrl = new URL(this.url);
+                this._currentOrigin = parsedUrl.origin;
+                parsedUrl.searchParams.append(PARAM_FRAME_ID, this._frameId);
+                this._urlToLoad = parsedUrl.toString();
+            } catch (ignored) {
+                this._urlToLoad = null;
+                console.warn('Supplied IFrame URL could not be parsed, and is therefore ignored!', newUrl);
+            }
         },
 
         _recreateIframe: function () {
@@ -48,59 +100,28 @@ define([
                 this._$iframeElement = null;
             }
 
-            // We need a random ID which we use as cache busting.
-            // Otherwise changes may never be properly loaded.
-            const randomId = Math.random().toString(36).substring(2, 7);
-            let urlToLoad;
-
-            try {
-                // Try to handle the URL nice and add the hash as param properly.
-                const parsedUrl = new URL(this.url);
-                parsedUrl.searchParams.append(PARAM_CACHE_BUSTING, randomId);
-                urlToLoad = parsedUrl.toString();
-            } catch (ignored) {
-                // Hacky way to add it to the params
-                urlToLoad = this.url;
-                urlToLoad += urlToLoad.includes('?') ? '&' : '?';
-                urlToLoad += PARAM_CACHE_BUSTING + '=' + randomId;
+            if (!this._urlToLoad) {
+                return;
             }
 
             this._$iframeElement = $('<iframe>', {
                 class: 'aloha-iframe-element',
-                src: urlToLoad,
+                src: this._urlToLoad,
                 attr: {
-                    'data-frame-id': randomId,
+                    'data-frame-id': this._frameId,
                 },
             }).appendTo(this.element);
             this._natIframe = this._$iframeElement[0];
             var _this = this;
 
             this._natIframe.addEventListener('load', function () {
-                var iframeWindow = _this._natIframe.contentWindow;
-
-                // Add event listeners for change
-                iframeWindow.addEventListener('message', function (event) {
-                    if (event.data == null || typeof event.data !== 'object') {
-                        return;
-                    }
-
-                    switch (event.data.eventName) {
-                        case EVENT_CHANGE:
-                            _this._iframeChange(event.data.value);
-                            break;
-                        case EVENT_TOUCH:
-                            _this._iframeTouch();
-                            break
-                        case EVENT_WINDOW_SIZE:
-                            _this._iframeSize(event.data.value);
-                            break;
-                    }
-                });
+                _this.onFrameLoad(_this._natIframe);
 
                 // Initialize the component with all required data
-                iframeWindow.postMessage({
+                _this._sendMessage({
                     eventName: EVENT_INIT,
                     value: {
+                        id: _this._frameId,
                         value: _this.value,
                         disabled: _this.disabled,
                         options: _this.options,
@@ -110,7 +131,14 @@ define([
                         },
                     },
                 });
+
+                _this.onFrameInit(_this._natIframe);
             });
+        },
+        _sendMessage: function(msg) {
+            if (this._natIframe) {
+                this._natIframe.contentWindow.postMessage(msg, this._currentOrigin);
+            }
         },
 
         _iframeTouch: function () {
@@ -133,45 +161,52 @@ define([
             }
         },
 
+        onFrameLoad: function (iframeElement) { },
+        onFrameInit: function (iframeElement) { },
+
+        destroy: function () {
+            if (this._messageHandler != null) {
+                window.removeEventListener('message', this._messageHandler);
+                this._messageHandler = null;
+            }
+            this._super();
+        },
+
         enable: function () {
             this._super();
-            if (this._natIframe) {
-                this._natIframe.contentWindow.postMessage({
-                    eventName: EVENT_DISABLED,
-                    value: this.disabled,
-                });
-            }
+            this._sendMessage({
+                eventName: EVENT_DISABLED,
+                id: this._frameId,
+                value: this.disabled,
+            });
         },
         disable: function () {
             this._super();
-            if (this._natIframe) {
-                this._natIframe.contentWindow.postMessage({
-                    eventName: EVENT_DISABLED,
-                    value: this.disabled,
-                });
-            }
+            this._sendMessage({
+                eventName: EVENT_DISABLED,
+                id: this._frameId,
+                value: this.disabled,
+            });
         },
         getValue: function () {
             return this.value;
         },
         setValue: function (value) {
             this.value = value;
-            if (this._natIframe) {
-                this._natIframe.contentWindow.postMessage({
-                    eventName: EVENT_UPDATE_VALUE,
-                    value: this.value,
-                });
-            }
+            this._sendMessage({
+                eventName: EVENT_UPDATE_VALUE,
+                id: this._frameId,
+                value: this.value,
+            });
         },
 
         updateOptions: function (options) {
             this.options = options;
-            if (this._natIframe) {
-                this._natIframe.contentWindow.postMessage({
-                    eventName: EVENT_UPDATE_OPTIONS,
-                    value: this.options,
-                });
-            }
+            this._sendMessage({
+                eventName: EVENT_UPDATE_OPTIONS,
+                id: this._frameId,
+                value: this.options,
+            });
         },
         updateUrl: function (url) {
             // No need to update the iframe url if it's the same.
@@ -179,6 +214,7 @@ define([
                 return;
             }
             this.url = url;
+            this._setupUrl();
             this._recreateIframe();
         },
     });
