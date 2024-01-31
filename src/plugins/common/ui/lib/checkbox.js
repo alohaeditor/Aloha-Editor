@@ -58,7 +58,7 @@ define([
 
         handleCheckboxChange: function (event) {
             this.touch();
-            this.checked = event.target.value;
+            this.checked = this.checkboxElement.prop('checked');
             this.triggerChangeNotification();
         },
 
