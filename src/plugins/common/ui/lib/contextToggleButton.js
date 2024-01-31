@@ -18,9 +18,12 @@ define([
         },
 
         _onClick: function () {
-            this._super();
+            this.touch();
+            this.toggleActivation();
+            this.click();
+            this.onToggle(this.active);
             this._handleContextClick();
-		},
+        },
 
         _handleActiveState: function() {
 			if (this.active) {

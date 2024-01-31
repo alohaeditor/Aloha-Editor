@@ -13,9 +13,9 @@ define([
         active: false,
 
         _onClick: function () {
-            this.click();
             this.touch();
             this.toggleActivation();
+            this.click();
             this.onToggle(this.active);
         },
         _handleActiveState: function() {

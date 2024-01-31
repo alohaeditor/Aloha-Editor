@@ -30,7 +30,7 @@ define([
         },
 
         _onClick: function () {
-            this._super();
+            this.touch();
             this.toggleActivation();
             this.triggerChangeNotification();
             this.click();
