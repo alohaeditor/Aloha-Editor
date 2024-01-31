@@ -36,6 +36,10 @@ define([
                 _this.handleCheckboxChange(event);
             });
 
+            if (this.checked) {
+                this.checkboxElement.prop('checked', 'checked');
+            }
+
             this.element = $('<div>', {
                 class: 'checkbox-container',
             }).append(
@@ -60,7 +64,12 @@ define([
 
         setValue: function (value) {
             this.checked = !!value;
-            this.checkboxElement.val(this.checked);
+
+            if (this.checked) {
+                this.checkboxElement.prop('checked', 'checked');
+            } else {
+                this.checkboxElement.removeProp('checked');
+            }
         },
         getValue: function () {
             return this.checked;
