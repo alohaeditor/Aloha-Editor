@@ -1,16 +1,13 @@
-/**
- * NOTES:
- *    - Why do we maintain 2 references to the DOM element for a button
- *    component (this.element = this.buttonElement)?
- */
-
 define([
 	'jquery',
 	'ui/component',
 	'ui/utils',
 	'jqueryui'
-],
-function (jQuery, Component, Utils) {
+], function (
+	jQuery,
+	Component,
+	Utils
+) {
 	'use strict';
 
 	/**

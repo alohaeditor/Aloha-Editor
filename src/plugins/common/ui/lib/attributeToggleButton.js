@@ -1,10 +1,6 @@
 define([
-    'jquery',
-    'aloha',
-    'ui/attributeButton',
+    'ui/attributeButton'
 ], function (
-    $,
-    Aloha,
     AttributeButton
 ) {
     'use strict';

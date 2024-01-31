@@ -46,10 +46,12 @@ define([
         },
 
         _onClick: function () {
-            var instance = this;
-            this.click();
             this.touch();
+            this.click();
+            this._handleContextClick();
+        },
 
+        _handleContextClick: function() {
             var _this = this;
             var controlPromise;
 
@@ -58,6 +60,11 @@ define([
                 contextData = this.context();
             } else {
                 contextData = this.context;
+            }
+
+            // Ignore if no data has been provided
+            if (contextData == null) {
+                return;
             }
 
             if (this.contextType === 'dropdown') {
@@ -75,8 +82,8 @@ define([
                 })
                 .then(function (contextValue) {
                     this.value = contextValue;
-                    if (typeof instance.changeNotify === 'function') {
-                        instance.changeNotify(contextValue);
+                    if (typeof _this.changeNotify === 'function') {
+                        _this.changeNotify(contextValue);
                     }
                     _this.contextResolve(contextValue);
                     _this.contextControl = null;

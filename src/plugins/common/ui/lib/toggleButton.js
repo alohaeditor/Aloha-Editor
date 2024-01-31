@@ -1,6 +1,5 @@
 define([
-	'ui/button',
-	'jqueryui'
+	'ui/button'
 ], function (
 	Button
 ) {
@@ -24,6 +23,8 @@ define([
 
 		init: function() {
 			this._super();
+
+			this._handleActiveState();
 		},
 
 		/**
@@ -47,10 +48,17 @@ define([
 
 		_onClick: function () {
 			this.touch();
-			this.setState(!this.active);
+			this.toggleActivation();
 			this.triggerChangeNotification();
 			this.click();
 			this.onToggle(this.active);
+		},
+		_handleActiveState: function() {
+			if (this.active) {
+				this.buttonElement.addClass(CLASS_ACTIVE);
+			} else {
+				this.buttonElement.removeClass(CLASS_ACTIVE);
+			}
 		},
 
 		onToggle: function (isActive) { },
@@ -65,27 +73,17 @@ define([
 
         activate: function () {
             this.active = true;
-            this.element.addClass('active');
+            this._handleActiveState();
         },
 
         deactivate: function () {
             this.active = false;
-            this.element.removeClass('active');
+            this._handleActiveState();
         },
 
 		setValue: function(value) {
-			// It is very common to set the button state on every
-			// selection change even if the state hasn't changed.
-			// Profiling showed that this is very inefficient.
-			if (this.active === value) {
-				return;
-			}
 			this.active = value;
-			if (value) {
-				this.element.addClass(CLASS_ACTIVE);
-			} else {
-				this.element.removeClass(CLASS_ACTIVE);
-			}
+			this._handleActiveState();			
 		},
 		getValue: function() {
 			return this.active;

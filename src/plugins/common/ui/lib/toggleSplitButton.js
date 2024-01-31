@@ -1,11 +1,11 @@
 define([
-    'jquery',
-    'ui/splitButton',
+    'ui/splitButton'
 ], function (
-    $,
     SplitButton
 ) {
     'use strict';
+
+    var CLASS_ACTIVE = 'active';
 
     var ToggleSplitButton = SplitButton.extend({
         type: 'toggle-split-button',
@@ -25,6 +25,8 @@ define([
             if (this.alwaysSecondary) {
                 this.element.addClass('always-secondary');
             }
+
+            this._handleActiveState();
         },
 
         _onClick: function () {
@@ -34,6 +36,14 @@ define([
             this.click();
             this.onToggle(this.active);
         },
+
+        _handleActiveState: function() {
+			if (this.active) {
+				this.element.addClass(CLASS_ACTIVE);
+			} else {
+				this.element.removeClass(CLASS_ACTIVE);
+			}
+		},
 
         onToggle: function (isActive) { },
 
@@ -47,7 +57,8 @@ define([
 
         activate: function () {
             this.active = true;
-            this.element.addClass('active');
+            this._handleActiveState();
+
             if (!this.disabled) {
                 this.secondaryButton.removeAttr('disabled');
             }
@@ -55,7 +66,8 @@ define([
 
         deactivate: function () {
             this.active = false;
-            this.element.removeClass('active');
+            this._handleActiveState();
+
             if (!this.alwaysSecondary) {
                 this.secondaryButton.attr('disabled', 'disabled');
             }
@@ -70,18 +82,8 @@ define([
         },
 
         setValue: function (value) {
-            // It is very common to set the button state on every
-			// selection change even if the state hasn't changed.
-			// Profiling showed that this is very inefficient.
-			if (this.active === value) {
-				return;
-			}
 			this.active = value;
-			if (value) {
-				this.element.addClass(CLASS_ACTIVE);
-			} else {
-				this.element.removeClass(CLASS_ACTIVE);
-			}
+			this._handleActiveState();
         },
         getValue: function () {
             return this.active;
