@@ -63,27 +63,23 @@ define([
 
 		onToggle: function (isActive) { },
 
-        toggleActivation: function () {
-            if (!this.active) {
-                this.activate();
-            } else {
-                this.deactivate();
-            }
-        },
-
+		
+		setActive: function(active) {
+			this.active = active;
+			this._handleActiveState();
+		},
+		toggleActivation: function () {
+			this.setActive(!this.active);
+		},
         activate: function () {
-            this.active = true;
-            this._handleActiveState();
+			this.setActive(true);
         },
-
         deactivate: function () {
-            this.active = false;
-            this._handleActiveState();
+            this.setActive(false);
         },
 
 		setValue: function(value) {
-			this.active = value;
-			this._handleActiveState();			
+			this.setActive(value);		
 		},
 		getValue: function() {
 			return this.active;

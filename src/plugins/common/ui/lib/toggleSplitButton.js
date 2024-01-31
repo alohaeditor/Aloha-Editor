@@ -40,37 +40,33 @@ define([
         _handleActiveState: function() {
 			if (this.active) {
 				this.element.addClass(CLASS_ACTIVE);
+
+                if (!this.disabled) {
+                    this.secondaryButton.removeAttr('disabled');
+                }
 			} else {
 				this.element.removeClass(CLASS_ACTIVE);
+
+                if (!this.alwaysSecondary) {
+                    this.secondaryButton.attr('disabled', 'disabled');
+                }
 			}
 		},
 
         onToggle: function (isActive) { },
 
-        toggleActivation: function () {
-            if (!this.active) {
-                this.activate();
-            } else {
-                this.deactivate();
-            }
-        },
-
+        setActive: function(active) {
+			this.active = active;
+			this._handleActiveState();
+		},
+		toggleActivation: function () {
+			this.setActive(!this.active);
+		},
         activate: function () {
-            this.active = true;
-            this._handleActiveState();
-
-            if (!this.disabled) {
-                this.secondaryButton.removeAttr('disabled');
-            }
+			this.setActive(true);
         },
-
         deactivate: function () {
-            this.active = false;
-            this._handleActiveState();
-
-            if (!this.alwaysSecondary) {
-                this.secondaryButton.attr('disabled', 'disabled');
-            }
+            this.setActive(false);
         },
 
         enable: function () {

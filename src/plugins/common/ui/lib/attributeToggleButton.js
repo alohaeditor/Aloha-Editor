@@ -18,25 +18,28 @@ define([
             this.toggleActivation();
             this.onToggle(this.active);
         },
-
-        onToggle: function (isActive) { },
-
-        toggleActivation: function () {
-            if (!this.active) {
-                this.activate();
+        _handleActiveState: function() {
+            if (this.active) {
+                this.element.addClass(CLASS_ACTIVE);
             } else {
-                this.deactivate();
+                this.this.element.removeClass(CLASS_ACTIVE);    
             }
         },
 
-        activate: function () {
-            this.active = true;
-            this.element.addClass(CLASS_ACTIVE);
-        },
+        onToggle: function (isActive) { },
 
+        setActive: function(active) {
+			this.active = active;
+			this._handleActiveState();
+		},
+		toggleActivation: function () {
+			this.setActive(!this.active);
+		},
+        activate: function () {
+			this.setActive(true);
+        },
         deactivate: function () {
-            this.active = false;
-            this.element.removeClass(CLASS_ACTIVE);
+            this.setActive(false);
         },
     });
 
