@@ -23,7 +23,7 @@ define([
 	'ui/scopes',
 	'ui/button',
 	'ui/toggleButton',
-	'ui/contextButton',
+	'ui/toggleSplitButton',
 	'ui/input',
 	'i18n!link/nls/i18n',
 	'PubSub',
@@ -44,7 +44,7 @@ define([
 	Scopes,
 	Button,
 	ToggleButton,
-	ContextButton,
+	ToggleSplitButton,
 	Input,
 	i18n,
 	PubSub,
@@ -313,6 +313,10 @@ define([
 							return control.value;
 						}).then(function (formValue) {
 							that.upsertLink(formData);
+						}).catch(function (error) {
+							if (error instanceof OverlayElement.OverlayCloseError && error.reason !== OverlayElement.ClosingReason.ERROR) {
+								console.log(error);
+							}
 						})
 					} else {
 						plugin.insertLink(true);
@@ -346,6 +350,8 @@ define([
 			});
 
 			PubSub.sub('aloha.selection.context-change', function (message) {
+				plugin._insertLinkButton.setActive(plugin.findLinkMarkup(message.range));
+
 				if (!Aloha.activeEditable) {
 					plugin.lastActiveLink = false;
 					return;
@@ -387,8 +393,7 @@ define([
 			}
 			this._isScopeActive = show;
 			this._isScopeActive_editableId = Aloha.activeEditable && Aloha.activeEditable.getId();
-			if (!configurations[this._isScopeActive_editableId]) {
-				this._removeLinkButton.hide();
+			if (!configurations[this._isScopeActive_editableId] || !show) {
 				// The calls to enterScope and leaveScope by the link
 				// plugin are not balanced.
 				// When the selection is changed from one link to
@@ -397,23 +402,7 @@ define([
 				// argument to leaveScope.
 				Scopes.leaveScope(this.name, 'link', true);
 			} else if ( show ) {
-				// Never show the removeLinkButton when the link itself
-				// is the editable.
-				if (Aloha.activeEditable && Aloha.activeEditable.obj[0].nodeName === 'A') {
-					this._removeLinkButton.hide();
-				} else {
-					this._removeLinkButton.show();
-				}
 				Scopes.enterScope(this.name, 'link');
-			} else {
-				this._removeLinkButton.hide();
-				// The calls to enterScope and leaveScope by the link
-				// plugin are not balanced.
-				// When the selection is changed from one link to
-				// another, the link scope is incremented more than
-				// decremented, which necessitates the force=true
-				// argument to leaveScope.
-				Scopes.leaveScope(this.name, 'link', true);
 			}
 		},
 
@@ -463,6 +452,7 @@ define([
 			let href = 'https://';
 			let anchor = '';
 			let newTab = false;
+			let toggleActive = false;
 
 			if (existingLink) {
 				href = existingLink.getAttribute('href');
@@ -475,10 +465,12 @@ define([
 				}
 
 				newTab = existingLink.getAttribute('target') === '_blank';
+				toggleActive = true;
 			}
 
 			return {
 				title: 'Insert Link',
+				active: toggleActive,
 				initialValue: {
 					url: {
 						target: href,
@@ -506,43 +498,47 @@ define([
 		},
 
 		/**
+		 * Opens the create/edit link modal.
+		 *
+		 * @param existingLink The link markup at the current range if available.
+		 */
+		showLinkModal: function (existingLink) {
+			var that = this;
+
+			Modal.openDynamicModal(
+				that.createInsertLinkContext(existingLink)
+			).then(function (control) {
+				return control.value;
+			}).then(function (formData) {
+				that.upsertLink(formData);
+			}).catch(function (error) {
+				if (error instanceof OverlayElement.OverlayCloseError && error.reason !== OverlayElement.ClosingReason.ERROR) {
+					console.log(error);
+				}
+			})
+		},
+
+		/**
 		 * Initialize the buttons
 		 */
 		createButtons: function () {
 			var that = this;
 
-			this._insertLinkButton = Ui.adopt("insertLink", ContextButton, {
+			this._insertLinkButton = Ui.adopt("insertLink", ToggleSplitButton, {
 				tooltip: i18n.t("button.addlink.tooltip"),
 				icon: "aloha-icon aloha-icon-link",
-				context: function () {
-					let existingLink = that.findLinkMarkup();
-
-					return that.createInsertLinkContext(existingLink);
-				},
-
 				contextType: 'modal',
-				contextResolve: function(formData) {
-					that.upsertLink(formData);
+
+				secondaryClick: function () {
+					that.showLinkModal(that.findLinkMarkup());
 				},
-				contextReject: function(error) {
-					if (
-						error instanceof OverlayElement.OverlayCloseError
-						&& error.reason !== OverlayElement.ClosingReason.ERROR
-					) {
-						// Error can be safely ignored
-						return;
+				onToggle: function (activated) {
+					if (activated) {
+						that.showLinkModal(that.findLinkMarkup());
+					} else {
+						that.removeLink();
 					}
-
-					console.error('Error while opening link modal', error);
 				},
-			});
-
-			this._removeLinkButton = Ui.adopt("removeLink", Button, {
-				tooltip: i18n.t("button.removelink.tooltip"),
-				icon: "aloha-icon aloha-icon-unlink",
-				click: function() {
-					that.removeLink();
-				}
 			});
 		},
 
