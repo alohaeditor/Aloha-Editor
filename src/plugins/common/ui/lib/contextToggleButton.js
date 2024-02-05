@@ -24,7 +24,9 @@ define([
         _onClick: function () {
             this.touch();
             var switched = !this.active;
-            this.toggleActivation();
+            if (!this.pure) {
+                this.toggleActivation();
+            }
             this.click();
             this.onToggle(switched);
             this._handleContextClick();
@@ -48,9 +50,7 @@ define([
 			this.pure = pure;
 		},
 		toggleActivation: function () {
-			if (!this.pure) {
-				this.setActive(!this.active);
-			}
+            this.setActive(!this.active);
 		},
         activate: function () {
 			this.setActive(true);
