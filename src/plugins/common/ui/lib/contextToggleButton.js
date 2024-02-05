@@ -10,7 +10,11 @@ define([
     var ContextToggleButton = ContextButton.extend({
         type: 'context-toggle-button',
 
-        active: false,
+        /** @type {boolean} If this button is currently active. */
+		active: false,
+
+		/** @type {boolean} When clicked, if it should *not* toggle it's `active` state. */
+		pure: false,
 
         init: function() {
             this._super();
@@ -19,9 +23,10 @@ define([
 
         _onClick: function () {
             this.touch();
+            var switched = !this.active;
             this.toggleActivation();
             this.click();
-            this.onToggle(this.active);
+            this.onToggle(switched);
             this._handleContextClick();
         },
 
@@ -39,8 +44,13 @@ define([
 			this.active = active;
 			this._handleActiveState();
 		},
+		setPure: function(pure) {
+			this.pure = pure;
+		},
 		toggleActivation: function () {
-			this.setActive(!this.active);
+			if (!this.pure) {
+				this.setActive(!this.active);
+			}
 		},
         activate: function () {
 			this.setActive(true);

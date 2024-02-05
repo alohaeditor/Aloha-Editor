@@ -525,6 +525,7 @@ define([
 			this._insertLinkButton = Ui.adopt("insertLink", ToggleSplitButton, {
 				tooltip: i18n.t("button.addlink.tooltip"),
 				icon: Icons.MAPPING.LINK,
+				pure: true,
 				contextType: 'modal',
 
 				secondaryClick: function () {

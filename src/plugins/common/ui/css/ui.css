@@ -1528,7 +1528,7 @@ span.ui-button-icon-primary.ui-icon.ui-icon-closethick {
     border-bottom-right-radius: 0;
 }
 
-.aloha .aloha-split-button .aloha-split-button-context {
+.aloha .aloha-split-button .aloha-split-button-secondary {
     flex: 0 0;
     width: 22px;
     border-radius: 2px;
@@ -1546,7 +1546,7 @@ span.ui-button-icon-primary.ui-icon.ui-icon-closethick {
     cursor: pointer;
 }
 
-.aloha .aloha-split-button .aloha-split-button-context .aloha-split-button-context-icon {
+.aloha .aloha-split-button .aloha-split-button-secondary .aloha-button-secondary-icon {
     font-size: 20px;
     height: 20px;
     width: 100%;
@@ -1557,7 +1557,7 @@ span.ui-button-icon-primary.ui-icon.ui-icon-closethick {
 }
 
 .aloha .aloha-split-button:not(.disabled) .aloha-split-button-main:hover,
-.aloha .aloha-split-button:not(.disabled) .aloha-split-button-context:hover {
+.aloha .aloha-split-button:not(.disabled) .aloha-split-button-secondary:hover {
     background: #e2e2e2;
 }
 
@@ -1571,11 +1571,11 @@ span.ui-button-icon-primary.ui-icon.ui-icon-closethick {
 }
 
 .aloha .aloha-split-button:not(.disabled).active .aloha-split-button-main:hover,
-.aloha .aloha-split-button:not(.disabled).active .aloha-split-button-context:hover {
+.aloha .aloha-split-button:not(.disabled).active .aloha-split-button-secondary:hover {
     background-color: #fefefe;
 }
 
-.aloha .aloha-split-button:not(.disabled).toggle-button:not(.active, .always-secondary) .aloha-split-button-context {
+.aloha .aloha-split-button:not(.disabled).toggle-button:not(.active, .always-secondary) .aloha-split-button-secondary {
     display: none;
 }
 
@@ -1586,6 +1586,6 @@ span.ui-button-icon-primary.ui-icon.ui-icon-closethick {
     cursor: not-allowed;
 }
 
-.aloha .aloha-split-button.disabled .aloha-split-button-context {
+.aloha .aloha-split-button.disabled .aloha-split-button-secondary {
     cursor: not-allowed;
 }

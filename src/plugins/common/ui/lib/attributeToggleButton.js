@@ -10,13 +10,18 @@ define([
     var AttributeToggleButton = AttributeButton.extend({
         type: 'attribute-toggle-button',
 
-        active: false,
+        /** @type {boolean} If this button is currently active. */
+		active: false,
+
+		/** @type {boolean} When clicked, if it should *not* toggle it's `active` state. */
+		pure: false,
 
         _onClick: function () {
             this.touch();
+            var switched = !this.active;
             this.toggleActivation();
             this.click();
-            this.onToggle(this.active);
+            this.onToggle(switched);
         },
         _handleActiveState: function() {
             if (this.active) {
@@ -32,8 +37,13 @@ define([
 			this.active = active;
 			this._handleActiveState();
 		},
+        setPure: function(pure) {
+			this.pure = pure;
+		},
 		toggleActivation: function () {
-			this.setActive(!this.active);
+			if (!this.pure) {
+				this.setActive(!this.active);
+			}
 		},
         activate: function () {
 			this.setActive(true);

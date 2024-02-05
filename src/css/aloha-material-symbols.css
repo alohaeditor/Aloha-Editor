@@ -15,7 +15,7 @@
 .material-icons,
 .material-symbols-outlined {
     font-family: 'Material Symbols Outlined';
-    font-weight: normal;
+    font-weight: 300;
     font-style: normal;
     font-size: 24px; /* Preferred icon size */
     display: inline-block;

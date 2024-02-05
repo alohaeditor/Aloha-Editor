@@ -11,8 +11,11 @@ define([
     var ToggleSplitButton = SplitButton.extend({
         type: 'toggle-split-button',
 
-        /** @type {boolean} If this toggle button is currently active/selected */
-        active: false,
+        /** @type {boolean} If this button is currently active. */
+		active: false,
+
+		/** @type {boolean} When clicked, if it should *not* toggle it's `active` state. */
+		pure: false,
 
         /**
          * @type {boolean} If the secondary button/action should always be visible.
@@ -30,10 +33,11 @@ define([
 
         _onClick: function () {
             this.touch();
+            var switched = !this.active;
             this.toggleActivation();
             this.triggerChangeNotification();
             this.click();
-            this.onToggle(this.active);
+            this.onToggle(switched);
         },
 
         _handleAlwaysSecondary: function() {
@@ -57,8 +61,13 @@ define([
 			this.active = active;
 			this._handleActiveState();
 		},
+		setPure: function(pure) {
+			this.pure = pure;
+		},
 		toggleActivation: function () {
-			this.setActive(!this.active);
+			if (!this.pure) {
+				this.setActive(!this.active);
+			}
 		},
         activate: function () {
 			this.setActive(true);
