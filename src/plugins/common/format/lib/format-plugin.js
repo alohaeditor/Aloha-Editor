@@ -103,15 +103,25 @@ define('format/format-plugin', [
 		"EM": ["EM", "I"]
 	};
 	var TYPOGRAPHY_ICONS = {
-		'p': Icons.AvailableIcons.PARAGRAPH,
-		'h1': Icons.AvailableIcons.HEADER_1,
-		'h2': Icons.AvailableIcons.HEADER_2,
-		'h3': Icons.AvailableIcons.HEADER_3,
-		'h4': Icons.AvailableIcons.HEADER_4,
-		'h5': Icons.AvailableIcons.HEADER_5,
-		'h6': Icons.AvailableIcons.HEADER_6,
-		'pre': Icons.AvailableIcons.PRE_FORMATTED,
-	}
+		'p': Icons.MAPPING.PARAGRAPH,
+		'h1': Icons.MAPPING.HEADER_1,
+		'h2': Icons.MAPPING.HEADER_2,
+		'h3': Icons.MAPPING.HEADER_3,
+		'h4': Icons.MAPPING.HEADER_4,
+		'h5': Icons.MAPPING.HEADER_5,
+		'h6': Icons.MAPPING.HEADER_6,
+		'pre': Icons.MAPPING.PRE_FORMATTED,
+	};
+	var FORMATTING_ICONS = {
+		'bold': Icons.MAPPING.BOLD,
+		'italic': Icons.MAPPING.ITALIC,
+		'strikethrough2': Icons.MAPPING.STRIKE_THROUGH,
+		'subscript': Icons.MAPPING.SUB_SCRIPT,
+		'superscript': Icons.MAPPING.SUPER_SCRIPT,
+		'underline': Icons.MAPPING.UNDERLINE,
+		'abbr': Icons.MAPPING.ABBREVIATION,
+		'code': Icons.MAPPING.CODE,
+	};
 
 	/**
 	 * Checks if the selection spans a whole node (HTML element)
@@ -330,7 +340,7 @@ define('format/format-plugin', [
 		}
 		var component = Ui.adopt(componentName, ToggleButton, {
 			tooltip: i18n.t('button.' + button + '.tooltip'),
-			icon: 'aloha-icon aloha-icon-' + componentName,
+			icon: FORMATTING_ICONS[componentName],
 			click: function () {
 				return textLevelButtonClickHandler(formatPlugin, button);
 			}
@@ -353,7 +363,7 @@ define('format/format-plugin', [
 	function makeRemoveFormatButton(formatPlugin, button) {
 		return Ui.adopt('removeFormat', Button, {
 			tooltip: i18n.t('button.' + button + '.tooltip'),
-			icon: Icons.ClassMapping[Icons.AvailableIcons.CLEAR_FORMATTING],
+			icon: Icons.MAPPING.CLEAR,
 			click: function () {
 				formatPlugin.removeFormat();
 			}
@@ -564,7 +574,7 @@ define('format/format-plugin', [
 				formatPlugin.typographyButton.deactivateInput();
 			}
 
-			formatPlugin.typographyButton.setIcon(Icons.ClassMapping[TYPOGRAPHY_ICONS[effectiveTypo]]);
+			formatPlugin.typographyButton.setIcon(TYPOGRAPHY_ICONS[effectiveTypo]);
 		}
 
 		handlePreformattedText(rangeObject.commonAncestorContainer);
@@ -844,7 +854,7 @@ define('format/format-plugin', [
 			});
 
 			this.typographyButton = Ui.adopt('formatBlock', AttributeButton, {
-				icon: 'aloha-icon ' + Icons.ClassMapping[Icons.AvailableIcons.TYPOGRAPHY],
+				icon: Icons.MAPPING.TYPOGRAPHY,
 				targetAttribute: 'id',
 				inputLabel: 'Heading Anchor',
 				panelLabel: 'Heading IDs',
@@ -858,7 +868,7 @@ define('format/format-plugin', [
 								return {
 									id: typo,
 									label: typo,
-									icon: Icons.ClassMapping[TYPOGRAPHY_ICONS[typo]],
+									icon: TYPOGRAPHY_ICONS[typo],
 								};
 							}),
 						},

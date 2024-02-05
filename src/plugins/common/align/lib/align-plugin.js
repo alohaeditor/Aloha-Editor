@@ -33,6 +33,7 @@ define([
 	'util/dom',
 	'ui/ui',
 	'ui/contextButton',
+	'ui/icons',
 	'i18n!align/nls/i18n',
 	'i18n!aloha/nls/i18n',
 	'jquery',
@@ -46,6 +47,7 @@ define([
 	DomLegacy,
 	Ui,
 	ContextButton,
+	Icons,
 	i18n,
 	i18nCore,
 	jQuery,
@@ -100,13 +102,13 @@ define([
 	function getAlignmentIcon(alignment) {
 		switch (alignment) {
 			case 'left':
-				return 'aloha-icon-align aloha-icon-align-left';
+				return Icons.MAPPING.ALIGN_LEFT;
 			case 'center':
-				return 'aloha-icon-align aloha-icon-align-center';
+				return Icons.MAPPING.ALIGN_CENTER;
 			case 'right':
-				return 'aloha-icon-align aloha-icon-align-right';
+				return Icons.MAPPING.ALIGN_RIGHT;
 			case 'justify':
-				return 'aloha-icon-align aloha-icon-align-justify';
+				return Icons.MAPPING.ALIGN_JUSTIFY;
 		}
 	}
 
@@ -145,29 +147,28 @@ define([
 				{
 					id: 'left',
 					label: 'Left',
-					icon: 'align-left'
+					icon: Icons.MAPPING.ALIGN_LEFT,
 				},
 				{
 					id: 'center',
 					label: 'Center',
-					icon: 'align-center'
+					icon: Icons.MAPPING.ALIGN_CENTER,
 				},
 				{
 					id: 'right',
 					label: 'Right',
-					icon: 'align-right'
+					icon: Icons.MAPPING.ALIGN_RIGHT,
 				},
 				{
 					id: 'justify',
 					label: 'Justify',
-					icon: 'align-justify'
+					icon: Icons.MAPPING.ALIGN_JUSTIFY,
 				}
 			];
 
 			that.alignmentButton = Ui.adopt('alignMenu', ContextButton, {
 				tooltip: i18n.t('button.addcharacter.tooltip'),
-				icon: 'aloha-icon aloha-icon-align aloha-icon-align-left',
-				scope: 'Aloha.continuoustext',
+				icon: Icons.MAPPING.ALIGN_LEFT,
 				contextType: 'dropdown',
 
 				context: function() {

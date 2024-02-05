@@ -298,6 +298,11 @@ define([
             }
         },
 
+        updatePalette: function(palette) {
+            this.palette = palette;
+            this._normalizeColors();
+            this._populatePalette();
+        },
         updateAllowOutsidePalette: function (allow) {
             this.allowOutsidePalette = allow;
             this._updateOptions();

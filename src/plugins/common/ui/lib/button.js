@@ -4,7 +4,7 @@ define([
 	'ui/utils',
 	'jqueryui'
 ], function (
-	jQuery,
+	$,
 	Component,
 	Utils
 ) {
@@ -18,7 +18,8 @@ define([
 	 * An extending class should optionally define the following properties
 	 * tooltip - the internationalized tooltip text,
 	 * icon    - the icon class,
-	 * class   - an additional class to add to the button element,
+	 * text	   - the text to display in the button (usually empty)
+	 * iconOnly - If it should only render the icon (default: true)
 	 * click   - the click handler for the button.
 	 *
 	 * @class
@@ -28,24 +29,28 @@ define([
 	var Button = Component.extend({
 		type: 'button',
 
-		/** @type {string=} Text in the button. Only `text` or `html` may be set. */
+		/** @type {string=} Text in the button. */
 		text: '',
-		/** @type {string=} HTML in the button. Only `text` or `html` may be set. */
-		html: '',
-		/** @type {(string|object.<string,string>)=} The icon (CSS-Class) to use for this button. */
+		/** @type {(string)=} The icon (CSS-Class) to use for this button. */
 		icon: '',
-		/** @type {string=} The URL to the icon to use for this button. */
-		iconUrl: '',
 		/** @type {string=} The tooltip text/content to display when the button is hovered over. */
 		tooltip: '',
+		/** @type {boolean} If it should only show the icon. */
+		iconOnly: true,
 
 		// Internals
+
 		/**
-		 * There's an issue with changing the initial icon: it doesn't remove the initially created icon.
-		 * Therefore we have to remove this "zombie" icon after updating the icon once, or we have duplicated
-		 * icon entries which isn't really helpful for anyone.
+		 * The reference to the button. Usually the same as `element`, but button extensions might
+		 * wrap the button in an additional container.
 		 */
-		didRemoveInitialIcon: false,
+		_$buttonElement: null,
+
+		/** The reference to the icon element. */
+		_$iconElement: null,
+
+		/** The reference to the text element. */
+		_$textElement: null,
 
 		/**
 		 * Initializes this button instance.
@@ -59,16 +64,9 @@ define([
 		init: function () {
 			this._super();
 			this.createButtonElement();
-			Utils.makeButton(this.buttonElement, this)
-				.button('widget')
-				.tooltip({
-					tooltipClass: 'aloha aloha-ui-tooltip',
-					position: {
-						my: 'left top',
-						at: 'right bottom'
-					}
-				})// fix for IE7,8 so the icon shown disabled
-				.click(jQuery.proxy(function () {
+			this._$buttonElement
+				// fix for IE7,8 so the icon shown disabled
+				.click($.proxy(function () {
 
 					// Ensure tooltips are always hidden after a button
 					// is clicked because sometimes the tooltip doesn't
@@ -84,7 +82,7 @@ define([
 
 		closeTooltip: function () {
 			// 'close', /*event*/, /*force*/
-			this.buttonElement.tooltip('close', null, true);
+			this._$buttonElement.tooltip('close', null, true);
 		},
 
 		/**
@@ -107,15 +105,43 @@ define([
 		/**
 		 * Creates the DOM element to be rendered for user interaction.
 		 *
-		 * @return {jQuery<HTMLElement>}
+		 * @return {$<HTMLElement>}
 		 */
 		createButtonElement: function () {
-			var button = Utils.makeButtonElement();
+			this._$iconElement = $('<i>', {
+				class: 'aloha-button-icon material-symbols-outlined',
+				text: this.icon,
+			});
 
-			if (this['class']) {
-				button.addClass(this['class']);
+			this._$textElement = $('<span>', {
+				class: 'aloha-button-text',
+				text: this.text,
+			});
+
+			var button = $('<button>', {
+				class: 'aloha-button ui-widget',
+				attr: {
+					type: 'button',
+					role: 'button',
+				},
+			})
+				.append(this._$iconElement, this._$textElement)
+				.tooltip({
+					tooltipClass: 'aloha aloha-ui-tooltip',
+					position: {
+						my: 'left top',
+						at: 'right bottom'
+					}
+				});
+
+			if (!this.icon) {
+				this._$iconElement.hide();
 			}
-			this.element = this.buttonElement = button;
+			if (this.iconOnly) {
+				button.addClass('icon-only');
+			}
+
+			this.element = this._$buttonElement = button;
 
 			var that = this;
 			button.on('mouseleave', function () {
@@ -128,38 +154,36 @@ define([
 		setIcon: function(icon) {
 			this.icon = icon;
 
-			// Update the icon in the create button instance
-			if (this.buttonElement) {
-				if (!this.didRemoveInitialIcon) {
-					this.didRemoveInitialIcon = true;
-					this.buttonElement.find('.ui-button-icon-primary').remove();
-				}
+			this._$iconElement.text(icon);
+			if (this.icon) {
+				this._$iconElement.show();
+			} else {
+				this._$iconElement.hide();
+			}
+		},
 
-				if (this.icon == null) {
-					this.buttonElement.button('option', 'icons', { primary: null, secondary: null });
-				} else if (typeof this.icon === 'object') {
-					this.buttonElement.button('option', 'icons', icon);
-				} else {
-					this.buttonElement.button('option', 'icon', icon);
-				}
+		setIconOnly: function(iconOnly) {
+			this.iconOnly = iconOnly;
+
+			if (iconOnly) {
+				this._$buttonElement.addClass('icon-only');
+			} else {
+				this._$buttonElement.removeClass('icon-only');
 			}
 		},
 
 		setText: function(text) {
 			this.text = text;
 
-			// Update the icon in the create button instance
-			if (this.buttonElement) {
-				this.buttonElement.button('option', 'text', text);
-			}
+			this._$textElement.text(text);
 		},
 
 		setTooltip: function(tooltip) {
 			this.tooltip = tooltip;
 
 			// Update the icon in the create button instance
-			if (this.buttonElement) {
-				this.buttonElement.tooltip('option', 'content', tooltip);
+			if (this._$buttonElement) {
+				this._$buttonElement.tooltip('option', 'content', tooltip);
 			}
 		},
 
@@ -168,7 +192,7 @@ define([
 		 */
 		disable: function () {
 			this._super();
-			this.buttonElement.button('option', 'disabled', true);
+			this._$buttonElement.attr('disabled', 'disabled');
 		},
 
 		/**
@@ -176,7 +200,7 @@ define([
 		 */
 		enable: function () {
 			this._super();
-			this.buttonElement.button('option', 'disabled', false);
+			this._$buttonElement.removeAttr('disabled');
 		}
 	});
 

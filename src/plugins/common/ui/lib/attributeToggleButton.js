@@ -22,7 +22,7 @@ define([
             if (this.active) {
                 this.element.addClass(CLASS_ACTIVE);
             } else {
-                this.this.element.removeClass(CLASS_ACTIVE);    
+                this.element.removeClass(CLASS_ACTIVE);    
             }
         },
 

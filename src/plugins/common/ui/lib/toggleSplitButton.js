@@ -6,6 +6,7 @@ define([
     'use strict';
 
     var CLASS_ACTIVE = 'active';
+    var CLASS_ALWAYS_SECONDARY = 'always-secondary';
 
     var ToggleSplitButton = SplitButton.extend({
         type: 'toggle-split-button',
@@ -22,10 +23,8 @@ define([
             this._super();
 
             this.element.addClass('toggle-button');
-            if (this.alwaysSecondary) {
-                this.element.addClass('always-secondary');
-            }
 
+            this._handleAlwaysSecondary();
             this._handleActiveState();
         },
 
@@ -37,19 +36,18 @@ define([
             this.onToggle(this.active);
         },
 
+        _handleAlwaysSecondary: function() {
+            if (this.alwaysSecondary) {
+                this.element.addClass(CLASS_ALWAYS_SECONDARY);
+            } else {
+                this.element.removeClass(CLASS_ALWAYS_SECONDARY);
+            }
+        },
         _handleActiveState: function() {
 			if (this.active) {
 				this.element.addClass(CLASS_ACTIVE);
-
-                if (!this.disabled) {
-                    this.secondaryButton.removeAttr('disabled');
-                }
 			} else {
 				this.element.removeClass(CLASS_ACTIVE);
-
-                if (!this.alwaysSecondary) {
-                    this.secondaryButton.attr('disabled', 'disabled');
-                }
 			}
 		},
 
@@ -69,12 +67,9 @@ define([
             this.setActive(false);
         },
 
-        enable: function () {
-            this._super();
-
-            if (!this.active && !this.alwaysSecondary) {
-                this.secondaryButton.attr('disabled', 'disabled');
-            }
+        setAlwaysSecondary: function(alwaysSecondary) {
+            this.alwaysSecondary = alwaysSecondary;
+            this._handleAlwaysSecondary();
         },
 
         setValue: function (value) {

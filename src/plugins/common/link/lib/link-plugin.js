@@ -21,10 +21,8 @@ define([
 	'util/dom',
 	'ui/ui',
 	'ui/scopes',
-	'ui/button',
-	'ui/toggleButton',
 	'ui/toggleSplitButton',
-	'ui/input',
+	'ui/icons',
 	'i18n!link/nls/i18n',
 	'PubSub',
 	'util/keys',
@@ -42,10 +40,8 @@ define([
 	Dom,
 	Ui,
 	Scopes,
-	Button,
-	ToggleButton,
 	ToggleSplitButton,
-	Input,
+	Icons,
 	i18n,
 	PubSub,
 	Keys,
@@ -350,7 +346,9 @@ define([
 			});
 
 			PubSub.sub('aloha.selection.context-change', function (message) {
-				plugin._insertLinkButton.setActive(plugin.findLinkMarkup(message.range));
+				var active = plugin.findLinkMarkup(message.range);
+				plugin._insertLinkButton.setActive(active);
+				plugin._insertLinkButton.setIcon(active ? Icons.MAPPING.UNLINK : Icons.MAPPING.LINK)
 
 				if (!Aloha.activeEditable) {
 					plugin.lastActiveLink = false;
@@ -526,7 +524,7 @@ define([
 
 			this._insertLinkButton = Ui.adopt("insertLink", ToggleSplitButton, {
 				tooltip: i18n.t("button.addlink.tooltip"),
-				icon: "aloha-icon aloha-icon-link",
+				icon: Icons.MAPPING.LINK,
 				contextType: 'modal',
 
 				secondaryClick: function () {

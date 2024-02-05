@@ -10,53 +10,58 @@ define([
     var SplitButton = Button.extend({
         type: 'split-button',
 
-        secondaryButton: null,
-
         /** @type {(string|null)} Label/Tooltip for the secondary action */
         secondaryLabel: null,
 
         /** @type {function} Function which is getting called whenever the secondary button is clicked. */
         secondaryClick: function () { },
 
+        // Internals
+
+        _$secondaryButton: null,
+
         init: function () {
             this._super();
 
             // Wrap both buttons in a div for proper styling
             var $container = $('<div>', {
-                class: 'ui-split-button'
-            }).append(this.element);
+                class: 'aloha-split-button ui-widget'
+            }).append(this._$buttonElement);
+            this._$buttonElement.addClass('aloha-split-button-main');
 
             var title = this.secondaryLabel || i18n.t('split-button.secondary.label');
-            this.secondaryButton = $('<button>', {
-                class: 'ui-split-button-secondary ui-widget',
+            this._$secondaryButton = $('<button>', {
+                class: 'aloha-split-button-secondary ui-widget',
                 type: 'button',
                 role: 'button',
-                'aria-disabled': false,
                 title: title,
             });
-            this.secondaryButton.append('<span class="ui-button-icon-secondary ui-icon aloha-jqueryui-icon ui-icon-splitbtn-expand"></span>');
+            this._$secondaryButton.append($('<i>', {
+                class: 'aloha-button-icon aloha-button-secondary-icon material-symbols-outlined',
+                text: 'arrow_drop_down',
+            }));
 
             var _this = this;
-            this.secondaryButton.on('click', function () {
+            this._$secondaryButton.on('click', function () {
                 _this.secondaryClick();
             });
 
-            $container.append(this.secondaryButton);
+            $container.append(this._$secondaryButton);
 
             this.element = $container;
         },
 
         enable: function() {
             this._super();
-            this.secondaryButton
-                .removeAttr('disabled')
-                .attr('aria-disabled', 'false');
+            this.element.removeClass('disabled');
+            this._$secondaryButton
+                .removeAttr('disabled');
         },
         disable: function() {
             this._super();
-            this.secondaryButton
-                .attr('disabled', 'disabled')
-                .attr('aria-disabled', 'true');
+            this.element.addClass('disabled');
+            this._$secondaryButton
+                .attr('disabled', 'disabled');
         }
     });
 

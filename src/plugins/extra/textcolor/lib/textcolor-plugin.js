@@ -98,6 +98,7 @@ define([
 			},
 			"background-color": {
 				palette: Palette,
+				allowTransparency: true,
 			},
 		},
 
@@ -131,8 +132,19 @@ define([
 				buttonProperties = Object.assign({}, buttonProperties || {}, {
 					contextType: 'dropdown',
 					context: function () {
-						var selection = Aloha.getSelection();
-						var activeColor = getColor(cssProperty, selection.getRangeAt(0));
+						var activeColor = null;
+
+						try {
+							var selection = Aloha.getSelection();
+							activeColor = getColor(cssProperty, selection.getRangeAt(0));
+						} catch (err) {
+							// This is an error thrown when the selection could not be retrieved properly.
+							// Can be safely ignored.
+							if (err == null || typeof err !== 'object' || err.codeName !== 'INDEX_SIZE_ERR') {
+								throw err;
+							}
+						}
+
 						var propertyConfig = Object.assign({}, {
 							// Default settings
 							palette: Palette,

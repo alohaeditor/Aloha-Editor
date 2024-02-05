@@ -41,8 +41,11 @@ define([
         init: function() {
             this._super();
 
-            this.element.addClass('context-button');
-            this.element.append('<span class="ui-button-icon-secondary ui-icon aloha-jqueryui-icon ui-icon-triangle-1-s"></span>');
+            this._$buttonElement.addClass('context-button');
+            this._$buttonElement.append($('<i>', {
+                class: 'aloha-button-icon aloha-button-secondary-icon material-symbols-outlined',
+                text: 'arrow_drop_down',
+            }));
         },
 
         _onClick: function () {

@@ -5,7 +5,7 @@ define([
 ) {
 	'use strict';
 
-	var CLASS_ACTIVE = 'aloha-button-active';
+	var CLASS_ACTIVE = 'active';
 
 	/**
 	 * ToggleButton control. Extends the Button component type to provide an
@@ -23,6 +23,8 @@ define([
 
 		init: function() {
 			this._super();
+
+			this._$buttonElement.addClass('toggle-button');
 
 			this._handleActiveState();
 		},
@@ -55,9 +57,9 @@ define([
 		},
 		_handleActiveState: function() {
 			if (this.active) {
-				this.buttonElement.addClass(CLASS_ACTIVE);
+				this._$buttonElement.addClass(CLASS_ACTIVE);
 			} else {
-				this.buttonElement.removeClass(CLASS_ACTIVE);
+				this._$buttonElement.removeClass(CLASS_ACTIVE);
 			}
 		},
 

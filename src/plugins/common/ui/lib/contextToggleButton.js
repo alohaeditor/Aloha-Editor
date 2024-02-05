@@ -5,7 +5,7 @@ define([
 ) {
     'use strict';
 
-    var CLASS_ACTIVE = 'aloha-button-active';
+    var CLASS_ACTIVE = 'active';
 
     var ContextToggleButton = ContextButton.extend({
         type: 'context-toggle-button',
@@ -27,9 +27,9 @@ define([
 
         _handleActiveState: function() {
 			if (this.active) {
-				this.buttonElement.addClass(CLASS_ACTIVE);
+				this._$buttonElement.addClass(CLASS_ACTIVE);
 			} else {
-				this.buttonElement.removeClass(CLASS_ACTIVE);
+				this._$buttonElement.removeClass(CLASS_ACTIVE);
 			}
 		},
 

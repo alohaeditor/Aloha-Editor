@@ -1137,10 +1137,33 @@ span.ui-button-icon-primary.ui-icon.ui-icon-closethick {
 }
 
 .aloha-ui .aloha-select-menu .select-menu-options-container .select-menu-option {
-	margin: 2px 4px;
 	background: transparent;
 	border: 1px solid rgba(0,0,0,0.2);
 	cursor: pointer;
+	transition: 200ms;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	padding: 2px 8px 2px 4px;
+  	align-content: center;
+}
+
+.aloha-ui .aloha-select-menu .select-menu-options-container .select-menu-option-label {
+	font-size: 14px;
+	margin-left: 4px;
+}
+
+.aloha-ui .aloha-select-menu .select-menu-options-container .select-menu-icon-wrapper {
+	display: block;
+	flex: 0 0 26px;
+	width: 26px;
+	height: 20px;
+}
+
+.aloha-ui .aloha-select-menu .select-menu-options-container .select-menu-icon {
+	height: 100%;
+	width: 100%;
+	font-size: inherit;
 }
 
 .aloha-ui .aloha-select-menu .select-menu-options-container .select-menu-option:hover,
@@ -1150,6 +1173,7 @@ span.ui-button-icon-primary.ui-icon.ui-icon-closethick {
 
 .aloha-ui .aloha-select-menu .select-menu-options-container .select-menu-option.active {
 	border-color: #3B73D7;
+	background: #D6E2F8;
 }
 
 .aloha-ui .aloha-select-menu.icons-only .select-menu-options-container {
@@ -1157,8 +1181,18 @@ span.ui-button-icon-primary.ui-icon.ui-icon-closethick {
 }
 
 .aloha-ui .aloha-select-menu.icons-only .select-menu-options-container .select-menu-option {
-	width: 18px;
-	height: 18px;
+	width: 26px;
+	height: 26px;
+	font-size: 20px;
+	padding: 2px;
+	border-radius: 2px;
+	margin: 2px;
+}
+
+.aloha-ui .aloha-select-menu.icons-only .select-menu-options-container .select-menu-icon-wrapper {
+	height: 100%;
+	width: 100%;
+	flex: 0 0;
 }
 
 .aloha-ui .aloha-select-menu.icons-only .select-menu-options-container .select-menu-option .select-menu-option-label {
@@ -1412,4 +1446,146 @@ span.ui-button-icon-primary.ui-icon.ui-icon-closethick {
 .aloha-ui .aloha-iframe-element {
     border: none;
     outline: none;
+}
+
+/** New Buttons */
+
+.aloha .aloha-button {
+    display: inline-flex;
+    border-radius: 2px;
+    background: transparent;
+    border: 1px solid transparent;
+    padding: 2px;
+    align-items: center;
+    position: relative;
+    box-sizing: border-box;
+    transition: 200ms;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.aloha .aloha-button .aloha-button-icon {
+    font-size: 20px;
+    height: 20px;
+    width: 20px;
+}
+
+.aloha .aloha-button .aloha-button-text {
+    padding: 2px 4px 2px 2px;
+    line-height: 1;
+}
+
+.aloha .aloha-button .aloha-button-text:not(:last-child) {
+    padding-right: 0px;
+}
+
+.aloha .aloha-button .aloha-button-icon+.aloha-button-text {
+    margin-left: 2px;
+}
+
+.aloha .aloha-button.icon-only>.aloha-button-text {
+    display: none;
+}
+
+.aloha .aloha-button:not(:disabled):hover {
+    background: #efefef;
+    border-color: #d6d6d6;
+}
+
+.aloha .aloha-button:not(:disabled).active {
+    background-color: #efefef;
+    border-color: #aaa;
+}
+
+.aloha .aloha-button:not(:disabled).active:hover {
+    background-color: #fff;
+    border-color: #666;
+}
+
+.aloha .aloha-button:disabled {
+    background-color: #cbcbcb;
+    border-color: #7f7f7f;
+    color: #6f6f6f;
+    cursor: not-allowed;
+}
+
+.aloha .aloha-split-button {
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    align-items: center;
+    position: relative;
+    box-sizing: border-box;
+    transition: 200ms;
+}
+
+.aloha .aloha-split-button .aloha-split-button-main {
+    border: none;
+    padding: 3px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.aloha .aloha-split-button .aloha-split-button-context {
+    flex: 0 0;
+    width: 22px;
+    border-radius: 2px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    display: flex;
+    background: transparent;
+    border: 1px solid transparent;
+    padding: 2px;
+    border: none;
+    position: relative;
+    box-sizing: border-box;
+    transition: 200ms;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.aloha .aloha-split-button .aloha-split-button-context .aloha-split-button-context-icon {
+    font-size: 20px;
+    height: 20px;
+    width: 100%;
+}
+
+.aloha .aloha-split-button:not(.disabled):hover {
+    border-color: #d6d6d6;
+}
+
+.aloha .aloha-split-button:not(.disabled) .aloha-split-button-main:hover,
+.aloha .aloha-split-button:not(.disabled) .aloha-split-button-context:hover {
+    background: #e2e2e2;
+}
+
+.aloha .aloha-split-button:not(.disabled).active {
+    background-color: #efefef;
+    border-color: #aaa;
+}
+
+.aloha .aloha-split-button:not(.disabled).active:hover {
+    border-color: #666;
+}
+
+.aloha .aloha-split-button:not(.disabled).active .aloha-split-button-main:hover,
+.aloha .aloha-split-button:not(.disabled).active .aloha-split-button-context:hover {
+    background-color: #fefefe;
+}
+
+.aloha .aloha-split-button:not(.disabled).toggle-button:not(.active, .always-secondary) .aloha-split-button-context {
+    display: none;
+}
+
+.aloha .aloha-split-button.disabled {
+    background-color: #cbcbcb;
+    border-color: #7f7f7f;
+    color: #6f6f6f;
+    cursor: not-allowed;
+}
+
+.aloha .aloha-split-button.disabled .aloha-split-button-context {
+    cursor: not-allowed;
 }

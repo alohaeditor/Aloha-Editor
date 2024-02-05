@@ -72,24 +72,24 @@ define([
 
 	function createSymbolGridFromConfig(
 		config,
-        name,
-        applyChanges,
-        validateFn,
-        onChangeFn,
-        onTouchFn
+		name,
+		applyChanges,
+		validateFn,
+		onChangeFn,
+		onTouchFn
 	) {
 		var tmpOptions = config.options || {};
 		var component = Ui.adopt(name, SymbolGrid, {
 			symbols: tmpOptions.symbols,
 
 			changeNotify: function (value) {
-                applyChanges(value);
-                validateFn(value);
-                onChangeFn(value);
-            },
-            touchNotify: function () {
-                onTouchFn();
-            },
+				applyChanges(value);
+				validateFn(value);
+				onChangeFn(value);
+			},
+			touchNotify: function () {
+				onTouchFn();
+			},
 		});
 		return component;
 	}
@@ -109,7 +109,7 @@ define([
 
 		init: function () {
 			DynamicForm.componentFactoryRegistry['symbol-grid'] = createSymbolGridFromConfig;
-			
+
 			if (
 				Aloha.settings.plugins &&
 				Aloha.settings.plugins.characterpicker
@@ -118,10 +118,10 @@ define([
 			}
 
 			var _this = this;
-				
+
 			Ui.adopt('characterPicker', ContextButton, {
 				tooltip: i18n.t('button.addcharacter.tooltip'),
-				icon: 'aloha-icon-characterpicker',
+				icon: Icon.MAPPING.CHARACTER_PICKER,
 
 				contextType: 'dropdown',
 				context: function() {
@@ -135,13 +135,13 @@ define([
 					}
 				},
 
-				contextResolve: function(symbol) {
+				contextResolve: function (symbol) {
 					onSelectCharacter(symbol);
 				},
 			});
 		},
 
-		getNormalizedSymbols: function() {
+		getNormalizedSymbols: function () {
 			var symbols = [];
 
 			if (!Array.isArray(this.config)) {

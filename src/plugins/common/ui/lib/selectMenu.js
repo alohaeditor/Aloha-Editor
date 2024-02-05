@@ -108,20 +108,17 @@ define([
                     attr: attributes,
                 });
 
-                var hasIcon = false;
                 if (option.icon) {
-                    var $iconElem = Icons.createIconElement(option.icon);
-                    if ($iconElem) {
-                        $optionElem.append(
-                            $('<div>', {
-                                class: 'select-menu-icon-wrapper',
-                            }).append($iconElem)
-                        );
-                        hasIcon = true;
-                    }
-                }
-
-                if (!hasIcon) {
+                    var $iconElem = $('<i>', {
+                        class: 'select-menu-icon material-symbols-outlined',
+                        text: option.icon,
+                    });
+                    $optionElem.append(
+                        $('<div>', {
+                            class: 'select-menu-icon-wrapper',
+                        }).append($iconElem)
+                    );
+                } else {
                     $optionElem.addClass('no-icon');
                 }
 
