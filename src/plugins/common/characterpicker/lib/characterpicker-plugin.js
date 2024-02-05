@@ -31,6 +31,7 @@ define([
 	'ui/ui',
 	'ui/contextButton',
 	'ui/dynamicForm',
+	'ui/icons',
 	'characterpicker/symbol-grid',
 	'i18n!characterpicker/nls/i18n'
 ], function (
@@ -39,6 +40,7 @@ define([
 	Ui,
 	ContextButton,
 	DynamicForm,
+	Icons,
 	SymbolGrid,
 	i18n
 ) {
@@ -121,10 +123,10 @@ define([
 
 			Ui.adopt('characterPicker', ContextButton, {
 				tooltip: i18n.t('button.addcharacter.tooltip'),
-				icon: Icon.MAPPING.CHARACTER_PICKER,
+				icon: Icons.MAPPING.CHARACTER_PICKER,
 
 				contextType: 'dropdown',
-				context: function() {
+				context: function () {
 					rangeAtOpen = Aloha.Selection.rangeObject;
 
 					return {

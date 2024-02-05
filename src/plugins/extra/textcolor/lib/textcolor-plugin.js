@@ -175,7 +175,7 @@ define([
 
 				btn = Ui.adopt(name, ContextButton, buttonProperties);
 
-				btn.buttonElement.addClass('textcolor-button');
+				btn._$buttonElement.addClass('textcolor-button');
 
 				// Updates the color of the button when changing focus/text elements
 				PubSub.sub('aloha.selection.context-change', function (message) {
@@ -190,11 +190,11 @@ define([
 			}
 
 			createButton('textColor', 'color', {
-				icon: Icons.ClassMapping[Icons.AvailableIcons.TEXT_COLOR],
+				icon: Icons.MAPPING.TEXT_COLOR,
 				tooltip: i18n.t('change-textcolor-color'),
 			});
 			createButton('textBackground', 'background-color', {
-				icon: Icons.ClassMapping[Icons.AvailableIcons.BACKGROUND_COLOR],
+				icon: Icons.MAPPING.BACKGROUND_COLOR,
 				tooltip: i18n.t('change-textcolor-background-color'),
 			});
 		}

@@ -1,7 +1,9 @@
 define([
+    'jquery',
     'ui/button',
     'i18n!ui/nls/i18n'
 ], function (
+    $,
     Button,
     i18n
 ) {

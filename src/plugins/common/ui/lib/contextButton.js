@@ -1,9 +1,11 @@
 define([
+    'jquery',
     'ui/button',
     'ui/dropdown',
     'ui/modal',
     'ui/overlayElement'
 ], function (
+    $,
     Button,
     Dropdown,
     Modal,
