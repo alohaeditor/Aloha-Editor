@@ -1,3 +1,7 @@
+/** @typedef {import('./overlayElement').DynamicDropdownConfiguration} DynamicDropdownConfiguration */
+/** @typedef {import('./overlayElement').DynamicModalConfiguration} DynamicModalConfiguration */
+/** @typedef {import('./overlayElement').OverlayElementControl} OverlayElementControl */
+
 define([
     'jquery',
     'ui/button',
@@ -17,7 +21,7 @@ define([
         type: 'context-button',
 
         /**
-         * @type {(DynamicDropdownConfiguration|DynamicModalConfiguration|function.<DynamicDropdownConfiguration|DynamicModalConfiguration>)}
+         * @type {DynamicDropdownConfiguration|DynamicModalConfiguration|function.<DynamicDropdownConfiguration|DynamicModalConfiguration>)}
          * A static context/config for the dropdown/modal, or a function which returns the context/config dynamically when needed.
          */
         context: null,

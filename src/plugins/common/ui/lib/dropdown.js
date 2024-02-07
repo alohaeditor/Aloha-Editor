@@ -1,11 +1,12 @@
+/** @typedef {import('./overlayElement').DynamicDropdownConfiguration} DynamicDropdownConfiguration */
+/** @typedef {import('./overlayElement').OverlayElementControl} OverlayElementControl */
+
 define([
     'ui/ui-plugin',
 ], function (
     UiPlugin
 ) {
     'use strict';
-
-    // Note: Typings are in overlayElement
 
     // Implementation is in dynamicUi
 

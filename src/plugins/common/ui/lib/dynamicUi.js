@@ -1,3 +1,7 @@
+/** @typedef {import('./overlayElement').DynamicDropdownConfiguration} DynamicDropdownConfiguration */
+/** @typedef {import('./overlayElement').DynamicModalConfiguration} DynamicModalConfiguration */
+/** @typedef {import('./overlayElement').OverlayElementControl} OverlayElementControl */
+
 define([
     'jquery',
     'aloha',
