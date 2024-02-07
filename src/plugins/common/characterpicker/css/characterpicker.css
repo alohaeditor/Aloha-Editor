@@ -1,53 +1,8 @@
-.aloha-character-picker-overlay{
-	position: absolute;
-	display: none;
-	float: left;
-	padding: 0;
-	top: 0;
-	left: 0;
-	border: none;
-	border-collapse: collapse;
-	z-index: 999999;
-	width: auto;
-}
-
-.aloha-character-picker-overlay{
-	border-collapse: collapse;
-}
-
-.aloha-character-picker-overlay tr,
-.aloha-character-picker-overlay th {
-	background: none;
-}
-
-.aloha-character-picker-overlay td{
-	width: 1.2em;
-	height: 1.2em;
-	padding: 0.1em;
-	border: 1px solid #afafaf;
-	background-color: #fff;
-
-	color: #000000;
-	line-height: 1.2em;
-	font-size: 1em;
-	text-align: center;
-	
-	cursor: pointer;
-}
-
-.aloha-character-picker-overlay td.focused {
-	border: 1px solid #407bcf;
-	background-color: #b9d6f9;
-}
-
-.aloha .ui-icon.aloha-icon-characterpicker {
-	background: url('../img/icon.png');
-}
-
 .aloha .aloha-symbol-grid {
 	width: 420px;
 	display: flex;
 	box-sizing: border-box;
+	flex-direction: column;
 }
 
 .aloha .aloha-symbol-grid .symbol-grid-container {
@@ -79,4 +34,8 @@
 .aloha .aloha-symbol-grid .symbol-grid-container .symbol-grid-cell:focus {
 	background: rgba(0,0,0,0.1);
 	border-color: #0096DC;
+}
+
+.aloha .aloha-symbol-grid .symbol-grid-container .symbol-grid-cell.cell-hidden {
+	display: none;
 }

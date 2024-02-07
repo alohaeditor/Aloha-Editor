@@ -33,6 +33,7 @@ define([
 	'ui/dynamicForm',
 	'ui/icons',
 	'characterpicker/symbol-grid',
+	'characterpicker/symbol-search-grid',
 	'i18n!characterpicker/nls/i18n'
 ], function (
 	Aloha,
@@ -42,6 +43,7 @@ define([
 	DynamicForm,
 	Icons,
 	SymbolGrid,
+	SymbolSearchGrid,
 	i18n
 ) {
 	'use strict';
@@ -96,6 +98,40 @@ define([
 		return component;
 	}
 
+	function createSymbolSearchGridFromConfig(
+		config,
+		name,
+		applyChanges,
+		validateFn,
+		onChangeFn,
+		onTouchFn
+	) {
+		var tmpOptions = config.options || {};
+		var component = Ui.adopt(name, SymbolSearchGrid, {
+			symbols: tmpOptions.symbols,
+			searchLabel: tmpOptions.searchLabel,
+
+			changeNotify: function (value) {
+				applyChanges(value);
+				validateFn(value);
+				onChangeFn(value);
+			},
+			touchNotify: function () {
+				onTouchFn();
+			},
+		});
+		return component;
+	}
+
+	var randomLabels = [
+        'foo',
+        'bar',
+        'hello',
+        'world',
+        'test',
+        'gentics',
+    ];
+
 	/**
 	 * @type {Plugin}
 	 */
@@ -111,6 +147,7 @@ define([
 
 		init: function () {
 			DynamicForm.componentFactoryRegistry['symbol-grid'] = createSymbolGridFromConfig;
+			DynamicForm.componentFactoryRegistry['symbol-search-grid'] = createSymbolSearchGridFromConfig;
 
 			if (
 				Aloha.settings.plugins &&
@@ -130,7 +167,7 @@ define([
 					rangeAtOpen = Aloha.Selection.rangeObject;
 
 					return {
-						type: 'symbol-grid',
+						type: 'symbol-search-grid',
 						options: {
 							symbols: _this.getNormalizedSymbols(),
 						},
@@ -148,7 +185,12 @@ define([
 
 			if (!Array.isArray(this.config)) {
 				if (typeof this.config === 'string') {
-					symbols = this.config.split(' ');
+					symbols = this.config.split(' ').map(function(symbol) {
+						return {
+							label: randomLabels[Math.round(Math.random() * randomLabels.length)],
+							symbol: symbol,
+						};
+					});
 				} else {
 					// ... ?
 				}
