@@ -1,0 +1,59 @@
+
+.aloha .aloha-button {
+    display: inline-flex;
+    border-radius: 2px;
+    background: transparent;
+    border: 1px solid transparent;
+    padding: 2px;
+    align-items: center;
+    position: relative;
+    box-sizing: border-box;
+    transition: 200ms;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.aloha .aloha-button .aloha-button-icon {
+    font-size: 20px;
+    height: 20px;
+    width: 20px;
+}
+
+.aloha .aloha-button .aloha-button-text {
+    padding: 2px 4px 2px 2px;
+    line-height: 1;
+}
+
+.aloha .aloha-button .aloha-button-text:not(:last-child) {
+    padding-right: 0px;
+}
+
+.aloha .aloha-button .aloha-button-icon+.aloha-button-text {
+    margin-left: 2px;
+}
+
+.aloha .aloha-button.icon-only>.aloha-button-text {
+    display: none;
+}
+
+.aloha .aloha-button:not(:disabled):hover {
+    background: #efefef;
+    border-color: #d6d6d6;
+}
+
+.aloha .aloha-button:not(:disabled).active {
+    background-color: #efefef;
+    border-color: #aaa;
+}
+
+.aloha .aloha-button:not(:disabled).active:hover {
+    background-color: #fff;
+    border-color: #666;
+}
+
+.aloha .aloha-button:disabled {
+    background-color: #cbcbcb;
+    border-color: #7f7f7f;
+    color: #6f6f6f;
+    cursor: not-allowed;
+}

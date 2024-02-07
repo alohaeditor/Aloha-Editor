@@ -43,7 +43,7 @@ define([
 			this.pure = pure;
 		},
 		toggleActivation: function () {
-            this.setActive(!this.active);``
+            this.setActive(!this.active);
 		},
         activate: function () {
 			this.setActive(true);

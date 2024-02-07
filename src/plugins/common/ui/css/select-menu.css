@@ -1,0 +1,69 @@
+
+.aloha-ui .aloha-select-menu .select-menu-options-container {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+}
+
+.aloha-ui .aloha-select-menu .select-menu-options-container .select-menu-option {
+	background: transparent;
+	border: 1px solid rgba(0,0,0,0.2);
+	cursor: pointer;
+	transition: 200ms;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	padding: 2px 8px 2px 4px;
+  	align-content: center;
+}
+
+.aloha-ui .aloha-select-menu .select-menu-options-container .select-menu-option-label {
+	font-size: 14px;
+	margin-left: 4px;
+}
+
+.aloha-ui .aloha-select-menu .select-menu-options-container .select-menu-icon-wrapper {
+	display: block;
+	flex: 0 0 26px;
+	width: 26px;
+	height: 20px;
+}
+
+.aloha-ui .aloha-select-menu .select-menu-options-container .select-menu-icon {
+	height: 100%;
+	width: 100%;
+	font-size: inherit;
+}
+
+.aloha-ui .aloha-select-menu .select-menu-options-container .select-menu-option:hover,
+.aloha-ui .aloha-select-menu .select-menu-options-container .select-menu-option:focus {
+	border-color: rgba(0,0,0,0.8);
+}
+
+.aloha-ui .aloha-select-menu .select-menu-options-container .select-menu-option.active {
+	border-color: #3B73D7;
+	background: #D6E2F8;
+}
+
+.aloha-ui .aloha-select-menu.icons-only .select-menu-options-container {
+	flex-direction: row;
+}
+
+.aloha-ui .aloha-select-menu.icons-only .select-menu-options-container .select-menu-option {
+	width: 26px;
+	height: 26px;
+	font-size: 20px;
+	padding: 2px;
+	border-radius: 2px;
+	margin: 2px;
+}
+
+.aloha-ui .aloha-select-menu.icons-only .select-menu-options-container .select-menu-icon-wrapper {
+	height: 100%;
+	width: 100%;
+	flex: 0 0;
+}
+
+.aloha-ui .aloha-select-menu.icons-only .select-menu-options-container .select-menu-option .select-menu-option-label {
+	display: none;
+}

@@ -15,6 +15,8 @@ define({
 	"link-target.target.label": "Ziel",
 	"link-target.anchor.label": "Anker",
 	"color-picker.clearButton.label": "Farbe entfernen",
+	"date-time-picker.hours.label": "Stunden",
+	"date-time-picker.minutes.label": "Minuten",
 
 	"button.p.label": "Absatz",
 	"button.h1.label": "Überschrift 1",

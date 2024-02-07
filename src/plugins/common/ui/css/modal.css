@@ -1,0 +1,79 @@
+.aloha-modal-overlay {
+	background: rgba(0,0,0,0.1);
+}
+
+.aloha-modal.aloha-ui {
+	position: fixed;
+	top: 80px;
+	left: 10%;
+	width: 80%;
+	background: #fff;
+	padding: 24px 32px;
+	border-radius: 2px;
+	box-shadow: 2px 2px 2px rgba(0,0,0,0.5);
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	/* Has to be insanely high, because the toolbar is 10100 */
+	z-index: 20001;
+}
+
+.aloha-modal.aloha-ui .modal-header {
+	width: 100%;
+	margin-bottom: 16px;
+}
+
+.aloha-modal.aloha-ui .modal-body {
+	flex: 1 1 auto;
+	width: 100%;
+	min-height: 1px;
+}
+
+.aloha-modal.aloha-ui .modal-body .modal-body-container {
+	height: 100%;
+	width: 100%;
+	overflow: auto;
+}
+
+.aloha-modal.aloha-ui .modal-footer {
+	width: 100%;
+	margin-top: 16px;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: flex-end;
+}
+
+.aloha-modal.aloha-ui .modal-footer .footer-button {
+	display: block;
+	padding: 8px 16px;
+	border-radius: 1px;
+	box-shadow: 2px 2px 2px rgba(0,0,0,0.2);
+	cursor: pointer;
+	color: #000;
+	transition: 300ms;
+	font-size: 16px;
+}
+
+.aloha-modal.aloha-ui .modal-footer .footer-button.cancel-button {
+	background: #c0c0c0;
+	margin: 0 16px;
+}
+
+.aloha-modal.aloha-ui .modal-footer .footer-button.cancel-button:hover {
+	background: #d7d7d7;
+}
+
+.aloha-modal .footer-button.confirm-button {
+	background: #97f476;
+}
+
+.aloha-modal .footer-button.confirm-button:hover {
+	background: #6eee40;
+}
+
+.aloha-modal.aloha-ui .modal-footer .footer-button[disabled],
+.aloha-modal.aloha-ui .modal-footer .footer-button:disabled {
+	background: #828282;
+	cursor: not-allowed;
+}

@@ -1,0 +1,29 @@
+/* This fixes the icon file locations for jquery-ui. */
+.aloha .ui-icon,
+.aloha .ui-widget-content .ui-icon {
+	background-image: url("../img/jqueryui/ui-icons_444444_256x240.png");
+}
+.aloha .ui-widget-header .ui-icon {
+	background-image: url("../img/jqueryui/ui-icons_444444_256x240.png");
+}
+.aloha .ui-state-hover .ui-icon,
+.aloha .ui-state-focus .ui-icon,
+.aloha .ui-button:hover .ui-icon,
+.aloha .ui-button:focus .ui-icon {
+	background-image: url("../img/jqueryui/ui-icons_555555_256x240.png");
+}
+.aloha .ui-state-active .ui-icon,
+.aloha .ui-button:active .ui-icon {
+	background-image: url("../img/jqueryui/ui-icons_ffffff_256x240.png");
+}
+.aloha .ui-state-highlight .ui-icon,
+.aloha .ui-button .ui-state-highlight.ui-icon {
+	background-image: url("../img/jqueryui/ui-icons_777620_256x240.png");
+}
+.aloha .ui-state-error .ui-icon,
+.aloha .ui-state-error-text .ui-icon {
+	background-image: url("../img/jqueryui/ui-icons_cc0000_256x240.png");
+}
+.aloha .ui-button .ui-icon {
+	background-image: url("../img/jqueryui/ui-icons_777777_256x240.png");
+}

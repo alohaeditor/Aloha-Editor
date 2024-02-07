@@ -92,7 +92,7 @@ define([
             }
 
             if (!!config.resolveWithConfirmButton) {
-                confirmButton.on('click', function() {
+                dropdownData.confirmButton.on('click', function() {
                     resolveIfValid();
                 });
             } else {
@@ -188,7 +188,8 @@ define([
         return {
             $dropdown: $dropdown,
             component: component,
-            control: control
+            control: control,
+            confirmButton: $confirmButton
         };
     }
 

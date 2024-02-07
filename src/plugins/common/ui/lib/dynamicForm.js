@@ -5,12 +5,12 @@ define([
     'ui/toggleButton',
     'ui/splitButton',
     'ui/toggleSplitButton',
-    'ui/autocomplete',
     'ui/checkbox',
     'ui/input',
     'ui/selectMenu',
     'ui/colorPicker',
-    'ui/iframe'
+    'ui/iframe',
+    'ui/dateTimePicker'
 ], function (
     $,
     Ui,
@@ -18,12 +18,12 @@ define([
     ToggleButton,
     SplitButton,
     ToggleSplitButton,
-    Autocomplete,
     Checkbox,
     Input,
     SelectMenu,
     ColorPicker,
-    IFrameComponent
+    IFrameComponent,
+    DateTimePicker
 ) {
     'use strict';
 
@@ -32,16 +32,16 @@ define([
 
     var componentFactoryRegistry = {
         'button': createButtonFromConfig,
-        'toggle-button': createToggleButtonFromConfig,
-        'split-button': createSplitButtonFromConfig,
-        'toggle-split-button': createToggleSplitButtonFromConfig,
-        'autocomplete': createAutocompleteFromConfig,
         'checkbox': createCheckboxFromConfig,
-        'input': createInputFromConfig,
-        'text': createTextFromConfig,
-        'select-menu': createSelectMenuFromConfig,
         'color-picker': createColorPickerFromConfig,
+        'date-time-picker': createDateTimePickerFromConfig,
         'iframe': createIFrameFromConfig,
+        'input': createInputFromConfig,
+        'select-menu': createSelectMenuFromConfig,
+        'split-button': createSplitButtonFromConfig,
+        'text': createTextFromConfig,
+        'toggle-button': createToggleButtonFromConfig,
+        'toggle-split-button': createToggleSplitButtonFromConfig,
     };
 
     function buildDynamicForm(config, postChangeFn) {
@@ -488,31 +488,6 @@ define([
         return component;
     }
 
-    function createAutocompleteFromConfig(
-        config,
-        name,
-        applyChanges,
-        validateFn,
-        onChangeFn,
-        onTouchFn
-    ) {
-        var tmpOptions = config.options || {};
-        var component = Ui.adopt(name, Autocomplete, {
-            types: tmpOptions.types,
-            template: tmpOptions.template,
-
-            changeNotify: function (value) {
-                applyChanges(value);
-                validateFn(value);
-                onChangeFn(value);
-            },
-            touchNotify: function () {
-                onTouchFn();
-            },
-        });
-        return component;
-    }
-
     function createCheckboxFromConfig(
         config,
         name,
@@ -692,6 +667,45 @@ define([
         return component;
     }
 
+    function createDateTimePickerFromConfig(
+        config,
+        name,
+        applyChanges,
+        validateFn,
+        onChangeFn,
+        onTouchFn
+    ) {
+        var tmpOptions = config.options || {};
+        var component = Ui.adopt(name, DateTimePicker, {
+            value: tmpOptions.value,
+            label: tmpOptions.label,
+            format: tmpOptions.format,
+            min: tmpOptions.min,
+            max: tmpOptions.max,
+            allowTime: tmpOptions.allowTime,
+            inline: tmpOptions.inline,
+            hoursLabel: tmpOptions.hoursLabel,
+            minutesLabel: tmpOptions.minutesLabel,
+            monthNames: tmpOptions.monthNames,
+            monthShort: tmpOptions.monthShort,
+            weekdayNames: tmpOptions.weekdayNames,
+            weekdayShort: tmpOptions.weekdayShort,
+            weekdayMinimal: tmpOptions.weekdayMinimal,
+            weekStart: tmpOptions.weekStart,
+        
+            changeNotify: function (value) {
+                applyChanges(value);
+                validateFn(value);
+                onChangeFn(value);
+            },
+            touchNotify: function () {
+                onTouchFn();
+            },
+        });
+        
+        return component;
+    }
+
     function createComponentFromConfig(
         config,
         applyChanges,
@@ -726,11 +740,15 @@ define([
 
         // Default factory functions
         createButtonFromConfig: createButtonFromConfig,
-        createToggleButtonFromConfig: createToggleButtonFromConfig,
-        createSplitButtonFromConfig: createSplitButtonFromConfig,
-        createAutocompleteFromConfig: createAutocompleteFromConfig,
         createCheckboxFromConfig: createCheckboxFromConfig,
+        createColorPickerFromConfig: createColorPickerFromConfig,
+        createDateTimePickerFromConfig: createDateTimePickerFromConfig,
+        createIFrameFromConfig: createIFrameFromConfig,
         createInputFromConfig: createInputFromConfig,
+        createSelectMenuFromConfig: createSelectMenuFromConfig,
+        createSplitButtonFromConfig: createSplitButtonFromConfig,
         createTextFromConfig: createTextFromConfig,
+        createToggleButtonFromConfig: createToggleButtonFromConfig,
+        createToggleSplitButtonFromConfig: createToggleSplitButtonFromConfig,
     };
 });
