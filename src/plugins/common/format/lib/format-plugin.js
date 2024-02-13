@@ -115,6 +115,7 @@ define('format/format-plugin', [
 	var FORMATTING_ICONS = {
 		'bold': Icons.MAPPING.BOLD,
 		'italic': Icons.MAPPING.ITALIC,
+		'strikethrough': Icons.MAPPING.STRIKE_THROUGH,
 		'strikethrough2': Icons.MAPPING.STRIKE_THROUGH,
 		'subscript': Icons.MAPPING.SUB_SCRIPT,
 		'superscript': Icons.MAPPING.SUPER_SCRIPT,
@@ -574,7 +575,7 @@ define('format/format-plugin', [
 				formatPlugin.typographyButton.deactivateInput();
 			}
 
-			formatPlugin.typographyButton.setIcon(TYPOGRAPHY_ICONS[effectiveTypo]);
+			formatPlugin.typographyButton.setIcon(TYPOGRAPHY_ICONS[effectiveTypo] || Icons.MAPPING.TYPOGRAPHY);
 		}
 
 		handlePreformattedText(rangeObject.commonAncestorContainer);

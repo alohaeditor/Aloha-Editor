@@ -234,9 +234,11 @@ define([
 				BlockManager.setDragDropState(dragdropState);
 				for (var i = 0; i < Aloha.editables.length; i++) {
 					var editable = Aloha.editables[i];
-					this._setDragDropStateForEditable(editable.obj, dragdropState);
+					if (editable && editable.obj) {
+						this._setDragDropStateForEditable(editable.obj, dragdropState);
+					}
 				}
-			} else {
+			} else if (editable && editable.obj) {
 				var toggleState = !editable.obj.data("block-dragdrop");
 				this._setDragDropStateForEditable(editable.obj, toggleState);
 			}
