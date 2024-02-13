@@ -8,7 +8,7 @@ define([
     'ui/dynamicForm',
     'ui/overlayElement',
     'i18n!ui/nls/i18n'
-], function(
+], function (
     $,
     Aloha,
     DynamicForm,
@@ -17,6 +17,150 @@ define([
 ) {
 
     var Ui;
+
+    function makeDialogDiv(props) {
+        var textOrHtml = {};
+        if (props.text) {
+            textOrHtml.text = props.text;
+        }
+        if (props.html) {
+            textOrHtml.html = props.html;
+        }
+        return $('<div>', textOrHtml);
+    }
+
+    /**
+     * Wraps the callback function so to destory the dialog when the callback is
+     * invoked.
+     *
+     * @param {function} callback
+     * @return {function} Wrapped callback.
+     */
+    function callbackAndDestroy(callback) {
+        return function () {
+            callback.apply(this);
+            $(this).dialog('destroy').remove();
+        };
+    }
+
+    function wrapDialogButtons(buttons) {
+        // Buttons automatically close the dialog for convenience
+        var title;
+        for (title in buttons) {
+            if (buttons.hasOwnProperty(title)) {
+                buttons[title] = callbackAndDestroy(buttons[title]);
+            }
+        }
+        return buttons;
+    }
+
+    function makeDialogProps(props, defaultTitle) {
+        // All root elements of widgets added to the page by aloha should have the class 'aloha'.
+        // All ui elements should have the class aloha-ui.
+        // aloha-dialog is used for a hack to prevent a click in the
+        // dialog from bluggin the editable search for aloha-dialog in
+        // the aloha core for more information.
+        var cls = 'aloha aloha-dialog aloha-ui';
+        if (props.cls) {
+            cls += ' ' + props.cls;
+        }
+        return {
+            'resizable': false,
+            'modal': true,
+            'title': props.title || defaultTitle,
+            'dialogClass': cls,
+            'zIndex': 10200
+        };
+    }
+
+    /**
+     * Shows a confirm dialog.
+     *
+     * A confirm dialog has a confirm icon and style and yes and no buttons.
+     *
+     * @param props is an object with the following properties (all optional):
+     *          title - the title of the dialog
+     *           text - either the text inside the dialog
+     *           html - or the html inside the dialog
+     *            yes - makes a "Yes" button in the dialog and invokes the given callback if it is pressed.
+     *             no - makes a "No" button in the dialog and invokes the given callback if it is pressed.
+     *         answer - makes a "Yes" and "No" button in the dialog and pressing either will invoke the
+     *                  callback with the answer as a boolean argument. Does not interfere with yes and
+     *                  no properties.
+     *            cls - the root element of the dialog will receive this class
+     *        buttons - an object where the properties are button titles and the values are callbacks
+     *        Button callbacks will receive the dialog element as context.
+     *        Pressing any buttons in the dialog will automatically close the dialog.
+     * @return
+     *        A function that can be called to close the dialog.
+     */
+    function openConfirmDialog(props) {
+        var buttons = props.buttons || {};
+
+        var yesLabel = i18n.t('button.yes.label');
+        var noLabel = i18n.t('button.no.label');
+
+        // block adds backwards compatibility to still be able to use
+        // 'buttons.Yes/No' for setting functionality of basic buttons
+        if (buttons.Yes !== null && yesLabel !== 'Yes') {
+            buttons[yesLabel] = buttons.Yes;
+            delete buttons.Yes;
+        }
+        if (buttons.No !== null && noLabel !== 'No') {
+            buttons[noLabel] = buttons.No;
+            delete buttons.No;
+        }
+
+        buttons[yesLabel] = buttons[yesLabel] || props.yes || $.noop;
+        buttons[noLabel] = buttons[noLabel] || props.no || $.noop;
+
+        if (props.answer) {
+            var yes = buttons[yesLabel];
+            var no = buttons[noLabel];
+            buttons[yesLabel] = function () {
+                yes();
+                props.answer(true);
+            };
+            buttons[noLabel] = function () {
+                no();
+                props.answer(false);
+            };
+        }
+        var dialog = makeDialogDiv(props).dialog(
+            $.extend(makeDialogProps(props, 'Confirm'), {
+                'buttons': wrapDialogButtons(buttons)
+            })
+        );
+        return function () {
+            dialog.dialog('destroy').remove();
+        };
+    }
+
+    /**
+     * Shows an alert dialog.
+     *
+     * An alert dialog has an alert icon and style and a dismiss button.
+     *
+     * @param props is an object with the following properties (all optional)
+     *        title - the title of the dialog
+     *        text - either the text inside the dialog
+     *        html - or the html inside the dialog
+     *        cls - the root element of the dialog will receive this class
+     * @return
+     *        A function that can be called to close the dialog.
+     */
+    function openAlertDialog(props) {
+        var propsExtended = {};
+        propsExtended[i18n.t('button.dismiss.label')] = $.noop;
+        var dialog = makeDialogDiv(props).dialog(
+            $.extend(makeDialogProps(props, 'Alert'), {
+                'buttons': wrapDialogButtons(propsExtended)
+            })
+        );
+        return function () {
+            dialog.dialog('destroy').remove();
+        };
+    }
 
     /**
      * Opens a modal with a dynamic form configuration.
@@ -35,11 +179,11 @@ define([
             return Promise.reject(new Error('Could not find target component "' + componentName + '"!'));
         }
 
-        var changeNotify = function() { }
-        var dropdownData = createDynamicDropdown(config, function() {
+        var changeNotify = function () { }
+        var dropdownData = createDynamicDropdown(config, function () {
             changeNotify();
         });
-        
+
         if (dropdownData == null) {
             return Promise.reject(new Error('Could not create component from config!'));
         }
@@ -47,7 +191,7 @@ define([
         var $dropdown = dropdownData.$dropdown;
         var component = dropdownData.component;
         var control = dropdownData.control;
-        
+
         var $dropdownOverlay = $('<div>', { class: 'aloha aloha-dropdown-overlay' });
         $dropdownOverlay.appendTo(document.body);
         $dropdown.appendTo(document.body);
@@ -59,7 +203,7 @@ define([
         });
 
         var open = true;
-        var reject = function() {}
+        var reject = function () { }
 
         function closeDropdown() {
             component.destroy();
@@ -96,24 +240,24 @@ define([
             }
 
             if (!!config.resolveWithConfirmButton) {
-                dropdownData.confirmButton.on('click', function() {
+                dropdownData.confirmButton.on('click', function () {
                     resolveIfValid();
                 });
             } else {
-                changeNotify = function() {
+                changeNotify = function () {
                     resolveIfValid();
                 };
             }
         });
 
         return Promise.resolve({
-            close: function() {
+            close: function () {
                 if (open) {
                     closeDropdown();
                     reject(new OverlayElement.OverlayCloseError(OverlayElement.ClosingReason.API));
                 }
             },
-            open: function() {
+            open: function () {
                 return open;
             },
             value: dropdownValue,
@@ -165,7 +309,7 @@ define([
             changeHandler,
             touchHandler
         );
-        
+
         if (!component) {
             return null;
         }
@@ -267,12 +411,12 @@ define([
         $(document.body).css('overflow', 'none');
         $modalOverlay.appendTo(document.body);
         $modal.appendTo(document.body);
-        
+
         var open = true;
-        var reject = function() {}
+        var reject = function () { }
 
         function closeModal() {
-            Object.values(generatedForm.components).forEach(function(comp) {
+            Object.values(generatedForm.components).forEach(function (comp) {
                 comp.destroy();
             });
             $modalOverlay.remove();
@@ -312,13 +456,13 @@ define([
         });
 
         return Promise.resolve({
-            close: function() {
+            close: function () {
                 if (open) {
                     closeModal();
                     reject(new OverlayElement.OverlayCloseError(OverlayElement.ClosingReason.API));
                 }
             },
-            isOpen: function() {
+            isOpen: function () {
                 return open;
             },
             value: modalValue,
@@ -328,5 +472,7 @@ define([
     return {
         openDynamicDropdown: openDynamicDropdown,
         openDynamicModal: openDynamicModal,
+        openAlertDialog: openAlertDialog,
+        openConfirmDialog: openConfirmDialog,
     };
 });

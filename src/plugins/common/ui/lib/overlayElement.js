@@ -105,6 +105,28 @@
  * @typedef {OverlayElementSettings.<T> & DynamicControlConfiguration.<T> & DynamicDropdownConfigurationProperties} DynamicDropdownConfiguration
  */
 
+/**
+ * @typedef {object} BaseDialogConfiguration
+ * @property {string} title Title of the Dialog
+ * @property {string} text Text/Description of the dialog for the user.
+ */
+
+/**
+ * @typedef {object} ConfirmDialogConfigurationProps
+ * 
+ * @property {VoidFunction} yes The function to call, when the user acceps the dialog.
+ * @property {VoidFunction} no The function to call, when the user denies the dialog.
+ * @property {SetterFunction.<boolean>} answer Function which is called when the user acceps or denies the dialog.
+ */
+
+/**
+ * @typedef {BaseDialogConfiguration & ConfirmDialogConfigurationProps} ConfirmDialogConfiguration
+ */
+
+/**
+ * @typedef {BaseDialogConfiguration} AlertDialogConfiguration
+ */
+
 define([], function () {
     'use strict';
 

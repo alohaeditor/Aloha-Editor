@@ -366,6 +366,12 @@ define([
 		openDynamicModal: function(config) {
 			return DynamicUi.openDynamicModal(config);
 		},
+		openConfirmDialog: function(config) {
+			return DynamicUi.openConfirmDialog(config);
+		},
+		openAlertDialog: function(config) {
+			return DynamicUi.openAlertDialog(config);
+		},
 
 		/**
 		 * Sets the width of the toolbar to match the Editable. On small screens, full width is used.

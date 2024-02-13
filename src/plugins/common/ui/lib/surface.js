@@ -1,6 +1,8 @@
 /** @typedef {import('./overlayElement').DynamicDropdownConfiguration} DynamicDropdownConfiguration */
 /** @typedef {import('./overlayElement').DynamicModalConfiguration} DynamicModalConfiguration */
-/** @typedef {import('./overlayElement').OverlayElementControl} OverlayElementControl */
+/** @typedef {import('./overlayElement').ConfirmDialogConfiguration} ConfirmDialogConfiguration */
+/** @typedef {import('./overlayElement').AlertDialogConfiguration} AlertDialogConfiguration */
+/** @typedef {import('./overlayElement').VoidFunction} VoidFunction */
 
 define([
 	'aloha/core',
@@ -77,6 +79,22 @@ define([
 		 * @returns {Promise.<OverlayElementControl.<T>>} - A Promise for a overlay element control.
 		 */
 		openDynamicModal: function(config) {
+			throw Error("Implement this function!");
+		},
+		/**
+		 * Opens a dialog for the user to confirm/dismiss an action.
+		 * @param {ConfirmDialogConfiguration} config The configuration for the dialog.
+		 * @returns {VoidFunction} A function to call to close the dialog.
+		 */
+		openConfirmDialog: function(config) {
+			throw Error("Implement this function!");
+		},
+		/**
+		 * Opens an alert dialog/notification for the user.
+		 * @param {AlertDialogConfiguration} config The configuration for the dialog.
+		 * @returns {VoidFunction} A function to call to close the dialog.
+		 */
+		openAlertDialog: function(config) {
 			throw Error("Implement this function!");
 		},
 
