@@ -510,7 +510,7 @@ define([
 			}).then(function (formData) {
 				that.upsertLink(formData);
 			}).catch(function (error) {
-				if (error instanceof OverlayElement.OverlayCloseError && error.reason !== OverlayElement.ClosingReason.ERROR) {
+				if (error instanceof OverlayElement.OverlayCloseError && error.reason !== OverlayElement.ClosingReason.CANCEL) {
 					console.log(error);
 				}
 			})
