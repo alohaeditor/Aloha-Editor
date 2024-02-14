@@ -1,6 +1,6 @@
 /*!
  * Aloha Editor
- * Author & Copyright (c) 2011-2013 Gentics Software GmbH
+ * Author & Copyright (c) 2011-2024 Gentics Software GmbH
  * aloha-sales@gentics.com
  * Licensed under the terms of http://www.aloha-editor.com/license.html
  */
@@ -13,10 +13,9 @@ define([
 	'aloha/content-rules',
 	'util/dom',
 	'ui/ui',
+	'ui/icons',
 	'ui/scopes',
-	'ui/button',
-	'ui/toggleButton',
-	'ui/port-helper-attribute-field',
+	'ui/attributeToggleButton',
 	'i18n!wai-lang/nls/i18n',
 	'../../../shared/languages/languages'
 ], function (
@@ -28,10 +27,9 @@ define([
 	ContentRules,
 	Dom,
 	Ui,
+	Icons,
 	Scopes,
-	Button,
-	ToggleButton,
-	attributeField,
+	AttributeToggleButton,
 	i18n,
 	LanguageRepository
 ) {
@@ -39,26 +37,6 @@ define([
 
 	var WAI_LANG_CLASS = 'aloha-wai-lang';
 
-	/**
-	 * Ui Attribute Field singleton.
-	 *
-	 * Needs to be defined in prepareUi(), because of a problem with the
-	 * stateful initialization of jQuery UI autocomplete implementation for
-	 * Aloha Editor.
-	 *
-	 * @type {AttributeField}
-	 */
-	var FIELD = null;
-
-	/**
-	 * UI Button to remove wai-lang
-	 */
-	var removeButton = null;
-
-	/**
-	 * True if IE9
-	 */
-	var isIE9 = Aloha.browser.msie && parseInt(Aloha.browser.version, 10) === 9;
 
 	/**
 	 * Sets focus on the given field.
@@ -66,12 +44,7 @@ define([
 	 * @param {AttributeField} field
 	 */
 	function focusOn(field) {
-		if (field) {
-			field.foreground();
-			field.focus();
-		}
-		FIELD.show();
-		removeButton.show();
+		console.log('TODO: focusOn() not implemented yet');
 	}
 
 	/**
@@ -97,8 +70,7 @@ define([
 	 */
 	function filterForWaiLangMarkup() {
 		var $elem = $(this);
-		//IE9 Fix, "lang" value not in dom attributes, use "xml:lang" instead
-		return $elem.hasClass(WAI_LANG_CLASS) || $elem.is('[lang]' || $elem.is('[xml\\:lang'));
+		return $elem.hasClass(WAI_LANG_CLASS) || $elem.is('[lang]');
 	}
 
 	/**
@@ -154,23 +126,6 @@ define([
 		if (!findWaiLangMarkup(range)) {
 			addMarkup(range);
 		}
-
-		focusOn(FIELD);
-	}
-
-	/**
-	 * Toggles language annotation on the markup at the current range.
-	 */
-	function toggleAnnotation() {
-		if (Aloha.activeEditable) {
-			var range = Selection.getRangeObject();
-			if (findWaiLangMarkup(range)) {
-				removeMarkup(range);
-			} else {
-				addMarkup(range);
-				focusOn(FIELD);
-			}
-		}
 	}
 
 	/**
@@ -183,50 +138,36 @@ define([
 		var $element = $(element);
 		$element.addClass(WAI_LANG_CLASS)
 		        .attr('data-gentics-aloha-repository', 'wai-languages')
-		        .attr('data-gentics-aloha-object-id', $element.attr(isIE9 ? 'xml:lang' : 'lang'));
+		        .attr('data-gentics-aloha-object-id', $element.attr('lang'));
 	}
 
 	/**
 	 * Initialize the buttons:
-	 * Places the Wai-Lang UI buttons into the floating menu.
-	 *
-	 * Initializes `FIELD`.
+	 * Places the Wai-Lang UI button into the floating menu.
 	 *
 	 * @param {Plugin} plugin Wai-lang plugin instance
 	 */
 	function prepareUi(plugin) {
-		FIELD = attributeField({
-			name: 'wailangfield',
-			width: 320,
-			valueField: 'id',
-			minChars: 1,
-		});
-
-		plugin._wailangButton = Ui.adopt('wailang', ToggleButton, {
+		plugin._wailangButton = Ui.adopt('wailang', AttributeToggleButton, {
 			tooltip: i18n.t('button.add-wai-lang.tooltip'),
-			icon: 'aloha-icon aloha-icon-wai-lang',
-			click: toggleAnnotation
-		});
-
-		removeButton = Ui.adopt('removewailang', Button, {
-			tooltip: i18n.t('button.add-wai-lang-remove.tooltip'),
-			icon: 'aloha-icon aloha-icon-wai-lang-remove',
-			click: function onButtonClick() {
-				removeMarkup(Selection.getRangeObject());
+			icon: Icons.MAPPING.LANGUAGE,
+			targetAttribute: 'lang',
+			inputLabel: 'Language',
+			panelLabel: 'WAI language',
+			pure: 'true',
+			onToggle: function(active) {
+				if (Aloha.activeEditable) {
+					var range = Selection.getRangeObject();
+					if (findWaiLangMarkup(range)) {
+						removeMarkup(range);
+						plugin._wailangButton.setActive(false);
+					} else {
+						addMarkup(range);
+						plugin._wailangButton.setActive(true);
+					}
+				}
 			}
 		});
-
-		FIELD.setTemplate(plugin.flags
-				? '<div class="aloha-wai-lang-img-item">' +
-				  '<img class="aloha-wai-lang-img" src="{url}" />' +
-				  '<div class="aloha-wai-lang-label-item">{name} ({id})</div>' +
-				  '</div>'
-				: '<div class="aloha-wai-lang-img-item">' +
-				  '<div class="aloha-wai-lang-label-item">{name} ({id})</div>' +
-				  '</div>'
-			);
-
-		FIELD.setObjectTypeFilter(plugin.objectTypeFilter);
 	}
 
 	/**
@@ -243,8 +184,6 @@ define([
 
 	/**
 	 * Registers event handlers for the given plugin instance.
-	 *
-	 * Assumes `FIELD` is initialized.
 	 *
 	 * @param {Plugin} plugin Instance of wai-lang plugin.
 	 */
@@ -286,36 +225,25 @@ define([
 			delete configurations[message.editable.getId()];
 		});
 
-		Aloha.bind(
-			'aloha-selection-changed',
-			function onSelectionChanged($event, range) {
+		PubSub.sub(
+			'aloha.selection.context-change',
+			// 'aloha-selection-changed',
+			function onSelectionChanged(message) {
+				var range = message.range;
 				var markup = findWaiLangMarkup(range);
-				if (markup) {
-					plugin._wailangButton.setState(true);
-					//IE9 Fix, "lang" value not in dom attributes,
-					//use "xml:lang" instead
-					FIELD.setTargetObject(markup, isIE9 ? 'xml:lang' : 'lang');
 
-					FIELD.show();
-					removeButton.show();
+				if (markup) {
+					plugin._wailangButton.setActive(true);
+					plugin._wailangButton.activateInput(true);
+					plugin._wailangButton.updateTargetElement(markup);
 					Scopes.enterScope(plugin.name, 'wai-lang');
 				} else {
-					plugin._wailangButton.setState(false);
-					FIELD.setTargetObject(null);
-					FIELD.hide();
-					removeButton.hide();
+					plugin._wailangButton.setActive(false);
+					plugin._wailangButton.deactivateInput();
 					Scopes.leaveScope(plugin.name, 'wai-lang', true);
 				}
 			}
 		);
-
-		FIELD.addListener('blur', function onFieldBlur() {
-			// @TODO Validate value to not permit values outside the set of
-			//       configured language codes
-			if (!this.getValue()) {
-				removeMarkup(Selection.getRangeObject());
-			}
-		});
 	}
 
 	return Plugin.create('wai-lang', {
@@ -371,7 +299,7 @@ define([
 			this.flags = isTrue(this.settings.flags);
 			prepareUi(this);
 			subscribeEvents(this);
-			
+
 			var repo = new LanguageRepository(
 				'wai-languages',
 				this.flags,
@@ -382,36 +310,21 @@ define([
 		},
 
 		/**
-		 * Toggle language annotation on the current selection, or if collapsed,
-		 * the current word.
-		 */
-		formatLanguageSpan: toggleAnnotation,
-
-		/**
 		 * Makes the given editable DOM element clean for export.  Find all
 		 * elements with lang attributes and remove the attribute.
 		 *
 		 * It also removes data attributes attached by the repository manager.
-		 * It adds a xml:lang attribute with the value of the lang attribute.
 		 *
 		 * @param {jQuery<HTMLElement>} $element jQuery unit set containing
 		 *                                       element to clean up.
 		 */
 		makeClean: function makeClean($element) {
-			//IE9 Fix, "lang" value not in dom attributes,
-			//use "xml:lang" instead
-			$element.find(isIE9 ? 'span[xml\\:lang]' : 'span[lang]')
+			$element.find('span[lang]')
 				.each(function onEachLangSpan() {
 					var $span = $(this);
 					$span.removeClass(WAI_LANG_CLASS)
 					     .removeAttr('data-gentics-aloha-repository')
 					     .removeAttr('data-gentics-aloha-object-id');
-					if (isIE9) {
-						$span.attr('lang', $span.attr('xml:lang'));
-						$span.lang = $span.attr('xml:lang');
-					} else {
-						$span.attr('xml:lang', $span.attr('lang'));
-					}
 				});
 		}
 

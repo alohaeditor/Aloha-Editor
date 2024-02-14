@@ -146,7 +146,7 @@ define([
         ABBREVIATION: 'book',
         CODE: 'code',
         CLEAR: 'format_clear',
-    
+
         TYPOGRAPHY: 'format_size',
         PARAGRAPH: 'format_paragraph',
         HEADER_1: 'format_h1',
@@ -156,11 +156,13 @@ define([
         HEADER_5: 'format_h5',
         HEADER_6: 'format_h6',
         PRE_FORMATTED: 'segment',
-    
+
+        LANGUAGE: 'language',
+
         LINK: 'link',
         UNLINK: 'link_off',
         ANCHOR: 'anchor',
-    
+
         ALIGN_LEFT: 'format_align_left',
         ALIGN_CENTER: 'format_align_center',
         ALIGN_RIGHT: 'format_align_right',
@@ -179,13 +181,13 @@ define([
         TABLE_ADD_ROW_AFTER: 'splitscreen_bottom',
         TABLE_DELETE_ROWS: 'delete',
         TABLE_ROW_HEADER: 'leaderboard',
-    
+
         TOGGLE_DRAG_AND_DROP: 'drag_pan',
         TREE: 'account_tree',
-    
+
         INDENT: 'format_indent_increase',
         OUTDENT: 'format_indent_decrease',
-    
+
         CHARACTER_PICKER: 'special_character',
         TEXT_COLOR: 'format_color_text',
         BACKGROUND_COLOR: 'format_color_fill',
