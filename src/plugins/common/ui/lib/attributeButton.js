@@ -15,7 +15,7 @@ define([
         type: 'attribute-button',
 
         targetElement: null,
-        targetAttribute: '',        
+        targetAttribute: '',
         inputLabel: '',
         panelLabel: '',
         panelActiveOn: null,
@@ -117,11 +117,14 @@ define([
 
             if (this.panelInputElement) {
                 this.panelInputElement.val(this.getValue() || '');
-            }         
+            }
         },
-        activateInput: function() {
+        activateInput: function(openSidebar) {
             this.inputActive = true;
             if (this.panelRef) {
+                if (openSidebar) {
+                    Aloha.Sidebar.right.open();
+                }
                 this.panelRef.activate();
             }
         },

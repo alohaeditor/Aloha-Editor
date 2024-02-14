@@ -1,8 +1,8 @@
 /* abbr-plugin.js is part of the Aloha Editor project http://aloha-editor.org
  *
- * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://aloha-editor.org/contribution.php 
+ * Contributors http://aloha-editor.org/contribution.php
  * License http://aloha-editor.org/license.php
  */
 define([
@@ -12,12 +12,10 @@ define([
 	'aloha/plugin',
 	'aloha/content-rules',
 	'ui/ui',
-	'ui/toggleButton',
-	'ui/button',
+	'ui/icons',
+	'ui/attributeToggleButton',
 	'ui/scopes',
-	'ui/port-helper-attribute-field',
 	'i18n!abbr/nls/i18n',
-	'i18n!aloha/nls/i18n'
 ], function (
 	Aloha,
 	jQuery,
@@ -25,12 +23,10 @@ define([
 	Plugin,
 	ContentRules,
 	Ui,
-	ToggleButton,
-	Button,
+	Icons,
+	AttributeToggleButton,
 	Scopes,
-	AttributeField,
-	i18n,
-	i18nCore
+	i18n
 ) {
 	'use strict';
 
@@ -65,47 +61,27 @@ define([
 
 			if (!configurations[Aloha.activeEditable.getId()]) {
 				plugin._formatAbbrButton.hide();
-				plugin._insertAbbrButton.hide();
 				return;
 			}
 
 			plugin._formatAbbrButton.show();
-			plugin._insertAbbrButton.show();
 
 			var range = message.range;
 			var foundMarkup = plugin.findAbbrMarkup(range);
 
 			if (foundMarkup) {
-				plugin.abbrField.show();
-				plugin.remAbbrButton.show();
-				plugin.abbrField.setTargetObject(foundMarkup, 'title');
-				plugin._formatAbbrButton.setState(true);
-				plugin._insertAbbrButton.hide();
-				addAdditionalTargetObject(range, plugin.abbrField);
+				plugin._formatAbbrButton.setActive(true);
+				plugin._formatAbbrButton.activateInput(true);
+				plugin._formatAbbrButton.updateTargetElement(foundMarkup);
 				Scopes.enterScope(plugin.name, 'abbr');
 			} else {
-				plugin.abbrField.hide();
-				plugin.remAbbrButton.hide();
-				plugin.abbrField.setTargetObject(null);
-				plugin._formatAbbrButton.setState(false);
+				plugin._formatAbbrButton.setActive(false);
+				plugin._formatAbbrButton.deactivateInput();
 				Scopes.leaveScope(plugin.name, 'abbr', true);
 			}
 		});
 	}
 
-	/**
-	 * Add additional target objects, in case the selection includes several
-	 * abbrs tag.
-	 *
-	 * @param {RangeObject} rangeObject Selection Range
-	 * @param {LinkPlugin} that Link Plugin object
-	 */
-	function addAdditionalTargetObject(rangeObject, field) {
-		var abbrs = rangeObject.findAllMarkupByTagName('ABBR', rangeObject);
-		for (var i = 0, len = abbrs.length; i < len; i++) {
-			field.addAdditionalTargetObject(abbrs[i]);
-		}
-	}
 	/**
 	 * register the plugin with unique name
 	 */
@@ -128,35 +104,24 @@ define([
 		 * Initialize the buttons
 		 */
 		createButtons: function () {
-		    var me = this;
+		    var that = this;
 
-			this._formatAbbrButton = Ui.adopt("formatAbbr", ToggleButton, {
+			this._formatAbbrButton = Ui.adopt("formatAbbr", AttributeToggleButton, {
 				tooltip: i18n.t("button.abbr.tooltip"),
-				icon: "aloha-icon aloha-icon-abbr",
-				click: function () {
-					me.formatAbbr();
-				}
-			});
-
-			this._insertAbbrButton = Ui.adopt("insertAbbr", Button, {
-				tooltip: i18n.t('button.addabbr.tooltip'),
-				icon: 'aloha-icon aloha-icon-abbr',
-				click: function () {
-					me.insertAbbr(false);
-				}
-			});
-
-			this.abbrField = new AttributeField({
-				width: 320,
-				name: 'abbrText',
-			});
-
-			this.remAbbrButton = Ui.adopt("removeAbbr", Button, {
-				tooltip: i18n.t('button.remabbr.tooltip'),
-				icon: 'aloha-icon aloha-icon-abbr-rem',
-				click: function () {
-					me.removeAbbr();
-				}
+				icon: Icons.MAPPING.ABBREVIATION,
+				targetAttribute: 'title',
+				inputLabel: 'Title',
+				panelLabel: 'Abbreviation',
+				pure: true,
+				onToggle: function (activated) {
+					if (activated) {
+						that.insertAbbr(true);
+						that._formatAbbrButton.setActive(true);
+					} else {
+						that.removeAbbr();
+						that._formatAbbrButton.setActive(false);
+					}
+				},
 			});
 		},
 
@@ -165,32 +130,25 @@ define([
 		 * Add the abbr shortcut to all edtiables
 		 */
 		bindInteractions: function () {
-			var me = this;
-			
-			// on blur check if abbr title is empty. If so remove the a tag
-			this.abbrField.addListener('blur', function (obj, event) {
-				if (this.getValue() == '') {
-					me.removeAbbr();
-				}
-			});
+			var that = this;
+
 
 			// add to all editables the abbr shortcut
 			for (var i = 0; i < Aloha.editables.length; i++) {
 				// CTRL+G
 				Aloha.editables[i].obj.keydown(function (e) {
 					if (e.metaKey && e.which == 71) {
-						if (me.findAbbrMarkup()) {
-							me.abbrField.foreground();
-							me.abbrField.focus();
+						if (that.findAbbrMarkup()) {
+							that.removeAbbr();
 						} else {
-							me.insertAbbr();
+							that.insertAbbr();
 						}
 
 						// prevent from further handling
 						// on a MAC Safari cursor would jump to location bar. Use ESC then META+L
 						e.stopPropagation();
 						e.preventDefault();
-						
+
 						return false;
 					}
 				});
@@ -218,22 +176,6 @@ define([
 		},
 
 		/**
-		 * Format the current selection or if collapsed the current word as abbr.
-		 * If inside a abbr tag the abbr is removed.
-		 */
-		formatAbbr: function () {
-			var range = Aloha.Selection.getRangeObject();
-
-			if (Aloha.activeEditable) {
-				if (this.findAbbrMarkup(range)) {
-		            this.removeAbbr();
-		        } else {
-		            this.insertAbbr();
-		        }
-		    }
-		},
-
-		/**
 		 * Insert a new abbr at the current selection. When the selection is collapsed,
 		 * the abbr will have a default abbr text, otherwise the selected text will be
 		 * the abbr text.
@@ -251,7 +193,7 @@ define([
 			if (range.isCollapsed() && extendToWord != false) {
 				GENTICS.Utils.Dom.extendToWord(range);
 			}
-			
+
 			if (range.isCollapsed()) {
 		        // insert a abbr with text here
 		        var abbrText = i18n.t('newabbr.defaulttext');
@@ -264,11 +206,8 @@ define([
 				var newAbbr = jQuery('<abbr title=""></abbr>');
 		        GENTICS.Utils.Dom.addMarkup(range, newAbbr, false);
 		    }
-			
-		    range.select();
 
-			this.abbrField.foreground();
-			this.abbrField.focus();
+		    range.select();
 		},
 
 		/**
@@ -304,5 +243,5 @@ define([
 		}
 
 	});
-	
+
 });

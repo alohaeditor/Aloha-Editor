@@ -27,9 +27,9 @@ define([
         },
         _handleActiveState: function() {
             if (this.active) {
-                this.element.addClass(CLASS_ACTIVE);
+                this._$buttonElement.addClass(CLASS_ACTIVE);
             } else {
-                this.element.removeClass(CLASS_ACTIVE);    
+                this._$buttonElement.removeClass(CLASS_ACTIVE);
             }
         },
 
