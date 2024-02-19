@@ -175,10 +175,13 @@ define('ui/ui-plugin', [
 		activeSurface = surface;
 
 		// Hide and show the toolbar if it is being de-/activated
-		if (oldSurface === toolbar) {
-			toolbar.hide();
-		} else if (surface === toolbar) {
-			toolbar.show();
+		if (oldSurface != null) {
+			oldSurface.disable();
+			oldSurface.hide();
+		}
+		if (activeSurface != null) {
+			activeSurface.enable();
+			activeSurface.show();
 		}
 
 		if (replayAdoption || removeFromOld) {

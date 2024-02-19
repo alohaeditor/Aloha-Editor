@@ -97,7 +97,7 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 	 *         parent.
 	 */
 	function getIndexInParent(node) {
-		if (!node) {
+		if (!node || !node.parentNode) {
 			return -1;
 		}
 

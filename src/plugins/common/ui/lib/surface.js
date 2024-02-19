@@ -24,6 +24,8 @@ define([
 	 * @base
 	 */
 	var Surface = Class.extend({
+		enabled: false,
+
 		_constructor: function (context) {
 			context.surfaces.push(this);
 		},
@@ -45,6 +47,13 @@ define([
 		 */
 		unadopt: function(slot) {
 			throw Error('Implement this function!');
+		},
+
+		enable: function() {
+			this.enabled = true;
+		},
+		disable: function() {
+			this.enabled = false
 		},
 
 		/**

@@ -128,6 +128,10 @@ define([
 		},
 
 		_setupTabs: function (initialSetup) {
+			if (this.disabled) {
+				return;
+			}
+
 			var _this = this;
 			var tmpSlots = {};
 
@@ -175,7 +179,7 @@ define([
 			// Create the tabs from the now active settings
 			(activeTabSettings.tabs || []).forEach(function(tabSettings) {
 				var tabInstance = new Tab(_this._context, {
-					label: i18n.t(tabSettings.label, tabSettings.label),
+					label: tabSettings.label,
 					showOn: tabSettings.showOn,
 					container: _this.$_container
 				}, tabSettings.components);
@@ -335,6 +339,10 @@ define([
 		 * Shows the toolbar.
 		 */
 		show: function () {
+			if (this.disabled) {
+				return;
+			}
+
 			Toolbar.$surfaceContainer.children().detach();
 			Toolbar.$surfaceContainer.append(this.$element);
 			Toolbar.$surfaceContainer.stop().fadeTo(200, 1);
@@ -377,6 +385,10 @@ define([
 		 * Sets the width of the toolbar to match the Editable. On small screens, full width is used.
 		 */
 		setWidth: function () {
+			if (this.disabled) {
+				return;
+			}
+
 			if (this._isResponsiveMode && Aloha.activeEditable) {
 				var windowMinWidth = 600;
 				var editableWidth = parseInt(Aloha.activeEditable.obj.css("width"));
@@ -389,6 +401,10 @@ define([
 		 * Recalculates the width and position of the toolbar. Should be called when the window is resized.
 		 */
 		reposition: function () {
+			if (this.disabled) {
+				return;
+			}
+
 			var toolbar = this;
 			if (toolbar._repositionTimeout) {
 				window.clearTimeout(toolbar._repositionTimeout);

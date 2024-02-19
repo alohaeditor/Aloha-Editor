@@ -93,13 +93,13 @@ define([
 
 	function setupMousePointerFix() {
 		jQuery(document).on('keydown.aloha-link.pointer-fix', function (e) {
-				// metaKey for OSX, 17 for PC (we can't check
-				// e.ctrlKey because it's only set on keyup or
-				// keypress, not on keydown).
-				if (e.metaKey || Keys.getToken(e.keyCode) === 'control') {
-					jQuery('body').addClass('aloha-link-pointer');
-				}
-			})
+			// metaKey for OSX, 17 for PC (we can't check
+			// e.ctrlKey because it's only set on keyup or
+			// keypress, not on keydown).
+			if (e.metaKey || Keys.getToken(e.keyCode) === 'control') {
+				jQuery('body').addClass('aloha-link-pointer');
+			}
+		})
 			.on('keyup.aloha-link.pointer-fix', function (e) {
 				if (e.metaKey || Keys.getToken(e.keyCode) === 'control') {
 					jQuery('body').removeClass('aloha-link-pointer');
@@ -112,7 +112,7 @@ define([
 	}
 
 	function setupMetaClickLink(editable) {
-		editable.obj.on('click.aloha-link.meta-click-link','a',  function (e) {
+		editable.obj.on('click.aloha-link.meta-click-link', 'a', function (e) {
 			// Use metaKey for OSX and ctrlKey for PC
 			if (e.metaKey || e.ctrlKey) {
 				// blur current editable. user is waiting for the link to load
@@ -163,11 +163,11 @@ define([
 
 	function createLinkTargetFromConfig(
 		config,
-        name,
-        applyChanges,
-        validateFn,
-        onChangeFn,
-        onTouchFn
+		name,
+		applyChanges,
+		validateFn,
+		onChangeFn,
+		onTouchFn
 	) {
 		var tmpOptions = config.options || {};
 		var component = Ui.adopt(name, LinkTarget, {
@@ -176,13 +176,13 @@ define([
 			anchorLabel: tmpOptions.anchorLabel,
 
 			changeNotify: function (value) {
-                applyChanges(value);
-                validateFn(value);
-                onChangeFn(value);
-            },
-            touchNotify: function () {
-                onTouchFn();
-            },
+				applyChanges(value);
+				validateFn(value);
+				onChangeFn(value);
+			},
+			touchNotify: function () {
+				onTouchFn();
+			},
 		});
 		return component;
 	}
@@ -191,7 +191,7 @@ define([
 		/**
 		 * Default configuration allows links everywhere
 		 */
-		config: [ 'a' ],
+		config: ['a'],
 
 		/**
 		 * the defined object types to be used for this instance
@@ -289,8 +289,8 @@ define([
 				var editable = message.editable;
 				var config = plugin.getEditableConfig(editable.obj);
 				var enabled = config
-				           && (jQuery.inArray('a', config) > -1)
-				           && ContentRules.isAllowed(editable.obj[0], 'a');
+					&& (jQuery.inArray('a', config) > -1)
+					&& ContentRules.isAllowed(editable.obj[0], 'a');
 
 				configurations[editable.getId()] = !!enabled;
 
@@ -308,7 +308,7 @@ define([
 						).then(function (control) {
 							return control.value;
 						}).then(function (formValue) {
-							that.upsertLink(formData);
+							that.upsertLink(existingLink, formData);
 						}).catch(function (error) {
 							if (error instanceof OverlayElement.OverlayCloseError && error.reason !== OverlayElement.ClosingReason.ERROR) {
 								console.log(error);
@@ -320,7 +320,7 @@ define([
 					return false;
 				});
 
-				editable.obj.find('a').each(function() {
+				editable.obj.find('a').each(function () {
 					plugin.addLinkEventHandlers(this);
 				});
 
@@ -345,10 +345,16 @@ define([
 				setupMetaClickLink(message.editable);
 			});
 
+			function updateLinkButtonState(activeStateOrRange) {
+				if (typeof activeStateOrRange !== 'boolean') {
+					activeStateOrRange = !!plugin.findLinkMarkup(activeStateOrRange);
+				}
+				plugin._insertLinkButton.setActive(activeStateOrRange);
+				plugin._insertLinkButton.setIcon(activeStateOrRange ? Icons.MAPPING.UNLINK : Icons.MAPPING.LINK);
+			}
+
 			PubSub.sub('aloha.selection.context-change', function (message) {
-				var active = plugin.findLinkMarkup(message.range);
-				plugin._insertLinkButton.setActive(active);
-				plugin._insertLinkButton.setIcon(active ? Icons.MAPPING.UNLINK : Icons.MAPPING.LINK)
+				updateLinkButtonState(message.range);
 
 				if (!Aloha.activeEditable) {
 					plugin.lastActiveLink = false;
@@ -362,6 +368,8 @@ define([
 			// the editable and thereby deactivates the editable, the link scope
 			// will remain active
 			PubSub.sub('aloha.editable.deactivated', function (message) {
+				updateLinkButtonState(false);
+
 				if (plugin.lastActiveLink !== false) {
 					// Leave the link scope lazily to avoid flickering when
 					// switching between anchor element editables
@@ -380,7 +388,7 @@ define([
 		 * lets you toggle the link scope to true or false
 		 * @param show bool
 		 */
-		toggleLinkScope: function ( show ) {
+		toggleLinkScope: function (show) {
 			// Check before doing anything as a performance improvement.
 			// The _isScopeActive_editableId check ensures that when
 			// changing from a normal link in an editable to an editable
@@ -399,7 +407,7 @@ define([
 				// decremented, which necessitates the force=true
 				// argument to leaveScope.
 				Scopes.leaveScope(this.name, 'link', true);
-			} else if ( show ) {
+			} else if (show) {
 				Scopes.enterScope(this.name, 'link');
 			}
 		},
@@ -408,37 +416,37 @@ define([
 		 * Add event handlers to the given link object
 		 * @param link object
 		 */
-		addLinkEventHandlers: function ( link ) {
+		addLinkEventHandlers: function (link) {
 			var that = this;
+			var $link = jQuery(link);
 
-			// show pointer on mouse over
-			jQuery( link ).mouseenter( function ( e ) {
-				Aloha.Log.debug( that, 'mouse over link.' );
-				that.mouseOverLink = link;
-				that.updateMousePointer();
-			} );
+			$link
+				// show pointer on mouse over
+				.mouseenter(function (e) {
+					Aloha.Log.debug(that, 'mouse over link.');
+					that.mouseOverLink = link;
+					that.updateMousePointer();
+				})
+				// in any case on leave show text cursor
+				.mouseleave(function (e) {
+					Aloha.Log.debug(that, 'mouse left link.');
+					that.mouseOverLink = null;
+					that.updateMousePointer();
+				})
+				// follow link on ctrl or meta + click
+				.click(function (e) {
+					if (e.metaKey) {
+						// blur current editable. user is waiting for the link to load
+						Aloha.activeEditable.blur();
+						// hack to guarantee a browser history entry
+						window.setTimeout(function () {
+							location.href = e.target;
+						}, 0);
+						e.stopPropagation();
 
-			// in any case on leave show text cursor
-			jQuery( link ).mouseleave( function ( e ) {
-				Aloha.Log.debug( that, 'mouse left link.' );
-				that.mouseOverLink = null;
-				that.updateMousePointer();
-			} );
-
-			// follow link on ctrl or meta + click
-			jQuery( link ).click( function ( e ) {
-				if ( e.metaKey ) {
-					// blur current editable. user is waiting for the link to load
-					Aloha.activeEditable.blur();
-					// hack to guarantee a browser history entry
-					window.setTimeout( function () {
-						location.href = e.target;
-					}, 0 );
-					e.stopPropagation();
-
-					return false;
-				}
-			} );
+						return false;
+					}
+				});
 		},
 
 		/**
@@ -503,12 +511,12 @@ define([
 		showLinkModal: function (existingLink) {
 			var that = this;
 
-			Modal.openDynamicModal(
+			return Modal.openDynamicModal(
 				that.createInsertLinkContext(existingLink)
 			).then(function (control) {
 				return control.value;
 			}).then(function (formData) {
-				that.upsertLink(formData);
+				that.upsertLink(existingLink, formData);
 			}).catch(function (error) {
 				if (error instanceof OverlayElement.OverlayCloseError && error.reason !== OverlayElement.ClosingReason.CANCEL) {
 					console.log(error);
@@ -548,29 +556,29 @@ define([
 		bindInteractions: function () {
 			var that = this;
 
-			jQuery( document )
-				.keydown( function ( e ) {
-					Aloha.Log.debug( that, 'Meta key down.' );
+			jQuery(document)
+				.keydown(function (e) {
+					Aloha.Log.debug(that, 'Meta key down.');
 					that.metaKey = e.metaKey;
 					that.updateMousePointer();
-				} ).keyup( function ( e ) {
-					Aloha.Log.debug( that, 'Meta key up.' );
+				}).keyup(function (e) {
+					Aloha.Log.debug(that, 'Meta key up.');
 					that.metaKey = e.metaKey;
 					that.updateMousePointer();
-				} );
+				});
 		},
 
 		/**
 		 * Updates the mouse pointer
 		 */
 		updateMousePointer: function () {
-			if ( this.metaKey && this.mouseOverLink ) {
-				Aloha.Log.debug( this, 'set pointer' );
-				jQuery( this.mouseOverLink ).removeClass( 'aloha-link-text' );
-				jQuery( this.mouseOverLink ).addClass( 'aloha-link-pointer' );
+			if (this.metaKey && this.mouseOverLink) {
+				Aloha.Log.debug(this, 'set pointer');
+				jQuery(this.mouseOverLink).removeClass('aloha-link-text');
+				jQuery(this.mouseOverLink).addClass('aloha-link-pointer');
 			} else {
-				jQuery( this.mouseOverLink ).removeClass( 'aloha-link-pointer' );
-				jQuery( this.mouseOverLink ).addClass( 'aloha-link-text' );
+				jQuery(this.mouseOverLink).removeClass('aloha-link-pointer');
+				jQuery(this.mouseOverLink).addClass('aloha-link-text');
 			}
 		},
 
@@ -581,23 +589,22 @@ define([
 		 * @return markup
 		 * @hide
 		 */
-		findLinkMarkup: function ( range ) {
-			if ( typeof range == 'undefined' ) {
+		findLinkMarkup: function (range) {
+			if (typeof range == 'undefined') {
 				range = Aloha.Selection.getRangeObject();
 			}
-			if ( Aloha.activeEditable ) {
-				// If the anchor element itself is the editable, we
-				// still want to show the link tab.
-				var limit = Aloha.activeEditable.obj;
-				if (limit[0] && limit[0].nodeName === 'A') {
-					limit = limit.parent();
-				}
-				return range.findMarkup(function () {
-					return this.nodeName == 'A';
-				}, limit);
-			} else {
+			if (!Aloha.activeEditable) {
 				return null;
 			}
+			// If the anchor element itself is the editable, we
+			// still want to show the link tab.
+			var limit = Aloha.activeEditable.obj;
+			if (limit[0] && limit[0].nodeName === 'A') {
+				limit = limit.parent();
+			}
+			return range.findMarkup(function (node) {
+				return node != null && node.nodeName == 'A';
+			}, limit);
 		},
 
 		/**
@@ -606,8 +613,8 @@ define([
 		 * @return {Array} markup An array containing all found link markup
 		 * @hide
 		 */
-		findAllLinkMarkup: function ( range ) {
-			if ( typeof range == 'undefined' ) {
+		findAllLinkMarkup: function (range) {
+			if (typeof range == 'undefined') {
 				range = Aloha.Selection.getRangeObject();
 			}
 
@@ -619,35 +626,35 @@ define([
 
 			markup = this.findLinkMarkup(range);
 
-			return markup ? [ markup ] : [];
+			return markup ? [markup] : [];
 		},
 
 		/**
 		 * Format the current selection or if collapsed the current word as
 		 * link. If inside a link tag the link is removed.
 		 */
-		upsertLink: function (linkData) {
-			if ( Aloha.activeEditable ) {
-				let existingLink = this.findLinkMarkup(Aloha.Selection.getRangeObject());
-
-				if (existingLink) {
-					let href = linkData.url.target;
-
-					if (linkData.url.anchor) {
-						href += "#" + linkData.url.anchor;
-					}
-
-					existingLink.setAttribute('href', href);
-
-					if (linkData.newTab) {
-						existingLink.setAttribute('target', '_blank');
-					} else {
-						existingLink.removeAttribute('target');
-					}
-				} else {
+		upsertLink: function (linkElement, linkData) {
+			if (!linkElement) {
+				if (Aloha.activeEditable) {
 					this.insertLink(true, linkData);
 				}
+				return;
 			}
+
+			let href = linkData.url.target;
+
+			if (linkData.url.anchor) {
+				href += "#" + linkData.url.anchor;
+			}
+
+			linkElement.setAttribute('href', href);
+
+			if (linkData.newTab) {
+				linkElement.setAttribute('target', '_blank');
+			} else {
+				linkElement.removeAttribute('target');
+			}
+			this.hrefChange();
 		},
 
 		/**
@@ -655,26 +662,26 @@ define([
 		 * collapsed, the link will have a default link text, otherwise the
 		 * selected text will be the link text.
 		 */
-		insertLink: function ( extendToWord, linkData ) {
+		insertLink: function (extendToWord, linkData) {
 			var that = this,
-			    range = Aloha.Selection.getRangeObject(),
-			    linkText,
-			    newLink;
+				range = Aloha.Selection.getRangeObject(),
+				linkText,
+				newLink;
 
 			// There are occasions where we do not get a valid range, in such
 			// cases we should not try and add a link
-			if ( !( range.startContainer && range.endContainer ) ) {
+			if (!(range.startContainer && range.endContainer)) {
 				return;
 			}
 
 			// do not nest a link inside a link
-			if ( this.findLinkMarkup( range ) ) {
+			if (this.findLinkMarkup(range)) {
 				return;
 			}
 
 			// if selection is collapsed then extend to the word.
-			if ( range.isCollapsed() && extendToWord !== false ) {
-				Dom.extendToWord( range );
+			if (range.isCollapsed() && extendToWord !== false) {
+				Dom.extendToWord(range);
 			}
 
 			let href = linkData.url.target;
@@ -685,24 +692,24 @@ define([
 
 			let target = linkData.newTab ? '" target="_blank' : '';
 
-			if ( range.isCollapsed() ) {
+			if (range.isCollapsed()) {
 				// insert a link with text here
-				linkText = i18n.t( 'newlink.defaulttext' );
-				newLink = jQuery( '<a href="' + href + target + '" class="aloha-new-link">' + linkText + '</a>' );
-				Dom.insertIntoDOM( newLink, range, jQuery( Aloha.activeEditable.obj ) );
-				range.startContainer = range.endContainer = newLink.contents().get( 0 );
+				linkText = i18n.t('newlink.defaulttext');
+				newLink = jQuery('<a href="' + href + target + '" class="aloha-new-link">' + linkText + '</a>');
+				Dom.insertIntoDOM(newLink, range, jQuery(Aloha.activeEditable.obj));
+				range.startContainer = range.endContainer = newLink.contents().get(0);
 				range.startOffset = 0;
 				range.endOffset = linkText.length;
 			} else {
-				newLink = jQuery( '<a href="' + href + target + '" class="aloha-new-link"></a>' );
-				Dom.addMarkup( range, newLink, false );
+				newLink = jQuery('<a href="' + href + target + '" class="aloha-new-link"></a>');
+				Dom.addMarkup(range, newLink, false);
 				Dom.doCleanup(insertLinkPostCleanup, range);
 			}
 
-			Aloha.activeEditable.obj.find( 'a.aloha-new-link' ).each( function ( i ) {
-				that.addLinkEventHandlers( this );
-				jQuery(this).removeClass( 'aloha-new-link' );
-			} );
+			Aloha.activeEditable.obj.find('a.aloha-new-link').each(function (i) {
+				that.addLinkEventHandlers(this);
+				jQuery(this).removeClass('aloha-new-link');
+			});
 
 			range.select();
 
@@ -712,24 +719,25 @@ define([
 			apiRange.setStart(range.startContainer, range.startOffset);
 			apiRange.setEnd(range.endContainer, range.endOffset);
 
-			PubSub.pub('aloha.link.insert', {range: apiRange});
+			PubSub.pub('aloha.link.insert', { range: apiRange });
 			this.hrefChange();
 		},
 
 		/**
 		 * Remove an a tag and clear
 		 */
-		removeLink: function ( terminateLinkScope ) {
-			var	range = Aloha.Selection.getRangeObject(),
-				foundMarkup = this.findAllLinkMarkup();
-			var linkText;
-			var that = this;
-			var maxIdx = foundMarkup.length - 1;
+		removeLink: function (terminateLinkScope, linkToRemove) {
+			var range = Aloha.Selection.getRangeObject();
+			var foundMarkup = this.findAllLinkMarkup();
 
-			$.each(foundMarkup, function (idx, link) {
-				linkText = jQuery(link).text();
+			if (linkToRemove != null) {
+				foundMarkup.push(linkToRemove);
+			}
+
+			foundMarkup.forEach(function (link) {
+				var linkText = jQuery(link).text();
 				// remove the link
-				Dom.removeFromDOM( link, range, true );
+				Dom.removeFromDOM(link, range, true);
 
 				range.startContainer = range.endContainer;
 				range.startOffset = range.endOffset;
@@ -737,8 +745,8 @@ define([
 				// select the (possibly modified) range
 				range.select();
 
-				if ( typeof terminateLinkScope == 'undefined' ||
-						terminateLinkScope === true ) {
+				if (typeof terminateLinkScope == 'undefined' ||
+					terminateLinkScope === true) {
 					Scopes.setScope('Aloha.continuoustext');
 				}
 
@@ -769,15 +777,14 @@ define([
 			let pubPayload = {
 				href: href,
 				element: linkObj,
-				input: null
 			};
 
 			Aloha.trigger('aloha-link-href-change', signalPayload);
 			PubSub.pub('aloha.link.changed', pubPayload);
 
-			if ( typeof this.onHrefChange == 'function' ) {
-				this.onHrefChange.call(this, linkObj, href, null);
+			if (typeof this.onHrefChange == 'function') {
+				this.onHrefChange.call(this, linkObj, href);
 			}
 		}
 	});
-} );
+});

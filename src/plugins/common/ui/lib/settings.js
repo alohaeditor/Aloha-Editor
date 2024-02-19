@@ -1,11 +1,13 @@
 define([
 	'jquery',
 	'util/maps',
-	'util/trees'
+	'util/trees',
+	'i18n!ui/nls/i18n'
 ], function (
 	$,
 	Maps,
-	Trees
+	Trees,
+	i18n
 ) {
 	'use strict';
 
@@ -139,13 +141,13 @@ define([
 
 	var defaultToolbarSettings = {
 		mobile: {
-			tabs: _defaultTabs,
+			tabs: [],
 		},
 		tablet: {
-			tabs: _defaultTabs,
+			tabs: [],
 		},
 		desktop: {
-			tabs: _defaultTabs,
+			tabs: [],
 		},
 	};
 
@@ -195,7 +197,10 @@ define([
 			userTabs[key] = mergeDefaultComponents(userTabs[key], defaultTabsByLabel, pruneDefaultComponents);
 			defaultTabs[key] = remainingDefaultTabs(defaultTabs[key], exclusionLookup, pruneDefaultComponents);
 
-			returnSettings[key].tabs = userTabs[key].concat(defaultTabs[key]);
+			returnSettings[key].tabs = userTabs[key].concat(defaultTabs[key]).map(function(tab) {
+				tab.label = i18n.t(tab.label, tab.label);
+				return tab;
+			});
 		}
 
 		return returnSettings;
