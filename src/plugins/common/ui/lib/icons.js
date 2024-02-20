@@ -159,6 +159,8 @@ define([
 
         LANGUAGE: 'language',
 
+        QUOTE: 'format_quote',
+
         LINK: 'link',
         UNLINK: 'link_off',
         ANCHOR: 'anchor',
