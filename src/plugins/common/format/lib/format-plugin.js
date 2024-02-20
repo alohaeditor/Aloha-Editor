@@ -640,6 +640,7 @@ define('format/format-plugin', [
 			'h5': Icons.MAPPING.HEADER_5,
 			'h6': Icons.MAPPING.HEADER_6,
 			'pre': Icons.MAPPING.PRE_FORMATTED,
+			'blockquote': Icons.MAPPING.QUOTE,
 		},
 
 		FORMATTING_ICONS: {
