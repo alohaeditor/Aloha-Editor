@@ -141,13 +141,13 @@ define([
 
 	var defaultToolbarSettings = {
 		mobile: {
-			tabs: [],
+			tabs: _defaultTabs,
 		},
 		tablet: {
-			tabs: [],
+			tabs: _defaultTabs,
 		},
 		desktop: {
-			tabs: [],
+			tabs: _defaultTabs,
 		},
 	};
 

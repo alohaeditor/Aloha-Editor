@@ -24,7 +24,7 @@ define([
 	 * @base
 	 */
 	var Surface = Class.extend({
-		enabled: false,
+		enabled: true,
 
 		_constructor: function (context) {
 			context.surfaces.push(this);

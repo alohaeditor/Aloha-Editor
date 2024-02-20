@@ -128,7 +128,7 @@ define([
 		},
 
 		_setupTabs: function (initialSetup) {
-			if (this.disabled) {
+			if (!this.enabled) {
 				return;
 			}
 
@@ -342,7 +342,7 @@ define([
 		 * Shows the toolbar.
 		 */
 		show: function () {
-			if (this.disabled) {
+			if (!this.enabled) {
 				return;
 			}
 
@@ -388,7 +388,7 @@ define([
 		 * Sets the width of the toolbar to match the Editable. On small screens, full width is used.
 		 */
 		setWidth: function () {
-			if (this.disabled) {
+			if (!this.enabled) {
 				return;
 			}
 
@@ -404,7 +404,7 @@ define([
 		 * Recalculates the width and position of the toolbar. Should be called when the window is resized.
 		 */
 		reposition: function () {
-			if (this.disabled) {
+			if (!this.enabled) {
 				return;
 			}
 
