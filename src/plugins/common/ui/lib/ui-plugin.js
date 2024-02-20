@@ -121,7 +121,7 @@ define('ui/ui-plugin', [
 
 	/* TODO: Check if this can be removed. Already defined in `toolbar.js` as well. */
 	function primaryScopeForegroundTab() {
-		if (!toolbar.active) {
+		if (!toolbar.enabled) {
 			return;
 		}
 

@@ -92,6 +92,10 @@ define([
 		return hasDiff;
 	}
 
+	PubSub.sub('aloha.editable.activated', function() {
+		Scopes.enterScope(SCOPE_CONTINUOUS_TEXT);
+	});
+
 	/**
 	 * Utility yo manage the scope/functionality/visibility of UI Elements.
 	 * A scope is simply a namespace, to determine where the selection/interaction
@@ -188,9 +192,7 @@ define([
 			});
 
 			return out;
-		},
-
-		
+		},		
 
 		/**
 	 	 * Helper function which does diff check and triggers the proper event.

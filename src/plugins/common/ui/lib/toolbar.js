@@ -221,7 +221,7 @@ define([
 		},
 
 		_tabScopeActive: function() {
-			if (!this.active) {
+			if (!this.enabled) {
 				return;
 			}
 
