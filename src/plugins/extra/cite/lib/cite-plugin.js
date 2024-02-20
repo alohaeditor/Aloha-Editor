@@ -433,7 +433,7 @@ define([
 						plugin.removeCiteButton.show();
 
 						updateCiteInputs(plugin);
-						Scopes.enterScope(plugin.name, 'cite');
+						Scopes.enterScope(plugin.name);
 
 						plugin.citeHrefField.foreground();
 					} else {
@@ -441,7 +441,7 @@ define([
 						plugin.removeCiteButton.hide();
 						plugin.removeCiteButton.setState(false);
 
-						Scopes.leaveScope(plugin.name, 'cite', true);
+						Scopes.leaveScope(plugin.name);
 					}
 				}
 

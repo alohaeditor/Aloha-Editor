@@ -217,19 +217,22 @@ define([
 				});
 			}
 
-			this._primaryScopeForegroundTab();
+			this._tabScopeActive();
 		},
 
-		_primaryScopeForegroundTab: function() {
-			var primaryScope = Scopes.getPrimaryScope(),
-				settings,
+		_tabScopeActive: function() {
+			if (!this.active) {
+				return;
+			}
+
+			var settings,
 				i;
 
 			for (i = 0; i < this._tabs.length; i++) {
 				settings = this._tabs[i].settings;
 				if (
 					'object' === $.type(settings.showOn)
-					&& settings.showOn.scope === primaryScope
+					&& Scopes.isActiveScope(settings.showOn.scope)
 					&& this._tabs[i].tab.hasVisibleComponents()
 				) {
 					this._tabs[i].tab.foreground();

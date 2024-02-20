@@ -29,6 +29,7 @@ define([
 	'aloha/core',
 	'aloha/plugin',
 	'ui/ui',
+	'ui/icons',
 	'ui/toggleButton',
 	'i18n!metaview/nls/i18n',
 	'i18n!aloha/nls/i18n'
@@ -37,6 +38,7 @@ define([
 	Aloha,
 	Plugin,
 	Ui,
+	Icons,
 	ToggleButton,
 	i18n
 ) {
@@ -105,7 +107,7 @@ define([
 	 */
 	var METAVIEW_TOGGLE_BUTTON = Ui.adopt('toggleMetaView', ToggleButton, {
 		tooltip : i18n.t('button.switch-metaview.tooltip'),
-		icon: 'aloha-icon aloha-icon-metaview',
+		icon: Icons.MAPPING.META_VIEW,
 		click: function () {
 			toggle(Aloha.activeEditable.obj, this);
 		}

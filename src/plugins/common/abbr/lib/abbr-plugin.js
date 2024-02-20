@@ -73,11 +73,11 @@ define([
 				plugin._formatAbbrButton.setActive(true);
 				plugin._formatAbbrButton.activateInput(true);
 				plugin._formatAbbrButton.updateTargetElement(foundMarkup);
-				Scopes.enterScope(plugin.name, 'abbr');
+				Scopes.enterScope(plugin.name);
 			} else {
 				plugin._formatAbbrButton.setActive(false);
 				plugin._formatAbbrButton.deactivateInput();
-				Scopes.leaveScope(plugin.name, 'abbr', true);
+				Scopes.leaveScope(plugin.name);
 			}
 		});
 	}

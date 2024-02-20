@@ -2,8 +2,8 @@ define([
 	'aloha',
 	'jquery',
 	'aloha/plugin',
-	'aloha/pluginmanager',
 	'ui/ui',
+	'ui/icons',
 	'ui/button',
 	'link/link-plugin',
 	'RepositoryBrowser',
@@ -13,8 +13,8 @@ define([
 	Aloha,
 	jQuery,
 	Plugin,
-	PluginManager,
 	Ui,
+	Icons,
 	Button,
 	Links,
 	RepositoryBrowser,
@@ -44,7 +44,7 @@ define([
 
 			this._linkBrowserButton = Ui.adopt('linkBrowser', Button, {
 				tooltip: i18n.t('button.addlink.tooltip'),
-				icon: 'aloha-icon-tree',
+				icon: Icons.MAPPING.TREE,
 				click: function () {
 					that.show();
 				}

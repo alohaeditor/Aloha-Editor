@@ -75,7 +75,7 @@ define('ui/ui-plugin', [
 
 	PubSub.sub('aloha.ui.scope.change', function () {
 		Container.showContainersForContext(context);
-		primaryScopeForegroundTab(Scopes.getPrimaryScope());
+		primaryScopeForegroundTab();
 	});
 
 	function getToolbarSettings() {
@@ -119,14 +119,18 @@ define('ui/ui-plugin', [
 		return false;
 	}
 
+	/* TODO: Check if this can be removed. Already defined in `toolbar.js` as well. */
 	function primaryScopeForegroundTab() {
+		if (!toolbar.active) {
+			return;
+		}
+
 		var tabs = toolbar._tabs,
-		    primaryScope = Scopes.getPrimaryScope(),
 		    settings,
 		    i;
 		for (i = 0; i < tabs.length; i++) {
 			settings = tabs[i].settings;
-			if ('object' === $.type(settings.showOn) && settings.showOn.scope === primaryScope && tabs[i].tab.hasVisibleComponents()) {
+			if ('object' === $.type(settings.showOn) && Scopes.isActiveScope(settings.showOn.scope) && tabs[i].tab.hasVisibleComponents()) {
 				tabs[i].tab.foreground();
 				break;
 			}

@@ -13,6 +13,7 @@ define([
 	'aloha/pluginmanager',
 	'aloha/content-rules',
 	'ui/ui',
+	'ui/icons',
 	'ui/scopes',
 	'ui/button',
 	'ui/contextButton',
@@ -38,6 +39,7 @@ define([
 	PluginManager,
 	ContentRules,
 	Ui,
+	Icons,
 	Scopes,
 	Button,
 	ContextButton,
@@ -489,7 +491,7 @@ define([
 				// Make sure the table tabs in the toolbar are hidden, since
 				// we no longer have an active table.
 				TablePlugin.leaveTableScopes();
-				Scopes.setScope('Aloha.continuoustext');
+				Scopes.leaveScope(TablePlugin.name);
 			});
 
 			editable.obj.find('table').each(function (index, elem) {
@@ -770,7 +772,7 @@ define([
 
 		this._mergecellsButton = Ui.adopt("mergecells", Button, {
 			tooltip: i18n.t("button.mergecells.tooltip"),
-			icon: "aloha-icon aloha-icon-mergecells",
+			icon: Icons.MAPPING.TABLE_MERGE_CELLS,
 			click: function() {
 				if (TablePlugin.activeTable) {
 					TablePlugin.activeTable.selection.mergeCells();
@@ -780,7 +782,7 @@ define([
 
 		this._splitcellsButton = Ui.adopt("splitcells", Button, {
 			tooltip: i18n.t("button.splitcells.tooltip"),
-			icon: "aloha-icon aloha-icon-splitcells",
+			icon: Icons.MAPPING.TABLE_SPLIT_CELLS,
 			click: function() {
 				var activeCell;
 				if (TablePlugin.activeTable) {
@@ -805,7 +807,7 @@ define([
 
 		this._mergecellsRowButton = Ui.adopt("mergecellsRow", Button, {
 			tooltip: i18n.t("button.mergecells.tooltip"),
-			icon: "aloha-icon aloha-icon-mergecells",
+			icon: Icons.MAPPING.TABLE_MERGE_CELLS,
 			click: function() {
 				if (TablePlugin.activeTable) {
 					TablePlugin.activeTable.selection.mergeCells();
@@ -815,7 +817,7 @@ define([
 
 		this._splitcellsRowButton = Ui.adopt("splitcellsRow", Button, {
 			tooltip: i18n.t("button.splitcells.tooltip"),
-			icon: "aloha-icon aloha-icon-splitcells",
+			icon: Icons.MAPPING.TABLE_SPLIT_CELLS,
 			click: function() {
 				if (TablePlugin.activeTable) {
 					TablePlugin.activeTable.selection.splitCells();
@@ -825,7 +827,7 @@ define([
 
 		this._mergecellsColumnButton = Ui.adopt("mergecellsColumn", Button, {
 			tooltip: i18n.t("button.mergecells.tooltip"),
-			icon: "aloha-icon aloha-icon-mergecells",
+			icon: Icons.MAPPING.TABLE_MERGE_CELLS,
 			click: function() {
 				if (TablePlugin.activeTable) {
 					TablePlugin.activeTable.selection.mergeCells();
@@ -835,7 +837,7 @@ define([
 
 		this._splitcellsColumnButton = Ui.adopt("splitcellsColumn", Button, {
 			tooltip: i18n.t("button.splitcells.tooltip"),
-			icon: "aloha-icon aloha-icon-splitcells",
+			icon: Icons.MAPPING.TABLE_SPLIT_CELLS,
 			click: function() {
 				if (TablePlugin.activeTable) {
 					TablePlugin.activeTable.selection.splitCells();
@@ -876,7 +878,7 @@ define([
 
 		this._addrowbeforeButton = Ui.adopt("addrowbefore", Button, {
 			tooltip: i18n.t( "button.addrowbefore.tooltip"),
-			icon: "aloha-icon aloha-icon-addrowbefore",
+			icon: Icons.MAPPING.TABLE_ADD_ROW_BEFORE,
 			click: function() {
 				if (that.activeTable) {
 					that.activeTable.addRowBeforeSelection();
@@ -886,7 +888,7 @@ define([
 
 		this._addrowafterButton = Ui.adopt("addrowafter", Button, {
 			tooltip: i18n.t("button.addrowafter.tooltip"),
-			icon: "aloha-icon aloha-icon-addrowafter",
+			icon: Icons.MAPPING.TABLE_ADD_ROW_AFTER,
 			click: function() {
 				if (that.activeTable) {
 					that.activeTable.addRowAfterSelection();
@@ -896,7 +898,7 @@ define([
 
 		this._deleterowsButton = Ui.adopt("deleterows", Button, {
 			tooltip: i18n.t("button.delrows.tooltip"),
-			icon: "aloha-icon aloha-icon-deleterows",
+			icon: Icons.MAPPING.TABLE_DELETE_ROWS,
 			click: function() {
 				if (that.activeTable) {
 					var aTable = that.activeTable;
@@ -913,7 +915,7 @@ define([
 
 		this._rowheaderButton = Ui.adopt("rowheader", ToggleButton, {
 			tooltip: i18n.t("button.rowheader.tooltip"),
-			icon: "aloha-icon aloha-icon-rowheader",
+			icon: Icons.MAPPING.TABLE_ROW_HEADER,
 			click: function() {
 				if (that.activeTable) {
 					that.activeTable.refresh();
@@ -984,7 +986,7 @@ define([
 
 		this._addcolumnleftButton = Ui.adopt("addcolumnleft", Button, {
 			tooltip: i18n.t("button.addcolleft.tooltip"),
-			icon: "aloha-icon aloha-icon-addcolumnleft",
+			icon: Icons.MAPPING.TABLE_ADD_COLUMN_LEFT,
 			click: function() {
 				if (that.activeTable) {
 					that.activeTable.addColumnsLeft();
@@ -994,7 +996,7 @@ define([
 
 		this._addcolumnrightButton = Ui.adopt("addcolumnright", Button, {
 			tooltip: i18n.t("button.addcolright.tooltip"),
-			icon: "aloha-icon aloha-icon-addcolumnright",
+			icon: Icons.MAPPING.TABLE_ADD_COLUMN_RIGHT,
 			click: function() {
 				if (that.activeTable) {
 					that.activeTable.addColumnsRight();
@@ -1004,7 +1006,7 @@ define([
 
 		this._deletecolumnsButton = Ui.adopt("deletecolumns", Button, {
 			tooltip: i18n.t("button.delcols.tooltip"),
-			icon: "aloha-icon aloha-icon-deletecolumns",
+			icon: Icons.MAPPING.TABLE_DELETE_COLUMNS,
 			click: function() {
 				if (that.activeTable) {
 					var aTable = that.activeTable;
@@ -1021,7 +1023,7 @@ define([
 
 		this._columnheaderButton = Ui.adopt("columnheader", ToggleButton, {
 			tooltip: i18n.t("button.columnheader.tooltip"),
-			icon: "aloha-icon aloha-icon-columnheader",
+			icon: Icons.MAPPING.TABLE_COLUMN_HEADER,
 			click: function() {
 				if (that.activeTable) {
 					that.activeTable.refresh();
@@ -1150,13 +1152,14 @@ define([
 		var that = this;
 
 		// generate the new scopes
-		Scopes.createScope(this.name + '.row', 'Aloha.continuoustext');
-		Scopes.createScope(this.name + '.column', 'Aloha.continuoustext');
-		Scopes.createScope(this.name + '.cell', 'Aloha.continuoustext');
+		Scopes.registerScope(TablePlugin.name, [Scopes.SCOPE_CONTINUOUS_TEXT]);
+		Scopes.registerScope(TablePlugin.name + '.row', [TablePlugin.name]);
+		Scopes.registerScope(TablePlugin.name + '.column', [TablePlugin.name]);
+		Scopes.registerScope(TablePlugin.name + '.cell', [TablePlugin.name]);
 
 		this._createTableButton = Ui.adopt("createTable", ContextButton, {
 			tooltip: i18n.t("button.createtable.tooltip"),
-			icon: "aloha-icon aloha-icon-createTable",
+			icon: Icons.MAPPING.TABLE_CREATE,
 			context: {
 				type: 'table-size-select',
 				options: {
@@ -1243,7 +1246,7 @@ define([
 
 		this._deleteTableButton = Ui.adopt("deleteTable", Button, {
 			tooltip: i18n.t("button.deltable.tooltip"),
-			icon: "aloha-icon aloha-icon-deletetable",
+			icon: Icons.MAPPING.TABLE_DELETE,
 			click: function() {
 				if (that.activeTable) {
 					var aTable = that.activeTable;
@@ -1260,7 +1263,7 @@ define([
 
 		this._tableCaptionButton = Ui.adopt("tableCaption", ToggleButton, {
 			tooltip: i18n.t("button.caption.tooltip"),
-			icon: "aloha-icon aloha-icon-table-caption",
+			icon: Icons.MAPPING.TABLE_CAPTION,
 			click: function() {
 				if (that.activeTable) {
 					// look if table object has a child caption
@@ -1615,14 +1618,11 @@ define([
 	 */
 	TablePlugin.updateFloatingMenuScope = function() {
 		var i = 0,
-			primaryScope,
 			scopes;
 		if (
 			null != TablePlugin.activeTable &&
 			null != TablePlugin.activeTable.selection.selectionType
 		) {
-			// save the primary scope
-			primaryScope = Scopes.getPrimaryScope(),
 			// get the new scopes
 			scopes = TablePlugin.activeTable.selection.getCurrentSelectionTypes();
 			// leave all scopes except the the current ones
@@ -1631,14 +1631,10 @@ define([
 			for (i = 0; i < scopes.length; i++) {
 				Scopes.enterScope(TablePlugin.name + '.' + scopes[i]);
 			}
-			// Check if the primaryScope changed and set the first scope as the currently active one
-			if (scopes[0] !== primaryScope) {
-				Scopes.setScope(TablePlugin.name + '.' + scopes[0]);
-			}
 		} else {
 			// leave all scopes
 			TablePlugin.leaveTableScopes();
-			Scopes.setScope('Aloha.continuoustext');
+			Scopes.leaveScope(TablePlugin.name);
 		}
 	};
 

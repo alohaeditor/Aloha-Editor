@@ -58,7 +58,7 @@ function (
 			plugin.floatingMenuControl = this;
 			this.plugin = plugin;
 
-			Scopes.createScope(plugin.name, 'Aloha.empty');
+			Scopes.registerScope(plugin.name, [Scopes.SCOPE_EMPTY]);
 
 			this._addUIInsertButton();
 			this._addUIMetaButtons();
@@ -216,7 +216,7 @@ function (
 		_addUICropButtons: function () {
 			var plugin = this.plugin;
 
-			Scopes.createScope('Aloha.img', ['Aloha.global']);
+			Scopes.registerScope('Aloha.img', [Scopes.SCOPE_GLOBAL]);
 
 			this._imageCropButton = Ui.adopt("imageCropButton", ToggleButton, {
 				tooltip: i18n.t('Crop'),
@@ -260,7 +260,7 @@ function (
 		_addFocalPointButton: function() {
 			var plugin = this.plugin;
 
-			Scopes.createScope('Aloha.img', ['Aloha.global']);
+			Scopes.registerScope('Aloha.img', [Scopes.SCOPE_GLOBAL]);
 
 			this._imageFocalPointButton = Ui.adopt("imageFocalPointButton", ToggleButton, {
 				tooltip: i18n.t('focalpoint'),
@@ -298,7 +298,7 @@ function (
 		 * Sets the scope
 		 */
 		setScope: function () {
-			Scopes.setScope(this.plugin.name);
+			// Scopes.setScope(this.plugin.name);
 		},
 
 		/**

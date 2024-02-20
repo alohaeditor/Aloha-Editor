@@ -514,7 +514,7 @@ define([
 
 			initializeTemplates(plugin);
 			registerEventHandlers(plugin);
-			Scopes.createScope('Aloha.List', 'Aloha.continuoustext');
+			Scopes.registerScope('Aloha.List', [Scopes.SCOPE_CONTINUOUS_TEXT]);
 		},
 
 

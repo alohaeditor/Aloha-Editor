@@ -545,7 +545,7 @@ define([
 
 			// Activate current block
 			if (this.$element.attr('data-block-skip-scope') !== 'true') {
-				Scopes.setScope('Aloha.Block.' + this.attr('aloha-block-type'));
+				Scopes.enterScope('Aloha.Block.' + this.attr('aloha-block-type'));
 			}
 			this.$element.addClass('aloha-block-active');
 			this._highlight();
@@ -606,6 +606,10 @@ define([
 				deactivatedBlocks.push(this);
 				that._unhighlight();
 			});
+
+			if (this.$element.attr('data-block-skip-scope') !== 'true') {
+				Scopes.leaveScope('Aloha.Block.' + this.attr('aloha-block-type'));
+			}
 
 			this.$element.removeClass('aloha-block-active');
 

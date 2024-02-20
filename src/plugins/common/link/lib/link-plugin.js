@@ -227,6 +227,8 @@ define([
 		init: function () {
 			var plugin = this;
 
+			Scopes.registerScope(this.name, [Scopes.SCOPE_GLOBAL]);
+
 			DynamicForm.componentFactoryRegistry['link-target'] = createLinkTargetFromConfig;
 
 			if (typeof this.settings.objectTypeFilter != 'undefined') {
@@ -351,6 +353,7 @@ define([
 				}
 				plugin._insertLinkButton.setActive(activeStateOrRange);
 				plugin._insertLinkButton.setIcon(activeStateOrRange ? Icons.MAPPING.UNLINK : Icons.MAPPING.LINK);
+				plugin.toggleLinkScope(activeStateOrRange);
 			}
 
 			PubSub.sub('aloha.selection.context-change', function (message) {
@@ -406,9 +409,9 @@ define([
 				// another, the link scope is incremented more than
 				// decremented, which necessitates the force=true
 				// argument to leaveScope.
-				Scopes.leaveScope(this.name, 'link', true);
+				Scopes.leaveScope(this.name);
 			} else if (show) {
-				Scopes.enterScope(this.name, 'link');
+				Scopes.enterScope(this.name);
 			}
 		},
 
@@ -747,7 +750,7 @@ define([
 
 				if (typeof terminateLinkScope == 'undefined' ||
 					terminateLinkScope === true) {
-					Scopes.setScope('Aloha.continuoustext');
+					Scopes.leaveScope(this.scope);
 				}
 
 				// trigger an event for removing the link

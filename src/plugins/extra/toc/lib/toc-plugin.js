@@ -12,6 +12,7 @@ define([
 	'aloha/plugin',
 	'aloha/content-rules',
 	'ui/ui',
+	'ui/icons',
 	'ui/button',
 	'util/dom',
 	'i18n!toc/nls/i18n'
@@ -22,6 +23,7 @@ define([
     Plugin,
 	ContentRules,
 	Ui,
+	Icons,
 	Button,
 	Dom,
 	i18n
@@ -107,7 +109,7 @@ define([
 
 			plugin._insertTocButton = Ui.adopt('insertToc', Button, {
 		        tooltip: i18n.t('button.addtoc.tooltip'),
-		        icon: 'aloha-icon aloha-icon-orderedlist',
+		        icon: Icons.MAPPING.LIST_ORDERED,
 		        click: function () {
 					plugin.insertAtSelection($containers);
 				}

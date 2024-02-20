@@ -140,7 +140,7 @@ define([
 		 * @constructor
 		 */
 		_constructor: function () {
-			Scopes.createScope('Aloha.Block');
+			Scopes.registerScope('Aloha.Block', [Scopes.SCOPE_GLOBAL]);
 			this.blockTypes = new Registry();
 			this.blocks = new Registry();
 			this._highlightedBlocks = {};
@@ -467,7 +467,7 @@ define([
 		 * @api
 		 */
 		registerBlockType: function (identifier, blockType) {
-			Scopes.createScope('Aloha.Block.' + identifier, 'Aloha.Block');
+			Scopes.registerScope('Aloha.Block.' + identifier, ['Aloha.Block']);
 			this.blockTypes.register(identifier, blockType);
 		},
 

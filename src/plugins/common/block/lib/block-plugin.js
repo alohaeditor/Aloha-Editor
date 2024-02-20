@@ -42,6 +42,7 @@ define([
 	'block/editor',
 	'block/dragbehavior',
 	'ui/ui',
+	'ui/icons',
 	'ui/toggleButton',
 	'i18n!block/nls/i18n',
 	'i18n!aloha/nls/i18n',
@@ -60,6 +61,7 @@ define([
 	editor,
 	dragBehavior,
 	Ui,
+	Icons,
 	ToggleButton, 
 	i18n,
 	i18nCore
@@ -156,7 +158,7 @@ define([
 		applyButtonConfig: function (editable) {
 			if (this._isDragdropToggleEnabled(editable)) {
 				this._toggleDragDropButton.show();
-				this._toggleDragDropButton.setState(this._getDragdropState(editable));
+				this._toggleDragDropButton.setValue(this._getDragdropState(editable));
 			} else {
 				this._toggleDragDropButton.hide();
 			}
@@ -249,7 +251,7 @@ define([
 
 			this._toggleDragDropButton = Ui.adopt("toggleDragDrop", ToggleButton, {
 				tooltip: i18n.t('button.toggledragdrop.tooltip'),
-				icon: 'aloha-icon aloha-icon-toggledragdrop',
+				icon: Icons.MAPPING.TOGGLE_DRAG_AND_DROP,
 				click: function () {
 					that._toggleDragdropState(Aloha.activeEditable);
 				}

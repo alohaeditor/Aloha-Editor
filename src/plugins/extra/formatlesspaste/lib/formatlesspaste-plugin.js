@@ -29,6 +29,7 @@ define([
 	'aloha/plugin',
 	'jquery',
 	'ui/ui',
+	'ui/icons',
 	'ui/toggleButton',
 	'formatlesspaste/formatlesshandler',
 	'aloha/contenthandlermanager',
@@ -39,6 +40,7 @@ define([
 	Plugin,
 	$,
 	Ui,
+	Icons,
 	ToggleButton,
 	FormatlessPasteHandler,
 	ContentHandlerManager,
@@ -90,8 +92,7 @@ define([
 		plugin._toggleFormatlessPasteButton =
 			Ui.adopt('toggleFormatlessPaste', ToggleButton, {
 				tooltip : i18n.t('button.formatlessPaste.tooltip'),
-				icon    : 'aloha-icon aloha-icon-formatless-paste',
-				scope   : 'Aloha.continuoustext',
+				icon    : Icons.MAPPING.FORMATLESS_PASTE,
 				click   : function () {
 					// Toggle the value of allowFormatless
 					FormatlessPasteHandler.enabled =

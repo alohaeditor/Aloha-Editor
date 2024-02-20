@@ -236,11 +236,11 @@ define([
 					plugin._wailangButton.setActive(true);
 					plugin._wailangButton.activateInput(true);
 					plugin._wailangButton.updateTargetElement(markup);
-					Scopes.enterScope(plugin.name, 'wai-lang');
+					Scopes.enterScope(plugin.name);
 				} else {
 					plugin._wailangButton.setActive(false);
 					plugin._wailangButton.deactivateInput();
-					Scopes.leaveScope(plugin.name, 'wai-lang', true);
+					Scopes.leaveScope(plugin.name);
 				}
 			}
 		);

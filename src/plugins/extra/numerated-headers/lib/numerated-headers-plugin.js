@@ -30,6 +30,7 @@ define([
 	'jquery',
 	'aloha/plugin',
 	'ui/ui',
+	'ui/icons',
 	'ui/toggleButton',
 	'util/browser',
 	'i18n!numerated-headers/nls/i18n',
@@ -40,6 +41,7 @@ define([
 	$,
 	Plugin,
 	Ui,
+	Icons,
 	ToggleButton,
 	Browser,
 	i18n,
@@ -74,7 +76,7 @@ define([
 			this._formatNumeratedHeadersButton = Ui.adopt('formatNumeratedHeaders',
 				ToggleButton, {
 					tooltip: i18n.t('button.numeratedHeaders.tooltip'),
-					icon: 'aloha-icon aloha-icon-numerated-headers',
+					icon: Icons.MAPPING.NUMERATED_HEADERS,
 					click: function () {
 						var buttonPressed = that._formatNumeratedHeadersButton.getState();
 						if (!buttonPressed) {

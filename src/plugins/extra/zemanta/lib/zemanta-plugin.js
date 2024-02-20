@@ -89,7 +89,7 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore, console) {
 			var self = this;
 
 			// zemanta button
-			FloatingMenu.createScope('Aloha.Zemanta', 'Aloha.continuoustext');
+			FloatingMenu.registerScope('Aloha.Zemanta', 'Aloha.continuoustext');
 			this.zemantaButton = new Aloha.ui.Button({
 				'name' : 'zemanta',
 				'iconClass' : 'aloha-button aloha-button-zemanta',
