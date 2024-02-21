@@ -63,7 +63,6 @@ src/plugins/extra/linkbrowser
 src/plugins/extra/metaview
 src/plugins/extra/proxy
 src/plugins/extra/speak
-src/plugins/extra/zemanta
 src/plugins/extra/browser
 src/plugins/extra/comments
 src/plugins/extra/formatlesspaste
