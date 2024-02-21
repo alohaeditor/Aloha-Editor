@@ -12,7 +12,6 @@
         url('../assets/MaterialSymbolsOutlined.ttf') format('truetype');
 }
 
-.material-icons,
 .material-symbols-outlined {
     font-family: 'Material Symbols Outlined';
     font-weight: 300;
@@ -28,8 +27,8 @@
     -moz-font-feature-settings: 'liga';
     -moz-osx-font-smoothing: grayscale;
     font-variation-settings: 'FILL' 1;
+}
 
-    &.hollow {
-        font-variation-settings: 'FILL' 0;
-    }
+.material-symbols-outlined.hollow {
+    font-variation-settings: 'FILL' 0;
 }

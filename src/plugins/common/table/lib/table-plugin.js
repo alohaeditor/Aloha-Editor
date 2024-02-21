@@ -879,6 +879,7 @@ define([
 		this._addrowbeforeButton = Ui.adopt("addrowbefore", Button, {
 			tooltip: i18n.t( "button.addrowbefore.tooltip"),
 			icon: Icons.MAPPING.TABLE_ADD_ROW_BEFORE,
+			iconHollow: true,
 			click: function() {
 				if (that.activeTable) {
 					that.activeTable.addRowBeforeSelection();
@@ -889,6 +890,7 @@ define([
 		this._addrowafterButton = Ui.adopt("addrowafter", Button, {
 			tooltip: i18n.t("button.addrowafter.tooltip"),
 			icon: Icons.MAPPING.TABLE_ADD_ROW_AFTER,
+			iconHollow: true,
 			click: function() {
 				if (that.activeTable) {
 					that.activeTable.addRowAfterSelection();
@@ -987,6 +989,7 @@ define([
 		this._addcolumnleftButton = Ui.adopt("addcolumnleft", Button, {
 			tooltip: i18n.t("button.addcolleft.tooltip"),
 			icon: Icons.MAPPING.TABLE_ADD_COLUMN_LEFT,
+			iconHollow: true,
 			click: function() {
 				if (that.activeTable) {
 					that.activeTable.addColumnsLeft();
@@ -997,6 +1000,7 @@ define([
 		this._addcolumnrightButton = Ui.adopt("addcolumnright", Button, {
 			tooltip: i18n.t("button.addcolright.tooltip"),
 			icon: Icons.MAPPING.TABLE_ADD_COLUMN_RIGHT,
+			iconHollow: true,
 			click: function() {
 				if (that.activeTable) {
 					that.activeTable.addColumnsRight();

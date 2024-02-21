@@ -31,12 +31,14 @@ define([
 
 		/** @type {string=} Text in the button. */
 		text: '',
-		/** @type {(string)=} The icon (CSS-Class) to use for this button. */
-		icon: '',
 		/** @type {string=} The tooltip text/content to display when the button is hovered over. */
 		tooltip: '',
+		/** @type {(string)=} The icon (CSS-Class) to use for this button. */
+		icon: '',
 		/** @type {boolean} If it should only show the icon. */
 		iconOnly: true,
+		/** @type {boolean} If the icon should be displayed hollow (Fill off, see Material Symbols). */
+		iconHollow: false,
 
 		// Internals
 
@@ -112,6 +114,9 @@ define([
 				class: 'aloha-button-icon material-symbols-outlined',
 				text: this.icon,
 			});
+			if (this.iconHollow) {
+				this._$iconElement.addClass('hollow');
+			}
 
 			this._$textElement = $('<span>', {
 				class: 'aloha-button-text',
@@ -169,6 +174,15 @@ define([
 				this._$buttonElement.addClass('icon-only');
 			} else {
 				this._$buttonElement.removeClass('icon-only');
+			}
+		},
+		setIconHollow: function(hollow) {
+			this.iconHollow = hollow;
+
+			if (hollow) {
+				this._$iconElement.addClass('hollow');
+			} else {
+				this._$iconElement.removeClass('hollow');
 			}
 		},
 
