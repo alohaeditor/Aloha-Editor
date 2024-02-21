@@ -200,7 +200,7 @@ define([
             });
         },
 
-        updateOptions: function (options) {
+        setOptions: function (options) {
             this.options = options;
             this._sendMessage({
                 eventName: EVENT_UPDATE_OPTIONS,
@@ -208,7 +208,7 @@ define([
                 value: this.options,
             });
         },
-        updateUrl: function (url) {
+        setUrl: function (url) {
             // No need to update the iframe url if it's the same.
             if (url === this.url) {
                 return;

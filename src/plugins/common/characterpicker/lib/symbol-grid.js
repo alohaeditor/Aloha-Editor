@@ -85,7 +85,7 @@ define([
          * Sets/updates the symbols of this grid.
          * @param {Array.<SymbolGridItem>} symbols Symbols to set
          */
-        updateSymbols: function (symbols) {
+        setSymbols: function (symbols) {
             this.symbols = symbols;
             this.renderSymbols(this.symbols);
         },

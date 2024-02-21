@@ -81,7 +81,7 @@ define([
          * @param {Array.<SymbolGridItem>} symbols Symbols to set
          * @override
          */
-        updateSymbols: function (symbols) {
+        setSymbols: function (symbols) {
             this._super(symbols);
             this._updateNormalizedSymbols();
             this._updateFilteredSymbols();

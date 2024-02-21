@@ -298,24 +298,24 @@ define([
             }
         },
 
-        updatePalette: function(palette) {
+        setPalette: function(palette) {
             this.palette = palette;
             this._normalizeColors();
             this._populatePalette();
         },
-        updateAllowOutsidePalette: function (allow) {
+        setAllowOutsidePalette: function (allow) {
             this.allowOutsidePalette = allow;
             this._updateOptions();
         },
-        updateAllowCustomInput: function (allow) {
+        setAllowCustomInput: function (allow) {
             this.allowCustomInput = allow;
             this._updateOptions();
         },
-        updateAllowClear: function (allow) {
+        setAllowClear: function (allow) {
             this.allowClear = allow;
             this._updateOptions();
         },
-        updateAllowTransparency: function (allow) {
+        setAllowTransparency: function (allow) {
             this.allowTransparency = allow;
             this._updateOptions();
         },
