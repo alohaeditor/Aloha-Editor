@@ -78,37 +78,21 @@ define('ui/ui-plugin', [
 		primaryScopeForegroundTab();
 	});
 
-	function getToolbarSettings() {
+	/**
+	 * @param {boolean=} skipMerge If it should merge the default settings with the user settings. Defaults to `false`.
+	 * @returns The Settings for the toolbar/ui and how to display the tabs/components.
+	 */
+	function getToolbarSettings(skipMerge) {
 		var userSettings = Aloha.settings.toolbar,
 		    defaultSettings = Settings.defaultToolbarSettings;
 
 		if (!userSettings) {
-			return defaultSettings;
+			return Settings.translateToolbarTabs(defaultSettings);
+		} else if (skipMerge) {
+			return Settings.translateToolbarTabs(Settings.normalizeToolbarSettings(userSettings));
 		}
 
-		var defaultTabSettings = asNormalizedResponsiveSettings(defaultSettings, 'tabs');
-
-		return Settings.combineToolbarSettings(
-			asNormalizedResponsiveSettings(userSettings, 'tabs'),
-			defaultTabSettings,
-			asNormalizedResponsiveSettings(userSettings, 'exclude')
-		);
-	}
-
-	function asNormalizedResponsiveSettings(settingsObj, propertyName) {
-		if (settingsObj.hasOwnProperty(propertyName)) {
-			return {
-				mobile: settingsObj[propertyName],
-				tablet: settingsObj[propertyName],
-				desktop: settingsObj[propertyName],
-			};
-		}
-
-		return {
-			mobile: (settingsObj.mobile || {})[propertyName],
-			tablet: (settingsObj.tablet || {})[propertyName],
-			desktop: (settingsObj.desktop || {})[propertyName],
-		};
+		return Settings.combineToolbarSettings(defaultSettings, userSettings);
 	}
 
 	function getResponsiveMode() {
