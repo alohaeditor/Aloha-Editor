@@ -1719,7 +1719,7 @@ define([
 		}
 
 		this.selection.selectColumns(columnsToSelect);
-		this.tablePlugin._columnheaderButton.setState(this.selection.isHeader());
+		this.tablePlugin._columnheaderButton.setActive(this.selection.isHeader());
 
 		// ====== BEGIN UI specific code - should be handled on event aloha-table-selection-changed by UI =======
 
@@ -1745,7 +1745,7 @@ define([
 	Table.prototype.selectRows = function () {
 
 		this.selection.selectRows(this.rowsToSelect);
-		this.tablePlugin._rowheaderButton.setState(this.selection.isHeader());
+		this.tablePlugin._rowheaderButton.setActive(this.selection.isHeader());
 
 		// ====== BEGIN UI specific code - should be handled on event aloha-table-selection-changed by UI =======
 

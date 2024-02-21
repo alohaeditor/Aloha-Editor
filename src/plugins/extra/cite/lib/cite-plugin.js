@@ -439,7 +439,7 @@ define([
 					} else {
 						plugin.citeHrefField.hide();
 						plugin.removeCiteButton.hide();
-						plugin.removeCiteButton.setState(false);
+						plugin.removeCiteButton.setActive(false);
 
 						Scopes.leaveScope(plugin.name);
 					}

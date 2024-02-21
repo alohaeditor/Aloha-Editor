@@ -191,7 +191,6 @@ define('format/format-plugin', [
 			}
 		}
 
-
 		// unwrap moved list elements
 		jQuery('._moved').each(function () {
 			var $p = jQuery('<p>');
@@ -201,7 +200,6 @@ define('format/format-plugin', [
 			$this.contents().unwrap().appendTo($p);
 		});
 
-
 		// If we are at the first list element, get rid of original (now empty) list
 		if (prevNodes.length === 0) {
 			cac.remove();
@@ -210,29 +208,31 @@ define('format/format-plugin', [
 
 	function formatInsideTableWorkaround(button) {
 		var selectedCells = jQuery('.aloha-cell-selected');
-		if (selectedCells.length > 0) {
-			var cellMarkupCounter = 0;
-			selectedCells.each(function () {
-				var cellContent = jQuery(this).find('div'),
-					cellMarkup = cellContent.find(button);
-				if (cellMarkup.length > 0) {
-					// unwrap all found markup text
-					// <td><b>text</b> foo <b>bar</b></td>
-					// and wrap the whole contents of the <td> into <b> tags
-					// <td><b>text foo bar</b></td>
-					cellMarkup.contents().unwrap();
-					cellMarkupCounter++;
-				}
-				cellContent.contents().wrap('<' + button + '></' + button + '>');
-			});
-
-			// remove all markup if all cells have markup
-			if (cellMarkupCounter === selectedCells.length) {
-				selectedCells.find(button).contents().unwrap();
-			}
-			return true;
+		if (selectedCells.length < 1) {
+			return false;
 		}
-		return false;
+
+		var cellMarkupCounter = 0;
+		selectedCells.each(function () {
+			var cellContent = jQuery(this).find('div'),
+				cellMarkup = cellContent.find(button);
+			if (cellMarkup.length > 0) {
+				// unwrap all found markup text
+				// <td><b>text</b> foo <b>bar</b></td>
+				// and wrap the whole contents of the <td> into <b> tags
+				// <td><b>text foo bar</b></td>
+				cellMarkup.contents().unwrap();
+				cellMarkupCounter++;
+			}
+			cellContent.contents().wrap('<' + button + '></' + button + '>');
+		});
+
+		// remove all markup if all cells have markup
+		if (cellMarkupCounter === selectedCells.length) {
+			selectedCells.find(button).contents().unwrap();
+		}
+
+		return true;
 	}
 
 	function textLevelButtonClickHandler(formatPlugin, button) {
@@ -243,12 +243,12 @@ define('format/format-plugin', [
 		return false;
 	}
 
-	function blockLevelButtonClickHandler(formatPlugin, button) {
-		if (formatInsideTableWorkaround(button)) {
+	function blockLevelButtonClickHandler(formatPlugin, nodeType) {
+		if (formatInsideTableWorkaround(nodeType)) {
 			return false;
 		}
 
-		formatPlugin.changeMarkup(button);
+		formatPlugin.changeMarkup(nodeType);
 
 		// setting the focus is needed for mozilla to have a working rangeObject.select()
 		if (Aloha.activeEditable && Aloha.browser.mozilla && document.activeElement !== Aloha.activeEditable.obj[0]) {
@@ -262,37 +262,25 @@ define('format/format-plugin', [
 		}
 	}
 
-	function makeTextLevelButton(formatPlugin, button) {
-		var command = formatPlugin.commandsByElement[button];
+	function makeTextLevelButton(formatPlugin, nodeType) {
+		var command = formatPlugin.commandsByElement[nodeType];
 		var componentName = command;
-		if (formatPlugin.componentNameByElement.hasOwnProperty(button)) {
-			componentName = formatPlugin.componentNameByElement[button];
+		if (formatPlugin.componentNameByElement.hasOwnProperty(nodeType)) {
+			componentName = formatPlugin.componentNameByElement[nodeType];
 		}
 		var component = Ui.adopt(componentName, ToggleButton, {
-			tooltip: i18n.t('button.' + button + '.tooltip'),
+			tooltip: i18n.t('button.' + nodeType + '.tooltip'),
 			icon: formatPlugin.FORMATTING_ICONS[componentName],
 			click: function () {
-				return textLevelButtonClickHandler(formatPlugin, button);
+				return textLevelButtonClickHandler(formatPlugin, nodeType);
 			}
 		});
 		return component;
 	}
 
-	function makeBlockLevelButton(formatPlugin, button) {
-		return {
-			name: button,
-			tooltip: i18n.t('button.' + button + '.tooltip'),
-			iconClass: 'aloha-icon ' + i18n.t('aloha-large-icon-' + button),
-			markup: jQuery('<' + button + '>'),
-			click: function () {
-				return blockLevelButtonClickHandler(formatPlugin, button);
-			}
-		};
-	}
-
-	function makeRemoveFormatButton(formatPlugin, button) {
+	function makeRemoveFormatButton(formatPlugin) {
 		return Ui.adopt('removeFormat', Button, {
-			tooltip: i18n.t('button.' + button + '.tooltip'),
+			tooltip: i18n.t('button.removeFormat.tooltip'),
 			icon: Icons.MAPPING.CLEAR,
 			click: function () {
 				formatPlugin.removeFormat();
@@ -332,7 +320,7 @@ define('format/format-plugin', [
 		//set startheading to heading with smallest number available in the config
 		for (var i = 0; i < config.length; i++) {
 			if (isHeading(config[i])) {
-				if (typeof startHeading !== 'undefined') {
+				if (startHeading != null) {
 					if (parseInt(config[i].charAt(1), 10) < startHeading) {
 						startHeading = parseInt(config[i].charAt(1), 10);
 					}
@@ -344,40 +332,42 @@ define('format/format-plugin', [
 		}
 
 		//check the heading hierarchy of every heading
-		if (typeof startHeading !== 'undefined') {
-			//this find() returns all headings in tree order
-			parent.find("h1,h2,h3,h4,h5,h6").each(function () {
-				currentHeading = parseInt(this.nodeName.charAt(1), 10);
-				if (typeof lastCorrectHeading !== 'undefined') {
-					//the current heading hierarchy must be lower than the startHeading hierarchy
-					if (currentHeading < startHeading) {
+		if (startHeading == null) {
+			return;
+		}
+
+		//this find() returns all headings in tree order
+		parent.find("h1,h2,h3,h4,h5,h6").each(function () {
+			currentHeading = parseInt(this.nodeName.charAt(1), 10);
+			if (typeof lastCorrectHeading !== 'undefined') {
+				//the current heading hierarchy must be lower than the startHeading hierarchy
+				if (currentHeading < startHeading) {
+					$(this).addClass("aloha-heading-hierarchy-violated");
+				} else {
+					//heading hierarchy is violated if a heading is more
+					//than one hierarchy lower than the last correct heading
+					if (currentHeading > (lastCorrectHeading + 1)) {
 						$(this).addClass("aloha-heading-hierarchy-violated");
 					} else {
-						//heading hierarchy is violated if a heading is more
-						//than one hierarchy lower than the last correct heading
-						if (currentHeading > (lastCorrectHeading + 1)) {
-							$(this).addClass("aloha-heading-hierarchy-violated");
-						} else {
-							//only set the last heading if the hierarchy is not violated
-							lastCorrectHeading = currentHeading;
-							$(this).removeClass("aloha-heading-hierarchy-violated");
-						}
-					}
-				} else {
-					//first heading! see if it starts with correct heading
-					if (currentHeading === startHeading) {
+						//only set the last heading if the hierarchy is not violated
 						lastCorrectHeading = currentHeading;
 						$(this).removeClass("aloha-heading-hierarchy-violated");
-					} else {
-						$(this).addClass("aloha-heading-hierarchy-violated");
 					}
 				}
-			});
-		}
+			} else {
+				//first heading! see if it starts with correct heading
+				if (currentHeading === startHeading) {
+					lastCorrectHeading = currentHeading;
+					$(this).removeClass("aloha-heading-hierarchy-violated");
+				} else {
+					$(this).addClass("aloha-heading-hierarchy-violated");
+				}
+			}
+		});
 	}
 
-	function changeMarkup(plugin, button) {
-		Selection.changeMarkupOnSelection(jQuery('<' + button + '>'));
+	function changeMarkup(plugin, nodeType) {
+		Selection.changeMarkupOnSelection(jQuery('<' + nodeType + '>'));
 		if (Strings.parseBoolean(plugin.settings.checkHeadingHierarchy)) {
 			checkHeadingHierarchy(plugin.formatOptions);
 		}
@@ -407,19 +397,19 @@ define('format/format-plugin', [
 		return config ? $.inArray(tagname, config) > -1 : false;
 	}
 
-	function addMarkup(button) {
+	function addMarkup(nodeType) {
 		var formatPlugin = this,
-			markup = jQuery('<' + button + '>'),
+			markup = jQuery('<' + nodeType + '>'),
 			rangeObject = Selection.rangeObject;
 
-		if (typeof button === "undefined" || button == "") {
+		if (typeof nodeType === "undefined" || nodeType == "") {
 			return;
 		}
 
 		// check whether the markup is found in the range (at the start of the range)
 		var nodeNames = formatPlugin.interchangeableNodeNames[markup[0].nodeName] || [markup[0].nodeName];
-		var foundMarkup = rangeObject.findMarkup(function () {
-			return -1 !== Arrays.indexOf(nodeNames, this.nodeName);
+		var foundMarkup = rangeObject.findMarkup(function (nodeElement) {
+			return -1 !== Arrays.indexOf(nodeNames, nodeElement.nodeName);
 		}, Aloha.activeEditable.obj);
 
 		if (foundMarkup) {
@@ -431,7 +421,7 @@ define('format/format-plugin', [
 				// the range is not collapsed, so we remove the markup from the range
 				Dom.removeMarkup(rangeObject, jQuery(foundMarkup), Aloha.activeEditable.obj);
 			}
-			PubSub.pub('aloha.format.removed', { level: 'text', format: button })
+			PubSub.pub('aloha.format.removed', { level: 'text', format: nodeType })
 			updateUiAfterMutation(formatPlugin, rangeObject);
 		} else {
 			// when the range is collapsed, extend it to a word
@@ -440,18 +430,18 @@ define('format/format-plugin', [
 				if (rangeObject.isCollapsed()) {
 					if (StateOverride.enabled()) {
 						StateOverride.setWithRangeObject(
-							formatPlugin.commandsByElement[button],
+							formatPlugin.commandsByElement[nodeType],
 							rangeObject,
 							function (command, rangeObject) {
 								format(formatPlugin, rangeObject, markup);
-								PubSub.pub('aloha.format.added', { level: 'text', format: button })
+								PubSub.pub('aloha.format.added', { level: 'text', format: nodeType })
 							}
 						);
 						return;
 					}
 				}
 			}
-			PubSub.pub('aloha.format.added', { level: 'text', format: button })
+			PubSub.pub('aloha.format.added', { level: 'text', format: nodeType })
 			format(formatPlugin, rangeObject, markup);
 		}
 	}
@@ -533,17 +523,19 @@ define('format/format-plugin', [
 
 		removePlaceholders();
 
-		if ($element.is('pre')) {
-			//add placeholder before and after the preformatted text element
-			var nextSibling = $element[0].nextSibling;
-			var previousSibling = $element[0].previousSibling;
-			if (!previousSibling || !nextSibling) {
-				if (!previousSibling) {
-					$element.before(createLanding());
-				}
-				if (!nextSibling) {
-					$element.after(createLanding());
-				}
+		if (!$element.is('pre')) {
+			return;
+		}
+
+		//add placeholder before and after the preformatted text element
+		var nextSibling = $element[0].nextSibling;
+		var previousSibling = $element[0].previousSibling;
+		if (!previousSibling || !nextSibling) {
+			if (!previousSibling) {
+				$element.before(createLanding());
+			}
+			if (!nextSibling) {
+				$element.after(createLanding());
 			}
 		}
 	}
@@ -835,32 +827,33 @@ define('format/format-plugin', [
 
 			this.buttons = {};
 
-			$.each(this.availableButtons, function (j, button) {
+			$.each(this.availableButtons, function (j, nodeType) {
 				var button_config = false;
 
-				if (typeof j !== 'number' && typeof button !== 'string') {
-					button_config = button;
-					button = j;
+				if (typeof j !== 'number' && typeof nodeType !== 'string') {
+					button_config = nodeType;
+					nodeType = j;
 				}
 
-				if (that.textLevelSemantics[button]) {
-					that.buttons[button] = {
-						handle: makeTextLevelButton(that, button),
-						markup: jQuery('<' + button + '>', { 'class': button_config || '' })
+				if (that.textLevelSemantics[nodeType]) {
+					that.buttons[nodeType] = {
+						handle: makeTextLevelButton(that, nodeType),
+						markup: jQuery('<' + nodeType + '>', { 'class': button_config || '' })
 					};
-				} else if ('removeFormat' === button) {
-					that.buttons[button] = {
-						handle: makeRemoveFormatButton(that, button),
-						markup: jQuery('<' + button + '>', { 'class': button_config || '' })
+				} else if ('removeFormat' === nodeType) {
+					that.buttons[nodeType] = {
+						handle: makeRemoveFormatButton(that),
+						markup: jQuery('<' + nodeType + '>', { 'class': button_config || '' })
 					};
 				} else {
-					Aloha.log('warn', that, 'Button "' + button + '" is not defined');
+					Aloha.log('warn', that, 'Button "' + nodeType + '" is not defined');
 				}
 			});
 
 			this.typographyButton = Ui.adopt('formatBlock', AttributeButton, {
 				icon: Icons.MAPPING.TYPOGRAPHY,
 				targetAttribute: 'id',
+				// TODO: Add translations
 				inputLabel: 'Heading Anchor',
 				panelLabel: 'Heading IDs',
 
@@ -880,13 +873,25 @@ define('format/format-plugin', [
 						initialValue: that.activeTypography,
 					}).then(function (ref) {
 						return ref.value;
-					}).then(function (value) {
+					}).then(function (result) {
+						var value = result.id;
 						var oldTypography = that.activeTypography;
 
 						that.activeTypography = value;
-						PubSub.pub('aloha.format.pre_change', {level: 'block', oldFormat: oldTypography, newFormat: value})
+
+						PubSub.pub('aloha.format.pre_change', {
+							level: 'block',
+							oldFormat: oldTypography,
+							newFormat: value,
+						});
+
 						changeMarkup(that, value);
-						PubSub.pub('aloha.format.changed', {level: 'block', oldFormat: oldTypography, newFormat: value})
+
+						PubSub.pub('aloha.format.changed', {
+							level: 'block',
+							oldFormat: oldTypography,
+							newFormat: value,
+						});
 					}).catch(function (err) {
 						console.error(err);
 					});
@@ -947,13 +952,12 @@ define('format/format-plugin', [
 				var limit = rangeEditingHost ? jQuery(rangeEditingHost) : Aloha.activeEditable.obj;
 
 				for (i = 0; i < formats.length; i++) {
-					var format = formats[i],
-						markup = jQuery('<' + format + '>');
+					var format = formats[i].toUpperCase();
 
 					// check whether the markup is found in the range (at the start of the range)
-					var nodeNames = this.interchangeableNodeNames[markup[0].nodeName] || [markup[0].nodeName];
-					var foundMarkup = rangeObject.findMarkup(function () {
-						return -1 !== Arrays.indexOf(nodeNames, this.nodeName);
+					var nodeNames = this.interchangeableNodeNames[format] || [format];
+					var foundMarkup = rangeObject.findMarkup(function (nodeElement) {
+						return -1 !== Arrays.indexOf(nodeNames, nodeElement.nodeName);
 					}, limit);
 
 					if (foundMarkup) {

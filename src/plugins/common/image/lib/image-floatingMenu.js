@@ -91,7 +91,7 @@ function (
 			// If the setting has been set to a number or false we need to activate the 
 			// toggle button to indicate that the aspect ratio will be preserved.
 			if (plugin.settings.fixedAspectRatio !== false) {
-				this._imageCnrRatioButton.setState(true);
+				this._imageCnrRatioButton.setActive(true);
 				plugin.keepAspectRatio = true;
 			}
 		},

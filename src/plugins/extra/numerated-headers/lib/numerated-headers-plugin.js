@@ -137,9 +137,9 @@ define([
 
 			if (flag === 'true') {
 				this.createNumeratedHeaders(editable);
-				this._formatNumeratedHeadersButton.setState(true);
+				this._formatNumeratedHeadersButton.setActive(true);
 			} else {
-				this._formatNumeratedHeadersButton.setState(false);
+				this._formatNumeratedHeadersButton.setActive(false);
 			}
 		},
 

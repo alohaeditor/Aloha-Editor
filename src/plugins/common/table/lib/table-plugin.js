@@ -1462,7 +1462,7 @@ define([
 			this.summary.setTargetObject(focusTable.obj, 'summary');
 			if ( focusTable.obj.children("caption").is('caption') ) {
 				// set caption button
-				this._tableCaptionButton.setState(true);
+				this._tableCaptionButton.setActive(true);
 				var c = focusTable.obj.children("caption");
 				that.makeCaptionEditable(c);
 			}

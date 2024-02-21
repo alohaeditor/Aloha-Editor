@@ -42,13 +42,13 @@ define([
 		 * @deprecated use `setValue` instead.
 		 */
 		setState: function (toggled) {
-			console.debug('[Deprecation] Call to ToggleButton.setState: Use "ToggleButton.setValue" instead.');
+			console.debug('[Deprecation] Call to ToggleButton.setState: Use "ToggleButton.setActive()" instead.');
 			this.setValue(toggled);
 		},
 
 		/** @deprecated use `getValue` instead. */
 		getState: function () {
-			console.debug('[Deprecation] Call to ToggleButton.getState: Use "ToggleButton.getValue" instead.');
+			console.debug('[Deprecation] Call to ToggleButton.getState: Use "ToggleButton.active" instead.');
 			return this.active;
 		},
 

@@ -744,7 +744,7 @@ define([
 
 			var editable = currentImage.closest('.aloha-editable');
 
-			plugin.ui._imageCnrRatioButton.setState(this.keepAspectRatio);
+			plugin.ui._imageCnrRatioButton.setActive(this.keepAspectRatio);
 
 			// Disabling the content editable. This will disable the resizeHandles in internet explorer
 			// already done in resize on a smaller scope, this block next aloha-selection-change event
@@ -1184,7 +1184,7 @@ define([
 			if (this.settings.ui.focalpoint) {
 				this.disableFocalPointMode();
 			}
-			this.ui._imageCropButton.setState(true);
+			this.ui._imageCropButton.setActive(true);
 
 			plugin.initCropButtons();
 			if (plugin.settings.ui.resizable) {
@@ -1272,7 +1272,7 @@ define([
 		disableFocalPointMode: function() {
 			jQuery(".ui-resizable-handle").show();
 			jQuery(".img-overlay-wrap").remove();
-			this.ui._imageFocalPointButton.setState(false);
+			this.ui._imageFocalPointButton.setActive(false);
 			$('body').trigger('aloha-image-focalpoint-stop');
 		},
 
@@ -1315,7 +1315,7 @@ define([
 			}
 
 			this.destroyCropButtons();
-			this.ui._imageCropButton.setState(false);
+			this.ui._imageCropButton.setActive(false);
 
 			if (this.settings.ui.resizable) {
 				this.startResize();

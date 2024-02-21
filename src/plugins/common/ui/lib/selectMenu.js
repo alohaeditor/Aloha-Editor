@@ -1,11 +1,29 @@
+/**
+ * @typedef {object} MultiStepOptionContext
+ * @property {string=} label - Label for the header. If left empty, will use the options label.
+ * @property {string} type - Type of the component to render.
+ * @property {object.<string,*>=} options - Options for the component.
+ * @property {*=} initialValue - The value of the component.
+ * @property {string=} confirmLabel - The label for the confirm button.
+ */
+
+/**
+ * @typedef {object} SelectMenuOption
+ * @property {string} label - The Label which is being displayed to the user
+ * @property {string=} icon - Icon to display for this option
+ * @property {boolean=} iconHollow - If the icon should be displayed "hollow"
+ * @property {string} id - Identifier of the option
+ * @property {boolean=} newTab - If it should display the new-tab icon for this option
+ * @property {boolean=} isMultiStep - If this option is a multi-step option
+ * @property {MultiStepOptionContext=} multiStepContext - Context for the multi step
+ */
+
 define([
     'jquery',
-    'ui/component',
-    'ui/icons'
+    'ui/component'
 ], function (
     $,
-    Component,
-    Icons
+    Component
 ) {
     'use strict';
 
@@ -15,25 +33,6 @@ define([
     var CLASS_OPTION_ACTIVE = 'active';
     var ATTR_OPTION_ID = 'data-id';
     var ATTR_ACTIVE_OPTION = 'data-active-id';
-
-    /**
-     * @typedef {object} MultiStepOptionContext
-     * @property {string=} label - Label for the header. If left empty, will use the options label.
-     * @property {string} type - Type of the component to render.
-     * @property {object.<string,*>=} options - Options for the component.
-     * @property {*=} initialValue - The value of the component.
-     * @property {string=} confirmLabel - The label for the confirm button.
-     */
-
-    /**
-     * @typedef {object} SelectMenuOption
-     * @property {string} label - The Label which is being displayed to the user
-     * @property {string=} icon - Icon to display for this option
-     * @property {string} id - Identifier of the option
-     * @property {boolean=} newTab - If it should display the new-tab icon for this option
-     * @property {boolean=} isMultiStep - If this option is a multi-step option
-     * @property {MultiStepOptionContext=} multiStepContext - Context for the multi step
-     */
 
     var SelectMenu = Component.extend({
         type: 'select-menu',
@@ -55,6 +54,7 @@ define([
          */
         activeMultistepOption: null,
 
+        // TODO: Implement multi-step
         multistepControl: null,
         multistepComponent: null,
 
@@ -113,6 +113,9 @@ define([
                         class: 'select-menu-icon material-symbols-outlined',
                         text: option.icon,
                     });
+                    if (option.iconHollow) {
+                        $iconElem.addClass('hollow');
+                    }
                     $optionElem.append(
                         $('<div>', {
                             class: 'select-menu-icon-wrapper',
@@ -229,14 +232,14 @@ define([
             this.updateElementClasses();
         },
 
-        setValue: function (active) {
-            if (active == null) {
+        setValue: function (optionIdOrValue) {
+            if (optionIdOrValue == null) {
                 this.activeOption = null;
                 this.updateActiveOption();
                 return;
             }
 
-            var id = typeof active === 'string' ? active : active.id;
+            var id = typeof optionIdOrValue === 'string' ? optionIdOrValue : optionIdOrValue.id;
             var foundOption = this.options.find(function (option) {
                 return option.id === id;
             });
@@ -257,7 +260,14 @@ define([
             this.updateActiveOption();
         },
         getValue: function () {
-            return this.activeOption;
+            if (this.activeMultistepOption) {
+                var out = { id: this.activeMultistepOption };
+                if (this.multistepControl) {
+                    out.value = this.multistepControl.value;
+                }
+                return out;
+            }
+            return { id: this.activeOption };
         },
     });
 
