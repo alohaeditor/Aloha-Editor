@@ -192,10 +192,10 @@ define([
 					}
 				},
 
-				contextResolve: function(alignment) {
-					that.alignment = alignment;
+				contextResolve: function(selection) {
+					that.alignment = selection.id;
 
-					that.align(alignment);
+					that.align(selection.id);
 
 					if (that.alignmentButton) {
 						that.alignmentButton.setIcon(getAlignmentIcon(that.alignment))

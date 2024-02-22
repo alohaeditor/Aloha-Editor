@@ -445,8 +445,8 @@ define([
 				},
 			}).then(function (ref) {
 				return ref.value;
-			}).then(function (value) {
-				that.setListStyle(type, value);
+			}).then(function (selection) {
+				that.setListStyle(type, selection.id);
 			}).catch(function (error) {
 				if (error instanceof OverlayElement.OverlayCloseError && error.reason === OverlayElement.ClosingReason.ERROR) {
 					console.log(error);
