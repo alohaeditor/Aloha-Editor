@@ -65,6 +65,7 @@ define([
         OUTDENT: 'format_indent_decrease',
         LIST_ORDERED: 'format_list_numbered',
         LIST_UNORDERED: 'format_list_bulleted',
+        LIST_DEFINITION: 'lists',
 
         CHARACTER_PICKER: 'special_character',
         TEXT_COLOR: 'format_color_text',

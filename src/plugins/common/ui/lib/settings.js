@@ -37,7 +37,7 @@
  * @typedef {object} ToolbarSettings
  * @property {ResponsiveToolbarSettings} mobile The settings to use on mobile sized displays.
  * @property {ResponsiveToolbarSettings} tablet The settings to use on tablet sized displays.
- * @property {ResponsiveToolbarSettings} desktop The settings to use on desktop sized displays. 
+ * @property {ResponsiveToolbarSettings} desktop The settings to use on desktop sized displays.
  */
 
 define([
@@ -83,6 +83,7 @@ define([
 				[
 					'alignMenu',
 					// TODO: Add list formatting buttons
+					'listOrdered', 'listUnordered', 'listDefinition', 'listIndentIncrease', 'listIndentDecrease', '\n',
 					{ slot: 'indentList', scope: [SCOPE_LIST] },
 					{ slot: 'outdentList', scope: [SCOPE_LIST] },
 				],
@@ -146,7 +147,7 @@ define([
 	 * Combines/Merges two toolbar configurations.
 	 * Applies the `mergerSettings` onto the `baseSettings`, similar to how `Object.assign` would do it.
 	 * Tabs are only "defined" by the `mergerSettings`, but properties will be properly merged.
-	 * 
+	 *
 	 * @param {ToolbarSettings|ResponsiveToolbarSettings} baseSettings
 	 * @param {ToolbarSettings|ResponsiveToolbarSettings} mergerSettings
 	 */
@@ -185,7 +186,7 @@ define([
 							case 'keep':
 								tmpTab.components = found.components || tab.components;
 								break;
-							
+
 							case 'append':
 								tmpTab.components = combineComponents(found.components || [], tab.components || []);
 								break;
@@ -213,9 +214,9 @@ define([
 	}
 
 	/**
-	 * 
-	 * @param {Array.<ComponentSlot>|Array.<Array<ComponentSlot>>} base 
-	 * @param {Array.<ComponentSlot>|Array.<Array<ComponentSlot>>} additional 
+	 *
+	 * @param {Array.<ComponentSlot>|Array.<Array<ComponentSlot>>} base
+	 * @param {Array.<ComponentSlot>|Array.<Array<ComponentSlot>>} additional
 	 */
 	function combineComponents(base, additional) {
 		if (!Array.isArray(base[0])) {
