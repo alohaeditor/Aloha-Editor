@@ -6,57 +6,57 @@
  * License http://aloha-editor.org/license.php
  */
 define([
-	'aloha',
 	'jquery',
+	'aloha',
 	'PubSub',
 	'aloha/plugin',
 	'aloha/pluginmanager',
 	'aloha/content-rules',
+	'aloha/ephemera',
+	'aloha/console',
 	'ui/ui',
+	'ui/ui-plugin',
 	'ui/icons',
 	'ui/scopes',
 	'ui/button',
 	'ui/contextButton',
 	'ui/toggleButton',
 	'ui/dialog',
+	'ui/dynamicForm',
 	'ui/port-helper-attribute-field',
 	'ui/port-helper-multi-split',
-	'i18n!table/nls/i18n',
-	'i18n!aloha/nls/i18n',
+	'util/dom',
 	'table/table',
 	'table/table-plugin-utils',
 	'table/table-selection',
-	'util/dom',
-	'aloha/ephemera',
-	'aloha/console',
-	'ui/dynamicForm',
-	'table/table-size-select'
+	'table/table-size-select',
+	'i18n!table/nls/i18n'
 ], function (
-	Aloha,
 	$,
+	Aloha,
 	PubSub,
 	Plugin,
 	PluginManager,
 	ContentRules,
+	Ephemera,
+	Console,
 	Ui,
+	UiPlugin,
 	Icons,
 	Scopes,
 	Button,
 	ContextButton,
 	ToggleButton,
 	Dialog,
+	DynamicForm,
 	AttributeField,
 	MultiSplitButton,
-	i18n,
-	i18nCore,
+	Dom,
 	Table,
 	Utils,
 	TableSelection,
-	Dom,
-	Ephemera,
-	Console,
-	DynamicForm,
-	TableSizeSelect
+	TableSizeSelect,
+	i18n
 ) {
 	var jQuery = $;
 	var GENTICS = window.GENTICS;
@@ -89,6 +89,12 @@ define([
 	 * Holds the active table-object
 	 */
 	TablePlugin.activeTable = undefined;
+
+	/**
+	 * The ID of the Tab that contains the main controls for this Plugin.
+	 * Will be swichted to automatically when present and a new table has been inserted.
+	 */
+	TablePlugin.tabId = 'table';
 
 	/**
 	 * parameters-objects for tables
@@ -772,7 +778,7 @@ define([
 
 		this._mergecellsButton = Ui.adopt("mergecells", Button, {
 			tooltip: i18n.t("button.mergecells.tooltip"),
-			icon: Icons.MAPPING.TABLE_MERGE_CELLS,
+			icon: Icons.TABLE_MERGE_CELLS,
 			click: function() {
 				if (TablePlugin.activeTable) {
 					TablePlugin.activeTable.selection.mergeCells();
@@ -782,7 +788,7 @@ define([
 
 		this._splitcellsButton = Ui.adopt("splitcells", Button, {
 			tooltip: i18n.t("button.splitcells.tooltip"),
-			icon: Icons.MAPPING.TABLE_SPLIT_CELLS,
+			icon: Icons.TABLE_SPLIT_CELLS,
 			click: function() {
 				var activeCell;
 				if (TablePlugin.activeTable) {
@@ -807,7 +813,7 @@ define([
 
 		this._mergecellsRowButton = Ui.adopt("mergecellsRow", Button, {
 			tooltip: i18n.t("button.mergecells.tooltip"),
-			icon: Icons.MAPPING.TABLE_MERGE_CELLS,
+			icon: Icons.TABLE_MERGE_CELLS,
 			click: function() {
 				if (TablePlugin.activeTable) {
 					TablePlugin.activeTable.selection.mergeCells();
@@ -817,7 +823,7 @@ define([
 
 		this._splitcellsRowButton = Ui.adopt("splitcellsRow", Button, {
 			tooltip: i18n.t("button.splitcells.tooltip"),
-			icon: Icons.MAPPING.TABLE_SPLIT_CELLS,
+			icon: Icons.TABLE_SPLIT_CELLS,
 			click: function() {
 				if (TablePlugin.activeTable) {
 					TablePlugin.activeTable.selection.splitCells();
@@ -827,7 +833,7 @@ define([
 
 		this._mergecellsColumnButton = Ui.adopt("mergecellsColumn", Button, {
 			tooltip: i18n.t("button.mergecells.tooltip"),
-			icon: Icons.MAPPING.TABLE_MERGE_CELLS,
+			icon: Icons.TABLE_MERGE_CELLS,
 			click: function() {
 				if (TablePlugin.activeTable) {
 					TablePlugin.activeTable.selection.mergeCells();
@@ -837,7 +843,7 @@ define([
 
 		this._splitcellsColumnButton = Ui.adopt("splitcellsColumn", Button, {
 			tooltip: i18n.t("button.splitcells.tooltip"),
-			icon: Icons.MAPPING.TABLE_SPLIT_CELLS,
+			icon: Icons.TABLE_SPLIT_CELLS,
 			click: function() {
 				if (TablePlugin.activeTable) {
 					TablePlugin.activeTable.selection.splitCells();
@@ -878,7 +884,7 @@ define([
 
 		this._addrowbeforeButton = Ui.adopt("addrowbefore", Button, {
 			tooltip: i18n.t( "button.addrowbefore.tooltip"),
-			icon: Icons.MAPPING.TABLE_ADD_ROW_BEFORE,
+			icon: Icons.TABLE_ADD_ROW_BEFORE,
 			iconHollow: true,
 			click: function() {
 				if (that.activeTable) {
@@ -889,7 +895,7 @@ define([
 
 		this._addrowafterButton = Ui.adopt("addrowafter", Button, {
 			tooltip: i18n.t("button.addrowafter.tooltip"),
-			icon: Icons.MAPPING.TABLE_ADD_ROW_AFTER,
+			icon: Icons.TABLE_ADD_ROW_AFTER,
 			iconHollow: true,
 			click: function() {
 				if (that.activeTable) {
@@ -900,7 +906,7 @@ define([
 
 		this._deleterowsButton = Ui.adopt("deleterows", Button, {
 			tooltip: i18n.t("button.delrows.tooltip"),
-			icon: Icons.MAPPING.TABLE_DELETE_ROWS,
+			icon: Icons.TABLE_DELETE_ROWS,
 			click: function() {
 				if (that.activeTable) {
 					var aTable = that.activeTable;
@@ -917,7 +923,7 @@ define([
 
 		this._rowheaderButton = Ui.adopt("rowheader", ToggleButton, {
 			tooltip: i18n.t("button.rowheader.tooltip"),
-			icon: Icons.MAPPING.TABLE_ROW_HEADER,
+			icon: Icons.TABLE_ROW_HEADER,
 			click: function() {
 				if (that.activeTable) {
 					that.activeTable.refresh();
@@ -988,7 +994,7 @@ define([
 
 		this._addcolumnleftButton = Ui.adopt("addcolumnleft", Button, {
 			tooltip: i18n.t("button.addcolleft.tooltip"),
-			icon: Icons.MAPPING.TABLE_ADD_COLUMN_LEFT,
+			icon: Icons.TABLE_ADD_COLUMN_LEFT,
 			iconHollow: true,
 			click: function() {
 				if (that.activeTable) {
@@ -999,7 +1005,7 @@ define([
 
 		this._addcolumnrightButton = Ui.adopt("addcolumnright", Button, {
 			tooltip: i18n.t("button.addcolright.tooltip"),
-			icon: Icons.MAPPING.TABLE_ADD_COLUMN_RIGHT,
+			icon: Icons.TABLE_ADD_COLUMN_RIGHT,
 			iconHollow: true,
 			click: function() {
 				if (that.activeTable) {
@@ -1010,7 +1016,7 @@ define([
 
 		this._deletecolumnsButton = Ui.adopt("deletecolumns", Button, {
 			tooltip: i18n.t("button.delcols.tooltip"),
-			icon: Icons.MAPPING.TABLE_DELETE_COLUMNS,
+			icon: Icons.TABLE_DELETE_COLUMNS,
 			click: function() {
 				if (that.activeTable) {
 					var aTable = that.activeTable;
@@ -1027,7 +1033,7 @@ define([
 
 		this._columnheaderButton = Ui.adopt("columnheader", ToggleButton, {
 			tooltip: i18n.t("button.columnheader.tooltip"),
-			icon: Icons.MAPPING.TABLE_COLUMN_HEADER,
+			icon: Icons.TABLE_COLUMN_HEADER,
 			click: function() {
 				if (that.activeTable) {
 					that.activeTable.refresh();
@@ -1163,7 +1169,7 @@ define([
 
 		this._createTableButton = Ui.adopt("createTable", ContextButton, {
 			tooltip: i18n.t("button.createtable.tooltip"),
-			icon: Icons.MAPPING.TABLE_CREATE,
+			icon: Icons.TABLE_CREATE,
 			context: {
 				type: 'table-size-select',
 				options: {
@@ -1250,7 +1256,7 @@ define([
 
 		this._deleteTableButton = Ui.adopt("deleteTable", Button, {
 			tooltip: i18n.t("button.deltable.tooltip"),
-			icon: Icons.MAPPING.TABLE_DELETE,
+			icon: Icons.TABLE_DELETE,
 			click: function() {
 				if (that.activeTable) {
 					var aTable = that.activeTable;
@@ -1267,7 +1273,7 @@ define([
 
 		this._tableCaptionButton = Ui.adopt("tableCaption", ToggleButton, {
 			tooltip: i18n.t("button.caption.tooltip"),
-			icon: Icons.MAPPING.TABLE_CAPTION,
+			icon: Icons.TABLE_CAPTION,
 			click: function() {
 				if (that.activeTable) {
 					// look if table object has a child caption
@@ -1444,6 +1450,9 @@ define([
 		// accordingly.
 		tableObj.focus();
 		TablePlugin.activeTable.selection.selectionType = 'cell';
+		if (typeof TablePlugin.tabId === 'string' && TablePlugin.tabId) {
+			UiPlugin.getActiveSurface().focusTab(TablePlugin.tabId);
+		}
 		TablePlugin.updateFloatingMenuScope();
 	};
 

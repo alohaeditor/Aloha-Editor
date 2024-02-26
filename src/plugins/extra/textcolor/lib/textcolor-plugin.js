@@ -190,11 +190,11 @@ define([
 			}
 
 			createButton('textColor', 'color', {
-				icon: Icons.MAPPING.TEXT_COLOR,
+				icon: Icons.TEXT_COLOR,
 				tooltip: i18n.t('change-textcolor-color'),
 			});
 			createButton('textBackground', 'background-color', {
-				icon: Icons.MAPPING.BACKGROUND_COLOR,
+				icon: Icons.BACKGROUND_COLOR,
 				tooltip: i18n.t('change-textcolor-background-color'),
 			});
 		}

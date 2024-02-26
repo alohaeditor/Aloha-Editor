@@ -352,7 +352,7 @@ define([
 					activeStateOrRange = !!plugin.findLinkMarkup(activeStateOrRange);
 				}
 				plugin._insertLinkButton.setActive(activeStateOrRange);
-				plugin._insertLinkButton.setIcon(activeStateOrRange ? Icons.MAPPING.UNLINK : Icons.MAPPING.LINK);
+				plugin._insertLinkButton.setIcon(activeStateOrRange ? Icons.UNLINK : Icons.LINK);
 				plugin.toggleLinkScope(activeStateOrRange);
 			}
 
@@ -535,7 +535,7 @@ define([
 
 			this._insertLinkButton = Ui.adopt("insertLink", ToggleSplitButton, {
 				tooltip: i18n.t("button.addlink.tooltip"),
-				icon: Icons.MAPPING.LINK,
+				icon: Icons.LINK,
 				pure: true,
 				contextType: 'modal',
 

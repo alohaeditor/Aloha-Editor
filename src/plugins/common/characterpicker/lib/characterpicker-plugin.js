@@ -1371,7 +1371,7 @@ define([
 
 			Ui.adopt('characterPicker', ContextButton, {
 				tooltip: i18n.t('button.addcharacter.tooltip'),
-				icon: Icons.MAPPING.CHARACTER_PICKER,
+				icon: Icons.CHARACTER_PICKER,
 
 				contextType: 'dropdown',
 				context: function () {

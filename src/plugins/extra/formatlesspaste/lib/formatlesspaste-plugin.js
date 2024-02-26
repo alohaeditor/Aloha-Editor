@@ -92,7 +92,7 @@ define([
 		plugin._toggleFormatlessPasteButton =
 			Ui.adopt('toggleFormatlessPaste', ToggleButton, {
 				tooltip : i18n.t('button.formatlessPaste.tooltip'),
-				icon    : Icons.MAPPING.FORMATLESS_PASTE,
+				icon    : Icons.FORMATLESS_PASTE,
 				click   : function () {
 					// Toggle the value of allowFormatless
 					FormatlessPasteHandler.enabled =

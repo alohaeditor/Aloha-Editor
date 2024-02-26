@@ -62,7 +62,7 @@ define([
 
 			this._imageBrowserButton = Ui.adopt('imageBrowser', Button, {
 				tooltip: i18n.t('button.addimage.tooltip'),
-				icon: Icons.MAPPING.TREE,
+				icon: Icons.TREE,
 				'class': 'aloha-imagebrowser-button',
 				click: function () { browser.open(); }
 			});

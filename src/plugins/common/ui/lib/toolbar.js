@@ -256,6 +256,16 @@ define([
 			}
 		},
 
+		focusTab: function(tabId) {
+			var foundTab = this._tabs.find(function(tab) {
+				return tab.id === tabId;
+			});
+			if (!foundTab) {
+				return;
+			}
+			foundTab.tab.foreground();
+		},
+
 		getActiveContainer: function () {
 			return this.$_container.data('aloha-active-container');
 		},

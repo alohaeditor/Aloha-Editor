@@ -106,6 +106,13 @@ define([
 		openAlertDialog: function(config) {
 			throw Error("Implement this function!");
 		},
+		/**
+		 * Attempts to set a tab as focused/active if this surface supports the toolbar tabs.
+		 * @param {string} tabId The Tab ID which should be focused/marked as active
+		 */
+		focusTab: function(tabId) {
+			// Not implemented
+		},
 
 		/**
 		 * Check for whether or not this surface is active--that is, whether is
@@ -114,7 +121,7 @@ define([
 		 * @eturn {boolean} True if this surface is visible.
 		 */
 		isActive: function () {
-			return true;
+			return this.enabled;
 		}
 	});
 

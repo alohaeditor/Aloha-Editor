@@ -150,7 +150,7 @@ define([
 	function prepareUi(plugin) {
 		plugin._wailangButton = Ui.adopt('wailang', AttributeToggleButton, {
 			tooltip: i18n.t('button.add-wai-lang.tooltip'),
-			icon: Icons.MAPPING.LANGUAGE,
+			icon: Icons.LANGUAGE,
 			targetAttribute: 'lang',
 			inputLabel: 'Language',
 			panelLabel: 'WAI language',

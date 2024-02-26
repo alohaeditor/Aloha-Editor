@@ -348,7 +348,7 @@ define([
 
 			this._quoteButton = Ui.adopt('quote', AttributeToggleButton, {
 				tooltip: i18n.t('cite.button.add.quote'),
-				icon: Icons.MAPPING.QUOTE,
+				icon: Icons.QUOTE,
 				click: function () {
 					if (!plugin.removeQuote()) {
 						plugin.addInlineQuote();

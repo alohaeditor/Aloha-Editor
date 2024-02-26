@@ -76,7 +76,7 @@ define([
 			this._formatNumeratedHeadersButton = Ui.adopt('formatNumeratedHeaders',
 				ToggleButton, {
 					tooltip: i18n.t('button.numeratedHeaders.tooltip'),
-					icon: Icons.MAPPING.NUMERATED_HEADERS,
+					icon: Icons.NUMERATED_HEADERS,
 					click: function () {
 						var buttonPressed = that._formatNumeratedHeadersButton.getState();
 						if (!buttonPressed) {

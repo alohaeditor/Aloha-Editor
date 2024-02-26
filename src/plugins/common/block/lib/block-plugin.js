@@ -251,7 +251,7 @@ define([
 
 			this._toggleDragDropButton = Ui.adopt("toggleDragDrop", ToggleButton, {
 				tooltip: i18n.t('button.toggledragdrop.tooltip'),
-				icon: Icons.MAPPING.TOGGLE_DRAG_AND_DROP,
+				icon: Icons.TOGGLE_DRAG_AND_DROP,
 				click: function () {
 					that._toggleDragdropState(Aloha.activeEditable);
 				}

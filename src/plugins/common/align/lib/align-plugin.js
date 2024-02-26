@@ -102,13 +102,13 @@ define([
 	function getAlignmentIcon(alignment) {
 		switch (alignment) {
 			case 'left':
-				return Icons.MAPPING.ALIGN_LEFT;
+				return Icons.ALIGN_LEFT;
 			case 'center':
-				return Icons.MAPPING.ALIGN_CENTER;
+				return Icons.ALIGN_CENTER;
 			case 'right':
-				return Icons.MAPPING.ALIGN_RIGHT;
+				return Icons.ALIGN_RIGHT;
 			case 'justify':
-				return Icons.MAPPING.ALIGN_JUSTIFY;
+				return Icons.ALIGN_JUSTIFY;
 		}
 	}
 
@@ -147,28 +147,28 @@ define([
 				{
 					id: 'left',
 					label: 'Left',
-					icon: Icons.MAPPING.ALIGN_LEFT,
+					icon: Icons.ALIGN_LEFT,
 				},
 				{
 					id: 'center',
 					label: 'Center',
-					icon: Icons.MAPPING.ALIGN_CENTER,
+					icon: Icons.ALIGN_CENTER,
 				},
 				{
 					id: 'right',
 					label: 'Right',
-					icon: Icons.MAPPING.ALIGN_RIGHT,
+					icon: Icons.ALIGN_RIGHT,
 				},
 				{
 					id: 'justify',
 					label: 'Justify',
-					icon: Icons.MAPPING.ALIGN_JUSTIFY,
+					icon: Icons.ALIGN_JUSTIFY,
 				}
 			];
 
 			that.alignmentButton = Ui.adopt('alignMenu', ContextButton, {
 				tooltip: i18n.t('button.addcharacter.tooltip'),
-				icon: Icons.MAPPING.ALIGN_LEFT,
+				icon: Icons.ALIGN_LEFT,
 				contextType: 'dropdown',
 
 				context: function() {

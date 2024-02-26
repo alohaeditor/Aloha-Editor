@@ -281,7 +281,7 @@ define('format/format-plugin', [
 	function makeRemoveFormatButton(formatPlugin) {
 		return Ui.adopt('removeFormat', Button, {
 			tooltip: i18n.t('button.removeFormat.tooltip'),
-			icon: Icons.MAPPING.CLEAR,
+			icon: Icons.CLEAR,
 			click: function () {
 				formatPlugin.removeFormat();
 			}
@@ -497,7 +497,7 @@ define('format/format-plugin', [
 				formatPlugin.typographyButton.deactivateInput();
 			}
 
-			formatPlugin.typographyButton.setIcon(formatPlugin.TYPOGRAPHY_ICONS[effectiveTypo] || Icons.MAPPING.TYPOGRAPHY);
+			formatPlugin.typographyButton.setIcon(formatPlugin.TYPOGRAPHY_ICONS[effectiveTypo] || Icons.TYPOGRAPHY);
 		}
 
 		handlePreformattedText(rangeObject.commonAncestorContainer);
@@ -624,27 +624,27 @@ define('format/format-plugin', [
 		},
 
 		TYPOGRAPHY_ICONS: {
-			'p': Icons.MAPPING.PARAGRAPH,
-			'h1': Icons.MAPPING.HEADER_1,
-			'h2': Icons.MAPPING.HEADER_2,
-			'h3': Icons.MAPPING.HEADER_3,
-			'h4': Icons.MAPPING.HEADER_4,
-			'h5': Icons.MAPPING.HEADER_5,
-			'h6': Icons.MAPPING.HEADER_6,
-			'pre': Icons.MAPPING.PRE_FORMATTED,
-			'blockquote': Icons.MAPPING.QUOTE,
+			'p': Icons.PARAGRAPH,
+			'h1': Icons.HEADER_1,
+			'h2': Icons.HEADER_2,
+			'h3': Icons.HEADER_3,
+			'h4': Icons.HEADER_4,
+			'h5': Icons.HEADER_5,
+			'h6': Icons.HEADER_6,
+			'pre': Icons.PRE_FORMATTED,
+			'blockquote': Icons.QUOTE,
 		},
 
 		FORMATTING_ICONS: {
-			'bold': Icons.MAPPING.BOLD,
-			'italic': Icons.MAPPING.ITALIC,
-			'strikethrough': Icons.MAPPING.STRIKE_THROUGH,
-			'strikethrough2': Icons.MAPPING.STRIKE_THROUGH,
-			'subscript': Icons.MAPPING.SUB_SCRIPT,
-			'superscript': Icons.MAPPING.SUPER_SCRIPT,
-			'underline': Icons.MAPPING.UNDERLINE,
-			'abbr': Icons.MAPPING.ABBREVIATION,
-			'code': Icons.MAPPING.CODE,
+			'bold': Icons.BOLD,
+			'italic': Icons.ITALIC,
+			'strikethrough': Icons.STRIKE_THROUGH,
+			'strikethrough2': Icons.STRIKE_THROUGH,
+			'subscript': Icons.SUB_SCRIPT,
+			'superscript': Icons.SUPER_SCRIPT,
+			'underline': Icons.UNDERLINE,
+			'abbr': Icons.ABBREVIATION,
+			'code': Icons.CODE,
 		},
 
 		/**
@@ -850,15 +850,15 @@ define('format/format-plugin', [
 				}
 			});
 
-			this.typographyButton = Ui.adopt('formatBlock', AttributeButton, {
-				icon: Icons.MAPPING.TYPOGRAPHY,
+			this.typographyButton = Ui.adopt('typographyMenu', AttributeButton, {
+				icon: Icons.TYPOGRAPHY,
 				targetAttribute: 'id',
 				// TODO: Add translations
 				inputLabel: 'Heading Anchor',
 				panelLabel: 'Heading IDs',
 
 				click: function () {
-					Dropdown.openDynamicDropdown('formatBlock', {
+					Dropdown.openDynamicDropdown('typographyMenu', {
 						type: 'select-menu',
 						options: {
 							iconsOnly: true,

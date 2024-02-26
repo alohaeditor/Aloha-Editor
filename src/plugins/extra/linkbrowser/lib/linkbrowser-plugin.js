@@ -44,7 +44,7 @@ define([
 
 			this._linkBrowserButton = Ui.adopt('linkBrowser', Button, {
 				tooltip: i18n.t('button.addlink.tooltip'),
-				icon: Icons.MAPPING.TREE,
+				icon: Icons.TREE,
 				click: function () {
 					that.show();
 				}

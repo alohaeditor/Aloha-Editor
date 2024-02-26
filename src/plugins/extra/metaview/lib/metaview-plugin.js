@@ -105,13 +105,7 @@ define([
 	 *
 	 * @type {ToggleButton}
 	 */
-	var METAVIEW_TOGGLE_BUTTON = Ui.adopt('toggleMetaView', ToggleButton, {
-		tooltip : i18n.t('button.switch-metaview.tooltip'),
-		icon: Icons.MAPPING.META_VIEW,
-		click: function () {
-			toggle(Aloha.activeEditable.obj, this);
-		}
-	});
+	var METAVIEW_TOGGLE_BUTTON;
 
 	/**
 	 * Gets the configuration for the given editable/plugin combination.
@@ -153,6 +147,14 @@ define([
 		config: ['metaview'],
 		init: function () {
 			var plugin = this;
+
+			METAVIEW_TOGGLE_BUTTON = Ui.adopt('toggleMetaView', ToggleButton, {
+				tooltip : i18n.t('button.switch-metaview.tooltip'),
+				icon: Icons.META_VIEW,
+				click: function () {
+					toggle(Aloha.activeEditable.obj, this);
+				}
+			});
 
 			Aloha.bind('aloha-editable-activated', function () {
 				var config = getConfiguration(plugin, Aloha.activeEditable.obj);

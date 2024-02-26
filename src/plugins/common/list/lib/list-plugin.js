@@ -76,7 +76,7 @@ define([
 	function initializeTemplates(plugin) {
 		plugin.orderedListButton = Ui.adopt('listOrdered', ToggleSplitButton, {
 			tooltip: i18n.t('button.listordered.tooltip'),
-			icon: Icons.MAPPING.LIST_ORDERED,
+			icon: Icons.LIST_ORDERED,
 			pure: true,
 			contextType: 'dropdown',
 
@@ -95,7 +95,7 @@ define([
 
 		plugin.unorderedListButton = Ui.adopt('listUnordered', ToggleSplitButton, {
 			tooltip: i18n.t('button.listunordered.tooltip'),
-			icon: Icons.MAPPING.LIST_UNORDERED,
+			icon: Icons.LIST_UNORDERED,
 			pure: true,
 			contextType: 'dropdown',
 
@@ -114,7 +114,7 @@ define([
 
 		plugin.definitionListButton = Ui.adopt('listDefinition', ToggleSplitButton, {
 			tooltip: i18n.t('button.listdefinition.tooltip'),
-			icon: Icons.MAPPING.LIST_DEFINITION,
+			icon: Icons.LIST_DEFINITION,
 			pure: true,
 			contextType: 'dropdown',
 
@@ -462,7 +462,7 @@ define([
 
 			plugin._indentListButton = Ui.adopt('indentList', Button, {
 				tooltip: i18n.t('button.indentlist.tooltip'),
-				icon: Icons.MAPPING.INDENT,
+				icon: Icons.INDENT,
 				click: function () {
 					plugin.indentList();
 				}
@@ -470,7 +470,7 @@ define([
 
 			plugin._outdentListButton = Ui.adopt('outdentList', Button, {
 				tooltip: i18n.t('button.outdentlist.tooltip'),
-				icon: Icons.MAPPING.OUTDENT,
+				icon: Icons.OUTDENT,
 				click: function () {
 					plugin.outdentList();
 				}

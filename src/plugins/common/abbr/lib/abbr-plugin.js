@@ -108,7 +108,7 @@ define([
 
 			this._formatAbbrButton = Ui.adopt("formatAbbr", AttributeToggleButton, {
 				tooltip: i18n.t("button.abbr.tooltip"),
-				icon: Icons.MAPPING.ABBREVIATION,
+				icon: Icons.ABBREVIATION,
 				targetAttribute: 'title',
 				inputLabel: 'Title',
 				panelLabel: 'Abbreviation',

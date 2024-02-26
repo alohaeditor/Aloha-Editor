@@ -1,8 +1,4 @@
-define([
-    'jquery'
-], function(
-    $
-) {
+define([], function() {
     'use strict';
 
     var MAPPING = {
@@ -16,6 +12,7 @@ define([
         SUPER_SCRIPT: 'superscript',
         ABBREVIATION: 'book',
         CODE: 'code',
+        QUOTE: 'format_quote',
         CLEAR: 'format_clear',
 
         TYPOGRAPHY: 'format_size',
@@ -29,11 +26,8 @@ define([
         PRE_FORMATTED: 'segment',
 
         LANGUAGE: 'language',
-        META_VIEW: 'mystery',
         NUMERATED_HEADERS: '123',
         VIDEO_DELETE: 'videocam_off',
-
-        QUOTE: 'format_quote',
 
         LINK: 'link',
         UNLINK: 'link_off',
@@ -73,9 +67,16 @@ define([
 
         PASTE: 'content_paste',
         FORMATLESS_PASTE: 'content_paste_go',
+        META_VIEW: 'mystery',
+        HORIZONTAL_RULE: 'horizontal_rule',
+
+        // Tabs
+        FORMATTING: 'edit',
+        INSERT: 'add_box',
+        VIEW: 'visibility',
+        TABLE: 'table',
+        IMAGE: 'image',
     };
 
-    return {
-        MAPPING: MAPPING,
-    }
+    return MAPPING;
 });

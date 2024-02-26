@@ -41,14 +41,10 @@
  */
 
 define([
-	'jquery',
-	'util/maps',
-	'util/trees',
+	'ui/icons',
 	'i18n!ui/nls/i18n'
 ], function (
-	$,
-	Maps,
-	Trees,
+	Icons,
 	i18n
 ) {
 	'use strict';
@@ -64,7 +60,7 @@ define([
 		{
 			id: 'formatting',
 			label: 'tab.format.label',
-			icon: 'edit',
+			icon: Icons.FORMATTING,
 			components: [
 				[
 					'bold',
@@ -82,45 +78,67 @@ define([
 				// List settings
 				[
 					'alignMenu',
-					// TODO: Add list formatting buttons
-					'listOrdered', 'listUnordered', 'listDefinition', 'listIndentIncrease', 'listIndentDecrease', '\n',
+					'listOrdered', 'listUnordered', 'listDefinition',
 					{ slot: 'indentList', scope: [SCOPE_LIST] },
 					{ slot: 'outdentList', scope: [SCOPE_LIST] },
 				],
-				// Table settings
-				[
-					{ slot: 'deleteTable', scope: [SCOPE_TABLE] },
-					{ slot: 'tableCaption', scope: [SCOPE_TABLE] },
-					{ slot: 'mergecells', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
-					{ slot: 'splitcells', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
-					{ slot: 'addrowbefore', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
-					{ slot: 'addrowafter', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
-					// { slot: 'deleterows', scope: [SCOPE_TABLE_ROW] },
-					// { slot: 'rowheader', scope: [SCOPE_TABLE_ROW] },
-					{ slot: 'addcolumnleft', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
-					{ slot: 'addcolumnright', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
-					// { slot: 'deletecolumns', scope: [SCOPE_TABLE_ROW] },
-					// { slot: 'columnheader', scope: [SCOPE_TABLE_ROW] },
-				],
-				[ 'textColor', 'textBackground', 'formatBlock', 'alignMenu' ],
+				[ 'textColor', 'textBackground', 'typographyMenu', 'alignMenu' ],
 				[ 'insertLink' ],
-				[ 'toggleDragDrop', 'toggleMetaView', 'toggleFormatlessPaste' ],
 			]
 		},
 		{
 			id: 'insert',
 			label: 'tab.insert.label',
-			icon: 'add_box',
+			icon: Icons.INSERT,
 			components: [
 				[ 'characterPicker', 'insertHorizontalRule', 'createTable', 'insertToc', 'insertAbbr' ],
 			]
 		},
-		// TODO: Check Image settings
+		{
+			id: 'view',
+			label: 'tab.view.label',
+			icon: Icons.VIEW,
+			components: [
+				'toggleDragDrop',
+				'toggleMetaView',
+				'toggleFormatlessPaste',
+			]
+		},
+		{
+			id: 'table',
+			label: 'tab.table.label',
+			icon: Icons.TABLE,
+			showOn: { scope: SCOPE_TABLE },
+			components: [
+				[
+					{ slot: 'deleteTable', scope: [SCOPE_TABLE] },
+					{ slot: 'tableCaption', scope: [SCOPE_TABLE] },
+				],
+				[
+					{ slot: 'mergecells', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
+					{ slot: 'splitcells', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
+				],
+				[
+					{ slot: 'addrowbefore', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
+					{ slot: 'addrowafter', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
+					// { slot: 'deleterows', scope: [SCOPE_TABLE_ROW] },
+					// { slot: 'rowheader', scope: [SCOPE_TABLE_ROW] },
+				],
+				[
+					{ slot: 'addcolumnleft', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
+					{ slot: 'addcolumnright', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
+					// { slot: 'deletecolumns', scope: [SCOPE_TABLE_ROW] },
+					// { slot: 'columnheader', scope: [SCOPE_TABLE_ROW] },
+				]
+			]
+		},
 		{
 			id: 'image',
 			label: "tab.img.label",
-			icon: 'image',
-			showOn: {scope: 'image'},
+			icon: Icons.IMAGE,
+			showOn: {
+				scope: 'image',
+			},
 			components: [
 				[ "imageSource", "imageTitle" ],
 				[ "imageResizeWidth", "imageResizeHeight" ],
@@ -281,65 +299,6 @@ define([
 		});
 
 		return settings;
-	}
-
-	function remainingDefaultTabs(defaultTabs, exclusionLookup, pruneDefaultComponents) {
-		var i,
-		    tab,
-		    tabs = [],
-		    defaultTab,
-		    components;
-		for (i = 0; i < defaultTabs.length; i++) {
-			defaultTab = defaultTabs[i];
-			if (!exclusionLookup[defaultTab.label]) {
-				components = Trees.postprune(defaultTab.components, pruneDefaultComponents);
-				if (components) {
-					tab = $.extend({}, defaultTab);
-					tab.components = components;
-					tabs.push(tab);
-				}
-			}
-		}
-		return tabs;
-	}
-
-	function mergeDefaultComponents(userTabs, defaultTabsByLabel, pruneDefaultComponents) {
-		var i,
-			tab,
-			tabs = [],
-			userTab,
-			components,
-			defaultTab,
-			defaultComponents;
-
-		for (i = 0; i < userTabs.length; i++) {
-			userTab = userTabs[i];
-			components = userTab.components || [];
-			defaultTab = defaultTabsByLabel[userTab.label];
-			if (!userTab.exclusive && defaultTab) {
-				defaultComponents = Trees.postprune(defaultTab.components, pruneDefaultComponents);
-				if (defaultComponents) {
-					components = components.concat(defaultComponents);
-				}
-			}
-			tab = $.extend({}, defaultTab || {}, userTab);
-			tab.components = components;
-			tabs.push(tab);
-		}
-		return tabs;
-	}
-
-	function makeExclusionMap(userTabs, exclude) {
-		if (!Array.isArray(exclude)) {
-			exclude = [];
-		}
-		var i,
-		    map = Maps.fillKeys({}, exclude, true);
-		for (i = 0; i < userTabs.length; i++) {
-			map[userTabs[i].label] = true;
-			Maps.fillKeys(map, Trees.flatten(userTabs[i].components), true);
-		}
-		return map;
 	}
 
 	return {

@@ -6,23 +6,25 @@
  * License http://aloha-editor.org/license.php
  */
 define([
-	'aloha',
 	'jquery',
+	'aloha',
 	'PubSub',
 	'aloha/plugin',
 	'aloha/content-rules',
 	'util/dom',
 	'ui/ui',
+	'ui/icons',
 	'ui/button',
 	'i18n!horizontalruler/nls/i18n'
 ], function (
-	Aloha,
 	$,
+	Aloha,
 	PubSub,
 	Plugin,
 	ContentRules,
 	Dom,
 	Ui,
+	Icons,
 	Button,
 	i18n
 ) {
@@ -38,12 +40,7 @@ define([
 		}
 	}
 
-	var button = Ui.adopt('insertHorizontalRule', Button, {
-		tooltip: i18n.t('button.addhr.tooltip'),
-		iconOnly: true,
-		icon: 'aloha-icon-horizontalruler',
-		click: insertHR
-	});
+	var button;
 
 	return Plugin.create('horizontalruler', {
 
@@ -55,6 +52,13 @@ define([
 
 		init: function () {
 			var plugin = this;
+
+			button = Ui.adopt('insertHorizontalRule', Button, {
+				tooltip: i18n.t('button.addhr.tooltip'),
+				iconOnly: true,
+				icon: Icons.HORIZONTAL_RULE,
+				click: insertHR
+			});
 
 			PubSub.sub('aloha.editable.created', function (message) {
 				var editable = message.editable;

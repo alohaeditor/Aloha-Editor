@@ -46,13 +46,8 @@ define({
 	"button.blockquote.label": "Zitat einfügen",
 	"tab.format.label": "Formatierung",
 	"tab.insert.label": "Einfügen",
-	"tab.abbr.label": "Abkürzung",
+	"tab.view.label": "Ansicht",
 	"tab.img.label": "Bild",
-	"tab.link.label": "Verweis",
-	"tab.list.label": "Liste",
 	"tab.table.label": "Tabelle",
-	"tab.col.label": "Tabellenspalte",
-	"tab.row.label": "Tabellenzeile",
-	"tab.cell.label": "Tabellenzelle",
 	"tab.wai-lang.label": "Sprachauszeichnung"
 });

@@ -109,7 +109,7 @@ define([
 
 			plugin._insertTocButton = Ui.adopt('insertToc', Button, {
 		        tooltip: i18n.t('button.addtoc.tooltip'),
-		        icon: Icons.MAPPING.LIST_ORDERED,
+		        icon: Icons.LIST_ORDERED,
 		        click: function () {
 					plugin.insertAtSelection($containers);
 				}

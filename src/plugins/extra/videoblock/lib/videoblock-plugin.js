@@ -104,7 +104,7 @@ define([
 
 			var removeVideoButton = Ui.adopt("remove-video", Button, {
 				tooltip: i18n.t("button.removevideo.tooltip"),
-				icon: Icons.MAPPING.VIDEO_DELETE,
+				icon: Icons.VIDEO_DELETE,
 				click: removeVideoBlock
 			});
 		},
