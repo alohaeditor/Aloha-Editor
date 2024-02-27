@@ -72,7 +72,7 @@ define([
 					'code',
 					'cite',
 					'quote',
-					'abbr',
+					'formatAbbr',
 				],
 				[ 'removeFormat' ],
 				// List settings
@@ -82,7 +82,8 @@ define([
 					{ slot: 'indentList', scope: [SCOPE_LIST] },
 					{ slot: 'outdentList', scope: [SCOPE_LIST] },
 				],
-				[ 'textColor', 'textBackground', 'typographyMenu', 'alignMenu' ],
+				[ 'textColor', 'textBackground'],
+				[ 'typographyMenu' ],
 				[ 'insertLink' ],
 			]
 		},
@@ -91,7 +92,7 @@ define([
 			label: 'tab.insert.label',
 			icon: Icons.INSERT,
 			components: [
-				[ 'characterPicker', 'insertHorizontalRule', 'createTable', 'insertToc', 'insertAbbr' ],
+				[ 'characterPicker', 'insertHorizontalRule', 'createTable', 'insertToc' ],
 			]
 		},
 		{

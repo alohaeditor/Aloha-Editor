@@ -52,6 +52,14 @@ define([
 	var states = {};
 
 	/**
+	 * Singleton meta view toggle button to be used across all meta view plugin
+	 * instances.
+	 *
+	 * @type {ToggleButton}
+	 */
+	var METAVIEW_TOGGLE_BUTTON;
+
+	/**
 	 * Checks whether the given editable is has metaview enabled.
 	 *
 	 * @param {jQuery<HTMLElement>} $editable
@@ -65,11 +73,10 @@ define([
 	 * Enables metaview for the given editable, and update UI appropriately.
 	 *
 	 * @param {jQuery<HTMLElement>} $editable
-	 * @param {ToggleButton} button
 	 */
-	function enable($editable, button) {
+	function enable($editable) {
 		$editable.addClass('aloha-metaview');
-		button.setState(true);
+		METAVIEW_TOGGLE_BUTTON.activate();
 		states[$editable[0].id] = true;
 	}
 
@@ -77,11 +84,10 @@ define([
 	 * Disables metaview for the given editable, and update UI appropriately.
 	 *
 	 * @param {jQuery<HTMLElement>} $editable
-	 * @param {ToggleButton} button
 	 */
-	function disable($editable, button) {
+	function disable($editable) {
 		$editable.removeClass('aloha-metaview');
-		button.setState(false);
+		METAVIEW_TOGGLE_BUTTON.deactivate();
 		states[$editable[0].id] = false;
 	}
 
@@ -89,23 +95,18 @@ define([
 	 * Toggles metaview on the given editable.
 	 *
 	 * @param {jQuery<HTMLElement>} $editable
-	 * @param {ToggleButton} button
 	 */
-	function toggle($editable, button) {
+	function toggle($editable) {
+		if (!$editable) {
+			return;
+		}
+
 		if (enabled($editable)) {
-			disable($editable, button);
+			disable($editable);
 		} else {
-			enable($editable, button);
+			enable($editable);
 		}
 	}
-
-	/**
-	 * Singleton meta view toggle button to be used across all meta view plugin
-	 * instances.
-	 *
-	 * @type {ToggleButton}
-	 */
-	var METAVIEW_TOGGLE_BUTTON;
 
 	/**
 	 * Gets the configuration for the given editable/plugin combination.
@@ -151,8 +152,11 @@ define([
 			METAVIEW_TOGGLE_BUTTON = Ui.adopt('toggleMetaView', ToggleButton, {
 				tooltip : i18n.t('button.switch-metaview.tooltip'),
 				icon: Icons.META_VIEW,
+				pure: true,
 				click: function () {
-					toggle(Aloha.activeEditable.obj, this);
+					if (Aloha.activeEditable != null && Aloha.activeEditable.obj != null) {
+						toggle(Aloha.activeEditable.obj);
+					}
 				}
 			});
 
@@ -161,19 +165,13 @@ define([
 
 				if (isAutomaticallyEnabled(config)) {
 					METAVIEW_TOGGLE_BUTTON.show(true);
-					enable(Aloha.activeEditable.obj, METAVIEW_TOGGLE_BUTTON);
+					enable(Aloha.activeEditable.obj);
 				} else if (isPluginActivated(config)) {
 					METAVIEW_TOGGLE_BUTTON.show(true);
 					if (enabled(Aloha.activeEditable.obj)) {
-						enable(
-							Aloha.activeEditable.obj,
-							METAVIEW_TOGGLE_BUTTON
-						);
+						enable(Aloha.activeEditable.obj);
 					} else {
-						disable(
-							Aloha.activeEditable.obj,
-							METAVIEW_TOGGLE_BUTTON
-						);
+						disable(Aloha.activeEditable.obj);
 					}
 				} else {
 					METAVIEW_TOGGLE_BUTTON.show(false);
@@ -181,7 +179,7 @@ define([
 			});
 
 			Aloha.bind('aloha-editable-deactivated', function () {
-				Aloha.activeEditable.obj.removeClass('aloha-metaview');
+				disable(Aloha.activeEditable.obj);
 			});
 		}
 	});

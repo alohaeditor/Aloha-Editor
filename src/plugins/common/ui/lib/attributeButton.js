@@ -108,11 +108,11 @@ define([
             this.triggerChangeNotification();
         },
 
-        updateTargetElement: function (element) {
+        setTargetElement: function (element) {
             if (element == null || element.length === 0) {
                 this.targetElement = null;
             } else {
-                this.targetElement = $(element);
+                this.targetElement = element;
             }
 
             if (this.panelInputElement) {

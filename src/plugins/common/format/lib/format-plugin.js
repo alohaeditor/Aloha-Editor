@@ -489,7 +489,7 @@ define('format/format-plugin', [
 			}
 
 			formatPlugin.activeTypography = effectiveTypo;
-			formatPlugin.typographyButton.updateTargetElement(typoElement);
+			formatPlugin.typographyButton.setTargetElement($(typoElement));
 
 			if (effectiveTypo && formatPlugin.headerNodeNames.includes(effectiveTypo)) {
 				formatPlugin.typographyButton.activateInput();

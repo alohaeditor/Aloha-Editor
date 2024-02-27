@@ -235,7 +235,7 @@ define([
 				if (markup) {
 					plugin._wailangButton.setActive(true);
 					plugin._wailangButton.activateInput(true);
-					plugin._wailangButton.updateTargetElement(markup);
+					plugin._wailangButton.setTargetElement($(markup));
 					Scopes.enterScope(plugin.name);
 				} else {
 					plugin._wailangButton.setActive(false);

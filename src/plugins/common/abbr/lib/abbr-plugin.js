@@ -72,11 +72,12 @@ define([
 			if (foundMarkup) {
 				plugin._formatAbbrButton.setActive(true);
 				plugin._formatAbbrButton.activateInput(true);
-				plugin._formatAbbrButton.updateTargetElement(foundMarkup);
+				plugin._formatAbbrButton.setTargetElement($(foundMarkup));
 				Scopes.enterScope(plugin.name);
 			} else {
 				plugin._formatAbbrButton.setActive(false);
 				plugin._formatAbbrButton.deactivateInput();
+				plugin._formatAbbrButton.setTargetElement(null);
 				Scopes.leaveScope(plugin.name);
 			}
 		});

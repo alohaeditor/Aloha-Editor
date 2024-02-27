@@ -52,7 +52,7 @@ define([
 	Plugin,
 	Ephemera,
 	jQuery,
-	ContentHandlerManager, 
+	ContentHandlerManager,
 	BlockManager,
 	SidebarAttributeEditor,
 	block,
@@ -62,7 +62,7 @@ define([
 	dragBehavior,
 	Ui,
 	Icons,
-	ToggleButton, 
+	ToggleButton,
 	i18n,
 	i18nCore
 ) {
@@ -74,11 +74,11 @@ define([
 	 * Register the 'block' plugin
 	 */
 	var BlockPlugin = Plugin.create('block', {
-		
+
 		/**
 		 * default button configuration
 		 */
-		config: [], 
+		config: [],
 
 		settings: {},
 
@@ -145,6 +145,17 @@ define([
 				that.applyButtonConfig(params.editable);
 			});
 
+			Aloha.bind('aloha-editable-deactivated', function (e, params) {
+				// No more editable focused, and global dnd isn't enabled
+				if (params.newEditable == null) {
+					if (that._globalEnabled()) {
+						that._toggleDragDropButton.setActive(BlockManager.getDragDropState());
+					} else {
+						that._toggleDragDropButton.deactivate();
+						that._toggleDragDropButton.hide();
+					}
+				}
+			});
 		},
 
 		/**
@@ -158,10 +169,16 @@ define([
 		applyButtonConfig: function (editable) {
 			if (this._isDragdropToggleEnabled(editable)) {
 				this._toggleDragDropButton.show();
-				this._toggleDragDropButton.setValue(this._getDragdropState(editable));
+				this._toggleDragDropButton.setActive(this._getDragdropState(editable));
 			} else {
 				this._toggleDragDropButton.hide();
 			}
+		},
+
+		_globalEnabled: function () {
+			return this.settings != null
+				&& this.settings.config != null
+				&& !!this.settings.config.toggleDragdropGlobal;
 		},
 
 		/**
@@ -177,22 +194,24 @@ define([
 		 *        turned on either globally, or for the given editable.
 		 */
 		_isDragdropToggleEnabled: function (editable) {
-			var config = this.getEditableConfig(editable.obj);
+			var config = editable != null && editable.obj != null
+				? this.getEditableConfig(editable.obj)
+				: null;
 
 			// toggle drag & drop option can be set as
 			// config: {'toggeleDragdrop': true} or
 			// config: ['toggleDragdrop']
 			var toggleDragdropConfigured = function () {
-				return (config[0] === "toggleDragdrop") ||
-								config.toggleDragdrop == true	||
-								config.toggleDragdrop == 'true'	||
-								config.toggleDragdrop == 1		||
-								config.toggleDragdrop == '1';
+				return config != null && (
+					(config[0] === "toggleDragdrop")
+					|| config.toggleDragdrop == true
+					|| config.toggleDragdrop == 'true'
+					|| config.toggleDragdrop == 1
+					|| config.toggleDragdrop == '1'
+				);
 			};
 
-			var toggleGloballyOrPerEditable =
-				((this.settings && this.settings.config && this.settings.config.toggleDragdropGlobal) ||
-				 toggleDragdropConfigured());
+			var toggleGloballyOrPerEditable = (this._globalEnabled() || toggleDragdropConfigured());
 			return toggleGloballyOrPerEditable && this.isDragDropEnabled();
 		},
 
@@ -208,9 +227,9 @@ define([
 		 *        globally, or for the given editable.
 		 */
 		_getDragdropState: function (editable) {
-			return ((this.settings && this.settings.config && this.settings.config.toggleDragdropGlobal) ?
-					BlockManager.getDragDropState() :
-					editable.obj.data("block-dragdrop"));
+			return this._globalEnabled()
+				? BlockManager.getDragDropState()
+				: editable.obj.data("block-dragdrop");
 		},
 
 		/**
@@ -228,7 +247,7 @@ define([
 		 *        Only used if !toggleDragdropGlobal.
 		 */
 		_toggleDragdropState: function (editable) {
-			if (this.settings && this.settings.config && this.settings.config.toggleDragdropGlobal) {
+			if (this._globalEnabled()) {
 				var dragdropState = !BlockManager.getDragDropState();
 				// Setting the dragdrop state in the block manager
 				// ensures that newly created editables will receive the
@@ -240,9 +259,11 @@ define([
 						this._setDragDropStateForEditable(editable.obj, dragdropState);
 					}
 				}
+				this._toggleDragDropButton.setActive(dragdropState);
 			} else if (editable && editable.obj) {
 				var toggleState = !editable.obj.data("block-dragdrop");
 				this._setDragDropStateForEditable(editable.obj, toggleState);
+				this._toggleDragDropButton.setActive(toggleState);
 			}
 		},
 
@@ -252,8 +273,12 @@ define([
 			this._toggleDragDropButton = Ui.adopt("toggleDragDrop", ToggleButton, {
 				tooltip: i18n.t('button.toggledragdrop.tooltip'),
 				icon: Icons.TOGGLE_DRAG_AND_DROP,
+				pure: true,
+				visible: this._globalEnabled(),
 				click: function () {
-					that._toggleDragdropState(Aloha.activeEditable);
+					if (that._isDragdropToggleEnabled(Aloha.activeEditable)) {
+						that._toggleDragdropState(Aloha.activeEditable);
+					}
 				}
 			});
 		},
@@ -268,10 +293,10 @@ define([
 			var dropzones = (config && config.dropzones) || that.settings.dropzones;
 
 			if (dropzones) {
-				editable.data('block-dropzones', dropzones);	
+				editable.data('block-dropzones', dropzones);
 			} else {
 				// if dropzones are undefined all editables should be dropzones
-				editable.data('block-dropzones', [".aloha-editable"]);	
+				editable.data('block-dropzones', [".aloha-editable"]);
 			}
 		},
 
@@ -283,9 +308,9 @@ define([
 			if (this.settings && typeof this.settings.dragdrop !== "undefined") {
 				// Normalize config
 				return (
-					this.settings.dragdrop === true   ||
+					this.settings.dragdrop === true ||
 					this.settings.dragdrop === 'true' ||
-					this.settings.dragdrop === 1      ||
+					this.settings.dragdrop === 1 ||
 					this.settings.dragdrop === '1'
 				);
 			} else {
@@ -307,12 +332,15 @@ define([
 
 		/**
 		 * Set the drag & drop state for the given editable.
+		 *
+		 * @param {JQuery} $editable The editable the state should be applied to
+		 * @param {boolean} state The drag'n'drop state for this editable (Enabled/Disabled)
 		 */
 		_setDragDropStateForEditable: function ($editable, state) {
 			$editable.data("block-dragdrop", state);
 
 			if ($editable.hasClass("ui-sortable")) {
-				$editable.sortable("option", "disabled", !state);	
+				$editable.sortable("option", "disabled", !state);
 			}
 
 			$editable.find(".aloha-block.ui-draggable").each(function () {

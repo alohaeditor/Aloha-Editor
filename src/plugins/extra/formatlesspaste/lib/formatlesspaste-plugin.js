@@ -45,7 +45,7 @@ define([
 	FormatlessPasteHandler,
 	ContentHandlerManager,
 	i18n,
-    Html
+	Html
 ) {
 	'use strict';
 
@@ -70,7 +70,7 @@ define([
 		var parsed = {};
 		if (typeof config.formatlessPasteOption !== 'undefined') {
 			parsed.formatlessPasteOption =
-					normalizeToBoolean(config.formatlessPasteOption);
+				normalizeToBoolean(config.formatlessPasteOption);
 		}
 		if (typeof config.strippedElements !== 'undefined') {
 			parsed.strippedElements = config.strippedElements;
@@ -89,16 +89,17 @@ define([
 		ContentHandlerManager.register('formatless', FormatlessPasteHandler);
 		FormatlessPasteHandler.strippedElements = config.strippedElements || Html.TEXT_LEVEL_SEMANTIC_ELEMENTS;
 
-		plugin._toggleFormatlessPasteButton =
-			Ui.adopt('toggleFormatlessPaste', ToggleButton, {
-				tooltip : i18n.t('button.formatlessPaste.tooltip'),
-				icon    : Icons.FORMATLESS_PASTE,
-				click   : function () {
-					// Toggle the value of allowFormatless
-					FormatlessPasteHandler.enabled =
-						!FormatlessPasteHandler.enabled;
-				}
-			});
+		plugin._toggleFormatlessPasteButton = Ui.adopt('toggleFormatlessPaste', ToggleButton, {
+			tooltip: i18n.t('button.formatlessPaste.tooltip'),
+			icon: Icons.FORMATLESS_PASTE,
+			pure: true,
+			active: FormatlessPasteHandler.enabled,
+			click: function () {
+				// Toggle the value of allowFormatless
+				FormatlessPasteHandler.enabled = !FormatlessPasteHandler.enabled;
+				plugin._toggleFormatlessPasteButton.setActive(FormatlessPasteHandler.enabled);
+			}
+		});
 
 		plugin._toggleFormatlessPasteButton.show(plugin.button);
 
