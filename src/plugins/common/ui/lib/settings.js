@@ -84,7 +84,7 @@ define([
 				],
 				[ 'textColor', 'textBackground'],
 				[ 'typographyMenu' ],
-				[ 'insertLink' ],
+				[ 'insertLink', 'wailang' ],
 			]
 		},
 		{
@@ -103,6 +103,7 @@ define([
 				'toggleDragDrop',
 				'toggleMetaView',
 				'toggleFormatlessPaste',
+				'formatNumeratedHeaders',
 			]
 		},
 		{
@@ -120,16 +121,16 @@ define([
 					{ slot: 'splitcells', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
 				],
 				[
+					{ slot: 'deleterows', scope: [SCOPE_TABLE_ROW] },
+					{ slot: 'rowheader', scope: [SCOPE_TABLE_ROW] },
 					{ slot: 'addrowbefore', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
 					{ slot: 'addrowafter', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
-					// { slot: 'deleterows', scope: [SCOPE_TABLE_ROW] },
-					// { slot: 'rowheader', scope: [SCOPE_TABLE_ROW] },
 				],
 				[
+					{ slot: 'deletecolumns', scope: [SCOPE_TABLE_ROW] },
+					{ slot: 'columnheader', scope: [SCOPE_TABLE_ROW] },
 					{ slot: 'addcolumnleft', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
 					{ slot: 'addcolumnright', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
-					// { slot: 'deletecolumns', scope: [SCOPE_TABLE_ROW] },
-					// { slot: 'columnheader', scope: [SCOPE_TABLE_ROW] },
 				]
 			]
 		},

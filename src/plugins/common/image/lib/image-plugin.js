@@ -517,9 +517,9 @@ define([
 		/**
 		 * Toggle the keep aspect ratio functionality
 		 */
-		toggleKeepAspectRatio: function () {
+		toggleKeepAspectRatio: function (active) {
 
-			this.keepAspectRatio = !this.keepAspectRatio;
+			this.keepAspectRatio = active;
 
 			// while cropping: calculate the new aspect ratio value for the crop
 			if (typeof this.jcAPI !== 'undefined' && this.jcAPI !== null) {

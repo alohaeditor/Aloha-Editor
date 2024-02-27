@@ -1375,6 +1375,11 @@ define([
 
 				contextType: 'dropdown',
 				context: function () {
+					// Can't open/insert a character without an editable to place it in
+					if (Aloha.activeEditable == null || Aloha.activeEditable.obj == null) {
+						return null;
+					}
+
 					rangeAtOpen = Aloha.Selection.rangeObject;
 
 					return {

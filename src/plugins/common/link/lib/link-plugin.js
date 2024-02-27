@@ -338,7 +338,10 @@ define([
 				}
 			});
 
+			var actuallyLeftEditable = false;
+
 			PubSub.sub('aloha.editable.activated', function (message) {
+				actuallyLeftEditable = false;
 				if (configurations[message.editable.getId()]) {
 					plugin._insertLinkButton.show();
 				} else {
@@ -357,31 +360,18 @@ define([
 			}
 
 			PubSub.sub('aloha.selection.context-change', function (message) {
-				updateLinkButtonState(message.range);
-
-				if (!Aloha.activeEditable) {
-					plugin.lastActiveLink = false;
-					return;
+				if (!actuallyLeftEditable) {
+					updateLinkButtonState(message.range);
 				}
-				var activeLink = false;
-				plugin.lastActiveLink = activeLink;
 			});
 
 			// Fixes problem: if one clicks from inside an aloha link outside
 			// the editable and thereby deactivates the editable, the link scope
 			// will remain active
 			PubSub.sub('aloha.editable.deactivated', function (message) {
-				updateLinkButtonState(false);
-
-				if (plugin.lastActiveLink !== false) {
-					// Leave the link scope lazily to avoid flickering when
-					// switching between anchor element editables
-					setTimeout(function () {
-						if (!plugin.lastActiveLink) {
-							plugin.toggleLinkScope(false);
-						}
-					}, 100);
-					plugin.lastActiveLink = false;
+				if (message.newEditable == null) {
+					updateLinkButtonState(false);
+					actuallyLeftEditable = true;
 				}
 				teardownMetaClickLink(message.editable);
 			});

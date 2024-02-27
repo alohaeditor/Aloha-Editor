@@ -263,7 +263,8 @@ define([
 			j,
 			allHeaders = table.selection.isHeader(),
 			domCell, // representation of the cell in the dom
-			bufferCell; // temporary buffer
+			bufferCell, // temporary buffer
+			headerBtn = scope === 'row' ? table.tablePlugin._rowheaderButton : table.tablePlugin._columnheaderButton;
 
 		for (i = 0; i < table.selection.selectedCells.length; i++) {
 			domCell = table.selection.selectedCells[i];
@@ -283,6 +284,7 @@ define([
 			} else {
 				bufferCell = Aloha.Markup.transformDomObject(domCell, 'th').attr('scope', scope).get(0);
 			}
+			headerBtn.setActive(!allHeaders);
 
 			if (cell != null) {
 				setCellDefaultClass(bufferCell, allHeaders);
@@ -517,23 +519,15 @@ define([
 			TablePlugin.updateFloatingMenuScope();
 
 			if (TablePlugin.activeTable.selection.cellsAreSplitable()) {
-				that._splitcellsButton.enable(true);
-				that._splitcellsRowButton.enable(true);
-				that._splitcellsColumnButton.enable(true);
+				that._splitcellsButton.enable();
 			} else {
-				that._splitcellsButton.enable(false);
-				that._splitcellsRowButton.enable(false);
-				that._splitcellsColumnButton.enable(false);
+				that._splitcellsButton.disable();
 			}
 
 			if (TablePlugin.activeTable.selection.cellsAreMergeable()) {
-				that._mergecellsButton.enable(true);
-				that._mergecellsRowButton.enable(true);
-				that._mergecellsColumnButton.enable(true);
+				that._mergecellsButton.enable();
 			} else {
-				that._mergecellsButton.enable(false);
-				that._mergecellsRowButton.enable(false);
-				that._mergecellsColumnButton.enable(false);
+				that._mergecellsButton.disable();
 			}
 		});
 
@@ -581,12 +575,8 @@ define([
 		});
 
 		PubSub.sub('aloha.editable.activated', function (message) {
-			that._splitcellsButton.enable(false);
-			that._mergecellsButton.enable(false);
-			that._splitcellsRowButton.enable(false);
-			that._mergecellsRowButton.enable(false);
-			that._splitcellsColumnButton.enable(false);
-			that._mergecellsColumnButton.enable(false);
+			that._splitcellsButton.disable();
+			that._mergecellsButton.disable();
 
 			message.editable.obj.find('table').each(function () {
 				var registry = TablePlugin.TableRegistry;
@@ -627,7 +617,9 @@ define([
 
 		if (this.settings.summaryinsidebar) {
 			Aloha.bind('aloha-plugins-loaded', function () {
-				that.initSidebar(Aloha.Sidebar.right.show());
+				if (Aloha.Sidebar != null && !Aloha.Sidebar.disabled) {
+					that.initSidebar(Aloha.Sidebar.right.show());
+				}
 			});
 		}
 	};
@@ -692,6 +684,7 @@ define([
             	var that = this;
 				that.effective = effective;
 				jQuery(nsSel('textarea')).val(jQuery(that.effective).attr('summary'));
+
             }
 
         });
@@ -770,12 +763,7 @@ define([
 		return false;
 	};
 
-	TablePlugin.initMergeSplitCellsBtns = function(){
-		// TODO current it is not possible to add the same buttons to
-		//      multiple tabs. To work around this limitation we are
-		//      defining the mergecells and splitcells components
-		//      multiple times, once for each tab.
-
+	TablePlugin.initMergeSplitCellsBtns = function() {
 		this._mergecellsButton = Ui.adopt("mergecells", Button, {
 			tooltip: i18n.t("button.mergecells.tooltip"),
 			icon: Icons.TABLE_MERGE_CELLS,
@@ -807,46 +795,6 @@ define([
 							Aloha.trigger('aloha-table-selection-changed');
 						}
 					}
-				}
-			}
-		});
-
-		this._mergecellsRowButton = Ui.adopt("mergecellsRow", Button, {
-			tooltip: i18n.t("button.mergecells.tooltip"),
-			icon: Icons.TABLE_MERGE_CELLS,
-			click: function() {
-				if (TablePlugin.activeTable) {
-					TablePlugin.activeTable.selection.mergeCells();
-				}
-			}
-		});
-
-		this._splitcellsRowButton = Ui.adopt("splitcellsRow", Button, {
-			tooltip: i18n.t("button.splitcells.tooltip"),
-			icon: Icons.TABLE_SPLIT_CELLS,
-			click: function() {
-				if (TablePlugin.activeTable) {
-					TablePlugin.activeTable.selection.splitCells();
-				}
-			}
-		});
-
-		this._mergecellsColumnButton = Ui.adopt("mergecellsColumn", Button, {
-			tooltip: i18n.t("button.mergecells.tooltip"),
-			icon: Icons.TABLE_MERGE_CELLS,
-			click: function() {
-				if (TablePlugin.activeTable) {
-					TablePlugin.activeTable.selection.mergeCells();
-				}
-			}
-		});
-
-		this._splitcellsColumnButton = Ui.adopt("splitcellsColumn", Button, {
-			tooltip: i18n.t("button.splitcells.tooltip"),
-			icon: Icons.TABLE_SPLIT_CELLS,
-			click: function() {
-				if (TablePlugin.activeTable) {
-					TablePlugin.activeTable.selection.splitCells();
 				}
 			}
 		});
@@ -924,16 +872,18 @@ define([
 		this._rowheaderButton = Ui.adopt("rowheader", ToggleButton, {
 			tooltip: i18n.t("button.rowheader.tooltip"),
 			icon: Icons.TABLE_ROW_HEADER,
+			pure: true,
 			click: function() {
-				if (that.activeTable) {
-					that.activeTable.refresh();
-
-					toggleHeaderStatus(that.activeTable, 'col');
-
-					// Update selection to the new row
-					that.activeTable.selection.selectRows(that.activeTable.selection.selectedRowIdxs);
-					that.activeTable.selection.unselectCells();
+				if (!that.activeTable) {
+					return;
 				}
+				that.activeTable.refresh();
+
+				toggleHeaderStatus(that.activeTable, 'col');
+
+				// Update selection to the new row
+				that.activeTable.selection.selectRows(that.activeTable.selection.selectedRowIdxs);
+				that.activeTable.selection.unselectCells();
 			}
 		});
 
@@ -1034,16 +984,18 @@ define([
 		this._columnheaderButton = Ui.adopt("columnheader", ToggleButton, {
 			tooltip: i18n.t("button.columnheader.tooltip"),
 			icon: Icons.TABLE_COLUMN_HEADER,
+			pure: true,
 			click: function() {
-				if (that.activeTable) {
-					that.activeTable.refresh();
-
-					toggleHeaderStatus(that.activeTable, 'row');
-
-					// Update selection to the new column
-					that.activeTable.selection.selectColumns(that.activeTable.selection.selectedColumnIdxs);
-					that.activeTable.selection.unselectCells();
+				if (!that.activeTable) {
+					return;
 				}
+				that.activeTable.refresh();
+
+				toggleHeaderStatus(that.activeTable, 'row');
+
+				// Update selection to the new column
+				that.activeTable.selection.selectColumns(that.activeTable.selection.selectedColumnIdxs);
+				that.activeTable.selection.unselectCells();
 			}
 		});
 
@@ -1170,11 +1122,18 @@ define([
 		this._createTableButton = Ui.adopt("createTable", ContextButton, {
 			tooltip: i18n.t("button.createtable.tooltip"),
 			icon: Icons.TABLE_CREATE,
-			context: {
-				type: 'table-size-select',
-				options: {
-					maxColumns: 10,
-					maxRows: 10,
+			context: function() {
+				// Can't open/insert a table without an editable to place it in
+				if (Aloha.activeEditable == null || Aloha.activeEditable.obj == null) {
+					return null;
+				}
+
+				return {
+					type: 'table-size-select',
+					options: {
+						maxColumns: 10,
+						maxRows: 10,
+					}
 				}
 			},
 			contextType: 'dropdown',
@@ -1274,42 +1233,48 @@ define([
 		this._tableCaptionButton = Ui.adopt("tableCaption", ToggleButton, {
 			tooltip: i18n.t("button.caption.tooltip"),
 			icon: Icons.TABLE_CAPTION,
+			pure: true,
 			click: function() {
-				if (that.activeTable) {
-					// look if table object has a child caption
-					var $caption = that.activeTable.obj.children("caption");
+				if (!that.activeTable) {
+					return;
+				}
 
-					if ( $caption.is('caption') && $caption.is(':visible') ) {
-						$caption.hide();
-					} else {
-						if (!$caption.is('caption')) {
-							$caption = jQuery('<caption></caption>');
-							that.activeTable.obj.prepend($caption);
-						}
-						$caption.show();
-						if (jQuery.trim($caption.text()).length === 0) {
-							$caption.text(i18n.t('empty.caption'));
-						}
+				// look if table object has a child caption
+				var $caption = that.activeTable.obj.children("caption");
 
-						that.makeCaptionEditable($caption, $caption.text());
+				if ($caption.is('caption') && $caption.is(':visible')) {
+					$caption.hide();
+					TablePlugin._tableCaptionButton.deactivate();
+					return;
+				}
 
-						// get the editable span within the caption and select it
-						var cDiv = $caption.find('div').eq(0);
-						var captionContent = cDiv.contents().eq(0);
-						if (captionContent.length > 0) {
-							var newRange = new GENTICS.Utils.RangeObject();
-							newRange.startContainer = newRange.endContainer = captionContent.get(0);
-							newRange.startOffset = 0;
-							newRange.endOffset = captionContent.text().length;
+				if (!$caption.is('caption')) {
+					$caption = jQuery('<caption></caption>');
+					that.activeTable.obj.prepend($caption);
+				}
+				$caption.show();
+				if (jQuery.trim($caption.text()).length === 0) {
+					$caption.text(i18n.t('empty.caption'));
+				}
+				TablePlugin._tableCaptionButton.activate();
 
-							// blur all editables within the table
-							that.activeTable.obj.find('div.aloha-table-cell-editable').blur();
+				that.makeCaptionEditable($caption, $caption.text());
 
-							cDiv.focus();
-							newRange.select();
-							Aloha.Selection.updateSelection();
-						}
-					}
+				// get the editable span within the caption and select it
+				var cDiv = $caption.find('div').eq(0);
+				var captionContent = cDiv.contents().eq(0);
+				if (captionContent.length > 0) {
+					var newRange = new GENTICS.Utils.RangeObject();
+					newRange.startContainer = newRange.endContainer = captionContent.get(0);
+					newRange.startOffset = 0;
+					newRange.endOffset = captionContent.text().length;
+
+					// blur all editables within the table
+					that.activeTable.obj.find('div.aloha-table-cell-editable').blur();
+
+					cDiv.focus();
+					newRange.select();
+					Aloha.Selection.updateSelection();
 				}
 			}
 		});

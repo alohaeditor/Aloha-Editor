@@ -154,7 +154,7 @@ define([
 			targetAttribute: 'lang',
 			inputLabel: 'Language',
 			panelLabel: 'WAI language',
-			pure: 'true',
+			pure: true,
 			onToggle: function(active) {
 				if (Aloha.activeEditable) {
 					var range = Selection.getRangeObject();

@@ -122,16 +122,14 @@ define([
 
 				var btn;
 
-				function applyColorToButton(color) {
-					$(btn.buttonElement).find('.ui-button-icon-primary').css(
-						'border-bottom-color',
-						color
-					);
-				}
-
 				buttonProperties = Object.assign({}, buttonProperties || {}, {
 					contextType: 'dropdown',
 					context: function () {
+						// Can't style the color without an editable
+						if (Aloha.activeEditable == null || Aloha.activeEditable.obj == null) {
+							return null;
+						}
+
 						var activeColor = null;
 
 						try {
@@ -169,22 +167,10 @@ define([
 					},
 					contextResolve: function (color) {
 						applyColorToSelection(cssProperty, color);
-						applyColorToButton(color || 'transparent');
 					},
 				});
 
 				btn = Ui.adopt(name, ContextButton, buttonProperties);
-
-				btn._$buttonElement.addClass('textcolor-button');
-
-				// Updates the color of the button when changing focus/text elements
-				PubSub.sub('aloha.selection.context-change', function (message) {
-					// The `execCommand` runs asynchronously, so it fires the selection
-					// change event, before actually applying the forecolor.
-					setTimeout(function () {
-						applyColorToButton($(message.range.endContainer).parent().css(cssProperty));
-					}, 20);
-				});
 
 				return btn;
 			}

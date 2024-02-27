@@ -513,6 +513,10 @@ define([
 			}
 		});
 
+		this.tablePlugin._tableCaptionButton.setActive(this.obj.children('caption').is('caption'));
+		this.tablePlugin._mergecellsButton.disable();
+		this.tablePlugin._splitcellsButton.disable();
+
 		/*
 		We need to make sure that when the user has selected text inside a
 		table cell we do not delete the entire row, before we activate this
@@ -1720,6 +1724,7 @@ define([
 
 		this.selection.selectColumns(columnsToSelect);
 		this.tablePlugin._columnheaderButton.setActive(this.selection.isHeader());
+		this.tablePlugin._rowheaderButton.deactivate();
 
 		// ====== BEGIN UI specific code - should be handled on event aloha-table-selection-changed by UI =======
 
@@ -1746,6 +1751,7 @@ define([
 
 		this.selection.selectRows(this.rowsToSelect);
 		this.tablePlugin._rowheaderButton.setActive(this.selection.isHeader());
+		this.tablePlugin._columnheaderButton.deactivate();
 
 		// ====== BEGIN UI specific code - should be handled on event aloha-table-selection-changed by UI =======
 
@@ -1819,6 +1825,10 @@ define([
 		this.obj.find('caption div').each(function () {
 			jQuery(this).contents().unwrap();
 		});
+
+		this.tablePlugin._tableCaptionButton.deactivate();
+		this.tablePlugin._rowheaderButton.deactivate();
+		this.tablePlugin._columnheaderButton.deactivate();
 
 		// better unset ;-) otherwise activate() may think you're activated.
 		this.isActive = false;

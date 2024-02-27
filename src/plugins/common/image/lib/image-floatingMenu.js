@@ -83,8 +83,9 @@ function (
 			this._imageCnrRatioButton = Ui.adopt("imageCnrRatio", ToggleButton, {
 				tooltip: i18n.t('button.toggle.tooltip'),
 				icon: 'aloha-icon-cnr-ratio',
-				click: function () {
-					plugin.toggleKeepAspectRatio();
+				pure: true,
+				onToggle: function (active) {
+					plugin.toggleKeepAspectRatio(active);
 				}
 			});
 
@@ -221,8 +222,9 @@ function (
 			this._imageCropButton = Ui.adopt("imageCropButton", ToggleButton, {
 				tooltip: i18n.t('Crop'),
 				icon: 'aloha-icon-cnr-crop',
-				click: function () {
-					if (this.getState()) {
+				pure: true,
+				onToggle: function (active) {
+					if (active) {
 						plugin.crop();
 					} else {
 						plugin.endCrop();
@@ -265,8 +267,9 @@ function (
 			this._imageFocalPointButton = Ui.adopt("imageFocalPointButton", ToggleButton, {
 				tooltip: i18n.t('focalpoint'),
 				icon: 'aloha-img aloha-image-set-focalpoint',
-				click: function () {
-					if (this.getState()) {
+				pure: true,
+				onToggle: function (active) {
+					if (active) {
 						plugin.enableFocalPointMode();
 					} else {
 						plugin.disableFocalPointMode();

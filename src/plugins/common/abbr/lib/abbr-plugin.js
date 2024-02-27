@@ -54,8 +54,17 @@ define([
 			delete configurations[message.editable.getId()];
 		});
 
+		/**
+		 * Flag for proper deactivation handling.
+		 * The context-change event triggers after editable-deactivated.
+		 * One weird quirk is however, that event after/during editable-deactivated,
+		 * the `activeEditable` is still set.
+		 * Therefore the context-change would enable the button again, which is wrong.
+		 */
+		var actuallyLeftEditable = false;
+
 		PubSub.sub('aloha.selection.context-change', function (message) {
-			if (!Aloha.activeEditable) {
+			if (!Aloha.activeEditable || actuallyLeftEditable) {
 				return;
 			}
 
@@ -81,6 +90,20 @@ define([
 				Scopes.leaveScope(plugin.name);
 			}
 		});
+
+		Aloha.bind('aloha-editable-activated', function() {
+			actuallyLeftEditable = false;
+		});
+
+		Aloha.bind('aloha-editable-deactivated', function(event, params) {
+			if (params.newEditable == null) {
+				plugin._formatAbbrButton.setActive(false);
+				plugin._formatAbbrButton.deactivateInput();
+				plugin._formatAbbrButton.setTargetElement(null);
+				Scopes.leaveScope(plugin.name);
+				actuallyLeftEditable = true;
+			}
+		})
 	}
 
 	/**

@@ -271,6 +271,7 @@ define('format/format-plugin', [
 		var component = Ui.adopt(componentName, ToggleButton, {
 			tooltip: i18n.t('button.' + nodeType + '.tooltip'),
 			icon: formatPlugin.FORMATTING_ICONS[componentName],
+			pure: true,
 			click: function () {
 				return textLevelButtonClickHandler(formatPlugin, nodeType);
 			}
@@ -402,7 +403,7 @@ define('format/format-plugin', [
 			markup = jQuery('<' + nodeType + '>'),
 			rangeObject = Selection.rangeObject;
 
-		if (typeof nodeType === "undefined" || nodeType == "") {
+		if (nodeType == null || !nodeType || Aloha.activeEditable == null || Aloha.activeEditable.obj == null) {
 			return;
 		}
 
@@ -448,32 +449,45 @@ define('format/format-plugin', [
 
 	function onSelectionChanged(formatPlugin, rangeObject) {
 		var effectiveMarkup,
-			foundMultiSplit, i, j;
+			i, j;
 
 		// Normal format buttons like bold
 		jQuery.each(formatPlugin.buttons, function (index, button) {
+			// If the button is not a toggle-button (or an instance of it), then skip it.
+			// Can't set the state of it or do anything.
+			if (typeof button.handle.setActive !== 'function') {
+				return;
+			}
+
 			var statusWasSet = false;
 			var nodeNames = formatPlugin.interchangeableNodeNames[button.markup[0].nodeName] || [button.markup[0].nodeName];
+
 			for (i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 				effectiveMarkup = rangeObject.markupEffectiveAtStart[i];
 				for (j = 0; j < nodeNames.length; j++) {
 					if (Selection.standardTagNameComparator(effectiveMarkup, jQuery('<' + nodeNames[j] + '>'))) {
-						button.handle.setValue(true);
+						button.handle.setActive(true);
 						statusWasSet = true;
+						break;
 					}
 				}
+				if (statusWasSet) {
+					break;
+				}
 			}
-			if (!statusWasSet && button.handle.setValue) {
-				button.handle.setValue(false);
+
+			if (!statusWasSet) {
+				button.handle.setActive(false);
 			}
 		});
 
+		// Typography/Blocklevel formats like h1
 		if (formatPlugin.typographyButton) {
 			var typographyElements = Object.keys(formatPlugin.blockLevelSemantics);
 			var effectiveTypo = null;
 			var typoElement = null;
 
-			for (i = 0; i < rangeObject.markupEffectiveAtStart.length && !foundMultiSplit; i++) {
+			for (i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 				if (effectiveTypo) {
 					break;
 				}
@@ -978,7 +992,9 @@ define('format/format-plugin', [
 			}
 
 			updateUiAfterMutation(this, rangeObject);
-			Aloha.activeEditable.smartContentChange({ type: 'block-change' });
+			if (Aloha.activeEditable) {
+				Aloha.activeEditable.smartContentChange({ type: 'block-change' });
+			}
 		},
 
 		/**
