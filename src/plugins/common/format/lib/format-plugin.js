@@ -461,7 +461,11 @@ define('format/format-plugin', [
 
 		// Typography/Blocklevel formats like h1
 		if (formatPlugin.typographyButton) {
-			var typographyElements = Object.keys(formatPlugin.config);
+			var typographyElements = Object.entries(formatPlugin.config).filter(function(entry) {
+				return entry[1].typography;
+			}).map(function(entry) {
+				return entry[0];
+			});
 			var effectiveTypo = null;
 			var typoElement = null;
 
@@ -954,6 +958,7 @@ define('format/format-plugin', [
 								options: {
 									label: i18n.t('button.header_id.input'),
 								},
+								label: settings.label,
 								initialValue: headerId,
 							};
 						}

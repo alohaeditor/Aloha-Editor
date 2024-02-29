@@ -363,7 +363,7 @@ define([
                 return;
             }
 
-            this._mutlistepTitleElement$.text(option.multiStepContext.label);
+            this._mutlistepTitleElement$.text(option.multiStepContext.label || option.label);
             this._multistepControl = ref.control;
             this._multistepComponent = ref.component;
             this._multistepControl.setValue(option.multiStepContext.initialValue);
