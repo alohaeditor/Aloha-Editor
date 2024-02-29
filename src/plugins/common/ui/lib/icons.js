@@ -12,7 +12,10 @@ define([], function() {
         SUPER_SCRIPT: 'superscript',
         ABBREVIATION: 'book',
         CODE: 'code',
+        CITATION: 'help',
         QUOTE: 'format_quote',
+        DELETED: 'backspace',
+        INSERTED: 'playlist_add',
         CLEAR: 'format_clear',
 
         TYPOGRAPHY: 'format_size',

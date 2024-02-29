@@ -527,7 +527,7 @@ define([
 
         var component = Ui.adopt(name, Input, {
             value: tmpOptions.value,
-            label: tmpOptions.checked,
+            label: tmpOptions.label,
             inputType: tmpOptions.inputType,
 
             changeNotify: function (value) {

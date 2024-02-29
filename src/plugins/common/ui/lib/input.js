@@ -25,7 +25,8 @@ define([
 		/** Type of the input */
 		inputType: 'text',
 
-		inputElement: null,
+		_inputElement$: null,
+		_labelElement$: null,
 
 		/**
 		 * Initializes the text component
@@ -37,7 +38,7 @@ define([
 			var id = 'aloha_input_' + counter;
 			counter++;
 
-			this.inputElement = $('<input>', {
+			this._inputElement$ = $('<input>', {
 				type: this.inputType,
 				class: 'input-element',
 				id: id,
@@ -56,17 +57,24 @@ define([
 				.on('focus', $.proxy(function (event) {
 					this.touch();
 				}, this));
-			this.inputElement[0].value = this.value;
+			this._inputElement$[0].value = this.value || '';
+
+			this._labelElement$ = $('<label>', {
+				class: 'input-label',
+				text: this.label,
+				for: id,
+			});
 
 			this.element = $('<div>', { class: 'input-container' })
                 .append(
-                    $('<label>', {
-                        class: 'input-label',
-                        text: this.label,
-                        for: id,
-                    }),
-                    this.inputElement
+                    this._labelElement$,
+                    this._inputElement$
                 );
+		},
+
+		setLabel: function(label) {
+			this.label = label;
+			this._labelElement$.text(label);
 		},
 
 		/**
@@ -75,7 +83,7 @@ define([
 		 * @param {string} value The new value of the text input.
 		 */
 		setValue: function (value) {
-			this.element.val(value);
+			this._inputElement$[0].value = value || '';
 		},
 
 		/**
@@ -84,17 +92,17 @@ define([
 		 * @return {string} The current value of the text component.
 		 */
 		getValue: function () {
-			return this.element.val();
+			return this._inputElement$.val();
 		},
 
 		enable: function () {
 			this._super();
-			this.inputElement.removeAttr('disabled');
+			this._inputElement$.removeAttr('disabled');
 		},
 
 		disable: function () {
 			this._super();
-			this.inputElement.attr('disabled', 'disabled');
+			this._inputElement$.attr('disabled', 'disabled');
 		}
 	});
 

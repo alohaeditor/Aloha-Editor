@@ -15,6 +15,7 @@
 	flex-wrap: nowrap;
 	padding: 2px 8px 2px 4px;
   	align-content: center;
+	font-size: 20px;
 }
 
 .aloha-ui .aloha-select-menu .select-menu-options-container .select-menu-option-label {
@@ -65,5 +66,86 @@
 }
 
 .aloha-ui .aloha-select-menu.icons-only .select-menu-options-container .select-menu-option .select-menu-option-label {
+	display: none;
+}
+
+.aloha-ui .aloha-select-menu .select-menu-multistep-container {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+}
+
+.aloha-ui .aloha-select-menu .select-menu-multistep-container .select-menu-multistep-header {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	gap: 8px;
+}
+
+.aloha-ui .aloha-select-menu .select-menu-multistep-container .select-menu-multistep-backbtn,
+.aloha-ui .aloha-select-menu .select-menu-multistep-container .select-menu-multistep-confirmbtn {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	font-size: 16px;
+	justify-content: center;
+	gap: 6px;
+	padding: 3px 6px;
+	
+	border-radius: 2px;
+	box-sizing: border-box;
+	transition: 200ms;
+	cursor: pointer;
+	border: 1px solid transparent;
+	color: #000;
+}
+
+.aloha-ui .aloha-select-menu .select-menu-multistep-container .select-menu-multistep-confirmbtn .material-symbols-outlined,
+.aloha-ui .aloha-select-menu .select-menu-multistep-container .select-menu-multistep-backbtn .material-symbols-outlined {
+	height: 16px;
+	width: 16px;
+	text-align: center;
+	font-size: inherit;
+}
+
+.aloha-ui .aloha-select-menu .select-menu-multistep-container .select-menu-multistep-backbtn {
+    background: #e8e8e8;
+    border-color: #8d8d8d;
+}
+
+.aloha-ui .aloha-select-menu .select-menu-multistep-container .select-menu-multistep-backbtn:hover {
+	background: #d8d8d8;
+	border-color: #868686;
+}
+
+.aloha-ui .aloha-select-menu .select-menu-multistep-container .select-menu-multistep-confirmbtn {
+	background: #97f476;
+	border-color: #8d8d8d;
+}
+
+.aloha-ui .aloha-select-menu .select-menu-multistep-container .select-menu-multistep-confirmbtn:hover {
+	background: #6eee40;
+	border-color: #8d8d8d;
+}
+
+.aloha-ui .aloha-select-menu .select-menu-multistep-container .select-menu-multistep-confirmbtn:disabled {
+	background: #86d08a;
+	border-color: #868686;
+	cursor: not-allowed;
+}
+
+.aloha-ui .aloha-select-menu .select-menu-multistep-container .select-menu-multistep-title {
+	flex: 1 1 auto;
+}
+
+.aloha-ui .aloha-select-menu.multistep-active .select-menu-options-container {
+	display: none;
+}
+
+.aloha-ui .aloha-select-menu:not(.multistep-active) .select-menu-multistep-container {
+	display: none;
+}
+
+.aloha-ui .aloha-select-menu .select-menu-multistep-header:not(.with-confirm) .select-menu-multistep-confirmbtn {
 	display: none;
 }
