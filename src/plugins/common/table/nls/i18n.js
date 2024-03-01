@@ -22,6 +22,7 @@ define({
 		"button.columnheader.tooltip": "Format column as table header",
 		"button.mergecells.tooltip": "Merge Cells",
 		"button.splitcells.tooltip": "Split Cells",
+		"button.summary.tooltip": "Summary",
 		"table.label.target": "Summary",
 		"table.sidebar.title": "Table",
 		"table.mergeCells.notRectangular": "Only a rectangular selection can be merged",

@@ -682,7 +682,7 @@ define([
 		// then add the additional row at the top
 		this.attachSelectionRow();
 		this.makeCaptionEditable();
-		this.checkWai();
+		this.tablePlugin.updateSummaryButton();
 		this.isActive = true;
 
 		// when we stored the range, it was in the current table,
@@ -726,30 +726,16 @@ define([
 	};
 
 	/**
-	 * Check the WAI conformity of the table and sets the attribute.
+	 * Check the WAI conformity of the table
 	 *
-	 * @returns {boolean} True is WAI is activated, False otherwise.
+	 * @returns {boolean} True is WAI is valid
 	 */
 	Table.prototype.checkWai = function () {
-		var thisWai = this.wai;
-		if (!thisWai) {
+		if (this.obj[0] == null || typeof this.obj[0].summary !== 'string') {
 			return false;
 		}
 
-		var waiGreen = this.get('waiGreen'),
-			waiRed = this.get('waiRed');
-
-		thisWai.removeClass(waiGreen + ' ' + waiRed);
-
-		// Y U NO explain why we must check that summary is longer than 5 characters?
-
-		if (jQuery.trim(this.obj[0].summary) !== '') {
-			thisWai.addClass(waiGreen);
-			return true;
-		}
-
-		thisWai.addClass(waiRed);
-		return false;
+		return this.obj[0].summary.trim() !== '';
 	};
 
 	/**
@@ -990,33 +976,10 @@ define([
 					// is false.
 					that._removeCursorSelection();
 
-					//If the summary should be modified in the sidebar
-					//we activate the sidebar panel
-					if (that.tablePlugin.settings.summaryinsidebar) {
-						that.tablePlugin.sidebar.open();
-						that.tablePlugin.sidebarPanel.activate(that.obj);
-						that.tablePlugin.sidebar.correctHeight();
-					}
-
-					// jump in Summary field
-					// attempting to focus on summary input field will occasionally result in the
-					// following exception:
-					//uncaught exception: [Exception... "Component returned failure code: 0x80004005 (NS_ERROR_FAILURE) [nsIDOMHTMLInputElement.setSelectionRange]" nsresult: "0x80004005 (NS_ERROR_FAILURE)" location: "JS frame :: src/dep/ext-3.2.1/ext-all.js :: <TOP_LEVEL> :: line 11" data: no]
-					// this occurs when the tab in which the summary field is contained is not visible
-					// TODO: I'm adding a try catch clause here for the time being, but a proper solution, which addresses the problem of how to handle invisible fields ought to be persued.
-
-					try {
-						that.tablePlugin.summary.focus();
-						e.stopPropagation();
-						e.preventDefault();
-					} catch (e) {
-						Console.error('Table', e.message);
-					}
-
 					return false;
 				};
-				this.wai = jQuery('<div/>').css("width", 25 + "px").css("height", 12 + "px").click(clickHandler);
-				columnToInsert.append(this.wai);
+				this._topLeftCornerCell$ = jQuery('<div/>').css("width", 25 + "px").css("height", 12 + "px").click(clickHandler);
+				columnToInsert.append(this._topLeftCornerCell$);
 			}
 
 			// add the cell to the row

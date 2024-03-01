@@ -18,7 +18,6 @@ define([
         targetAttribute: '',
         inputLabel: '',
         panelLabel: '',
-        panelActiveOn: null,
 
         inputActive: false,
 
@@ -42,11 +41,11 @@ define([
 
             // Don't need to init the sidebar if it has been disabled
             if (Aloha.Sidebar != null && !Aloha.Sidebar.disabled) {
-                this.initSidebar();
+                this._initSidebar();
             }
         },
 
-        initSidebar: function () {
+        _initSidebar: function () {
             var panelId = 'attribute_toggle_button_panel_' + counter;
             var inputId = 'attribute_toggle_button_input_' + counter;
             counter++;
@@ -59,14 +58,16 @@ define([
                 class: 'input-element',
                 value: initialValue || '',
                 id: inputId,
-                activeOn: this.panelActiveOn,
+                activeOn: function() {
+                    return _this.inputActive;
+                },
                 attr: {
                     autocapitalize: 'off',
                     autocomplete: 'off',
                 }
             })
                 .on('change', function (event) {
-                    _this.handleInputChange(event);
+                    _this._handleInputChange(event);
                 })
                 .on('focus', function () {
                     _this.touch();
@@ -102,11 +103,14 @@ define([
             Aloha.Sidebar.right.show();
         },
 
-        handleInputChange: function (event) {
+        _handleInputChange: function (event) {
             this.touch();
             this.setValue(event.target.value);
+            this.onChange(event.target.value);
             this.triggerChangeNotification();
         },
+
+        onChange: function(value) {},
 
         setTargetElement: function (element) {
             if (element == null || element.length === 0) {

@@ -115,6 +115,7 @@ define([
 				[
 					{ slot: 'deleteTable', scope: [SCOPE_TABLE] },
 					{ slot: 'tableCaption', scope: [SCOPE_TABLE] },
+					{ slot: 'tableSummary', scope: [SCOPE_TABLE] },
 				],
 				[
 					{ slot: 'mergecells', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },

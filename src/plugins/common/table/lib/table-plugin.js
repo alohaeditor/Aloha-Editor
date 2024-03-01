@@ -21,9 +21,9 @@ define([
 	'ui/button',
 	'ui/contextButton',
 	'ui/toggleButton',
+	'ui/attributeButton',
 	'ui/dialog',
 	'ui/dynamicForm',
-	'ui/port-helper-attribute-field',
 	'ui/port-helper-multi-split',
 	'util/dom',
 	'table/table',
@@ -47,9 +47,9 @@ define([
 	Button,
 	ContextButton,
 	ToggleButton,
+	AttributeButton,
 	Dialog,
 	DynamicForm,
-	AttributeField,
 	MultiSplitButton,
 	Dom,
 	Table,
@@ -77,7 +77,7 @@ define([
 	/**
 	 * default button configuration
 	 */
-	TablePlugin.config = [ 'table' ];
+	TablePlugin.config = ['table'];
 
 	/**
 	 * An Array which holds all newly created tables contains DOM-Nodes of
@@ -103,33 +103,31 @@ define([
 	 *            The class of activated tables
 	 */
 	TablePlugin.parameters = {
-		className            : 'aloha-table',                 // class of editable tables
-		classSelectionRow    : 'aloha-table-selectcolumn',    // class for the upper table-row to select columns
-		classSelectionColumn : 'aloha-table-selectrow',       // class for the left bound table-cells to select rows
-		classLeftUpperCorner : 'aloha-table-leftuppercorner', // class for the left upper corner cell
-		classTableWrapper    : 'aloha-table-wrapper',         // class of the outest table-wrapping div
-		classCellSelected    : 'aloha-cell-selected',         // class of cell which are selected (row/column selection)
-		waiRed               : 'aloha-wai-red',               // class that shows wai of div
-		waiGreen             : 'aloha-wai-green',             // class that shows wai of div
-		selectionArea        : 10                             // width/height of the selection rows (in pixel)
+		className: 'aloha-table',                 // class of editable tables
+		classSelectionRow: 'aloha-table-selectcolumn',    // class for the upper table-row to select columns
+		classSelectionColumn: 'aloha-table-selectrow',       // class for the left bound table-cells to select rows
+		classLeftUpperCorner: 'aloha-table-leftuppercorner', // class for the left upper corner cell
+		classTableWrapper: 'aloha-table-wrapper',         // class of the outest table-wrapping div
+		classCellSelected: 'aloha-cell-selected',         // class of cell which are selected (row/column selection)
+		selectionArea: 10                             // width/height of the selection rows (in pixel)
 	};
 
 	/**
 	 * @hide
 	 * {name:'green', text:'Green',tooltip:'Green',iconClass:'GENTICS_table GENTICS_button_green',cssClass:'green'}
 	 */
-	TablePlugin.checkConfig = function (c){
+	TablePlugin.checkConfig = function (c) {
 		if (typeof c == 'object' && c.length) {
 			var newC = [];
 
 			for (var i = 0; i < c.length; i++) {
 				if (c[i]) {
 					newC.push({
-						name      : c[i].name,
-						text	  : c[i].text	   ? c[i].text		: c[i].name,
-						tooltip	  : c[i].tooltip   ? c[i].tooltip	: c[i].text,
-						iconClass : c[i].iconClass ? c[i].iconClass	: 'aloha-icon-' + c[i].name,
-						cssClass  : c[i].cssClass  ? c[i].cssClass	: c[i].name
+						name: c[i].name,
+						text: c[i].text ? c[i].text : c[i].name,
+						tooltip: c[i].tooltip ? c[i].tooltip : c[i].text,
+						iconClass: c[i].iconClass ? c[i].iconClass : 'aloha-icon-' + c[i].name,
+						cssClass: c[i].cssClass ? c[i].cssClass : c[i].name
 					});
 				}
 			}
@@ -141,25 +139,6 @@ define([
 
 		return c;
 	};
-
-	/**
-	 * Update the WAI image
-	 *
-	 * @param {TablePlugin} tablePlugin tablePlugin
-	 */
-	function updateWaiImage(tablePlugin) {
-		var $element = $(tablePlugin.summary.getInputElem()),
-			waiRed = tablePlugin.activeTable.get('waiRed'),
-			waiGreen = tablePlugin.activeTable.get('waiGreen');
-
-		$element.removeClass(waiRed + ' ' + waiGreen);
-		if (tablePlugin.activeTable.checkWai()) {
-			$element.addClass(waiGreen);
-		}
-		else {
-			$element.addClass(waiRed);
-		}
-	}
 
 	/**
 	 * Checks whether the given DOM element is nested within a table.
@@ -214,7 +193,7 @@ define([
 		var selector = $element.is('table') ? 'table' : 'table table';
 		if ($element.find(selector).length) {
 			Console.warn('Table Plugin',
-					'Nested tables found. They will not be initialized.');
+				'Nested tables found. They will not be initialized.');
 			return true;
 		}
 		return false;
@@ -234,8 +213,8 @@ define([
 	function createNewTable(element) {
 		var $table = $(element);
 		var create = isEditableTable(element)
-		          && !isWithinTable($table)
-		          && !isWithinBlock($table);
+			&& !isWithinTable($table)
+			&& !isWithinBlock($table);
 		if (create) {
 			var table = new Table(element, TablePlugin);
 			var $host = $(Dom.getEditingHostOf(element));
@@ -259,7 +238,7 @@ define([
 	 * @param {string} scope for which the header should be used (i.e. 'row' or 'column')
 	 */
 	function toggleHeaderStatus(table, scope) {
-		var	i,
+		var i,
 			j,
 			allHeaders = table.selection.isHeader(),
 			domCell, // representation of the cell in the dom
@@ -304,12 +283,12 @@ define([
 			jQuery(table.selection.selectedCells[i]).on('mousedown', function (jqEvent) {
 				var wrapper = jQuery(this).children('div').eq(0);
 				window.setTimeout(function () {
-					wrapper.trigger( 'focus' );
+					wrapper.trigger('focus');
 				}, 1);
 			});
 		}
 
-		Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'table-plugin'});
+		Aloha.activeEditable.smartContentChange({ type: 'block-change', plugin: 'table-plugin' });
 		var tableElement = table.obj && table.obj.get && table.obj.get(0);
 		if (tableElement) {
 			applyDefaultClassesToTable(tableElement);
@@ -399,7 +378,7 @@ define([
 		var appliedToAll = true;
 
 		for (var i = 0; i < sc.length; i++) {
-			if (jQuery(sc[i]).attr('class').indexOf(cssClass) < 0 ) {
+			if (jQuery(sc[i]).attr('class').indexOf(cssClass) < 0) {
 				appliedToAll = false;
 				break;
 			}
@@ -423,11 +402,11 @@ define([
 
 	function createTableSizeSelectFromConfig(
 		config,
-        name,
-        applyChanges,
-        validateFn,
-        onChangeFn,
-        onTouchFn
+		name,
+		applyChanges,
+		validateFn,
+		onChangeFn,
+		onTouchFn
 	) {
 		var tmpOptions = config.options || {};
 		var component = Ui.adopt(name, TableSizeSelect, {
@@ -435,13 +414,13 @@ define([
 			maxRows: tmpOptions.maxRows,
 
 			changeNotify: function (value) {
-                applyChanges(value);
-                validateFn(value);
-                onChangeFn(value);
-            },
-            touchNotify: function () {
-                onTouchFn();
-            },
+				applyChanges(value);
+				validateFn(value);
+				onChangeFn(value);
+			},
+			touchNotify: function () {
+				onTouchFn();
+			},
 		});
 
 		return component;
@@ -452,21 +431,21 @@ define([
 	 *
 	 * @return void
 	 */
-	TablePlugin.init = function() {
+	TablePlugin.init = function () {
 		var that = this;
 
 		DynamicForm.componentFactoryRegistry['table-size-select'] = createTableSizeSelectFromConfig;
 
 		Ephemera.classes(this.get('className'), this.get('classCellSelected'));
 
-		this.tableConfig  = this.checkConfig(this.tableConfig  || this.settings.tableConfig);
+		this.tableConfig = this.checkConfig(this.tableConfig || this.settings.tableConfig);
 		this.columnConfig = this.checkConfig(this.columnConfig || this.settings.columnConfig);
-		this.rowConfig    = this.checkConfig(this.rowConfig    || this.settings.rowConfig);
-		this.cellConfig   = this.checkConfig(this.cellConfig   || this.settings.cellConfig);
+		this.rowConfig = this.checkConfig(this.rowConfig || this.settings.rowConfig);
+		this.cellConfig = this.checkConfig(this.cellConfig || this.settings.cellConfig);
 
-		this.tableResize  = this.settings.tableResize === undefined ? false : this.settings.tableResize;
-		this.colResize    = this.settings.colResize   === undefined ? false : this.settings.colResize;
-		this.rowResize    = this.settings.rowResize   === undefined ? false : this.settings.rowResize;
+		this.tableResize = this.settings.tableResize === undefined ? false : this.settings.tableResize;
+		this.colResize = this.settings.colResize === undefined ? false : this.settings.colResize;
+		this.rowResize = this.settings.rowResize === undefined ? false : this.settings.rowResize;
 		this.defaultClass = this.settings.defaultClass || '';
 		this.defaultRowClass = this.settings.defaultRowClass || '';
 		this.defaultHeaderRowClass = this.settings.defaultHeaderRowClass || '';
@@ -484,8 +463,8 @@ define([
 			var editable = message.editable;
 			var config = that.getEditableConfig(editable.obj);
 			var enabled = config
-			           && ($.inArray('table', config) > -1)
-			           && ContentRules.isAllowed(editable.obj[0], 'table');
+				&& ($.inArray('table', config) > -1)
+				&& ContentRules.isAllowed(editable.obj[0], 'table');
 
 			configurations[editable.getId()] = !!enabled;
 
@@ -495,7 +474,7 @@ define([
 				}
 
 				TablePlugin.setFocusedTable(undefined);
-				
+
 				// Make sure the table tabs in the toolbar are hidden, since
 				// we no longer have an active table.
 				TablePlugin.leaveTableScopes();
@@ -510,13 +489,14 @@ define([
 		// initialize the table buttons
 		this.initTableButtons();
 
-		Aloha.bind( 'aloha-table-selection-changed', function () {
+		Aloha.bind('aloha-table-selection-changed', function () {
 			// check if selected cells are split/merge able and set button status
 			if (!TablePlugin.activeTable || !TablePlugin.activeTable.selection) {
 				return;
 			}
 
 			TablePlugin.updateFloatingMenuScope();
+			TablePlugin.updateSummaryButton();
 
 			if (TablePlugin.activeTable.selection.cellsAreSplitable()) {
 				that._splitcellsButton.enable();
@@ -547,7 +527,7 @@ define([
 			}
 
 			// show hide buttons regarding configuration and DOM position
-			if (configurations[Aloha.activeEditable.getId()] && Aloha.Selection.mayInsertTag('table') ) {
+			if (configurations[Aloha.activeEditable.getId()] && Aloha.Selection.mayInsertTag('table')) {
 				that._createTableButton.show();
 			} else {
 				that._createTableButton.hide();
@@ -572,6 +552,7 @@ define([
 				that.activeTable.selection.lastSelectionRange = null;
 				that.activeTable.focusOut();
 			}
+			TablePlugin.updateSummaryButton();
 		});
 
 		PubSub.sub('aloha.editable.activated', function (message) {
@@ -614,14 +595,6 @@ define([
 				});
 			}
 		});
-
-		if (this.settings.summaryinsidebar) {
-			Aloha.bind('aloha-plugins-loaded', function () {
-				if (Aloha.Sidebar != null && !Aloha.Sidebar.disabled) {
-					that.initSidebar(Aloha.Sidebar.right.show());
-				}
-			});
-		}
 	};
 
 	var tableNamespace = 'aloha-table';
@@ -643,73 +616,47 @@ define([
 		return jQuery.trim(stringBuilder.join(' '));
 	}
 
-	TablePlugin.initSidebar = function (sidebar) {
-		var pl = this;
-		pl.sidebar = sidebar;
-		pl.sidebarPanel = sidebar.addPanel({
+	/**
+	 * Update the Summary Icon
+	 */
+	TablePlugin.updateSummaryButton = function() {
+		if (this.activeTable) {
+			this._summary.setTargetElement(this.activeTable.obj);
+			this._summary.activateInput(true);
+			this._summary.enable();
 
-			id       : nsClass('sidebar-panel'),
-			title    : i18n.t('table.sidebar.title'),
-			content  : '',
-			expanded : true,
-			activeOn : 'table',
-
-			onInit   : function () {
-				var that = this,
-	            content = this.setContent(
-	                '<label class="' + nsClass('label') + '" for="' + nsClass('textarea') + '" >' + i18n.t('table.label.target') + '</label>' +
-	                	'<textarea id="' + nsClass('textarea') + '" class="' + nsClass('textarea') + '" />').content;
-
-				jQuery(nsSel('textarea')).on('keyup', function () {
-					//The original developer thought that escaping the
-					//quote characters of the textarea value are
-					//necessary to work around a bug in IE. I could not
-					//reproduce the bug, so I commented the following
-					//out.
-					//.replace("\"", '&quot;').replace("'", "&#39;")
- 					jQuery(that.effective).attr('summary', jQuery(nsSel('textarea')).val());
- 					var waiDiv = jQuery('div[class*="wai"]', 'table#' + jQuery(that.effective).attr('id'));
- 					waiDiv.removeClass(pl.get('waiGreen'));
- 					waiDiv.removeClass(pl.get('waiRed'));
-
- 					if (jQuery(nsSel('textarea')).val().trim() != '') {
- 						waiDiv.addClass(pl.get('waiGreen'));
-				    } else {
-				    	waiDiv.addClass(pl.get('waiRed'));
-				    }
- 				});
-            },
-
-            onActivate: function (effective) {
-            	var that = this;
-				that.effective = effective;
-				jQuery(nsSel('textarea')).val(jQuery(that.effective).attr('summary'));
-
-            }
-
-        });
-		sidebar.show();
-	};
+			if (this.activeTable.checkWai()) {
+				this._summary.setIcon('check_circle');
+			} else {
+				this._summary.setIcon('cancel');	
+			}
+		} else {
+			this._summary.setTargetElement(null);
+			this._summary.deactivateInput();
+			this._summary.disable();
+			this._summary.setIcon('description');
+		}
+	}
 
 	/**
 	 * test if the table is editable
 	 * @return boolean true if the table's parent element is contentEditable, false otherwise
 	 */
 	TablePlugin.isEditableTable = function (table) {
-		return GENTICS.Utils.Dom.isEditable( table );
+		return GENTICS.Utils.Dom.isEditable(table);
 	};
 
 	/**
 	 * @param {DOMElement} table
 	 * @return {Number}
 	 */
-	TablePlugin.indexOfTableInRegistry = function ( table ) {
+	TablePlugin.indexOfTableInRegistry = function (table) {
 		var registry = this.TableRegistry;
 
-		for ( var i = 0; i < registry.length; i++ ) {
+		for (var i = 0; i < registry.length; i++) {
 			// We need to find exactly the same object from the
 			// registry since we could also deal with cloned objects
-			if ( registry[ i ].obj[ 0 ].id == table.id ) {
+			if (registry[i].obj[0].id == table.id) {
 				return i;
 			}
 		}
@@ -721,10 +668,10 @@ define([
 	 * @param {DOMElement} table
 	 * @return {Table}
 	 */
-	TablePlugin.getTableFromRegistry = function ( table ) {
-		var i = this.indexOfTableInRegistry( table );
-		if ( i > -1 ) {
-			return this.TableRegistry[ i ];
+	TablePlugin.getTableFromRegistry = function (table) {
+		var i = this.indexOfTableInRegistry(table);
+		if (i > -1) {
+			return this.TableRegistry[i];
 		}
 		return null;
 	};
@@ -737,13 +684,13 @@ define([
 	 */
 	TablePlugin.isSelectionInTable = function () {
 		var range = Aloha.Selection.getRangeObject();
-		var container = jQuery( range.commonAncestorContainer );
+		var container = jQuery(range.commonAncestorContainer);
 
-		if ( container.length == 0 ) {
-			return  false;
+		if (container.length == 0) {
+			return false;
 		}
 
-		if ( container.parents( '.aloha-editable table' ).length ) {
+		if (container.parents('.aloha-editable table').length) {
 			return true;
 		}
 
@@ -751,10 +698,10 @@ define([
 	};
 
 	TablePlugin.preventNestedTables = function () {
-		if ( this.isSelectionInTable() ) {
+		if (this.isSelectionInTable()) {
 			Dialog.alert({
-				title : i18n.t( 'Table' ),
-				text  : i18n.t( 'table.createTable.nestedTablesNoSupported' )
+				title: i18n.t('Table'),
+				text: i18n.t('table.createTable.nestedTablesNoSupported')
 			});
 
 			return true;
@@ -763,11 +710,11 @@ define([
 		return false;
 	};
 
-	TablePlugin.initMergeSplitCellsBtns = function() {
+	TablePlugin.initMergeSplitCellsBtns = function () {
 		this._mergecellsButton = Ui.adopt("mergecells", Button, {
 			tooltip: i18n.t("button.mergecells.tooltip"),
 			icon: Icons.TABLE_MERGE_CELLS,
-			click: function() {
+			click: function () {
 				if (TablePlugin.activeTable) {
 					TablePlugin.activeTable.selection.mergeCells();
 				}
@@ -777,7 +724,7 @@ define([
 		this._splitcellsButton = Ui.adopt("splitcells", Button, {
 			tooltip: i18n.t("button.splitcells.tooltip"),
 			icon: Icons.TABLE_SPLIT_CELLS,
-			click: function() {
+			click: function () {
 				var activeCell;
 				if (TablePlugin.activeTable) {
 					if (TablePlugin.activeTable.selection.selectedCells.length > 0) {
@@ -791,7 +738,7 @@ define([
 							});
 
 
-							Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'table-plugin'});
+							Aloha.activeEditable.smartContentChange({ type: 'block-change', plugin: 'table-plugin' });
 							Aloha.trigger('aloha-table-selection-changed');
 						}
 					}
@@ -800,24 +747,24 @@ define([
 		});
 	};
 
-	TablePlugin.initNaturalFitBtn = function() {
+	TablePlugin.initNaturalFitBtn = function () {
 		var that = this;
 
 		if (this.colResize || this.rowResize) {
 			this._tableNaturalFitButton = Ui.adopt("naturalFit", Button, {
 				tooltip: i18n.t("button.naturalfit.tooltip"),
 				icon: "aloha-icon aloha-icon-table-naturalfit",
-				click: function() {
+				click: function () {
 					if (that.activeTable) {
 						var tableObj = that.activeTable.obj;
-						tableObj.find('td, th').each(function() {
+						tableObj.find('td, th').each(function () {
 							jQuery(this).find('div').css('width', '');
 							jQuery(this).css('width', '');
 						});
-						tableObj.find('tr').each(function() {
+						tableObj.find('tr').each(function () {
 							jQuery(this).css('height', '');
 						});
-						tableObj.css('width','');
+						tableObj.css('width', '');
 					}
 				}
 			});
@@ -831,10 +778,10 @@ define([
 		var that = this;
 
 		this._addrowbeforeButton = Ui.adopt("addrowbefore", Button, {
-			tooltip: i18n.t( "button.addrowbefore.tooltip"),
+			tooltip: i18n.t("button.addrowbefore.tooltip"),
 			icon: Icons.TABLE_ADD_ROW_BEFORE,
 			iconHollow: true,
-			click: function() {
+			click: function () {
 				if (that.activeTable) {
 					that.activeTable.addRowBeforeSelection();
 				}
@@ -845,7 +792,7 @@ define([
 			tooltip: i18n.t("button.addrowafter.tooltip"),
 			icon: Icons.TABLE_ADD_ROW_AFTER,
 			iconHollow: true,
-			click: function() {
+			click: function () {
 				if (that.activeTable) {
 					that.activeTable.addRowAfterSelection();
 				}
@@ -855,13 +802,13 @@ define([
 		this._deleterowsButton = Ui.adopt("deleterows", Button, {
 			tooltip: i18n.t("button.delrows.tooltip"),
 			icon: Icons.TABLE_DELETE_ROWS,
-			click: function() {
+			click: function () {
 				if (that.activeTable) {
 					var aTable = that.activeTable;
 					Dialog.confirm({
 						title: i18n.t('Table'),
 						text: i18n.t('deleterows.confirm'),
-						yes: function(){
+						yes: function () {
 							aTable.deleteRows();
 						}
 					});
@@ -873,7 +820,7 @@ define([
 			tooltip: i18n.t("button.rowheader.tooltip"),
 			icon: Icons.TABLE_ROW_HEADER,
 			pure: true,
-			click: function() {
+			click: function () {
 				if (!that.activeTable) {
 					return;
 				}
@@ -908,12 +855,12 @@ define([
 
 		if (this.rowMSItems.length > 0) {
 			this.rowMSItems.push({
-				name    : 'removeFormat',
-				text    : i18n.t('button.removeFormat.text'),
-				tooltip : i18n.t('button.removeFormat.tooltip'),
-				'cls'   : 'aloha-ui-multisplit-fullwidth',
-				wide    : true,
-				click   : function () {
+				name: 'removeFormat',
+				text: i18n.t('button.removeFormat.text'),
+				tooltip: i18n.t('button.removeFormat.tooltip'),
+				'cls': 'aloha-ui-multisplit-fullwidth',
+				wide: true,
+				click: function () {
 					if (that.activeTable) {
 						var sc = that.activeTable.selection.selectedCells;
 						// if a selection was made, transform the selected cells
@@ -946,7 +893,7 @@ define([
 			tooltip: i18n.t("button.addcolleft.tooltip"),
 			icon: Icons.TABLE_ADD_COLUMN_LEFT,
 			iconHollow: true,
-			click: function() {
+			click: function () {
 				if (that.activeTable) {
 					that.activeTable.addColumnsLeft();
 				}
@@ -957,7 +904,7 @@ define([
 			tooltip: i18n.t("button.addcolright.tooltip"),
 			icon: Icons.TABLE_ADD_COLUMN_RIGHT,
 			iconHollow: true,
-			click: function() {
+			click: function () {
 				if (that.activeTable) {
 					that.activeTable.addColumnsRight();
 				}
@@ -967,13 +914,13 @@ define([
 		this._deletecolumnsButton = Ui.adopt("deletecolumns", Button, {
 			tooltip: i18n.t("button.delcols.tooltip"),
 			icon: Icons.TABLE_DELETE_COLUMNS,
-			click: function() {
+			click: function () {
 				if (that.activeTable) {
 					var aTable = that.activeTable;
 					Dialog.confirm({
 						title: i18n.t('Table'),
 						text: i18n.t('deletecolumns.confirm'),
-						yes: function(){
+						yes: function () {
 							aTable.deleteColumns();
 						}
 					});
@@ -985,7 +932,7 @@ define([
 			tooltip: i18n.t("button.columnheader.tooltip"),
 			icon: Icons.TABLE_COLUMN_HEADER,
 			pure: true,
-			click: function() {
+			click: function () {
 				if (!that.activeTable) {
 					return;
 				}
@@ -1003,11 +950,11 @@ define([
 		this.columnMSItems = [];
 		jQuery.each(this.columnConfig, function (j, itemConf) {
 			var item = {
-				name	  : itemConf.name,
-				text	  : i18n.t(itemConf.text),
-				tooltip	  : i18n.t(itemConf.tooltip),
-				iconClass : 'aloha-icon aloha-column-layout ' + itemConf.iconClass,
-				click	  : function (x,y,z) {
+				name: itemConf.name,
+				text: i18n.t(itemConf.text),
+				tooltip: i18n.t(itemConf.tooltip),
+				iconClass: 'aloha-icon aloha-column-layout ' + itemConf.iconClass,
+				click: function (x, y, z) {
 					if (that.activeTable) {
 						applyStyle(that.columnConfig, itemConf.cssClass, that.activeTable.selection.selectedCells);
 
@@ -1022,12 +969,12 @@ define([
 
 		if (this.columnMSItems.length > 0) {
 			this.columnMSItems.push({
-				name	: 'removeFormat',
-				text	: i18n.t('button.removeFormat.text'),
-				tooltip	: i18n.t('button.removeFormat.tooltip'),
-				'cls'   : 'aloha-ui-multisplit-fullwidth',
-				wide	: true,
-				click	: function () {
+				name: 'removeFormat',
+				text: i18n.t('button.removeFormat.text'),
+				tooltip: i18n.t('button.removeFormat.tooltip'),
+				'cls': 'aloha-ui-multisplit-fullwidth',
+				wide: true,
+				click: function () {
 					if (that.activeTable) {
 						var sc = that.activeTable.selection.selectedCells;
 						// if a selection was made, transform the selected cells
@@ -1060,11 +1007,11 @@ define([
 		this.cellMSItems = [];
 		jQuery.each(this.cellConfig, function (j, itemConf) {
 			var item = {
-				name	  : itemConf.name,
-				text	  : i18n.t(itemConf.text),
-				tooltip	  : i18n.t(itemConf.tooltip),
-				iconClass : 'aloha-icon aloha-column-layout ' + itemConf.iconClass,
-				click	  : function (x,y,z) {
+				name: itemConf.name,
+				text: i18n.t(itemConf.text),
+				tooltip: i18n.t(itemConf.tooltip),
+				iconClass: 'aloha-icon aloha-column-layout ' + itemConf.iconClass,
+				click: function (x, y, z) {
 					if (that.activeTable) {
 						applyStyle(that.cellConfig, itemConf.cssClass, that.selectedOrActiveCells());
 
@@ -1078,12 +1025,12 @@ define([
 
 		if (this.cellMSItems.length > 0) {
 			this.cellMSItems.push({
-				name	: 'removeFormat',
-				text	: i18n.t('button.removeFormat.text'),
-				tooltip	: i18n.t('button.removeFormat.tooltip'),
-				'cls'   : 'aloha-ui-multisplit-fullwidth',
-				wide	: true,
-				click	: function () {
+				name: 'removeFormat',
+				text: i18n.t('button.removeFormat.text'),
+				tooltip: i18n.t('button.removeFormat.tooltip'),
+				'cls': 'aloha-ui-multisplit-fullwidth',
+				wide: true,
+				click: function () {
 					if (that.activeTable) {
 						var sc = that.selectedOrActiveCells();
 						// if a selection was made, transform the selected cells
@@ -1122,7 +1069,7 @@ define([
 		this._createTableButton = Ui.adopt("createTable", ContextButton, {
 			tooltip: i18n.t("button.createtable.tooltip"),
 			icon: Icons.TABLE_CREATE,
-			context: function() {
+			context: function () {
 				// Can't open/insert a table without an editable to place it in
 				if (Aloha.activeEditable == null || Aloha.activeEditable.obj == null) {
 					return null;
@@ -1137,7 +1084,7 @@ define([
 				}
 			},
 			contextType: 'dropdown',
-			contextResolve: function(size) {
+			contextResolve: function (size) {
 				TablePlugin.createTable(size.columns, size.rows);
 			}
 		});
@@ -1162,13 +1109,13 @@ define([
 
 		var tableConfig = this.tableConfig;
 
-		jQuery.each(tableConfig, function(j, itemConf){
+		jQuery.each(tableConfig, function (j, itemConf) {
 			that.tableMSItems.push({
 				name: itemConf.name,
 				text: i18n.t(itemConf.text),
 				tooltip: i18n.t(itemConf.tooltip),
 				iconClass: 'aloha-icon aloha-table-layout ' + itemConf.iconClass,
-				click: function(){
+				click: function () {
 					// set table css class
 					if (that.activeTable) {
 						if (!that.activeTable.obj.hasClass(itemConf.cssClass)) {
@@ -1188,14 +1135,14 @@ define([
 			});
 		});
 
-		if(this.tableMSItems.length > 0) {
+		if (this.tableMSItems.length > 0) {
 			this.tableMSItems.push({
-				name    : 'removeFormat',
-				text    : i18n.t('button.removeFormat.text'),
-				tooltip : i18n.t('button.removeFormat.tooltip'),
-				'cls'   : 'aloha-ui-multisplit-fullwidth',
-				wide    : true,
-				click   : function () {
+				name: 'removeFormat',
+				text: i18n.t('button.removeFormat.text'),
+				tooltip: i18n.t('button.removeFormat.tooltip'),
+				'cls': 'aloha-ui-multisplit-fullwidth',
+				wide: true,
+				click: function () {
 					// remove all table classes
 					if (that.activeTable) {
 						for (var f = 0; f < tableConfig.length; f++) {
@@ -1208,21 +1155,21 @@ define([
 		}
 
 		this.tableMSButton = MultiSplitButton({
-			items : this.tableMSItems,
-			name : 'formatTable',
+			items: this.tableMSItems,
+			name: 'formatTable',
 			hideIfEmpty: true,
 		});
 
 		this._deleteTableButton = Ui.adopt("deleteTable", Button, {
 			tooltip: i18n.t("button.deltable.tooltip"),
 			icon: Icons.TABLE_DELETE,
-			click: function() {
+			click: function () {
 				if (that.activeTable) {
 					var aTable = that.activeTable;
 					Dialog.confirm({
 						title: i18n.t('Table'),
 						text: i18n.t('deletetable.confirm'),
-						yes: function(){
+						yes: function () {
 							aTable.deleteTable();
 						}
 					});
@@ -1234,7 +1181,7 @@ define([
 			tooltip: i18n.t("button.caption.tooltip"),
 			icon: Icons.TABLE_CAPTION,
 			pure: true,
-			click: function() {
+			click: function () {
 				if (!that.activeTable) {
 					return;
 				}
@@ -1279,16 +1226,21 @@ define([
 			}
 		});
 
-		this.summary = AttributeField( {
-			width : 275,
-			name  : 'tableSummary',
-			noTargetHighlight: true,
-			element: jQuery('<input id="aloha-attribute-field-tableSummary" class="aloha-wai-red" style="color: black; padding-left: 32px; background-color: white"/>')
-		} );
-
-		this.summary.addListener('keyup', function() {
-			if (that.activeTable) {
-				updateWaiImage(that);
+		var _this = this;
+		this._summary = Ui.adopt('tableSummary', AttributeButton, {
+			targetAttribute: 'summary',
+			icon: 'description',
+			iconHollow: true,
+			tooltip: i18n.t('button.summary.tooltip'),
+			inputLabel: i18n.t('table.label.target'),
+			panelTitle: i18n.t('table.sidebar.title'),
+			click: function() {
+				if (_this._summary && _this._summary.panelInputElement) {
+					_this._summary.panelInputElement.focus();
+				}
+			},
+			onChange: function() {
+				_this.updateSummaryButton();
 			}
 		});
 	};
@@ -1298,7 +1250,7 @@ define([
 	 * @param caption caption as jQuery object
 	 * @param captionText default text for the caption
 	 */
-	TablePlugin.makeCaptionEditable = function(caption, captionText) {
+	TablePlugin.makeCaptionEditable = function (caption, captionText) {
 		var that = this;
 		var cSpan = caption.children('div');
 		if (cSpan.length === 0) {
@@ -1344,8 +1296,8 @@ define([
 	 *            number of rows for the created table
 	 * @return void
 	 */
-	TablePlugin.createTable = function(cols, rows) {
-		if ( this.preventNestedTables() ) {
+	TablePlugin.createTable = function (cols, rows) {
+		if (this.preventNestedTables()) {
 			return;
 		}
 
@@ -1356,38 +1308,38 @@ define([
 		}
 
 		// create a dom-table object
-		var table = document.createElement( 'table' );
+		var table = document.createElement('table');
 		var tableId = table.id = GENTICS.Utils.guid();
-		var tbody = document.createElement( 'tbody' );
+		var tbody = document.createElement('tbody');
 
 		// create "rows"-number of rows
-		for ( var i = 0; i < rows; i++ ) {
-			var tr = document.createElement( 'tr' );
+		for (var i = 0; i < rows; i++) {
+			var tr = document.createElement('tr');
 			// create "cols"-number of columns
-			for ( var j = 0; j < cols; j++ ) {
+			for (var j = 0; j < cols; j++) {
 				var text = document.createTextNode('');
-				var td = document.createElement( 'td' );
-				td.appendChild( text );
-				tr.appendChild( td );
+				var td = document.createElement('td');
+				td.appendChild(text);
+				tr.appendChild(td);
 			}
-			tbody.appendChild( tr );
+			tbody.appendChild(tr);
 		}
 		applyDefaultClassesToTable(table);
-		table.appendChild( tbody );
+		table.appendChild(tbody);
 
 		prepareRangeContainersForInsertion(
-			Aloha.Selection.getRangeObject(), table );
+			Aloha.Selection.getRangeObject(), table);
 
 		// insert the table at the current selection
 		GENTICS.Utils.Dom.insertIntoDOM(
-			jQuery( table ),
+			jQuery(table),
 			Aloha.Selection.getRangeObject(),
 			Aloha.activeEditable.obj
 		);
 
 		cleanupAfterInsertion();
 
-		var tableReloadedFromDOM = document.getElementById( tableId );
+		var tableReloadedFromDOM = document.getElementById(tableId);
 		var tableObj = createNewTable(tableReloadedFromDOM);
 
 		if (tableObj) {
@@ -1402,13 +1354,13 @@ define([
 			if ($.browser.msie) {
 				window.setTimeout(function () {
 					tableObj.cells[0].wrapper.get(0).focus();
-				}, 20 );
+				}, 20);
 			} else {
 				tableObj.cells[0].wrapper.get(0).focus();
 			}
 		}
 
-		Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'table-plugin'});
+		Aloha.activeEditable.smartContentChange({ type: 'block-change', plugin: 'table-plugin' });
 
 		// The selection starts out in the first cell of the new
 		// table. The table tab/scope has to be activated
@@ -1419,22 +1371,22 @@ define([
 			UiPlugin.getActiveSurface().focusTab(TablePlugin.tabId);
 		}
 		TablePlugin.updateFloatingMenuScope();
+		TablePlugin.updateSummaryButton();
 	};
 
-	TablePlugin.setFocusedTable = function(focusTable) {
+	TablePlugin.setFocusedTable = function (focusTable) {
 		var that = this;
 
 		// clicking outside the table unselects the cells of the table
-		if (null != this.activeTable ) {
+		if (null != this.activeTable) {
 			this.activeTable.selection.unselectCells();
 		}
 
 		for (var i = 0; i < TablePlugin.TableRegistry.length; i++) {
 			TablePlugin.TableRegistry[i].hasFocus = false;
 		}
-		if (typeof focusTable != 'undefined') {
-			this.summary.setTargetObject(focusTable.obj, 'summary');
-			if ( focusTable.obj.children("caption").is('caption') ) {
+		if (focusTable != null) {
+			if (focusTable.obj.children("caption").is('caption')) {
 				// set caption button
 				this._tableCaptionButton.setActive(true);
 				var c = focusTable.obj.children("caption");
@@ -1442,10 +1394,9 @@ define([
 			}
 			focusTable.hasFocus = true;
 		}
+
 		TablePlugin.activeTable = focusTable;
-		if (TablePlugin.activeTable) {
-			updateWaiImage(TablePlugin);
-		}
+		this.updateSummaryButton();
 
 		// show configured formatting classes
 		for (var i = 0; i < this.tableMSItems.length; i++) {
@@ -1470,7 +1421,7 @@ define([
 	 *            The message to display
 	 * @return void
 	 */
-	TablePlugin.error = function(msg) {
+	TablePlugin.error = function (msg) {
 		Aloha.Log.error(this, msg);
 	};
 
@@ -1482,7 +1433,7 @@ define([
 	 *            The message to display
 	 * @return void
 	 */
-	TablePlugin.debug = function(msg) {
+	TablePlugin.debug = function (msg) {
 		Aloha.Log.debug(this, msg);
 	};
 
@@ -1494,7 +1445,7 @@ define([
 	 *            The message to display
 	 * @return void
 	 */
-	TablePlugin.info = function(msg) {
+	TablePlugin.info = function (msg) {
 		Aloha.Log.info(this, msg);
 	};
 
@@ -1506,7 +1457,7 @@ define([
 	 *            The message to display
 	 * @return void
 	 */
-	TablePlugin.log = function(msg) {
+	TablePlugin.log = function (msg) {
 		Aloha.log('log', this, msg);
 	};
 
@@ -1542,7 +1493,7 @@ define([
 	TablePlugin.set = function (key, value) {
 		if (this.config[key]) {
 			this.config[key] = value;
-		}else{
+		} else {
 			this.parameters[key] = value;
 		}
 	};
@@ -1553,7 +1504,7 @@ define([
 	 * @param obj jQuery object to make clean
 	 * @return void
 	 */
-	TablePlugin.makeClean = function ( obj ) {
+	TablePlugin.makeClean = function (obj) {
 		// it is generally not necessary to do anything here, because everything is handled by Ephemera.
 		// the only exception is removing the cursor styles, because as of this moment, Ephemera is not capable
 		// of removing css
@@ -1565,7 +1516,7 @@ define([
 	 *
 	 * @return The plugins namespace (string)
 	 */
-	TablePlugin.toString = function() {
+	TablePlugin.toString = function () {
 		return this.prefix;
 	};
 
@@ -1575,7 +1526,7 @@ define([
 	 *
 	 * @param  {array} retainScopes the name of the scopes which should not be left
 	 */
-	TablePlugin.leaveTableScopes = function(retainScopes, force) {
+	TablePlugin.leaveTableScopes = function (retainScopes, force) {
 		var i = 0,
 			scopes = [];
 		retainScopes = $.isArray(retainScopes) ? retainScopes : [];
@@ -1594,7 +1545,7 @@ define([
 	 * Update the current floating menu scope according to the
 	 * selected cells
 	 */
-	TablePlugin.updateFloatingMenuScope = function() {
+	TablePlugin.updateFloatingMenuScope = function () {
 		var i = 0,
 			scopes;
 		if (
@@ -1620,7 +1571,7 @@ define([
 	 * Set the cell-style to match the active item, if all selected cells have the same style
 	 * TODO: Algorithm very similar to setActiveStyle in table.js, should be refactored
 	 */
-	TablePlugin.setActiveCellStyle = function() {
+	TablePlugin.setActiveCellStyle = function () {
 		var that = this;
 		var allSelected = false;
 		var className;
@@ -1631,7 +1582,7 @@ define([
 		var selectedCells = that.selectedOrActiveCells();
 
 		for (var i = 0; i < that.cellConfig.length; i++) {
-			if (jQuery(selectedCells[0]).hasClass(that.cellConfig[i].cssClass) ) {
+			if (jQuery(selectedCells[0]).hasClass(that.cellConfig[i].cssClass)) {
 				className = that.cellConfig[i].name;
 				allSelected = true;
 				break;
@@ -1639,7 +1590,7 @@ define([
 		}
 
 		// if all selected cells have the same class, set it as active
-		jQuery(selectedCells).each(function(index) {
+		jQuery(selectedCells).each(function (index) {
 			if (!jQuery(this).hasClass(className)) {
 				allSelected = false;
 			}
@@ -1649,28 +1600,28 @@ define([
 		}
 	};
 
-	TablePlugin.selectedOrActiveCells = function() {
+	TablePlugin.selectedOrActiveCells = function () {
 		var that = this;
 		var sc = this.activeTable.selection.selectedCells;
 
 		// if there are no selected cells,
 		// set the active cell as the selected cell.
 		if (!sc || sc.length < 1) {
-			var activeCell = function() {
+			var activeCell = function () {
 				var range = Aloha.Selection.getRangeObject();
 				if (Aloha.activeEditable) {
-					return range.findMarkup( function() {
+					return range.findMarkup(function () {
 						var nodeName = this.nodeName.toLowerCase();
 
 						return nodeName === 'td' || nodeName === 'th';
-					}, Aloha.activeEditable.obj );
+					}, Aloha.activeEditable.obj);
 				} else {
 					return null;
 				}
 			}
 
 			var active_cell = activeCell();
-			return (active_cell ? [ active_cell ] : []);
+			return (active_cell ? [active_cell] : []);
 		} else {
 			return sc;
 		}
@@ -1700,23 +1651,23 @@ define([
 	 * @param {Object} range
 	 * @param {DOMElement} table
 	 */
-	function prepareRangeContainersForInsertion ( range, table ) {
-		var	eNode = range.endContainer,
+	function prepareRangeContainersForInsertion(range, table) {
+		var eNode = range.endContainer,
 			sNode = range.startContainer,
-			eNodeLength = ( eNode.nodeType == 3 )
+			eNodeLength = (eNode.nodeType == 3)
 				? eNode.length
 				: eNode.childNodes.length;
 
 
-		if ( sNode.nodeType == 3 &&
-				sNode.parentNode.tagName == 'P' &&
-					sNode.parentNode.childNodes.length == 1 &&
-						/^(\s|%A0)$/.test( escape( sNode.data ) ) ) {
+		if (sNode.nodeType == 3 &&
+			sNode.parentNode.tagName == 'P' &&
+			sNode.parentNode.childNodes.length == 1 &&
+			/^(\s|%A0)$/.test(escape(sNode.data))) {
 			sNode.data = '';
 			range.startOffset = 0;
 
 			// In case ... <p> []</p>
-			if ( eNode == sNode ) {
+			if (eNode == sNode) {
 				range.endOffset = 0;
 			}
 		}
@@ -1727,17 +1678,17 @@ define([
 		// end of their container nodes.
 		// If they do, we will mark their container so that after they are
 		// split we can check whether or not they should be removed
-		if ( !GENTICS.Utils.Dom.allowsNesting(
-				sNode.nodeType == 3 ? sNode.parentNode : sNode, table ) ) {
+		if (!GENTICS.Utils.Dom.allowsNesting(
+			sNode.nodeType == 3 ? sNode.parentNode : sNode, table)) {
 
-			if ( range.startOffset == 0 ) {
-				jQuery( sNode.nodeType == 3 ? sNode.parentNode : sNode )
-					.addClass( 'aloha-table-cleanme' );
+			if (range.startOffset == 0) {
+				jQuery(sNode.nodeType == 3 ? sNode.parentNode : sNode)
+					.addClass('aloha-table-cleanme');
 			}
 
-			if ( range.endOffset == eNodeLength ) {
-				jQuery( eNode.nodeType == 3 ? eNode.parentNode : eNode )
-					.addClass( 'aloha-table-cleanme' );
+			if (range.endOffset == eNodeLength) {
+				jQuery(eNode.nodeType == 3 ? eNode.parentNode : eNode)
+					.addClass('aloha-table-cleanme');
 			}
 		}
 	};
@@ -1749,21 +1700,21 @@ define([
 	 * even though they are also invisible.
 	 * We can consider removing these as well at a later stage, if needed.
 	 */
-	function cleanupAfterInsertion () {
-		var dirty = jQuery( '.aloha-table-cleanme' ).removeClass(
-						'aloha-table-cleanme' );
+	function cleanupAfterInsertion() {
+		var dirty = jQuery('.aloha-table-cleanme').removeClass(
+			'aloha-table-cleanme');
 		// check all children of the element we want
-		for ( var i = 0; i < dirty.length; i++ ) {
+		for (var i = 0; i < dirty.length; i++) {
 			// get the children of the to be cleaned element for some checks
-			var dirtyChildren = jQuery( dirty[ i ] ).children();
+			var dirtyChildren = jQuery(dirty[i]).children();
 			// is the element empty
 			// is the first child <br class="aloha-end-br"> - placeholder element
 			// is the element not the editing Host
-			if ( ( jQuery.trim( jQuery( dirty[ i ] ).html() ) == '' ||
-					( dirtyChildren.length === 1 &&
-						dirtyChildren.first('br.aloha-end-br') ) ) &&
-					!GENTICS.Utils.Dom.isEditingHost( dirty[ i ] ) ) {
-				jQuery( dirty[ i ] ).remove();
+			if ((jQuery.trim(jQuery(dirty[i]).html()) == '' ||
+				(dirtyChildren.length === 1 &&
+					dirtyChildren.first('br.aloha-end-br'))) &&
+				!GENTICS.Utils.Dom.isEditingHost(dirty[i])) {
+				jQuery(dirty[i]).remove();
 
 				/*
 				// For debugging: to see what we are deleting
