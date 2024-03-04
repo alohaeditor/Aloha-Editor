@@ -179,10 +179,13 @@ define([
 		});
 
 		PubSub.sub('aloha.selection.context-change', function (message) {
+			var wasInListScope = plugin._inListScope;
+
+			plugin._inListScope = false;
+
 			plugin.orderedListButton.setActive(false);
 			plugin.unorderedListButton.setActive(false);
 			plugin.definitionListButton.setActive(false);
-
 			plugin._outdentListButton.show(false);
 			plugin._indentListButton.show(false);
 
@@ -196,20 +199,30 @@ define([
 				case 'DL':
 					$(markup).addClass('alohafocus');
 					plugin.definitionListButton.setActive(true);
+					plugin._inListScope = true;
 					break;
 				case 'OL':
 					plugin._outdentListButton.show(true);
 					plugin._indentListButton.show(true);
 					plugin.orderedListButton.setActive(true);
+					plugin._inListScope = true;
 					break;
 				case 'UL':
 					plugin._outdentListButton.show(true);
 					plugin._indentListButton.show(true);
 					plugin.unorderedListButton.setActive(true);
+					plugin._inListScope = true;
 					break;
 				}
 			}
 
+			if (wasInListScope != plugin._inListScope) {
+				if (plugin._inListScope) {
+					Scopes.enterScope('Aloha.List');
+				} else {
+					Scopes.leaveScope('Aloha.List');
+				}
+			}
 			// Remove jQuery UI menu classes/attributes from list-templates in submenus
 			$('div.aloha-list-templates ul').removeClass('ui-menu ui-widget ui-widget-content ui-corner-all')
 			          .attr('role', '')
@@ -242,19 +255,13 @@ define([
 	function toggleListOption(plugin, listtype, show) {
 		switch (listtype) {
 		case 'ul':
-			if (plugin.templates.ul) {
-				plugin.unorderedListButton.show(show);
-			}
+			plugin.unorderedListButton.show(show);
 			break;
 		case 'ol':
-			if (plugin.templates.ol) {
-				plugin.orderedListButton.show(show);
-			}
+			plugin.orderedListButton.show(show);
 			break;
 		case 'dl':
-			if (plugin.templates.dl) {
-				plugin.definitionListButton.show(show);
-			}
+			plugin.definitionListButton.show(show);
 			break;
 		}
 	}
@@ -324,23 +331,23 @@ define([
 		 */
 		templates: {
 			ul: {
-				'aloha-list-disc': 'Disc',
-				'aloha-list-circle': 'Circle',
-				'aloha-list-square': 'Square',
+				'aloha-list-disc': i18n.t('class.ul.disc'),
+				'aloha-list-circle': i18n.t('class.ul.circle'),
+				'aloha-list-square': i18n.t('class.ul.square'),
 			},
 			ol: {
-				'aloha-list-decimal': 'Numbers',
-				'aloha-list-decimal-leading-zero': 'Numbers, leading zeroes',
-				'aloha-list-lower-roman': 'Lowercase roman',
-				'aloha-list-upper-roman': 'Uppercase roman',
-				'aloha-list-lower-greek': 'Greek letters',
-				'aloha-list-lower-latin': 'Lowercase letters',
-				'aloha-list-upper-latin': 'Uppercase letters',
+				'aloha-list-decimal': i18n.t('class.ol.numbers'),
+				'aloha-list-decimal-leading-zero': i18n.t('class.ol.numberszero'),
+				'aloha-list-lower-roman': i18n.t('class.ol.lcroman'),
+				'aloha-list-upper-roman': i18n.t('class.ol.ucroman'),
+				'aloha-list-lower-greek': i18n.t('class.ol.greek'),
+				'aloha-list-lower-latin': i18n.t('class.ol.lcletters'),
+				'aloha-list-upper-latin': i18n.t('class.ol.ucletters'),
 			},
 			dl: {
-				'aloha-list-blue': 'Blue',
-				'aloha-list-green': 'Green',
-				'aloha-list-red': 'Red',
+				'aloha-list-blue': i18n.t('class.dl.blue'),
+				'aloha-list-green': i18n.t('class.dl.green'),
+				'aloha-list-red': i18n.t('class.dl.red'),
 			},
 		},
 
@@ -394,7 +401,9 @@ define([
 					listToStyle.removeClass(cssClass);
 				});
 
-				listToStyle.addClass(style);
+				if (style) {
+					listToStyle.addClass(style);
+				}
 
 				// now proceed with all selected sublists
 				listToStyle.find(listtype).each(function () {
@@ -403,7 +412,10 @@ define([
 						jQuery.each(plugin.templates[listtype].classes, function (i, cssClass) {
 							listToStyle.removeClass(cssClass);
 						});
-						listToStyle.addClass(style);
+
+						if (style) {
+							listToStyle.addClass(style);
+						}
 					}
 				});
 			}
@@ -430,6 +442,7 @@ define([
 		 * @param elementId The ID of the button element.
 		 */
 		showListDropdown: function (type, elementId) {
+			/*
 			var that = this;
 
 			Dropdown.openDynamicDropdown(elementId, {
@@ -452,6 +465,35 @@ define([
 					console.log(error);
 				}
 			});
+			 */
+
+			var that = this;
+			var options = Object.keys(that.templates[type]).map(function (listClass) {
+				return {
+					id: listClass,
+					label: that.templates[type][listClass],
+				}
+			});
+
+			if (options.length > 0) {
+				Dropdown.openDynamicDropdown(elementId, {
+					type: 'select-menu',
+					options: {
+						iconsOnly: false,
+						options: options
+					},
+				}).then(function (ref) {
+					return ref.value;
+				}).then(function (selection) {
+					that.setListStyle(type, selection.id);
+				}).catch(function (error) {
+					if (error instanceof OverlayElement.OverlayCloseError && error.reason === OverlayElement.ClosingReason.ERROR) {
+						console.log(error);
+					}
+				});
+			} else {
+				that.setListStyle(type);
+			}
 		},
 
 		/**
@@ -480,6 +522,10 @@ define([
 				if (Aloha.settings.plugins.list.templates) {
 					plugin.templates = Aloha.settings.plugins.list.templates;
 				}
+
+				if (Aloha.settings.plugins.list.listTypes) {
+					plugin.listTypes = Aloha.settings.plugins.list.listTypes;
+				}
 				if (Aloha.settings.plugins.list.defaultClasses) {
 					plugin.defaultClasses = plugin.normalizeDefaultClasses(Aloha.settings.plugins.list.defaultClasses);
 					plugin.uniqueDefaultClassNames = plugin.getUniqueDefaultClasseNames(plugin.defaultClasses);
@@ -488,6 +534,9 @@ define([
 
 			initializeTemplates(plugin);
 			registerEventHandlers(plugin);
+
+			plugin._inListScope = false;
+
 			Scopes.registerScope('Aloha.List', [Scopes.SCOPE_CONTINUOUS_TEXT]);
 		},
 
