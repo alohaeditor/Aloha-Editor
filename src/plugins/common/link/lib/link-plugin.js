@@ -699,10 +699,11 @@ define([
 				Dom.doCleanup(insertLinkPostCleanup, range);
 			}
 
-			Aloha.activeEditable.obj.find('a.aloha-new-link').each(function (i) {
-				that.addLinkEventHandlers(this);
-				jQuery(this).removeClass('aloha-new-link');
-			});
+			var linkElements = $(Array.from(Aloha.activeEditable.obj.find('a.aloha-new-link')).map(function (newLinkElem) {
+				that.addLinkEventHandlers(newLinkElem);
+				jQuery(newLinkElem).removeClass('aloha-new-link');
+				return newLinkElem;
+			}));
 
 			range.select();
 
@@ -712,7 +713,7 @@ define([
 			apiRange.setStart(range.startContainer, range.startOffset);
 			apiRange.setEnd(range.endContainer, range.endOffset);
 
-			PubSub.pub('aloha.link.insert', { range: apiRange });
+			PubSub.pub('aloha.link.insert', { range: apiRange, elements: linkElements });
 			this.hrefChange();
 		},
 
@@ -727,6 +728,7 @@ define([
 				foundMarkup.push(linkToRemove);
 			}
 
+			var _this = this;
 			foundMarkup.forEach(function (link) {
 				var linkText = jQuery(link).text();
 				// remove the link
@@ -740,7 +742,7 @@ define([
 
 				if (typeof terminateLinkScope == 'undefined' ||
 					terminateLinkScope === true) {
-					Scopes.leaveScope(this.scope);
+					Scopes.leaveScope(_this.scope);
 				}
 
 				// trigger an event for removing the link
