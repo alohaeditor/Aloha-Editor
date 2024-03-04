@@ -1,119 +1,111 @@
 .aloha-block table.debug-block {
-	background: #EEEEEE;
-	border: 1px dashed #999999;
-	border-radius: 7px;
-	margin: 5px 0;
-	padding: 4px;
-	width: 100%;
+  background: #eeeeee;
+  border: 1px dashed #999999;
+  border-radius: 7px;
+  margin: 5px 0;
+  padding: 4px;
+  width: 100%;
 }
 
 .aloha-block {
-    cursor: pointer;
-}
-
-/* IE8 will use outline for highlighting */
-.aloha-ie8 .aloha-block:hover {
-	outline: 3px solid #FFE767; /* IE does not support box-shadow, thus we need to use border */
-}
-.aloha-ie8 .aloha-block.aloha-block-active, .aloha-ie8 .aloha-block.aloha-block-active:hover {
-	outline: 3px solid #80B5F2; /* IE does not support box-shadow, thus we need to use border */
-}
-/* IE7 will use border for outlining */
-.aloha-ie7 .aloha-block:hover {
-	border: 3px solid #FFE767; /* IE does not support box-shadow, thus we need to use border */
-	margin: -3px;
-}
-.aloha-ie7 .aloha-block.aloha-block-active, .aloha-ie7 .aloha-block.aloha-block-active:hover {
-	border: 3px solid #80B5F2; /* IE does not support box-shadow, thus we need to use border */
-	margin: -3px;
+  cursor: pointer;
 }
 
 /** DRAG DROP **/
 /* Display cursor for drag/drop */
 .aloha-block-droppable {
-	border-left: 1px solid red;
-	margin-left:-1px;
-}
-.aloha-ie7 .aloha-block-droppable {
-	margin-left:0; /* IE7 cannot handle the negative margin... */
+  border-left: 1px solid red;
+  margin-left: -1px;
 }
 
 .aloha-block-droppable.aloha-block-droppable-right {
-	margin-left:0 !important;
-	border-left: none !important;
-	margin-right:-1px;
-	border-right: 1px solid red;
+  margin-left: 0 !important;
+  border-left: none !important;
+  margin-right: -1px;
+  border-right: 1px solid red;
 }
 
 .aloha-block-droppable-blocklevel {
-	position:relative;
+  position: relative;
 }
 .aloha-block-blockleveldragdropline {
-	position:absolute;
-	width: 100%;
-	height:2px;
-	background-color:red;
-	bottom:0;
-
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background-color: red;
+  bottom: 0;
 }
 /** OTHER **/
 
 .aloha-block .aloha-editable {
-	cursor: auto;
+  cursor: auto;
 }
 
 .aloha-block {
-	position:relative;
+  position: relative;
 }
 .aloha-block:hover > .aloha-block-draghandle,
 .aloha-block-active > .aloha-block-draghandle {
-	display:block;
+  display: block;
 }
-.aloha-block-draghandle {
-	position:absolute;
-	left:0;
-	top:-13px;
-	width:24px;
-	height:12px;
-	overflow:hidden;
-	display:none;
-	background:url(../img/toolbar-draghandle.gif);
-	border-top:1px solid #CCC;
-	border-left:1px solid #CCC;
-	border-right:1px solid #CCC;
-	border-top-left-radius:5px;
-	border-top-right-radius:5px;
-}
+
 /* Hide drag handle while dragging takes place */
 .aloha-block.ui-draggable-dragging .aloha-block-draghandle {
-	display: none;
+  display: none;
 }
 
 .aloha-block-editor fieldset {
-	border: 2px groove threedface!important;
-	padding-bottom: 5px;
+  border: 2px groove threedface !important;
+  padding-bottom: 5px;
 }
 
 .aloha-block-editor label {
-	display:block;
+  display: block;
 }
 
 .aloha-block-editor .input-label {
-	display: inline;
+  display: inline;
 }
 
 .aloha-block-dropInlineElementIntoEmptyBlock {
-	border: 1px solid red;
+  border: 1px solid red;
 }
 
-.aloha-table-wrapper div.aloha-table-cell-editable.aloha-block-dropInlineElementIntoEmptyBlock {
-	border: 1px solid red;
+.aloha-table-wrapper
+  div.aloha-table-cell-editable.aloha-block-dropInlineElementIntoEmptyBlock {
+  border: 1px solid red;
 }
 
 .aloha-block-dropzone {
-	background-color: #eeeeff;
+  background-color: #eeeeff;
 }
 
-.aloha .ui-state-default .aloha-icon.aloha-icon-toggledragdrop {
-	background: url(../../../../img/base.png) -416px 0px;
+.aloha-block-draghandle {
+  width: 30px;
+  height: 30px;
+  padding: 4px;
+  margin: 0;
+  border: 1px solid #d6d6d6;
+  outline: none;
+  display: flex;
+  box-sizing: border-box;
+  transition: 200ms;
+  z-index: 100;
+  user-select: none;
+  cursor: move;
+  position: relative;
+  background: none;
+  left: unset;
+  top: unset;
+  border-radius: 0;
+  background: #f5f5f5;
+  color: #222;
+}
+
+.aloha-block-button-icon {
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+  text-align: center;
+  margin: auto;
 }

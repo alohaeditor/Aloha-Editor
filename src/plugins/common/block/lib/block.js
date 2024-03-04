@@ -1244,7 +1244,16 @@ define([
 		renderBlockHandlesIfNeeded: function () {
 			if (this.isDraggable()) {
 				if (this.$element.children('.aloha-block-draghandle').length === 0) {
-					this.$element.prepend('<span class="aloha-block-handle aloha-block-draghandle aloha-cleanme"></span>');
+					this.$element.prepend(
+						$('<span>', {
+							class: 'aloha-block-handle aloha-block-draghandle aloha-cleanme'
+						}).append(
+							$('<i>', {
+								class: 'material-symbols-outlined aloha-block-button-icon',
+								text: 'drag_pan',
+							})
+						)
+					);
 				}
 			}
 		},

@@ -154,11 +154,15 @@ define([
 
         enable: function () {
             this._super();
-            this.panelInputElement.removeAttr('disabled');
+            if (this.panelInputElement) {
+                this.panelInputElement.removeAttr('disabled');
+            }
         },
         disable: function () {
             this._super();
-            this.panelInputElement.attr('disabled', 'disabled');
+            if (this.panelInputElement) {
+                this.panelInputElement.attr('disabled', 'disabled');
+            }
         },
     });
 
