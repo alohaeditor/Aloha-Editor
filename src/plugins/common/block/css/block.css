@@ -102,6 +102,13 @@
   color: #222;
 }
 
+.aloha-block:not(.ui-draggable) .aloha-block-draghandle,
+.aloha-block.ui-draggable.ui-draggable-disabled .aloha-block-draghandle,
+.aloha-block:not(.ui-draggable) .ui-draggable-handle,
+.aloha-block.ui-draggable.ui-draggable-disabled .ui-draggable-handle {
+  display: none;
+}
+
 .aloha-block-button-icon {
   font-size: 22px;
   width: 22px;
