@@ -361,7 +361,14 @@ define([
 			// We brute-forcishly push our button settings into the
 			// multiSplitButton. The multiSplitButton will pick it up and render
 			// it.
-			Format.blockLevelSemantics['blockquote'] = true;
+			// Format.blockLevelSemantics['blockquote'] = true;
+			Format.config['blockquote'] = {
+				icon: Icons.QUOTE,
+				label: i18n.t('button.blockquote.tooltip'),
+				typography: true,
+				header: false,
+			};
+
 			PubSub.sub('aloha.format.pre_change', function (message) {
 				if (message.oldFormat == 'blockquote' && message.newFormat != 'blockquote') {
 					plugin.removeQuote()
