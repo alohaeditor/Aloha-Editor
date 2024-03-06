@@ -177,14 +177,6 @@ define([
 	 * @param plugin
 	 */
 	function initShowOnToolbar(plugin) {
-		plugin.removeCiteButton = Ui.adopt("removeCite", ToggleButton, {
-			tooltip: i18n.t("button.removeCite.tooltip"),
-			icon: "aloha-icon aloha-icon-unlink",
-			click: function () {
-				plugin.removeQuote();
-			}
-		});
-
 		plugin.citeHrefField = AttributeField({
 			name: 'editCite',
 			width: 320,
@@ -437,7 +429,6 @@ define([
 				if (plugin.showOnToolbar) {
 					if (quoteFound || blockquoteFound) {
 						plugin.citeHrefField.show();
-						plugin.removeCiteButton.show();
 
 						updateCiteInputs(plugin);
 						Scopes.enterScope(plugin.name);
@@ -445,8 +436,6 @@ define([
 						plugin.citeHrefField.foreground();
 					} else {
 						plugin.citeHrefField.hide();
-						plugin.removeCiteButton.hide();
-						plugin.removeCiteButton.setActive(false);
 
 						Scopes.leaveScope(plugin.name);
 					}
