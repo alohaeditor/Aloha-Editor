@@ -187,7 +187,7 @@ define([
 		return component;
 	}
 
-	return Plugin.create('link', {
+	var plugin = Plugin.create('link', {
 		/**
 		 * Default configuration allows links everywhere
 		 */
@@ -225,28 +225,26 @@ define([
 		 * Initializes the plugin.
 		 */
 		init: function () {
-			var plugin = this;
-
-			Scopes.registerScope(this.name, [Scopes.SCOPE_GLOBAL]);
+			Scopes.registerScope(plugin.name, [Scopes.SCOPE_GLOBAL]);
 
 			DynamicForm.componentFactoryRegistry['link-target'] = createLinkTargetFromConfig;
 
-			if (typeof this.settings.objectTypeFilter != 'undefined') {
-				this.objectTypeFilter = this.settings.objectTypeFilter;
+			if (typeof plugin.settings.objectTypeFilter != 'undefined') {
+				plugin.objectTypeFilter = plugin.settings.objectTypeFilter;
 			}
-			if (typeof this.settings.onHrefChange != 'undefined') {
-				this.onHrefChange = this.settings.onHrefChange;
+			if (typeof plugin.settings.onHrefChange != 'undefined') {
+				plugin.onHrefChange = plugin.settings.onHrefChange;
 			}
-			if (typeof this.settings.hotKey != 'undefined') {
-				jQuery.extend(true, this.hotKey, this.settings.hotKey);
+			if (typeof plugin.settings.hotKey != 'undefined') {
+				jQuery.extend(true, plugin.hotKey, plugin.settings.hotKey);
 			}
-			if (typeof this.settings.hrefValue != 'undefined') {
-				this.hrefValue = this.settings.hrefValue;
+			if (typeof plugin.settings.hrefValue != 'undefined') {
+				plugin.hrefValue = plugin.settings.hrefValue;
 			}
 
-			this.createButtons();
-			this.subscribeEvents();
-			this.bindInteractions();
+			plugin.createButtons();
+			plugin.subscribeEvents();
+			plugin.bindInteractions();
 
 			Aloha.bind('aloha-plugins-loaded', function () {
 				PubSub.pub('aloha.link.ready', {
@@ -256,7 +254,7 @@ define([
 
 			LANG_REPOSITORY = new LanguageRepository(
 				'link-languages',
-				this.flags,
+				plugin.flags,
 				'iso639-1',
 				Aloha.settings.locale,
 				'language/link'
@@ -264,27 +262,22 @@ define([
 		},
 
 		nsSel: function () {
-			var stringBuilder = [], prefix = pluginNamespace;
-			jQuery.each(arguments, function () {
-				stringBuilder.push('.' + (this == '' ? prefix : prefix + '-' + this));
-			});
-			return jQuery.trim(stringBuilder.join(' '));
+			return Array.from(arguments).map(function(arg) {
+				return '.' + pluginNamespace + (arg == '' ? '' : '-' + arg);
+			}).join(' ').trim();
 		},
 
 		//Creates string with this component's namepsace prefixed the each classname
 		nsClass: function () {
-			var stringBuilder = [], prefix = pluginNamespace;
-			jQuery.each(arguments, function () {
-				stringBuilder.push(this == '' ? prefix : prefix + '-' + this);
-			});
-			return jQuery.trim(stringBuilder.join(' '));
+			return Array.from(arguments).map(function(arg) {
+				return pluginNamespace + (arg == '' ? '' : '-' + arg);
+			}).join(' ').trim();
 		},
 
 		/**
 		 * Subscribe for events
 		 */
 		subscribeEvents: function () {
-			var plugin = this;
 			var editablesCreated = 0;
 
 			PubSub.sub('aloha.editable.created', function (message) {
@@ -310,7 +303,7 @@ define([
 						).then(function (control) {
 							return control.value;
 						}).then(function (formValue) {
-							that.upsertLink(existingLink, formData);
+							plugin.upsertLink(existingLink, formData);
 						}).catch(function (error) {
 							if (error instanceof OverlayElement.OverlayCloseError && error.reason !== OverlayElement.ClosingReason.ERROR) {
 								console.log(error);
@@ -322,8 +315,8 @@ define([
 					return false;
 				});
 
-				editable.obj.find('a').each(function () {
-					plugin.addLinkEventHandlers(this);
+				Array.from(editable.obj.find('a')).forEach(function (foundLink) {
+					plugin.addLinkEventHandlers(foundLink);
 				});
 
 				if (0 === editablesCreated++) {
@@ -383,25 +376,25 @@ define([
 		 */
 		toggleLinkScope: function (show) {
 			// Check before doing anything as a performance improvement.
-			// The _isScopeActive_editableId check ensures that when
+			// The _isScopeActive_editableId check ensures plugin when
 			// changing from a normal link in an editable to an editable
-			// that is a link itself, the removeLinkButton will be
+			// plugin is a link itself, the removeLinkButton will be
 			// hidden.
-			if (this._isScopeActive === show && Aloha.activeEditable && this._isScopeActive_editableId === Aloha.activeEditable.getId()) {
+			if (plugin._isScopeActive === show && Aloha.activeEditable && plugin._isScopeActive_editableId === Aloha.activeEditable.getId()) {
 				return;
 			}
-			this._isScopeActive = show;
-			this._isScopeActive_editableId = Aloha.activeEditable && Aloha.activeEditable.getId();
-			if (!configurations[this._isScopeActive_editableId] || !show) {
+			plugin._isScopeActive = show;
+			plugin._isScopeActive_editableId = Aloha.activeEditable && Aloha.activeEditable.getId();
+			if (!configurations[plugin._isScopeActive_editableId] || !show) {
 				// The calls to enterScope and leaveScope by the link
 				// plugin are not balanced.
 				// When the selection is changed from one link to
 				// another, the link scope is incremented more than
 				// decremented, which necessitates the force=true
 				// argument to leaveScope.
-				Scopes.leaveScope(this.name);
+				Scopes.leaveScope(plugin.name);
 			} else if (show) {
-				Scopes.enterScope(this.name);
+				Scopes.enterScope(plugin.name);
 			}
 		},
 
@@ -410,21 +403,20 @@ define([
 		 * @param link object
 		 */
 		addLinkEventHandlers: function (link) {
-			var that = this;
 			var $link = jQuery(link);
 
 			$link
 				// show pointer on mouse over
 				.mouseenter(function (e) {
-					Aloha.Log.debug(that, 'mouse over link.');
-					that.mouseOverLink = link;
-					that.updateMousePointer();
+					Aloha.Log.debug(plugin, 'mouse over link.');
+					plugin.mouseOverLink = link;
+					plugin.updateMousePointer();
 				})
 				// in any case on leave show text cursor
 				.mouseleave(function (e) {
-					Aloha.Log.debug(that, 'mouse left link.');
-					that.mouseOverLink = null;
-					that.updateMousePointer();
+					Aloha.Log.debug(plugin, 'mouse left link.');
+					plugin.mouseOverLink = null;
+					plugin.updateMousePointer();
 				})
 				// follow link on ctrl or meta + click
 				.click(function (e) {
@@ -452,8 +444,10 @@ define([
 			let anchor = '';
 			let newTab = false;
 			let toggleActive = false;
+			let title = i18n.t('button.addlink.tooltip');
 
 			if (existingLink) {
+				title = i18n.t('button.editlink.tooltip');
 				href = existingLink.getAttribute('href');
 
 				let anchorIdx = href.indexOf('#')
@@ -468,7 +462,7 @@ define([
 			}
 
 			return {
-				title: 'Insert Link',
+				title: title,
 				active: toggleActive,
 				initialValue: {
 					url: {
@@ -489,7 +483,7 @@ define([
 					newTab: {
 						type: 'checkbox',
 						options: {
-							label: 'Open in new Tab',
+							label: i18n.t('link.new_tab.label'),
 						},
 					},
 				},
@@ -502,14 +496,12 @@ define([
 		 * @param existingLink The link markup at the current range if available.
 		 */
 		showLinkModal: function (existingLink) {
-			var that = this;
-
 			return Modal.openDynamicModal(
-				that.createInsertLinkContext(existingLink)
+				plugin.createInsertLinkContext(existingLink)
 			).then(function (control) {
 				return control.value;
 			}).then(function (formData) {
-				that.upsertLink(existingLink, formData);
+				plugin.upsertLink(existingLink, formData);
 			}).catch(function (error) {
 				if (error instanceof OverlayElement.OverlayCloseError && error.reason !== OverlayElement.ClosingReason.CANCEL) {
 					console.log(error);
@@ -521,22 +513,20 @@ define([
 		 * Initialize the buttons
 		 */
 		createButtons: function () {
-			var that = this;
-
-			this._insertLinkButton = Ui.adopt("insertLink", ToggleSplitButton, {
+			plugin._insertLinkButton = Ui.adopt("insertLink", ToggleSplitButton, {
 				tooltip: i18n.t("button.addlink.tooltip"),
 				icon: Icons.LINK,
 				pure: true,
 				contextType: 'modal',
 
 				secondaryClick: function () {
-					that.showLinkModal(that.findLinkMarkup());
+					plugin.showLinkModal(plugin.findLinkMarkup());
 				},
 				onToggle: function (activated) {
 					if (activated) {
-						that.showLinkModal(that.findLinkMarkup());
+						plugin.showLinkModal(plugin.findLinkMarkup());
 					} else {
-						that.removeLink();
+						plugin.removeLink();
 					}
 				},
 			});
@@ -547,17 +537,15 @@ define([
 		 * Add the link short cut to all edtiables
 		 */
 		bindInteractions: function () {
-			var that = this;
-
 			jQuery(document)
 				.keydown(function (e) {
-					Aloha.Log.debug(that, 'Meta key down.');
-					that.metaKey = e.metaKey;
-					that.updateMousePointer();
+					Aloha.Log.debug(plugin, 'Meta key down.');
+					plugin.metaKey = e.metaKey;
+					plugin.updateMousePointer();
 				}).keyup(function (e) {
-					Aloha.Log.debug(that, 'Meta key up.');
-					that.metaKey = e.metaKey;
-					that.updateMousePointer();
+					Aloha.Log.debug(plugin, 'Meta key up.');
+					plugin.metaKey = e.metaKey;
+					plugin.updateMousePointer();
 				});
 		},
 
@@ -565,13 +553,13 @@ define([
 		 * Updates the mouse pointer
 		 */
 		updateMousePointer: function () {
-			if (this.metaKey && this.mouseOverLink) {
-				Aloha.Log.debug(this, 'set pointer');
-				jQuery(this.mouseOverLink).removeClass('aloha-link-text');
-				jQuery(this.mouseOverLink).addClass('aloha-link-pointer');
+			if (plugin.metaKey && plugin.mouseOverLink) {
+				Aloha.Log.debug(plugin, 'set pointer');
+				jQuery(plugin.mouseOverLink).removeClass('aloha-link-text');
+				jQuery(plugin.mouseOverLink).addClass('aloha-link-pointer');
 			} else {
-				jQuery(this.mouseOverLink).removeClass('aloha-link-pointer');
-				jQuery(this.mouseOverLink).addClass('aloha-link-text');
+				jQuery(plugin.mouseOverLink).removeClass('aloha-link-pointer');
+				jQuery(plugin.mouseOverLink).addClass('aloha-link-text');
 			}
 		},
 
@@ -617,7 +605,7 @@ define([
 				return markup;
 			}
 
-			markup = this.findLinkMarkup(range);
+			markup = plugin.findLinkMarkup(range);
 
 			return markup ? [markup] : [];
 		},
@@ -626,12 +614,12 @@ define([
 		 * Format the current selection or if collapsed the current word as
 		 * link. If inside a link tag the link is removed.
 		 */
-		upsertLink: function (linkElement, linkData) {
+		upsertLink: function (linkElement, linkData, skipEvent) {
 			if (!linkElement) {
 				if (Aloha.activeEditable) {
-					this.insertLink(true, linkData);
+					return plugin.insertLink(true, linkData);
 				}
-				return;
+				return null;
 			}
 
 			let href = linkData.url.target;
@@ -647,7 +635,12 @@ define([
 			} else {
 				linkElement.removeAttribute('target');
 			}
-			this.hrefChange();
+
+			if (!skipEvent) {
+				plugin.hrefChange();
+			}
+
+			return linkElement;
 		},
 
 		/**
@@ -656,20 +649,19 @@ define([
 		 * selected text will be the link text.
 		 */
 		insertLink: function (extendToWord, linkData) {
-			var that = this,
-				range = Aloha.Selection.getRangeObject(),
+			var range = Aloha.Selection.getRangeObject(),
 				linkText,
 				newLink;
 
 			// There are occasions where we do not get a valid range, in such
 			// cases we should not try and add a link
 			if (!(range.startContainer && range.endContainer)) {
-				return;
+				return null;
 			}
 
 			// do not nest a link inside a link
-			if (this.findLinkMarkup(range)) {
-				return;
+			if (plugin.findLinkMarkup(range)) {
+				return null;
 			}
 
 			// if selection is collapsed then extend to the word.
@@ -700,13 +692,12 @@ define([
 			}
 
 			var linkElements = $(Array.from(Aloha.activeEditable.obj.find('a.aloha-new-link')).map(function (newLinkElem) {
-				that.addLinkEventHandlers(newLinkElem);
+				plugin.addLinkEventHandlers(newLinkElem);
 				jQuery(newLinkElem).removeClass('aloha-new-link');
 				return newLinkElem;
 			}));
 
 			range.select();
-
 
 			// because the Aloha Selection is deprecated I need to convert it to a ragne
 			var apiRange = Aloha.createRange();
@@ -714,7 +705,9 @@ define([
 			apiRange.setEnd(range.endContainer, range.endOffset);
 
 			PubSub.pub('aloha.link.insert', { range: apiRange, elements: linkElements });
-			this.hrefChange();
+			plugin.hrefChange();
+
+			return linkElements[0];
 		},
 
 		/**
@@ -722,13 +715,12 @@ define([
 		 */
 		removeLink: function (terminateLinkScope, linkToRemove) {
 			var range = Aloha.Selection.getRangeObject();
-			var foundMarkup = this.findAllLinkMarkup();
+			var foundMarkup = plugin.findAllLinkMarkup();
 
 			if (linkToRemove != null) {
 				foundMarkup.push(linkToRemove);
 			}
 
-			var _this = this;
 			foundMarkup.forEach(function (link) {
 				var linkText = jQuery(link).text();
 				// remove the link
@@ -742,7 +734,7 @@ define([
 
 				if (typeof terminateLinkScope == 'undefined' ||
 					terminateLinkScope === true) {
-					Scopes.leaveScope(_this.scope);
+					Scopes.leaveScope(plugin.scope);
 				}
 
 				// trigger an event for removing the link
@@ -760,8 +752,14 @@ define([
 		/**
 		 * Updates the link object depending on the src field
 		 */
-		hrefChange: function () {
-			let link = this.findLinkMarkup()
+		hrefChange: function (link) {
+			if (!link) {
+				link = plugin.findLinkMarkup();
+			}
+			if (!link) {
+				return;
+			}
+
 			let href = link.getAttribute('href');
 			let linkObj = $(link);
 			let signalPayload = {
@@ -777,9 +775,11 @@ define([
 			Aloha.trigger('aloha-link-href-change', signalPayload);
 			PubSub.pub('aloha.link.changed', pubPayload);
 
-			if (typeof this.onHrefChange == 'function') {
-				this.onHrefChange.call(this, linkObj, href);
+			if (typeof plugin.onHrefChange == 'function') {
+				plugin.onHrefChange.call(plugin, linkObj, href);
 			}
 		}
 	});
+
+	return plugin;
 });

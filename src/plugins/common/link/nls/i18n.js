@@ -1,15 +1,11 @@
 define({
 	"root":  {
 		"button.addlink.tooltip": "Insert Link",
+		"button.editlink.tooltip": "Edit Link",
 		"button.removelink.tooltip": "Remove Link",
 		"newlink.defaulttext": "New Link",
 		"floatingmenu.tab.link": "Link",
-		"link.target.self": "Self",
-		"link.target.blank": "Blank",
-		"link.target.parent": "Parent",
-		"link.target.top": "Top",
-		"link.target.framename": "Framename",
-		"link.target.legend": "Target",
+		"link.new_tab.label": "Open in new Tab",
 		"link.title.legend": "Title",
 		"href.lang.legend": "Language",
 		"insertLink": "ctrl+k"

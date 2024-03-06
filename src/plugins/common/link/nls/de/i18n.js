@@ -1,14 +1,10 @@
 define({
 	"button.addlink.tooltip": "Verweis einfügen",
+	"button.editlink.tooltip": "Verweis bearbeiten",
 	"button.removelink.tooltip": "Verweis entfernen",
 	"newlink.defaulttext": "Neuer Verweis",
 	"floatingmenu.tab.link": "Verweis",
-	"link.target.self": "Gleiches Fenster",
-	"link.target.blank": "Neues Fenster",
-	"link.target.parent": "Elternfenster",
-	"link.target.top": "Hauptfenster",
-	"link.target.framename": "Framename",
-	"link.target.legend": "Ziel",
+	"link.new_tab.label": "In neuen Tab öffnen",
 	"link.title.legend": "Titel",
 	"href.lang.legend": "Sprache",
 	"insertLink": "Ctrl+k"
