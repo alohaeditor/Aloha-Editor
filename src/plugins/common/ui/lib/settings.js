@@ -113,25 +113,27 @@ define([
 			showOn: { scope: SCOPE_TABLE },
 			components: [
 				[
-					{ slot: 'deleteTable', scope: [SCOPE_TABLE] },
+					{ slot: 'tableDelete', scope: [SCOPE_TABLE] },
 					{ slot: 'tableCaption', scope: [SCOPE_TABLE] },
 					{ slot: 'tableSummary', scope: [SCOPE_TABLE] },
 				],
 				[
-					{ slot: 'mergecells', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
-					{ slot: 'splitcells', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
+					{ slot: 'tableCellsMerge', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
+					{ slot: 'tableCellsSplit', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
+					{ slot: 'tableSelectionDelete', scope: [SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
+					{ slot: 'tableSelectionHeader', scope: [SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
 				],
 				[
 					{ slot: 'deleterows', scope: [SCOPE_TABLE_ROW] },
 					{ slot: 'rowheader', scope: [SCOPE_TABLE_ROW] },
-					{ slot: 'addrowbefore', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
-					{ slot: 'addrowafter', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
+					{ slot: 'tableRowAddBefore', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
+					{ slot: 'tableRowAddAfter', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
 				],
 				[
 					{ slot: 'deletecolumns', scope: [SCOPE_TABLE_ROW] },
 					{ slot: 'columnheader', scope: [SCOPE_TABLE_ROW] },
-					{ slot: 'addcolumnleft', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
-					{ slot: 'addcolumnright', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
+					{ slot: 'tableColumnAddLeft', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
+					{ slot: 'tableColumnAddRight', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
 				]
 			]
 		},
@@ -143,10 +145,11 @@ define([
 				scope: 'image',
 			},
 			components: [
-				[ "imageSource", "imageTitle" ],
+				[ "imageEdit", "imageSource", "imageTitle" ],
 				[ "imageResizeWidth", "imageResizeHeight" ],
-				[ "imageAlignLeft", "imageAlignRight", "imageAlignNone", "imageIncPadding",
-				  "imageCropButton", "imageCnrReset", "imageCnrRatio", "imageDecPadding" ],
+				[ "imageEdit", "imageAlignLeft", "imageAlignRight", "imageAlignNone", "\n",
+				  "imageIncPadding", "imageDecPadding", "\n",
+				  "imageCropButton", "imageCnrReset", "imageCnrRatio"  ],
 				[ "imageBrowser" ]
 			]
 		},
