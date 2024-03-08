@@ -31,7 +31,7 @@ function (
 	ToggleButton,
 	ContextButton,
 	Icons,
-	OverlayElement,
+	OverlayElement
 ) {
 	'use strict';
 
