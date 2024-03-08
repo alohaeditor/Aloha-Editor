@@ -85,9 +85,9 @@ define([
 		$wrapper.on('focus', function ($event) {
 			// activate the button for splitting cells if the clicked cell has an active row- or colspan
 			if (Utils.colspan(cell.obj) > 1 || Utils.rowspan(cell.obj) > 1) {
-				cell.tableObj.tablePlugin._splitcellsButton.enable(true);
+				cell.tableObj.tablePlugin._tableCellsSplitButton.enable(true);
 			} else {
-				cell.tableObj.tablePlugin._splitcellsButton.enable(false);
+				cell.tableObj.tablePlugin._tableCellsSplitButton.enable(false);
 			}
 
 			// ugly workaround for ext-js-adapter problem in

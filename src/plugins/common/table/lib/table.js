@@ -514,36 +514,8 @@ define([
 		});
 
 		this.tablePlugin._tableCaptionButton.setActive(this.obj.children('caption').is('caption'));
-		this.tablePlugin._mergecellsButton.disable();
-		this.tablePlugin._splitcellsButton.disable();
-
-		/*
-		We need to make sure that when the user has selected text inside a
-		table cell we do not delete the entire row, before we activate this
-
-		this.obj.on( 'keyup', function ( $event ) {
-			if ( $event.keyCode == 46 ) {
-				if ( that.selection.selectedColumnIdxs.length ) {
-					that.deleteColumns();
-					$event.stopPropagation();
-				} else if ( that.selection.selectedRowIdxs.length ) {
-					that.deleteRows();
-					$event.stopPropagation();
-				} else {
-					// Nothing to delete
-				}
-			}
-		} );
-		*/
-
-		// handle click event of the table
-		//	this.obj.on('click', function(e){
-		//		// stop bubbling the event to the outer divs, a click in the table
-		//		// should only be handled in the table
-		//		e.stopPropagation();
-		//		return false;
-		//	});
-		//
+		this.tablePlugin._tableCellsMergeButton.disable();
+		this.tablePlugin._tableCellsSplitButton.disable();
 
 		// handle column/row resize
 		eventContainer.on('mousemove', 'th, td', function (e) {
@@ -1686,15 +1658,7 @@ define([
 		}
 
 		this.selection.selectColumns(columnsToSelect);
-		this.tablePlugin._columnheaderButton.setActive(this.selection.isHeader());
-		this.tablePlugin._rowheaderButton.deactivate();
-
-		// ====== BEGIN UI specific code - should be handled on event aloha-table-selection-changed by UI =======
-
-		setActiveStyle(this.selection.selectedCells, this.tablePlugin.columnConfig,
-			this.tablePlugin.columnMSItems, this.tablePlugin.columnMSButton);
-
-		// ====== END UI specific code - should be handled by UI =======
+		this.tablePlugin._tableSelectionHeaderButton.setActive(this.selection.isHeader());
 
 		// blur all editables within the table
 		this.obj.find('div.aloha-ui-table-cell-editable').blur();
@@ -1713,15 +1677,7 @@ define([
 	Table.prototype.selectRows = function () {
 
 		this.selection.selectRows(this.rowsToSelect);
-		this.tablePlugin._rowheaderButton.setActive(this.selection.isHeader());
-		this.tablePlugin._columnheaderButton.deactivate();
-
-		// ====== BEGIN UI specific code - should be handled on event aloha-table-selection-changed by UI =======
-
-		setActiveStyle(this.selection.selectedCells, this.tablePlugin.rowConfig,
-			this.tablePlugin.rowMSItems, this.tablePlugin.rowMSButton);
-
-		// ====== END UI specific code - should be handled by UI =======
+		this.tablePlugin._tableSelectionHeaderButton.setActive(this.selection.isHeader());
 
 		// blur all editables within the table
 		this.obj.find('div.aloha-ui-table-cell-editable').blur();
@@ -1790,8 +1746,7 @@ define([
 		});
 
 		this.tablePlugin._tableCaptionButton.deactivate();
-		this.tablePlugin._rowheaderButton.deactivate();
-		this.tablePlugin._columnheaderButton.deactivate();
+		this.tablePlugin._tableSelectionHeaderButton.deactivate();
 
 		// better unset ;-) otherwise activate() may think you're activated.
 		this.isActive = false;
