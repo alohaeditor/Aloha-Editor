@@ -1,0 +1,89 @@
+{
+  "components": [
+    {
+      "name": "Aloha Editor",
+      "modules": [
+        {
+          "name": "Core",
+          "dependencies": [
+            {
+              "name": "Amplify Store",
+              "current": "1.1.0",
+              "latest": "1.1.2"
+            },
+            {
+              "name": "jQuery",
+              "current": "1.7.2",
+              "latest": "3.7.1"
+            },
+            {
+              "name": "jQuery UI",
+              "current": "1.9.0",
+              "latest": "1.13.2"
+            },
+            {
+              "name": "jQuery Grid",
+              "current": "4.0.0",
+              "latest": "5.8.5"
+            },
+            {
+              "name": "jsTree",
+              "current": "1.0-rc3",
+              "latest": "3.3.16"
+            },
+            {
+              "name": "jquery.layout",
+              "current": "1.3.0-rc30.7",
+              "latest": "1.3.0-rc30.7"
+            },
+            {
+              "name": "Rangy",
+              "current": "1.2.1",
+              "latest": "1.3.1"
+            },
+            {
+              "name": "RequireJS",
+              "current": "2.0.5",
+              "latest": "2.3.6"
+            },
+            {
+              "name": "RequireJS i18n",
+              "current": "2.0.1",
+              "latest": "2.0.6"
+            },
+            {
+              "name": "RequireJS text",
+              "current": "1.0.6+",
+              "latest": "2.0.16"
+            }
+          ]
+        },
+        {
+          "name": "Common Plugins",
+          "dependencies": [
+            {
+              "name": "jQuery Jcrop",
+              "current": "0.9.8",
+              "latest": "0.9.15"
+            },
+            {
+              "name": "jQuery Mousewheel",
+              "current": "3.0.6",
+              "latest": "3.1.12"
+            }
+          ]
+        },
+        {
+          "name": "Extra Plugins",
+          "dependencies": [
+            {
+              "name": "tipsy",
+              "current": "1.0.0a",
+              "latest": "1.0"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
