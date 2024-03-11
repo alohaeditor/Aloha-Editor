@@ -1,8 +1,8 @@
 define({
 	"root":  {
-		"button.createulist.tooltip": "Insert Unordered List",
-		"button.createolist.tooltip": "Insert Ordered List",
-		"button.createdlist.tooltip": "Insert Definition List",
+		"button.listunordered.tooltip": "Insert Unordered List",
+		"button.listordered.tooltip": "Insert Ordered List",
+		"button.listdefinition.tooltip": "Insert Definition List",
 		"button.indentlist.tooltip": "Increase Indent",
 		"button.outdentlist.tooltip": "Decrease Indent",
 		"floatingmenu.tab.list": "Lists",
