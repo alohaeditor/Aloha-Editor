@@ -85,11 +85,7 @@ define([
 			},
 
 			onToggle: function (activated) {
-				if (activated) {
-					plugin.showListDropdown('ol', 'listOrdered');
-				} else {
-					plugin.transformList('ol');
-				}
+				plugin.transformList('ol');
 			},
 		});
 
@@ -104,11 +100,7 @@ define([
 			},
 
 			onToggle: function (activated) {
-				if (activated) {
-					plugin.showListDropdown('ul', 'listUnordered');
-				} else {
-					plugin.transformList('ul');
-				}
+				plugin.transformList('ul');
 			},
 		});
 
@@ -123,11 +115,7 @@ define([
 			},
 
 			onToggle: function (activated) {
-				if (activated) {
-					plugin.showListDropdown('dl', 'listDefinition');
-				} else {
-					plugin.transformList('dl');
-				}
+				plugin.transformList('dl');
 			},
 		});
 	}
@@ -356,15 +344,15 @@ define([
 		 */
 		defaultClasses: {
 			ul: {
-				list: [],
+				list: ['aloha-list-disc'],
 				item: []
 			},
 			ol: {
-				list: [],
+				list: ['aloha-list-decimal'],
 				item: []
 			},
 			dl: {
-				list: [],
+				list: ['aloha-list-blue'],
 				item: []
 			}
 		},
@@ -397,7 +385,7 @@ define([
 
 			if (listtype === nodeName) {
 				// remove all classes
-				jQuery.each(this.templates[nodeName].classes, function (i, cssClass) {
+				jQuery.each(Object.keys(this.templates[nodeName]), function (i, cssClass) {
 					listToStyle.removeClass(cssClass);
 				});
 
@@ -442,31 +430,6 @@ define([
 		 * @param elementId The ID of the button element.
 		 */
 		showListDropdown: function (type, elementId) {
-			/*
-			var that = this;
-
-			Dropdown.openDynamicDropdown(elementId, {
-				type: 'select-menu',
-				options: {
-					iconsOnly: false,
-					options: Object.keys(that.templates[type]).map(function (listClass) {
-						return {
-							id: listClass,
-							label: that.templates[type][listClass],
-						};
-					}),
-				},
-			}).then(function (ref) {
-				return ref.value;
-			}).then(function (selection) {
-				that.setListStyle(type, selection.id);
-			}).catch(function (error) {
-				if (error instanceof OverlayElement.OverlayCloseError && error.reason === OverlayElement.ClosingReason.ERROR) {
-					console.log(error);
-				}
-			});
-			 */
-
 			var that = this;
 			var options = Object.keys(that.templates[type]).map(function (listClass) {
 				return {
@@ -524,7 +487,21 @@ define([
 				}
 
 				if (Aloha.settings.plugins.list.listTypes) {
-					plugin.listTypes = Aloha.settings.plugins.list.listTypes;
+					var idx = plugin.config.indexOf('ol');
+
+					if (Aloha.settings.plugins.list.listTypes.ul === false && idx >= 0) {
+						plugin.config.splice(idx, 1)
+					}
+
+					idx = plugin.config.indexOf('ol');
+					if (Aloha.settings.plugins.list.listTypes.ol === false && idx >= 0) {
+						plugin.config.splice(idx, 1)
+					}
+
+					idx = plugin.config.indexOf('dl');
+					if (Aloha.settings.plugins.list.listTypes.dl === false && idx >= 0) {
+						plugin.config.splice(idx, 1)
+					}
 				}
 				if (Aloha.settings.plugins.list.defaultClasses) {
 					plugin.defaultClasses = plugin.normalizeDefaultClasses(Aloha.settings.plugins.list.defaultClasses);
