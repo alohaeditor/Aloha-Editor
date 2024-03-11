@@ -1,9 +1,9 @@
 /* block.js is part of Aloha Editor project http://aloha-editor.org
  *
- * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2012 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://aloha-editor.org/contribution.php 
- * 
+ * Contributors http://aloha-editor.org/contribution.php
+ *
  * Aloha Editor is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- * 
+ *
  * As an additional permission to the GNU GPL version 2, you may distribute
  * non-source (e.g., minimized or compacted) forms of the Aloha-Editor
  * source code without the copy of the GNU GPL normally required,
@@ -392,7 +392,7 @@ define([
 		/**
 		 * Function which is executed when a user tries to delete a block with the keyboard.
 		 * Implementations may let the user confirm, whether the block shall really be destroyed
-		 * 
+		 *
 		 * @param {Function} destroyFn function, that is executed, if the block shall be destroyed
 		 */
 		confirmedDestroy: function (destroyFn) {
@@ -416,7 +416,7 @@ define([
 
 			newRange.startContainer = newRange.endContainer = this.$element.parent()[0];
 			newRange.startOffset = newRange.endOffset = GENTICS.Utils.Dom.getIndexInParent(this.$element[0]);
-			
+
 			BlockUtils.unpad(this.$element);
 
 			BlockManager.trigger('block-delete', this);
@@ -758,11 +758,11 @@ define([
 						$draghandle.removeClass('aloha-block-draghandle');
 					}
 				});
-			} 
+			}
         },
 
         /**
-         * Attach mousedown/up events to block's draghandle 
+         * Attach mousedown/up events to block's draghandle
          * to toggle dropzones when dragging starts and ends.
          */
         _attachDropzoneHighlightEvents: function () {
@@ -1312,7 +1312,14 @@ define([
 		 * Internal helper for getting an attribute
 		 */
 		_getAttribute: function (name) {
-			return this.$element.attr('data-' + name.toLowerCase());
+			var attrName = name.toLowerCase();
+			var value = this.$element.attr('data-' + attrName);
+
+			if (value) {
+				return value;
+			}
+
+			return this.$element.attr(attrName);
 		},
 
 		/**
@@ -1370,7 +1377,7 @@ define([
 			postProcessFn();
 		}
 	});
-	
+
 	/**
 	 * @name block.block.EmptyBlock
 	 * @class An empty block doesn't render any tag fill icons or borders (no Aloha tags)
