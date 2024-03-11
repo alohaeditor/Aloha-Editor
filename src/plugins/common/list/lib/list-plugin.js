@@ -243,13 +243,25 @@ define([
 	function toggleListOption(plugin, listtype, show) {
 		switch (listtype) {
 		case 'ul':
-			plugin.unorderedListButton.show(show);
+			if (show) {
+				plugin.unorderedListButton.show();
+			} else {
+				plugin.unorderedListButton.hide();
+			}
 			break;
 		case 'ol':
-			plugin.orderedListButton.show(show);
+			if (show) {
+				plugin.orderedListButton.show();
+			} else {
+				plugin.orderedListButton.hide();
+			}
 			break;
 		case 'dl':
-			plugin.definitionListButton.show(show);
+			if (show) {
+				plugin.definitionListButton.show();
+			} else {
+				plugin.definitionListButton.hide();
+			}
 			break;
 		}
 	}
