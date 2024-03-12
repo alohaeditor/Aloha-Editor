@@ -215,7 +215,7 @@ define([
 								tmpTab.components = combineComponents(found.components || [], tab.components || []);
 								break;
 
-							case 'prepent':
+							case 'prepend':
 								tmpTab.components = combineComponents(tab.components || [], found.components || []);
 								break;
 

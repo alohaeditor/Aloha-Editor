@@ -906,11 +906,8 @@ define('format/format-plugin', [
 
 			this.typographyButton = Ui.adopt('typographyMenu', ContextButton, {
 				icon: Icons.TYPOGRAPHY,
-				targetAttribute: 'id',
 				text: i18n.t('button.typography.tooltip'),
 				iconOnly: false,
-				inputLabel: i18n.t('button.header_id.input'),
-				panelLabel: i18n.t('button.header_id.panel'),
 
 				context: function() {
 					var headerId = null;
@@ -1038,6 +1035,7 @@ define('format/format-plugin', [
 					return textLevelButtonClickHandler(_this, nodeType);
 				}
 			});
+
 			return component;
 		},
 
