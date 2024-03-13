@@ -65,7 +65,7 @@ define({
 		"button.blockquote.label": "Format selection as blockquote",
 		"tab.format.label": "Format",
 		"tab.insert.label": "Insert",
-		"tab.meta.label": "View",
+		"tab.view.label": "View",
 		"tab.img.label": "Image",
 		"tab.table.label": "Table",
 		"tab.wai-lang.label": "Language annotation"
