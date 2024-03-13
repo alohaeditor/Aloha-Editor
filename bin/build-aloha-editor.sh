@@ -40,12 +40,8 @@ run_command "Building Aloha-Editor $BUILD_PROFILE..." "npx r.js -o 'build/aloha/
 
 run_command "Building Aloha-Editor $BUILD_PROFILE (full)..." "cat build/aloha/license-header.frag target/$BUILD_PROFILE/lib/require.js target/$BUILD_PROFILE/lib/vendor/jquery-3.7.0.js target/$BUILD_PROFILE/lib/aloha.js > target/$BUILD_PROFILE/lib/aloha-full.js"
 run_command "Building Aloha-Editor $BUILD_PROFILE (full; minified)..." "npx uglifyjs target/$BUILD_PROFILE/lib/require.js target/$BUILD_PROFILE/lib/vendor/jquery-3.7.0.js target/$BUILD_PROFILE/lib/aloha.js --compress --mangle --source-map --output 'target/$BUILD_PROFILE/lib/aloha-full.min.js'"
-#run_command "Building Aloha-Editor $BUILD_PROFILE (full)..." cat target/$BUILD_PROFILE/lib/require.js target/$BUILD_PROFILE/lib/vendor/jquery-3.7.0.js target/$BUILD_PROFILE/lib/aloha.js > target/$BUILD_PROFILE/lib/aloha-full.js
-#run_command "Building Aloha-Editor $BUILD_PROFILE (full; minified)..." npx esbuild build/aloha/entrypoint-full.js --bundle --minify --sourcemap --outfile="target/$BUILD_PROFILE/lib/aloha-full.min.js"
 
 run_command "Building Aloha-Editor $BUILD_PROFILE (bare)..." "cat build/aloha/license-header.frag target/$BUILD_PROFILE/lib/aloha.js > target/$BUILD_PROFILE/lib/aloha-bare.js"
 run_command "Building Aloha-Editor $BUILD_PROFILE (bare; minified)..." "npx uglifyjs target/$BUILD_PROFILE/lib/aloha.js --compress --mangle --source-map --output 'target/$BUILD_PROFILE/lib/aloha-bare.min.js'"
-#run_command "Building Aloha-Editor $BUILD_PROFILE (bare)..." npx esbuild build/aloha/entrypoint-bare.js --bundle --outfile="target/$BUILD_PROFILE/lib/aloha-bare.js"
-#run_command "Building Aloha-Editor $BUILD_PROFILE (bare; minified)..." npx esbuild build/aloha/entrypoint-bare.js --bundle --minify --sourcemap --outfile="target/$BUILD_PROFILE/lib/aloha-bare.min.js"
 
 run_command "Building Aloha-Editor CSS..." "npx postcss src/css/aloha-common-extra.css -o 'target/$BUILD_PROFILE/css/aloha.css'"

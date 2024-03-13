@@ -695,6 +695,8 @@ define([
 		return false;
 	};
 
+	TablePlugin.toggleHeaderStatus = toggleHeaderStatus;
+
 	TablePlugin.preventNestedTables = function () {
 		if (this.isSelectionInTable()) {
 			Dialog.alert({
