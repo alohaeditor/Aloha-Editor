@@ -1,6 +1,7 @@
 define({
 	"root":  {
-		"button.addcharacter.tooltip": "pick special characters"
+		"button.addcharacter.tooltip": "pick special characters",
+		"input.search-symbol.label": "Search for symbol"
 	},
 		"ca": true,
 		"de": true,

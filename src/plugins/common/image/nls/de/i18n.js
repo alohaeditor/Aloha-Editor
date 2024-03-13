@@ -5,6 +5,7 @@ define({
 	"floatingmenu.tab.formatting": "Formatierung",
 	"floatingmenu.tab.resize": "Größe anpassen",
 	"floatingmenu.tab.crop": "Zuschneiden",
+	"modal.properties.title": "Bildeigenschaften",
 	"button.uploadimg.tooltip": "Bild hochladen",
 	"button.uploadimg.label": "Hochladen",
 	"button.img.align.left.tooltip": "Linksbündig",

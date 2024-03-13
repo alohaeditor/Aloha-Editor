@@ -56,6 +56,11 @@ define('ui/ui-plugin', [
 	var context = new Context(),
 		toolbar = new Toolbar(context, getToolbarSettings(), getResponsiveMode());
 
+	var adoptedComponents = {};
+
+	/** @type {Aloha.Surface} Currently the active Surface implementation to use/adopt into. */
+	var activeSurface = toolbar;
+
 	Aloha.bind('aloha-editable-activated', function (event, alohaEvent) {
 		Surface.show(context);
 		toolbar.setWidth();
@@ -70,20 +75,24 @@ define('ui/ui-plugin', [
 
 	PubSub.sub('aloha.ui.scope.change', function () {
 		Container.showContainersForContext(context);
-		primaryScopeForegroundTab(Scopes.getPrimaryScope());
+		primaryScopeForegroundTab();
 	});
 
-	function getToolbarSettings() {
+	/**
+	 * @param {boolean=} skipMerge If it should merge the default settings with the user settings. Defaults to `false`.
+	 * @returns The Settings for the toolbar/ui and how to display the tabs/components.
+	 */
+	function getToolbarSettings(skipMerge) {
 		var userSettings = Aloha.settings.toolbar,
 		    defaultSettings = Settings.defaultToolbarSettings;
+
 		if (!userSettings) {
-			return defaultSettings.tabs;
+			return Settings.translateToolbarTabs(defaultSettings);
+		} else if (skipMerge) {
+			return Settings.translateToolbarTabs(Settings.normalizeToolbarSettings(userSettings));
 		}
-		return Settings.combineToolbarSettings(
-			userSettings.tabs || [],
-			defaultSettings.tabs,
-			userSettings.exclude || []
-		);
+
+		return Settings.combineToolbarSettings(defaultSettings, userSettings);
 	}
 
 	function getResponsiveMode() {
@@ -94,14 +103,18 @@ define('ui/ui-plugin', [
 		return false;
 	}
 
+	/* TODO: Check if this can be removed. Already defined in `toolbar.js` as well. */
 	function primaryScopeForegroundTab() {
+		if (!toolbar.enabled) {
+			return;
+		}
+
 		var tabs = toolbar._tabs,
-		    primaryScope = Scopes.getPrimaryScope(),
 		    settings,
 		    i;
 		for (i = 0; i < tabs.length; i++) {
 			settings = tabs[i].settings;
-			if ('object' === $.type(settings.showOn) && settings.showOn.scope === primaryScope && tabs[i].tab.hasVisibleComponents()) {
+			if ('object' === $.type(settings.showOn) && Scopes.isActiveScope(settings.showOn.scope) && tabs[i].tab.hasVisibleComponents()) {
 				tabs[i].tab.foreground();
 				break;
 			}
@@ -122,7 +135,53 @@ define('ui/ui-plugin', [
 	 * @api
 	 */
 	function adoptInto(slot, component) {
-		return toolbar.adoptInto(slot, component);
+		adoptedComponents[slot] = component;
+		return activeSurface.adoptInto(slot, component);
+	}
+
+	function unadopt(slot) {
+		delete adoptedComponents[slot];
+		activeSurface.unadopt(slot);
+	}
+
+	function getActiveSurface() {
+		return activeSurface;
+	}
+
+	/**
+	 * Sets the current active Surface to handle all UI elements.
+	 * @param {*} surface The surface instance which should be used.
+	 * @param {boolean} replayAdoption If all previously adopted component calls should be replayed/applied to this surface instance.
+	 * @param {boolean} removeFromOld If it should remove all adopted components from the old/previous surface.
+	 */
+	function setActiveSurface(surface, replayAdoption, removeFromOld) {
+		if (activeSurface === surface) {
+			return;
+		}
+
+		var oldSurface = activeSurface;
+		activeSurface = surface;
+
+		// Hide and show the toolbar if it is being de-/activated
+		if (oldSurface != null) {
+			oldSurface.disable();
+			oldSurface.hide();
+		}
+		if (activeSurface != null) {
+			activeSurface.enable();
+			activeSurface.show();
+		}
+
+		if (replayAdoption || removeFromOld) {
+			Object.entries(adoptedComponents).forEach(function(entry) {
+				if (removeFromOld) {
+					oldSurface.unadopt(entry[0]);
+				}
+				if (replayAdoption) {
+					surface.adoptInto(entry[0], entry[1]);
+				}
+			});
+		}
 	}
 
 	/**
@@ -135,7 +194,7 @@ define('ui/ui-plugin', [
 	 *
 	 * The toolbar will only become visible if tabs are visible as well.
 	 * To make tabs visible, set a scope. For example
-	 * Scopes.setScope('Aloha.continuoustext');		
+	 * Scopes.setScope('Aloha.continuoustext');
 	 *
 	 * Please note that the toolbar will not remain visible if an
 	 * editable is subsequently deactivated.
@@ -173,6 +232,16 @@ define('ui/ui-plugin', [
 		 * @api
 		 */
 		adoptInto: adoptInto,
-		showToolbar: showToolbar
+		unadopt: unadopt,
+		showToolbar: showToolbar,
+		getContext: function() {
+			return context;
+		},
+		getToolbarInstance: function() {
+			return toolbar;
+		},
+		getToolbarSettings: getToolbarSettings,
+		getActiveSurface: getActiveSurface,
+		setActiveSurface: setActiveSurface,
 	};
 });

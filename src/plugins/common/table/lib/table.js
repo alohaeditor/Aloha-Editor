@@ -37,7 +37,7 @@ define([
 	Ephemera,
 	Html,
 	Dom,
-    Console
+	Console
 ) {
 	var undefined = void 0;
 	var GENTICS = window.GENTICS;
@@ -110,16 +110,16 @@ define([
 	 *            the dom-representation of the held table
 	 * @return void
 	 */
-	var Table = function ( table, tablePlugin ) {
+	var Table = function (table, tablePlugin) {
 		// set the table attribut "obj" as a jquery represenation of the dom-table
-		this.obj = jQuery( table );
+		this.obj = jQuery(table);
 
 		// setup a class to mark wrapping divs introduced by this plugin
 		var wrapperMarkerClass = "aloha-table-container";
 		// parent before wrapping
 		var parent = this.obj.parent();
 		// check config if table should be wrapped
-		if ( tablePlugin.settings.wrapClass !== undefined ) {
+		if (tablePlugin.settings.wrapClass !== undefined) {
 			// combine configurable class with fixed
 			var wrapClass = tablePlugin.settings.wrapClass + ' ' + wrapperMarkerClass;
 
@@ -129,15 +129,15 @@ define([
 			// and classes do not match,
 			// and a wrapping div does exist allready,
 			// --> change classes
-			if ( parent.attr( 'class' ) !==  wrapClass && parent.hasClass( wrapperMarkerClass ) ) {
+			if (parent.attr('class') !== wrapClass && parent.hasClass(wrapperMarkerClass)) {
 				parent.attr('class', wrapClass);
-			// If config for wrapping div exists
-			// and classes do not match
-			// and wrapping div is not present (yet),
-			// --> create
-			} else if ( parent.attr( 'class')  !==  wrapClass ) {
+				// If config for wrapping div exists
+				// and classes do not match
+				// and wrapping div is not present (yet),
+				// --> create
+			} else if (parent.attr('class') !== wrapClass) {
 				// add div with class from config
-				this.obj.wrap( '<div class="' + wrapClass + '"></div>' );
+				this.obj.wrap('<div class="' + wrapClass + '"></div>');
 			}
 			// set parent of table element - the wrapping div - for further handling
 			this.wrappedObj = this.obj.parent();
@@ -145,28 +145,28 @@ define([
 			// If config for wrapping div does not exists
 			// and there is a wrapping div
 			// --> remove it
-			if ( parent.hasClass( wrapperMarkerClass ) ) {
+			if (parent.hasClass(wrapperMarkerClass)) {
 				this.obj.unwrap();
 			}
 			// set table-element itself for further handling
 			this.wrappedObj = this.obj;
 		}
 
-		correctTableStructure( this );
+		correctTableStructure(this);
 
-		if ( !this.obj.attr( 'id' ) ) {
-			this.obj.attr( 'id', GENTICS.Utils.guid() );
+		if (!this.obj.attr('id')) {
+			this.obj.attr('id', GENTICS.Utils.guid());
 		}
 
 		// mark table id as ephemeral
 		Ephemera.markAttr(this.obj, 'id');
 
 		this.tablePlugin = tablePlugin;
-		this.selection = new TableSelection( this );
+		this.selection = new TableSelection(this);
 		this.refresh();
 	};
 
-	jQuery.extend( Table.prototype, {
+	jQuery.extend(Table.prototype, {
 		/**
 		 * Attribute holding the jQuery-table-represenation
 		 */
@@ -238,7 +238,7 @@ define([
 		 * contains the plugin id used for interaction with the floating menu
 		 */
 		fmPluginId: undefined
-	} );
+	});
 
 	/**
 	 * @hide
@@ -254,19 +254,19 @@ define([
 		this.cells = [];
 
 		// iterate over table cells and create Cell-objects
-		for ( var i = 0; i < rows.length; i++ ) {
+		for (var i = 0; i < rows.length; i++) {
 			var row = jQuery(rows[i]);
 			var cols = row.children();
-			for ( var j = 0; j < cols.length; j++ ) {
+			for (var j = 0; j < cols.length; j++) {
 				var col = cols[j];
-				var Cell = this.newCell( col );
+				var Cell = this.newCell(col);
 			}
 		}
 	};
 
 	Table.prototype.countVirtualCols = function () {
-		var $firstRow = this.obj.children().children( 'tr:first-child' ).children();
-		return $firstRow.length - $firstRow.filter( '.' + this.get( 'classLeftUpperCorner' ) ).length;
+		var $firstRow = this.obj.children().children('tr:first-child').children();
+		return $firstRow.length - $firstRow.filter('.' + this.get('classLeftUpperCorner')).length;
 	};
 
 	/**
@@ -277,7 +277,7 @@ define([
 	 *            the property whichs value should be return
 	 * @return the value associated with the property
 	 */
-	Table.prototype.get = function(property) {
+	Table.prototype.get = function (property) {
 		return this.tablePlugin.get(property);
 	};
 
@@ -291,7 +291,7 @@ define([
 	 *            the value for the key
 	 * @return void
 	 */
-	Table.prototype.set = function(key, value) {
+	Table.prototype.set = function (key, value) {
 		this.tablePlugin.set(key, value);
 	};
 
@@ -301,61 +301,61 @@ define([
 	 *
 	 * @param {Aloha.Table} tableObj
 	 */
-	function correctTableStructure ( tableObj ) {
+	function correctTableStructure(tableObj) {
 		var table = tableObj.obj,
 
 			i,
 			j,
-		    row,
-		    rows = tableObj.getRows(),
-		    rowsNum = rows.length,
+			row,
+			rows = tableObj.getRows(),
+			rowsNum = rows.length,
 
 			cols,
 			colsNum,
 
-		    colsCount,
-		    maxColsCount = 0,
-		    cachedColsCounts = [rowsNum],
-		    colsCountDiff,
-		    colSpan;
+			colsCount,
+			maxColsCount = 0,
+			cachedColsCounts = [rowsNum],
+			colsCountDiff,
+			colSpan;
 
-		for ( i = 0; i < rowsNum; i++ ) {
-			row = jQuery( rows[ i ] );
-			cols = row.children( 'td, th' );
+		for (i = 0; i < rowsNum; i++) {
+			row = jQuery(rows[i]);
+			cols = row.children('td, th');
 			colsNum = cols.length;
-			colsCount = Utils.cellIndexToGridColumn( rows, i, colsNum - 1 ) + 1;
+			colsCount = Utils.cellIndexToGridColumn(rows, i, colsNum - 1) + 1;
 
 			// Check if the last cell in this row has a col span, to account
 			// for it in the total number of colums in this row
 
-			colSpan = parseInt( cols.last().attr( 'colspan' ), 10 );
+			colSpan = parseInt(cols.last().attr('colspan'), 10);
 
-			if ( colSpan === 0 ) {
+			if (colSpan === 0) {
 				// TODO: support colspan=0
 				// http://dev.w3.org/html5/markup/td.html#td.attrs.colspan
 				// http://www.w3.org/TR/html401/struct/tables.html#adef-colspan
 				// The value zero ("0") means that the cell spans all columns
 				// from the current column to the last column of the column
 				// group (COLGROUP) in which the cel
-			} else if ( !isNaN( colSpan ) ) {
+			} else if (!isNaN(colSpan)) {
 				// The default value of this attribute is one ("1"), so where this
 				// is the case, we will remove such superfluous colspan attributes
-				if ( colSpan == 1 ) {
-					cols.last().removeAttr( 'colspan' );
+				if (colSpan == 1) {
+					cols.last().removeAttr('colspan');
 				}
 
-				colsCount += ( colSpan - 1 );
+				colsCount += (colSpan - 1);
 			}
 
 			// if a rowspan is set in the last element of the row, the row(s) below
 			// are supposed to have one less column for every colspan the element has
 			rowSpan = parseInt(cols.last().attr('rowspan'), 10);
 			if (rowSpan > 1) {
-				for (j = 1; j < rowSpan-1; j++) {
+				for (j = 1; j < rowSpan - 1; j++) {
 					if (colSpan > 1) {
-						cachedColsCounts[i+j] += colSpan;
+						cachedColsCounts[i + j] += colSpan;
 					} else {
-						cachedColsCounts[i+j] += 1;
+						cachedColsCounts[i + j] += 1;
 					}
 				}
 			}
@@ -367,12 +367,12 @@ define([
 			}
 		}
 
-		for ( i = 0; i < rowsNum; i++ ) {
-			colsCountDiff = maxColsCount - cachedColsCounts[ i ];
-			if ( colsCountDiff > 0 ) {
+		for (i = 0; i < rowsNum; i++) {
+			colsCountDiff = maxColsCount - cachedColsCounts[i];
+			if (colsCountDiff > 0) {
 				// Create as many td's as we need to complete the row
-				jQuery( rows[ i ] ).append(
-					( new Array( colsCountDiff + 1 ) ).join( '<td></td>' )
+				jQuery(rows[i]).append(
+					(new Array(colsCountDiff + 1)).join('<td></td>')
 				);
 			}
 		}
@@ -411,7 +411,7 @@ define([
 		}
 
 		// if all selected cells have the same class, set it as active
-		jQuery(selectedCells).each(function(index) {
+		jQuery(selectedCells).each(function (index) {
 			if (!jQuery(this).hasClass(className)) {
 				allSelected = false;
 			}
@@ -431,30 +431,30 @@ define([
 	 * @return void
 	 */
 	Table.prototype.activate = function () {
-		if ( this.isActive ) {
+		if (this.isActive) {
 			return;
 		}
 
 		var that = this,
-		    htmlTableWrapper,
-		    tableWrapper, eventContainer, range = new Aloha.Selection.SelectionRange(true);
+			htmlTableWrapper,
+			tableWrapper, eventContainer, range = new Aloha.Selection.SelectionRange(true);
 
 		// check whether the current selection is in this table
 		if (jQuery(range.startContainer).closest('table').is(this.obj)
-				|| jQuery(range.endContainer).closest('table').is(
-						this.obj)) {
+			|| jQuery(range.endContainer).closest('table').is(
+				this.obj)) {
 			// if the startContainer or endContainer are a tr, we move into the next td
 			if (range.startContainer
-					&& range.startContainer.nodeType === 1
-					&& range.startContainer.nodeName.toLowerCase() === 'tr') {
+				&& range.startContainer.nodeType === 1
+				&& range.startContainer.nodeName.toLowerCase() === 'tr') {
 				if (range.startOffset < range.startContainer.childNodes.length) {
 					range.startContainer = range.startContainer.childNodes[range.startOffset];
 					range.startOffset = 0;
 				}
 			}
 			if (range.endContainer
-					&& range.endContainer.nodeType === 1
-					&& range.endContainer.nodeName.toLowerCase() === 'tr') {
+				&& range.endContainer.nodeType === 1
+				&& range.endContainer.nodeName.toLowerCase() === 'tr') {
 				if (range.endOffset < range.endContainer.childNodes.length) {
 					range.endContainer = range.endContainer.childNodes[range.endOffset];
 					range.endOffset = 0;
@@ -465,12 +465,12 @@ define([
 		}
 
 		// alter the table attributes
-		this.obj.addClass( this.get( 'className' ) );
-		this.obj.contentEditable( false );
+		this.obj.addClass(this.get('className'));
+		this.obj.contentEditable(false);
 
 		// set an id to the table if not already set
-		if ( this.obj.attr( 'id' ) === '' ) {
-			this.obj.attr( 'id', GENTICS.Utils.guid() );
+		if (this.obj.attr('id') === '') {
+			this.obj.attr('id', GENTICS.Utils.guid());
 		}
 
 		// unset the selection type
@@ -482,14 +482,14 @@ define([
 			eventContainer = this.obj;
 		}
 
-		eventContainer.on( 'keydown', function ( jqEvent ) {
-			if ( !jqEvent.ctrlKey && !jqEvent.shiftKey ) {
-				if ( that.selection.selectedCells.length > 0 &&
-						that.selection.selectedCells[ 0 ].length > 0 ) {
-					that.selection.selectedCells[ 0 ][ 0 ].firstChild.focus();
+		eventContainer.on('keydown', function (jqEvent) {
+			if (!jqEvent.ctrlKey && !jqEvent.shiftKey) {
+				if (that.selection.selectedCells.length > 0 &&
+					that.selection.selectedCells[0].length > 0) {
+					that.selection.selectedCells[0][0].firstChild.focus();
 				}
 			}
-		} );
+		});
 
 		this.obj.on('keydown', function (jqEvent) {
 			// Delete button
@@ -513,102 +513,78 @@ define([
 			}
 		});
 
-		/*
-		We need to make sure that when the user has selected text inside a
-		table cell we do not delete the entire row, before we activate this
+		this.tablePlugin._tableCaptionButton.setActive(this.obj.children('caption').is('caption'));
+		this.tablePlugin._tableCellsMergeButton.disable();
+		this.tablePlugin._tableCellsSplitButton.disable();
 
-		this.obj.on( 'keyup', function ( $event ) {
-			if ( $event.keyCode == 46 ) {
-				if ( that.selection.selectedColumnIdxs.length ) {
-					that.deleteColumns();
-					$event.stopPropagation();
-				} else if ( that.selection.selectedRowIdxs.length ) {
-					that.deleteRows();
-					$event.stopPropagation();
-				} else {
-					// Nothing to delete
+		// handle column/row resize
+		eventContainer.on('mousemove', 'th, td', function (e) {
+
+			var jqObj = jQuery(this);
+			// offset to be used for activating the resize cursor near a table border
+			var mouseOffset = 3;
+
+			// filter out the control cells
+			if (jQuery(this).hasClass('aloha-table-selectrow') || jQuery(this).closest('tr').hasClass('aloha-table-selectcolumn'))
+				return;
+
+			var closeToLeftBorder = function (cell) {
+				return ((e.pageX - cell.offset().left) < mouseOffset);
+			};
+
+			var closeToTopBorder = function (cell) {
+				return ((e.pageY - cell.offset().top) < mouseOffset);
+			};
+
+			var closeToTableBottom = function (cell) {
+				var row = cell.closest('tr');
+				// check if it's the last row
+				if (row.next('tr').length > 0) {
+					return false;
 				}
+
+				var cursorOffset = e.pageY - (row.offset().top + row.outerHeight());
+				return cursorOffset > (mouseOffset * -1) && cursorOffset < mouseOffset;
+			};
+
+			var colResize = that.tablePlugin.colResize;
+			var rowResize = that.tablePlugin.rowResize;
+
+			if (colResize && closeToLeftBorder(jqObj)) {
+				jqObj.css('cursor', 'col-resize');
+				return that.attachColumnResize(jqObj);
+			} else if (rowResize && closeToTopBorder(jqObj)) {
+				jqObj.css('cursor', 'row-resize');
+				return that.attachRowResize(jqObj);
+			} else if (rowResize && closeToTableBottom(jqObj)) {
+				jqObj.css('cursor', 'row-resize');
+				return that.attachRowResize(jqObj, true);
+			} else {
+				jqObj.css('cursor', 'default');
+				return that.detachRowColResize(jqObj);
 			}
-		} );
-		*/
+		});
 
-		// handle click event of the table
-	//	this.obj.on('click', function(e){
-	//		// stop bubbling the event to the outer divs, a click in the table
-	//		// should only be handled in the table
-	//		e.stopPropagation();
-	//		return false;
-	//	});
-	//
+		eventContainer.on('mousemove', function (e) {
 
-	 // handle column/row resize
-			eventContainer.on( 'mousemove', 'th, td', function( e ) {
+			var jqObj = jQuery(this).closest('table');
 
-				var jqObj = jQuery( this );
-				// offset to be used for activating the resize cursor near a table border
-				var mouseOffset = 3;
+			var isTableRightBorder = function (table) {
+				var cursorOffset = e.pageX - (table.offset().left + table.outerWidth());
+				return cursorOffset > -5 && cursorOffset < 5;
+			};
 
-				// filter out the control cells
-				if ( jQuery( this ).hasClass( 'aloha-table-selectrow' ) || jQuery( this ).closest( 'tr' ).hasClass( 'aloha-table-selectcolumn' ))
-					return;
+			var tableResize = that.tablePlugin.tableResize;
 
-				var closeToLeftBorder = function(cell) {
-					return ( ( e.pageX - cell.offset().left ) < mouseOffset );
-				};
+			if (tableResize && isTableRightBorder(jqObj)) {
+				return that.attachTableResizeWidth(jqObj);
+			}
 
-				var closeToTopBorder = function(cell) {
-					return ( ( e.pageY - cell.offset().top ) < mouseOffset );
-				};
+		});
 
-				var closeToTableBottom = function(cell) {
-					var row = cell.closest( 'tr');
-					// check if it's the last row
-					if ( row.next( 'tr').length > 0 ) {
-						return false;
-					}
-
-					var cursorOffset = e.pageY - ( row.offset().top + parseInt(row.css("height"))+parseInt(row.css("padding-top"))+parseInt(row.css("padding-bottom")) );
-					return cursorOffset > (mouseOffset * -1) && cursorOffset < mouseOffset;
-				};
-
-				var colResize = that.tablePlugin.colResize;
-				var rowResize = that.tablePlugin.rowResize;
-
-				if ( colResize && closeToLeftBorder( jqObj ) ) {
-					jqObj.css( 'cursor', 'col-resize' );
-					return that.attachColumnResize( jqObj );
-				} else if ( rowResize && closeToTopBorder( jqObj ) ) {
-					jqObj.css( 'cursor', 'row-resize' );
-					return that.attachRowResize( jqObj );
-				} else if ( rowResize && closeToTableBottom( jqObj ) ) {
-					jqObj.css( 'cursor', 'row-resize' );
-					return that.attachRowResize( jqObj, true );
-				} else {
-					jqObj.css( 'cursor', 'default' );
-					return that.detachRowColResize( jqObj );
-				}
-			});
-
-			eventContainer.on( 'mousemove', function( e ) {
-
-				var jqObj = jQuery( this ).closest( 'table' );
-
-				var isTableRightBorder = function( table ) {
-					var cursorOffset = e.pageX - ( table.offset().left + parseInt(table.css("width")) + parseInt(table.css("padding-left")) + parseInt(table.css("padding-right")) );
-					return cursorOffset > -5 && cursorOffset < 5;
-				};
-
-				var tableResize = that.tablePlugin.tableResize;
-
-				if ( tableResize && isTableRightBorder( jqObj ) ) {
-					return that.attachTableResizeWidth( jqObj );
-				}
-
-			});
-
-		eventContainer.on( 'mousedown', function ( jqEvent ) {
+		eventContainer.on('mousedown', function (jqEvent) {
 			// focus the table if not already done
-			if ( !that.hasFocus ) {
+			if (!that.hasFocus) {
 				that.focus();
 			}
 
@@ -626,7 +602,7 @@ define([
 			jqEvent.stopPropagation();
 			jqEvent.preventDefault();
 			return false;
-		} );
+		});
 
 		// ### create a wrapper for the table (@see HINT below)
 		// wrapping div for the table to suppress the display of the resize-controls of
@@ -634,15 +610,15 @@ define([
 		// tha data-block-skip-scope attribute will keep the block plugin from setting the
 		// FloatingMenu's scope when the block is clicked
 		tableWrapper = jQuery(
-			'<div class="' + this.get( 'classTableWrapper' ) + ' aloha-block-collection" data-block-skip-scope="true"></div>'
+			'<div class="' + this.get('classTableWrapper') + ' aloha-block-collection" data-block-skip-scope="true"></div>'
 		);
-		tableWrapper.contentEditable( false );
+		tableWrapper.contentEditable(false);
 
 		// mark the wrapper as ephemeral
 		Ephemera.markWrapper(tableWrapper);
 
 		// wrap the tableWrapper around the table
-		this.wrappedObj.wrap( tableWrapper );
+		this.wrappedObj.wrap(tableWrapper);
 
 		// :HINT The outest div (Editable) of the table is still in an editable
 		// div. So IE will surround the the wrapper div with a resize-border
@@ -651,18 +627,18 @@ define([
 		// Events only can be set to elements which are loaded from the DOM (if they
 		// were created dynamically before) ;)
 
-		htmlTableWrapper = this.obj.parents( '.' + this.get( 'classTableWrapper' ) );
-		htmlTableWrapperElem = this.obj.parents( '.' + this.get( 'classTableWrapper' ) ).get( 0 );
-		htmlTableWrapperElem.onresizestart = function ( e ) { return false; };
-		htmlTableWrapperElem.oncontrolselect = function ( e ) { return false; };
-		htmlTableWrapperElem.ondragstart = function ( e ) { return false; };
-		htmlTableWrapperElem.onmovestart = function ( e ) { return false; };
+		htmlTableWrapper = this.obj.parents('.' + this.get('classTableWrapper'));
+		htmlTableWrapperElem = this.obj.parents('.' + this.get('classTableWrapper')).get(0);
+		htmlTableWrapperElem.onresizestart = function (e) { return false; };
+		htmlTableWrapperElem.oncontrolselect = function (e) { return false; };
+		htmlTableWrapperElem.ondragstart = function (e) { return false; };
+		htmlTableWrapperElem.onmovestart = function (e) { return false; };
 		// the following handler prevents proper selection in the editable div in the caption!
 		// htmlTableWrapperElem.onselectstart = function ( e ) { return false; };
 
-		jQuery( this.cells ).each( function () {
+		jQuery(this.cells).each(function () {
 			this.activate();
-		} );
+		});
 
 		// Check because the aloha block plugin may not be loaded
 		// This is done, after the cells were made contenteditable, so that while initialization of the block,
@@ -678,7 +654,7 @@ define([
 		// then add the additional row at the top
 		this.attachSelectionRow();
 		this.makeCaptionEditable();
-		this.checkWai();
+		this.tablePlugin.updateSummaryButton();
 		this.isActive = true;
 
 		// when we stored the range, it was in the current table,
@@ -686,7 +662,7 @@ define([
 		if (range) {
 			// check whether the startContainer and/or endContainer are one of the table's cells.
 			// if yes, replace the container with the editable wrapper
-			jQuery(this.cells).each(function() {
+			jQuery(this.cells).each(function () {
 				if (this.obj.is(range.startContainer)) {
 					if (this.wrapper.contents().length === 0) {
 						this.wrapper.html('&nbsp;');
@@ -703,18 +679,18 @@ define([
 				}
 			});
 			this.focus();
-			window.setTimeout( function() {
+			window.setTimeout(function () {
 				range.select();
 			}, 1);
 		}
 
-		Aloha.trigger( 'aloha-table-activated' );
+		Aloha.trigger('aloha-table-activated');
 	};
 
 	/**
 	 * Make the table caption editable (if present)
 	 */
-	Table.prototype.makeCaptionEditable = function() {
+	Table.prototype.makeCaptionEditable = function () {
 		var caption = this.obj.find('caption').eq(0);
 		if (caption) {
 			this.tablePlugin.makeCaptionEditable(caption);
@@ -722,30 +698,16 @@ define([
 	};
 
 	/**
-	 * Check the WAI conformity of the table and sets the attribute.
+	 * Check the WAI conformity of the table
 	 *
-	 * @returns {boolean} True is WAI is activated, False otherwise.
+	 * @returns {boolean} True is WAI is valid
 	 */
 	Table.prototype.checkWai = function () {
-		var thisWai = this.wai;
-		if (!thisWai) {
+		if (this.obj[0] == null || typeof this.obj[0].summary !== 'string') {
 			return false;
 		}
 
-		var waiGreen = this.get('waiGreen'),
-			waiRed = this.get('waiRed');
-
-		thisWai.removeClass(waiGreen + ' ' + waiRed);
-
-		// Y U NO explain why we must check that summary is longer than 5 characters?
-
-		if (jQuery.trim(this.obj[0].summary) !== '') {
-			thisWai.addClass(waiGreen);
-			return true;
-		}
-
-		thisWai.addClass(waiRed);
-		return false;
+		return this.obj[0].summary.trim() !== '';
 	};
 
 	/**
@@ -754,7 +716,7 @@ define([
 	 *
 	 * @return void
 	 */
-	Table.prototype.attachSelectionColumn = function() {
+	Table.prototype.attachSelectionColumn = function () {
 		// create an empty cell
 		var emptyCell = jQuery('<td>'),
 			rowIndex, columnToInsert, rowObj, that = this, rows, i;
@@ -766,7 +728,7 @@ define([
 		rows = this.obj[0].rows;
 
 		// add a column before each first cell of each row
-		for ( i = 0; i < rows.length; i++) {
+		for (i = 0; i < rows.length; i++) {
 			rowObj = jQuery(rows[i]);
 			columnToInsert = emptyCell.clone();
 			columnToInsert.addClass(this.get('classSelectionColumn'));
@@ -788,7 +750,7 @@ define([
 	 *            The jquery object of the table-data field
 	 * @return void
 	 */
-	Table.prototype.attachRowSelectionEventsToCell = function(cell){
+	Table.prototype.attachRowSelectionEventsToCell = function (cell) {
 		var that = this;
 
 		// mark cell as ephemeral
@@ -799,20 +761,20 @@ define([
 		cell.unbind('mouseover');
 
 		// prevent ie from selecting the contents of the table
-		cell.get(0).onselectstart = function() { return false; };
+		cell.get(0).onselectstart = function () { return false; };
 
-		cell.on('mousedown', function(e) {
+		cell.on('mousedown', function (e) {
 			// set flag that the mouse is pressed
-//TODO to implement the mousedown-select effect not only must the
-//mousedown be set here but also be unset when the mouse button is
-//released.
-//			that.mousedown = true;
+			//TODO to implement the mousedown-select effect not only must the
+			//mousedown be set here but also be unset when the mouse button is
+			//released.
+			//			that.mousedown = true;
 			return that.rowSelectionMouseDown(e);
 		});
 
-		cell.on('mouseover', function(e){
+		cell.on('mouseover', function (e) {
 			// only select more crows if the mouse is pressed
-			if ( that.mousedown ) {
+			if (that.mousedown) {
 				return that.rowSelectionMouseOver(e);
 			}
 		});
@@ -825,12 +787,12 @@ define([
 	 *            the jquery-event object
 	 * @return void
 	 */
-	Table.prototype.rowSelectionMouseDown = function ( jqEvent ) {
+	Table.prototype.rowSelectionMouseDown = function (jqEvent) {
 		// focus the table (if not already done)
 		this.focus();
 
 		// if no cells are selected, reset the selection-array
-		if ( this.selection.selectedCells.length === 0 ) {
+		if (this.selection.selectedCells.length === 0) {
 			this.rowsToSelect = [];
 		}
 
@@ -838,29 +800,29 @@ define([
 		this.clickedRowId = jqEvent.currentTarget.parentNode.rowIndex;
 
 		// set single column selection
-		if ( jqEvent.metaKey ) {
-			var arrayIndex = jQuery.inArray( this.clickedRowId, this.rowsToSelect );
-			if ( arrayIndex >= 0 ) {
-				this.rowsToSelect.splice( arrayIndex, 1 );
+		if (jqEvent.metaKey) {
+			var arrayIndex = jQuery.inArray(this.clickedRowId, this.rowsToSelect);
+			if (arrayIndex >= 0) {
+				this.rowsToSelect.splice(arrayIndex, 1);
 			} else {
-				this.rowsToSelect.push( this.clickedRowId );
+				this.rowsToSelect.push(this.clickedRowId);
 			}
-		// block of columns selection
-		} else if ( jqEvent.shiftKey ) {
-			this.rowsToSelect.sort( function( a, b ) { return a - b; } );
-			var start = this.rowsToSelect[ 0 ];
+			// block of columns selection
+		} else if (jqEvent.shiftKey) {
+			this.rowsToSelect.sort(function (a, b) { return a - b; });
+			var start = this.rowsToSelect[0];
 			var end = this.clickedRowId;
-			if ( start > end ) {
+			if (start > end) {
 				start = end;
-				end = this.rowsToSelect[ 0 ];
+				end = this.rowsToSelect[0];
 			}
 			this.rowsToSelect = [];
-			for ( var i = start; i <= end; i++ ) {
-				this.rowsToSelect.push( i );
+			for (var i = start; i <= end; i++) {
+				this.rowsToSelect.push(i);
 			}
-		// single column
+			// single column
 		} else {
-			this.rowsToSelect = [ this.clickedRowId ];
+			this.rowsToSelect = [this.clickedRowId];
 		}
 
 		// mark the selection visual
@@ -903,7 +865,7 @@ define([
 			end = (rowIndex < this.clickedRowId) ? this.clickedRowId : rowIndex;
 
 			this.rowsToSelect = [];
-			for ( i = start; i <= end; i++) {
+			for (i = start; i <= end; i++) {
 				this.rowsToSelect.push(i);
 			}
 
@@ -921,13 +883,13 @@ define([
 		}
 	};
 
-  /**
-   * Binds the needed selection-mouse events to the given cell
-   *
-   * @param cell
-   *            The jquery object of the table-data field
-   * @return void
-   */
+	/**
+	 * Binds the needed selection-mouse events to the given cell
+	 *
+	 * @param cell
+	 *            The jquery object of the table-data field
+	 * @return void
+	 */
 	Table.prototype.attachSelectionRow = function () {
 		var that = this;
 
@@ -938,15 +900,15 @@ define([
 		// get the number of columns in the table (first row)
 		// iterate through all rows and find the maximum number of columns to add
 		var numColumns = 0;
-		for( var i = 0; i < this.obj[0].rows.length; i++ ){
+		for (var i = 0; i < this.obj[0].rows.length; i++) {
 			var curNumColumns = 0;
 
-			for( var j = 0; j < this.obj[0].rows[i].cells.length; j++ ){
-				var colspan = Utils.colspan( this.obj[0].rows[i].cells[j] );
+			for (var j = 0; j < this.obj[0].rows[i].cells.length; j++) {
+				var colspan = Utils.colspan(this.obj[0].rows[i].cells[j]);
 				curNumColumns += colspan;
 			}
 
-			if ( numColumns < curNumColumns ) {
+			if (numColumns < curNumColumns) {
 				numColumns = curNumColumns;
 			}
 		}
@@ -986,33 +948,10 @@ define([
 					// is false.
 					that._removeCursorSelection();
 
-					//If the summary should be modified in the sidebar
-					//we activate the sidebar panel
-					if (that.tablePlugin.settings.summaryinsidebar) {
-						that.tablePlugin.sidebar.open();
-						that.tablePlugin.sidebarPanel.activate(that.obj);
-						that.tablePlugin.sidebar.correctHeight();
-					}
-
-					// jump in Summary field
-					// attempting to focus on summary input field will occasionally result in the
-					// following exception:
-					//uncaught exception: [Exception... "Component returned failure code: 0x80004005 (NS_ERROR_FAILURE) [nsIDOMHTMLInputElement.setSelectionRange]" nsresult: "0x80004005 (NS_ERROR_FAILURE)" location: "JS frame :: src/dep/ext-3.2.1/ext-all.js :: <TOP_LEVEL> :: line 11" data: no]
-					// this occurs when the tab in which the summary field is contained is not visible
-					// TODO: I'm adding a try catch clause here for the time being, but a proper solution, which addresses the problem of how to handle invisible fields ought to be persued.
-
-					try {
-						that.tablePlugin.summary.focus();
-						e.stopPropagation();
-						e.preventDefault();
-					} catch (e) {
-						Console.error ('Table', e.message);
-					}
-
 					return false;
 				};
-				this.wai = jQuery('<div/>').css("width", 25 + "px").css("height", 12+"px").click(clickHandler);
-				columnToInsert.append(this.wai);
+				this._topLeftCornerCell$ = jQuery('<div/>').css("width", 25 + "px").css("height", 12 + "px").click(clickHandler);
+				columnToInsert.append(this._topLeftCornerCell$);
 			}
 
 			// add the cell to the row
@@ -1020,9 +959,9 @@ define([
 		}
 
 		// global mouseup event to reset the selection properties
-		jQuery(document).on('mouseup', function(e) { that.columnSelectionMouseUp(e) } );
+		jQuery(document).on('mouseup', function (e) { that.columnSelectionMouseUp(e) });
 
-		this.obj.find('tr:first').before( selectionRow );
+		this.obj.find('tr:first').before(selectionRow);
 	};
 
 	/**
@@ -1032,18 +971,18 @@ define([
 	 *            the jquery object of the td-field
 	 * @return void
 	 */
-	Table.prototype.attachColumnSelectEventsToCell = function ( cell ) {
+	Table.prototype.attachColumnSelectEventsToCell = function (cell) {
 		var that = this;
 
 		// unbind eventually existing events of this cell
-		cell.unbind( 'mousedown' );
-		cell.unbind( 'mouseover' );
+		cell.unbind('mousedown');
+		cell.unbind('mouseover');
 
 		// prevent ie from selecting the contents of the table
-		cell.get( 0 ).onselectstart = function () { return false; };
+		cell.get(0).onselectstart = function () { return false; };
 
-		cell.on( 'mousedown',  function ( e ) { that.columnSelectionMouseDown( e ) } );
-		cell.on( 'mouseover',  function ( e ) { that.columnSelectionMouseOver( e ) } );
+		cell.on('mousedown', function (e) { that.columnSelectionMouseDown(e) });
+		cell.on('mouseover', function (e) { that.columnSelectionMouseOver(e) });
 	};
 
 	/**
@@ -1053,43 +992,43 @@ define([
 	 * @param {jQuery:Event} jqEvent - the jquery-event object
 	 * @return void
 	 */
-	Table.prototype.columnSelectionMouseDown = function ( jqEvent ) {
+	Table.prototype.columnSelectionMouseDown = function (jqEvent) {
 		// focus the table (if not already done)
 		this.focus();
 
 		// if no cells are selected, reset the selection-array
-		if ( this.selection.selectedCells.length === 0 ) {
+		if (this.selection.selectedCells.length === 0) {
 			this.columnsToSelect = [];
 		}
 
 		// set the origin-columnId of the mouse-click
-		this.clickedColumnId = jQuery( jqEvent.currentTarget.parentNode )
-									.children().index( jqEvent.currentTarget );
+		this.clickedColumnId = jQuery(jqEvent.currentTarget.parentNode)
+			.children().index(jqEvent.currentTarget);
 
 		// set single column selection
-		if ( jqEvent.metaKey ) {
-			var arrayIndex = jQuery.inArray( this.clickedColumnId, this.columnsToSelect );
-			if ( arrayIndex >= 0 ) {
-				this.columnsToSelect.splice( arrayIndex, 1 );
+		if (jqEvent.metaKey) {
+			var arrayIndex = jQuery.inArray(this.clickedColumnId, this.columnsToSelect);
+			if (arrayIndex >= 0) {
+				this.columnsToSelect.splice(arrayIndex, 1);
 			} else {
-				this.columnsToSelect.push( this.clickedColumnId );
+				this.columnsToSelect.push(this.clickedColumnId);
 			}
-		// block of columns selection
-		} else if ( jqEvent.shiftKey ) {
-			this.columnsToSelect.sort( function( a, b ) { return a - b; } );
-			var start = this.columnsToSelect[ 0 ];
+			// block of columns selection
+		} else if (jqEvent.shiftKey) {
+			this.columnsToSelect.sort(function (a, b) { return a - b; });
+			var start = this.columnsToSelect[0];
 			var end = this.clickedColumnId;
-			if ( start > end ) {
+			if (start > end) {
 				start = end;
-				end = this.columnsToSelect[ 0 ];
+				end = this.columnsToSelect[0];
 			}
 			this.columnsToSelect = [];
-			for ( var i = start; i <= end; i++ ) {
-				this.columnsToSelect.push( i );
+			for (var i = start; i <= end; i++) {
+				this.columnsToSelect.push(i);
 			}
-		// single column
+			// single column
 		} else {
-			this.columnsToSelect = [ this.clickedColumnId ];
+			this.columnsToSelect = [this.clickedColumnId];
 		}
 
 		// mark the selection visual
@@ -1123,13 +1062,13 @@ define([
 			end;
 
 		// select all columns from the last clicked to the hoverd
-		if ( this.mouseDownColIdx ) {
+		if (this.mouseDownColIdx) {
 			start = (colIdx < this.mouseDownColIdx) ? colIdx : this.mouseDownColIdx;
 			end = (colIdx < this.mouseDownColIdx) ? this.mouseDownColIdx : colIdx;
 			for (var i = start; i <= end; i++) {
 				columnsToSelect.push(i);
 			}
-			this.selectColumns( columnsToSelect );
+			this.selectColumns(columnsToSelect);
 		}
 	};
 
@@ -1152,7 +1091,7 @@ define([
 	 *
 	 * @return void
 	 */
-	Table.prototype.deleteRows = function() {
+	Table.prototype.deleteRows = function () {
 		var
 			rowIDs = [],
 			rowsToDelete = {},
@@ -1167,9 +1106,9 @@ define([
 			rowsToDelete[this.selection.selectedCells[i].parentNode.rowIndex] = true;
 		}
 
-	    for (var rowId in rowsToDelete) {
-	       rowIDs.push(rowId);
-	    }
+		for (var rowId in rowsToDelete) {
+			rowIDs.push(rowId);
+		}
 
 		// if all rows should be deleted, set a flag to remove the WHOLE table
 		var deleteTable = false;
@@ -1182,30 +1121,30 @@ define([
 		if (deleteTable) {
 			var that = this;
 			Dialog.confirm({
-				title : i18n.t('Table'),
-				text : i18n.t('deletetable.confirm'),
-				yes : function () {
+				title: i18n.t('Table'),
+				text: i18n.t('deletetable.confirm'),
+				yes: function () {
 					that.deleteTable();
 				}
 			});
 		} else {
 
-			rowIDs.sort(function(a,b){return a - b;});
+			rowIDs.sort(function (a, b) { return a - b; });
 
 			// check which cell should be focused after the deletion
 			var focusRowId = rowIDs[0];
 			if (focusRowId > (this.numRows - rowIDs.length)) {
-				focusRowId --;
+				focusRowId--;
 			}
 
 			// get all rows
 			var rows = this.getRows();
 
 			//splits all cells on the rows to be deleted
-			jQuery.each( rowIDs, function ( unused, rowId ) {
-				var row = rows[ rowId ];
+			jQuery.each(rowIDs, function (unused, rowId) {
+				var row = rows[rowId];
 				for (var i = 0; i < row.cells.length; i++) {
-					Utils.splitCell( row.cells[i], function () {
+					Utils.splitCell(row.cells[i], function () {
 						return table.newActiveCell().obj;
 					});
 				}
@@ -1213,26 +1152,26 @@ define([
 
 			//decreases rowspans of cells that span the row to be deleted
 			//and removes the row
-			var grid = Utils.makeGrid( rows );
-			jQuery.each( rowIDs, function ( unused, rowId ) {
-				var row = grid[ rowId ];
-				for ( var j = 0; j < row.length; ) {
-					var cellInfo = row[ j ];
-					var rowspan = Utils.rowspan( cellInfo.cell );
-					if ( 1 < rowspan ) {
-						jQuery( cellInfo.cell ).attr( 'rowspan', rowspan - 1);
+			var grid = Utils.makeGrid(rows);
+			jQuery.each(rowIDs, function (unused, rowId) {
+				var row = grid[rowId];
+				for (var j = 0; j < row.length;) {
+					var cellInfo = row[j];
+					var rowspan = Utils.rowspan(cellInfo.cell);
+					if (1 < rowspan) {
+						jQuery(cellInfo.cell).attr('rowspan', rowspan - 1);
 					}
 					j += cellInfo.colspan;
 				}
-				jQuery( rows[ rowId ] ).remove();
+				jQuery(rows[rowId]).remove();
 			});
 
 			// reduce the attribute storing the number of rows in the table
 			this.numRows -= rowIDs.length;
 
 			// IE needs a timeout to work properly
-			window.setTimeout( function() {
-				var lastCell = jQuery( rows[1].cells[ focusRowId +1 ] );
+			window.setTimeout(function () {
+				var lastCell = jQuery(rows[1].cells[focusRowId + 1]);
 				lastCell.focus();
 			}, 5);
 
@@ -1240,7 +1179,7 @@ define([
 			this.selection.unselectCells();
 		}
 
-		Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'table-plugin'});
+		Aloha.activeEditable.smartContentChange({ type: 'block-change', plugin: 'table-plugin' });
 	};
 
 	/**
@@ -1250,12 +1189,12 @@ define([
 	 *
 	 * @return void
 	 */
-	Table.prototype.deleteColumns = function() {
+	Table.prototype.deleteColumns = function () {
 		var
 			colIDs = [],
 			cellToDelete = [],
 			// get all rows to iterate
-		    rows = this.getRows(),
+			rows = this.getRows(),
 			that = this,
 			changeColspan = [],
 			cells,
@@ -1287,18 +1226,18 @@ define([
 
 		// if all columns should be deleted, remove the WHOLE table
 		// delete the whole table
-		if ( selectedColumnIdxs.length == grid[0].length - selectColWidth ) {
+		if (selectedColumnIdxs.length == grid[0].length - selectColWidth) {
 			Dialog.confirm({
-				title : i18n.t('Table'),
-				text : i18n.t('deletetable.confirm'),
-				yes : function () {
+				title: i18n.t('Table'),
+				text: i18n.t('deletetable.confirm'),
+				yes: function () {
 					that.deleteTable();
 				}
 			});
 
 		} else {
 
-			colIDs.sort(function(a,b) {return a - b;} );
+			colIDs.sort(function (a, b) { return a - b; });
 
 			//TODO there is a bug that that occurs if a column is
 			//selected and deleted, and then a column with a greater
@@ -1306,25 +1245,25 @@ define([
 
 			//sorted so we delete from right to left to minimize interfernce of deleted rows
 
-			var gridColumns = selectedColumnIdxs.sort(function(a,b){ return b - a; });
+			var gridColumns = selectedColumnIdxs.sort(function (a, b) { return b - a; });
 			for (var i = 0; i < gridColumns.length; i++) {
 				var gridColumn = gridColumns[i];
 				for (var j = 0; j < rows.length; j++) {
 					cellInfo = grid[j][gridColumn];
-					if ( ! cellInfo ) {
+					if (!cellInfo) {
 						//TODO this case occurred because of a bug somewhere which should be fixed
 						continue;
 					}
-					if ( 0 === cellInfo.spannedX ) {
+					if (0 === cellInfo.spannedX) {
 						if (1 < cellInfo.colspan) {
 							var nCell = this.newActiveCell().obj;
-							jQuery( cellInfo.cell ).after(nCell);
+							jQuery(cellInfo.cell).after(nCell);
 							nCell.attr('rowspan', cellInfo.rowspan);
 							nCell.attr('colspan', cellInfo.colspan - 1);
 						}
-						jQuery( cellInfo.cell ).remove();
+						jQuery(cellInfo.cell).remove();
 					} else {
-						jQuery( cellInfo.cell ).attr('colspan', cellInfo.colspan - 1);
+						jQuery(cellInfo.cell).attr('colspan', cellInfo.colspan - 1);
 					}
 					//ensures that always 0 === cellInfo.spannedY
 					j += cellInfo.rowspan - 1;
@@ -1337,15 +1276,15 @@ define([
 			this.numCols -= colIDs.length;
 
 			// IE needs a timeout to work properly
-			window.setTimeout( function() {
-				var lastCell = jQuery( rows[1].cells[1] );
+			window.setTimeout(function () {
+				var lastCell = jQuery(rows[1].cells[1]);
 				lastCell.focus();
 			}, 5);
 
 			this.selection.unselectCells();
 		}
 
-		Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'table-plugin'});
+		Aloha.activeEditable.smartContentChange({ type: 'block-change', plugin: 'table-plugin' });
 	};
 
 	/**
@@ -1353,10 +1292,10 @@ define([
 	 *
 	 * @return void
 	 */
-	Table.prototype.deleteTable = function() {
+	Table.prototype.deleteTable = function () {
 
 		var deleteIndex = -1;
-		for (var i = 0; i < this.tablePlugin.TableRegistry.length; i++){
+		for (var i = 0; i < this.tablePlugin.TableRegistry.length; i++) {
 			if (this.tablePlugin.TableRegistry[i].obj.attr('id') == this.obj.attr('id')) {
 				deleteIndex = i;
 				break;
@@ -1384,7 +1323,7 @@ define([
 
 			var that = this;
 			// IE needs a timeout to work properly
-			window.setTimeout( function() {
+			window.setTimeout(function () {
 				that.parentEditable.obj.focus();
 			}, 5);
 
@@ -1399,17 +1338,17 @@ define([
 	 *            could be 'after' or 'before'. defines the position where the new
 	 *            rows should be inserted
 	 */
-	function rowIndexFromSelection( position, selection ) {
+	function rowIndexFromSelection(position, selection) {
 
 		var newRowIndex = -1;
 
 		// get the index where the new rows should be inserted
 		var cellOfInterest = null;
-		if ( 'before' === position ) {
-			cellOfInterest = selection.selectedCells[ 0 ];
-		} else if ( 'after' === position ) {
+		if ('before' === position) {
+			cellOfInterest = selection.selectedCells[0];
+		} else if ('after' === position) {
 			var offset = selection.selectedCells.length - 1;
-			cellOfInterest = selection.selectedCells[ offset ];
+			cellOfInterest = selection.selectedCells[offset];
 		}
 
 		if (cellOfInterest && cellOfInterest.nodeType == 1) {
@@ -1424,10 +1363,10 @@ define([
 	 *
 	 * @see Table.prototype.addRow
 	 */
-	Table.prototype.addRowBeforeSelection = function(highlightNewRows) {
-		var newRowIndex = rowIndexFromSelection( 'before', this.selection );
-		if ( -1 !== newRowIndex ) {
-			this.addRow( newRowIndex );
+	Table.prototype.addRowBeforeSelection = function (highlightNewRows) {
+		var newRowIndex = rowIndexFromSelection('before', this.selection);
+		if (-1 !== newRowIndex) {
+			this.addRow(newRowIndex);
 		}
 	};
 
@@ -1436,10 +1375,10 @@ define([
 	 *
 	 * @see Table.prototype.addRow
 	 */
-	Table.prototype.addRowAfterSelection = function() {
-		var newRowIndex = rowIndexFromSelection( 'after', this.selection );
-		if ( -1 !== newRowIndex ) {
-			this.addRow( newRowIndex + 1 );
+	Table.prototype.addRowAfterSelection = function () {
+		var newRowIndex = rowIndexFromSelection('after', this.selection);
+		if (-1 !== newRowIndex) {
+			this.addRow(newRowIndex + 1);
 		}
 	};
 
@@ -1450,7 +1389,7 @@ define([
 	 *        the index at which the new row shall be inserted
 	 * @return <HTMLElemenet> last row inserted
 	 */
-	Table.prototype.addRow = function(newRowIndex) {
+	Table.prototype.addRow = function (newRowIndex) {
 		var rowsToInsert = 1;
 		var $insertionRow;
 		var classSelectionColumn = this.get('classSelectionColumn');
@@ -1469,13 +1408,13 @@ define([
 
 			var grid = Utils.makeGrid($rows);
 			var selectColOffset = 1;
-			if ( newRowIndex >= grid.length ) {
+			if (newRowIndex >= grid.length) {
 				for (var i = selectColOffset; i < grid[0].length; i++) {
 					$insertionRow.append(this.newActiveCell().obj);
 				}
 			} else {
 				var newRow = grid[newRowIndex];
-				for (var i = selectColOffset, len = newRow.length; i < len; ) {
+				for (var i = selectColOffset, len = newRow.length; i < len;) {
 					var cellInfo = newRow[i];
 					if (Utils.containsDomCell(cellInfo)) {
 						var colspan = cellInfo.colspan;
@@ -1483,22 +1422,22 @@ define([
 							$insertionRow.append(this.newActiveCell().obj);
 						}
 					} else {
-						jQuery( cellInfo.cell ).attr('rowspan', cellInfo.rowspan + 1);
+						jQuery(cellInfo.cell).attr('rowspan', cellInfo.rowspan + 1);
 					}
 					i += cellInfo.colspan;
 				}
 			}
 
-			if ( newRowIndex >= $rows.length ) {
-				$rows.eq( $rows.length - 1 ).after( $insertionRow );
+			if (newRowIndex >= $rows.length) {
+				$rows.eq($rows.length - 1).after($insertionRow);
 			} else {
-				$rows.eq( newRowIndex ).before( $insertionRow );
+				$rows.eq(newRowIndex).before($insertionRow);
 			}
 		}
 
 		this.numRows += rowsToInsert;
 
-		Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'table-plugin'});
+		Aloha.activeEditable.smartContentChange({ type: 'block-change', plugin: 'table-plugin' });
 
 		return $insertionRow[0];
 	};
@@ -1519,7 +1458,7 @@ define([
 	 * @see Table.addColumns
 	 * @return void
 	 */
-	Table.prototype.addColumnsLeft = function() {
+	Table.prototype.addColumnsLeft = function () {
 		this.addColumns('left');
 	};
 
@@ -1535,74 +1474,74 @@ define([
 	 *            columns should be inserted
 	 * @return void
 	 */
-	Table.prototype.addColumns = function( position ) {
+	Table.prototype.addColumns = function (position) {
 		var
 			that = this,
-			emptyCell = jQuery( '<td>' ),
-		    rows = this.getRows(),
+			emptyCell = jQuery('<td>'),
+			rows = this.getRows(),
 			cell,
 			currentColIdx,
 			columnsToSelect = [],
 			selectedColumnIdxs = this.selection.selectedColumnIdxs;
 
-		if ( 0 === selectedColumnIdxs.length ) {
+		if (0 === selectedColumnIdxs.length) {
 			return;
 		}
 
-		selectedColumnIdxs.sort( function ( a, b ) { return a - b; } );
+		selectedColumnIdxs.sort(function (a, b) { return a - b; });
 
 		// refuse to insert a column unless a consecutive range has been selected
-		if ( ! Utils.isConsecutive( selectedColumnIdxs ) ) {
-			Dialog.alert( {
-				title : i18n.t( 'Table' ),
-				text  : i18n.t( 'table.addColumns.nonConsecutive' )
+		if (!Utils.isConsecutive(selectedColumnIdxs)) {
+			Dialog.alert({
+				title: i18n.t('Table'),
+				text: i18n.t('table.addColumns.nonConsecutive')
 			});
 			return;
 		}
 
-		if ( 'left' === position ) {
-			currentColIdx = selectedColumnIdxs[ 0 ];
+		if ('left' === position) {
+			currentColIdx = selectedColumnIdxs[0];
 			// inserting a row before the selected column indicies moves
 			// all selected columns one to the right
-			for ( var i = 0; i < this.selection.selectedColumnIdxs.length; i++ ) {
-				this.selection.selectedColumnIdxs[ i ] += 1;
+			for (var i = 0; i < this.selection.selectedColumnIdxs.length; i++) {
+				this.selection.selectedColumnIdxs[i] += 1;
 			}
 		} else {//"right" == position
-			currentColIdx = selectedColumnIdxs[ selectedColumnIdxs.length - 1 ];
+			currentColIdx = selectedColumnIdxs[selectedColumnIdxs.length - 1];
 		}
 
-		var grid = Utils.makeGrid( rows );
+		var grid = Utils.makeGrid(rows);
 
-		for ( var i = 0; i < rows.length; i++ ) {
+		for (var i = 0; i < rows.length; i++) {
 			// prepare the cell to be inserted
 			cell = emptyCell.clone();
-			cell.html( '\u00a0' );
+			cell.html('\u00a0');
 
 			// on first row correct the position of the selected columns
-			if ( i === 0 ) {
+			if (i === 0) {
 				// this is the first row, so make a column-selection cell
-				this.attachColumnSelectEventsToCell( cell );
+				this.attachColumnSelectEventsToCell(cell);
 			} else {
 				// activate the cell for this table
-				cellObj = this.newActiveCell( cell.get(0) );
+				cellObj = this.newActiveCell(cell.get(0));
 				cell = cellObj.obj;
 			}
 
-			var leftCell = Utils.leftDomCell( grid, i, currentColIdx );
-			if ( null === leftCell ) {
-				jQuery( rows[i] ).prepend( cell );
+			var leftCell = Utils.leftDomCell(grid, i, currentColIdx);
+			if (null === leftCell) {
+				jQuery(rows[i]).prepend(cell);
 			} else {
-				if ( 'left' === position && Utils.containsDomCell( grid[ i ][ currentColIdx ] ) ) {
-					jQuery( leftCell ).before( cell );
+				if ('left' === position && Utils.containsDomCell(grid[i][currentColIdx])) {
+					jQuery(leftCell).before(cell);
 				} else {//right
-					jQuery( leftCell ).after( cell );
+					jQuery(leftCell).after(cell);
 				}
 			}
 
 			this.numCols++;
 		}
 
-		Aloha.activeEditable.smartContentChange({type: 'block-change', plugin: 'table-plugin'});
+		Aloha.activeEditable.smartContentChange({ type: 'block-change', plugin: 'table-plugin' });
 	};
 
 	/**
@@ -1610,7 +1549,7 @@ define([
 	 *
 	 * @return void
 	 */
-	Table.prototype.focus = function() {
+	Table.prototype.focus = function () {
 		if (!this.hasFocus) {
 			if (!this.parentEditable.isActive) {
 				this.parentEditable.obj.focus();
@@ -1628,8 +1567,8 @@ define([
 
 		// TODO workaround - fix this. the selection is updated later on by the browser
 		// using setTimeout here is hideous, but a simple execution-time call will fail
-	// DEACTIVATED by Haymo prevents selecting rows
-	//	setTimeout('Aloha.Selection.updateSelection(false, true)', 50);
+		// DEACTIVATED by Haymo prevents selecting rows
+		//	setTimeout('Aloha.Selection.updateSelection(false, true)', 50);
 
 	};
 
@@ -1638,7 +1577,7 @@ define([
 	 *
 	 * @return void
 	 */
-	Table.prototype.focusOut = function() {
+	Table.prototype.focusOut = function () {
 		if (this.hasFocus) {
 			this.tablePlugin.setFocusedTable(undefined);
 			this.selection.selectionType = undefined;
@@ -1650,7 +1589,7 @@ define([
 	 * is done to be more consistent in the UI - there should either be
 	 * a cursor-selection or a cell-selection, but not both.
 	 */
-	Table.prototype._removeCursorSelection = function() {
+	Table.prototype._removeCursorSelection = function () {
 		// We can't remove the selection on IE because whenever a
 		// row/column is selected, and then another row/column is
 		// selected, the browser windows scrolls to the top of the page
@@ -1678,30 +1617,30 @@ define([
 
 		var selection = Aloha.getSelection();
 
-		if ( !selection ||
-				!selection._nativeSelection ||
-					selection._nativeSelection._ranges.length === 0 ) {
+		if (!selection ||
+			!selection._nativeSelection ||
+			selection._nativeSelection._ranges.length === 0) {
 			return;
 		}
 
-		var range = selection.getRangeAt( 0 );
-		if ( null === range.startContainer ) {
+		var range = selection.getRangeAt(0);
+		if (null === range.startContainer) {
 			return;
 		}
 
 		// if the selection is  already in the table, do nothing
-		if ( 0 !== jQuery( range.startContainer ).closest('table').length ) {
+		if (0 !== jQuery(range.startContainer).closest('table').length) {
 			return;
 		}
 
 		// if no cells are selected, do nothing
-		if ( 0 === this.selection.selectedCells.length ) {
+		if (0 === this.selection.selectedCells.length) {
 			return;
 		}
 
 		// set the foces to the first selected cell
-		var container = TableCell.getContainer( this.selection.selectedCells[ 0 ] );
-		jQuery( container ).focus();
+		var container = TableCell.getContainer(this.selection.selectedCells[0]);
+		jQuery(container).focus();
 	};
 
 	/**
@@ -1709,7 +1648,7 @@ define([
 	 *
 	 * @return void
 	 */
-	Table.prototype.selectColumns = function ( columns ) {
+	Table.prototype.selectColumns = function (columns) {
 		var columnsToSelect;
 
 		if (columns) {
@@ -1719,14 +1658,7 @@ define([
 		}
 
 		this.selection.selectColumns(columnsToSelect);
-		this.tablePlugin._columnheaderButton.setState(this.selection.isHeader());
-
-		// ====== BEGIN UI specific code - should be handled on event aloha-table-selection-changed by UI =======
-
-		setActiveStyle(this.selection.selectedCells, this.tablePlugin.columnConfig,
-				this.tablePlugin.columnMSItems,	this.tablePlugin.columnMSButton);
-
-		// ====== END UI specific code - should be handled by UI =======
+		this.tablePlugin._tableSelectionHeaderButton.setActive(this.selection.isHeader());
 
 		// blur all editables within the table
 		this.obj.find('div.aloha-ui-table-cell-editable').blur();
@@ -1745,14 +1677,7 @@ define([
 	Table.prototype.selectRows = function () {
 
 		this.selection.selectRows(this.rowsToSelect);
-		this.tablePlugin._rowheaderButton.setState(this.selection.isHeader());
-
-		// ====== BEGIN UI specific code - should be handled on event aloha-table-selection-changed by UI =======
-
-		setActiveStyle(this.selection.selectedCells, this.tablePlugin.rowConfig,
-				this.tablePlugin.rowMSItems, this.tablePlugin.rowMSButton);
-
-		// ====== END UI specific code - should be handled by UI =======
+		this.tablePlugin._tableSelectionHeaderButton.setActive(this.selection.isHeader());
 
 		// blur all editables within the table
 		this.obj.find('div.aloha-ui-table-cell-editable').blur();
@@ -1769,7 +1694,7 @@ define([
 	 *
 	 * @return void
 	 */
-	Table.prototype.deactivate = function() {
+	Table.prototype.deactivate = function () {
 		// preserve the current selection
 		var range = new Aloha.Selection.SelectionRange(true);
 
@@ -1784,10 +1709,10 @@ define([
 			this.obj.removeAttr('class');
 		}
 		this.obj.removeAttr('contenteditable');
-	//	this.obj.removeAttr('id');
+		//	this.obj.removeAttr('id');
 
 		// unwrap the selectionLeft-div if available
-		if (this.wrappedObj.parents('.' + this.get('classTableWrapper')).length){
+		if (this.wrappedObj.parents('.' + this.get('classTableWrapper')).length) {
 			this.wrappedObj.unwrap();
 		}
 
@@ -1795,7 +1720,7 @@ define([
 		this.obj.find('tr.' + this.get('classSelectionRow') + ':first').remove();
 		// remove the selection column (first column left)
 		var that = this;
-		jQuery.each(this.obj[0].rows, function(){
+		jQuery.each(this.obj[0].rows, function () {
 			jQuery(this).children('td.' + that.get('classSelectionColumn')).remove();
 		});
 
@@ -1816,9 +1741,12 @@ define([
 		}
 
 		// remove editable span in caption (if any)
-		this.obj.find('caption div').each(function() {
+		this.obj.find('caption div').each(function () {
 			jQuery(this).contents().unwrap();
 		});
+
+		this.tablePlugin._tableCaptionButton.deactivate();
+		this.tablePlugin._tableSelectionHeaderButton.deactivate();
 
 		// better unset ;-) otherwise activate() may think you're activated.
 		this.isActive = false;
@@ -1835,44 +1763,44 @@ define([
 	 *
 	 * @return void
 	 */
-	Table.prototype.attachColumnResize = function(cell) {
+	Table.prototype.attachColumnResize = function (cell) {
 
 		var that = this;
 
 		//unbind any exisiting resize event handlers
-		that.detachRowColResize( cell );
+		that.detachRowColResize(cell);
 
-		var rows = cell.closest( 'tbody' ).children( 'tr' );
-		var cellRow = cell.closest( 'tr' );
+		var rows = cell.closest('tbody').children('tr');
+		var cellRow = cell.closest('tr');
 		var gridId = Utils.cellIndexToGridColumn(rows,
 			rows.index(cellRow),
 			cellRow.children().index(cell)
 		);
 
-		var resizeColumns = function(pixelsMoved) {
+		var resizeColumns = function (pixelsMoved) {
 			var expandToWidth, reduceToWidth;
 
-			Utils.walkCells(rows, function(ri, ci, gridCi, colspan, rowspan) {
-				var currentCell = jQuery( jQuery( rows[ri] ).children()[ ci ] );
+			Utils.walkCells(rows, function (ri, ci, gridCi, colspan, rowspan) {
+				var currentCell = jQuery(jQuery(rows[ri]).children()[ci]);
 
 				// skip the select & cells with colspans
-				if ( currentCell.hasClass( 'aloha-table-selectrow' ) || currentCell.closest( 'tr' ).hasClass( 'aloha-table-selectcolumn' ) || colspan > 1 ) {
+				if (currentCell.hasClass('aloha-table-selectrow') || currentCell.closest('tr').hasClass('aloha-table-selectcolumn') || colspan > 1) {
 					return true;
 				}
 
-				if (gridCi === gridId ) {
+				if (gridCi === gridId) {
 					if (!reduceToWidth) {
-						reduceToWidth = parseInt(currentCell.css("width")) - pixelsMoved;
+						reduceToWidth = currentCell.width() - pixelsMoved;
 					}
 
-					Utils.resizeCellWidth( currentCell, reduceToWidth );
+					Utils.resizeCellWidth(currentCell, reduceToWidth);
 
 				} else if (gridCi === gridId - 1) {
 					if (!expandToWidth) {
-						expandToWidth = parseInt(currentCell.css("width"))+ pixelsMoved;
+						expandToWidth = currentCell.width() + pixelsMoved;
 					}
 
-					Utils.resizeCellWidth( currentCell, expandToWidth );
+					Utils.resizeCellWidth(currentCell, expandToWidth);
 
 				}
 
@@ -1884,7 +1812,7 @@ define([
 			}
 		};
 
-		cell.on('mousedown.resize', function($event) {
+		cell.on('mousedown.resize', function ($event) {
 			// prevent cell resizing, if mousedown was on a block handle
 			if (jQuery($event.target).hasClass('aloha-block-draghandle')) {
 				return;
@@ -1893,38 +1821,38 @@ define([
 			var $guide = jQuery('<div></div>');
 			var isResizing = false;
 
-			Utils.getCellResizeBoundaries(gridId, rows, function(maxPageX, minPageX) {
+			Utils.getCellResizeBoundaries(gridId, rows, function (maxPageX, minPageX) {
 				isResizing = true;
 
 				// unset the selection type
 				that.selection.resizeMode = true;
 
 				// move the guide while dragging
-				jQuery( 'body' ).on( 'mousemove.dnd_col_resize', function(e) {
+				jQuery('body').on('mousemove.dnd_col_resize', function (e) {
 					// limit the maximum resize
-					if ( e.pageX > minPageX && e.pageX < maxPageX ) {
+					if (e.pageX > minPageX && e.pageX < maxPageX) {
 						$guide.css('left', e.pageX);
 					}
 				});
 
 				// do the actual resizing after drag stops
-				jQuery( 'body' ).on( 'mouseup.dnd_col_resize', function(e) {
+				jQuery('body').on('mouseup.dnd_col_resize', function (e) {
 					var pixelsMoved = 0;
 
-					if ( e.pageX < minPageX ) {
+					if (e.pageX < minPageX) {
 						pixelsMoved = minPageX - cell.offset().left;
-					} else if ( e.pageX > minPageX && e.pageX < maxPageX ) {
+					} else if (e.pageX > minPageX && e.pageX < maxPageX) {
 						pixelsMoved = e.pageX - cell.offset().left;
-					} else if ( e.pageX > maxPageX ) {
+					} else if (e.pageX > maxPageX) {
 						pixelsMoved = maxPageX - cell.offset().left;
 					}
 
-					if ( pixelsMoved !== 0 ) {
-						resizeColumns( pixelsMoved );
+					if (pixelsMoved !== 0) {
+						resizeColumns(pixelsMoved);
 					}
 
-					jQuery( 'body' ).unbind( 'mousemove.dnd_col_resize' );
-					jQuery( 'body' ).unbind( 'mouseup.dnd_col_resize' );
+					jQuery('body').unbind('mousemove.dnd_col_resize');
+					jQuery('body').unbind('mouseup.dnd_col_resize');
 
 					// unset the selection resize mode
 					that.selection.resizeMode = false;
@@ -1938,8 +1866,9 @@ define([
 			}
 
 			var $cell = jQuery(cell);
-			var width = (parseInt($cell.css("width")) + parseInt($cell.css("padding-left")) + parseInt($cell.css("padding-right"))) - parseInt($cell.css("width"))-parseInt($cell.css("padding-left"))-parseInt($cell.css("padding-right"));
-			var height = parseInt($cell.closest('tbody').css("height"))-parseInt($cell.closest('tbody').css("padding-top"))-parseInt($cell.closest('tbody').css("padding-bottom"))
+			var width = $cell.outerWidth() - $cell.innerWidth();
+			var height = $cell.closest('tbody').innerHeight();
+
 			$guide.css({
 				'height': (height < 1) ? 1 : height,
 				'width': (width < 1) ? 1 : width,
@@ -1958,69 +1887,69 @@ define([
 	 *
 	 * @return void
 	 */
-	Table.prototype.attachRowResize = function(cell, lastRow) {
+	Table.prototype.attachRowResize = function (cell, lastRow) {
 
 		var that = this;
 
 		//unbind any exisiting resize event handlers
-		that.detachRowColResize( cell );
+		that.detachRowColResize(cell);
 
-		var resizeRows = function(pixelsMoved) {
+		var resizeRows = function (pixelsMoved) {
 			var expandingRow;
 
 			if (lastRow) {
-				expandingRow = cell.closest( 'tr' );
+				expandingRow = cell.closest('tr');
 			} else {
-				expandingRow = cell.closest( 'tr' ).prev( 'tr' );
+				expandingRow = cell.closest('tr').prev('tr');
 			}
 
-			var currentRowHeight = parseInt(expandingRow.css("height"));
+			var currentRowHeight = expandingRow.height();
 			var expandToHeight = currentRowHeight + pixelsMoved;
 
 			// correct if the height is a minus value
-			if ( expandToHeight < 0 ) {
+			if (expandToHeight < 0) {
 				expandToHeight = 1;
 			}
 
-			expandingRow.css( 'height', expandToHeight );
+			expandingRow.css('height', expandToHeight);
 		};
 
-		cell.on('mousedown.resize', function($event) {
+		cell.on('mousedown.resize', function ($event) {
 			// prevent cell selection, if mousedown was on a block handle
 			if (jQuery($event.target).hasClass('aloha-block-draghandle')) {
 				return;
 			}
 
 			// create a guide
-			var guide = jQuery( '<div></div>' );
+			var guide = jQuery('<div></div>');
 
-			var guideTop = function() {
+			var guideTop = function () {
 				if (lastRow) {
-					return cell.offset().top + parseInt(cell.css("height"))+parseInt(cell.css("padding-top"))+parseInt(cell.css("padding-bottom"));
+					return cell.offset().top + cell.outerHeight();
 				} else {
 					return cell.offset().top;
 				}
 			};
 
-			var width = parseInt(cell.closest('tbody').css("width"))-parseInt(cell.closest('tbody').css("padding-left"))-parseInt(cell.closest('tbody').css("padding-right"));
-			var height = parseInt(cell.css("height"))+parseInt(cell.css("padding-top"))+parseInt(cell.css("padding-bottom")) - parseInt(cell.css("height"))-parseInt(cell.css("padding-top"))-parseInt(cell.css("padding-bottom"));
+			var width = cell.closest('tbody').innerWidth();
+			var height = cell.outerHeight() - cell.innerHeight();
 
 			guide.css({
 				'width': (width < 1) ? 1 : width,
-				'height': (height < 1) ? 1: height,
+				'height': (height < 1) ? 1 : height,
 				'top': guideTop(),
-				'left': cell.closest( 'tbody' ).offset().left,
+				'left': cell.closest('tbody').offset().left,
 				'position': 'absolute',
 				'background-color': '#80B5F2'
 			});
-			jQuery( 'body' ).append( guide );
+			jQuery('body').append(guide);
 
 			// set the minimum resize
-			var minHeight = function() {
+			var minHeight = function () {
 				if (lastRow) {
 					return cell.closest('tr').offset().top;
 				} else {
-					return cell.closest('tr').prev( 'tr' ).offset().top;
+					return cell.closest('tr').prev('tr').offset().top;
 				}
 			};
 
@@ -2028,27 +1957,27 @@ define([
 			that.selection.resizeMode = true;
 
 			// move the guide while dragging
-			jQuery( 'body' ).on( 'mousemove.dnd_row_resize', function(e) {
-				if ( e.pageY > minHeight() ) {
-					guide.css( 'top', e.pageY );
+			jQuery('body').on('mousemove.dnd_row_resize', function (e) {
+				if (e.pageY > minHeight()) {
+					guide.css('top', e.pageY);
 				}
 			});
 
 			// do the actual resizing after drag stops
-			jQuery( 'body' ).on( 'mouseup.dnd_row_resize', function(e) {
+			jQuery('body').on('mouseup.dnd_row_resize', function (e) {
 
 				var pixelsMoved = 0;
 
 				if (lastRow) {
-					pixelsMoved = e.pageY - ( cell.offset().top + parseInt(cell.css("height"))+parseInt(toHide.css("padding-top"))+parseInt(cell.css("padding-bottom")) );
+					pixelsMoved = e.pageY - (cell.offset().top + cell.outerHeight());
 				} else {
 					pixelsMoved = e.pageY - cell.offset().top;
 				}
 
-				resizeRows( pixelsMoved );
+				resizeRows(pixelsMoved);
 
-				jQuery( 'body' ).unbind( 'mousemove.dnd_row_resize' );
-				jQuery( 'body' ).unbind( 'mouseup.dnd_row_resize' );
+				jQuery('body').unbind('mousemove.dnd_row_resize');
+				jQuery('body').unbind('mouseup.dnd_row_resize');
 
 				// unset the selection resize mode
 				that.selection.resizeMode = false;
@@ -2066,61 +1995,61 @@ define([
 	 *
 	 * @return void
 	 */
-	Table.prototype.attachTableResizeWidth = function(table) {
+	Table.prototype.attachTableResizeWidth = function (table) {
 
 		var that = this;
 		var tableContainer = table.closest('.aloha-table-wrapper');
 		var trSelector = "tr:not(.aloha-table-selectcolumn)";
 		var lastColumn = table.find(trSelector + " th:last-child, " +
-			                        trSelector + " td:last-child");
+			trSelector + " td:last-child");
 		var lastCell;
 
-		jQuery.each( lastColumn, function() {
+		jQuery.each(lastColumn, function () {
 			// don't use colspanned cell as the base cell
-			if ( !jQuery( this ).attr('colspan') || jQuery( this ).attr('colspan') < 2 ) {
-				lastCell = jQuery( this );
+			if (!jQuery(this).attr('colspan') || jQuery(this).attr('colspan') < 2) {
+				lastCell = jQuery(this);
 				return false;
 			}
 		});
 
 		// change the cursor
-		lastColumn.css( 'cursor', 'col-resize' );
+		lastColumn.css('cursor', 'col-resize');
 
-		var resizeColumns = function(pixelsMoved) {
-			var rows = table.find( 'tr' );
-			var lastCellRow = lastCell.closest( 'tr' );
+		var resizeColumns = function (pixelsMoved) {
+			var rows = table.find('tr');
+			var lastCellRow = lastCell.closest('tr');
 			var gridId = Utils.cellIndexToGridColumn(
-				                   rows,
-			                      rows.index( lastCellRow ),
-			                      lastCellRow.children().index( lastCell )
-			                   );
+				rows,
+				rows.index(lastCellRow),
+				lastCellRow.children().index(lastCell)
+			);
 			var expandToWidth = pixelsMoved - Utils.getCellBorder(lastCell) - Utils.getCellPadding(lastCell),
 				cellChanges = [],
 				gridCellWidthBefore = 0,
-				tableWidthBefore = parseInt(table.css("width"));
+				tableWidthBefore = table.width();
 
-			Utils.walkCells(rows, function(ri, ci, gridCi, colspan, rowspan) {
-				var currentCell = jQuery( jQuery( rows[ri] ).children()[ ci ] );
+			Utils.walkCells(rows, function (ri, ci, gridCi, colspan, rowspan) {
+				var currentCell = jQuery(jQuery(rows[ri]).children()[ci]);
 
 				// skip the select cells and cells with colspans
-				if ( currentCell.hasClass( 'aloha-table-selectrow' ) || currentCell.closest( 'tr' ).hasClass( 'aloha-table-selectcolumn' ) || colspan > 1 ) {
+				if (currentCell.hasClass('aloha-table-selectrow') || currentCell.closest('tr').hasClass('aloha-table-selectcolumn') || colspan > 1) {
 					return true;
 				}
 
 				// we keep a list of changes an apply them in a second run
 				// in order to not change the values we are calculating with during the process
-				if (gridCi === gridId ) {
-					gridCellWidthBefore = parseInt(currentCell.css("width"));
-					cellChanges.push({cell : currentCell, width : expandToWidth});
+				if (gridCi === gridId) {
+					gridCellWidthBefore = currentCell.width();
+					cellChanges.push({ cell: currentCell, width: expandToWidth });
 				} else {
-					cellChanges.push({cell : currentCell, width : parseInt(currentCell.css("width"))});
+					cellChanges.push({ cell: currentCell, width: currentCell.width() });
 				}
 				return true;
 			});
 
 			// now we apply the changes to the table cells
-			jQuery.each(cellChanges, function(index, item) {
-				Utils.resizeCellWidth( item.cell, item.width );
+			jQuery.each(cellChanges, function (index, item) {
+				Utils.resizeCellWidth(item.cell, item.width);
 			});
 
 			// set the width on the table to ensure that the table actually shrinks
@@ -2132,58 +2061,58 @@ define([
 			}
 		};
 
-		lastColumn.on( 'mousedown.resize', function() {
+		lastColumn.on('mousedown.resize', function () {
 
 			// create a guide
-			var guide = jQuery( '<div></div>' );
+			var guide = jQuery('<div></div>');
 
-			var height = parseInt(table.children('tbody').css("height"))-parseInt(table.children('tbody').css("padding-top"))-parseInt(table.children('tbody').css("padding-bottom"));
-			var width = parseInt(lastCell.css("width")) + parseInt(lastCell.css("padding-left")) + parseInt(lastCell.css("padding-right")) - parseInt(lastCell.css("width"))-parseInt(lastCell.css("padding-left"))-parseInt(lastCell.css("padding-right"));
+			var height = table.children('tbody').innerHeight();
+			var width = lastCell.outerWidth() - lastCell.innerWidth();
 
 			guide.css({
 				'height': (height < 1) ? 1 : height,
 				'width': (width < 1) ? 1 : width,
 				'top': table.find('tbody').offset().top,
-				'left': table.offset().left + parseInt(table.css("width")) + parseInt(table.css("padding-left")) + parseInt(table.css("padding-right")),
+				'left': table.offset().left + table.outerWidth(),
 				'position': 'absolute',
 				'background-color': '#80B5F2'
 			});
-			jQuery('body').append( guide );
+			jQuery('body').append(guide);
 
 			// set the maximum and minimum resize
-			var maxPageX = tableContainer.offset().left + parseInt(tableContainer.css("width"));
-			var minPageX = lastCell.offset().left + ( parseInt(lastCell.css("width"))-parseInt(lastCell.css("padding-left"))-parseInt(lastCell.css("padding-right")) - parseInt(lastCell.css("width")) ) + Utils.getMinColWidth( lastCell );
+			var maxPageX = tableContainer.offset().left + tableContainer.width();
+			var minPageX = lastCell.offset().left + (lastCell.innerWidth() - lastCell.width()) + Utils.getMinColWidth(lastCell);
 
 			// unset the selection type
 			that.selection.resizeMode = true;
 
 			// move the guide while dragging
-			jQuery( 'body' ).on( 'mousemove.dnd_col_resize', function(e) {
+			jQuery('body').on('mousemove.dnd_col_resize', function (e) {
 				// limit the maximum resize
-				if ( e.pageX > minPageX && e.pageX < maxPageX ) {
-					guide.css( 'left', e.pageX );
+				if (e.pageX > minPageX && e.pageX < maxPageX) {
+					guide.css('left', e.pageX);
 				}
 			});
 
 			// do the actual resizing after drag stops
-			jQuery( 'body' ).on( 'mouseup.dnd_col_resize', function(e) {
+			jQuery('body').on('mouseup.dnd_col_resize', function (e) {
 				var pixelsMoved = 0;
 
-				if ( e.pageX <= minPageX ) {
-				 	pixelsMoved = minPageX - lastCell.offset().left;
-				} else if ( e.pageX > minPageX && e.pageX < maxPageX ) {
+				if (e.pageX <= minPageX) {
+					pixelsMoved = minPageX - lastCell.offset().left;
+				} else if (e.pageX > minPageX && e.pageX < maxPageX) {
 					pixelsMoved = e.pageX - lastCell.offset().left;
-				} else if ( e.pageX > maxPageX ) {
-				  pixelsMoved = maxPageX - lastCell.offset().left;
+				} else if (e.pageX > maxPageX) {
+					pixelsMoved = maxPageX - lastCell.offset().left;
 				}
 				// set the table width
-				resizeColumns( pixelsMoved );
+				resizeColumns(pixelsMoved);
 
 				// unbind the events and reset the cursor
-				jQuery( 'body' ).unbind( 'mousemove.dnd_col_resize' );
-				jQuery( 'body' ).unbind( 'mouseup.dnd_col_resize' );
-				lastColumn.unbind( 'mousedown.resize' );
-				lastColumn.css( 'cursor', 'default' );
+				jQuery('body').unbind('mousemove.dnd_col_resize');
+				jQuery('body').unbind('mouseup.dnd_col_resize');
+				lastColumn.unbind('mousedown.resize');
+				lastColumn.css('cursor', 'default');
 
 				// unset the selection resize mode
 				that.selection.resizeMode = false;
@@ -2201,7 +2130,7 @@ define([
 	 *
 	 * @return void
 	 */
-	Table.prototype.detachRowColResize = function(cell) {
+	Table.prototype.detachRowColResize = function (cell) {
 		return cell.unbind('mousedown.resize');
 	};
 
@@ -2210,15 +2139,15 @@ define([
 	 *
 	 * @return void
 	 */
-	Table.prototype.toString = function() {
+	Table.prototype.toString = function () {
 		return 'Table';
 	};
 
-	Table.prototype.newCell = function(domElement) {
+	Table.prototype.newCell = function (domElement) {
 		return new TableCell(domElement, this);
 	};
 
-	Table.prototype.newActiveCell = function(domElement) {
+	Table.prototype.newActiveCell = function (domElement) {
 		var cell = new TableCell(domElement, this);
 		cell.activate();
 		return cell;
@@ -2230,11 +2159,11 @@ define([
 	 */
 	Table.prototype.getRows = function (filterSelectionRow) {
 		//W3C DOM property .rows supported by all modern browsers
-		var rows = this.obj.get( 0 ).rows;
+		var rows = this.obj.get(0).rows;
 		//converts the HTMLCollection to a real array
 		rows = jQuery.makeArray(rows);
 		if (filterSelectionRow) {
-			rows = rows.filter(function(elt, i, array) {
+			rows = rows.filter(function (elt, i, array) {
 				return !jQuery(elt).hasClass('aloha-ephemera');
 			});
 		}

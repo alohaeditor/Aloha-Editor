@@ -1,5 +1,21 @@
 
-@import "jquery-ui-1.9m6.css";
+@import "./jquery-ui.css";
+@import "./jquery-ui-modifications.css";
+
+/* Aloha UI Components */
+@import "./overlay-elements.css";
+@import "./modal.css";
+@import "./dropdown.css";
+@import "./input.css";
+@import "./checkbox.css";
+@import "./select-menu.css";
+@import "./color-picker.css";
+@import "./slider.css";
+@import "./spinner.css";
+@import "./iframe.css";
+@import "./button.css";
+@import "./split-button.css";
+@import "./date-time-picker.css";
 
 /* Workaround for dialogs that are appended directly to the body and
  * can't be placed inside a .aloha context element.
@@ -273,8 +289,6 @@
 	display: none;
 }
 
-
-
 /* === dropdown menu === */
 .aloha .aloha-ui-toolbar .aloha-ui-menubutton-menu,
 .aloha .aloha-ui-toolbar .aloha-ui-menubutton-menu .ui-menu,
@@ -509,191 +523,6 @@
 }
 /* === /accordion menu === */
 
-
-
-
-/* === icons === */
-
-.aloha .ui-state-default .aloha-icon {
-	background-image: url(../img/format-inline.png);
-}
-
-/* TODO: merge with icons image file */
-.aloha .ui-state-default .aloha-icon-tree           { background-image: url(../img/tree.png); }
-
-.aloha .ui-state-default .aloha-icon-bold           { background-position: 0 0; }
-.aloha .ui-state-default .aloha-icon-italic         { background-position: -16px 0; }
-.aloha .ui-state-default .aloha-icon-underline      { background-position: -32px 0; }
-.aloha .ui-state-default .aloha-icon-strikethrough  { background-position: -48px 0; }
-.aloha .ui-state-default .aloha-icon-subscript      { background-position: -64px 0; }
-.aloha .ui-state-default .aloha-icon-superscript    { background-position: -80px 0; }
-.aloha .ui-state-default .aloha-icon-createTable    { background-position: -96px 0; }
-.aloha .ui-state-default .aloha-icon-addcolumnleft  { background-position: -112px 0; }
-.aloha .ui-state-default .aloha-icon-addcolumnright { background-position: -128px 0; }
-.aloha .ui-state-default .aloha-icon-addrowbefore   { background-position: -144px 0; }
-.aloha .ui-state-default .aloha-icon-addrowafter    { background-position: -160px 0; }
-.aloha .ui-state-default .aloha-icon-deleterows     { background-position: -176px 0; }
-.aloha .ui-state-default .aloha-icon-deletecolumns  { background-position: -192px 0; }
-.aloha .ui-state-default .aloha-icon-table-caption  { background-position: -320px 0; }
-.aloha .ui-state-default .aloha-icon-rowheader      { background-position: -352px 0; }
-.aloha .ui-state-default .aloha-icon-columnheader   { background-position: -368px 0; }
-.aloha .ui-state-default .aloha-icon-mergecells     { background-position: -384px 0; }
-.aloha .ui-state-default .aloha-icon-splitcells     { background-position: -400px 0; }
-.aloha .ui-state-default .aloha-icon-deletetable    { background-position: -448px 0; }
-.aloha .ui-state-default .aloha-icon-orderedlist    { background-position: -272px 0; }
-.aloha .ui-state-default .aloha-icon-unorderedlist  { background-position: -256px 0; }
-.aloha .ui-state-default .aloha-icon-link           { background-position: -288px 0; }
-.aloha .ui-state-default .aloha-icon-anchor         { background: url(../img/anchor.png) no-repeat; }
-.aloha .ui-state-default .aloha-icon-unlink         { background-position: -304px 0; }
-.aloha .ui-state-default .aloha-icon-abbr           { background-position: -336px 0; }
-.aloha .ui-state-default .aloha-icon-emphasis       { background-image: url(../img/em.png); }
-.aloha .ui-state-default .aloha-icon-strong         { background-image: url(../img/strong.png); }
-.aloha .ui-state-default .aloha-icon-code           { background-image: url(../img/code.png); }
-
-.aloha .ui-state-default .aloha-icon-indent {
-	background: url(../../../../img/text_indent.png) no-repeat center center;
-}
-.aloha .ui-state-default .aloha-icon-outdent {
-	background: url(../../../../img/text_indent_remove.png) no-repeat center center;
-}
-
-/* === inline icons (<img> instead of class) === */
-
-.aloha .ui-button-icon-only .aloha-ui-inline-icon-container {
-	/* These width height and margin settings will allow an inline icon
-       almost as big as the button */
-	width: 18px;
-	height: 18px;
-	margin-top: -10px;
-	margin-left: -9px;
-}
-
-.aloha .aloha-ui-inline-icon-container {
-	/* Overwrite jqueryui icon style text-indent: -9999px; to support
-       <img> icons (inline icons) instead of class icons */
-	text-indent: 0px;
-}
-
-.aloha .ui-button-text-icon-primary .ui-button-icon-primary {
-	margin-left: 4px;
-}
-
-/* === large icons === */
-
-.aloha .ui-state-default .aloha-large-icon {
-    /* TODO merge with icons image file */
-	background-image: url("../img/format-block.png");
-	width: 54px;
-	height: 44px;
-	/* TODO doesn't work without important */
-	margin-left: -27px !important;
-	margin-top: -22px !important;
-}
-/* It does not suffice to make just the icon large, the button itself must also be made larger */
-.aloha .aloha-large-button {
-	width: 60px !important;
-	/* TODO doesn't work without important */
-	height: 50px !important;
-}
-
-.aloha .aloha-large-icon-h1  { background-position: -52px 0; }
-.aloha .aloha-large-icon-h2  { background-position: -104px 0; }
-.aloha .aloha-large-icon-h3  { background-position: -156px 0; }
-.aloha .aloha-large-icon-h4  { background-position: -208px 0; }
-.aloha .aloha-large-icon-h5  { background-position: -260px 0; }
-.aloha .aloha-large-icon-h6  { background-position: -312px 0; }
-.aloha .aloha-large-icon-pre { background-position: -364px 0; }
-
-/**** multi-split-button ****/
-
-.aloha .aloha-multisplit-active {
-	/* TODO this just gives the active multi-split item a border which
-			however isn't very visually distinctive */
-	/* Override ui-state-default with important */
-	border: 1px solid #aaaaaa !important;
-}
-
-/**** button states ****/
-
-.aloha .aloha-button-active {
-	/* Override ui-state-default with important */
-	border: 1px solid #aaaaaa !important;
-	/* Override ui-state-default with important */
-	background: #ffffff !important;
-}
-
-/** jquery-ui icons used by Aloha **/
-
-
-/* TODO take the jqueryui icons out from the jqueryui icon sprite map
-   and merge with other icons into an aloha specific sprite map */
-.aloha .ui-state-default .aloha-jqueryui-icon { background-image: url(../img/jqueryui/ui-icons_222222_256x240.png); }
-/* triangle and carat are used by the ribbon plugin for the drop down and expand icons */
-.aloha .ui-icon-triangle-1-s { background-position: -64px -16px; }
-.aloha .ui-icon-carat-1-e { background: url(../img/jqueryui/ui-icons_222222_256x240.png) no-repeat -30px -16px; }
-/* the gripsmall is used by the image plugin */
-.aloha .ui-icon-gripsmall-diagonal-se { background: url(../img/jqueryui/ui-icons_222222_256x240.png) no-repeat; }
-
-.aloha .aloha-multisplit {
-	position: relative;
-	width: 260px;
-	height: 50px;
-	overflow: hidden;
-	margin: 0 auto;
-}
-.aloha .aloha-multisplit-open {
-	overflow: visible;
-}
-.aloha .aloha-multisplit-content {
-	text-align: left;
-	position: relative;
-	width: 245px;
-}
-.aloha .aloha-multisplit-open .aloha-multisplit-content {
-	background: #ccc;
-	box-shadow: inset 0 0 15px rgba(0,0,0,0.25);
-}
-.aloha .aloha-multisplit .aloha-multisplit-toggle {
-	position: absolute;
-	top: 0;
-	right: 0;
-	width: 15px;
-	height: 50px;
-	overflow: hidden;
-	border-width: 0px;
-	background-color: #f0f0f0;
-	background-image: url(../img/multisplit-open.gif);
-	background-repeat: no-repeat;
-	background-position: bottom center;
-	text-indent: -99999px;
-	margin: 0;
-}
-.aloha .aloha-multisplit-open .aloha-multisplit-toggle {
-	background-image: url(../img/multisplit-close.gif);
-}
-.aloha .aloha-multisplit .ui-button-icon-only.aloha-multisplit-toggle:hover {
-	background-color: #fff;
-	border-color: #e6e6e6;
-}
-.aloha .aloha-multisplit .ui-button-icon-only {
-	background: #e6e6e6;
-	border-color: lightGrey;
-}
-.aloha .aloha-multisplit .ui-button-icon-only.aloha-multisplit-active {
-	background: #3B73D7;
-}
-.aloha .aloha-multisplit .aloha-ui-multisplit-fullwidth {
-	display: block;
-	width: 100%;
-	background: #f0f0f0 url('../img/removeformat.png') no-repeat 0px 0px;
-	border: 1px solid #bbb;
-	padding-left: 18px;
-	text-align: left;
-}
-.aloha .aloha-multisplit .aloha-ui-multisplit-fullwidth:hover {
-	border-color: #999;
-}
-
 .aloha .aloha-ui-component-group {
 	float: left;
 	border: 1px solid #e0e0e0;
@@ -761,7 +590,7 @@
 	border-color: #999;
 }
 .aloha.aloha-dialog .ui-icon-closethick {
-	background: url(../img/jqueryui/ui-icons_222222_256x240.png) no-repeat -80px -128px;
+	background: url(../img/jqueryui/ui-icons_444444_256x240.png) no-repeat -80px -128px;
 }
 
 span.ui-button-icon-primary.ui-icon.ui-icon-closethick {
@@ -770,6 +599,10 @@ span.ui-button-icon-primary.ui-icon.ui-icon-closethick {
 }
 
 .aloha-ui-hidden {
+	display: none;
+}
+
+.aloha .aloha-ui .aloha-ui-component-group .aloha-ui-component-slot.out-of-scope {
 	display: none;
 }
 

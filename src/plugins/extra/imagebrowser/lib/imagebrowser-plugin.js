@@ -29,8 +29,8 @@ define([
 	'aloha',
 	'jquery',
 	'aloha/plugin',
-	'aloha/pluginmanager',
 	'ui/ui',
+	'ui/icons',
 	'ui/button',
 	'image/image-plugin',
 	'RepositoryBrowser',
@@ -41,8 +41,8 @@ define([
 	Aloha,
     jQuery,
     Plugin,
-    PluginManager,
     Ui,
+	Icons,
     Button,
     Images,
     RepositoryBrowser,
@@ -62,8 +62,7 @@ define([
 
 			this._imageBrowserButton = Ui.adopt('imageBrowser', Button, {
 				tooltip: i18n.t('button.addimage.tooltip'),
-				icon: 'aloha-icon-tree',
-				scope: 'Aloha.continuoustext',
+				icon: Icons.TREE,
 				'class': 'aloha-imagebrowser-button',
 				click: function () { browser.open(); }
 			});

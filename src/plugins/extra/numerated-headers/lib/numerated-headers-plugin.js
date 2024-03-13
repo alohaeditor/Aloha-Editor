@@ -30,6 +30,7 @@ define([
 	'jquery',
 	'aloha/plugin',
 	'ui/ui',
+	'ui/icons',
 	'ui/toggleButton',
 	'util/browser',
 	'i18n!numerated-headers/nls/i18n',
@@ -40,6 +41,7 @@ define([
 	$,
 	Plugin,
 	Ui,
+	Icons,
 	ToggleButton,
 	Browser,
 	i18n,
@@ -71,24 +73,22 @@ define([
 		init: function () {
 			var that = this;
 
-			this._formatNumeratedHeadersButton = Ui.adopt('formatNumeratedHeaders',
-				ToggleButton, {
-					tooltip: i18n.t('button.numeratedHeaders.tooltip'),
-					icon: 'aloha-icon aloha-icon-numerated-headers',
-					scope: 'Aloha.continuoustext',
-					click: function () {
-						var buttonPressed = that._formatNumeratedHeadersButton.getState();
-						if (!buttonPressed) {
-							that.removeNumerations();
-						} else {
-							that.createNumeratedHeaders();
-						}
+			this._formatNumeratedHeadersButton = Ui.adopt('formatNumeratedHeaders', ToggleButton, {
+				tooltip: i18n.t('button.numeratedHeaders.tooltip'),
+				icon: Icons.NUMERATED_HEADERS,
+				pure: true,
+				onToggle: function (active) {
+					if (!active) {
+						that.removeNumerations();
+					} else if (that.createNumeratedHeaders()) {
+						that._formatNumeratedHeadersButton.activate();
 					}
+				}
 			});
 
 			Aloha.bind('aloha-editable-created', function (event, editable) {
 				if (that.isNumeratingOn(editable)) {
-					that.initForEditable(editable);
+					that.initForEditable(editable, true);
 				}
 			});
 
@@ -119,6 +119,12 @@ define([
 					that._formatNumeratedHeadersButton.hide();
 				}
 			});
+
+			Aloha.bind('aloha-editable-deactivated', function(event, params) {
+				if (params.newEditable == null || !that.isNumeratingOn(params.newEditable)) {
+					that._formatNumeratedHeadersButton.deactivate();
+				}
+			});
 		},
 
 		/**
@@ -127,18 +133,22 @@ define([
 		 * If numerating shall be on by default and was not turned on, numbers
 		 * will be created.
 		 */
-		initForEditable: function (editable) {
-			var flag = editable.obj.attr('aloha-numerated-headers');
+		initForEditable: function (editable, skipButtonState) {
+			var flag = editable != null
+				&& editable.obj != null
+				&& editable.obj.attr('aloha-numerated-headers');
 			if (flag !== 'true' && flag !== 'false') {
-				flag = (true === this.getNumeratedEditableConfig(editable).numeratedactive) ? 'true' : 'false';
-				editable.obj.attr('aloha-numerated-headers', flag);
+				flag = (true === this.getNumeratedEditableConfig(editable).numeratedactive);
+				editable.obj.attr('aloha-numerated-headers', flag + '');
+			} else {
+				flag = flag === 'true';
 			}
 
-			if (flag === 'true') {
+			if (flag) {
 				this.createNumeratedHeaders(editable);
-				this._formatNumeratedHeadersButton.setState(true);
-			} else {
-				this._formatNumeratedHeadersButton.setState(false);
+			}
+			if (!skipButtonState) {
+				this._formatNumeratedHeadersButton.setActive(flag);
 			}
 		},
 
@@ -298,8 +308,12 @@ define([
 		 * Removed and disables numeration for the current editable.
 		 */
 		removeNumerations : function () {
+			if (Aloha.activeEditable == null || Aloha.activeEditable.obj == null) {
+				return;
+			}
 			$(Aloha.activeEditable.obj).attr('aloha-numerated-headers', 'false');
 			this.cleanNumerations();
+			this._formatNumeratedHeadersButton.deactivate();
 		},
 
 		getBaseElement: function (editableParam) {
@@ -351,7 +365,7 @@ define([
 		createNumeratedHeaders: function (editable) {
 			var active_editable_obj = this.getBaseElement(editable);
 			if (!active_editable_obj) {
-				return;
+				return false;
 			}
 
 			var currentEditable = editable;
@@ -366,7 +380,7 @@ define([
 			currentEditable.obj.attr('aloha-numerated-headers', 'true');
 
 			if (typeof headers === 'undefined' || headers.length === 0) {
-				return;
+				return false;
 			}
 
 			// base rank is the lowest rank of all selected headers
@@ -380,9 +394,11 @@ define([
 					}
 				}
 			});
+
 			if (base_rank > 6) {
-				return;
+				return false;
 			}
+
 			var prev_rank = null,
 				current_annotation = [],
 				annotation_pos = 0,
@@ -458,6 +474,8 @@ define([
 					}
 				}
 			});
+
+			return true;
 		}
 	});
 });

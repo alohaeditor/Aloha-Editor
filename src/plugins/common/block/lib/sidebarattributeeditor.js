@@ -51,9 +51,11 @@ define([ 'jquery', 'block/blockmanager', 'aloha/sidebar', 'block/editormanager',
 		 * Initialize the sidebar attribute editor and bind events
 		 */
 		init: function() {
-			this._sidebar = Sidebar.right.show();
-
-			BlockManager.bind('block-selection-change', this._onBlockSelectionChange, this);
+			if (Sidebar != null && !Sidebar.disabled) {
+				this._sidebar = Sidebar.right.show();
+	
+				BlockManager.bind('block-selection-change', this._onBlockSelectionChange, this);
+			}
 		},
 
 		/**

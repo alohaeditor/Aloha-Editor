@@ -9,6 +9,16 @@ define({
 		"button.underline.label": "Underline",
 		"button.yes.label": "Yes",
 		"button.no.label": "No",
+		"button.back.label": "Back",
+		"button.confirm.label": "Confirm",
+		"button.cancel.label": "Cancel",
+
+		"split-button.secondary.label": "Open Context",
+		"link-target.target.label": "Target",
+		"link-target.anchor.label": "Anchor",
+		"color-picker.clearButton.label": "Clear color",
+		"date-time-picker.hours.label": "Hours",
+		"date-time-picker.minutes.label": "Minutes",
 
 		// paragraph
 		"button.p.label": "Paragraph",
@@ -55,15 +65,9 @@ define({
 		"button.blockquote.label": "Format selection as blockquote",
 		"tab.format.label": "Format",
 		"tab.insert.label": "Insert",
-		"tab.abbr.label": "Abbreviation",
+		"tab.meta.label": "View",
 		"tab.img.label": "Image",
-		"tab.link.label": "Link",
-		"tab.cite.label": "Cite",
-		"tab.list.label": "List",
 		"tab.table.label": "Table",
-		"tab.col.label": "Table Column",
-		"tab.row.label": "Table Row",
-		"tab.cell.label": "Table Cell",
 		"tab.wai-lang.label": "Language annotation"
 	},
 		"ca": true,

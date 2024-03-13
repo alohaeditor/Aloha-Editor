@@ -32,6 +32,7 @@ define([
 	'i18n!aloha/nls/i18n',
 	'block/blockmanager',
 	'ui/ui',
+	'ui/icons',
 	'ui/button',
 	'ui/port-helper-attribute-field',
 	'videoblock/block',
@@ -44,6 +45,7 @@ define([
 	i18nCore,
 	BlockManager,
 	Ui,
+	Icons,
 	Button,
 	AttributeField,
 	VideoBlock,
@@ -102,7 +104,7 @@ define([
 
 			var removeVideoButton = Ui.adopt("remove-video", Button, {
 				tooltip: i18n.t("button.removevideo.tooltip"),
-				icon: "aloha-icon aloha-icon-unlink",
+				icon: Icons.VIDEO_DELETE,
 				click: removeVideoBlock
 			});
 		},

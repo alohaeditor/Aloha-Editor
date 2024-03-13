@@ -1,21 +1,19 @@
 define([
-	'aloha/core',
 	'jquery',
 	'ui/container',
-	'ui/component',
+	'ui/utils',
 	'PubSub',
 	'jqueryui'
 ], function (
-	Aloha,
 	$,
 	Container,
-	Component,
+	Utils,
 	PubSub
 ) {
 	'use strict';
 
 	var idCounter = 0;
-	var slottedComponents = {};
+	var GROUP_LINE_BREAK = '\n';
 
 	/**
 	 * Defines a Container object that represents a collection of related
@@ -43,9 +41,15 @@ define([
 	 */
 	var Tab = Container.extend({
 
-		_elemBySlot: null,
-		_groupBySlot: null,
-		_groupByComponent: null,
+		_elemBySlot: {},
+		_groupBySlot: {},
+		_groupByComponent: {},
+		_scopeFnBySlot: {},
+		_slotInScope: {},
+		_slotsList: [],
+	
+		_componentBySlot: {},
+		_scopeChangeSubId: null,
 
 		/**
 		 * All that this constructor does is save the components array into a
@@ -56,17 +60,13 @@ define([
 		 * @constructor
 		 */
 		_constructor: function (context, settings, components) {
-			var thisTab = this,
-				i, j,
-				elem,
-				groupedComponents,
-				group,
-				groupProps,
-				componentName;
-
 			this._elemBySlot = {};
 			this._groupBySlot = {};
 			this._groupByComponent = {};
+			this._scopeFnBySlot = {};
+			this._slotInScope = {};
+			this._componentBySlot = {};
+
 			this._slotsList = [];
 			this._super(context, settings);
 
@@ -74,7 +74,7 @@ define([
 			this.list = this.container.data('list');
 			this.panels = this.container.data('panels');
 			this.id = 'tab-ui-container-' + (++idCounter);
-			this.panel = $('<div>', {id : this.id, 'unselectable': 'on'});
+			this.panel = $('<div>', { id: this.id, 'unselectable': 'on' });
 			this.handle = $('<li><a href="' + location.href.replace(/#.*$/, '') + '#' + this.id + '">' +
 				settings.label + '</a></li>');
 
@@ -82,40 +82,9 @@ define([
 			// to handle the click and change the edit/preview mode.
 			this.handle.find('a').attr('role', 'presentation');
 
-			for (i = 0; i < components.length; i++) {
-				if (typeof components[i] === 'string') {
-					if (1 === components[i].length && components[i].charCodeAt(0) === 10) {
-						this.panel.append('<div>', {'unselectable': 'on'});
-					} else {
-						elem = $('<span>', {'unselectable': 'on'});
-						this._elemBySlot[components[i]] = elem;
-						this.panel.append(elem);
-					}
-				} else {
-					// Hide the group until the first button is adopted into it.
-					group = $('<div>', {
-						'class': 'aloha-ui-component-group aloha-ui-hidden',
-						'unselectable': 'on'
-					}).appendTo(this.panel);
-					groupProps = {element: group, visibleCounter: 0};
-					groupedComponents = components[i];
-					for (j = 0; j < groupedComponents.length; j++) {
-						this._groupBySlot[groupedComponents[j]] = groupProps;
-						if (groupedComponents[j] &&
-							1 === groupedComponents[j].length &&
-						    groupedComponents[j].charCodeAt(0) === 10) {
-							group.append($('<div>', {'unselectable': 'on'}));
-						} else {
-							componentName = groupedComponents[j];
-							elem = $('<span>', {'unselectable': 'on'});
-							this._elemBySlot[groupedComponents[j]] = elem;
-							group.append(elem);
-						}
-					}
-				}
-			}
+			this._setupComponents(components);
 
-			this.panel.append($('<div>', {'class': 'aloha-ui-clear', 'unselectable': 'on'}));
+			this.panel.append($('<div>', { 'class': 'aloha-ui-clear', 'unselectable': 'on' }));
 			this.handle.appendTo(this.list);
 			this.panel.appendTo(this.panels);
 			this.container.tabs('refresh');
@@ -123,15 +92,115 @@ define([
 			var alohaTabs = settings.container.data('aloha-tabs');
 			this.index = alohaTabs.length;
 			alohaTabs.push(this);
+
+			var _this = this;
+
+			function updateInstance() {
+				Object.keys(_this._scopeFnBySlot).forEach(function(slot) {
+					if (!_this._componentBySlot[slot] || !_this._elemBySlot[slot]) {
+						return;
+					}
+					var $elem = $(_this._elemBySlot[slot]);
+					_this._slotInScope[slot] = _this._scopeFnBySlot[slot]();
+	
+					if (_this._slotInScope[slot]) {
+						$elem.removeClass('out-of-scope');
+					} else {
+						$elem.addClass('out-of-scope');
+					}
+				});
+	
+				if (_this.visible && !_this.hasVisibleComponents()) {
+					_this.hide();
+				}
+			}
+
+			this._scopeChangeSubId = PubSub.sub('aloha.ui.scope.change', function() {
+				updateInstance();
+			});
+
+			if (this.list.children().length < 1 || !this.hasVisibleComponents()) {
+				this.hide();
+			} else {
+				this.show();
+			}
+		},
+
+		_setupComponents: function (componentGroups) {
+			var _this = this;
+
+			// Ignore invalid/empty groups
+			if (!Array.isArray(componentGroups) || componentGroups.length === 0) {
+				return;
+			}
+
+			// First, normalize the layout, as it might be defined as a 1 dimensional array instead of 2
+			// i.E. : { components: ['foo', 'bar'] } -> { components: [ ['foo', 'bar'] ]}
+			if (
+				!Array.isArray(componentGroups[0])
+				&& componentGroups[0] != null
+				&& ((typeof componentGroups[0] === 'string') || (typeof componentGroups[0] === 'object'))
+			) {
+				componentGroups = [componentGroups];
+			}
+
+			componentGroups.forEach(function (components) {
+				// Hide the group until the first button is adopted into it.
+				var $groupContainer = $('<div>', {
+					'class': 'aloha-ui-component-group aloha-ui-hidden',
+					'unselectable': 'on'
+				}).appendTo(_this.panel);
+				var groupProps = { element: $groupContainer, visibleCounter: 0 };
+
+				components.forEach(function (component) {
+					if (typeof component === 'string') {
+						component = {
+							slot: component,
+						};
+					}
+
+					// Ignore invalid entries
+					if (typeof component !== 'object' || component == null) {
+						return;
+					}
+
+					// If it's a line-break inside of a group, then insert it as such and end here
+					if (component.slot === GROUP_LINE_BREAK) {
+						_this.panel.append('<div>', {
+							class: 'aloha-ui-group-break',
+							unselectable: 'on'
+						});
+						return;
+					}
+
+					// Placeholder/Container where the actual component is getting mounted into
+					// once it's valid
+					var $container = $('<span>', {
+						class: 'aloha-ui-component-slot',
+						attr: {
+							'data-slot': component.slot,
+						},
+						unselectable: 'on',
+					});
+					$groupContainer.append($container);
+
+					// Register the slot and component to this tabs instance
+					_this._groupBySlot[component.slot] = groupProps;
+					_this._elemBySlot[component.slot] = $container;
+					_this._scopeFnBySlot[component.slot] = Utils.normalizeScopeToFunction(component.scope);
+					_this._slotInScope[component.slot] = _this._scopeFnBySlot[component.slot]();
+				});
+			});
 		},
 
 		adoptInto: function (slot, component) {
 			var elem = this._elemBySlot[slot],
-			    group;
+				group;
 			if (!elem) {
 				return false;
 			}
-			slottedComponents[slot] = component;
+			this._componentBySlot[slot] = component;
+
 			component.adoptParent(this);
 			elem.append(component.element);
 			group = this._groupBySlot[slot];
@@ -145,7 +214,37 @@ define([
 					group.visibleCounter += 1;
 				}
 			}
+
+			// If it isn't visible, check if we can make it visible now
+			if (!this.visible) {
+				this.show();
+			}
+
 			return true;
+		},
+
+		unadopt: function(slot) {
+			var comp = this._componentBySlot[slot];
+			var group = this._groupBySlot[slot];
+			if (!comp) {
+				return;
+			}
+
+			delete this._componentBySlot[slot];
+			delete this._elemBySlot[slot];
+			delete this._scopeFnBySlot[slot];
+			delete this._slotInScope[slot];
+
+			var idx = this._slotsList.indexOf(slot);
+			if (idx > -1) {
+				this._slotsList.splice(idx, 1);
+			}
+
+			if (group) {
+				delete this._groupBySlot[slot];
+				delete this._groupByComponent[comp.id];
+				group.visibleCounter -= 1;
+			}
 		},
 
 		foreground: function () {
@@ -157,11 +256,10 @@ define([
 		},
 
 		hasVisibleComponents: function () {
-			var siblings = this._elemBySlot;
-			var slot;
-			for (slot in siblings) {
-				if (siblings.hasOwnProperty(slot) && slottedComponents[slot]) {
-					if (slottedComponents[slot].visible) {
+			var slots = Object.keys(this._elemBySlot);
+			for (var i = 0; i < slots.length; i++) {
+				if (this._componentBySlot[slots[i]]) {
+					if (this._componentBySlot[slots[i]].visible && this._slotInScope[slots[i]]) {
 						return true;
 					}
 				}
@@ -257,7 +355,16 @@ define([
 				this.container.tabs({ collapsible: true, active: false });
 				this.container.hide();
 			}
-		}
+		},
+
+		destroy: function() {
+			this._super();
+			if (this._scopeChangeSubId) {
+				PubSub.unsub(this._scopeChangeSubId);
+				this._scopeChangeSubId = null;
+			}
+			this.panel.remove();
+		},
 
 	});
 
@@ -272,9 +379,9 @@ define([
 		 *                                populated with tab containers.
 		 */
 		createContainer: function () {
-			var $container = $('<div>', {'unselectable': 'on'});
-			var $list = $('<ul>', {'unselectable': 'on'}).appendTo($container);
-			var $panels = $('<div>', {'unselectable': 'on'}).appendTo($container);
+			var $container = $('<div>', { 'unselectable': 'on' });
+			var $list = $('<ul>', { 'unselectable': 'on' }).appendTo($container);
+			var $panels = $('<div>', { 'unselectable': 'on' }).appendTo($container);
 
 			$container
 				.data('list', $list)
@@ -284,7 +391,7 @@ define([
 					select: function (event, ui) {
 						var tabs = $container.data('aloha-tabs');
 						$container.data('aloha-active-container', tabs[ui.index]);
-						PubSub.pub('aloha.ui.container.selected', {data: tabs[ui.index]});
+						PubSub.pub('aloha.ui.container.selected', { data: tabs[ui.index] });
 					}
 				});
 

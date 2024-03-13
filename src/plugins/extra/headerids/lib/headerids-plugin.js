@@ -107,7 +107,9 @@ define([
 			PubSub.sub('aloha.editable.activated', setHeadingIds);
 			PubSub.sub('aloha.editable.deactivated', setHeadingIds);
 			Aloha.bind('aloha-plugins-loaded', function () {
-				plugin.initSidebar(Aloha.Sidebar.right);
+				if (Aloha.Sidebar != null && !Aloha.Sidebar.disabled) {
+					plugin.initSidebar(Aloha.Sidebar.right);
+				}
 			});
 		},
 
@@ -192,6 +194,8 @@ define([
 		initSidebar: function(sidebar) {
 			var thisPlugin = this;
 			thisPlugin.sidebar = sidebar;
+
+
 			sidebar.addPanel({
 				id: nsClass('sidebar-panel'),
 				title: i18n.t('internal_hyperlink'),

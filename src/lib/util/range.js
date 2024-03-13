@@ -849,8 +849,8 @@ define([
 		 * Example for finding an anchor tag at the start of the range up to the active editable object:<br/>
 		 * <pre>
 		 * range.findMarkup(
-		 *   function() {
-		 *     return this.nodeName.toLowerCase() == 'a';
+		 *   function(node) {
+		 *     return node.nodeName.toLowerCase() == 'a';
 		 *   },
 		 *   jQuery(Aloha.activeEditable.obj)
 		 * );
@@ -872,7 +872,7 @@ define([
 			}
 			parents = selfAndParentsUntil(container, limit);
 			for (i = 0, len = parents.length; i < len; i++) {
-				if (comparator.apply(parents[i])) {
+				if (comparator.apply(parents[i], [parents[i]])) {
 					return parents[i];
 				}
 			}

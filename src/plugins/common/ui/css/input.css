@@ -1,0 +1,26 @@
+.aloha-ui .input-container {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	width: 100%;
+	padding: 0 4px;
+  	box-sizing: border-box;
+	margin: 8px 0;
+}
+
+.aloha-ui .input-container .input-label {
+	color: #000;
+	font-size: 14px;
+}
+
+.aloha-ui .input-container .input-label:not(:empty) {
+	margin-bottom: 2px;
+}
+
+.aloha-ui .input-container .input-element {
+	margin: 0;
+	width: 100%;
+	box-sizing: border-box;
+	font-size: 16px;
+	padding: 4px;
+}

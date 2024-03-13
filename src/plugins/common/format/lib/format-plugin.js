@@ -1,8 +1,17 @@
+/**
+ * @typedef {object} FormattingOption
+ * @property {string=} name (Component/Slot) Name of the element
+ * @property {string} icon Icon to use for the Button/Select entry
+ * @property {string} label The display name/label for the user
+ * @property {boolean} typography If this is a typography format (i.E. paragraph, header, ...)
+ * @property {boolean} header If this is a header typography (h1-h6)
+ */
+
 /* format-plugin.js is part of the Aloha Editor project http://aloha-editor.org
  *
- * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
  * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://aloha-editor.org/contribution.php 
+ * Contributors http://aloha-editor.org/contribution.php
  * License http://aloha-editor.org/license.php
  */
 define('format/format-plugin', [
@@ -18,11 +27,12 @@ define('format/format-plugin', [
 	'util/html',
 	'util/dom',
 	'util/browser',
-	'util/maps',
 	'util/strings',
 	'ui/ui',
+	'ui/button',
 	'ui/toggleButton',
-	'ui/port-helper-multi-split',
+	'ui/icons',
+	'ui/contextButton',
 	'i18n!format/nls/i18n'
 ], function (
 	jQuery,
@@ -37,64 +47,18 @@ define('format/format-plugin', [
 	Html,
 	Dom,
 	Browser,
-	Maps,
 	Strings,
 	Ui,
+	Button,
 	ToggleButton,
-	MultiSplitButton,
+	Icons,
+	ContextButton,
 	i18n
 ) {
 	'use strict';
 
 	var $ = jQuery;
 	var pluginNamespace = 'aloha-format';
-	var commandsByElement = {
-		'b': 'bold',
-		'strong': 'bold',
-		'i': 'italic',
-		'em': 'italic',
-		'del': 'strikethrough',
-		'sub': 'subscript',
-		'sup': 'superscript',
-		'u': 'underline',
-		's': 'strikethrough'
-	};
-	var componentNameByElement = {
-		'strong': 'strong',
-		'em': 'emphasis',
-		's': 'strikethrough2'
-	};
-	var textLevelSemantics = {
-		'u': true,
-		'em': true,
-		'strong': true,
-		'b': true,
-		'i': true,
-		'cite': true,
-		'q': true,
-		'code': true,
-		'abbr': true,
-		'del': true,
-		's': true,
-		'sub': true,
-		'sup': true
-	};
-	var blockLevelSemantics = {
-		'p': true,
-		'h1': true,
-		'h2': true,
-		'h3': true,
-		'h4': true,
-		'h5': true,
-		'h6': true,
-		'pre': true
-	};
-	var interchangeableNodeNames = {
-		"B": ["STRONG", "B"],
-		"I": ["EM", "I"],
-		"STRONG": ["STRONG", "B"],
-		"EM": ["EM", "I"]
-	};
 
 	/**
 	 * Checks if the selection spans a whole node (HTML element)
@@ -103,9 +67,9 @@ define('format/format-plugin', [
 	 */
 	function isEntireNodeInRange(range) {
 		var sc = range.startContainer;
-		var	so = range.startOffset;
-		var	ec = range.endContainer;
-		var	eo = range.endOffset;
+		var so = range.startOffset;
+		var ec = range.endContainer;
+		var eo = range.endOffset;
 		return (sc === ec && so === 0 && eo === ec.length);
 	}
 
@@ -158,7 +122,7 @@ define('format/format-plugin', [
 	 * @param DOM node
 	 * @return {boolean}
 	 */
-	function isListElement(node){
+	function isListElement(node) {
 		return LIST_ELEMENT[node.nodeName];
 	}
 
@@ -167,8 +131,8 @@ define('format/format-plugin', [
 	 * @param string markup
 	 * @returns {boolean}
 	 */
-	function isHeading(markup){
-		return jQuery.inArray(markup,['h1', 'h2', 'h3', 'h4', 'h5', 'h6']) >= 0;
+	function isHeading(markup) {
+		return jQuery.inArray(markup, this.headerNodeNames) >= 0;
 	}
 
 	/**
@@ -176,7 +140,7 @@ define('format/format-plugin', [
 	 * @param Range range
 	 * @return {boolean}
 	 */
-	function spansMultipleLists(range){
+	function spansMultipleLists(range) {
 		return range.startContainer !== range.endContainer;
 	}
 
@@ -186,12 +150,12 @@ define('format/format-plugin', [
 	 * @param Range range
 	 * @return void
 	 */
-	function unformatList(range){
+	function unformatList(range) {
 		expandRange(range);
 
 		var cac = range.commonAncestorContainer;
 
-		if (!isListElement(cac)){
+		if (!isListElement(cac)) {
 			return;
 		}
 
@@ -234,16 +198,14 @@ define('format/format-plugin', [
 			}
 		}
 
-
 		// unwrap moved list elements
-		jQuery('._moved').each(function() {
+		jQuery('._moved').each(function () {
 			var $p = jQuery('<p>');
 			var $this = jQuery(this);
 
 			$this.after($p);
 			$this.contents().unwrap().appendTo($p);
 		});
-
 
 		// If we are at the first list element, get rid of original (now empty) list
 		if (prevNodes.length === 0) {
@@ -253,98 +215,49 @@ define('format/format-plugin', [
 
 	function formatInsideTableWorkaround(button) {
 		var selectedCells = jQuery('.aloha-cell-selected');
-		if (selectedCells.length > 0) {
-			var cellMarkupCounter = 0;
-			selectedCells.each(function () {
-				var cellContent = jQuery(this).find('div'),
-				cellMarkup = cellContent.find(button);
-				if (cellMarkup.length > 0) {
-					// unwrap all found markup text
-					// <td><b>text</b> foo <b>bar</b></td>
-					// and wrap the whole contents of the <td> into <b> tags
-					// <td><b>text foo bar</b></td>
-					cellMarkup.contents().unwrap();
-					cellMarkupCounter++;
-				}
-				cellContent.contents().wrap('<'+button+'></'+button+'>');
-			});
-
-			// remove all markup if all cells have markup
-			if (cellMarkupCounter === selectedCells.length) {
-				selectedCells.find(button).contents().unwrap();
-			}
-			return true;
+		if (selectedCells.length < 1) {
+			return false;
 		}
-		return false;
+
+		var cellMarkupCounter = 0;
+		selectedCells.each(function () {
+			var cellContent = jQuery(this).find('div'),
+				cellMarkup = cellContent.find(button);
+			if (cellMarkup.length > 0) {
+				// unwrap all found markup text
+				// <td><b>text</b> foo <b>bar</b></td>
+				// and wrap the whole contents of the <td> into <b> tags
+				// <td><b>text foo bar</b></td>
+				cellMarkup.contents().unwrap();
+				cellMarkupCounter++;
+			}
+			cellContent.contents().wrap('<' + button + '></' + button + '>');
+		});
+
+		// remove all markup if all cells have markup
+		if (cellMarkupCounter === selectedCells.length) {
+			selectedCells.find(button).contents().unwrap();
+		}
+
+		return true;
 	}
 
 	function textLevelButtonClickHandler(formatPlugin, button) {
 		if (formatInsideTableWorkaround(button)) {
 			return false;
 		}
-		formatPlugin.addMarkup( button ); 
+		formatPlugin.addMarkup(button);
 		return false;
 	}
 
-	function blockLevelButtonClickHandler(formatPlugin, button) {
-		if (formatInsideTableWorkaround(button)) {
-			return false;
-		}
-
-		formatPlugin.changeMarkup( button );
-
-		// setting the focus is needed for mozilla to have a working rangeObject.select()
-		if (Aloha.activeEditable && Aloha.browser.mozilla && document.activeElement !== Aloha.activeEditable.obj[0]) {
-			Aloha.activeEditable.obj.focus();
-		}
-		
-		// triggered for numerated-headers plugin
-		if (Aloha.activeEditable) {
-			Aloha.trigger( 'aloha-format-block' );
-			Aloha.activeEditable.smartContentChange({type: 'block-change'});
-		}
-	}
-
-	function makeTextLevelButton(formatPlugin, button) {
-		var command = commandsByElement[button];
-		var componentName = command;
-		if (componentNameByElement.hasOwnProperty(button)) {
-			componentName = componentNameByElement[button];
-		}
-		var component = Ui.adopt(componentName, ToggleButton, {
-			tooltip : i18n.t('button.' + button + '.tooltip'),
-			icon: 'aloha-icon aloha-icon-' + componentName,
-			scope: 'Aloha.continuoustext',
-			click: function () {
-				return textLevelButtonClickHandler(formatPlugin, button); 
-			}
-		});
-		return component;
-	}
-
-	function makeBlockLevelButton(formatPlugin, button) {
-		return {
-			name: button,
-			tooltip: i18n.t('button.' + button + '.tooltip'),
-			iconClass: 'aloha-icon ' + i18n.t('aloha-large-icon-' + button),
-			markup: jQuery('<' + button + '>'),
-			click: function () { 
-				return blockLevelButtonClickHandler(formatPlugin, button); 
-			}
-		};
-	}
-
-	function makeRemoveFormatButton(formatPlugin, button) {
-		return {
-			name: button,
-			text: i18n.t('button.' + button + '.text'),
-			tooltip: i18n.t('button.' + button + '.tooltip'),
-			wide: true,
-			cls: 'aloha-ui-multisplit-fullwidth',
+	function makeRemoveFormatButton(formatPlugin) {
+		return Ui.adopt(REMOVE_FORMAT_ID, Button, {
+			tooltip: i18n.t('button.removeFormat.tooltip'),
+			icon: Icons.CLEAR,
 			click: function () {
 				formatPlugin.removeFormat();
 			}
-		};
+		});
 	}
 
 	/**
@@ -372,67 +285,69 @@ define('format/format-plugin', [
 		// The warning class should only be used with header tags, but the
 		// insertparagraph command for example, copies all attributes, to
 		// the new element, so the plugin has to remove them again.
-		parent.find(":not(h1,h2,h3,h4,h5,h6)").each(function() {
+		parent.find(":not(h1,h2,h3,h4,h5,h6)").each(function () {
 			$(this).removeClass("aloha-heading-hierarchy-violated");
 		});
 
 		//set startheading to heading with smallest number available in the config
-		for (var i = 0; i < config.length; i++){
+		for (var i = 0; i < config.length; i++) {
 			if (isHeading(config[i])) {
-				if (typeof startHeading !== 'undefined') {
-					if (parseInt(config[i].charAt(1),10) < startHeading) {
-						startHeading = parseInt(config[i].charAt(1),10);
+				if (startHeading != null) {
+					if (parseInt(config[i].charAt(1), 10) < startHeading) {
+						startHeading = parseInt(config[i].charAt(1), 10);
 					}
 				} else {
 					//first heading found in config
-					startHeading = parseInt(config[i].charAt(1),10);
+					startHeading = parseInt(config[i].charAt(1), 10);
 				}
 			}
 		}
 
 		//check the heading hierarchy of every heading
-		if (typeof startHeading !== 'undefined') {
-			//this find() returns all headings in tree order
-			parent.find("h1,h2,h3,h4,h5,h6").each(function (){
-				currentHeading = parseInt(this.nodeName.charAt(1),10);
-				if (typeof lastCorrectHeading !== 'undefined') {
-					//the current heading hierarchy must be lower than the startHeading hierarchy
-					if (currentHeading < startHeading) {
+		if (startHeading == null) {
+			return;
+		}
+
+		//this find() returns all headings in tree order
+		parent.find("h1,h2,h3,h4,h5,h6").each(function () {
+			currentHeading = parseInt(this.nodeName.charAt(1), 10);
+			if (typeof lastCorrectHeading !== 'undefined') {
+				//the current heading hierarchy must be lower than the startHeading hierarchy
+				if (currentHeading < startHeading) {
+					$(this).addClass("aloha-heading-hierarchy-violated");
+				} else {
+					//heading hierarchy is violated if a heading is more
+					//than one hierarchy lower than the last correct heading
+					if (currentHeading > (lastCorrectHeading + 1)) {
 						$(this).addClass("aloha-heading-hierarchy-violated");
 					} else {
-						//heading hierarchy is violated if a heading is more
-						//than one hierarchy lower than the last correct heading
-						if (currentHeading > (lastCorrectHeading+1)) {
-							$(this).addClass("aloha-heading-hierarchy-violated");
-						} else {
-							//only set the last heading if the hierarchy is not violated
-							lastCorrectHeading = currentHeading;
-							$(this).removeClass("aloha-heading-hierarchy-violated");
-						}
-					}
-				} else {
-					//first heading! see if it starts with correct heading
-					if (currentHeading === startHeading) {
+						//only set the last heading if the hierarchy is not violated
 						lastCorrectHeading = currentHeading;
 						$(this).removeClass("aloha-heading-hierarchy-violated");
-					} else {
-						$(this).addClass("aloha-heading-hierarchy-violated");
 					}
 				}
-			});
-		}
+			} else {
+				//first heading! see if it starts with correct heading
+				if (currentHeading === startHeading) {
+					lastCorrectHeading = currentHeading;
+					$(this).removeClass("aloha-heading-hierarchy-violated");
+				} else {
+					$(this).addClass("aloha-heading-hierarchy-violated");
+				}
+			}
+		});
 	}
 
-	function changeMarkup(button) {
-		Selection.changeMarkupOnSelection(jQuery('<' + button + '>'));
-		if (Strings.parseBoolean(this.settings.checkHeadingHierarchy)) {
-			checkHeadingHierarchy(this.formatOptions);
+	function changeMarkup(plugin, nodeType) {
+		Selection.changeMarkupOnSelection(jQuery('<' + nodeType + '>'));
+		if (Strings.parseBoolean(plugin.settings.checkHeadingHierarchy)) {
+			checkHeadingHierarchy(plugin.formatOptions);
 		}
 	}
 
 	function updateUiAfterMutation(formatPlugin, rangeObject) {
 		if (Aloha.activeEditable) {
-			Aloha.activeEditable.smartContentChange({type: 'block-change'});
+			Aloha.activeEditable.smartContentChange({ type: 'block-change' });
 		}
 		// select the modified range
 		rangeObject.select();
@@ -454,19 +369,23 @@ define('format/format-plugin', [
 		return config ? $.inArray(tagname, config) > -1 : false;
 	}
 
-	function addMarkup(button) {
+	function addMarkup(nodeType) {
 		var formatPlugin = this,
-			markup = jQuery('<'+button+'>'),
+			markup = jQuery('<' + nodeType + '>'),
 			rangeObject = Selection.rangeObject;
 
-		if ( typeof button === "undefined" || button == "" ) {
+		if (nodeType == null || !nodeType || Aloha.activeEditable == null || Aloha.activeEditable.obj == null) {
 			return;
 		}
 
 		// check whether the markup is found in the range (at the start of the range)
-		var nodeNames = interchangeableNodeNames[markup[0].nodeName] || [markup[0].nodeName];
-		var foundMarkup = rangeObject.findMarkup(function() {
-			return -1 !== Arrays.indexOf(nodeNames, this.nodeName);
+		var nodeNames = [markup[0].nodeName];
+		if (formatPlugin.conversionNames[markup[0].nodeName]) {
+			nodeNames.push(formatPlugin.conversionNames[markup[0].nodeName]);
+		}
+
+		var foundMarkup = rangeObject.findMarkup(function (nodeElement) {
+			return -1 !== Arrays.indexOf(nodeNames, nodeElement.nodeName);
 		}, Aloha.activeEditable.obj);
 
 		if (foundMarkup) {
@@ -478,6 +397,7 @@ define('format/format-plugin', [
 				// the range is not collapsed, so we remove the markup from the range
 				Dom.removeMarkup(rangeObject, jQuery(foundMarkup), Aloha.activeEditable.obj);
 			}
+			PubSub.pub('aloha.format.removed', { level: 'text', format: nodeType })
 			updateUiAfterMutation(formatPlugin, rangeObject);
 		} else {
 			// when the range is collapsed, extend it to a word
@@ -486,72 +406,97 @@ define('format/format-plugin', [
 				if (rangeObject.isCollapsed()) {
 					if (StateOverride.enabled()) {
 						StateOverride.setWithRangeObject(
-							commandsByElement[button],
+							formatPlugin.commandsByElement[nodeType],
 							rangeObject,
 							function (command, rangeObject) {
 								format(formatPlugin, rangeObject, markup);
+								PubSub.pub('aloha.format.added', { level: 'text', format: nodeType })
 							}
 						);
 						return;
 					}
 				}
 			}
+			PubSub.pub('aloha.format.added', { level: 'text', format: nodeType })
 			format(formatPlugin, rangeObject, markup);
 		}
 	}
 
 	function onSelectionChanged(formatPlugin, rangeObject) {
 		var effectiveMarkup,
-		    foundMultiSplit, i, j, multiSplitItem;
+			i, j;
 
 		// Normal format buttons like bold
 		jQuery.each(formatPlugin.buttons, function (index, button) {
+			// If the button is not a toggle-button (or an instance of it), then skip it.
+			// Can't set the state of it or do anything.
+			if (typeof button.handle.setActive !== 'function') {
+				return;
+			}
+
 			var statusWasSet = false;
-			var nodeNames = interchangeableNodeNames[button.markup[0].nodeName] || [button.markup[0].nodeName];
+			var nodeNames = [button.markup[0].nodeName];
+			if (formatPlugin.conversionNames[button.markup[0].nodeName]) {
+				nodeNames.push(formatPlugin.conversionNames[markup[0].nodeName]);
+			}
+
 			for (i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 				effectiveMarkup = rangeObject.markupEffectiveAtStart[i];
 				for (j = 0; j < nodeNames.length; j++) {
 					if (Selection.standardTagNameComparator(effectiveMarkup, jQuery('<' + nodeNames[j] + '>'))) {
-						button.handle.setState(true);
+						button.handle.setActive(true);
 						statusWasSet = true;
+						break;
 					}
 				}
+				if (statusWasSet) {
+					break;
+				}
 			}
+
 			if (!statusWasSet) {
-				button.handle.setState(false);
+				button.handle.setActive(false);
 			}
 		});
 
-		// Multisplit buttons like headlines
-		if (formatPlugin.multiSplitItems.length > 0) {
-			foundMultiSplit = false;
+		// Typography/Blocklevel formats like h1
+		if (formatPlugin.typographyButton) {
+			var typographyElements = Object.entries(formatPlugin.config).filter(function(entry) {
+				return entry[1].typography;
+			}).map(function(entry) {
+				return entry[0];
+			});
+			var effectiveTypo = null;
+			var typoElement = null;
 
-			// iterate over the markup elements
-			for (i = 0; i < rangeObject.markupEffectiveAtStart.length && !foundMultiSplit; i++) {
+			for (i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
+				if (effectiveTypo) {
+					break;
+				}
 				effectiveMarkup = rangeObject.markupEffectiveAtStart[i];
-
-				for (j = 0; j < formatPlugin.multiSplitItems.length && !foundMultiSplit; j++) {
-					multiSplitItem = formatPlugin.multiSplitItems[j];
-
-					if (!multiSplitItem.markup) {
-						continue;
-					}
-
-					// now check whether one of the multiSplitItems fits to the effective markup
-					if (Selection.standardTagNameComparator(effectiveMarkup, multiSplitItem.markup)) {
-						formatPlugin.multiSplitButton.setActiveItem(multiSplitItem.name);
-						foundMultiSplit = true;
+				for (var j = 0; j < typographyElements.length; j++) {
+					var typo = typographyElements[j];
+					if (Selection.standardTagNameComparator(effectiveMarkup, jQuery('<' + typo + '>'))) {
+						effectiveTypo = typo;
+						typoElement = effectiveMarkup;
+						break;
 					}
 				}
 			}
 
-			if (!foundMultiSplit) {
-				formatPlugin.multiSplitButton.setActiveItem(null);
+			var settings = formatPlugin.config[effectiveTypo];
+			if (!settings) {
+				settings = Object.assign({}, DEFAULT_CONFIG[effectiveTypo], settings);
 			}
+			formatPlugin.activeTypography = effectiveTypo;
+			formatPlugin.typographyElement$ = typoElement ? $(typoElement) : null;
+			formatPlugin.typographyButton.setIcon(settings.icon || Icons.TYPOGRAPHY);
+			formatPlugin.typographyButton.setText(settings.label || i18n.t('button.typography.tooltip'));
 		}
 
 		handlePreformattedText(rangeObject.commonAncestorContainer);
 	}
+
 	/**
 	 * Handles preformatted text.
 	 * Adds empty paragraphs as landing stripes before and after a preformatted text.
@@ -572,17 +517,19 @@ define('format/format-plugin', [
 
 		removePlaceholders();
 
-		if ($element.is('pre')) {
-			//add placeholder before and after the preformatted text element
-			var nextSibling = $element[0].nextSibling;
-			var previousSibling = $element[0].previousSibling;
-			if (!previousSibling || !nextSibling) {
-				if (!previousSibling) {
-					$element.before(createLanding());
-				}
-				if (!nextSibling) {
-					$element.after(createLanding());
-				}
+		if (!$element.is('pre')) {
+			return;
+		}
+
+		//add placeholder before and after the preformatted text element
+		var nextSibling = $element[0].nextSibling;
+		var previousSibling = $element[0].previousSibling;
+		if (!previousSibling || !nextSibling) {
+			if (!previousSibling) {
+				$element.before(createLanding());
+			}
+			if (!nextSibling) {
+				$element.after(createLanding());
 			}
 		}
 	}
@@ -596,8 +543,8 @@ define('format/format-plugin', [
 	function createLanding() {
 		//IE: add a "word joiner" character instead of a <br>
 		var landing = Browser.ie
-		            ? '<p class="aloha-editing-p aloha-placeholder">&#x2060;</p>'
-		            : '<p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p>';
+			? '<p class="aloha-editing-p aloha-placeholder">&#x2060;</p>'
+			: '<p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p>';
 		return jQuery(landing);
 	}
 
@@ -606,47 +553,190 @@ define('format/format-plugin', [
 	 *
 	 * @private
 	 */
-	function removePlaceholders(){
+	function removePlaceholders() {
 		if (Aloha.activeEditable) {
 			Aloha.activeEditable.removePlaceholder(Aloha.activeEditable.obj);
 		}
 	}
 
+	/** @type {object.<string,FormattingOption>} */
+	var DEFAULT_CONFIG = {
+		// Text Level
+		'u': {
+			name: 'underline',
+			icon: Icons.UNDERLINE,
+			label: i18n.t('button.u.tooltip'),
+			typography: false,
+			header: false,
+		},
+		'b': {
+			name: 'bold',
+			icon: Icons.BOLD,
+			label: i18n.t('button.b.tooltip'),
+			typography: false,
+			header: false,
+		},
+		'i': {
+			name: 'italic',
+			icon: Icons.ITALIC,
+			label: i18n.t('button.i.tooltip'),
+			typography: false,
+			header: false,
+		},
+		'cite': {
+			icon: Icons.CITATION,
+			label: i18n.t('button.cite.tooltip'),
+			typography: false,
+			header: false,
+		},
+		'q': {
+			name: 'quoute',
+			icon: Icons.QUOTE,
+			label: i18n.t('button.q.tooltip'),
+			typography: false,
+			header: false,
+		},
+		'code': {
+			icon: Icons.CODE,
+			label: i18n.t('button.code.tooltip'),
+			typography: false,
+			header: false,
+		},
+		'abbr': {
+			icon: Icons.ABBREVIATION,
+			label: i18n.t('button.abbr.tooltip'),
+			typography: false,
+			header: false,
+		},
+		'del': {
+			icon: Icons.DELETED,
+			label: i18n.t('button.del.tooltip'),
+			typography: false,
+			header: false,
+		},
+		'ins': {
+			icon: Icons.INSERTED,
+			label: i18n.t('button.ins.tooltip'),
+			typography: false,
+			header: false,
+		},
+		's': {
+			name: 'strikethrough',
+			icon: Icons.STRIKE_THROUGH,
+			label: i18n.t('button.s.tooltip'),
+			typography: false,
+			header: false,
+		},
+		'sub': {
+			name: 'subscript',
+			icon: Icons.SUB_SCRIPT,
+			label: i18n.t('button.sub.tooltip'),
+			typography: false,
+			header: false,
+		},
+		'sup': {
+			name: 'superscript',
+			icon: Icons.SUPER_SCRIPT,
+			label: i18n.t('button.sup.tooltip'),
+			typography: false,
+			header: false,
+		},
+
+		// Typography / Block level
+		'p': {
+			icon: Icons.PARAGRAPH,
+			label: i18n.t('button.p.tooltip'),
+			typography: true,
+			header: false,
+		},
+		'pre': {
+			icon: Icons.PRE_FORMATTED,
+			label: i18n.t('button.pre.tooltip'),
+			typography: true,
+			header: false,
+		},
+		'h1': {
+			icon: Icons.HEADER_1,
+			label: i18n.t('button.h1.tooltip'),
+			typography: true,
+			header: true,
+		},
+		'h2': {
+			icon: Icons.HEADER_2,
+			label: i18n.t('button.h2.tooltip'),
+			typography: true,
+			header: true,
+		},
+		'h3': {
+			icon: Icons.HEADER_3,
+			label: i18n.t('button.h3.tooltip'),
+			typography: true,
+			header: true,
+		},
+		'h4': {
+			icon: Icons.HEADER_4,
+			label: i18n.t('button.h4.tooltip'),
+			typography: true,
+			header: true,
+		},
+		'h5': {
+			icon: Icons.HEADER_5,
+			label: i18n.t('button.h5.tooltip'),
+			typography: true,
+			header: true,
+		},
+		'h6': {
+			icon: Icons.HEADER_6,
+			label: i18n.t('button.h6.tooltip'),
+			typography: true,
+			header: true,
+		},
+	};
+
+	var REMOVE_FORMAT_ID = 'removeFormat';
+
 	/**
 	 * register the plugin with unique name
 	 */
 	return Plugin.create('format', {
-		/**
-		 * default button configuration
-		 */
-		config: [ 'b', 'i', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],
+		config: DEFAULT_CONFIG,
+
+		// These are old/depreacted nodes and will be converted to the modern equivalent
+		conversionNames: {
+			'strong': 'b',
+			'em': 'i',
+		},
+
+		headerNodeNames: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
 
 		/**
 		 * available options / buttons
 		 *
 		 * @todo new buttons needed for 'code'
 		 */
-		availableButtons: [ 'u', 'strong', 'del', 'em', 'b', 'i', 's', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],
+		availableButtons: Object.keys(DEFAULT_CONFIG).concat(REMOVE_FORMAT_ID),
 
 		/**
 		 * HotKeys used for special actions
 		 */
 		hotKey: {
-			formatBold:      'ctrl+b meta+b',
-			formatItalic:    'ctrl+i meta+i',
+			formatBold: 'ctrl+b meta+b',
+			formatItalic: 'ctrl+i meta+i',
 			formatUnderline: 'ctrl+u meta+u',
 			formatParagraph: 'alt+ctrl+0 alt+meta+0',
-			formatH1:        'alt+ctrl+1 alt+meta+1',
-			formatH2:        'alt+ctrl+2 alt+meta+2',
-			formatH3:        'alt+ctrl+3 alt+meta+3',
-			formatH4:        'alt+ctrl+4 alt+meta+4',
-			formatH5:        'alt+ctrl+5 alt+meta+5',
-			formatH6:        'alt+ctrl+6 alt+meta+6',
-			formatPre:       'ctrl+p meta+p',
-			formatDel:       'ctrl+d meta+d',
-			formatSub:       'alt+shift+s',
-			formatSup:       'ctrl+shift+s'
+			formatH1: 'alt+ctrl+1 alt+meta+1',
+			formatH2: 'alt+ctrl+2 alt+meta+2',
+			formatH3: 'alt+ctrl+3 alt+meta+3',
+			formatH4: 'alt+ctrl+4 alt+meta+4',
+			formatH5: 'alt+ctrl+5 alt+meta+5',
+			formatH6: 'alt+ctrl+6 alt+meta+6',
+			formatPre: 'ctrl+p meta+p',
+			formatDel: 'ctrl+d meta+d',
+			formatSub: 'alt+shift+s',
+			formatSup: 'ctrl+shift+s'
 		},
+
+		activeTypography: null,
 
 		/**
 		 * Initialize the plugin and set initialize flag on true
@@ -661,11 +751,6 @@ define('format/format-plugin', [
 			}
 
 			this.initButtons();
-
-			Aloha.bind('aloha-plugins-loaded', function () {
-				// @todo add config option for sidebar panel
-				me.initSidebar(Aloha.Sidebar.right);
-			});
 
 			var shouldCheckHeadingHierarchy = Strings.parseBoolean(this.settings.checkHeadingHierarchy);
 
@@ -712,41 +797,25 @@ define('format/format-plugin', [
 				};
 
 				var $editable = editable.obj;
-				$editable.on('keydown.aloha.format',  me.hotKey.formatBold,      createAdder('b'));
-				$editable.on('keydown.aloha.format',  me.hotKey.formatItalic,    createAdder('i'));
-				$editable.on('keydown.aloha.format',  me.hotKey.formatUnderline, createAdder('u'));
-				$editable.on('keydown.aloha.format',  me.hotKey.formatDel,       createAdder('del'));
-				$editable.on('keydown.aloha.format',  me.hotKey.formatSub,       createAdder('sub'));
-				$editable.on('keydown.aloha.format',  me.hotKey.formatSup,       createAdder('sup'));
-				$editable.on('keydown.aloha.format',  me.hotKey.formatParagraph, createChanger('p'));
-				$editable.on('keydown.aloha.format',  me.hotKey.formatH1,        createChanger('h1'));
-				$editable.on('keydown.aloha.format',  me.hotKey.formatH2,        createChanger('h2'));
-				$editable.on('keydown.aloha.format',  me.hotKey.formatH3,        createChanger('h3'));
-				$editable.on('keydown.aloha.format',  me.hotKey.formatH4,        createChanger('h4'));
-				$editable.on('keydown.aloha.format',  me.hotKey.formatH5,        createChanger('h5'));
-				$editable.on('keydown.aloha.format',  me.hotKey.formatH6,        createChanger('h6'));
-				$editable.on('keydown.aloha.format',  me.hotKey.formatPre,       createChanger('pre'));
+				$editable.on('keydown.aloha.format', me.hotKey.formatBold, createAdder('b'));
+				$editable.on('keydown.aloha.format', me.hotKey.formatItalic, createAdder('i'));
+				$editable.on('keydown.aloha.format', me.hotKey.formatUnderline, createAdder('u'));
+				$editable.on('keydown.aloha.format', me.hotKey.formatDel, createAdder('del'));
+				$editable.on('keydown.aloha.format', me.hotKey.formatSub, createAdder('sub'));
+				$editable.on('keydown.aloha.format', me.hotKey.formatSup, createAdder('sup'));
+				$editable.on('keydown.aloha.format', me.hotKey.formatParagraph, createChanger('p'));
+				$editable.on('keydown.aloha.format', me.hotKey.formatH1, createChanger('h1'));
+				$editable.on('keydown.aloha.format', me.hotKey.formatH2, createChanger('h2'));
+				$editable.on('keydown.aloha.format', me.hotKey.formatH3, createChanger('h3'));
+				$editable.on('keydown.aloha.format', me.hotKey.formatH4, createChanger('h4'));
+				$editable.on('keydown.aloha.format', me.hotKey.formatH5, createChanger('h5'));
+				$editable.on('keydown.aloha.format', me.hotKey.formatH6, createChanger('h6'));
+				$editable.on('keydown.aloha.format', me.hotKey.formatPre, createChanger('pre'));
 			});
 
 			PubSub.sub('aloha.editable.deactivated', function (message) {
 				message.editable.obj.unbind('keydown.aloha.format');
 			});
-
-			// check settings for locale de
-			if (Aloha.settings.locale === "de") {
-				var css = "/**/\n.aloha .ui-state-default .aloha-large-icon {background-position-y: -40px;}",
-					// to support < IE 8
-					head = document.head || document.getElementsByTagName('head')[0],
-					style = document.createElement('style');
-
-				style.type = 'text/css';
-				if (style.styleSheet) {
-					style.styleSheet.cssText = css;
-				} else {
-					style.appendChild(document.createTextNode(css));
-				}
-				head.appendChild(style);
-			}
 		},
 
 		/**
@@ -757,17 +826,17 @@ define('format/format-plugin', [
 		 */
 		applyButtonConfig: function ($editable) {
 			var config = this.getEditableConfig($editable),
-			    button, i, len;
+				button, i, len;
 
-			if ( typeof config === 'object' ) {
+			if (typeof config === 'object') {
 				var config_old = [];
-				jQuery.each(config, function(j, button) {
-					if ( !(typeof j === 'number' && typeof button === 'string') ) {
+				jQuery.each(config, function (j, button) {
+					if (!(typeof j === 'number' && typeof button === 'string')) {
 						config_old.push(j);
 					}
 				});
-				
-				if ( config_old.length > 0 ) {
+
+				if (config_old.length > 0) {
 					config = config_old;
 				}
 			}
@@ -776,7 +845,7 @@ define('format/format-plugin', [
 			var editable = $editable[0];
 
 			// now iterate all buttons and show/hide them according to the config
-			for ( button in this.buttons) {
+			for (button in this.buttons) {
 				if (this.buttons.hasOwnProperty(button)) {
 					if (!ContentRules.isAllowed(editable, button)) {
 						this.buttons[button].handle.hide();
@@ -785,22 +854,6 @@ define('format/format-plugin', [
 					} else {
 						this.buttons[button].handle.hide();
 					}
-				}
-			}
-
-			// and the same for multisplit items
-			len = this.multiSplitItems.length;
-			for (i = 0; i < len; i++) {
-				var name = this.multiSplitItems[i].name;
-
-				// Currently removeFormat is the only button, that would not
-				// insert tags, and can therefore ignore the content rules.
-				if (name != 'removeFormat' && !ContentRules.isAllowed(editable, name)) {
-					this.multiSplitButton.hideItem(name);
-				} else if (jQuery.inArray(name, config) !== -1) {
-					this.multiSplitButton.showItem(name);
-				} else {
-					this.multiSplitButton.hideItem(name);
 				}
 			}
 		},
@@ -814,114 +867,194 @@ define('format/format-plugin', [
 			var that = this;
 
 			this.buttons = {};
-			this.multiSplitItems = [];
 
-			$.each(this.availableButtons, function(j, button) {
-				var button_config = false;
+			// First create all the regular formatting buttons
+			Object.entries(this.config).forEach(function(entry) {
+				var nodeName = entry[0];
+				var settings = entry[1];
 
-				if (typeof j !== 'number' && typeof button !== 'string') {
-					button_config = button;
-					button = j;
-				}
-
-				if (textLevelSemantics[button]) {
-					that.buttons[button] = {
-						handle: makeTextLevelButton(that, button),
-						markup: jQuery('<'+button+'>', {'class': button_config || ''})
-					};
-				} else if (blockLevelSemantics[button]) {
-					that.multiSplitItems.push(makeBlockLevelButton(that, button));
-				} else if ('removeFormat' === button) {
-					that.multiSplitItems.push(makeRemoveFormatButton(that, button));
+				// Get default config if possible
+				if (settings == null || typeof settings !== 'object') {
+					settings = DEFAULT_CONFIG[nodeName];
 				} else {
-					Aloha.log('warn', that, 'Button "' + button + '" is not defined');
+					// Allow partial settings, but fill in default values
+					settings = Object.assign({}, DEFAULT_CONFIG, settings);
 				}
+
+				// If there's no settings, we have to ignore it
+				if (!settings) {
+					return;
+				}
+
+				// Ignore typography buttons for now
+				if (settings.typography) {
+					return;
+				}
+
+				that.buttons[nodeName] = {
+					handle: that.makeTextLevelButton(nodeName, settings),
+					markup: jQuery('<' + nodeName + '>'),
+				};
 			});
 
-			this.multiSplitButton = new MultiSplitButton({
-				name: 'formatBlock',
-				items: this.multiSplitItems,
-				hideIfEmpty: true,
-				scope: 'Aloha.continuoustext'
+			this.buttons[REMOVE_FORMAT_ID] = {
+				handle: makeRemoveFormatButton(this),
+				markup: null,
+			};
+
+			var latestOptions = [];
+
+			this.typographyButton = Ui.adopt('typographyMenu', ContextButton, {
+				icon: Icons.TYPOGRAPHY,
+				text: i18n.t('button.typography.tooltip'),
+				iconOnly: false,
+
+				context: function() {
+					var headerId = null;
+					if (that.typographyElement$) {
+						headerId = that.typographyElement$.attr('id');
+					}
+
+					latestOptions = Object.entries(that.config).map(function(entry) {
+						var nodeName = entry[0];
+						var settings = entry[1];
+
+						// Get default config if possible
+						if (settings == null || typeof settings !== 'object') {
+							// If it isn't enabled, ignore it
+							if (settings !== true) {
+								return null;
+							}
+
+							settings = DEFAULT_CONFIG[nodeName];
+						} else {
+							// Allow partial settings, but fill in default values
+							settings = Object.assign({}, DEFAULT_CONFIG, settings);
+						}
+
+						// If there's no settings, we have to ignore it
+						if (!settings) {
+							return null;
+						}
+
+						// Only check for typography buttons
+						if (!settings.typography) {
+							return null;
+						}
+
+						var out = {
+							id: nodeName,
+							label: settings.label,
+							icon: settings.icon,
+						};
+
+						if (settings.header) {
+							out.isMultiStep = true;
+							out.multiStepContext = {
+								type: 'input',
+								options: {
+									label: i18n.t('button.header_id.input'),
+								},
+								label: settings.label,
+								initialValue: headerId,
+							};
+						}
+
+						return out;
+					}).filter(function(option) {
+						return option != null;
+					});
+
+					return {
+						type: 'select-menu',
+						options: {
+							iconsOnly: false,
+							options: latestOptions,
+						},
+						initialValue: that.activeTypography,
+					};
+				},
+
+				contextResolve: function(result) {
+					var oldTypography = that.activeTypography;
+					that.activeTypography = result.id;
+					/** @type {FormattingOption|null} */
+					var resultSettings = that.config[result.id];
+					if (!resultSettings) {
+						resultSettings = DEFAULT_CONFIG[result.id];
+					}
+					
+					PubSub.pub('aloha.format.pre_change', {
+						level: 'block',
+						oldFormat: oldTypography,
+						newFormat: that.activeTypography,
+					});
+					
+					changeMarkup(that, that.activeTypography);
+
+					// Only if it's a header typography option and a selection is available
+					if (
+						resultSettings != null
+						&& resultSettings.typography
+						&& resultSettings.header
+						&& Selection.rangeObject != null
+						&& Array.isArray(Selection.rangeObject.markupEffectiveAtStart)
+						&& Selection.rangeObject.markupEffectiveAtStart.length > 0
+					) {
+						// Attempt to find the newly formatted header element
+						var found = Selection.rangeObject.markupEffectiveAtStart.find(function(elem) {
+							return elem.nodeName.toLowerCase() === that.activeTypography;
+						});
+						// Apply the id if found
+						if (found) {
+							$(found).attr('id', result.value);
+						}
+					}
+
+					PubSub.pub('aloha.format.changed', {
+						level: 'block',
+						oldFormat: oldTypography,
+						newFormat: that.activeTypography,
+					});
+				},
 			});
 
-			PubSub.sub('aloha.selection.context-change', function(message) {
+			PubSub.sub('aloha.selection.context-change', function (message) {
 				onSelectionChanged(that, message.range);
 			});
 		},
 
-		initSidebar: function ( sidebar ) {
-			var pl = this;
-			pl.sidebar = sidebar;
-			sidebar.addPanel( {
-
-				id       : pl.nsClass( 'sidebar-panel-class' ),
-				title    : i18n.t( 'floatingmenu.tab.format' ),
-				content  : '',
-				expanded : true,
-				activeOn : this.formatOptions || false,
-
-				onInit: function () {
-				},
-
-				onActivate: function ( effective ) {
-					var that = this;
-					that.effective = effective;
-					
-					if ( !effective[0] ) {
-						return;
-					}
-					that.format = effective[0].nodeName.toLowerCase();
-
-					var dom = jQuery('<div>').attr('class', pl.nsClass( 'target-container' ));
-					var fieldset = jQuery('<fieldset>');
-					fieldset.append(jQuery('<legend>' + that.format + ' ' + i18n.t( 'format.class.legend' )).append(jQuery('<select>')));
-					
-					dom.append(fieldset);
-					
-					var html = 
-						'<div class="' + pl.nsClass( 'target-container' ) + '"><fieldset><legend>' + i18n.t( 'format.class.legend' ) + '</legend><select name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '">' + 
-						'<option value="">' + i18n.t( 'format.class.none' ) + '</option>';
-
-					if ( pl.config[that.format] && pl.config[that.format]['class'] ) {
-						jQuery.each(pl.config[that.format]['class'], function(i ,v) {
-							html += '<option value="' + i + '" >' + v + '</option>';
-						});
-					}
-
-					html += '</select></fieldset></div>';
-
-					var content = this.setContent(html).content;
-
-					jQuery( pl.nsSel( 'framename' ) ).on( 'keyup', function () {
-						jQuery( that.effective ).attr( 'target', jQuery( this ).val().replace( '\"', '&quot;' ).replace( "'", "&#39;" ) );
-					} );
-
-					that.effective = effective;
-					jQuery( pl.nsSel( 'linkTitle' ) ).val( jQuery( that.effective ).attr( 'title' ) );
+		makeTextLevelButton: function(nodeType, settings) {
+			var _this = this;
+			var name = settings.name || nodeType;
+			var component = Ui.adopt(name, ToggleButton, {
+				tooltip: settings.label,
+				icon: settings.icon,
+				pure: true,
+				click: function () {
+					return textLevelButtonClickHandler(_this, nodeType);
 				}
+			});
 
-			} );
-
-			sidebar.show();
+			return component;
 		},
 
 		// duplicated code from link-plugin
 		//Creates string with this component's namepsace prefixed the each classname
 		nsClass: function () {
 			var stringBuilder = [], prefix = pluginNamespace;
-			jQuery.each( arguments, function () {
-				stringBuilder.push( this == '' ? prefix : prefix + '-' + this );
-			} );
+			jQuery.each(arguments, function () {
+				stringBuilder.push(this == '' ? prefix : prefix + '-' + this);
+			});
 			return jQuery.trim(stringBuilder.join(' '));
 		},
 
 		// duplicated code from link-plugin
 		nsSel: function () {
 			var stringBuilder = [], prefix = pluginNamespace;
-			jQuery.each( arguments, function () {
-				stringBuilder.push( '.' + ( this == '' ? prefix : prefix + '-' + this ) );
-			} );
+			jQuery.each(arguments, function () {
+				stringBuilder.push('.' + (this == '' ? prefix : prefix + '-' + this));
+			});
 			return jQuery.trim(stringBuilder.join(' '));
 		},
 
@@ -932,15 +1065,15 @@ define('format/format-plugin', [
 		 * Removes all formatting from the current selection.
 		 * And deconstructs lists via unformatList method.
 		 */
-		removeFormat: function() {
+		removeFormat: function () {
 			var formats = [
 				'u', 'strong', 'em', 'b', 'i', 'q', 'del', 's', 'code', 'sub', 'sup',
 				'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'quote', 'blockquote',
 				'address', 'small', 'cite', 'dfn',
 				'abbr', 'time', 'var', 'samp', 'kbd', 'mark', 'span', 'ins'
-				],
-			    rangeObject = Selection.rangeObject,
-			    i;
+			],
+				rangeObject = Selection.rangeObject,
+				i;
 
 			// formats to be removed by the removeFormat button may now be configured using Aloha.settings.plugins.format.removeFormats = ['b', 'strong', ...]
 			if (this.settings.removeFormats) {
@@ -952,13 +1085,16 @@ define('format/format-plugin', [
 				var limit = rangeEditingHost ? jQuery(rangeEditingHost) : Aloha.activeEditable.obj;
 
 				for (i = 0; i < formats.length; i++) {
-					var format = formats[i],
-						markup = jQuery('<'+format+'>');
+					var format = formats[i].toUpperCase();
 
 					// check whether the markup is found in the range (at the start of the range)
-					var nodeNames = interchangeableNodeNames[markup[0].nodeName] || [markup[0].nodeName];
-					var foundMarkup = rangeObject.findMarkup(function() {
-						return -1 !== Arrays.indexOf(nodeNames, this.nodeName);
+					var nodeNames = [format];
+					if (this.conversionNames[format]) {
+						nodeNames.push(this.conversionNames[format]);
+					}
+
+					var foundMarkup = rangeObject.findMarkup(function (nodeElement) {
+						return -1 !== Arrays.indexOf(nodeNames, nodeElement.nodeName);
 					}, limit);
 
 					if (foundMarkup) {
@@ -979,7 +1115,9 @@ define('format/format-plugin', [
 			}
 
 			updateUiAfterMutation(this, rangeObject);
-			Aloha.activeEditable.smartContentChange({type: 'block-change'});
+			if (Aloha.activeEditable) {
+				Aloha.activeEditable.smartContentChange({ type: 'block-change' });
+			}
 		},
 
 		/**

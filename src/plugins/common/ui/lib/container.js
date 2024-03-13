@@ -21,11 +21,11 @@
 define([
 	'jquery',
 	'util/class',
-	'ui/scopes'
+	'ui/utils'
 ], function (
 	$,
 	Class,
-	Scopes
+	Utils
 ) {
 	'use strict';
 
@@ -63,8 +63,6 @@ define([
 		}
 	}
 
-	var scopeFns = {};
-
 	var returnTrue = function () {
 		return true;
 	};
@@ -80,16 +78,11 @@ define([
 		case 'function':
 			return showOn;
 		case 'object':
-			if (showOn.scope) {
-				if (scopeFns[showOn.scope]) {
-					return scopeFns[showOn.scope];
-				}
-				return scopeFns[showOn.scope] = function () {
-					return Scopes.isActiveScope(showOn.scope);
-				};
-			} else {
+			if (!showOn.scope) {
 				throw "Invalid showOn configuration";
 			}
+
+			return Utils.normalizeScopeToFunction(showOn.scope);			
 		default:
 			return returnTrue;
 		}
@@ -102,6 +95,8 @@ define([
 	 * @base
 	 */
 	var Container = Class.extend({
+
+		_contextContainerKey: null,
 
 		/**
 		 * The containing (wrapper) element for this container.
@@ -117,12 +112,13 @@ define([
 		 * @constructor
 		 */
 		_constructor: function (context, settings) {
-			var showOn = normalizeShowOn(this, settings.showOn),
-			    key = getShowOnId(showOn),
-			    group = context.containers[key];
+			var showOn = normalizeShowOn(this, settings.showOn);
+			this._contextContainerKey = getShowOnId(showOn);
+			var group = context.containers[this._contextContainerKey];
 			this.context = context;
+
 			if (!group) {
-				group = context.containers[key] = {
+				group = context.containers[this._contextContainerKey] = {
 					shouldShow: showOn,
 					containers: []
 				};
@@ -169,12 +165,18 @@ define([
 		 * The container was foregrounded; this method must foreground all children
 		 * of the container.
 		 */
-		childForeground: function (childComponent) {}
+		childForeground: function (childComponent) {},
 
 		/**
 		 * @} End of "ingroup api".
 		 */
 
+		destroy: function() {
+			if (this._contextContainerKey) {
+				delete this.context.containers[this._contextContainerKey];
+				this._contextContainerKey = null;
+			}
+		},
 	});
 
 	// static fields

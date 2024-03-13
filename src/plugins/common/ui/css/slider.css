@@ -1,0 +1,76 @@
+.aloha-ui .aloha-slider .aloha-slider-label {
+	font-size: 14px;
+	padding: 0 5px 0 3px;
+	display: block;
+}
+
+.aloha-ui .aloha-slider .slider-body {
+	margin: 2px 0;
+	display: flex;
+	width: 100%;
+	flex-direction: column;
+	flex-wrap: wrap;
+}
+
+.aloha-ui .aloha-slider .slider-main {
+	flex: 1 1 auto;
+}
+
+.aloha-ui .aloha-slider .indicator-container {
+	display: none;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	padding: 0 5px 0 3px;
+}
+
+.aloha-ui .aloha-slider.with-indicators .indicator-container {
+	display: flex;
+}
+
+.aloha-ui .aloha-slider .slider-indicator {
+	font-size: 11px;
+	flex: 1 1 50%;
+}
+
+.aloha-ui .aloha-slider .slider-indicator.indicator-min {
+	text-align: left;
+}
+
+.aloha-ui .aloha-slider .slider-indicator.indicator-max {
+	text-align: right;
+}
+
+.aloha-ui .aloha-slider .slider-container {
+	padding: 0px 4px 6px 2px;
+}
+
+.aloha-ui .aloha-slider .slider-element.ui-slider {
+	position: relative;
+	box-sizing: border-box;
+	height: 12px;
+	margin-top: 5px;
+}
+
+.aloha-ui .aloha-slider .slider-element.ui-slider .ui-slider-range {
+	height: 100%;
+  	border: none;
+}
+
+.aloha-ui .aloha-slider .slider-element.ui-slider .ui-slider-handle {
+	width: 10px;
+	display: inline-block;
+	height: 16px;
+	position: absolute;
+	margin-top: -14px;
+	margin-left: -6px;
+}
+
+.aloha-ui .aloha-slider .spinner-container {
+	display: none;
+	padding-left: 2px;
+	flex: 1 1 auto;
+}
+
+.aloha-ui .aloha-slider.with-spinner .spinner-container {
+	display: block;
+}

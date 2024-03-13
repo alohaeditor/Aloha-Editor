@@ -24,8 +24,124 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define(['jquery', 'jqueryui'], function ($) {
+define([
+	'jquery',
+	'jqueryui',
+	'ui/scopes'
+], function (
+	$,
+	_, // Unused
+	Scopes
+) {
 	'use strict';
+
+	var colorCache = {};
+	var colorCanvas = document.createElement('canvas');
+	colorCanvas.width = colorCanvas.height = 1;
+	var colorCanvasCtx = colorCanvas.getContext('2d');
+
+	/** @see https://stackoverflow.com/questions/11068240/what-is-the-most-efficient-way-to-parse-a-css-color-in-javascript */
+	function colorToRGBA(inputColor) {
+		if (inputColor == null || typeof inputColor !== 'string') {
+			// If it's an array, we're gonna assume it's an already parsed color
+			return Array.isArray(inputColor) ? inputColor : null;
+		}
+		if (colorCache.hasOwnProperty(inputColor)) {
+			var cached = colorCache[inputColor];
+			return cached ? cached.slice() : null;
+		}
+
+		colorCanvasCtx.clearRect(0, 0, 1, 1);
+		// In order to detect invalid values,
+		// we can't rely on col being in the same format as what fillStyle is computed as,
+		// but we can ask it to implicitly compute a normalized value twice and compare.
+		colorCanvasCtx.fillStyle = '#000';
+		colorCanvasCtx.fillStyle = inputColor;
+		var computed = colorCanvasCtx.fillStyle;
+		colorCanvasCtx.fillStyle = '#fff';
+		colorCanvasCtx.fillStyle = inputColor;
+		if (computed !== colorCanvasCtx.fillStyle) {
+			// invalid color
+			colorCache[inputColor] = null;
+			return null;
+		}
+		colorCanvasCtx.fillRect(0, 0, 1, 1);
+
+		var outputColor = Array.from(colorCanvasCtx.getImageData(0, 0, 1, 1).data);
+		colorCache[inputColor] = outputColor;
+
+		return outputColor.slice();
+	}
+
+	function colorToHex(inputColor) {
+		var rgba;
+		if (Array.isArray(inputColor)) {
+			rgba = inputColor;
+		} else if (inputColor instanceof Uint8ClampedArray) {
+			rgba = Array.from(inputColor);
+		} else {
+			rgba = colorToRGBA(inputColor);
+			if (!rgba) {
+				return null;
+			}
+			rgba = Array.from(rgba);
+		}
+
+		return '#' + rgba.map(function (number) {
+			return number < 10 ? '0' + number.toString() : number.toString(16);
+		}).join('');
+	}
+
+	var scopeFns = {};
+
+	function normalizeScopeToFunction(scopes) {
+		if (typeof scopes === 'string') {
+			if (scopes.includes(',')) {
+				scopes = scopes.split(',').map(function (part) {
+					return part.trim();
+				});
+			} else {
+				scopes = [scopes];
+			}
+		} else if (!Array.isArray(scopes)) {
+			scopes = [];
+		}
+
+		scopes = scopes.filter(function (scope) {
+			return typeof scope === 'string' && scope.length > 0;
+		});
+
+		if (scopes.length === 0) {
+			return function () {
+				return true;
+			}
+		}
+
+		var functions = scopes.map(function (scope) {
+			if (scopeFns[scope]) {
+				return scopeFns[scope];
+			}
+			return scopeFns[scope] = function () {
+				return Scopes.isActiveScope(scope);
+			};
+		});
+
+		return function () {
+			return functions.some(function (fn) {
+				return fn();
+			});
+		}
+	}
+
+	function colorIsSame(one, two) {
+		if (!Array.isArray(one) || !Array.isArray(two)) {
+			return (one == null && two == null) || one === two;
+		}
+
+        return one.every(function(part, idx) {
+            return part === two[idx];
+        });
+    }
 
 	/**
 	 * Wraps an element such that a label is displayed alongside it.
@@ -45,8 +161,8 @@ define(['jquery', 'jqueryui'], function ($) {
 	 *       A new label element that wraps the given element.
 	 */
 	function wrapWithLabel(labelText, element) {
-		return $('<label>', {'class': 'aloha-ui-label'})
-			.append($('<span>', {'class': 'aloha-ui-label-text', 'text': labelText}))
+		return $('<label>', { 'class': 'aloha-ui-label' })
+			.append($('<span>', { 'class': 'aloha-ui-label-text', 'text': labelText }))
 			.append(element);
 	}
 
@@ -94,6 +210,11 @@ define(['jquery', 'jqueryui'], function ($) {
 	}
 
 	return {
+		normalizeScopeToFunction: normalizeScopeToFunction,
+		colorToRGBA: colorToRGBA,
+		colorToHex: colorToHex,
+		colorIsSame: colorIsSame,
+
 		wrapWithLabel: wrapWithLabel,
 		makeButton: makeButton,
 		makeButtonElement: makeButtonElement,

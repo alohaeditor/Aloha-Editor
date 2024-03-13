@@ -30,8 +30,11 @@ define([
 	 * @extends {Component}
 	 */
 	var Autocomplete = Component.extend({
+		type: 'autocomplete',
+
 		init: function () {
 			this._super();
+
 			var that = this;
 			this.element = jQuery("<input>")
 				.autocomplete({
@@ -53,7 +56,11 @@ define([
 					}
 				})
 				.on("autocompletechange", jQuery.proxy(function (event, ui) {
+					this.touch();
 					this.setValue(event.target.value, ui.item ? ui.item.obj : null);
+					if (typeof this.changeNotify === 'function') {
+						this.changeNotify(this.getValue());
+					}
 				}, this));
 		},
 

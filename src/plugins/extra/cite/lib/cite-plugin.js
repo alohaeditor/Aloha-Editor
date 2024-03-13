@@ -1,7 +1,7 @@
 /* cite-plugin.js is part of the Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
+ * Copyright (c) 2010-2024 Gentics Software GmbH, Vienna, Austria.
  * Contributors http://aloha-editor.org/contribution.php
  * License http://aloha-editor.org/license.php
  */
@@ -13,7 +13,8 @@ define([
 	'aloha/content-rules',
 	'aloha/sidebar',
 	'ui/ui',
-	'ui/toggleButton',
+	'ui/icons',
+	'ui/attributeToggleButton',
 	'ui/scopes',
 	'ui/port-helper-attribute-field',
 	'format/format-plugin',
@@ -27,7 +28,8 @@ define([
 	ContentRules,
 	Sidebars,
 	Ui,
-	ToggleButton,
+	Icons,
+	AttributeToggleButton,
 	Scopes,
 	AttributeField,
 	Format,
@@ -38,7 +40,7 @@ define([
 
 	var configurations = {};
 	var ns  = 'aloha-cite';
-	var uid = (new Date()).getTime();
+	var globalCiteId = 0;
 
 	// namespaced classnames
 	var nsClasses = {
@@ -119,7 +121,7 @@ define([
 		});
 		return $.trim(strBldr.join(' '));
 	}
-	
+
 
 	/**
 	 * Sets cites inputs
@@ -175,21 +177,11 @@ define([
 	 * @param plugin
 	 */
 	function initShowOnToolbar(plugin) {
-		plugin.removeCiteButton = Ui.adopt("removeCite", ToggleButton, {
-			tooltip: i18n.t("button.removeCite.tooltip"),
-			icon: "aloha-icon aloha-icon-unlink",
-			scope: 'Aloha.continuoustext',
-			click: function () {
-				plugin.removeQuote();
-			}
-		});
-
 		plugin.citeHrefField = AttributeField({
 			name: 'editCite',
 			width: 320,
 			placeholder: 'Link',
 			cls: 'aloha-cite-href-field',
-			scope: 'Aloha.continuoustext',
 			noTargetHighlight: false,
 			targetHighlightClass: 'aloha-focus'
 		});
@@ -199,7 +191,6 @@ define([
 			width: 320,
 			placeholder: 'Note',
 			cls: 'aloha-cite-note-href-field',
-			scope: 'Aloha.continuoustext',
 			noTargetHighlight: false,
 			targetHighlightClass: 'aloha-focus'
 		});
@@ -247,7 +238,7 @@ define([
 
 					var content = this.setContent(renderTemplate(
 						'<label class="{panel-label}" for="{link-field}-input">Link</label>' +
-						'<div class="{panel-field} {link-field}" ' + 
+						'<div class="{panel-field} {link-field}" ' +
 						'style="margin: 5px;"><input type="text" id="{link-field}-input" /></div>' +
 						additionalReferenceContainer
 					)).content;
@@ -288,7 +279,7 @@ define([
 			plugin.sideBarPanel = Sidebars.right.getPanelById(nsClass('sidebar-panel'));
 		});
 	}
-	
+
 	/**
 	 * Checks if an element has a data-cite-id and, if not, adds one.
 	 * @param {effective} JQuery object representing the element to be checked.
@@ -297,7 +288,7 @@ define([
 	function assureCitationHasId(effective) {
 		var activeUid = effective.attr('data-cite-id');
 		if (!activeUid) {
-			activeUid = ++uid;
+			activeUid = ++globalCiteId;
 			effective.addClass([nsClass('wrapper')].join(' '));
 			effective.addClass('aloha-cite-' + activeUid);
 			effective.attr('data-cite-id', activeUid);
@@ -347,10 +338,9 @@ define([
 				}
 			}
 
-			this._quoteButton = Ui.adopt('quote', ToggleButton, {
+			this._quoteButton = Ui.adopt('quote', AttributeToggleButton, {
 				tooltip: i18n.t('cite.button.add.quote'),
-				icon: nsClass('button', 'inline-button'),
-				scope: 'Aloha.continuoustext',
+				icon: Icons.QUOTE,
 				click: function () {
 					if (!plugin.removeQuote()) {
 						plugin.addInlineQuote();
@@ -363,14 +353,23 @@ define([
 			// We brute-forcishly push our button settings into the
 			// multiSplitButton. The multiSplitButton will pick it up and render
 			// it.
-			Format.multiSplitButton.pushItem({
-				name: 'blockquote',
-				tooltip: i18n.t('cite.button.add.blockquote'),
-				icon: nsClass('button', 'block-button'),
-				click: function () {
-					if (!plugin.removeQuote()) {
-						plugin.addBlockQuote();
-					}
+			// Format.blockLevelSemantics['blockquote'] = true;
+			Format.config['blockquote'] = {
+				icon: Icons.QUOTE,
+				label: i18n.t('button.blockquote.tooltip'),
+				typography: true,
+				header: false,
+			};
+
+			PubSub.sub('aloha.format.pre_change', function (message) {
+				if (message.oldFormat == 'blockquote' && message.newFormat != 'blockquote') {
+					plugin.removeQuote()
+				}
+			});
+			PubSub.sub('aloha.format.changed', function (message) {
+				if (message.oldFormat != 'blockquote' && message.newFormat == 'blockquote') {
+					plugin.removeQuote();
+					plugin.addBlockQuote();
 				}
 			});
 
@@ -395,11 +394,6 @@ define([
 			PubSub.sub('aloha.editable.activated', function (message) {
 				var config = configurations[message.editable.getId()];
 				plugin._quoteButton.show(!!config.quote);
-				if (config.blockquote) {
-					Format.multiSplitButton.showItem('blockquote');
-				} else {
-					Format.multiSplitButton.hideItem('blockquote');
-				}
 			});
 
 			if (plugin.showOnToolbar) {
@@ -435,25 +429,22 @@ define([
 				if (plugin.showOnToolbar) {
 					if (quoteFound || blockquoteFound) {
 						plugin.citeHrefField.show();
-						plugin.removeCiteButton.show();
 
 						updateCiteInputs(plugin);
-						Scopes.enterScope(plugin.name, 'cite');
+						Scopes.enterScope(plugin.name);
 
 						plugin.citeHrefField.foreground();
 					} else {
 						plugin.citeHrefField.hide();
-						plugin.removeCiteButton.hide();
-						plugin.removeCiteButton.setState(false);
 
-						Scopes.leaveScope(plugin.name, 'cite', true);
+						Scopes.leaveScope(plugin.name);
 					}
 				}
 
-				plugin._quoteButton.setState(quoteFound);
+				plugin._quoteButton.setActive(quoteFound);
 
 				if (blockquoteFound) {
-					Format.multiSplitButton.setActiveItem('blockquote');
+					// Format.multiSplitButton.setActiveItem('blockquote');
 				}
 
 				if (!Aloha.activeEditable) {
@@ -463,12 +454,6 @@ define([
 				var config = configurations[Aloha.activeEditable.getId()];
 
 				plugin._quoteButton.show(!!config.quote);
-
-				if (config.blockquote) {
-					Format.multiSplitButton.showItem('blockquote');
-				} else {
-					Format.multiSplitButton.hideItem('blockquote');
-				}
 			});
 		},
 
@@ -515,12 +500,13 @@ define([
 			if (Aloha.activeEditable) {
 				Aloha.activeEditable.obj.click();
 			}
-			var markup = $('<blockquote class="aloha-cite-wrapper aloha-cite-'
-			           + (++uid) + '" ' + 'data-cite-id="'
-			           + uid + '"></blockquote>');
+
+			var citeId = ++globalCiteId;
+
+			var markup = $(supplant('<blockquote class="aloha-cite-wrapper aloha-cite-{citeId}" data-cite-id="{citeId}"></blockquote>', {citeId: citeId}));
 			Aloha.Selection.changeMarkupOnSelection(markup);
 			if (this.referenceContainer) {
-				this.addCiteToReferences(uid);
+				this.addCiteToReferences(citeId);
 			}
 			if (this.sidebar && this.settings && this.settings.sidebar && this.settings.sidebar.open) {
 				this.sidebar.sidebar.open();
@@ -561,16 +547,10 @@ define([
 				var citUid = $(foundMarkup).attr('data-cite-id');
 				this.removeCiteFromReferences(citUid);
 
-				var $quotes = $('q[data-cite-id=' + citUid + '],blockquote[data-cite-id=' + citUid + ']');
+				var $quotes = $('q[data-cite-id=' + citUid + ']');
 
 				$quotes.each(function () {
-					if (this.nodeName === 'BLOCKQUOTE') {
-						var $newBlock = $('<p></p>');
-						$newBlock.append(this.childNodes);
-						this.parentNode.replaceChild($newBlock[0], this);
-					} else  {
-						domUtils.removeFromDOM(this, rangeObject, true);
-					}
+					domUtils.removeFromDOM(this, rangeObject, true);
 				});
 
 				rangeObject.select();
@@ -581,11 +561,11 @@ define([
 		},
 
 		addInlineQuote: function () {
-			var classes = [nsClass('wrapper'), nsClass(++uid)].join(' ');
-			
+			var classes = [nsClass('wrapper'), nsClass(++globalCiteId)].join(' ');
+
 			var markup = $(supplant(
 					'<q class="{classes}" data-cite-id="{uid}"></q>',
-					{ uid: uid, classes: classes }
+					{ uid: globalCiteId, classes: classes }
 			));
 
 			var rangeObject = Aloha.Selection.rangeObject;
@@ -606,7 +586,7 @@ define([
 
 			// If the cite is not found, it was not created. Probably for
 			// a incorrect caret position.
-			if ($('[data-cite-id=' + uid + ']').length === 0) {
+			if ($('[data-cite-id=' + globalCiteId + ']').length === 0) {
 				return;
 			}
 
@@ -614,7 +594,7 @@ define([
 			rangeObject.select();
 
 			if (this.referenceContainer) {
-				this.addCiteToReferences(uid);
+				this.addCiteToReferences(globalCiteId);
 			}
 
 			if (this.sidebar && this.settings && this.settings.sidebar && this.settings.sidebar.open) {
@@ -679,14 +659,14 @@ define([
 		 * This method will assume that this.referenceContainer is a jQuery
 		 * object container into which the references list should be built.
 		 *
-		 * @param {string} uid The uid of the citation to add.
+		 * @param {string} referenceCiteId The uid of the citation to add.
 		 */
-		addCiteToReferences: function (uid) {
-			var index = this.getIndexOfCitation(uid);
+		addCiteToReferences: function (referenceCiteId) {
+			var index = this.getIndexOfCitation(referenceCiteId);
 
-			var wrapper = $('.aloha-editable-active ' + nsSel(uid));
-			var note = 'cite-note-' + uid;
-			var ref = 'cite-ref-'  + uid;
+			var wrapper = $('.aloha-editable-active ' + nsSel(referenceCiteId));
+			var note = 'cite-note-' + referenceCiteId;
+			var ref = 'cite-ref-'  + referenceCiteId;
 
 			wrapper.append(this.createCiteAnchor(ref, note, index));
 
@@ -746,7 +726,7 @@ define([
 				// container was set
 				if (!plugin.referenceContainer) {
 					$elem.removeClass('aloha-cite-' + $elem.attr('data-cite-id'));
-			
+
 					// We need to read this attribute for IE7 otherwise it will
 					// crash when the attribute gets removed. In IE7 this
 					// removal does not work at all. (no wonders here.. :.( )

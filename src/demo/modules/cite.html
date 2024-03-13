@@ -9,15 +9,22 @@
 	<link rel="stylesheet" href="../../css/aloha-common-extra.css" type="text/css">
 	<script src="../../lib/require.js"></script>
 	<script src="../../lib/vendor/jquery-3.7.0.js"></script>
-	<script src="../../lib/aloha.js" data-aloha-plugins="common/ui,extra/cite"></script>
+	<script src="../../lib/aloha.js" data-aloha-plugins="common/ui,common/format,extra/cite"></script>
 </head>
 <body>
 	<div id="main">
 		<div id="content">
 			<p>CITE PLUGIN</p>
-    </div>
+    	</div>
+		<ol id="references"></ol>
 	</div>
 	<script type="text/javascript">
+	Aloha.settings['plugins'] = {
+		cite: {
+			referenceContainer: '#references'
+		}
+	};
+
 	Aloha.ready( function() {
 		Aloha.jQuery('#content').aloha();
 	});

@@ -4,7 +4,8 @@ define([
 	'ui/surface',
 	'ui/tab',
 	'ui/floating',
-	'ui/context',
+	'ui/scopes',
+	'ui/dynamicUi',
 	'i18n!ui/nls/i18n',
 	'jqueryui'
 ], function (
@@ -13,7 +14,8 @@ define([
 	Surface,
 	Tab,
 	floating,
-	Context,
+	Scopes,
+	DynamicUi,
 	i18n
 ) {
 	'use strict';
@@ -44,11 +46,16 @@ define([
 	 * @extends {Surface}
 	 */
 	var Toolbar = Surface.extend({
+		_context: null,
 		_moveTimeout: null,
 		_repositionTimeout: null,
 		$_container: null,
 		_tabBySlot: null,
 		_tabs: [],
+		_tabSettings: null,
+		_adoptedComponents: {},
+		_activeResponive: 'desktop',
+		$_inactiveContainer: null,
 
 		/**
 		 * Returns true if the "responsiveMode" setting has been set to true. Indicates
@@ -68,30 +75,45 @@ define([
 		 * @override
 		 */
 		_constructor: function (context, tabs, responsiveMode) {
-			var tabSettings,
-			    tabInstance,
-			    i,
-			    key;
 			this._super(context);
-			this.$element = $('<div>', {'class': 'aloha-ui aloha-ui-toolbar', 'unselectable': 'on'});
-			this.$_container = Tab.createContainer().appendTo(this.$element);
+			this._context = context;
+			this.$element = $('<div>', { class: 'aloha-ui aloha-ui-toolbar', unselectable: 'on' });
+			this.$_inactiveContainer = $('<div>', {
+				class: 'aloha-ui aloha-ui-toolbar-inactive-components',
+				unselectable: 'on',
+			}).hide();
+
+			var _this = this;
+
+			$(function() {
+				_this.$_inactiveContainer.appendTo(window.document.body);
+			});
+
 			this._tabBySlot = {};
 			this._isResponsiveMode = responsiveMode;
+			this._tabSettings = tabs;
 
-			for (i = 0; i < tabs.length; i++) {
-				tabSettings = tabs[i];
-				tabInstance = new Tab(context, {
-					label: i18n.t(tabSettings.label, tabSettings.label),
-					showOn: tabSettings.showOn,
-					container: this.$_container
-				}, tabSettings.components);
-				for (key in tabInstance._elemBySlot) {
-					if (tabInstance._elemBySlot.hasOwnProperty(key)) {
-						this._tabBySlot[key] = tabInstance;
+			var initialSetup = true;
+
+			function handleMedia(query, target) {
+				var media = window.matchMedia(query);
+				media.onchange = function(change) {
+					if (change.matches) {
+						_this._activeResponive = target;
+						_this._setupTabs(false);
 					}
+				};
+				if (media.matches) {
+					_this._activeResponive = target;
+					_this._setupTabs(initialSetup);
 				}
-				this._tabs.push({tab: tabInstance, settings: tabSettings});
+				initialSetup = false;
 			}
+
+			// TODO: Define the breakpoints somewhere static
+			handleMedia('(max-width: 400px)', 'mobile');
+			handleMedia('(min-width: 401px) and (max-width: 1024px)', 'tablet');
+			handleMedia('(min-width: 1025px)', 'desktop');
 
 			// Pinning behaviour is global in that if one toolbar is pinned,
 			// then all other toolbars will be pinned to that position.
@@ -105,9 +127,143 @@ define([
 			}
 		},
 
+		_setupTabs: function (initialSetup) {
+			if (!this.enabled) {
+				return;
+			}
+
+			var _this = this;
+			var tmpSlots = {};
+
+			// Destroy all old tabs
+			this._tabs.forEach(function(tabData) {
+				if (!initialSetup) {
+					// The tab itself is going to be destroyed, but the components inside of it need to persist.
+					// Therefore, we move them into the inactive-container before deletion/removal.
+					Object.entries(tabData.tab._componentBySlot).forEach(function(entry) {
+						tmpSlots[entry[0]] = entry[1];
+
+						var $inactiveComponentContainer = _this.$_inactiveContainer.find('[data-slot="' + entry[0] + '"');
+						if ($inactiveComponentContainer.length < 1) {
+							$inactiveComponentContainer = $('<div>', {
+								attr: {
+									'data-slot': entry[0],
+								},
+							})
+								.append(entry[1].element)
+								.appendTo(_this.$_inactiveContainer);
+						} else {
+							$inactiveComponentContainer.children().remove();
+							$inactiveComponentContainer.append(entry[1].element);
+						}
+					});
+				}
+
+				tabData.tab.destroy();
+			});
+
+			// Re-create the container to get rid of the old stuff
+			if (this.$_container != null) {
+				this.$_container.tabs('destroy');
+				this.$_container.remove();
+			}
+			this.$_container = Tab.createContainer().appendTo(this.$element);
+
+			// Clear out old settings
+			this._tabs = [];
+			this._tabBySlot = {};
+
+			var activeTabSettings = this._tabSettings[this._activeResponive];
+			var appliedSlots = [];
+
+			// Create the tabs from the now active settings
+			(activeTabSettings.tabs || []).forEach(function(tabSettings) {
+				var tabInstance = new Tab(_this._context, {
+					label: tabSettings.label,
+					showOn: tabSettings.showOn,
+					container: _this.$_container
+				}, tabSettings.components);
+
+				Object.keys(tabInstance._elemBySlot).forEach(function(slot) {
+					_this._tabBySlot[slot] = tabInstance;
+					appliedSlots.push(slot);
+				});
+
+				_this._tabs.push({ tab: tabInstance, settings: tabSettings });
+			});
+
+			// Here we check each slot again, if the component has been used before and was moved to
+			// the inactive-container. If it is, reuse it.
+			// Otherwise, if the component has been adopted, but wasn't bound yet (i.E. wasn't configured to show up yet),
+			// then we adopt it from the adoptedComponents data.
+			if (!initialSetup) {
+				appliedSlots.forEach(function(slot) {
+					var tab = _this._tabBySlot[slot];
+					if (!tab) {
+						return;
+					}
+
+					var component;
+					if (tmpSlots[slot]) {
+						component = tmpSlots[slot];
+						delete tmpSlots[slot];
+					} else if (_this._adoptedComponents[slot]) {
+						component = _this._adoptedComponents[slot];
+					}
+
+					if (component) {
+						tab.adoptInto(slot, component);
+					}
+				});
+			}
+
+			this._tabScopeActive();
+		},
+
+		_tabScopeActive: function() {
+			if (!this.enabled) {
+				return;
+			}
+
+			var settings,
+				i;
+
+			for (i = 0; i < this._tabs.length; i++) {
+				settings = this._tabs[i].settings;
+				if (
+					'object' === $.type(settings.showOn)
+					&& Scopes.isActiveScope(settings.showOn.scope)
+					&& this._tabs[i].tab.hasVisibleComponents()
+				) {
+					this._tabs[i].tab.foreground();
+					break;
+				}
+			}
+		},
+
 		adoptInto: function (slot, component) {
+			this._adoptedComponents[slot] = component;
 			var tab = this._tabBySlot[slot];
 			return tab && tab.adoptInto(slot, component);
+		},
+
+		unadopt: function(slot) {
+			delete this._adoptedComponents[slot];
+			var tab = this._tabBySlot[slot];
+			delete this._tabBySlot[slot];
+			if (tab) {
+				tab.unadopt(slot);
+			}
+		},
+
+		focusTab: function(tabId) {
+			var foundTab = this._tabs.find(function(tab) {
+				return tab.id === tabId;
+			});
+			if (!foundTab) {
+				return;
+			}
+			foundTab.tab.foreground();
 		},
 
 		getActiveContainer: function () {
@@ -196,6 +352,10 @@ define([
 		 * Shows the toolbar.
 		 */
 		show: function () {
+			if (!this.enabled) {
+				return;
+			}
+
 			Toolbar.$surfaceContainer.children().detach();
 			Toolbar.$surfaceContainer.append(this.$element);
 			Toolbar.$surfaceContainer.stop().fadeTo(200, 1);
@@ -221,10 +381,27 @@ define([
 			}
 		},
 
+		openDynamicDropdown: function(componentName, config) {
+			return DynamicUi.openDynamicDropdown(componentName, config);
+		},
+		openDynamicModal: function(config) {
+			return DynamicUi.openDynamicModal(config);
+		},
+		openConfirmDialog: function(config) {
+			return DynamicUi.openConfirmDialog(config);
+		},
+		openAlertDialog: function(config) {
+			return DynamicUi.openAlertDialog(config);
+		},
+
 		/**
 		 * Sets the width of the toolbar to match the Editable. On small screens, full width is used.
 		 */
-		setWidth: function() {
+		setWidth: function () {
+			if (!this.enabled) {
+				return;
+			}
+
 			if (this._isResponsiveMode && Aloha.activeEditable) {
 				var windowMinWidth = 600;
 				var editableWidth = parseInt(Aloha.activeEditable.obj.css("width"));
@@ -236,12 +413,16 @@ define([
 		/**
 		 * Recalculates the width and position of the toolbar. Should be called when the window is resized.
 		 */
-		reposition: function() {
+		reposition: function () {
+			if (!this.enabled) {
+				return;
+			}
+
 			var toolbar = this;
 			if (toolbar._repositionTimeout) {
 				window.clearTimeout(toolbar._repositionTimeout);
 			}
-			toolbar._repositionTimeout = setTimeout(function() {
+			toolbar._repositionTimeout = setTimeout(function () {
 				toolbar._repositionTimeout = null;
 				toolbar.setWidth();
 				toolbar._move();

@@ -127,8 +127,8 @@ define([
 		var right = Ui.getAdoptedComponent('alignRight');
 		var center = Ui.getAdoptedComponent('alignCenter');
 		var alignLeft = function () {
-			center.setState(false);
-			right.setState(false);
+			center.setActive(false);
+			right.setActive(false);
 			if (BlockManager._activeBlock) {
 				var alignment = BlockManager._activeBlock.attr('align');
 				BlockManager._activeBlock.attr('align',
@@ -138,8 +138,8 @@ define([
 			return false;
 		};
 		var alignRight = function () {
-			left.setState(false);
-			center.setState(false);
+			left.setActive(false);
+			center.setActive(false);
 			if (BlockManager._activeBlock) {
 				var alignment = BlockManager._activeBlock.attr('align');
 				BlockManager._activeBlock.attr('align',
@@ -149,8 +149,8 @@ define([
 			return false;
 		};
 		var alignCenter = function () {
-			left.setState(false);
-			right.setState(false);
+			left.setActive(false);
+			right.setActive(false);
 			if (BlockManager._activeBlock) {
 				BlockManager._activeBlock.attr('align', 'center');
 				return true;
@@ -263,14 +263,14 @@ define([
 		}
 
 		for (i = 0; i < components.length; i++) {
-			components[i].setState(false);
+			components[i].setActive(false);
 		}
 
 		var alignment = BlockManager._activeBlock.attr('align');
 		var component = getAlignmentButton(alignment);
 
 		if (component) {
-			component.setState(true);
+			component.setActive(true);
 		}
 	}
 

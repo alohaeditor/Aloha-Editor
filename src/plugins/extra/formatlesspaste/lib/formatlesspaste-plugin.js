@@ -29,6 +29,7 @@ define([
 	'aloha/plugin',
 	'jquery',
 	'ui/ui',
+	'ui/icons',
 	'ui/toggleButton',
 	'formatlesspaste/formatlesshandler',
 	'aloha/contenthandlermanager',
@@ -39,11 +40,12 @@ define([
 	Plugin,
 	$,
 	Ui,
+	Icons,
 	ToggleButton,
 	FormatlessPasteHandler,
 	ContentHandlerManager,
 	i18n,
-    Html
+	Html
 ) {
 	'use strict';
 
@@ -68,7 +70,7 @@ define([
 		var parsed = {};
 		if (typeof config.formatlessPasteOption !== 'undefined') {
 			parsed.formatlessPasteOption =
-					normalizeToBoolean(config.formatlessPasteOption);
+				normalizeToBoolean(config.formatlessPasteOption);
 		}
 		if (typeof config.strippedElements !== 'undefined') {
 			parsed.strippedElements = config.strippedElements;
@@ -87,25 +89,25 @@ define([
 		ContentHandlerManager.register('formatless', FormatlessPasteHandler);
 		FormatlessPasteHandler.strippedElements = config.strippedElements || Html.TEXT_LEVEL_SEMANTIC_ELEMENTS;
 
-		plugin._toggleFormatlessPasteButton =
-			Ui.adopt('toggleFormatlessPaste', ToggleButton, {
-				tooltip : i18n.t('button.formatlessPaste.tooltip'),
-				icon    : 'aloha-icon aloha-icon-formatless-paste',
-				scope   : 'Aloha.continuoustext',
-				click   : function () {
-					// Toggle the value of allowFormatless
-					FormatlessPasteHandler.enabled =
-						!FormatlessPasteHandler.enabled;
-				}
-			});
+		plugin._toggleFormatlessPasteButton = Ui.adopt('toggleFormatlessPaste', ToggleButton, {
+			tooltip: i18n.t('button.formatlessPaste.tooltip'),
+			icon: Icons.FORMATLESS_PASTE,
+			pure: true,
+			active: FormatlessPasteHandler.enabled,
+			click: function () {
+				// Toggle the value of allowFormatless
+				FormatlessPasteHandler.enabled = !FormatlessPasteHandler.enabled;
+				plugin._toggleFormatlessPasteButton.setActive(FormatlessPasteHandler.enabled);
+			}
+		});
 
 		plugin._toggleFormatlessPasteButton.show(plugin.button);
 
 		if (true === plugin.formatlessPasteOption) {
-			plugin._toggleFormatlessPasteButton.setState(true);
+			plugin._toggleFormatlessPasteButton.setActive(true);
 			FormatlessPasteHandler.enabled = true;
 		} else if (false === plugin.formatlessPasteOption) {
-			plugin._toggleFormatlessPasteButton.setState(false);
+			plugin._toggleFormatlessPasteButton.setActive(false);
 			FormatlessPasteHandler.enabled = false;
 		}
 	}
@@ -180,10 +182,10 @@ define([
 				var pasteButton = plugin._toggleFormatlessPasteButton;
 
 				if (true === config.formatlessPasteOption) {
-					pasteButton.setState(true);
+					pasteButton.setActive(true);
 					FormatlessPasteHandler.enabled = true;
 				} else if (false === config.formatlessPasteOption) {
-					pasteButton.setState(false);
+					pasteButton.setActive(false);
 					FormatlessPasteHandler.enabled = false;
 				}
 

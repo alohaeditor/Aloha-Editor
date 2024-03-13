@@ -1,0 +1,43 @@
+.aloha-ui .aloha-spinner.ui-spinner {
+	height: 24px;
+	display: block;
+	box-sizing: border-box;
+	position: relative;
+	font-size: 14px;
+}
+
+.aloha-ui .aloha-spinner.ui-spinner .ui-spinner-input {
+	height: 100%;
+	width: 100%;
+	padding-right: 20px;
+	box-sizing: border-box;
+	border: none;
+}
+
+.aloha-ui .aloha-spinner.ui-spinner .ui-spinner-button {
+	width: 20px;
+	height: 50%;
+	position: absolute;
+	right: 0;
+	box-sizing: border-box;
+	border: none;
+	border-left: 1px solid;
+	border-color: inherit;
+}
+
+.aloha-ui .aloha-spinner.ui-spinner .ui-spinner-button.ui-spinner-up {
+	top: 0;
+	border-bottom: 1px solid;
+}
+
+.aloha-ui .aloha-spinner.ui-spinner .ui-spinner-button.ui-spinner-up .ui-button-icon-primary {
+	margin-left: -6px;
+}
+
+.aloha-ui .aloha-spinner.ui-spinner .ui-spinner-button.ui-spinner-down {
+	bottom: 0;
+}
+
+.aloha-ui .aloha-spinner.ui-spinner .ui-spinner-button.ui-spinner-down .ui-button-icon-primary {
+	margin-left: -7px;
+}

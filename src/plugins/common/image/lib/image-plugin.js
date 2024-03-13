@@ -267,7 +267,7 @@ define([
 				}
 			}
 
-			plugin.initializeUI();
+			plugin.initializeUI()
 			plugin.bindInteractions();
 			plugin.subscribeEvents();
 
@@ -297,22 +297,6 @@ define([
 					Aloha.Log.info(e, 'Could not disable enableObjectResizing');
 					// this is just for internet explorer, which will not support disabling enableObjectResizing
 				}
-			}
-
-			if (plugin.settings.ui.meta) {
-				// update image object when src changes
-				plugin.ui.imgSrcField.addListener('keyup', function (event) {
-					plugin.srcChange();
-				});
-
-				plugin.ui.imgSrcField.addListener('blur', function (event) {
-					// TODO remove image or do something useful if the user leaves the
-					// image without defining a valid image src
-					var img = jQuery(plugin.ui.imgSrcField.getTargetObject());
-					if (img.attr('src') === '') {
-						img.remove();
-					} // image removal when src field is blank
-				});
 			}
 
 			// Override the default method by using the given one
@@ -353,10 +337,10 @@ define([
 				var enabled = false;
 				var config = plugin.getEditableConfig(message.editable.obj);
 
-				if (config && jQuery.inArray('img', config) > -1 && ContentRules.isAllowed(message.editable.obj[0], 'img')) {
+				if (config && config.enabled && ContentRules.isAllowed(message.editable.obj[0], 'img')) {
 					enabled = true;
 				}
-				
+
 				configurations[message.editable.getId()] = enabled;
 			});
 
@@ -411,24 +395,6 @@ define([
 
 				plugin.ui._insertImageButton.show();
 
-				var foundMarkup = plugin.findImgMarkup(rangeObject);
-
-				// Enable image specific ui components if the element is an image
-				if (foundMarkup) { // TODO : this is always null (below is dead code, moving it to clickImage)
-					plugin.ui._insertImageButton.show();
-					plugin.ui.setScope();
-					if (plugin.settings.ui.meta) {
-						plugin.ui.imgSrcField.setTargetObject(foundMarkup, 'src');
-						plugin.ui.imgTitleField.setTargetObject(foundMarkup, 'title');
-					}
-					plugin.ui.imgSrcField.foreground();
-					plugin.ui.imgSrcField.focus();
-				} else {
-					if (plugin.settings.ui.meta) {
-						plugin.ui.imgSrcField.setTargetObject(null);
-					}
-				}
-
 				// TODO this should not be necessary here!
 				plugin.ui.doLayout();
 			});
@@ -453,8 +419,6 @@ define([
 					}
 				});
 			});
-
-			plugin._subscribeToResizeFieldEvents();
 
 		},
 
@@ -517,9 +481,9 @@ define([
 		/**
 		 * Toggle the keep aspect ratio functionality
 		 */
-		toggleKeepAspectRatio: function () {
+		toggleKeepAspectRatio: function (active) {
 
-			this.keepAspectRatio = !this.keepAspectRatio;
+			this.keepAspectRatio = active;
 
 			// while cropping: calculate the new aspect ratio value for the crop
 			if (typeof this.jcAPI !== 'undefined' && this.jcAPI !== null) {
@@ -559,156 +523,6 @@ define([
 		},
 
 		/**
-		 * Bind interaction events that are invoked on the resize fields
-		 */
-		_subscribeToResizeFieldEvents: function () {
-			var plugin = this;
-
-			/**
-			 * Handle the keyup event on the field
-			 */
-			function handleKeyUpEventOnField(e) {
-
-				// Load the max/min from the data properties of this event
-				var minValue = e.data.minValue;
-				var maxValue = e.data.maxValue;
-				var fieldName = e.data.fieldName;
-
-				// Allow backspace and delete
-				if (e.keyCode === 8 || e.keyCode === 46) {
-
-					// Only resize if field values are ok
-					if (plugin._updateFields(fieldName, $(this).val(), false)) {
-						// Check if we are currently in cropping mode
-						if (typeof plugin.jcAPI !== 'undefined' && plugin.jcAPI !== null) {
-							plugin.setCropAreaByFieldValue();
-						} else {
-							plugin.setSizeByFieldValue();
-						}
-					}
-					// 0-9 keys
-				} else if (e.keyCode <= 57 && e.keyCode >= 48 || e.keyCode <= 105 && e.keyCode >= 96) {
-
-					// Only resize if field values are ok
-					if (plugin._updateFields(fieldName, $(this).val(), false)) {
-						// Check if we are currently in cropping mode
-						if (typeof plugin.jcAPI !== 'undefined' && plugin.jcAPI !== null) {
-							plugin.setCropAreaByFieldValue();
-						} else {
-							plugin.setSizeByFieldValue();
-						}
-					}
-				} else {
-					var delta = 0;
-					if (e.keyCode === 38 || e.keyCode === 107) {
-						delta = +1;
-					} else if (e.keyCode === 40 || e.keyCode === 109) {
-						delta = -1;
-					}
-					// Handle key combinations
-					if (e.shiftKey || e.metaKey || e.ctrlKey) {
-						delta = delta * 10;
-					}
-
-					var isDecrement = false;
-					if (delta < 0) {
-						isDecrement = true;
-					}
-					var newValue = parseInt($(this).val(), 10) + delta;
-
-					// Only resize if field values are ok
-					if (plugin._updateFields(fieldName, newValue, isDecrement)) {
-						// Check if we are currently in cropping mode
-						if (typeof plugin.jcAPI !== 'undefined' && plugin.jcAPI !== null) {
-							plugin.setCropAreaByFieldValue();
-						} else {
-							plugin.setSizeByFieldValue();
-						}
-					}
-				}
-
-				e.preventDefault();
-				return false;
-			}
-
-			/**
-			 * Handle the mouse wheel event on the field
-			 */
-			function handleMouseWheelEventOnField(e, delta) {
-				var minValue = e.data.minValue;
-				var maxValue = e.data.maxValue;
-				var fieldName = e.data.fieldName;
-
-				// Handle key combinations
-				if (e.shiftKey || e.metaKey || e.ctrlKey) {
-					delta = delta * 10;
-				}
-
-				var newValue = parseInt($(this).val(), 10) + delta;
-				var decrement = false;
-				if (delta < 0) {
-					decrement = true;
-				}
-
-				// Only resize if field values are ok
-				if (plugin._updateFields(fieldName, newValue, decrement)) {
-					// Check if we are currently in cropping mode
-					if (typeof plugin.jcAPI !== 'undefined' && plugin.jcAPI !== null) {
-						plugin.setCropAreaByFieldValue();
-					} else {
-						plugin.setSizeByFieldValue();
-					}
-				}
-				return false;
-			}
-
-			/**
-			 * Handle mousewheel,keyup actions on both fields
-			 */
-			const heightFieldSelector = "#" + plugin.ui.imgResizeHeightField.getInputId();
-
-      		var heightEventData = {
-        		fieldName: "height",
-       			maxValue: plugin.ui.imgResizeHeightField.maxValue,
-        		minValue: plugin.ui.imgResizeHeightField.minValue,
-      		};
-			$(document).on(
-				"keyup",
-				heightFieldSelector,
-				heightEventData,
-				handleKeyUpEventOnField
-			);
-			$(document).on(
-				"wheel",
-				heightFieldSelector,
-				heightEventData,
-				handleMouseWheelEventOnField
-			);
-
-			const widthFieldSelector =
-				"#" + plugin.ui.imgResizeWidthField.getInputId();
-
-			var widthEventData = {
-				fieldName: "width",
-				maxValue: plugin.ui.imgResizeWidthField.maxValue,
-				minValue: plugin.ui.imgResizeWidthField.minValue,
-			};
-			$(document).on(
-				"keyup",
-				widthFieldSelector,
-				widthEventData,
-				handleKeyUpEventOnField
-			);
-			$(document).on(
-				"wheel",
-				widthFieldSelector,
-				widthEventData,
-				handleMouseWheelEventOnField
-			);
-
-		},
-
-		/**
 		 * Manually set the given size for the current image
 		 */
 		setSize: function (width, height) {
@@ -744,7 +558,7 @@ define([
 
 			var editable = currentImage.closest('.aloha-editable');
 
-			plugin.ui._imageCnrRatioButton.setState(this.keepAspectRatio);
+			plugin.ui._imageCnrRatioButton.setActive(this.keepAspectRatio);
 
 			// Disabling the content editable. This will disable the resizeHandles in internet explorer
 			// already done in resize on a smaller scope, this block next aloha-selection-change event
@@ -762,16 +576,10 @@ define([
 			// Update the resize input fields with the new width and height
 			plugin._applyValuesToFields(parseInt(plugin.imageObj.css("width")), parseInt(plugin.imageObj.css("height")));
 
-			if (plugin.settings.ui.meta) {
-				plugin.ui.imgSrcField.setTargetObject(plugin.imageObj, 'src');
-				plugin.ui.imgTitleField.setTargetObject(plugin.imageObj, 'title');
-			}
+			plugin.ui.src = plugin.imageObj.attr('src')
+			plugin.ui.title = plugin.imageObj.attr('title')
+
 			Aloha.Selection.preventSelectionChanged();
-			try {
-				plugin.ui.imgSrcField.focus();
-			} catch(e) {
-				// FIXME for some reason execution breaks at this point
-			}
 
 			//to handle switching between images, aspect ratio is recalculated on click
 			cropRatioValue = aspectRatioValue = parseInt(plugin.imageObj.css("width")) / parseInt(plugin.imageObj.css("height"));
@@ -1002,8 +810,8 @@ define([
 		 * Helper function that will set the new image size using the field values
 		 */
 		setSizeByFieldValue: function () {
-			var width =  this.ui.imgResizeWidthField.getValue();
-			var height = this.ui.imgResizeHeightField.getValue();
+			var width =  this.ui.width;
+			var height = this.ui.height;
 			this.setSize(width, height);
 		},
 
@@ -1013,11 +821,8 @@ define([
 		 * @param height new image-height in pixels
 		 */
 		_applyValuesToFields: function (width, height) {
-			this.ui.imgResizeWidthField.setValue(width);
-			this.ui.imgResizeHeightField.setValue(height);
-
-			this.ui.imgResizeWidthField.getInputJQuery().css('background-color', '');
-			this.ui.imgResizeHeightField.getInputJQuery().css('background-color', '');
+			this.ui.width = width;
+			this.ui.height = height;
 		},
 
 		/**
@@ -1031,8 +836,8 @@ define([
 		setCropAreaByFieldValue: function () {
 			var currentCropArea = this.jcAPI.tellSelect();
 
-			var width =  parseInt(this.ui.imgResizeWidthField.getValue(), 10);
-			var height = parseInt(this.ui.imgResizeHeightField.getValue(), 10);
+			var width =  parseInt(this.ui.width, 10);
+			var height = parseInt(this.ui.height, 10);
 
 			var selection = [currentCropArea.x, currentCropArea.y, currentCropArea.x + width, currentCropArea.y + height];
 
@@ -1069,17 +874,7 @@ define([
 			},
 
 		srcChange: function () {
-			// TODO the src changed. I suggest :
-			// 1. set an loading image (I suggest set src base64 enc) to show the user
-			// we are trying to load an image
-			// 2. start a request to get the image
-			// 3a. the image is ok change the src
-			// 3b. the image is not availbable show an error.
-			this.imageObj.attr('src', this.ui.imgSrcField.getValue()); // (the img tag)
-//			 jQuery(img).attr('src', this.imgSrcField.getQueryValue()); // (the query value in the inputfield)
-//			 this.imgSrcField.getItem(); // (optinal a selected resource item)
-			// TODO additionally implement an srcChange Handler to let implementer
-			// customize
+			this.imageObj.attr('src', this.ui.src);
 		},
 
 		/**
@@ -1184,7 +979,7 @@ define([
 			if (this.settings.ui.focalpoint) {
 				this.disableFocalPointMode();
 			}
-			this.ui._imageCropButton.setState(true);
+			this.ui._imageCropButton.setActive(true);
 
 			plugin.initCropButtons();
 			if (plugin.settings.ui.resizable) {
@@ -1272,7 +1067,7 @@ define([
 		disableFocalPointMode: function() {
 			jQuery(".ui-resizable-handle").show();
 			jQuery(".img-overlay-wrap").remove();
-			this.ui._imageFocalPointButton.setState(false);
+			this.ui._imageFocalPointButton.setActive(false);
 			$('body').trigger('aloha-image-focalpoint-stop');
 		},
 
@@ -1315,7 +1110,7 @@ define([
 			}
 
 			this.destroyCropButtons();
-			this.ui._imageCropButton.setState(false);
+			this.ui._imageCropButton.setActive(false);
 
 			if (this.settings.ui.resizable) {
 				this.startResize();

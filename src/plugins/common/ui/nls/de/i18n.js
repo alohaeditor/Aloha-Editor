@@ -8,6 +8,16 @@ define({
 	"button.underline.label": "Unterstrichen",
 	"button.yes.label": "Ja",
 	"button.no.label": "Nein",
+	"button.confirm.label": "Bestätigen",
+	"button.cancel.label": "Abbrechen",
+
+	"split-button.secondary.label": "Kontext öffnen",
+	"link-target.target.label": "Ziel",
+	"link-target.anchor.label": "Anker",
+	"color-picker.clearButton.label": "Farbe entfernen",
+	"date-time-picker.hours.label": "Stunden",
+	"date-time-picker.minutes.label": "Minuten",
+
 	"button.p.label": "Absatz",
 	"button.h1.label": "Überschrift 1",
 	"button.h2.label": "Überschrift 2",
@@ -36,13 +46,8 @@ define({
 	"button.blockquote.label": "Zitat einfügen",
 	"tab.format.label": "Formatierung",
 	"tab.insert.label": "Einfügen",
-	"tab.abbr.label": "Abkürzung",
+	"tab.view.label": "Ansicht",
 	"tab.img.label": "Bild",
-	"tab.link.label": "Verweis",
-	"tab.list.label": "Liste",
 	"tab.table.label": "Tabelle",
-	"tab.col.label": "Tabellenspalte",
-	"tab.row.label": "Tabellenzeile",
-	"tab.cell.label": "Tabellenzelle",
 	"tab.wai-lang.label": "Sprachauszeichnung"
 });

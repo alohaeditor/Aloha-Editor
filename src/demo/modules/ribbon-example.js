@@ -199,24 +199,6 @@ Aloha.ready(function () {
           });
         },
       });
-
-      Ribbon.addButton({
-        text: "progress",
-        click: function () {
-          var progress = Dialog.progress({
-            text: "X is in progress...",
-            value: 0,
-          });
-          var percent = 0;
-          var interval = setInterval(function () {
-            percent += 10;
-            progress(percent);
-            if (percent == 100) {
-              clearInterval(interval);
-            }
-          }, 1000);
-        },
-      });
     }
   );
 })

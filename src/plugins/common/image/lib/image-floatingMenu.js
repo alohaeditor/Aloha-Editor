@@ -4,7 +4,7 @@
  * Author & Copyright (c) 2011 Gentics Software GmbH
  * aloha-sales@gentics.com
  * Licensed under the terms of http://www.aloha-editor.com/license.html
- * 
+ *
  * Author : Nicolas Karageuzian - http://nka.me
  */
 define([
@@ -16,7 +16,9 @@ define([
 	'ui/scopes',
     'ui/button',
     'ui/toggleButton',
-    'ui/port-helper-attribute-field'
+	'ui/contextButton',
+	'ui/icons',
+	'ui/overlayElement',
 ],
 function (
 	jQuery,
@@ -27,7 +29,9 @@ function (
 	Scopes,
 	Button,
 	ToggleButton,
-	AttributeField
+	ContextButton,
+	Icons,
+	OverlayElement
 ) {
 	'use strict';
 
@@ -48,71 +52,183 @@ function (
          * @constructor
          */
 		_constructor: function () {
- 
+
 		},
 
          /**
           * Initialize Floating menu buttons according to plugin config
           */
         init: function (plugin) {
+			var that = this;
 			plugin.floatingMenuControl = this;
-			this.plugin = plugin;
 
-			Scopes.createScope(plugin.name, 'Aloha.empty');
+			that.plugin = plugin;
+			that.src = '';
+			that.title = '';
+			that.width = '';
+			that.height = '';
+
+			Scopes.registerScope(plugin.name, [Scopes.SCOPE_EMPTY]);
+
+			this._editImage = Ui.adopt('imageEdit', ContextButton, {
+				contextType: 'modal',
+				icon: Icons.IMAGE_EDIT,
+				context: function () {
+					if (!plugin || !plugin.imageObj) {
+						return null;
+					}
+
+					var src = plugin.imageObj.attr('src');
+					var title = plugin.imageObj.attr('title');
+					var width = plugin.imageObj.css('width');
+					var height = plugin.imageObj.css('height');
+					var pxIdx = width.indexOf('px');
+
+					if (pxIdx > 0) {
+						width = width.substring(0, pxIdx);
+					}
+
+					pxIdx = height.indexOf('px');
+
+					if (pxIdx > 0) {
+						height = height.substring(0, pxIdx);
+					}
+
+					return {
+						title: i18n.t('modal.properties.title'),
+						initialValue: {
+							src: src,
+							title: title,
+							width: width,
+							height: height,
+						},
+						controls: {
+							src: {
+								type: 'input',
+								options: {
+									label: i18n.t('field.img.label'),
+								}
+							},
+							title: {
+								type: 'input',
+								options: {
+									label: i18n.t('field.img.title.label'),
+								}
+							},
+							width: {
+								type: 'input',
+								options: {
+									label: i18n.t('width'),
+								},
+							},
+							height: {
+								type: 'input',
+								options: {
+									label: i18n.t('height'),
+								}
+							}
+						},
+						onChange: function (value, control) {
+							if (!plugin.keepAspectRatio) {
+								return;
+							}
+
+							var widthChanged = that.width != control.value.width;
+							var heightChanged = that.height != control.value.height;
+
+							if (!widthChanged && !heightChanged) {
+								return;
+							}
+
+							var w = parseInt(that.width);
+							var h = parseInt(that.height);
+							var ratio = w / h;
+
+							if (widthChanged) {
+								w = parseInt(control.value.width);
+								h = w / ratio;
+							}
+
+							if (heightChanged) {
+								h = parseInt(control.value.height);
+								w = h * ratio;
+							}
+
+							that.width = w.toString();
+							that.height = h.toString();
+							control.setValue({
+								src: control.value.src,
+								title: control.value.title,
+								width: that.width,
+								height: that.height,
+							})
+						}
+					};
+				},
+				contextResolve: function (data) {
+					that.src = data.src;
+					that.title = data.title;
+					that.width = data.width;
+					that.height = data.height;
+					plugin.setSizeByFieldValue();
+					plugin.srcChange();
+				},
+				contextReject: function (error) {
+					if (error instanceof OverlayElement.OverlayCloseError && error.reason !== OverlayElement.ClosingReason.CANCEL) {
+						console.log(error);
+					}
+				}
+			 });
 
 			this._addUIInsertButton();
-			this._addUIMetaButtons();
 			this._addUIResetButton();
 			this._addUIAlignButtons();
 			this._addUIMarginButtons();
 			this._addUICropButtons();
-			this._addUIResizeButtons();
 			this._addUIAspectRatioToggleButton();
 			this._addFocalPointButton();
-
-//			 TODO fix the function and reenable this button 
-//			this._addNaturalSizeButton();
 		},
 
 		/**
 		 * Adds the aspect ratio toggle button to the floating menu
 		 */
 		_addUIAspectRatioToggleButton: function () {
-			var plugin = this.plugin;
+			var that = this;
+			var plugin = that.plugin;
 
 			this._imageCnrRatioButton = Ui.adopt("imageCnrRatio", ToggleButton, {
 				tooltip: i18n.t('button.toggle.tooltip'),
-				icon: 'aloha-icon-cnr-ratio',
-				scope: plugin.name,
-				click: function () {
-					plugin.toggleKeepAspectRatio();
+				icon: Icons.IMAGE_RATIO,
+				pure: true,
+				onToggle: function (active) {
+					plugin.toggleKeepAspectRatio(active);
+					that._imageCnrRatioButton.setActive(active);
 				}
 			});
 
-			// If the setting has been set to a number or false we need to activate the 
+			// If the setting has been set to a number or false we need to activate the
 			// toggle button to indicate that the aspect ratio will be preserved.
 			if (plugin.settings.fixedAspectRatio !== false) {
-				this._imageCnrRatioButton.setState(true);
+				this._imageCnrRatioButton.setActive(true);
 				plugin.keepAspectRatio = true;
 			}
 		},
-		
+
 		/**
-		 * Adds the reset button to the floating menu for the given tab 
+		 * Adds the reset button to the floating menu for the given tab
 		 */
 		_addUIResetButton: function () {
 			var plugin = this.plugin;
 
 			this._imageCnrResetButton = Ui.adopt("imageCnrReset", Button, {
 				tooltip: i18n.t('Reset'),
-				icon: 'aloha-icon-cnr-reset',
-				scope: plugin.name,
+				icon: Icons.IMAGE_RESET,
 				click: function () {
 					plugin.reset();
 				}
 			});
 		},
-		
+
 		/**
 		 * Adds the insert button to the floating menu
 		 */
@@ -122,37 +238,10 @@ function (
 			this._insertImageButton = Ui.adopt("insertImage", Button, {
 				tooltip: i18n.t('button.addimg.tooltip'),
 				icon: 'aloha-button aloha-image-insert',
-				scope: 'Aloha.continuoustext',
 				click: function () {
 					plugin.insertImg();
 				}
 			});
-		},
-
-		/**
-		 * Adds the ui meta fields (search, title) to the floating menu. 
-		 */
-		_addUIMetaButtons: function () {
-			var plugin = this.plugin;
-
-			this.imgSrcField = new AttributeField({
-				label: i18n.t('field.img.src.label'),
-				labelClass: 'aloha-image-input-label',
-				tooltip: i18n.t('field.img.src.tooltip'),
-				name: 'imageSource',
-				scope: plugin.name
-			});
-			this.imgSrcField.setTemplate('<span><b>{name}</b><br/>{url}</span>');
-			this.imgSrcField.setObjectTypeFilter(plugin.objectTypeFilter);
-
-			this.imgTitleField = new AttributeField({
-				label: i18n.t('field.img.title.label'),
-				labelClass: 'aloha-image-input-label',
-				tooltip: i18n.t('field.img.title.tooltip'),
-				name: 'imageTitle',
-				scope: plugin.name
-			});
-			this.imgTitleField.setObjectTypeFilter();
 		},
 
 		/**
@@ -163,8 +252,7 @@ function (
 
 			this._imageAlignLeftButton = Ui.adopt("imageAlignLeft", Button, {
 				tooltip: i18n.t('button.img.align.left.tooltip'),
-				icon: 'aloha-img aloha-image-align-left',
-				scope: plugin.name,
+				icon: Icons.IMAGE_ALIGN_LEFT,
 				click : function () {
 					var el = jQuery(plugin.getPluginFocus());
 					el.add(el.parent()).css('float', 'left');
@@ -173,8 +261,7 @@ function (
 
 			this._imageAlignRightButton = Ui.adopt("imageAlignRight", Button, {
 				tooltip: i18n.t('button.img.align.right.tooltip'),
-				icon: 'aloha-img aloha-image-align-right',
-				scope: plugin.name,
+				icon: Icons.IMAGE_ALIGN_RIGHT,
 				click : function () {
 					var el = jQuery(plugin.getPluginFocus());
 					el.add(el.parent()).css('float', 'right');
@@ -183,8 +270,7 @@ function (
 
 			this._imageAlignNoneButton = Ui.adopt("imageAlignNone", Button, {
 				tooltip: i18n.t('button.img.align.none.tooltip'),
-				icon: 'aloha-img aloha-image-align-none',
-				scope: plugin.name,
+				icon: Icons.IMAGE_ALIGN_NONE,
 				click : function () {
 					var el = jQuery(plugin.getPluginFocus());
 					el.add(el.parent()).css({
@@ -203,8 +289,7 @@ function (
 
 			this._imageIncPaddingButton = Ui.adopt("imageIncPadding", Button, {
 				tooltip: i18n.t('padding.increase'),
-				icon: 'aloha-img aloha-image-padding-increase',
-				scope: plugin.name,
+				icon: Icons.IMAGE_INCREASE_PADDING,
 				click: function () {
 					jQuery(plugin.getPluginFocus()).increase('padding');
 				}
@@ -212,8 +297,7 @@ function (
 
 			this._imageDecPaddingButton = Ui.adopt("imageDecPadding", Button, {
 				tooltip: i18n.t('padding.decrease'),
-				icon: 'aloha-img aloha-image-padding-decrease',
-				scope: plugin.name,
+				icon: Icons.IMAGE_DECREASE_PADDING,
 				click: function () {
 					jQuery(plugin.getPluginFocus()).decrease('padding');
 				}
@@ -222,18 +306,18 @@ function (
 
 		/**
 		 * Adds the crop buttons to the floating menu
-		 */		
+		 */
 		_addUICropButtons: function () {
 			var plugin = this.plugin;
 
-			Scopes.createScope('Aloha.img', ['Aloha.global']);
+			Scopes.registerScope('Aloha.img', [Scopes.SCOPE_GLOBAL]);
 
 			this._imageCropButton = Ui.adopt("imageCropButton", ToggleButton, {
 				tooltip: i18n.t('Crop'),
-				icon: 'aloha-icon-cnr-crop',
-				scope: plugin.name,
-				click: function () {
-					if (this.getState()) {
+				icon: Icons.IMAGE_CROP,
+				pure: true,
+				onToggle: function (active) {
+					if (active) {
 						plugin.crop();
 					} else {
 						plugin.endCrop();
@@ -242,45 +326,17 @@ function (
 			});
 		},
 
-		/**
-		 * Adds the resize buttons to the floating menu
-		 */	
-		_addUIResizeButtons: function () {
-			var plugin = this.plugin;
-
-			// Manual resize fields
-			this.imgResizeHeightField = new AttributeField({
-				label:  i18n.t('height'),
-				labelClass: 'aloha-image-input-label',
-				name: "imageResizeHeight",
-				width: 50,
-				scope: plugin.name
-			});
-			this.imgResizeHeightField.maxValue = plugin.settings.maxHeight;
-			this.imgResizeHeightField.minValue = plugin.settings.minHeight;
-
-			this.imgResizeWidthField = new AttributeField({
-				label:  i18n.t('width'),				
-				labelClass: 'aloha-image-input-label',
-				name: "imageResizeWidth",
-				width: 50,
-				scope: plugin.name
-			});
-			this.imgResizeWidthField.maxValue = plugin.settings.maxWidth;
-			this.imgResizeWidthField.minValue = plugin.settings.minWidth;
-		},
-
 		_addFocalPointButton: function() {
 			var plugin = this.plugin;
 
-			Scopes.createScope('Aloha.img', ['Aloha.global']);
+			Scopes.registerScope('Aloha.img', [Scopes.SCOPE_GLOBAL]);
 
 			this._imageFocalPointButton = Ui.adopt("imageFocalPointButton", ToggleButton, {
 				tooltip: i18n.t('focalpoint'),
-				icon: 'aloha-img aloha-image-set-focalpoint',
-				scope: plugin.name,
-				click: function () {
-					if (this.getState()) {
+				icon: Icons.IMAGE_FOCAL_POINT,
+				pure: true,
+				onToggle: function (active) {
+					if (active) {
 						plugin.enableFocalPointMode();
 					} else {
 						plugin.disableFocalPointMode();
@@ -291,29 +347,10 @@ function (
 		},
 
 		/**
-		 * Adds the natural size button to the floating menu
-		 */
-		/*
-		  TODO currently deactivated see TODO at call site above.
-		_addNaturalSizeButton: function () {
-			var plugin = this.plugin;
-
-			this._imageNaturalSizeButton = Ui.adopt("imageNaturalSize", Button, {
-				icon: 'aloha-img aloha-image-size-natural',
-				label: i18n.t('size.natural'),
-				scope: plugin.name,
-				click: function () {
-					plugin.resetSize();
-				}
-			});
-		},
-		*/
-
-		/**
 		 * Sets the scope
 		 */
 		setScope: function () {
-			Scopes.setScope(this.plugin.name);
+			// Scopes.setScope(this.plugin.name);
 		},
 
 		/**

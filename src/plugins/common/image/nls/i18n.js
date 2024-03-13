@@ -6,6 +6,7 @@ define({
 		"floatingmenu.tab.formatting": "Formatting",
 		"floatingmenu.tab.resize": "Resize",
 		"floatingmenu.tab.crop": "Crop",
+		"modal.properties.title": "Image properties",
 		"button.uploadimg.tooltip": "Upload img",
 		"button.uploadimg.label": "Upload",
 		"button.img.align.left.tooltip": "Left align",

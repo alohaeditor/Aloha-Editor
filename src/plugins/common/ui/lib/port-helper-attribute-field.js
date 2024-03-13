@@ -7,23 +7,17 @@ define([
 	'jquery',
 	'ui/ui',
 	'ui/component',
-	'ui/scopes',
 	'ui/context',
 	'ui/utils',
 	'aloha/repositorymanager',
-	'aloha/selection',
-	'aloha/console',
 	'ui/vendor/jquery-ui-autocomplete-html'
 ], function (
 	$,
 	Ui,
 	Component,
-	Scopes,
 	Context,
 	Utils,
-	RepositoryManager,
-	Selection,
-	console
+	RepositoryManager
 ) {
 	'use strict';
 
@@ -41,25 +35,72 @@ define([
 	//   item was selected (example link plugin)
 
 	/**
-	 * Creates a new attribute field.
+	 * @callback AutocompleteOpen
+	 * @param {*} event - A jQuery Event wrapping the native Event.
+	 * @param {*} ui - Empty object which does nothing.
+	 */
+
+	/**
+	 * @typedef {Object} AttributeFieldProperties
+	 * @property {string} name - The name to register this component under (Ui.adopt(props.name, ...)).
+	 * @property {string=} label - Some text that will be displayed alongside the attribute field.
+	 * @property {string=} labelClass - A CSS class to identify the label element.
+	 * @property {string=} valueField - When using a select/repository items, which property in the items should be used for the item value.
+	 * @property {string=} displayField - When using a select/repository items, which property in the items should be used for the display value.
+	 * @property {Array.<string>=} objectTypeFilter - When using a select/repository items, which filter to use when getting the items.
+	 * @property {string=} placeholder - The placeholder text which is displayed when no value is present.
+	 * @property {boolean=} noTargetHighlight - If it should not highlight the target element while editing.
+	 * @property {string=} targetHighlightClass - The CSS class which is getting added to the highlighted element.
+	 * @property {(string|Array.<string>)=} cls - Additional CSS classes for the {{element}}.
+	 * @property {*=} element - The <input> element to use. If not supplied, a new one will be created.
+	 * @property {number=} width - The width of the {{element}} in pixel. Should not be used.
+	 * @property {*} scope - The scope in which the component should be created.
+	 * @property {AutocompleteOpen} open - Callback for when the autocomplete opens.
+	 * @property {function} modifyValue - Callback which gets called when the value needs to be updated from a repository item.
+	 * @property {function} changeNotify - Callback when the value changes.
+	 * @property {function} touchNotify - Callback when the user interacted with the component.
+	 */
+
+	/**
+	 * Creates a new attribute field
+	 * 
+	 * @typedef {AttributeField} AttributeField
+	 * @param {AttributeFieldProperties} props - The properties to initialize this Component with.
 	 *
-	 * @param {!Object} props
-	 *        A map containing the following properties
-	 *        name         -
-	 *        label        - some text that will be displayed alongside
-	 *                       the attribute field,
-	 *        labelClass   - a class to identify the label element,
-	 *        valueField   -
-	 *        displayField -
-	 *        objectTypeFilter -
-	 *        placeholder  -
-	 *        noTargetHighlight -
-	 *        targetHighlightCass - a class to be identify focused element
-	 *        cls          -
-	 *        width        -
-	 *        scope        -
-	 *        element      - the <input> element to use.
-	 *                       If not supplied, a new one will be created.
+	 * @property {function} getInputElem - Function to get the input element.
+	 * @property {function} hasInputElem -
+	 * @property {function} getInputId -
+	 * @property {function} hide -
+	 * @property {function} show -
+	 * @property {function} foreground -
+	 * @property {function} focus -
+	 * @property {function} getTargetObject -
+	 * @property {function} setTargetObject -
+	 * @property {function} addAdditionalTargetObject -
+	 * @property {function} setAttribute -
+	 * @property {function} getItem -
+	 * @property {function} setItem -
+	 * @property {function} setValue -
+	 * @property {function} getValue -
+	 * @property {function} addListener -
+	 * @property {function} setObjectTypeFilter -
+	 * @property {function} setTemplate -
+	 * @property {function} setPlaceholder -
+	 * @property {function} getInputJQuery -
+	 * @property {function} enableInput -
+	 * @property {function} disableInput -
+	 * @property {function} enable -
+	 * @property {function} disable -
+	 * @property {function} updateTarget -
+	 * @property {function} finishEditing -
+	 * @property {function} isValid -
+	 * @property {function} touch -
+	 * @property {function} untouched -
+	 * @property {*} disabled -
+	 * @property {*} touched -
+	 * @property {*} validationErrors -
+	 * 
+	 * @returns AttributeField
 	 */
 	var AttributeField = function (props) {
 		var valueField = props.valueField || 'id',
@@ -83,11 +124,15 @@ define([
 			element.addClass(props.cls);
 		}
 		if (props.width) {
-			element.css("width",props.width + "px");
+			element.css("width", props.width + "px");
 		}
 
 		component = Ui.adopt(props.name, Component, {
-			scope: props.scope,
+			type: 'attribute-field',
+
+			changeNotify: props.changeNotify,
+			touchNotify: props.touchNotify,
+
 			init: function () {
 
 				if (props.element) {
@@ -155,7 +200,7 @@ define([
 
 			// This handles attribute updates for non-repository, literal urls typed into the input field.
 			// Input values that refer to a repository item are handled via setItem().
-			if ( ! resourceItem ) {
+			if (!resourceItem) {
 				setAttribute(targetAttribute, getValue(true));
 			}
 		}
@@ -200,15 +245,20 @@ define([
 		}
 
 		function onKeyup(event) {
+			component.touch();
 			updateTarget();
 
-			if ( ( event.keyCode == 13 || event.keyCode == 27 ) ) {
+			if ((event.keyCode == 13 || event.keyCode == 27)) {
 				finishEditing(true);
 			}
 		}
 
 		function onChange(event) {
+			component.touch();
 			updateTarget();
+			if (component != null && typeof component.changeNotify === 'function') {
+				component.changeNotify(getValue(true));
+			}
 		}
 
 		function finishEditing(select) {
@@ -230,7 +280,7 @@ define([
 
 			// when no resource item was selected, remove any marking of the target object
 			if (!resourceItem) {
-				RepositoryManager.markObject( targetObject );
+				RepositoryManager.markObject(targetObject);
 			}
 
 			if (getValue() === '') {
@@ -247,7 +297,7 @@ define([
 		function executeForTargets(fn) {
 			var target = $(targetObject);
 			fn(target);
-			for (var i = 0, len = additionalTargetObjects.length; i < len ; i++) {
+			for (var i = 0, len = additionalTargetObjects.length; i < len; i++) {
 				fn($(additionalTargetObjects[i]));
 			}
 		}
@@ -278,7 +328,7 @@ define([
 				target.context.style['background-color']) {
 				executeForTargets(function (target) {
 					target.attr('data-original-background-color',
-					            target.context.style['background-color']);
+						target.context.style['background-color']);
 				});
 			}
 			executeForTargets(function (target) {
@@ -380,7 +430,7 @@ define([
 			} else {
 				resourceValue = null;
 			}
-			
+
 			element.trigger('item-change');
 		}
 
@@ -419,7 +469,7 @@ define([
 			targetObject = obj;
 			targetAttribute = attr;
 			additionalTargetObjects = [];
-			
+
 			if (obj && attr) {
 				lastAttributeValue = $obj.attr(attr);
 				setValue(lastAttributeValue);
@@ -436,7 +486,7 @@ define([
 			var ignoreAutoValues = $obj.attr('data-ignore-auto-values');
 
 			// check whether a repository item is linked to the object
-			RepositoryManager.getObject( obj, function ( items ) {
+			RepositoryManager.getObject(obj, function (items) {
 				if (items && items.length > 0) {
 					var needResetIgnoreAutoValues = false;
 					if (ignoreAutoValues && !$obj.attr('data-ignore-auto-values')) {
@@ -477,14 +527,14 @@ define([
 		function hide() {
 			element.hide();
 		}
-		
+
 		/**
 		 * Disables input text, so the text can not be edit.
 		 */
 		function disableInput() {
-			element.attr('disabled','disabled'); 
+			element.attr('disabled', 'disabled');
 		}
-		
+
 		/**
 		 * Enables input text, so the text can be edit.
 		 */
@@ -492,7 +542,17 @@ define([
 			element.removeAttr('disabled');
 		}
 
-		function getInputId(){
+		function disable() {
+			disableInput();
+			component.disable();
+		}
+
+		function enable() {
+			enableInput();
+			component.enable();
+		}
+
+		function getInputId() {
 			return element.attr("id");
 		}
 
@@ -531,9 +591,43 @@ define([
 			getInputJQuery: getInputJQuery,
 			enableInput: enableInput,
 			disableInput: disableInput,
+			enable: enable,
+			disable: disable,
 			updateTarget: updateTarget,
-			finishEditing: finishEditing
+			finishEditing: finishEditing,
+			isValid: function () {
+				return component.isValid();
+			},
+			touch: function () {
+				component.touch();
+			},
+			untouched: function () {
+				component.untouched();
+			},
 		};
+
+		Object.defineProperties(attrField, {
+			disabled: {
+				get: function () {
+					return component.disabled;
+				},
+				set: function () { },
+			},
+			touched: {
+				get: function () {
+					return component.touched;
+				},
+				set: function () { },
+			},
+			validationErrors: {
+				get: function () {
+					return component.validationErrors;
+				},
+				set: function (errors) {
+					component.validationErrors = errors;
+				},
+			},
+		});
 
 		return attrField;
 	};

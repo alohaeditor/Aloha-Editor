@@ -231,6 +231,8 @@ define([
 				dragBehavior.stopListenMouseOver();
 			});
 
+		var resetScopes;
+
 		this.$element.draggable({
 			handle: '>.aloha-block-draghandle',
 			helper: 'clone',
@@ -239,8 +241,9 @@ define([
 				top: -10
 			},
 			start: function (event, ui) {
-				// set the empty scope, so that the toolbar will be hidden while dragging
-				Scopes.setScope('Aloha.empty');
+				// set the empty scope, so that the toolbar will be hidden while dragging'
+				resetScopes = Scopes.getActiveScopes(false);
+				Scopes.setScope(Scopes.SCOPE_EMPTY);
 				ui.helper.css('zIndex', 100000);
 				dragBehavior._fillEmptyEditables();
 				dragBehavior.listenMouseOver();
@@ -255,6 +258,7 @@ define([
 				dragBehavior.onDragStop();
 				dragBehavior._removeFillers();
 				ui.helper.remove();
+				Scopes.setScope(resetScopes);
 				IESelectionState.restore();
 				return true;
 			}

@@ -1,0 +1,34 @@
+.aloha-ui .checkbox-container {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	width: 100%;
+	padding: 0 4px;
+  	box-sizing: border-box;
+	margin: 8px 0;
+}
+
+.aloha-ui .checkbox-container {
+	padding: 4px;
+}
+
+.aloha-ui .checkbox-container .checkbox-label {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	align-items: flex-start;
+}
+
+.aloha-ui .checkbox-container .checkbox-element {
+	margin-left: 0px;
+	flex: 0 0;
+	height: 14px;
+	display: block;
+}
+
+.aloha-ui .checkbox-container .checkbox-label-content {
+	color: #000;
+	font-size: 14px;
+	display: block;
+	flex: 1 1 auto;
+}

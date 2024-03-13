@@ -1,25 +1,37 @@
 define([
-	'jquery',
-	'ui/button',
-	'jqueryui'
-],
-function (jQuery, Button) {
+	'ui/button'
+], function (
+	Button
+) {
 	'use strict';
 
-	var idCounter = 0;
+	var CLASS_ACTIVE = 'active';
 
 	/**
 	 * ToggleButton control. Extends the Button component type to provide an
-	 * easy way to create buttons that can transition between "checked" and
-	 * "unchecked" states.
+	 * easy way to create buttons that can transition between "active" and
+	 * "inactive" states.
 	 *
 	 * @class
 	 * @name ToggleButton
 	 * @extends {Button}
 	 */
 	var ToggleButton = Button.extend({
+		type: 'toggle-button',
 
-		_checked: false,
+		/** @type {boolean} If this button is currently active. */
+		active: false,
+
+		/** @type {boolean} When clicked, if it should *not* toggle it's `active` state. */
+		pure: false,
+
+		init: function() {
+			this._super();
+
+			this._$buttonElement.addClass('toggle-button');
+
+			this._handleActiveState();
+		},
 
 		/**
 		 * Sets the state of the toggleButton and updates its visual display
@@ -27,29 +39,61 @@ function (jQuery, Button) {
 		 *
 		 * @param {boolean} toggled Whether the button is to be set to the
 		 *                          "toggled/checked" state.
+		 * @deprecated use `setValue` instead.
 		 */
 		setState: function (toggled) {
-			// It is very common to set the button state on every
-			// selection change even if the state hasn't changed.
-			// Profiling showed that this is very inefficient.
-			if (this._checked === toggled) {
-				return;
-			}
-			this._checked = toggled;
-			if (toggled) {
-				this.element.addClass("aloha-button-active");
-			} else {
-				this.element.removeClass("aloha-button-active");
-			}
+			console.debug('[Deprecation] Call to ToggleButton.setState: Use "ToggleButton.setActive()" instead.');
+			this.setValue(toggled);
 		},
 
+		/** @deprecated use `getValue` instead. */
 		getState: function () {
-			return this._checked;
+			console.debug('[Deprecation] Call to ToggleButton.getState: Use "ToggleButton.active" instead.');
+			return this.active;
 		},
 
 		_onClick: function () {
-			this.setState(! this._checked);
+			this.touch();
+			var switched = !this.active;
+			if (!this.pure) {
+				this.toggleActivation();
+			}
+			this.triggerChangeNotification();
 			this.click();
+			this.onToggle(switched);
+		},
+		_handleActiveState: function() {
+			if (this.active) {
+				this._$buttonElement.addClass(CLASS_ACTIVE);
+			} else {
+				this._$buttonElement.removeClass(CLASS_ACTIVE);
+			}
+		},
+
+		onToggle: function (isActive) { },
+		
+		setActive: function(active) {
+			this.active = active;
+			this._handleActiveState();
+		},
+		setPure: function(pure) {
+			this.pure = pure;
+		},
+		toggleActivation: function () {
+			this.setActive(!this.active);
+		},
+        activate: function () {
+			this.setActive(true);
+        },
+        deactivate: function () {
+            this.setActive(false);
+        },
+
+		setValue: function(value) {
+			this.setActive(value);		
+		},
+		getValue: function() {
+			return this.active;
 		}
 	});
 

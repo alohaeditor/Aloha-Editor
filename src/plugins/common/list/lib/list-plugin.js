@@ -13,9 +13,12 @@ define([
 	'aloha/engine',
 	'util/dom',
 	'ui/ui',
+	'ui/icons',
 	'ui/scopes',
 	'ui/button',
-	'ui/menuButton',
+	'ui/toggleSplitButton',
+	'ui/dropdown',
+	'ui/overlayElement',
 	'util/contenthandler',
 	'PubSub',
 	'i18n!list/nls/i18n'
@@ -27,9 +30,12 @@ define([
 	Engine,
 	Dom,
 	Ui,
+	Icons,
 	Scopes,
 	Button,
-	MenuButton,
+	ToggleSplitButton,
+	Dropdown,
+	OverlayElement,
 	ContentHandlerUtils,
 	PubSub,
 	i18n
@@ -46,7 +52,7 @@ define([
 			return 'ul';
 		} else if ($elem.is('dl')) {
 			return 'dl';
-		} 
+		}
 		return false;
 	}
 
@@ -60,6 +66,7 @@ define([
 		}
 		return nestingLevel;
 	}
+
 	/**
 	 * Initializes the list templates button menus.
 	 *
@@ -67,62 +74,50 @@ define([
 	 * @param {ListPlugin} plugin
 	 */
 	function initializeTemplates(plugin) {
-		if (plugin.templates.dl) {
-			$.each(plugin.templates.dl.classes, function (i, cssClass) {
-				plugin.definitionListStyleButtons.push(plugin.makeListStyleButton('dl', cssClass));
-			});
+		plugin.orderedListButton = Ui.adopt('listOrdered', ToggleSplitButton, {
+			tooltip: i18n.t('button.listordered.tooltip'),
+			icon: Icons.LIST_ORDERED,
+			pure: true,
+			contextType: 'dropdown',
 
-			plugin._definitionListFormatSelectorButton = Ui.adopt(
-				'definitionListFormatSelector',
-				MenuButton,
-				{
-					click: function () {
-						plugin.transformList('dl');
-					},
-					tooltip: i18n.t('button.createdlist.tooltip'),
-					html: '<span class="ui-button-icon-primary ui-icon aloha-icon aloha-icon-definitionlist"></span>',
-					menu: (plugin.definitionListStyleButtons.length) ? plugin.definitionListStyleButtons : null
-				}
-			);
-		}
+			secondaryClick: function () {
+				plugin.showListDropdown('ol', 'listOrdered');
+			},
 
-		if (plugin.templates.ol) {
-			$.each(plugin.templates.ol.classes, function (i, cssClass) {
-				plugin.orderedListStyleButtons.push(plugin.makeListStyleButton('ol', cssClass));
-			});
+			onToggle: function (activated) {
+				plugin.transformList('ol');
+			},
+		});
 
-			plugin._orderedListFormatSelectorButton = Ui.adopt(
-				'orderedListFormatSelector',
-				MenuButton,
-				{
-					click: function () {
-						plugin.transformList('ol');
-					},
-					tooltip: i18n.t('button.createolist.tooltip'),
-					html: '<span class="ui-button-icon-primary ui-icon aloha-icon aloha-icon-orderedlist"></span>',
-					menu: (plugin.orderedListStyleButtons.length) ? plugin.orderedListStyleButtons : null
-				}
-			);
-		}
+		plugin.unorderedListButton = Ui.adopt('listUnordered', ToggleSplitButton, {
+			tooltip: i18n.t('button.listunordered.tooltip'),
+			icon: Icons.LIST_UNORDERED,
+			pure: true,
+			contextType: 'dropdown',
 
-		if (plugin.templates.ul) {
-			$.each(plugin.templates.ul.classes, function (i, cssClass) {
-				plugin.unorderedListStyleButtons.push(plugin.makeListStyleButton('ul', cssClass));
-			});
+			secondaryClick: function () {
+				plugin.showListDropdown('ul', 'listUnordered');
+			},
 
-			plugin._unorderedListFormatSelectorButton = Ui.adopt(
-				'unorderedListFormatSelector',
-				MenuButton,
-				{
-					click: function () {
-						plugin.transformList('ul');
-					},
-					tooltip: i18n.t('button.createulist.tooltip'),
-					html: '<span class="ui-button-icon-primary ui-icon aloha-icon aloha-icon-unorderedlist"></span>',
-					menu: (plugin.unorderedListStyleButtons.length) ? plugin.unorderedListStyleButtons : null
-				}
-			);
-		}
+			onToggle: function (activated) {
+				plugin.transformList('ul');
+			},
+		});
+
+		plugin.definitionListButton = Ui.adopt('listDefinition', ToggleSplitButton, {
+			tooltip: i18n.t('button.listdefinition.tooltip'),
+			icon: Icons.LIST_DEFINITION,
+			pure: true,
+			contextType: 'dropdown',
+
+			secondaryClick: function () {
+				plugin.showListDropdown('dl', 'listDefinition');
+			},
+
+			onToggle: function (activated) {
+				plugin.transformList('dl');
+			},
+		});
 	}
 
 	/**
@@ -172,14 +167,13 @@ define([
 		});
 
 		PubSub.sub('aloha.selection.context-change', function (message) {
-			var $dlIcon = $('.aloha-icon-definitionlist').parents('.aloha-ui-menubutton-container');
-			var $olIcon = $('.aloha-icon-orderedlist').parents('.aloha-ui-menubutton-container');
-			var $ulIcon = $('.aloha-icon-unorderedlist').parents('.aloha-ui-menubutton-container');
+			var wasInListScope = plugin._inListScope;
 
-			$dlIcon.removeClass('aloha-button-active');
-			$olIcon.removeClass('aloha-button-active');
-			$ulIcon.removeClass('aloha-button-active');
+			plugin._inListScope = false;
 
+			plugin.orderedListButton.setActive(false);
+			plugin.unorderedListButton.setActive(false);
+			plugin.definitionListButton.setActive(false);
 			plugin._outdentListButton.show(false);
 			plugin._indentListButton.show(false);
 
@@ -191,22 +185,32 @@ define([
 				markup = range.markupEffectiveAtStart[i];
 				switch (markup.nodeName) {
 				case 'DL':
-					$dlIcon.addClass('aloha-button-active');
 					$(markup).addClass('alohafocus');
+					plugin.definitionListButton.setActive(true);
+					plugin._inListScope = true;
 					break;
 				case 'OL':
-					$olIcon.addClass('aloha-button-active');
 					plugin._outdentListButton.show(true);
 					plugin._indentListButton.show(true);
+					plugin.orderedListButton.setActive(true);
+					plugin._inListScope = true;
 					break;
 				case 'UL':
-					$ulIcon.addClass('aloha-button-active');
 					plugin._outdentListButton.show(true);
 					plugin._indentListButton.show(true);
+					plugin.unorderedListButton.setActive(true);
+					plugin._inListScope = true;
 					break;
 				}
 			}
 
+			if (wasInListScope != plugin._inListScope) {
+				if (plugin._inListScope) {
+					Scopes.enterScope('Aloha.List');
+				} else {
+					Scopes.leaveScope('Aloha.List');
+				}
+			}
 			// Remove jQuery UI menu classes/attributes from list-templates in submenus
 			$('div.aloha-list-templates ul').removeClass('ui-menu ui-widget ui-widget-content ui-corner-all')
 			          .attr('role', '')
@@ -229,28 +233,6 @@ define([
 	}
 
 	/**
-	 * Small JS template function.
-	 *
-	 * @param  {string} str The template where substitution takes place
-	 * @param  {object} obj The object containing strings to insert into template
-	 * @return {string}
-	 */
-	function tmpl(str, obj) {
-	    var replacer = function (wholeMatch, key) {
-	            return obj[key] === undefined ? wholeMatch : obj[key];
-	        },
-	        regexp = /\${\s*([a-z0-9\-_]+)\s*}/ig;
-
-	    do {
-	        var beforeReplace = str;
-	        str = str.replace(regexp, replacer);
-	        var afterReplace = str !== beforeReplace;
-	    } while (afterReplace);
-
-	    return str;
-	}
-
-	/**
 	 * Shows or hides the ul, ol or dl buttons in Aloha floating menu if they are
 	 * configured.
 	 *
@@ -261,18 +243,24 @@ define([
 	function toggleListOption(plugin, listtype, show) {
 		switch (listtype) {
 		case 'ul':
-			if (plugin.templates.ul) {
-				plugin._unorderedListFormatSelectorButton.show(show);
+			if (show) {
+				plugin.unorderedListButton.show();
+			} else {
+				plugin.unorderedListButton.hide();
 			}
 			break;
 		case 'ol':
-			if (plugin.templates.ol) {
-				plugin._orderedListFormatSelectorButton.show(show);
+			if (show) {
+				plugin.orderedListButton.show();
+			} else {
+				plugin.orderedListButton.hide();
 			}
 			break;
 		case 'dl':
-			if (plugin.templates.dl) {
-				plugin._definitionListFormatSelectorButton.show(show);
+			if (show) {
+				plugin.definitionListButton.show();
+			} else {
+				plugin.definitionListButton.hide();
 			}
 			break;
 		}
@@ -343,31 +331,24 @@ define([
 		 */
 		templates: {
 			ul: {
-				classes: ['aloha-list-disc', 'aloha-list-circle', 'aloha-list-square'],
-				template: '<ul class="${cssClass}"><li>${first}<ul class="${cssClass}"><li>${second}<ul class="${cssClass}"><li>${third}</li></ul></li></ul></li></ul>',
-				locale: {
-					fallback: {first: 'first layer', second: 'second layer', third: 'third layer'},
-					de: {first: 'erste Ebene', second: 'zweite Ebene', third: 'dritte Ebene'}
-				}
+				'aloha-list-disc': i18n.t('class.ul.disc'),
+				'aloha-list-circle': i18n.t('class.ul.circle'),
+				'aloha-list-square': i18n.t('class.ul.square'),
 			},
 			ol: {
-				classes: ['aloha-list-decimal', 'aloha-list-decimal-leading-zero',
-					'aloha-list-lower-roman', 'aloha-list-upper-roman', 'aloha-list-lower-greek',
-					'aloha-list-lower-latin', 'aloha-list-upper-latin' ],
-				template: '<ol class="${cssClass}"><li>${first}<ol class="${cssClass}"><li>${second}<ol class="${cssClass}"><li>${third}</li></ol></li></ol></li></ol>',
-				locale: {
-					fallback: {first: 'first layer', second: 'second layer', third: 'third layer'},
-					de: {first: 'erste Ebene', second: 'zweite Ebene', third: 'dritte Ebene'}
-				}
+				'aloha-list-decimal': i18n.t('class.ol.numbers'),
+				'aloha-list-decimal-leading-zero': i18n.t('class.ol.numberszero'),
+				'aloha-list-lower-roman': i18n.t('class.ol.lcroman'),
+				'aloha-list-upper-roman': i18n.t('class.ol.ucroman'),
+				'aloha-list-lower-greek': i18n.t('class.ol.greek'),
+				'aloha-list-lower-latin': i18n.t('class.ol.lcletters'),
+				'aloha-list-upper-latin': i18n.t('class.ol.ucletters'),
 			},
 			dl: {
-				classes: ['aloha-list-blue', 'aloha-list-green', 'aloha-list-red'],
-				template: '<dl class="${cssClass}"><dt>${first}<dt><dd>${second}</dd></dl>',
-				locale: {
-					fallback: {first: 'first item', second: 'second item'},
-					de: {first: 'erstes Element', second: 'zweites Element'}
-				}
-			}
+				'aloha-list-blue': i18n.t('class.dl.blue'),
+				'aloha-list-green': i18n.t('class.dl.green'),
+				'aloha-list-red': i18n.t('class.dl.red'),
+			},
 		},
 
 		/**
@@ -375,15 +356,15 @@ define([
 		 */
 		defaultClasses: {
 			ul: {
-				list: [],
+				list: ['aloha-list-disc'],
 				item: []
 			},
 			ol: {
-				list: [],
+				list: ['aloha-list-decimal'],
 				item: []
 			},
 			dl: {
-				list: [],
+				list: ['aloha-list-blue'],
 				item: []
 			}
 		},
@@ -416,11 +397,13 @@ define([
 
 			if (listtype === nodeName) {
 				// remove all classes
-				jQuery.each(this.templates[nodeName].classes, function (i, cssClass) {
+				jQuery.each(Object.keys(this.templates[nodeName]), function (i, cssClass) {
 					listToStyle.removeClass(cssClass);
 				});
 
-				listToStyle.addClass(style);
+				if (style) {
+					listToStyle.addClass(style);
+				}
 
 				// now proceed with all selected sublists
 				listToStyle.find(listtype).each(function () {
@@ -429,7 +412,10 @@ define([
 						jQuery.each(plugin.templates[listtype].classes, function (i, cssClass) {
 							listToStyle.removeClass(cssClass);
 						});
-						listToStyle.addClass(style);
+
+						if (style) {
+							listToStyle.addClass(style);
+						}
 					}
 				});
 			}
@@ -451,33 +437,38 @@ define([
 		definitionListStyleButtons: [],
 
 		/**
-		 * Construct button for list styles (CSS classes).
-		 *
-		 * @param  {String} listtype ol, ul or dl
-		 * @param  {String} cssClass selected list style
-		 * @return {Object} MenuButton menu property
+		 * Create the select menu entries for the available list styles.
+		 * @param type The list type.
+		 * @param elementId The ID of the button element.
 		 */
-		makeListStyleButton: function (listtype, cssClass) {
+		showListDropdown: function (type, elementId) {
 			var that = this;
-
-			var template = that.templates[listtype];
-
-			var locale = template.locale[Aloha.settings.locale]
-			          || template.locale['fallback'];
-
-			var html = tmpl(template.template, {
-				cssClass : cssClass,
-				first    : locale.first,
-				second   : locale.second,
-				third    : locale.third
+			var options = Object.keys(that.templates[type]).map(function (listClass) {
+				return {
+					id: listClass,
+					label: that.templates[type][listClass],
+				}
 			});
 
-			return {
-				html: '<div class="aloha-list-templates">' + html + '</div>',
-				click: function () {
-					that.setListStyle(listtype, cssClass);
-				}
-			};
+			if (options.length > 0) {
+				Dropdown.openDynamicDropdown(elementId, {
+					type: 'select-menu',
+					options: {
+						iconsOnly: false,
+						options: options
+					},
+				}).then(function (ref) {
+					return ref.value;
+				}).then(function (selection) {
+					that.setListStyle(type, selection.id);
+				}).catch(function (error) {
+					if (error instanceof OverlayElement.OverlayCloseError && error.reason === OverlayElement.ClosingReason.ERROR) {
+						console.log(error);
+					}
+				});
+			} else {
+				that.setListStyle(type);
+			}
 		},
 
 		/**
@@ -488,8 +479,7 @@ define([
 
 			plugin._indentListButton = Ui.adopt('indentList', Button, {
 				tooltip: i18n.t('button.indentlist.tooltip'),
-				icon: 'aloha-icon aloha-icon-indent',
-				scope: 'Aloha.continuoustext',
+				icon: Icons.INDENT,
 				click: function () {
 					plugin.indentList();
 				}
@@ -497,8 +487,7 @@ define([
 
 			plugin._outdentListButton = Ui.adopt('outdentList', Button, {
 				tooltip: i18n.t('button.outdentlist.tooltip'),
-				icon: 'aloha-icon aloha-icon-outdent',
-				scope: 'Aloha.continuoustext',
+				icon: Icons.OUTDENT,
 				click: function () {
 					plugin.outdentList();
 				}
@@ -508,6 +497,24 @@ define([
 				if (Aloha.settings.plugins.list.templates) {
 					plugin.templates = Aloha.settings.plugins.list.templates;
 				}
+
+				if (Aloha.settings.plugins.list.listTypes) {
+					var idx = plugin.config.indexOf('ol');
+
+					if (Aloha.settings.plugins.list.listTypes.ul === false && idx >= 0) {
+						plugin.config.splice(idx, 1)
+					}
+
+					idx = plugin.config.indexOf('ol');
+					if (Aloha.settings.plugins.list.listTypes.ol === false && idx >= 0) {
+						plugin.config.splice(idx, 1)
+					}
+
+					idx = plugin.config.indexOf('dl');
+					if (Aloha.settings.plugins.list.listTypes.dl === false && idx >= 0) {
+						plugin.config.splice(idx, 1)
+					}
+				}
 				if (Aloha.settings.plugins.list.defaultClasses) {
 					plugin.defaultClasses = plugin.normalizeDefaultClasses(Aloha.settings.plugins.list.defaultClasses);
 					plugin.uniqueDefaultClassNames = plugin.getUniqueDefaultClasseNames(plugin.defaultClasses);
@@ -516,7 +523,10 @@ define([
 
 			initializeTemplates(plugin);
 			registerEventHandlers(plugin);
-			Scopes.createScope('Aloha.List', 'Aloha.continuoustext');
+
+			plugin._inListScope = false;
+
+			Scopes.registerScope('Aloha.List', [Scopes.SCOPE_CONTINUOUS_TEXT]);
 		},
 
 
@@ -525,7 +535,7 @@ define([
 			return {
 				'ol,ul,dl': function ($elem, options, editable) {
 					// check which list-types are allowed in this editable
-					// if the list type is not allowed we have to remove the 
+					// if the list type is not allowed we have to remove the
 					// element by unwrapping its contents
 					var config = configurations[editable.getId()],
 						listType = getListTypeFromElement($elem);
@@ -538,7 +548,7 @@ define([
 						return false;
 					}
 					ContentHandlerUtils.removeAttributes($elem, ['class']);
-					// only keep classes which are in the list of allowed classes 
+					// only keep classes which are in the list of allowed classes
 					var classList = $elem.attr('class');
 					if (typeof classList === 'string') {
 						jQuery.each(classList.split(/\s+/), function (i, className) {
@@ -607,13 +617,13 @@ define([
 		/**
 		 * Given the normalized defaultClasses (as generated by normalizeDefaultClasses()), this returns
 		 * a string containing each unique class name defined, space-separated.
-		 * 
+		 *
 		 * @param {Object} normalizedDefaultClasses
 		 * @return {string}
 		 */
 		getUniqueDefaultClasseNames: function(normalizedDefaultClasses) {
 			var allDefaultClassesArray = [];
-			
+
 			$.each(normalizedDefaultClasses, function (key, value){
 				var classes = value.item.concat(value.list);
 				allDefaultClassesArray = allDefaultClassesArray.concat(classes);

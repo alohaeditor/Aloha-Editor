@@ -545,7 +545,7 @@ define([
 
 			// Activate current block
 			if (this.$element.attr('data-block-skip-scope') !== 'true') {
-				Scopes.setScope('Aloha.Block.' + this.attr('aloha-block-type'));
+				Scopes.enterScope('Aloha.Block.' + this.attr('aloha-block-type'));
 			}
 			this.$element.addClass('aloha-block-active');
 			this._highlight();
@@ -606,6 +606,10 @@ define([
 				deactivatedBlocks.push(this);
 				that._unhighlight();
 			});
+
+			if (this.$element.attr('data-block-skip-scope') !== 'true') {
+				Scopes.leaveScope('Aloha.Block.' + this.attr('aloha-block-type'));
+			}
 
 			this.$element.removeClass('aloha-block-active');
 
@@ -1240,7 +1244,16 @@ define([
 		renderBlockHandlesIfNeeded: function () {
 			if (this.isDraggable()) {
 				if (this.$element.children('.aloha-block-draghandle').length === 0) {
-					this.$element.prepend('<span class="aloha-block-handle aloha-block-draghandle aloha-cleanme"></span>');
+					this.$element.prepend(
+						$('<span>', {
+							class: 'aloha-block-handle aloha-block-draghandle aloha-cleanme'
+						}).append(
+							$('<i>', {
+								class: 'material-symbols-outlined aloha-block-button-icon',
+								text: 'drag_pan',
+							})
+						)
+					);
 				}
 			}
 		},

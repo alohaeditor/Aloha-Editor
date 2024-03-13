@@ -1,0 +1,80 @@
+.aloha .aloha-split-button {
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    align-items: center;
+    position: relative;
+    box-sizing: border-box;
+    transition: 200ms;
+}
+
+.aloha .aloha-split-button .aloha-split-button-main {
+    border: none;
+    padding: 3px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.aloha .aloha-split-button .aloha-split-button-secondary {
+    flex: 0 0;
+    width: 22px;
+    border-radius: 2px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    display: flex;
+    background: transparent;
+    border: 1px solid transparent;
+    padding: 2px;
+    border: none;
+    position: relative;
+    box-sizing: border-box;
+    transition: 200ms;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.aloha .aloha-split-button .aloha-split-button-secondary .aloha-button-secondary-icon {
+    font-size: 20px;
+    height: 20px;
+    width: 100%;
+}
+
+.aloha .aloha-split-button:not(.disabled):hover {
+    border-color: #d6d6d6;
+}
+
+.aloha .aloha-split-button:not(.disabled) .aloha-split-button-main:hover,
+.aloha .aloha-split-button:not(.disabled) .aloha-split-button-secondary:hover {
+    background: #e2e2e2;
+}
+
+.aloha .aloha-split-button:not(.disabled).active {
+    background-color: #efefef;
+    border-color: #aaa;
+}
+
+.aloha .aloha-split-button:not(.disabled).active:hover {
+    border-color: #666;
+}
+
+.aloha .aloha-split-button:not(.disabled).active .aloha-split-button-main:hover,
+.aloha .aloha-split-button:not(.disabled).active .aloha-split-button-secondary:hover {
+    background-color: #fefefe;
+}
+
+.aloha .aloha-split-button:not(.disabled).toggle-button:not(.active, .always-secondary) .aloha-split-button-secondary {
+    display: none;
+}
+
+.aloha .aloha-split-button.disabled {
+    background-color: #cbcbcb;
+    border-color: #7f7f7f;
+    color: #6f6f6f;
+    cursor: not-allowed;
+}
+
+.aloha .aloha-split-button.disabled .aloha-split-button-secondary {
+    cursor: not-allowed;
+}

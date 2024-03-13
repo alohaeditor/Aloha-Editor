@@ -1,0 +1,71 @@
+.aloha-date-time-picker {
+    position: relative;
+}
+
+.aloha-date-time-picker .aloha-picker-input {
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 16px;
+    padding: 4px;
+}
+
+.aloha-date-time-picker-dropdown {
+    position: absolute;
+    left: 0;
+    top: 0;
+    background: #fff;
+    padding: 6px 0px !important;
+    display: flex;
+    flex-direction: column;
+}
+
+.aloha-date-time-picker-dropdown > .confirm-button {
+    margin: 6px 6px 4px auto;
+}
+
+.aloha-date-time-picker-content {
+    width: 320px;
+}
+
+.aloha-date-time-picker-content .aloha-datepicker-element {
+    width: 100%;
+    padding: 0 6px;
+    box-sizing: border-box;
+}
+
+.aloha-date-time-picker-content .aloha-datepicker-element .ui-datepicker {
+    width: 100%;
+}
+
+.aloha-date-time-picker-content .aloha-time-input-container {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    margin-top: 12px;
+}
+
+.aloha-date-time-picker-content .aloha-time-input-container .aloha-time-input {
+    flex: 1 1 50%;
+    width: 50%;
+    padding: 0 6px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+.aloha-date-time-picker-content .aloha-time-input-container .aloha-time-spinner {
+    width: 100%;
+}
+
+.aloha-date-time-picker-content .aloha-time-input-container .aloha-time-spinner .ui-spinner {
+    display: flex;
+}
+
+.aloha-date-time-picker-content .aloha-time-input-container .aloha-time-spinner .ui-spinner-input {
+    width: 100%;
+}
+
+.aloha-date-time-picker-content:not(.with-time) .aloha-time-input-container {
+    display: none;
+}

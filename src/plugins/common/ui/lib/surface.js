@@ -1,3 +1,9 @@
+/** @typedef {import('./overlayElement').DynamicDropdownConfiguration} DynamicDropdownConfiguration */
+/** @typedef {import('./overlayElement').DynamicModalConfiguration} DynamicModalConfiguration */
+/** @typedef {import('./overlayElement').ConfirmDialogConfiguration} ConfirmDialogConfiguration */
+/** @typedef {import('./overlayElement').AlertDialogConfiguration} AlertDialogConfiguration */
+/** @typedef {import('./overlayElement').VoidFunction} VoidFunction */
+
 define([
 	'aloha/core',
 	'jquery',
@@ -18,8 +24,94 @@ define([
 	 * @base
 	 */
 	var Surface = Class.extend({
+		enabled: true,
+
 		_constructor: function (context) {
 			context.surfaces.push(this);
+		},
+
+		/**
+		 * Function to adopt/register a component to a specific slot.
+		 * Rendering of the component should be done when the slot for it is available.
+		 * @param {string} slot The slot that sohuld be registered for the component.
+		 * @param {*} component The component that should be registered.
+		 * @abstract
+		 */
+		adoptInto: function (slot, component) {
+			throw Error('Implement this function!');
+		},
+		/**
+		 * Clears a previously adopted slot.
+		 * @param {string} slot The slot that should be cleared.
+		 * @abstract
+		 */
+		unadopt: function(slot) {
+			throw Error('Implement this function!');
+		},
+
+		enable: function() {
+			this.enabled = true;
+		},
+		disable: function() {
+			this.enabled = false
+		},
+
+		/**
+		 * Show the Surface and it's content
+		 * @abstract
+		 */
+		show: function() {
+			throw Error('Implement this function!');
+		},
+		/**
+		 * Hide the Surface and it's content
+		 * @abstract
+		 */
+		hide: function() {
+			throw Error('Implement this function!');
+		},
+
+		/**
+		 * Opens a modal with a dynamic form configuration.
+		 * @template {*} T
+		 * @param {string} componentName - The name of the component/slot to where the dropdown should be opened to.
+		 * @param {DynamicDropdownConfiguration.<T>} config - The config for how to open the dropdown and what to display.
+		 * @returns {Promise.<OverlayElementControl.<T>>} - A Promise for a overlay element control.
+		 */
+		openDynamicDropdown: function(componentName, config) {
+			throw Error("Implement this function!");
+		},
+		/**
+		 * Opens a modal with a dynamic form configuration.
+		 * @template {*} T
+		 * @param {DynamicFormModalConfiguration.<T>} config - The config for how to open the modal and what to do with it.
+		 * @returns {Promise.<OverlayElementControl.<T>>} - A Promise for a overlay element control.
+		 */
+		openDynamicModal: function(config) {
+			throw Error("Implement this function!");
+		},
+		/**
+		 * Opens a dialog for the user to confirm/dismiss an action.
+		 * @param {ConfirmDialogConfiguration} config The configuration for the dialog.
+		 * @returns {VoidFunction} A function to call to close the dialog.
+		 */
+		openConfirmDialog: function(config) {
+			throw Error("Implement this function!");
+		},
+		/**
+		 * Opens an alert dialog/notification for the user.
+		 * @param {AlertDialogConfiguration} config The configuration for the dialog.
+		 * @returns {VoidFunction} A function to call to close the dialog.
+		 */
+		openAlertDialog: function(config) {
+			throw Error("Implement this function!");
+		},
+		/**
+		 * Attempts to set a tab as focused/active if this surface supports the toolbar tabs.
+		 * @param {string} tabId The Tab ID which should be focused/marked as active
+		 */
+		focusTab: function(tabId) {
+			// Not implemented
 		},
 
 		/**
@@ -29,7 +121,7 @@ define([
 		 * @eturn {boolean} True if this surface is visible.
 		 */
 		isActive: function () {
-			return true;
+			return this.enabled;
 		}
 	});
 

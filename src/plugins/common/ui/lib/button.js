@@ -1,16 +1,13 @@
-/**
- * NOTES:
- *    - Why do we maintain 2 references to the DOM element for a button
- *    component (this.element = this.buttonElement)?
- */
-
 define([
 	'jquery',
 	'ui/component',
 	'ui/utils',
 	'jqueryui'
-],
-function (jQuery, Component, Utils) {
+], function (
+	$,
+	Component,
+	Utils
+) {
 	'use strict';
 
 	/**
@@ -21,7 +18,8 @@ function (jQuery, Component, Utils) {
 	 * An extending class should optionally define the following properties
 	 * tooltip - the internationalized tooltip text,
 	 * icon    - the icon class,
-	 * class   - an additional class to add to the button element,
+	 * text	   - the text to display in the button (usually empty)
+	 * iconOnly - If it should only render the icon (default: true)
 	 * click   - the click handler for the button.
 	 *
 	 * @class
@@ -29,6 +27,32 @@ function (jQuery, Component, Utils) {
 	 * @extends {Component}
 	 */
 	var Button = Component.extend({
+		type: 'button',
+
+		/** @type {string=} Text in the button. */
+		text: '',
+		/** @type {string=} The tooltip text/content to display when the button is hovered over. */
+		tooltip: '',
+		/** @type {(string)=} The icon (CSS-Class) to use for this button. */
+		icon: '',
+		/** @type {boolean} If it should only show the icon. */
+		iconOnly: true,
+		/** @type {boolean} If the icon should be displayed hollow (Fill off, see Material Symbols). */
+		iconHollow: false,
+
+		// Internals
+
+		/**
+		 * The reference to the button. Usually the same as `element`, but button extensions might
+		 * wrap the button in an additional container.
+		 */
+		_$buttonElement: null,
+
+		/** The reference to the icon element. */
+		_$iconElement: null,
+
+		/** The reference to the text element. */
+		_$textElement: null,
 
 		/**
 		 * Initializes this button instance.
@@ -42,16 +66,9 @@ function (jQuery, Component, Utils) {
 		init: function () {
 			this._super();
 			this.createButtonElement();
-			Utils.makeButton(this.buttonElement, this)
-				.button('widget')
-				.tooltip({
-					tooltipClass: 'aloha aloha-ui-tooltip',
-					position: {
-						my: 'left top',
-						at: 'right bottom'
-					}
-				})// fix for IE7,8 so the icon shown disabled
-				.click(jQuery.proxy(function () {
+			this._$buttonElement
+				// fix for IE7,8 so the icon shown disabled
+				.click($.proxy(function () {
 
 					// Ensure tooltips are always hidden after a button
 					// is clicked because sometimes the tooltip doesn't
@@ -67,7 +84,7 @@ function (jQuery, Component, Utils) {
 
 		closeTooltip: function () {
 			// 'close', /*event*/, /*force*/
-			this.buttonElement.tooltip('close', null, true);
+			this._$buttonElement.tooltip('close', null, true);
 		},
 
 		/**
@@ -78,6 +95,7 @@ function (jQuery, Component, Utils) {
 		 * @protected
 		 */
 		_onClick: function () {
+			this.touch();
 			this.click();
 		},
 
@@ -89,15 +107,46 @@ function (jQuery, Component, Utils) {
 		/**
 		 * Creates the DOM element to be rendered for user interaction.
 		 *
-		 * @return {jQuery<HTMLElement>}
+		 * @return {$<HTMLElement>}
 		 */
 		createButtonElement: function () {
-			var button = Utils.makeButtonElement();
-
-			if (this['class']) {
-				button.addClass(this['class']);
+			this._$iconElement = $('<i>', {
+				class: 'aloha-button-icon material-symbols-outlined',
+				text: this.icon,
+			});
+			if (this.iconHollow) {
+				this._$iconElement.addClass('hollow');
 			}
-			this.element = this.buttonElement = button;
+
+			this._$textElement = $('<span>', {
+				class: 'aloha-button-text',
+				text: this.text,
+			});
+
+			var button = $('<button>', {
+				class: 'aloha-button ui-widget',
+				attr: {
+					type: 'button',
+					role: 'button',
+				},
+			})
+				.append(this._$iconElement, this._$textElement)
+				.tooltip({
+					tooltipClass: 'aloha aloha-ui-tooltip',
+					position: {
+						my: 'left top',
+						at: 'right bottom'
+					}
+				});
+
+			if (!this.icon) {
+				this._$iconElement.hide();
+			}
+			if (this.iconOnly) {
+				button.addClass('icon-only');
+			}
+
+			this.element = this._$buttonElement = button;
 
 			var that = this;
 			button.on('mouseleave', function () {
@@ -107,18 +156,65 @@ function (jQuery, Component, Utils) {
 			return button;
 		},
 
+		setIcon: function(icon) {
+			this.icon = icon;
+
+			this._$iconElement.text(icon);
+			if (this.icon) {
+				this._$iconElement.show();
+			} else {
+				this._$iconElement.hide();
+			}
+		},
+
+		setIconOnly: function(iconOnly) {
+			this.iconOnly = iconOnly;
+
+			if (iconOnly) {
+				this._$buttonElement.addClass('icon-only');
+			} else {
+				this._$buttonElement.removeClass('icon-only');
+			}
+		},
+		setIconHollow: function(hollow) {
+			this.iconHollow = hollow;
+
+			if (hollow) {
+				this._$iconElement.addClass('hollow');
+			} else {
+				this._$iconElement.removeClass('hollow');
+			}
+		},
+
+		setText: function(text) {
+			this.text = text;
+
+			this._$textElement.text(text);
+		},
+
+		setTooltip: function(tooltip) {
+			this.tooltip = tooltip;
+
+			// Update the icon in the create button instance
+			if (this._$buttonElement) {
+				this._$buttonElement.tooltip('option', 'content', tooltip);
+			}
+		},
+
 		/**
 		 * Shows the button in a greyed-out inactive (unclickable) state.
 		 */
 		disable: function () {
-			this.element.button('option', 'disabled', false);
+			this._super();
+			this._$buttonElement.attr('disabled', 'disabled');
 		},
 
 		/**
 		 * Enables the button again after it has previously been disabled.
 		 */
-		enable: function (enable_opt) {
-			this.element.button('option', 'disabled', enable_opt === false);
+		enable: function () {
+			this._super();
+			this._$buttonElement.removeAttr('disabled');
 		}
 	});
 

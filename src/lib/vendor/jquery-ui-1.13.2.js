@@ -4892,7 +4892,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					return toHide.animate( this.hideProps, duration, easing, complete );
 				}
 
-				total = parseInt(toShow.show().css("height"))+parseInt(toShow.show().css("padding-top"))+parseInt(toShow.show().css("padding-bottom")) 
+				total = parseInt(toShow.show().css("height"))+parseInt(toShow.show().css("padding-top"))+parseInt(toShow.show().css("padding-bottom"))
 				toHide.animate( this.hideProps, {
 					duration: duration,
 					easing: easing,
@@ -6959,7 +6959,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 						}
 					} );
 				}
-				
+
 			},
 
 			_enhance: function() {
@@ -7139,25 +7139,25 @@ define('jqueryui', ['jquery'], function (jQuery) {
 					icons = this.options.icons,
 					multipleIcons = icons.primary && icons.secondary,
 					buttonClasses = [];
-		
+
 				if ( icons.primary || icons.secondary ) {
-					
+
 					if ( this.options.text ) {
 						buttonClasses.push( "ui-button-text-icon" + ( multipleIcons ? "s" : ( icons.primary ? "-primary" : "-secondary" ) ) );
 					}
-		
+
 					if ( icons.primary ) {
 						buttonElement.prepend( "<span class='ui-button-icon-primary ui-icon " + icons.primary + "'></span>" );
 					}
-		
+
 					if ( icons.secondary ) {
 						buttonElement.append( "<span class='ui-button-icon-secondary ui-icon " + icons.secondary + "'></span>" );
 					}
-		
+
 					if ( !this.options.text ) {
 						buttonClasses.push( multipleIcons ? "ui-button-icons-only" : "ui-button-icon-only" );
-		
-						
+
+
 					}
 				} else {
 					buttonClasses.push( "ui-button-text-only" );
@@ -11438,7 +11438,7 @@ define('jqueryui', ['jquery'], function (jQuery) {
 				};
 
 				this.sizeDiff = {
-					width:  parseInt(element.css("padding-left")) + parseInt(element.css("padding-right")),
+					width:  parseInt(el.css("padding-left")) + parseInt(el.css("padding-right")),
 					height: parseInt(el.css("padding-top"))+parseInt(el.css("padding-bottom"))
 				};
 
@@ -12086,8 +12086,8 @@ define('jqueryui', ['jquery'], function (jQuery) {
 						el.data( "ui-resizable-alsoresize", {
 						width: parseFloat( parseInt(el.css("width")) ), height: parseFloat( parseInt(el.css("height")) ),
 
-				
-						
+
+
 
 						left: parseFloat( el.css( "left" ) ), top: parseFloat( el.css( "top" ) )
 					} );

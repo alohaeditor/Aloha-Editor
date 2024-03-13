@@ -1,0 +1,31 @@
+.aloha-dropdown.aloha-ui {
+	position: fixed;
+	/* Has to be insanely high, because the toolbar is 10100 */
+	z-index: 20002;
+	background: #fff;
+	border-radius: 2px;
+	box-shadow: 2px 2px 2px rgba(0,0,0,0.5);
+	padding: 8px;
+}
+
+.aloha-dropdown .dropdown-confirm-button {
+	display: block;
+	padding: 8px 16px;
+	border-radius: 1px;
+	box-shadow: 2px 2px 2px rgba(0,0,0,0.2);
+	cursor: pointer;
+	color: #000;
+	transition: 300ms;
+	background: #97f476;
+	margin-top: 4px;
+}
+
+.aloha-dropdown .dropdown-confirm-button:hover {
+	background: #6eee40;
+}
+
+.aloha-dropdown .dropdown-confirm-button[disabled],
+.aloha-dropdown .dropdown-confirm-button:disabled {
+	background: #828282;
+	cursor: not-allowed;
+}

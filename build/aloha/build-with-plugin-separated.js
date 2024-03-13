@@ -645,10 +645,6 @@
       name: 'wai-lang/wai-lang-plugin',
       exclude: ['aloha', 'ui/ui-plugin']
     }
-    //{
-    //  name: 'zemanta/zemanta-plugin',
-    //  exclude: ['aloha', 'ui/ui-plugin']
-    //}
 
     //This module entry shows how to specify a specific module be excluded
     //from the built module file. excludeShallow means just exclude that

@@ -88,13 +88,15 @@
 
 define('ui/ui', [
 	'jquery',
-	'ui/ui-plugin'
+	'aloha/core'
 ],
 function (
 	$,
-	UiPlugin
+	Aloha
 ) {
 	'use strict';
+
+	var UiPlugin;
 
 	/**
 	 * A hash map of components mapped against the slots into which they have
@@ -141,6 +143,10 @@ function (
 	function adopt(name, SuperTypeOrInstance, settings) {
 		var Type,
 		    component;
+
+		if (UiPlugin == null) {
+			UiPlugin = Aloha.require('ui/ui-plugin');
+		}
 
 		if ('string' !== $.type(name)) {
 			settings = SuperTypeOrInstance;

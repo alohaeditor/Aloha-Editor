@@ -23,6 +23,7 @@ define([
 	 * @extends {Component}
 	 */
 	var MultiSplit = Component.extend({
+		type: 'multi-split',
 
 		_activeButton: null,
 		_isOpen: false,
@@ -32,6 +33,7 @@ define([
 		 */
 		init: function () {
 			this._super();
+
 			var multiSplit = this;
 			var element = this.element = $('<div>', {
 				'class': 'aloha-multisplit'
@@ -42,8 +44,9 @@ define([
 			var toggle = this.toggleButton = Utils.makeButtonElement({
 				'class': 'aloha-multisplit-toggle',
 				click: function () {
+					this.touch();
 					multiSplit.toggle();
-				}
+				},
 			}).button().appendTo(element);
 
 			this.buttons = [];
@@ -60,9 +63,11 @@ define([
 			}
 
 			$('body').click(function (event) {
-				if (multiSplit._isOpen &&
-			        !multiSplit.element.is(event.target) &&
-			        0 === multiSplit.element.find(event.target).length) {
+				if (
+					multiSplit._isOpen &&
+					!multiSplit.element.is(event.target) &&
+					0 === multiSplit.element.find(event.target).length
+				) {
 					multiSplit.close();
 				}
 			});
@@ -107,6 +112,7 @@ define([
 					}
 				},
 				click: function () {
+					multiSplit.touch();
 					props.click.apply(multiSplit, arguments);
 					multiSplit.close();
 				}
@@ -138,14 +144,14 @@ define([
 			if (!name) {
 				name = null;
 			}
-			if (null !== this._activeButton) {
+			if (null != this._activeButton) {
 				this.buttons[this._activeButton]
-				    .element.removeClass('aloha-multisplit-active');
+					.element.removeClass('aloha-multisplit-active');
 			}
 			this._activeButton = name;
-			if (null !== name) {
+			if (null != name) {
 				this.buttons[name]
-				    .element.addClass('aloha-multisplit-active');
+					.element.addClass('aloha-multisplit-active');
 			}
 		},
 
@@ -242,7 +248,7 @@ define([
 					}
 				}
 			}
-		}
+		},
 	});
 
 	/**
