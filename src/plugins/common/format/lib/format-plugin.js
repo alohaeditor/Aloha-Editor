@@ -213,7 +213,7 @@ define('format/format-plugin', [
 		}
 	}
 
-	function formatInsideTableWorkaround(button) {
+	function formatInsideTableWorkaround(nodeType) {
 		var selectedCells = jQuery('.aloha-cell-selected');
 		if (selectedCells.length < 1) {
 			return false;
@@ -222,7 +222,7 @@ define('format/format-plugin', [
 		var cellMarkupCounter = 0;
 		selectedCells.each(function () {
 			var cellContent = jQuery(this).find('div'),
-				cellMarkup = cellContent.find(button);
+				cellMarkup = cellContent.find(nodeType);
 			if (cellMarkup.length > 0) {
 				// unwrap all found markup text
 				// <td><b>text</b> foo <b>bar</b></td>
@@ -231,22 +231,22 @@ define('format/format-plugin', [
 				cellMarkup.contents().unwrap();
 				cellMarkupCounter++;
 			}
-			cellContent.contents().wrap('<' + button + '></' + button + '>');
+			cellContent.contents().wrap('<' + nodeType + '></' + nodeType + '>');
 		});
 
 		// remove all markup if all cells have markup
 		if (cellMarkupCounter === selectedCells.length) {
-			selectedCells.find(button).contents().unwrap();
+			selectedCells.find(nodeType).contents().unwrap();
 		}
 
 		return true;
 	}
 
-	function textLevelButtonClickHandler(formatPlugin, button) {
-		if (formatInsideTableWorkaround(button)) {
+	function textLevelButtonClickHandler(formatPlugin, nodeType, commandName) {
+		if (formatInsideTableWorkaround(nodeType)) {
 			return false;
 		}
-		formatPlugin.addMarkup(button);
+		formatPlugin.addMarkup(nodeType, commandName);
 		return false;
 	}
 
@@ -369,7 +369,7 @@ define('format/format-plugin', [
 		return config ? $.inArray(tagname, config) > -1 : false;
 	}
 
-	function addMarkup(nodeType) {
+	function addMarkup(nodeType, command) {
 		var formatPlugin = this,
 			markup = jQuery('<' + nodeType + '>'),
 			rangeObject = Selection.rangeObject;
@@ -406,7 +406,7 @@ define('format/format-plugin', [
 				if (rangeObject.isCollapsed()) {
 					if (StateOverride.enabled()) {
 						StateOverride.setWithRangeObject(
-							formatPlugin.commandsByElement[nodeType],
+							command || nodeType,
 							rangeObject,
 							function (command, rangeObject) {
 								format(formatPlugin, rangeObject, markup);
@@ -1032,7 +1032,7 @@ define('format/format-plugin', [
 				icon: settings.icon,
 				pure: true,
 				click: function () {
-					return textLevelButtonClickHandler(_this, nodeType);
+					return textLevelButtonClickHandler(_this, nodeType, name);
 				}
 			});
 
