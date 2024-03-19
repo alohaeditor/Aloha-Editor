@@ -197,7 +197,7 @@ define([
 
         Object.entries(config.controls).forEach(function (data) {
             var controlName = data[0];
-            var controlConfig = data[1];
+            var controlConfig = Object.assign({}, data[1], { renderContext: 'modal' });
 
             var validationHandler = function (value) {
                 if (typeof controlConfig.validate === 'function') {

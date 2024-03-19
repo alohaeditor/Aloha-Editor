@@ -303,7 +303,7 @@ define([
         }
 
         var component = DynamicForm.createComponentFromConfig(
-            config,
+            Object.assign({}, config, { renderContext: 'dropdown' }),
             applyValueHandler,
             validationHandler,
             changeHandler,

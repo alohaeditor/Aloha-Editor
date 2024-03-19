@@ -45,6 +45,14 @@ define([
 		type: null,
 
 		/**
+		 * @type {'dropdown' | 'modal' | null} In which kind of rendering-context this component resides in.
+		 * This is useful if you want to have different styling or behaviour, depending if it's visible in the regular
+		 * toolbar/ui, or if it's visible somewhere else.
+		 * If `null`/not specified, it's the default context, which should be considered the toolbar.
+		 */
+		renderContext: null,
+
+		/**
 		 * @type {boolean} Whether or not this component is visible.
 		 */
 		visible: true,
