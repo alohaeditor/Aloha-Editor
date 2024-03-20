@@ -26,9 +26,11 @@
  */
 define([
 	'jquery',
+	'PubSub',
 	'aloha/pluginmanager'
 ], function (
 	$,
+	PubSub,
 	PluginManager
 ) {
 	'use strict';
@@ -442,6 +444,9 @@ define([
 				}
 			}
 			Aloha.activeEditable = editable;
+			PubSub.pub('aloha.editable.set-active', {
+				editable: editable
+			});
 		},
 
 		/**
@@ -461,6 +466,10 @@ define([
 			if (Aloha.activeEditable) {
 				Aloha.activeEditable.blur();
 				Aloha.activeEditable = null;
+
+				PubSub.pub('aloha.editable.set-active', {
+					editable: null
+				});
 			}
 		},
 
