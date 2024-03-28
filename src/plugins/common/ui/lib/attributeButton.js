@@ -126,7 +126,7 @@ define([
         activateInput: function(openSidebar) {
             this.inputActive = true;
             if (this.panelRef) {
-                if (openSidebar) {
+                if (openSidebar && Aloha.Sidebar && !Aloha.Sidebar.disabled) {
                     Aloha.Sidebar.right.open();
                 }
                 this.panelRef.activate();

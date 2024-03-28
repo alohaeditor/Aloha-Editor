@@ -10,9 +10,8 @@
  * For example, most plugins depend on the ui-plugin - so, they must
  * explicitly exclude the ui-plugin, otherwise the ui-plugin may be
  * compiled into multiple plugins. Additionally, the ui-plugin exposes
- * multiple .js files (toggleButton.js, menuButton.js) on which the
- * ui-plugin itself doesn't have a dependency - so, they must be
- * explicitly included.
+ * multiple .js files on which the ui-plugin itself doesn't have a
+ * dependency - so, they must be explicitly included.
  *
  * The same issue applies to the core, which is treated as just another
  * module by r.js.
@@ -469,10 +468,7 @@
         'ui/arena',
         'ui/autocomplete',
         'ui/dialog',
-        'ui/menuButton',
         'ui/multiSplit',
-        'ui/port-helper-attribute-field',
-        'ui/port-helper-multi-split',
         'ui/text',
         'ui/toggleButton'
       ],
