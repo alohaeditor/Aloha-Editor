@@ -16,7 +16,6 @@ define([
 	'ui/icons',
 	'ui/attributeToggleButton',
 	'ui/scopes',
-	'ui/port-helper-attribute-field',
 	'format/format-plugin',
 	'util/dom',
 	'i18n!cite/nls/i18n'
@@ -31,7 +30,6 @@ define([
 	Icons,
 	AttributeToggleButton,
 	Scopes,
-	AttributeField,
 	Format,
 	domUtils,
 	i18n
@@ -173,42 +171,6 @@ define([
 	};
 
 	/**
-	 * Initialization to show the required inputs in the Aloha toolbar.
-	 * @param plugin
-	 */
-	function initShowOnToolbar(plugin) {
-		plugin.citeHrefField = AttributeField({
-			name: 'editCite',
-			width: 320,
-			placeholder: 'Link',
-			cls: 'aloha-cite-href-field',
-			noTargetHighlight: false,
-			targetHighlightClass: 'aloha-focus'
-		});
-
-		plugin.citeNoteField = AttributeField({
-			name: 'editNote',
-			width: 320,
-			placeholder: 'Note',
-			cls: 'aloha-cite-note-href-field',
-			noTargetHighlight: false,
-			targetHighlightClass: 'aloha-focus'
-		});
-
-		if (!plugin.referenceContainer) {
-			plugin.citeNoteField.setValue('');
-			plugin.citeNoteField.hide();
-		}
-
-		var onSaveInputs = function () {
-			saveCiteDetails(plugin);
-		}
-
-		plugin.citeHrefField.getInputJQuery().on('keyup change', onSaveInputs);
-		plugin.citeNoteField.getInputJQuery().on('keyup change', onSaveInputs);
-	}
-
-	/**
 	 * Initializes the sidebar.
 	 *
 	 * Note that if the sidebar is not loaded, aloha-sidebar-initialized will
@@ -247,10 +209,6 @@ define([
 						var noteValue = panel.content.find(nsSel('note-field textarea')).val();
 						var linkValue = panel.content.find(nsSel('link-field input')).val();
 
-						if (plugin.showOnToolbar) {
-							plugin.citeNoteField.setValue(noteValue);
-							plugin.citeHrefField.setValue(linkValue);
-						}
 						plugin.addCiteDetails(
 							panel.content.attr('data-cite-id'),
 							linkValue,
@@ -312,8 +270,6 @@ define([
 			if (Aloha.settings && Aloha.settings.plugins && Aloha.settings.plugins.cite) {
 
 				var referenceContainer = $(Aloha.settings.plugins.cite.referenceContainer);
-
-				plugin.showOnToolbar = !!Aloha.settings.plugins.cite.showOnToolbar;
 
 				if (referenceContainer.length) {
 					plugin.referenceContainer = referenceContainer;
@@ -396,10 +352,6 @@ define([
 				plugin._quoteButton.show(!!config.quote);
 			});
 
-			if (plugin.showOnToolbar) {
-				initShowOnToolbar(plugin);
-			}
-
 			PubSub.sub('aloha.editable.destroyed', function (message) {
 				delete configurations[message.editable.getId()];
 			});
@@ -423,21 +375,6 @@ define([
 						blockquoteFound = true;
 						assureCitationHasId($(effective[i]));
 						$.merge(plugin.effective, $(effective[i]));
-					}
-				}
-
-				if (plugin.showOnToolbar) {
-					if (quoteFound || blockquoteFound) {
-						plugin.citeHrefField.show();
-
-						updateCiteInputs(plugin);
-						Scopes.enterScope(plugin.name);
-
-						plugin.citeHrefField.foreground();
-					} else {
-						plugin.citeHrefField.hide();
-
-						Scopes.leaveScope(plugin.name);
 					}
 				}
 
