@@ -18,7 +18,7 @@ define([
     'ui/toggleButton',
 	'ui/contextButton',
 	'ui/icons',
-	'ui/overlayElement',
+	'ui/utils',
 ],
 function (
 	jQuery,
@@ -31,7 +31,7 @@ function (
 	ToggleButton,
 	ContextButton,
 	Icons,
-	OverlayElement
+	Utils
 ) {
 	'use strict';
 
@@ -174,7 +174,7 @@ function (
 					plugin.srcChange();
 				},
 				contextReject: function (error) {
-					if (error instanceof OverlayElement.OverlayCloseError && error.reason !== OverlayElement.ClosingReason.CANCEL) {
+					if (!Utils.isUserCloseError(error)) {
 						console.log(error);
 					}
 				}

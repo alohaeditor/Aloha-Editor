@@ -7,13 +7,15 @@ define([
     'ui/button',
     'ui/dropdown',
     'ui/modal',
-    'ui/overlayElement'
+    'ui/overlayElement',
+    'ui/utils'
 ], function (
     $,
     Button,
     Dropdown,
     Modal,
-    OverlayElement
+    OverlayElement,
+    Utils
 ) {
     'use strict';
 
@@ -99,14 +101,10 @@ define([
                 })
                 .catch(function (error) {
                     _this.contextReject(error);
-                    if (
-                        error instanceof OverlayElement.OverlayCloseError
-                        && error.reason !== OverlayElement.ClosingReason.ERROR
-                    ) {
-                        // This is a "notification" error which can be safely dismissed.
-                        _this.contextControl = null;
-                        return;
-                    }
+
+                    try {
+                        return Utils.handleUserCloseErrors(error);
+                    } catch (ignored) { }
 
                     console.error('Error while opening dynamic dropdown for context button', this, error);
                     _this.contextControl = null;

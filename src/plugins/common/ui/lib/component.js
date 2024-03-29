@@ -45,6 +45,13 @@ define([
 		type: null,
 
 		/**
+		 * The name/slot this component is being rendered in.
+		 * Will set when this component is being adopted.
+		 * @type {string}
+		 */
+		name: null,
+
+		/**
 		 * @type {'dropdown' | 'modal' | null} In which kind of rendering-context this component resides in.
 		 * This is useful if you want to have different styling or behaviour, depending if it's visible in the regular
 		 * toolbar/ui, or if it's visible somewhere else.

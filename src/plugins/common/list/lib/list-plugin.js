@@ -7,10 +7,12 @@
  */
 define([
 	'aloha',
+	'PubSub',
 	'jquery',
 	'aloha/plugin',
 	'aloha/content-rules',
 	'aloha/engine',
+	'util/contenthandler',
 	'util/dom',
 	'ui/ui',
 	'ui/icons',
@@ -18,16 +20,16 @@ define([
 	'ui/button',
 	'ui/toggleSplitButton',
 	'ui/dropdown',
-	'ui/overlayElement',
-	'util/contenthandler',
-	'PubSub',
+	'ui/utils',
 	'i18n!list/nls/i18n'
 ], function (
 	Aloha,
+	PubSub,
 	$,
 	Plugin,
 	ContentRules,
 	Engine,
+	ContentHandlerUtils,
 	Dom,
 	Ui,
 	Icons,
@@ -35,9 +37,7 @@ define([
 	Button,
 	ToggleSplitButton,
 	Dropdown,
-	OverlayElement,
-	ContentHandlerUtils,
-	PubSub,
+	Utils,
 	i18n
 ) {
 	'use strict';
@@ -462,7 +462,7 @@ define([
 				}).then(function (selection) {
 					that.setListStyle(type, selection.id);
 				}).catch(function (error) {
-					if (error instanceof OverlayElement.OverlayCloseError && error.reason === OverlayElement.ClosingReason.ERROR) {
+					if (!Utils.isUserCloseError(error)) {
 						console.log(error);
 					}
 				});

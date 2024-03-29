@@ -31,8 +31,10 @@ define('format/format-plugin', [
 	'ui/ui',
 	'ui/button',
 	'ui/toggleButton',
+	'ui/splitButton',
 	'ui/icons',
-	'ui/contextButton',
+	'ui/dropdown',
+	'ui/utils',
 	'i18n!format/nls/i18n'
 ], function (
 	jQuery,
@@ -51,14 +53,21 @@ define('format/format-plugin', [
 	Ui,
 	Button,
 	ToggleButton,
+	SplitButton,
 	Icons,
-	ContextButton,
+	Dropdown,
+	Utils,
 	i18n
 ) {
 	'use strict';
 
 	var $ = jQuery;
 	var pluginNamespace = 'aloha-format';
+
+	/** Class which needs to be set on headers when the IDs are manually set. */
+	var CLASS_CUSTOMIZED = 'aloha-customized';
+
+	var ATTR_HEADER_ID = 'id';
 
 	/**
 	 * Checks if the selection spans a whole node (HTML element)
@@ -461,9 +470,9 @@ define('format/format-plugin', [
 
 		// Typography/Blocklevel formats like h1
 		if (formatPlugin.typographyButton) {
-			var typographyElements = Object.entries(formatPlugin.config).filter(function(entry) {
+			var typographyElements = Object.entries(formatPlugin.config).filter(function (entry) {
 				return entry[1].typography;
-			}).map(function(entry) {
+			}).map(function (entry) {
 				return entry[0];
 			});
 			var effectiveTypo = null;
@@ -484,14 +493,17 @@ define('format/format-plugin', [
 				}
 			}
 
+			/** @type {FormattingOption|null} */
 			var settings = formatPlugin.config[effectiveTypo];
 			if (!settings) {
 				settings = Object.assign({}, DEFAULT_CONFIG[effectiveTypo], settings);
 			}
+
 			formatPlugin.activeTypography = effectiveTypo;
 			formatPlugin.typographyElement$ = typoElement ? $(typoElement) : null;
 			formatPlugin.typographyButton.setIcon(settings.icon || Icons.TYPOGRAPHY);
 			formatPlugin.typographyButton.setText(settings.label || i18n.t('button.typography.tooltip'));
+			formatPlugin.typographyButton.setSecondaryVisible(settings != null && settings.typography && settings.header);
 		}
 
 		handlePreformattedText(rangeObject.commonAncestorContainer);
@@ -869,7 +881,7 @@ define('format/format-plugin', [
 			this.buttons = {};
 
 			// First create all the regular formatting buttons
-			Object.entries(this.config).forEach(function(entry) {
+			Object.entries(this.config).forEach(function (entry) {
 				var nodeName = entry[0];
 				var settings = entry[1];
 
@@ -902,119 +914,48 @@ define('format/format-plugin', [
 				markup: null,
 			};
 
-			var latestOptions = [];
-
-			this.typographyButton = Ui.adopt('typographyMenu', ContextButton, {
+			this.typographyButton = Ui.adopt('typographyMenu', SplitButton, {
 				icon: Icons.TYPOGRAPHY,
 				text: i18n.t('button.typography.tooltip'),
 				iconOnly: false,
 
-				context: function() {
-					var headerId = null;
-					if (that.typographyElement$) {
-						headerId = that.typographyElement$.attr('id');
+				click: function () {
+					var data = Dropdown.openDynamicDropdown(that.typographyButton.name, that._createTypographyContext());
+					if (!data) {
+						return;
 					}
 
-					latestOptions = Object.entries(that.config).map(function(entry) {
-						var nodeName = entry[0];
-						var settings = entry[1];
-
-						// Get default config if possible
-						if (settings == null || typeof settings !== 'object') {
-							// If it isn't enabled, ignore it
-							if (settings !== true) {
-								return null;
-							}
-
-							settings = DEFAULT_CONFIG[nodeName];
-						} else {
-							// Allow partial settings, but fill in default values
-							settings = Object.assign({}, DEFAULT_CONFIG, settings);
+					data.then(function(ctl) {
+						return ctl.value;
+					}).then(function (result) {
+						that._applyTypography(result.id);
+					}).catch(function (error) {
+						if (!Utils.isUserCloseError(error)) {
+							console.error(error);
 						}
-
-						// If there's no settings, we have to ignore it
-						if (!settings) {
-							return null;
-						}
-
-						// Only check for typography buttons
-						if (!settings.typography) {
-							return null;
-						}
-
-						var out = {
-							id: nodeName,
-							label: settings.label,
-							icon: settings.icon,
-						};
-
-						if (settings.header) {
-							out.isMultiStep = true;
-							out.multiStepContext = {
-								type: 'input',
-								options: {
-									label: i18n.t('button.header_id.input'),
-								},
-								label: settings.label,
-								initialValue: headerId,
-							};
-						}
-
-						return out;
-					}).filter(function(option) {
-						return option != null;
 					});
-
-					return {
-						type: 'select-menu',
-						options: {
-							iconsOnly: false,
-							options: latestOptions,
-						},
-						initialValue: that.activeTypography,
-					};
 				},
 
-				contextResolve: function(result) {
-					var oldTypography = that.activeTypography;
-					that.activeTypography = result.id;
-					/** @type {FormattingOption|null} */
-					var resultSettings = that.config[result.id];
-					if (!resultSettings) {
-						resultSettings = DEFAULT_CONFIG[result.id];
+				secondaryClick: function () {
+					/** @type {FormattingOption} */
+					var settings = that.config[that.activeTypography];
+					if (!settings) {
+						settings = DEFAULT_CONFIG[that.activeTypography];
 					}
-					
-					PubSub.pub('aloha.format.pre_change', {
-						level: 'block',
-						oldFormat: oldTypography,
-						newFormat: that.activeTypography,
-					});
-					
-					changeMarkup(that, that.activeTypography);
 
-					// Only if it's a header typography option and a selection is available
-					if (
-						resultSettings != null
-						&& resultSettings.typography
-						&& resultSettings.header
-						&& Selection.rangeObject != null
-						&& Array.isArray(Selection.rangeObject.markupEffectiveAtStart)
-						&& Selection.rangeObject.markupEffectiveAtStart.length > 0
-					) {
-						// Attempt to find the newly formatted header element
-						var found = Selection.rangeObject.markupEffectiveAtStart.find(function(elem) {
-							return elem.nodeName.toLowerCase() === that.activeTypography;
-						});
-						// Apply the id if found
-						if (found) {
-							$(found).attr('id', result.value);
+					var data = Dropdown.openDynamicDropdown(that.typographyButton.name, that._createHeaderIdContext(settings));
+					if (!data) {
+						return;
+					}
+
+					data.then(function(ctl) {
+						return ctl.value;
+					}).then(function (value) {
+						that._applyHeaderId((value || '').trim());
+					}).catch(function (error) {
+						if (!Utils.isUserCloseError(error)) {
+							console.error(error);
 						}
-					}
-
-					PubSub.pub('aloha.format.changed', {
-						level: 'block',
-						oldFormat: oldTypography,
-						newFormat: that.activeTypography,
 					});
 				},
 			});
@@ -1024,7 +965,113 @@ define('format/format-plugin', [
 			});
 		},
 
-		makeTextLevelButton: function(nodeType, settings) {
+		_createTypographyContext: function () {
+			var latestOptions = Object.entries(this.config).map(function (entry) {
+				var nodeName = entry[0];
+				var settings = entry[1];
+
+				// Get default config if possible
+				if (settings == null || typeof settings !== 'object') {
+					// If it isn't enabled, ignore it
+					if (settings !== true) {
+						return null;
+					}
+
+					settings = DEFAULT_CONFIG[nodeName];
+				} else {
+					// Allow partial settings, but fill in default values
+					settings = Object.assign({}, DEFAULT_CONFIG, settings);
+				}
+
+				// If there's no settings, we have to ignore it
+				if (!settings) {
+					return null;
+				}
+
+				// Only check for typography buttons
+				if (!settings.typography) {
+					return null;
+				}
+
+				var out = {
+					id: nodeName,
+					label: settings.label,
+					icon: settings.icon,
+				};
+
+				return out;
+			}).filter(function (option) {
+				return option != null;
+			});
+
+			return {
+				type: 'select-menu',
+				options: {
+					iconsOnly: false,
+					options: latestOptions,
+				},
+				initialValue: this.activeTypography,
+			};
+		},
+
+		/**
+		 * @param {string} typography
+		 */
+		_applyTypography: function (typography) {
+			var oldTypography = this.activeTypography;
+			this.activeTypography = typography;
+
+			PubSub.pub('aloha.format.pre_change', {
+				level: 'block',
+				oldFormat: oldTypography,
+				newFormat: this.activeTypography,
+			});
+
+			changeMarkup(this, this.activeTypography);
+
+			PubSub.pub('aloha.format.changed', {
+				level: 'block',
+				oldFormat: oldTypography,
+				newFormat: this.activeTypography,
+			});
+		},
+
+		/**
+		 * 
+		 * @param {FormattingOption} settings
+		 */
+		_createHeaderIdContext: function (settings) {
+			var headerId = null;
+			if (this.typographyElement$) {
+				headerId = this.typographyElement$.attr(ATTR_HEADER_ID);
+			}
+
+			return {
+				type: 'input',
+				options: {
+					label: i18n.t('button.header_id.input'),
+				},
+				initialValue: headerId,
+			};
+		},
+
+		_applyHeaderId: function (value) {
+			if (!this.typographyElement$) {
+				return;
+			}
+
+			$(this.typographyElement$).attr(ATTR_HEADER_ID, value);
+
+			// Add the customized class if a ID has been set. Otherwise remove it, so the headerids plugin
+			// could automatically add it again if needed/enabled.
+			if (value) {
+				$(this.typographyElement$).addClass(CLASS_CUSTOMIZED);
+			} else {
+				$(this.typographyElement$).removeClass(CLASS_CUSTOMIZED);
+			}
+		},
+
+		makeTextLevelButton: function (nodeType, settings) {
 			var _this = this;
 			var name = settings.name || nodeType;
 			var component = Ui.adopt(name, ToggleButton, {

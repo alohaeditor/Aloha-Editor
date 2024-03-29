@@ -468,7 +468,6 @@
         'ui/arena',
         'ui/autocomplete',
         'ui/dialog',
-        'ui/multiSplit',
         'ui/text',
         'ui/toggleButton'
       ],

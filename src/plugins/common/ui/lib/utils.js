@@ -25,13 +25,11 @@
  * recipients can access the Corresponding Source.
  */
 define([
-	'jquery',
-	'jqueryui',
-	'ui/scopes'
+	'ui/scopes',
+	'ui/overlayElement'
 ], function (
-	$,
-	_, // Unused
-	Scopes
+	Scopes,
+	OverlayElement
 ) {
 	'use strict';
 
@@ -143,83 +141,52 @@ define([
         });
     }
 
+	function isUserCloseError(error) {
+		return error instanceof OverlayElement.OverlayCloseError
+			&& error.reason !== OverlayElement.ClosingReason.ERROR;
+	}
+
 	/**
-	 * Wraps an element such that a label is displayed alongside it.
+	 * Util to ignore all errors which occur when a user closes a overlay pre-maturely.
+	 * Will re-throw the error if it's a legit one.
 	 *
-	 * Contrary to tooltips, a label is always visible and takes up
-	 * place in the toolbar.
-	 *
-	 * The label will wrap the given element to make an implicit
-	 * association between label and element (click on the label will
-	 * give focus to a wrapped input element for example).
-	 *
-	 * @param {string} labelText
-	 *       The already internationalized text the label should contain.
-	 * @param {!jQuery} element
-	 *       Any element to wrap.
-	 * @return {!jQuery}
-	 *       A new label element that wraps the given element.
+	 * @param {*} error The error which has been thrown
+	 * @param {*=} resolveValue The value that should be returned in the case it's a notification error.
+	 * @returns 
 	 */
-	function wrapWithLabel(labelText, element) {
-		return $('<label>', { 'class': 'aloha-ui-label' })
-			.append($('<span>', { 'class': 'aloha-ui-label-text', 'text': labelText }))
-			.append(element);
+	function handleUserCloseErrors(error, resolveValue) {
+		if (isUserCloseError(error)) {
+			// This is a "notification" error which can be safely dismissed.
+			_this.contextControl = null;
+			return resolveValue;
+		}
+
+		throw error;
 	}
 
-	function makeButton(button, props, hasMenu) {
-		button.button({
-			label: makeButtonLabel(props),
-			text: !!(props.text || props.html),
-			icons: {
-				primary: props.icon || (props.iconUrl && 'aloha-ui-inline-icon-container') || null,
-				secondary: (hasMenu && 'aloha-jqueryui-icon ui-icon-triangle-1-s') || null
-			}
+	/**
+	 * Wrapper for `handleUserCloseErrors`, which calls it on the promise' error handler.
+	 *
+	 * @param {Promise.<*>} promise A promise that should be handled
+	 * @param {*=} resolveValue The value that should be returned in the case it's a notification error.
+	 * @returns A promise which either resolves or throws the original error
+	 */
+	function ignoreUserCloseErrors(promise, resolveValue) {
+		return promise.catch(function(error) {
+			return handleUserCloseErrors(error, resolveValue);
 		});
-		if (props.iconUrl) {
-			button.button('widget')
-				.children('.ui-button-icon-primary')
-				.append(makeButtonIconFromUrl(props.iconUrl));
-		}
-		return button;
-	}
-
-	function makeButtonLabel(props) {
-		// TODO text should be escaped
-		return props.html || props.text || props.tooltip;
-	}
-
-	function makeButtonLabelWithIcon(props) {
-		var label = makeButtonLabel(props);
-		if (props.iconUrl) {
-			label = makeButtonIconFromUrl(props.iconUrl) + label;
-		}
-		return label;
-	}
-
-	function makeButtonIconFromUrl(iconUrl) {
-		return '<img class="aloha-ui-inline-icon" src="' + iconUrl + '">';
-	}
-
-	function makeButtonElement(attr) {
-		// Set type to button to avoid problems with IE which
-		// considers buttons to be of type submit by default. One
-		// problem that occurd was that hitting enter inside a
-		// text-input caused a click event in the button right next
-		// to it.
-		return $('<button>', attr).attr('type', 'button');
 	}
 
 	return {
+		// Color utils
 		normalizeScopeToFunction: normalizeScopeToFunction,
 		colorToRGBA: colorToRGBA,
 		colorToHex: colorToHex,
 		colorIsSame: colorIsSame,
 
-		wrapWithLabel: wrapWithLabel,
-		makeButton: makeButton,
-		makeButtonElement: makeButtonElement,
-		makeButtonLabel: makeButtonLabel,
-		makeButtonLabelWithIcon: makeButtonLabelWithIcon,
-		makeButtonIconFromUrl: makeButtonIconFromUrl
+		// Overlay utils
+		isUserCloseError: isUserCloseError,
+		handleUserCloseErrors: handleUserCloseErrors,
+		ignoreUserCloseErrors: ignoreUserCloseErrors,
 	};
 });

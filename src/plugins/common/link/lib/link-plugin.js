@@ -14,42 +14,43 @@
  */
 define([
 	'jquery',
+	'PubSub',
 	'aloha',
 	'aloha/plugin',
 	'aloha/ephemera',
 	'aloha/content-rules',
 	'util/dom',
+	'util/keys',
 	'ui/ui',
 	'ui/scopes',
 	'ui/toggleSplitButton',
 	'ui/icons',
-	'i18n!link/nls/i18n',
-	'PubSub',
-	'util/keys',
-	'link/link-target',
 	'ui/dynamicForm',
-	'ui/overlayElement',
+	'ui/utils',
 	'ui/modal',
-	'../../../shared/languages/languages'
+	'link/link-target',
+	'../../../shared/languages/languages',
+	'i18n!link/nls/i18n'
 ], function (
 	$,
+	PubSub,
 	Aloha,
 	Plugin,
 	Ephemera,
 	ContentRules,
 	Dom,
+	Keys,
 	Ui,
 	Scopes,
 	ToggleSplitButton,
 	Icons,
-	i18n,
-	PubSub,
-	Keys,
-	LinkTarget,
 	DynamicForm,
-	OverlayElement,
+	Utils,
 	Modal,
-	LanguageRepository
+	LinkTarget,
+	/** @deprecated */
+	LanguageRepository,
+	i18n
 ) {
 	'use strict';
 
@@ -59,6 +60,7 @@ define([
 
 	/**
 	 * Language repository
+	 * @deprecated
 	 */
 	var LANG_REPOSITORY;
 
@@ -305,7 +307,7 @@ define([
 						}).then(function (formValue) {
 							plugin.upsertLink(existingLink, formData);
 						}).catch(function (error) {
-							if (error instanceof OverlayElement.OverlayCloseError && error.reason !== OverlayElement.ClosingReason.ERROR) {
+							if (!Utils.isUserCloseError(error)) {
 								console.log(error);
 							}
 						})
@@ -503,7 +505,7 @@ define([
 			}).then(function (formData) {
 				plugin.upsertLink(existingLink, formData);
 			}).catch(function (error) {
-				if (error instanceof OverlayElement.OverlayCloseError && error.reason !== OverlayElement.ClosingReason.CANCEL) {
+				if (!Utils.isUserCloseError(error)) {
 					console.log(error);
 				}
 			})

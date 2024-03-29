@@ -18,6 +18,9 @@ define([
         /** @type {function} Function which is getting called whenever the secondary button is clicked. */
         secondaryClick: function () { },
 
+        /** @type {boolean} If the secondary button should be visible or not. */
+        secondaryVisible: true,
+
         // Internals
 
         _$secondaryButton: null,
@@ -64,6 +67,15 @@ define([
             this.element.addClass('disabled');
             this._$secondaryButton
                 .attr('disabled', 'disabled');
+        },
+
+        setSecondaryVisible: function(visible) {
+            this.secondaryVisible = visible;
+            if (this.secondaryVisible) {
+                this._$secondaryButton.show();
+            } else {
+                this._$secondaryButton.hide();
+            }
         }
     });
 

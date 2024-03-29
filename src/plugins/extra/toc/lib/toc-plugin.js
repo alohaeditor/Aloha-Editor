@@ -35,6 +35,8 @@ define([
 	var allTocs = [];
 	var configurations = {};
 
+	var CLASS_CUSTOMIZED = 'aloha-customized';
+
 	/* helper functions */
 	function last(a) { return a[a.length - 1]; }
 	function head(a) { return a[0]; }
@@ -243,14 +245,24 @@ define([
 				 *  a $.contains(documentElement...
 				 */
 				cleanupIds: function (ctx) {
-					var ids = [];
-					this.headings(this.$containers).each(function () {
+					var ids = new Set();
+					if (!ctx) {
+						return this;
+					}
+
+					// Do not cleanup customized headings, as they are manually set and shouldn't be touched.
+					this.headings(this.$containers).not('.' + CLASS_CUSTOMIZED).each(function () {
 						var id = $(this).attr('id');
-						if ((id && -1 != $.inArray(id, ids)) || (ctx && ($.contains(ctx, this) || ctx === this))) {
+						if (!id) {
+							return;
+						}
+						// If id is already used, and this heading is contained in the context, then we need to generate a new one
+						if (ids.has(id) && ($.contains(ctx, this) || ctx === this)) {
 							$(this).attr('id', generateId(this));
 						}
-						ids.push(id);
+						ids.add(id);
 					});
+
 					return this;
 				},
 
