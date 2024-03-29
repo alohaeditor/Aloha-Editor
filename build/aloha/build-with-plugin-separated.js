@@ -613,10 +613,6 @@
     //  name: 'proxy/proxy-plugin',
     //  exclude: ['aloha', 'ui/ui-plugin']
     //},
-    {
-      name: 'ribbon/ribbon-plugin',
-      exclude: ['aloha', 'ui/ui-plugin']
-    },
     //{
     //  name: 'sourceview/sourceview-plugin',
     //  exclude: ['aloha', 'ui/ui-plugin']

@@ -434,7 +434,6 @@
 				'formatlesspaste/formatlesspaste-plugin',
 				'linkbrowser/linkbrowser-plugin',
 				'imagebrowser/imagebrowser-plugin',
-				'ribbon/ribbon-plugin',
 				'wai-lang/wai-lang-plugin',
 				'headerids/headerids-plugin',
 				'metaview/metaview-plugin',
