@@ -58,6 +58,10 @@ define([
 	var jQuery = $;
 	var pluginNamespace = 'aloha-link';
 
+	var CLASS_NEW_LINK = 'aloha-new-link';
+	var CLASS_LINK = 'aloha-link-text';
+	var CLASS_LINK_POINTER = 'aloha-link-pointer';
+
 	/**
 	 * Language repository
 	 * @deprecated
@@ -86,12 +90,12 @@ define([
 	var insertLinkPostCleanup = {
 		merge: true,
 		mergeable: function (node) {
-			return ('aloha-new-link' === node.className && node.nextSibling &&
-				'aloha-new-link' === node.nextSibling.className);
+			return (CLASS_NEW_LINK === node.className && node.nextSibling &&
+				CLASS_NEW_LINK === node.nextSibling.className);
 		}
 	};
 
-	Ephemera.classes('aloha-link-pointer', 'aloha-link-text');
+	Ephemera.classes(CLASS_LINK_POINTER, CLASS_LINK);
 
 	function setupMousePointerFix() {
 		jQuery(document).on('keydown.aloha-link.pointer-fix', function (e) {
@@ -99,12 +103,12 @@ define([
 			// e.ctrlKey because it's only set on keyup or
 			// keypress, not on keydown).
 			if (e.metaKey || Keys.getToken(e.keyCode) === 'control') {
-				jQuery('body').addClass('aloha-link-pointer');
+				jQuery('body').addClass(CLASS_LINK_POINTER);
 			}
 		})
 			.on('keyup.aloha-link.pointer-fix', function (e) {
 				if (e.metaKey || Keys.getToken(e.keyCode) === 'control') {
-					jQuery('body').removeClass('aloha-link-pointer');
+					jQuery('body').removeClass(CLASS_LINK_POINTER);
 				}
 			});
 	}
@@ -131,36 +135,6 @@ define([
 
 	function teardownMetaClickLink(editable) {
 		editable.obj.unbind('.aloha-link.meta-click-link');
-	}
-
-	/**
-	 * Get the translation from the given i18n object.
-	 * The object should be composed like:
-	 * {
-	 *   "en": "Path",
-	 *   "de": "Pfad"
-	 * }
-	 *
-	 * If the translation in the current language is not found,
-	 * the first translation will be returned
-	 * @param i18nObject {Object} i18n Object
-	 * @return translation {String}
-	 */
-	function _i18n(i18nObject) {
-		if (!i18nObject) {
-			return '';
-		}
-		if (i18nObject.hasOwnProperty(Aloha.settings.locale)) {
-			return i18nObject[Aloha.settings.locale];
-		}
-
-		for (var lang in i18nObject) {
-			if (i18nObject.hasOwnProperty(lang)) {
-				return i18nObject[lang];
-			}
-		}
-
-		return '';
 	}
 
 	function createLinkTargetFromConfig(
@@ -216,7 +190,7 @@ define([
 		/**
 		 * Default input value for a new link
 		 */
-		hrefValue: 'http://',
+		hrefValue: 'https://',
 
 		/**
 		 * Shows the flags when setting language ('hreflang' attribute).
@@ -246,7 +220,6 @@ define([
 
 			plugin.createButtons();
 			plugin.subscribeEvents();
-			plugin.bindInteractions();
 
 			Aloha.bind('aloha-plugins-loaded', function () {
 				PubSub.pub('aloha.link.ready', {
@@ -264,14 +237,14 @@ define([
 		},
 
 		nsSel: function () {
-			return Array.from(arguments).map(function(arg) {
+			return Array.from(arguments).map(function (arg) {
 				return '.' + pluginNamespace + (arg == '' ? '' : '-' + arg);
 			}).join(' ').trim();
 		},
 
 		//Creates string with this component's namepsace prefixed the each classname
 		nsClass: function () {
-			return Array.from(arguments).map(function(arg) {
+			return Array.from(arguments).map(function (arg) {
 				return pluginNamespace + (arg == '' ? '' : '-' + arg);
 			}).join(' ').trim();
 		},
@@ -407,33 +380,20 @@ define([
 		addLinkEventHandlers: function (link) {
 			var $link = jQuery(link);
 
-			$link
-				// show pointer on mouse over
-				.mouseenter(function (e) {
-					Aloha.Log.debug(plugin, 'mouse over link.');
-					plugin.mouseOverLink = link;
-					plugin.updateMousePointer();
-				})
-				// in any case on leave show text cursor
-				.mouseleave(function (e) {
-					Aloha.Log.debug(plugin, 'mouse left link.');
-					plugin.mouseOverLink = null;
-					plugin.updateMousePointer();
-				})
-				// follow link on ctrl or meta + click
-				.click(function (e) {
-					if (e.metaKey) {
-						// blur current editable. user is waiting for the link to load
-						Aloha.activeEditable.blur();
-						// hack to guarantee a browser history entry
-						window.setTimeout(function () {
-							location.href = e.target;
-						}, 0);
-						e.stopPropagation();
+			// follow link on ctrl or meta + click
+			$link.click(function (e) {
+				if (e.metaKey) {
+					// blur current editable. user is waiting for the link to load
+					Aloha.activeEditable.blur();
+					// hack to guarantee a browser history entry
+					window.setTimeout(function () {
+						location.href = e.target;
+					}, 0);
+					e.stopPropagation();
 
-						return false;
-					}
-				});
+					return false;
+				}
+			});
 		},
 
 		/**
@@ -442,7 +402,7 @@ define([
 		 * @param existingLink The existing link if applicable.
 		 */
 		createInsertLinkContext: function (existingLink) {
-			let href = 'https://';
+			let href = plugin.hrefValue;
 			let anchor = '';
 			let newTab = false;
 			let toggleActive = false;
@@ -506,7 +466,7 @@ define([
 				plugin.upsertLink(existingLink, formData);
 			}).catch(function (error) {
 				if (!Utils.isUserCloseError(error)) {
-					console.log(error);
+					console.error(error);
 				}
 			})
 		},
@@ -532,37 +492,6 @@ define([
 					}
 				},
 			});
-		},
-
-		/**
-		 * Parse a all editables for links and bind an onclick event
-		 * Add the link short cut to all edtiables
-		 */
-		bindInteractions: function () {
-			jQuery(document)
-				.keydown(function (e) {
-					Aloha.Log.debug(plugin, 'Meta key down.');
-					plugin.metaKey = e.metaKey;
-					plugin.updateMousePointer();
-				}).keyup(function (e) {
-					Aloha.Log.debug(plugin, 'Meta key up.');
-					plugin.metaKey = e.metaKey;
-					plugin.updateMousePointer();
-				});
-		},
-
-		/**
-		 * Updates the mouse pointer
-		 */
-		updateMousePointer: function () {
-			if (plugin.metaKey && plugin.mouseOverLink) {
-				Aloha.Log.debug(plugin, 'set pointer');
-				jQuery(plugin.mouseOverLink).removeClass('aloha-link-text');
-				jQuery(plugin.mouseOverLink).addClass('aloha-link-pointer');
-			} else {
-				jQuery(plugin.mouseOverLink).removeClass('aloha-link-pointer');
-				jQuery(plugin.mouseOverLink).addClass('aloha-link-text');
-			}
 		},
 
 		/**
@@ -677,25 +606,32 @@ define([
 				href += '#' + linkData.url.anchor
 			}
 
-			let target = linkData.newTab ? '" target="_blank' : '';
-
 			if (range.isCollapsed()) {
 				// insert a link with text here
 				linkText = i18n.t('newlink.defaulttext');
-				newLink = jQuery('<a href="' + href + target + '" class="aloha-new-link">' + linkText + '</a>');
+				newLink = jQuery('<a>', {
+					href: href,
+					target: linkData.newTab ? '_blank' : '',
+					class: CLASS_NEW_LINK,
+					text: linkText,
+				});
 				Dom.insertIntoDOM(newLink, range, jQuery(Aloha.activeEditable.obj));
 				range.startContainer = range.endContainer = newLink.contents().get(0);
 				range.startOffset = 0;
 				range.endOffset = linkText.length;
 			} else {
-				newLink = jQuery('<a href="' + href + target + '" class="aloha-new-link"></a>');
+				newLink = jQuery('<a>', {
+					href: href,
+					target: linkData.newTab ? '_blank' : '',
+					class: CLASS_NEW_LINK,
+				});
 				Dom.addMarkup(range, newLink, false);
 				Dom.doCleanup(insertLinkPostCleanup, range);
 			}
 
-			var linkElements = $(Array.from(Aloha.activeEditable.obj.find('a.aloha-new-link')).map(function (newLinkElem) {
+			var linkElements = $(Array.from(Aloha.activeEditable.obj.find('a.' + CLASS_NEW_LINK)).map(function (newLinkElem) {
 				plugin.addLinkEventHandlers(newLinkElem);
-				jQuery(newLinkElem).removeClass('aloha-new-link');
+				jQuery(newLinkElem).removeClass(CLASS_NEW_LINK);
 				return newLinkElem;
 			}));
 
@@ -706,6 +642,7 @@ define([
 			apiRange.setStart(range.startContainer, range.startOffset);
 			apiRange.setEnd(range.endContainer, range.endOffset);
 
+			Aloha.trigger('aloha-link-insert', { range: apiRange, elements: linkElements });
 			PubSub.pub('aloha.link.insert', { range: apiRange, elements: linkElements });
 			plugin.hrefChange();
 
@@ -779,6 +716,12 @@ define([
 
 			if (typeof plugin.onHrefChange == 'function') {
 				plugin.onHrefChange.call(plugin, linkObj, href);
+			}
+
+			// Mark the editable as changed
+			var editable = Aloha.getEditableHost($(link));
+			if (editable) {
+				editable.smartContentChange({ type: 'block-change' });
 			}
 		}
 	});
