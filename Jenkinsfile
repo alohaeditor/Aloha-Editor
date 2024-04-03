@@ -16,14 +16,10 @@ pipeline {
 		kubernetes {
 			label env.BUILD_TAG
 			defaultContainer 'build'
-			yaml """
+			yaml ocpWorker("""
 apiVersion: v1
 kind: Pod
 spec:
-  volumes:
-  - name: cache
-    hostPath:
-      path: /opt/kubernetes/cache
   containers:
   - name: build
     image: """ + buildEnvironmentDockerImage("build/Dockerfile", null, "build") + """
@@ -33,39 +29,30 @@ spec:
     tty: true
     resources:
       requests:
-        cpu: 1
-        memory: 256Mi
-    volumeMounts:
-    - mountPath: /home/jenkins/.m2/repository
-      name: cache
-      subPath: maven
-    - mountPath: /home/jenkins/.cache/npm
-      name: cache
-      subPath: npm
-    env:
-      - name: DOCKER_HOST
-        value: tcp://127.0.0.1:2375
+        cpu: '0'
+        memory: '0'
+      limits:
+        cpu: '0'
+        memory: '0'
+  - name: docker
+  - name: jnlp
   - name: selenium
     image: selenium/standalone-chrome:3.141.59
-    imagePullPolicy: Always
     tty: true
     ports:
-    - containerPort: 4444
-      name: selenium
-      protocol: TCP
+      - containerPort: 4444
+        name: selenium
+        protocol: TCP
     resources:
       requests:
-        cpu: 1
-        memory: 1024Mi
-  - name: docker
-    image: docker:18-dind
-    imagePullPolicy: Always
-    securityContext:
-      privileged: true
-    tty: true
+        cpu: '0'
+        memory: '0'
+      limits:
+        cpu: '0'
+        memory: '0'
   imagePullSecrets:
-  - name: docker-jenkinsbuilds-apa-it
-"""
+    - name: docker-jenkinsbuilds-apa-it
+""")
 		}
 	}
 

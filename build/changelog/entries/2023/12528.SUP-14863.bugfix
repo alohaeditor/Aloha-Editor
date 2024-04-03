@@ -1,0 +1,1 @@
+Fix jumping caret: When inserting text into an empty table cell the caret was jumping unexpectedly in the Chrome browser.
