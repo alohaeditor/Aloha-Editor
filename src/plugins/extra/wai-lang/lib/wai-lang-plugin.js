@@ -37,16 +37,6 @@ define([
 
 	var WAI_LANG_CLASS = 'aloha-wai-lang';
 
-
-	/**
-	 * Sets focus on the given field.
-	 *
-	 * @param {AttributeField} field
-	 */
-	function focusOn(field) {
-		console.log('TODO: focusOn() not implemented yet');
-	}
-
 	/**
 	 * Maps the given value to boolean.
 	 *

@@ -37,13 +37,6 @@
 }
 
 /**
-* Definition list style
-*/
-.aloha .ui-state-default .aloha-icon-definitionlist {
-	background-image: url('../img/dl.png');
-}
-
-/**
 * List wrapper
 */
 .aloha-list-templates { 
