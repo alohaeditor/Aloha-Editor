@@ -91,8 +91,8 @@ define([
 	 * @const
 	 */
 	var $CLIPBOARD = $('<div style="position:absolute; ' +
-	                   'clip:rect(0px,0px,0px,0px); ' +
-	                   'width:1px; height:1px;"></div>').contentEditable(true);
+		'clip:rect(0px,0px,0px,0px); ' +
+		'width:1px; height:1px;"></div>').contentEditable(true);
 
 	/**
 	 * Stored range, use to accomplish IE hack.
@@ -214,12 +214,12 @@ define([
 		var start = range.startContainer;
 		if (1 === start.nodeType) {
 			return ('p' === start.nodeName.toLowerCase() &&
-					ContentHandlerUtils.isProppedParagraph(start.outerHTML));
+				ContentHandlerUtils.isProppedParagraph(start.outerHTML));
 		}
 		return (3 === start.nodeType &&
-				'p' === start.parentNode.nodeName.toLowerCase() &&
-					1 === start.parentNode.childNodes.length &&
-						PROPPING_SPACE.test(window.escape(start.data)));
+			'p' === start.parentNode.nodeName.toLowerCase() &&
+			1 === start.parentNode.childNodes.length &&
+			PROPPING_SPACE.test(window.escape(start.data)));
 	}
 
 	/**
@@ -350,7 +350,7 @@ define([
 		if (isIEorDocModeGreater9(doc)) {
 			$editable.bind('beforepaste', function ($event) {
 				if ($event.target.nodeName === 'INPUT' ||
-						$event.target.nodeName === 'TEXTAREA') {
+					$event.target.nodeName === 'TEXTAREA') {
 					// We have to let the browser handle most events concerning
 					// text input telements.
 					return;
@@ -368,7 +368,7 @@ define([
 		} else {
 			$editable.bind('paste', function ($event) {
 				if ($event.target.nodeName === 'INPUT' ||
-						$event.target.nodeName === 'TEXTAREA') {
+					$event.target.nodeName === 'TEXTAREA') {
 					return;
 				}
 
@@ -378,6 +378,21 @@ define([
 					document.documentElement.scrollTop;
 
 				var range = CopyPaste.getRange();
+
+				try {
+					if ($event.originalEvent instanceof ClipboardEvent) {
+						$event.preventDefault();
+						/** @type {DataTransfer} */
+						var data = $event.originalEvent.clipboardData;
+						var rawPaste = data.getData('text/html');
+						if (rawPaste !== '') {
+							$CLIPBOARD.append($(rawPaste));
+							onPaste($event, range);
+							return;
+						}
+					}
+				} catch (ignored) { }
+
 				redirect(range, $CLIPBOARD);
 				if (IS_IE) {
 					$event.preventDefault();
@@ -418,9 +433,9 @@ define([
 		 */
 		register: function (pasteHandler) {
 			Console.deprecated('Plugins.Paste', 'register() for pasteHandler' +
-			                                    ' is deprecated.  Use the ' +
-			                                    'ContentHandler Plugin ' +
-			                                    'instead.');
+				' is deprecated.  Use the ' +
+				'ContentHandler Plugin ' +
+				'instead.');
 		}
 	});
 });
