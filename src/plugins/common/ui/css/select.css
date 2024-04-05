@@ -1,0 +1,114 @@
+.aloha-ui .aloha-select {
+  position: relative;
+}
+
+.aloha-ui .aloha-select .aloha-select-picker {
+  border: 1px solid #7d7d7d;
+  border-radius: 2px;
+  height: 2em;
+  padding-right: 1.5em;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.aloha-ui .aloha-select .aloha-select-picker::after {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+
+  content: "\e5c5";
+  display: block;
+
+  font-family: "Material Symbols Outlined";
+  font-weight: 300;
+  font-style: normal;
+  font-size: 20px;
+  height: 20px;
+  width: 20px;
+  text-align: center;
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  -moz-font-feature-settings: "liga";
+  -moz-osx-font-smoothing: grayscale;
+  font-variation-settings: "FILL" 1;
+}
+
+.aloha-ui .aloha-select .aloha-select-clear-button {
+  position: absolute;
+  top: 4px;
+  right: 28px;
+  height: 24px;
+  width: 24px;
+}
+
+.aloha-ui .aloha-select .aloha-select-clear-button .clear-button-icon {
+  color: rgb(146, 3, 3);
+}
+
+.aloha-ui .aloha-select .aloha-select-dropdown {
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.aloha-ui .aloha-select .aloha-select-list {
+  position: absolute;
+  top: calc(var(--aloha-select-y) + var(--aloha-select-height) + 2px);
+  left: calc(var(--aloha-select-x) + 2px);
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  background: #efefef;
+  padding: 4px;
+}
+
+.aloha-ui .aloha-select .aloha-select-list .select-item {
+  display: flex;
+  flex-direction: row;
+  font-size: 16px;
+  padding: 6px 16px;
+  border-bottom: 1px solid;
+  cursor: pointer;
+  transition: 200ms;
+}
+
+.aloha-ui .aloha-select .aloha-select-list .select-item:last-child {
+  border-bottom: none;
+}
+
+.aloha-ui .aloha-select .aloha-select-list .select-item .select-item-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  padding-right: 4px;
+}
+
+/* Align the items without icons properly */
+.aloha-ui .aloha-select .aloha-select-list.has-icons .select-item:not(.has-icon) {
+  padding-left: 40px;
+}
+
+.aloha-ui .aloha-select .aloha-select-list .select-item:hover {
+  background: rgb(226, 236, 254);
+}
+
+.aloha-ui .aloha-select .aloha-select-list .select-item.active {
+  background: rgb(164, 185, 247);
+}
+
+.aloha-ui .aloha-select:not(.show-clear) .aloha-select-clear-button {
+  display: none;
+}
+
+.aloha-ui .aloha-select:not(.show-dropdown) .aloha-select-dropdown {
+  display: none;
+}

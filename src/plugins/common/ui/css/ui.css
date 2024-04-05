@@ -10,6 +10,7 @@
 @import "./checkbox.css";
 @import "./select-menu.css";
 @import "./color-picker.css";
+@import "./select.css";
 @import "./slider.css";
 @import "./spinner.css";
 @import "./iframe.css";
@@ -667,4 +668,8 @@ span.ui-button-icon-primary.ui-icon.ui-icon-closethick {
 
 .aloha.aloha-toolbar .aloha-ui-label-text {
 	margin-right: 2px;
+}
+
+.ui-front {
+	z-index: 100000;	
 }

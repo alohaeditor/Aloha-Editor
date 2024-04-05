@@ -5,6 +5,12 @@
  * Contributors http://aloha-editor.org/contribution.php
  * License http://aloha-editor.org/license.php
  */
+
+/**
+ * @typedef {import('../../ui/lib/select.js').SelectOption} SelectOption
+ */
+
+
 /* Aloha Link Plugin
  * -----------------
  * This plugin provides an interface to allow the user to insert, edit and
@@ -29,7 +35,6 @@ define([
 	'ui/utils',
 	'ui/modal',
 	'link/link-target',
-	'../../../shared/languages/languages',
 	'i18n!link/nls/i18n'
 ], function (
 	$,
@@ -48,8 +53,6 @@ define([
 	Utils,
 	Modal,
 	LinkTarget,
-	/** @deprecated */
-	LanguageRepository,
 	i18n
 ) {
 	'use strict';
@@ -62,20 +65,29 @@ define([
 	var CLASS_LINK = 'aloha-link-text';
 	var CLASS_LINK_POINTER = 'aloha-link-pointer';
 
-	/**
-	 * Language repository
-	 * @deprecated
-	 */
-	var LANG_REPOSITORY;
-
-
-	/**
-	 * Gets the language name for laguage code 'langCode'.
-	 * @param {string} langCode Language code
-	 */
-	function getLanguageName(langCode) {
-		return LANG_REPOSITORY.languageData ? LANG_REPOSITORY.languageData[langCode].name : langCode;
-	}
+	/** @type {Array.<SelectOption>} */
+	var TARGETS = [
+		{
+			id: '_self',
+			label: i18n.t('link.target._self'),
+		},
+		{
+			id: '_blank',
+			label: i18n.t('link.target._blank'),
+		},
+		{
+			id: '_parent',
+			label: i18n.t('link.target._parent'),
+		},
+		{
+			id: '_top',
+			label: i18n.t('link.target._top'),
+		},
+		{
+			id: '_unfencedTop',
+			label: i18n.t('link.target._unfencedTop'),
+		}
+	];
 
 	/**
 	 * Properties for cleaning up markup immediately after inserting new link
@@ -226,14 +238,6 @@ define([
 					plugin: plugin
 				});
 			});
-
-			LANG_REPOSITORY = new LanguageRepository(
-				'link-languages',
-				plugin.flags,
-				'iso639-1',
-				Aloha.settings.locale,
-				'language/link'
-			);
 		},
 
 		nsSel: function () {
@@ -402,15 +406,17 @@ define([
 		 * @param existingLink The existing link if applicable.
 		 */
 		createInsertLinkContext: function (existingLink) {
-			let href = plugin.hrefValue;
-			let anchor = '';
-			let newTab = false;
-			let toggleActive = false;
-			let title = i18n.t('button.addlink.tooltip');
+			var href = plugin.hrefValue;
+			var anchor = '';
+			var target = null;
+			var lang = '';
+			var title = i18n.t('button.addlink.tooltip');
 
 			if (existingLink) {
 				title = i18n.t('button.editlink.tooltip');
 				href = existingLink.getAttribute('href');
+				target = existingLink.getAttribute('target');
+				lang = existingLink.getAttribute('hreflang');
 
 				let anchorIdx = href.indexOf('#')
 
@@ -418,20 +424,17 @@ define([
 					anchor = href.substring(anchorIdx + 1)
 					href = href.substring(0, anchorIdx);
 				}
-
-				newTab = existingLink.getAttribute('target') === '_blank';
-				toggleActive = true;
 			}
 
 			return {
 				title: title,
-				active: toggleActive,
 				initialValue: {
 					url: {
 						target: href,
 						anchor: anchor,
 					},
-					newTab: newTab,
+					target: target,
+					lang: lang,
 				},
 				controls: {
 					url: {
@@ -442,12 +445,19 @@ define([
 							} : null;
 						},
 					},
-					newTab: {
-						type: 'checkbox',
+					target: {
+						type: 'select',
 						options: {
-							label: i18n.t('link.new_tab.label'),
+							label: i18n.t('link.target.label'),
+							options: TARGETS,
 						},
 					},
+					lang: {
+						type: 'input',
+						options: {
+							label: i18n.t('link.hreflang.label'),
+						}
+					}
 				},
 			};
 		},
@@ -553,7 +563,13 @@ define([
 				return null;
 			}
 
-			let href = linkData.url.target;
+			var href;
+			
+			if (URL.canParse(linkData.url.target, window.location)) {
+				href = linkData.url.target;
+			} else {
+				href = '';
+			}
 
 			if (linkData.url.anchor) {
 				href += "#" + linkData.url.anchor;
@@ -561,10 +577,16 @@ define([
 
 			linkElement.setAttribute('href', href);
 
-			if (linkData.newTab) {
-				linkElement.setAttribute('target', '_blank');
+			if (linkData.target) {
+				linkElement.setAttribute('target', linkData.target);
 			} else {
 				linkElement.removeAttribute('target');
+			}
+
+			if (linkData.lang) {
+				linkElement.setAttribute('hreflang', linkData.lang);
+			} else {
+				linkElement.removeAttribute('hreflang');
 			}
 
 			if (!skipEvent) {
@@ -600,7 +622,13 @@ define([
 				Dom.extendToWord(range);
 			}
 
-			let href = linkData.url.target;
+			var href;
+			
+			if (URL.canParse(linkData.url.target, window.location)) {
+				href = linkData.url.target;
+			} else {
+				href = '';
+			}
 
 			if (linkData.url.anchor) {
 				href += '#' + linkData.url.anchor
@@ -611,7 +639,8 @@ define([
 				linkText = i18n.t('newlink.defaulttext');
 				newLink = jQuery('<a>', {
 					href: href,
-					target: linkData.newTab ? '_blank' : '',
+					target: linkData.target || '',
+					hreflang: linkData.lang || '',
 					class: CLASS_NEW_LINK,
 					text: linkText,
 				});
@@ -622,7 +651,8 @@ define([
 			} else {
 				newLink = jQuery('<a>', {
 					href: href,
-					target: linkData.newTab ? '_blank' : '',
+					target: linkData.target || '',
+					hreflang: linkData.lang || '',
 					class: CLASS_NEW_LINK,
 				});
 				Dom.addMarkup(range, newLink, false);

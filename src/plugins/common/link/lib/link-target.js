@@ -34,8 +34,8 @@ define([
         targetLabel: null,
         anchorLabel: null,
 
-        targetInput: null,
-        anchorInput: null,
+        _$targetInputElement: null,
+        _$anchorInputElement: null,
 
         init: function () {
             this.element = $('<div>', {
@@ -49,7 +49,7 @@ define([
 
             var _this = this;
 
-            this.targetInput = $('<input>', {
+            this._$targetInputElement = $('<input>', {
                 type: 'url',
                 class: 'input-element target-input',
                 id: 'linkTarget_target_' + counter,
@@ -80,7 +80,7 @@ define([
                     _this.handlePasteData(event, data);
                 });
 
-            this.anchorInput = $('<input>', {
+            this._$anchorInputElement = $('<input>', {
                 type: 'text',
                 class: 'input-element anchor-input',
                 id: 'linkTarget_anchor_' + counter,
@@ -104,7 +104,7 @@ define([
                         text: this.targetLabel || i18n.t('link-target.target.label'),
                         for: 'linkTarget_target_' + counter,
                     }),
-                    this.targetInput
+                    this._$targetInputElement
                 )
                 .appendTo(this.element);
 
@@ -115,7 +115,7 @@ define([
                         text: this.anchorLabel || i18n.t('link-target.anchor.label'),
                         for: 'linkTarget_anchor_' + counter,
                     }),
-                    this.anchorInput
+                    this._$anchorInputElement
                 )
                 .appendTo(this.element);
 
@@ -159,8 +159,8 @@ define([
         },
 
         applyValueToInputs: function () {
-            this.targetInput.val(this.value.target);
-            this.anchorInput.val(this.value.anchor);
+            this._$targetInputElement.val(this.value.target);
+            this._$anchorInputElement.val(this.value.anchor);
         },
 
         setValue: function (value) {
@@ -173,13 +173,13 @@ define([
 
         enable: function () {
             this._super();
-            $(this.targetInput, this.anchorInput)
+            $(this._$targetInputElement, this._$anchorInputElement)
                 .removeAttr('disabled')
                 .attr('aria-disabled', 'false');
         },
         disable: function () {
             this._super();
-            $(this.targetInput, this.anchorInput)
+            $(this._$targetInputElement, this._$anchorInputElement)
                 .attr('disabled', 'disabled')
                 .attr('aria-disabled', 'false');
         }

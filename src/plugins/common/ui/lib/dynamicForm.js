@@ -2,28 +2,32 @@ define([
     'jquery',
     'ui/ui',
     'ui/button',
-    'ui/toggleButton',
-    'ui/splitButton',
-    'ui/toggleSplitButton',
     'ui/checkbox',
-    'ui/input',
-    'ui/selectMenu',
     'ui/colorPicker',
+    'ui/dateTimePicker',
     'ui/iframe',
-    'ui/dateTimePicker'
+    'ui/input',
+    'ui/select',
+    'ui/selectMenu',
+    'ui/splitButton',
+    'ui/text',
+    'ui/toggleButton',
+    'ui/toggleSplitButton'
 ], function (
     $,
     Ui,
     Button,
-    ToggleButton,
-    SplitButton,
-    ToggleSplitButton,
     Checkbox,
-    Input,
-    SelectMenu,
     ColorPicker,
+    DateTimePicker,
     IFrameComponent,
-    DateTimePicker
+    Input,
+    Select,
+    SelectMenu,
+    SplitButton,
+    Text,
+    ToggleButton,
+    ToggleSplitButton
 ) {
     'use strict';
 
@@ -37,6 +41,7 @@ define([
         'date-time-picker': createDateTimePickerFromConfig,
         'iframe': createIFrameFromConfig,
         'input': createInputFromConfig,
+        'select': createSelectFromConfig,
         'select-menu': createSelectMenuFromConfig,
         'split-button': createSplitButtonFromConfig,
         'text': createTextFromConfig,
@@ -130,7 +135,7 @@ define([
             markAsPristine: function () {
                 formReference.touched = false;
             },
-            updateValueAndValidity: function() {
+            updateValueAndValidity: function () {
                 runningAllChecks = true;
                 // Run the validation on all controls, and then this validation handler again
                 Object.values(formReference.controls).forEach(function (control) {
@@ -373,7 +378,7 @@ define([
         control.markAsPristine = function () {
             component.untouch();
         };
-        control.updateValueAndValidity = function() {
+        control.updateValueAndValidity = function () {
             validationHandler(component.getValue());
         };
 
@@ -550,37 +555,50 @@ define([
         onChangeFn,
         onTouchFn
     ) {
-        return {
-            name: name,
-            textContent: '',
-            disabled: false,
-            touched: false,
-            validationErrors: null,
-            element: $('<div class="text-wrapper"></div>'),
+        var tmpOptions = config.options || {};
 
-            setValue: function (value) {
-                this.textContent = value;
-                this.element.text(this.textContent);
+        return Ui.adopt(name, Text, {
+            content: tmpOptions.content,
+
+            changeNotify: function (value) {
+                applyChanges(value);
+                validateFn(value);
+                onChangeFn(value);
             },
-            getValue: function () {
-                return this.textContent;
+            touchNotify: function () {
+                onTouchFn();
             },
-            enable: function () {
-                this.disabled = false;
+        });
+    }
+
+    function createSelectFromConfig(
+        config,
+        name,
+        applyChanges,
+        validateFn,
+        onChangeFn,
+        onTouchFn
+    ) {
+        var tmpOptions = config.options || {};
+        var component = Ui.adopt(name, Select, {
+            label: tmpOptions.label,
+            value: tmpOptions.value,
+            options: tmpOptions.options,
+            multiple: tmpOptions.multiple,
+            clearable: tmpOptions.clearable,
+            placeholder: tmpOptions.placeholder,
+
+            changeNotify: function (value) {
+                applyChanges(value);
+                validateFn(value);
+                onChangeFn(value);
             },
-            disable: function () {
-                this.disabled = true;
+            touchNotify: function () {
+                onTouchFn();
             },
-            touch: function () {
-                this.touched = true;
-            },
-            untouched: function () {
-                this.touched = false;
-            },
-            isValid: function () {
-                return this.validationErrors == null;
-            },
-        };
+        });
+
+        return component;
     }
 
     function createSelectMenuFromConfig(
@@ -653,7 +671,7 @@ define([
             url: tmpOptions.url,
             value: tmpOptions.value,
             options: tmpOptions.options,
-        
+
             changeNotify: function (value) {
                 applyChanges(value);
                 validateFn(value);
@@ -663,7 +681,7 @@ define([
                 onTouchFn();
             },
         });
-        
+
         return component;
     }
 
@@ -692,7 +710,7 @@ define([
             weekdayShort: tmpOptions.weekdayShort,
             weekdayMinimal: tmpOptions.weekdayMinimal,
             weekStart: tmpOptions.weekStart,
-        
+
             changeNotify: function (value) {
                 applyChanges(value);
                 validateFn(value);
@@ -702,7 +720,7 @@ define([
                 onTouchFn();
             },
         });
-        
+
         return component;
     }
 
