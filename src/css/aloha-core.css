@@ -1,6 +1,6 @@
 @import "aloha-reset.css";
 @import "aloha-sidebar.css";
-@import './aloha-material-symbols.css';
+@import "aloha-material-symbols.css";
 @import "../lib/vendor/repository-browser/css/repository-browser.css";
 
 .aloha-editable {

@@ -5,6 +5,9 @@
   "directories": {
     "doc": "doc"
   },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "cypress:open": "cypress open",
     "demo:start": "http-server target/build-profile-with-common-extra-plugins -p 8080",

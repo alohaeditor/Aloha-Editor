@@ -6,7 +6,7 @@ ARG GIT_USER_EMAIL="entwicklung@gentics.com"
 ARG USER_NAME="jenkins"
 ARG DEBIAN_RELEASE="bullseye"
 ARG NPM_CONFIG_LOGLEVEL=info
-ARG NODE_VERSION=16.16.0
+ARG NODE_VERSION=20.12.1
 
 ENV PATH "/usr/local/rvm/bin:$PATH"
 ENV RVM_PATH "/usr/local/rvm"
@@ -24,19 +24,38 @@ RUN echo "deb http://ftp.at.debian.org/debian ${DEBIAN_RELEASE} main contrib non
 # Update public keys for node installs.
 RUN set -ex \
 	&& for key in \
-		0034A06D9D9B0064CE8ADF6BF1747F4AD2306D93 \
 		4ED778F539E3634C779C87C6D7062848A1AB005C \
-		71DCFD284A79C3B38668286BC97EC7A07EDE3FC1 \
-    	74F12602B6F1C4E913FAA37AD3A89613643B6201 \
-		94AE36675C464D64BAFA68DD7434390BDBE9B9C5 \
-		9554F04D7259F04124DE6B476D5A82AC7E37093B \
-		B9AE9905FFD7803F25714661B63B535A4C206CA9 \
+		141F07595B7B3FFE74309A937405533BE57C7D57 \
+		74F12602B6F1C4E913FAA37AD3A89613643B6201 \
+		DD792F5973C6DE52C432CBDAC77ABFA00DDBF2B7 \
+		CC68F5A3106FF448322E48ED27F5E38D5B0A215F \
+		8FCCA13FEF1D0C2E91008E09770F7A9A5AE15600 \
 		C4F0DFFF4E8C1A8236409D08E73BC641CC11F4C8 \
-		DD8F2338BAE7501E3DD5AC78C273792F7D83545D \
-		FD3A5288F042B6850C66B31F09FE44734EB7990E \
+		890C08DB8579162FEE0DF9DB8BEAB4DFCF555EF4 \
+		C82FA3AE1CBEDC6BE46B9360C43CEC45C17AB93C \
+		108F52B48DB57BB0CC439B2997B01419BD92F80A \
+		A363A499291CBBC940DD62E41F10027AF002F8B0 \
 		; do \
 			gpg2 --batch --keyserver keys.openpgp.org --recv-keys "$key"; \
 		done
+
+# Download NodeJS
+RUN mkdir /opt/node \
+	&& curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz" \
+	&& curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt" \
+	&& curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.sig"
+# Verify downloaded NodeJS files
+RUN gpg --verify SHASUMS256.txt.sig SHASUMS256.txt \
+	&& grep " node-v$NODE_VERSION-linux-x64.tar.xz\$" SHASUMS256.txt | sha256sum -c -
+# Install NodeJS
+RUN tar -xJf "node-v$NODE_VERSION-linux-x64.tar.xz" -C /opt/node --strip-components=1 \
+	&& rm "node-v$NODE_VERSION-linux-x64.tar.xz" SHASUMS256.txt.sig SHASUMS256.txt \
+	&& ln -s /opt/node/bin/node /usr/local/bin/node \
+	&& ln -s /opt/node/bin/npm /usr/local/bin/npm \
+	&& ln -s /opt/node/bin/npx /usr/local/bin/npx \
+	&& echo "export PATH=\$PATH:/opt/node/bin" > /etc/profile.d/nodejs.sh \
+    && chmod +x /etc/profile.d/* \
+	&& chown -R 10000:10000 /opt/node
 
 # Install Ruby 2.3 with RVM
 RUN curl -sSL https://rvm.io/mpapis.asc | gpg2 --import - \
@@ -49,20 +68,6 @@ RUN curl -sSL https://rvm.io/mpapis.asc | gpg2 --import - \
 COPY guides-wrapper.sh /usr/local/bin/guides
 RUN rvm-exec 2.3 gem install guides -- --with-cflags="-O2 -pipe -march=native -w" \
 	&&	chmod +x /usr/local/bin/guides
-
-RUN mkdir /opt/node \
-	&& curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz" \
-	&& curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc" \
-	&& gpg2 --batch --decrypt --output SHASUMS256.txt SHASUMS256.txt.asc \
-	&& grep " node-v$NODE_VERSION-linux-x64.tar.xz\$" SHASUMS256.txt | sha256sum -c - \
-	&& tar -xJf "node-v$NODE_VERSION-linux-x64.tar.xz" -C /opt/node --strip-components=1 \
-	&& rm "node-v$NODE_VERSION-linux-x64.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt \
-	&& ln -s /opt/node/bin/node /usr/local/bin/node \
-	&& ln -s /opt/node/bin/npm /usr/local/bin/npm \
-	&& ln -s /opt/node/bin/npx /usr/local/bin/npx \
-	&& echo "export PATH=\$PATH:/opt/node/bin" > /etc/profile.d/nodejs.sh \
-    && chmod +x /etc/profile.d/* \
-	&& chown -R 10000:10000 /opt/node
 
 # Set the locale (needed for ruby guides)
 RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \
