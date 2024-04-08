@@ -156,8 +156,6 @@ define([
 	 */
 	function handleUserCloseErrors(error, resolveValue) {
 		if (isUserCloseError(error)) {
-			// This is a "notification" error which can be safely dismissed.
-			_this.contextControl = null;
 			return resolveValue;
 		}
 

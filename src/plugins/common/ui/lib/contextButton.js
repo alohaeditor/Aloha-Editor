@@ -103,10 +103,12 @@ define([
                     _this.contextReject(error);
 
                     try {
-                        return Utils.handleUserCloseErrors(error);
+                        Utils.handleUserCloseErrors(error);
+                        // This is a "notification" error which can be safely dismissed.
+			            _this.contextControl = null;
                     } catch (ignored) { }
 
-                    console.error('Error while opening dynamic dropdown for context button', this, error);
+                    console.error('Error while opening dynamic overlay for context button', _this, error);
                     _this.contextControl = null;
                 });
         },
