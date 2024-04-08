@@ -36,18 +36,20 @@ RUN set -ex \
 		108F52B48DB57BB0CC439B2997B01419BD92F80A \
 		A363A499291CBBC940DD62E41F10027AF002F8B0 \
 		; do \
-			gpg2 --verbose --batch --keyserver keys.openpgp.org --recv-keys "$key"; \
+			gpg2 --batch --keyserver keys.openpgp.org --recv-keys "$key"; \
 		done
 
-# Install NodeJS
+# Download NodeJS
 RUN mkdir /opt/node \
 	&& curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz" \
 	&& curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt" \
-	&& curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.sig" \
-	&& gpg --verify SHASUMS256.txt.sig SHASUMS256.txt \
-	&& grep " node-v$NODE_VERSION-linux-x64.tar.xz\$" SHASUMS256.txt | sha256sum -c - \
-	&& tar -xJf "node-v$NODE_VERSION-linux-x64.tar.xz" -C /opt/node --strip-components=1 \
-	&& rm "node-v$NODE_VERSION-linux-x64.tar.xz" SHASUMS256.txt.asc SHASUMS256.txt \
+	&& curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.sig"
+# Verify downloaded NodeJS files
+RUN gpg --verify SHASUMS256.txt.sig SHASUMS256.txt \
+	&& grep " node-v$NODE_VERSION-linux-x64.tar.xz\$" SHASUMS256.txt | sha256sum -c -
+# Install NodeJS
+RUN tar -xJf "node-v$NODE_VERSION-linux-x64.tar.xz" -C /opt/node --strip-components=1 \
+	&& rm "node-v$NODE_VERSION-linux-x64.tar.xz" SHASUMS256.txt.sig SHASUMS256.txt \
 	&& ln -s /opt/node/bin/node /usr/local/bin/node \
 	&& ln -s /opt/node/bin/npm /usr/local/bin/npm \
 	&& ln -s /opt/node/bin/npx /usr/local/bin/npx \
