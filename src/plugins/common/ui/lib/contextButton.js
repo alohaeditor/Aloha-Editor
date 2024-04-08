@@ -101,15 +101,14 @@ define([
                 })
                 .catch(function (error) {
                     _this.contextReject(error);
+                    _this.contextControl = null;
 
-                    try {
-                        Utils.handleUserCloseErrors(error);
-                        // This is a "notification" error which can be safely dismissed.
-			            _this.contextControl = null;
-                    } catch (ignored) { }
+                    // This is a "notification" error which can be safely dismissed.
+                    if (Utils.isUserCloseError(error)) {
+                        return;
+                    }
 
                     console.error('Error while opening dynamic overlay for context button', _this, error);
-                    _this.contextControl = null;
                 });
         },
 
