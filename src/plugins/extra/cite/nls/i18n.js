@@ -1,6 +1,7 @@
 define({
 	"root":  {
-		"cite.button.add.quote": "Format selection as quote",
+		"cite.button.add.quote": "Insert quote",
+		"cite.button.edit.quote": "Edit selected quote",
 		"cite.button.add.blockquote": "Format selection as blockquote",
 		"button.removeCite.tooltip": "Remove cite",
 		"button.blockquote.tooltip": "Block quote"
