@@ -38,7 +38,7 @@ define([
 	 * Node names for editables where block-level elements may be inserted.
 	 * @type {Array.<string>}
 	 */
-	var ALLOWED_BLOCKLEVEL_INSERT_EDITABLE_NODE_NAMES = ['div', 'p', 'pre', 'article', 'aside', 'header', 'footer', 'section']
+	var ALLOWED_BLOCKLEVEL_INSERT_EDITABLE_NODE_NAMES = ['div', 'p', 'pre', 'header', 'nav', 'main', 'mark', 'section', 'article', 'aside', 'footer', 'summary', 'details'];
 
 	/**
 	 * Add default rules for some elements.
