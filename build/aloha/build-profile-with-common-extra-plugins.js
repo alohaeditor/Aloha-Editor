@@ -202,7 +202,7 @@
 		"listenforcer/css": "../plugins/extra/listenforcer/css",
 		"listenforcer/nls": "../plugins/extra/listenforcer/nls",
 		"listenforcer/res": "../plugins/extra/listenforcer/res",
-		"shared/languages": "../plugins/shared/languages",
+		"extra/languages": "../plugins/shared/languages",
     },
 
     //Configure CommonJS packages. See http://requirejs.org/docs/api.html#packages

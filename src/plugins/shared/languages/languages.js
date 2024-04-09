@@ -12,10 +12,10 @@
 define([
 	'aloha',
 	'jquery',
-	'shared/languages/iso639-1-de',
-	'shared/languages/iso639-2-de',
-	'shared/languages/iso639-1-en',
-	'shared/languages/iso639-2-en'
+	'extra/languages/iso639-1-de',
+	'extra/languages/iso639-2-de',
+	'extra/languages/iso639-1-en',
+	'extra/languages/iso639-2-en'
 ], function(
 	Aloha,
 	jQuery,

@@ -17,7 +17,7 @@ define([
 	'ui/scopes',
 	'ui/attributeToggleButton',
 	'i18n!wai-lang/nls/i18n',
-	'shared/languages/languages'
+	'extra/languages/languages'
 ], function (
 	$,
 	Aloha,
