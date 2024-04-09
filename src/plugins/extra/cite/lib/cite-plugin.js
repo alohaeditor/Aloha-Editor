@@ -17,6 +17,7 @@ define([
 	'ui/modal',
 	'ui/overlayElement',
 	'ui/scopes',
+	'ui/utils',
 	'format/format-plugin',
 	'util/dom',
 	'i18n!cite/nls/i18n'
@@ -32,11 +33,15 @@ define([
 	Modal,
 	OverlayElement,
 	Scopes,
+	Utils,
 	Format,
 	domUtils,
 	i18n
 ) {
 	'use strict';
+
+	var NODE_NAME_Q = 'Q';
+	var NODE_NAME_BLOCKQUOTE = 'BLOCKQUOTE';
 
 	var configurations = {};
 	var ns  = 'aloha-cite';
@@ -169,12 +174,7 @@ define([
 			});
 			PubSub.sub('aloha.format.changed', function (message) {
 				if (message.oldFormat !== 'blockquote' && message.newFormat === 'blockquote') {
-					// The format plugin just added the 'blockquote' tag, remove it and add
-					// the plugins version of the blockquote at the current range. Opening
-					// the modal on the active blockquote will update the citation data.
-					plugin.removeQuote();
-					plugin.addBlockQuote();
-					plugin.showQuoteModal(false);
+					plugin.initBlockQuote();
 				}
 			});
 
@@ -184,11 +184,11 @@ define([
 
 				var isQuoteEnabled = config
 					&& ($.inArray('quote', config) > -1)
-					&& ContentRules.isAllowed(editable.obj[0], 'q');
+					&& ContentRules.isAllowed(editable.obj[0], NODE_NAME_Q);
 
 				var isBlockQuoteEnabled = config
 					&& ($.inArray('blockquote', config) > -1)
-					&& ContentRules.isAllowed(editable.obj[0], 'blockquote');
+					&& ContentRules.isAllowed(editable.obj[0], NODE_NAME_BLOCKQUOTE);
 
 				configurations[editable.getId()] = {
 					quote: isQuoteEnabled,
@@ -215,7 +215,7 @@ define([
 				// Check whether any of the effective items are citation tags
 				while (i) {
 					nodeName = effective[--i].nodeName;
-					if (nodeName === 'Q' || nodeName === 'BLOCKQUOTE') {
+					if (nodeName === NODE_NAME_Q || nodeName === NODE_NAME_BLOCKQUOTE) {
 						quoteFound = true;
 						assureCitationHasId($(effective[i]));
 						$.merge(plugin.effective, $(effective[i]));
@@ -256,13 +256,18 @@ define([
 
 			return {
 				title: title,
-				active: toggleActive,
 				controls: {
 					cite: {
 						type: 'input',
+						options: {
+							label: i18n.t('cite.label.source')
+						}
 					},
 					note: {
-						type: 'input'
+						type: 'input',
+						options: {
+							label: i18n.t('cite.label.note')
+						}
 					}
 				},
 				initialValue: {
@@ -280,13 +285,13 @@ define([
 			let range = Aloha.Selection.getRangeObject();
 			let limit = Aloha.activeEditable.obj;
 
-			if (limit[0] && limit[0].nodeName === 'Q' || limit[0].nodeName === 'BLOCKQUOTE') {
+			if (limit[0] && limit[0].nodeName === NODE_NAME_Q || limit[0].nodeName === NODE_NAME_BLOCKQUOTE) {
 				limit = limit.parent();
 			}
 
 			let foundMarkup = range.findMarkup(
 				function (node) {
-					return node != null && (node.nodeName === 'Q' || node.nodeName === 'BLOCKQUOTE');
+					return node != null && (node.nodeName === NODE_NAME_Q || node.nodeName === NODE_NAME_BLOCKQUOTE);
 				},
 				limit);
 
@@ -305,8 +310,10 @@ define([
 					plugin.addCiteDetails(createdQuote.data('cite-id'), formData.cite, formData.note);
 				}
 			}).catch(function (error) {
-				if (!(error instanceof OverlayElement) || (error instanceof OverlayElement.OverlayCloseError && error.reason !== OverlayElement.ClosingReason.CANCEL)) {
-					console.log(error);
+				try {
+					return Utils.handleUserCloseErrors(error);
+				} catch (nonCloseError) {
+					console.error(nonCloseError);
 				}
 			});
 		},
@@ -350,20 +357,43 @@ define([
 		/**
 		 * Formats the current selection with blockquote.
 		 */
-		addBlockQuote: function () {
+		initBlockQuote: function () {
 			if (Aloha.activeEditable) {
-				Aloha.activeEditable.obj.click();
+				$(Aloha.activeEditable.obj[0]).click();
 			}
 
-			var citeId = ++globalCiteId;
+			// Check whether the markup is found in the range (at the start of the range).
+			let foundMarkup = Aloha.Selection.rangeObject.findMarkup(
+				function () {
+					if (this.nodeName && (typeof this.nodeName === 'string')) {
+						return this.nodeName === NODE_NAME_BLOCKQUOTE;
+					}
 
-			var markup = $(supplant('<blockquote class="aloha-cite-wrapper aloha-cite-{citeId}" data-cite-id="{citeId}"></blockquote>', {citeId: citeId}));
-			Aloha.Selection.changeMarkupOnSelection(markup);
-			if (this.referenceContainer) {
-				this.addCiteToReferences(citeId);
+					return false;
+				},
+				Aloha.activeEditable.obj);
+
+			if (foundMarkup) {
+				let citeId = foundMarkup.getAttribute('data-cite-id');
+
+				if (!citeId) {
+					citeId = ++globalCiteId;
+
+					foundMarkup.classList.add('aloha-cite-wrapper');
+					foundMarkup.classList.add('data-cite-' + citeId);
+					foundMarkup.setAttribute('data-cite-id', citeId);
+				}
+
+				if (this.referenceContainer) {
+					this.addCiteToReferences(citeId);
+				}
+
+				this.showQuoteModal(false);
+
+				return foundMarkup;
 			}
 
-			return markup;
+			return false;
 		},
 
 		/**
@@ -384,8 +414,8 @@ define([
 				if (this.nodeName &&
 					(typeof this.nodeName === 'string')) {
 
-					return this.nodeName === 'Q'
-						|| this.nodeName === 'BLOCKQUOTE';
+					return this.nodeName === NODE_NAME_Q
+						|| this.nodeName === NODE_NAME_BLOCKQUOTE;
 				}
 
 				return false;
@@ -398,9 +428,7 @@ define([
 				var citUid = $(foundMarkup).attr('data-cite-id');
 				this.removeCiteFromReferences(citUid);
 
-				var $quotes = $('q[data-cite-id=' + citUid + ']');
-
-				$.merge($quotes, $('blockquote[data-cite-id=' + citUid + ']'));
+				var $quotes = $('q[data-cite-id=' + citUid + '],blockquote[data-cite-id=' + citUid + ']');
 
 				$quotes.each(function () {
 					domUtils.removeFromDOM(this, rangeObject, true);
@@ -433,7 +461,7 @@ define([
 				'merge': true,
 				'removeempty': true,
 				'mergeable': function (obj) {
-					return obj.nodeName === 'Q';
+					return obj.nodeName === NODE_NAME_Q;
 				}
 			}, rangeObject);
 

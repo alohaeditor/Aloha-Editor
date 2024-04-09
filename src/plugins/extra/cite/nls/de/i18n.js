@@ -3,5 +3,7 @@ define({
 	"cite.button.edit.quote": "Selektiertes Zitat bearbeiten",
 	"cite.button.add.blockquote": "Auswahl als Zitat formatieren",
 	"button.removeCite.tooltip": "Zitat entfernen",
-	"button.blockquote.tooltip": "Blockzitat"
+	"button.blockquote.tooltip": "Blockzitat",
+	"cite.label.cite": "Quelle",
+	"cite.label.note": "Notiz"
 });
