@@ -72,20 +72,3 @@
 .aloha-block li:after {
    content:'\0200B'
 }
-
-/**
-* Predefined list styles
-**/
-.aloha-list-templates ul.aloha-list-disc, ul.aloha-list-disc 									{ list-style-type: disc; }
-.aloha-list-templates ul.aloha-list-circle, ul.aloha-list-circle 								{ list-style-type: circle; }
-.aloha-list-templates ul.aloha-list-square, ul.aloha-list-square 								{ list-style-type: square; }
-.aloha-list-templates ol.aloha-list-decimal, ol.aloha-list-decimal								{ list-style-type: decimal; }
-.aloha-list-templates ol.aloha-list-decimal-leading-zero, ol.aloha-list-decimal-leading-zero	{ list-style-type: decimal-leading-zero; }
-.aloha-list-templates ol.aloha-list-lower-roman, ol.aloha-list-lower-roman						{ list-style-type: lower-roman; }
-.aloha-list-templates ol.aloha-list-upper-roman, ol.aloha-list-upper-roman						{ list-style-type: upper-roman; }
-.aloha-list-templates ol.aloha-list-lower-greek, ol.aloha-list-lower-greek 						{ list-style-type: lower-greek; }
-.aloha-list-templates ol.aloha-list-lower-latin, ol.aloha-list-lower-latin						{ list-style-type: lower-latin; }
-.aloha-list-templates ol.aloha-list-upper-latin, ol.aloha-list-upper-latin 						{ list-style-type: upper-latin; }
-.aloha-list-templates dl.aloha-list-red, dl.aloha-list-red										{ color: red; }
-.aloha-list-templates dl.aloha-list-blue, dl.aloha-list-blue									{ color: blue; }
-.aloha-list-templates dl.aloha-list-green, dl.aloha-list-green									{ color: green; }
