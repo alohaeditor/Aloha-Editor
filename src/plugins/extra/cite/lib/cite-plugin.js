@@ -11,11 +11,13 @@ define([
 	'PubSub',
 	'aloha/plugin',
 	'aloha/content-rules',
-	'aloha/sidebar',
 	'ui/ui',
 	'ui/icons',
-	'ui/attributeToggleButton',
+	'ui/toggleSplitButton',
+	'ui/modal',
+	'ui/overlayElement',
 	'ui/scopes',
+	'ui/utils',
 	'format/format-plugin',
 	'util/dom',
 	'i18n!cite/nls/i18n'
@@ -25,32 +27,25 @@ define([
 	PubSub,
 	Plugin,
 	ContentRules,
-	Sidebars,
 	Ui,
 	Icons,
-	AttributeToggleButton,
+	ToggleSplitButton,
+	Modal,
+	OverlayElement,
 	Scopes,
+	Utils,
 	Format,
 	domUtils,
 	i18n
 ) {
 	'use strict';
 
+	var NODE_NAME_Q = 'Q';
+	var NODE_NAME_BLOCKQUOTE = 'BLOCKQUOTE';
+
 	var configurations = {};
 	var ns  = 'aloha-cite';
 	var globalCiteId = 0;
-
-	// namespaced classnames
-	var nsClasses = {
-		'quote'       : nsClass('quote'),
-		'blockquote'  : nsClass('blockquote'),
-		'panel-label' : nsClass('panel-label'),
-		'panel-field' : nsClass('panel-field'),
-		'panel-btns'  : nsClass('panel-btns'),
-		'link-field'  : nsClass('link-field'),
-		'note-field'  : nsClass('note-field'),
-		'references'  : nsClass('references')
-	};
 
 	/**
 	 * Simple templating
@@ -68,18 +63,6 @@ define([
 					replacement() :
 					replacement;
 			});
-	}
-
-	/**
-	 * Wrapper to call the supplant method on a given string, taking the
-	 * nsClasses object as the associative array containing the replacement
-	 * pairs
-	 *
-	 * @param {String} str
-	 * @return {String}
-	 */
-	function renderTemplate(str) {
-		return (typeof str === 'string') ? supplant(str, nsClasses) : str;
 	}
 
 	/**
@@ -120,127 +103,9 @@ define([
 		return $.trim(strBldr.join(' '));
 	}
 
-
-	/**
-	 * Sets cites inputs
-	 * @param plugin
-	 */
-	function updateCiteInputs(plugin) {
-		var citeAnchorValue = plugin.effective.attr('cite');
-
-		if (citeAnchorValue) {
-			plugin.citeHrefField.setValue(citeAnchorValue);
-		} else {
-			plugin.citeHrefField.setPlaceholder();
-		}
-
-		var index = plugin.getIndexOfCitation(plugin.effective.attr('data-cite-id'));
-		var note = plugin.citations[index].note;
-
-		if (note) {
-			plugin.citeNoteField.setValue(note);
-		} else {
-			plugin.citeNoteField.setPlaceholder();
-		}
-	}
-
-	/**
-	 * Updates de inputs text of the sidebar and also the cite details.
-	 * @param plugin
-	 */
-	var saveCiteDetails = function (plugin) {
-		var citeHrefFieldValue = plugin.citeHrefField.getValue();
-		var citeNoteValue = null;
-
-		if (plugin.referenceContainer) {
-			citeNoteValue = plugin.citeNoteField.getValue();
-		}
-
-		if (typeof plugin.sideBarPanel !== 'undefined') {
-			plugin.sideBarPanel.content.find(nsSel('link-field input')).val(citeHrefFieldValue);
-			plugin.sideBarPanel.content.find(nsSel('note-field textarea')).val(citeNoteValue);
-		}
-
-		plugin.effective.attr('cite', citeHrefFieldValue);
-
-		plugin.addCiteDetails(
-			plugin.effective.attr('data-cite-id'),
-			citeHrefFieldValue,
-			citeNoteValue
-		);
-	};
-
-	/**
-	 * Initializes the sidebar.
-	 *
-	 * Note that if the sidebar is not loaded, aloha-sidebar-initialized will
-	 * not fire and this listener will not be called, which is what we would
-	 * want if there are no sidebars
-	 *
-	 * @param {Plugin} plugin
-	 */
-	function setupSidebar(plugin) {
-
-		Aloha.ready(function () {
-			plugin.sidebar = Sidebars.right.show().addPanel({
-				id       : nsClass('sidebar-panel'),
-				title    : 'Citation',
-				content  : '',
-				expanded : true,
-				activeOn : 'q, blockquote',
-
-				onInit: function () {
-					var panel = this;
-
-					var additionalReferenceContainer = plugin.referenceContainer
-							? '<label class="{panel-label}" for="{note-field}-textarea">Note</label>'
-							+ '<div class="{panel-field} {note-field}" style="margin: 5px;">'
-							+ '<textarea id="{note-field}-textarea"></textarea></div>'
-							: '';
-
-					var content = this.setContent(renderTemplate(
-						'<label class="{panel-label}" for="{link-field}-input">Link</label>' +
-						'<div class="{panel-field} {link-field}" ' +
-						'style="margin: 5px;"><input type="text" id="{link-field}-input" /></div>' +
-						additionalReferenceContainer
-					)).content;
-
-					content.find('input, textarea').on('keyup change', function () {
-						var noteValue = panel.content.find(nsSel('note-field textarea')).val();
-						var linkValue = panel.content.find(nsSel('link-field input')).val();
-
-						plugin.addCiteDetails(
-							panel.content.attr('data-cite-id'),
-							linkValue,
-							noteValue
-						);
-					});
-				},
-
-				/**
-				 * Invoked during aloha-selection-changed, if activeOn function
-				 * returns true for the current selection. Will populate panel
-				 * fields with the details of the selected citation if they are
-				 * already available.  If no citation exists for the selected
-				 * quotation, then one will be created for it first.
-				 */
-				onActivate: function (effective) {
-					var activeUid = assureCitationHasId(effective);
-					var index = plugin.getIndexOfCitation(activeUid);
-					this.content.attr('data-cite-id', activeUid);
-					this.content.find(nsSel('link-field input'))
-					    .val(effective.attr('cite'));
-					this.content.find(nsSel('note-field textarea'))
-					    .val(plugin.citations[index].note);
-				}
-			});
-			plugin.sideBarPanel = Sidebars.right.getPanelById(nsClass('sidebar-panel'));
-		});
-	}
-
 	/**
 	 * Checks if an element has a data-cite-id and, if not, adds one.
-	 * @param {effective} JQuery object representing the element to be checked.
+	 * @param effective jQuery object representing the element to be checked.
 	 * @return {number} The cite-id for this element.
 	 */
 	function assureCitationHasId(effective) {
@@ -255,18 +120,15 @@ define([
 	}
 
 	return Plugin.create('cite', {
-
 		citations: [],
 		referenceContainer: null,
 		settings: null,
-		sidebar: null,
 		config: ['quote', 'blockquote'],
 
 		init: function () {
 			var plugin = this;
 
-			// Harverst configuration options that may be defined outside of the
-			// plugin
+			// Harvest configuration options that may be defined outside the plugin.
 			if (Aloha.settings && Aloha.settings.plugins && Aloha.settings.plugins.cite) {
 
 				var referenceContainer = $(Aloha.settings.plugins.cite.referenceContainer);
@@ -278,38 +140,26 @@ define([
 				if (typeof Aloha.settings.plugins.cite !== 'undefined') {
 					plugin.settings = Aloha.settings.plugins.cite;
 				}
-
-				if (typeof plugin.settings.sidebar === 'undefined') {
-					plugin.settings.sidebar = {};
-				}
-
-				var sidebar = plugin.settings.sidebar;
-
-				if (typeof sidebar.open === 'undefined') {
-					sidebar.open = true;
-				}
-
-				if (typeof sidebar.open === 'string') {
-					sidebar.open = !(sidebar.open === '0' || sidebar.open.toLowerCase() === 'false');
-				}
 			}
 
-			this._quoteButton = Ui.adopt('quote', AttributeToggleButton, {
+			this._quoteButton = Ui.adopt('quote', ToggleSplitButton, {
 				tooltip: i18n.t('cite.button.add.quote'),
 				icon: Icons.QUOTE,
-				click: function () {
-					if (!plugin.removeQuote()) {
-						plugin.addInlineQuote();
+				pure: true,
+				contextType: 'modal',
+				secondaryClick: function () {
+					plugin.showQuoteModal();
+				},
+				onToggle: function (activated) {
+					if (activated) {
+						plugin.showQuoteModal(true);
+					} else {
+						plugin.removeQuote();
 					}
 				}
 			});
 
-			setupSidebar(this);
-
-			// We brute-forcishly push our button settings into the
-			// multiSplitButton. The multiSplitButton will pick it up and render
-			// it.
-			// Format.blockLevelSemantics['blockquote'] = true;
+			// We brute-forcishly push our button settings into the format plugin configuration.
 			Format.config['blockquote'] = {
 				icon: Icons.QUOTE,
 				label: i18n.t('button.blockquote.tooltip'),
@@ -318,14 +168,13 @@ define([
 			};
 
 			PubSub.sub('aloha.format.pre_change', function (message) {
-				if (message.oldFormat == 'blockquote' && message.newFormat != 'blockquote') {
+				if (message.oldFormat === 'blockquote' && message.newFormat !== 'blockquote') {
 					plugin.removeQuote()
 				}
 			});
 			PubSub.sub('aloha.format.changed', function (message) {
-				if (message.oldFormat != 'blockquote' && message.newFormat == 'blockquote') {
-					plugin.removeQuote();
-					plugin.addBlockQuote();
+				if (message.oldFormat !== 'blockquote' && message.newFormat === 'blockquote') {
+					plugin.initBlockQuote();
 				}
 			});
 
@@ -335,11 +184,11 @@ define([
 
 				var isQuoteEnabled = config
 					&& ($.inArray('quote', config) > -1)
-					&& ContentRules.isAllowed(editable.obj[0], 'q');
+					&& ContentRules.isAllowed(editable.obj[0], NODE_NAME_Q);
 
 				var isBlockQuoteEnabled = config
 					&& ($.inArray('blockquote', config) > -1)
-					&& ContentRules.isAllowed(editable.obj[0], 'blockquote');
+					&& ContentRules.isAllowed(editable.obj[0], NODE_NAME_BLOCKQUOTE);
 
 				configurations[editable.getId()] = {
 					quote: isQuoteEnabled,
@@ -358,7 +207,6 @@ define([
 
 			PubSub.sub('aloha.selection.context-change', function (message) {
 				var quoteFound = false;
-				var blockquoteFound = false;
 				var nodeName;
 				var effective = message.range.markupEffectiveAtStart;
 				var i = effective.length;
@@ -367,22 +215,14 @@ define([
 				// Check whether any of the effective items are citation tags
 				while (i) {
 					nodeName = effective[--i].nodeName;
-					if (nodeName === 'Q') {
+					if (nodeName === NODE_NAME_Q || nodeName === NODE_NAME_BLOCKQUOTE) {
 						quoteFound = true;
-						assureCitationHasId($(effective[i]));
-						$.merge(plugin.effective, $(effective[i]));
-					} else if (nodeName === 'BLOCKQUOTE') {
-						blockquoteFound = true;
 						assureCitationHasId($(effective[i]));
 						$.merge(plugin.effective, $(effective[i]));
 					}
 				}
 
 				plugin._quoteButton.setActive(quoteFound);
-
-				if (blockquoteFound) {
-					// Format.multiSplitButton.setActiveItem('blockquote');
-				}
 
 				if (!Aloha.activeEditable) {
 					return;
@@ -391,6 +231,90 @@ define([
 				var config = configurations[Aloha.activeEditable.getId()];
 
 				plugin._quoteButton.show(!!config.quote);
+			});
+		},
+
+		/**
+		 * Create component context for insert quote button.
+		 *
+		 * @param existingQuote The existing quote if applicable.
+		 */
+		createQuoteContext: function (existingQuote) {
+			let toggleActive = false;
+			let title = i18n.t('cite.button.add.quote');
+			let cite = '';
+			let note = '';
+
+			if (existingQuote) {
+				let quoteIdx = this.getIndexOfCitation(existingQuote.getAttribute('data-cite-id'));
+
+				toggleActive = true;
+				title = i18n.t('cite.button.edit.quote');
+				cite = existingQuote.cite;
+				note = this.citations[quoteIdx].note;
+			}
+
+			return {
+				title: title,
+				controls: {
+					cite: {
+						type: 'input',
+						options: {
+							label: i18n.t('cite.label.source')
+						}
+					},
+					note: {
+						type: 'input',
+						options: {
+							label: i18n.t('cite.label.note')
+						}
+					}
+				},
+				initialValue: {
+					cite: cite,
+					note: note
+				}
+			}
+		},
+
+		/**
+		 * Opens the create/edit quote modal.
+		 */
+		showQuoteModal: function () {
+			let plugin = this;
+			let range = Aloha.Selection.getRangeObject();
+			let limit = Aloha.activeEditable.obj;
+
+			if (limit[0] && limit[0].nodeName === NODE_NAME_Q || limit[0].nodeName === NODE_NAME_BLOCKQUOTE) {
+				limit = limit.parent();
+			}
+
+			let foundMarkup = range.findMarkup(
+				function (node) {
+					return node != null && (node.nodeName === NODE_NAME_Q || node.nodeName === NODE_NAME_BLOCKQUOTE);
+				},
+				limit);
+
+			return Modal.openDynamicModal(
+				this.createQuoteContext(foundMarkup)
+			).then(function (control) {
+				return control.value;
+			}).then(function (formData) {
+				if (foundMarkup) {
+					plugin.addCiteDetails(foundMarkup.getAttribute('data-cite-id'), formData.cite, formData.note);
+				} else {
+					// When no markup was found, a new inline quote is created. The markup for blockquotes
+					// is generated before the modal is shown.
+					let createdQuote = plugin.addInlineQuote();
+
+					plugin.addCiteDetails(createdQuote.data('cite-id'), formData.cite, formData.note);
+				}
+			}).catch(function (error) {
+				try {
+					return Utils.handleUserCloseErrors(error);
+				} catch (nonCloseError) {
+					console.error(nonCloseError);
+				}
 			});
 		},
 
@@ -433,28 +357,48 @@ define([
 		/**
 		 * Formats the current selection with blockquote.
 		 */
-		addBlockQuote: function () {
+		initBlockQuote: function () {
 			if (Aloha.activeEditable) {
-				Aloha.activeEditable.obj.click();
+				$(Aloha.activeEditable.obj[0]).click();
 			}
 
-			var citeId = ++globalCiteId;
+			// Check whether the markup is found in the range (at the start of the range).
+			let foundMarkup = Aloha.Selection.rangeObject.findMarkup(
+				function () {
+					if (this.nodeName && (typeof this.nodeName === 'string')) {
+						return this.nodeName === NODE_NAME_BLOCKQUOTE;
+					}
 
-			var markup = $(supplant('<blockquote class="aloha-cite-wrapper aloha-cite-{citeId}" data-cite-id="{citeId}"></blockquote>', {citeId: citeId}));
-			Aloha.Selection.changeMarkupOnSelection(markup);
-			if (this.referenceContainer) {
-				this.addCiteToReferences(citeId);
+					return false;
+				},
+				Aloha.activeEditable.obj);
+
+			if (foundMarkup) {
+				let citeId = foundMarkup.getAttribute('data-cite-id');
+
+				if (!citeId) {
+					citeId = ++globalCiteId;
+
+					foundMarkup.classList.add('aloha-cite-wrapper');
+					foundMarkup.classList.add('data-cite-' + citeId);
+					foundMarkup.setAttribute('data-cite-id', citeId);
+				}
+
+				if (this.referenceContainer) {
+					this.addCiteToReferences(citeId);
+				}
+
+				this.showQuoteModal(false);
+
+				return foundMarkup;
 			}
-			if (this.sidebar && this.settings && this.settings.sidebar && this.settings.sidebar.open) {
-				this.sidebar.sidebar.open();
-			}
+
+			return false;
 		},
 
 		/**
 		 * Removes quote. Returns true if a quote was found and removed.
-		 * @param {Range} rangeObject
-		 * @param {jQueryElement} $markup
-		 * @return {boolean}
+		 * @return {boolean} True if quote markup was removed and false otherwise.
 		 */
 		removeQuote: function () {
 			var foundMarkup;
@@ -470,8 +414,8 @@ define([
 				if (this.nodeName &&
 					(typeof this.nodeName === 'string')) {
 
-					return this.nodeName === 'Q'
-						|| this.nodeName === 'BLOCKQUOTE';
+					return this.nodeName === NODE_NAME_Q
+						|| this.nodeName === NODE_NAME_BLOCKQUOTE;
 				}
 
 				return false;
@@ -484,7 +428,7 @@ define([
 				var citUid = $(foundMarkup).attr('data-cite-id');
 				this.removeCiteFromReferences(citUid);
 
-				var $quotes = $('q[data-cite-id=' + citUid + ']');
+				var $quotes = $('q[data-cite-id=' + citUid + '],blockquote[data-cite-id=' + citUid + ']');
 
 				$quotes.each(function () {
 					domUtils.removeFromDOM(this, rangeObject, true);
@@ -517,14 +461,14 @@ define([
 				'merge': true,
 				'removeempty': true,
 				'mergeable': function (obj) {
-					return obj.nodeName == 'Q';
+					return obj.nodeName === NODE_NAME_Q;
 				}
 			}, rangeObject);
 
 			// If the cite is not found, it was not created. Probably for
 			// a incorrect caret position.
 			if ($('[data-cite-id=' + globalCiteId + ']').length === 0) {
-				return;
+				return false;
 			}
 
 			// select the modified range
@@ -534,13 +478,7 @@ define([
 				this.addCiteToReferences(globalCiteId);
 			}
 
-			if (this.sidebar && this.settings && this.settings.sidebar && this.settings.sidebar.open) {
-				Sidebars.right.open();
-			}
-
-			//	.activatePanel(nsClass('sidebar-panel'), markup);
-
-			return false;
+			return markup;
 		},
 
 		/**
