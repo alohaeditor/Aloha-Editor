@@ -330,43 +330,18 @@ define([
 		 * Default list styles
 		 */
 		templates: {
-			ul: {
-				'aloha-list-disc': i18n.t('class.ul.disc'),
-				'aloha-list-circle': i18n.t('class.ul.circle'),
-				'aloha-list-square': i18n.t('class.ul.square'),
-			},
-			ol: {
-				'aloha-list-decimal': i18n.t('class.ol.numbers'),
-				'aloha-list-decimal-leading-zero': i18n.t('class.ol.numberszero'),
-				'aloha-list-lower-roman': i18n.t('class.ol.lcroman'),
-				'aloha-list-upper-roman': i18n.t('class.ol.ucroman'),
-				'aloha-list-lower-greek': i18n.t('class.ol.greek'),
-				'aloha-list-lower-latin': i18n.t('class.ol.lcletters'),
-				'aloha-list-upper-latin': i18n.t('class.ol.ucletters'),
-			},
-			dl: {
-				'aloha-list-blue': i18n.t('class.dl.blue'),
-				'aloha-list-green': i18n.t('class.dl.green'),
-				'aloha-list-red': i18n.t('class.dl.red'),
-			},
+			ul: {},
+			ol: {},
+			dl: {},
 		},
 
 		/**
 		 * Default classes to apply to lists and list items
 		 */
 		defaultClasses: {
-			ul: {
-				list: ['aloha-list-disc'],
-				item: []
-			},
-			ol: {
-				list: ['aloha-list-decimal'],
-				item: []
-			},
-			dl: {
-				list: ['aloha-list-blue'],
-				item: []
-			}
+			ul: {},
+			ol: {},
+			dl: {}
 		},
 
 		/**

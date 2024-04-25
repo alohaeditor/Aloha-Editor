@@ -7,6 +7,21 @@
 	<link rel="stylesheet" href="../../css/aloha-reset.css" type="text/css">
 	<link rel="stylesheet" href="../../css/aloha-core.css" type="text/css">
 	<link rel="stylesheet" href="../../css/aloha-common-extra.css" type="text/css">
+	<style>
+		.aloha-list-disc                    { list-style-type: disc; }
+		.aloha-list-circle                  { list-style-type: circle; }
+		.aloha-list-square                  { list-style-type: square; }
+		.aloha-list-decimal                 { list-style-type: decimal; }
+		.aloha-list-decimal-leading-zero    { list-style-type: decimal-leading-zero; }
+		.aloha-list-lower-roman             { list-style-type: lower-roman; }
+		.aloha-list-upper-roman             { list-style-type: upper-roman; }
+		.aloha-list-lower-greek             { list-style-type: lower-greek; }
+		.aloha-list-lower-latin             { list-style-type: lower-latin; }
+		.aloha-list-upper-latin             { list-style-type: upper-latin; }
+		.aloha-list-red                     { color: red; }
+		.aloha-list-blue                    { color: blue; }
+		.aloha-list-green                   { color: green; }
+	</style>
 	<script src="../../lib/require.js"></script>
 	<script src="../../lib/vendor/jquery-3.7.0.js"></script>
 	<script src="../../lib/aloha.js" data-aloha-plugins="common/ui,common/list"></script>
@@ -35,9 +50,51 @@
     </div>
 	</div>
 	<script type="text/javascript">
-	Aloha.ready( function() {
-		Aloha.jQuery('#content').aloha();
-	});
+        let i18n = Aloha.require('i18n!list/nls/i18n');
+
+        Aloha.settings.plugins = {
+            list: {
+                templates: {
+                    ul: {
+                        'aloha-list-disc': i18n.t('class.ul.disc'),
+                        'aloha-list-circle': i18n.t('class.ul.circle'),
+                        'aloha-list-square': i18n.t('class.ul.square'),
+                    },
+                    ol: {
+                        'aloha-list-decimal': i18n.t('class.ol.numbers'),
+                        'aloha-list-decimal-leading-zero': i18n.t('class.ol.numberszero'),
+                        'aloha-list-lower-roman': i18n.t('class.ol.lcroman'),
+                        'aloha-list-upper-roman': i18n.t('class.ol.ucroman'),
+                        'aloha-list-lower-greek': i18n.t('class.ol.greek'),
+                        'aloha-list-lower-latin': i18n.t('class.ol.lcletters'),
+                        'aloha-list-upper-latin': i18n.t('class.ol.ucletters'),
+                    },
+                    dl: {
+                        'aloha-list-blue': i18n.t('class.dl.blue'),
+                        'aloha-list-green': i18n.t('class.dl.green'),
+                        'aloha-list-red': i18n.t('class.dl.red'),
+                    },
+                },
+                defaultClasses: {
+                    ul: {
+                        list: ['aloha-list-disc'],
+                        item: []
+                    },
+                    ol: {
+                        list: ['aloha-list-decimal'],
+                        item: []
+                    },
+                    dl: {
+                        list: ['aloha-list-blue'],
+                        item: []
+                    }
+                }
+            }
+        };
+
+	    Aloha.ready( function() {
+		    Aloha.jQuery('#content').aloha();
+	    });
 	</script>
 </body>
 </html>
