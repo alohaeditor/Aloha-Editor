@@ -1,0 +1,44 @@
+Existing UI Systems have been overhauled:
+
+* @ui/scopes@: have been de-deprecated and reworked
+* @ui/surface@: now controls general UI behavior and can derfer it to other systems entirely
+
+All UI Components may now inherit from the new @ui/component@ base-class, as new functionality and requirements have been added.
+
+Icons have been reworked to use "Google's Material Symbols":https://fonts.google.com/icons?icon.set=Material+Symbols instead of Image files.
+Icons that are used are mapped and available in @ui/icons@.
+
+New Systems for dynamic, and consistent UIs have been added:
+
+* @ui/dropdown@: Adds a generic way to open a dropdown on a specific component.
+* @ui/dynamicForm@: Allows for dynamic form and form-control generation, as well as a component registry to add new components.
+* @ui/modal@: Adds a generic way to open modals with a form.
+
+New UI Components have been added:
+
+* @ui/attributeButton@: Regular button, which also allows for editing of a single attribute of an HTML-Element.
+* @ui/attributeToggleButton@: Extension of @ui/attributeButton@ which adds toggle functions to the button.
+* @ui/checkbox@: Checkbox component to control a boolean value.
+* @ui/colorPicker@: Color picker to either select a pre-defined color value or let's the user select/pick one.
+* @ui/contextButton@: Button which opens a context (Modal/Dropdown) on click.
+* @ui/contextToggleButton@: Extension of @ui/contextButton@ which adds toggle functions to the button.
+* @ui/dateTimePicker@: Date-Time Picker to enter/select a date, or a date-time.
+* @ui/iframe@: Iframe which allows embedding of external components and interacts via the window message protocol.
+* @ui/input@: Formerly @ui/text@, and is a generic input element.
+* @ui/select@: Select which allows the user to select one or more options.
+* @ui/selectMenu@: Special select for dropdowns only. Allows the user to select only one option and has additional step for extra data input.
+* @ui/slider@: Horizontal slider/range to select a number.
+* @ui/splitButton@: Button which has a secondary smaller button added to it.
+* @ui/text@: Just text without any interactions.
+* @ui/toggleSplitButton@: Extension of @ui/splitBtton@ which adds toggle functions to the button.
+
+Components which have been removed:
+
+* @ui/accordionMenuButton@: Use a combination of @ui/contextButton@, or @ui/dropdown@; and the @ui/selectMenu@ instead.
+* @ui/menuButton@: Use a combination of @ui/contextButton@, or @ui/dropdown@; and the @ui/selectMenu@ instead.
+* @ui/multiSplit@: Use either a @ui/splitButton@, or a combination of @ui/contextButton@, or @ui/dropdown@; and the @ui/selectMenu@ instead.
+* @ui/port-helper-attribute-field@: Use the @ui/attributeButton@ or @ui/attributeToggleButton@ instead.
+* @ui/port-helper-multi-split@: Use either a @ui/splitButton@, or a combination of @ui/contextButton@, or @ui/dropdown@; and the @ui/selectMenu@ instead.
+* @ui/text@: Not directly removed, but changed to @ui/input@, as this component will now only render text.
+
+Component layouts and stylings may have changed significantly.

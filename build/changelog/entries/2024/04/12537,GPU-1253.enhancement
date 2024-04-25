@@ -1,0 +1,8 @@
+Various settings for plugins and the UI Toolbar have been changed.
+
+Noteworthy changes for the @Aloha.settings.toolbar@:
+
+* Tabs require an @id@, and @label@ property and optionally an @icon@.
+* Tab component slots (@components@) can be defined by either @string@ or as @{ slot: string; scope: string | string[] }@ elements.
+
+For full type definitions, check the @ui/settings@ file.
