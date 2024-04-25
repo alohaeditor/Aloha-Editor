@@ -10,12 +10,14 @@ define([
 	'aloha/core',
 	'util/dom2',
 	'util/arrays',
+	'util/html',
 	'aloha/jquery'
 ], function (
 	PubSub,
 	Aloha,
 	Dom,
 	Arrays,
+	Html,
 	$
 ) {
 	'use strict';
@@ -31,6 +33,12 @@ define([
 	 * @type {Array.<string>}
 	 */
 	var TABLE_WHITELIST_NODE_NAMES = ['caption', 'colgroup', 'col', 'thead', 'tbody', 'tfoot', 'td', 'th'];
+
+	/**
+	 * Node names for editables where block-level elements may be inserted.
+	 * @type {Array.<string>}
+	 */
+	var ALLOWED_BLOCKLEVEL_INSERT_EDITABLE_NODE_NAMES = ['div', 'p', 'pre', 'header', 'nav', 'main', 'mark', 'section', 'article', 'aside', 'footer', 'summary', 'details'];
 
 	/**
 	 * Add default rules for some elements.
@@ -176,6 +184,12 @@ define([
 	 * @return {boolean}
 	 */
 	function isAllowed(editable, nodeName) {
+		if (Html.BLOCKLEVEL_ELEMENTS.includes(nodeName.toLowerCase())) {
+			if (!ALLOWED_BLOCKLEVEL_INSERT_EDITABLE_NODE_NAMES.includes(editable.nodeName.toLowerCase())) {
+				return false;
+			}
+		}
+
 		var white = getRules(editable, whitelist);
 		// Because if no rules are configured for this editable then permit all
 		if (white.length > 0) {
