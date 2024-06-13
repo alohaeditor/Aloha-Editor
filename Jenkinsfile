@@ -163,7 +163,7 @@ spec:
 		stage("Publish release") {
 			when {
 				expression {
-					return Boolean.valueOf(release) && env.BUILD_SKIPPED != "true"
+					return Boolean.valueOf(params.release) && env.BUILD_SKIPPED != "true"
 				}
 			}
 
