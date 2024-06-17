@@ -29,7 +29,6 @@ define([
 	'util/class',
 	'util/html',
 	'jquery',
-	'aloha/ecma5shims',
 	'aloha/console',
 	'aloha/block-jump',
 	'aloha/content-rules'
@@ -38,7 +37,6 @@ define([
 	Class,
 	Html,
 	jQuery,
-	shims,
 	console,
 	BlockJump,
 	ContentRules
@@ -189,7 +187,7 @@ define([
 	}
 
 	function nodeContains(node1, node2) {
-		return isOldIE ? (shims.compareDocumentPosition(node1, node2) & 16) : 0 < jQuery(node1).find(node2).length;
+		return isOldIE ? (node1.compareDocumentPosition(node2) & 16) : 0 < jQuery(node1).find(node2).length;
 	}
 
 	function isInsidePlaceholder(range) {

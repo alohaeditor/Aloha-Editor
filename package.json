@@ -11,7 +11,7 @@
   "scripts": {
     "cypress:open": "cypress open",
     "demo:start": "http-server target/build-profile-with-common-extra-plugins -p 8080",
-    "demo:build": "node ./node_modules/requirejs/bin/r.js -o build/aloha/build-profile-with-common-extra-plugins.js && node build/aloha/copy-dependencies.js",
+    "demo:build": "node ./node_modules/requirejs/bin/r.js -o build/aloha/build-profile-with-common-extra-plugins.js",
     "build": "node ./node_modules/requirejs/bin/r.js -o build/aloha/build-profile-with-common-extra-plugins.js"
   },
   "repository": {

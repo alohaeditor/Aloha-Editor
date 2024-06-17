@@ -29,7 +29,13 @@
 window.GENTICS = window.GENTICS || {};
 window.GENTICS.Utils = window.GENTICS.Utils || {};
 
-define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_) {
+define([
+	'jquery',
+	'util/class'
+], function (
+	jQuery,
+	Class
+) {
 	"use strict";
 
 	var	GENTICS = window.GENTICS,
@@ -1893,7 +1899,13 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 		// resolved value "inline" or "inline-block" or "inline-table" or "none", or a
 		// Document, or a DocumentFragment."
 		isBlockNode: function (node) {
-			return node && ((node.nodeType == $_.Node.ELEMENT_NODE && $_(["inline", "inline-block", "inline-table", "none"]).indexOf($_.getComputedStyle(node).display) == -1) || node.nodeType == $_.Node.DOCUMENT_NODE || node.nodeType == $_.Node.DOCUMENT_FRAGMENT_NODE);
+			return node && (
+				(node.nodeType == Node.ELEMENT_NODE
+					&& ["inline", "inline-block", "inline-table", "none"].includes(node.getComputedStyle().display)
+				)
+				|| node.nodeType == Node.DOCUMENT_NODE
+				|| node.nodeType == Node.DOCUMENT_FRAGMENT_NODE
+			);
 		},
 
 		/**
@@ -1910,12 +1922,12 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 			}
 
 			// check whether the node itself is visible
-			if ((node.nodeType == $_.Node.TEXT_NODE && this.isEmpty(node)) || (node.nodeType == $_.Node.ELEMENT_NODE && this.getOffsetHeight(node) === 0 && jQuery.inArray(node.nodeName.toLowerCase(), this.nonEmptyTags) === -1)) {
+			if ((node.nodeType == Node.TEXT_NODE && this.isEmpty(node)) || (node.nodeType == Node.ELEMENT_NODE && this.getOffsetHeight(node) === 0 && jQuery.inArray(node.nodeName.toLowerCase(), this.nonEmptyTags) === -1)) {
 				return null;
 			}
 
 			// if the node is a text node, or does not have children, or is not editable, it is the first visible child
-			if (node.nodeType == $_.Node.TEXT_NODE || (node.nodeType == $_.Node.ELEMENT_NODE && node.childNodes.length == 0) || !jQuery(node).contentEditable()) {
+			if (node.nodeType == Node.TEXT_NODE || (node.nodeType == Node.ELEMENT_NODE && node.childNodes.length == 0) || !jQuery(node).contentEditable()) {
 				return includeNode ? node : null;
 			}
 
@@ -1950,12 +1962,12 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 			}
 
 			// check whether the node itself is visible
-			if ((node.nodeType == $_.Node.TEXT_NODE && this.isEmpty(node)) || (node.nodeType == $_.Node.ELEMENT_NODE && this.getOffsetHeight(node) === 0 && jQuery.inArray(node.nodeName.toLowerCase(), this.nonEmptyTags) === -1)) {
+			if ((node.nodeType == Node.TEXT_NODE && this.isEmpty(node)) || (node.nodeType == Node.ELEMENT_NODE && this.getOffsetHeight(node) === 0 && jQuery.inArray(node.nodeName.toLowerCase(), this.nonEmptyTags) === -1)) {
 				return null;
 			}
 
 			// if the node is a text node, or does not have children, or is not editable, it is the first visible child
-			if (node.nodeType == $_.Node.TEXT_NODE || (node.nodeType == $_.Node.ELEMENT_NODE && node.childNodes.length == 0) || !jQuery(node).contentEditable()) {
+			if (node.nodeType == Node.TEXT_NODE || (node.nodeType == Node.ELEMENT_NODE && node.childNodes.length == 0) || !jQuery(node).contentEditable()) {
 				return includeNode ? node : null;
 			}
 
