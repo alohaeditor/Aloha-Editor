@@ -30,6 +30,9 @@ define([
 		 */
 		isInstance: true,
 
+		/** The name under which slot this component was registered as. */
+		name: null,
+
 		/** jQuery ref to the root element of this component. */
 		element: null,
 

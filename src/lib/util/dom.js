@@ -143,8 +143,8 @@ define([
 		return (
 			node.className === 'aloha-editing-p'
 				&& nodeLength(node) === 1
-					&& node.children[0].nodeName === 'BR'
-						&& node.children[0].className === 'aloha-end-br'
+				&& node.children[0].nodeName === 'BR'
+				&& node.children[0].className === 'aloha-end-br'
 		);
 	}
 
@@ -170,12 +170,12 @@ define([
 			return node;
 		}
 		var next = node.firstChild
-		        || node.nextSibling
-		        || (
-		            node.parentNode
-		            && !GENTICS.Utils.Dom.isEditingHost(node.parentNode)
-		            && node.parentNode.nextSibling
-		        );
+			|| node.nextSibling
+			|| (
+				node.parentNode
+				&& !GENTICS.Utils.Dom.isEditingHost(node.parentNode)
+				&& node.parentNode.nextSibling
+			);
 		return next ? findNodeForward(next, match) : null;
 	}
 
@@ -1901,7 +1901,7 @@ define([
 		isBlockNode: function (node) {
 			return node && (
 				(node.nodeType == Node.ELEMENT_NODE
-					&& ["inline", "inline-block", "inline-table", "none"].includes(node.getComputedStyle().display)
+					&& ["inline", "inline-block", "inline-table", "none"].includes(getComputedStyle(node).display)
 				)
 				|| node.nodeType == Node.DOCUMENT_NODE
 				|| node.nodeType == Node.DOCUMENT_FRAGMENT_NODE
