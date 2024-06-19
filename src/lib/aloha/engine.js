@@ -5008,11 +5008,11 @@ define([
 			return "none";
 		}
 
-		function itselfOrParentIsType(type) {
+		function itselfOrParentIsType(type, checkChildren) {
 			return function(node) {
 				return (isNamedHtmlElement(node, type)
 					|| isNamedHtmlElement(node.parentNode, type)
-					|| (node.querySelector && node.querySelector(type))
+					|| (checkChildren && node.querySelector && node.querySelector(type))
 					|| (
 						isNamedHtmlElement(node.parentNode, "li")
 						&& isNamedHtmlElement(node.parentNode.parentNode, type)
@@ -5023,7 +5023,7 @@ define([
 		// "If every member of node list is either an ol or the child of an ol or
 		// the child of an li child of an ol, and none is a ul or an ancestor of a
 		// ul, return "ol"."
-		if (nodeList.every(itselfOrParentIsType('ol'))
+		if (nodeList.every(itselfOrParentIsType('ol', false))
 			&& !nodeList.some(function (node) {
 				return isNamedHtmlElement(node, 'ul')
 					|| (node.querySelector && node.querySelector("ul"));
@@ -5035,7 +5035,7 @@ define([
 		// "If every member of node list is either a ul or the child of a ul or the
 		// child of an li child of a ul, and none is an ol or an ancestor of an ol,
 		// return "ul"."
-		if (nodeList.every(itselfOrParentIsType('ul'))
+		if (nodeList.every(itselfOrParentIsType('ul', false))
 			&& !nodeList.some(function (node) {
 				return isNamedHtmlElement(node, 'ol')
 					|| (node.querySelector && node.querySelector("ol"));
@@ -5044,8 +5044,8 @@ define([
 			return "ul";
 		}
 
-		var hasOl = nodeList.some(itselfOrParentIsType('ol'));
-		var hasUl = nodeList.some(itselfOrParentIsType('ul'));
+		var hasOl = nodeList.some(itselfOrParentIsType('ol', true));
+		var hasUl = nodeList.some(itselfOrParentIsType('ul', true));
 
 		// "If some member of node list is either an ol or the child or ancestor of
 		// an ol or the child of an li child of an ol, and some member of node list
@@ -5370,7 +5370,7 @@ define([
 				// subtract one from start offset."
 			} else if (
 				startNode.nodeType === Node.TEXT_NODE
-					&& ['pre', 'pre-wrap'].includes(getComputedStyle(startNode.parentNode).whiteSpace)
+					&& !['pre', 'pre-wrap'].includes(getComputedStyle(startNode.parentNode).whiteSpace)
 					&& startOffset != 0
 					&& /[ \xa0]/.test(startNode.data[startOffset - 1])
 			) {
@@ -5414,7 +5414,7 @@ define([
 				// end node's data is a space (0x0020) or non-breaking space (0x00A0):"
 			} else if (
 				endNode.nodeType === Node.TEXT_NODE
-				&& ['pre', 'pre-wrap'].includes(getComputedStyle(endNode.parentNode).whiteSpace)
+				&& !['pre', 'pre-wrap'].includes(getComputedStyle(endNode.parentNode).whiteSpace)
 				&& endOffset != getNodeLength(endNode)
 				&& /[ \xa0]/.test(endNode.data[endOffset])
 			) {
@@ -7959,7 +7959,7 @@ define([
 				Array.from(range.startContainer.childNodes)
 					.filter(function (node, range) {
 						return isEditable(node) && isCollapsedBlockProp(node) && Dom.getIndexInParent(node) >= range.startOffset;
-					}, true)
+					})
 					.forEach(function (node) {
 						node.parentNode.removeChild(node);
 					});
