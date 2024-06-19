@@ -486,12 +486,11 @@ define([
 			parents = splitElement.parents().get();
 			parents.unshift(splitElement.get(0));
 
-			jQuery.each(parents, function (index, element) {
-				var isLimit = limit.filter(
-					function () {
-						return this == element;
-					}
-				).length;
+			parents.forEach(function (element, index) {
+				var isLimit = limit.filter(function () {
+					return this == element;
+				}).length;
+
 				if (isLimit) {
 					if (index > 0) {
 						path = parents.slice(0, index);
@@ -618,12 +617,17 @@ define([
 			if (this.children[outerNodeName] == innerNodeName) {
 				return true;
 			}
-			if (jQuery.isArray(this.children[outerNodeName]) && jQuery.inArray(innerNodeName, this.children[outerNodeName]) >= 0) {
+			if (
+				Array.isArray(this.children[outerNodeName])
+				&& this.children[outerNodeName].includes(innerNodeName)
+			) {
 				return true;
 			}
 
-			if (jQuery.isArray(this.tags[this.children[outerNodeName]])
-				    && jQuery.inArray(innerNodeName, this.tags[this.children[outerNodeName]]) >= 0) {
+			if (
+				Array.isArray(this.tags[this.children[outerNodeName]])
+				&& this.tags[this.children[outerNodeName]].includes(innerNodeName)
+			) {
 				return true;
 			}
 
@@ -959,7 +963,11 @@ define([
 								//							jQuery(this).remove();
 								removed = true;
 							}
-							if (jQuery.inArray(thisNodeName.toLowerCase(), that.mergeableTags) >= 0 && jQuery(this).text().length === 0 && this.childNodes.length === 0) {
+							if (
+								that.mergeableTags.includes(thisNodeName.toLowerCase())
+								&& jQuery(this).text().length === 0
+								&& this.childNodes.length === 0
+							) {
 								//							jQuery(this).remove();
 								removed = true;
 							}
@@ -967,7 +975,7 @@ define([
 
 						// when the current node was not removed, we eventually store it as previous (mergeable) tag
 						if (!removed) {
-							if (cleanup.mergeable ? cleanup.mergeable(this) : jQuery.inArray(thisNodeName.toLowerCase(), that.mergeableTags) >= 0) {
+							if (cleanup.mergeable ? cleanup.mergeable(this) : that.mergeableTags.includes(thisNodeName.toLowerCase())) {
 								prevNode = this;
 							} else {
 								prevNode = false;
@@ -1140,7 +1148,7 @@ define([
 			if (!node) {
 				return false;
 			}
-			if (node.nodeType === 1 && jQuery.inArray(node.nodeName.toLowerCase(), this.blockLevelElements) >= 0) {
+			if (node.nodeType === 1 && this.blockLevelElements.includes(node.nodeName.toLowerCase())) {
 				return true;
 			}
 			return false;
@@ -1156,7 +1164,7 @@ define([
 			if (!node) {
 				return false;
 			}
-			if (node.nodeType === 1 && jQuery.inArray(node.nodeName.toLowerCase(), this.tableElements) >= 0) {
+			if (node.nodeType === 1 && this.tableElements.includes(node.nodeName.toLowerCase())) {
 				return true;
 			}
 			return false;
@@ -1198,7 +1206,7 @@ define([
 			if (!node) {
 				return false;
 			}
-			return node.nodeType === 1 && jQuery.inArray(node.nodeName.toLowerCase(), this.listElements) >= 0;
+			return node.nodeType === 1 && this.listElements.includes(node.nodeName.toLowerCase());
 		},
 
 		/**
@@ -1264,7 +1272,7 @@ define([
 				searchleft = true;
 			}
 
-			options = jQuery.extend({ acceptUntrimmed: false }, options);
+			options = Object.assign({ acceptUntrimmed: false }, options);
 
 			var nextNode,
 			    currentParent = parent;
@@ -1300,7 +1308,7 @@ define([
 					currentParent = currentParent.parentNode;
 					continue;
 				} else if (nextNode.nodeType === 3
-						&& (options.acceptUntrimmed ? nextNode.data : jQuery.trim(nextNode.data)).length > 0) {
+						&& (options.acceptUntrimmed ? nextNode.data : nextNode.data.trim()).length > 0) {
 					// we are lucky and found a notempty text node
 					return nextNode;
 				}
@@ -1373,7 +1381,7 @@ define([
 			if (parentElements.length === 0) {
 				newParent = limit.get(0);
 			} else {
-				jQuery.each(parentElements, function (index, parent) {
+				parentElements.forEach(function (parent) {
 					if (that.allowsNesting(parent, object.get(0))) {
 						newParent = parent;
 						return false;
@@ -1599,7 +1607,7 @@ define([
 			if (!object || !object.nodeName) {
 				return false;
 			}
-			return jQuery.inArray(object.nodeName.toLowerCase(), this.nonWordBoundaryTags) == -1;
+			return !this.nonWordBoundaryTags.includes(object.nodeName.toLowerCase());
 		},
 
 		/**
@@ -1739,7 +1747,7 @@ define([
 			}
 
 			// some tags are considered to be non-empty
-			if (jQuery.inArray(domObject.nodeName.toLowerCase(), this.nonEmptyTags) != -1) {
+			if (this.nonEmptyTags.includes(domObject.nodeName.toLowerCase())) {
 				return false;
 			}
 
@@ -1901,7 +1909,7 @@ define([
 		isBlockNode: function (node) {
 			return node && (
 				(node.nodeType == Node.ELEMENT_NODE
-					&& ["inline", "inline-block", "inline-table", "none"].includes(getComputedStyle(node).display)
+					&& !["inline", "inline-block", "inline-table", "none"].includes(getComputedStyle(node).display)
 				)
 				|| node.nodeType == Node.DOCUMENT_NODE
 				|| node.nodeType == Node.DOCUMENT_FRAGMENT_NODE
@@ -1922,7 +1930,16 @@ define([
 			}
 
 			// check whether the node itself is visible
-			if ((node.nodeType == Node.TEXT_NODE && this.isEmpty(node)) || (node.nodeType == Node.ELEMENT_NODE && this.getOffsetHeight(node) === 0 && jQuery.inArray(node.nodeName.toLowerCase(), this.nonEmptyTags) === -1)) {
+			if (
+				(node.nodeType == Node.TEXT_NODE
+					&& this.isEmpty(node)
+				)
+				|| (
+					node.nodeType == Node.ELEMENT_NODE
+					&& this.getOffsetHeight(node) === 0
+					&& !this.nonEmptyTags.includes(node.nodeName.toLowerCase())
+				)
+			) {
 				return null;
 			}
 
@@ -1932,7 +1949,7 @@ define([
 			}
 
 			// when we find one of the stop elements, we return it
-			if (jQuery.isArray(stopElements) && jQuery.inArray(node.nodeName, stopElements) >= 0) {
+			if (Array.isArray(stopElements) && stopElements.includes(node.nodeName)) {
 				return includeNode ? node : null;
 			}
 
@@ -1962,17 +1979,34 @@ define([
 			}
 
 			// check whether the node itself is visible
-			if ((node.nodeType == Node.TEXT_NODE && this.isEmpty(node)) || (node.nodeType == Node.ELEMENT_NODE && this.getOffsetHeight(node) === 0 && jQuery.inArray(node.nodeName.toLowerCase(), this.nonEmptyTags) === -1)) {
+			if (
+				(
+					node.nodeType == Node.TEXT_NODE
+					&& this.isEmpty(node)
+				)
+				|| (
+					node.nodeType == Node.ELEMENT_NODE
+					&& this.getOffsetHeight(node) === 0
+					&& !this.nonEmptyTags.includes(node.nodeName.toLowerCase())
+				)
+			) {
 				return null;
 			}
 
 			// if the node is a text node, or does not have children, or is not editable, it is the first visible child
-			if (node.nodeType == Node.TEXT_NODE || (node.nodeType == Node.ELEMENT_NODE && node.childNodes.length == 0) || !jQuery(node).contentEditable()) {
+			if (
+				node.nodeType == Node.TEXT_NODE
+				|| (
+					node.nodeType == Node.ELEMENT_NODE
+					&& node.childNodes.length == 0
+				)
+				|| !jQuery(node).contentEditable()
+			) {
 				return includeNode ? node : null;
 			}
 
 			// when we find one of the stop elements, we return it
-			if (jQuery.isArray(stopElements) && jQuery.inArray(node.nodeName, stopElements) >= 0) {
+			if (Array.isArray(stopElements) && stopElements.includes(node.nodeName)) {
 				return includeNode ? node : null;
 			}
 
