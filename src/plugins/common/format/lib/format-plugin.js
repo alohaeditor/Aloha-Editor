@@ -834,37 +834,29 @@ define('format/format-plugin', [
 		 * @return void
 		 */
 		applyButtonConfig: function ($editable) {
-			var config = this.getEditableConfig($editable),
-				button, i, len;
+			var config = this.getEditableConfig($editable);
 
-			if (typeof config === 'object') {
-				var config_old = [];
-				$.each(config, function (j, button) {
-					if (!(typeof j === 'number' && typeof button === 'string')) {
-						config_old.push(j);
-					}
-				});
-
-				if (config_old.length > 0) {
-					config = config_old;
-				}
+			if (config != null && typeof config === 'object' && !Array.isArray(config)) {
+				config = Object.keys(config);
 			}
+
 			this.formatOptions = config;
 
 			var editable = $editable[0];
 
 			// now iterate all buttons and show/hide them according to the config
-			for (button in this.buttons) {
-				if (this.buttons.hasOwnProperty(button)) {
-					if (!ContentRules.isAllowed(editable, button)) {
-						this.buttons[button].handle.hide();
-					} else if ($.inArray(button, config) !== -1) {
-						this.buttons[button].handle.show();
-					} else {
-						this.buttons[button].handle.hide();
-					}
+			Object.entries(this.buttons).forEach(function(entry) {
+				var buttonName = entry[0];
+				var button = entry[1];
+
+				if (!ContentRules.isAllowed(editable, buttonName)
+					|| !config.includes(buttonName)
+				) {
+					button.handle.hide();
+				} else {
+					button.handle.show();
 				}
-			}
+			});
 		},
 
 		/**
