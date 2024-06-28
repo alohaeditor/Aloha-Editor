@@ -381,11 +381,12 @@ define([
 
 				try {
 					if ($event.originalEvent instanceof ClipboardEvent) {
-						$event.preventDefault();
 						/** @type {DataTransfer} */
 						var data = $event.originalEvent.clipboardData;
 						var rawPaste = data.getData('text/html');
 						if (rawPaste !== '') {
+							// Cancel the event and put the clipboard data directly into the clipboard container element
+							$event.preventDefault();
 							$CLIPBOARD.append($(rawPaste));
 							onPaste($event, range);
 							return;
