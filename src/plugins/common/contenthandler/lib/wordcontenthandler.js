@@ -226,7 +226,11 @@ define([
 
 				// Because any empty element (like spaces wrapped in spans) are
 				// not needed, except table cells.
-				$node.contents().unwrap();
+				if ($node.contents().length === 0) {
+					$node.remove();
+				} else {
+					$node.contents().unwrap();
+				}
 			} else if (nodeName === 'a'
 					&& $node.attr('href') && $node.attr('href').match("^file://")) {
 				$node.contents().unwrap();
