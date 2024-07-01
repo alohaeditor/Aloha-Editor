@@ -11,7 +11,7 @@
   "scripts": {
     "cypress:open": "cypress open",
     "demo:start": "http-server target/build-profile-with-common-extra-plugins -p 8080",
-    "demo:build": "node ./node_modules/requirejs/bin/r.js -o build/aloha/build-profile-with-common-extra-plugins.js && node build/aloha/copy-dependencies.js",
+    "demo:build": "node ./node_modules/requirejs/bin/r.js -o build/aloha/build-profile-with-common-extra-plugins.js",
     "build": "node ./node_modules/requirejs/bin/r.js -o build/aloha/build-profile-with-common-extra-plugins.js"
   },
   "repository": {
@@ -49,10 +49,16 @@
     "postcss-import": "^15.1.0",
     "postcss-plugin-namespace": "^0.0.3",
     "postcss-url": "^10.1.3",
-    "requirejs": "^2.0.5",
+    "requirejs": "^2.3.6",
     "uglify-js": "^3.17.4"
   },
   "dependencies": {
-    "fs-extra": "^11.1.1"
+    "fs-extra": "^11.1.1",
+    "jcrop": "^3.0.1",
+    "jqGrid": "^5.8.7",
+    "jquery": "^3.7.1",
+    "jquery-ui": "^1.13.3",
+    "jstree": "^3.3.16",
+    "rangy": "^1.3.1"
   }
 }

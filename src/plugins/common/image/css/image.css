@@ -1,4 +1,4 @@
-@import	"../vendor/jcrop/jquery.jcrop.css";
+@import	"../../../../../node_modules/jcrop/dist/jcrop.css";
 
 /* Images */
 .aloha-image-align-left {
@@ -126,6 +126,34 @@
 .aloha-image-box-active .ui-resizable-handle.ui-resizable-se {
 }
 .aloha-image-box-active .ui-resizable-handle.ui-resizable-sw {
+}
+
+.aloha-image-jcrop-wrapper {
+	display: inline-flex;
+	flex-direction: column;
+}
+
+.aloha-image-jcrop-wrapper .jcrop-image-stage img {
+	/* Otherwise broken */
+	z-index: 0;
+}
+
+.aloha-image-jcrop-wrapper .aloha-image-crop-controls-container {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	align-items: center;
+	gap: 8px;
+	padding: 3px 6px;
+}
+.aloha-image-jcrop-wrapper .aloha-image-crop-controls-container .aloha-button {
+	background: #eee;
+}
+.aloha-image-jcrop-wrapper .aloha-image-crop-controls-container .aloha-crop-confirm {
+	color: green;
+}
+.aloha-image-jcrop-wrapper .aloha-image-crop-controls-container .aloha-crop-cancel {
+	color: red;
 }
 
 .aloha.aloha-toolbar .aloha-image-input-label .aloha-ui-label-text {

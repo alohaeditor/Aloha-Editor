@@ -31,9 +31,9 @@ define([
 
 	var blocksSelector = Html.BLOCKLEVEL_ELEMENTS.join();
 	var nonVoidBlocksSelector = Arrays.subtract(
-			Html.BLOCKLEVEL_ELEMENTS,
-			Html.VOID_ELEMENTS
-		).join();
+		Html.BLOCKLEVEL_ELEMENTS,
+		Html.VOID_ELEMENTS
+	).join();
 
 	var NOT_ALOHA_BLOCK_FILTER = ':not(.aloha-block)';
 

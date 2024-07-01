@@ -428,12 +428,9 @@
         'jquery',
         'i18n',
 
-        'util/json2',
         'util/class',
         'util/lang',
         'util/range',
-        'util/maps',
-        'util/maps',
         'util/dom',
         'util/position',
         'util/trees',

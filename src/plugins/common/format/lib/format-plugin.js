@@ -23,7 +23,6 @@ define('format/format-plugin', [
 	'aloha/content-rules',
 	'aloha/ephemera',
 	'aloha/selection',
-	'util/arrays',
 	'util/html',
 	'util/dom',
 	'util/browser',
@@ -37,7 +36,7 @@ define('format/format-plugin', [
 	'ui/utils',
 	'i18n!format/nls/i18n'
 ], function (
-	jQuery,
+	$,
 	Aloha,
 	PubSub,
 	Plugin,
@@ -45,7 +44,6 @@ define('format/format-plugin', [
 	ContentRules,
 	Ephemera,
 	Selection,
-	Arrays,
 	Html,
 	Dom,
 	Browser,
@@ -61,7 +59,6 @@ define('format/format-plugin', [
 ) {
 	'use strict';
 
-	var $ = jQuery;
 	var pluginNamespace = 'aloha-format';
 
 	/** Class which needs to be set on headers when the IDs are manually set. */
@@ -141,7 +138,7 @@ define('format/format-plugin', [
 	 * @returns {boolean}
 	 */
 	function isHeading(markup) {
-		return jQuery.inArray(markup, this.headerNodeNames) >= 0;
+		return this.headerNodeNames.includes(markup);
 	}
 
 	/**
@@ -172,9 +169,9 @@ define('format/format-plugin', [
 			return;
 		}
 
-		var selectedNodes = jQuery(range.startContainer.parentNode).nextUntil(jQuery(range.endContainer.parentNode).next()).addBack();
-		var prevNodes = jQuery(range.startContainer.parentNode).prevAll();
-		var nextNodes = jQuery(range.endContainer.parentNode).nextAll();
+		var selectedNodes = $(range.startContainer.parentNode).nextUntil($(range.endContainer.parentNode).next()).addBack();
+		var prevNodes = $(range.startContainer.parentNode).prevAll();
+		var nextNodes = $(range.endContainer.parentNode).nextAll();
 		var listName = range.startContainer.parentNode.parentNode.nodeName;
 
 		// Only one item selected
@@ -196,21 +193,21 @@ define('format/format-plugin', [
 			// one list item in middle
 			else {
 				selectedNodes.addClass('_moved').remove().insertAfter(prevNodes.parent());
-				jQuery('<' + listName.toLowerCase() + '>').append(nextNodes).insertAfter(selectedNodes);
+				$('<' + listName.toLowerCase() + '>').append(nextNodes).insertAfter(selectedNodes);
 			}
 		}
 		// multiple list items up to whole list
 		else {
 			selectedNodes.addClass('_moved').remove().insertAfter(cac);
 			if (nextNodes.length > 0) {
-				jQuery('<' + listName.toLowerCase() + '>').append(nextNodes).insertAfter(selectedNodes.last());
+				$('<' + listName.toLowerCase() + '>').append(nextNodes).insertAfter(selectedNodes.last());
 			}
 		}
 
 		// unwrap moved list elements
-		jQuery('._moved').each(function () {
-			var $p = jQuery('<p>');
-			var $this = jQuery(this);
+		$('._moved').each(function () {
+			var $p = $('<p>');
+			var $this = $(this);
 
 			$this.after($p);
 			$this.contents().unwrap().appendTo($p);
@@ -223,14 +220,14 @@ define('format/format-plugin', [
 	}
 
 	function formatInsideTableWorkaround(nodeType) {
-		var selectedCells = jQuery('.aloha-cell-selected');
+		var selectedCells = $('.aloha-cell-selected');
 		if (selectedCells.length < 1) {
 			return false;
 		}
 
 		var cellMarkupCounter = 0;
 		selectedCells.each(function () {
-			var cellContent = jQuery(this).find('div'),
+			var cellContent = $(this).find('div'),
 				cellMarkup = cellContent.find(nodeType);
 			if (cellMarkup.length > 0) {
 				// unwrap all found markup text
@@ -348,7 +345,7 @@ define('format/format-plugin', [
 	}
 
 	function changeMarkup(plugin, nodeType) {
-		Selection.changeMarkupOnSelection(jQuery('<' + nodeType + '>'));
+		Selection.changeMarkupOnSelection($('<' + nodeType + '>'));
 		if (Strings.parseBoolean(plugin.settings.checkHeadingHierarchy)) {
 			checkHeadingHierarchy(plugin.formatOptions);
 		}
@@ -380,7 +377,7 @@ define('format/format-plugin', [
 
 	function addMarkup(nodeType, command) {
 		var formatPlugin = this,
-			markup = jQuery('<' + nodeType + '>'),
+			markup = $('<' + nodeType + '>'),
 			rangeObject = Selection.rangeObject;
 
 		if (nodeType == null || !nodeType || Aloha.activeEditable == null || Aloha.activeEditable.obj == null) {
@@ -394,7 +391,7 @@ define('format/format-plugin', [
 		}
 
 		var foundMarkup = rangeObject.findMarkup(function (nodeElement) {
-			return -1 !== Arrays.indexOf(nodeNames, nodeElement.nodeName);
+			return nodeNames.includes(nodeElement.nodeName);
 		}, Aloha.activeEditable.obj);
 
 		if (foundMarkup) {
@@ -404,7 +401,7 @@ define('format/format-plugin', [
 				Dom.removeFromDOM(foundMarkup, rangeObject, true);
 			} else {
 				// the range is not collapsed, so we remove the markup from the range
-				Dom.removeMarkup(rangeObject, jQuery(foundMarkup), Aloha.activeEditable.obj);
+				Dom.removeMarkup(rangeObject, $(foundMarkup), Aloha.activeEditable.obj);
 			}
 			PubSub.pub('aloha.format.removed', { level: 'text', format: nodeType })
 			updateUiAfterMutation(formatPlugin, rangeObject);
@@ -436,7 +433,7 @@ define('format/format-plugin', [
 			i, j;
 
 		// Normal format buttons like bold
-		jQuery.each(formatPlugin.buttons, function (index, button) {
+		Object.values(formatPlugin.buttons || {}).forEach(function (button) {
 			// If the button is not a toggle-button (or an instance of it), then skip it.
 			// Can't set the state of it or do anything.
 			if (typeof button.handle.setActive !== 'function') {
@@ -452,7 +449,7 @@ define('format/format-plugin', [
 			for (i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 				effectiveMarkup = rangeObject.markupEffectiveAtStart[i];
 				for (j = 0; j < nodeNames.length; j++) {
-					if (Selection.standardTagNameComparator(effectiveMarkup, jQuery('<' + nodeNames[j] + '>'))) {
+					if (Selection.standardTagNameComparator(effectiveMarkup, $('<' + nodeNames[j] + '>'))) {
 						button.handle.setActive(true);
 						statusWasSet = true;
 						break;
@@ -485,7 +482,7 @@ define('format/format-plugin', [
 				effectiveMarkup = rangeObject.markupEffectiveAtStart[i];
 				for (var j = 0; j < typographyElements.length; j++) {
 					var typo = typographyElements[j];
-					if (Selection.standardTagNameComparator(effectiveMarkup, jQuery('<' + typo + '>'))) {
+					if (Selection.standardTagNameComparator(effectiveMarkup, $('<' + typo + '>'))) {
 						effectiveTypo = typo;
 						typoElement = effectiveMarkup;
 						break;
@@ -517,7 +514,7 @@ define('format/format-plugin', [
 	 * @param {Element} element a Dom element
 	 */
 	function handlePreformattedText(element) {
-		var $element = jQuery(element);
+		var $element = $(element);
 
 		if ($element.is('.aloha-editing-p.aloha-placeholder')) {
 			//remove all other placeholders
@@ -547,17 +544,17 @@ define('format/format-plugin', [
 	}
 
 	/**
-	 * Helper function to create the placeholder jQuery element
+	 * Helper function to create the placeholder $ element
 	 *
 	 * @private
-	 * @returns {Object} the landing jQuery element
+	 * @returns {Object} the landing $ element
 	 */
 	function createLanding() {
 		//IE: add a "word joiner" character instead of a <br>
 		var landing = Browser.ie
 			? '<p class="aloha-editing-p aloha-placeholder">&#x2060;</p>'
 			: '<p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p>';
-		return jQuery(landing);
+		return $(landing);
 	}
 
 	/**
@@ -759,7 +756,7 @@ define('format/format-plugin', [
 			Ephemera.classes('aloha-heading-hierarchy-violated');
 
 			if (typeof this.settings.hotKey !== 'undefined') {
-				jQuery.extend(true, this.hotKey, this.settings.hotKey);
+				$.extend(true, this.hotKey, this.settings.hotKey);
 			}
 
 			this.initButtons();
@@ -837,37 +834,29 @@ define('format/format-plugin', [
 		 * @return void
 		 */
 		applyButtonConfig: function ($editable) {
-			var config = this.getEditableConfig($editable),
-				button, i, len;
+			var config = this.getEditableConfig($editable);
 
-			if (typeof config === 'object') {
-				var config_old = [];
-				jQuery.each(config, function (j, button) {
-					if (!(typeof j === 'number' && typeof button === 'string')) {
-						config_old.push(j);
-					}
-				});
-
-				if (config_old.length > 0) {
-					config = config_old;
-				}
+			if (config != null && typeof config === 'object' && !Array.isArray(config)) {
+				config = Object.keys(config);
 			}
+
 			this.formatOptions = config;
 
 			var editable = $editable[0];
 
 			// now iterate all buttons and show/hide them according to the config
-			for (button in this.buttons) {
-				if (this.buttons.hasOwnProperty(button)) {
-					if (!ContentRules.isAllowed(editable, button)) {
-						this.buttons[button].handle.hide();
-					} else if (jQuery.inArray(button, config) !== -1) {
-						this.buttons[button].handle.show();
-					} else {
-						this.buttons[button].handle.hide();
-					}
+			Object.entries(this.buttons).forEach(function(entry) {
+				var buttonName = entry[0];
+				var button = entry[1];
+
+				if (!ContentRules.isAllowed(editable, buttonName)
+					|| !config.includes(buttonName)
+				) {
+					button.handle.hide();
+				} else {
+					button.handle.show();
 				}
-			}
+			});
 		},
 
 		/**
@@ -905,7 +894,7 @@ define('format/format-plugin', [
 
 				that.buttons[nodeName] = {
 					handle: that.makeTextLevelButton(nodeName, settings),
-					markup: jQuery('<' + nodeName + '>'),
+					markup: $('<' + nodeName + '>'),
 				};
 			});
 
@@ -1089,20 +1078,16 @@ define('format/format-plugin', [
 		// duplicated code from link-plugin
 		//Creates string with this component's namepsace prefixed the each classname
 		nsClass: function () {
-			var stringBuilder = [], prefix = pluginNamespace;
-			jQuery.each(arguments, function () {
-				stringBuilder.push(this == '' ? prefix : prefix + '-' + this);
-			});
-			return jQuery.trim(stringBuilder.join(' '));
+			return Array.from(arguments).map(function(className) {
+				return pluginNamespace + (className == '' ? '' : '-' + className);
+			}).join(' ').trim();
 		},
 
 		// duplicated code from link-plugin
 		nsSel: function () {
-			var stringBuilder = [], prefix = pluginNamespace;
-			jQuery.each(arguments, function () {
-				stringBuilder.push('.' + (this == '' ? prefix : prefix + '-' + this));
-			});
-			return jQuery.trim(stringBuilder.join(' '));
+			return Array.from(arguments).map(function(selector) {
+				return '.' + pluginNamespace + (selector == '' ? '' : '-' + selector);
+			}).join(' ').trim();
 		},
 
 		addMarkup: addMarkup,
@@ -1129,7 +1114,7 @@ define('format/format-plugin', [
 
 			if (rangeObject.isCollapsed()) {
 				var rangeEditingHost = Dom.getEditingHostOf(rangeObject.startContainer);
-				var limit = rangeEditingHost ? jQuery(rangeEditingHost) : Aloha.activeEditable.obj;
+				var limit = rangeEditingHost ? $(rangeEditingHost) : Aloha.activeEditable.obj;
 
 				for (i = 0; i < formats.length; i++) {
 					var format = formats[i].toUpperCase();
@@ -1141,7 +1126,7 @@ define('format/format-plugin', [
 					}
 
 					var foundMarkup = rangeObject.findMarkup(function (nodeElement) {
-						return -1 !== Arrays.indexOf(nodeNames, nodeElement.nodeName);
+						return nodeNames.includes(nodeElement.nodeName);
 					}, limit);
 
 					if (foundMarkup) {
@@ -1150,11 +1135,11 @@ define('format/format-plugin', [
 				}
 			} else {
 				var rangeEditingHost = Dom.getEditingHostOf(rangeObject.startContainer);
-				var limit = rangeEditingHost ? jQuery(rangeEditingHost) : Aloha.activeEditable.obj;
+				var limit = rangeEditingHost ? $(rangeEditingHost) : Aloha.activeEditable.obj;
 				for (i = 0; i < formats.length; i++) {
 					Dom.removeMarkup(
 						rangeObject,
-						jQuery('<' + formats[i] + '>'),
+						$('<' + formats[i] + '>'),
 						limit,
 						false);
 				}
