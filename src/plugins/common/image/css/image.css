@@ -1,4 +1,4 @@
-@import	"../../../../../node_modules/jcrop/dist/jcrop.css";
+@import	"../vendor/jcrop.css";
 
 /* Images */
 .aloha-image-align-left {
