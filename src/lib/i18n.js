@@ -1,5 +1,5 @@
 /**
- * @license RequireJS i18n 2.0.1 Copyright (c) 2010-2012, The Dojo Foundation All Rights Reserved.
+ * @license RequireJS i18n 2.0.6 Copyright (c) 2010-2012, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
  * see: http://github.com/requirejs/i18n for details
  */
@@ -11,13 +11,13 @@
  *
  * 1) A regular module can have a dependency on an i18n bundle, but the regular
  * module does not want to specify what locale to load. So it just specifies
- * the top-level bundle, like "i18n!nls/colors".
+ * the top-level bundle, like 'i18n!nls/colors'.
  *
  * This plugin will load the i18n bundle at nls/colors, see that it is a root/master
  * bundle since it does not have a locale in its name. It will then try to find
  * the best match locale available in that master bundle, then request all the
- * locale pieces for that best match locale. For instance, if the locale is "en-us",
- * then the plugin will ask for the "en-us", "en" and "root" bundles to be loaded
+ * locale pieces for that best match locale. For instance, if the locale is 'en-us',
+ * then the plugin will ask for the 'en-us', 'en' and 'root' bundles to be loaded
  * (but only if they are specified on the master bundle).
  *
  * Once all the bundles for the locale pieces load, then it mixes in all those
@@ -38,10 +38,10 @@
     'use strict';
 
     //regexp for reconstructing the master bundle name from parts of the regexp match
-    //nlsRegExp.exec("foo/bar/baz/nls/en-ca/foo") gives:
-    //["foo/bar/baz/nls/en-ca/foo", "foo/bar/baz/nls/", "/", "/", "en-ca", "foo"]
-    //nlsRegExp.exec("foo/bar/baz/nls/foo") gives:
-    //["foo/bar/baz/nls/foo", "foo/bar/baz/nls/", "/", "/", "foo", ""]
+    //nlsRegExp.exec('foo/bar/baz/nls/en-ca/foo') gives:
+    //['foo/bar/baz/nls/en-ca/foo', 'foo/bar/baz/nls/', '/', '/', 'en-ca', 'foo']
+    //nlsRegExp.exec('foo/bar/baz/nls/foo') gives:
+    //['foo/bar/baz/nls/foo', 'foo/bar/baz/nls/', '/', '/', 'foo', '']
     //so, if match[5] is blank, it means this is the top bundle definition.
     var nlsRegExp = /(^.*(^|\/)nls(\/|$))([^\/]*)\/?([^\/]*)/;
 
@@ -59,7 +59,7 @@
 
     function addIfExists(req, locale, toLoad, prefix, suffix) {
         var fullName = prefix + locale + '/' + suffix;
-        if (require._fileExists(req.toUrl(fullName))) {
+        if (require._fileExists(req.toUrl(fullName + '.js'))) {
             toLoad.push(fullName);
         }
     }
@@ -77,16 +77,19 @@
             if (source.hasOwnProperty(prop) && (!target.hasOwnProperty(prop) || force)) {
                 target[prop] = source[prop];
             } else if (typeof source[prop] === 'object') {
+                if (!target[prop] && source[prop]) {
+                    target[prop] = {};
+                }
                 mixin(target[prop], source[prop], force);
             }
         }
     }
 
     define(['module'], function (module) {
-        var masterConfig = module.config();
+        var masterConfig = module.config ? module.config() : {};
 
         return {
-            version: '2.0.1',
+            version: '2.0.6',
             /**
              * Called when a dependency needs to be loaded.
              */
@@ -102,10 +105,10 @@
                     prefix = match[1],
                     locale = match[4],
                     suffix = match[5],
-                    parts = locale.split("-"),
+                    parts = locale.split('-'),
                     toLoad = [],
                     value = {},
-                    i, part, current = "";
+                    i, part, current = '';
 
                 //If match[5] is blank, it means this is the top bundle definition,
                 //so it does not have to be handled. Locale-specific requests
@@ -121,21 +124,22 @@
                     locale = masterConfig.locale;
                     if (!locale) {
                         locale = masterConfig.locale =
-                            typeof navigator === "undefined" ? "root" :
-                            (navigator.language ||
-                             navigator.userLanguage || "root").toLowerCase();
+                            typeof navigator === 'undefined' ? 'root' :
+                            ((navigator.languages && navigator.languages[0]) ||
+                             navigator.language ||
+                             navigator.userLanguage || 'root').toLowerCase();
                     }
-                    parts = locale.split("-");
+                    parts = locale.split('-');
                 }
 
                 if (config.isBuild) {
                     //Check for existence of all locale possible files and
                     //require them if exist.
                     toLoad.push(masterName);
-                    addIfExists(req, "root", toLoad, prefix, suffix);
+                    addIfExists(req, 'root', toLoad, prefix, suffix);
                     for (i = 0; i < parts.length; i++) {
                         part = parts[i];
-                        current += (current ? "-" : "") + part;
+                        current += (current ? '-' : '') + part;
                         addIfExists(req, current, toLoad, prefix, suffix);
                     }
 
@@ -150,10 +154,10 @@
                             part;
 
                         //Always allow for root, then do the rest of the locale parts.
-                        addPart("root", master, needed, toLoad, prefix, suffix);
+                        addPart('root', master, needed, toLoad, prefix, suffix);
                         for (i = 0; i < parts.length; i++) {
                             part = parts[i];
-                            current += (current ? "-" : "") + part;
+                            current += (current ? '-' : '') + part;
                             addPart(current, master, needed, toLoad, prefix, suffix);
                         }
 
@@ -169,7 +173,7 @@
                                 mixin(value, partBundle);
                             }
 
-							// MODIFICATION FROM ALOHA START: add a t() function
+                            // MODIFICATION FROM ALOHA START: add a t() function
 							value.t = function( key, defaultValue ) {
 								if ( this[key] ) {
 									return this[key];

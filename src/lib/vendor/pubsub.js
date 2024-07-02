@@ -1,3 +1,4 @@
+// TODO: Should be moved to aloha, this is not an external dependency and therefore shouldn't be in `vendor`
 /*!
  * Aloha Editor
  * Author & Copyright (c) 2012 Gentics Software GmbH
