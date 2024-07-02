@@ -14,7 +14,7 @@ define([
 	'util/dom',
 	'image/image-floatingMenu',
 	'i18n!image/nls/i18n',
-	'jquery-ui',
+	'jqueryui',
 	'image/vendor/jcrop'
 ], function (
 	$,
