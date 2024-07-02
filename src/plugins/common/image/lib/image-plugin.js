@@ -13,9 +13,8 @@ define([
 	'aloha/content-rules',
 	'util/dom',
 	'image/image-floatingMenu',
-	'i18n!image/nls/i18n',
-	'jqueryui',
-	'image/vendor/jcrop'
+	'image/vendor/jcrop',
+	'jqueryui'
 ], function (
 	$,
 	PubSub,
@@ -24,7 +23,7 @@ define([
 	ContentRules,
 	Dom,
 	ImageFloatingMenu,
-	i18n
+	Jcrop
 ) {
 	'use strict';
 
