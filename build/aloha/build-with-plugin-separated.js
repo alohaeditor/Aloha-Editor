@@ -267,16 +267,16 @@
     "jqueryui": 'vendor/jquery-ui-1.9.0.custom-aloha',
 
     // For the repository browser
-    'PubSub': 'vendor/pubsub/js/pubsub-unminified',
+    'PubSub': 'vendor/pubsub',
     'Class': 'vendor/class',
-    'RepositoryBrowser': 'vendor/repository-browser/js/repository-browser-unminified',
+    'RepositoryBrowser': 'vendor/repository-browser/js/repository-browser',
     'jstree': 'vendor/jquery.jstree', // Mutates jquery
     'jqgrid': 'vendor/jquery.jqgrid', // Mutates jquery
     'jquery-layout': 'vendor/jquery.layout-1.3.0-rc29.14', // Mutates jquery
     'jqgrid-locale-en': 'vendor/grid.locale.en', // Mutates jqgrid
     'jqgrid-locale-de': 'vendor/grid.locale.de', // Mutates jqgrid
-    'repository-browser-i18n-de': 'vendor/repository-browser/js/repository-browser-unminified',
-    'repository-browser-i18n-en': 'vendor/repository-browser/js/repository-browser-unminified',
+    'repository-browser-i18n-de': 'vendor/repository-browser/js/repository-browser',
+    'repository-browser-i18n-en': 'vendor/repository-browser/js/repository-browser',
 
     // Shortcuts for all common plugins
     "ui": "../plugins/common/ui/lib",
@@ -453,7 +453,7 @@
         'aloha/nls/i18n',
 
         'vendor/class',
-        'vendor/pubsub/js/pubsub',
+        'vendor/pubsub',
         'vendor/amplify.store',
         'vendor/sanitize'
       ]
