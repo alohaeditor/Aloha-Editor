@@ -1,3 +1,31 @@
+/** @typedef {import('./button').Button} Button */
+
+/**
+ * @typedef {object} CommonToggleProperties
+ * @property {boolean} active If this button is currently active.
+ * @property {boolean} pure When clicked, if it should *not* toggle it's `active` state.
+ *
+ * @property {function(boolean): void} onToggle Callback for when the toggle has been applied. Parameter is the current `active` state.
+ * @property {function(): void} toggleActivation Toggles the `active` state of the button
+ * @property {function(): void} activate Sets this instance `active` to `true` (Calls `setActive` with `true`)
+ * @property {function(): void} deactivate Sets this instance `active` to `false` (Calls `setActive` with `false`)
+ *
+ * @property {function(boolean): void} setActive Updates the `active` of the instance
+ * @property {function(boolean): void} setPure Updates the `pure` of the instance
+ */
+
+/**
+ * @typedef {object} ToggleButtonProperties
+ * @property {'toggle-button'} type
+ */
+
+/**
+ * ToggleButton control. Extends the Button component type to provide an
+ * easy way to create buttons that can transition between "active" and
+ * "inactive" states.
+ * @typedef {Button & CommonToggleProperties & ToggleButtonProperties} ToggleButton
+ */
+
 define([
 	'ui/button'
 ], function (
@@ -7,22 +35,11 @@ define([
 
 	var CLASS_ACTIVE = 'active';
 
-	/**
-	 * ToggleButton control. Extends the Button component type to provide an
-	 * easy way to create buttons that can transition between "active" and
-	 * "inactive" states.
-	 *
-	 * @class
-	 * @name ToggleButton
-	 * @extends {Button}
-	 */
-	var ToggleButton = Button.extend({
+	/** @type {ToggleButton} */
+	var ToggleButton = Button.extend(/** @type {ToggleButton} */ ({
 		type: 'toggle-button',
 
-		/** @type {boolean} If this button is currently active. */
 		active: false,
-
-		/** @type {boolean} When clicked, if it should *not* toggle it's `active` state. */
 		pure: false,
 
 		init: function() {
@@ -95,7 +112,7 @@ define([
 		getValue: function() {
 			return this.active;
 		}
-	});
+	}));
 
 	return ToggleButton;
 });
