@@ -1,3 +1,16 @@
+/** @typedef {import('./splitButton').SplitButton} SplitButton */
+/** @typedef {import('./toggleButton').CommonToggleProperties} CommonToggleProperties */
+
+/**
+ * @typedef {object} ToggleSplitButtonProperties
+ * @property {'toggle-split-button'} type
+ * @property {boolean} alwaysSecondary If the secondary button/action should always be visible.
+ * When `false`, the secondary button/action will only be displayed when `active` is `true`.
+ * @property {function(boolean): void} setAlwaysSecondary Updates the `alwaysSecondary` of the instance
+ */
+
+/** @typedef {SplitButton & CommonToggleProperties & ToggleSplitButtonProperties} ToggleSplitButton */
+
 define([
     'ui/splitButton'
 ], function (
@@ -8,18 +21,13 @@ define([
     var CLASS_ACTIVE = 'active';
     var CLASS_ALWAYS_SECONDARY = 'always-secondary';
 
-    var ToggleSplitButton = SplitButton.extend({
+    /** @type {ToggleSplitButton} */
+    var ToggleSplitButton = SplitButton.extend(/** @type {ToggleSplitButton} */ ({
         type: 'toggle-split-button',
 
-        /** @type {boolean} If this button is currently active. */
 		active: false,
-
-		/** @type {boolean} When clicked, if it should *not* toggle it's `active` state. */
 		pure: false,
 
-        /**
-         * @type {boolean} If the secondary button/action should always be visible.
-         * When false, the secondary button/action will only be displayed when `active` is `true`.  */
         alwaysSecondary: false,
 
         init: function () {
@@ -88,7 +96,7 @@ define([
         getValue: function () {
             return this.active;
         }
-    });
+    }));
 
     return ToggleSplitButton;
 });

@@ -1,7 +1,8 @@
 /** @typedef {import('./overlayElement').DynamicControlConfiguration} DynamicControlConfiguration */
+/** @typedef {import('./component').Component} Component */
 
 /**
- * @typedef {object} BaseSelectMenuOption
+ * @typedef {object} BaseSelectMenuOptionEntry
  * @property {string} id - Identifier of the option
  * @property {string} label - The Label which is being displayed to the user
  * @property {string=} icon - Icon to display for this option
@@ -18,7 +19,7 @@
 
 /**
  * @template {*} T
- * @typedef {BaseSelectMenuOption & MultiStepOptionProperties<T>} MultiStepOption
+ * @typedef {BaseSelectMenuOptionEntry & MultiStepOptionProperties<T>} MultiStepOptionEntry
  */
 
 /**
@@ -36,9 +37,32 @@
  */
 
 /**
- * @template {*=} T
- * @typedef {BaseSelectMenuOption | MultiStepOption<T>} SelectMenuOption
+ * @template {*} T
+ * @typedef {object} SelectMenuResult
+ * @property {string} id The ID of the selected option
+ * @property {T=} value The value of the selected multi-step option (Only if a multi-step option has been selected).
+ * Otherwise, this property is not present.
  */
+
+/**
+ * @template {*=} T
+ * @typedef {BaseSelectMenuOptionEntry | MultiStepOptionEntry<T>} SelectMenuOptionEntry
+ */
+
+/**
+ * Options which can be defined via the Overlay-Element API.
+ * @typedef {object} SelectMenuOptions
+ * @property {Array.<SelectMenuOptionEntry>} options The available options of this menu.
+ * @property {boolean} iconsOnly If it should only display the icons/hide the option labels.
+ */
+
+/**
+ * @typedef {object} SelectMenuProperties
+ * @property {'select-menu'} type
+ * @property {?string} activeOption ID of the option which should be highlighted/marked differently.
+ */
+
+/** @typedef {Component & SelectMenuOptions & SelectMenuProperties} SelectMenu */
 
 define([
     'jquery',
@@ -67,16 +91,12 @@ define([
      */
     var DynamicForm;
 
-    var SelectMenu = Component.extend({
+    /** @type {SelectMenu} */
+    var SelectMenu = Component.extend(/** @type {SelectMenu} */({
         type: 'select-menu',
 
-        /** @type {Array.<SelectMenuOption>} The available options of this menu. */
         options: [],
-
-        /** @type {string=} ID of the option which should be highlighted/marked differently. */
         activeOption: null,
-
-        /** @type {boolean} If it should only display the icons/hide the option labels. */
         iconsOnly: false,
 
         // Internals
@@ -290,7 +310,7 @@ define([
         },
 
         /**
-         * @param {SelectMenuOption<*>} option 
+         * @param {SelectMenuOptionEntry<*>} option 
          */
         _handleOptionClick: function (option) {
             if (this.disabled) {
@@ -313,7 +333,7 @@ define([
         },
 
         /**
-         * @param {MultiStepOption<*>} option 
+         * @param {MultiStepOptionEntry<*>} option 
          */
         _handleMultistepActivation: function (option) {
             this._cleanUpMultiStep();
@@ -449,7 +469,7 @@ define([
             this._cleanUpMultiStep();
             this._super();
         },
-    });
+    }));
 
     return SelectMenu;
 });

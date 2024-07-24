@@ -185,7 +185,7 @@ define([
 	 */
 	function isAllowed(editable, nodeName) {
 		if (Html.BLOCKLEVEL_ELEMENTS.includes(nodeName.toLowerCase())) {
-			if (!ALLOWED_BLOCKLEVEL_INSERT_EDITABLE_NODE_NAMES.includes(editable.nodeName.toLowerCase())) {
+			if (editable != null && editable.nodeName && !ALLOWED_BLOCKLEVEL_INSERT_EDITABLE_NODE_NAMES.includes(editable.nodeName.toLowerCase())) {
 				return false;
 			}
 		}

@@ -1,43 +1,48 @@
+/** @typedef {import('./component').Component} Component */
+
+/**
+ * @typedef {object} ButtonProperties
+ * @property {'button'} type
+ * @property {string=} text Text in the button
+ * @property {string=} tooltip The tooltip text/content to display when the button is hovered over
+ * @property {string=} icon The icon (CSS-Class) to use for this button.
+ * @property {boolean} iconOnly If it should only show the icon.
+ * @property {boolean} iconHollow If the icon should be displayed hollow (Fill off, see Material Symbols).
+ * 
+ * @property {function(): void} click Function to be called when the button is being clicked.
+ * 
+ * @property {function(string): void} setIcon Updates the `icon` of the instance
+ * @property {function(boolean): void} setIconOnly Updates the `iconOnly` of the instance
+ * @property {function(boolean): void} setIconHollow Updates the `iconHollow` of the instance
+ * @property {function(string): void} setText Updates the `text` of the instance
+ * @property {function(string): void} setTooltip Updates the `tooltip` of the instance
+ */
+
+/**
+ * Implements a simple button component.
+ * All interactive UI controls (that is, anything that is not a label),
+ * will most probably extend the Button component.
+ * @typedef {Component & ButtonProperties} Button
+ */
+
 define([
 	'jquery',
 	'ui/component',
-	'ui/utils',
 	'jqueryui'
 ], function (
 	$,
-	Component,
-	Utils
+	Component
 ) {
 	'use strict';
 
-	/**
-	 * Implements a simple button component.  All interactive UI controls (that
-	 * is--anything that is not a label) will most probably extend the Button
-	 * component.
-	 *
-	 * An extending class should optionally define the following properties
-	 * tooltip - the internationalized tooltip text,
-	 * icon    - the icon class,
-	 * text	   - the text to display in the button (usually empty)
-	 * iconOnly - If it should only render the icon (default: true)
-	 * click   - the click handler for the button.
-	 *
-	 * @class
-	 * @name Button
-	 * @extends {Component}
-	 */
-	var Button = Component.extend({
+	/** @type {Button} */
+	var Button = Component.extend(/** @type {Button} */ ({
 		type: 'button',
 
-		/** @type {string=} Text in the button. */
 		text: '',
-		/** @type {string=} The tooltip text/content to display when the button is hovered over. */
 		tooltip: '',
-		/** @type {(string)=} The icon (CSS-Class) to use for this button. */
 		icon: '',
-		/** @type {boolean} If it should only show the icon. */
 		iconOnly: true,
-		/** @type {boolean} If the icon should be displayed hollow (Fill off, see Material Symbols). */
 		iconHollow: false,
 
 		// Internals
@@ -65,21 +70,21 @@ define([
 		 */
 		init: function () {
 			this._super();
-			this.createButtonElement();
-			this._$buttonElement
-				// fix for IE7,8 so the icon shown disabled
-				.click($.proxy(function () {
+			this._createButtonElement();
+			var instance = this;
 
+			this._$buttonElement
+				.click(function () {
 					// Ensure tooltips are always hidden after a button
 					// is clicked because sometimes the tooltip doesn't
 					// get closed automatically, for example after table
 					// cells are merged or split.
 					// IE needs the force argument to be true, Chrome doesn't.
 					// The event argument can be ignored.
-					this.closeTooltip();
+					instance.closeTooltip();
 
-					this._onClick();
-				}, this));
+					instance._onClick();
+				});
 		},
 
 		closeTooltip: function () {
@@ -109,7 +114,7 @@ define([
 		 *
 		 * @return {$<HTMLElement>}
 		 */
-		createButtonElement: function () {
+		_createButtonElement: function () {
 			this._$iconElement = $('<i>', {
 				class: 'aloha-button-icon material-symbols-outlined',
 				text: this.icon,
@@ -216,7 +221,7 @@ define([
 			this._super();
 			this._$buttonElement.removeAttr('disabled');
 		}
-	});
+	}));
 
 	return Button;
 });

@@ -1,9 +1,46 @@
+/**
+ * @typedef {object} Component
+ * @property {number} id Unique numerical ID for this component instance
+ * @property {boolean} isInstance Flag to indicate that this is an instance of a component and  not the class object.
+ * @property {JQuery} element jQuery ref to the root element of this component.
+ * @property {*=} container The Container instance or null if this component was not adopted by a container by calling Component.adopt().
+ * @property {string} type The type of the component. Must be defined in classes which extend this class.
+ * @property {string} name The name/slot this component is being rendered in. Will set when this component is being adopted.
+ * @property {'dropdown' | 'modal' | null} renderContext In which kind of rendering-context this component resides in.
+ * This is useful if you want to have different styling or behaviour, depending if it's visible in the regular
+ * toolbar/ui, or if it's visible somewhere else.
+ * If `null`/not specified, it's the default context, which should be considered the toolbar.
+ * @property {boolean} visible Whether or not this component is visible.
+ * @property {boolean} disabled Whether this component is disabled and can be interacted with.
+ * @property {boolean} touched Whether the user has interacted/changed the value of this component.
+ * @property {object | null} validationErrors When this component is being validated, which kind of errors it has.
+ * `null` when no errors are present, otherwise a object with potentially multiple validation errors.
+ * @property {function(*): void} changeNotify Function to call when the value of the component changes.
+ * @property {function(): void} touchNotify Function to call when the user interacted with the component.
+ * 
+ * @property {function(*): void} adoptParent
+ * @property {function(): void} destroy
+ * @property {function(): boolean} isVisible
+ * @property {function(): boolean} isValid
+ * 
+ * @property {function(): void} show Shows the component instance. Updates `visible`
+ * @property {function(): void} hide Hides the component instance. Updates `visible`
+ * @property {function(): void} enable Enables the component instance. Updates `disabled`
+ * @property {function(): void} disable Disables the component instance. Updates `disabled`
+ * @property {function(): void} touch Marks the component as touched. Updates `touched`. Calls `triggerTouchNotification`.
+ * @property {function(): void} untouch Unmarks the component as touched. Updated `touched`.
+ * 
+ * @property {function(): void} triggerTouchNotification Util function to mark this component as touched and call the `touchNotify` callback.
+ * @property {function(): void} triggerChangeNotification Util function which calls the `changeNotify` callback with the `getValue` return value.
+ * 
+ * @property {function(*): void} setValue Sets the value for this instance.
+ * @property {function(): *} getValue Get the value of this instance.
+ */
+
 define([
-	'aloha/core',
 	'jquery',
 	'util/class'
 ], function (
-	Aloha,
 	$,
 	Class
 ) {
@@ -21,73 +58,23 @@ define([
 	 * @class
 	 * @base
 	 */
-	var Component = Class.extend({
+	var Component = Class.extend(/** @type {Component} */({
 
 		id: 0,
-
-		/**
-		 * Flag to indicate that this is an instance of a component and  not the class object.
-		 */
-		isInstance: true,
-
-		/** jQuery ref to the root element of this component. */
-		element: null,
-
-		/**
-		 * The Container instance or null if this component was not
-		 * adopted by a counter by calling Component.adopt().
-		 */
-		container: null,
-
-		/**
-		 * Will be set in Component.define()
-		 */
 		type: null,
-
-		/**
-		 * The name/slot this component is being rendered in.
-		 * Will set when this component is being adopted.
-		 * @type {string}
-		 */
 		name: null,
 
-		/**
-		 * @type {'dropdown' | 'modal' | null} In which kind of rendering-context this component resides in.
-		 * This is useful if you want to have different styling or behaviour, depending if it's visible in the regular
-		 * toolbar/ui, or if it's visible somewhere else.
-		 * If `null`/not specified, it's the default context, which should be considered the toolbar.
-		 */
+		isInstance: true,
+		element: null,
+		container: null,
 		renderContext: null,
 
-		/**
-		 * @type {boolean} Whether or not this component is visible.
-		 */
 		visible: true,
-
-		/**
-		 * @type {boolean} Whether this component is disabled and can be interacted with.
-		 */
 		disabled: false,
-
-		/**
-		 * @type {boolean} Whether the user has interacted/changed the value of this component.
-		 */
 		touched: false,
 
-		/**
-		 * @type {object | null} When this component is being validated, which kind of errors it has.
-		 * `null` when no errors are present, otherwise a object with potentially multiple validation errors.
-		 */
 		validationErrors: null,
-
-		/**
-		 * @type {function} Function to call when the value of the component changes.
-		 */
 		changeNotify: null,
-
-		/**
-		 * @type {function} Function to call when the user interacted with the component.
-		 */
 		touchNotify: null,
 
 		/**
@@ -118,9 +105,6 @@ define([
 			return this.visible;
 		},
 
-		/**
-		 * Shows this component.
-		 */
 		show: function (show_opt) {
 			if (false === show_opt) {
 				this.hide();
@@ -136,9 +120,6 @@ define([
 			}
 		},
 
-		/**
-		 * Hides this component.
-		 */
 		hide: function () {
 			// Only call container.childVisible if we switch from visible to hidden
 			if (this.visible) {
@@ -163,7 +144,7 @@ define([
 			}
 		},
 
-		enable: function (enable_opt) {
+		enable: function () {
 			this.disabled = false;
 		},
 		disable: function () {
@@ -199,7 +180,7 @@ define([
 		getValue: function() {
 			return null;
 		},
-	});
+	}));
 
 	return Component;
 });
