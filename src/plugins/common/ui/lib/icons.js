@@ -81,6 +81,7 @@ define([], function() {
         FORMATLESS_PASTE: 'content_paste_go',
         META_VIEW: 'mystery',
         HORIZONTAL_RULE: 'horizontal_rule',
+        SPELLCHECK: 'spellcheck',
 
         // Tabs
         FORMATTING: 'edit',
