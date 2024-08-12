@@ -104,6 +104,7 @@ define([
 				'toggleMetaView',
 				'toggleFormatlessPaste',
 				'formatNumeratedHeaders',
+				'gcnSpellCheck',
 			]
 		},
 		{
