@@ -517,7 +517,6 @@
 
 		define('aloha', [
 			'aloha/jquery',
-			'util/json2',
 			'aloha/rangy-core',
 			'util/class',
 			'util/lang',

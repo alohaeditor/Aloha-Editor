@@ -1,6 +1,5 @@
 define([
 	'aloha/core',
-	'util/maps',
 	'util/html',
 	'util/dom',
 	'util/dom2',
@@ -10,7 +9,6 @@ define([
 	'PubSub'
 ], function (
 	Aloha,
-	Maps,
 	Html,
 	Dom,
 	Dom2,
@@ -584,12 +582,12 @@ define([
 		var innerSpan = document.createElement("span");
 		outerSpan.appendChild(innerSpan);
 		innerSpan.style.color = color;
-		color = innerSpan.getComputedStyle().color;
+		color = getComputedStyle(innerSpan).color;
 
 		if (color == "rgb(0, 0, 0)") {
 			// Maybe it's really black, maybe it's invalid.
 			outerSpan.color = "white";
-			color = innerSpan.getComputedStyle().color;
+			color = getComputedStyle(innerSpan).color;
 			if (color != "rgb(0, 0, 0)") {
 				return null;
 			}
@@ -718,7 +716,9 @@ define([
 		// in suffixed with "px", not as plain numbers.
 		size = normalizeFontSize(size);
 
-		if (jQuery.inArray(size, ["xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"]) == -1 && !/^[0-9]+(\.[0-9]+)?(cm|mm|in|pt|pc|px)$/.test(size)) {
+		if (!["xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"].includes(size)
+			&& !/^[0-9]+(\.[0-9]+)?(cm|mm|in|pt|pc|px)$/.test(size)
+		) {
 			// There is no sensible legacy size for things like "2em".
 			return null;
 		}
@@ -730,7 +730,7 @@ define([
 		} else {
 			font.style.fontSize = size;
 		}
-		var pixelSize = parseInt(font.getComputedStyle().fontSize, 10);
+		var pixelSize = parseInt(getComputedStyle(font).fontSize, 10);
 		document.body.removeChild(font);
 
 		// "Let returned size be 1."
@@ -743,13 +743,13 @@ define([
 			font = document.createElement("font");
 			font.size = returnedSize;
 			document.body.appendChild(font);
-			var lowerBound = parseInt(font.getComputedStyle().fontSize, 10);
+			var lowerBound = parseInt(getComputedStyle(font).fontSize, 10);
 
 			// "Let upper bound be the resolved value of "font-size" in pixels
 			// of a font element whose size attribute is set to one plus
 			// returned size."
 			font.size = 1 + returnedSize;
-			var upperBound = parseInt(font.getComputedStyle().fontSize, 10);
+			var upperBound = parseInt(getComputedStyle(font).fontSize, 10);
 			document.body.removeChild(font);
 
 			// "Let average be the average of upper bound and lower bound."
@@ -801,7 +801,7 @@ define([
 				// Miscellaneous commands are always enabled. The other commands defined
 				// here are enabled if the active range is not null, and disabled
 				// otherwise."
-				return jQuery.inArray(command, ["copy", "cut", "paste", "selectall", "stylewithcss", "usecss"]) != -1 || range !== null;
+				return ["copy", "cut", "paste", "selectall", "stylewithcss", "usecss"].includes(command) || range !== null;
 			};
 		}(command)));
 	}
@@ -1031,7 +1031,7 @@ define([
 	function isBlockNode(node) {
 		return node && (
 			(node.nodeType == Node.ELEMENT_NODE
-				&& !nonBlockDisplayValuesMap[node.getComputedStyle().display]
+				&& !nonBlockDisplayValuesMap[getComputedStyle(node).display]
 			)
 			|| node.nodeType == Node.DOCUMENT_NODE
 			|| node.nodeType == Node.DOCUMENT_FRAGMENT_NODE
@@ -1104,7 +1104,7 @@ define([
 		// non-inline parent.  Note: this is not actually reliable, because the
 		// parent might have a fixed height or something.
 		var ref = br.parentNode;
-		while (ref.getComputedStyle().display == "inline") {
+		while (getComputedStyle(ref).display == "inline") {
 			ref = ref.parentNode;
 		}
 
@@ -1158,7 +1158,7 @@ define([
 		// the reference node because otherwise its height won't change if it's not
 		// auto.
 		var ref = br.parentNode;
-		while (ref.getComputedStyle().display == "inline") {
+		while (getComputedStyle(ref).display == "inline") {
 			ref = ref.parentNode;
 		}
 
@@ -1219,13 +1219,13 @@ define([
 			var parentNode = node.parentNode;
 
 			var nodeData = node.data;
-			if (jQuery.trim(nodeData).length === 0) {
+			if (nodeData.trim().length === 0) {
 				return true;
 			} else if (parentNode && /^[\t\n\r ]+$/.test(nodeData)) {
 				if (parentNode.nodeType === nodeTypes.ELEMENT_NODE) {
-					if (jQuery.inArray(parentNode.getComputedStyle().whiteSpace, ["normal", "nowrap"]) !== -1) {
+					if (["normal", "nowrap"].includes(getComputedStyle(parentNode).whiteSpace)) {
 						return true;
-					} else if (parentNode.getComputedStyle().whiteSpace === "pre-line") {
+					} else if (getComputedStyle(parentNode).whiteSpace === "pre-line") {
 						return true;
 					}
 				} else if (parentNode.nodeType === nodeTypes.DOCUMENT_FRAGMENT_NODE) {
@@ -1254,7 +1254,7 @@ define([
 		}
 
 		// if the node is in a pre or pre-wrap node, return
-		if (jQuery.inArray(node.parentNode.getComputedStyle().whiteSpace, ["pre", "pre-wrap"]) != -1) {
+		if (["pre", "pre-wrap"].includes(getComputedStyle(node.parentNode).whiteSpace)) {
 			return;
 		}
 
@@ -1321,9 +1321,9 @@ define([
 
 		// "If the "display" property of some ancestor of node has resolved value
 		// "none", return true."
-		if (node.getAncestors().some(function (ancestor) {
+		if (getAncestors(node).some(function (ancestor) {
 			return ancestor.nodeType == Node.ELEMENT_NODE
-				&& ancestor.getComputedStyle().display == "none";
+				&& getComputedStyle(ancestor).display == "none";
 			})
 		) {
 			return true;
@@ -1402,7 +1402,7 @@ define([
 			.filter(function (node) {
 				return node.nodeType == Node.ELEMENT_NODE;
 			}, true).some(function (node) {
-				return node.getComputedStyle().display == "none";
+				return getComputedStyle(node).display == "none";
 			});
 
 		if (hasHiddenAncestor) {
@@ -1528,12 +1528,11 @@ define([
 	 *                   only immediate child of its parent editing host.
 	 */
 	function isEmptyOnlyChildOfEditingHost(node) {
-		return (
-			node
-				&& isEmptyNode(node)
-					&& isEditingHost(node.parentNode)
-						&& !node.previousSibling
-							&& !node.nextSibling
+		return (node
+			&& isEmptyNode(node)
+			&& isEditingHost(node.parentNode)
+			&& !node.previousSibling
+			&& !node.nextSibling
 		);
 	}
 
@@ -1573,7 +1572,14 @@ define([
 		} else {
 			return null;
 		}
-		if (jQuery.inArray(ret.startContainer.nodeType, [Node.TEXT_NODE, Node.ELEMENT_NODE]) == -1 || jQuery.inArray(ret.endContainer.nodeType, [Node.TEXT_NODE, Node.ELEMENT_NODE]) == -1 || !ret.startContainer.ownerDocument || !ret.endContainer.ownerDocument || !isDescendant(ret.startContainer, ret.startContainer.ownerDocument) || !isDescendant(ret.endContainer, ret.endContainer.ownerDocument)) {
+		if (
+			![Node.TEXT_NODE, Node.ELEMENT_NODE].includes(ret.startContainer.nodeType)
+			|| ![Node.TEXT_NODE, Node.ELEMENT_NODE].includes(ret.endContainer.nodeType)
+			|| !ret.startContainer.ownerDocument
+			|| !ret.endContainer.ownerDocument
+			|| !isDescendant(ret.startContainer, ret.startContainer.ownerDocument)
+			|| !isDescendant(ret.endContainer, ret.endContainer.ownerDocument)
+		) {
 			throw "Invalid active range; test bug?";
 		}
 		return ret;
@@ -1602,17 +1608,18 @@ define([
 
 		resetOverrides = function (range) {
 			if (!storedRange
-				    || storedRange.startContainer != range.startContainer
-				    || storedRange.endContainer != range.endContainer
-				    || storedRange.startOffset != range.startOffset
-				    || storedRange.endOffset != range.endOffset) {
+				|| storedRange.startContainer != range.startContainer
+				|| storedRange.endContainer != range.endContainer
+				|| storedRange.startOffset != range.startOffset
+				|| storedRange.endOffset != range.endOffset
+			) {
 				storedRange = {
 					startContainer: range.startContainer,
 					endContainer: range.endContainer,
 					startOffset: range.startOffset,
 					endOffset: range.endOffset
 				};
-				if (!Maps.isEmpty(stateOverrides) || !Maps.isEmpty(valueOverrides)) {
+				if (Object.keys(stateOverrides).length > 0 || Object.keys(valueOverrides).length > 0) {
 					stateOverrides = {};
 					valueOverrides = {};
 					return true;
@@ -2007,7 +2014,11 @@ define([
 			// the last child of new parent is not a br, call createElement("br")
 			// on the ownerDocument of new parent and append the result as the last
 			// child of new parent."
-			if (!isInlineNode(newParent) && isInlineNode(newParent.lastChild) && isInlineNode(nodeList[0]) && !isNamedHtmlElement(newParent.lastChild, "BR")) {
+			if (!isInlineNode(newParent)
+				&& isInlineNode(newParent.lastChild)
+				&& isInlineNode(nodeList[0])
+				&& !isNamedHtmlElement(newParent.lastChild, "BR")
+			) {
 				newParent.appendChild(newParent.ownerDocument.createElement("br"));
 			}
 
@@ -2024,7 +2035,11 @@ define([
 			// the last member of node list is not a br, call createElement("br")
 			// on the ownerDocument of new parent and insert the result as the
 			// first child of new parent."
-			if (!isInlineNode(newParent) && isInlineNode(newParent.firstChild) && isInlineNode(nodeList[nodeList.length - 1]) && !isNamedHtmlElement(nodeList[nodeList.length - 1], "BR")) {
+			if (!isInlineNode(newParent)
+				&& isInlineNode(newParent.firstChild)
+				&& isInlineNode(nodeList[nodeList.length - 1])
+				&& !isNamedHtmlElement(nodeList[nodeList.length - 1], "BR")
+			) {
 				newParent.insertBefore(newParent.ownerDocument.createElement("br"), newParent.firstChild);
 			}
 
@@ -2049,7 +2064,11 @@ define([
 			// and new parent's last child is not a br, call createElement("br") on
 			// the ownerDocument of new parent and append the result as the last
 			// child of new parent."
-			if (!isInlineNode(newParent) && isInlineNode(newParent.lastChild) && isInlineNode(newParent.nextSibling.firstChild) && !isNamedHtmlElement(newParent.lastChild, "BR")) {
+			if (!isInlineNode(newParent)
+				&& isInlineNode(newParent.lastChild)
+				&& isInlineNode(newParent.nextSibling.firstChild)
+				&& !isNamedHtmlElement(newParent.lastChild, "BR")
+			) {
 				newParent.appendChild(newParent.ownerDocument.createElement("br"));
 			}
 
@@ -2143,7 +2162,7 @@ define([
 		"xmp": true
 	};
 
-	var prohibitedHeadingNestingMap = jQuery.extend({
+	var prohibitedHeadingNestingMap = Object.assign({
 		"H1": true,
 		"H2": true,
 		"H3": true,
@@ -2167,7 +2186,7 @@ define([
 		"DT": true
 	};
 	var prohibitedNestingCombinationsMap = {
-		"A": jQuery.extend({
+		"A": Object.assign({
 			"A": true
 		}, prohibitedParagraphChildNamesMap),
 		"DD": prohibitedDefNestingMap,
@@ -2175,7 +2194,7 @@ define([
 		"LI": {
 			"LI": true
 		},
-		"NOBR": jQuery.extend({
+		"NOBR": Object.assign({
 			"NOBR": true
 		}, prohibitedParagraphChildNamesMap),
 		"H1": prohibitedHeadingNestingMap,
@@ -2235,20 +2254,41 @@ define([
 		// an HTML element with local name equal to one of those, and child is a
 		// Text node whose data does not consist solely of space characters, return
 		// false."
-		if ((tableRelatedElements[parent_] || isHtmlElementInArray(parent_, ["colgroup", "table", "tbody", "tfoot", "thead", "tr"])) && typeof child == "object" && child.nodeType == Node.TEXT_NODE && !/^[ \t\n\f\r]*$/.test(child.data)) {
+		if (
+			(tableRelatedElements[parent_]
+				|| isHtmlElementInArray(parent_, ["colgroup", "table", "tbody", "tfoot", "thead", "tr"])
+			)
+			&& typeof child == "object"
+			&& child.nodeType == Node.TEXT_NODE
+			&& !/^[ \t\n\f\r]*$/.test(child.data)
+		) {
 			return false;
 		}
 
 		// "If parent is "script", "style", "plaintext", or "xmp", or an HTML
 		// element with local name equal to one of those, and child is not a Text
 		// node, return false."
-		if ((scriptRelatedElements[parent_] || isHtmlElementInArray(parent_, ["script", "style", "plaintext", "xmp"])) && (typeof child != "object" || child.nodeType != Node.TEXT_NODE)) {
+		if (
+			(scriptRelatedElements[parent_]
+				|| isHtmlElementInArray(parent_, ["script", "style", "plaintext", "xmp"])
+			)
+			&& (
+				typeof child != "object"
+				|| child.nodeType != Node.TEXT_NODE
+			)
+		) {
 			return false;
 		}
 
 		// "If child is a Document, DocumentFragment, or DocumentType, return
 		// false."
-		if (typeof child == "object" && (child.nodeType == Node.DOCUMENT_NODE || child.nodeType == Node.DOCUMENT_FRAGMENT_NODE || child.nodeType == Node.DOCUMENT_TYPE_NODE)) {
+		if (typeof child == "object"
+			&& (
+				child.nodeType == Node.DOCUMENT_NODE
+				|| child.nodeType == Node.DOCUMENT_FRAGMENT_NODE
+				|| child.nodeType == Node.DOCUMENT_TYPE_NODE
+			)
+		) {
 			return false;
 		}
 
@@ -2309,19 +2349,19 @@ define([
 		case "colgroup":
 			return child == "col";
 		case "table":
-			return jQuery.inArray(child, ["caption", "col", "colgroup", "tbody", "td", "tfoot", "th", "thead", "tr"]) != -1;
+			return ["caption", "col", "colgroup", "tbody", "td", "tfoot", "th", "thead", "tr"].includes(child);
 		case "tbody":
 		case "thead":
 		case "tfoot":
-			return jQuery.inArray(child, ["td", "th", "tr"]) != -1;
+			return ["td", "th", "tr"].includes(child);
 		case "tr":
-			return jQuery.inArray(child, ["td", "th"]) != -1;
+			return ["td", "th"].includes(child);
 		case "dl":
-			return jQuery.inArray(child, ["dt", "dd"]) != -1;
+			return ["dt", "dd"].includes(child);
 		case "dir":
 		case "ol":
 		case "ul":
-			return jQuery.inArray(child, ["dir", "li", "ol", "ul"]) != -1;
+			return ["dir", "li", "ol", "ul"].includes(child);
 		case "hgroup":
 			return (/^h[1-6]$/).test(child);
 		}
@@ -2329,12 +2369,12 @@ define([
 		// "If child is "body", "caption", "col", "colgroup", "frame", "frameset",
 		// "head", "html", "tbody", "td", "tfoot", "th", "thead", or "tr", return
 		// false."
-		if (jQuery.inArray(child, ["body", "caption", "col", "colgroup", "frame", "frameset", "head", "html", "tbody", "td", "tfoot", "th", "thead", "tr"]) != -1) {
+		if (["body", "caption", "col", "colgroup", "frame", "frameset", "head", "html", "tbody", "td", "tfoot", "th", "thead", "tr"].includes(child)) {
 			return false;
 		}
 
 		// "If child is "dd" or "dt" and parent is not "dl", return false."
-		if (jQuery.inArray(child, ["dd", "dt"]) != -1 && parent_ != "dl") {
+		if (["dd", "dt"].includes(child) && parent_ != "dl") {
 			return false;
 		}
 
@@ -2473,7 +2513,7 @@ define([
 			return false;
 		}
 
-		if (jQuery.inArray(node.tagName, ["B", "EM", "I", "S", "SPAN", "STRIKE", "STRONG", "SUB", "SUP", "U"]) != -1) {
+		if (["B", "EM", "I", "S", "SPAN", "STRIKE", "STRONG", "SUB", "SUP", "U"].includes(node.tagName)) {
 			if (node.attributes.length == 0) {
 				return true;
 			}
@@ -2524,7 +2564,7 @@ define([
 		}
 
 		// Only these elements can possibly be a simple modifiable element.
-		if (jQuery.inArray(node.tagName, ["A", "B", "EM", "FONT", "I", "S", "SPAN", "STRIKE", "STRONG", "SUB", "SUP", "U"]) == -1) {
+		if (!["A", "B", "EM", "FONT", "I", "S", "SPAN", "STRIKE", "STRONG", "SUB", "SUP", "U"].includes(node.tagName)) {
 			return false;
 		}
 
@@ -2586,7 +2626,16 @@ define([
 		// property (including invalid or unrecognized properties), which is
 		// "text-decoration", which is set to "line-through" or "underline" or
 		// "overline" or "none"."
-		if (jQuery.inArray(node.tagName, ["A", "FONT", "S", "SPAN", "STRIKE", "U"]) != -1 && hasAttribute(node, "style") && getStyleLength(node) == 1 && (node.style.textDecoration == "line-through" || node.style.textDecoration == "underline" || node.style.textDecoration == "overline" || node.style.textDecoration == "none")) {
+		if (["A", "FONT", "S", "SPAN", "STRIKE", "U"].includes(node.tagName)
+			&& hasAttribute(node, "style")
+			&& getStyleLength(node) == 1
+			&& (
+				node.style.textDecoration == "line-through"
+				|| node.style.textDecoration == "underline"
+				|| node.style.textDecoration == "overline"
+				|| node.style.textDecoration == "none"
+			)
+		) {
 			return true;
 		}
 
@@ -2636,7 +2685,7 @@ define([
 			document.body.appendChild(font);
 			["xx-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"].forEach(function (keyword) {
 				font.size = cssSizeToLegacy(keyword);
-				callee.sizeMap[keyword] = font.getComputedStyle().fontSize;
+				callee.sizeMap[keyword] = getComputedStyle(font).fontSize;
 			});
 			document.body.removeChild(font);
 		}
@@ -2689,7 +2738,7 @@ define([
 			var bgColor;
 			// eslint-disable-next-line no-inner-declarations
 			function checkBgColor() {
-				bgColor = node.getComputedStyle().backgroundColor;
+				bgColor = getComputedStyle(node).backgroundColor;
 				bgColorInvalid = INVALID_BG_COLOR.includes(bgColor);
 			}
 			checkBgColor();
@@ -2761,7 +2810,7 @@ define([
 		// "line-through", return "line-through". Otherwise, return null."
 		if (command === "strikethrough") {
 			do {
-				if ((node.getComputedStyle().textDecoration || '').indexOf("line-through") != -1) {
+				if ((getComputedStyle(node).textDecoration || '').indexOf("line-through") != -1) {
 					return "line-through";
 				}
 				node = node.parentNode;
@@ -2774,7 +2823,7 @@ define([
 		// return "underline". Otherwise, return null."
 		if (command === "underline") {
 			do {
-				if ((node.getComputedStyle().textDecoration || '').indexOf("underline") != -1) {
+				if ((getComputedStyle(node).textDecoration || '').indexOf("underline") != -1) {
 					return "underline";
 				}
 				node = node.parentNode;
@@ -2788,13 +2837,13 @@ define([
 
 		// "Return the resolved value for node of the relevant CSS property for
 		// command."
-		return node.getComputedStyle()[commands[command].relevantCssProperty].toString();
+		return getComputedStyle(node)[commands[command].relevantCssProperty].toString();
 	}
 
 	function getSpecifiedCommandValue(element, command) {
 		// "If command is "backColor" or "hiliteColor" and element's display
 		// property does not have resolved value "inline", return null."
-		if ((command === "backcolor" || command === "hilitecolor") && element.getComputedStyle().display !== "inline") {
+		if ((command === "backcolor" || command === "hilitecolor") && getComputedStyle(element).display !== "inline") {
 			return null;
 		}
 
@@ -2971,7 +3020,7 @@ define([
 
 		// Ensure we have a plain array to avoid the potential performance
 		// overhead of a NodeList
-		var nodes = jQuery.makeArray(nodeList);
+		var nodes = Array.from(nodeList);
 		var i, j;
 		var node;
 		var command;
@@ -3287,7 +3336,10 @@ define([
 		// be the result of calling createElement("font") on the ownerDocument of
 		// node, then set the size attribute of new parent to the number from the
 		// following table based on new value: [table omitted]"
-		if (command == "fontsize" && jQuery.inArray(newValue, ["xx-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"]) != -1 && (!cssStylingFlag || newValue == "xxx-large")) {
+		if (command == "fontsize"
+			&& ["xx-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"].includes(newValue)
+			&& (!cssStylingFlag || newValue == "xxx-large")
+		) {
 			newParent = node.ownerDocument.createElement("font");
 			newParent.size = cssSizeToLegacy(newValue);
 		}
@@ -3823,12 +3875,12 @@ define([
 
 		// "If the first child of original parent is in node list, remove
 		// extraneous line breaks before original parent."
-		if (jQuery.inArray(originalParent.firstChild, nodeList) != -1) {
+		if (nodeList.includes(originalParent.firstChild)) {
 			removeExtraneousLineBreaksBefore(originalParent);
 		}
 
-		var firstChildInNodeList = jQuery.inArray(originalParent.firstChild, nodeList) != -1;
-		var lastChildInNodeList = jQuery.inArray(originalParent.lastChild, nodeList) != -1;
+		var firstChildInNodeList = nodeList.includes(originalParent.firstChild);
+		var lastChildInNodeList = nodeList.includes(originalParent.lastChild);
 
 		// "If the first child of original parent is in node list, and original
 		// parent follows a line break, set follows line break to true. Otherwise,
@@ -4057,7 +4109,9 @@ define([
 			// valid CSS absolute length, then abort these steps and do nothing."
 			//
 			// More cheap hacks to skip valid CSS absolute length checks.
-			if (jQuery.inArray(value, ["xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"]) == -1 && !/^[0-9]+(\.[0-9]+)?(cm|mm|in|pt|pc)$/.test(value)) {
+			if (!["xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"].includes(value)
+				&& !/^[0-9]+(\.[0-9]+)?(cm|mm|in|pt|pc)$/.test(value)
+			) {
 				return;
 			}
 
@@ -4473,7 +4527,9 @@ define([
 
 		var i;
 		for (i = 0; i < node.attributes.length; i++) {
-			if (!isHtmlNamespace(node.attributes[i].namespaceURI) || jQuery.inArray(node.attributes[i].name, ["style", "class", "dir"]) == -1) {
+			if (!isHtmlNamespace(node.attributes[i].namespaceURI)
+				|| !["style", "class", "dir"].includes(node.attributes[i].name)
+			) {
 				return false;
 			}
 		}
@@ -4586,7 +4642,7 @@ define([
 	 * @return {boolean}
 	 */
 	function isUnwrappable(node) {
-		return jQuery.inArray(node.nodeName, NOT_UNWRAPPABLE_NODES) === -1;
+		return !NOT_UNWRAPPABLE_NODES.includes(node.nodeName);
 	}
 	//@}
 	///// Assorted block formatting command algorithms /////
@@ -5023,7 +5079,7 @@ define([
 			(node && node.nodeType != Node.ELEMENT_NODE)
 			|| (
 				node.nodeType == Node.ELEMENT_NODE
-				&& ['inline', 'none'].includes(node.getComputedStyle().display)
+				&& ['inline', 'none'].includes(getComputedStyle(node).display)
 			)
 		) {
 			node = node.parentNode;
@@ -5034,7 +5090,7 @@ define([
 			return "left";
 		}
 
-		var resolvedValue = node.getComputedStyle().textAlign
+		var resolvedValue = getComputedStyle(node).textAlign
 		// Hack around browser non-standardness
 			.replace(/^-(moz|webkit)-/, "").replace(/^auto$/, "start");
 
@@ -5052,7 +5108,7 @@ define([
 
 		// "If node's "text-align" property has resolved value "center", "justify",
 		// "left", or "right", return that value."
-		if (jQuery.inArray(resolvedValue, ["center", "justify", "left", "right"]) != -1) {
+		if (["center", "justify", "left", "right"].includes(resolvedValue)) {
 			return resolvedValue;
 		}
 
@@ -5314,7 +5370,7 @@ define([
 				// subtract one from start offset."
 			} else if (
 				startNode.nodeType === Node.TEXT_NODE
-					&& ['pre', 'pre-wrap'].includes(startNode.parentNode.getComputedStyle().whiteSpace)
+					&& ['pre', 'pre-wrap'].includes(getComputedStyle(startNode.parentNode).whiteSpace)
 					&& startOffset != 0
 					&& /[ \xa0]/.test(startNode.data[startOffset - 1])
 			) {
@@ -5358,7 +5414,7 @@ define([
 				// end node's data is a space (0x0020) or non-breaking space (0x00A0):"
 			} else if (
 				endNode.nodeType === Node.TEXT_NODE
-				&& ['pre', 'pre-wrap'].includes(endNode.parentNode.getComputedStyle().whiteSpace)
+				&& ['pre', 'pre-wrap'].includes(getComputedStyle(endNode.parentNode).whiteSpace)
 				&& endOffset != getNodeLength(endNode)
 				&& /[ \xa0]/.test(endNode.data[endOffset])
 			) {
@@ -7302,7 +7358,11 @@ define([
 					// single-line container, and the last member of sublist is
 					// not a br, remove the first member of node list and
 					// append it to sublist."
-					while (nodeList.length && nodeList[0] == sublist[sublist.length - 1].nextSibling && !isSingleLineContainer(nodeList[0]) && !isNamedHtmlElement(sublist[sublist.length - 1], "BR")) {
+					while (nodeList.length
+						&& nodeList[0] == sublist[sublist.length - 1].nextSibling
+						&& !isSingleLineContainer(nodeList[0])
+						&& !isNamedHtmlElement(sublist[sublist.length - 1], "BR")
+					) {
 						sublist.push(nodeList.shift());
 					}
 				}
@@ -7315,7 +7375,7 @@ define([
 				// ancestors of the result."
 				fixDisallowedAncestors(wrap(
 					sublist,
-					jQuery.inArray(value, ["div", "p"]) == -1 ? makeIsElementWithoutAttributes(value) : returnFalse,
+					!["div", "p"].includes(value) ? makeIsElementWithoutAttributes(value) : returnFalse,
 					makeCreateElement(value),
 					newRange
 				), newRange);
@@ -8555,7 +8615,7 @@ define([
 			var refElement = node.nodeType == Node.ELEMENT_NODE ? node : node.parentNode;
 			if (value == " "
 				&& refElement.nodeType === Node.ELEMENT_NODE
-				&& ['pre', 'pre-wrap'].includes(refElement.getComputedStyle().whiteSpace)
+				&& ['pre', 'pre-wrap'].includes(getComputedStyle(refElement).whiteSpace)
 			) {
 				value = "\xa0";
 			}

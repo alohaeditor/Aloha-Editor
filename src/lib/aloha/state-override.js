@@ -29,7 +29,6 @@ define([
 	'jquery',
 	'aloha/command',
 	'util/dom2',
-	'util/maps',
 	'util/range',
 	'PubSub'
 ], function (
@@ -37,7 +36,6 @@ define([
 	jQuery,
 	Command,
 	Dom,
-	Maps,
 	RangeObject,
 	PubSub
 ) {
@@ -71,8 +69,8 @@ define([
 		var text = String.fromCharCode(event.which);
 		var range = selection.getRangeAt(0);
 		Dom.insertSelectText(text, range);
-		Maps.forEach(overrides, function (formatFn, command) {
-			formatFn(command, range);
+		Object.entries(overrides).forEach(function(entry) {
+			entry[1](entry[0], range);
 		});
 		Dom.collapseToEnd(range);
 		selection.removeAllRanges();

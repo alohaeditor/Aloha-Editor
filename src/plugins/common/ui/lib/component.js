@@ -17,22 +17,22 @@
  * `null` when no errors are present, otherwise a object with potentially multiple validation errors.
  * @property {function(*): void} changeNotify Function to call when the value of the component changes.
  * @property {function(): void} touchNotify Function to call when the user interacted with the component.
- * 
+ *
  * @property {function(*): void} adoptParent
  * @property {function(): void} destroy
  * @property {function(): boolean} isVisible
  * @property {function(): boolean} isValid
- * 
+ *
  * @property {function(): void} show Shows the component instance. Updates `visible`
  * @property {function(): void} hide Hides the component instance. Updates `visible`
  * @property {function(): void} enable Enables the component instance. Updates `disabled`
  * @property {function(): void} disable Disables the component instance. Updates `disabled`
  * @property {function(): void} touch Marks the component as touched. Updates `touched`. Calls `triggerTouchNotification`.
  * @property {function(): void} untouch Unmarks the component as touched. Updated `touched`.
- * 
+ *
  * @property {function(): void} triggerTouchNotification Util function to mark this component as touched and call the `touchNotify` callback.
  * @property {function(): void} triggerChangeNotification Util function which calls the `changeNotify` callback with the `getValue` return value.
- * 
+ *
  * @property {function(*): void} setValue Sets the value for this instance.
  * @property {function(): *} getValue Get the value of this instance.
  */

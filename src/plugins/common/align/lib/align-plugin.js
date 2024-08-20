@@ -28,28 +28,24 @@ define([
 	'aloha',
 	'aloha/plugin',
 	'align/align-table-utils',
-	'util/arrays',
 	'util/html',
 	'util/dom',
 	'ui/ui',
 	'ui/contextButton',
 	'ui/icons',
 	'i18n!align/nls/i18n',
-	'i18n!aloha/nls/i18n',
 	'jquery',
 	'PubSub'
 ], function (
 	Aloha,
 	Plugin,
 	AlignTableUtils,
-	Arrays,
 	Html,
 	DomLegacy,
 	Ui,
 	ContextButton,
 	Icons,
 	i18n,
-	i18nCore,
 	jQuery,
 	PubSub
 ) {
@@ -64,7 +60,6 @@ define([
 		var selection = range.getRangeTree(),
 			cac = range.getCommonAncestorContainer(),
 			elements = [];
-		var cells, i, len;
 
 		jQuery.each(selection, function () {
 			var node = this.domobj;

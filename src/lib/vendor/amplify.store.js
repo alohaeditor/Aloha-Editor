@@ -1,4 +1,4 @@
-define(['util/json2'],function(){
+define([],function(){
 var amplify = {};
 
 /*!
