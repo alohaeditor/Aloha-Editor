@@ -607,7 +607,7 @@ define('format/format-plugin', [
 			header: false,
 		},
 		'q': {
-			name: 'quoute',
+			name: 'quote',
 			icon: Icons.QUOTE,
 			label: i18n.t('button.q.tooltip'),
 			typography: false,
@@ -616,12 +616,6 @@ define('format/format-plugin', [
 		'code': {
 			icon: Icons.CODE,
 			label: i18n.t('button.code.tooltip'),
-			typography: false,
-			header: false,
-		},
-		'abbr': {
-			icon: Icons.ABBREVIATION,
-			label: i18n.t('button.abbr.tooltip'),
 			typography: false,
 			header: false,
 		},

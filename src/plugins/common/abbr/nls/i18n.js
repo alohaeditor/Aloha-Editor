@@ -1,9 +1,6 @@
 define({
 	"root":  {
-		"floatingmenu.tab.abbr": "Abbreviation",
-		"button.addabbr.tooltip": "insert abbreviation",
-		"button.remabbr.tooltip": "remove abbreviation",
-		"button.abbr.tooltip": "format as abbreviation",
+		"button.abbr.tooltip": "Abbreviation",
 		"newabbr.defaulttext": "Abbr"
 	},
 		"ca": true,
