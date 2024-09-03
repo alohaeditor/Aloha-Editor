@@ -1,5 +1,7 @@
 define({
 	"root":  {
+		"input.label": "Definition",
+		"panel.label": "Abbreviation",
 		"button.abbr.tooltip": "Abbreviation",
 		"newabbr.defaulttext": "Abbr"
 	},

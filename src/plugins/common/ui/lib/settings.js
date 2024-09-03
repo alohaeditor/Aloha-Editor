@@ -70,10 +70,10 @@ define([
 					'subscript',
 					'superscript',
 					'code',
-					'cite',
-					'quote',
-					'formatAbbr',
+					'formatAbbr'
 				],
+				[ 'quote', 'cite' ],
+				[ 'del', 'ins' ],
 				[ 'removeFormat' ],
 				// List settings
 				[

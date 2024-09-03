@@ -143,7 +143,7 @@ define([
 			}
 
 			this._quoteButton = Ui.adopt('quote', ToggleSplitButton, {
-				tooltip: i18n.t('cite.button.add.quote'),
+				tooltip: i18n.t('cite.button.tooltip'),
 				icon: Icons.QUOTE,
 				pure: true,
 				contextType: 'modal',
@@ -160,12 +160,14 @@ define([
 			});
 
 			// We brute-forcishly push our button settings into the format plugin configuration.
-			Format.config['blockquote'] = {
+			Format.buttonConfig['blockquote'] = {
 				icon: Icons.QUOTE,
 				label: i18n.t('button.blockquote.tooltip'),
 				typography: true,
 				header: false,
 			};
+			Format.config.push('blockquote');
+			Format.initButtons();
 
 			PubSub.sub('aloha.format.pre_change', function (message) {
 				if (message.oldFormat === 'blockquote' && message.newFormat !== 'blockquote') {
@@ -572,9 +574,13 @@ define([
 				link : link,
 				note : note
 			};
+
 			if (link) {
 				$('.aloha-cite-' + uid).attr('cite', link);
+			} else {
+				$('.aloha-cite-' + uid).removeAttr('cite');
 			}
+
 			if (this.referenceContainer) {
 				$('li#cite-note-' + uid + ' span').html((
 					link ? '<a class="external" target="_blank" href="' + link + '">' + link + '</a>'

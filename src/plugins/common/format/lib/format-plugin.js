@@ -256,20 +256,20 @@ define('format/format-plugin', [
 		return true;
 	}
 
-	function textLevelButtonClickHandler(formatPlugin, nodeType, commandName) {
+	function textLevelButtonClickHandler(nodeType, commandName) {
 		if (formatInsideTableWorkaround(nodeType)) {
 			return false;
 		}
-		formatPlugin.addMarkup(nodeType, commandName);
+		plugin.addMarkup(nodeType, commandName);
 		return false;
 	}
 
-	function makeRemoveFormatButton(formatPlugin) {
+	function makeRemoveFormatButton() {
 		return Ui.adopt(REMOVE_FORMAT_ID, Button, {
 			tooltip: i18n.t('button.removeFormat.tooltip'),
 			icon: Icons.CLEAR,
 			click: function () {
-				formatPlugin.removeFormat();
+				plugin.removeFormat();
 			}
 		});
 	}
@@ -352,14 +352,14 @@ define('format/format-plugin', [
 		});
 	}
 
-	function changeMarkup(plugin, nodeType) {
+	function changeMarkup(nodeType) {
 		Selection.changeMarkupOnSelection(jQuery('<' + nodeType + '>'));
 		if (Strings.parseBoolean(plugin.settings.checkHeadingHierarchy)) {
 			checkHeadingHierarchy(plugin.formatOptions);
 		}
 	}
 
-	function updateUiAfterMutation(formatPlugin, rangeObject) {
+	function updateUiAfterMutation(rangeObject) {
 		if (Aloha.activeEditable) {
 			Aloha.activeEditable.smartContentChange({ type: 'block-change' });
 		}
@@ -367,12 +367,12 @@ define('format/format-plugin', [
 		rangeObject.select();
 		// update Button toggle state. We take Selection.getRangeObject()
 		// because rangeObject is not up-to-date
-		onSelectionChanged(formatPlugin, Selection.getRangeObject());
+		onSelectionChanged(Selection.getRangeObject());
 	}
 
-	function format(formatPlugin, rangeObject, markup) {
+	function format(rangeObject, markup) {
 		Dom.addMarkup(rangeObject, markup);
-		updateUiAfterMutation(formatPlugin, rangeObject);
+		updateUiAfterMutation(rangeObject);
 	}
 
 	function isFormatAllowed(tagname, plugin, editable) {
@@ -384,8 +384,7 @@ define('format/format-plugin', [
 	}
 
 	function addMarkup(nodeType, command) {
-		var formatPlugin = this,
-			markup = jQuery('<' + nodeType + '>'),
+		var markup = jQuery('<' + nodeType + '>'),
 			rangeObject = Selection.rangeObject;
 
 		if (nodeType == null || !nodeType || Aloha.activeEditable == null || Aloha.activeEditable.obj == null) {
@@ -394,8 +393,8 @@ define('format/format-plugin', [
 
 		// check whether the markup is found in the range (at the start of the range)
 		var nodeNames = [markup[0].nodeName];
-		if (formatPlugin.conversionNames[markup[0].nodeName]) {
-			nodeNames.push(formatPlugin.conversionNames[markup[0].nodeName]);
+		if (plugin.conversionNames[markup[0].nodeName]) {
+			nodeNames.push(plugin.conversionNames[markup[0].nodeName]);
 		}
 
 		var foundMarkup = rangeObject.findMarkup(function (nodeElement) {
@@ -412,7 +411,7 @@ define('format/format-plugin', [
 				Dom.removeMarkup(rangeObject, jQuery(foundMarkup), Aloha.activeEditable.obj);
 			}
 			PubSub.pub('aloha.format.removed', { level: 'text', format: nodeType })
-			updateUiAfterMutation(formatPlugin, rangeObject);
+			updateUiAfterMutation(rangeObject);
 		} else {
 			// when the range is collapsed, extend it to a word
 			if (rangeObject.isCollapsed()) {
@@ -423,7 +422,7 @@ define('format/format-plugin', [
 							command || nodeType,
 							rangeObject,
 							function (command, rangeObject) {
-								format(formatPlugin, rangeObject, markup);
+								format(rangeObject, markup);
 								PubSub.pub('aloha.format.added', { level: 'text', format: nodeType })
 							}
 						);
@@ -432,16 +431,16 @@ define('format/format-plugin', [
 				}
 			}
 			PubSub.pub('aloha.format.added', { level: 'text', format: nodeType })
-			format(formatPlugin, rangeObject, markup);
+			format(rangeObject, markup);
 		}
 	}
 
-	function onSelectionChanged(formatPlugin, rangeObject) {
+	function onSelectionChanged(rangeObject) {
 		var effectiveMarkup,
 			i, j;
 
 		// Normal format buttons like bold
-		jQuery.each(formatPlugin.buttons, function (index, button) {
+		jQuery.each(plugin.buttons, function (index, button) {
 			// If the button is not a toggle-button (or an instance of it), then skip it.
 			// Can't set the state of it or do anything.
 			if (typeof button.handle.setActive !== 'function') {
@@ -450,8 +449,8 @@ define('format/format-plugin', [
 
 			var statusWasSet = false;
 			var nodeNames = [button.markup[0].nodeName];
-			if (formatPlugin.conversionNames[button.markup[0].nodeName]) {
-				nodeNames.push(formatPlugin.conversionNames[markup[0].nodeName]);
+			if (plugin.conversionNames[button.markup[0].nodeName]) {
+				nodeNames.push(plugin.conversionNames[markup[0].nodeName]);
 			}
 
 			for (i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
@@ -474,8 +473,8 @@ define('format/format-plugin', [
 		});
 
 		// Typography/Blocklevel formats like h1
-		if (formatPlugin.typographyButton) {
-			var typographyElements = Object.entries(formatPlugin.config).filter(function (entry) {
+		if (plugin.typographyButton) {plugin
+			var typographyElements = Object.entries(plugin.config).filter(function (entry) {
 				return entry[1].typography;
 			}).map(function (entry) {
 				return entry[0];
@@ -499,16 +498,16 @@ define('format/format-plugin', [
 			}
 
 			/** @type {FormattingOption|null} */
-			var settings = formatPlugin.config[effectiveTypo];
+			var settings = plugin.config[effectiveTypo];
 			if (!settings) {
 				settings = Object.assign({}, DEFAULT_CONFIG[effectiveTypo], settings);
 			}
 
-			formatPlugin.activeTypography = effectiveTypo;
-			formatPlugin.typographyElement$ = typoElement ? $(typoElement) : null;
-			formatPlugin.typographyButton.setIcon(settings.icon || Icons.TYPOGRAPHY);
-			formatPlugin.typographyButton.setText(settings.label || i18n.t('button.typography.tooltip'));
-			formatPlugin.typographyButton.setSecondaryVisible(settings != null && settings.typography && settings.header);
+			plugin.activeTypography = effectiveTypo;
+			plugin.typographyElement$ = typoElement ? $(typoElement) : null;
+			plugin.typographyButton.setIcon(settings.icon || Icons.TYPOGRAPHY);
+			plugin.typographyButton.setText(settings.label || i18n.t('button.typography.tooltip'));
+			plugin.typographyButton.setSecondaryVisible(settings != null && settings.typography && settings.header);
 		}
 
 		handlePreformattedText(rangeObject.commonAncestorContainer);
@@ -879,8 +878,6 @@ define('format/format-plugin', [
 		 * @param editable current editable object
 		 */
 		initButtons: function () {
-			var that = this;
-
 			plugin.buttons = {};
 
 			// First create all the regular formatting buttons
@@ -906,14 +903,14 @@ define('format/format-plugin', [
 					return;
 				}
 
-				that.buttons[nodeName] = {
-					handle: that.makeTextLevelButton(nodeName, settings),
+				plugin.buttons[nodeName] = {
+					handle: plugin.makeTextLevelButton(nodeName, settings),
 					markup: jQuery('<' + nodeName + '>'),
 				};
 			});
 
 			plugin.buttons[REMOVE_FORMAT_ID] = {
-				handle: makeRemoveFormatButton(this),
+				handle: makeRemoveFormatButton(),
 				markup: null,
 			};
 
@@ -923,7 +920,7 @@ define('format/format-plugin', [
 				iconOnly: false,
 
 				click: function () {
-					var data = Dropdown.openDynamicDropdown(that.typographyButton.name, that._createTypographyContext());
+					var data = Dropdown.openDynamicDropdown(plugin.typographyButton.name, plugin._createTypographyContext());
 					if (!data) {
 						return;
 					}
@@ -931,7 +928,7 @@ define('format/format-plugin', [
 					data.then(function(ctl) {
 						return ctl.value;
 					}).then(function (result) {
-						that._applyTypography(result.id);
+						plugin._applyTypography(result.id);
 					}).catch(function (error) {
 						if (!Utils.isUserCloseError(error)) {
 							console.error(error);
@@ -941,12 +938,12 @@ define('format/format-plugin', [
 
 				secondaryClick: function () {
 					/** @type {FormattingOption} */
-					var settings = that.config[that.activeTypography];
+					var settings = plugin.config[plugin.activeTypography];
 					if (!settings) {
-						settings = DEFAULT_CONFIG[that.activeTypography];
+						settings = DEFAULT_CONFIG[plugin.activeTypography];
 					}
 
-					var data = Dropdown.openDynamicDropdown(that.typographyButton.name, that._createHeaderIdContext(settings));
+					var data = Dropdown.openDynamicDropdown(plugin.typographyButton.name, plugin._createHeaderIdContext(settings));
 					if (!data) {
 						return;
 					}
@@ -954,7 +951,7 @@ define('format/format-plugin', [
 					data.then(function(ctl) {
 						return ctl.value;
 					}).then(function (value) {
-						that._applyHeaderId((value || '').trim());
+						plugin._applyHeaderId((value || '').trim());
 					}).catch(function (error) {
 						if (!Utils.isUserCloseError(error)) {
 							console.error(error);
@@ -964,7 +961,7 @@ define('format/format-plugin', [
 			});
 
 			PubSub.sub('aloha.selection.context-change', function (message) {
-				onSelectionChanged(that, message.range);
+				onSelectionChanged(message.range);
 			});
 		},
 
@@ -1030,7 +1027,7 @@ define('format/format-plugin', [
 				newFormat: plugin.activeTypography,
 			});
 
-			changeMarkup(this, plugin.activeTypography);
+			changeMarkup(plugin.activeTypography);
 
 			PubSub.pub('aloha.format.changed', {
 				level: 'block',
@@ -1075,14 +1072,13 @@ define('format/format-plugin', [
 		},
 
 		makeTextLevelButton: function (nodeType, settings) {
-			var _this = this;
 			var name = settings.name || nodeType;
 			var component = Ui.adopt(name, ToggleButton, {
 				tooltip: settings.label,
 				icon: settings.icon,
 				pure: true,
 				click: function () {
-					return textLevelButtonClickHandler(_this, nodeType, name);
+					return textLevelButtonClickHandler(nodeType, name);
 				}
 			});
 
@@ -1092,20 +1088,22 @@ define('format/format-plugin', [
 		// duplicated code from link-plugin
 		//Creates string with this component's namepsace prefixed the each classname
 		nsClass: function () {
-			var stringBuilder = [], prefix = pluginNamespace;
-			jQuery.each(arguments, function () {
-				stringBuilder.push(this == '' ? prefix : prefix + '-' + this);
-			});
-			return jQuery.trim(stringBuilder.join(' '));
+			return Array.from(arguments)
+				.map(function(part) {
+					return part === '' ? pluginNamespace : pluginNamespace + '-' + part;
+				})
+				.join(' ')
+				.trim();
 		},
 
 		// duplicated code from link-plugin
 		nsSel: function () {
-			var stringBuilder = [], prefix = pluginNamespace;
-			jQuery.each(arguments, function () {
-				stringBuilder.push('.' + (this == '' ? prefix : prefix + '-' + this));
-			});
-			return jQuery.trim(stringBuilder.join(' '));
+			return Array.from(arguments)
+				.map(function(part) {
+					return '.' + (part === '' ? pluginNamespace : pluginNamespace + '-' + part);
+				})
+				.join(' ')
+				.trim();
 		},
 
 		addMarkup: addMarkup,
@@ -1164,7 +1162,7 @@ define('format/format-plugin', [
 				unformatList(rangeObject);
 			}
 
-			updateUiAfterMutation(this, rangeObject);
+			updateUiAfterMutation(rangeObject);
 			if (Aloha.activeEditable) {
 				Aloha.activeEditable.smartContentChange({ type: 'block-change' });
 			}
