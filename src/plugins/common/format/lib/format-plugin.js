@@ -1,3 +1,5 @@
+/** @typedef {import('../../ui/lib/toggleButton').ToggleButton} ToggleButton */
+
 /**
  * @typedef {object} FormattingOption
  * @property {string=} name (Component/Slot) Name of the element
@@ -66,6 +68,8 @@ define('format/format-plugin', [
 
 	/** Class which needs to be set on headers when the IDs are manually set. */
 	var CLASS_CUSTOMIZED = 'aloha-customized';
+
+	var CLASS_HIERACHY_VIOLATION = 'aloha-heading-hierarchy-violated';
 
 	var ATTR_HEADER_ID = 'id';
 
@@ -141,7 +145,8 @@ define('format/format-plugin', [
 	 * @returns {boolean}
 	 */
 	function isHeading(markup) {
-		return jQuery.inArray(markup, this.headerNodeNames) >= 0;
+		const config = plugin.buttonConfig[markup];
+		return config && config.header;
 	}
 
 	/**
@@ -295,7 +300,7 @@ define('format/format-plugin', [
 		// insertparagraph command for example, copies all attributes, to
 		// the new element, so the plugin has to remove them again.
 		parent.find(":not(h1,h2,h3,h4,h5,h6)").each(function () {
-			$(this).removeClass("aloha-heading-hierarchy-violated");
+			$(this).removeClass(CLASS_HIERACHY_VIOLATION);
 		});
 
 		//set startheading to heading with smallest number available in the config
@@ -323,25 +328,25 @@ define('format/format-plugin', [
 			if (typeof lastCorrectHeading !== 'undefined') {
 				//the current heading hierarchy must be lower than the startHeading hierarchy
 				if (currentHeading < startHeading) {
-					$(this).addClass("aloha-heading-hierarchy-violated");
+					$(this).addClass(CLASS_HIERACHY_VIOLATION);
 				} else {
 					//heading hierarchy is violated if a heading is more
 					//than one hierarchy lower than the last correct heading
 					if (currentHeading > (lastCorrectHeading + 1)) {
-						$(this).addClass("aloha-heading-hierarchy-violated");
+						$(this).addClass(CLASS_HIERACHY_VIOLATION);
 					} else {
 						//only set the last heading if the hierarchy is not violated
 						lastCorrectHeading = currentHeading;
-						$(this).removeClass("aloha-heading-hierarchy-violated");
+						$(this).removeClass(CLASS_HIERACHY_VIOLATION);
 					}
 				}
 			} else {
 				//first heading! see if it starts with correct heading
 				if (currentHeading === startHeading) {
 					lastCorrectHeading = currentHeading;
-					$(this).removeClass("aloha-heading-hierarchy-violated");
+					$(this).removeClass(CLASS_HIERACHY_VIOLATION);
 				} else {
-					$(this).addClass("aloha-heading-hierarchy-violated");
+					$(this).addClass(CLASS_HIERACHY_VIOLATION);
 				}
 			}
 		});
@@ -710,23 +715,29 @@ define('format/format-plugin', [
 	/**
 	 * register the plugin with unique name
 	 */
-	return Plugin.create('format', {
-		config: DEFAULT_CONFIG,
+	var plugin = Plugin.create('format', {
+
+		/**
+		 * General button configuration for the plugin
+		 */
+		buttonConfig: structuredClone(DEFAULT_CONFIG),
+
+		/**
+		 * Array of which buttons are available/visible/enabled for the user
+		 */
+		config: Object.keys(DEFAULT_CONFIG).concat(REMOVE_FORMAT_ID),
+
+		/**
+		 * Map for the currently created/managed buttons
+		 * @type {Object<string, { markup: string, handle: ToggleButton }>}
+		 */
+		buttons: {},
 
 		// These are old/depreacted nodes and will be converted to the modern equivalent
 		conversionNames: {
 			'strong': 'b',
 			'em': 'i',
 		},
-
-		headerNodeNames: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
-
-		/**
-		 * available options / buttons
-		 *
-		 * @todo new buttons needed for 'code'
-		 */
-		availableButtons: Object.keys(DEFAULT_CONFIG).concat(REMOVE_FORMAT_ID),
 
 		/**
 		 * HotKeys used for special actions
@@ -754,20 +765,18 @@ define('format/format-plugin', [
 		 * Initialize the plugin and set initialize flag on true
 		 */
 		init: function () {
-			var me = this;
+			Ephemera.classes(CLASS_HIERACHY_VIOLATION);
 
-			Ephemera.classes('aloha-heading-hierarchy-violated');
-
-			if (typeof this.settings.hotKey !== 'undefined') {
-				jQuery.extend(true, this.hotKey, this.settings.hotKey);
+			if (typeof plugin.settings.hotKey !== 'undefined') {
+				jQuery.extend(true, plugin.hotKey, plugin.settings.hotKey);
 			}
 
-			this.initButtons();
+			plugin.initButtons();
 
-			var shouldCheckHeadingHierarchy = Strings.parseBoolean(this.settings.checkHeadingHierarchy);
+			var shouldCheckHeadingHierarchy = Strings.parseBoolean(plugin.settings.checkHeadingHierarchy);
 
 			var checkHeadings = function () {
-				checkHeadingHierarchy(me.formatOptions);
+				checkHeadingHierarchy(plugin.formatOptions);
 			};
 
 			if (shouldCheckHeadingHierarchy) {
@@ -778,16 +787,16 @@ define('format/format-plugin', [
 			// apply specific configuration if an editable has been activated
 			PubSub.sub('aloha.editable.activated', function (message) {
 				var editable = message.editable;
-				me.applyButtonConfig(editable.obj);
+				plugin.applyButtonConfig(editable.obj);
 
 				if (shouldCheckHeadingHierarchy) {
 					checkHeadings();
 				}
 
 				var createAdder = function (tagname) {
-					if (isFormatAllowed(tagname, me, editable)) {
+					if (isFormatAllowed(tagname, plugin, editable)) {
 						return function addFormat() {
-							me.addMarkup(tagname);
+							plugin.addMarkup(tagname);
 							return false;
 						};
 					}
@@ -797,9 +806,9 @@ define('format/format-plugin', [
 				};
 
 				var createChanger = function (tagname) {
-					if (isFormatAllowed(tagname, me, editable)) {
+					if (isFormatAllowed(tagname, plugin, editable)) {
 						return function changeFormat() {
-							me.changeMarkup(tagname);
+							plugin.changeMarkup(tagname);
 							return false;
 						};
 					}
@@ -809,20 +818,20 @@ define('format/format-plugin', [
 				};
 
 				var $editable = editable.obj;
-				$editable.on('keydown.aloha.format', me.hotKey.formatBold, createAdder('b'));
-				$editable.on('keydown.aloha.format', me.hotKey.formatItalic, createAdder('i'));
-				$editable.on('keydown.aloha.format', me.hotKey.formatUnderline, createAdder('u'));
-				$editable.on('keydown.aloha.format', me.hotKey.formatDel, createAdder('del'));
-				$editable.on('keydown.aloha.format', me.hotKey.formatSub, createAdder('sub'));
-				$editable.on('keydown.aloha.format', me.hotKey.formatSup, createAdder('sup'));
-				$editable.on('keydown.aloha.format', me.hotKey.formatParagraph, createChanger('p'));
-				$editable.on('keydown.aloha.format', me.hotKey.formatH1, createChanger('h1'));
-				$editable.on('keydown.aloha.format', me.hotKey.formatH2, createChanger('h2'));
-				$editable.on('keydown.aloha.format', me.hotKey.formatH3, createChanger('h3'));
-				$editable.on('keydown.aloha.format', me.hotKey.formatH4, createChanger('h4'));
-				$editable.on('keydown.aloha.format', me.hotKey.formatH5, createChanger('h5'));
-				$editable.on('keydown.aloha.format', me.hotKey.formatH6, createChanger('h6'));
-				$editable.on('keydown.aloha.format', me.hotKey.formatPre, createChanger('pre'));
+				$editable.on('keydown.aloha.format', plugin.hotKey.formatBold, createAdder('b'));
+				$editable.on('keydown.aloha.format', plugin.hotKey.formatItalic, createAdder('i'));
+				$editable.on('keydown.aloha.format', plugin.hotKey.formatUnderline, createAdder('u'));
+				$editable.on('keydown.aloha.format', plugin.hotKey.formatDel, createAdder('del'));
+				$editable.on('keydown.aloha.format', plugin.hotKey.formatSub, createAdder('sub'));
+				$editable.on('keydown.aloha.format', plugin.hotKey.formatSup, createAdder('sup'));
+				$editable.on('keydown.aloha.format', plugin.hotKey.formatParagraph, createChanger('p'));
+				$editable.on('keydown.aloha.format', plugin.hotKey.formatH1, createChanger('h1'));
+				$editable.on('keydown.aloha.format', plugin.hotKey.formatH2, createChanger('h2'));
+				$editable.on('keydown.aloha.format', plugin.hotKey.formatH3, createChanger('h3'));
+				$editable.on('keydown.aloha.format', plugin.hotKey.formatH4, createChanger('h4'));
+				$editable.on('keydown.aloha.format', plugin.hotKey.formatH5, createChanger('h5'));
+				$editable.on('keydown.aloha.format', plugin.hotKey.formatH6, createChanger('h6'));
+				$editable.on('keydown.aloha.format', plugin.hotKey.formatPre, createChanger('pre'));
 			});
 
 			PubSub.sub('aloha.editable.deactivated', function (message) {
@@ -837,8 +846,8 @@ define('format/format-plugin', [
 		 * @return void
 		 */
 		applyButtonConfig: function ($editable) {
-			var config = this.getEditableConfig($editable),
-				button, i, len;
+			var config = plugin.getEditableConfig($editable),
+				button;
 
 			if (typeof config === 'object') {
 				var config_old = [];
@@ -852,19 +861,19 @@ define('format/format-plugin', [
 					config = config_old;
 				}
 			}
-			this.formatOptions = config;
+			plugin.formatOptions = config;
 
 			var editable = $editable[0];
 
 			// now iterate all buttons and show/hide them according to the config
-			for (button in this.buttons) {
-				if (this.buttons.hasOwnProperty(button)) {
+			for (button in plugin.buttons) {
+				if (plugin.buttons.hasOwnProperty(button)) {
 					if (!ContentRules.isAllowed(editable, button)) {
-						this.buttons[button].handle.hide();
-					} else if (jQuery.inArray(button, config) !== -1) {
-						this.buttons[button].handle.show();
+						plugin.buttons[button].handle.hide();
+					} else if (config.includes(button)) {
+						plugin.buttons[button].handle.show();
 					} else {
-						this.buttons[button].handle.hide();
+						plugin.buttons[button].handle.hide();
 					}
 				}
 			}
@@ -878,10 +887,10 @@ define('format/format-plugin', [
 		initButtons: function () {
 			var that = this;
 
-			this.buttons = {};
+			plugin.buttons = {};
 
 			// First create all the regular formatting buttons
-			Object.entries(this.config).forEach(function (entry) {
+			Object.entries(plugin.buttonConfig).forEach(function (entry) {
 				var nodeName = entry[0];
 				var settings = entry[1];
 
@@ -909,12 +918,12 @@ define('format/format-plugin', [
 				};
 			});
 
-			this.buttons[REMOVE_FORMAT_ID] = {
+			plugin.buttons[REMOVE_FORMAT_ID] = {
 				handle: makeRemoveFormatButton(this),
 				markup: null,
 			};
 
-			this.typographyButton = Ui.adopt('typographyMenu', SplitButton, {
+			plugin.typographyButton = Ui.adopt('typographyMenu', SplitButton, {
 				icon: Icons.TYPOGRAPHY,
 				text: i18n.t('button.typography.tooltip'),
 				iconOnly: false,
@@ -966,7 +975,7 @@ define('format/format-plugin', [
 		},
 
 		_createTypographyContext: function () {
-			var latestOptions = Object.entries(this.config).map(function (entry) {
+			var latestOptions = Object.entries(plugin.buttonConfig).map(function (entry) {
 				var nodeName = entry[0];
 				var settings = entry[1];
 
@@ -1010,7 +1019,7 @@ define('format/format-plugin', [
 					iconsOnly: false,
 					options: latestOptions,
 				},
-				initialValue: this.activeTypography,
+				initialValue: plugin.activeTypography,
 			};
 		},
 
@@ -1018,21 +1027,21 @@ define('format/format-plugin', [
 		 * @param {string} typography
 		 */
 		_applyTypography: function (typography) {
-			var oldTypography = this.activeTypography;
-			this.activeTypography = typography;
+			var oldTypography = plugin.activeTypography;
+			plugin.activeTypography = typography;
 
 			PubSub.pub('aloha.format.pre_change', {
 				level: 'block',
 				oldFormat: oldTypography,
-				newFormat: this.activeTypography,
+				newFormat: plugin.activeTypography,
 			});
 
-			changeMarkup(this, this.activeTypography);
+			changeMarkup(this, plugin.activeTypography);
 
 			PubSub.pub('aloha.format.changed', {
 				level: 'block',
 				oldFormat: oldTypography,
-				newFormat: this.activeTypography,
+				newFormat: plugin.activeTypography,
 			});
 		},
 
@@ -1042,8 +1051,8 @@ define('format/format-plugin', [
 		 */
 		_createHeaderIdContext: function (settings) {
 			var headerId = null;
-			if (this.typographyElement$) {
-				headerId = this.typographyElement$.attr(ATTR_HEADER_ID);
+			if (plugin.typographyElement$) {
+				headerId = plugin.typographyElement$.attr(ATTR_HEADER_ID);
 			}
 
 			return {
@@ -1056,18 +1065,18 @@ define('format/format-plugin', [
 		},
 
 		_applyHeaderId: function (value) {
-			if (!this.typographyElement$) {
+			if (!plugin.typographyElement$) {
 				return;
 			}
 
-			$(this.typographyElement$).attr(ATTR_HEADER_ID, value);
+			$(plugin.typographyElement$).attr(ATTR_HEADER_ID, value);
 
 			// Add the customized class if a ID has been set. Otherwise remove it, so the headerids plugin
 			// could automatically add it again if needed/enabled.
 			if (value) {
-				$(this.typographyElement$).addClass(CLASS_CUSTOMIZED);
+				$(plugin.typographyElement$).addClass(CLASS_CUSTOMIZED);
 			} else {
-				$(this.typographyElement$).removeClass(CLASS_CUSTOMIZED);
+				$(plugin.typographyElement$).removeClass(CLASS_CUSTOMIZED);
 			}
 		},
 
@@ -1123,8 +1132,8 @@ define('format/format-plugin', [
 				i;
 
 			// formats to be removed by the removeFormat button may now be configured using Aloha.settings.plugins.format.removeFormats = ['b', 'strong', ...]
-			if (this.settings.removeFormats) {
-				formats = this.settings.removeFormats;
+			if (plugin.settings.removeFormats) {
+				formats = plugin.settings.removeFormats;
 			}
 
 			if (rangeObject.isCollapsed()) {
@@ -1136,8 +1145,8 @@ define('format/format-plugin', [
 
 					// check whether the markup is found in the range (at the start of the range)
 					var nodeNames = [format];
-					if (this.conversionNames[format]) {
-						nodeNames.push(this.conversionNames[format]);
+					if (plugin.conversionNames[format]) {
+						nodeNames.push(plugin.conversionNames[format]);
 					}
 
 					var foundMarkup = rangeObject.findMarkup(function (nodeElement) {
@@ -1175,4 +1184,6 @@ define('format/format-plugin', [
 			return 'format';
 		}
 	});
+
+	return plugin;
 });
