@@ -473,7 +473,7 @@ define('format/format-plugin', [
 		});
 
 		// Typography/Blocklevel formats like h1
-		if (plugin.typographyButton) {plugin
+		if (plugin.typographyButton) {
 			var typographyElements = Object.entries(plugin.config).filter(function (entry) {
 				return entry[1].typography;
 			}).map(function (entry) {
@@ -829,6 +829,15 @@ define('format/format-plugin', [
 
 			PubSub.sub('aloha.editable.deactivated', function (message) {
 				message.editable.obj.unbind('keydown.aloha.format');
+
+				// Set all buttons to inactive if we leave the editable
+				if (plugin.buttons) {
+					Object.values(plugin.buttons).forEach(function (button) {
+						if (typeof button.handle.setActive === 'function') {
+							button.handle.setActive(false);
+						}
+					});
+				}
 			});
 		},
 
@@ -925,7 +934,7 @@ define('format/format-plugin', [
 						return;
 					}
 
-					data.then(function(ctl) {
+					data.then(function (ctl) {
 						return ctl.value;
 					}).then(function (result) {
 						plugin._applyTypography(result.id);
@@ -948,7 +957,7 @@ define('format/format-plugin', [
 						return;
 					}
 
-					data.then(function(ctl) {
+					data.then(function (ctl) {
 						return ctl.value;
 					}).then(function (value) {
 						plugin._applyHeaderId((value || '').trim());
@@ -1089,7 +1098,7 @@ define('format/format-plugin', [
 		//Creates string with this component's namepsace prefixed the each classname
 		nsClass: function () {
 			return Array.from(arguments)
-				.map(function(part) {
+				.map(function (part) {
 					return part === '' ? pluginNamespace : pluginNamespace + '-' + part;
 				})
 				.join(' ')
@@ -1099,7 +1108,7 @@ define('format/format-plugin', [
 		// duplicated code from link-plugin
 		nsSel: function () {
 			return Array.from(arguments)
-				.map(function(part) {
+				.map(function (part) {
 					return '.' + (part === '' ? pluginNamespace : pluginNamespace + '-' + part);
 				})
 				.join(' ')

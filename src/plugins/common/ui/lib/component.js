@@ -94,6 +94,7 @@ define([
 		destroy: function() {
 			this.container = null;
 			this.element.remove();
+			this.element = null;
 		},
 
 		/**
