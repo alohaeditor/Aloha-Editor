@@ -51,7 +51,7 @@ spec:
         cpu: '0'
         memory: '0'
   imagePullSecrets:
-    - name: docker-jenkinsbuilds-gentics-com
+    - name: jenkins-docker-pull-secret
 """)
 		}
 	}
