@@ -1,4 +1,4 @@
-FROM docker.apa-it.at/maven:3.8.6-jdk-8-slim
+FROM docker.gentics.com/maven:3.8.6-jdk-8-slim
 MAINTAINER Patrick Klaffenböck <p.klaffenboeck@gentics.com>
 
 ARG GIT_USER_NAME="Maven Release Manager"
