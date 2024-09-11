@@ -1,12 +1,17 @@
 <settings>
 	<servers>
 		<server>
-			<id>lan.snapshots</id>
+			<id>gentics.nexus.maven-central</id>
 			<username>${env.repoUsername}</username>
 			<password>${env.repoPassword}</password>
 		</server>
 		<server>
-			<id>lan.releases.staging.alohaeditor</id>
+			<id>gentics.nexus.releases-oss</id>
+			<username>${env.repoUsername}</username>
+			<password>${env.repoPassword}</password>
+		</server>
+		<server>
+			<id>gentics.nexus.snapshots</id>
 			<username>${env.repoUsername}</username>
 			<password>${env.repoPassword}</password>
 		</server>
