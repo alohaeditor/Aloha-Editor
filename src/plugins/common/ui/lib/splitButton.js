@@ -1,3 +1,17 @@
+/** @typedef {import('./button').Button} Button */
+
+/**
+ * @typedef {object} SplitButtonProperties
+ * @property {'split-button'} type
+ * @property {string=} secondaryLabel Label/Tooltip for the secondary action
+ * @property {function(): void} secondaryClick Function which is getting called whenever the secondary button is clicked.
+ * @property {boolean} secondaryVisible If the secondary button should be visible or not.
+ *
+ * @property {function(boolean): void} setSecondaryVisible Updates the `secondaryVisible` of the instance
+ */
+
+/** @typedef {Button & SplitButtonProperties} SplitButton */
+
 define([
     'jquery',
     'ui/button',
@@ -9,16 +23,12 @@ define([
 ) {
     'use strict';
 
-    var SplitButton = Button.extend({
+    /** @type {SplitButton} */
+    var SplitButton = Button.extend(/** @type {SplitButton} */ ({
         type: 'split-button',
 
-        /** @type {(string|null)} Label/Tooltip for the secondary action */
         secondaryLabel: null,
-
-        /** @type {function} Function which is getting called whenever the secondary button is clicked. */
-        secondaryClick: function () { },
-
-        /** @type {boolean} If the secondary button should be visible or not. */
+        secondaryClick: function () {},
         secondaryVisible: true,
 
         // Internals
@@ -77,7 +87,7 @@ define([
                 this._$secondaryButton.hide();
             }
         }
-    });
+    }));
 
     return SplitButton;
 });

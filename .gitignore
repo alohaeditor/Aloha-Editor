@@ -16,6 +16,7 @@ node_modules
 src/css/aloha.css
 .idea
 .vscode
+alohaeditor.iml 
 
 # Javascript
 node_modules/
