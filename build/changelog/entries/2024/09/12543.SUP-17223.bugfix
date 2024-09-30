@@ -1,0 +1,1 @@
+Defaulted UI Component element to an empty jQuery element, to prevent potential null-access.
