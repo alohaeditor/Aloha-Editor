@@ -580,9 +580,12 @@ define([
 
 			var href;
 			
-			if (URL.canParse(linkData.url.target, window.location)) {
+			try {
+				// Cannot use URL.parse here, as it's not available in Cypress (v13.13+) w/ Electron (v27.x)
+				// which uses Node v18.17, which in turn doesn't have this feature yet.
+				new URL(linkData.url.target, window.location);
 				href = linkData.url.target;
-			} else {
+			} catch (err) {
 				href = '';
 			}
 
