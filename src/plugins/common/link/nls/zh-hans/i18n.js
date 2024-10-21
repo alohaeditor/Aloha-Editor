@@ -8,7 +8,7 @@ define({
 	"link.target.parent": "父页面",
 	"link.target.top": "最上层页面",
 	"link.target.framename": "框架名",
-	"link.target.legend": "目标",
+	"link.target.label": "目标",
 	"link.title.legend": "标题",
 	"insertLink": "ctrl+k"
 });

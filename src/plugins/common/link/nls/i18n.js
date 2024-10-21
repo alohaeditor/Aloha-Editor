@@ -6,7 +6,7 @@ define({
 		"newlink.defaulttext": "New Link",
 		"floatingmenu.tab.link": "Link",
 		"link.new_tab.label": "Open in new Tab",
-		"link.title.legend": "Title",
+		"link.title.label": "Title",
 		"href.lang.legend": "Language",
 		"link.target.label": "Open in",
 		"link.target._self": "Current Tab",
