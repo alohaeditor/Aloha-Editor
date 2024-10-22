@@ -8,7 +8,7 @@ define({
 	"link.target.parent": "Батьківський фрейм",
 	"link.target.top": "Поверх усіх фреймів",
 	"link.target.framename": "Назва фрейма",
-	"link.target.legend": "Ціль",
+	"link.target.label": "Ціль",
 	"link.title.legend": "Назва",
 	"insertLink": "ctrl+k"
 });
