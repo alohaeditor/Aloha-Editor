@@ -117,16 +117,16 @@ Aloha.settings.plugins: {
 			{ name:'hor-zebra' },
 		],
 		columnConfig : [
-				{ name: 'table-style-bigbold',  iconClass: 'aloha-button-col-bigbold' },
-				{ name: 'table-style-redwhite', iconClass: 'aloha-button-col-redwhite' }
+				{ name: 'table-style-align-left',  icon: 'format_align_left', label: 'Align left' },
+				{ name: 'table-style-align-right', icon: 'format_align_right', label: 'Align right' }
 		],
 		rowConfig : [
-				{ name: 'table-style-bigbold',  iconClass: 'aloha-button-row-bigbold' },
-				{ name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite' }
+				{ name: 'table-style-align-left',  icon: 'format_align_left', label: 'Align left' },
+				{ name: 'table-style-align-right', icon: 'format_align_right', label: 'Align right' }
 		],
 		cellConfig : [
-				{ name: 'table-style-bigbold',  iconClass: 'aloha-button-row-bigbold' },
-				{ name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite' }
+				{ name: 'table-style-align-left',  icon: 'format_align_left', label: 'Align left' },
+				{ name: 'table-style-align-right', icon: 'format_align_right', label: 'Align right' }
 		],
 		// allow resizing the table width (options: "px", false, default: false)
 		tableResize: true,

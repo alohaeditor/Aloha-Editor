@@ -9,6 +9,7 @@ define({
 		"button.createtable.tooltip": "Insert Table",
 		"button.addcolleft.tooltip": "Add Column left",
 		"button.addcolright.tooltip": "Add Column right",
+		"button.cellstyle.tooltip": "Set cell style",
 		"button.addrowbefore.tooltip": "Add Row before",
 		"button.addrowafter.tooltip": "Add Row after",
 		"button.delselecltion.tooltip": "Delete selection",

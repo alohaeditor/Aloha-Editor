@@ -1667,6 +1667,7 @@ define([
 
 		this.selection.notifyCellsSelected();
 		this._removeCursorSelection();
+		this.tablePlugin.activeTable.selection.selectionType = 'column';
 	};
 
 	/**
@@ -1686,6 +1687,7 @@ define([
 
 		this.selection.notifyCellsSelected();
 		this._removeCursorSelection();
+		this.tablePlugin.activeTable.selection.selectionType = 'row';
 	};
 
 	/**

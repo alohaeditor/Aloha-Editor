@@ -122,6 +122,7 @@ define([
 					{ slot: 'tableCellsSplit', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
 					{ slot: 'tableSelectionDelete', scope: [SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
 					{ slot: 'tableSelectionHeader', scope: [SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
+					{ slot: 'tableCellStyle', scope: [SCOPE_TABLE_CELL, SCOPE_TABLE_ROW, SCOPE_TABLE_COLUMN] },
 				],
 				[
 					{ slot: 'deleterows', scope: [SCOPE_TABLE_ROW] },
