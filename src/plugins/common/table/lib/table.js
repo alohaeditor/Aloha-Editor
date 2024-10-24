@@ -1665,9 +1665,10 @@ define([
 
 		Utils.selectAnchorContents(this.selection.selectedCells);
 
+		this.tablePlugin.activeTable.selection.selectionType = 'column';
+
 		this.selection.notifyCellsSelected();
 		this._removeCursorSelection();
-		this.tablePlugin.activeTable.selection.selectionType = 'column';
 	};
 
 	/**
@@ -1685,9 +1686,10 @@ define([
 
 		Utils.selectAnchorContents(this.selection.selectedCells);
 
+		this.tablePlugin.activeTable.selection.selectionType = 'row';
+
 		this.selection.notifyCellsSelected();
 		this._removeCursorSelection();
-		this.tablePlugin.activeTable.selection.selectionType = 'row';
 	};
 
 	/**
