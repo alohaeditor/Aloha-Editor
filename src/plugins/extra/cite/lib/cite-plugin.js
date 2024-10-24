@@ -160,7 +160,7 @@ define([
 			});
 
 			// We brute-forcishly push our button settings into the format plugin configuration.
-			Format.config['blockquote'] = {
+			Format.buttonConfig['blockquote'] = {
 				icon: Icons.QUOTE,
 				label: i18n.t('button.blockquote.tooltip'),
 				typography: true,
