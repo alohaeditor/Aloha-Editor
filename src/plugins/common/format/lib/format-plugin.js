@@ -496,7 +496,7 @@ define('format/format-plugin', [
 			/** @type {FormattingOption|null} */
 			var settings = formatPlugin.config[effectiveTypo];
 			if (!settings) {
-				settings = Object.assign({}, DEFAULT_CONFIG[effectiveTypo], settings);
+				settings = Object.assign({}, DEFAULT_BUTTON_CONFIG[effectiveTypo], settings);
 			}
 
 			formatPlugin.activeTypography = effectiveTypo;
@@ -572,7 +572,7 @@ define('format/format-plugin', [
 	}
 
 	/** @type {object.<string,FormattingOption>} */
-	var DEFAULT_CONFIG = {
+	var DEFAULT_BUTTON_CONFIG = {
 		// Text Level
 		'u': {
 			name: 'underline',
@@ -710,10 +710,10 @@ define('format/format-plugin', [
 	/**
 	 * register the plugin with unique name
 	 */
-	return Plugin.create('format', {
-		config: DEFAULT_CONFIG,
+	var plugin = Plugin.create('format', {
+		buttonConfig: structuredClone(DEFAULT_BUTTON_CONFIG),
 
-		// These are old/depreacted nodes and will be converted to the modern equivalent
+		// These are old/deprecated nodes and will be converted to the modern equivalent
 		conversionNames: {
 			'strong': 'b',
 			'em': 'i',
@@ -726,7 +726,7 @@ define('format/format-plugin', [
 		 *
 		 * @todo new buttons needed for 'code'
 		 */
-		availableButtons: Object.keys(DEFAULT_CONFIG).concat(REMOVE_FORMAT_ID),
+		config: Object.keys(DEFAULT_BUTTON_CONFIG).concat(REMOVE_FORMAT_ID),
 
 		/**
 		 * HotKeys used for special actions
@@ -760,6 +760,10 @@ define('format/format-plugin', [
 
 			if (typeof this.settings.hotKey !== 'undefined') {
 				jQuery.extend(true, this.hotKey, this.settings.hotKey);
+			}
+
+			if (typeof this.settings.config !== 'undefined') {
+				this.config = this.settings.config;
 			}
 
 			this.initButtons();
@@ -876,22 +880,11 @@ define('format/format-plugin', [
 		 * @param editable current editable object
 		 */
 		initButtons: function () {
-			var that = this;
-
-			this.buttons = {};
+			plugin.buttons = {};
 
 			// First create all the regular formatting buttons
-			Object.entries(this.config).forEach(function (entry) {
-				var nodeName = entry[0];
-				var settings = entry[1];
-
-				// Get default config if possible
-				if (settings == null || typeof settings !== 'object') {
-					settings = DEFAULT_CONFIG[nodeName];
-				} else {
-					// Allow partial settings, but fill in default values
-					settings = Object.assign({}, DEFAULT_CONFIG, settings);
-				}
+			(this.config || []).forEach(function (nodeName) {
+				var settings = plugin.buttonConfig[nodeName];
 
 				// If there's no settings, we have to ignore it
 				if (!settings) {
@@ -903,24 +896,24 @@ define('format/format-plugin', [
 					return;
 				}
 
-				that.buttons[nodeName] = {
-					handle: that.makeTextLevelButton(nodeName, settings),
+				plugin.buttons[nodeName] = {
+					handle: plugin.makeTextLevelButton(nodeName, settings),
 					markup: jQuery('<' + nodeName + '>'),
 				};
 			});
 
-			this.buttons[REMOVE_FORMAT_ID] = {
+			plugin.buttons[REMOVE_FORMAT_ID] = {
 				handle: makeRemoveFormatButton(this),
 				markup: null,
 			};
 
-			this.typographyButton = Ui.adopt('typographyMenu', SplitButton, {
+			plugin.typographyButton = Ui.adopt('typographyMenu', SplitButton, {
 				icon: Icons.TYPOGRAPHY,
 				text: i18n.t('button.typography.tooltip'),
 				iconOnly: false,
 
 				click: function () {
-					var data = Dropdown.openDynamicDropdown(that.typographyButton.name, that._createTypographyContext());
+					var data = Dropdown.openDynamicDropdown(plugin.typographyButton.name, plugin._createTypographyContext());
 					if (!data) {
 						return;
 					}
@@ -928,7 +921,7 @@ define('format/format-plugin', [
 					data.then(function(ctl) {
 						return ctl.value;
 					}).then(function (result) {
-						that._applyTypography(result.id);
+						plugin._applyTypography(result.id);
 					}).catch(function (error) {
 						if (!Utils.isUserCloseError(error)) {
 							console.error(error);
@@ -938,12 +931,12 @@ define('format/format-plugin', [
 
 				secondaryClick: function () {
 					/** @type {FormattingOption} */
-					var settings = that.config[that.activeTypography];
+					var settings = plugin.config[plugin.activeTypography];
 					if (!settings) {
-						settings = DEFAULT_CONFIG[that.activeTypography];
+						settings = DEFAULT_BUTTON_CONFIG[plugin.activeTypography];
 					}
 
-					var data = Dropdown.openDynamicDropdown(that.typographyButton.name, that._createHeaderIdContext(settings));
+					var data = Dropdown.openDynamicDropdown(plugin.typographyButton.name, plugin._createHeaderIdContext(settings));
 					if (!data) {
 						return;
 					}
@@ -951,7 +944,7 @@ define('format/format-plugin', [
 					data.then(function(ctl) {
 						return ctl.value;
 					}).then(function (value) {
-						that._applyHeaderId((value || '').trim());
+						plugin._applyHeaderId((value || '').trim());
 					}).catch(function (error) {
 						if (!Utils.isUserCloseError(error)) {
 							console.error(error);
@@ -961,27 +954,13 @@ define('format/format-plugin', [
 			});
 
 			PubSub.sub('aloha.selection.context-change', function (message) {
-				onSelectionChanged(that, message.range);
+				onSelectionChanged(plugin, message.range);
 			});
 		},
 
 		_createTypographyContext: function () {
-			var latestOptions = Object.entries(this.config).map(function (entry) {
-				var nodeName = entry[0];
-				var settings = entry[1];
-
-				// Get default config if possible
-				if (settings == null || typeof settings !== 'object') {
-					// If it isn't enabled, ignore it
-					if (settings !== true) {
-						return null;
-					}
-
-					settings = DEFAULT_CONFIG[nodeName];
-				} else {
-					// Allow partial settings, but fill in default values
-					settings = Object.assign({}, DEFAULT_CONFIG, settings);
-				}
+			var latestOptions = (this.config || []).map(function (nodeName) {
+				var settings = plugin.buttonConfig[nodeName];
 
 				// If there's no settings, we have to ignore it
 				if (!settings) {
@@ -1010,7 +989,7 @@ define('format/format-plugin', [
 					iconsOnly: false,
 					options: latestOptions,
 				},
-				initialValue: this.activeTypography,
+				initialValue: plugin.activeTypography,
 			};
 		},
 
@@ -1175,4 +1154,6 @@ define('format/format-plugin', [
 			return 'format';
 		}
 	});
+
+	return plugin;
 });
