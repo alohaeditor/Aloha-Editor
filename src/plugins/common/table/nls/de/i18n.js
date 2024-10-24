@@ -8,6 +8,7 @@ define({
 	"button.createtable.tooltip": "Tabelle einfügen",
 	"button.addcolleft.tooltip": "Spalte links einfügen",
 	"button.addcolright.tooltip": "Spalte rechts einfügen",
+	"button.cellstyle.tooltip": "Zellenformat setzen",
 	"button.addrowbefore.tooltip": "Zeile darüber einfügen",
 	"button.addrowafter.tooltip": "Zeile darunter einfügen",
 	"button.delselection.tooltip": "Selektion löschen",

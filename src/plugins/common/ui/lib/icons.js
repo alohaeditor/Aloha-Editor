@@ -51,6 +51,7 @@ define([], function() {
         TABLE_SELECTION_HEADER: 'leaderboard',
         TABLE_ADD_ROW_BEFORE: 'splitscreen_top',
         TABLE_ADD_ROW_AFTER: 'splitscreen_bottom',
+        TABLE_STYLE_CELLS: 'format_paint',
         TABLE_DELETE_SELECTION: 'delete',
 
         IMAGE_ALIGN_LEFT: 'format_image_left',

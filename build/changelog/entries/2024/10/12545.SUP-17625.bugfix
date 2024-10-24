@@ -1,0 +1,1 @@
+Table plugin: Fixes missing styling button. The configuration items @cellConfig@, @columnConfig@ and @rowConfig@ specify available entries in the table styling button to apply CSS classes to individual cells, columns or rows. See the "table plugin documentation":https://www.alohaeditor.org/guides/plugin_table.html#configuration-settings for details.
