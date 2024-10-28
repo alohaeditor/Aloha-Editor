@@ -1381,7 +1381,7 @@ define([
 			if (parentElements.length === 0) {
 				newParent = limit.get(0);
 			} else {
-				parentElements.forEach(function (parent) {
+				parentElements.each(function (parent) {
 					if (that.allowsNesting(parent, object.get(0))) {
 						newParent = parent;
 						return false;
