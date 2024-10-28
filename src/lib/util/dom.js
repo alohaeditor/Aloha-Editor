@@ -1381,6 +1381,8 @@ define([
 			if (parentElements.length === 0) {
 				newParent = limit.get(0);
 			} else {
+				// make sure  it is a jquery object
+				parentElements = jQuery(parentElements);
 				parentElements.each(function (parent) {
 					if (that.allowsNesting(parent, object.get(0))) {
 						newParent = parent;
