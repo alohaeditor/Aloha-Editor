@@ -57,6 +57,9 @@ function (jQuery, ContentHandlerManager, BlockManager) {
 			} else if (content instanceof jQuery) {
 				content = jQuery('<div>').append(content);
 			}
+			else if (typeof content === 'object' && content.symbol) {
+				content = jQuery('<div>' + content.symbol + '</div>');
+			}
 
 			if (content.find('.aloha-block[data-aloha-block-copy-only-block="true"]').length > 0) {
 				// We are in case 1; so some more cleanup is needed (at least in webkit and firefox).
