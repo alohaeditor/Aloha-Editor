@@ -1391,7 +1391,11 @@ define([
 				},
 
 				contextResolve: function (symbol) {
-					onSelectCharacter(symbol);
+					let character = symbol;
+					if (symbol && symbol.symbol) {
+						character = symbol.symbol;
+					}
+					onSelectCharacter(character);
 				},
 			});
 		},
