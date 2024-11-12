@@ -207,33 +207,33 @@ define([
 
 				// check if the editable's selector matches and if so add its configuration to object configuration
 				jQuery.each(this.settings.editables, function (selector, selectorConfig) {
-					var k;
-					if (obj.is(selector)) {
-						configSpecified = true;
-						if (selectorConfig instanceof Array) {
-							configObj = [];
-							configObj = jQuery.merge(configObj, selectorConfig);
-						} else if (typeof selectorConfig === "object") {
-							configObj = {};
-							configObj['aloha-editable-selector'] = selector;
-							for (k in selectorConfig) {
-								if (selectorConfig.hasOwnProperty(k)) {
-									if (selectorConfig[k] instanceof Array) {
-										//configObj[k] = [];
-										//configObj[k] = jQuery.extend(true, configObj[k], that.config[k], selectorConfig[k]);
-										configObj[k] = selectorConfig[k];
-									} else if (typeof selectorConfig[k] === "object") {
-										configObj[k] = {};
-										configObj[k] = jQuery.extend(true, configObj[k], that.config[k], selectorConfig[k]);
-									} else {
-										configObj[k] = selectorConfig[k];
-									}
-								}
-							}
-						} else {
-							configObj = selectorConfig;
-						}
+					if (!obj.is(selector)) {
+						return;
 					}
+					configSpecified = true;
+
+					if (Array.isArray(selectorConfig)) {
+						configObj = selectorConfig.slice(0);
+						return;
+					} else if (typeof selectorConfig !== "object") {
+						configObj = selectorConfig;
+						return;
+					}
+
+					configObj = {};
+					// Not used anywhere in the project - Why does this exist?
+					configObj['aloha-editable-selector'] = selector;
+
+					Object.entries(selectorConfig || {}).forEach(function(entry) {
+						if (Array.isArray(selectorConfig[entry[0]])) {
+							configObj[entry[0]] = entry[1];
+						} else if (typeof selectorConfig[entry[0]] === "object") {
+							configObj[entry[0]] = {};
+							configObj[entry[0]] = jQuery.extend(true, configObj[entry[0]], that.config[entry[0]], entry[1]);
+						} else {
+							configObj[entry[0]] = entry[1];
+						}
+					});
 				});
 			}
 
