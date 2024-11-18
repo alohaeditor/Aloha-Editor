@@ -32,6 +32,7 @@ define([
 	'aloha/console'
 ], function (
 	Aloha,
+	/** @type JQueryStatic */
 	jQuery,
 	Class,
 	PluginManager,
@@ -187,7 +188,7 @@ define([
 		 *  </pre>
 		 * </li>
 		 *
-		 * @param {jQuery} obj jQuery object of an Editable Object
+		 * @param {JQuery} obj jQuery object of an Editable Object
 		 * @return {Array} config A Array with configuration entries
 		 */
 		getEditableConfig: function (obj) {
@@ -225,11 +226,10 @@ define([
 					configObj['aloha-editable-selector'] = selector;
 
 					Object.entries(selectorConfig || {}).forEach(function(entry) {
-						if (Array.isArray(selectorConfig[entry[0]])) {
+						if (Array.isArray(entry[1])) {
 							configObj[entry[0]] = entry[1];
-						} else if (typeof selectorConfig[entry[0]] === "object") {
-							configObj[entry[0]] = {};
-							configObj[entry[0]] = jQuery.extend(true, configObj[entry[0]], that.config[entry[0]], entry[1]);
+						} else if (typeof entry[1] === "object") {
+							configObj[entry[0]] = jQuery.extend(true, {}, that.config[entry[0]], entry[1]);
 						} else {
 							configObj[entry[0]] = entry[1];
 						}
