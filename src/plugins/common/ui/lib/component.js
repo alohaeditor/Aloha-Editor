@@ -65,12 +65,7 @@ define([
 		name: null,
 
 		isInstance: true,
-
-		/** The name under which slot this component was registered as. */
-		name: null,
-
-		/** jQuery ref to the root element of this component. */
-		element: null,
+		element: $(),
 		container: null,
 		renderContext: null,
 
@@ -99,6 +94,7 @@ define([
 		destroy: function() {
 			this.container = null;
 			this.element.remove();
+			this.element = $();
 		},
 
 		/**

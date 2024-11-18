@@ -5,7 +5,7 @@ define({
 	"newlink.defaulttext": "Neuer Verweis",
 	"floatingmenu.tab.link": "Verweis",
 	"link.new_tab.label": "In neuen Tab öffnen",
-	"link.title.legend": "Titel",
+	"link.title.label": "Titel",
 	"href.lang.legend": "Sprache",
 	"link.target.label": "Öffnen in",
 	"link.target._self": "Aktuellen Tab",

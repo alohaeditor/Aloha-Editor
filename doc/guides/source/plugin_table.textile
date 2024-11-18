@@ -116,17 +116,22 @@ Aloha.settings.plugins: {
 			{ name:'box-table-a' },
 			{ name:'hor-zebra' },
 		],
+		// the following settings define CSS classes applicable to entire columns, rows or single cells:
+		// - name:       the CSS class to be added
+		// - icon:       the icon name for the dropdown entry
+		// - iconHollow: flag whether the icon should be displayed hollow or filled
+		// - label:      the label to display in the dropdown
 		columnConfig : [
-				{ name: 'table-style-bigbold',  iconClass: 'aloha-button-col-bigbold' },
-				{ name: 'table-style-redwhite', iconClass: 'aloha-button-col-redwhite' }
+				{ name: 'table-style-align-left',  icon: 'format_align_left', iconHollow: false, label: 'Align left' },
+				{ name: 'table-style-align-right', icon: 'format_align_right', iconHollow: false, label: 'Align right' }
 		],
 		rowConfig : [
-				{ name: 'table-style-bigbold',  iconClass: 'aloha-button-row-bigbold' },
-				{ name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite' }
+				{ name: 'table-style-align-left',  icon: 'format_align_left', iconHollow: false, label: 'Align left' },
+				{ name: 'table-style-align-right', icon: 'format_align_right', iconHollow: false, label: 'Align right' }
 		],
 		cellConfig : [
-				{ name: 'table-style-bigbold',  iconClass: 'aloha-button-row-bigbold' },
-				{ name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite' }
+				{ name: 'table-style-align-left',  icon: 'format_align_left', iconHollow: false, label: 'Align left' },
+				{ name: 'table-style-align-right', icon: 'format_align_right', iconHollow: false, label: 'Align right' }
 		],
 		// allow resizing the table width (options: "px", false, default: false)
 		tableResize: true,
