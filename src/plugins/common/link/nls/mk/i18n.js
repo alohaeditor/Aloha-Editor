@@ -8,7 +8,7 @@ define({
 	"link.target.parent": "Родител",
 	"link.target.top": "Најгоре",
 	"link.target.framename": "Име на рамката",
-	"link.target.legend": "Мета",
+	"link.target.label": "Мета",
 	"link.title.legend": "Наслов",
 	"insertLink": "ctrl+k"
 });

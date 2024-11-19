@@ -1,5 +1,5 @@
 #!groovy
-@Library('jenkins-pipeline-library') import com.gentics.*
+@Library('jenkins-pipeline-library@nexus') import com.gentics.*
 JobContext.set(this)
 
 
@@ -51,12 +51,13 @@ spec:
         cpu: '0'
         memory: '0'
   imagePullSecrets:
-    - name: docker-jenkinsbuilds-apa-it
+    - name: jenkins-docker-pull-secret
 """)
 		}
 	}
 
 	parameters {
+		booleanParam(name: 'checkGitCommit',            defaultValue: false, description: 'If set to true, the current git revision is compared with the git revision of the last successful build. If they are equal, the build is skipped and env.BUILD_SKIPPED is set to true')
 		booleanParam(name: 'unitTests',                 defaultValue: true,  description: 'Whether to run the unit tests')
 		booleanParam(name: 'release',                   defaultValue: false, description: 'Whether to perform a release')
 		booleanParam(name: 'releaseWithNewChangesOnly', defaultValue: true,  description: 'Release: Abort the build if there are no new changes')
@@ -68,14 +69,38 @@ spec:
 	}
 
 	options {
-		withCredentials([usernamePassword(credentialsId: 'repo.gentics.com', usernameVariable: 'repoUsername', passwordVariable: 'repoPassword')])
+		withCredentials([usernamePassword(credentialsId: 'docker.gentics.com', usernameVariable: 'repoUsername', passwordVariable: 'repoPassword')])
 		timestamps()
 		timeout(time: 4, unit: 'HOURS')
 		ansiColor('xterm')
 	}
 
 	stages {
+		stage('Check git commit') {
+			when {
+				expression {
+					return Boolean.valueOf(params.checkGitCommit)
+				}
+			}
+
+			steps {
+				script {
+					if ( env.GIT_COMMIT == env.GIT_PREVIOUS_SUCCESSFUL_COMMIT ) {
+						echo "env.GIT_COMMIT (" + env.GIT_COMMIT + ") = env.GIT_PREVIOUS_SUCCESSFUL_COMMIT (" + env.GIT_PREVIOUS_SUCCESSFUL_COMMIT + "). Skip building."
+						env.BUILD_SKIPPED = "true"
+					} else {
+						echo "env.GIT_COMMIT (" + env.GIT_COMMIT + ") != env.GIT_PREVIOUS_SUCCESSFUL_COMMIT (" + env.GIT_PREVIOUS_SUCCESSFUL_COMMIT + "). Need to rebuild."
+					}
+ 				}
+			}
+		}
+
 		stage('Build, Deploy') {
+			when {
+				expression {
+					return env.BUILD_SKIPPED != "true"
+				}
+			}
 			steps {
 				githubBuildStarted()
 
@@ -138,7 +163,7 @@ spec:
 		stage("Publish release") {
 			when {
 				expression {
-					return Boolean.valueOf(release)
+					return Boolean.valueOf(params.release) && env.BUILD_SKIPPED != "true"
 				}
 			}
 

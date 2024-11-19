@@ -37,6 +37,7 @@ define([
 	'link/link-target',
 	'i18n!link/nls/i18n'
 ], function (
+	/** @type {JQueryStatic} */
 	$,
 	PubSub,
 	Aloha,
@@ -58,8 +59,12 @@ define([
 	'use strict';
 
 	var configurations = {};
-	var jQuery = $;
 	var pluginNamespace = 'aloha-link';
+
+	var ATTR_HREF = 'href';
+	var ATTR_TARGET = 'target';
+	var ATTR_HREF_LANG = 'hreflang';
+	var ATTR_TITLE = 'title';
 
 	var CLASS_NEW_LINK = 'aloha-new-link';
 	var CLASS_LINK = 'aloha-link-text';
@@ -110,23 +115,23 @@ define([
 	Ephemera.classes(CLASS_LINK_POINTER, CLASS_LINK);
 
 	function setupMousePointerFix() {
-		jQuery(document).on('keydown.aloha-link.pointer-fix', function (e) {
+		$(document).on('keydown.aloha-link.pointer-fix', function (e) {
 			// metaKey for OSX, 17 for PC (we can't check
 			// e.ctrlKey because it's only set on keyup or
 			// keypress, not on keydown).
 			if (e.metaKey || Keys.getToken(e.keyCode) === 'control') {
-				jQuery('body').addClass(CLASS_LINK_POINTER);
+				$('body').addClass(CLASS_LINK_POINTER);
 			}
 		})
 			.on('keyup.aloha-link.pointer-fix', function (e) {
 				if (e.metaKey || Keys.getToken(e.keyCode) === 'control') {
-					jQuery('body').removeClass(CLASS_LINK_POINTER);
+					$('body').removeClass(CLASS_LINK_POINTER);
 				}
 			});
 	}
 
 	function teardownMousePointerFix() {
-		jQuery(document).unbind('.aloha-link.pointer-fix');
+		$(document).unbind('.aloha-link.pointer-fix');
 	}
 
 	function setupMetaClickLink(editable) {
@@ -224,7 +229,7 @@ define([
 				plugin.onHrefChange = plugin.settings.onHrefChange;
 			}
 			if (typeof plugin.settings.hotKey != 'undefined') {
-				jQuery.extend(true, plugin.hotKey, plugin.settings.hotKey);
+				$.extend(true, plugin.hotKey, plugin.settings.hotKey);
 			}
 			if (typeof plugin.settings.hrefValue != 'undefined') {
 				plugin.hrefValue = plugin.settings.hrefValue;
@@ -263,7 +268,8 @@ define([
 				var editable = message.editable;
 				var config = plugin.getEditableConfig(editable.obj);
 				var enabled = config
-					&& (jQuery.inArray('a', config) > -1)
+					&& Array.isArray(config)
+					&& config.includes('a')
 					&& ContentRules.isAllowed(editable.obj[0], 'a');
 
 				configurations[editable.getId()] = !!enabled;
@@ -382,7 +388,7 @@ define([
 		 * @param link object
 		 */
 		addLinkEventHandlers: function (link) {
-			var $link = jQuery(link);
+			var $link = $(link);
 
 			// follow link on ctrl or meta + click
 			$link.click(function (e) {
@@ -410,13 +416,15 @@ define([
 			var anchor = '';
 			var target = null;
 			var lang = '';
-			var title = i18n.t('button.addlink.tooltip');
+			var title = '';
+			var modalTitle = i18n.t('button.addlink.tooltip');
 
 			if (existingLink) {
-				title = i18n.t('button.editlink.tooltip');
-				href = existingLink.getAttribute('href');
-				target = existingLink.getAttribute('target');
-				lang = existingLink.getAttribute('hreflang');
+				modalTitle = i18n.t('button.editlink.tooltip');
+				href = existingLink.getAttribute(ATTR_HREF);
+				target = existingLink.getAttribute(ATTR_TARGET);
+				lang = existingLink.getAttribute(ATTR_HREF_LANG);
+				title = existingLink.getAttribute(ATTR_TITLE);
 
 				let anchorIdx = href.indexOf('#')
 
@@ -427,7 +435,7 @@ define([
 			}
 
 			return {
-				title: title,
+				title: modalTitle,
 				initialValue: {
 					url: {
 						target: href,
@@ -435,6 +443,7 @@ define([
 					},
 					target: target,
 					lang: lang,
+					title: title,
 				},
 				controls: {
 					url: {
@@ -444,6 +453,12 @@ define([
 								required: true
 							} : null;
 						},
+					},
+					title: {
+						type: 'input',
+						options: {
+							label: i18n.t('link.title.label'),
+						}
 					},
 					target: {
 						type: 'select',
@@ -565,9 +580,12 @@ define([
 
 			var href;
 			
-			if (URL.canParse(linkData.url.target, window.location)) {
+			try {
+				// Cannot use URL.parse here, as it's not available in Cypress (v13.13+) w/ Electron (v27.x)
+				// which uses Node v18.17, which in turn doesn't have this feature yet.
+				new URL(linkData.url.target, window.location);
 				href = linkData.url.target;
-			} else {
+			} catch (err) {
 				href = '';
 			}
 
@@ -575,18 +593,24 @@ define([
 				href += "#" + linkData.url.anchor;
 			}
 
-			linkElement.setAttribute('href', href);
+			linkElement.setAttribute(ATTR_HREF, href);
 
 			if (linkData.target) {
-				linkElement.setAttribute('target', linkData.target);
+				linkElement.setAttribute(ATTR_TARGET, linkData.target);
 			} else {
-				linkElement.removeAttribute('target');
+				linkElement.removeAttribute(ATTR_TARGET);
 			}
 
 			if (linkData.lang) {
-				linkElement.setAttribute('hreflang', linkData.lang);
+				linkElement.setAttribute(ATTR_HREF_LANG, linkData.lang);
 			} else {
-				linkElement.removeAttribute('hreflang');
+				linkElement.removeAttribute(ATTR_HREF_LANG);
+			}
+
+			if (linkData.title) {
+				linkElement.setAttribute(ATTR_TITLE, linkData.title);
+			} else {
+				linkElement.removeAttribute(ATTR_TITLE);
 			}
 
 			if (!skipEvent) {
@@ -631,37 +655,44 @@ define([
 			}
 
 			if (linkData.url.anchor) {
-				href += '#' + linkData.url.anchor
+				href += '#' + linkData.url.anchor;
+			}
+
+			/**
+			 * 
+			 * @param {JQuery} $linkElement 
+			 */
+			function applyAttributes($linkElement) {
+				$linkElement.attr(ATTR_HREF, href);
+				$linkElement.attr(ATTR_HREF_LANG, linkData.lang);
+				$linkElement.attr(ATTR_TARGET, linkData.target);
+				$linkElement.attr(ATTR_TITLE, linkData.title);
 			}
 
 			if (range.isCollapsed()) {
 				// insert a link with text here
 				linkText = i18n.t('newlink.defaulttext');
-				newLink = jQuery('<a>', {
-					href: href,
-					target: linkData.target || '',
-					hreflang: linkData.lang || '',
+				newLink = $('<a>', {
 					class: CLASS_NEW_LINK,
 					text: linkText,
 				});
-				Dom.insertIntoDOM(newLink, range, jQuery(Aloha.activeEditable.obj));
+				applyAttributes(newLink);
+				Dom.insertIntoDOM(newLink, range, $(Aloha.activeEditable.obj));
 				range.startContainer = range.endContainer = newLink.contents().get(0);
 				range.startOffset = 0;
 				range.endOffset = linkText.length;
 			} else {
-				newLink = jQuery('<a>', {
-					href: href,
-					target: linkData.target || '',
-					hreflang: linkData.lang || '',
+				newLink = $('<a>', {
 					class: CLASS_NEW_LINK,
 				});
+				applyAttributes(newLink);
 				Dom.addMarkup(range, newLink, false);
 				Dom.doCleanup(insertLinkPostCleanup, range);
 			}
 
 			var linkElements = $(Array.from(Aloha.activeEditable.obj.find('a.' + CLASS_NEW_LINK)).map(function (newLinkElem) {
 				plugin.addLinkEventHandlers(newLinkElem);
-				jQuery(newLinkElem).removeClass(CLASS_NEW_LINK);
+				$(newLinkElem).removeClass(CLASS_NEW_LINK);
 				return newLinkElem;
 			}));
 
@@ -691,7 +722,7 @@ define([
 			}
 
 			foundMarkup.forEach(function (link) {
-				var linkText = jQuery(link).text();
+				var linkText = $(link).text();
 				// remove the link
 				Dom.removeFromDOM(link, range, true);
 

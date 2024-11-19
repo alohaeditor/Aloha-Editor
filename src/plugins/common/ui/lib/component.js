@@ -65,7 +65,7 @@ define([
 		name: null,
 
 		isInstance: true,
-		element: null,
+		element: $(),
 		container: null,
 		renderContext: null,
 
@@ -94,7 +94,7 @@ define([
 		destroy: function() {
 			this.container = null;
 			this.element.remove();
-			this.element = null;
+			this.element = $();
 		},
 
 		/**

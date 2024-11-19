@@ -8,7 +8,7 @@ define({
 	"link.target.parent": "Parente",
 	"link.target.top": "Topo",
 	"link.target.framename": "Nome do frame",
-	"link.target.legend": "Alvo",
+	"link.target.label": "Alvo",
 	"link.title.legend": "Título",
 	"insertLink": "Ctrl+K"
 });

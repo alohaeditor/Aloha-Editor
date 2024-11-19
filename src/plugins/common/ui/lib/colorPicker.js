@@ -2,7 +2,7 @@ define([
     'jquery',
     'ui/component',
     'ui/slider',
-    'ui/utils',
+    'util/color',
     'i18n!ui/nls/i18n'
 ], function (
     $,

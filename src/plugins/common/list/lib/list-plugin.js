@@ -232,11 +232,18 @@ define([
 	function registerEventHandlers() {
 		PubSub.sub('aloha.editable.created', function (message) {
 			var editable = message.editable.obj[0];
-			var config = ListPlugin.getEditableConfig(message.editable.obj);
+			/** @type Array.<string> */
+			var config = ListPlugin.getEditableConfig(message.editable.obj) || [];
+			// If a oject is returned, we only want keys where the value is true
+			if (!Array.isArray(config) && typeof config === 'object') {
+				config = Object.entries(config).flatMap(function(entry) {
+					return entry[1] ? [entry[0]] : [];
+				});
+			}
 
 			var newConfig = {};
 			LIST_TYPES.forEach(function(type) {
-				newConfig[type] = config && config[type] && ContentRules.isAllowed(editable, type);
+				newConfig[type] = config && config.includes(type) && ContentRules.isAllowed(editable, type);
 			});
 
 			configurations[message.editable.getId()] = newConfig;

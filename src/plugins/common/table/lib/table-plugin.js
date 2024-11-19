@@ -19,6 +19,7 @@ define([
 	'ui/icons',
 	'ui/scopes',
 	'ui/button',
+	'ui/contextToggleButton',
 	'ui/contextButton',
 	'ui/toggleButton',
 	'ui/attributeButton',
@@ -44,6 +45,7 @@ define([
 	Icons,
 	Scopes,
 	Button,
+	ContextToggleButton,
 	ContextButton,
 	ToggleButton,
 	AttributeButton,
@@ -850,6 +852,74 @@ define([
 			click: function () {
 				if (that.activeTable) {
 					that.activeTable.addColumnsRight();
+				}
+			}
+		});
+
+		this._tableCellStyleButton = Ui.adopt('tableCellStyle', ContextToggleButton, {
+			contextType: 'dropdown',
+			tooltip: i18n.t("button.cellstyle.tooltip"),
+			icon: Icons.TABLE_STYLE_CELLS,
+			context: function () {
+				const haveCellConfig = Array.isArray(that.settings.cellConfig) && that.settings.cellConfig.length > 0;
+				const haveColumnConfig = Array.isArray(that.settings.columnConfig) && that.settings.columnConfig.length > 0;
+				const haveRowConfig = Array.isArray(that.settings.rowConfig) && that.settings.rowConfig.length > 0;
+
+				const selType = TablePlugin.activeTable.selection.selectionType;
+
+				const getOptions = function (config, currentOptions) {
+					for (let i = 0; i < config.length; i++) {
+						const option = config[i];
+
+						if (currentOptions[option.name]) {
+							continue;
+						}
+
+						if (option.name && option.label) {
+							currentOptions[option.name] = {
+								id: option.name,
+								icon: option.icon,
+								iconHollow: option.iconHollow || false,
+								label: option.label
+							};
+						}
+					}
+
+					return currentOptions;
+				}
+
+				var options = [];
+				const currentOptions = {};
+
+				if (haveCellConfig) {
+					options = Object.values(getOptions(that.settings.cellConfig, currentOptions));
+				}
+
+				if (haveColumnConfig && (selType === 'column' || selType === 'all')) {
+					options = Object.values(getOptions(that.settings.columnConfig, currentOptions));
+				}
+
+				if (haveRowConfig && (selType === 'row' || selType === 'all')) {
+					options = Object.values(getOptions(that.settings.rowConfig, currentOptions));
+				}
+
+				if (options.length === 0) {
+					return null;
+				}
+
+				return {
+					type: 'select-menu',
+					options: {
+						iconsOnly: false,
+						options: options
+					},
+				}
+			},
+			contextResolve: function (selection) {
+				if (that.activeTable) {
+					applyStyle(that.cellConfig, selection.id, that.selectedOrActiveCells());
+
+					that.setActiveCellStyle();
 				}
 			}
 		});

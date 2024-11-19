@@ -8,7 +8,7 @@ define({
 	"link.target.parent": "Родительский фрейм",
 	"link.target.top": "Поверх всех фреймов",
 	"link.target.framename": "Имя фрейма",
-	"link.target.legend": "Цель",
+	"link.target.label": "Цель",
 	"link.title.legend": "Название",
 	"insertLink": "ctrl+k"
 });

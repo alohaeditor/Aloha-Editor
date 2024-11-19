@@ -1,0 +1,1 @@
+Format plugin: Fixes an issue that the @config@ setting of the format plugin was ignored.

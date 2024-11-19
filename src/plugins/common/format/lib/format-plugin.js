@@ -25,7 +25,6 @@ define('format/format-plugin', [
 	'aloha/content-rules',
 	'aloha/ephemera',
 	'aloha/selection',
-	'util/arrays',
 	'util/html',
 	'util/dom',
 	'util/browser',
@@ -39,7 +38,7 @@ define('format/format-plugin', [
 	'ui/utils',
 	'i18n!format/nls/i18n'
 ], function (
-	jQuery,
+	$,
 	Aloha,
 	PubSub,
 	Plugin,
@@ -47,7 +46,6 @@ define('format/format-plugin', [
 	ContentRules,
 	Ephemera,
 	Selection,
-	Arrays,
 	Html,
 	Dom,
 	Browser,
@@ -63,7 +61,6 @@ define('format/format-plugin', [
 ) {
 	'use strict';
 
-	var $ = jQuery;
 	var pluginNamespace = 'aloha-format';
 
 	/** Class which needs to be set on headers when the IDs are manually set. */
@@ -145,8 +142,7 @@ define('format/format-plugin', [
 	 * @returns {boolean}
 	 */
 	function isHeading(markup) {
-		const config = plugin.buttonConfig[markup];
-		return config && config.header;
+		return plugin.headerNodeNames.includes(markup);
 	}
 
 	/**
@@ -177,9 +173,9 @@ define('format/format-plugin', [
 			return;
 		}
 
-		var selectedNodes = jQuery(range.startContainer.parentNode).nextUntil(jQuery(range.endContainer.parentNode).next()).addBack();
-		var prevNodes = jQuery(range.startContainer.parentNode).prevAll();
-		var nextNodes = jQuery(range.endContainer.parentNode).nextAll();
+		var selectedNodes = $(range.startContainer.parentNode).nextUntil($(range.endContainer.parentNode).next()).addBack();
+		var prevNodes = $(range.startContainer.parentNode).prevAll();
+		var nextNodes = $(range.endContainer.parentNode).nextAll();
 		var listName = range.startContainer.parentNode.parentNode.nodeName;
 
 		// Only one item selected
@@ -201,21 +197,21 @@ define('format/format-plugin', [
 			// one list item in middle
 			else {
 				selectedNodes.addClass('_moved').remove().insertAfter(prevNodes.parent());
-				jQuery('<' + listName.toLowerCase() + '>').append(nextNodes).insertAfter(selectedNodes);
+				$('<' + listName.toLowerCase() + '>').append(nextNodes).insertAfter(selectedNodes);
 			}
 		}
 		// multiple list items up to whole list
 		else {
 			selectedNodes.addClass('_moved').remove().insertAfter(cac);
 			if (nextNodes.length > 0) {
-				jQuery('<' + listName.toLowerCase() + '>').append(nextNodes).insertAfter(selectedNodes.last());
+				$('<' + listName.toLowerCase() + '>').append(nextNodes).insertAfter(selectedNodes.last());
 			}
 		}
 
 		// unwrap moved list elements
-		jQuery('._moved').each(function () {
-			var $p = jQuery('<p>');
-			var $this = jQuery(this);
+		$('._moved').each(function () {
+			var $p = $('<p>');
+			var $this = $(this);
 
 			$this.after($p);
 			$this.contents().unwrap().appendTo($p);
@@ -228,14 +224,14 @@ define('format/format-plugin', [
 	}
 
 	function formatInsideTableWorkaround(nodeType) {
-		var selectedCells = jQuery('.aloha-cell-selected');
+		var selectedCells = $('.aloha-cell-selected');
 		if (selectedCells.length < 1) {
 			return false;
 		}
 
 		var cellMarkupCounter = 0;
 		selectedCells.each(function () {
-			var cellContent = jQuery(this).find('div'),
+			var cellContent = $(this).find('div'),
 				cellMarkup = cellContent.find(nodeType);
 			if (cellMarkup.length > 0) {
 				// unwrap all found markup text
@@ -398,7 +394,7 @@ define('format/format-plugin', [
 		}
 
 		var foundMarkup = rangeObject.findMarkup(function (nodeElement) {
-			return -1 !== Arrays.indexOf(nodeNames, nodeElement.nodeName);
+			return nodeNames.includes(nodeElement.nodeName);
 		}, Aloha.activeEditable.obj);
 
 		if (foundMarkup) {
@@ -408,7 +404,7 @@ define('format/format-plugin', [
 				Dom.removeFromDOM(foundMarkup, rangeObject, true);
 			} else {
 				// the range is not collapsed, so we remove the markup from the range
-				Dom.removeMarkup(rangeObject, jQuery(foundMarkup), Aloha.activeEditable.obj);
+				Dom.removeMarkup(rangeObject, $(foundMarkup), Aloha.activeEditable.obj);
 			}
 			PubSub.pub('aloha.format.removed', { level: 'text', format: nodeType })
 			updateUiAfterMutation(rangeObject);
@@ -440,7 +436,7 @@ define('format/format-plugin', [
 			i, j;
 
 		// Normal format buttons like bold
-		jQuery.each(plugin.buttons, function (index, button) {
+		Object.values(formatPlugin.buttons || {}).forEach(function (button) {
 			// If the button is not a toggle-button (or an instance of it), then skip it.
 			// Can't set the state of it or do anything.
 			if (typeof button.handle.setActive !== 'function') {
@@ -456,7 +452,7 @@ define('format/format-plugin', [
 			for (i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 				effectiveMarkup = rangeObject.markupEffectiveAtStart[i];
 				for (j = 0; j < nodeNames.length; j++) {
-					if (Selection.standardTagNameComparator(effectiveMarkup, jQuery('<' + nodeNames[j] + '>'))) {
+					if (Selection.standardTagNameComparator(effectiveMarkup, $('<' + nodeNames[j] + '>'))) {
 						button.handle.setActive(true);
 						statusWasSet = true;
 						break;
@@ -489,7 +485,7 @@ define('format/format-plugin', [
 				effectiveMarkup = rangeObject.markupEffectiveAtStart[i];
 				for (var j = 0; j < typographyElements.length; j++) {
 					var typo = typographyElements[j];
-					if (Selection.standardTagNameComparator(effectiveMarkup, jQuery('<' + typo + '>'))) {
+					if (Selection.standardTagNameComparator(effectiveMarkup, $('<' + typo + '>'))) {
 						effectiveTypo = typo;
 						typoElement = effectiveMarkup;
 						break;
@@ -500,7 +496,7 @@ define('format/format-plugin', [
 			/** @type {FormattingOption|null} */
 			var settings = plugin.config[effectiveTypo];
 			if (!settings) {
-				settings = Object.assign({}, DEFAULT_CONFIG[effectiveTypo], settings);
+				settings = Object.assign({}, DEFAULT_BUTTON_CONFIG[effectiveTypo], settings);
 			}
 
 			plugin.activeTypography = effectiveTypo;
@@ -521,7 +517,7 @@ define('format/format-plugin', [
 	 * @param {Element} element a Dom element
 	 */
 	function handlePreformattedText(element) {
-		var $element = jQuery(element);
+		var $element = $(element);
 
 		if ($element.is('.aloha-editing-p.aloha-placeholder')) {
 			//remove all other placeholders
@@ -551,17 +547,17 @@ define('format/format-plugin', [
 	}
 
 	/**
-	 * Helper function to create the placeholder jQuery element
+	 * Helper function to create the placeholder $ element
 	 *
 	 * @private
-	 * @returns {Object} the landing jQuery element
+	 * @returns {Object} the landing $ element
 	 */
 	function createLanding() {
 		//IE: add a "word joiner" character instead of a <br>
 		var landing = Browser.ie
 			? '<p class="aloha-editing-p aloha-placeholder">&#x2060;</p>'
 			: '<p class="aloha-editing-p aloha-placeholder"><br class="aloha-end-br"></p>';
-		return jQuery(landing);
+		return $(landing);
 	}
 
 	/**
@@ -576,7 +572,7 @@ define('format/format-plugin', [
 	}
 
 	/** @type {object.<string,FormattingOption>} */
-	var DEFAULT_CONFIG = {
+	var DEFAULT_BUTTON_CONFIG = {
 		// Text Level
 		'u': {
 			name: 'underline',
@@ -726,11 +722,13 @@ define('format/format-plugin', [
 		 */
 		buttons: {},
 
-		// These are old/depreacted nodes and will be converted to the modern equivalent
+		// These are old/deprecated nodes and will be converted to the modern equivalent
 		conversionNames: {
 			'strong': 'b',
 			'em': 'i',
 		},
+
+		headerNodeNames: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
 
 		/**
 		 * HotKeys used for special actions
@@ -760,8 +758,14 @@ define('format/format-plugin', [
 		init: function () {
 			Ephemera.classes(CLASS_HIERACHY_VIOLATION);
 
+			Ephemera.classes('aloha-heading-hierarchy-violated');
+
 			if (typeof plugin.settings.hotKey !== 'undefined') {
-				jQuery.extend(true, plugin.hotKey, plugin.settings.hotKey);
+				$.extend(true, plugin.hotKey, plugin.settings.hotKey);
+			}
+
+			if (typeof plugin.settings.config !== 'undefined') {
+				plugin.config = plugin.settings.config;
 			}
 
 			plugin.initButtons();
@@ -848,37 +852,29 @@ define('format/format-plugin', [
 		 * @return void
 		 */
 		applyButtonConfig: function ($editable) {
-			var config = plugin.getEditableConfig($editable),
-				button;
+			var config = plugin.getEditableConfig($editable);
 
-			if (typeof config === 'object') {
-				var config_old = [];
-				jQuery.each(config, function (j, button) {
-					if (!(typeof j === 'number' && typeof button === 'string')) {
-						config_old.push(j);
-					}
-				});
-
-				if (config_old.length > 0) {
-					config = config_old;
-				}
+			if (config != null && typeof config === 'object' && !Array.isArray(config)) {
+				config = Object.keys(config);
 			}
+
 			plugin.formatOptions = config;
 
 			var editable = $editable[0];
 
 			// now iterate all buttons and show/hide them according to the config
-			for (button in plugin.buttons) {
-				if (plugin.buttons.hasOwnProperty(button)) {
-					if (!ContentRules.isAllowed(editable, button)) {
-						plugin.buttons[button].handle.hide();
-					} else if (config.includes(button)) {
-						plugin.buttons[button].handle.show();
-					} else {
-						plugin.buttons[button].handle.hide();
-					}
+			Object.entries(plugin.buttons).forEach(function(entry) {
+				var buttonName = entry[0];
+				var button = entry[1];
+
+				if (!ContentRules.isAllowed(editable, buttonName)
+					|| !config.includes(buttonName)
+				) {
+					button.handle.hide();
+				} else {
+					button.handle.show();
 				}
-			}
+			});
 		},
 
 		/**
@@ -890,17 +886,8 @@ define('format/format-plugin', [
 			plugin.buttons = {};
 
 			// First create all the regular formatting buttons
-			Object.entries(plugin.buttonConfig).forEach(function (entry) {
-				var nodeName = entry[0];
-				var settings = entry[1];
-
-				// Get default config if possible
-				if (settings == null || typeof settings !== 'object') {
-					settings = DEFAULT_CONFIG[nodeName];
-				} else {
-					// Allow partial settings, but fill in default values
-					settings = Object.assign({}, DEFAULT_CONFIG, settings);
-				}
+			(plugin.config || []).forEach(function (nodeName) {
+				var settings = plugin.buttonConfig[nodeName];
 
 				// If there's no settings, we have to ignore it
 				if (!settings) {
@@ -949,7 +936,7 @@ define('format/format-plugin', [
 					/** @type {FormattingOption} */
 					var settings = plugin.config[plugin.activeTypography];
 					if (!settings) {
-						settings = DEFAULT_CONFIG[plugin.activeTypography];
+						settings = DEFAULT_BUTTON_CONFIG[plugin.activeTypography];
 					}
 
 					var data = Dropdown.openDynamicDropdown(plugin.typographyButton.name, plugin._createHeaderIdContext(settings));
@@ -975,22 +962,8 @@ define('format/format-plugin', [
 		},
 
 		_createTypographyContext: function () {
-			var latestOptions = Object.entries(plugin.buttonConfig).map(function (entry) {
-				var nodeName = entry[0];
-				var settings = entry[1];
-
-				// Get default config if possible
-				if (settings == null || typeof settings !== 'object') {
-					// If it isn't enabled, ignore it
-					if (settings !== true) {
-						return null;
-					}
-
-					settings = DEFAULT_CONFIG[nodeName];
-				} else {
-					// Allow partial settings, but fill in default values
-					settings = Object.assign({}, DEFAULT_CONFIG, settings);
-				}
+			var latestOptions = (plugin.config || []).map(function (nodeName) {
+				var settings = plugin.buttonConfig[nodeName];
 
 				// If there's no settings, we have to ignore it
 				if (!settings) {
@@ -1097,22 +1070,16 @@ define('format/format-plugin', [
 		// duplicated code from link-plugin
 		//Creates string with this component's namepsace prefixed the each classname
 		nsClass: function () {
-			return Array.from(arguments)
-				.map(function (part) {
-					return part === '' ? pluginNamespace : pluginNamespace + '-' + part;
-				})
-				.join(' ')
-				.trim();
+			return Array.from(arguments).map(function(className) {
+				return pluginNamespace + (className == '' ? '' : '-' + className);
+			}).join(' ').trim();
 		},
 
 		// duplicated code from link-plugin
 		nsSel: function () {
-			return Array.from(arguments)
-				.map(function (part) {
-					return '.' + (part === '' ? pluginNamespace : pluginNamespace + '-' + part);
-				})
-				.join(' ')
-				.trim();
+			return Array.from(arguments).map(function(selector) {
+				return '.' + pluginNamespace + (selector == '' ? '' : '-' + selector);
+			}).join(' ').trim();
 		},
 
 		addMarkup: addMarkup,
@@ -1139,7 +1106,7 @@ define('format/format-plugin', [
 
 			if (rangeObject.isCollapsed()) {
 				var rangeEditingHost = Dom.getEditingHostOf(rangeObject.startContainer);
-				var limit = rangeEditingHost ? jQuery(rangeEditingHost) : Aloha.activeEditable.obj;
+				var limit = rangeEditingHost ? $(rangeEditingHost) : Aloha.activeEditable.obj;
 
 				for (i = 0; i < formats.length; i++) {
 					var format = formats[i].toUpperCase();
@@ -1151,7 +1118,7 @@ define('format/format-plugin', [
 					}
 
 					var foundMarkup = rangeObject.findMarkup(function (nodeElement) {
-						return -1 !== Arrays.indexOf(nodeNames, nodeElement.nodeName);
+						return nodeNames.includes(nodeElement.nodeName);
 					}, limit);
 
 					if (foundMarkup) {
@@ -1160,11 +1127,11 @@ define('format/format-plugin', [
 				}
 			} else {
 				var rangeEditingHost = Dom.getEditingHostOf(rangeObject.startContainer);
-				var limit = rangeEditingHost ? jQuery(rangeEditingHost) : Aloha.activeEditable.obj;
+				var limit = rangeEditingHost ? $(rangeEditingHost) : Aloha.activeEditable.obj;
 				for (i = 0; i < formats.length; i++) {
 					Dom.removeMarkup(
 						rangeObject,
-						jQuery('<' + formats[i] + '>'),
+						$('<' + formats[i] + '>'),
 						limit,
 						false);
 				}

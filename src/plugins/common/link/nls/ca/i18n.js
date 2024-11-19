@@ -8,7 +8,7 @@ define({
 	"link.target.parent": "Pare",
 	"link.target.top": "Superior",
 	"link.target.framename": "Nom del marc",
-	"link.target.legend": "Objectiu",
+	"link.target.label": "Objectiu",
 	"link.title.legend": "Títol",
 	"insertLink": "ctrl+k"
 });
