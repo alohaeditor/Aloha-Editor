@@ -134,8 +134,8 @@ define([
 				tooltip: i18n.t("button.abbr.tooltip"),
 				icon: Icons.ABBREVIATION,
 				targetAttribute: 'title',
-				inputLabel: 'Title',
-				panelLabel: 'Abbreviation',
+				inputLabel: i18n.t('input.label'),
+				panelLabel: i18n.t('panel.label'),
 				pure: true,
 				onToggle: function (activated) {
 					if (activated) {
