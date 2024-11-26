@@ -709,12 +709,12 @@ define('format/format-plugin', [
 		/**
 		 * General button configuration for the plugin
 		 */
-		buttonConfig: structuredClone(DEFAULT_CONFIG),
+		buttonConfig: structuredClone(DEFAULT_BUTTON_CONFIG),
 
 		/**
 		 * Array of which buttons are available/visible/enabled for the user
 		 */
-		config: Object.keys(DEFAULT_CONFIG).concat(REMOVE_FORMAT_ID),
+		config: Object.keys(DEFAULT_BUTTON_CONFIG).concat(REMOVE_FORMAT_ID),
 
 		/**
 		 * Map for the currently created/managed buttons
