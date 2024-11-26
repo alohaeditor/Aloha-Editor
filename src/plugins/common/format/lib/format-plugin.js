@@ -349,7 +349,7 @@ define('format/format-plugin', [
 	}
 
 	function changeMarkup(nodeType) {
-		Selection.changeMarkupOnSelection(jQuery('<' + nodeType + '>'));
+		Selection.changeMarkupOnSelection($('<' + nodeType + '>'));
 		if (Strings.parseBoolean(plugin.settings.checkHeadingHierarchy)) {
 			checkHeadingHierarchy(plugin.formatOptions);
 		}
@@ -380,7 +380,7 @@ define('format/format-plugin', [
 	}
 
 	function addMarkup(nodeType, command) {
-		var markup = jQuery('<' + nodeType + '>'),
+		var markup = $('<' + nodeType + '>'),
 			rangeObject = Selection.rangeObject;
 
 		if (nodeType == null || !nodeType || Aloha.activeEditable == null || Aloha.activeEditable.obj == null) {
@@ -436,7 +436,7 @@ define('format/format-plugin', [
 			i, j;
 
 		// Normal format buttons like bold
-		Object.values(formatPlugin.buttons || {}).forEach(function (button) {
+		Object.values(plugin.buttons || {}).forEach(function (button) {
 			// If the button is not a toggle-button (or an instance of it), then skip it.
 			// Can't set the state of it or do anything.
 			if (typeof button.handle.setActive !== 'function') {
@@ -901,7 +901,7 @@ define('format/format-plugin', [
 
 				plugin.buttons[nodeName] = {
 					handle: plugin.makeTextLevelButton(nodeName, settings),
-					markup: jQuery('<' + nodeName + '>'),
+					markup: $('<' + nodeName + '>'),
 				};
 			});
 
