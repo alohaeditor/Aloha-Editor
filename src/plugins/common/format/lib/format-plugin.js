@@ -470,7 +470,7 @@ define('format/format-plugin', [
 
 		// Typography/Blocklevel formats like h1
 		if (formatPlugin.typographyButton) {
-			var typographyElements = Object.entries(formatPlugin.config).filter(function (entry) {
+			var typographyElements = Object.entries(formatPlugin.buttonConfig).filter(function (entry) {
 				return entry[1].typography;
 			}).map(function (entry) {
 				return entry[0];
