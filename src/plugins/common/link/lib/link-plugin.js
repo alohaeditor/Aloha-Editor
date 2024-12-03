@@ -288,7 +288,7 @@ define([
 						).then(function (control) {
 							return control.value;
 						}).then(function (formValue) {
-							plugin.upsertLink(existingLink, formData);
+							plugin.upsertLink(existingLink, formValue);
 						}).catch(function (error) {
 							if (!Utils.isUserCloseError(error)) {
 								console.log(error);
