@@ -288,7 +288,7 @@ define([
 						).then(function (control) {
 							return control.value;
 						}).then(function (formValue) {
-							plugin.upsertLink(existingLink, formData);
+							plugin.upsertLink(existingLink, formValue);
 						}).catch(function (error) {
 							if (!Utils.isUserCloseError(error)) {
 								console.log(error);
@@ -421,15 +421,15 @@ define([
 
 			if (existingLink) {
 				modalTitle = i18n.t('button.editlink.tooltip');
-				href = existingLink.getAttribute(ATTR_HREF);
-				target = existingLink.getAttribute(ATTR_TARGET);
-				lang = existingLink.getAttribute(ATTR_HREF_LANG);
-				title = existingLink.getAttribute(ATTR_TITLE);
+				href = existingLink.getAttribute(ATTR_HREF) || '';
+				target = existingLink.getAttribute(ATTR_TARGET) || '';
+				lang = existingLink.getAttribute(ATTR_HREF_LANG) || '';
+				title = existingLink.getAttribute(ATTR_TITLE) || '';
 
-				let anchorIdx = href.indexOf('#')
+				let anchorIdx = href.indexOf('#');
 
 				if (anchorIdx >= 0) {
-					anchor = href.substring(anchorIdx + 1)
+					anchor = href.substring(anchorIdx + 1);
 					href = href.substring(0, anchorIdx);
 				}
 			}
@@ -579,7 +579,7 @@ define([
 			}
 
 			var href;
-			
+
 			try {
 				// Cannot use URL.parse here, as it's not available in Cypress (v13.13+) w/ Electron (v27.x)
 				// which uses Node v18.17, which in turn doesn't have this feature yet.
@@ -647,7 +647,7 @@ define([
 			}
 
 			var href;
-			
+
 			if (URL.canParse(linkData.url.target, window.location)) {
 				href = linkData.url.target;
 			} else {
