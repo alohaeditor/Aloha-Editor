@@ -1,3 +1,20 @@
+/** @typedef {import('./component').Component} Component */
+/** @typedef {'button' | 'checkbox' | 'color' | 'date' | 'datetime-local' | 'email' | 'file' | 'hidden' | 'image' | 'month' | 'number' | 'password' | 'radio' | 'range' | 'reset' | 'search' | 'submit' | 'tel' | 'text' | 'time' | 'url' | 'week'} InputType */
+/**
+ * @typedef {object} InputProperties
+ * @property {'input'} type
+ * @property {InputType} inputType The type of the input. @see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#type
+ * @property {string=} label The label describing what the input is for
+ * @property {string=} hint Additional text for further description of the input, usually for password guidelines or similar.
+ * 
+ * @property {function(string): void} setLabel Updates the `label` of the instance
+ * @property {function(string): void} setHint Updates the `hint` of the instance
+ */
+/**
+ * Implements a simple input component, with basic reactive wrapper and options.
+ * @typedef {Component & InputProperties} Input
+ */
+
 define([
 	"jquery",
 	"ui/component"
@@ -11,22 +28,32 @@ define([
 
 	/**
 	 * Input component type
-	 * @class
-	 * @extend {Component}
+	 * @type {Input}
 	 */
-	var Input = Component.extend({
+	var Input = Component.extend(/** @type {Input} */({
 		type: 'input',
 
 		/** Label for the input */
 		label: '',
 
+		/**
+		 * Hint/Description text for the input.
+		 * Commonly used for password inputs, with the requirements of the password.
+		 */
+		hint: '',
+
+		/** The value of the input */
 		value: '',
 
 		/** Type of the input */
 		inputType: 'text',
 
+		/** @type {JQuery} */
 		_inputElement$: null,
+		/** @type {JQuery} */
 		_labelElement$: null,
+		/** @type {JQuery} */
+		_hintElement$: null,
 
 		/**
 		 * Initializes the text component
@@ -65,16 +92,26 @@ define([
 				for: id,
 			});
 
+			this._hintElement$ = $('<div>', {
+				class: 'input-hint',
+				text: this.hint,
+			})
+
 			this.element = $('<div>', { class: 'input-container' })
                 .append(
                     this._labelElement$,
-                    this._inputElement$
+                    this._inputElement$,
+					this._hintElement$
                 );
 		},
 
 		setLabel: function(label) {
 			this.label = label;
 			this._labelElement$.text(label);
+		},
+		setHint: function(hint) {
+			this.hint = hint;
+			this._hintElement$.text(hint);
 		},
 
 		/**
@@ -104,7 +141,7 @@ define([
 			this._super();
 			this._inputElement$.attr('disabled', 'disabled');
 		}
-	});
+	}));
 
 	return Input;
 });

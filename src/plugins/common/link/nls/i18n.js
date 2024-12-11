@@ -14,7 +14,8 @@ define({
 		"link.target._parent": "Parent Context (_parent)",
 		"link.target._top": "Highest Context (_top)",
 		"link.target._unfencedTop": "Unfenced Highest Context (_unfencedTop)",
-		"link.hreflang.label": "Language",
+		"link.hreflang.label": "Language (hreflang)",
+		"link.hreflang.hint": "Language of the target page, for SEO optimization",
 		"insertLink": "ctrl+k"
 	},
 		"ca": true,
