@@ -95,7 +95,7 @@ define([
 			this._hintElement$ = $('<div>', {
 				class: 'input-hint',
 				text: this.hint,
-			})
+			});
 
 			this.element = $('<div>', { class: 'input-container' })
                 .append(
