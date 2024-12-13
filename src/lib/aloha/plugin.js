@@ -303,7 +303,7 @@ define([
 		var pluginInstance = new (Plugin.extend(definition))(pluginName);
 		var globalSettings = {};
 		if (Aloha.settings != null && Aloha.settings.plugins != null) {
-			globalSettings = AlohAloha.settings.plugins[pluginName] || {};
+			globalSettings = Aloha.settings.plugins[pluginName] || {};
 		}
 		pluginInstance.settings = jQuery.extendObjects(true, pluginInstance.defaults, globalSettings);
 		PluginManager.register(pluginInstance);
