@@ -533,6 +533,7 @@ define([
         var component = Ui.adopt(name, Input, {
             value: tmpOptions.value,
             label: tmpOptions.label,
+            hint: tmpOptions.hint,
             inputType: tmpOptions.inputType,
 
             changeNotify: function (value) {
