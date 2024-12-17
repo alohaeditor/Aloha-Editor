@@ -202,7 +202,12 @@ define([
 
 				// when obj does not exist in the DOM anymore, fetch from DOM again 
 				// so that nested selectors with parent elements will match against obj as well
-				if (!document.body.contains(obj[0]) && typeof obj[0] != "undefined" && typeof obj[0].id != "undefined") {
+				if (
+					!document.body.contains(obj[0])
+					&& obj[0] != null
+					&& obj[0].id != null
+					&& obj[0].id
+				) {
 					obj = jQuery('#' + obj[0].id);
 				}
 
