@@ -471,6 +471,7 @@ define([
 						type: 'input',
 						options: {
 							label: i18n.t('link.hreflang.label'),
+							hint: i18n.t('link.hreflang.hint', ''),
 						}
 					}
 				},

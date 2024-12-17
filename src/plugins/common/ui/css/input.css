@@ -24,3 +24,8 @@
 	font-size: 16px;
 	padding: 4px;
 }
+
+.aloha-ui .input-container .input-hint {
+	font-size: 12px;
+	color: #272727;
+}

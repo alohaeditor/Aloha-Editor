@@ -13,6 +13,7 @@ define({
 	"link.target._parent": "Nächst höheren Kontext (_parent)",
 	"link.target._top": "Höchst verfügbaren Kontext (_top)",
 	"link.target._unfencedTop": "Höchsten Kontext (_unfencedTop)",
-	"link.hreflang.label": "Sprache",
+	"link.hreflang.label": "Sprache (hreflang)",
+	"link.hreflang.hint": "Sprache der Zielseite, für SEO Optimierungen",
 	"insertLink": "Ctrl+k"
 });
