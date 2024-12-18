@@ -39,21 +39,6 @@ define([
 	var Aloha = window.Aloha;
 
 	/**
-	 * For each plugin setting, assigns it into its corresponding plugin.
-	 *
-	 * @param {Array.<Plugin>} plugins
-	 * @param {object<string, object>} settings
-	 */
-	function mapSettingsIntoPlugins(plugins, settings) {
-		var plugin;
-		for (plugin in settings) {
-			if (settings.hasOwnProperty(plugin) && plugins[plugin]) {
-				plugins[plugin].settings = settings[plugin] || {};
-			}
-		}
-	}
-
-	/**
 	 * Retrieves a set of plugins or the given `names' list, from among those
 	 * specified in `plugins'.
 	 *
@@ -139,9 +124,6 @@ define([
 		init: function (next, enabled) {
 			var manager = this;
 			var plugins = manager.plugins;
-
-			mapSettingsIntoPlugins(plugins,
-					Aloha && Aloha.settings && Aloha.settings.plugins);
 
 			// Because all plugins are enabled by default if specific plugins
 			// are not specified.
