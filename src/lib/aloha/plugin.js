@@ -32,7 +32,7 @@ define([
 	'aloha/console'
 ], function (
 	Aloha,
-	/** @type JQueryStatic */
+	/** @type {JQueryStatic} */
 	jQuery,
 	Class,
 	PluginManager,
@@ -310,7 +310,7 @@ define([
 		if (Aloha.settings != null && Aloha.settings.plugins != null) {
 			globalSettings = Aloha.settings.plugins[pluginName] || {};
 		}
-		pluginInstance.settings = jQuery.extendObjects(true, pluginInstance.defaults, globalSettings);
+		pluginInstance.settings = jQuery.extendObjects(true, {}, pluginInstance.defaults, globalSettings);
 		PluginManager.register(pluginInstance);
 
 		return pluginInstance;
