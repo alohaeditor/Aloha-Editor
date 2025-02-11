@@ -21,8 +21,6 @@ define([
 	'aloha/content-rules',
 	'util/dom',
 	'util/dom2',
-	'util/arrays',
-	'util/trees',
 	'util/strings',
 	'util/functions',
 	'util/html'
@@ -31,8 +29,6 @@ define([
 	ContentRules,
 	DomLegacy,
 	Dom,
-	Arrays,
-	Trees,
 	Strings,
 	Fn,
 	Html
@@ -138,8 +134,8 @@ define([
 		var stepAtEnd   = makePointNodeStep(end, endEnd, stepOutside, stepPartial);
 		ascendWalkSiblings(ascStart, startEnd, carryDown, stepOutside, stepAtStart, stepInside, arg);
 		ascendWalkSiblings(ascEnd, endEnd, carryDown, stepInside, stepAtEnd, stepOutside, arg);
-		var cacChildStart = Arrays.last(ascStart);
-		var cacChildEnd   = Arrays.last(ascEnd);
+		var cacChildStart = ascStart[ascStart.length - 1];
+		var cacChildEnd   = ascEnd[ascEnd.length - 1];
 		if (cacChildStart && cacChildStart !== cacChildEnd) {
 			var next;
 			Dom.walkUntilNode(cac.firstChild, stepOutside, cacChildStart, arg);
@@ -274,7 +270,7 @@ define([
 			// document element (which has nodeType 9).
 			return !node.parentNode || 9 === node.parentNode.nodeType || formatter.hasContext(node);
 		});
-		Arrays.forEach(fromCacToContext, function (node) {
+		fromCacToContext.forEach(function (node) {
 			upperBoundaryAndBeyond = upperBoundaryAndBeyond || formatter.isUpperBoundary(node);
 			if (null != formatter.getOverride(node)) {
 				topmostOverrideNode = node;
@@ -282,7 +278,7 @@ define([
 				bottommostOverrideNode = bottommostOverrideNode || node;
 			}
 		});
-		if ((rootHasImpliedContext || formatter.hasContext(Arrays.last(fromCacToContext)))
+		if ((rootHasImpliedContext || formatter.hasContext(fromCacToContext[fromCacToContext.length - 1]))
 			    && !isNonClearableOverride) {
 			var pushDownFrom = topmostOverrideNode || cac;
 			var cacOverride = formatter.getOverride(bottommostOverrideNode || cac);
@@ -553,9 +549,12 @@ define([
 	}
 
 	function isStyleWrapperPrunable_default(node) {
-		return ('SPAN' === node.nodeName
-				&& Arrays.every(Arrays.map(Dom.attrs(node), Arrays.second),
-								Strings.empty));
+		return ('SPAN' === node.nodeName && Dom.attrs(node)
+			.map(function(attrs) {
+				return attrs[1];
+			})
+			.every(Strings.empty)
+		);
 	}
 
 	function makeStyleFormatter(styleName, styleValue, createWrapper, isStyleEq, isReusable, isPrunable, leftPoint, rightPoint) {
@@ -663,7 +662,7 @@ define([
 		var endEnd   = Dom.isAtEnd(range.endContainer, range.endOffset);
 		var ascStart = Dom.childAndParentsUntilIncl(start, untilIncl);
 		var ascEnd   = Dom.childAndParentsUntilIncl(end, untilIncl);
-		var reusable = Arrays.last(ascStart);
+		var reusable = ascStart[ascStart.length - 1];
 		function at(node) {
 			// Because the start node is inside the range.
 			if (node === start && !startEnd) {
@@ -676,7 +675,7 @@ define([
 			}
 			obstruction = obstruction || !Html.isInlineFormattable(node);
 		}
-		if (!reusable || !isReusable(reusable) || reusable !== Arrays.last(ascEnd)) {
+		if (!reusable || !isReusable(reusable) || reusable !== ascEnd[ascEnd.length - 1]) {
 			return null;
 		}
 		ascendWalkSiblings(ascStart, startEnd, Fn.noop, beforeAfter, at, Fn.noop);
