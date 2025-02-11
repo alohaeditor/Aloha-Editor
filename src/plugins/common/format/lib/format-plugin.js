@@ -371,7 +371,7 @@ define('format/format-plugin', [
 		Dom.doCleanup({
 			merge: true,
 			mergeable: function (node) {
-				return 'Q' === node.nodeName;
+				return 'Q' === node.nodeName && 'Q' === node.nextSibling.nodeName;
 			}
 		}, rangeObject);
 		updateUiAfterMutation(rangeObject);
