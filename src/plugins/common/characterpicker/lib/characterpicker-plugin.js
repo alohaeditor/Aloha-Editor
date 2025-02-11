@@ -1,3 +1,6 @@
+/**
+ * @typedef {SymbolGridItem} import('./symbol-grid.js')
+ */
 /* characterpicker-plugin.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
@@ -59,12 +62,12 @@ define([
 	/**
 	 * Inserts the selected character, at the editor's selection.
 	 *
-	 * @param {String} character
+	 * @param {SymbolGridItem} item
 	 */
-	function onSelectCharacter(character) {
+	function onSelectCharacter(item) {
 		if (Aloha.activeEditable) {
 			rangeAtOpen.select();
-			Aloha.execCommand('insertHTML', false, character);
+			Aloha.execCommand('insertHTML', false, item.symbol);
 
 			// Because after the character was inserted, move the selection
 			// forward.
@@ -122,15 +125,6 @@ define([
 		});
 		return component;
 	}
-
-	var randomLabels = [
-        'foo',
-        'bar',
-        'hello',
-        'world',
-        'test',
-        'gentics',
-    ];
 
 	/**
 	 * @type {Plugin}
@@ -1403,7 +1397,7 @@ define([
 				if (typeof this.config === 'string') {
 					symbols = this.config.split(' ').map(function(symbol) {
 						return {
-							label: randomLabels[Math.round(Math.random() * randomLabels.length)],
+							label: symbol,
 							symbol: symbol,
 						};
 					});
@@ -1414,7 +1408,6 @@ define([
 				symbols = this.config;
 			}
 
-			// TODO: Add labels?
 			return symbols;
 		},
 
