@@ -367,6 +367,12 @@ define('format/format-plugin', [
 
 	function format(formatPlugin, rangeObject, markup) {
 		Dom.addMarkup(rangeObject, markup);
+		Dom.doCleanup({
+			merge: true,
+			mergeable: function (node) {
+				return 'Q' === node.nodeName && 'Q' === node.nextSibling.nodeName;
+			}
+		}, rangeObject);
 		updateUiAfterMutation(formatPlugin, rangeObject);
 	}
 
@@ -602,7 +608,7 @@ define('format/format-plugin', [
 			header: false,
 		},
 		'q': {
-			name: 'quoute',
+			name: 'quote',
 			icon: Icons.QUOTE,
 			label: i18n.t('button.q.tooltip'),
 			typography: false,
@@ -711,7 +717,6 @@ define('format/format-plugin', [
 	 * register the plugin with unique name
 	 */
 	var plugin = Plugin.create('format', {
-		buttonConfig: structuredClone(DEFAULT_BUTTON_CONFIG),
 
 		// These are old/deprecated nodes and will be converted to the modern equivalent
 		conversionNames: {
@@ -722,11 +727,20 @@ define('format/format-plugin', [
 		headerNodeNames: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
 
 		/**
-		 * available options / buttons
-		 *
-		 * @todo new buttons needed for 'code'
+		 * General button configuration for the plugin
+		 */
+		buttonConfig: structuredClone(DEFAULT_BUTTON_CONFIG),
+
+		/**
+		 * Array of which buttons are available/visible/enabled for the user
 		 */
 		config: Object.keys(DEFAULT_BUTTON_CONFIG).concat(REMOVE_FORMAT_ID),
+
+		/**
+		 * Map for the currently created/managed buttons
+		 * @type {Object<string, { markup: string, handle: ToggleButton }>}
+		 */
+		buttons: {},
 
 		/**
 		 * HotKeys used for special actions
@@ -831,6 +845,15 @@ define('format/format-plugin', [
 
 			PubSub.sub('aloha.editable.deactivated', function (message) {
 				message.editable.obj.unbind('keydown.aloha.format');
+
+				// Set all buttons to inactive if we leave the editable
+				if (plugin.buttons) {
+					Object.values(plugin.buttons).forEach(function (button) {
+						if (typeof button.handle.setActive === 'function') {
+							button.handle.setActive(false);
+						}
+					});
+				}
 			});
 		},
 
@@ -841,37 +864,29 @@ define('format/format-plugin', [
 		 * @return void
 		 */
 		applyButtonConfig: function ($editable) {
-			var config = this.getEditableConfig($editable),
-				button, i, len;
+			var config = plugin.getEditableConfig($editable);
 
-			if (typeof config === 'object') {
-				var config_old = [];
-				jQuery.each(config, function (j, button) {
-					if (!(typeof j === 'number' && typeof button === 'string')) {
-						config_old.push(j);
-					}
-				});
-
-				if (config_old.length > 0) {
-					config = config_old;
-				}
+			if (config != null && typeof config === 'object' && !Array.isArray(config)) {
+				config = Object.keys(config);
 			}
-			this.formatOptions = config;
+
+			plugin.formatOptions = config;
 
 			var editable = $editable[0];
 
 			// now iterate all buttons and show/hide them according to the config
-			for (button in this.buttons) {
-				if (this.buttons.hasOwnProperty(button)) {
-					if (!ContentRules.isAllowed(editable, button)) {
-						this.buttons[button].handle.hide();
-					} else if (jQuery.inArray(button, config) !== -1) {
-						this.buttons[button].handle.show();
-					} else {
-						this.buttons[button].handle.hide();
-					}
+			Object.entries(plugin.buttons).forEach(function(entry) {
+				var buttonName = entry[0];
+				var button = entry[1];
+
+				if (!ContentRules.isAllowed(editable, buttonName)
+					|| !config.includes(buttonName)
+				) {
+					button.handle.hide();
+				} else {
+					button.handle.show();
 				}
-			}
+			});
 		},
 
 		/**
