@@ -1,0 +1,1 @@
+Now a quote formatter, applied over already formatted text, produces a single quoted block, instead of a serie of distinct differently formatted quotes.
