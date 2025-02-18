@@ -1,0 +1,1 @@
+Fixed initialization of the Table Plugin, which now correctly picks up the global settings.
