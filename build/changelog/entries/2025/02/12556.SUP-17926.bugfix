@@ -1,0 +1,2 @@
+Drag'n'Drop dropzones can now be disabled by simply providing an empty array @[]@, allowing blocks only to be moved within the original editable.
+Additionally, resolving of the editable configuration for the dropzones has been fixed to reflect the documentation.

@@ -61,6 +61,8 @@ define([
 
 	var GENTICS = window.GENTICS;
 
+	var CLASS_DROPZONE_ELEMENT = 'aloha-block-dropzone';
+
 	/**
 	 * An aloha block has the following special properties, being readable through the
 	 * "attr" function:
@@ -775,24 +777,35 @@ define([
 
             this.$element.on( "mousedown", ".aloha-block-draghandle",function () {
 
-                var dropzones = that.$element.parents(".aloha-editable").first().data("block-dropzones") || [];
+				var editable = that.$element.parents(".aloha-editable");
+                var dropzones = editable.first().data("block-dropzones");
 
-                jQuery.each(dropzones, function (i, editable_selector) {
-                    var editables = jQuery(editable_selector);
-                    jQuery(editables).each(function () {
-                        if (jQuery(this).data("block-dragdrop")) {
-                            jQuery(this).addClass("aloha-block-dropzone");
-                        }
-                    });
-                });
+				if (!Array.isArray(dropzones)) {
+					dropzones = [];
+				}
+
+				dropzones = dropzones.map(function(selector) {
+					return jQuery(selector);
+				});
+				// Always allow drag'n'drop inside of the same editable
+				dropzones.push(editable);
+
+				dropzones.forEach(function(dropEditable) {
+					dropEditable.each(function () {
+						if (jQuery(this).data("block-dragdrop")) {
+							jQuery(this).addClass(CLASS_DROPZONE_ELEMENT);
+						}
+					});
+				});
 
                 // Remove the dropzones as soon as the mouse is released,
                 // irrespective of where the drop took place.
-                jQuery(document).one("mouseup.aloha-block-dropzone", function () {
-                    var dropzones = that.$element.parents(".aloha-editable").first().data("block-dropzones") || [];
-                    jQuery.each(dropzones, function (i, editable_selector) {
-                        jQuery(editable_selector).removeClass("aloha-block-dropzone");
-                    });
+                jQuery(document).one("mouseup." + CLASS_DROPZONE_ELEMENT, function () {
+					dropzones.forEach(function(dropEditable) {
+						dropEditable.each(function () {
+							jQuery(this).removeClass(CLASS_DROPZONE_ELEMENT);
+						});
+					});
                 });
             });
         },
@@ -995,14 +1008,14 @@ define([
 						}
 					};
 
-					$createdDroppables = jQuery(".aloha-editable.aloha-block-dropzone").children(":not(.aloha-block)");
+					$createdDroppables = jQuery(".aloha-editable." + CLASS_DROPZONE_ELEMENT).children(":not(.aloha-block)");
 
 					// add empty editables
-					$createdDroppables = $createdDroppables.add(".aloha-editable:not(:has(*))");
+					$createdDroppables = $createdDroppables.add("." + CLASS_DROPZONE_ELEMENT + ":not(:has(*))");
 
 					// Small HACK: Also make table cells droppable
 					$createdDroppables = $createdDroppables.add('.aloha-table-cell-editable');
-					$createdDroppables = $createdDroppables.add(jQuery('.aloha-editable.aloha-block-dropzone .aloha-table-cell-editable').children(":not(.aloha-block)"));
+					$createdDroppables = $createdDroppables.add(jQuery('.aloha-editable.' + CLASS_DROPZONE_ELEMENT + ' .aloha-table-cell-editable').children(":not(.aloha-block)"));
 
 					$createdDroppables.droppable(droppableCfg);
 				}
