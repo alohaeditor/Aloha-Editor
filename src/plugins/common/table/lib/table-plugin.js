@@ -10,7 +10,6 @@ define([
 	'aloha',
 	'PubSub',
 	'aloha/plugin',
-	'aloha/pluginmanager',
 	'aloha/content-rules',
 	'aloha/ephemera',
 	'aloha/console',
@@ -36,7 +35,6 @@ define([
 	Aloha,
 	PubSub,
 	Plugin,
-	PluginManager,
 	ContentRules,
 	Ephemera,
 	Console,
@@ -65,7 +63,7 @@ define([
 	/**
 	 * Register the TablePlugin as Aloha.Plugin
 	 */
-	var TablePlugin = new Plugin('table');
+	var TablePlugin = Plugin.create('table', {});
 
 	/**
 	 * The Create-Layer Object of the TablePlugin
@@ -1419,8 +1417,6 @@ define([
 			return sc;
 		}
 	};
-
-	PluginManager.register(TablePlugin);
 
 	/**
 	 * Detects a situation where we are about to insert content into a
