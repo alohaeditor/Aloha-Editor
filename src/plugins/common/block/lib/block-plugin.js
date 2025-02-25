@@ -290,9 +290,16 @@ define([
 		setDropzones: function (editable) {
 			var that = this;
 			var config = that.getEditableConfig(editable);
-			var dropzones = (config && config.dropzones) || that.settings.dropzones;
+			// Try yo get the editable config
+			var dropzones = (config && config.dropzones);
 
-			if (dropzones) {
+			// If no dropzones are defined for the editable, attempt to fallback/use the global settings
+			if (!Array.isArray(dropzones) && that.settings != null) {
+				dropzones = that.settings.dropzones;
+			}
+
+			// Allow empty dropzones, i.E. disabling dropping it somewhere else
+			if (Array.isArray(dropzones)) {
 				editable.data('block-dropzones', dropzones);
 			} else {
 				// if dropzones are undefined all editables should be dropzones
