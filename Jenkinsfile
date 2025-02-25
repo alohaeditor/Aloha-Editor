@@ -1,5 +1,7 @@
 #!groovy
-@Library('jenkins-pipeline-library@nexus') import com.gentics.*
+@Library('jenkins-pipeline-library')
+import com.gentics.*
+
 JobContext.set(this)
 
 
@@ -22,7 +24,7 @@ kind: Pod
 spec:
   containers:
   - name: build
-    image: """ + buildEnvironmentDockerImage("build/Dockerfile", null, "build") + """
+    image: docker.gentics.com/alohaeditor/build-container:latest
     imagePullPolicy: Always
     command:
     - cat
@@ -166,7 +168,6 @@ spec:
 	post {
 		always {
 			githubBuildEnded()
-			notifyMattermostUsers()
 		}
 	}
 }
