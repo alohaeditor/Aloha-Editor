@@ -368,6 +368,12 @@ define('format/format-plugin', [
 
 	function format(rangeObject, markup) {
 		Dom.addMarkup(rangeObject, markup);
+		Dom.doCleanup({
+			merge: true,
+			mergeable: function (node) {
+				return 'Q' === node.nodeName && 'Q' === node.nextSibling.nodeName;
+			}
+		}, rangeObject);
 		updateUiAfterMutation(rangeObject);
 	}
 
@@ -706,6 +712,14 @@ define('format/format-plugin', [
 	 */
 	var plugin = Plugin.create('format', {
 
+		// These are old/deprecated nodes and will be converted to the modern equivalent
+		conversionNames: {
+			'strong': 'b',
+			'em': 'i',
+		},
+
+		headerNodeNames: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+
 		/**
 		 * General button configuration for the plugin
 		 */
@@ -721,14 +735,6 @@ define('format/format-plugin', [
 		 * @type {Object<string, { markup: string, handle: ToggleButton }>}
 		 */
 		buttons: {},
-
-		// These are old/deprecated nodes and will be converted to the modern equivalent
-		conversionNames: {
-			'strong': 'b',
-			'em': 'i',
-		},
-
-		headerNodeNames: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
 
 		/**
 		 * HotKeys used for special actions
