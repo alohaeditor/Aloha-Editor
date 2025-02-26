@@ -353,13 +353,17 @@ define([
 		var $elm = $(elm);
 		var $srcEditable = this.$element.closest('.aloha-editable');
 		var $dstEditable = $elm.closest('.aloha-editable');
-		var dropzones = ($srcEditable.data('block-dropzones') || ['.aloha-editable']).join();
+		var dropzoneSelectors = ($srcEditable.data('block-dropzones') || []);
+		var $dropzones = $($srcEditable);
+		dropzoneSelectors.forEach(function(selector) {
+			$dropzones = $dropzones.add(selector);
+		});
 
-		if (!$dstEditable.is(dropzones)) {
+		if (!$dropzones.is($dstEditable)) {
 			if (Aloha.Log.isDebugEnabled()) {
 				Aloha.Log.debug(
 					'block-plugin',
-					'Preventing drop because of defined dropzones: [ ' + dropzones + ' ]');
+					'Preventing drop because of defined dropzones: [ ' + dropzoneSelectors.join(',') + ' ]');
 			}
 
 			event.stopImmediatePropagation();

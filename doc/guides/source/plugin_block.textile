@@ -513,21 +513,32 @@ Aloha.settings.plugins.block.config.toggleDragdropGlobal = true;
 
 h4. Defining Dropzones
 
-When a block is being dragged, it can be dropped to any editable available in the page by default. To specify explicit drop targets for blocks inside an editable, use the `dropzones` option.
+When a block is being dragged, it can be dropped to any editable available in the page by default.
+To specify explicit drop targets for blocks inside an editable, use the `dropzones` option.
+The editable from which the drag originates is implicitly always a valid target, and doesn't need to be specified.
 
 <javascript>
 Aloha.settings.plugins.block.editables = {
-	'#editable-1': { 'dropzones': [ '#editable-1', '#editable-2' ]},
-	'#editable-2': { 'dropzones': [ '#editable-2' ]},
+	'#editable-1': { 'dropzones': ['#editable-2'] },
+	// This is redundant - the editable itself is always a valid target
+	'#editable-2': { 'dropzones': ['#editable-2'] },
 };
 </javascript>
 
-In the above example, blocks defined in "#editable-1" can be dragged to either "#editable-1" or "#editable-2". However, blocks in "#editable-2" can only be dragged within itself.
+In the above example, blocks defined in "#editable-1" can be dragged to either "#editable-1" or "#editable-2".
+However, blocks in "#editable-2" can only be dragged within itself.
 
 You can also define the dropzones globally for all editables which do not have a specific configuration.
 
 <javascript>
+// Allows all editable to drop into '#editable-1' and '#editable-2'.
 Aloha.settings.plugins.block.dropzones = [ '#editable-1', '#editable-2' ];
+</javascript>
+
+To disable moving between editable on default, simply provide an empty array as @dropzones@:
+
+<javascript>
+Aloha.settings.plugins.block.dropzones = [];
 </javascript>
 
 h4. Changing the root tags
