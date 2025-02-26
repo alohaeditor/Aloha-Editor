@@ -29,12 +29,12 @@ define([
 	'aloha/jquery',
 	'aloha/plugin',
 	'util/dom2',
+	'util/color',
 	'PubSub',
 	'util/range-context',
 	'ui/ui',
 	'ui/contextButton',
 	'ui/icons',
-	'ui/utils',
 	'./palette',
 	'i18n!textcolor/nls/i18n',
 ], function (
@@ -42,12 +42,12 @@ define([
 	$,
 	Plugin,
 	Dom,
+	Utils,
 	PubSub,
 	RangeContext,
 	Ui,
 	ContextButton,
 	Icons,
-	Utils,
 	Palette,
 	i18n
 ) {
