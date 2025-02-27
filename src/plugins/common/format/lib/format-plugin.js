@@ -763,6 +763,8 @@ define('format/format-plugin', [
 		},
 
 		activeTypography: null,
+		formatOptions: [],
+		typographyOptions: [],
 
 		/**
 		 * Initialize the plugin and set initialize flag on true
@@ -887,6 +889,31 @@ define('format/format-plugin', [
 					button.handle.show();
 				}
 			});
+
+			plugin.typographyOptions = Object.entries(plugin.buttonConfig).map(function(entry) {
+				var name = entry[0];
+				var elemConfig = entry[1];
+
+				// Ignore non-typography elements
+				if (!elemConfig.typography) {
+					return null;
+				}
+
+				// Skip elements which aren't allowed
+				if (!ContentRules.isAllowed(editable, name) || !config.includes(name)) {
+					return null;
+				}
+
+				return name;
+			}).filter(function(value) {
+				return value != null;
+			});
+
+			if (plugin.typographyOptions.length === 0) {
+				plugin.typographyButton.hide();
+			} else {
+				plugin.typographyButton.show();
+			}
 		},
 
 		/**
@@ -928,7 +955,12 @@ define('format/format-plugin', [
 				iconOnly: false,
 
 				click: function () {
-					var data = Dropdown.openDynamicDropdown(plugin.typographyButton.name, plugin._createTypographyContext());
+					var context = plugin._createTypographyContext();
+					if (context == null) {
+						return;
+					}
+
+					var data = Dropdown.openDynamicDropdown(plugin.typographyButton.name, context);
 					if (!data) {
 						return;
 					}
@@ -974,7 +1006,7 @@ define('format/format-plugin', [
 		},
 
 		_createTypographyContext: function () {
-			var latestOptions = (this.config || []).map(function (nodeName) {
+			var latestOptions = (plugin.typographyOptions || []).map(function (nodeName) {
 				var settings = plugin.buttonConfig[nodeName];
 
 				// If there's no settings, we have to ignore it
@@ -997,6 +1029,13 @@ define('format/format-plugin', [
 			}).filter(function (option) {
 				return option != null;
 			});
+
+			// In case there's only one option, and we already have it selected,
+			// then we can skip opening the context all together, as the user can't
+			// change it to something else anyways.
+			if (latestOptions.length === 1 && latestOptions[0].id === plugin.activeTypography) {
+				return null;
+			}
 
 			return {
 				type: 'select-menu',
