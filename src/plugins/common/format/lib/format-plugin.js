@@ -909,7 +909,8 @@ define('format/format-plugin', [
 				return value != null;
 			});
 
-			if (plugin.typographyOptions.length === 0) {
+			// We need at least two options, otherwise the button/selection wouldn't make sense
+			if (plugin.typographyOptions.length <= 1) {
 				plugin.typographyButton.hide();
 			} else {
 				plugin.typographyButton.show();
