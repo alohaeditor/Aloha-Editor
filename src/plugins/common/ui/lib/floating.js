@@ -33,7 +33,6 @@ define([
 	'ui/surface',
 	'ui/subguarded',
 	'PubSub',
-	'vendor/amplify.store',
 	'util/browser'
 ], function (
 	$,
@@ -41,7 +40,6 @@ define([
 	Surface,
 	subguarded,
 	PubSub,
-	amplifyStore,
 	Browser
 ) {
 	'use strict';
@@ -193,18 +191,18 @@ define([
 	 * Persist the "top" and "left" positions of the FloatingMenu surface.
 	 */
 	function storePinPosition(offset) {
-		amplifyStore.store('Aloha.FloatingMenu.pinned', 'true');
-		amplifyStore.store('Aloha.FloatingMenu.top', offset.top);
-		amplifyStore.store('Aloha.FloatingMenu.left', offset.left);
+		localStorage.setItem('Aloha.FloatingMenu.pinned', 'true');
+		localStorage.setItem('Aloha.FloatingMenu.top', offset.top);
+		localStorage.setItem('Aloha.FloatingMenu.left', offset.left);
 	}
 
 	/**
 	 * Clears persisted state of the FloatingMenu surface.
 	 */
 	function unstorePinPosition() {
-		amplifyStore.store('Aloha.FloatingMenu.pinned', null);
-		amplifyStore.store('Aloha.FloatingMenu.top', null);
-		amplifyStore.store('Aloha.FloatingMenu.left', null);
+		localStorage.setItem('Aloha.FloatingMenu.pinned', null);
+		localStorage.setItem('Aloha.FloatingMenu.top', null);
+		localStorage.setItem('Aloha.FloatingMenu.left', null);
 	}
 
 	/**
@@ -213,10 +211,10 @@ define([
 	 * @return {object}
 	 */
 	function getPinState() {
-		if (amplifyStore.store('Aloha.FloatingMenu.pinned') === 'true') {
+		if (localStorage.getItem('Aloha.FloatingMenu.pinned') === 'true') {
 			return {
-				top: parseInt(amplifyStore.store('Aloha.FloatingMenu.top'), 10),
-				left: parseInt(amplifyStore.store('Aloha.FloatingMenu.left'), 10),
+				top: parseInt(localStorage.getItem('Aloha.FloatingMenu.top'), 10),
+				left: parseInt(localStorage.getItem('Aloha.FloatingMenu.left'), 10),
 				isPinned: true
 			};
 		}

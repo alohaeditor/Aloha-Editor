@@ -9,14 +9,12 @@ define([
 	'PubSub',
 	'aloha/core',
 	'util/dom2',
-	'util/arrays',
 	'util/html',
 	'aloha/jquery'
 ], function (
 	PubSub,
 	Aloha,
 	Dom,
-	Arrays,
 	Html,
 	$
 ) {
@@ -49,11 +47,11 @@ define([
 		var selector;
 		for (selector in mapRules) {
 			if (mapRules.hasOwnProperty(selector)) {
-				if (Arrays.contains(mapRules[selector], 'ol') || Arrays.contains(mapRules[selector], 'ul')) {
-					mapRules[selector] = Arrays.concat(mapRules[selector], LIST_WHITELIST_NODE_NAMES);
+				if (mapRules[selector].includes('ol') || mapRules[selector].includes('ul')) {
+					mapRules[selector] = mapRules[selector].concat(LIST_WHITELIST_NODE_NAMES);
 				}
-				if (Arrays.contains(mapRules[selector], 'table')) {
-					mapRules[selector] = Arrays.concat(mapRules[selector], TABLE_WHITELIST_NODE_NAMES);
+				if (mapRules[selector].includes('table')) {
+					mapRules[selector] = mapRules[selector].concat(TABLE_WHITELIST_NODE_NAMES);
 				}
 			}
 		}
@@ -184,8 +182,11 @@ define([
 	 * @return {boolean}
 	 */
 	function isAllowed(editable, nodeName) {
+		// In case that a jQuery object is passed
+		editable = $(editable)[0];
+
 		if (Html.BLOCKLEVEL_ELEMENTS.includes(nodeName.toLowerCase())) {
-			if (editable != null && editable.nodeName && !ALLOWED_BLOCKLEVEL_INSERT_EDITABLE_NODE_NAMES.includes(editable.nodeName.toLowerCase())) {
+			if (!ALLOWED_BLOCKLEVEL_INSERT_EDITABLE_NODE_NAMES.includes((editable.nodeName || '').toLowerCase())) {
 				return false;
 			}
 		}
@@ -195,13 +196,13 @@ define([
 		if (white.length > 0) {
 			// Because textnode are always to be permitted by default. They
 			// must be explicitly blacklisted if undesired
-			if (!Arrays.contains(setcat(['#text'].concat(white)), nodeName.toLowerCase())) {
+			if (!setcat(['#text'].concat(white)).includes(nodeName.toLowerCase())) {
 				return false;
 			}
 		}
 		var black = getRules(editable, blacklist);
 		if (black.length > 0) {
-			return !Arrays.contains(setcat(black), nodeName.toLowerCase());
+			return !setcat(black).includes(nodeName.toLowerCase());
 		}
 		return true;
 	}
@@ -237,27 +238,28 @@ define([
 			//skip over node if it is a aloha-block, because we want to keep elements inside
 			if ($(node).hasClass('aloha-block')) {
 				node = Dom.forward(node, true);
+				continue;
+			}
+
+			var translation = translate(editable, node.nodeName);
+			if (translation !== node.nodeName) {
+				var replacement = doc.createElement(translation);
+				replacement.innerHTML = node.innerHTML;
+				node.parentNode.replaceChild(replacement, node);
+				node = replacement;
+			}
+			if (isAllowed(editable, node.nodeName)) {
+				node = Dom.forward(node);
+			} else if (GROUP_CONTAINERS[node.nodeName] || GROUPED_ELEMENTS[node.nodeName]) {
+				// Because `node` is being entirely removed, we skip over, and
+				// do not descend its subtree
+				var prev = Dom.backward(node);
+				node.parentNode.removeChild(node);
+				node = Dom.forward(prev);
 			} else {
-				var translation = translate(editable, node.nodeName);
-				if (translation !== node.nodeName) {
-					var replacement = doc.createElement(translation);
-					replacement.innerHTML = node.innerHTML;
-					node.parentNode.replaceChild(replacement, node);
-					node = replacement;
-				}
-				if (isAllowed(editable, node.nodeName)) {
-					node = Dom.forward(node);
-				} else if (GROUP_CONTAINERS[node.nodeName] || GROUPED_ELEMENTS[node.nodeName]) {
-					// Because `node` is being entirely removed, we skip over, and
-					// do not descend its subtree
-					var prev = Dom.backward(node);
-					node.parentNode.removeChild(node);
-					node = Dom.forward(prev);
-				} else {
-					var next = Dom.forward(node);
-					Dom.removeShallow(node);
-					node = next;
-				}
+				var next = Dom.forward(node);
+				Dom.removeShallow(node);
+				node = next;
 			}
 		}
 		return container.innerHTML;
