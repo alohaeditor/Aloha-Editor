@@ -291,7 +291,7 @@ define([
 							plugin.upsertLink(existingLink, formValue);
 						}).catch(function (error) {
 							if (!Utils.isUserCloseError(error)) {
-								console.log(error);
+								console.error(error);
 							}
 						})
 					} else {

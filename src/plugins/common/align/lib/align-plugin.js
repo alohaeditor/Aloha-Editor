@@ -1,3 +1,4 @@
+/** @typedef {import('../../ui/lib/contextButton.js').ContextButton} ContextButton */
 /* align-plugin.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
@@ -28,28 +29,25 @@ define([
 	'aloha',
 	'aloha/plugin',
 	'align/align-table-utils',
-	'util/arrays',
 	'util/html',
 	'util/dom',
 	'ui/ui',
 	'ui/contextButton',
 	'ui/icons',
 	'i18n!align/nls/i18n',
-	'i18n!aloha/nls/i18n',
 	'jquery',
 	'PubSub'
 ], function (
 	Aloha,
 	Plugin,
 	AlignTableUtils,
-	Arrays,
 	Html,
 	DomLegacy,
 	Ui,
 	ContextButton,
 	Icons,
 	i18n,
-	i18nCore,
+	/** @type {JQueryStatic} */
 	jQuery,
 	PubSub
 ) {
@@ -64,7 +62,6 @@ define([
 		var selection = range.getRangeTree(),
 			cac = range.getCommonAncestorContainer(),
 			elements = [];
-		var cells, i, len;
 
 		jQuery.each(selection, function () {
 			var node = this.domobj;
@@ -99,23 +96,60 @@ define([
 		return elements;
 	}
 
-	function getAlignmentIcon(alignment) {
-		switch (alignment) {
-			case 'left':
-				return Icons.ALIGN_LEFT;
-			case 'center':
-				return Icons.ALIGN_CENTER;
-			case 'right':
-				return Icons.ALIGN_RIGHT;
-			case 'justify':
-				return Icons.ALIGN_JUSTIFY;
-		}
-	}
+	var HORIZONTAL_OPTIONS = {
+		left: {
+			id: 'left',
+			label: i18n.t('button.alignleft.tooltip'),
+			icon: Icons.ALIGN_LEFT,
+		},
+		center: {
+			id: 'center',
+			label: i18n.t('button.aligncenter.tooltip'),
+			icon: Icons.ALIGN_CENTER,
+		},
+		right: {
+			id: 'right',
+			label: i18n.t('button.alignright.tooltip'),
+			icon: Icons.ALIGN_RIGHT,
+		},
+		justify: {
+			id: 'justify',
+			label: i18n.t('button.alignjustify.tooltip'),
+			icon: Icons.ALIGN_JUSTIFY,
+		},
+	};
+
+	var VERTICAL_OPTIONS = {
+		top: {
+			id: 'top',
+			label: i18n.t('button.aligntop.tooltip'),
+			icon: Icons.ALIGN_TOP,
+		},
+		middle: {
+			id: 'middle',
+			label: i18n.t('button.alignmiddle.tooltip'),
+			icon: Icons.ALIGN_MIDDLE,
+		},
+		bottom: {
+			id: 'bottom',
+			label: i18n.t('button.alignbottom.tooltip'),
+			icon: Icons.ALIGN_BOTTOM,
+		},
+
+	};
+
+	/**
+	 * Icon which is displayed when no alignment could be determined
+	 */
+	var HORIZONTAL_DEFAULT_ICON = 'arrow_range';
+	var VERTICAL_DEFAULT_ICON = 'height';
+	var PROP_ALIGN_HORIZONTAL = 'text-align';
+	var PROP_ALIGN_VERTICAL = 'vertical-align';
 
 	/**
 	 * register the plugin with unique name
 	 */
-	return Plugin.create('align', {
+	var plugin = {
 		_constructor: function () {
 			this._super('align');
 		},
@@ -126,119 +160,160 @@ define([
 			alignment: ['right', 'left', 'center', 'justify', 'top', 'middle', 'bottom']
 		},
 
-		/**
-		 * Alignment wanted by the user
-		 */
-		alignment: '',
+		/** Current alignment of the formatable block */
+		_currentHorizontalAlign: '',
 
-		verticalAlignment: '',
+		/** Current vertical alignment of the formatable block */
+		_currentVerticalAlign: '',
 
-		/**
-		 * Alignment of the selection before modification
-		 */
-		lastAlignment: '',
+		/** @type {ContextButton?} */
+		_horizontalButton: null,
+
+		/** @type {ContextButton?} */
+		_verticalButton: null,
+
+		/** @type {array.<string>} */
+		_allowedHorizontals: [],
+
+		/** @type {array.<string>} */
+		_allowedVerticals: [],
 
 		/**
 		 * Initialize the plugin and set initialize flag on true
 		 */
 		init: function () {
-			var that = this;
-			var availableOptions = [
-				{
-					id: 'left',
-					label: 'Left',
-					icon: Icons.ALIGN_LEFT,
-				},
-				{
-					id: 'center',
-					label: 'Center',
-					icon: Icons.ALIGN_CENTER,
-				},
-				{
-					id: 'right',
-					label: 'Right',
-					icon: Icons.ALIGN_RIGHT,
-				},
-				{
-					id: 'justify',
-					label: 'Justify',
-					icon: Icons.ALIGN_JUSTIFY,
-				}
-			];
-
-			that.alignmentButton = Ui.adopt('alignMenu', ContextButton, {
-				tooltip: i18n.t('button.addcharacter.tooltip'),
-				icon: Icons.ALIGN_LEFT,
+			plugin._horizontalButton = Ui.adopt('alignMenu', ContextButton, {
+				tooltip: i18n.t('button.alignmenu.tooltip'),
+				icon: HORIZONTAL_DEFAULT_ICON,
 				contextType: 'dropdown',
 
-				context: function() {
+				context: function () {
 					const options = [];
 
-					for (let i = 0; i < availableOptions.length; i++) {
-						const option = availableOptions[i];
-
-						if (jQuery.inArray(option.id, that.settings.alignment) >= 0) {
-							options.push(option);
+					for (let i = 0; i < plugin._allowedHorizontals.length; i++) {
+						var opt = HORIZONTAL_OPTIONS[plugin._allowedHorizontals[i]];
+						if (opt) {
+							options.push(opt);
 						}
+					}
+
+					// Don't open the dropdown if no options are available
+					if (options.length === 0) {
+						return null;
 					}
 
 					return {
 						type: 'select-menu',
-						initialValue: that.alignment,
+						initialValue: plugin._currentHorizontalAlign,
 						options: {
-							iconsOnly: true,
 							options: options
 						},
 					}
 				},
 
-				contextResolve: function(selection) {
-					that.alignment = selection.id;
+				contextResolve: function (selection) {
+					if (plugin._currentHorizontalAlign === selection.id) {
+						// Clear the value if it's already selected
+						plugin._currentHorizontalAlign = '';
+					} else {
+						plugin._currentHorizontalAlign = selection.id;
+					}
 
-					that.align(selection.id);
+					plugin.align(selection.id);
+					var option = HORIZONTAL_OPTIONS[plugin._currentHorizontalAlign];
 
-					if (that.alignmentButton) {
-						that.alignmentButton.setIcon(getAlignmentIcon(that.alignment))
+					if (plugin._horizontalButton) {
+						plugin._horizontalButton.setIcon(option != null ? option.icon : HORIZONTAL_DEFAULT_ICON);
 					}
 				},
 			});
 
-			var that = this;
+			plugin._verticalButton = Ui.adopt('vertAlignMenu', ContextButton, {
+				tooltip: i18n.t('button.vertalignmenu.tooltip'),
+				icon: VERTICAL_DEFAULT_ICON,
+				contextType: 'dropdown',
+
+				context: function () {
+					const options = [];
+
+					for (let i = 0; i < plugin._allowedVerticals.length; i++) {
+						var opt = VERTICAL_OPTIONS[plugin._allowedVerticals[i]];
+						if (opt) {
+							options.push(opt);
+						}
+					}
+
+					// Don't open the dropdown if no options are available
+					if (options.length === 0) {
+						return null;
+					}
+
+					return {
+						type: 'select-menu',
+						initialValue: plugin._currentVerticalAlign,
+						options: {
+							options: options
+						},
+					}
+				},
+
+				contextResolve: function (selection) {
+					if (plugin._currentVerticalAlign === selection.id) {
+						// Clear the value if it's already selected
+						plugin._currentVerticalAlign = '';
+					} else {
+						plugin._currentVerticalAlign = selection.id;
+					}
+
+					plugin.align(selection.id, PROP_ALIGN_VERTICAL);
+					var option = VERTICAL_OPTIONS[plugin._currentVerticalAlign];
+
+					if (plugin._verticalButton) {
+						plugin._verticalButton.setIcon(option != null ? option.icon : VERTICAL_DEFAULT_ICON);
+					}
+				},
+			});
 
 			// apply specific configuration if an editable has been activated
 			Aloha.bind('aloha-editable-activated', function (e, params) {
-				that.applyButtonConfig(params.editable.obj);
+				plugin.applyButtonConfig(params.editable.obj);
 			});
 
 			PubSub.sub('aloha.selection.context-change', function (message) {
 				var rangeObject = message.range;
 
 				if (Aloha.activeEditable) {
-					that.buttonPressed(rangeObject);
+					plugin._updateCurrentAlignments(rangeObject);
 				}
 			});
 		},
 
-		buttonPressed: function (rangeObject) {
-			this.horizontalButtonPressed(rangeObject);
-		},
-
-		horizontalButtonPressed: function (rangeObject) {
-			var that = this;
-
-			this.lastAlignment = this.alignment;
-
+		_updateCurrentAlignments: function (rangeObject) {
 			//reset current alignment
-			this.alignment = '';
+			plugin._currentHorizontalAlign = '';
+			plugin._currentVerticalAlign = '';
 
-			rangeObject.findMarkup(function () {
-				// try to find explicitly defined text-align style property
-				if (this.style.textAlign !== "") {
-					that.alignment = this.style.textAlign;
-					return true;
+			rangeObject.findMarkup(function (elem) {
+				var $elem = jQuery(elem);
+				var horz = $elem.css(PROP_ALIGN_HORIZONTAL);
+				var vert = $elem.css(PROP_ALIGN_VERTICAL);
+
+				if (!horz && !vert) {
+					return;
 				}
 
-				that.alignment = jQuery(this).css('text-align');
+				plugin._currentHorizontalAlign = horz;
+				plugin._currentVerticalAlign = vert;
+
+				if (plugin._horizontalButton) {
+					var opt = HORIZONTAL_OPTIONS[plugin._currentHorizontalAlign];
+					plugin._horizontalButton.setIcon(opt != null ? opt.icon : HORIZONTAL_DEFAULT_ICON);
+				}
+				if (plugin._verticalButton) {
+					var opt = VERTICAL_OPTIONS[plugin._currentVerticalAlign];
+					plugin._verticalButton.setIcon(opt != null ? opt.icon : VERTICAL_DEFAULT_ICON);
+				}
+
 			}, Aloha.activeEditable.obj);
 		},
 
@@ -249,18 +324,40 @@ define([
 		 * @return void
 		 */
 		applyButtonConfig: function (obj) {
-			var config = this.getEditableConfig(obj);
+			var config = plugin.getEditableConfig(obj);
+			var allowedOptions = [];
 
-			if ( config && config.alignment && !this.settings.alignment ) {
-				config = config;
-			} else if ( config[0] && config[0].alignment) {
-				config = config[0];
-			} else if (this.settings.alignment) {
-				config.alignment = this.settings.alignment;
+			if (config && Array.isArray(config.alignment)) {
+				allowedOptions = config.alignment;
+			} else if (config && config[0] && Array.isArray(config[0].alignment)) {
+				allowedOptions = config[0];
+			} else if (Array.isArray(plugin.settings.alignment)) {
+				allowedOptions = plugin.settings.alignment;
+			} else {
+				allowedOptions = [];
 			}
 
-			if (typeof config.alignment !== 'undefined') {
-				this.settings.alignment = config.alignment;
+			plugin._allowedHorizontals = allowedOptions.filter(function(name) {
+				return HORIZONTAL_OPTIONS[name] != null;
+			});
+			plugin._allowedVerticals = allowedOptions.filter(function(name) {
+				return VERTICAL_OPTIONS[name] != null;
+			});
+
+			if (plugin._horizontalButton) {
+				if (plugin._allowedHorizontals.length <= 1) {
+					plugin._horizontalButton.hide();
+				} else {
+					plugin._horizontalButton.show();
+				}
+			}
+
+			if (plugin._verticalButton) {
+				if (plugin._allowedVerticals.length <= 1) {
+					plugin._verticalButton.hide();
+				} else {
+					plugin._verticalButton.show();
+				}
 			}
 		},
 
@@ -268,41 +365,36 @@ define([
 		 * Sets or removes the alignment on the selected range.
 		 *
 		 * @param {string} alignment
+		 * @param {string?} property
 		 */
-		align: function (alignment) {
-			this.lastAlignment = this.alignment;
-			this.alignment = alignment;
-
+		align: function (alignment, property) {
 			var elements = getCurrentSelectedBlockElements();
-			this.toggleAlign(elements);
+			plugin.toggleAlign(elements, property, alignment);
 		},
 
 		getSelectedCells: function (range) {
-
 			var selectedCell;
 
-			var activeTable = range.findMarkup(function () {
-				if (jQuery(this).is('td,th')) {
-					selectedCell = this;
+			var activeTable = range.findMarkup(function (elem) {
+				var $elem = jQuery(elem);
+				if ($elem.is('td,th')) {
+					selectedCell = elem;
 				}
-				return jQuery(this).is('table.aloha-table');
+				return $elem.is('table.aloha-table');
 			}, Aloha.activeEditable.obj);
 
 			var selectedCells = jQuery(activeTable).find('.aloha-cell-selected');
 
 			return selectedCells.length ? selectedCells : selectedCell;
-
 		},
 
 		/**
 		 * Toggle the align property of given DOM object(s)
 		 */
-		toggleAlign: function (domObj, property) {
-			var that = this;
+		toggleAlign: function (domObj, property, value) {
+			property = property || PROP_ALIGN_HORIZONTAL;
 
-			property = property || 'text-align';
-
-			var newAlignment = that.alignment;
+			var newAlignment = value;
 			var shouldRemoveAlignment = true;
 
 			jQuery(domObj).each(function () {
@@ -325,5 +417,9 @@ define([
 
 			});
 		}
-	});
+	};
+
+	plugin = Plugin.create('align', plugin);
+
+	return plugin;
 });

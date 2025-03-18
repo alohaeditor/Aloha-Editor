@@ -649,7 +649,7 @@ define([
 				ListPlugin.setListStyle(type, tpl, tplId);
 			}).catch(function (error) {
 				if (!Utils.isUserCloseError(error)) {
-					console.log(error);
+					console.error(error);
 				}
 			});
 		},

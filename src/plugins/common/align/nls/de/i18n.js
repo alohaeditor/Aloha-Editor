@@ -1,4 +1,6 @@
 define({
+	"button.alignmenu.tooltip": "Text ausrichten",
+	"button.vertalignmenu.tooltip": "Text vertical ausrichten",
 	"button.alignright.tooltip": "Rechtsbündig",
 	"button.alignleft.tooltip": "Linksbündig",
 	"button.aligncenter.tooltip": "Zentriert",

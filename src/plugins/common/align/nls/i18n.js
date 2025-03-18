@@ -1,5 +1,7 @@
 define({
 	"root":  {
+		"button.alignmenu.tooltip": "Align text",
+		"button.vertalignmenu.tooltip": "Vertically align text",
 		"button.alignright.tooltip": "Align to the right",
 		"button.alignleft.tooltip": "Align to the left",
 		"button.aligncenter.tooltip": "Center",
