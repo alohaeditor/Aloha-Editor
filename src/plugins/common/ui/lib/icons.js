@@ -40,6 +40,9 @@ define([], function() {
         ALIGN_CENTER: 'format_align_center',
         ALIGN_RIGHT: 'format_align_right',
         ALIGN_JUSTIFY: 'format_align_justify',
+        ALIGN_TOP: 'vertical_align_top',
+        ALIGN_MIDDLE: 'vertical_align_center',
+        ALIGN_BOTTOM: 'vertical_align_bottom',
 
         TABLE_CREATE: 'table',
         TABLE_MERGE_CELLS: 'cell_merge',
