@@ -157,7 +157,7 @@ define([
 		 * Configuration (available align options)
 		 */
 		config: {
-			alignment: ['right', 'left', 'center', 'justify', 'top', 'middle', 'bottom']
+			alignment: Object.keys(HORIZONTAL_OPTIONS)
 		},
 
 		/** Current alignment of the formatable block */
