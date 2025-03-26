@@ -64,8 +64,8 @@ define([
 				var editable = message.editable;
 				var config = plugin.getEditableConfig(editable.obj);
 				var enabled = config
-				           && ($.inArray('hr', config) > -1)
-				           && ContentRules.isAllowed(editable.obj[0], 'hr');
+					&& ($.inArray('hr', config) > -1)
+					&& ContentRules.isAllowed(editable.obj[0], 'hr');
 				configurations[editable.getId()] = !!enabled;
 			});
 
@@ -74,7 +74,12 @@ define([
 			});
 
 			PubSub.sub('aloha.editable.activated', function (message) {
-				button.show(!!configurations[message.editable.getId()]);
+				var allowed = !!configurations[message.editable.getId()];
+				if (!allowed) {
+					button.hide();
+				} else {
+					button.show();
+				}
 			});
 		}
 
