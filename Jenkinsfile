@@ -52,8 +52,6 @@ spec:
       limits:
         cpu: '0'
         memory: '0'
-  imagePullSecrets:
-    - name: jenkins-docker-pull-secret
 """)
 		}
 	}
