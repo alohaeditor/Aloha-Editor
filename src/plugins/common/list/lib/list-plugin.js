@@ -2,7 +2,6 @@
 /** @typedef {import('../../ui/lib/dropdown').Dropdown} Dropdown */
 /** @typedef {import('../../ui/lib/selectMenu').SelectMenuOptions} SelectMenuOptions */
 /** @typedef {import('../../ui/lib/selectMenu').SelectMenuResult} SelectMenuResult */
-
 /**
  * Settings for css-classes which should be applied, depending on the nesting level.
  * Example settings:
@@ -38,7 +37,6 @@
  * @property {Array.<string>} list Classes that will be applied to the list elements (ul/ol/dl).
  * @property {Array.<string>} item Classes that will be applied to the list items (li/dd)
  */
-
 /**
  * @typedef {object} ListTemplate
  * @property {string} label Label of the template
@@ -48,21 +46,6 @@
  */
 
 /** @typedef {'ul'|'ol'|'dl'} ListType */
-
-/**
- * @typedef {object} ListPlugin
- * @property {Array.<string>} config At which elements the plugin is active at.
- *
- * @property {object.<string, boolean>} transformableElements Elements which can be transformed to lists/list-items.
- * @property {object.<string, Array.<ListTemplate>>} templates Types of templates that can be applied to the list-type. The user can select one.
- * @property {object.<string, ?ListSettings>} defaultClasses Default classes which are applied to list/item elements
- 
- * @property {ToggleSplitButton} orderedListButton
- * @property {ToggleSplitButton} unorderedListButton
- * @property {ToggleSplitButton} definitionListButton
- * 
- * @property {function(): HTMLElement | false} getNearestSelectedListItem
- */
 
 /* list-ListPlugin.js is part of the Aloha Editor project http://aloha-editor.org
  *
@@ -121,10 +104,6 @@ define([
 	};
 	var ATTR_DATA_LIST_TEMPLATE = 'data-aloha-list-template';
 	var NONE_OPTION_ID = -1;
-
-	/** @typedef {object.<string, boolean>} EditableListConfiguration */
-	/** @type {object.<string, EditableListConfiguration>} */
-	var configurations = {};
 
 	function getListTypeFromElement($elem) {
 		if ($elem.is('ol')) {
@@ -224,29 +203,53 @@ define([
 		});
 	}
 
+	function normalizeConfiguration(config) {
+		// If a oject is returned, we only want keys where the value is true
+		if (config != null && !Array.isArray(config) && typeof config === 'object') {
+			return Object.entries(config).flatMap(function(entry) {
+				return entry[1] ? [entry[0]] : [];
+			});
+		}
+
+		return config;
+	}
+
+	function checkVisibility(editable) {
+		// If we have no editable, then we don't want to show the button
+		if (editable == null || editable.obj == null) {
+			ListPlugin.orderedListButton.hide();
+			ListPlugin.unorderedListButton.hide();
+			ListPlugin.definitionListButton.hide();
+			return;
+		}
+
+		var config = normalizeConfiguration(ListPlugin.getEditableConfig(editable.obj));
+		if (config) {
+			LIST_TYPES.forEach(function(type) {
+				var enabled = config.includes(type);
+				var allowed = ContentRules.isAllowed(editable.obj[0], type);
+				toggleListOption(type, enabled && allowed);
+			});
+		}
+	}
+
 	/**
 	 * Subscribes event handlers to facilitate user interaction on editables.
 	 *
 	 * @private
 	 */
 	function registerEventHandlers() {
-		PubSub.sub('aloha.editable.created', function (message) {
-			var editable = message.editable.obj[0];
-			/** @type Array.<string> */
-			var config = ListPlugin.getEditableConfig(message.editable.obj) || [];
-			// If a oject is returned, we only want keys where the value is true
-			if (!Array.isArray(config) && typeof config === 'object') {
-				config = Object.entries(config).flatMap(function(entry) {
-					return entry[1] ? [entry[0]] : [];
-				});
-			}
+		// Set the button visible if it's enabled via the config
+		PubSub.sub('aloha.editable.activated', function (message) {
+			var editable = message.editable;
+			checkVisibility(editable);
+		});
 
-			var newConfig = {};
-			LIST_TYPES.forEach(function(type) {
-				newConfig[type] = config && config.includes(type) && ContentRules.isAllowed(editable, type);
-			});
-
-			configurations[message.editable.getId()] = newConfig;
+		// Reset and hide the buttons when leaving an editable
+		PubSub.sub('aloha.editable.deactivated', function () {
+			ListPlugin.orderedListButton.hide();
+			ListPlugin.unorderedListButton.hide();
+			ListPlugin.definitionListButton.hide();
 		});
 
 		Aloha.bind('aloha-smart-content-changed', function (event, data) {
@@ -265,19 +268,6 @@ define([
 					ListPlugin.applyDefaultClassesToList(list);
 				}
 			});
-		});
-
-		PubSub.sub('aloha.editable.destroyed', function (message) {
-			delete configurations[message.editable.getId()];
-		});
-
-		PubSub.sub('aloha.editable.activated', function (message) {
-			var config = configurations[message.editable.getId()];
-			if (config) {
-				LIST_TYPES.forEach(function(type) {
-					toggleListOption(type, config[type] !== false);
-				});
-			}
 		});
 
 		PubSub.sub('aloha.editable.deactivated', function () {
@@ -450,7 +440,7 @@ define([
 	 * Register the ListPlugin as Aloha.Plugin
 	 * @type {ListPlugin}
 	 */
-	var ListPlugin = Plugin.create('list', /** @type {ListPlugin} */ ({
+	var ListPlugin = {
 
 		/**
 		 * default button configuration
@@ -458,7 +448,7 @@ define([
 		config: LIST_TYPES.slice(0),
 
 		/**
-		 * List of transformable elements
+		 * Elements which can be transformed to lists/list-items.
 		 */
 		transformableElements: {
 			'p' : true,
@@ -473,12 +463,16 @@ define([
 			'dl': true
 		},
 		
+		/**
+		 * Types of templates that can be applied to the list-type. The user can select one.
+		 */
 		templates: {
 			ul: [],
 			ol: [],
 			dl: []
 		},
 
+		/** Default classes which are applied to list/item elements */
 		defaultClasses: {
 			ul: {
 				list: [],
@@ -520,6 +514,8 @@ define([
 
 			initializeButtons();
 			registerEventHandlers();
+
+			checkVisibility(Aloha.activeEditable);
 
 			ListPlugin._inListScope = false;
 
@@ -661,9 +657,9 @@ define([
 				// check which list-types are allowed in this editable
 				// if the list type is not allowed we have to remove the
 				// element by unwrapping its contents
-				var config = configurations[editable.getId()],
+				var config = normalizeConfiguration(ListPlugin.getEditableConfig(editable)),
 					listType = getListTypeFromElement($elem);
-				if (!listType || (config && !config[listType])) {
+				if (!listType || (config && !config.includes(listType))) {
 					$elem.contents().unwrap();
 					return false;
 				}
@@ -1553,7 +1549,7 @@ define([
 
 			return ListPlugin.defaultClasses[listType] || { list: [], item: [] };
 		}
-	}));
+	};
 
 	Engine.commands['insertdefinitionlist'] = {
 		action: function (value, range) {
@@ -1685,6 +1681,8 @@ define([
 			return false;
 		}
 	};
+
+	ListPlugin = Plugin.create('list', ListPlugin);
 
 	return ListPlugin;
 });

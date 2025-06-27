@@ -18,7 +18,7 @@ define([
 	'i18n!abbr/nls/i18n',
 ], function (
 	Aloha,
-	jQuery,
+	$,
 	PubSub,
 	Plugin,
 	ContentRules,
@@ -31,106 +31,89 @@ define([
 	'use strict';
 
 	var GENTICS = window.GENTICS;
-	var $ = jQuery;
-	var configurations = {};
+
+	function checkVisibility(editable) {
+		// If we have no editable, then we don't want to show the button
+		if (editable == null || editable.obj == null) {
+			AbbreviationPlugin._formatAbbrButton.hide();
+			return;
+		}
+
+		var config = AbbreviationPlugin.getEditableConfig(editable.obj);
+		var enabled = config
+			&& ($.inArray('abbr', config) > -1)
+			&& ContentRules.isAllowed(editable.obj[0], 'abbr');
+
+		if (enabled) {
+			AbbreviationPlugin._formatAbbrButton.show();
+		} else {
+			AbbreviationPlugin._formatAbbrButton.hide();
+		}
+	}
 
 	/**
 	 * Subscribes event handlers to facilitate user interaction on editables.
-	 *
-	 * @private
-	 * @param {ListPlugin} plugin
 	 */
-	function registerEventHandlers(plugin) {
-		PubSub.sub('aloha.editable.created', function (message) {
+	function registerEventHandlers() {
+		// Set the button visible if it's enabled via the config
+		PubSub.sub('aloha.editable.activated', function (message) {
 			var editable = message.editable;
-			var config = plugin.getEditableConfig(editable.obj);
-			var enabled = config
-			           && ($.inArray('abbr', config) > -1)
-			           && ContentRules.isAllowed(editable.obj[0], 'abbr');
-			configurations[editable.getId()] = !!enabled;
+			checkVisibility(editable);
 		});
 
-		PubSub.sub('aloha.editable.destroyed', function (message) {
-			delete configurations[message.editable.getId()];
+		// Reset and hide the button when leaving an editable
+		PubSub.sub('aloha.editable.deactivated', function () {
+			AbbreviationPlugin._formatAbbrButton.hide();
+			AbbreviationPlugin._formatAbbrButton.setActive(false);
+			AbbreviationPlugin._formatAbbrButton.deactivateInput();
+			AbbreviationPlugin._formatAbbrButton.setTargetElement(null);
+			Scopes.leaveScope(AbbreviationPlugin.name);
 		});
 
-		/**
-		 * Flag for proper deactivation handling.
-		 * The context-change event triggers after editable-deactivated.
-		 * One weird quirk is however, that event after/during editable-deactivated,
-		 * the `activeEditable` is still set.
-		 * Therefore the context-change would enable the button again, which is wrong.
-		 */
-		var actuallyLeftEditable = false;
-
+		// Handle the active-state of the button
 		PubSub.sub('aloha.selection.context-change', function (message) {
-			if (!Aloha.activeEditable || actuallyLeftEditable) {
-				return;
-			}
-
-			if (!configurations[Aloha.activeEditable.getId()]) {
-				plugin._formatAbbrButton.hide();
-				return;
-			}
-
-			plugin._formatAbbrButton.show();
-
 			var range = message.range;
-			var foundMarkup = plugin.findAbbrMarkup(range);
+			var foundMarkup = AbbreviationPlugin.findAbbrMarkup(range);
 
 			if (foundMarkup) {
-				plugin._formatAbbrButton.setActive(true);
-				plugin._formatAbbrButton.activateInput(true);
-				plugin._formatAbbrButton.setTargetElement($(foundMarkup));
-				Scopes.enterScope(plugin.name);
+				AbbreviationPlugin._formatAbbrButton.setActive(true);
+				AbbreviationPlugin._formatAbbrButton.activateInput(true);
+				AbbreviationPlugin._formatAbbrButton.setTargetElement($(foundMarkup));
+				Scopes.enterScope(AbbreviationPlugin.name);
 			} else {
-				plugin._formatAbbrButton.setActive(false);
-				plugin._formatAbbrButton.deactivateInput();
-				plugin._formatAbbrButton.setTargetElement(null);
-				Scopes.leaveScope(plugin.name);
+				AbbreviationPlugin._formatAbbrButton.setActive(false);
+				AbbreviationPlugin._formatAbbrButton.deactivateInput();
+				AbbreviationPlugin._formatAbbrButton.setTargetElement(null);
+				Scopes.leaveScope(AbbreviationPlugin.name);
 			}
 		});
-
-		Aloha.bind('aloha-editable-activated', function() {
-			actuallyLeftEditable = false;
-		});
-
-		Aloha.bind('aloha-editable-deactivated', function(event, params) {
-			if (params.newEditable == null) {
-				plugin._formatAbbrButton.setActive(false);
-				plugin._formatAbbrButton.deactivateInput();
-				plugin._formatAbbrButton.setTargetElement(null);
-				Scopes.leaveScope(plugin.name);
-				actuallyLeftEditable = true;
-			}
-		})
 	}
 
 	/**
 	 * register the plugin with unique name
 	 */
-	return Plugin.create('abbr', {
+	var AbbreviationPlugin = {
 		/**
 		 * default button configuration
 		 */
-		config: [ 'abbr' ],
+		config: ['abbr'],
+
+		_formatAbbrButton: null,
 
 		/**
 		 * Initialize the plugin and set initialize flag on true
 		 */
 		init: function () {
-			this.createButtons();
-		    this.bindInteractions();
-		    registerEventHandlers(this);
+			AbbreviationPlugin.createButtons();
+			AbbreviationPlugin.bindInteractions();
+			registerEventHandlers();
 		},
 
 		/**
 		 * Initialize the buttons
 		 */
 		createButtons: function () {
-		    var that = this;
-
-			this._formatAbbrButton = Ui.adopt("formatAbbr", AttributeToggleButton, {
+			AbbreviationPlugin._formatAbbrButton = Ui.adopt("formatAbbr", AttributeToggleButton, {
 				tooltip: i18n.t("button.abbr.tooltip"),
 				icon: Icons.ABBREVIATION,
 				targetAttribute: 'title',
@@ -139,14 +122,16 @@ define([
 				pure: true,
 				onToggle: function (activated) {
 					if (activated) {
-						that.insertAbbr(true);
-						that._formatAbbrButton.setActive(true);
+						AbbreviationPlugin.insertAbbr(true);
+						AbbreviationPlugin._formatAbbrButton.setActive(true);
 					} else {
-						that.removeAbbr();
-						that._formatAbbrButton.setActive(false);
+						AbbreviationPlugin.removeAbbr();
+						AbbreviationPlugin._formatAbbrButton.setActive(false);
 					}
 				},
 			});
+
+			checkVisibility(Aloha.activeEditable);
 		},
 
 		/**
@@ -154,18 +139,15 @@ define([
 		 * Add the abbr shortcut to all edtiables
 		 */
 		bindInteractions: function () {
-			var that = this;
-
-
 			// add to all editables the abbr shortcut
 			for (var i = 0; i < Aloha.editables.length; i++) {
 				// CTRL+G
 				Aloha.editables[i].obj.keydown(function (e) {
 					if (e.metaKey && e.which == 71) {
-						if (that.findAbbrMarkup()) {
-							that.removeAbbr();
+						if (AbbreviationPlugin.findAbbrMarkup()) {
+							AbbreviationPlugin.removeAbbr();
 						} else {
-							that.insertAbbr();
+							AbbreviationPlugin.insertAbbr();
 						}
 
 						// prevent from further handling
@@ -190,13 +172,13 @@ define([
 				range = Aloha.Selection.getRangeObject();
 			}
 
-			if (Aloha.activeEditable) {
-				return range.findMarkup( function() {
-					return this.nodeName.toLowerCase() == 'abbr';
-				}, Aloha.activeEditable.obj);
-			} else {
+			if (!Aloha.activeEditable) {
 				return null;
 			}
+
+			return range.findMarkup(function () {
+				return this.nodeName.toLowerCase() == 'abbr';
+			}, Aloha.activeEditable.obj);
 		},
 
 		/**
@@ -205,11 +187,11 @@ define([
 		 * the abbr text.
 		 */
 		insertAbbr: function (extendToWord) {
-		    // current selection or cursor position
-		    var range = Aloha.Selection.getRangeObject();
+			// current selection or cursor position
+			var range = Aloha.Selection.getRangeObject();
 
 			// do not insert a abbr in a abbr
-			if (this.findAbbrMarkup(range)) {
+			if (AbbreviationPlugin.findAbbrMarkup(range)) {
 				return;
 			}
 
@@ -219,33 +201,33 @@ define([
 			}
 
 			if (range.isCollapsed()) {
-		        // insert a abbr with text here
-		        var abbrText = i18n.t('newabbr.defaulttext');
-		        var newAbbr = jQuery('<abbr title="">' + abbrText + '</abbr>');
-		        GENTICS.Utils.Dom.insertIntoDOM(newAbbr, range, jQuery(Aloha.activeEditable.obj));
-		        range.startContainer = range.endContainer = newAbbr.contents().get(0);
-		        range.startOffset = 0;
-		        range.endOffset = abbrText.length;
-		    } else {
-				var newAbbr = jQuery('<abbr title=""></abbr>');
-		        GENTICS.Utils.Dom.addMarkup(range, newAbbr, false);
-		    }
+				// insert a abbr with text here
+				var abbrText = i18n.t('newabbr.defaulttext');
+				var newAbbr = $('<abbr title="">' + abbrText + '</abbr>');
+				GENTICS.Utils.Dom.insertIntoDOM(newAbbr, range, jQuery(Aloha.activeEditable.obj));
+				range.startContainer = range.endContainer = newAbbr.contents().get(0);
+				range.startOffset = 0;
+				range.endOffset = abbrText.length;
+			} else {
+				var newAbbr = $('<abbr title=""></abbr>');
+				GENTICS.Utils.Dom.addMarkup(range, newAbbr, false);
+			}
 
-		    range.select();
+			range.select();
 		},
 
 		/**
 		 * Remove an a tag.
 		 */
 		removeAbbr: function () {
-		    var range = Aloha.Selection.getRangeObject();
-		    var foundMarkup = this.findAbbrMarkup();
-		    if (foundMarkup) {
-		        // remove the abbr
-		        GENTICS.Utils.Dom.removeFromDOM(foundMarkup, range, true);
-		        // select the (possibly modified) range
-		        range.select();
-		    }
+			var range = Aloha.Selection.getRangeObject();
+			var foundMarkup = AbbreviationPlugin.findAbbrMarkup();
+			if (foundMarkup) {
+				// remove the abbr
+				GENTICS.Utils.Dom.removeFromDOM(foundMarkup, range, true);
+				// select the (possibly modified) range
+				range.select();
+			}
 		},
 
 		/**
@@ -265,7 +247,9 @@ define([
 		toString: function () {
 			return 'abbr';
 		}
+	};
 
-	});
+	AbbreviationPlugin = Plugin.create('abbr', AbbreviationPlugin);
 
+	return AbbreviationPlugin;
 });

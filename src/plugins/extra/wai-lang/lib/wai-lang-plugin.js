@@ -46,10 +46,10 @@ define([
 	 * @return {boolean}
 	 */
 	function isTrue(value) {
-		return true   === value
-		    || 'true' === value
-		    || 1      === value
-		    || '1'    === value;
+		return true === value
+			|| 'true' === value
+			|| 1 === value
+			|| '1' === value;
 	}
 
 	/**
@@ -71,8 +71,8 @@ define([
 	 */
 	function findWaiLangMarkup(range) {
 		return Aloha.activeEditable
-		     ? range.findMarkup(filterForWaiLangMarkup, Aloha.activeEditable.obj)
-		     : null;
+			? range.findMarkup(filterForWaiLangMarkup, Aloha.activeEditable.obj)
+			: null;
 	}
 
 	/**
@@ -127,17 +127,15 @@ define([
 	function annotate(element) {
 		var $element = $(element);
 		$element.addClass(WAI_LANG_CLASS)
-		        .attr('data-gentics-aloha-repository', 'wai-languages')
-		        .attr('data-gentics-aloha-object-id', $element.attr('lang'));
+			.attr('data-gentics-aloha-repository', 'wai-languages')
+			.attr('data-gentics-aloha-object-id', $element.attr('lang'));
 	}
 
 	/**
 	 * Initialize the buttons:
 	 * Places the Wai-Lang UI button into the floating menu.
-	 *
-	 * @param {Plugin} plugin Wai-lang plugin instance
 	 */
-	function prepareUi(plugin) {
+	function prepareUi() {
 		plugin._wailangButton = Ui.adopt('wailang', AttributeToggleButton, {
 			tooltip: i18n.t('button.add-wai-lang.tooltip'),
 			icon: Icons.LANGUAGE,
@@ -145,7 +143,7 @@ define([
 			inputLabel: 'Language',
 			panelLabel: 'WAI language',
 			pure: true,
-			onToggle: function(active) {
+			onToggle: function (active) {
 				if (Aloha.activeEditable) {
 					var range = Selection.getRangeObject();
 					if (findWaiLangMarkup(range)) {
@@ -160,83 +158,80 @@ define([
 		});
 	}
 
-	/**
-	 * Cache of editable configuration for quicker lookup.
-	 *
-	 * Note that each configuration is the product of the per-editable
-	 * configuration and the plugin configuration, and therefore the cache key
-	 * for each configuration entry must be a function of both their
-	 * identifiers.
-	 *
-	 * @type {string, object}
-	 */
-	var configurations = {};
+	function checkVisibility(editable) {
+		// If we have no editable, then we don't want to show the button
+		if (editable == null || editable.obj == null) {
+			plugin._wailangButton.hide();
+			return;
+		}
+
+		var config = plugin.getEditableConfig(editable.obj);
+		var enabled = config
+			&& ($.inArray('span', config) > -1)
+			&& ContentRules.isAllowed(editable.obj[0], 'span');
+
+		if (enabled) {
+			plugin._wailangButton.show();
+		} else {
+			plugin._wailangButton.hide();
+		}
+	}
 
 	/**
 	 * Registers event handlers for the given plugin instance.
-	 *
-	 * @param {Plugin} plugin Instance of wai-lang plugin.
 	 */
-	function subscribeEvents(plugin) {
-		PubSub.sub('aloha.editable.created', function (message) {
-			var $editable = message.editable.obj;
-			var config = plugin.getEditableConfig($editable);
-			var enabled = config
-			           && ($.inArray('span', config) > -1)
-			           && ContentRules.isAllowed($editable[0], 'span');
+	function subscribeEvents() {
+		// Set the button visible if it's enabled via the config
+		PubSub.sub('aloha.editable.activated', function (message) {
+			var editable = message.editable;
+			checkVisibility(editable);
 
-			configurations[message.editable.getId()] = enabled;
-
-			if (!enabled) {
+			if (!plugin._wailangButton.visibile) {
 				return;
 			}
 
-			$editable.on('keydown', plugin.hotKey.insertAnnotation, function () {
-					prepareAnnotation();
+			$editable.on('keydown.aloha-wai', plugin.hotKey.insertAnnotation, function () {
+				prepareAnnotation();
 
-					// Because on a MAC Safari, cursor would otherwise
-					// automatically jump to location bar.  We therefore prevent
-					// bubbling, so that the editor must hit ESC and then META+I
-					// to manually do that
-					return false;
-				}
-			);
+				// Because on a MAC Safari, cursor would otherwise
+				// automatically jump to location bar.  We therefore prevent
+				// bubbling, so that the editor must hit ESC and then META+I
+				// to manually do that
+				return false;
+			});
 
 			$editable.find('span[lang]').each(function () {
 				annotate(this);
 			});
 		});
 
-		PubSub.sub('aloha.editable.activated', function (message) {
-			plugin._wailangButton.show(!!configurations[message.editable.getId()]);
+		// Reset and hide the button when leaving an editable
+		PubSub.sub('aloha.editable.deactivated', function (message) {
+			plugin._wailangButton.hide();
+			message.editable.obj.off('keydown.aloha-wai');
 		});
 
-		PubSub.sub('aloha.editable.deleted', function (message) {
-			delete configurations[message.editable.getId()];
-		});
+		checkVisibility(Aloha.activeEditable);
 
-		PubSub.sub(
-			'aloha.selection.context-change',
-			// 'aloha-selection-changed',
-			function onSelectionChanged(message) {
-				var range = message.range;
-				var markup = findWaiLangMarkup(range);
+		// 'aloha-selection-changed',
+		PubSub.sub('aloha.selection.context-change', function onSelectionChanged(message) {
+			var range = message.range;
+			var markup = findWaiLangMarkup(range);
 
-				if (markup) {
-					plugin._wailangButton.setActive(true);
-					plugin._wailangButton.activateInput(true);
-					plugin._wailangButton.setTargetElement($(markup));
-					Scopes.enterScope(plugin.name);
-				} else {
-					plugin._wailangButton.setActive(false);
-					plugin._wailangButton.deactivateInput();
-					Scopes.leaveScope(plugin.name);
-				}
+			if (markup) {
+				plugin._wailangButton.setActive(true);
+				plugin._wailangButton.activateInput(true);
+				plugin._wailangButton.setTargetElement($(markup));
+				Scopes.enterScope(plugin.name);
+			} else {
+				plugin._wailangButton.setActive(false);
+				plugin._wailangButton.deactivateInput();
+				Scopes.leaveScope(plugin.name);
 			}
-		);
+		});
 	}
 
-	return Plugin.create('wai-lang', {
+	var plugin = {
 
 		/**
 		 * Default configuration, allows spans everywhere.
@@ -277,23 +272,23 @@ define([
 		},
 
 		init: function init() {
-			if (this.settings.objectTypeFilter) {
-				this.objectTypeFilter = this.settings.objectTypeFilter;
+			if (plugin.settings.objectTypeFilter) {
+				plugin.objectTypeFilter = plugin.settings.objectTypeFilter;
 			}
-			if (this.settings.hotKey) {
-				$.extend(true, this.hotKey, this.settings.hotKey);
+			if (plugin.settings.hotKey) {
+				$.extend(true, plugin.hotKey, plugin.settings.hotKey);
 			}
-			if (this.settings.iso639) {
-				this.iso639 = this.settings.iso639;
+			if (plugin.settings.iso639) {
+				plugin.iso639 = plugin.settings.iso639;
 			}
-			this.flags = isTrue(this.settings.flags);
-			prepareUi(this);
-			subscribeEvents(this);
+			plugin.flags = isTrue(plugin.settings.flags);
+			prepareUi();
+			subscribeEvents();
 
 			var repo = new LanguageRepository(
 				'wai-languages',
-				this.flags,
-				this.iso639 == 'iso639-1' ? 'iso639-1' : 'iso639-2',
+				plugin.flags,
+				plugin.iso639 == 'iso639-1' ? 'iso639-1' : 'iso639-2',
 				Aloha.settings.locale,
 				'language/wai'
 			);
@@ -309,14 +304,17 @@ define([
 		 *                                       element to clean up.
 		 */
 		makeClean: function makeClean($element) {
-			$element.find('span[lang]')
-				.each(function onEachLangSpan() {
-					var $span = $(this);
-					$span.removeClass(WAI_LANG_CLASS)
-					     .removeAttr('data-gentics-aloha-repository')
-					     .removeAttr('data-gentics-aloha-object-id');
-				});
+			$element.find('span[lang]').each(function onEachLangSpan() {
+				var $span = $(this);
+				$span.removeClass(WAI_LANG_CLASS)
+					.removeAttr('data-gentics-aloha-repository')
+					.removeAttr('data-gentics-aloha-object-id');
+			});
 		}
 
-	});
+	};
+
+	plugin = Plugin.create('wai-lang', plugin);
+
+	return plugin;
 });

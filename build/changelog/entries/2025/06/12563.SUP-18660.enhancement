@@ -1,0 +1,1 @@
+Plugins will now check their configuration dynamically whenever a editable is getting de-/activated, instead of caching it once on initialization.

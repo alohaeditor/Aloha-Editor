@@ -196,7 +196,9 @@ define([
 				configSpecified = false,
 				that = this;
 
-			if (this.settings.editables) {
+			var pluginSettings = getPluginSettings(this);
+
+			if (pluginSettings.editables && obj != null) {
 				// When editable is an input or textarea we need the original object.
 				obj = getEditableOriginalObj(obj);
 
@@ -212,7 +214,7 @@ define([
 				}
 
 				// check if the editable's selector matches and if so add its configuration to object configuration
-				jQuery.each(this.settings.editables, function (selector, selectorConfig) {
+				jQuery.each(pluginSettings.editables, function (selector, selectorConfig) {
 					if (!obj.is(selector)) {
 						return;
 					}
@@ -244,10 +246,10 @@ define([
 
 			// fall back to default configuration
 			if (!configSpecified) {
-				if (typeof this.settings.config === 'undefined' || !this.settings.config) {
+				if (typeof pluginSettings.config === 'undefined' || !pluginSettings.config) {
 					configObj = this.config;
 				} else {
-					configObj = this.settings.config;
+					configObj = pluginSettings.config;
 				}
 			}
 
@@ -297,6 +299,15 @@ define([
 		}
 	});
 
+	function getPluginSettings(instance) {
+		var globalSettings = {};
+		if (Aloha.settings != null && Aloha.settings.plugins != null) {
+			globalSettings = Aloha.settings.plugins[instance.name] || {};
+		}
+		var merged = jQuery.extendObjects(true, {}, instance.defaults, globalSettings);
+		return merged;
+	}
+
 	/**
 	 * Static method used as factory to create plugins.
 	 * 
@@ -306,11 +317,7 @@ define([
 	Plugin.create = function (pluginName, definition) {
 
 		var pluginInstance = new (Plugin.extend(definition))(pluginName);
-		var globalSettings = {};
-		if (Aloha.settings != null && Aloha.settings.plugins != null) {
-			globalSettings = Aloha.settings.plugins[pluginName] || {};
-		}
-		pluginInstance.settings = jQuery.extendObjects(true, {}, pluginInstance.defaults, globalSettings);
+		pluginInstance.settings = getPluginSettings(pluginInstance);
 		PluginManager.register(pluginInstance);
 
 		return pluginInstance;

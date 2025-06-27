@@ -277,9 +277,6 @@ define([
 		* Create buttons
 		*/
 		initializeUI: function () {
-
-			var that = this;
-
 			this.ui = new ImageFloatingMenu();
 			this.ui.init(this);
 		},
