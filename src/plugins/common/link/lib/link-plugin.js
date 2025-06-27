@@ -5,10 +5,8 @@
  * Contributors http://aloha-editor.org/contribution.php
  * License http://aloha-editor.org/license.php
  */
-
-/**
- * @typedef {import('../../ui/lib/select.js').SelectOption} SelectOption
- */
+/** @typedef {import('../../ui/lib/toggleSplitButton').ToggleSplitButton} ToggleSplitButton */
+/** @typedef {import('../../ui/lib/select').SelectOption} SelectOption */
 
 
 /* Aloha Link Plugin
@@ -180,7 +178,28 @@ define([
 		return component;
 	}
 
-	var plugin = Plugin.create('link', {
+	function checkVisibility(editable) {
+		// If we have no editable, then we don't want to show the button
+		if (editable == null || editable.obj == null) {
+			LinkPlugin._insertLinkButton.hide();
+			return false;
+		}
+
+		var config = LinkPlugin.getEditableConfig(editable.obj);
+		var enabled = config
+			&& ($.inArray('a', config) > -1)
+			&& ContentRules.isAllowed(editable.obj[0], 'a');
+
+		if (enabled) {
+			LinkPlugin._insertLinkButton.show();
+		} else {
+			LinkPlugin._insertLinkButton.hide();
+		}
+
+		return enabled;
+	}
+
+	var LinkPlugin = {
 		/**
 		 * Default configuration allows links everywhere
 		 */
@@ -194,6 +213,7 @@ define([
 		/**
 		 * handle change on href change
 		 * called function ( obj, href, item );
+		 * @type {function(jQuery, string):void=}
 		 */
 		onHrefChange: null,
 
@@ -214,33 +234,36 @@ define([
 		 */
 		flags: true,
 
+		/** @type {ToggleSplitButton=} */
+		_insertLinkButton: null,
+
 		/**
 		 * Initializes the plugin.
 		 */
 		init: function () {
-			Scopes.registerScope(plugin.name, [Scopes.SCOPE_GLOBAL]);
+			Scopes.registerScope(LinkPlugin.name, [Scopes.SCOPE_GLOBAL]);
 
 			DynamicForm.componentFactoryRegistry['link-target'] = createLinkTargetFromConfig;
 
-			if (typeof plugin.settings.objectTypeFilter != 'undefined') {
-				plugin.objectTypeFilter = plugin.settings.objectTypeFilter;
+			if (typeof LinkPlugin.settings.objectTypeFilter != 'undefined') {
+				LinkPlugin.objectTypeFilter = LinkPlugin.settings.objectTypeFilter;
 			}
-			if (typeof plugin.settings.onHrefChange != 'undefined') {
-				plugin.onHrefChange = plugin.settings.onHrefChange;
+			if (typeof LinkPlugin.settings.onHrefChange != 'undefined') {
+				LinkPlugin.onHrefChange = LinkPlugin.settings.onHrefChange;
 			}
-			if (typeof plugin.settings.hotKey != 'undefined') {
-				$.extend(true, plugin.hotKey, plugin.settings.hotKey);
+			if (typeof LinkPlugin.settings.hotKey != 'undefined') {
+				$.extend(true, LinkPlugin.hotKey, LinkPlugin.settings.hotKey);
 			}
-			if (typeof plugin.settings.hrefValue != 'undefined') {
-				plugin.hrefValue = plugin.settings.hrefValue;
+			if (typeof LinkPlugin.settings.hrefValue != 'undefined') {
+				LinkPlugin.hrefValue = LinkPlugin.settings.hrefValue;
 			}
 
-			plugin.createButtons();
-			plugin.subscribeEvents();
+			LinkPlugin.createButtons();
+			LinkPlugin.subscribeEvents();
 
 			Aloha.bind('aloha-plugins-loaded', function () {
 				PubSub.pub('aloha.link.ready', {
-					plugin: plugin
+					plugin: LinkPlugin
 				});
 			});
 		},
@@ -262,125 +285,69 @@ define([
 		 * Subscribe for events
 		 */
 		subscribeEvents: function () {
-			var editablesCreated = 0;
-
-			PubSub.sub('aloha.editable.created', function (message) {
+			// Set the button visible if it's enabled via the config
+			PubSub.sub('aloha.editable.activated', function (message) {
 				var editable = message.editable;
-				var config = plugin.getEditableConfig(editable.obj);
-				var enabled = config
-					&& Array.isArray(config)
-					&& config.includes('a')
-					&& ContentRules.isAllowed(editable.obj[0], 'a');
 
-				configurations[editable.getId()] = !!enabled;
+				setupMetaClickLink(message.editable);
 
-				if (!enabled) {
+				if (!checkVisibility(editable)) {
 					return;
 				}
 
 				// enable hotkey for inserting links
-				editable.obj.on('keydown.aloha-link', plugin.hotKey.insertLink, function () {
-					let existingLink = plugin.findLinkMarkup();
+				editable.obj.on('keydown.aloha-link', LinkPlugin.hotKey.insertLink, function () {
+					let existingLink = LinkPlugin.findLinkMarkup();
 
 					if (existingLink) {
 						Modal.openDynamicModal(
-							plugin.createInsertLinkContext(existingLink)
+							LinkPlugin.createInsertLinkContext(existingLink)
 						).then(function (control) {
 							return control.value;
 						}).then(function (formValue) {
-							plugin.upsertLink(existingLink, formValue);
+							LinkPlugin.upsertLink(existingLink, formValue);
 						}).catch(function (error) {
 							if (!Utils.isUserCloseError(error)) {
 								console.error(error);
 							}
 						})
 					} else {
-						plugin.insertLink(true);
+						LinkPlugin.insertLink(true);
 					}
 					return false;
 				});
 
 				Array.from(editable.obj.find('a')).forEach(function (foundLink) {
-					plugin.addLinkEventHandlers(foundLink);
+					LinkPlugin.addLinkEventHandlers(foundLink);
 				});
-
-				if (0 === editablesCreated++) {
-					setupMousePointerFix();
-				}
 			});
 
-			PubSub.sub('aloha.editable.destroyed', function (message) {
-				message.editable.obj.unbind('.aloha-link');
-				if (0 === --editablesCreated) {
-					teardownMousePointerFix();
-				}
+			// Reset and hide the button when leaving an editable
+			PubSub.sub('aloha.editable.deactivated', function (message) {
+				teardownMetaClickLink(message.editable);
+				LinkPlugin._insertLinkButton.hide();
+				updateLinkButtonState(false);
 			});
 
-			var actuallyLeftEditable = false;
-
-			PubSub.sub('aloha.editable.activated', function (message) {
-				actuallyLeftEditable = false;
-				if (configurations[message.editable.getId()]) {
-					plugin._insertLinkButton.show();
-				} else {
-					plugin._insertLinkButton.hide();
-				}
-				setupMetaClickLink(message.editable);
-			});
+			checkVisibility(Aloha.activeEditable);
 
 			function updateLinkButtonState(activeStateOrRange) {
 				if (typeof activeStateOrRange !== 'boolean') {
-					activeStateOrRange = !!plugin.findLinkMarkup(activeStateOrRange);
+					activeStateOrRange = !!LinkPlugin.findLinkMarkup(activeStateOrRange);
 				}
-				plugin._insertLinkButton.setActive(activeStateOrRange);
-				plugin._insertLinkButton.setIcon(activeStateOrRange ? Icons.UNLINK : Icons.LINK);
-				plugin.toggleLinkScope(activeStateOrRange);
+				LinkPlugin._insertLinkButton.setActive(activeStateOrRange);
+				LinkPlugin._insertLinkButton.setIcon(activeStateOrRange ? Icons.UNLINK : Icons.LINK);
+
+				if (activeStateOrRange) {
+					Scopes.enterScope(LinkPlugin.name);
+				} else {
+					Scopes.leaveScope(LinkPlugin.name);
+				}
 			}
 
 			PubSub.sub('aloha.selection.context-change', function (message) {
-				if (!actuallyLeftEditable) {
-					updateLinkButtonState(message.range);
-				}
+				updateLinkButtonState(message.range);
 			});
-
-			// Fixes problem: if one clicks from inside an aloha link outside
-			// the editable and thereby deactivates the editable, the link scope
-			// will remain active
-			PubSub.sub('aloha.editable.deactivated', function (message) {
-				if (message.newEditable == null) {
-					updateLinkButtonState(false);
-					actuallyLeftEditable = true;
-				}
-				teardownMetaClickLink(message.editable);
-			});
-		},
-
-		/**
-		 * lets you toggle the link scope to true or false
-		 * @param show bool
-		 */
-		toggleLinkScope: function (show) {
-			// Check before doing anything as a performance improvement.
-			// The _isScopeActive_editableId check ensures plugin when
-			// changing from a normal link in an editable to an editable
-			// plugin is a link itself, the removeLinkButton will be
-			// hidden.
-			if (plugin._isScopeActive === show && Aloha.activeEditable && plugin._isScopeActive_editableId === Aloha.activeEditable.getId()) {
-				return;
-			}
-			plugin._isScopeActive = show;
-			plugin._isScopeActive_editableId = Aloha.activeEditable && Aloha.activeEditable.getId();
-			if (!configurations[plugin._isScopeActive_editableId] || !show) {
-				// The calls to enterScope and leaveScope by the link
-				// plugin are not balanced.
-				// When the selection is changed from one link to
-				// another, the link scope is incremented more than
-				// decremented, which necessitates the force=true
-				// argument to leaveScope.
-				Scopes.leaveScope(plugin.name);
-			} else if (show) {
-				Scopes.enterScope(plugin.name);
-			}
 		},
 
 		/**
@@ -412,7 +379,7 @@ define([
 		 * @param existingLink The existing link if applicable.
 		 */
 		createInsertLinkContext: function (existingLink) {
-			var href = plugin.hrefValue;
+			var href = LinkPlugin.hrefValue;
 			var anchor = '';
 			var target = null;
 			var lang = '';
@@ -485,11 +452,11 @@ define([
 		 */
 		showLinkModal: function (existingLink) {
 			return Modal.openDynamicModal(
-				plugin.createInsertLinkContext(existingLink)
+				LinkPlugin.createInsertLinkContext(existingLink)
 			).then(function (control) {
 				return control.value;
 			}).then(function (formData) {
-				plugin.upsertLink(existingLink, formData);
+				LinkPlugin.upsertLink(existingLink, formData);
 			}).catch(function (error) {
 				if (!Utils.isUserCloseError(error)) {
 					console.error(error);
@@ -501,20 +468,20 @@ define([
 		 * Initialize the buttons
 		 */
 		createButtons: function () {
-			plugin._insertLinkButton = Ui.adopt("insertLink", ToggleSplitButton, {
+			LinkPlugin._insertLinkButton = Ui.adopt("insertLink", ToggleSplitButton, {
 				tooltip: i18n.t("button.addlink.tooltip"),
 				icon: Icons.LINK,
 				pure: true,
 				contextType: 'modal',
 
 				secondaryClick: function () {
-					plugin.showLinkModal(plugin.findLinkMarkup());
+					LinkPlugin.showLinkModal(LinkPlugin.findLinkMarkup());
 				},
 				onToggle: function (activated) {
 					if (activated) {
-						plugin.showLinkModal(plugin.findLinkMarkup());
+						LinkPlugin.showLinkModal(LinkPlugin.findLinkMarkup());
 					} else {
-						plugin.removeLink();
+						LinkPlugin.removeLink();
 					}
 				},
 			});
@@ -562,7 +529,7 @@ define([
 				return markup;
 			}
 
-			markup = plugin.findLinkMarkup(range);
+			markup = LinkPlugin.findLinkMarkup(range);
 
 			return markup ? [markup] : [];
 		},
@@ -574,7 +541,7 @@ define([
 		upsertLink: function (linkElement, linkData, skipEvent) {
 			if (!linkElement) {
 				if (Aloha.activeEditable) {
-					return plugin.insertLink(true, linkData);
+					return LinkPlugin.insertLink(true, linkData);
 				}
 				return null;
 			}
@@ -615,7 +582,7 @@ define([
 			}
 
 			if (!skipEvent) {
-				plugin.hrefChange();
+				LinkPlugin.hrefChange();
 			}
 
 			return linkElement;
@@ -638,7 +605,7 @@ define([
 			}
 
 			// do not nest a link inside a link
-			if (plugin.findLinkMarkup(range)) {
+			if (LinkPlugin.findLinkMarkup(range)) {
 				return null;
 			}
 
@@ -695,7 +662,7 @@ define([
 			}
 
 			var linkElements = $(Array.from(Aloha.activeEditable.obj.find('a.' + CLASS_NEW_LINK)).map(function (newLinkElem) {
-				plugin.addLinkEventHandlers(newLinkElem);
+				LinkPlugin.addLinkEventHandlers(newLinkElem);
 				$(newLinkElem).removeClass(CLASS_NEW_LINK);
 				return newLinkElem;
 			}));
@@ -709,7 +676,7 @@ define([
 
 			Aloha.trigger('aloha-link-insert', { range: apiRange, elements: linkElements });
 			PubSub.pub('aloha.link.insert', { range: apiRange, elements: linkElements });
-			plugin.hrefChange();
+			LinkPlugin.hrefChange();
 
 			return linkElements[0];
 		},
@@ -719,7 +686,7 @@ define([
 		 */
 		removeLink: function (terminateLinkScope, linkToRemove) {
 			var range = Aloha.Selection.getRangeObject();
-			var foundMarkup = plugin.findAllLinkMarkup();
+			var foundMarkup = LinkPlugin.findAllLinkMarkup();
 
 			if (linkToRemove != null) {
 				foundMarkup.push(linkToRemove);
@@ -738,7 +705,7 @@ define([
 
 				if (typeof terminateLinkScope == 'undefined' ||
 					terminateLinkScope === true) {
-					Scopes.leaveScope(plugin.scope);
+					Scopes.leaveScope(LinkPlugin.scope);
 				}
 
 				// trigger an event for removing the link
@@ -758,7 +725,7 @@ define([
 		 */
 		hrefChange: function (link) {
 			if (!link) {
-				link = plugin.findLinkMarkup();
+				link = LinkPlugin.findLinkMarkup();
 			}
 			if (!link) {
 				return;
@@ -779,8 +746,8 @@ define([
 			Aloha.trigger('aloha-link-href-change', signalPayload);
 			PubSub.pub('aloha.link.changed', pubPayload);
 
-			if (typeof plugin.onHrefChange == 'function') {
-				plugin.onHrefChange.call(plugin, linkObj, href);
+			if (typeof LinkPlugin.onHrefChange == 'function') {
+				LinkPlugin.onHrefChange.call(LinkPlugin, linkObj, href);
 			}
 
 			// Mark the editable as changed
@@ -789,7 +756,9 @@ define([
 				editable.smartContentChange({ type: 'block-change' });
 			}
 		}
-	});
+	};
 
-	return plugin;
+	LinkPlugin = Plugin.create('link', LinkPlugin);
+
+	return LinkPlugin;
 });

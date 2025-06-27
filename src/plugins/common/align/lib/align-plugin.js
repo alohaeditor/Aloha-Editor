@@ -150,9 +150,6 @@ define([
 	 * register the plugin with unique name
 	 */
 	var plugin = {
-		_constructor: function () {
-			this._super('align');
-		},
 		/**
 		 * Configuration (available align options)
 		 */
@@ -274,9 +271,20 @@ define([
 				},
 			});
 
-			// apply specific configuration if an editable has been activated
-			Aloha.bind('aloha-editable-activated', function (e, params) {
-				plugin.applyButtonConfig(params.editable.obj);
+			if (Aloha.activeEditable != null) {
+				plugin.applyButtonConfig(Aloha.activeEditable.obj);
+			} else {
+				plugin.applyButtonConfig(null);
+			}
+
+			// Set the button visible if it's enabled via the config
+			PubSub.sub('aloha.editable.activated', function (message) {
+				plugin.applyButtonConfig(message.editable.obj);
+			});
+
+			// Reset and hide the button when leaving an editable
+			PubSub.sub('aloha.editable.deactivated', function () {
+				plugin.applyButtonConfig(null);
 			});
 
 			PubSub.sub('aloha.selection.context-change', function (message) {
@@ -324,17 +332,15 @@ define([
 		 * @return void
 		 */
 		applyButtonConfig: function (obj) {
-			var config = plugin.getEditableConfig(obj);
 			var allowedOptions = [];
-
-			if (config && Array.isArray(config.alignment)) {
-				allowedOptions = config.alignment;
-			} else if (config && config[0] && Array.isArray(config[0].alignment)) {
-				allowedOptions = config[0];
-			} else if (Array.isArray(plugin.settings.alignment)) {
-				allowedOptions = plugin.settings.alignment;
-			} else {
-				allowedOptions = [];
+			if (obj != null) {
+				var config = plugin.getEditableConfig(obj);
+	
+				if (config && Array.isArray(config.alignment)) {
+					allowedOptions = config.alignment;
+				} else if (config && config[0] && Array.isArray(config[0].alignment)) {
+					allowedOptions = config[0];
+				}
 			}
 
 			plugin._allowedHorizontals = allowedOptions.filter(function(name) {

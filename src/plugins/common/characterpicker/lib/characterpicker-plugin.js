@@ -1,6 +1,5 @@
-/**
- * @typedef {SymbolGridItem} import('./symbol-grid.js')
- */
+/** @typedef {import('./symbol-grid').SymbolGridItem} SymbolGridItem */
+/** @typedef {import('../../ui/lib/contextButton').ContextButton} ContextButton */
 /* characterpicker-plugin.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
@@ -31,6 +30,7 @@
 define([
 	'aloha',
 	'aloha/plugin',
+	'PubSub',
 	'ui/ui',
 	'ui/contextButton',
 	'ui/dynamicForm',
@@ -41,6 +41,7 @@ define([
 ], function (
 	Aloha,
 	Plugin,
+	PubSub,
 	Ui,
 	ContextButton,
 	DynamicForm,
@@ -126,10 +127,7 @@ define([
 		return component;
 	}
 
-	/**
-	 * @type {Plugin}
-	 */
-	var CharacterPickerPlugin = Plugin.create('characterpicker', {
+	var CharacterPickerPlugin = {
 
 		settings: {},
 
@@ -1346,24 +1344,14 @@ define([
 			},
 		],
 
-		_constructor: function () {
-			this._super('characterpicker');
-		},
+		/** @type {ContextButton<SymbolGridItem>} */
+		_pickerButton: null,
 
 		init: function () {
 			DynamicForm.componentFactoryRegistry['symbol-grid'] = createSymbolGridFromConfig;
 			DynamicForm.componentFactoryRegistry['symbol-search-grid'] = createSymbolSearchGridFromConfig;
 
-			if (
-				Aloha.settings.plugins &&
-				Aloha.settings.plugins.characterpicker
-			) {
-				this.settings = Aloha.settings.plugins.characterpicker;
-			}
-
-			var _this = this;
-
-			Ui.adopt('characterPicker', ContextButton, {
+			CharacterPickerPlugin._pickerButton = Ui.adopt('characterPicker', ContextButton, {
 				tooltip: i18n.t('button.addcharacter.tooltip'),
 				icon: Icons.CHARACTER_PICKER,
 
@@ -1379,7 +1367,7 @@ define([
 					return {
 						type: 'symbol-search-grid',
 						options: {
-							symbols: _this.getNormalizedSymbols(),
+							symbols: CharacterPickerPlugin.getNormalizedSymbols(),
 						},
 					}
 				},
@@ -1392,30 +1380,65 @@ define([
 					onSelectCharacter(character);
 				},
 			});
+
+			// Set the button visible if it's enabled via the config
+			PubSub.sub('aloha.editable.activated', function (message) {
+				var editable = message.editable;
+				CharacterPickerPlugin.checkVisibility(editable);
+			});
+
+			// Reset and hide the button when leaving an editable
+			PubSub.sub('aloha.editable.deactivated', function () {
+				CharacterPickerPlugin._pickerButton.hide();
+			});
+
+			CharacterPickerPlugin.checkVisibility(Aloha.activeEditable);
 		},
 
-		getNormalizedSymbols: function () {
-			var symbols = [];
+		checkVisibility: function (editable) {
+			// If we have no editable, then we don't want to show the button
+			if (editable == null) {
+				CharacterPickerPlugin._pickerButton.hide();
+				return;
+			}
 
-			if (!Array.isArray(this.config)) {
-				if (typeof this.config === 'string') {
-					symbols = this.config.split(' ').map(function(symbol) {
-						return {
-							label: symbol,
-							symbol: symbol,
-						};
-					});
-				} else {
-					// ... ?
-				}
+			var symbols = CharacterPickerPlugin.getNormalizedSymbols();
+
+			if (symbols.length > 0) {
+				CharacterPickerPlugin._pickerButton.show();
 			} else {
-				symbols = this.config;
+				CharacterPickerPlugin._pickerButton.hide();
+			}
+		},
+
+		/**
+		 * 
+		 * @returns {Array.<string>}
+		 */
+		getNormalizedSymbols: function () {
+			if (!Aloha.activeEditable || !Aloha.activeEditable.obj) {
+				return [];
+			}
+
+			var symbols = [];
+			var config = CharacterPickerPlugin.getEditableConfig(Aloha.activeEditable.obj);
+
+			if (typeof config === 'string') {
+				symbols = config.split(' ').map(function (symbol) {
+					return {
+						label: symbol,
+						symbol: symbol,
+					};
+				});
+			} else if (Array.isArray(config)) {
+				symbols = config;
 			}
 
 			return symbols;
 		},
+	};
 
-	});
+	CharacterPickerPlugin = Plugin.create('characterpicker', CharacterPickerPlugin);
 
 	return CharacterPickerPlugin;
 });

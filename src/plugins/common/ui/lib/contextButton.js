@@ -1,49 +1,50 @@
 /** @typedef {import('./overlayElement').DynamicDropdownConfiguration} DynamicDropdownConfiguration */
 /** @typedef {import('./overlayElement').DynamicModalConfiguration} DynamicModalConfiguration */
 /** @typedef {import('./overlayElement').OverlayElementControl} OverlayElementControl */
+/** @typedef {import('./button').Button} Button */
+/**
+ * @template {*} T
+ * @typedef {object} ContextButtonProperties
+ * @property {'context-button'} type
+ * @property {DynamicDropdownConfiguration<T>|DynamicModalConfiguration|null|function():(DynamicDropdownConfiguration<T>|DynamicModalConfiguration|null)} context A static context/config for the dropdown/modal, or a function which returns the context/config dynamically when needed.
+ * @property {'dropdown'|'modal'} contextType The type of the context and what the context options should be used for.
+ * @property {T=} value Value of this button, which gets updated on each context resolve.
+ * @property {OverlayElementControl} contextControl The control for the latest opened context overlay element.
+ * @property {function(): boolean} isOpen If the Context is currently open. Shortcut to `contextControl?.isOpen?.()`
+ * @property {function(): void} closeContext Force closes the context if it's available, and clears the reference to the control.
+ * @property {function(T):void} contextResolve Callback/Hook when the context has been successfully resolved.
+ * @property {function(*):void} contextReject Callback/Hook when the context has been aborted/closed.
+ */
+/**
+ * @template {*} T
+ * @typedef {Button & ContextButtonProperties<T>} ContextButton
+ */
 
 define([
     'jquery',
     'ui/button',
     'ui/dropdown',
     'ui/modal',
-    'ui/overlayElement',
     'ui/utils'
 ], function (
     $,
     Button,
     Dropdown,
     Modal,
-    OverlayElement,
     Utils
 ) {
     'use strict';
 
-    var ContextButton = Button.extend({
+    /** @type {ContextButton} */
+    var ContextButton = Button.extend(/** @type {ContextButton} */({
         type: 'context-button',
 
-        /**
-         * @type {DynamicDropdownConfiguration|DynamicModalConfiguration|function.<DynamicDropdownConfiguration|DynamicModalConfiguration>)}
-         * A static context/config for the dropdown/modal, or a function which returns the context/config dynamically when needed.
-         */
         context: null,
 
-        /**
-         * @type {string} The type of the context and what the context options should be used for.
-         *      Allowed values: 'dropdown', 'modal'
-         */
         contextType: 'dropdown',
 
-        /**
-         * Value of this button, which gets updated on each context resolve.
-         * @type {*}
-         */
         value: null,
 
-        /**
-         * The control for the latest opened context overlay element.
-         * @type {OverlayElementControl}
-         */
         contextControl: null,
 
         init: function() {
@@ -133,7 +134,7 @@ define([
         // Override me for notifications
         contextResolve: function(value) {},
         contextReject: function(err) {},
-    });
+    }));
 
     return ContextButton;
 });
