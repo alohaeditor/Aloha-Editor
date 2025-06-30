@@ -1383,7 +1383,7 @@ define([
 			} else {
 				// make sure  it is a jquery object
 				parentElements = jQuery(parentElements);
-				parentElements.each(function (parent) {
+				parentElements.each(function (index, parent) {
 					if (that.allowsNesting(parent, object.get(0))) {
 						newParent = parent;
 						return false;
