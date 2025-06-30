@@ -90,21 +90,50 @@ define([
 		});
 	}
 
-	return Plugin.create('textcolor', {
+	function checkVisibility(editable) {
+		// If we have no editable, then we don't want to show the button
+		if (editable == null || editable.obj == null) {
+			plugin._textColorButton.hide();
+			plugin._backgroundColorButton.hide();
+			return;
+		}
+		
+		var config = plugin.getEditableConfig(editable.obj);
+
+		// Just to be sure
+		if (config == null) {
+			return;
+		}
+
+		if (config.color === false || !config.color.enabled) {
+			plugin._textColorButton.hide();
+		} else {
+			plugin._textColorButton.show();
+		}
+
+		if (config['background-color'] === false || !config['background-color'].enabled) {
+			plugin._backgroundColorButton.hide();
+		} else {
+			plugin._backgroundColorButton.show();
+		}
+	}
+
+	var plugin = {
 
 		config: {
 			"color": {
 				palette: Palette,
+				enabled: true,
 			},
 			"background-color": {
 				palette: Palette,
 				allowTransparency: true,
+				enabled: true,
 			},
 		},
 
-		_constructor: function () {
-			this._super('textcolor');
-		},
+		_textColorButton: null,
+		_backgroundColorButton: null,
 
 		init: function () {
 			var plugin = this;
@@ -119,10 +148,7 @@ define([
 			}
 
 			function createButton(name, cssProperty, buttonProperties) {
-
-				var btn;
-
-				buttonProperties = Object.assign({}, buttonProperties || {}, {
+				var mergedProperties = Object.assign({}, buttonProperties || {}, {
 					contextType: 'dropdown',
 					context: function () {
 						// Can't style the color without an editable
@@ -170,19 +196,37 @@ define([
 					},
 				});
 
-				btn = Ui.adopt(name, ContextButton, buttonProperties);
+				var btn = Ui.adopt(name, ContextButton, mergedProperties);
 
 				return btn;
 			}
 
-			createButton('textColor', 'color', {
+			plugin._textColorButton = createButton('textColor', 'color', {
 				icon: Icons.TEXT_COLOR,
 				tooltip: i18n.t('change-textcolor-color'),
 			});
-			createButton('textBackground', 'background-color', {
+			plugin._backgroundColorButton = createButton('textBackground', 'background-color', {
 				icon: Icons.BACKGROUND_COLOR,
 				tooltip: i18n.t('change-textcolor-background-color'),
 			});
+
+			// Set the button visible if it's enabled via the config
+			PubSub.sub('aloha.editable.activated', function (message) {
+				var editable = message.editable;
+				checkVisibility(editable);
+			});
+
+			// Reset and hide the button when leaving an editable
+			PubSub.sub('aloha.editable.deactivated', function () {
+				plugin._textColorButton.hide();
+				plugin._backgroundColorButton.hide();
+			});
+
+			checkVisibility(Aloha.activeEditable);
 		}
-	});
+	};
+
+	plugin = Plugin.create('textcolor', plugin);
+
+	return plugin;
 });
