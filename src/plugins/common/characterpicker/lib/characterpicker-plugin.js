@@ -62,12 +62,12 @@ define([
 	/**
 	 * Inserts the selected character, at the editor's selection.
 	 *
-	 * @param {SymbolGridItem} item
+	 * @param {string} character The character (in HTML escape, i.E. `&#38`)
 	 */
-	function onSelectCharacter(item) {
+	function onSelectCharacter(character) {
 		if (Aloha.activeEditable) {
 			rangeAtOpen.select();
-			Aloha.execCommand('insertHTML', false, item.symbol);
+			Aloha.execCommand('insertHTML', false, character);
 
 			// Because after the character was inserted, move the selection
 			// forward.
