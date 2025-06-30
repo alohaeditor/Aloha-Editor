@@ -84,11 +84,12 @@ define([
 	 * @return {string}
 	 */
 	function nsSel() {
-		var strBldr = [], prx = ns;
-		$.each(arguments, function () {
-			strBldr.push('.' + ('' === this ? prx : prx + '-' + this));
-		});
-		return $.trim(strBldr.join(' '));
+		return Array.from(arguments)
+			.map(function (part) {
+				return '.' + (part === '' ? NAMESPACE : NAMESPACE + '-' + part);
+			})
+			.join(' ')
+			.trim();
 	}
 
 	/**
@@ -103,11 +104,12 @@ define([
 	 * @return {string}
 	 */
 	function nsClass() {
-		var strBldr = [], prx = ns;
-		$.each(arguments, function () {
-			strBldr.push('' === this ? prx : prx + '-' + this);
-		});
-		return $.trim(strBldr.join(' '));
+		return Array.from(arguments)
+			.map(function (part) {
+				return part === '' ? NAMESPACE : NAMESPACE + '-' + part;
+			})
+			.join(' ')
+			.trim();
 	}
 
 	/**
