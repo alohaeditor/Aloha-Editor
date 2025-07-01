@@ -30,7 +30,7 @@ define([
 	ToggleSplitButton,
 	Modal,
 	Utils,
-	Format,
+	FormatPlugin,
 	domUtils,
 	i18n
 ) {
@@ -47,7 +47,6 @@ define([
 
 	var SLOT_QUOTE_BUTTON = 'quote';
 
-	var configurations = {};
 	var NAMESPACE = 'aloha-cite';
 	var globalCiteId = 0;
 
@@ -125,7 +124,26 @@ define([
 		return activeUid;
 	}
 
-	var plugin = Plugin.create('cite', {
+	function checkVisibility(editable) {
+		// If we have no editable, then we don't want to show the button
+		if (editable == null || editable.obj == null) {
+			plugin._quoteButton.hide();
+			return;
+		}
+
+		var config = plugin.getEditableConfig(editable.obj);
+		var enabled = config
+			&& ($.inArray(TYPE_SINGLE_QUOTE, config) > -1)
+			&& ContentRules.isAllowed(editable.obj[0], NODE_NAME_Q);
+
+		if (enabled) {
+			plugin._quoteButton.show();
+		} else {
+			plugin._quoteButton.hide();
+		}
+	}
+
+	var plugin = {
 		citations: [],
 		referenceContainer: null,
 		settings: null,
@@ -147,7 +165,7 @@ define([
 			}
 
 			// Delete the entry for a single quote, as we "replace" it here.
-			delete Format.buttonConfig[TYPE_SINGLE_QUOTE];
+			delete FormatPlugin.buttonConfig[TYPE_SINGLE_QUOTE];
 			plugin._quoteButton = Ui.adopt(SLOT_QUOTE_BUTTON, ToggleSplitButton, {
 				tooltip: i18n.t('cite.button.tooltip'),
 				icon: Icons.QUOTE,
@@ -167,16 +185,30 @@ define([
 
 			// We brute-forcishly push our button settings into the format plugin configuration,
 			// so that it shows up in the typography menu correctly.
-			Format.buttonConfig[TYPE_BLOCKQUOTE] = {
+			FormatPlugin.buttonConfig[TYPE_BLOCKQUOTE] = {
 				icon: Icons.QUOTE,
 				label: i18n.t('button.blockquote.tooltip'),
 				typography: true,
 				header: false,
 			};
-			Format.config.push(TYPE_BLOCKQUOTE);
+			FormatPlugin.config.push(TYPE_BLOCKQUOTE);
 
 			// Then rebuild the buttons of the format plugin, so that our adjustments work as expected.
-			Format.initButtons();
+			FormatPlugin.initButtons();
+
+			// Set the button visible if it's enabled via the config
+			PubSub.sub('aloha.editable.activated', function (message) {
+				var editable = message.editable;
+				checkVisibility(editable);
+			});
+
+			// Reset and hide the button when leaving an editable
+			PubSub.sub('aloha.editable.deactivated', function () {
+				plugin._quoteButton.hide();
+				plugin._quoteButton.setActive(false);
+			});
+
+			checkVisibility(Aloha.activeEditable);
 
 			PubSub.sub('aloha.format.pre_change', function (message) {
 				if (message.oldFormat === TYPE_BLOCKQUOTE && message.newFormat !== TYPE_BLOCKQUOTE) {
@@ -187,33 +219,6 @@ define([
 				if (message.oldFormat !== TYPE_BLOCKQUOTE && message.newFormat === TYPE_BLOCKQUOTE) {
 					plugin.initBlockQuote();
 				}
-			});
-
-			PubSub.sub('aloha.editable.created', function (message) {
-				var editable = message.editable;
-				var config = plugin.getEditableConfig(editable.obj);
-
-				var isQuoteEnabled = config
-					&& ($.inArray(TYPE_SINGLE_QUOTE, config) > -1)
-					&& ContentRules.isAllowed(editable.obj[0], NODE_NAME_Q);
-
-				var isBlockQuoteEnabled = config
-					&& ($.inArray(TYPE_BLOCKQUOTE, config) > -1)
-					&& ContentRules.isAllowed(editable.obj[0], NODE_NAME_BLOCKQUOTE);
-
-				configurations[editable.getId()] = {
-					quote: isQuoteEnabled,
-					blockquote: isBlockQuoteEnabled
-				};
-			});
-
-			PubSub.sub('aloha.editable.activated', function (message) {
-				var config = configurations[message.editable.getId()];
-				plugin._quoteButton.show(!!config.quote);
-			});
-
-			PubSub.sub('aloha.editable.destroyed', function (message) {
-				delete configurations[message.editable.getId()];
 			});
 
 			PubSub.sub('aloha.selection.context-change', function (message) {
@@ -234,20 +239,6 @@ define([
 				}
 
 				plugin._quoteButton.setActive(quoteFound);
-
-				if (!Aloha.activeEditable) {
-					return;
-				}
-
-				var config = configurations[Aloha.activeEditable.getId()];
-
-				plugin._quoteButton.show(!!config.quote);
-			});
-
-			PubSub.sub('aloha.editable.deactivated', function (message) {
-				if (plugin._quoteButton) {
-					plugin._quoteButton.setActive(false);
-				}
 			});
 		},
 
@@ -383,15 +374,13 @@ define([
 			}
 
 			// Check whether the markup is found in the range (at the start of the range).
-			let foundMarkup = Aloha.Selection.rangeObject.findMarkup(
-				function () {
-					if (this.nodeName && (typeof this.nodeName === 'string')) {
-						return this.nodeName === NODE_NAME_BLOCKQUOTE;
-					}
+			let foundMarkup = Aloha.Selection.rangeObject.findMarkup(function () {
+				if (this.nodeName && (typeof this.nodeName === 'string')) {
+					return this.nodeName === NODE_NAME_BLOCKQUOTE;
+				}
 
-					return false;
-				},
-				Aloha.activeEditable.obj);
+				return false;
+			}, Aloha.activeEditable.obj);
 
 			if (foundMarkup) {
 				let citeId = foundMarkup.getAttribute(ATTR_CITE_ID);
@@ -431,14 +420,8 @@ define([
 			// Check whether the markup is found in the range (at the start of
 			// the range).
 			foundMarkup = rangeObject.findMarkup(function () {
-				if (this.nodeName &&
-					(typeof this.nodeName === 'string')) {
-
-					return this.nodeName === NODE_NAME_Q
-						|| this.nodeName === NODE_NAME_BLOCKQUOTE;
-				}
-
-				return false;
+				return this.nodeName === NODE_NAME_Q
+					|| this.nodeName === NODE_NAME_BLOCKQUOTE;
 			}, Aloha.activeEditable.obj);
 
 			// If the we click the quote button on a range that contains quote
@@ -638,7 +621,9 @@ define([
 				$elem.removeClass(nsClass(CLASS_WRAPPER));
 			});
 		}
-	});
+	};
+
+	plugin = Plugin.create('cite', plugin);
 
 	return plugin;
 });

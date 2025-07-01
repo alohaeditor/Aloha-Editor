@@ -20,7 +20,7 @@ define([
 	$,
 	PubSub,
 	Aloha,
-    Plugin,
+	Plugin,
 	ContentRules,
 	Ui,
 	Icons,
@@ -33,7 +33,6 @@ define([
 	var namespace = 'toc';
 	var $containers = null;
 	var allTocs = [];
-	var configurations = {};
 
 	var CLASS_CUSTOMIZED = 'aloha-customized';
 
@@ -41,66 +40,63 @@ define([
 	function last(a) { return a[a.length - 1]; }
 	function head(a) { return a[0]; }
 	function tail(a) { return a.slice(1); }
-	function indexOf(a, item) {
-		return detect(a, function (cmp){
-			return cmp === item;
-		});
-	}
-	function detect(a, f) {
-		for (var i = 0; i < a.length; i++) {
-			if (f(a[i])) {
-				return a[i];
-			}
-		}
-		return null;
-	}
-	function map(a, f) {
-		var result = [];
-		for (var i = 0; i < a.length; i++) {
-			result.push(f(a[i]));
-		}
-		return result;
-	}
 
-    function editableContainers() {
-	    return $(map(Aloha.editables, function (editable) {
+	function editableContainers() {
+		return $(Aloha.editables.map(function (editable) {
 			return document.getElementById(editable.getId());
 		}));
-    }
-
-    function anchorFromLinkId($ctx, linkId) {
-        return linkId ? $ctx.find('a[href $= "#' + linkId + '"]') : $();
-    }
-
-	function generateId(elemOrText) {
-	    var validId;
-	    if (typeof elemOrText === 'object') {
-	        validId = $(elemOrText).text()
-			                       .replace(/[^a-zA-Z-]+/g, '-')
-			                       .replace(/^[^a-zA-Z]+/, '');
-	    } else if (elemOrText) {
-	        validId = elemOrText;
-	    }
-	    for (var uniquifier = 0; ; uniquifier++) {
-	        var uniqueId = validId;
-	        if (uniquifier) {
-	            uniqueId += '-' + uniquifier;
-	        }
-	        var conflict = $('#' + uniqueId);
-	        if (conflict.length === 0 || (typeof elemOrText === 'object' && conflict === elemOrText)) {
-				return uniqueId;
-	        }
-	    }
 	}
 
-	return Plugin.create(namespace, {
+	function anchorFromLinkId($ctx, linkId) {
+		return linkId ? $ctx.find('a[href $= "#' + linkId + '"]') : $();
+	}
+
+	function generateId(elemOrText) {
+		var validId;
+		if (typeof elemOrText === 'object') {
+			validId = $(elemOrText).text()
+				.replace(/[^a-zA-Z-]+/g, '-')
+				.replace(/^[^a-zA-Z]+/, '');
+		} else if (elemOrText) {
+			validId = elemOrText;
+		}
+		for (var uniquifier = 0; ; uniquifier++) {
+			var uniqueId = validId;
+			if (uniquifier) {
+				uniqueId += '-' + uniquifier;
+			}
+			var conflict = $('#' + uniqueId);
+			if (conflict.length === 0 || (typeof elemOrText === 'object' && conflict === elemOrText)) {
+				return uniqueId;
+			}
+		}
+	}
+
+	function checkVisibility(editable) {
+		// If we have no editable, then we don't want to show the button
+		if (editable == null || editable.obj == null) {
+			plugin._insertTocButton.hide();
+			return;
+		}
+
+		var config = plugin.getEditableConfig(editable.obj);
+		var enabled = config
+			&& ($.inArray('toc', config) > -1)
+			&& ContentRules.isAllowed(editable.obj[0], 'ol');
+
+		if (enabled) {
+			plugin._insertTocButton.show();
+		} else {
+			plugin._insertTocButton.hide();
+		}
+	}
+
+	var plugin = {
 		minEntries: 0,
 		updateInterval: 5000,
 		config: ['toc'],
 
 		init: function () {
-			var plugin = this;
-
 			if (typeof plugin.settings.minEntries === 'undefined') {
 				plugin.settings.minEntries = plugin.minEntries;
 			}
@@ -110,65 +106,58 @@ define([
 			}
 
 			plugin._insertTocButton = Ui.adopt('insertToc', Button, {
-		        tooltip: i18n.t('button.addtoc.tooltip'),
-		        icon: Icons.LIST_ORDERED,
-		        click: function () {
+				tooltip: i18n.t('button.addtoc.tooltip'),
+				icon: Icons.LIST_ORDERED,
+				click: function () {
 					plugin.insertAtSelection($containers);
 				}
 			});
 
-			PubSub.sub('aloha.editable.created', function (message) {
-				var editable = message.editable;
-				var config = plugin.getEditableConfig(editable.obj);
-				var enabled = config
-				           && ($.inArray('toc', config) > -1)
-				           && ContentRules.isAllowed(editable.obj[0], 'ol');
-				configurations[message.editable.getId()] = enabled;
-			});
-
-			PubSub.sub('aloha.editable.destroyed', function (message) {
-				delete configurations[message.editable.getId()];
-			});
-
+			// Set the button visible if it's enabled via the config
 			PubSub.sub('aloha.editable.activated', function (message) {
-				plugin._insertTocButton.show(
-					configurations[message.editable.getId()]
-				);
+				var editable = message.editable;
+				checkVisibility(editable);
 			});
+
+			// Reset and hide the button when leaving an editable
+			PubSub.sub('aloha.editable.deactivated', function () {
+				plugin._insertTocButton.hide();
+			});
+
+			checkVisibility(Aloha.activeEditable);
 
 			$(document).ready(function () {
 				plugin.spawn();
 			});
-	    },
+		},
 
 		register: function ($c) {
 			$containers = $c;
 		},
 
-	    /**
-	     * inserts a new TOC at the current selection
-	     */
-	    insertAtSelection: function ($containers) {
+		/**
+		 * inserts a new TOC at the current selection
+		 */
+		insertAtSelection: function ($containers) {
 			if (!Aloha.activeEditable) {
 				return;
 			}
-		    $containers = $containers || editableContainers();
+			$containers = $containers || editableContainers();
 			var id = generateId('toc');
-	        var $toc = $('<ol class="toc_root"></ol>').attr('id', id).attr('contentEditable', 'false');
-		    Dom.insertIntoDOM(
+			var $toc = $('<ol class="toc_root"></ol>').attr('id', id).attr('contentEditable', 'false');
+			Dom.insertIntoDOM(
 				$toc,
 				Aloha.Selection.getRangeObject(),
 				$('#' + Aloha.activeEditable.getId())
 			);
-		    this.create(id).register($containers).update().tickTock();
-	    },
+			plugin.create(id).register($containers).update().tickTock();
+		},
 
 		/**
 		 * Spawn containers for all ols with the toc_root class.
 		 */
 		spawn: function ($ctx, $containers) {
-			var plugin  = this;
-			$ctx        = $ctx        || $('body');
+			$ctx = $ctx || $('body');
 			$containers = $containers || editableContainers();
 			$ctx.find('ol.toc_root').each(function () {
 				var id = $(this).attr('id');
@@ -180,9 +169,10 @@ define([
 			});
 		},
 
-	    create: function (id) {
-			allTocs.push(this);
-	        return {
+		create: function (id) {
+			allTocs.push(plugin);
+
+			return {
 				'id': id,
 				'$containers': $(),
 				'settings': this.settings,
@@ -282,7 +272,7 @@ define([
 					last(ancestors).empty();
 					(function descend(outline) {
 						var prevSiblings = [];
-						map(outline, function (node) {
+						outline.forEach(function (node) {
 							var $section = head(node);
 							var $entry = self.linkSection($section, ancestors, prevSiblings);
 							ancestors.push($entry);
@@ -347,15 +337,15 @@ define([
 						var higherEq = hLevels.slice(currLevel).join(',');
 						var $section = $heading.nextUntil(higherEq).addBack();
 						var node = [$section];
-						var parent = detect(potentialParents, function (parent) {
+						var parent = potentialParents.find(function (parent) {
 							var parentSection = parent[0];
 							return !parentSection.length || //top-level contains everything
-								detect(parentSection, function (sectionElem) {
+								parentSection.find(function (sectionElem) {
 									return $heading.get(0) === sectionElem || $.contains(sectionElem, $heading.get(0));
 								});
 						});
 						parent.push(node);
-						potentialParents.splice(0, indexOf(potentialParents, parent), node);
+						potentialParents.splice(0, potentialParents.indexOf(parent), node);
 					});
 					return rootNode;
 				},
@@ -365,5 +355,9 @@ define([
 				}
 			};
 		}
-	});
+	};
+
+	plugin = Plugin.create(namespace, plugin);
+
+	return plugin;
 });

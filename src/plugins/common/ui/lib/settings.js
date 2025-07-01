@@ -77,7 +77,7 @@ define([
 				[ 'removeFormat' ],
 				// List settings
 				[
-					'alignMenu',
+					'alignMenu', 'vertAlignMenu',
 					'listOrdered', 'listUnordered', 'listDefinition',
 					{ slot: 'indentList', scope: [SCOPE_LIST] },
 					{ slot: 'outdentList', scope: [SCOPE_LIST] },

@@ -33,8 +33,6 @@ define([
 	 */
 	var pluginName = 'autoparagraph';
 
-	var configurations = {};
-
 	/**
 	 * Auto-generate missing paragraphs in the given editable, when the editable allows insertion of paragraphs.
 	 * If the editable is the currently active one, the current selection will be modified according to the content
@@ -51,7 +49,11 @@ define([
 		if (!$obj) {
 			return;
 		}
-		var obj = $obj[0], i, j, selectionRange = Aloha.Selection.rangeObject, contentChanged = false;
+		var obj = $obj[0],
+			i,
+			j,
+			selectionRange = Aloha.Selection.rangeObject,
+			contentChanged = false;
 
 		// check whether nesting of paragraphs inside the editable is allowed
 		if (!Dom.allowsNesting(obj, $('<p></p>')[0])) {
@@ -132,16 +134,25 @@ define([
 	 * @param {object} The plugin/editable configuration.
 	 * @return {boolean} True if activated.
 	 */
-	function isPluginActivated(config) {
-		return (
-			$.type(config) === 'array' && $.inArray(pluginName, config) !== -1
-		);
+	function isPluginActivated(config, editable) {
+		return Array.isArray(config)
+			&& config.includes(pluginName)
+			&& ContentRules.isAllowed(editable.obj[0], 'p');
+	}
+
+	function executeIfEnabled(editable) {
+		var config = plugin.getEditableConfig(editable);
+		var active = isPluginActivated(config, editable);
+		if (!active) {
+			return;
+		}
+		autogenerateParagraphs(editable);
 	}
 
 	/**
 	 * @type {Aloha.Plugin}
 	 */
-	var autoParagraphPlugin = Plugin.create(pluginName, {
+	var plugin = Plugin.create(pluginName, {
 		/**
 		 * Default config: plugin active for all editables
 		 */
@@ -151,29 +162,18 @@ define([
 		 * Initialize the plugin
 		 */
 		init: function () {
-			var plugin = this;
 
 			// autogenerate paragraphs when a new editable is created
 			PubSub.sub('aloha.editable.created', function (message) {
-				var editable = message.editable;
-				var config = plugin.getEditableConfig(editable.obj);
-				var enabled = config
-				           && ($.inArray(pluginName, config) > -1)
-				           && ContentRules.isAllowed(editable.obj[0], 'p');
-				configurations[editable.getId()] = !!enabled;
-				if (enabled) {
-					autogenerateParagraphs(editable);
-				}
+				executeIfEnabled(message.editable);
 			});
 
 			// autogenerate paragraphs upon smart content change
 			Aloha.bind('aloha-smart-content-changed', function (event, data) {
-				if (configurations[data.editable.getId()]) {
-					autogenerateParagraphs(data.editable);
-				}
+				executeIfEnabled(data.editable);
 			});
 		}
 	});
 
-	return autoParagraphPlugin;
+	return plugin;
 });

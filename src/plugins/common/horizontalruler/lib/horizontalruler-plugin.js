@@ -1,3 +1,4 @@
+/** @typedef {import('../../ui/lib/button').Button} Button */
 /* horizontalruler-plugin.js is part of the Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor. 
@@ -30,55 +31,67 @@ define([
 ) {
 	'use strict';
 
-	var configurations = {};
+	function checkVisibility(editable) {
+		// If we have no editable, then we don't want to show the button
+		if (editable == null || editable.obj == null) {
+			HorizontalRulerPlugin._insertButton.hide();
+			return;
+		}
 
-	function insertHR() {
-		if (Aloha.activeEditable) {
-			var range = Aloha.Selection.getRangeObject();
-			Dom.insertIntoDOM($('<hr>'), range, Aloha.activeEditable.obj, true);
-			range.select();
+		var config = HorizontalRulerPlugin.getEditableConfig(editable.obj);
+		var enabled = config
+			&& ($.inArray('hr', config) > -1)
+			&& ContentRules.isAllowed(editable.obj[0], 'hr');
+
+		if (enabled) {
+			HorizontalRulerPlugin._insertButton.show();
+		} else {
+			HorizontalRulerPlugin._insertButton.hide();
 		}
 	}
 
-	var button;
-
-	return Plugin.create('horizontalruler', {
-
-		_constructor: function () {
-			this._super('horizontalruler');
-		},
+	var HorizontalRulerPlugin = {
 
 		config: ['hr'],
 
-		init: function () {
-			var plugin = this;
+		/** @type {Button} */
+		_insertButton: null,
 
-			button = Ui.adopt('insertHorizontalRule', Button, {
+		init: function () {
+			HorizontalRulerPlugin._insertButton = Ui.adopt('insertHorizontalRule', Button, {
 				tooltip: i18n.t('button.addhr.tooltip'),
 				iconOnly: true,
 				icon: Icons.HORIZONTAL_RULE,
-				click: insertHR
+				click: function() {
+					HorizontalRulerPlugin.insertHR();
+				},
 			});
 
-			PubSub.sub('aloha.editable.created', function (message) {
-				var editable = message.editable;
-				var config = plugin.getEditableConfig(editable.obj);
-				var enabled = config
-				           && ($.inArray('hr', config) > -1)
-				           && ContentRules.isAllowed(editable.obj[0], 'hr');
-				configurations[editable.getId()] = !!enabled;
-			});
-
-			PubSub.sub('aloha.editable.destroyed', function (message) {
-				delete configurations[message.editable.getId()];
-			});
-
+			// Set the button visible if it's enabled via the config
 			PubSub.sub('aloha.editable.activated', function (message) {
-				button.show(!!configurations[message.editable.getId()]);
+				var editable = message.editable;
+				checkVisibility(editable);
 			});
+
+			// Reset and hide the button when leaving an editable
+			PubSub.sub('aloha.editable.deactivated', function () {
+				HorizontalRulerPlugin._insertButton.hide();
+			});
+
+			checkVisibility(Aloha.activeEditable);
+		},
+
+		insertHR: function () {
+			if (Aloha.activeEditable) {
+				var range = Aloha.Selection.getRangeObject();
+				Dom.insertIntoDOM($('<hr>'), range, Aloha.activeEditable.obj, true);
+				range.select();
+			}
 		}
+	};
 
-	});
+	HorizontalRulerPlugin = Plugin.create('horizontalruler', HorizontalRulerPlugin);
 
+	return HorizontalRulerPlugin;
 });
 

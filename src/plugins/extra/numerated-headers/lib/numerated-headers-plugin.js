@@ -49,18 +49,7 @@ define([
 ) {
 	'use strict';
 
-	/**
-	 * A cache of editable configuration.
-	 * @private
-	 * @type {object<string, object>}
-	 */
-	var editableConfigurations = {};
-
-	Aloha.bind('aloha-editable-destroyed', function (event, editable) {
-		delete editableConfigurations[editable.getId()];
-	});
-
-	return Plugin.create('numerated-headers', {
+	var plugin = {
 		config: {
 			numeratedactive: true,
 			headingselector: 'h1, h2, h3, h4, h5, h6',
@@ -71,33 +60,31 @@ define([
 		 * Initialize the plugin.
 		 */
 		init: function () {
-			var that = this;
-
-			this._formatNumeratedHeadersButton = Ui.adopt('formatNumeratedHeaders', ToggleButton, {
+			plugin._formatNumeratedHeadersButton = Ui.adopt('formatNumeratedHeaders', ToggleButton, {
 				tooltip: i18n.t('button.numeratedHeaders.tooltip'),
 				icon: Icons.NUMERATED_HEADERS,
 				pure: true,
 				onToggle: function (active) {
 					if (!active) {
-						that.removeNumerations();
-					} else if (that.createNumeratedHeaders()) {
-						that._formatNumeratedHeadersButton.activate();
+						plugin.removeNumerations();
+					} else if (plugin.createNumeratedHeaders()) {
+						plugin._formatNumeratedHeadersButton.activate();
 					}
 				}
 			});
 
 			Aloha.bind('aloha-editable-created', function (event, editable) {
-				if (that.isNumeratingOn(editable)) {
-					that.initForEditable(editable, true);
+				if (plugin.isNumeratingOn(editable)) {
+					plugin.initForEditable(editable, true);
 				}
 			});
 
 			// We need to bind to smart-content-changed event to recognize
 			// backspace and delete interactions.
 			Aloha.bind('aloha-smart-content-changed', function (event) {
-				that.cleanNumerations();
-				if (that.showNumbers()) {
-					that.createNumeratedHeaders();
+				plugin.cleanNumerations();
+				if (plugin.showNumbers()) {
+					plugin.createNumeratedHeaders();
 				}
 			});
 			
@@ -105,24 +92,24 @@ define([
 			// header format. smart-content-changed would be not fired in 
 			// that case
 			Aloha.bind('aloha-format-block', function () {
-				that.cleanNumerations();
-				if (that.showNumbers()) {
-					that.createNumeratedHeaders();
+				plugin.cleanNumerations();
+				if (plugin.showNumbers()) {
+					plugin.createNumeratedHeaders();
 				}
 			});
 
 			Aloha.bind('aloha-editable-activated', function (event) {
-				if (that.isNumeratingOn()) {
-					that._formatNumeratedHeadersButton.show();
-					that.initForEditable(Aloha.activeEditable);
+				if (plugin.isNumeratingOn()) {
+					plugin._formatNumeratedHeadersButton.show();
+					plugin.initForEditable(Aloha.activeEditable);
 				} else {
-					that._formatNumeratedHeadersButton.hide();
+					plugin._formatNumeratedHeadersButton.hide();
 				}
 			});
 
 			Aloha.bind('aloha-editable-deactivated', function(event, params) {
-				if (params.newEditable == null || !that.isNumeratingOn(params.newEditable)) {
-					that._formatNumeratedHeadersButton.deactivate();
+				if (params.newEditable == null || !plugin.isNumeratingOn(params.newEditable)) {
+					plugin._formatNumeratedHeadersButton.deactivate();
 				}
 			});
 		},
@@ -138,17 +125,17 @@ define([
 				&& editable.obj != null
 				&& editable.obj.attr('aloha-numerated-headers');
 			if (flag !== 'true' && flag !== 'false') {
-				flag = (true === this.getNumeratedEditableConfig(editable).numeratedactive);
+				flag = (true === plugin.getNumeratedEditableConfig(editable).numeratedactive);
 				editable.obj.attr('aloha-numerated-headers', flag + '');
 			} else {
 				flag = flag === 'true';
 			}
 
 			if (flag) {
-				this.createNumeratedHeaders(editable);
+				plugin.createNumeratedHeaders(editable);
 			}
 			if (!skipButtonState) {
-				this._formatNumeratedHeadersButton.setActive(flag);
+				plugin._formatNumeratedHeadersButton.setActive(flag);
 			}
 		},
 
@@ -160,14 +147,14 @@ define([
 				return null;
 			}
 
-			return this.getNumeratedEditableConfig(Aloha.activeEditable)
+			return plugin.getNumeratedEditableConfig(Aloha.activeEditable)
 		},
 
 		/**
 		 * Get the config for the given editable
 		 */
 		getNumeratedEditableConfig: function (editable) {
-			var config = this.getEditableConfig(editable.obj);
+			var config = plugin.getEditableConfig(editable.obj);
 
 			// normalize config (set default values)
 			if (config.numeratedactive === true || config.numeratedactive === 'true' || config.numeratedactive === '1') {
@@ -199,7 +186,7 @@ define([
 				editable = Aloha.activeEditable;
 			}
 
-			return this.getNumeratedEditableConfig(editable).headingselector !== '';
+			return plugin.getNumeratedEditableConfig(editable).headingselector !== '';
 		},
 
 		/**
@@ -209,7 +196,7 @@ define([
 		showNumbers: function () {
 			return (
 				Aloha.activeEditable &&
-				this.isNumeratingOn() &&
+				plugin.isNumeratingOn() &&
 				(Aloha.activeEditable.obj.attr('aloha-numerated-headers') === 'true')
 			);
 		},
@@ -218,13 +205,12 @@ define([
 		 * Remove all annotations in the current editable.
 		 */
 		cleanNumerations: function () {
-			var that = this;
-			var active_editable_obj = this.getBaseElement();
+			var active_editable_obj = plugin.getBaseElement();
 			if (!active_editable_obj) {
 				return;
 			}
 			$('div.aloha-numerated-headers-annotation-wrapper>span[role=annotation]').unwrap();
-			this._safeRemoveAnnotations($(active_editable_obj).find('span[role=annotation]'));
+			plugin._safeRemoveAnnotations($(active_editable_obj).find('span[role=annotation]'));
 		},
 		
 		/**
@@ -232,12 +218,11 @@ define([
 		 * @param annotationcollection the collection of annotations.
 		 */
 		_safeRemoveAnnotations: function (annotationcollection) {
-			var that = this;
 			var range = Aloha.Selection.getRangeObject();
 			var rangemod = false;
 			annotationcollection.each(function () {
 				if (range.startContainer === this || $.inArray(this, $(range.startContainer).parents()) > -1) {
-			        range.startContainer = that._prevNode(this);
+			        range.startContainer = plugin._prevNode(this);
 			        range.startOffset = 0;
 			        rangemod = true;
 				}
@@ -247,7 +232,7 @@ define([
 				}
 				//Check if the selection ends inside the annotation
 				if (range.endContainer === this || $.inArray(this, $(range.endContainer).parents()) > -1) {
-					range.endContainer = that._prevNode(this);
+					range.endContainer = plugin._prevNode(this);
 					range.endOffset = 0;
 					rangemod = true;
 				}
@@ -312,14 +297,14 @@ define([
 				return;
 			}
 			$(Aloha.activeEditable.obj).attr('aloha-numerated-headers', 'false');
-			this.cleanNumerations();
-			this._formatNumeratedHeadersButton.deactivate();
+			plugin.cleanNumerations();
+			plugin._formatNumeratedHeadersButton.deactivate();
 		},
 
 		getBaseElement: function (editableParam) {
-			if (typeof this.baseobjectSelector !== 'undefined') {
-				return ($(this.baseobjectSelector).length > 0) ?
-						$(this.baseobjectSelector) : null;
+			if (typeof plugin.baseobjectSelector !== 'undefined') {
+				return ($(plugin.baseobjectSelector).length > 0) ?
+						$(plugin.baseobjectSelector) : null;
 			}
 
 			var editable = editableParam;
@@ -363,7 +348,7 @@ define([
 		},
 
 		createNumeratedHeaders: function (editable) {
-			var active_editable_obj = this.getBaseElement(editable);
+			var active_editable_obj = plugin.getBaseElement(editable);
 			if (!active_editable_obj) {
 				return false;
 			}
@@ -373,7 +358,7 @@ define([
 				currentEditable = Aloha.activeEditable;
 			}
 
-			var config = this.getNumeratedEditableConfig(currentEditable);
+			var config = plugin.getNumeratedEditableConfig(currentEditable);
 			var headingselector = config.headingselector;
 			var headers = active_editable_obj.find(headingselector);
 
@@ -385,9 +370,8 @@ define([
 
 			// base rank is the lowest rank of all selected headers
 			var base_rank = 7;
-			var that = this;
 			headers.each(function () {
-				if (that.hasContent(this)) {
+				if (plugin.hasContent(this)) {
 					var current_rank = parseInt(this.nodeName.substr(1), 10);
 					if (current_rank < base_rank) {
 						base_rank = current_rank;
@@ -411,14 +395,14 @@ define([
 
 			headers.each(function () {
 				// build and count annotation only if there is content in this header
-				if (that.hasContent(this)) {
+				if (plugin.hasContent(this)) {
 
 					var current_rank = parseInt(this.nodeName.substr(1), 10);
 					if (prev_rank === null && current_rank !== base_rank) {
 						// when the first found header has a rank
 						// different from the base rank, we omit it
-						that._safeRemoveAnnotations($(this).find('div.aloha-numerated-headers-annotation-wrapper>span[role=annotation]').parent());
-						that._safeRemoveAnnotations($(this).find('span[role=annotation]'));
+						plugin._safeRemoveAnnotations($(this).find('div.aloha-numerated-headers-annotation-wrapper>span[role=annotation]').parent());
+						plugin._safeRemoveAnnotations($(this).find('span[role=annotation]'));
 						return;
 					} else if (prev_rank === null) {
 						// increment the main annotation
@@ -461,21 +445,25 @@ define([
 					//We add a trailing non-breakable space to the annotation_result
 					//to separate the annotation from the heading's text.
 					annotation_result += '&nbsp;';
-					if (that.hasNote(this)) {
-						that._safeRemoveAnnotations($(this).find('div.aloha-numerated-headers-annotation-wrapper>span[role=annotation]').parent());
-						that._safeRemoveAnnotations($(this).find('span[role=annotation]'));
+					if (plugin.hasNote(this)) {
+						plugin._safeRemoveAnnotations($(this).find('div.aloha-numerated-headers-annotation-wrapper>span[role=annotation]').parent());
+						plugin._safeRemoveAnnotations($(this).find('span[role=annotation]'));
 					}
-					that._prependAnnotation(annotation_result, this);
+					plugin._prependAnnotation(annotation_result, this);
 				} else {
 					// no Content, so remove the Note, if there is one
-					if (that.hasNote(this)) {
-						that._safeRemoveAnnotations($(this).find('div.aloha-numerated-headers-annotation-wrapper>span[role=annotation]').parent());
-						that._safeRemoveAnnotations($(this).find('span[role=annotation]'));
+					if (plugin.hasNote(this)) {
+						plugin._safeRemoveAnnotations($(this).find('div.aloha-numerated-headers-annotation-wrapper>span[role=annotation]').parent());
+						plugin._safeRemoveAnnotations($(this).find('span[role=annotation]'));
 					}
 				}
 			});
 
 			return true;
 		}
-	});
+	};
+
+	plugin = Plugin.create('numerated-headers', plugin);
+
+	return plugin;
 });

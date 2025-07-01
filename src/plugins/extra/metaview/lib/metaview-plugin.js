@@ -1,3 +1,4 @@
+/** @typedef {import('../../../common/ui/lib/toggleButton').ToggleButton} ToggleButton */
 /* metaview-plugin.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
@@ -28,6 +29,7 @@ define([
 	'jquery',
 	'aloha/core',
 	'aloha/plugin',
+	'aloha/ephemera',
 	'ui/ui',
 	'ui/icons',
 	'ui/toggleButton',
@@ -37,6 +39,7 @@ define([
 	$,
 	Aloha,
 	Plugin,
+	Ephemera,
 	Ui,
 	Icons,
 	ToggleButton,
@@ -51,13 +54,7 @@ define([
 	 */
 	var states = {};
 
-	/**
-	 * Singleton meta view toggle button to be used across all meta view plugin
-	 * instances.
-	 *
-	 * @type {ToggleButton}
-	 */
-	var METAVIEW_TOGGLE_BUTTON;
+	var CLASS_META_VIEW = 'aloha-metaview';
 
 	/**
 	 * Checks whether the given editable is has metaview enabled.
@@ -75,8 +72,8 @@ define([
 	 * @param {jQuery<HTMLElement>} $editable
 	 */
 	function enable($editable) {
-		$editable.addClass('aloha-metaview');
-		METAVIEW_TOGGLE_BUTTON.activate();
+		$editable.addClass(CLASS_META_VIEW);
+		plugin._toggleButton.activate();
 		states[$editable[0].id] = true;
 	}
 
@@ -86,8 +83,8 @@ define([
 	 * @param {jQuery<HTMLElement>} $editable
 	 */
 	function disable($editable) {
-		$editable.removeClass('aloha-metaview');
-		METAVIEW_TOGGLE_BUTTON.deactivate();
+		$editable.removeClass(CLASS_META_VIEW);
+		plugin._toggleButton.deactivate();
 		states[$editable[0].id] = false;
 	}
 
@@ -109,27 +106,13 @@ define([
 	}
 
 	/**
-	 * Gets the configuration for the given editable/plugin combination.
-	 *
-	 * TODO: Memoize
-	 *
-	 * @param {Plugin} plugin Instance of metaview plugin
-	 * @param {Editable} editable
-	 */
-	function getConfiguration(plugin, editable) {
-		return plugin.getEditableConfig(editable);
-	}
-
-	/**
 	 * Checks whether or not meta-view is automatically enable on an editable.
 	 *
 	 * @param {object} The plugin/editable configuration.
 	 * @return {boolean} True if activated.
 	 */
 	function isAutomaticallyEnabled(config) {
-		return (
-			$.type(config) === 'array' && $.inArray('enabled', config) !== -1
-		);
+		return Array.isArray(config) && config.includes('enabled');
 	}
 
 	/**
@@ -139,17 +122,23 @@ define([
 	 * @return {boolean} True if activated.
 	 */
 	function isPluginActivated(config) {
-		return (
-			$.type(config) === 'array' && $.inArray('metaview', config) !== -1
-		);
+		return Array.isArray(config) && config.includes('metaview');
 	}
 
-    return Plugin.create('metaview', {
+	var plugin = {
 		config: ['metaview'],
-		init: function () {
-			var plugin = this;
 
-			METAVIEW_TOGGLE_BUTTON = Ui.adopt('toggleMetaView', ToggleButton, {
+		/**
+		 * The button which toggles between the states
+		 *
+		 * @type {ToggleButton}
+		 */
+		_toggleButton: null,
+
+		init: function () {
+			Ephemera.classes(CLASS_META_VIEW);
+
+			plugin._toggleButton = Ui.adopt('toggleMetaView', ToggleButton, {
 				tooltip : i18n.t('button.switch-metaview.tooltip'),
 				icon: Icons.META_VIEW,
 				pure: true,
@@ -161,26 +150,35 @@ define([
 			});
 
 			Aloha.bind('aloha-editable-activated', function () {
-				var config = getConfiguration(plugin, Aloha.activeEditable.obj);
+				var config = plugin.getEditableConfig(Aloha.activeEditable.obj);
 
 				if (isAutomaticallyEnabled(config)) {
-					METAVIEW_TOGGLE_BUTTON.show(true);
+					plugin._toggleButton.show();
 					enable(Aloha.activeEditable.obj);
 				} else if (isPluginActivated(config)) {
-					METAVIEW_TOGGLE_BUTTON.show(true);
+					plugin._toggleButton.show();
 					if (enabled(Aloha.activeEditable.obj)) {
 						enable(Aloha.activeEditable.obj);
 					} else {
 						disable(Aloha.activeEditable.obj);
 					}
 				} else {
-					METAVIEW_TOGGLE_BUTTON.show(false);
+					plugin._toggleButton.hide();
 				}
 			});
 
 			Aloha.bind('aloha-editable-deactivated', function () {
-				disable(Aloha.activeEditable.obj);
+				// disable(Aloha.activeEditable.obj);
+				plugin._toggleButton.hide();
 			});
+
+			if (!Aloha.activeEditable) {
+				plugin._toggleButton.hide();
+			}
 		}
-	});
+	};
+
+	plugin = Plugin.create('metaview', plugin);
+
+	return plugin;
 });

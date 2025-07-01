@@ -1,5 +1,5 @@
 /** @typedef {import('../../ui/lib/toggleButton').ToggleButton} ToggleButton */
-
+/** @typedef {import('../../ui/lib/splitButton').SplitButton} SplitButton */
 /**
  * @typedef {object} FormattingOption
  * @property {string=} name (Component/Slot) Name of the element
@@ -710,7 +710,7 @@ define('format/format-plugin', [
 	/**
 	 * register the plugin with unique name
 	 */
-	var plugin = Plugin.create('format', {
+	var plugin = {
 
 		// These are old/deprecated nodes and will be converted to the modern equivalent
 		conversionNames: {
@@ -759,6 +759,9 @@ define('format/format-plugin', [
 		activeTypography: null,
 		formatOptions: [],
 		typographyOptions: [],
+
+		/** @type {SplitButton} */
+		typographyButton: null,
 
 		/**
 		 * Initialize the plugin and set initialize flag on true
@@ -839,43 +842,63 @@ define('format/format-plugin', [
 				$editable.on('keydown.aloha.format', plugin.hotKey.formatPre, createChanger('pre'));
 			});
 
+			PubSub.sub('aloha.selection.context-change', function (message) {
+				onSelectionChanged(message.range);
+			});
+
+			PubSub.sub('aloha.selection.context-change', function (message) {
+				onSelectionChanged(plugin, message.range);
+			});
+
 			PubSub.sub('aloha.editable.deactivated', function (message) {
 				message.editable.obj.unbind('keydown.aloha.format');
 
-				// Set all buttons to inactive if we leave the editable
+				// Set all buttons to inactive if we leave the editable, and hide them
 				if (plugin.buttons) {
 					Object.values(plugin.buttons).forEach(function (button) {
 						if (typeof button.handle.setActive === 'function') {
 							button.handle.setActive(false);
 						}
+						button.handle.hide();
 					});
 				}
+
+				plugin.typographyButton.hide();
 			});
 		},
 
 		/**
 		 * applys a configuration specific for an editable
 		 * buttons not available in this configuration are hidden
-		 * @param {Object} id of the activated editable
+		 * @param {jQuery} $editable The editable object
 		 * @return void
 		 */
 		applyButtonConfig: function ($editable) {
-			var config = plugin.getEditableConfig($editable);
+			var config = [];
+			
+			if ($editable != null) {
+				config = plugin.getEditableConfig($editable);
+			}
 
 			if (config != null && typeof config === 'object' && !Array.isArray(config)) {
-				config = Object.keys(config);
+				config = Object.entries(config).reduce(function(acc, entry) {
+					if (entry[1]) {
+						acc.push(entry[0]);
+					}
+					return acc;
+				}, []);
 			}
 
 			plugin.formatOptions = config;
-
-			var editable = $editable[0];
 
 			// now iterate all buttons and show/hide them according to the config
 			Object.entries(plugin.buttons).forEach(function(entry) {
 				var buttonName = entry[0];
 				var button = entry[1];
 
-				if (!ContentRules.isAllowed(editable, buttonName)
+				if (
+					$editable == null
+					|| !ContentRules.isAllowed($editable[0], buttonName)
 					|| !config.includes(buttonName)
 				) {
 					button.handle.hide();
@@ -894,7 +917,11 @@ define('format/format-plugin', [
 				}
 
 				// Skip elements which aren't allowed
-				if (!ContentRules.isAllowed(editable, name) || !config.includes(name)) {
+				if (
+					$editable == null
+					||!ContentRules.isAllowed($editable[0], name)
+					|| !config.includes(name)
+				) {
 					return null;
 				}
 
@@ -995,9 +1022,11 @@ define('format/format-plugin', [
 				},
 			});
 
-			PubSub.sub('aloha.selection.context-change', function (message) {
-				onSelectionChanged(message.range);
-			});
+			if (Aloha.activeEditable) {
+				plugin.applyButtonConfig(Aloha.activeEditable.obj);
+			} else {
+				plugin.applyButtonConfig(null);
+			}
 		},
 
 		_createTypographyContext: function () {
@@ -1197,7 +1226,9 @@ define('format/format-plugin', [
 		toString: function () {
 			return 'format';
 		}
-	});
+	};
+
+	plugin = Plugin.create('format', plugin);
 
 	return plugin;
 });
