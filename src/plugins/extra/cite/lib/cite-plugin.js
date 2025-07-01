@@ -239,10 +239,6 @@ define([
 				}
 
 				plugin._quoteButton.setActive(quoteFound);
-
-				if (!Aloha.activeEditable) {
-					return;
-				}
 			});
 		},
 

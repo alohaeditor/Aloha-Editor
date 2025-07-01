@@ -1,0 +1,10 @@
+{
+  "version": "2.0.12",
+  "date": "01.07.2025",
+  "changeLogEntryFileNames": [
+    "12560.SUP-18644.bugfix",
+    "12562.SUP-18659.bugfix",
+    "12563.SUP-18660.enhancement"
+  ],
+  "genericProperties": {}
+}

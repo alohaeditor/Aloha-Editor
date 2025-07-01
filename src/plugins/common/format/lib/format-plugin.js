@@ -846,6 +846,10 @@ define('format/format-plugin', [
 				onSelectionChanged(message.range);
 			});
 
+			PubSub.sub('aloha.selection.context-change', function (message) {
+				onSelectionChanged(plugin, message.range);
+			});
+
 			PubSub.sub('aloha.editable.deactivated', function (message) {
 				message.editable.obj.unbind('keydown.aloha.format');
 
