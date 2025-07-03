@@ -1,0 +1,1 @@
+Fixed wrong access to load the configuration dynamically, which prevented the proper loading and initialization of Aloha/Plugins.
