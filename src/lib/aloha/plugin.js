@@ -198,7 +198,7 @@ define([
 
 			var pluginSettings = getPluginSettings(this);
 
-			if (pluginSettings.editables && obj != null) {
+			if (pluginSettings.editables && obj != null && typeof obj.attr === 'function') {
 				// When editable is an input or textarea we need the original object.
 				obj = getEditableOriginalObj(obj);
 

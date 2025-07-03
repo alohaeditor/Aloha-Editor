@@ -141,7 +141,7 @@ define([
 	}
 
 	function executeIfEnabled(editable) {
-		var config = plugin.getEditableConfig(editable);
+		var config = plugin.getEditableConfig(editable.obj);
 		var active = isPluginActivated(config, editable);
 		if (!active) {
 			return;

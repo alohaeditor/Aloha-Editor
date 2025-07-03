@@ -351,7 +351,7 @@ define([
 				while (--len >= 0) {
 					fileObj = data.filesObjs[len];
 					if (fileObj.file.type.match(/image\//)) {
-						config = plugin.getEditableConfig(data.editable);
+						config = plugin.getEditableConfig(data.editable.obj);
 						// Prepare
 						img = jQuery('<img/>');
 						img.css({
