@@ -657,7 +657,7 @@ define([
 				// check which list-types are allowed in this editable
 				// if the list type is not allowed we have to remove the
 				// element by unwrapping its contents
-				var config = normalizeConfiguration(ListPlugin.getEditableConfig(editable)),
+				var config = normalizeConfiguration(ListPlugin.getEditableConfig(editable.obj)),
 					listType = getListTypeFromElement($elem);
 				if (!listType || (config && !config.includes(listType))) {
 					$elem.contents().unwrap();

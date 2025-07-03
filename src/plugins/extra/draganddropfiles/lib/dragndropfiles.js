@@ -102,7 +102,7 @@ function($, Plugin,DropFilesRepository) {
 						'filesObjs':that.filesObjs,
 						'range': that.targetRange,
 						'editable': that.targetEditable});
-					var edConfig = that.getEditableConfig(that.targetEditable);
+					var edConfig = that.getEditableConfig(that.targetEditable.obj);
 					while(--len >= 0) {
 						that.uploader.startFileUpload(that.filesObjs[len].id,edConfig.upload.config);
 					}
@@ -233,7 +233,7 @@ function($, Plugin,DropFilesRepository) {
 			} else {
 				Aloha.getEditableById(this.targetEditable.attr('id')).activate();
 				that.targetRange = that.initializeRangeForDropEvent(event, this.targetEditable);
-				edConfig = that.getEditableConfig(this.targetEditable);
+				edConfig = that.getEditableConfig(this.targetEditable.obj);
 				edConfig.upload = $.extend({},edConfig.upload,that.settings.upload);
 				if (edConfig) {
 					that.dropInEditable = true;
