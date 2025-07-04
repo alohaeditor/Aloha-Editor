@@ -143,7 +143,7 @@ define('format/format-plugin', [
 	 * @returns {boolean}
 	 */
 	function isHeading(markup) {
-		return plugin.headerNodeNames.includes(markup);
+		return FormatPlugin.headerNodeNames.includes(markup);
 	}
 
 	/**
@@ -443,7 +443,7 @@ define('format/format-plugin', [
 			i, j;
 
 		// Normal format buttons like bold
-		Object.values(plugin.buttons || {}).forEach(function (button) {
+		Object.values(FormatPlugin.buttons || {}).forEach(function (button) {
 			// If the button is not a toggle-button (or an instance of it), then skip it.
 			// Can't set the state of it or do anything.
 			if (typeof button.handle.setActive !== 'function') {
@@ -770,17 +770,17 @@ define('format/format-plugin', [
 		init: function () {
 			Ephemera.classes(CLASS_HIERACHY_VIOLATION);
 
-			if (typeof plugin.settings.hotKey !== 'undefined') {
-				$.extend(true, plugin.hotKey, plugin.settings.hotKey);
+			if (typeof FormatPlugin.settings.hotKey !== 'undefined') {
+				$.extend(true, FormatPlugin.hotKey, FormatPlugin.settings.hotKey);
 			}
 
-			if (typeof plugin.settings.config !== 'undefined') {
-				plugin.config = plugin.settings.config;
+			if (typeof FormatPlugin.settings.config !== 'undefined') {
+				FormatPlugin.config = FormatPlugin.settings.config;
 			}
 
-			plugin.initButtons();
+			FormatPlugin.initButtons();
 
-			var shouldCheckHeadingHierarchy = Strings.parseBoolean(plugin.settings.checkHeadingHierarchy);
+			var shouldCheckHeadingHierarchy = Strings.parseBoolean(FormatPlugin.settings.checkHeadingHierarchy);
 
 			var checkHeadings = function () {
 				checkHeadingHierarchy(FormatPlugin.formatOptions);
@@ -1070,13 +1070,13 @@ define('format/format-plugin', [
 		 * @param {string} typography
 		 */
 		_applyTypography: function (typography) {
-			var oldTypography = plugin.activeTypography;
-			plugin.activeTypography = typography;
+			var oldTypography = FormatPlugin.activeTypography;
+			FormatPlugin.activeTypography = typography;
 
 			PubSub.pub('aloha.format.pre_change', {
 				level: 'block',
 				oldFormat: oldTypography,
-				newFormat: plugin.activeTypography,
+				newFormat: FormatPlugin.activeTypography,
 			});
 
 			changeMarkup(FormatPlugin.activeTypography);
@@ -1084,7 +1084,7 @@ define('format/format-plugin', [
 			PubSub.pub('aloha.format.changed', {
 				level: 'block',
 				oldFormat: oldTypography,
-				newFormat: plugin.activeTypography,
+				newFormat: FormatPlugin.activeTypography,
 			});
 		},
 
@@ -1094,8 +1094,8 @@ define('format/format-plugin', [
 		 */
 		_createHeaderIdContext: function (settings) {
 			var headerId = null;
-			if (plugin.typographyElement$) {
-				headerId = plugin.typographyElement$.attr(ATTR_HEADER_ID);
+			if (FormatPlugin.typographyElement$) {
+				headerId = FormatPlugin.typographyElement$.attr(ATTR_HEADER_ID);
 			}
 
 			return {
@@ -1108,18 +1108,18 @@ define('format/format-plugin', [
 		},
 
 		_applyHeaderId: function (value) {
-			if (!plugin.typographyElement$) {
+			if (!FormatPlugin.typographyElement$) {
 				return;
 			}
 
-			$(plugin.typographyElement$).attr(ATTR_HEADER_ID, value);
+			$(FormatPlugin.typographyElement$).attr(ATTR_HEADER_ID, value);
 
 			// Add the customized class if a ID has been set. Otherwise remove it, so the headerids plugin
 			// could automatically add it again if needed/enabled.
 			if (value) {
-				$(plugin.typographyElement$).addClass(CLASS_CUSTOMIZED);
+				$(FormatPlugin.typographyElement$).addClass(CLASS_CUSTOMIZED);
 			} else {
-				$(plugin.typographyElement$).removeClass(CLASS_CUSTOMIZED);
+				$(FormatPlugin.typographyElement$).removeClass(CLASS_CUSTOMIZED);
 			}
 		},
 
@@ -1170,8 +1170,8 @@ define('format/format-plugin', [
 				i;
 
 			// formats to be removed by the removeFormat button may now be configured using Aloha.settings.plugins.format.removeFormats = ['b', 'strong', ...]
-			if (plugin.settings.removeFormats) {
-				formats = plugin.settings.removeFormats;
+			if (FormatPlugin.settings.removeFormats) {
+				formats = FormatPlugin.settings.removeFormats;
 			}
 
 			if (rangeObject.isCollapsed()) {
@@ -1183,8 +1183,8 @@ define('format/format-plugin', [
 
 					// check whether the markup is found in the range (at the start of the range)
 					var nodeNames = [format];
-					if (plugin.conversionNames[format]) {
-						nodeNames.push(plugin.conversionNames[format]);
+					if (FormatPlugin.conversionNames[format]) {
+						nodeNames.push(FormatPlugin.conversionNames[format]);
 					}
 
 					var foundMarkup = rangeObject.findMarkup(function (nodeElement) {
