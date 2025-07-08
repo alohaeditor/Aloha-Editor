@@ -1,6 +1,8 @@
 {
   "version": "2.0.13",
   "date": "03.07.2025",
-  "changeLogEntryFileNames": [],
+  "changeLogEntryFileNames": [
+    "12564.SUP-18736.bugfix"
+  ],
   "genericProperties": {}
 }
