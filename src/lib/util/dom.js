@@ -137,12 +137,9 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 		return (
 			node.className === 'aloha-editing-p'
 				&& (
-					nodeLength(node) === 1
-					|| (
-						node.childElementCount > 0
-						&& node.children[0].nodeName === 'BR'
-						&& node.children[0].className === 'aloha-end-br'
-					)
+					node.childNodes.length === 1
+					&& node.childNodes[0].nodeName === 'BR'
+					&& node.childNodes[0].className === 'aloha-end-br'
 				)
 		);
 	}
