@@ -1,0 +1,1 @@
+Fixed a check if a paragraph is empty which could cause text to be deleted or other issues to arise.
