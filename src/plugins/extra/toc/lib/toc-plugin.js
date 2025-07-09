@@ -115,6 +115,11 @@ define([
 				}
 			});
 
+			PubSub.sub('aloha.editable.created', function (message) {
+				var editable = message.editable.obj;
+				plugin.spawn(editable);
+			});
+
 			// Set the button visible if it's enabled via the config
 			PubSub.sub('aloha.editable.activated', function (message) {
 				var editable = message.editable;
@@ -127,10 +132,6 @@ define([
 			});
 
 			checkVisibility(Aloha.activeEditable);
-
-			$(document).ready(function () {
-				plugin.spawn();
-			});
 		},
 
 		register: function ($c) {
@@ -153,17 +154,6 @@ define([
 				Aloha.Selection.getRangeObject(),
 				$('#' + Aloha.activeEditable.getId())
 			);
-
-			$toc.wrap('<div class="aloha-block-collection aloha-toc-wrapper" data-block-skip-scope="true"></div>');
-
-			let wrapper = $toc.parent();
-
-			Ephemera.markWrapper(wrapper);
-			wrapper.contentEditable(false);
-
-			if (wrapper.alohaBlock) {
-				wrapper.alohaBlock();
-			}
 
 			plugin.create(id).register($containers).update().tickTock();
 		},
@@ -223,6 +213,22 @@ define([
 							self.update($container);
 						});
 					});
+
+					let toc = this.root();
+
+					if (!toc.parent().is('.aloha-toc-wrapper')) {
+						toc.wrap('<div class="aloha-block-collection aloha-toc-wrapper" data-block-skip-scope="true"></div>');
+
+						let wrapper = toc.parent();
+
+						Ephemera.markWrapper(wrapper);
+						wrapper.contentEditable(false);
+
+						if (wrapper.alohaBlock) {
+							wrapper.alohaBlock();
+						}
+					}
+
 					return self;
 				},
 
