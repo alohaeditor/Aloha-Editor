@@ -115,10 +115,9 @@ define([
 				}
 			});
 
-			PubSub.sub('aloha.editable.created', function (message) {
-				var editable = message.editable.obj;
-				plugin.spawn(editable);
-			});
+			Aloha.ready(function () {
+				plugin.spawn();
+			})
 
 			// Set the button visible if it's enabled via the config
 			PubSub.sub('aloha.editable.activated', function (message) {
