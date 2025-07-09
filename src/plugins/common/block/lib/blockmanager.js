@@ -234,7 +234,7 @@ define([
 				if (selection.getRangeCount() === 0) {
 					return true;
 				}
-				if (!$.browser.msie) {
+				if (!($.browser && $.browser.msie)) {
 					return false;
 				}
 				var range = selection.getRangeAt(0);
@@ -323,7 +323,7 @@ define([
 
 					// BROWSER QUIRK WORKAROUND
 					// - IE7+IE8 for block-level blocks which are NOT part of a bigger selection.
-					if (jQuery.browser.msie && parseInt(jQuery.browser.version, 10) <= 8 && that._activeBlock.$element.parents('.aloha-editable,.aloha-block').first().hasClass('aloha-editable')) {
+					if (jQuery.browser && jQuery.browser.msie && parseInt(jQuery.browser.version, 10) <= 8 && that._activeBlock.$element.parents('.aloha-editable,.aloha-block').first().hasClass('aloha-editable')) {
 						that._activeBlock.destroy();
 						e.preventDefault();
 						return false;
