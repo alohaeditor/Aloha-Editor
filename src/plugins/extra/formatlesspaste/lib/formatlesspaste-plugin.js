@@ -160,7 +160,7 @@ define([
 			registerFormatlessPasteHandler(parsedConfig);
 
 			Aloha.bind('aloha-editable-activated', function ($event, data) {
-				var config = getEditableConfig(plugin, data.editable);
+				var config = getEditableConfig(plugin, data.editable.obj);
 				if (!config) {
 					return;
 				}

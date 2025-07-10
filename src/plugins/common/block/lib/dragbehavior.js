@@ -170,7 +170,7 @@ define([
 		var range = null;
 		var x = 0;
 		var y = 0;
-		return $.browser.msie ? {
+		return $.browser && $.browser.msie ? {
 
 				/**
 				 * Remember the selection state.
