@@ -461,7 +461,7 @@ define([
 			positionStyle = POSITION_STYLE;
 		}
 
-		if ($.browser.msie) {
+		if ($.browser && $.browser.msie) {
 			var $parent = surface.$element.parent();
 			surface.$element.appendTo('body');
 			surface.$element.css('position', positionStyle);

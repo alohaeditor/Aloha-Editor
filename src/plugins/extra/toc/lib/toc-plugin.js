@@ -15,7 +15,8 @@ define([
 	'ui/icons',
 	'ui/button',
 	'util/dom',
-	'i18n!toc/nls/i18n'
+	'i18n!toc/nls/i18n',
+	'aloha/ephemera',
 ], function (
 	$,
 	PubSub,
@@ -26,7 +27,8 @@ define([
 	Icons,
 	Button,
 	Dom,
-	i18n
+	i18n,
+	Ephemera
 ) {
 	'use strict';
 
@@ -113,6 +115,10 @@ define([
 				}
 			});
 
+			Aloha.ready(function () {
+				plugin.spawn();
+			})
+
 			// Set the button visible if it's enabled via the config
 			PubSub.sub('aloha.editable.activated', function (message) {
 				var editable = message.editable;
@@ -125,10 +131,6 @@ define([
 			});
 
 			checkVisibility(Aloha.activeEditable);
-
-			$(document).ready(function () {
-				plugin.spawn();
-			});
 		},
 
 		register: function ($c) {
@@ -145,11 +147,13 @@ define([
 			$containers = $containers || editableContainers();
 			var id = generateId('toc');
 			var $toc = $('<ol class="toc_root"></ol>').attr('id', id).attr('contentEditable', 'false');
+
 			Dom.insertIntoDOM(
 				$toc,
 				Aloha.Selection.getRangeObject(),
 				$('#' + Aloha.activeEditable.getId())
 			);
+
 			plugin.create(id).register($containers).update().tickTock();
 		},
 
@@ -208,6 +212,22 @@ define([
 							self.update($container);
 						});
 					});
+
+					let toc = this.root();
+
+					if (!toc.parent().is('.aloha-toc-wrapper')) {
+						toc.wrap('<div class="aloha-block-collection aloha-toc-wrapper" data-block-skip-scope="true"></div>');
+
+						let wrapper = toc.parent();
+
+						Ephemera.markWrapper(wrapper);
+						wrapper.contentEditable(false);
+
+						if (wrapper.alohaBlock) {
+							wrapper.alohaBlock();
+						}
+					}
+
 					return self;
 				},
 
@@ -340,7 +360,7 @@ define([
 						var parent = potentialParents.find(function (parent) {
 							var parentSection = parent[0];
 							return !parentSection.length || //top-level contains everything
-								parentSection.find(function (sectionElem) {
+								parentSection.toArray().find(function (sectionElem) {
 									return $heading.get(0) === sectionElem || $.contains(sectionElem, $heading.get(0));
 								});
 						});
