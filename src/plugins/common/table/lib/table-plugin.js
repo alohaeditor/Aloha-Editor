@@ -580,7 +580,7 @@ define([
 			if (!actuallyLeftEditable) {
 				// show hide buttons regarding configuration and DOM position
 				if (!Aloha.Selection.mayInsertTag('table')) {
-					TablePlugin._createTableButton.show();
+					TablePlugin._createTableButton.hide();
 				} else {
 					checkVisibility(editable);
 				}
