@@ -31,6 +31,7 @@ define([
 	'util/dom2',
 	'PubSub',
 	'util/range-context',
+	'util/html',
 	'ui/ui',
 	'ui/contextButton',
 	'ui/icons',
@@ -44,6 +45,7 @@ define([
 	Dom,
 	PubSub,
 	RangeContext,
+	Html,
 	Ui,
 	ContextButton,
 	Icons,
@@ -54,6 +56,21 @@ define([
 	'use strict';
 
 	/**
+	 * @param {Element} node
+	 */
+	function isStyleableNode(node) {
+		return Html.TYPOGRAPHY_ELEMENTS.has(node.nodeName)
+			|| (
+				// If it's a span which has no attributes or only has inline-styles, then we can re-use it
+				node.nodeName === 'SPAN'
+				&& (
+					node.attributes.length === 0
+					|| (node.attributes.length === 1 && node.attributes.item(0).name === 'style')
+				)
+			);
+	}
+
+	/**
 	 * Removes color at the given range.
 	 *
 	 * @param {Range} range
@@ -61,7 +78,7 @@ define([
 	function unsetColor(cssProperty, range) {
 		RangeContext.formatStyle(range, cssProperty, null, null, function(a, b) {
 			return false;
-		});
+		}, isStyleableNode);
 	}
 
 	/**
@@ -87,7 +104,7 @@ define([
 	function setColor(cssProperty, range, color) {
 		RangeContext.formatStyle(range, cssProperty, color, null, function(a, b) {
 			return Utils.colorIsSame(Utils.colorToRGBA(a), Utils.colorToRGBA(b));
-		});
+		}, isStyleableNode);
 	}
 
 	function checkVisibility(editable) {
