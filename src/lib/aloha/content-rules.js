@@ -172,7 +172,8 @@ define([
 		TBODY : ['TABLE'],
 		TR    : ['TABLE', 'TBODY'],
 		TH    : ['TABLE', 'TBODY'],
-		TD    : ['TR', 'TH']
+		TD    : ['TR', 'TH'],
+		RUBY  : ['RB', 'RP', 'RT'],
 	};
 
 	/**
@@ -184,6 +185,12 @@ define([
 	 * @return {boolean}
 	 */
 	function isAllowed(editable, nodeName) {
+		if (editable != null && editable.nodeName && Html.TYPOGRAPHY_ELEMENTS.has(editable.nodeName.toLowerCase())) {
+			if (!Html.isInlineFormattable(nodeName)) {
+				return false;
+			}
+		}
+
 		if (Html.BLOCKLEVEL_ELEMENTS.includes(nodeName.toLowerCase())) {
 			if (editable != null && editable.nodeName && !ALLOWED_BLOCKLEVEL_INSERT_EDITABLE_NODE_NAMES.includes(editable.nodeName.toLowerCase())) {
 				return false;
