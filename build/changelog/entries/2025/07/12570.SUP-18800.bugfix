@@ -1,0 +1,1 @@
+Fixed a check in the @table-plugin@ to correctly remove the table insert button when it shouldn't be available.

@@ -37,20 +37,40 @@ define([
 ) {
 	'use strict';
 
-	var inlineFormattableMap = {
-		'A': true,
-		'B': true,
-		'EM': true,
-		'FONT': true,
-		'I': true,
-		'S': true,
-		'SPAN': true,
-		'STRIKE': true,
-		'STRONG': true,
-		'SUB': true,
-		'SUP': true,
-		'U': true
-	};
+	var inlineFormattableMap = new Set([
+		'a',
+		'abbr',
+		'b',
+		'bdi', // Intl
+		'bdo', // Intl
+		'cite',
+		'code',
+		'del',
+		'dfn',
+		'em',
+		'font',
+		'i',
+		'ins',
+		'kbd',
+		'mark',
+		'output',
+		'q',
+		'rb', // Intl
+		'rp', // Intl
+		'rt', // Intl
+		'ruby', // Intl
+		's',
+		'samp',
+		'span',
+		'strike',
+		'strong',
+		'sub',
+		'sup',
+		'time',
+		'u',
+		'var',
+		'wbr'
+	]);
 
 	// NB: "block-level" is not technically defined for elements that are new in
 	// HTML5.
@@ -84,6 +104,17 @@ define([
 		'ul',
 		'video'      // HTML5
 	];
+
+	var TYPOGRAPHY_ELEMENTS = new Set([
+		'h1',
+		'h2',
+		'h3',
+		'h4',
+		'h5',
+		'h6',
+		'p',
+		'pre'
+	]);
 
 	/**
 	 * Void elements are elements which are not permitted to contain content.
@@ -273,8 +304,16 @@ define([
 		return 3 === node.nodeType && !node.length;
 	}
 
-	function isInlineFormattable(node) {
-		return inlineFormattableMap[node.nodeName];
+	/**
+	 * 
+	 * @param {HTMLElement | string} nodeOrName The node or name to check
+	 * @returns If the node is deemed a inline formattable
+	 */
+	function isInlineFormattable(nodeOrName) {
+		if (typeof nodeOrName !== 'string') {
+			nodeOrName = nodeOrName.nodeName;
+		}
+		return inlineFormattableMap.has((nodeOrName || '').toLowerCase());
 	}
 
 	/**
@@ -388,6 +427,7 @@ define([
 		return !isUnrenderedNode(node);
 	}
 	return {
+		TYPOGRAPHY_ELEMENTS: TYPOGRAPHY_ELEMENTS,
 		BLOCKLEVEL_ELEMENTS: BLOCKLEVEL_ELEMENTS,
 		VOID_ELEMENTS: VOID_ELEMENTS,
 		TEXT_LEVEL_SEMANTIC_ELEMENTS: TEXT_LEVEL_SEMANTIC_ELEMENTS,
