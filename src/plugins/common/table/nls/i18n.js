@@ -27,7 +27,8 @@ define({
 		"table.mergeCells.notRectangular": "Only a rectangular selection can be merged",
 		"table.addColumns.nonConsecutive": "Please select a single column or a consecutive range of columns",
 		"table.createTable.nestedTablesNoSupported": "Sorry, nested tables are not supported",
-		"button.deltable.tooltip": "Delete table"
+		"button.deltable.tooltip" : "Delete table",
+		"button.delrows.tooltip": "Delete selected rows/columns"
 	},
 		"ca": true,
 		"de": true,

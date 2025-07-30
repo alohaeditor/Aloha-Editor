@@ -239,9 +239,9 @@ define([
 			this.selectedRowIdxs = [];
 			this.currentRectangle = {};
 			this.selectionType = undefined;
-
-			this._notifyCellsUnselected();
 		}
+
+		this._notifyCellsUnselected();
 	};
 
 	/**

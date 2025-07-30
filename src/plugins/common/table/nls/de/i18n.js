@@ -26,5 +26,6 @@ define({
 	"table.mergeCells.notRectangular": "Es kann nur eine rechteckige Auswahl verknüpft werden",
 	"table.addColumns.nonConsecutive": "Bitte einzelne oder aufeinanderfolgende Reihen auswählen",
 	"table.createTable.nestedTablesNoSupported": "Verschachtelte Tabellen werden nicht unterstützt",
-	"button.deltable.tooltip": "Tabelle löschen"
+	"button.deltable.tooltip": "Tabelle löschen",
+	"button.delrows.tooltip": "Ausgewählte Reihen/Spalten löschen"
 });

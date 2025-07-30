@@ -85,9 +85,9 @@ define([
 		$wrapper.on('focus', function ($event) {
 			// activate the button for splitting cells if the clicked cell has an active row- or colspan
 			if (Utils.colspan(cell.obj) > 1 || Utils.rowspan(cell.obj) > 1) {
-				cell.tableObj.tablePlugin._tableCellsSplitButton.enable(true);
+				cell.tableObj.tablePlugin._tableCellsSplitButton.enable();
 			} else {
-				cell.tableObj.tablePlugin._tableCellsSplitButton.enable(false);
+				cell.tableObj.tablePlugin._tableCellsSplitButton.disable();
 			}
 
 			// ugly workaround for ext-js-adapter problem in
@@ -518,44 +518,46 @@ define([
 	/**
 	 * Selects all inner-contens of an contentEditable-object
 	 *
-	 * @param editableNode dom-representation of the editable node (div-element)
+	 * @param {HTMLElement | JQuery} editableNode dom-representation of the editable node (div-element)
 	 * @return void
 	 */
 	TableCell.prototype._selectAll = function (editableNode) {
-		var e = (editableNode.jquery) ? editableNode.get(0) : editableNode;
+		/** @type {Element} */
+		var element = (editableNode.jquery) ? editableNode.get(0) : editableNode;
 
 		// Not IE
 		if (!jQuery.browser.msie) {
-			var s = window.getSelection();
+			var selection = window.getSelection();
 			// WebKit
-			if (s.setBaseAndExtent /*&& e> 0 */) {
-				s.setBaseAndExtent(e, 0, e, Math.max(0, e.innerText.length - 1));
+			if (selection.setBaseAndExtent /*&& e> 0 */) {
+				var offset = element.nodeType === document.ELEMENT_NODE ? element.childNodes.length : (element.textContent - 1);
+				selection.setBaseAndExtent(element, 0, element, Math.max(0, offset));
 			}
 			// Firefox and Opera
 			else {
 				// workaround for bug # 42885
-				if (window.opera && e.innerHTML.substring(e.innerHTML.length - 4) == '<BR>') {
-					e.innerHTML = e.innerHTML + '&#160;';
+				if (window.opera && element.innerHTML.substring(element.innerHTML.length - 4) == '<BR>') {
+					element.innerHTML = element.innerHTML + '&#160;';
 				}
 
 				var r = document.createRange();
-				r.selectNodeContents(e);
-				s.removeAllRanges();
-				s.addRange(r);
+				r.selectNodeContents(element);
+				selection.removeAllRanges();
+				selection.addRange(r);
 			}
 		}
 		// Some older browsers
 		else if (document.getSelection) {
-			var s = document.getSelection();
+			var selection = document.getSelection();
 			var r = document.createRange();
-			r.selectNodeContents(e);
-			s.removeAllRanges();
-			s.addRange(r);
+			r.selectNodeContents(element);
+			selection.removeAllRanges();
+			selection.addRange(r);
 		}
 		// IE
 		else if (document.selection) {
 			var r = document.body.createTextRange();
-			r.moveToElementText(e);
+			r.moveToElementText(element);
 			r.select();
 		}
 	};

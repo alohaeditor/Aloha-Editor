@@ -368,8 +368,10 @@ define('format/format-plugin', [
 		Dom.addMarkup(rangeObject, markup);
 		Dom.doCleanup({
 			merge: true,
-			mergeable: function (node) {
-				return 'Q' === node.nodeName && 'Q' === node.nextSibling.nodeName;
+			mergeable: /** @param {HTMLElement} node */function (node) {
+				return 'Q' === node.nodeName
+					&& node.nextSibling != null
+					&& 'Q' === node.nextSibling.nodeName;
 			}
 		}, rangeObject);
 		updateUiAfterMutation(rangeObject);
