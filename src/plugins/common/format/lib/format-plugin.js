@@ -30,6 +30,7 @@ define('format/format-plugin', [
 	'util/dom',
 	'util/browser',
 	'util/strings',
+	'util/range-context',
 	'ui/ui',
 	'ui/button',
 	'ui/toggleButton',
@@ -52,6 +53,7 @@ define('format/format-plugin', [
 	Dom,
 	Browser,
 	Strings,
+	RangeContext,
 	Ui,
 	Button,
 	ToggleButton,
@@ -85,11 +87,6 @@ define('format/format-plugin', [
 	}
 
 	/**
-	 * Alias for isInlineFormatable function from Html lib
-	 */
-	var isInlineNode = Html.isInlineFormattable;
-
-	/**
 	 * Expands the (invisible) range to encompass the whole node
 	 * that was selected by the user
 	 * @param Range range
@@ -98,7 +95,7 @@ define('format/format-plugin', [
 	function expandRange(range) {
 		var cac = range.commonAncestorContainer;
 
-		if (isInlineNode(cac) && cac.parentNode) {
+		if (Html.isInlineFormattable(cac) && cac.parentNode) {
 			var parent = cac.parentNode;
 			range.startContainer = parent;
 			range.endContainer = parent;
@@ -1171,13 +1168,18 @@ define('format/format-plugin', [
 		 */
 		removeFormat: function () {
 			var formats = [
-				'u', 'strong', 'em', 'b', 'i', 'q', 'del', 's', 'code', 'sub', 'sup',
-				'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'quote', 'blockquote',
-				'address', 'small', 'cite', 'dfn',
-				'abbr', 'time', 'var', 'samp', 'kbd', 'mark', 'span', 'ins'
-			],
-				rangeObject = Selection.rangeObject,
-				i;
+				'abbr', 'b', 'cite', 'code', 'del', 'em', 'font', 'i', 'ins',
+				'kbd', 'mark', 'output', 'q', 's', 'samp', 'strike', 'strong',
+				'sub', 'sup', 'time', 'u', 'var',
+				// 'big', 'small', // Deprecated
+				'blockquote',
+			];
+			var styles = [
+				'color',
+				'background-color',
+				'text-align',
+			];
+			var rangeObject = Selection.rangeObject;
 
 			// formats to be removed by the removeFormat button may now be configured using Aloha.settings.plugins.format.removeFormats = ['b', 'strong', ...]
 			if (this.settings.removeFormats) {
@@ -1188,7 +1190,7 @@ define('format/format-plugin', [
 				var rangeEditingHost = Dom.getEditingHostOf(rangeObject.startContainer);
 				var limit = rangeEditingHost ? jQuery(rangeEditingHost) : Aloha.activeEditable.obj;
 
-				for (i = 0; i < formats.length; i++) {
+				for (var i = 0; i < formats.length; i++) {
 					var format = formats[i].toUpperCase();
 
 					// check whether the markup is found in the range (at the start of the range)
@@ -1208,7 +1210,7 @@ define('format/format-plugin', [
 			} else {
 				var rangeEditingHost = Dom.getEditingHostOf(rangeObject.startContainer);
 				var limit = rangeEditingHost ? jQuery(rangeEditingHost) : Aloha.activeEditable.obj;
-				for (i = 0; i < formats.length; i++) {
+				for (var i = 0; i < formats.length; i++) {
 					Dom.removeMarkup(
 						rangeObject,
 						jQuery('<' + formats[i] + '>'),
@@ -1216,6 +1218,13 @@ define('format/format-plugin', [
 						false);
 				}
 				unformatList(rangeObject);
+			}
+
+			// Remove the styles from the range
+			for (var i = 0; i < styles.length; i++) {
+				RangeContext.formatStyle(Aloha.getSelection().getRangeAt(0), styles[i], null, null, function(a, b) {
+					return false;
+				});
 			}
 
 			updateUiAfterMutation(rangeObject);
