@@ -43,12 +43,10 @@ define([
 		'b',
 		'bdi', // Intl
 		'bdo', // Intl
-		// 'big', // deprecated
 		'cite',
 		'code',
-		'data', // technically valid, but should we support it?
 		'del',
-		'dfn', // technically valid, but should we support it?
+		'dfn',
 		'em',
 		'font',
 		'i',
@@ -60,12 +58,9 @@ define([
 		'rb', // Intl
 		'rp', // Intl
 		'rt', // Intl
-		// 'rbc', // Intl, deprecated
-		// 'rtc', // Intl, deprecated
 		'ruby', // Intl
 		's',
 		'samp',
-		// 'small', //deprecated
 		'span',
 		'strike',
 		'strong',

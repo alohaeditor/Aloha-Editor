@@ -173,7 +173,9 @@ define([
 		TR    : ['TABLE', 'TBODY'],
 		TH    : ['TABLE', 'TBODY'],
 		TD    : ['TR', 'TH'],
-		RUBY  : ['RB', 'RP', 'RT'],
+		RB	  : ['RUBY'],
+		RP	  : ['RUBY'],
+		RT    : ['RUBY']
 	};
 
 	/**

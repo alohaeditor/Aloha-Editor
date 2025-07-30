@@ -1168,11 +1168,9 @@ define('format/format-plugin', [
 		 */
 		removeFormat: function () {
 			var formats = [
-				'abbr', 'b', 'cite', 'code', 'del', 'em', 'font', 'i', 'ins',
+				'abbr', 'b', 'cite', 'code', 'del', 'dfn', 'em', 'font', 'i', 'ins',
 				'kbd', 'mark', 'output', 'q', 's', 'samp', 'strike', 'strong',
 				'sub', 'sup', 'time', 'u', 'var',
-				// 'big', 'small', // Deprecated
-				'blockquote',
 			];
 			var styles = [
 				'color',

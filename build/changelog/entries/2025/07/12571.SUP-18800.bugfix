@@ -1,0 +1,1 @@
+Changed the behavior of the @clearFormat@ action, to not remove typography anymore.
