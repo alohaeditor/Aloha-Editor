@@ -530,7 +530,9 @@ define([
 			var selection = window.getSelection();
 			// WebKit
 			if (selection.setBaseAndExtent /*&& e> 0 */) {
-				var offset = element.nodeType === document.ELEMENT_NODE ? element.childNodes.length : (element.textContent - 1);
+				var offset = element.nodeType === document.ELEMENT_NODE
+					? element.childNodes.length
+					: (element.textContent.length - 1);
 				selection.setBaseAndExtent(element, 0, element, Math.max(0, offset));
 			}
 			// Firefox and Opera
