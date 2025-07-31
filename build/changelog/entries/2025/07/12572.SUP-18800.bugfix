@@ -1,0 +1,1 @@
+Fixed checks for validity of markup, which incorrectly allowed elements to be added or changed, which could cause layout errors.

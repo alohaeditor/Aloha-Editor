@@ -540,25 +540,14 @@ define([
 		});
 
 		Aloha.bind('aloha-table-selection-changed', function () {
+			TablePlugin.updateButtonStates();
+
 			// check if selected cells are split/merge able and set button status
 			if (!TablePlugin.activeTable || !TablePlugin.activeTable.selection) {
 				return;
 			}
 
 			TablePlugin.updateFloatingMenuScope();
-			TablePlugin.updateSummaryButton();
-
-			if (TablePlugin.activeTable.selection.cellsAreSplitable()) {
-				TablePlugin._tableCellsSplitButton.enable();
-			} else {
-				TablePlugin._tableCellsSplitButton.disable();
-			}
-
-			if (TablePlugin.activeTable.selection.cellsAreMergeable()) {
-				TablePlugin._tableCellsMergeButton.enable();
-			} else {
-				TablePlugin._tableCellsMergeButton.disable();
-			}
 		});
 
 		//		PubSub.sub('aloha.selection.context-change', function (message) {
@@ -580,7 +569,7 @@ define([
 			if (!actuallyLeftEditable) {
 				// show hide buttons regarding configuration and DOM position
 				if (!Aloha.Selection.mayInsertTag('table')) {
-					TablePlugin._createTableButton.show();
+					TablePlugin._createTableButton.hide();
 				} else {
 					checkVisibility(editable);
 				}
@@ -642,10 +631,100 @@ define([
 		return jQuery.trim(stringBuilder.join(' '));
 	}
 
+	TablePlugin._cellStyleOptions = [];
+
+	TablePlugin.updateCellStyleOptions = function() {
+		const haveCellConfig = Array.isArray(TablePlugin.settings.cellConfig) && TablePlugin.settings.cellConfig.length > 0;
+		const haveColumnConfig = Array.isArray(TablePlugin.settings.columnConfig) && TablePlugin.settings.columnConfig.length > 0;
+		const haveRowConfig = Array.isArray(TablePlugin.settings.rowConfig) && TablePlugin.settings.rowConfig.length > 0;
+
+		const selType = TablePlugin.activeTable
+			&& TablePlugin.activeTable.selection
+			&& TablePlugin.activeTable.selection.selectionType;
+
+		const getOptions = function (config, currentOptions) {
+			for (let i = 0; i < config.length; i++) {
+				const option = config[i];
+
+				if (currentOptions[option.name]) {
+					continue;
+				}
+
+				if (option.name && option.label) {
+					currentOptions[option.name] = {
+						id: option.name,
+						icon: option.icon,
+						iconHollow: option.iconHollow || false,
+						label: option.label
+					};
+				}
+			}
+
+			return currentOptions;
+		}
+
+		var options = [];
+		const currentOptions = {};
+
+		if (haveCellConfig) {
+			options = Object.values(getOptions(TablePlugin.settings.cellConfig, currentOptions));
+		}
+
+		if (haveColumnConfig && (selType === 'column' || selType === 'all')) {
+			options = Object.values(getOptions(TablePlugin.settings.columnConfig, currentOptions));
+		}
+
+		if (haveRowConfig && (selType === 'row' || selType === 'all')) {
+			options = Object.values(getOptions(TablePlugin.settings.rowConfig, currentOptions));
+		}
+
+		TablePlugin._cellStyleOptions = options;
+	};
+
+	TablePlugin.updateButtonStates = function () {
+		var selection = TablePlugin
+			&& TablePlugin.activeTable
+			&& TablePlugin.activeTable.selection;
+
+		if (selection != null && selection.cellsAreSplitable()) {
+			TablePlugin._tableCellsSplitButton.enable();
+		} else {
+			TablePlugin._tableCellsSplitButton.disable();
+		}
+
+		if (selection != null && selection.cellsAreMergeable()) {
+			TablePlugin._tableCellsMergeButton.enable();
+		} else {
+			TablePlugin._tableCellsMergeButton.disable();
+		}
+
+		if (selection != null && (selection.selectedCells == null || selection.selectedCells.length === 0)) {
+			TablePlugin._tableRowAddBeforeButton.disable();
+			TablePlugin._tableRowAddAfterButton.disable();
+			TablePlugin._tableColumnAddLeftButton.disable();
+			TablePlugin._tableColumnAddRightButton.disable();
+		} else {
+			TablePlugin._tableRowAddBeforeButton.enable();
+			TablePlugin._tableRowAddAfterButton.enable();
+			TablePlugin._tableColumnAddLeftButton.enable();
+			TablePlugin._tableColumnAddRightButton.enable();
+		}
+
+		TablePlugin.updateCellStyleOptions();
+
+		if (TablePlugin._cellStyleOptions.length === 0) {
+			TablePlugin._tableCellStyleButton.disable();
+		} else {
+			TablePlugin._tableCellStyleButton.enable();
+		}
+
+		TablePlugin.updateSummaryButton();
+	}
+
 	/**
 	 * Update the Summary Icon
 	 */
-	TablePlugin.updateSummaryButton = function() {
+	TablePlugin.updateSummaryButton = function () {
 		if (TablePlugin.activeTable) {
 			TablePlugin._summary.setTargetElement(TablePlugin.activeTable.obj);
 			TablePlugin._summary.activateInput(true);
@@ -883,49 +962,7 @@ define([
 			tooltip: i18n.t("button.cellstyle.tooltip"),
 			icon: Icons.TABLE_STYLE_CELLS,
 			context: function () {
-				const haveCellConfig = Array.isArray(TablePlugin.settings.cellConfig) && TablePlugin.settings.cellConfig.length > 0;
-				const haveColumnConfig = Array.isArray(TablePlugin.settings.columnConfig) && TablePlugin.settings.columnConfig.length > 0;
-				const haveRowConfig = Array.isArray(TablePlugin.settings.rowConfig) && TablePlugin.settings.rowConfig.length > 0;
-
-				const selType = TablePlugin.activeTable.selection.selectionType;
-
-				const getOptions = function (config, currentOptions) {
-					for (let i = 0; i < config.length; i++) {
-						const option = config[i];
-
-						if (currentOptions[option.name]) {
-							continue;
-						}
-
-						if (option.name && option.label) {
-							currentOptions[option.name] = {
-								id: option.name,
-								icon: option.icon,
-								iconHollow: option.iconHollow || false,
-								label: option.label
-							};
-						}
-					}
-
-					return currentOptions;
-				}
-
-				var options = [];
-				const currentOptions = {};
-
-				if (haveCellConfig) {
-					options = Object.values(getOptions(TablePlugin.settings.cellConfig, currentOptions));
-				}
-
-				if (haveColumnConfig && (selType === 'column' || selType === 'all')) {
-					options = Object.values(getOptions(TablePlugin.settings.columnConfig, currentOptions));
-				}
-
-				if (haveRowConfig && (selType === 'row' || selType === 'all')) {
-					options = Object.values(getOptions(TablePlugin.settings.rowConfig, currentOptions));
-				}
-
-				if (options.length === 0) {
+				if (TablePlugin._cellStyleOptions.length === 0) {
 					return null;
 				}
 
@@ -933,7 +970,7 @@ define([
 					type: 'select-menu',
 					options: {
 						iconsOnly: false,
-						options: options
+						options: TablePlugin._cellStyleOptions
 					},
 				}
 			},
@@ -1065,12 +1102,12 @@ define([
 			tooltip: i18n.t('button.summary.tooltip'),
 			inputLabel: i18n.t('table.label.target'),
 			panelTitle: i18n.t('table.sidebar.title'),
-			click: function() {
+			click: function () {
 				if (TablePlugin._summary && TablePlugin._summary.panelInputElement) {
 					TablePlugin._summary.panelInputElement.focus();
 				}
 			},
-			onChange: function() {
+			onChange: function () {
 				TablePlugin.updateSummaryButton();
 			}
 		});
@@ -1200,7 +1237,7 @@ define([
 			UiPlugin.getActiveSurface().focusTab(TablePlugin.tabId);
 		}
 		TablePlugin.updateFloatingMenuScope();
-		TablePlugin.updateSummaryButton();
+		TablePlugin.updateButtonStates();
 	};
 
 	TablePlugin.setFocusedTable = function (focusTable) {
@@ -1223,7 +1260,7 @@ define([
 		}
 
 		TablePlugin.activeTable = focusTable;
-		TablePlugin.updateSummaryButton();
+		TablePlugin.updateButtonStates();
 	};
 
 	/**
