@@ -39,6 +39,7 @@ define([
 		'b',
 		'bdi', // Intl
 		'bdo', // Intl
+		'br',
 		'cite',
 		'code',
 		'del',
