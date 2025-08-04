@@ -188,7 +188,7 @@ define([
 	 */
 	function isAllowed(editable, nodeName) {
 		if (editable != null && editable.nodeName && Html.TYPOGRAPHY_ELEMENTS.has(editable.nodeName.toLowerCase())) {
-			if (!Html.isInlineFormattable(nodeName)) {
+			if (!Html.isInlineFormattable(nodeName) && nodeName !== '#text') {
 				return false;
 			}
 		}
