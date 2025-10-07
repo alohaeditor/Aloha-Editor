@@ -938,7 +938,7 @@ define([
 					that.selection.selectAll();
 
 					// set the selection type before updating the scope
-					that.tablePlugin.activeTable.selection.selectionType = 'cell';
+					// that.tablePlugin.activeTable.selection.selectionType = 'cell';
 					that.tablePlugin.updateFloatingMenuScope();
 
 					// As side-effect of the following call the focus

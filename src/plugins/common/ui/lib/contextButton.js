@@ -93,7 +93,7 @@ define([
                     return control.value;
                 })
                 .then(function (contextValue) {
-                    this.value = contextValue;
+                    _this.value = contextValue;
                     if (typeof _this.changeNotify === 'function') {
                         _this.changeNotify(contextValue);
                     }
