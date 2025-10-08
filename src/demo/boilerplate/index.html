@@ -60,6 +60,11 @@
 	  // newer versions of jQuery will make a call to define which will
 	  // be picked up in aloha.js
 	  //Aloha.settings.jQuery = $.noConflict(true);
+	  if (!$.browser) {
+          $.browser = {
+              msie: false
+		  };
+	  }
     </script>
 	<!--
 		Load the Aloha Editor library.
@@ -92,7 +97,6 @@
 	                            extra/listenforcer,
 	                            extra/metaview,
 	                            extra/numerated-headers,
-	                            extra/ribbon,
 	                            extra/textcolor,
 	                            extra/wai-lang,
 	                            extra/linkbrowser,
@@ -100,7 +104,6 @@
 	                            extra/cite"></script>
 	<!-- Include the fake-jquery to make sure that Aloha works even if
 		 the user includes his own global jQuery after aloha.js. -->
-	<script src="fake-jquery.js"></script>
 	<link rel="stylesheet" href="css/style.css">
 	<style>
 		b {

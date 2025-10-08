@@ -167,6 +167,8 @@ define([
 		this.selectRows( rowIndices );
 
 		this.selectionType = 'all';
+
+		this.notifyCellsSelected();
 	};
 	
 	/**
