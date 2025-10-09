@@ -357,6 +357,37 @@ define([
 	}
 
 	/**
+	 * Apply the given style to the table as a whole.
+	 * @param config The style config.
+	 * @param styleName The style to apply.
+	 */
+	function applyTableStyle(config, styleName) {
+		if (!TablePlugin.activeTable) {
+			return;
+		}
+
+		const tableObj = TablePlugin.activeTable.obj;
+		const configItem = config.find(item => item.name === styleName);
+
+		if (!configItem) {
+			return;
+		}
+
+		const hasStyle = tableObj.hasClass(configItem.cssClass);
+
+		for (const configItem of config) {
+			tableObj.removeClass(configItem.cssClass);
+		}
+
+		if (!hasStyle) {
+			tableObj.addClass(configItem.cssClass);
+			TablePlugin._currentStyle = configItem.name;
+		} else {
+			TablePlugin._currentStyle = null;
+		}
+	}
+
+	/**
 	 * If the specified style is not already active in all selected cells, it is applied;
 	 * otherwise, it is removed from the cells
 	 *
@@ -383,10 +414,14 @@ define([
 					}
 				}
 			}
+
+			TablePlugin._currentStyle = cssClass;
 		} else {
 			for (var i = 0; i < sc.length; i++) {
 				jQuery(sc[i]).removeClass(cssClass);
 			}
+
+			TablePlugin._currentStyle = '';
 		}
 	}
 
@@ -585,6 +620,7 @@ define([
 			}, editable.obj);
 
 			if (table) {
+				TablePlugin.updateButtonStates();
 				TablePlugin.updateFloatingMenuScope();
 				TablePlugin.setActiveCellStyle();
 			} else {
@@ -632,8 +668,11 @@ define([
 	}
 
 	TablePlugin._cellStyleOptions = [];
+	TablePlugin._currentStyle = '';
+	TablePlugin._styleTypesById = {};
 
 	TablePlugin.updateCellStyleOptions = function() {
+		const haveTableConfig = Array.isArray(TablePlugin.settings.tableConfig) && TablePlugin.settings.tableConfig.length > 0;
 		const haveCellConfig = Array.isArray(TablePlugin.settings.cellConfig) && TablePlugin.settings.cellConfig.length > 0;
 		const haveColumnConfig = Array.isArray(TablePlugin.settings.columnConfig) && TablePlugin.settings.columnConfig.length > 0;
 		const haveRowConfig = Array.isArray(TablePlugin.settings.rowConfig) && TablePlugin.settings.rowConfig.length > 0;
@@ -642,7 +681,7 @@ define([
 			&& TablePlugin.activeTable.selection
 			&& TablePlugin.activeTable.selection.selectionType;
 
-		const getOptions = function (config, currentOptions) {
+		const getOptions = function (type, config, currentOptions) {
 			for (let i = 0; i < config.length; i++) {
 				const option = config[i];
 
@@ -653,6 +692,7 @@ define([
 				if (option.name && option.label) {
 					currentOptions[option.name] = {
 						id: option.name,
+						type: type,
 						icon: option.icon,
 						iconHollow: option.iconHollow || false,
 						label: option.label
@@ -667,19 +707,74 @@ define([
 		const currentOptions = {};
 
 		if (haveCellConfig) {
-			options = Object.values(getOptions(TablePlugin.settings.cellConfig, currentOptions));
+			options = Object.values(getOptions('cell', TablePlugin.settings.cellConfig, currentOptions));
 		}
 
 		if (haveColumnConfig && (selType === 'column' || selType === 'all')) {
-			options = Object.values(getOptions(TablePlugin.settings.columnConfig, currentOptions));
+			options = Object.values(getOptions('column', TablePlugin.settings.columnConfig, currentOptions));
 		}
 
 		if (haveRowConfig && (selType === 'row' || selType === 'all')) {
-			options = Object.values(getOptions(TablePlugin.settings.rowConfig, currentOptions));
+			options = Object.values(getOptions('row', TablePlugin.settings.rowConfig, currentOptions));
+		}
+
+		if (haveTableConfig && selType === 'all') {
+			options = Object.values(getOptions('table', TablePlugin.settings.tableConfig, currentOptions));
+		}
+
+		let optionTypes = {};
+
+		for (const option of options) {
+			optionTypes[option.id] = option.type;
 		}
 
 		TablePlugin._cellStyleOptions = options;
+		TablePlugin._currentStyle = TablePlugin._getCurrentStyle(selType, options);
+		TablePlugin._styleTypesById = optionTypes;
 	};
+
+	TablePlugin._getCurrentStyle = function (selType, options) {
+		const tableObj = TablePlugin.activeTable ? TablePlugin.activeTable.obj : null;
+
+		if (!tableObj || tableObj.length === 0) {
+			return '';
+		}
+
+		if (selType === 'all') {
+			for (const option of options) {
+				if (tableObj.hasClass(option.id)) {
+					return option.id;
+				}
+			}
+		} else {
+			for (const option of options) {
+				let cells = [];
+
+				try {
+					cells = TablePlugin.selectedOrActiveCells();
+				} catch (e) {
+					return '';
+				}
+
+				let allCellsHaveStyle = true;
+
+				for (const cell of TablePlugin.selectedOrActiveCells()) {
+					if (!$(cell).hasClass(option.id)) {
+						allCellsHaveStyle = false;
+
+						break;
+					}
+				}
+
+				if (allCellsHaveStyle) {
+					return option.id;
+				}
+			}
+
+		}
+
+		return '';
+	}
 
 	TablePlugin.updateButtonStates = function () {
 		var selection = TablePlugin
@@ -972,11 +1067,19 @@ define([
 						iconsOnly: false,
 						options: TablePlugin._cellStyleOptions
 					},
+					initialValue: TablePlugin._currentStyle
 				}
 			},
 			contextResolve: function (selection) {
 				if (TablePlugin.activeTable) {
-					applyStyle(TablePlugin.cellConfig, selection.id, TablePlugin.selectedOrActiveCells());
+					const config = [];
+					const configType = `${TablePlugin._styleTypesById[selection.id]}Config`;
+
+					if (configType === 'tableConfig' && TablePlugin.tableConfig) {
+						applyTableStyle(TablePlugin.tableConfig, selection.id);
+					} else if (TablePlugin[configType]) {
+						applyStyle(TablePlugin[configType], selection.id, TablePlugin.selectedOrActiveCells());
+					}
 
 					TablePlugin.setActiveCellStyle();
 				}

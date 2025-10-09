@@ -101,21 +101,22 @@
 				summaryinsidebar: true,
 					// [{name:'green', text:'Green', tooltip:'Green is cool', iconClass:'GENTICS_table GENTICS_button_green', cssClass:'green'}]
 				tableConfig: [
-					{ name: 'hor-minimalist-a' },
-					{ name: 'box-table-a' },
-					{ name: 'hor-zebra' },
+					{ name: 'hor-minimalist-a', label: 'Minimalist' },
+					{ name: 'box-table-a', label: 'Box' },
+					{ name: 'hor-zebra', label: 'Zebra' },
 				],
 				columnConfig: [
-					{ name: 'table-style-bigbold',  iconClass: 'aloha-button-col-bigbold' },
-					{ name: 'table-style-redwhite', iconClass: 'aloha-button-col-redwhite' }
+					{ name: 'column-style-bigbold', label: 'Col Big Bold' },
+					{ name: 'column-style-redwhite', label: 'Col Red White' },
 				],
+
 				rowConfig: [
-					{ name: 'table-style-bigbold',  iconClass: 'aloha-button-row-bigbold' },
-					{ name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite' }
+					{ name: 'row-style-bigbold', label: 'Row Big Bold' },
+					{ name: 'row-style-redwhite', label: 'Row Red White' },
 				],
 				cellConfig: [
-					{ name: 'table-style-bigbold',  iconClass: 'aloha-button-row-bigbold' },
-					{ name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite' }
+					{ name: 'cell-style-bigbold', label: 'Cell Big Bold' },
+					{ name: 'cell-style-redwhite', label: 'Cell Red White' },
 				],
 				// allow resizing the table width (default: false)
 				tableResize: true,
