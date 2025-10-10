@@ -5,7 +5,6 @@ define([
 	'ui/ui',
 	'ui/icons',
 	'ui/button',
-	'link/link-plugin',
 	'RepositoryBrowser',
 	'i18n!linkbrowser/nls/i18n',
 	'i18n!aloha/nls/i18n'
@@ -31,8 +30,8 @@ define([
 			// If the link plugin tries to display any special attributes
 			// in the sidebar, make sure the repository does not filter
 			// them out.
-			if (Links.settings.sidebar && config.filter) {
-				jQuery.each(Links.settings.sidebar, function (idx, val) {
+			if (LinkBrowserPlugin._linkPlugin.settings.sidebar && config.filter) {
+				jQuery.each(LinkBrowserPlugin._linkPlugin.settings.sidebar, function (idx, val) {
 					config.filter.push(val.attr);
 				});
 			}
@@ -64,7 +63,7 @@ define([
 		},
 
 		onSelect: function (item) {
-			Links.hrefField.setItem(item);
+			LinkBrowserPlugin._linkPlugin.hrefField.setItem(item);
 
 			// Now create a selection within the editable since the user should
 			// be able to type once the link has been created.
@@ -148,7 +147,11 @@ define([
 
 		browser: null,
 
+		_linkPlugin: null,
+
 		init: function () {
+			this._linkPlugin = Aloha.require('link/link-plugin');
+
 			var config = {
 				repositoryManager : Aloha.RepositoryManager,
 				repositoryFilter  : [],

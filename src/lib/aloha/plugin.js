@@ -24,6 +24,18 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
+/**
+ * @typedef {object} AlohaPluginSettings
+ * @property {boolean=} enabled If this plugin is enabled and therefore can be initialized.
+ */
+/**
+ * @typedef {object} AlohaPlugin Plugin to extend the functionality of Aloha.
+ * @property {string} name Name/ID of the Plugin.
+ * @property {object} defaults Default values of the plugin `settings`.
+ * @property {AlohaPluginSettings} settings The local settings of the plugin.
+ * @property {Array.<string>} dependencies List of plugin-names that this plugin depends on.
+ * @property {function():void|Promise<void>} init Function to initialize the plugin.
+ */
 define([
 	'aloha/core',
 	'jquery',
@@ -58,29 +70,13 @@ define([
 	 * @namespace Aloha
 	 * @class Plugin
 	 * @constructor
-	 * @param {String} pluginPrefix unique plugin prefix
+	 * @type {AlohaPlugin}
 	 */
-	var Plugin = Class.extend({
+	var Plugin = Class.extend(/** @type {AlohaPlugin} */ ({
 
 		name: null,
-
-		/**
-		 * contains the plugin's default settings object
-		 * @cfg {Object} default settings for the plugin
-		 */
 		defaults: {},
-
-		/**
-		 * contains the plugin's settings object
-		 * @cfg {Object} settings the plugins settings stored in an object
-		 */
 		settings: {},
-
-		/**
-		 * Names of other plugins which must be loaded in order for this plugin to
-		 * function.
-		 * @cfg {Array}
-		 */
 		dependencies: [],
 
 		_constructor: function (name) {
@@ -94,28 +90,6 @@ define([
 			}
 		},
 
-		/**
-		 * @return true if dependencies satisfied, false otherwise
-		 */
-		checkDependencies: function () {
-			var plugin = this;
-			var satisfied = true;
-			jQuery.each(plugin.dependencies, function (i, dependency) {
-				if (!Aloha.isPluginLoaded(dependency.toString())) {
-					satisfied = false;
-					console.error('plugin.' + plugin.name,
-							'Required plugin "' + dependency + '" not found.');
-					return false;
-				}
-			});
-			return satisfied;
-		},
-
-		/**
-		 * Init method of the plugin. Called from Aloha Core to initialize this plugin
-		 * @return void
-		 * @hide
-		 */
 		init: function () {},
 
 		/**
@@ -297,7 +271,7 @@ define([
 			console.deprecated('plugin', 'log() is deprecated. Use Aloha.console instead.');
 			console.log(level, this, message);
 		}
-	});
+	}));
 
 	function getPluginSettings(instance) {
 		var globalSettings = {};

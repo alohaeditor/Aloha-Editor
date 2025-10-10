@@ -213,27 +213,15 @@ define([
 	 *                        asynchronously.
 	 */
 	function initPluginManager(event, next) {
-		// Because if there are no loadedPlugins specified, then the default is
-		// to initialized all available plugins.
-		if (0 === Aloha.loadedPlugins.length) {
-			var plugins = PluginManager.plugins;
-			var plugin;
-			for (plugin in plugins) {
-				if (plugins.hasOwnProperty(plugin)) {
-					Aloha.loadedPlugins.push(plugin);
-				}
-			}
-		}
-
 		var fired = false;
 
-		PluginManager.init(function () {
+		PluginManager.init(Aloha.loadedPlugins).then(function () {
 			if (!fired) {
 				event();
 				fired = true;
 			}
 			next();
-		}, Aloha.loadedPlugins);
+		});
 
 		if (!fired) {
 			event();
@@ -414,18 +402,13 @@ define([
 		/**
 		 * Returns true if a certain plugin is loaded, false otherwise.
 		 *
-		 * @param {string} plugin Name of plugin
-		 * @return {boolean} True if plugin with given name is load.
+		 * @param {string} name Name of plugin
+		 * @return {boolean} True if plugin with given name is scheduled to load.
 		 */
 		isPluginLoaded: function (name) {
-			var loaded = false;
-			$.each(this.loadedPlugins, function (i, plugin) {
-				if (name === plugin.toString()) {
-					loaded = true;
-					return false;
-				}
+			return this.loadedPlugins.some(function(pluginName) {
+				return name === pluginName;
 			});
-			return loaded;
 		},
 
 		/**

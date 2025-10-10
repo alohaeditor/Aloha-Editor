@@ -26,7 +26,6 @@
  */
 define([
 	'aloha',
-	'aloha/jquery',
 	'aloha/plugin',
 	'util/dom2',
 	'util/color',
@@ -40,7 +39,6 @@ define([
 	'i18n!textcolor/nls/i18n',
 ], function (
 	Aloha,
-	$,
 	Plugin,
 	Dom,
 	Utils,
@@ -136,7 +134,6 @@ define([
 	}
 
 	var plugin = {
-
 		config: {
 			"color": {
 				palette: Palette,

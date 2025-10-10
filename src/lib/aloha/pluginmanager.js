@@ -24,13 +24,18 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
+/** @typedef {import('./plugin').AlohaPlugin} AlohaPlugin */
+/**
+ * @typedef {object} PluginManager
+ * @property {Map.<string, AlohaPlugin>} plugins Map of registered plugins.
+ * @property {Set.<string>} initializedPlugins A set of plugin names which have been initialized.
+ * @property {function(Array.<string>):Promise.<void>} init Initialize all provided plugins.
+ */
 // Do not add dependencies that require depend on aloha/core
 define([
-	'jquery',
 	'util/class',
 	'aloha/plugincontenthandlermanager'
 ], function (
-	$,
 	Class,
 	PluginContentHandlerManager
 ) {
@@ -39,122 +44,215 @@ define([
 	var Aloha = window.Aloha;
 
 	/**
-	 * Retrieves a set of plugins or the given `names' list, from among those
-	 * specified in `plugins'.
-	 *
-	 * @param {object<string, object>} plugins
-	 * @param {Array.<string>} names List of plugins names.
-	 * @return {Array.<Plugins>} List of available plugins.
-	 */
-	function getPlugins(plugins, names) {
-		var available = [];
-		var plugin;
-		var i;
-		for (i = 0; i < names.length; i++) {
-			plugin = plugins[names[i]];
-			if (plugin) {
-				available.push(plugin);
-			}
-		}
-		return available;
-	}
-
-	/**
-	 * Initializes the plugins in the given list.
-	 *
-	 * @param {Array.<Plugins>} plugins Plugins to initialize.
-	 * @param {function} callback Function to invoke once all plugins have been
-	 *                            successfully initialized.
-	 */
-	function initializePlugins(plugins, callback) {
-		if (0 === plugins.length) {
-			if (callback) {
-				callback();
-			}
-			return;
-		}
-		var numToEnable = plugins.length;
-		var onInit = function () {
-			if (0 === --numToEnable && callback) {
-				callback();
-			}
-		};
-		var i;
-		var ret;
-		var plugin;
-		for (i = 0; i < plugins.length; i++) {
-			plugin = plugins[i];
-			plugin.settings = plugin.settings || {};
-			if (typeof plugin.settings.enabled === 'undefined') {
-				plugin.settings.enabled = true;
-			}
-			if (plugin.settings.enabled && plugin.checkDependencies()) {
-				ret = plugin.init();
-				PluginContentHandlerManager.registerPluginContentHandler(plugin);
-				if (ret && typeof ret.done === 'function') {
-					ret.done(onInit);
-				} else {
-					onInit();
-				}
-			} else {
-				onInit();
-			}
-		}
-	}
-
-	/**
 	 * The Plugin Manager controls the lifecycle of all Aloha Plugins.
 	 *
 	 * @namespace Aloha
 	 * @class PluginManager
 	 * @singleton
+	 * @type {PluginManager}
 	 */
-	return new (Class.extend({
+	const manager = new (Class.extend(/** @type {PluginManager} */ ({
 
-		plugins: {},
+		plugins: new Map(),
+		initializedPlugins: new Set(),
 
-		/**
-		 * Initialize all registered plugins.
-		 *
-		 * @param {function} next Callback to invoke after plugins have
-		 *                        succefully initialized.
-		 * @param {Array.<string>} enabled A list of plugin names which are to
-		 *                                 be enable.
-		 */
-		init: function (next, enabled) {
-			var manager = this;
-			var plugins = manager.plugins;
-
+		init: function (pluginList) {
 			// Because all plugins are enabled by default if specific plugins
 			// are not specified.
-			var plugin;
-			if (plugins && 0 === enabled.length) {
-				enabled = [];
-				for (plugin in plugins) {
-					if (plugins.hasOwnProperty(plugin)) {
-						enabled.push(plugin);
+			if (manager.plugins && 0 === pluginList.length) {
+				pluginList = manager.plugins.keys();
+			}
+
+			/**
+			 * Plugins which are already initialized or which are requested
+			 * are available/included for dependency checks.
+			 */
+			const availablePlugins = new Set(manager.initializedPlugins);
+			/**
+			 * Set of dependencies which are absent/missing and would therefore
+			 * cause a deadlock if it contains elements.
+			 * @type {Set.<string>}
+			 */
+			const missingDependencies = new Set();
+			/**
+			 * Inverse mapping of dependency as key and the plugins as values.
+			 * Used for printing a detailed error message and for quicker lookups.
+			 * @type {Map.<string, Set.<string>>}
+			 */
+			const inverseDependencies = new Map();
+			/**
+			 * A map which contains the remaining requirements/dependencies of
+			 * each plugin.
+			 * @type {Map.<string, Set.<string>>}
+			 */
+			const waitingForDependencies = new Map();
+
+			for (const pluginName of pluginList) {
+				const plugin = manager.plugins.get(pluginName);
+				if (plugin == null) {
+					throw new Error(`Cannot initialize Plugin ${pluginName}, as it is not registered!`);
+				}
+
+				// Set the default value for enabled
+				plugin.settings = plugin.settings || {};
+				if (plugin.settings.enabled == null) {
+					plugin.settings.enabled = true;
+				}
+
+				// If it isn't enabled, we don't want to initialize it
+				if (!plugin.settings.enabled) {
+					continue;
+				}
+
+				missingDependencies.delete(pluginName);
+				availablePlugins.add(pluginName);
+				waitingForDependencies.set(pluginName, new Set());
+
+				if (!Array.isArray(plugin.dependencies)) {
+					continue;
+				}
+
+				for (const dep of plugin.dependencies) {
+					if (!inverseDependencies.has(dep)) {
+						inverseDependencies.set(dep, new Set());
+					}
+					inverseDependencies.get(dep).add(pluginName);
+
+					if (!availablePlugins.has(dep)) {
+						missingDependencies.add(dep);
+					}
+					if (!manager.initializedPlugins.has(dep)) {
+						waitingForDependencies.get(pluginName).add(dep);
 					}
 				}
 			}
 
-			initializePlugins(getPlugins(plugins, enabled), next);
+			if (missingDependencies.size > 0) {
+				const deps = Array.from(missingDependencies).map(function(dep) {
+					return `  Dependency "${dep}" needed by ["${Array.from(inverseDependencies.get(dep)).join('", "')}"]`;
+				});
+				throw new Error(`Could not resolve needed plugin-dependencies:\n${deps.join('\n')}`);
+			}
+
+			return new Promise(function(resolve, reject) {
+				let hasError = false;
+
+				// Flags which prevent extra calls to `initializeNextPlugins`
+				/** If the initialization is still running. */
+				let working = false;
+				/** If it should call the init again after it's done. */
+				let queued = false;
+
+				/**
+				 * Finalizes the plugin initialization.
+				 * @param {AlohaPlugin} plugin The plugin which has been initialized 
+				 */
+				function finalizePlugin(plugin) {
+					manager.initializedPlugins.add(plugin.name);
+					PluginContentHandlerManager.registerPluginContentHandler(plugin);
+
+					// Mark this plugin as resolved in all plugins which have this as dependency
+					const dependents = inverseDependencies.get(plugin.name);
+					if (dependents) {
+						for (const dep of dependents) {
+							if (waitingForDependencies.has(dep)) {
+								waitingForDependencies.get(dep).delete(plugin.name);
+							}
+						}
+					}
+
+					if (working) {
+						queued = true;
+					} else {
+						queued = false;
+						initializeNextPlugins();
+					}
+				}
+
+				function initializeNextPlugins() {
+					// Start the work
+					working = true;
+
+					// If we have encountered an error while initializing,
+					// then we don't want to continue initializing plugins.
+					if (hasError) {
+						return;
+					}
+
+					if (waitingForDependencies.size === 0) {
+						// If all plugins have been initialized, we can resolve
+						if (availablePlugins.size === manager.initializedPlugins.size) {
+							resolve();
+						}
+						return;
+					}
+
+					const keys = waitingForDependencies.keys();
+					for (const pluginName of keys) {
+						const deps = waitingForDependencies.get(pluginName);
+						// If it's still waiting for dependencies to resolve,
+						// then we have to wait this out.
+						if (deps.size !== 0) {
+							continue;
+						}
+
+						// Remove it from the map since we initialize it now.
+						waitingForDependencies.delete(pluginName);
+
+						// Get the plugin itself and try to initialize it
+						const plugin = manager.plugins.get(pluginName);
+						/** @type {void|Promise<void>} */
+						let result;
+
+						try {
+							result = plugin.init();
+						} catch (error) {
+							hasError = true;
+							reject(new Error(`Error while initializing Plugin "${pluginName}"!`, {
+								cause: error,
+							}));
+						}
+
+						// Check if it's a promise
+						if (result != null && typeof result === 'object' && typeof result.then === 'function') {
+							result.then(function() {
+								finalizePlugin(plugin);
+							}).catch(function(error) {
+								hasError = true;
+								reject(new Error(`Error while initializing Plugin "${pluginName}"!`, {
+									cause: error,
+								}));
+							});
+						} else {
+							finalizePlugin(plugin);
+						}
+					}
+
+					working = false;
+					if (queued) {
+						queued = false;
+						initializeNextPlugins();
+					}
+				}
+
+				initializeNextPlugins();
+			});
 		},
 
 		/**
 		 * Register a plugin
-		 * @param {Plugin} plugin plugin to register
+		 * @param {AlohaPlugin} plugin plugin to register
 		 */
 		register: function (plugin) {
-
 			if (!plugin.name) {
 				throw new Error('Plugin does not have an name.');
 			}
 
-			if (this.plugins[plugin.name]) {
+			if (manager.plugins.has(plugin.name)) {
 				throw new Error('Already registered the plugin "' + plugin.name + '"!');
 			}
 
-			this.plugins[plugin.name] = plugin;
+			this.plugins.set(plugin.name, plugin);
 		},
 
 		/**
@@ -164,15 +262,12 @@ define([
 		 * @hide
 		 */
 		makeClean: function (obj) {
-			var i, plugin;
-			// iterate through all registered plugins
-			for (plugin in this.plugins) {
-				if (this.plugins.hasOwnProperty(plugin)) {
-					if (Aloha.Log.isDebugEnabled()) {
-						Aloha.Log.debug(this, 'Passing contents of HTML Element with id { ' + obj.attr('id') + ' } for cleaning to plugin { ' + plugin + ' }');
-					}
-					this.plugins[plugin].makeClean(obj);
+			const registeredPlugins = Array.from(this.plugins.values());
+			for (const plugin of registeredPlugins) {
+				if (Aloha.Log.isDebugEnabled()) {
+					Aloha.Log.debug(this, 'Passing contents of HTML Element with id { ' + obj.attr('id') + ' } for cleaning to plugin { ' + plugin.name + ' }');
 				}
+				plugin.makeClean(obj);
 			}
 		},
 
@@ -184,5 +279,7 @@ define([
 			return 'pluginmanager';
 		}
 
-	}))();
+	})))();
+
+	return manager;
 });

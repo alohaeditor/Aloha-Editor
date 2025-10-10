@@ -1,3 +1,10 @@
+/* format-plugin.js is part of the Aloha Editor project http://aloha-editor.org
+ *
+ * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
+ * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
+ * Contributors http://aloha-editor.org/contribution.php
+ * License http://aloha-editor.org/license.php
+ */
 /** @typedef {import('../../ui/lib/toggleButton').ToggleButton} ToggleButton */
 /** @typedef {import('../../ui/lib/splitButton').SplitButton} SplitButton */
 /**
@@ -7,14 +14,6 @@
  * @property {string} label The display name/label for the user
  * @property {boolean} typography If this is a typography format (i.E. paragraph, header, ...)
  * @property {boolean} header If this is a header typography (h1-h6)
- */
-
-/* format-plugin.js is part of the Aloha Editor project http://aloha-editor.org
- *
- * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
- * Copyright (c) 2010-2014 Gentics Software GmbH, Vienna, Austria.
- * Contributors http://aloha-editor.org/contribution.php
- * License http://aloha-editor.org/license.php
  */
 define('format/format-plugin', [
 	'jquery',

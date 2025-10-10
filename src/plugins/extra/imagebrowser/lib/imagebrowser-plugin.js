@@ -32,11 +32,9 @@ define([
 	'ui/ui',
 	'ui/icons',
 	'ui/button',
-	'image/image-plugin',
 	'RepositoryBrowser',
 	// i18n
 	'i18n!imagebrowser/nls/i18n',
-	'i18n!aloha/nls/i18n'
 ], function(
 	Aloha,
     jQuery,
@@ -44,14 +42,12 @@ define([
     Ui,
 	Icons,
     Button,
-    Images,
     RepositoryBrowser,
     i18n,
-    i18nCore
 ) {
 	'use strict';
 
-	var ImageBrowser = RepositoryBrowser.extend( {
+	var ImageBrowser = RepositoryBrowser.extend({
 
 		init: function ( config ) {
 			this._super( config );
@@ -80,8 +76,8 @@ define([
 		},
 		onSelect: function ( item ) {
 			if ( item.type.match( 'image' ) !== null ) {
-				Images.ui.imgSrcField.setItem( item );
-				Images.resetSize(); // reset to original image size
+				ImageBrowserPlugin._imagePlugin.ui.imgSrcField.setItem( item );
+				ImageBrowserPlugin._imagePlugin.resetSize(); // reset to original image size
 				this.close();
 			}
 		},
@@ -140,7 +136,12 @@ define([
 	var ImageBrowserPlugin = Plugin.create( 'imagebrowser', {
 		dependencies: [ 'image' ],
 		browser: null,
+
+		_imagePlugin: null,
+
 		init: function () {
+			this._imagePlugin = Aloha.require('image/image-plugin');
+
 			var config = {
 				repositoryManager : Aloha.RepositoryManager,
 				repositoryFilter  : [],

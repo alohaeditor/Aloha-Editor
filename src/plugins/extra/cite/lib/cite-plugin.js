@@ -16,7 +16,6 @@ define([
 	'ui/toggleSplitButton',
 	'ui/modal',
 	'ui/utils',
-	'format/format-plugin',
 	'util/dom',
 	'i18n!cite/nls/i18n'
 ], function (
@@ -30,7 +29,6 @@ define([
 	ToggleSplitButton,
 	Modal,
 	Utils,
-	FormatPlugin,
 	domUtils,
 	i18n
 ) {
@@ -144,6 +142,8 @@ define([
 	}
 
 	var plugin = {
+		dependencies: ['format'],
+
 		citations: [],
 		referenceContainer: null,
 		settings: null,
@@ -163,6 +163,8 @@ define([
 					plugin.settings = Aloha.settings.plugins.cite;
 				}
 			}
+
+			const FormatPlugin = Aloha.require('format/format-plugin');
 
 			// Delete the entry for a single quote, as we "replace" it here.
 			delete FormatPlugin.buttonConfig[TYPE_SINGLE_QUOTE];

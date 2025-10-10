@@ -11,6 +11,7 @@
  * @template {*} T
  * @typedef {object} OverlayElementSettings
  * 
+ * @property {string=} openerReference - Reference to the opening element.
  * @property {T=} initialValue - Value of the form/component and what it's starting value is.
  * @property {boolean=} closeOnEscape - If the overlay eleemnt should close when the escape key is being pressed.
  * @property {boolean=} closeOnOverlayClick - If the overlay element should close when the user clicks outside of it.

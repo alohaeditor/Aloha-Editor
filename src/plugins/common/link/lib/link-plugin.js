@@ -402,6 +402,7 @@ define([
 			}
 
 			return {
+				openerReference: 'insertLink',
 				title: modalTitle,
 				initialValue: {
 					url: {

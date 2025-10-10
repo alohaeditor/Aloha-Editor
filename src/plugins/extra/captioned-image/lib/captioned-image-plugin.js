@@ -20,10 +20,7 @@ define([
 	'ui/ui',
 	'ui/toggleButton',
 	'ui/toolbar',
-	'aloha/contenthandlermanager',
 	'aloha/console',
-	'align/align-plugin', // Needed to ensure that we have "alignLeft", and
-	                      // "alignRight" components.
 	// FIXME: use of the css require plugin is deprecated
 	'css!captioned-image/css/captioned-image.css'
 ], function (
@@ -35,7 +32,6 @@ define([
 	Ui,
 	ToggleButton,
 	Toolbar,
-	ContentHandlerManager,
 	console
 ) {
 	'use strict';
@@ -522,6 +518,8 @@ define([
 	});
 
 	var CaptionedImage = Plugin.create('captioned-image', {
+		dependencies: ['align'],
+
 		init: function () {
 			initializeComponents();
 			BlockManager.registerBlockType('CaptionedImageBlock', CaptionedImageBlock);
