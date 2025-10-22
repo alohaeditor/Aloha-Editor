@@ -416,7 +416,7 @@ define([
 					url: {
 						type: 'link-target',
 						validate: function (value) {
-							return (value == null || !value.target) ? {
+							return (value == null || !(value.target || value.anchor)) ? {
 								required: true
 							} : null;
 						},
