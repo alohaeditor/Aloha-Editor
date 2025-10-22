@@ -23,6 +23,7 @@ define([
 	'aloha/plugin',
 	'aloha/ephemera',
 	'aloha/content-rules',
+	'aloha/keybinds',
 	'util/dom',
 	'util/keys',
 	'ui/ui',
@@ -42,6 +43,7 @@ define([
 	Plugin,
 	Ephemera,
 	ContentRules,
+	Keybinds,
 	Dom,
 	Keys,
 	Ui,
@@ -285,37 +287,38 @@ define([
 		 * Subscribe for events
 		 */
 		subscribeEvents: function () {
+			Aloha.bind('aloha-editable-created', function (e, editable) {
+				Keybinds.bind(editable.obj, 'link', Keybinds.parseKeybinds(LinkPlugin.hotKey.insertLink), function() {
+					let existingLink = LinkPlugin.findLinkMarkup();
+	
+					if (!existingLink) {
+						LinkPlugin.insertLink(true);
+						return;
+					}
+
+					Modal.openDynamicModal(
+						LinkPlugin.createInsertLinkContext(existingLink)
+					).then(function (control) {
+						return control.value;
+					}).then(function (formValue) {
+						LinkPlugin.upsertLink(existingLink, formValue);
+					}).catch(function (error) {
+						if (!Utils.isUserCloseError(error)) {
+							console.error(error);
+						}
+					});
+				});
+			});
+
 			// Set the button visible if it's enabled via the config
 			PubSub.sub('aloha.editable.activated', function (message) {
 				var editable = message.editable;
 
-				setupMetaClickLink(message.editable);
+				setupMetaClickLink(editable);
 
 				if (!checkVisibility(editable)) {
 					return;
 				}
-
-				// enable hotkey for inserting links
-				editable.obj.on('keydown.aloha-link', LinkPlugin.hotKey.insertLink, function () {
-					let existingLink = LinkPlugin.findLinkMarkup();
-
-					if (existingLink) {
-						Modal.openDynamicModal(
-							LinkPlugin.createInsertLinkContext(existingLink)
-						).then(function (control) {
-							return control.value;
-						}).then(function (formValue) {
-							LinkPlugin.upsertLink(existingLink, formValue);
-						}).catch(function (error) {
-							if (!Utils.isUserCloseError(error)) {
-								console.error(error);
-							}
-						})
-					} else {
-						LinkPlugin.insertLink(true);
-					}
-					return false;
-				});
 
 				Array.from(editable.obj.find('a')).forEach(function (foundLink) {
 					LinkPlugin.addLinkEventHandlers(foundLink);

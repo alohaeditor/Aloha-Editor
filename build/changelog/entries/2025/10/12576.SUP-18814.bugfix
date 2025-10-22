@@ -1,0 +1,2 @@
+Hotkeys/Keybinds have been reworked and work as expected again.
+A new module @aloha/keybinds@ has been created for keybind handling.
