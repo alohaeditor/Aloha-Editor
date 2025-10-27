@@ -79,6 +79,8 @@ h4. Table layout
 
 Each cell, row or column can have an individual style applied. You only have to select the cells, rows or columns and choose one layout from the table layout list.
 
+NOTE: The names used in +tableConfig+, +columnConfig+, +rowConfig+ and +cellConfig+ must be unique.
+
 h4. Table caption & summary
 
 To add a caption to a table click inside of one cell and click the button table caption. A summary may be added by using the according field in the sidebar.
@@ -105,16 +107,14 @@ Aloha.settings.plugins: {
 		// to style the buttons.
 		//
 		// The full list of options are as follows:
-		// - name:		a unique name for the style (required)
-		// - tooltip:	a tooltip string for the button
-		// - iconClass:	the css class of the icon to use for the toggle button.
-		//				If not set, defaults to 'aloha-icon-<name>'.
-		// - cssClass:	the css class to toggle on the table/row/cell.
-		//				If not set, defaults to the value of `name`.
+		// - name: the CSS class to be added.
+		// - icon: the icon name for the dropdown entry
+		// - iconHollow: flag whether the icon should be displayed hollow or filled
+		// - label: the label to display in the dropdown
 		tableConfig : [
-			{ name:'hor-minimalist-a' },
-			{ name:'box-table-a' },
-			{ name:'hor-zebra' },
+			{ name: 'table-style-minimalist' icon: 'border_clear', iconHollow: false, label: 'Minimalist'},
+			{ name: 'table-style-box', icon: 'border_all', iconHollow: false, label: 'Box' },
+			{ name: 'table-style-zebra', icon: 'table_rows_narrow', iconHollow: false, label: 'Zebra' },
 		],
 		// the following settings define CSS classes applicable to entire columns, rows or single cells:
 		// - name:       the CSS class to be added
@@ -122,16 +122,16 @@ Aloha.settings.plugins: {
 		// - iconHollow: flag whether the icon should be displayed hollow or filled
 		// - label:      the label to display in the dropdown
 		columnConfig : [
-				{ name: 'table-style-align-left',  icon: 'format_align_left', iconHollow: false, label: 'Align left' },
-				{ name: 'table-style-align-right', icon: 'format_align_right', iconHollow: false, label: 'Align right' }
+				{ name: 'column-style-align-left',  icon: 'format_align_left', iconHollow: false, label: 'Align left' },
+				{ name: 'column-style-align-right', icon: 'format_align_right', iconHollow: false, label: 'Align right' }
 		],
 		rowConfig : [
-				{ name: 'table-style-align-left',  icon: 'format_align_left', iconHollow: false, label: 'Align left' },
-				{ name: 'table-style-align-right', icon: 'format_align_right', iconHollow: false, label: 'Align right' }
+				{ name: 'row-style-align-left',  icon: 'format_align_left', iconHollow: false, label: 'Align left' },
+				{ name: 'row-style-align-right', icon: 'format_align_right', iconHollow: false, label: 'Align right' }
 		],
 		cellConfig : [
-				{ name: 'table-style-align-left',  icon: 'format_align_left', iconHollow: false, label: 'Align left' },
-				{ name: 'table-style-align-right', icon: 'format_align_right', iconHollow: false, label: 'Align right' }
+				{ name: 'cell-style-align-left',  icon: 'format_align_left', iconHollow: false, label: 'Align left' },
+				{ name: 'cell-style-align-right', icon: 'format_align_right', iconHollow: false, label: 'Align right' }
 		],
 		// allow resizing the table width (options: "px", false, default: false)
 		tableResize: true,
