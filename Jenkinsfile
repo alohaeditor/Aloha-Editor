@@ -63,6 +63,7 @@ spec:
 		booleanParam(name: 'release',                   defaultValue: false, description: 'Whether to perform a release')
 		booleanParam(name: 'releaseWithNewChangesOnly', defaultValue: true,  description: 'Release: Abort the build if there are no new changes')
 		booleanParam(name: 'deployTesting',             defaultValue: false, description: 'Deploy the snapshot version (only valid, if not release)')
+		string(name:       'forceVersion',              defaultValue: "",  description: "If not empty, the build/release will be done using this POM version")
 	}
 
 	triggers {
@@ -82,6 +83,7 @@ spec:
 				githubBuildStarted()
 
 				script {
+					version    = params.forceVersion
 					branchName = GitHelper.fetchCurrentBranchName()
 
 					if (!version && Boolean.valueOf(params.release)) {
@@ -89,7 +91,9 @@ spec:
 					}
 
 					if (version) {
-						version = MavenHelper.transformSnapshotToReleaseVersion(version)
+						if (Boolean.valueOf(params.release)) {
+							version = MavenHelper.transformSnapshotToReleaseVersion(version)
+						}
 						MavenHelper.setVersion(version)
 					}
 
