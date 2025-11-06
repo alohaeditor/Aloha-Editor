@@ -292,7 +292,6 @@ define(['jquery',], /** @param {JQueryStatic} $ */ function ($) {
 
                 // If the incorrect key is pressed, reset state
                 if (!singleKeybind.keys.has(key)) {
-                    state.clear();
                     continue;
                 }
 

@@ -542,6 +542,10 @@ define([
 		 * link. If inside a link tag the link is removed.
 		 */
 		upsertLink: function (linkElement, linkData, skipEvent) {
+			if (linkData == null) {
+				linkData = {};
+			}
+
 			if (!linkElement) {
 				if (Aloha.activeEditable) {
 					return LinkPlugin.insertLink(true, linkData);
@@ -554,13 +558,15 @@ define([
 			try {
 				// Cannot use URL.parse here, as it's not available in Cypress (v13.13+) w/ Electron (v27.x)
 				// which uses Node v18.17, which in turn doesn't have this feature yet.
-				new URL(linkData.url.target, window.location);
-				href = linkData.url.target;
+				if (linkData.url != null && linkData.url.target != null) {
+					new URL(linkData.url.target, window.location);
+					href = linkData.url.target;
+				}
 			} catch (err) {
 				href = '';
 			}
 
-			if (linkData.url.anchor) {
+			if (linkData.url != null && linkData.url.anchor) {
 				href += "#" + linkData.url.anchor;
 			}
 
@@ -600,6 +606,9 @@ define([
 			var range = Aloha.Selection.getRangeObject(),
 				linkText,
 				newLink;
+			if (linkData == null) {
+				linkData = {};
+			}
 
 			// There are occasions where we do not get a valid range, in such
 			// cases we should not try and add a link
@@ -619,13 +628,13 @@ define([
 
 			var href;
 
-			if (URL.canParse(linkData.url.target, window.location)) {
+			if (linkData.url != null && linkData.url.target != null && URL.canParse(linkData.url.target, window.location)) {
 				href = linkData.url.target;
 			} else {
 				href = '';
 			}
 
-			if (linkData.url.anchor) {
+			if (linkData.url != null && linkData.url.anchor) {
 				href += '#' + linkData.url.anchor;
 			}
 

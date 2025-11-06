@@ -763,20 +763,20 @@ define('format/format-plugin', [
 		 */
 		// TODO: Move the keybinds into the formatting options
 		hotKey: {
-			formatBold: [Keybinds.MOD_CONTROL_OR_META, 'b'],
-			formatItalic: [Keybinds.MOD_CONTROL_OR_META, 'i'],
-			formatUnderline: [Keybinds.MOD_CONTROL_OR_META, 'u'],
-			formatParagraph: [Keybinds.MOD_CONTROL_OR_META, Keybinds.MOD_ALT, '0'],
-			formatH1: [Keybinds.MOD_CONTROL_OR_META, Keybinds.MOD_ALT, '1'],
-			formatH2: [Keybinds.MOD_CONTROL_OR_META, Keybinds.MOD_ALT, '2'],
-			formatH3: [Keybinds.MOD_CONTROL_OR_META, Keybinds.MOD_ALT, '3'],
-			formatH4: [Keybinds.MOD_CONTROL_OR_META, Keybinds.MOD_ALT, '4'],
-			formatH5: [Keybinds.MOD_CONTROL_OR_META, Keybinds.MOD_ALT, '5'],
-			formatH6: [Keybinds.MOD_CONTROL_OR_META, Keybinds.MOD_ALT, '6'],
-			formatPre: [Keybinds.MOD_CONTROL_OR_META, 'p'],
-			formatDel: [Keybinds.MOD_CONTROL_OR_META, 'd'],
-			formatSub: [Keybinds.MOD_ALT, Keybinds.MOD_SHIFT, 's'],
-			formatSup: [Keybinds.MOD_CONTROL, Keybinds.MOD_SHIFT, 's'],
+			formatBold: 'ControlOrMeta+b',
+			formatItalic: 'ControlOrMeta+i',
+			formatUnderline: 'ControlOrMeta+u',
+			formatParagraph: 'ControlOrMeta+Alt+0',
+			formatH1: 'ControlOrMeta+Alt+1',
+			formatH2: 'ControlOrMeta+Alt+2',
+			formatH3: 'ControlOrMeta+Alt+3',
+			formatH4: 'ControlOrMeta+Alt+4',
+			formatH5: 'ControlOrMeta+Alt+5',
+			formatH6: 'ControlOrMeta+Alt+6',
+			formatPre: 'ControlOrMeta+p',
+			formatDel: 'ControlOrMeta+d',
+			formatSub: 'Alt+Shift+s',
+			formatSup: 'Control+Shift+s',
 		},
 
 		activeTypography: null,
@@ -826,20 +826,20 @@ define('format/format-plugin', [
 			Aloha.bind('aloha-editable-created', function (e, editable) {
 				const $element = editable.obj;
 
-				Keybinds.bind($element, 'format.bold', Keybinds.asKeybind(FormatPlugin.hotKey.formatBold), function(){ addMarkup('b'); });
-				Keybinds.bind($element, 'format.italic', Keybinds.asKeybind(FormatPlugin.hotKey.formatItalic), function(){ addMarkup('i'); });
-				Keybinds.bind($element, 'format.underline', Keybinds.asKeybind(FormatPlugin.hotKey.formatUnderline), function(){ addMarkup('u'); });
-				Keybinds.bind($element, 'format.del', Keybinds.asKeybind(FormatPlugin.hotKey.formatDel), function(){ addMarkup('del'); });
-				Keybinds.bind($element, 'format.sub', Keybinds.asKeybind(FormatPlugin.hotKey.formatSub), function(){ addMarkup('sub'); });
-				Keybinds.bind($element, 'format.sup', Keybinds.asKeybind(FormatPlugin.hotKey.formatSup), function(){ addMarkup('sup'); });
-				Keybinds.bind($element, 'format.paragraph', Keybinds.asKeybind(FormatPlugin.hotKey.formatParagraph), function(){ changeMarkup('p'); });
-				Keybinds.bind($element, 'format.h1', Keybinds.asKeybind(FormatPlugin.hotKey.formatH1), function(){ changeMarkup('h1'); });
-				Keybinds.bind($element, 'format.h2', Keybinds.asKeybind(FormatPlugin.hotKey.formatH2), function(){ changeMarkup('h2'); });
-				Keybinds.bind($element, 'format.h3', Keybinds.asKeybind(FormatPlugin.hotKey.formatH3), function(){ changeMarkup('h3'); });
-				Keybinds.bind($element, 'format.h4', Keybinds.asKeybind(FormatPlugin.hotKey.formatH4), function(){ changeMarkup('h4'); });
-				Keybinds.bind($element, 'format.h5', Keybinds.asKeybind(FormatPlugin.hotKey.formatH5), function(){ changeMarkup('h5'); });
-				Keybinds.bind($element, 'format.h6', Keybinds.asKeybind(FormatPlugin.hotKey.formatH6), function(){ changeMarkup('h6'); });
-				Keybinds.bind($element, 'format.pre', Keybinds.asKeybind(FormatPlugin.hotKey.formatPre), function(){ changeMarkup('pre'); });
+				Keybinds.bind($element, 'format.bold', Keybinds.parseKeybinds(FormatPlugin.hotKey.formatBold), function(){ addMarkup('b'); });
+				Keybinds.bind($element, 'format.italic', Keybinds.parseKeybinds(FormatPlugin.hotKey.formatItalic), function(){ addMarkup('i'); });
+				Keybinds.bind($element, 'format.underline', Keybinds.parseKeybinds(FormatPlugin.hotKey.formatUnderline), function(){ addMarkup('u'); });
+				Keybinds.bind($element, 'format.del', Keybinds.parseKeybinds(FormatPlugin.hotKey.formatDel), function(){ addMarkup('del'); });
+				Keybinds.bind($element, 'format.sub', Keybinds.parseKeybinds(FormatPlugin.hotKey.formatSub), function(){ addMarkup('sub'); });
+				Keybinds.bind($element, 'format.sup', Keybinds.parseKeybinds(FormatPlugin.hotKey.formatSup), function(){ addMarkup('sup'); });
+				Keybinds.bind($element, 'format.paragraph', Keybinds.parseKeybinds(FormatPlugin.hotKey.formatParagraph), function(){ changeMarkup('p'); });
+				Keybinds.bind($element, 'format.h1', Keybinds.parseKeybinds(FormatPlugin.hotKey.formatH1), function(){ changeMarkup('h1'); });
+				Keybinds.bind($element, 'format.h2', Keybinds.parseKeybinds(FormatPlugin.hotKey.formatH2), function(){ changeMarkup('h2'); });
+				Keybinds.bind($element, 'format.h3', Keybinds.parseKeybinds(FormatPlugin.hotKey.formatH3), function(){ changeMarkup('h3'); });
+				Keybinds.bind($element, 'format.h4', Keybinds.parseKeybinds(FormatPlugin.hotKey.formatH4), function(){ changeMarkup('h4'); });
+				Keybinds.bind($element, 'format.h5', Keybinds.parseKeybinds(FormatPlugin.hotKey.formatH5), function(){ changeMarkup('h5'); });
+				Keybinds.bind($element, 'format.h6', Keybinds.parseKeybinds(FormatPlugin.hotKey.formatH6), function(){ changeMarkup('h6'); });
+				Keybinds.bind($element, 'format.pre', Keybinds.parseKeybinds(FormatPlugin.hotKey.formatPre), function(){ changeMarkup('pre'); });
 			});
 
 			PubSub.sub('aloha.selection.context-change', function (message) {
