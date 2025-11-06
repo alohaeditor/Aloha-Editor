@@ -33,14 +33,14 @@
 				"plugins": {
 					"format": {
 						// all elements with no specific configuration get this configuration
-						config : [ 'b', 'i','sub','sup'],
+						config : [ 'b', 'i','u', 'sub','sup'],
 							editables : {
 							// no formatting allowed for title
 							'#title'	: [ ],
 							// formatting for all editable DIVs
-							'div'		: [ 'b', 'i', 'del', 'sub', 'sup'  ],
+							'div'		: [ 'b', 'i', 'u', 'del', 'sub', 'sup'  ],
 							// content is a DIV and has class .article so it gets both buttons
-							'.article'	: [ 'b', 'i', 'p', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat']
+							'.article'	: [ 'b', 'i', 'u', 'p', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat']
 							}
 					},
 					"list": {

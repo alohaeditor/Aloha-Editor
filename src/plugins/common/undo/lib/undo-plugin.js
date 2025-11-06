@@ -24,9 +24,17 @@
  * provided you include this license notice and a URL through which
  * recipients can access the Corresponding Source.
  */
-define(
-['aloha', 'jquery', 'aloha/plugin', 'undo/vendor/undo', 'undo/vendor/diff_match_patch_uncompressed'],
-function (Aloha, jQuery, Plugin) {
+define([
+	'aloha',
+	'aloha/keybinds',
+	'aloha/plugin',
+	'undo/vendor/undo',
+	'undo/vendor/diff_match_patch_uncompressed',
+], function (
+	Aloha,
+	Keybinds,
+	Plugin
+) {
 	"use strict";
 	var
 		dmp = new diff_match_patch,
@@ -53,65 +61,64 @@ function (Aloha, jQuery, Plugin) {
 			this.stack = new Undo.Stack();
 			var that = this;
 			var EditCommand = Undo.Command.extend({
-					constructor: function (editable, patch) {
-						this.editable = editable;
-						this.patch = patch;
-					},
-					execute: function () {
-						//command object is created after execution.
-					},
-					undo: function () {
-						this.phase(reversePatch(this.patch));
-					},
-					redo: function () {
-						this.phase(this.patch);
-					},
-					phase: function (patch) {
-						var contents = this.editable.getContents(),
-							applied = dmp.patch_apply(patch, contents),
-							newValue = applied[0],
-							didNotApply = applied[1];
-						//if (didNotApply.length) {
-						//	//error
-						//}
-						this.reset(newValue);
-					},
-					reset: function (val) {
-						//we have to trigger a smartContentChange event
-						//after doing an undo or redo, but we mustn't
-						//push new commands on the stack, because there
-						//are no new commands, just the old commands on
-						//the stack that are undone or redone.
-						resetFlag = true;
+				constructor: function (editable, patch) {
+					this.editable = editable;
+					this.patch = patch;
+				},
+				execute: function () {
+					//command object is created after execution.
+				},
+				undo: function () {
+					this.phase(reversePatch(this.patch));
+				},
+				redo: function () {
+					this.phase(this.patch);
+				},
+				phase: function (patch) {
+					var contents = this.editable.getContents(),
+						applied = dmp.patch_apply(patch, contents),
+						newValue = applied[0],
+						didNotApply = applied[1];
+					//if (didNotApply.length) {
+					//	//error
+					//}
+					this.reset(newValue);
+				},
+				reset: function (val) {
+					//we have to trigger a smartContentChange event
+					//after doing an undo or redo, but we mustn't
+					//push new commands on the stack, because there
+					//are no new commands, just the old commands on
+					//the stack that are undone or redone.
+					resetFlag = true;
 
-						var reactivate = null;
-						if (Aloha.getActiveEditable() === this.editable) {
-							Aloha.deactivateEditable();
-							reactivate = this.editable;
-						}
-
-						this.editable.obj.html(val);
-
-						if (null !== reactivate) {
-							reactivate.activate();
-						}
-
-						//TODO: this is a call to an internal
-						//function. There should be an API to generate
-						//new smartContentChangeEvents.
-						this.editable.smartContentChange({type : 'blur'});
-
-						resetFlag = false;
+					var reactivate = null;
+					if (Aloha.getActiveEditable() === this.editable) {
+						Aloha.deactivateEditable();
+						reactivate = this.editable;
 					}
-				});
+
+					this.editable.obj.html(val);
+
+					if (null !== reactivate) {
+						reactivate.activate();
+					}
+
+					//TODO: this is a call to an internal
+					//function. There should be an API to generate
+					//new smartContentChangeEvents.
+					this.editable.smartContentChange({ type: 'blur' });
+
+					resetFlag = false;
+				}
+			});
 
 			this.stack.changed = function () {
 				// update UI
 			};
 
 			Aloha.bind('aloha-editable-created', function (e, editable) {
-				editable.obj.on('keydown', 'ctrl+z shift+ctrl+z', function (event) {
-					event.preventDefault();
+				Keybinds.bind(editable.obj, 'undo', Keybinds.parseKeybinds('ctrl+z, ctrl+shift+z'), function(event) {
 					if (event.shiftKey) {
 						that.redo();
 					} else {
@@ -149,7 +156,7 @@ function (Aloha, jQuery, Plugin) {
 		},
 		undo: function () {
 			if (null !== Aloha.getActiveEditable()) {
-				Aloha.getActiveEditable().smartContentChange({type : 'blur'});
+				Aloha.getActiveEditable().smartContentChange({ type: 'blur' });
 			}
 			if (this.stack.canUndo()) {
 				this.stack.undo();
@@ -157,7 +164,7 @@ function (Aloha, jQuery, Plugin) {
 		},
 		redo: function () {
 			if (null !== Aloha.getActiveEditable()) {
-				Aloha.getActiveEditable().smartContentChange({type : 'blur'});
+				Aloha.getActiveEditable().smartContentChange({ type: 'blur' });
 			}
 			if (this.stack.canRedo()) {
 				this.stack.redo();
