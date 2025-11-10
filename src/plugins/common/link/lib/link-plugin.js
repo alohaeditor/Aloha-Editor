@@ -23,6 +23,7 @@ define([
 	'aloha/plugin',
 	'aloha/ephemera',
 	'aloha/content-rules',
+	'aloha/keybinds',
 	'util/dom',
 	'util/keys',
 	'ui/ui',
@@ -42,6 +43,7 @@ define([
 	Plugin,
 	Ephemera,
 	ContentRules,
+	Keybinds,
 	Dom,
 	Keys,
 	Ui,
@@ -285,37 +287,38 @@ define([
 		 * Subscribe for events
 		 */
 		subscribeEvents: function () {
+			Aloha.bind('aloha-editable-created', function (e, editable) {
+				Keybinds.bind(editable.obj, 'link', Keybinds.parseKeybinds(LinkPlugin.hotKey.insertLink), function() {
+					let existingLink = LinkPlugin.findLinkMarkup();
+	
+					if (!existingLink) {
+						LinkPlugin.insertLink(true);
+						return;
+					}
+
+					Modal.openDynamicModal(
+						LinkPlugin.createInsertLinkContext(existingLink)
+					).then(function (control) {
+						return control.value;
+					}).then(function (formValue) {
+						LinkPlugin.upsertLink(existingLink, formValue);
+					}).catch(function (error) {
+						if (!Utils.isUserCloseError(error)) {
+							console.error(error);
+						}
+					});
+				});
+			});
+
 			// Set the button visible if it's enabled via the config
 			PubSub.sub('aloha.editable.activated', function (message) {
 				var editable = message.editable;
 
-				setupMetaClickLink(message.editable);
+				setupMetaClickLink(editable);
 
 				if (!checkVisibility(editable)) {
 					return;
 				}
-
-				// enable hotkey for inserting links
-				editable.obj.on('keydown.aloha-link', LinkPlugin.hotKey.insertLink, function () {
-					let existingLink = LinkPlugin.findLinkMarkup();
-
-					if (existingLink) {
-						Modal.openDynamicModal(
-							LinkPlugin.createInsertLinkContext(existingLink)
-						).then(function (control) {
-							return control.value;
-						}).then(function (formValue) {
-							LinkPlugin.upsertLink(existingLink, formValue);
-						}).catch(function (error) {
-							if (!Utils.isUserCloseError(error)) {
-								console.error(error);
-							}
-						})
-					} else {
-						LinkPlugin.insertLink(true);
-					}
-					return false;
-				});
 
 				Array.from(editable.obj.find('a')).forEach(function (foundLink) {
 					LinkPlugin.addLinkEventHandlers(foundLink);
@@ -539,6 +542,10 @@ define([
 		 * link. If inside a link tag the link is removed.
 		 */
 		upsertLink: function (linkElement, linkData, skipEvent) {
+			if (linkData == null) {
+				linkData = {};
+			}
+
 			if (!linkElement) {
 				if (Aloha.activeEditable) {
 					return LinkPlugin.insertLink(true, linkData);
@@ -551,13 +558,15 @@ define([
 			try {
 				// Cannot use URL.canParse here, as it's not available in Cypress (v13.13+) w/ Electron (v27.x)
 				// which uses Node v18.17, which in turn doesn't have this feature yet.
-				new URL(linkData.url.target, window.location);
-				href = linkData.url.target;
+				if (linkData.url != null && linkData.url.target != null) {
+					new URL(linkData.url.target, window.location);
+					href = linkData.url.target;
+				}
 			} catch (err) {
 				href = '';
 			}
 
-			if (linkData.url.anchor) {
+			if (linkData.url != null && linkData.url.anchor) {
 				href += "#" + linkData.url.anchor;
 			}
 
@@ -597,6 +606,9 @@ define([
 			var range = Aloha.Selection.getRangeObject(),
 				linkText,
 				newLink;
+			if (linkData == null) {
+				linkData = {};
+			}
 
 			// There are occasions where we do not get a valid range, in such
 			// cases we should not try and add a link
@@ -625,7 +637,7 @@ define([
 				href = '';
 			}
 
-			if (linkData.url.anchor) {
+			if (linkData.url != null && linkData.url.anchor) {
 				href += '#' + linkData.url.anchor;
 			}
 

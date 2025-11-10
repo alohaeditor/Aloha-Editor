@@ -11,6 +11,7 @@ define([
 	'PubSub',
 	'aloha/plugin',
 	'aloha/content-rules',
+	'aloha/keybinds',
 	'ui/ui',
 	'ui/icons',
 	'ui/attributeToggleButton',
@@ -22,6 +23,7 @@ define([
 	PubSub,
 	Plugin,
 	ContentRules,
+	Keybinds,
 	Ui,
 	Icons,
 	AttributeToggleButton,
@@ -105,7 +107,17 @@ define([
 		 */
 		init: function () {
 			AbbreviationPlugin.createButtons();
-			AbbreviationPlugin.bindInteractions();
+
+			Aloha.bind('aloha-editable-created', function (e, editable) {
+				Keybinds.bind(editable.obj, 'abbr', Keybinds.asKeybind([Keybinds.MOD_CONTROL_OR_META, 'g']), function() {
+					if (AbbreviationPlugin.findAbbrMarkup()) {
+						AbbreviationPlugin.removeAbbr();
+					} else {
+						AbbreviationPlugin.insertAbbr();
+					}
+				});
+			});
+
 			registerEventHandlers();
 		},
 
@@ -132,33 +144,6 @@ define([
 			});
 
 			checkVisibility(Aloha.activeEditable);
-		},
-
-		/**
-		 * Parse a all editables for abbreviations
-		 * Add the abbr shortcut to all edtiables
-		 */
-		bindInteractions: function () {
-			// add to all editables the abbr shortcut
-			for (var i = 0; i < Aloha.editables.length; i++) {
-				// CTRL+G
-				Aloha.editables[i].obj.keydown(function (e) {
-					if (e.metaKey && e.which == 71) {
-						if (AbbreviationPlugin.findAbbrMarkup()) {
-							AbbreviationPlugin.removeAbbr();
-						} else {
-							AbbreviationPlugin.insertAbbr();
-						}
-
-						// prevent from further handling
-						// on a MAC Safari cursor would jump to location bar. Use ESC then META+L
-						e.stopPropagation();
-						e.preventDefault();
-
-						return false;
-					}
-				});
-			}
 		},
 
 		/**

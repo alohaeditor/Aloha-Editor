@@ -11,6 +11,7 @@ define([
 	'aloha/plugin',
 	'aloha/selection',
 	'aloha/content-rules',
+	'aloha/keybinds',
 	'util/dom',
 	'ui/ui',
 	'ui/icons',
@@ -25,6 +26,7 @@ define([
 	Plugin,
 	Selection,
 	ContentRules,
+	Keybinds,
 	Dom,
 	Ui,
 	Icons,
@@ -181,6 +183,12 @@ define([
 	 * Registers event handlers for the given plugin instance.
 	 */
 	function subscribeEvents() {
+		Aloha.bind('aloha-editable-created', function (e, editable) {
+			Keybinds.bind(editable.obj, 'abbr', Keybinds.parseKeybinds(plugin.hotKey.insertAnnotation), function() {
+				prepareAnnotation();
+			});
+		});
+
 		// Set the button visible if it's enabled via the config
 		PubSub.sub('aloha.editable.activated', function (message) {
 			var editable = message.editable;
@@ -189,16 +197,6 @@ define([
 			if (!plugin._wailangButton.visibile) {
 				return;
 			}
-
-			$editable.on('keydown.aloha-wai', plugin.hotKey.insertAnnotation, function () {
-				prepareAnnotation();
-
-				// Because on a MAC Safari, cursor would otherwise
-				// automatically jump to location bar.  We therefore prevent
-				// bubbling, so that the editor must hit ESC and then META+I
-				// to manually do that
-				return false;
-			});
 
 			$editable.find('span[lang]').each(function () {
 				annotate(this);

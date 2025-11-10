@@ -25,6 +25,7 @@ define('format/format-plugin', [
 	'aloha/content-rules',
 	'aloha/ephemera',
 	'aloha/selection',
+	'aloha/keybinds',
 	'util/html',
 	'util/dom',
 	'util/browser',
@@ -47,6 +48,7 @@ define('format/format-plugin', [
 	ContentRules,
 	Ephemera,
 	Selection,
+	Keybinds,
 	Html,
 	Dom,
 	Browser,
@@ -347,6 +349,10 @@ define('format/format-plugin', [
 	}
 
 	function changeMarkup(nodeType) {
+		if (!isFormatAllowed(nodeType, FormatPlugin, Aloha.activeEditable)) {
+			return false;
+		}
+
 		Selection.changeMarkupOnSelection(jQuery('<' + nodeType + '>'));
 		if (Strings.parseBoolean(FormatPlugin.settings.checkHeadingHierarchy)) {
 			checkHeadingHierarchy(FormatPlugin.formatOptions);
@@ -378,7 +384,12 @@ define('format/format-plugin', [
 	}
 
 	function isFormatAllowed(tagname, plugin, editable) {
-		if (!ContentRules.isAllowed(editable.obj[0], tagname)) {
+		if (
+			editable == null
+			|| editable.obj == null
+			|| editable.obj[0] == null
+			|| !ContentRules.isAllowed(editable.obj[0], tagname)
+		) {
 			return false;
 		}
 		var config = plugin.getEditableConfig(editable.obj);
@@ -390,6 +401,11 @@ define('format/format-plugin', [
 			rangeObject = Selection.rangeObject;
 
 		if (nodeType == null || !nodeType || Aloha.activeEditable == null || Aloha.activeEditable.obj == null) {
+			return;
+		}
+
+		// If the node-type isn't allowed, skip
+		if (!isFormatAllowed(nodeType, FormatPlugin, Aloha.activeEditable)) {
 			return;
 		}
 
@@ -739,21 +755,22 @@ define('format/format-plugin', [
 		/**
 		 * HotKeys used for special actions
 		 */
+		// TODO: Move the keybinds into the formatting options
 		hotKey: {
-			formatBold: 'ctrl+b meta+b',
-			formatItalic: 'ctrl+i meta+i',
-			formatUnderline: 'ctrl+u meta+u',
-			formatParagraph: 'alt+ctrl+0 alt+meta+0',
-			formatH1: 'alt+ctrl+1 alt+meta+1',
-			formatH2: 'alt+ctrl+2 alt+meta+2',
-			formatH3: 'alt+ctrl+3 alt+meta+3',
-			formatH4: 'alt+ctrl+4 alt+meta+4',
-			formatH5: 'alt+ctrl+5 alt+meta+5',
-			formatH6: 'alt+ctrl+6 alt+meta+6',
-			formatPre: 'ctrl+p meta+p',
-			formatDel: 'ctrl+d meta+d',
-			formatSub: 'alt+shift+s',
-			formatSup: 'ctrl+shift+s'
+			formatBold: 'ControlOrMeta+b',
+			formatItalic: 'ControlOrMeta+i',
+			formatUnderline: 'ControlOrMeta+u',
+			formatParagraph: 'ControlOrMeta+Alt+0',
+			formatH1: 'ControlOrMeta+Alt+1',
+			formatH2: 'ControlOrMeta+Alt+2',
+			formatH3: 'ControlOrMeta+Alt+3',
+			formatH4: 'ControlOrMeta+Alt+4',
+			formatH5: 'ControlOrMeta+Alt+5',
+			formatH6: 'ControlOrMeta+Alt+6',
+			formatPre: 'ControlOrMeta+p',
+			formatDel: 'ControlOrMeta+d',
+			formatSub: 'Alt+Shift+s',
+			formatSup: 'Control+Shift+s',
 		},
 
 		activeTypography: null,
@@ -798,55 +815,32 @@ define('format/format-plugin', [
 				if (shouldCheckHeadingHierarchy) {
 					checkHeadings();
 				}
+			});
 
-				var createAdder = function (tagname) {
-					if (isFormatAllowed(tagname, FormatPlugin, editable)) {
-						return function addFormat() {
-						addMarkup(tagname);
-							return false;
-						};
-					}
-					return function () {
-						return false;
-					};
-				};
+			Aloha.bind('aloha-editable-created', function (e, editable) {
+				const $element = editable.obj;
 
-				var createChanger = function (tagname) {
-					if (isFormatAllowed(tagname, FormatPlugin, editable)) {
-						return function changeFormat() {
-							changeMarkup(tagname);
-							return false;
-						};
-					}
-					return function () {
-						return false;
-					};
-				};
-
-				var $editable = editable.obj;
-				$editable.on('keydown.aloha.format', FormatPlugin.hotKey.formatBold, createAdder('b'));
-				$editable.on('keydown.aloha.format', FormatPlugin.hotKey.formatItalic, createAdder('i'));
-				$editable.on('keydown.aloha.format', FormatPlugin.hotKey.formatUnderline, createAdder('u'));
-				$editable.on('keydown.aloha.format', FormatPlugin.hotKey.formatDel, createAdder('del'));
-				$editable.on('keydown.aloha.format', FormatPlugin.hotKey.formatSub, createAdder('sub'));
-				$editable.on('keydown.aloha.format', FormatPlugin.hotKey.formatSup, createAdder('sup'));
-				$editable.on('keydown.aloha.format', FormatPlugin.hotKey.formatParagraph, createChanger('p'));
-				$editable.on('keydown.aloha.format', FormatPlugin.hotKey.formatH1, createChanger('h1'));
-				$editable.on('keydown.aloha.format', FormatPlugin.hotKey.formatH2, createChanger('h2'));
-				$editable.on('keydown.aloha.format', FormatPlugin.hotKey.formatH3, createChanger('h3'));
-				$editable.on('keydown.aloha.format', FormatPlugin.hotKey.formatH4, createChanger('h4'));
-				$editable.on('keydown.aloha.format', FormatPlugin.hotKey.formatH5, createChanger('h5'));
-				$editable.on('keydown.aloha.format', FormatPlugin.hotKey.formatH6, createChanger('h6'));
-				$editable.on('keydown.aloha.format', FormatPlugin.hotKey.formatPre, createChanger('pre'));
+				Keybinds.bind($element, 'format.bold', Keybinds.parseKeybinds(FormatPlugin.hotKey.formatBold), function(){ addMarkup('b'); });
+				Keybinds.bind($element, 'format.italic', Keybinds.parseKeybinds(FormatPlugin.hotKey.formatItalic), function(){ addMarkup('i'); });
+				Keybinds.bind($element, 'format.underline', Keybinds.parseKeybinds(FormatPlugin.hotKey.formatUnderline), function(){ addMarkup('u'); });
+				Keybinds.bind($element, 'format.del', Keybinds.parseKeybinds(FormatPlugin.hotKey.formatDel), function(){ addMarkup('del'); });
+				Keybinds.bind($element, 'format.sub', Keybinds.parseKeybinds(FormatPlugin.hotKey.formatSub), function(){ addMarkup('sub'); });
+				Keybinds.bind($element, 'format.sup', Keybinds.parseKeybinds(FormatPlugin.hotKey.formatSup), function(){ addMarkup('sup'); });
+				Keybinds.bind($element, 'format.paragraph', Keybinds.parseKeybinds(FormatPlugin.hotKey.formatParagraph), function(){ changeMarkup('p'); });
+				Keybinds.bind($element, 'format.h1', Keybinds.parseKeybinds(FormatPlugin.hotKey.formatH1), function(){ changeMarkup('h1'); });
+				Keybinds.bind($element, 'format.h2', Keybinds.parseKeybinds(FormatPlugin.hotKey.formatH2), function(){ changeMarkup('h2'); });
+				Keybinds.bind($element, 'format.h3', Keybinds.parseKeybinds(FormatPlugin.hotKey.formatH3), function(){ changeMarkup('h3'); });
+				Keybinds.bind($element, 'format.h4', Keybinds.parseKeybinds(FormatPlugin.hotKey.formatH4), function(){ changeMarkup('h4'); });
+				Keybinds.bind($element, 'format.h5', Keybinds.parseKeybinds(FormatPlugin.hotKey.formatH5), function(){ changeMarkup('h5'); });
+				Keybinds.bind($element, 'format.h6', Keybinds.parseKeybinds(FormatPlugin.hotKey.formatH6), function(){ changeMarkup('h6'); });
+				Keybinds.bind($element, 'format.pre', Keybinds.parseKeybinds(FormatPlugin.hotKey.formatPre), function(){ changeMarkup('pre'); });
 			});
 
 			PubSub.sub('aloha.selection.context-change', function (message) {
 				onSelectionChanged(message.range);
 			});
 
-			PubSub.sub('aloha.editable.deactivated', function (message) {
-				message.editable.obj.unbind('keydown.aloha.format');
-
+			PubSub.sub('aloha.editable.deactivated', function () {
 				// Set all buttons to inactive if we leave the editable, and hide them
 				if (FormatPlugin.buttons) {
 					Object.values(FormatPlugin.buttons).forEach(function (button) {
@@ -869,13 +863,13 @@ define('format/format-plugin', [
 		 */
 		applyButtonConfig: function ($editable) {
 			var config = [];
-			
+
 			if ($editable != null) {
 				config = FormatPlugin.getEditableConfig($editable);
 			}
 
 			if (config != null && typeof config === 'object' && !Array.isArray(config)) {
-				config = Object.entries(config).reduce(function(acc, entry) {
+				config = Object.entries(config).reduce(function (acc, entry) {
 					if (entry[1]) {
 						acc.push(entry[0]);
 					}
@@ -886,7 +880,7 @@ define('format/format-plugin', [
 			FormatPlugin.formatOptions = config;
 
 			// now iterate all buttons and show/hide them according to the config
-			Object.entries(FormatPlugin.buttons).forEach(function(entry) {
+			Object.entries(FormatPlugin.buttons).forEach(function (entry) {
 				var buttonName = entry[0];
 				var button = entry[1];
 
@@ -901,7 +895,7 @@ define('format/format-plugin', [
 				}
 			});
 
-			FormatPlugin.typographyOptions = Object.entries(FormatPlugin.buttonConfig).map(function(entry) {
+			FormatPlugin.typographyOptions = Object.entries(FormatPlugin.buttonConfig).map(function (entry) {
 				var name = entry[0];
 				var elemConfig = entry[1];
 
@@ -913,14 +907,14 @@ define('format/format-plugin', [
 				// Skip elements which aren't allowed
 				if (
 					$editable == null
-					||!ContentRules.isAllowed($editable[0], name)
+					|| !ContentRules.isAllowed($editable[0], name)
 					|| !config.includes(name)
 				) {
 					return null;
 				}
 
 				return name;
-			}).filter(function(value) {
+			}).filter(function (value) {
 				return value != null;
 			});
 
@@ -1212,7 +1206,7 @@ define('format/format-plugin', [
 
 			// Remove the styles from the range
 			for (var i = 0; i < styles.length; i++) {
-				RangeContext.formatStyle(Aloha.getSelection().getRangeAt(0), styles[i], null, null, function(a, b) {
+				RangeContext.formatStyle(Aloha.getSelection().getRangeAt(0), styles[i], null, null, function (a, b) {
 					return false;
 				});
 			}
