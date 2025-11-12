@@ -425,11 +425,7 @@ define([
 			});
 
 			Aloha.bind('aloha-editable-created', function (e, editable) {
-				
-
-		
 				editable.obj.data('block-dragdrop', blockmanager._dragdropEnabled);
-
 			});
 		},
 

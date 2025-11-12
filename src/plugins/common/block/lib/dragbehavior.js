@@ -98,7 +98,7 @@ define([
 	function allowDropRegions($hovering, $dragging) {
 		return !$hovering || !(
 			$hovering.is('.ui-draggable-dragging') ||
-			$hovering.is('.ui-draggable') ||
+			$hovering.is('.ui-draggable:not(.aloha-block)') ||
 			$hovering.closest($dragging).length > 0
 		);
 	}
