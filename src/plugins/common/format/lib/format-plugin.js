@@ -675,6 +675,20 @@ define('format/format-plugin', [
 			typography: false,
 			header: false,
 		},
+		'strong': {
+			name: 'strong',
+			icon: Icons.STRONG,
+			label: i18n.t('button.strong.tooltip'),
+			typography: false,
+			header: false,
+		},
+		'em': {
+			name: 'emphasize',
+			icon: Icons.EMPHASIS,
+			label: i18n.t('button.em.tooltip'),
+			typography: false,
+			header: false,
+		},
 
 		// Typography / Block level
 		'p': {
@@ -1166,7 +1180,7 @@ define('format/format-plugin', [
 			var formats = [
 				'abbr', 'b', 'cite', 'code', 'del', 'dfn', 'em', 'font', 'i', 'ins',
 				'kbd', 'mark', 'output', 'q', 's', 'samp', 'strike', 'strong',
-				'sub', 'sup', 'time', 'u', 'var',
+				'sub', 'sup', 'time', 'u', 'var', 'strong', 'em'
 			];
 			var styles = [
 				'color',
