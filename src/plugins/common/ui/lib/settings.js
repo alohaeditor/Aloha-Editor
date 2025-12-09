@@ -73,6 +73,8 @@ define([
 					'cite',
 					'quote',
 					'formatAbbr',
+					'strong',
+					'emphasize',
 				],
 				[ 'removeFormat' ],
 				// List settings

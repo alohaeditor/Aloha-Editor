@@ -411,7 +411,7 @@ define('format/format-plugin', [
 
 		// check whether the markup is found in the range (at the start of the range)
 		var nodeNames = [markup[0].nodeName];
-		if (FormatPlugin.conversionNames[markup[0].nodeName]) {
+		if (FormatPlugin.conversionNames[markup[0].nodeName] && !FormatPlugin.settings.config.includes(markup[0].nodeName)) {
 			nodeNames.push(FormatPlugin.conversionNames[markup[0].nodeName]);
 		}
 
@@ -467,8 +467,8 @@ define('format/format-plugin', [
 
 			var statusWasSet = false;
 			var nodeNames = [button.markup[0].nodeName];
-			if (FormatPlugin.conversionNames[button.markup[0].nodeName]) {
-				nodeNames.push(FormatPlugin.conversionNames[markup[0].nodeName]);
+			if (FormatPlugin.conversionNames[button.markup[0].nodeName] && !FormatPlugin.settings.config.includes(button.markup[0].nodeName)) {
+				nodeNames.push(FormatPlugin.conversionNames[button.markup[0].nodeName]);
 			}
 
 			for (i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
