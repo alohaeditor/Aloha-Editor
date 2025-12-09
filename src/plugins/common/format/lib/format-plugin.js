@@ -1180,7 +1180,7 @@ define('format/format-plugin', [
 			var formats = [
 				'abbr', 'b', 'cite', 'code', 'del', 'dfn', 'em', 'font', 'i', 'ins',
 				'kbd', 'mark', 'output', 'q', 's', 'samp', 'strike', 'strong',
-				'sub', 'sup', 'time', 'u', 'var', 'strong', 'em'
+				'sub', 'sup', 'time', 'u', 'var',
 			];
 			var styles = [
 				'color',

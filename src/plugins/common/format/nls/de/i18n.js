@@ -1,6 +1,6 @@
 define({
-	"button.strong.tooltip": "Fett",
-	"button.em.tooltip": "Kursiv",
+	"button.strong.tooltip": "Bestarken",
+	"button.em.tooltip": "Betonen",
 	"button.b.tooltip": "Fett",
 	"button.i.tooltip": "Kursiv",
 	"button.u.tooltip": "Unterstrichen",
