@@ -75,6 +75,8 @@ define([
 					'formatAbbr',
 					'strong',
 					'emphasize',
+					'deleted',
+					'inserted',
 				],
 				[ 'removeFormat' ],
 				// List settings

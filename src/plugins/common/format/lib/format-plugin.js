@@ -618,6 +618,7 @@ define('format/format-plugin', [
 			header: false,
 		},
 		'cite': {
+			name: 'cite',
 			icon: Icons.CITATION,
 			label: i18n.t('button.cite.tooltip'),
 			typography: false,
@@ -631,24 +632,28 @@ define('format/format-plugin', [
 			header: false,
 		},
 		'code': {
+			name: 'code',
 			icon: Icons.CODE,
 			label: i18n.t('button.code.tooltip'),
 			typography: false,
 			header: false,
 		},
 		'abbr': {
+			name: 'formatAbbr',
 			icon: Icons.ABBREVIATION,
 			label: i18n.t('button.abbr.tooltip'),
 			typography: false,
 			header: false,
 		},
 		'del': {
+			name: 'deleted',
 			icon: Icons.DELETED,
 			label: i18n.t('button.del.tooltip'),
 			typography: false,
 			header: false,
 		},
 		'ins': {
+			name: 'inserted',
 			icon: Icons.INSERTED,
 			label: i18n.t('button.ins.tooltip'),
 			typography: false,
