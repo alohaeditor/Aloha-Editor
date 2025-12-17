@@ -289,24 +289,7 @@ define([
 		subscribeEvents: function () {
 			Aloha.bind('aloha-editable-created', function (e, editable) {
 				Keybinds.bind(editable.obj, 'link', Keybinds.parseKeybinds(LinkPlugin.hotKey.insertLink), function() {
-					let existingLink = LinkPlugin.findLinkMarkup();
-	
-					if (!existingLink) {
-						LinkPlugin.insertLink(true);
-						return;
-					}
-
-					Modal.openDynamicModal(
-						LinkPlugin.createInsertLinkContext(existingLink)
-					).then(function (control) {
-						return control.value;
-					}).then(function (formValue) {
-						LinkPlugin.upsertLink(existingLink, formValue);
-					}).catch(function (error) {
-						if (!Utils.isUserCloseError(error)) {
-							console.error(error);
-						}
-					});
+					LinkPlugin.showLinkModal(LinkPlugin.findLinkMarkup());
 				});
 			});
 
