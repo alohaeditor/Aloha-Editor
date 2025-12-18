@@ -3,9 +3,9 @@ define([], function() {
 
     var MAPPING = {
         BOLD: 'format_bold',
-        STRONG: 'format_bold',
+        STRONG: 'format_size',
         ITALIC: 'format_italic',
-        EMPHASIS: 'format_italic',
+        EMPHASIS: 'format_ink_highlighter',
         UNDERLINE: 'format_underlined',
         STRIKE_THROUGH: 'format_strikethrough',
         SUB_SCRIPT: 'subscript',

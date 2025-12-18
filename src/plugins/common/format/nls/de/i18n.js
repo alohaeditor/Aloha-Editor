@@ -1,6 +1,6 @@
 define({
-	"button.strong.tooltip": "Fett",
-	"button.em.tooltip": "Kursiv",
+	"button.strong.tooltip": "Bestarken",
+	"button.em.tooltip": "Betonen",
 	"button.b.tooltip": "Fett",
 	"button.i.tooltip": "Kursiv",
 	"button.u.tooltip": "Unterstrichen",
@@ -8,7 +8,8 @@ define({
 	"button.q.tooltip": "Tooltip",
 	"button.code.tooltip": "Code",
 	"button.abbr.tooltip": "Abkürzung",
-	"button.del.tooltip": "Durchgestrichen",
+	"button.del.tooltip": "Wegstreichen",
+	"button.ins.tooltip": "Zugeben",
 	"button.s.tooltip": "Durchgestrichen",
 	"button.sub.tooltip": "Tiefgestellt",
 	"button.sup.tooltip": "Hochgestellt",

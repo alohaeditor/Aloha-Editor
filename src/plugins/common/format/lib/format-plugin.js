@@ -26,7 +26,6 @@ define('format/format-plugin', [
 	'aloha/ephemera',
 	'aloha/selection',
 	'aloha/keybinds',
-	'util/arrays',
 	'util/html',
 	'util/dom',
 	'util/browser',
@@ -50,7 +49,6 @@ define('format/format-plugin', [
 	Ephemera,
 	Selection,
 	Keybinds,
-	Arrays,
 	Html,
 	Dom,
 	Browser,
@@ -72,6 +70,8 @@ define('format/format-plugin', [
 
 	/** Class which needs to be set on headers when the IDs are manually set. */
 	var CLASS_CUSTOMIZED = 'aloha-customized';
+
+	var CLASS_HIERARCHY_VOILATED = 'aloha-heading-hierarchy-violated';
 
 	var ATTR_HEADER_ID = 'id';
 
@@ -296,7 +296,7 @@ define('format/format-plugin', [
 		// insertparagraph command for example, copies all attributes, to
 		// the new element, so the plugin has to remove them again.
 		parent.find(":not(h1,h2,h3,h4,h5,h6)").each(function () {
-			$(this).removeClass("aloha-heading-hierarchy-violated");
+			$(this).removeClass(CLASS_HIERARCHY_VOILATED);
 		});
 
 		//set startheading to heading with smallest number available in the config
@@ -324,25 +324,25 @@ define('format/format-plugin', [
 			if (typeof lastCorrectHeading !== 'undefined') {
 				//the current heading hierarchy must be lower than the startHeading hierarchy
 				if (currentHeading < startHeading) {
-					$(this).addClass("aloha-heading-hierarchy-violated");
+					$(this).addClass(CLASS_HIERARCHY_VOILATED);
 				} else {
 					//heading hierarchy is violated if a heading is more
 					//than one hierarchy lower than the last correct heading
 					if (currentHeading > (lastCorrectHeading + 1)) {
-						$(this).addClass("aloha-heading-hierarchy-violated");
+						$(this).addClass(CLASS_HIERARCHY_VOILATED);
 					} else {
 						//only set the last heading if the hierarchy is not violated
 						lastCorrectHeading = currentHeading;
-						$(this).removeClass("aloha-heading-hierarchy-violated");
+						$(this).removeClass(CLASS_HIERARCHY_VOILATED);
 					}
 				}
 			} else {
 				//first heading! see if it starts with correct heading
 				if (currentHeading === startHeading) {
 					lastCorrectHeading = currentHeading;
-					$(this).removeClass("aloha-heading-hierarchy-violated");
+					$(this).removeClass(CLASS_HIERARCHY_VOILATED);
 				} else {
-					$(this).addClass("aloha-heading-hierarchy-violated");
+					$(this).addClass(CLASS_HIERARCHY_VOILATED);
 				}
 			}
 		});
@@ -410,13 +410,15 @@ define('format/format-plugin', [
 		}
 
 		// check whether the markup is found in the range (at the start of the range)
-		var nodeNames = [markup[0].nodeName];
-		if (FormatPlugin.conversionNames[markup[0].nodeName]) {
-			nodeNames.push(FormatPlugin.conversionNames[markup[0].nodeName]);
+		var nodeNameLower = markup[0].nodeName.toLowerCase();
+		var nodeNames = [nodeNameLower];
+
+		if (FormatPlugin.interchangableNames[nodeNameLower]) {
+			nodeNames = nodeNames.concat(FormatPlugin.interchangableNames[nodeNameLower]);
 		}
 
 		var foundMarkup = rangeObject.findMarkup(function (nodeElement) {
-			return -1 !== Arrays.indexOf(nodeNames, nodeElement.nodeName);
+			return nodeNames.includes(nodeElement.nodeName.toLowerCase());
 		}, Aloha.activeEditable.obj);
 
 		if (foundMarkup) {
@@ -466,9 +468,12 @@ define('format/format-plugin', [
 			}
 
 			var statusWasSet = false;
-			var nodeNames = [button.markup[0].nodeName];
-			if (FormatPlugin.conversionNames[button.markup[0].nodeName]) {
-				nodeNames.push(FormatPlugin.conversionNames[markup[0].nodeName]);
+
+			var nodeNameLower = button.markup[0].nodeName.toLowerCase();
+			var nodeNames = [nodeNameLower];
+
+			if (FormatPlugin.interchangableNames[nodeNameLower]) {
+				nodeNames = nodeNames.concat(FormatPlugin.interchangableNames[nodeNameLower]);
 			}
 
 			for (i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
@@ -618,6 +623,7 @@ define('format/format-plugin', [
 			header: false,
 		},
 		'cite': {
+			name: 'cite',
 			icon: Icons.CITATION,
 			label: i18n.t('button.cite.tooltip'),
 			typography: false,
@@ -631,24 +637,28 @@ define('format/format-plugin', [
 			header: false,
 		},
 		'code': {
+			name: 'code',
 			icon: Icons.CODE,
 			label: i18n.t('button.code.tooltip'),
 			typography: false,
 			header: false,
 		},
 		'abbr': {
+			name: 'formatAbbr',
 			icon: Icons.ABBREVIATION,
 			label: i18n.t('button.abbr.tooltip'),
 			typography: false,
 			header: false,
 		},
 		'del': {
+			name: 'deleted',
 			icon: Icons.DELETED,
 			label: i18n.t('button.del.tooltip'),
 			typography: false,
 			header: false,
 		},
 		'ins': {
+			name: 'inserted',
 			icon: Icons.INSERTED,
 			label: i18n.t('button.ins.tooltip'),
 			typography: false,
@@ -672,6 +682,20 @@ define('format/format-plugin', [
 			name: 'superscript',
 			icon: Icons.SUPER_SCRIPT,
 			label: i18n.t('button.sup.tooltip'),
+			typography: false,
+			header: false,
+		},
+		'strong': {
+			name: 'strong',
+			icon: Icons.STRONG,
+			label: i18n.t('button.strong.tooltip'),
+			typography: false,
+			header: false,
+		},
+		'em': {
+			name: 'emphasize',
+			icon: Icons.EMPHASIS,
+			label: i18n.t('button.em.tooltip'),
 			typography: false,
 			header: false,
 		},
@@ -734,10 +758,18 @@ define('format/format-plugin', [
 	 */
 	var FormatPlugin = {
 
-		// These are old/deprecated nodes and will be converted to the modern equivalent
-		conversionNames: {
-			'strong': 'b',
-			'em': 'i',
+		// Mapping to determine which names are interchangable.
+		// This is useful for when you don't need schemantic elements, and want them to
+		// be recogniced as an existing one.
+		// Default use case is `<b>` and `<strong>` - strong is rarely used, and while it
+		// has different schemantic meaning from b, it's commonly used the same way as b.
+		interchangableNames: {
+			/* // Example config
+			'strong': ['b'],
+			'b': ['strong'],
+			'em': ['i'],
+			'i': ['em']
+			*/
 		},
 
 		headerNodeNames: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
@@ -790,7 +822,7 @@ define('format/format-plugin', [
 		 * Initialize the plugin and set initialize flag on true
 		 */
 		init: function () {
-			Ephemera.classes('aloha-heading-hierarchy-violated');
+			Ephemera.classes(CLASS_HIERARCHY_VOILATED);
 
 			if (typeof this.settings.hotKey !== 'undefined') {
 				jQuery.extend(true, this.hotKey, this.settings.hotKey);
@@ -798,6 +830,10 @@ define('format/format-plugin', [
 
 			if (typeof this.settings.config !== 'undefined') {
 				this.config = this.settings.config;
+			}
+
+			if (typeof this.settings.interchangableNames != 'undefined') {
+				this.interchangableNames = this.settings.interchangableNames;
 			}
 
 			this.initButtons();
@@ -1185,17 +1221,16 @@ define('format/format-plugin', [
 				var limit = rangeEditingHost ? jQuery(rangeEditingHost) : Aloha.activeEditable.obj;
 
 				for (var i = 0; i < formats.length; i++) {
-					var format = formats[i].toUpperCase();
+					var nodeNameLower = formats[i].toLowerCase();
+					var nodeNames = [nodeNameLower];
 
-					// check whether the markup is found in the range (at the start of the range)
-					var nodeNames = [format];
-					if (this.conversionNames[format]) {
-						nodeNames.push(this.conversionNames[format]);
+					if (FormatPlugin.interchangableNames[nodeNameLower]) {
+						nodeNames = nodeNames.concat(FormatPlugin.interchangableNames[nodeNameLower]);
 					}
 
 					var foundMarkup = rangeObject.findMarkup(function (nodeElement) {
-						return -1 !== Arrays.indexOf(nodeNames, nodeElement.nodeName);
-					}, limit);
+						return nodeNames.includes(nodeElement.nodeName.toLowerCase());
+					}, Aloha.activeEditable.obj);
 
 					if (foundMarkup) {
 						Dom.removeFromDOM(foundMarkup, rangeObject, true);
