@@ -410,13 +410,15 @@ define('format/format-plugin', [
 		}
 
 		// check whether the markup is found in the range (at the start of the range)
-		var nodeNames = [markup[0].nodeName];
-		if (FormatPlugin.conversionNames[markup[0].nodeName]) {
-			nodeNames.push(FormatPlugin.conversionNames[markup[0].nodeName]);
+		var nodeNameLower = markup[0].nodeName.toLowerCase();
+		var nodeNames = [nodeNameLower];
+
+		if (FormatPlugin.interchangableNames[nodeNameLower]) {
+			nodeNames = nodeNames.concat(FormatPlugin.interchangableNames[nodeNameLower]);
 		}
 
 		var foundMarkup = rangeObject.findMarkup(function (nodeElement) {
-			return nodeNames.includes(nodeElement.nodeName);
+			return nodeNames.includes(nodeElement.nodeName.toLowerCase());
 		}, Aloha.activeEditable.obj);
 
 		if (foundMarkup) {
@@ -466,9 +468,12 @@ define('format/format-plugin', [
 			}
 
 			var statusWasSet = false;
-			var nodeNames = [button.markup[0].nodeName];
-			if (FormatPlugin.conversionNames[button.markup[0].nodeName]) {
-				nodeNames.push(FormatPlugin.conversionNames[markup[0].nodeName]);
+
+			var nodeNameLower = button.markup[0].nodeName.toLowerCase();
+			var nodeNames = [nodeNameLower];
+
+			if (FormatPlugin.interchangableNames[nodeNameLower]) {
+				nodeNames = nodeNames.concat(FormatPlugin.interchangableNames[nodeNameLower]);
 			}
 
 			for (i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
@@ -618,6 +623,7 @@ define('format/format-plugin', [
 			header: false,
 		},
 		'cite': {
+			name: 'cite',
 			icon: Icons.CITATION,
 			label: i18n.t('button.cite.tooltip'),
 			typography: false,
@@ -631,18 +637,28 @@ define('format/format-plugin', [
 			header: false,
 		},
 		'code': {
+			name: 'code',
 			icon: Icons.CODE,
 			label: i18n.t('button.code.tooltip'),
 			typography: false,
 			header: false,
 		},
+		'abbr': {
+			name: 'formatAbbr',
+			icon: Icons.ABBREVIATION,
+			label: i18n.t('button.abbr.tooltip'),
+			typography: false,
+			header: false,
+		},
 		'del': {
+			name: 'deleted',
 			icon: Icons.DELETED,
 			label: i18n.t('button.del.tooltip'),
 			typography: false,
 			header: false,
 		},
 		'ins': {
+			name: 'inserted',
 			icon: Icons.INSERTED,
 			label: i18n.t('button.ins.tooltip'),
 			typography: false,
@@ -666,6 +682,20 @@ define('format/format-plugin', [
 			name: 'superscript',
 			icon: Icons.SUPER_SCRIPT,
 			label: i18n.t('button.sup.tooltip'),
+			typography: false,
+			header: false,
+		},
+		'strong': {
+			name: 'strong',
+			icon: Icons.STRONG,
+			label: i18n.t('button.strong.tooltip'),
+			typography: false,
+			header: false,
+		},
+		'em': {
+			name: 'emphasize',
+			icon: Icons.EMPHASIS,
+			label: i18n.t('button.em.tooltip'),
 			typography: false,
 			header: false,
 		},
@@ -728,10 +758,18 @@ define('format/format-plugin', [
 	 */
 	var FormatPlugin = {
 
-		// These are old/deprecated nodes and will be converted to the modern equivalent
-		conversionNames: {
-			'strong': 'b',
-			'em': 'i',
+		// Mapping to determine which names are interchangable.
+		// This is useful for when you don't need schemantic elements, and want them to
+		// be recogniced as an existing one.
+		// Default use case is `<b>` and `<strong>` - strong is rarely used, and while it
+		// has different schemantic meaning from b, it's commonly used the same way as b.
+		interchangableNames: {
+			/* // Example config
+			'strong': ['b'],
+			'b': ['strong'],
+			'em': ['i'],
+			'i': ['em']
+			*/
 		},
 
 		headerNodeNames: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
@@ -794,7 +832,11 @@ define('format/format-plugin', [
 				FormatPlugin.config = FormatPlugin.settings.config;
 			}
 
-			FormatPlugin.initButtons();
+			if (typeof this.settings.interchangableNames != 'undefined') {
+				this.interchangableNames = this.settings.interchangableNames;
+			}
+
+			this.initButtons();
 
 			var shouldCheckHeadingHierarchy = Strings.parseBoolean(FormatPlugin.settings.checkHeadingHierarchy);
 
@@ -1175,17 +1217,16 @@ define('format/format-plugin', [
 				var limit = rangeEditingHost ? $(rangeEditingHost) : Aloha.activeEditable.obj;
 
 				for (var i = 0; i < formats.length; i++) {
-					var format = formats[i].toUpperCase();
+					var nodeNameLower = formats[i].toLowerCase();
+					var nodeNames = [nodeNameLower];
 
-					// check whether the markup is found in the range (at the start of the range)
-					var nodeNames = [format];
-					if (FormatPlugin.conversionNames[format]) {
-						nodeNames.push(FormatPlugin.conversionNames[format]);
+					if (FormatPlugin.interchangableNames[nodeNameLower]) {
+						nodeNames = nodeNames.concat(FormatPlugin.interchangableNames[nodeNameLower]);
 					}
 
 					var foundMarkup = rangeObject.findMarkup(function (nodeElement) {
-						return nodeNames.includes(nodeElement.nodeName);
-					}, limit);
+						return nodeNames.includes(nodeElement.nodeName.toLowerCase());
+					}, Aloha.activeEditable.obj);
 
 					if (foundMarkup) {
 						Dom.removeFromDOM(foundMarkup, rangeObject, true);
