@@ -74,10 +74,10 @@ define([
 					'deleted',
 					'inserted',
 					'code',
-					'cite',
-					'quote',
-					'formatAbbr',
+					'formatAbbr'
 				],
+				[ 'quote', 'cite' ],
+				[ 'del', 'ins' ],
 				[ 'removeFormat' ],
 				// List settings
 				[
