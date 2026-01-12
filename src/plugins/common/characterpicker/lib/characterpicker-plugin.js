@@ -1373,7 +1373,11 @@ define([
 				},
 
 				contextResolve: function (symbol) {
-					onSelectCharacter(symbol);
+					let character = symbol;
+					if (symbol && symbol.symbol) {
+						character = symbol.symbol;
+					}
+					onSelectCharacter(character);
 				},
 			});
 
@@ -1408,7 +1412,7 @@ define([
 		},
 
 		/**
-		 * 
+		 *
 		 * @returns {Array.<string>}
 		 */
 		getNormalizedSymbols: function () {
@@ -1430,6 +1434,7 @@ define([
 				symbols = config;
 			}
 
+			// TODO: Add labels?
 			return symbols;
 		},
 	};
