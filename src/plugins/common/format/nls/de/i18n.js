@@ -1,5 +1,5 @@
 define({
-	"button.strong.tooltip": "Bestarken",
+	"button.strong.tooltip": "Verstärken",
 	"button.em.tooltip": "Betonen",
 	"button.b.tooltip": "Fett",
 	"button.i.tooltip": "Kursiv",
