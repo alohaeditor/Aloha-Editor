@@ -497,6 +497,9 @@ define([
 	 * @return {Boolean}
 	 */
 	DragBehavior.prototype._isAllowedOverElement = function (elm) {
+		if (elm == null) {
+			return false;
+		}
 		if ($.inArray(elm.nodeName, notAllowedOverTags) < 0) {
 			if (!isEditable(elm)) {
 				return false;
