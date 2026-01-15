@@ -68,7 +68,13 @@ define([
 	function onSelectCharacter(character) {
 		if (Aloha.activeEditable) {
 			rangeAtOpen.select();
-			Aloha.execCommand('insertHTML', false, character);
+			if (typeof character === 'string') {
+				Aloha.execCommand('insertHTML', false, character);
+			} else if (typeof character === 'object' && character.symbol) {
+				Aloha.execCommand('insertHTML', false, character.symbol);
+			} else {
+				return;
+			}
 
 			// Because after the character was inserted, move the selection
 			// forward.
