@@ -1,0 +1,1 @@
+The character picker plugin has been refactored to process not only the distinct charachters being picked, but the config editable objects.
