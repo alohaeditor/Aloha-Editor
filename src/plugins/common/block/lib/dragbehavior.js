@@ -133,14 +133,14 @@ define([
 	 * @return {Boolean}
 	 */
 	function isEditable(domElm) {
-		if (domElm.nodeType === 1) {
+		if (domElm != null && domElm.nodeType === 1) {
 			if (domElm.contentEditable === 'inherit') {
-				while (domElm.contentEditable === 'inherit') {
+				while (domElm != null && domElm.contentEditable === 'inherit') {
 					domElm = domElm.parentNode;
 				}
 			}
 
-			return (domElm.contentEditable === 'true');
+			return (domElm != null && domElm.contentEditable === 'true');
 		}
 		return false;
 	}
@@ -497,28 +497,16 @@ define([
 	 * @return {Boolean}
 	 */
 	DragBehavior.prototype._isAllowedOverElement = function (elm) {
-		if ($.inArray(elm.nodeName, notAllowedOverTags) < 0) {
-			if (!isEditable(elm)) {
-				return false;
-			}
-
+		if (elm != null && $.inArray(elm.nodeName, notAllowedOverTags) < 0) {
 			var $elm = $(elm);
-			if ($elm.parents(notAllowedDropParentsSelector.join(',')).length > 0) {
-				return false;
+			if (isEditable(elm) 
+					&& $elm.parents(notAllowedDropParentsSelector.join(',')).length < 1
+					&& !$elm.is(notAllowedDropSelector.join(','))
+					&& !isNestedTable($elm, this.$element)) {
+				return true;
 			}
-
-			if ($elm.is(notAllowedDropSelector.join(','))) {
-				return false;
-			}
-
-			if (isNestedTable($elm, this.$element)) {
-				return false;
-			}
-
-			return true;
-		} else {
-			return false;
 		}
+		return false;
 	};
 
 	/**
@@ -528,7 +516,8 @@ define([
 	 */
 	DragBehavior.prototype.onDragStop = function () {
 		// @todo check if the $overElement is a Valid element to drop the block
-		if (allowDropRegions(this.$overElement, this.$element)) {
+		if (allowDropRegions(this.$overElement, this.$element) && 
+			this.$overElement.parent().length > 0) {
 			if (this.$overElement &&
 				!this._isAllowedOverElement(this.$overElement[0])) {
 				this.enableInsertBeforeOrAfter(this.$overElement[0]);

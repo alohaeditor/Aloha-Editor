@@ -1,0 +1,1 @@
+A missing null-check has been introduced in drag-n-drop functionality, eliminating possibilities of an insconsistent behaviour.
