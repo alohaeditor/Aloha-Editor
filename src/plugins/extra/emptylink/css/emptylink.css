@@ -4,11 +4,13 @@
 .aloha-editable.aloha-emptylink-plugin a[href='#']:not([name]):not([data-gentics-aloha-object-id]),
 .aloha-editable.aloha-emptylink-plugin a[href='']:not([name]):not([data-gentics-aloha-object-id]),
 .aloha-editable.aloha-emptylink-plugin a[href='http://']:not([name]):not([data-gentics-aloha-object-id]),
+.aloha-editable.aloha-emptylink-plugin a[href='https://']:not([name]):not([data-gentics-aloha-object-id]),
 /* mark all anchor elements with empty name attribute and the href attribute not set */
 .aloha-editable.aloha-emptylink-plugin a[name='']:not([href]),
 /* mark all anchor elements with empty href (including '#') and empty name attribute */
 .aloha-editable.aloha-emptylink-plugin a[href='#'][name=''],
 .aloha-editable.aloha-emptylink-plugin a[href='http://'][name=''],
+.aloha-editable.aloha-emptylink-plugin a[href='https://'][name=''],
 .aloha-editable.aloha-emptylink-plugin a[href=''][name=''],
 /* mark all anchor elements that are marked to link to offline data-gentics-aloha-objects */
 .aloha-editable.aloha-emptylink-plugin a[data-gentics-aloha-object-online='false'] {
