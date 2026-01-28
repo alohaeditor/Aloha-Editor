@@ -3,7 +3,7 @@
 
 	<groupId>org.alohaeditor</groupId>
 	<artifactId>alohaeditor</artifactId>
-	<version>2.0.17-SNAPSHOT</version>
+	<version>2.1.15-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Aloha Editor</name>
 	<url>http://aloha-editor.org</url>
@@ -318,13 +318,13 @@
 			<id>gentics.nexus.releases-oss</id>
 			<name>Gentics Nexus OSS Maven Repository</name>
 			<url>https://repo.gentics.com/repository/maven-releases-oss/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
+             <releases>
+                     <enabled>true</enabled>
+             </releases>
+             <snapshots>
 				<enabled>false</enabled>
-			</snapshots>
-		</repository>
+             </snapshots>
+       </repository>
     </repositories>
 
 	<distributionManagement>

@@ -299,9 +299,11 @@ define([
 
 		$editable.keypress(StateOverride.keyPressHandler);
 		$editable.keypress(function (event) {
-			// triggers a smartContentChange to get the right charcode
-			// To test try http://www.w3.org/2002/09/tests/keys.html
-			Aloha.activeEditable.smartContentChange(event);
+			if (Aloha.activateEditable != null) {
+				// triggers a smartContentChange to get the right charcode
+				// To test try http://www.w3.org/2002/09/tests/keys.html
+				Aloha.activeEditable.smartContentChange(event);
+			}
 		});
 
 		// native drag and drop adds unwanted style elements so we need to

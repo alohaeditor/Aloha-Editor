@@ -385,6 +385,10 @@ define([
 						var data = $event.originalEvent.clipboardData;
 						var rawPaste = data.getData('text/html');
 
+						if (rawPaste.length === 0) {
+							rawPaste = data.getData('text/plain');
+						}
+
 						// Make sure the paste contents has an HTML element at the root, so that it can be appended to $CLIPBOARD.
 						if ($(rawPaste).length === 0) {
 							let wrappedPaste = $('<span>').html(rawPaste);

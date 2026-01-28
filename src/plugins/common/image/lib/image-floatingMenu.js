@@ -35,10 +35,6 @@ function (
 ) {
 	'use strict';
 
-	var $ = jQuery;
-	var GENTICS = window.GENTICS;
-	var Aloha = window.Aloha;
-
 	/**
      * Toolbar elements for Image plugin
      *

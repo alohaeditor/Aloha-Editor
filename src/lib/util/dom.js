@@ -29,7 +29,13 @@
 window.GENTICS = window.GENTICS || {};
 window.GENTICS.Utils = window.GENTICS.Utils || {};
 
-define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_) {
+define([
+	'jquery',
+	'util/class'
+], function (
+	jQuery,
+	Class
+) {
 	"use strict";
 
 	var	GENTICS = window.GENTICS,
@@ -166,12 +172,12 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 			return node;
 		}
 		var next = node.firstChild
-		        || node.nextSibling
-		        || (
-		            node.parentNode
-		            && !GENTICS.Utils.Dom.isEditingHost(node.parentNode)
-		            && node.parentNode.nextSibling
-		        );
+			|| node.nextSibling
+			|| (
+				node.parentNode
+				&& !GENTICS.Utils.Dom.isEditingHost(node.parentNode)
+				&& node.parentNode.nextSibling
+			);
 		return next ? findNodeForward(next, match) : null;
 	}
 
@@ -482,12 +488,11 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 			parents = splitElement.parents().get();
 			parents.unshift(splitElement.get(0));
 
-			jQuery.each(parents, function (index, element) {
-				var isLimit = limit.filter(
-					function () {
-						return this == element;
-					}
-				).length;
+			parents.forEach(function (element, index) {
+				var isLimit = limit.filter(function () {
+					return this == element;
+				}).length;
+
 				if (isLimit) {
 					if (index > 0) {
 						path = parents.slice(0, index);
@@ -614,12 +619,17 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 			if (this.children[outerNodeName] == innerNodeName) {
 				return true;
 			}
-			if (jQuery.isArray(this.children[outerNodeName]) && jQuery.inArray(innerNodeName, this.children[outerNodeName]) >= 0) {
+			if (
+				Array.isArray(this.children[outerNodeName])
+				&& this.children[outerNodeName].includes(innerNodeName)
+			) {
 				return true;
 			}
 
-			if (jQuery.isArray(this.tags[this.children[outerNodeName]])
-				    && jQuery.inArray(innerNodeName, this.tags[this.children[outerNodeName]]) >= 0) {
+			if (
+				Array.isArray(this.tags[this.children[outerNodeName]])
+				&& this.tags[this.children[outerNodeName]].includes(innerNodeName)
+			) {
 				return true;
 			}
 
@@ -955,7 +965,11 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 								//							jQuery(this).remove();
 								removed = true;
 							}
-							if (jQuery.inArray(thisNodeName.toLowerCase(), that.mergeableTags) >= 0 && jQuery(this).text().length === 0 && this.childNodes.length === 0) {
+							if (
+								that.mergeableTags.includes(thisNodeName.toLowerCase())
+								&& jQuery(this).text().length === 0
+								&& this.childNodes.length === 0
+							) {
 								//							jQuery(this).remove();
 								removed = true;
 							}
@@ -963,7 +977,7 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 
 						// when the current node was not removed, we eventually store it as previous (mergeable) tag
 						if (!removed) {
-							if (cleanup.mergeable ? cleanup.mergeable(this) : jQuery.inArray(thisNodeName.toLowerCase(), that.mergeableTags) >= 0) {
+							if (cleanup.mergeable ? cleanup.mergeable(this) : that.mergeableTags.includes(thisNodeName.toLowerCase())) {
 								prevNode = this;
 							} else {
 								prevNode = false;
@@ -1136,7 +1150,7 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 			if (!node) {
 				return false;
 			}
-			if (node.nodeType === 1 && jQuery.inArray(node.nodeName.toLowerCase(), this.blockLevelElements) >= 0) {
+			if (node.nodeType === 1 && this.blockLevelElements.includes(node.nodeName.toLowerCase())) {
 				return true;
 			}
 			return false;
@@ -1152,7 +1166,7 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 			if (!node) {
 				return false;
 			}
-			if (node.nodeType === 1 && jQuery.inArray(node.nodeName.toLowerCase(), this.tableElements) >= 0) {
+			if (node.nodeType === 1 && this.tableElements.includes(node.nodeName.toLowerCase())) {
 				return true;
 			}
 			return false;
@@ -1194,7 +1208,7 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 			if (!node) {
 				return false;
 			}
-			return node.nodeType === 1 && jQuery.inArray(node.nodeName.toLowerCase(), this.listElements) >= 0;
+			return node.nodeType === 1 && this.listElements.includes(node.nodeName.toLowerCase());
 		},
 
 		/**
@@ -1260,7 +1274,7 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 				searchleft = true;
 			}
 
-			options = jQuery.extend({ acceptUntrimmed: false }, options);
+			options = Object.assign({ acceptUntrimmed: false }, options);
 
 			var nextNode,
 			    currentParent = parent;
@@ -1296,7 +1310,7 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 					currentParent = currentParent.parentNode;
 					continue;
 				} else if (nextNode.nodeType === 3
-						&& (options.acceptUntrimmed ? nextNode.data : jQuery.trim(nextNode.data)).length > 0) {
+						&& (options.acceptUntrimmed ? nextNode.data : nextNode.data.trim()).length > 0) {
 					// we are lucky and found a notempty text node
 					return nextNode;
 				}
@@ -1369,7 +1383,9 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 			if (parentElements.length === 0) {
 				newParent = limit.get(0);
 			} else {
-				jQuery.each(parentElements, function (index, parent) {
+				// make sure  it is a jquery object
+				parentElements = jQuery(parentElements);
+				parentElements.each(function (index, parent) {
 					if (that.allowsNesting(parent, object.get(0))) {
 						newParent = parent;
 						return false;
@@ -1595,7 +1611,7 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 			if (!object || !object.nodeName) {
 				return false;
 			}
-			return jQuery.inArray(object.nodeName.toLowerCase(), this.nonWordBoundaryTags) == -1;
+			return !this.nonWordBoundaryTags.includes(object.nodeName.toLowerCase());
 		},
 
 		/**
@@ -1735,7 +1751,7 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 			}
 
 			// some tags are considered to be non-empty
-			if (jQuery.inArray(domObject.nodeName.toLowerCase(), this.nonEmptyTags) != -1) {
+			if (this.nonEmptyTags.includes(domObject.nodeName.toLowerCase())) {
 				return false;
 			}
 
@@ -1895,7 +1911,13 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 		// resolved value "inline" or "inline-block" or "inline-table" or "none", or a
 		// Document, or a DocumentFragment."
 		isBlockNode: function (node) {
-			return node && ((node.nodeType == $_.Node.ELEMENT_NODE && $_(["inline", "inline-block", "inline-table", "none"]).indexOf($_.getComputedStyle(node).display) == -1) || node.nodeType == $_.Node.DOCUMENT_NODE || node.nodeType == $_.Node.DOCUMENT_FRAGMENT_NODE);
+			return node && (
+				(node.nodeType == Node.ELEMENT_NODE
+					&& !["inline", "inline-block", "inline-table", "none"].includes(getComputedStyle(node).display)
+				)
+				|| node.nodeType == Node.DOCUMENT_NODE
+				|| node.nodeType == Node.DOCUMENT_FRAGMENT_NODE
+			);
 		},
 
 		/**
@@ -1912,17 +1934,26 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 			}
 
 			// check whether the node itself is visible
-			if ((node.nodeType == $_.Node.TEXT_NODE && this.isEmpty(node)) || (node.nodeType == $_.Node.ELEMENT_NODE && this.getOffsetHeight(node) === 0 && jQuery.inArray(node.nodeName.toLowerCase(), this.nonEmptyTags) === -1)) {
+			if (
+				(node.nodeType == Node.TEXT_NODE
+					&& this.isEmpty(node)
+				)
+				|| (
+					node.nodeType == Node.ELEMENT_NODE
+					&& this.getOffsetHeight(node) === 0
+					&& !this.nonEmptyTags.includes(node.nodeName.toLowerCase())
+				)
+			) {
 				return null;
 			}
 
 			// if the node is a text node, or does not have children, or is not editable, it is the first visible child
-			if (node.nodeType == $_.Node.TEXT_NODE || (node.nodeType == $_.Node.ELEMENT_NODE && node.childNodes.length == 0) || !jQuery(node).contentEditable()) {
+			if (node.nodeType == Node.TEXT_NODE || (node.nodeType == Node.ELEMENT_NODE && node.childNodes.length == 0) || !jQuery(node).contentEditable()) {
 				return includeNode ? node : null;
 			}
 
 			// when we find one of the stop elements, we return it
-			if (jQuery.isArray(stopElements) && jQuery.inArray(node.nodeName, stopElements) >= 0) {
+			if (Array.isArray(stopElements) && stopElements.includes(node.nodeName)) {
 				return includeNode ? node : null;
 			}
 
@@ -1952,17 +1983,34 @@ define(['jquery', 'util/class', 'aloha/ecma5shims'], function (jQuery, Class, $_
 			}
 
 			// check whether the node itself is visible
-			if ((node.nodeType == $_.Node.TEXT_NODE && this.isEmpty(node)) || (node.nodeType == $_.Node.ELEMENT_NODE && this.getOffsetHeight(node) === 0 && jQuery.inArray(node.nodeName.toLowerCase(), this.nonEmptyTags) === -1)) {
+			if (
+				(
+					node.nodeType == Node.TEXT_NODE
+					&& this.isEmpty(node)
+				)
+				|| (
+					node.nodeType == Node.ELEMENT_NODE
+					&& this.getOffsetHeight(node) === 0
+					&& !this.nonEmptyTags.includes(node.nodeName.toLowerCase())
+				)
+			) {
 				return null;
 			}
 
 			// if the node is a text node, or does not have children, or is not editable, it is the first visible child
-			if (node.nodeType == $_.Node.TEXT_NODE || (node.nodeType == $_.Node.ELEMENT_NODE && node.childNodes.length == 0) || !jQuery(node).contentEditable()) {
+			if (
+				node.nodeType == Node.TEXT_NODE
+				|| (
+					node.nodeType == Node.ELEMENT_NODE
+					&& node.childNodes.length == 0
+				)
+				|| !jQuery(node).contentEditable()
+			) {
 				return includeNode ? node : null;
 			}
 
 			// when we find one of the stop elements, we return it
-			if (jQuery.isArray(stopElements) && jQuery.inArray(node.nodeName, stopElements) >= 0) {
+			if (Array.isArray(stopElements) && stopElements.includes(node.nodeName)) {
 				return includeNode ? node : null;
 			}
 

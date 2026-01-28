@@ -33,7 +33,6 @@ define([
 	'aloha/registry',
 	'util/class',
 	'util/strings',
-	'util/maps',
 	'block/block-utils'
 ], function (
 	Aloha,
@@ -43,7 +42,6 @@ define([
 	Registry,
 	Class,
 	Strings,
-	Maps,
     BlockUtils
 ) {
 	'use strict';
@@ -179,7 +177,7 @@ define([
 		_registerEventHandlersForDeactivatingAlohaBlock: function () {
 			var that = this;
 			jQuery(document).on('click', function (event) {
-				if (Maps.isEmpty(that._highlightedBlocks)) {
+				if (Object.keys(that._highlightedBlocks).length < 1) {
 					return;
 				}
 				if (jQuery(event.target)

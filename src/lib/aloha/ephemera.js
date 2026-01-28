@@ -67,10 +67,7 @@ define([
 	'aloha/console',
 	'util/strings',
 	'util/trees',
-	'util/arrays',
-	'util/maps',
 	'util/dom2',
-	'util/functions',
 	'util/html',
 	'util/misc',
 	'util/browser',
@@ -81,10 +78,7 @@ define([
 	console,
 	Strings,
 	Trees,
-	Arrays,
-	Maps,
 	Dom,
-	Functions,
 	Html,
 	Misc,
 	Browser,
@@ -152,8 +146,10 @@ define([
 	 * Also see ephemera().
 	 */
 	function classes() {
-		var clss = Array.prototype.slice.call(arguments);
-		Maps.fillKeys(ephemeraMap.classMap, clss, true);
+		var clss = Array.from(arguments);
+		clss.forEach(function(className) {
+			ephemeraMap.classMap[className] = true;
+		});
 		checkCommonSubstr(clss);
 		PubSub.pub('aloha.ephemera.classes', {
 			ephemera: ephemeraMap,
@@ -168,8 +164,10 @@ define([
 	 * of individual classes in the class attribute.
 	 */
 	function attributes() {
-		var attrs = Array.prototype.slice.call(arguments);
-		Maps.fillKeys(ephemeraMap.attrMap, attrs, true);
+		var attrs = Array.from(arguments);
+		attrs.forEach(function(attrName) {
+			ephemeraMap.attrMap[attrName] = true;
+		});
 		PubSub.pub('aloha.ephemera.attributes', {
 			ephemera: ephemeraMap,
 			newAttributes: attrs
@@ -271,7 +269,7 @@ define([
 		var data = elem.attr('data-aloha-ephemera-attr');
 		if (null == data || '' === data) {
 			data = attr;
-		} else if (-1 === Arrays.indexOf(Strings.words(data), attr)) {
+		} else if (Strings.words(data).includes(attr)) {
 			data += ' ' + attr;
 		}
 		elem.attr('data-aloha-ephemera-attr', data);
@@ -364,7 +362,7 @@ define([
 			if (true === mapped) {
 				return true;
 			}
-			if (-1 !== Arrays.indexOf(mapped, elem.nodeName)) {
+			if (mapped.includes(elem.nodeName)) {
 				return true;
 			}
 		}
@@ -410,20 +408,20 @@ define([
 			var classes = Strings.words(className);
 
 			// Ephemera.markElement()
-			if (-1 !== Arrays.indexOf(classes, 'aloha-cleanme') || -1 !== Arrays.indexOf(classes, 'aloha-ephemera')) {
+			if (classes.includes('aloha-cleanme') || classes.includes('aloha-ephemera')) {
 				$.removeData(elem); // avoids memory leak
 				return false; // removes the element
 			}
 
 			// Ephemera.markWrapper() and Ephemera.markFiller()
-			if (-1 !== Arrays.indexOf(classes, 'aloha-ephemera-wrapper') || -1 !== Arrays.indexOf(classes, 'aloha-ephemera-filler')) {
+			if (classes.includes('aloha-ephemera-wrapper') || classes.includes('aloha-ephemera-filler')) {
 				Dom.moveNextAll(elem.parentNode, elem.firstChild, elem.nextSibling);
 				$.removeData(elem);
 				return false;
 			}
 
 			// Ephemera.markWhiteSpaceWrapper() and Ephemera.markFiller()
-			if (-1 !== Arrays.indexOf(classes, 'aloha-ephemera-empty-wrapper')) {
+			if (classes.includes('aloha-ephemera-empty-wrapper')) {
 				if (!Html.hasOnlyWhiteSpaceChildren(elem)) {
 					Dom.moveNextAll(elem.parentNode, elem.firstChild, elem.nextSibling);
 				}
@@ -432,12 +430,12 @@ define([
 			}
 
 			// Ephemera.markAttr()
-			if (-1 !== Arrays.indexOf(classes, 'aloha-ephemera-attr')) {
+			if (classes.includes('aloha-ephemera-attr')) {
 				pruneMarkedAttrs(elem);
 			}
 
 			// Ephemera.classes() and Ehpemera.ephemera({ classMap: {} })
-			var persistentClasses = Arrays.filter(classes, function (cls) {
+			var persistentClasses = classes.filter(function (cls) {
 				return !emap.classMap[cls];
 			});
 			if (persistentClasses.length !== classes.length) {
@@ -469,7 +467,10 @@ define([
 		}
 
 		// Ephemera.ephemera({ pruneFns: [] })
-		node = Arrays.reduce(emap.pruneFns, node, Arrays.applyNotNull);
+		node = emap.pruneFns.reduce(function(acc, fn) {
+			return fn != null ? fn(acc) : null;
+		}, node);
+
 		if (!node) {
 			return [];
 		}
