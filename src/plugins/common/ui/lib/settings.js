@@ -210,8 +210,9 @@ define([
 						}
 
 						var tmpTab = Object.assign({}, found, tab);
+						var componentMerge = tab.merge && tab.merge.components;
 
-						switch (tab.merge) {
+						switch (componentMerge) {
 							case 'keep':
 								tmpTab.components = found.components || tab.components;
 								break;
@@ -251,7 +252,7 @@ define([
 		if (!Array.isArray(base[0])) {
 			base = [base];
 		}
-		if (Array.isArray(additional[0])) {
+		if (!Array.isArray(additional[0])) {
 			additional = [additional];
 		}
 
