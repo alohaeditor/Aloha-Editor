@@ -103,34 +103,6 @@ define([
 	};
 
 	/**
-	 * @hide
-	 * {name:'green', text:'Green',tooltip:'Green',iconClass:'GENTICS_table GENTICS_button_green',cssClass:'green'}
-	 */
-	TablePlugin.checkConfig = function (c) {
-		if (typeof c == 'object' && c.length) {
-			var newC = [];
-
-			for (var i = 0; i < c.length; i++) {
-				if (c[i]) {
-					newC.push({
-						name: c[i].name,
-						text: c[i].text ? c[i].text : c[i].name,
-						tooltip: c[i].tooltip ? c[i].tooltip : c[i].text,
-						iconClass: c[i].iconClass ? c[i].iconClass : 'aloha-icon-' + c[i].name,
-						cssClass: c[i].cssClass ? c[i].cssClass : c[i].name
-					});
-				}
-			}
-
-			c = newC;
-		} else {
-			c = [];
-		}
-
-		return c;
-	};
-
-	/**
 	 * Checks whether the given DOM element is nested within a table.
 	 *
 	 * @param {jQuery.<HTMLElement>} $element
@@ -373,14 +345,14 @@ define([
 			return;
 		}
 
-		const hasStyle = tableObj.hasClass(configItem.cssClass);
+		const hasStyle = tableObj.hasClass(configItem.name);
 
 		for (const configItem of config) {
-			tableObj.removeClass(configItem.cssClass);
+			tableObj.removeClass(configItem.name);
 		}
 
 		if (!hasStyle) {
-			tableObj.addClass(configItem.cssClass);
+			tableObj.addClass(configItem.name);
 			TablePlugin._currentStyle = configItem.name;
 		} else {
 			TablePlugin._currentStyle = null;
@@ -479,11 +451,6 @@ define([
 		DynamicForm.componentFactoryRegistry['table-size-select'] = createTableSizeSelectFromConfig;
 
 		Ephemera.classes(TablePlugin.get('className'), TablePlugin.get('classCellSelected'));
-
-		TablePlugin.tableConfig = TablePlugin.checkConfig(TablePlugin.tableConfig || TablePlugin.settings.tableConfig);
-		TablePlugin.columnConfig = TablePlugin.checkConfig(TablePlugin.columnConfig || TablePlugin.settings.columnConfig);
-		TablePlugin.rowConfig = TablePlugin.checkConfig(TablePlugin.rowConfig || TablePlugin.settings.rowConfig);
-		TablePlugin.cellConfig = TablePlugin.checkConfig(TablePlugin.cellConfig || TablePlugin.settings.cellConfig);
 
 		TablePlugin.tableResize = TablePlugin.settings.tableResize === undefined ? false : TablePlugin.settings.tableResize;
 		TablePlugin.colResize = TablePlugin.settings.colResize === undefined ? false : TablePlugin.settings.colResize;
@@ -1075,10 +1042,12 @@ define([
 					const config = [];
 					const configType = `${TablePlugin._styleTypesById[selection.id]}Config`;
 
-					if (configType === 'tableConfig' && TablePlugin.tableConfig) {
-						applyTableStyle(TablePlugin.tableConfig, selection.id);
-					} else if (TablePlugin[configType]) {
-						applyStyle(TablePlugin[configType], selection.id, TablePlugin.selectedOrActiveCells());
+					if (configType === 'tableConfig' && TablePlugin.settings.tableConfig) {
+						console.log(`APPLYING "${configType}" CONFIG: ${selection.id}`)
+						applyTableStyle(TablePlugin.settings.tableConfig, selection.id);
+					} else if (TablePlugin.settings[configType]) {
+						console.log(`APPLYING "${configType}" CONFIG: ${selection.id}`)
+						applyStyle(TablePlugin.settings[configType], selection.id, TablePlugin.selectedOrActiveCells());
 					}
 
 					TablePlugin.setActiveCellStyle();
@@ -1529,9 +1498,9 @@ define([
 
 		var selectedCells = TablePlugin.selectedOrActiveCells();
 
-		for (var i = 0; i < TablePlugin.cellConfig.length; i++) {
-			if (jQuery(selectedCells[0]).hasClass(TablePlugin.cellConfig[i].cssClass)) {
-				className = TablePlugin.cellConfig[i].name;
+		for (var i = 0; i < TablePlugin.settings.cellConfig.length; i++) {
+			if (jQuery(selectedCells[0]).hasClass(TablePlugin.settings.cellConfig[i].cssClass)) {
+				className = TablePlugin.settings.cellConfig[i].name;
 				allSelected = true;
 				break;
 			}
