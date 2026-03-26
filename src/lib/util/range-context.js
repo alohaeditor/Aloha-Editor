@@ -386,13 +386,20 @@ define([
 		Dom.removeShallow(node);
 	}
 
-	function wrapAdjust(node, wrapper, leftPoint, rightPoint) {
+	function wrapAdjust(node, wrapper, leftPoint, rightPoint, nodeSelector) {
 		if (wrapper.parentNode) {
 			removeShallowAdjust(wrapper, leftPoint, rightPoint);
 		}
 		adjustPointWrap(leftPoint, true, node, wrapper);
 		adjustPointWrap(rightPoint, false, node, wrapper);
-		Dom.wrap(node, wrapper);
+
+		if (typeof nodeSelector !== 'function') {
+			nodeSelector = function (node) {
+				return node;
+			}
+		}
+
+		Dom.wrap(nodeSelector(node), wrapper);
 	}
 
 	function insertAdjust(node, ref, atEnd, leftPoint, rightPoint) {
@@ -584,8 +591,22 @@ define([
 			if (!editable || !ContentRules.isAllowed(editable, wrapper.nodeName)) {
 				return null;
 			}
+			let nodeSelector = function (node) {
+				console.log('Node type:', node);
+
+				if (node.nodeType === 3) {
+					return node;
+				}
+
+				if (node.nodeName === wrapper.nodeName) {
+					return node;
+				}
+
+				return node.firstChild;
+			}
+
 			Dom.setStyle(wrapper, styleName, styleValue);
-			wrapAdjust(node, wrapper, leftPoint, rightPoint);
+			wrapAdjust(node, wrapper, leftPoint, rightPoint, nodeSelector);
 			removeStyle(node, styleName);
 			return wrapper;
 		}
