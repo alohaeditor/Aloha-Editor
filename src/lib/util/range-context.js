@@ -540,7 +540,7 @@ define([
 	function createStyleWrapper_default() {
 		let wrapper = document.createElement('SPAN');
 
-		wrapper.setAttribute('data-style-wrapper', 'true');
+		wrapper.setAttribute('data-aloha-style-wrapper', 'true');
 
 		return wrapper;
 	}
