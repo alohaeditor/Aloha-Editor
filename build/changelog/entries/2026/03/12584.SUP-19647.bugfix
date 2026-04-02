@@ -1,0 +1,1 @@
+Fixes an issue where removing formatting could lead to invalid markup (and lost contents in further edits).

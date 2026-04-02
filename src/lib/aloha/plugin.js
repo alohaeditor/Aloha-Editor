@@ -112,6 +112,31 @@ define([
 		},
 
 		/**
+		 * Merges two config object (left & right), into the target object.
+		 * Separate function for plugins to overwrite for special handling.
+		 *
+		 * @param {object} target Object into which the properties are to be set
+		 * @param {object} left Config object from the plugin, which act as default/fallback value
+		 * @param {object} right Specialized config object (usually from the editables settings), to be merged/applied
+		 */
+		_mergeConfigurations: function(target, left, right) {
+			var properties = new Set(Object.keys(left || {}));
+			Object.keys(right || {}).forEach(function(key) {
+				properties.add(key);
+			});
+
+			properties.forEach(function(key) {
+				if (Array.isArray(right[key])) {
+					target[key] = right[key];
+				} else if (typeof right[key] === 'object') {
+					jQuery.extend(true, target, left[key], right[key]);
+				} else {
+					target[key] = right[key];
+				}
+			});
+		},
+
+		/**
 		 * Init method of the plugin. Called from Aloha Core to initialize this plugin
 		 * @return void
 		 * @hide
@@ -232,15 +257,7 @@ define([
 					// Not used anywhere in the project - Why does this exist?
 					configObj['aloha-editable-selector'] = selector;
 
-					Object.entries(selectorConfig || {}).forEach(function(entry) {
-						if (Array.isArray(entry[1])) {
-							configObj[entry[0]] = entry[1];
-						} else if (typeof entry[1] === "object") {
-							configObj[entry[0]] = jQuery.extend(true, {}, that.config[entry[0]], entry[1]);
-						} else {
-							configObj[entry[0]] = entry[1];
-						}
-					});
+					that._mergeConfigurations(configObj, that.config, selectorConfig);
 				});
 			}
 
