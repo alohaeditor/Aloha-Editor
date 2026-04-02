@@ -392,6 +392,7 @@ define([
 		}
 		adjustPointWrap(leftPoint, true, node, wrapper);
 		adjustPointWrap(rightPoint, false, node, wrapper);
+
 		Dom.wrap(node, wrapper);
 	}
 
@@ -537,7 +538,11 @@ define([
 	}
 
 	function createStyleWrapper_default() {
-		return document.createElement('SPAN');
+		let wrapper = document.createElement('SPAN');
+
+		wrapper.setAttribute('data-aloha-style-wrapper', 'true');
+
+		return wrapper;
 	}
 
 	function isStyleEq_default(styleValueA, styleValueB) {
@@ -545,7 +550,7 @@ define([
 	}
 
 	function isStyleWrapperReusable_default(node) {
-		return 'SPAN' === node.nodeName && !Html.isEditingHost(node);
+		return 'SPAN' === node.nodeName && node.getAttribute('data-style-wrapper') === 'true' && !Html.isEditingHost(node);
 	}
 
 	function isStyleWrapperPrunable_default(node) {
@@ -579,13 +584,22 @@ define([
 				Dom.setStyle(node, styleName, styleValue);
 				return prevWrapper;
 			}
+
+			var wrapped = node.nodeType === 3 ? node : node.firstChild;
+
+			if (isReusable(wrapped)) {
+				Dom.setStyle(wrapped, styleName, styleValue);
+				return prevWrapper;
+			}
+
 			var wrapper = createWrapper();
 			var editable = DomLegacy.getEditingHostOf(node);
 			if (!editable || !ContentRules.isAllowed(editable, wrapper.nodeName)) {
 				return null;
 			}
+
 			Dom.setStyle(wrapper, styleName, styleValue);
-			wrapAdjust(node, wrapper, leftPoint, rightPoint);
+			wrapAdjust(wrapped, wrapper, leftPoint, rightPoint);
 			removeStyle(node, styleName);
 			return wrapper;
 		}

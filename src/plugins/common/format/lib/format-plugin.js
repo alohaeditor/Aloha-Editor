@@ -173,10 +173,12 @@ define('format/format-plugin', [
 			return;
 		}
 
-		var selectedNodes = $(range.startContainer.parentNode).nextUntil($(range.endContainer.parentNode).next()).addBack();
-		var prevNodes = $(range.startContainer.parentNode).prevAll();
-		var nextNodes = $(range.endContainer.parentNode).nextAll();
-		var listName = range.startContainer.parentNode.parentNode.nodeName;
+		var firstNode = $(range.startContainer.parentNode).closest('li,dt,dd');
+		var lastNode = $(range.endContainer.parentNode).closest('li,dt,dd');
+		var selectedNodes = firstNode.nextUntil(lastNode.next()).addBack();
+		var prevNodes = firstNode.prevAll();
+		var nextNodes = lastNode.nextAll();
+		var listName = firstNode.parent()[0].nodeName;
 
 		// Only one item selected
 		if (selectedNodes.length == 1) {
