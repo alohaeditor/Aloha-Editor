@@ -1474,6 +1474,10 @@ define([
 			null != TablePlugin.activeTable &&
 			null != TablePlugin.activeTable.selection.selectionType
 		) {
+			if (!Scopes.isActiveScope(TablePlugin.name)) {
+				UiPlugin.getActiveSurface().focusTab(TablePlugin.tabId);
+			}
+
 			// get the new scopes
 			scopes = TablePlugin.activeTable.selection.getCurrentSelectionTypes();
 			// leave all scopes except the the current ones
@@ -1498,11 +1502,13 @@ define([
 
 		var selectedCells = TablePlugin.selectedOrActiveCells();
 
-		for (var i = 0; i < TablePlugin.settings.cellConfig.length; i++) {
-			if (jQuery(selectedCells[0]).hasClass(TablePlugin.settings.cellConfig[i].cssClass)) {
-				className = TablePlugin.settings.cellConfig[i].name;
-				allSelected = true;
-				break;
+		if (TablePlugin.settings?.cellConfig) {
+			for (var i = 0; i < TablePlugin.settings.cellConfig.length; i++) {
+				if (jQuery(selectedCells[0]).hasClass(TablePlugin.settings.cellConfig[i].cssClass)) {
+					className = TablePlugin.settings.cellConfig[i].name;
+					allSelected = true;
+					break;
+				}
 			}
 		}
 
