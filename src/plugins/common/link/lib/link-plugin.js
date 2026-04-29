@@ -349,7 +349,7 @@ define([
 				LinkPlugin._insertLinkButton.setIcon(activeStateOrRange ? Icons.UNLINK : Icons.LINK);
 
 				if (activeStateOrRange) {
-					if (!Scopes.isActiveScope(LinkPlugin.tabId)) {
+					if (!Scopes.isActiveScope(LinkPlugin.name)) {
 						UiPlugin.getActiveSurface().focusTab(LinkPlugin.tabId);
 					}
 

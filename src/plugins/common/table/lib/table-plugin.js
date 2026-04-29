@@ -1502,7 +1502,7 @@ define([
 
 		var selectedCells = TablePlugin.selectedOrActiveCells();
 
-		if (TablePlugin.settings?.cellConfig) {
+		if (TablePlugin.settings && TablePlugin.settings.cellConfig) {
 			for (var i = 0; i < TablePlugin.settings.cellConfig.length; i++) {
 				if (jQuery(selectedCells[0]).hasClass(TablePlugin.settings.cellConfig[i].cssClass)) {
 					className = TablePlugin.settings.cellConfig[i].name;
