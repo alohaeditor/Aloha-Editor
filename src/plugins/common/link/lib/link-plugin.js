@@ -26,6 +26,7 @@ define([
 	'aloha/keybinds',
 	'util/dom',
 	'util/keys',
+	'ui/ui-plugin',
 	'ui/ui',
 	'ui/scopes',
 	'ui/toggleSplitButton',
@@ -46,6 +47,7 @@ define([
 	Keybinds,
 	Dom,
 	Keys,
+	UiPlugin,
 	Ui,
 	Scopes,
 	ToggleSplitButton,
@@ -208,6 +210,11 @@ define([
 		config: ['a'],
 
 		/**
+		 * Default tab ID to focus when the link scope is entered (this is typically the format plugin tab, since it contains the link button).
+		 */
+		tabId: 'formatting',
+
+		/**
 		 * the defined object types to be used for this instance
 		 */
 		objectTypeFilter: [],
@@ -342,6 +349,10 @@ define([
 				LinkPlugin._insertLinkButton.setIcon(activeStateOrRange ? Icons.UNLINK : Icons.LINK);
 
 				if (activeStateOrRange) {
+					if (!Scopes.isActiveScope(LinkPlugin.name)) {
+						UiPlugin.getActiveSurface().focusTab(LinkPlugin.tabId);
+					}
+
 					Scopes.enterScope(LinkPlugin.name);
 				} else {
 					Scopes.leaveScope(LinkPlugin.name);
