@@ -581,4 +581,6 @@ define([
 		return this.$hElm;
 	};
 
+
+	return DragBehavior;
 });
