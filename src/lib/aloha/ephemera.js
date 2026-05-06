@@ -269,8 +269,12 @@ define([
 		var data = elem.attr('data-aloha-ephemera-attr');
 		if (null == data || '' === data) {
 			data = attr;
-		} else if (Strings.words(data).includes(attr)) {
-			data += ' ' + attr;
+		} else {
+			var elAttributes = Strings.words(data);
+			if (!elAttributes.includes(attr)) {
+				elAttributes.push(attr);
+			}
+			data = elAttributes.join(' ');
 		}
 		elem.attr('data-aloha-ephemera-attr', data);
 		elem.addClass('aloha-ephemera-attr');
