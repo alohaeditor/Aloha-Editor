@@ -2,7 +2,7 @@ h2. The Content Handler Plugin
 
 After reading this guide, you will be able to:
 
-* Understand what Content Handler are and how to use them
+* Understand what Content Handlers are and how to use them
 * Use the Content Handler API to create, modify and
 * Extend Content Handler with custom implementations
 
@@ -115,12 +115,12 @@ h4. Writing your own Content Handler
 	['aloha', 'jquery', 'aloha/contenthandlermanager'],
 	function(Aloha, jQuery, ContentHandlerManager) {
 		"use strict";
-	
+
 		var MyContentHandler = ContentHandlerManager.createHandler({
 			handleContent: function( content ) {
-				
+
 				// do something with the content
-				
+
 				return content; // return as HTML text not jQuery/DOM object
 			}
 		});
@@ -273,3 +273,21 @@ Aloha.settings.contentHandler.sanitize = {
 	}
 }
 </javascript>
+
+h4. Style Attribute Content Handler
+
+The Style Attribute Content Handler will remove all unsupported style attribute items recursively from the style tags
+of all elements in the supplied content.  The set of supported style attribute items is defined by plugin configuration.
+You may specify your own configuration based on these default settings:
+
+<javascript>
+Aloha.settings.contentHandler.styleattribute = {
+	// style attribute items allowed in the content
+  supportedStyles: {
+      'text-align': true
+  }
+}
+</javascript>
+
+
+
