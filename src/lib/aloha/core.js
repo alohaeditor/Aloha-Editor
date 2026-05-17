@@ -528,6 +528,15 @@ define([
 					if (Aloha.editables[i].originalObj[0] === editable) {
 						return Aloha.editables[i];
 					}
+
+					if ( editable.hasChildNodes() && editable.childNodes.length > 0) {
+						var k;
+						for (k = 0; k < editable.childNodes.length; k++) {
+							if (Aloha.editables[i].originalObj[0] === editable.childNodes[k]) {
+								return Aloha.editables[i];
+							}
+						}
+					}
 				}
 				return null;
 			};
