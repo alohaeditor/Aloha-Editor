@@ -668,7 +668,7 @@ define([
 				var classList = Array.from($elem[0].classList);
 				/** @type {Array.<ListTemplate>} */
 				var templates = ListPlugin.templates[listType] || [];
-				var templateClasses = templates.flatMap(function(tpl) {
+				var templateClasses = (Array.isArray(templates.classes)) ? templates.classes : templates.flatMap(function (tpl) {
 					return tpl.classes;
 				});
 
