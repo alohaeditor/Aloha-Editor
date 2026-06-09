@@ -438,7 +438,6 @@ define([
 
 	/**
 	 * Register the ListPlugin as Aloha.Plugin
-	 * @type {ListPlugin}
 	 */
 	var ListPlugin = {
 
@@ -465,6 +464,7 @@ define([
 		
 		/**
 		 * Types of templates that can be applied to the list-type. The user can select one.
+		 * @type {Object.<string, Array.<ListTemplate>>}
 		 */
 		templates: {
 			ul: [],
@@ -603,7 +603,6 @@ define([
 			/**
 			 * Copy of the templates, as we later need them again and just in case they change
 			 * inbetween the dropdown open, we have the correct values.
-			 * @type {Array.<ListTemplate>}
 			 */
 			var templates = (ListPlugin.templates[type] || []).slice(0);
 			var options = templates.map(function (tpl, idx) {
