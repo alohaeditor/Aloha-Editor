@@ -60,7 +60,7 @@ define([
 
 	function isCollapsedAndEmptyOrEndBr(rangeObject) {
 		var firstChild;
-		if (rangeObject.startContainer !== rangeObject.endContainer) {
+		if (!rangeObject || !rangeObject.startContainer || rangeObject.startContainer !== rangeObject.endContainer) {
 			return false;
 		}
 		// check whether the container starts in an element node
@@ -1385,14 +1385,14 @@ define([
 
 			if (markupObject.isReplacingElement) {
 				//Check if the startContainer is one of the zapped elements
-				if (backupRangeObject && backupRangeObject.startContainer.className && backupRangeObject.startContainer.className.indexOf('preparedForRemoval') > -1) {
+				if (backupRangeObject && backupRangeObject.startContainer && backupRangeObject.startContainer.className && backupRangeObject.startContainer.className.indexOf('preparedForRemoval') > -1) {
 					//var parentElement = jQuery(backupRangeObject.startContainer).closest(markupObject[0].tagName).get(0);
 					parentElement = jQuery(backupRangeObject.startContainer).parents(markupObject[0].tagName).get(0);
 					backupRangeObject.startContainer = parentElement;
 					rangeObject.startContainer = parentElement;
 				}
 				//check if the endContainer is one of the zapped elements
-				if (backupRangeObject && backupRangeObject.endContainer.className && backupRangeObject.endContainer.className.indexOf('preparedForRemoval') > -1) {
+				if (backupRangeObject && backupRangeObject.startContainer && backupRangeObject.endContainer.className && backupRangeObject.endContainer.className.indexOf('preparedForRemoval') > -1) {
 					//var parentElement = jQuery(backupRangeObject.endContainer).closest(markupObject[0].tagName).get(0);
 					parentElement = jQuery(backupRangeObject.endContainer).parents(markupObject[0].tagName).get(0);
 					backupRangeObject.endContainer = parentElement;
@@ -1406,20 +1406,22 @@ define([
 
 			// update selection
 			if (markupObject.isReplacingElement) {
-				//After the zapping we have to check for wrong offsets
-				if (Node.ELEMENT_NODE === backupRangeObject.startContainer.nodeType
-					&& backupRangeObject.startContainer.childNodes
-					&& backupRangeObject.startContainer.childNodes.length < backupRangeObject.startOffset
-				) {
-					backupRangeObject.startOffset = backupRangeObject.startContainer.childNodes.length;
-					rangeObject.startOffset = backupRangeObject.startContainer.childNodes.length;
-				}
-				if (Node.ELEMENT_NODE === backupRangeObject.endContainer.nodeType
-					&& backupRangeObject.endContainer.childNodes
-					&& backupRangeObject.endContainer.childNodes.length < backupRangeObject.endOffset
-				) {
-					backupRangeObject.endOffset = backupRangeObject.endContainer.childNodes.length;
-					rangeObject.endOffset = backupRangeObject.endContainer.childNodes.length;
+				if (backupRangeObject.startContainer) {
+					//After the zapping we have to check for wrong offsets
+					if (Node.ELEMENT_NODE === backupRangeObject.startContainer.nodeType
+						&& backupRangeObject.startContainer.childNodes
+						&& backupRangeObject.startContainer.childNodes.length < backupRangeObject.startOffset
+					) {
+						backupRangeObject.startOffset = backupRangeObject.startContainer.childNodes.length;
+						rangeObject.startOffset = backupRangeObject.startContainer.childNodes.length;
+					}
+					if (Node.ELEMENT_NODE === backupRangeObject.endContainer.nodeType
+						&& backupRangeObject.endContainer.childNodes
+						&& backupRangeObject.endContainer.childNodes.length < backupRangeObject.endOffset
+					) {
+						backupRangeObject.endOffset = backupRangeObject.endContainer.childNodes.length;
+						rangeObject.endOffset = backupRangeObject.endContainer.childNodes.length;
+					}
 				}
 				rangeObject.endContainer = backupRangeObject.endContainer;
 				rangeObject.endOffset = backupRangeObject.endOffset;

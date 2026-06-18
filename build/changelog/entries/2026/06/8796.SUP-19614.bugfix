@@ -1,0 +1,2 @@
+Format: Now the dropdown button is not shown next to the list buttons, if there are no corresponding list item templates configured.
+Selection: A number of crash cases, caused by an incomplete selection context, has been eliminated.
