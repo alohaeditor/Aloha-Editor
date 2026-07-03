@@ -1,0 +1,2 @@
+Removed the @amd@ hint from @RequireJS@' @define@ function, to prevent loading unintended modules.
+Please check your custom implementations if these use that functionality, and adopt these if needed.
