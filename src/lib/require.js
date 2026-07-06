@@ -2125,16 +2125,9 @@ var requirejs, require, define;
         }
     };
 
-    // Removed for FormGen integration
-    // Bundled dependencies from it would try to register themself into the
-    // global define from here, which would be break both functionalities.
-    // Luckily most packages which still support require-js, check that the
-    // "amd" property is an object before attempting to register, which solves
-    // this issue.
-
-    // define.amd = {
-    //     jQuery: true
-    // };
+    define.amd = {
+        jQuery: true
+    };
 
     /**
      * Executes the text. Normally just uses eval, but can be modified
