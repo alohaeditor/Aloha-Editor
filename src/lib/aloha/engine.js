@@ -4812,7 +4812,7 @@ define([
 	/**
 	 * This method "normalizes" sublists of the given item (which is supposed to be a LI):
 	 * If sublists are found in the LI element, they are moved directly into the outer list.
-	 * @param item item
+	 * @param {HTMLElement} item
 	 * @param range range, which will be modified if necessary
 	 */
 	function normalizeSublists(item, range) {
@@ -4830,7 +4830,7 @@ define([
 		}
 
 		// "While item has an ol or ul child:"
-		while (item.childNodes.some(isOlUl)) {
+		while (Array.from(item.childNodes).some(isOlUl)) {
 			// "Let child be the last child of item."
 			var child = item.lastChild;
 
@@ -5919,9 +5919,7 @@ define([
 				// then remove end block from parent, then set end block to
 				// parent."
 				while (isEditable(endBlock) && endBlock.parentNode.childNodes.length == 1 && endBlock.parentNode != startBlock) {
-					parent_ = endBlock;
-					parent_.removeChild(endBlock);
-					endBlock = parent_;
+					endBlock.remove();
 				}
 
 				// "If end block is editable and is not an inline node, and its

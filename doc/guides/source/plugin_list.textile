@@ -19,115 +19,156 @@ You can remove lists by clicking the applied list type a second time, which will
 
 NOTE: Although allowed by the HTML specification, Aloha Editor will not allow nesting of paragraphs or headers in list items.
 
-h4. List styles
-
-If you open the dropdown next to the respective list icon, you can choose from a list of pre-defined list styles.
-Shipped with Aloha Editor are the following:
-
-h5. Unordered list styles
-
-* disc
-* circle
-* square
-
-h5. Ordered list styles
-
-* decimal
-* decimal-leading-zero
-* lower-roman
-* upper-roman
-* lower-greek
-* lower-latin
-* upper-latin
-
-h5. Definition list styles
-
-* blue
-* green
-* red
-
 h3. Configuration settings
 
 Add the available components +'ol', 'ul', 'dl'+ to the editables where you want to use them:
 
 <javascript>
-	Aloha.settings.plugins: {
-		list: {
-			config: [ 'ol', 'ul', 'dl' ],
-			editables: {
-				'#one': [ 'ul' ],
-				'#two': [ ]
-			}
-		}
+Aloha.settings.plugins: {
+	list: {
+		config: [ 'ol', 'ul', 'dl' ],
+		editables: {
+			'#one': [ 'ul' ],
+			'#two': [ ]
+		},
+		// Explained below
+		defaultClasses: {},
+		templates: {},
 	}
+};
 </javascript>
 
-To define custom list styles use the following syntax:
+h3. Class lists
+
+Class lists are either @string@ or @string[]@, and define which classes are to be applied on which nesting level.
+If it's a simple string, it will be treated like an array with the string as single value.
+
+The index within the array determines which nesting level it will be applied to. If the nesting is deeper than what the array has defined, it will use the last value in the array.
+
+h3. Default classes
+
+Default classes can be defined for each list type, and will be applied to all lists.
+The default classes can be set for the list itself aswell as for it's items.
 
 <javascript>
-    Aloha.settings.plugins.list = {
-    	templates: {
-    		ul: {
-    			classes: ['aloha-list-disc', 'aloha-list-circle', 'aloha-list-square'],
-    			template: '<ul class="${cssClass}"><li>${first}<ul class="${cssClass}"><li>${second}<ul class="${cssClass}"><li>${third}</li></ul></li></ul></li></ul>',
-    			locale: {
-    				fallback: {first: 'first layer', second: 'second layer', third: 'third layer'},
-    				de: {first: 'erste Ebene', second: 'zweite Ebene', third: 'dritte Ebene'}
-    			}
-    		},
-    		ol: {
-    			classes: ['aloha-list-decimal', 'aloha-list-decimal-leading-zero',
-    				'aloha-list-lower-roman', 'aloha-list-upper-roman', 'aloha-list-lower-greek',
-    				'aloha-list-lower-latin', 'aloha-list-upper-latin' ],
-    			template: '<ol class="${cssClass}"><li>${first}<ol class="${cssClass}"><li>${second}<ol class="${cssClass}"><li>${third}</li></ol></li></ol></li></ol>',
-    			locale: {
-    				fallback: {first: 'first layer', second: 'second layer', third: 'third layer'},
-    				de: {first: 'erste Ebene', second: 'zweite Ebene', third: 'dritte Ebene'}
-    			}
-    		},
-    		dl: {
-    			classes: ['aloha-list-blue', 'aloha-list-green', 'aloha-list-red'],
-    			template: '<dl class="${cssClass}"><dt>${first}<dt><dd>${second}</dd></dl>',
-    			locale: {
-    				fallback: {first: 'first item', second: 'second item'},
-    				de: {first: 'erstes Element', second: 'zweites Element'}
-    			}
-    		},
-    	},
-    	// defaultClasses are optional classes which will be applied to all lists and list items for which they are defined.
-    	// The classes to be added are provided as a string or as an array of strings.
-    	//
-    	// - If defined as a string, then that class (or multiple classes separated by a space) will be applied to all
-    	// lists or items of that type.
-    	// - If defined as an array of strings, then those classes will be applied according to the nesting level of
-    	// the list.
-    	//
-    	// For example, in the "ol" definition below, the class "my-numbered-list" will be applied to all non-nested OL elements.
-    	// Any nested OL lists will have the classes "my-numbered-list" & "my-numbered-list--nested" applied.
-    	// The items of the root list will have the class "my-numbered-list__item" applied, and items of list nested 1-level deep
-    	// will have the classes "my-numbered-list__item" & "my-numbered-list__item--lvl-1" applied, and so on. The last item in the
-    	// list "--lvl-4" will then be used for all further nesting levels beyond that point.
-    	defaultClasses: {
-    		ul: {
-    			list: 'my-bullet-list',
-    			item: 'list-item my-bullet-list__item'
-    		},
-    		ol: {
-    			list: ['my-numbered-list', 'my-numbered-list my-numbered-list--nested'],
-    			item: [
-    				'my-numbered-list__item',
-    				'my-numbered-list__item my-numbered-list__item--lvl-1',
-    				'my-numbered-list__item my-numbered-list__item--lvl-2',
-    				'my-numbered-list__item my-numbered-list__item--lvl-3',
-    				'my-numbered-list__item my-numbered-list__item--lvl-4'
-    			]
-    		},
-    		dl: {
-    			list: ['my-dl-list'],
-    			item: ['my-dl-item']
-    		}
-    }
+Aloha.settings.plugins.list = {
+	defaultClasses: {
+		ul: {
+			list: ['my-bullet-list', 'my-nested-list'],
+			item: 'list-item my-bullet-list__item'
+		},
+	},
+};
 </javascript>
+
+<html>
+<ul class="my-bullet-list">
+	<li class="list-item my-bullet-list__item">First level item</li>
+	<li class="list-item my-bullet-list__item">First level item</li>
+
+	<ul class="my-nested-list">
+		<li class="list-item my-bullet-list__item">Second level item</li>
+		<li class="list-item my-bullet-list__item">Second level item</li>
+
+		<ul class="my-nested-list">
+			<li class="list-item my-bullet-list__item">Third level item</li>
+			<li class="list-item my-bullet-list__item">Third level item</li>
+		</ul>
+	</ul>
+</ul>
+</html>
+
+h3. Templates
+
+Templates can be selected by an editor and define which classes are to be applied to the list items.
+Multiple templates can be defined, but an editor may only choose one at a time.
+
+<javascript>
+Aloha.settings.plugins.list = {
+	templates: {
+		dl: [
+			{
+				label: 'Symbols',
+				classes: ['aloha-list-disc', 'aloha-list-circle', 'aloha-list-square'],
+			},
+			{
+				label: 'Colors',
+				classes: ['aloha-list-blue', 'aloha-list-green', 'aloha-list-red'],
+			},
+		],
+	},
+};
+</javascript>
+
+<html>
+<dl class="aloha-list-disc">
+	<dt>First level item title<dt>
+	<dd>First level item description</dd>
+
+	<dt>First level item title<dt>
+	<dd>First level item description</dd>
+
+	<dl class="aloha-list-circle">
+		<dt>Second level item title<dt>
+		<dd>Second level item description</dd>
+
+		<dt>Second level item title<dt>
+		<dd>Second level item description</dd>
+
+		<dl class="aloha-list-square">
+			<dt>Second level item title<dt>
+			<dd>Second level item description</dd>
+
+			<dt>Second level item title<dt>
+			<dd>Second level item description</dd>
+		</dl>
+	</dl>
+</dl>
+</html>
+
+h3. Combining both
+
+When both default classes and templates are used, then both classes are merged and applied.
+
+<javascript>
+Aloha.settings.plugins.list = {
+	defaultClasses: {
+		ol: {
+			list: ['my-list', 'nested-list'],
+			item: ['generic-item', 'generic-nested-item']
+		},
+	},
+	templates: {
+		ol: [
+			{
+				label: 'Numbers',
+				classes: [
+					'aloha-list-decimal',
+					'aloha-list-roman',
+					'aloha-list-greek',
+				]
+			}
+		]
+	}
+};
+</javascript>
+
+<html>
+<ol class="my-list aloha-list-decimal">
+	<li class="generic-item">First level item</li>
+	<li class="generic-item">First level item</li>
+
+	<ol class="nested-list aloha-list-roman">
+		<li class="generic-nested-item">Second level item</li>
+		<li class="generic-nested-item">Second level item</li>
+
+		<ol class="nested-list aloha-list-greek">
+			<li class="generic-nested-item">Third level item</li>
+			<li class="generic-nested-item">Third level item</li>
+		</ol>
+	</ol>
+</ol>
+</html>
 
 h3. Components
 
