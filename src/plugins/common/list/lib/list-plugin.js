@@ -156,6 +156,7 @@ define([
 			onToggle: function (activated) {
 				ListPlugin.transformList('ol');
 			},
+			secondaryVisible: (ListPlugin.templates['ol'] || []).slice(0).length > 0,
 		}));
 
 		ListPlugin.unorderedListButton = Ui.adopt('listUnordered', ToggleSplitButton, /** @type {ToggleSplitButton} */ ({
@@ -170,6 +171,7 @@ define([
 			onToggle: function (activated) {
 				ListPlugin.transformList('ul');
 			},
+			secondaryVisible: (ListPlugin.templates['ul'] || []).slice(0).length > 0,
 		}));
 
 		ListPlugin.definitionListButton = Ui.adopt('listDefinition', ToggleSplitButton, /** @type {ToggleSplitButton} */ ({
@@ -184,6 +186,7 @@ define([
 			onToggle: function (activated) {
 				ListPlugin.transformList('dl');
 			},
+			secondaryVisible: (ListPlugin.templates['dl'] || []).slice(0).length > 0,
 		}));
 
 		ListPlugin._indentListButton = Ui.adopt('indentList', Button, {
@@ -1136,6 +1139,10 @@ define([
 				if (domToTransform && domToTransform.nodeName.toLowerCase() === listType) {
 					return;
 				}
+			}
+
+			if (!domToTransform || !domToTransform.nodeName) {
+				return;
 			}
 
 			// check the dom object
