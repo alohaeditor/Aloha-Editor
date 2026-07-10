@@ -299,10 +299,11 @@ define([
 
 		$editable.keypress(StateOverride.keyPressHandler);
 		$editable.keypress(function (event) {
-			if (Aloha.activateEditable != null) {
+			var editable = Aloha.activateEditable;
+			if (editable != null && typeof editable.smartContentChange === 'function') {
 				// triggers a smartContentChange to get the right charcode
 				// To test try http://www.w3.org/2002/09/tests/keys.html
-				Aloha.activeEditable.smartContentChange(event);
+				editable.smartContentChange(event);
 			}
 		});
 

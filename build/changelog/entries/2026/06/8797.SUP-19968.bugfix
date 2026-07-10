@@ -1,0 +1,1 @@
+Drag'n'drop: Eliminate a crash, leading to the undefined behaviour, when dropping an element to the unsupported or incorrectly set drop zone.
