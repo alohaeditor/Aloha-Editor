@@ -1,12 +1,11 @@
 define({
 	"root":  {
-		"cite.button.add.quote": "Insert quote",
-		"cite.button.edit.quote": "Edit selected quote",
-		"cite.button.add.blockquote": "Format selection as blockquote",
+		"cite.button.tooltip": "Citation",
+		"cite.button.add.quote": "insert Citation",
+		"cite.button.edit.quote": "edit Citation",
+		"button.blockquote.tooltip": "Blockquote",
 		"cite.label.source": "Source",
-		"cite.label.note": "Note",
-		"button.removeCite.tooltip": "Remove cite",
-		"button.blockquote.tooltip": "Block quote"
+		"cite.label.note": "Note"
 	},
 		"ca": true,
 		"de": true,

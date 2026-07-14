@@ -1,0 +1,1 @@
+Fixed an issue in the @format-plugin@ which caused the editing to not work.

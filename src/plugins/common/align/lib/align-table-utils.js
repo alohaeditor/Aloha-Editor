@@ -121,7 +121,7 @@ define([
 			return getCellsInSelection(table);
 		}
 
-		if (Arrays.isEmpty(elements)) {
+		if (elements.length === 0) {
 			// If there is nothing selected, we add the cell.
 			return [cellElement];
 		}

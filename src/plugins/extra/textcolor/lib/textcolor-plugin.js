@@ -29,13 +29,13 @@ define([
 	'aloha/jquery',
 	'aloha/plugin',
 	'util/dom2',
+	'util/color',
 	'PubSub',
 	'util/range-context',
 	'util/html',
 	'ui/ui',
 	'ui/contextButton',
 	'ui/icons',
-	'ui/utils',
 	'./palette',
 	'i18n!textcolor/nls/i18n',
 ], function (
@@ -43,13 +43,13 @@ define([
 	$,
 	Plugin,
 	Dom,
+	Utils,
 	PubSub,
 	RangeContext,
 	Html,
 	Ui,
 	ContextButton,
 	Icons,
-	Utils,
 	Palette,
 	i18n
 ) {
@@ -122,13 +122,21 @@ define([
 			return;
 		}
 
-		if (config.color === false || !config.color.enabled) {
+		if (
+			config.color === false
+			|| config.color == null
+			|| !config.color.enabled
+		) {
 			plugin._textColorButton.hide();
 		} else {
 			plugin._textColorButton.show();
 		}
 
-		if (config['background-color'] === false || !config['background-color'].enabled) {
+		if (
+			config['background-color'] === false
+			|| config['background-color']  == null
+			|| !config['background-color'].enabled
+		) {
 			plugin._backgroundColorButton.hide();
 		} else {
 			plugin._backgroundColorButton.show();
@@ -186,6 +194,8 @@ define([
 							}
 						}
 
+						var conf = plugin.getEditableConfig(Aloha.activeEditable.obj);
+
 						var propertyConfig = Object.assign({}, {
 							// Default settings
 							palette: Palette,
@@ -193,7 +203,7 @@ define([
 							allowCustomInput: true,
 							allowTransparency: false,
 							allowClear: true,
-						}, plugin.config[cssProperty] || {});
+						}, conf[cssProperty] || {});
 
 						return {
 							type: 'color-picker',
@@ -240,7 +250,28 @@ define([
 			});
 
 			checkVisibility(Aloha.activeEditable);
-		}
+		},
+
+		/*
+		 * Override the config merge handler, because the configuration of this plugin
+		 * is in a bit different format compared to other plugins.
+		 */
+		_mergeConfigurations: function(target, left, right) {
+			var properties = new Set(Object.keys(left || {}));
+			Object.keys(right || {}).forEach(function(key) {
+				properties.add(key);
+			});
+
+			properties.forEach(function(key) {
+				if (Array.isArray(right[key])) {
+					target[key] = right[key];
+				} else if (typeof right[key] === 'object') {
+					jQuery.extend(target, left[key], right[key]);
+				} else {
+					target[key] = right[key];
+				}
+			});
+		},
 	};
 
 	plugin = Plugin.create('textcolor', plugin);
