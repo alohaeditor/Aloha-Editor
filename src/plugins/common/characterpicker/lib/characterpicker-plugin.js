@@ -139,6 +139,18 @@ define([
 
 		config: [
 			{
+				'label': 'shy',
+				'symbol': '&shy;',
+				'keywords': ['and', 'amp'],
+				'icon' : '<span class="material-symbols-outlined">horizontal_rule</span>'
+			},
+			{
+				'label': 'non-breaking space',
+				'symbol': '&nbsp;',
+				'keywords': ['and', 'amp'],
+				'icon': '<span class="material-symbols-outlined">space_bar</span>'
+			},
+			{
 				'label': 'Ampersand',
 				'symbol': '&#38',
 				'keywords': ['and', 'amp']
