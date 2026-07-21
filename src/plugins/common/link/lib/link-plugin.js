@@ -299,8 +299,7 @@ define([
 					let existingLink = LinkPlugin.findLinkMarkup();
 	
 					if (!existingLink) {
-						LinkPlugin.insertLink(true);
-						return;
+						existingLink = LinkPlugin.insertLink(true);
 					}
 
 					Modal.openDynamicModal(
@@ -623,12 +622,9 @@ define([
 
 			// There are occasions where we do not get a valid range, in such
 			// cases we should not try and add a link
-			if (!(range.startContainer && range.endContainer)) {
-				return null;
-			}
-
-			// do not nest a link inside a link
-			if (LinkPlugin.findLinkMarkup(range)) {
+			// also do not nest a link inside a link
+			if (!(range.startContainer && range.endContainer) ||
+				LinkPlugin.findLinkMarkup(range)) {
 				return null;
 			}
 
@@ -684,21 +680,24 @@ define([
 				Dom.doCleanup(insertLinkPostCleanup, range);
 			}
 
-			var linkElements = $(Array.from(Aloha.activeEditable.obj.find('a.' + CLASS_NEW_LINK)).map(function (newLinkElem) {
+			const linkElements = Array.from(Aloha.activeEditable.obj.find('a.' + CLASS_NEW_LINK))
+			.map(newLinkElem => {
 				LinkPlugin.addLinkEventHandlers(newLinkElem);
 				$(newLinkElem).removeClass(CLASS_NEW_LINK);
 				return newLinkElem;
-			}));
+			});
+			
+			const $linkElements = $(linkElements);
 
 			range.select();
 
-			// because the Aloha Selection is deprecated I need to convert it to a ragne
+			// because the Aloha Selection is deprecated I need to convert it to a range
 			var apiRange = Aloha.createRange();
 			apiRange.setStart(range.startContainer, range.startOffset);
 			apiRange.setEnd(range.endContainer, range.endOffset);
 
-			Aloha.trigger('aloha-link-insert', { range: apiRange, elements: linkElements });
-			PubSub.pub('aloha.link.insert', { range: apiRange, elements: linkElements });
+			Aloha.trigger('aloha-link-insert', { range: apiRange, elements: $linkElements });
+			PubSub.pub('aloha.link.insert', { range: apiRange, elements: $linkElements });
 			LinkPlugin.hrefChange();
 
 			return linkElements[0];
