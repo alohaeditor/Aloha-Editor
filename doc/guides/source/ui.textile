@@ -77,36 +77,36 @@ When a plugin calls Ui.adopt(componentName, ...), the adopted component
 will appear in the toolbar, at the place where the component name
 appears in the configuration.
 
-Most components will be displayed inline (next to each other). The
-special string '\n' will force the following component to be displayed
-below the preceding components.
+Most components will be displayed inline (next to each other). When grouped
+together in an array, then these components will be grouped together and
+displayed distinctly.
 
 <javascript>
 Aloha.settings.toolbar = {
-    tabs: [
-    	{
-        	label: 'Format',
-    		components: [
-                [ 'bold', 'italic', 'underline', '\n',
-				  'subscript', 'superscript', 'strikethrough' ],
-			    [ 'formatBlock' ]
-            ]
-    	},
+  tabs: [
+    {
+      id: 'format',
+      icon: 'edit',
+      label: 'tab.format.label',
+      components: [
+        [ 'bold', 'italic', 'underline', 'subscript', 'superscript', 'strikethrough' ],
+        [ 'formatBlock' ]
+      ]
+    },
 		{
-        	label: 'Insert',
-            exclusive: true,
-			components: [
-                "createTable", "characterPicker", "insertLink",
-                [ "myArena" ]
-            ]
-    	},
-    	{
-        	label: 'Link',
-    		components: [ 'editlink' ]
-    	}
-    ],
-    exclude: [ 'strong', 'emphasis', 'strikethrough' ],
-    responsiveMode: false
+      id: 'insert',
+      icon: 'add',
+      label: 'tab.insert.label',
+      exclusive: true,
+			components: [ 'createTable', 'characterPicker', 'insertLink' ]
+    },
+    {
+      id: 'link',
+      icon: 'link',
+      label: 'tab.link.label',
+      components: [ 'editlink' ]
+    }
+  ],
 };
 </javascript>
 

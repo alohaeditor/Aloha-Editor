@@ -8,7 +8,7 @@ h3. Functional Description
 
 In order to apply a color select the text and move the cursor to the "Format" tab in the Aloha Editor. Now click on the textcolor or the background-color button and choose a color from the list. To remove an applied color click on the "x" icon.
 
-When color is applied to a selection, textual contents will be wrapped in span-tags with a style setting for colors, or a class in case a class was picked.
+When color is applied to a selection, textual contents will be wrapped in span-tags with a style setting for colors.
 
 <html>
 <!-- Marking the whole paragraph and selecting 
@@ -20,45 +20,72 @@ When color is applied to a selection, textual contents will be wrapped in span-t
 
 When applying a color to a collapsed selection, the selection will be extended to word level. When removing colors from text Aloha Editor will attempt to clean up left over span tags.
 
-h4. Components
-
-* colorpicker - brings up the overlay to select a color
-
-The color picker palette is rendered depending on how many items are configured for the textcolor or background-color
-
-* 36 or less colors => new row every 6 colors
-* 144 or less colors => new row every 12 colors
-* more than 144 colors => new row every 18 colors
-
 h4. Configuration settings
 
-The textcolor plugin will by default offer all web-safe colors - see: "Wikipedia - Web colors":http://en.wikipedia.org/wiki/Web_colors#Color_table
+The textcolor plugin can be configured to control both the foreground- and background-color, separate of each other.
+You may specify any valid "@css color values@":https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color_value, like @blue@, @#f00@, @rgb(123,45,67)@, etc.
 
-
-It is possible to configure the global color palette and to configure color palettes for specific editables (identified by jQuery selectors):
-You can specify the colors as hex (#FF0000) or RGB (rgb(255,0,0)) values.
+The configuration has to be applied the following way:
 
 <javascript>
 Aloha.settings = {
 	plugins: {
 		textcolor: {
-			// if the config property is ommitted the default color palette is used
-			config : {
-				// these are the global settings which render the color palette for the text-color and text background
-				// deactivate globally using an empty array
-				"color": ['#FFEE00', 'rgb(255,0,0)', '#FFFF00', '#FFFFFF'],
-				"background-color": ['#FFEE00', 'rgb(255,0,0)']
-			},
+			config: {
+				color: {
+					// If you want to disable the foreground color entirely, simply set this to `false`
+					enabled: true,
+					// Specify which colors the palette should display. Use an empty array to disable the palette.
+					palette: ['blue', '#f00', 'rgb(123,45,67)'],
+					// If the user should be able to clear the color value.
+					// This is shown by having an extra entry shown in the palette.
+					allowClear: true,
+					// If the user should be allowed to select a color which is not defined in the palette.
+					// Note that this setting needs to be set to `true`, for the options `allowCustomInput`, `allowTransparency`
+					// to be available/take effect.
+					allowOutsidePalette: true,
+					// If it should display a color picker to the user to pick a custom color value.
+					// Requires `allowOutsidePalette` to be `true` to work.
+					allowCustomInput: true,
+					// If the user should be able to change the transparency of a selected color.
+					// Usually done by displaying a slider.
+					// Requires `allowOutsidePalette` to be `true` to work.
+					allowTransparency: true,
+				},
+				"background-color": {
+					// Same settings as described above, just for background colors.
+				}
+			}
+		}
+	}
+};
+</javascript>
+
+You may also specify configurations for specific editables by using the css-selector as key:
+
+<javascript>
+Aloha.settings = {
+	plugins: {
+		textcolor: {
 			editables: {
-				// this will disable textcolors and overwrite the background-colors for the element with the id "top-text"
+				// this will disable the foreground color and overwrite the background-colors for the element with the id "top-text"
 				'#top-text': {
-					"color": [],
-					"background-color": ['#FFEE00']
+					"color": {
+						enabled: false,
+					},
+					"background-color": {
+						palette: ['#FFEE00']
+					}
 				},
 				// show only these textcolors and disable background-colors for editables with class 'article'
 				'.article': {
-					"color": [ '#FFEEEE', 'rgb(255,255,0)', '#FFFFFF' ],
-					"background-color": []
+					"color": {
+						palette: [ '#FFEEEE', 'rgb(255,255,0)', '#FFFFFF' ],
+						allowOutsidePalette: false,
+					},
+					"background-color": {
+						enabled: false,
+					}
 				}
 			}
 		}

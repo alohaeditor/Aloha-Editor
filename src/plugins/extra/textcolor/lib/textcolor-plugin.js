@@ -125,7 +125,7 @@ define([
 		if (
 			config.color === false
 			|| config.color == null
-			|| !config.color.enabled
+			|| config.color.enabled === false
 		) {
 			plugin._textColorButton.hide();
 		} else {

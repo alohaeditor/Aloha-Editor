@@ -71,17 +71,21 @@ See "cite plugin":plugin_cite.html
 
 h3. Components
 
-* code - format content as a code block
-* emphasize - emphasize content
-* strong (not def command) - put strong emphasis on content
-* bold - format content bold
-* italic - format content italic
-* strikethrough - add strikethrough formatting
-* subscript - add subscript formatting
-* superscript - add superscript formatting
-* underline - add underline formatting
-* paragraph - will allow you to add paragraph formattings (address, dd, div, dt, h1, h2, h3, h4, h5, h6, p, pre)
+The following components can be added to the toolbar-settings (on default, all are provided):
 
+* @code@ - format content as a code block
+* @emphasize@ - emphasize content
+* @italic@ - format content italic
+* @strong@ - put strong emphasis on content
+* @bold@ - format content bold
+* @strikethrough@ - add strikethrough formatting
+* @subscript@ - add subscript formatting
+* @superscript@ - add superscript formatting
+* @underline@ - add underline formatting
+* @deleted@ - marks text as deleted
+* @inserted@ - marks text as inserted
+* @typographyMenu@ - will allow you to add typography formattings (h1, h2, h3, h4, h5, h6, p, pre)
+* @removeFormat@ - clears all formatting
 
 h3. Configuration
 
@@ -112,3 +116,5 @@ Aloha.settings.plugins.format = {
 };
 </javascript>
 
+Note that the @config@ uses the @HTML@ node-names to determine which elements are allowed,
+instead of the component names.
