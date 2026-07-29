@@ -102,6 +102,8 @@ define([
 		selectionArea: 10                             // width/height of the selection rows (in pixel)
 	};
 
+	TablePlugin.captionFocused = false;
+
 	/**
 	 * Checks whether the given DOM element is nested within a table.
 	 *
@@ -744,6 +746,25 @@ define([
 	}
 
 	TablePlugin.updateButtonStates = function () {
+		if (TablePlugin.captionFocused) {
+			TablePlugin._tableCellsSplitButton.disable();
+			TablePlugin._tableCellsMergeButton.disable();
+			TablePlugin._tableRowAddBeforeButton.disable();
+			TablePlugin._tableRowAddAfterButton.disable();
+			TablePlugin._tableColumnAddLeftButton.disable();
+			TablePlugin._tableColumnAddRightButton.disable();
+
+			TablePlugin.updateCellStyleOptions();
+
+			if (TablePlugin._cellStyleOptions.length === 0) {
+				TablePlugin._tableCellStyleButton.disable();
+			} else {
+				TablePlugin._tableCellStyleButton.enable();
+			}
+
+			return;
+		}
+
 		var selection = TablePlugin
 			&& TablePlugin.activeTable
 			&& TablePlugin.activeTable.selection;
@@ -1223,6 +1244,28 @@ define([
 		}
 		// make the div editable
 		cSpan.contentEditable(true);
+
+		cSpan.off('.tablecaption');
+		cSpan.on('focus.tablecaption', function () {
+			TablePlugin.captionFocused = true;
+
+			TablePlugin.leaveTableScopes();
+
+			if (!Scopes.isActiveScope(TablePlugin.name)) {
+				UiPlugin.getActiveSurface().focusTab(TablePlugin.tabId);
+			}
+
+			Scopes.enterScope(TablePlugin.name);
+			TablePlugin.updateButtonStates();
+		});
+
+		cSpan.on('blur.tablecaption', function () {
+			TablePlugin.captionFocused = false;
+
+			TablePlugin.leaveTableScopes();
+			Scopes.leaveScope(TablePlugin.name, undefined, true);
+			TablePlugin.updateButtonStates();
+		});
 	};
 
 	/**
@@ -1474,7 +1517,7 @@ define([
 			null != TablePlugin.activeTable &&
 			null != TablePlugin.activeTable.selection.selectionType
 		) {
-			if (!Scopes.isActiveScope(TablePlugin.name)) {
+		if (!Scopes.isActiveScope(TablePlugin.name)) {
 				UiPlugin.getActiveSurface().focusTab(TablePlugin.tabId);
 			}
 
