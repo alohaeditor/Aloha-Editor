@@ -35,6 +35,8 @@ define([
 ) {
 	'use strict';
 
+	var ATTR_STYLE_WRAPPER = 'data-aloha-style-wrapper';
+
 	/**
 	 * Walks the siblings of the given child, calling before for
 	 * siblings before the given child, after for siblings after the
@@ -540,7 +542,7 @@ define([
 	function createStyleWrapper_default() {
 		let wrapper = document.createElement('SPAN');
 
-		wrapper.setAttribute('data-aloha-style-wrapper', 'true');
+		wrapper.setAttribute(ATTR_STYLE_WRAPPER, 'true');
 
 		return wrapper;
 	}
@@ -550,7 +552,7 @@ define([
 	}
 
 	function isStyleWrapperReusable_default(node) {
-		return 'SPAN' === node.nodeName && node.getAttribute('data-style-wrapper') === 'true' && !Html.isEditingHost(node);
+		return 'SPAN' === node.nodeName && node.getAttribute(ATTR_STYLE_WRAPPER) === 'true' && !Html.isEditingHost(node);
 	}
 
 	function isStyleWrapperPrunable_default(node) {

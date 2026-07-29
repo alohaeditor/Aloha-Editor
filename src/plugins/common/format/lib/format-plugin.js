@@ -1032,7 +1032,7 @@ define('format/format-plugin', [
 
 				secondaryClick: function () {
 					/** @type {FormattingOption} */
-					var settings = FormatPlugin.config[FormatPlugin.activeTypography];
+					var settings = FormatPlugin.buttonConfig[FormatPlugin.activeTypography];
 					if (!settings) {
 						settings = DEFAULT_BUTTON_CONFIG[FormatPlugin.activeTypography];
 					}
