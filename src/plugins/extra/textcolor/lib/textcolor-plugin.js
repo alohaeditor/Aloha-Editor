@@ -123,7 +123,7 @@ define([
 		if (
 			config['background-color'] === false
 			|| config['background-color']  == null
-			|| !config['background-color'].enabled
+			|| config['background-color'].enabled === false
 		) {
 			plugin._backgroundColorButton.hide();
 		} else {

@@ -33,23 +33,30 @@ Aloha.settings = {
 		textcolor: {
 			config: {
 				color: {
-					// If you want to disable the foreground color entirely, simply set this to `false`
+					// If you want to disable the foreground color entirely, must be set this to `false`
+					// Default: true
 					enabled: true,
-					// Specify which colors the palette should display. Use an empty array to disable the palette.
+					// Specify which colors the palette should display.
+					// Use an empty array to disable the palette.
+					// Default: See "default configuration" section below
 					palette: ['blue', '#f00', 'rgb(123,45,67)'],
 					// If the user should be able to clear the color value.
 					// This is shown by having an extra entry shown in the palette.
+					// Default: true
 					allowClear: true,
 					// If the user should be allowed to select a color which is not defined in the palette.
 					// Note that this setting needs to be set to `true`, for the options `allowCustomInput`, `allowTransparency`
 					// to be available/take effect.
+					// Default: true
 					allowOutsidePalette: true,
 					// If it should display a color picker to the user to pick a custom color value.
 					// Requires `allowOutsidePalette` to be `true` to work.
+					// Default: true
 					allowCustomInput: true,
 					// If the user should be able to change the transparency of a selected color.
 					// Usually done by displaying a slider.
 					// Requires `allowOutsidePalette` to be `true` to work.
+					// Default: false
 					allowTransparency: true,
 				},
 				"background-color": {
@@ -90,5 +97,40 @@ Aloha.settings = {
 			}
 		}
 	}
+}
+</javascript>
+
+h4. Default Configuration
+
+<javascript>
+{
+	"color": {
+		enabled: true,
+		palette: [
+			'#ff0000',
+			'#0f0',
+			'blue',
+			'rgb(0,0,0)',
+			'rgba(255,255,255,1)'
+		],
+		allowOutsidePalette: true,
+		allowCustomInput: true,
+		allowTransparency: false,
+		allowClear: true,
+	},
+	"background-color": {
+		enabled: true,
+		palette: [
+			'#ff0000',
+			'#0f0',
+			'blue',
+			'rgb(0,0,0)',
+			'rgba(255,255,255,1)'
+		],
+		allowOutsidePalette: true,
+		allowCustomInput: true,
+		allowTransparency: true,
+		allowClear: true,
+	},
 }
 </javascript>
