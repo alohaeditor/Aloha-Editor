@@ -60,8 +60,9 @@ define([
                 })
                     .attr(ATTR_VALUE, symbolObj.symbol)
                     .append($('<span>', {
-                        class: 'symbol-grid-cell-content',
-                        html: symbolObj.symbol,
+                        class: 'symbol-grid-cell-content' +
+                            (symbolObj.icon ? ' material-symbols-outlined' : ''),
+                        html: symbolObj.icon ? symbolObj.icon : symbolObj.symbol,
                     }))
                     .on('click', function () {
                         _this.touch();
