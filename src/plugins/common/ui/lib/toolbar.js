@@ -242,10 +242,6 @@ define([
 		},
 
 		adoptInto: function (slot, component) {
-			// If the component already exists, we have to remove/clean it up first
-			// before overriding it, as otherwise it'll just linger there.
-			this.unadopt(slot);
-
 			this._adoptedComponents[slot] = component;
 			var tab = this._tabBySlot[slot];
 			return tab && tab.adoptInto(slot, component);

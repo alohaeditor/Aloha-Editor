@@ -463,13 +463,6 @@ define([
 		TablePlugin.defaultCellClass = TablePlugin.settings.defaultCellClass || '';
 		TablePlugin.defaultHeaderCellClass = TablePlugin.settings.defaultHeaderCellClass || '';
 
-		// disable table resize settings on browsers below IE8
-		if (jQuery.browser.msie && parseInt(jQuery.browser.version, 10) < 8) {
-			TablePlugin.tableResize = false;
-			TablePlugin.colResize = false;
-			TablePlugin.rowResize = false;
-		}
-
 		// initialize the table buttons
 		TablePlugin.initTableButtons();
 
@@ -1330,15 +1323,8 @@ define([
 			range.startOffset = range.endOffset = 0;
 			range.select();
 
-			// Because without the 10ms delay, we cannot place the cursor
-			// automatically into the first cell in IE.
-			if ($.browser.msie) {
-				window.setTimeout(function () {
-					tableObj.cells[0].wrapper.get(0).focus();
-				}, 20);
-			} else {
-				tableObj.cells[0].wrapper.get(0).focus();
-			}
+
+			tableObj.cells[0].wrapper.get(0).focus();
 		}
 
 		Aloha.activeEditable.smartContentChange({ type: 'block-change', plugin: 'table-plugin' });
