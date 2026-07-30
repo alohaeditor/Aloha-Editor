@@ -141,14 +141,14 @@ define([
 			{
 				'label': 'shy',
 				'symbol': '&shy;',
-				'keywords': ['and', 'amp'],
-				'icon' : '<span class="material-symbols-outlined">horizontal_rule</span>'
+				'keywords': ['format'],
+				'icon' : 'horizontal_rule'
 			},
 			{
 				'label': 'non-breaking space',
 				'symbol': '&nbsp;',
-				'keywords': ['and', 'amp'],
-				'icon': '<span class="material-symbols-outlined">space_bar</span>'
+				'keywords': ['format'],
+				'icon': 'space_bar'
 			},
 			{
 				'label': 'Ampersand',
