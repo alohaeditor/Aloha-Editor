@@ -110,7 +110,7 @@ define([
 		} else if (typeof value === 'string') {
 			return value.toLowerCase() === 'true';
 		} else if (typeof value !== 'boolean') {
-			return !!configObj.enabled;
+			return !!value;
 		}
 
 		return value;
