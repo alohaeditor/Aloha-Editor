@@ -65,10 +65,12 @@ define([
 ) {
 	'use strict';
 
+	/** @type {ColorConfiguration} */
 	var DEFAULT_COLOR_CONFIG = {
 		palette: Palette,
 		enabled: true,
 	};
+	/** @type {ColorConfiguration} */
 	var DEFAULT_BACKGROUND_COLOR_CONFIG = {
 		palette: Palette,
 		allowTransparency: true,
@@ -104,7 +106,7 @@ define([
 
 	function coerceToBoolean(value, defaultValue) {
 		if (value == null) {
-			return false;
+			return defaultValue;
 		} else if (typeof value === 'string') {
 			return value.toLowerCase() === 'true';
 		} else if (typeof value !== 'boolean') {
@@ -189,9 +191,11 @@ define([
 	var plugin = {
 
 		config: {
+			/** @type {ColorConfiguration} */
 			"color": {
 				...DEFAULT_COLOR_CONFIG
 			},
+			/** @type {ColorConfiguration} */
 			"background-color": {
 				...DEFAULT_BACKGROUND_COLOR_CONFIG
 			},
