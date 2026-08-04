@@ -254,7 +254,7 @@ define([
 				if (Array.isArray(right[key])) {
 					target[key] = right[key];
 				} else if (typeof right[key] === 'object') {
-					jQuery.extend(target, left[key], right[key]);
+					target[key] = jQuery.extend({}, left[key], right[key]);
 				} else {
 					target[key] = right[key];
 				}
