@@ -8,6 +8,16 @@
  * @prop {boolean=} allowTransparency If the user may change the transparency of a selected (palette or custom input) color.
  * @prop {boolean=} allowClear If the user should be able to remove the currently selected color (aka reset it to unset).
  */
+/**
+ * @typedef {object} TextColorPluginConfiguration
+ * @prop {ColorConfiguration} color Configuration for the foreground color
+ * @prop {ColorConfiguration} background-color Configuration for the background color
+ */
+/**
+ * @typedef {object} TextColorPluginSettings
+ * @prop {TextColorPluginConfiguration} config General configuration for the textcolor plugin
+ * @prop {object.<string, TextColorPluginConfiguration>=} editables Configuration for individual editables
+ */
 /* textcolor-plugin.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
@@ -67,14 +77,26 @@ define([
 
 	/** @type {ColorConfiguration} */
 	var DEFAULT_COLOR_CONFIG = {
-		palette: Palette,
 		enabled: true,
+		palette: Palette,
+		allowClear: true,
+		allowCustomInput: true,
+		allowOutsidePalette: true,
+		allowTransparency: false,
 	};
 	/** @type {ColorConfiguration} */
 	var DEFAULT_BACKGROUND_COLOR_CONFIG = {
-		palette: Palette,
-		allowTransparency: true,
 		enabled: true,
+		palette: Palette,
+		allowClear: true,
+		allowCustomInput: true,
+		allowOutsidePalette: true,
+		allowTransparency: true,
+	};
+	/** @type {TextColorPluginConfiguration} */
+	var DEFAULT_CONFIG = {
+		color: { ...DEFAULT_COLOR_CONFIG },
+		'background-color': { ...DEFAULT_BACKGROUND_COLOR_CONFIG },
 	};
 
 	/**
@@ -190,14 +212,18 @@ define([
 
 	var plugin = {
 
-		config: {
-			/** @type {ColorConfiguration} */
-			"color": {
-				...DEFAULT_COLOR_CONFIG
-			},
-			/** @type {ColorConfiguration} */
-			"background-color": {
-				...DEFAULT_BACKGROUND_COLOR_CONFIG
+		/**
+		 * @type {TextColorPluginSettings}
+		 */
+		settings: {},
+		/**
+		 * @type {TextColorPluginConfiguration}
+		 */
+		config: {},
+
+		defaults: {
+			config: {
+				...DEFAULT_CONFIG,
 			},
 		},
 
@@ -205,7 +231,9 @@ define([
 		_backgroundColorButton: null,
 
 		init: function () {
-			var plugin = this;
+			normalizeConfiguration(plugin.settings.config.color, DEFAULT_COLOR_CONFIG);
+			normalizeConfiguration(plugin.settings.config["background-color"], DEFAULT_BACKGROUND_COLOR_CONFIG);
+			plugin.config = plugin.settings.config;
 
 			function applyColorToSelection(cssProperty, color) {
 				var selection = Aloha.getSelection();
@@ -239,15 +267,7 @@ define([
 						}
 
 						var conf = plugin.getEditableConfig(Aloha.activeEditable.obj);
-
-						var propertyConfig = Object.assign({}, {
-							// Default settings
-							palette: Palette,
-							allowOutsidePalette: true,
-							allowCustomInput: true,
-							allowTransparency: false,
-							allowClear: true,
-						}, conf[cssProperty] || {});
+						var propertyConfig = Object.assign({}, DEFAULT_CONFIG[cssProperty], conf[cssProperty] || {});
 
 						return {
 							type: 'color-picker',
@@ -296,6 +316,24 @@ define([
 			checkVisibility(Aloha.activeEditable);
 		},
 
+		getEditableConfig: function(obj) {
+			var config = this._super(obj);
+
+			// Normalize the config we receive
+			if (config['color'] != null) {
+				normalizeConfiguration(config['color'], plugin.config.color);
+			} else {
+				config['color'] = plugin.config.color;
+			}
+			if (config['background-color'] != null) {
+				normalizeConfiguration(config['background-color'], plugin.config["background-color"]);
+			} else {
+				config['background-color'] = plugin.config['background-color'];
+			}
+
+			return config;
+		},
+
 		/*
 		 * Override the config merge handler, because the configuration of this plugin
 		 * is in a bit different format compared to other plugins.
@@ -317,13 +355,6 @@ define([
 					target[key] = right[key];
 				}
 			});
-
-			if (target['color'] != null) {
-				normalizeConfiguration(target['color'], plugin.config.color || DEFAULT_COLOR_CONFIG);
-			}
-			if (target['background-color'] != null) {
-				normalizeConfiguration(target['background-color'], plugin.config["background-color"] || DEFAULT_BACKGROUND_COLOR_CONFIG);
-			}
 		},
 	};
 
