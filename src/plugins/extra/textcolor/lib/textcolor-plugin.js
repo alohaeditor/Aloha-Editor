@@ -1,3 +1,13 @@
+/**
+ * @typedef {object} ColorConfiguration
+ * @prop {boolean=} enabled If the setting should be enabled.
+ * @prop {Array.<string>=} palette A list of css-compatible color strings the user can choose from.
+ * Empty if it should be disabled.
+ * @prop {boolean=} allowOutsidePalette If the user may select a color outside of the palette.
+ * @prop {boolean=} allowCustomInput If the user may select a color from a provided color-picker.
+ * @prop {boolean=} allowTransparency If the user may change the transparency of a selected (palette or custom input) color.
+ * @prop {boolean=} allowClear If the user should be able to remove the currently selected color (aka reset it to unset).
+ */
 /* textcolor-plugin.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
@@ -55,6 +65,16 @@ define([
 ) {
 	'use strict';
 
+	var DEFAULT_COLOR_CONFIG = {
+		palette: Palette,
+		enabled: true,
+	};
+	var DEFAULT_BACKGROUND_COLOR_CONFIG = {
+		palette: Palette,
+		allowTransparency: true,
+		enabled: true,
+	};
+
 	/**
 	 * Removes color at the given range.
 	 *
@@ -80,6 +100,41 @@ define([
 			3 === node.nodeType ? node.parentNode : node,
 			cssProperty
 		);
+	}
+
+	function coerceToBoolean(value, defaultValue) {
+		if (value == null) {
+			return false;
+		} else if (typeof value === 'string') {
+			return value.toLowerCase() === 'true';
+		} else if (typeof value !== 'boolean') {
+			return !!configObj.enabled;
+		}
+
+		return value;
+	}
+
+	/**
+	 * Normalizes the config from potentially misconfigured options.
+	 * Does so on the config object directly.
+	 * @param {ColorConfiguration} configObj The config to normalize
+	 * @param {ColorConfiguration} defaultConf The default/fallback config from which it should take values from if needed
+	 */
+	function normalizeConfiguration(configObj, defaultConf) {
+		if (configObj == null || typeof configObj !== 'object') {
+			return;
+		}
+
+		configObj.enabled = coerceToBoolean(configObj.enabled, defaultConf.enabled);
+		configObj.allowClear = coerceToBoolean(configObj.allowClear, defaultConf.allowClear);
+		configObj.allowCustomInput = coerceToBoolean(configObj.allowCustomInput, defaultConf.allowCustomInput);
+		configObj.allowOutsidePalette = coerceToBoolean(configObj.allowOutsidePalette, defaultConf.allowOutsidePalette);
+		configObj.allowTransparency = coerceToBoolean(configObj.allowTransparency, defaultConf.allowTransparency);
+
+		// Reset it to an empty palette if anything is wrong, just in case
+		if (configObj.palette != null && !Array.isArray(configObj.palette)) {
+			configObj.palette = [];
+		}
 	}
 
 	/**
@@ -122,7 +177,7 @@ define([
 
 		if (
 			config['background-color'] === false
-			|| config['background-color']  == null
+			|| config['background-color'] == null
 			|| config['background-color'].enabled === false
 		) {
 			plugin._backgroundColorButton.hide();
@@ -135,13 +190,10 @@ define([
 
 		config: {
 			"color": {
-				palette: Palette,
-				enabled: true,
+				...DEFAULT_COLOR_CONFIG
 			},
 			"background-color": {
-				palette: Palette,
-				allowTransparency: true,
-				enabled: true,
+				...DEFAULT_BACKGROUND_COLOR_CONFIG
 			},
 		},
 
@@ -255,10 +307,19 @@ define([
 					target[key] = right[key];
 				} else if (typeof right[key] === 'object') {
 					target[key] = jQuery.extend({}, left[key], right[key]);
+				} else if (right[key] == null) {
+					target[key] = left[key];
 				} else {
 					target[key] = right[key];
 				}
 			});
+
+			if (target['color'] != null) {
+				normalizeConfiguration(target['color'], plugin.config.color || DEFAULT_COLOR_CONFIG);
+			}
+			if (target['background-color'] != null) {
+				normalizeConfiguration(target['background-color'], plugin.config["background-color"] || DEFAULT_BACKGROUND_COLOR_CONFIG);
+			}
 		},
 	};
 
