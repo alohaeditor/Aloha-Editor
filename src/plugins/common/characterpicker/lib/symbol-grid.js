@@ -4,6 +4,7 @@
  * @property {string} label The label/name of the symbol
  * @property {string} symbol The symbol itself
  * @property {Array.<string>=} keywords Addtitional keywords/strings which are used when searching/filtering
+ * @property {string=} icon If the symbol is visually invisible (&shy;, &nbsp;) the icon will be rendered instead
  */
 
 define([
@@ -59,8 +60,9 @@ define([
                 })
                     .attr(ATTR_VALUE, symbolObj.symbol)
                     .append($('<span>', {
-                        class: 'symbol-grid-cell-content',
-                        html: symbolObj.symbol,
+                        class: 'symbol-grid-cell-content' +
+                            (symbolObj.icon ? ' material-symbols-outlined' : ''),
+                        html: symbolObj.icon ? symbolObj.icon : symbolObj.symbol,
                     }))
                     .on('click', function () {
                         _this.touch();

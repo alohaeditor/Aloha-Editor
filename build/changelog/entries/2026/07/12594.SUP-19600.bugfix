@@ -1,0 +1,2 @@
+Characterpicker: Symbol definitions can now define a @icon@ property to display (Used primarily for invisible symbols).
+Some symbol definitions have been fixed, and are now more grouped together based on the symbol content/usage.

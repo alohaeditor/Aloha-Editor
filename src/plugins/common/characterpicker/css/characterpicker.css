@@ -30,6 +30,10 @@
 	font-size: 14px;
 }
 
+.aloha .aloha-symbol-grid .symbol-grid-container .symbol-grid-cell .symbol-grid-cell-content.material-symbols-outlined {
+	font-family: 'Material Symbols Outlined';
+}
+
 .aloha .aloha-symbol-grid .symbol-grid-container .symbol-grid-cell:hover,
 .aloha .aloha-symbol-grid .symbol-grid-container .symbol-grid-cell:focus {
 	background: rgba(0,0,0,0.1);
