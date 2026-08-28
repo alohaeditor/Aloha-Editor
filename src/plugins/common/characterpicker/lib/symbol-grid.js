@@ -1,10 +1,9 @@
 /**
  * @typedef SymbolGridItem
- * 
- * @property {string} label The label/name of the symbol
- * @property {string} symbol The symbol itself
- * @property {Array.<string>=} keywords Addtitional keywords/strings which are used when searching/filtering
- * @property {string=} icon If the symbol is visually invisible (&shy;, &nbsp;) the icon will be rendered instead
+ * @prop {string} label The human readable name of the symbol to be inserted.
+ * @prop {string} symbol The XML entity code that will be inserted, i.E. "&#8482".
+ * @prop {Array.<string>=} keywords A list of strings that are used for searches to find this symbol.
+ * @prop {string=} icon A icon which will be displayed in the picker instead of the symbol itself. Primarily used for symbols which render invisible characters.
  */
 
 define([
