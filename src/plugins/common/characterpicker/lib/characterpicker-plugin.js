@@ -1,5 +1,7 @@
 /** @typedef {import('./symbol-grid').SymbolGridItem} SymbolGridItem */
 /** @typedef {import('../../ui/lib/contextButton').ContextButton} ContextButton */
+/** @typedef {import('./symbol-grid').SymbolGridItem} SymbolGridItem */
+
 /* characterpicker-plugin.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
@@ -133,6 +135,7 @@ define([
 		return component;
 	}
 
+	/** @type {Array.<SymbolGridItem>} */
 	var SYMBOLS_COMMON = [
 		{
 			'label': 'Ampersand',
@@ -236,6 +239,7 @@ define([
 		},
 	];
 
+	/** @type {Array.<SymbolGridItem>} */
 	var SYMBOLS_CURRENCY = [
 		{
 			'label': 'Cent sign',
@@ -264,6 +268,7 @@ define([
 		},
 	];
 
+	/** @type {Array.<SymbolGridItem>} */
 	var SYMBOLS_MATH = [
 		{
 			'label': 'Minus sign',
@@ -607,6 +612,7 @@ define([
 		},
 	];
 
+	/** @type {Array.<SymbolGridItem>} */
 	var SYMBOLS_PUNCTUATION = [
 		{
 			'label': 'Soft Hyphen (shy)',
@@ -702,6 +708,7 @@ define([
 		},
 	];
 
+	/** @type {Array.<SymbolGridItem>} */
 	var SYMBOLS_ACCENT = [
 		{
 			'label': 'Accent acute',
@@ -1055,6 +1062,7 @@ define([
 		},
 	];
 
+	/** @type {Array.<SymbolGridItem>} */
 	var SYMBOLS_GREEK = [
 		{
 			'label': 'Capital Alpha',
@@ -1303,6 +1311,7 @@ define([
 		},
 	];
 
+	/** @type {Array.<SymbolGridItem>} */
 	var SYMBOLS_ARROWS = [
 		{
 			'label': 'Leftwards arrow',
@@ -1361,6 +1370,7 @@ define([
 		},
 	];
 
+	/** @type {Array.<SymbolGridItem>} */
 	var SYMBOLS_MISCELLANEOUS = [
 		{
 			'label': 'Lozenge',
@@ -1389,6 +1399,7 @@ define([
 		},
 	];
 
+	/** @type {Array.<SymbolGridItem>} */
 	var DEFAULT_SYMBOLS = [
 		...SYMBOLS_COMMON,
 		...SYMBOLS_PUNCTUATION,
@@ -1404,6 +1415,7 @@ define([
 
 		settings: {},
 
+		/** @type {Array.<SymbolGridItem>} */
 		config: DEFAULT_SYMBOLS.slice(),
 
 		/** @type {ContextButton<SymbolGridItem>} */
@@ -1475,7 +1487,7 @@ define([
 
 		/**
 		 *
-		 * @returns {Array.<string>}
+		 * @returns {Array.<SymbolGridItem>}
 		 */
 		getNormalizedSymbols: function () {
 			if (!Aloha.activeEditable || !Aloha.activeEditable.obj) {
