@@ -87,11 +87,8 @@
  */
 
 define('ui/ui', [
-	'jquery',
 	'aloha/core'
-],
-function (
-	$,
+], function (
 	Aloha
 ) {
 	'use strict';
@@ -148,12 +145,12 @@ function (
 			UiPlugin = Aloha.require('ui/ui-plugin');
 		}
 
-		if ('string' !== $.type(name)) {
+		if (typeof name !== 'string') {
 			settings = SuperTypeOrInstance;
 			SuperTypeOrInstance = name;
 			name = settings.name;
 		} else {
-			settings = $.extend({name: name}, settings);
+			settings = Object.assign({name: name}, settings);
 		}
 
 		if (!SuperTypeOrInstance.isInstance) {

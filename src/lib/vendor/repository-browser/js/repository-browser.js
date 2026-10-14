@@ -1,35 +1,1519 @@
-(function(){function k(d,o,k,t){function q(a){a.attr("unselectable","on");a.css({"-webkit-user-select":"none","user-select":"none"});a.onselectstart=function(){return!1}}function u(a){d.each(l,function(a){this.element.css("z-index",m+a)});a.element.css("z-index",m+1+l.length)}function v(){var a=d('<div class="repository-browser-modal-window" style="z-index: '+m+';"></div>');d("body").append(a);return a}function r(){var a=d("body");a.removeAttr("unselectable");a.css({"-webkit-user-select":"text","user-select":"text"});
-a.onselectstart=null;d(".repository-browser-modal-overlay").hide()}function w(a){d.each("arrow-000-medium.png,arrow-180.png,arrow-315-medium.png,arrow-stop-180.png,arrow-stop.png,arrow.png,control-stop-square-small.png,folder-horizontal-open.png,folder-open.png,magnifier-left.png,page.png,picture.png,sort-alphabet-descending.png,sort-alphabet.png".split(","),function(){document.createElement("img").src=a+"img/"+this})}function x(a,b,c){var e=d('<div class="repository-browser-tree-header repository-browser-grab-handle">'+
-a._i18n("Repository Browser")+"</div>"),f=d('<div class="repository-browser-tree"></div>');b.append(e,f);f.css("height",(c-e.css("height",!0))+"px");f.on("loaded.jstree",function(){d(this).find(">ul>li:first").css("padding-top",5);d(this).find('li[rel="repository"]:first').each(function(a,b){f.jstree("open_node",b)})});f.on("select_node.jstree",function(b,c){c.args[0].context||a.treeNodeSelected(c.rslt.obj)});f.on("open_node.jstree",function(b,c){a.folderOpened(c.rslt.obj)});f.on("close_node.jstree",function(b,
-c){a.folderClosed(c.rslt.obj)});f.jstree({types:a.types,rootFolderId:a.rootFolderId,plugins:["themes","json_data","ui","types"],core:{animation:250},ui:{select_limit:1},themes:{theme:"browser",url:a.rootPath+"css/jstree.css",dots:!0,icons:!0},json_data:{correct_state:!0,data:function(b,c){a.manager?(a.jstree_callback=c,a._fetchSubnodes.call(a,b,c)):c()}}});return f}function y(a,b){var c=d('<div class="repository-browser-grid repository-browser-shadow repository-browser-top"><div class="ui-layout-west"></div><div class="ui-layout-center"></div></div>');
-b.append(c);return c}function z(a,b){var c=b.find(".ui-jqgrid-titlebar"),e='<div class="repository-browser-btns"><input type="text" class="repository-browser-search-field" /><span class="repository-browser-btn repository-browser-search-btn"><span class="repository-browser-search-icon"></span></span><span class="repository-browser-btn repository-browser-close-btn">'+a._i18n("Close")+'</span><div class="repository-browser-clear"></div></div>';c.addClass("repository-browser-grab-handle").append(e);c.find(".repository-browser-search-btn").click(function(){a._triggerSearch()});
-var f=c.find(".repository-browser-search-field").keypress(function(b){13===b.keyCode&&(b.preventDefault(),a._triggerSearch())});f.val(a._i18n("Input search text...")).addClass("repository-browser-search-field-empty");f.focus(function(){f.val()===a._i18n("Input search text...")&&f.val("").removeClass("repository-browser-search-field-empty")});f.blur(function(){""===f.val()&&f.val(a._i18n("Input search text...")).addClass("repository-browser-search-field-empty")});c.find(".repository-browser-close-btn").click(function(){a.close()});
-c.find(".repository-browser-btn").mousedown(function(){d(this).addClass("repository-browser-pressed")}).mouseup(function(){d(this).removeClass("repository-browser-pressed")});return c}function A(a,b,c){var e=d('<table id="list-'+ ++n+'" class="repository-browser-list"></table>'),f=[""],h=[{name:"id",sorttype:"int",firstsortorder:"asc",hidden:!0}],g=a.listShrinkToFit;typeof g!=="number"&&typeof g!=="boolean"&&(g=parseInt(g,10),isNaN(g)&&(g=a.listShrinkToFit!=="false"));d.each(a.columns,function(a,
-b){f.push(b.title||"&nbsp;");h.push({name:a,width:b.width,sortable:b.sortable,sorttype:b.sorttype,resizable:b.resizable,fixed:b.fixed})});var s="repository-browser-list-page-"+ ++n;b.append(e,'<div id="'+s+'" class="repository-browser-grab-handle"></div>');e.jqGrid({datatype:"local",width:parseInt(b.css("width")),shrinkToFit:g,colNames:f,colModel:h,caption:"&nbsp;",altRows:!0,altclass:"repository-browser-list-altrow",resizeclass:"repository-browser-list-resizable",pager:s,viewrecords:!0,onPaging:function(){},loadError:function(){},
-ondblClickRow:function(){},gridComplete:function(){},loadComplete:function(){}});b.find(".ui-jqgrid-bdiv").css("height",(c-(parseInt(b.find(".ui-jqgrid-titlebar").css("height"))+parseInt(b.find(".ui-jqgrid-hdiv").css("height"))+parseInt(b.find(".ui-jqgrid-pager").css("height"))))+"px");e.click(function(){a.rowClicked.apply(a,arguments)});b.find(".ui-pg-button").unbind().find(">span.ui-icon").each(function(){var b=d(this).parent(),c=this.className.match(/ui\-icon\-seek\-([a-z]+)/)[1];a._pagingBtns[c]=b;b.addClass("ui-state-disabled").click(function(){d(this).hasClass("ui-state-disabled")||
-a._doPaging(c)})});b.find(".ui-pg-input").parent().hide();b.find(".ui-separator").parent().css("opacity",0).first().hide();var j=e[0].p;b.find(".ui-jqgrid-view tr:first th div").each(function(b){!1!==j.colModel[b].sortable&&(d(this).css("cursor","pointer"),d(this).unbind().click(function(c){c.stopPropagation();a._sortList(j.colModel[b],this)}))});z(a,b);return e}function B(a,b){var c=a.element.attr("data-repository-browser",++n),e=y(a,c);e.resize();c.css("width",b.maxWidth);e.css("width",b.maxWidth);
-var d=x(a,e.find(".ui-layout-west"),parseInt(e.css("height"))),h=A(a,e.find(".ui-layout-center"),parseInt(e.css("height"))),g=e.layout({west__size:b.treeWidth-1,west__minSize:0,west__maxSize:b.maxWidth,west__enableCursorHotkey:!1,center__size:"auto",paneClass:"ui-layout-pane",resizerClass:"ui-layout-resizer",togglerClass:"ui-layout-toggler",onresize:function(a,b){"center"===a&&h.setGridWidth(parseInt(b.css("width")))}});c.hide();r();g.sizePane("west",b.treeWidth);c.resizable({autoHide:!0,minWidth:b.minWidth,minHeight:b.minHeight,maxWidth:b.maxWidth,
-maxHeight:b.maxHeight,handles:"all",resize:function(c,e){a._resizeHorizontal(b.maxWidth-e.size.width);a._resizeVertical(b.maxHeight-e.size.height);a._resizeInnerComponents()}});q(e);c.mousedown(function(){u(a)});return{$elem:c,$grid:e,$tree:d,$list:h}}var i=d(window),p=0,l=[],m=99999,C={repositoryManager:null,repositoryFilter:[],objectTypeFilter:[],renditionFilter:["cmis:none"],filter:["url"],element:null,isFloating:!1,padding:50,maxHeight:1E3,minHeight:400,minWidth:660,maxWidth:2E3,treeWidth:300,
-listWidth:"auto",listShrinkToFit:!0,pageSize:10,adaptPageSize:!1,rowHeight:24,rootPath:"",rootFolderId:"aloha",columns:{icon:{title:"",width:30,sortable:!1,resizable:!1},name:{title:"Name",width:200,sorttype:"text"},url:{title:"URL",width:220,sorttype:"text"},preview:{title:"Preview",width:150,sorttype:"text"}},i18n:{Browsing:"Browsing",Close:"Close","in":"in","Input search text...":"Input search text...",numerous:"numerous",of:"of","Repository Browser":"Repository Browser",Search:"Search","Searching for":"Searching for",
-Viewing:"Viewing"}},n=(new Date).getTime(),o=o.extend({opened:!1,grid:null,tree:null,list:null,_searchQuery:null,_orderBy:null,_currentFolder:null,_objs:{},_resizeInnerComponents:function(){var a=this.grid.find(".repository-browser-tree-header"),b=this.grid.find(".ui-layout-center");this.tree.css("height", (parseInt(this.grid.css("height"))-a.css("height",!0))+"px");b.find(".ui-jqgrid-bdiv").css("height", (parseInt(this.grid.css("height"))-(parseInt(b.find(".ui-jqgrid-titlebar").css("height"))+parseInt(b.find(".ui-jqgrid-hdiv").css("height"))+parseInt(b.find(".ui-jqgrid-pager").css("height"))))+"px");
-this._adaptPageSize()&&this._currentFolder&&this._fetchItems(this._currentFolder)},_resizeVertical:function(a){a=a>0?Math.max(this.minHeight,this.maxHeight-a):this.maxHeight;this.element.css("height",a+"px");this.grid.css("height",a+"px")},_resizeHorizontal:function(a){a=a>0?Math.max(this.minWidth,this.maxWidth-a):this.maxWidth;this.element.css("width",a+"px");this.grid.css("width",a+"px")},_isResizeAllowed:function(){this.callsThisSecond=this.callsThisSecond||0;var a=Math.floor((new Date).getTime()/1E3);return a===this.lastCall?this.callsThisSecond>=
-10?!1:(this.callsThisSecond++,!0):(this.lastCall=a,this.callsThisSecond=1,!0)},_onWindowResized:function(){this._isResizeAllowed()&&(this._resizeHorizontal(this.maxWidth-parseInt(i.css("width"))+this.padding),this._resizeVertical(this.maxHeight-parseInt(i.css("height",a+"px"))+this.padding),this._resizeInnerComponents())},_clearSearch:function(){this.grid.find(".repository-browser-search-field").val(this._i18n("Input search text...")).addClass("repository-browser-search-field-empty");this._searchQuery=null},_i18n:function(a){return this.i18n[a]||
-a},_adaptPageSize:function(){if(!this.adaptPageSize||!this.list||!this.rowHeight)return!1;var a=parseInt(this.grid.find(".ui-jqgrid--bdiv").css("height"))-parseInt(this.grid.find(".ui-jqgrid--bdiv").css("padding-top"))-parseInt(this.grid.find(".ui-jqgrid--bdiv").css("padding-bottom"))-20;return a&&(a=Math.floor(a/this.rowHeight),a<=0&&(a=1),a!==this.pageSize)?(this.pageSize=a,!0):!1},_constructor:function(){this.init.apply(this,arguments)},init:function(a){a.repositoryManager||d("body").trigger("repository-browser-error","Repository Manager not configured");var b=this,a=d.extend({},C,a,{i18n:t});if(!a.element||0===a.element.length)a.isFloating=
-!0,a.element=v();b.manager=a.repositoryManager;b._objs={};b._searchQuery=null;b._orderBy=null;b._pagingOffset=0;b._pagingCount=void 0;b._pagingBtns={first:null,end:null,next:null,prev:null};d.extend(b,a);w(a.rootPath);a=B(b,a);b.grid=a.$grid;b.list=a.$list;b.tree=a.$tree;b.element=a.$elem;b.$_grid=b.grid;b.$_list=b.list;b._cachedRepositoryObjects=b._objs;b._adaptPageSize();b.close();i.resize(function(){b._onWindowResized()});if(b.manager)b._currentFolder=b.getSelectedFolder(),b._fetchRepoRoot(b.jstree_callback);
-l.push(this);k.pub("repository-browser.initialized",{data:this})},harvestRepoObject:function(a){var b=++n;return this.processRepoObject(this._objs[b]=d.extend(a,{uid:b,loaded:!1}))},processRepoObject:function(a){var b="",c,e,f,h=this;switch(a.baseType){case "folder":b="folder";break;case "document":b="document"}a.type&&(c={rel:a.type,"data-rep-oobj":a.uid});e=a.hasMoreItems||"folder"===a.baseType?"closed":null;!1===a.hasMoreItems&&(e=null);a.children&&(f=[],d.each(a.children,function(){f.push(h.harvestRepoObject(this));
-e="open"}));this._currentFolder&&this._currentFolder.id===a.id&&window.setTimeout(function(){h.tree.jstree("select_node",'li[data-rep-oobj="'+a.uid+'"]')},0);return{data:{title:a.name,attr:{"data-rep-oobj":a.uid},icon:b},attr:c,state:e,resource:a,children:f}},_processRepoResponse:function(a,b,c){var e=this,f=e._currentFolder&&e._currentFolder.id,h=[],g=null;"function"===typeof b&&(c=b,b=void 0);d.each(a,function(){h.push(e.harvestRepoObject(this));f===this.id&&(g=this)});"function"===typeof c&&c.call(e,
-h,b);g&&window.setTimeout(function(){e.tree.jstree("select_node",'li[data-repo-obj="'+g.uid+'"]')},0)},_getObjectFromCache:function(a){if("object"===typeof a)return this._objs[a.find("a:first").attr("data-rep-oobj")]},queryRepository:function(a,b){var c=this;c.manager.query(a,function(a){c._processRepoResponse(a.results>0?a.items:[],{timeout:a.timeout,numItems:a.numItems,hasMoreItems:a.hasMoreItems},b)})},_listItems:function(a){var b=this,c=this.list.clearGridData();d.each(a,function(){var a=this.resource;
-c.addRowData(a.uid,d.extend({id:a.id},b.renderRowCols(a)))})},_processItems:function(a,b){var c=this._pagingBtns;this._pagingCount=b&&"number"===typeof b.numItems?b.numItems:void 0;this.grid.find(".loading").hide();this.list.show();this._listItems(a);this._pagingOffset<=0?c.first.add(c.prev).addClass("ui-state-disabled"):c.first.add(c.prev).removeClass("ui-state-disabled");isNaN(this._pagingCount)?(c.end.addClass("ui-state-disabled"),a.length<=this.pageSize?c.next.addClass("ui-state-disabled"):c.next.removeClass("ui-state-disabled")):
-this._pagingOffset+this.pageSize>=this._pagingCount?c.end.add(c.next).addClass("ui-state-disabled"):c.end.add(c.next).removeClass("ui-state-disabled");var e;0===a.length&&0===this._pagingOffset?e=c=0:(c=this._pagingOffset+1,e=c+a.length-1);var d="number"===typeof this._pagingCount?this._pagingCount:this._i18n("numerous");this.grid.find(".ui-paging-info").html(this._i18n("Viewing")+" "+c+" - "+e+" "+this._i18n("of")+" "+d);b&&b.timeout&&this.handleTimeout()},_fetchSubnodes:function(a,b){var c=this;
--1===a?c._fetchRepoRoot(b):a.each(function(){var a=c._getObjectFromCache(d(this));"object"===typeof a&&c.fetchChildren(a,b)})},_fetchRepoRoot:function(a){this.getRepoChildren({inFolderId:this.rootFolderId,repositoryFilter:this.repositoryFilter},function(b){"function"===typeof a&&a(b)})},_fetchItems:function(a){if(a){var b=this,c="string"===typeof this._searchQuery;b.list.setCaption(c?b._i18n("Searching for")+" "+b._searchQuery+" "+b._i18n("in")+" "+a.name:b._i18n("Browsing")+": "+a.name);b.list.hide();
-b.grid.find(".loading").show();b.queryRepository({repositoryId:a.repositoryId,inFolderId:a.id,queryString:b._searchQuery,orderBy:b._orderBy,skipCount:b._pagingOffset,maxItems:b.pageSize,objectTypeFilter:b.objectTypeFilter,renditionFilter:b.renditionFilter,filter:b.filter,recursive:c},function(a,c){b._processItems(a,c)})}},fetchChildren:function(a,b){var c=this;(!0===a.hasMoreItems||"folder"===a.baseType)&&!1===a.loaded&&c.getRepoChildren({inFolderId:a.id,repositoryId:a.repositoryId},function(e){c._objs[a.uid].loaded=
-!0;"function"===typeof b&&b(e)})},getRepoChildren:function(a,b){var c=this;c.manager.getChildren(a,function(a){c._processRepoResponse(a,b)})},_doPaging:function(a){switch(a){case "first":this._pagingOffset=0;break;case "end":this._pagingOffset=this._pagingCount%this.pageSize===0?this._pagingCount-this.pageSize:this._pagingCount-this._pagingCount%this.pageSize;break;case "next":this._pagingOffset+=this.pageSize;break;case "prev":if(this._pagingOffset-=this.pageSize,this._pagingOffset<0)this._pagingOffset=
-0}this._fetchItems(this._currentFolder)},renderRowCols:function(a){var b={};d.each(this.columns,function(c){switch(c){case "icon":b.icon='<div class="repository-browser-icon repository-browser-icon-'+a.type+'"></div>';break;default:b[c]=a[c]||"--"}});return b},_sortList:function(a,b){this.grid.find("span.ui-grid-ico-sort").addClass("ui-state-disabled");a.sortorder="asc"===a.sortorder?"desc":"asc";d(b).find("span.s-ico").show().find(".ui-icon-"+a.sortorder).removeClass("ui-state-disabled");this._setSortOrder(a.name,
-a.sortorder)._fetchItems(this._currentFolder)},_setSortOrder:function(a,b){var c=this._orderBy||[],d,f,h=!1,g,i,j={};j[a]=b||"asc";for(g=0,i=c.length;g<i;g++){f=c[g];for(d in f)if(f.hasOwnProperty(d)&&d===a){c.splice(g,1);c.unshift(j);h=!0;break}if(h)break}h||c.unshift(j);this._orderBy=c;return this},rowClicked:function(a){var a=d(a.target).parent("tr"),b=null;a.length>0&&(b=this._objs[a.attr("id")],this.onSelect(b));return b},treeNodeSelected:function(a){if(a=this._getObjectFromCache(a))this._pagingOffset=
-0,this._clearSearch(),this._currentFolder=a,this._fetchItems(a),this.folderSelected(a)},_triggerSearch:function(){var a=this.grid.find("input.repository-browser-search-field"),b=a.val();""===b||a.hasClass("repository-browser-search-field-empty")?b=null:""===b&&(b=null);this._pagingOffset=0;this._searchQuery=b;this._fetchItems(this._currentFolder)},getFieldOfHeader:function(a){return a.find("div.ui-jqgrid-sortable").attr("id").replace("jqgh_","")},setObjectTypeFilter:function(a){this.objectTypeFilter=
-"string"===typeof a?[a]:a},getObjectTypeFilter:function(){return this.objectTypeFilter},show:function(){if(!this.opened){this.opened=!0;var a=this.element;this.isFloating?(q(d("body")),d(".repository-browser-modal-overlay").stop().css({top:0,left:0}).show(),a.stop().show().css({left:i.scrollLeft()+this.padding/2,top:i.scrollTop()+this.padding/2}).draggable({handle:a.find(".repository-browser-grab-handle")}),this.grid.css({marginTop:0,opacity:0}).animate({marginTop:0,opacity:1},1500,"easeOutExpo",
-function(){d.browser.msie&&d(this).add(a).css("filter","progid:DXImageTransform.Microsoft.gradient(enabled = false)")})):a.stop().show().css({opacity:1,filter:"progid:DXImageTransform.Microsoft.gradient(enabled = false)"});this._onWindowResized();this.element.resize();p++}},open:function(){this.show()},close:function(){if(this.opened)this.opened=!1,this.element.fadeOut(250,function(){d(this).css("top",0).hide();(0===p||0===--p)&&r()})},refresh:function(){this._currentFolder&&this._fetchItems(this._currentFolder)},
-folderOpened:function(a){(a=this._getObjectFromCache(a))&&this.manager.folderOpened(a)},folderClosed:function(a){(a=this._getObjectFromCache(a))&&this.manager.folderClosed(a)},folderSelected:function(a){this.manager.folderSelected(a)},getSelectedFolder:function(){if("function"===typeof this.manager.getSelectedFolder)return this.manager.getSelectedFolder()},destroy:function(){},onSelect:function(){},handleTimeout:function(){}});d(function(){var a=d('<div class="repository-browser-modal-overlay" style="z-index: '+
-m+';"></div>');d("body").append(a);a.click(function(){d.each(l,function(a,c){c.close()})})});return o}"function"===typeof define?(define("repository-browser-i18n-de",[],function(){return{Browsing:"Durchsuchen",Close:"Schließen","in":"in","Input search text...":"Suchtext einfügen...",numerous:"zahlreiche",of:"von","Repository Browser":"Repository Browser",Search:"Suchen","Searching for":"Suche nach",Viewing:"Anzeige","button.switch-metaview.tooltip":"Zwischen Metaansicht und normaler Ansicht umschalten"}}),
-define("repository-browser-i18n-en",[],function(){return{Browsing:"Browsing",Close:"Close","in":"in","Input search text...":"Input search text...",numerous:"numerous",of:"of","Repository Browser":"Repository Browser",Search:"Search","Searching for":"Searching for",Viewing:"Viewing","button.switch-metaview.tooltip":"Switch between meta and normal view"}}),define("RepositoryBrowser",["jquery","Class","PubSub","repository-browser-i18n-"+(window&&window.__DEPS__&&window.__DEPS__.lang||"en"),"jstree",
-"jqgrid","jquery-layout"],k)):window.Browser=k(window.jQuery,window.Class,{pub:function(){}})})();
+// TODO: Should be moved to aloha, this is not an external dependency and therefore shouldn't be in `vendor`
+/*!
+ * Repository Browser (https://github.com/gentics/Repository-Browser)
+ * Author & Copyright (c) 2012-2014 Gentics Software GmbH
+ * aloha-sales@gentics.com
+ * Licensed under the terms of http://www.aloha-editor.com/license.html
+ */
+(function () {
+	'use strict';
+
+	function initialize($, Class, PubSub, i18n) {
+		var $window = $(window);
+
+		/**
+		 * A count of the number of opened repository browsers instances.
+		 *
+		 * @type {number}
+		 */
+		var numOpenedBrowsers = 0;
+
+		/**
+		 * A list of repository browser instances.
+		 *
+		 * @type {Array.<Browser>}
+		 */
+		var instances = [];
+
+		/**
+		 * The lowest CSS z-index on for the repository browser overlay and
+		 * modals.
+		 *
+		 * @type {number}
+		 */
+		var BASE_ZINDEX = 99999;
+
+		/**
+		 * Default values from which each repository browser instance will be
+		 * created.
+		 *
+		 * @type {Object}
+		 */
+		var DEFAULTS = {
+			repositoryManager : null,
+			repositoryFilter  : [],
+			objectTypeFilter  : [],
+			renditionFilter   : ['cmis:none'], // ['*']
+			filter            : ['url'],
+			element           : null,
+			isFloating        : false,
+			padding           : 50,
+			maxHeight         : 1000,
+			minHeight         : 400,
+			minWidth          : 660,
+			maxWidth          : 2000,
+			treeWidth         : 300,
+			listWidth         : 'auto',
+			listShrinkToFit   : true,
+			pageSize          : 10,
+			adaptPageSize     : false,
+			rowHeight         : 24,
+			rootPath          : '',
+			rootFolderId      : 'aloha',
+			columns : {
+				icon    : {title: '',        width: 30,  sortable: false, resizable: false},
+				name    : {title: 'Name',    width: 200, sorttype: 'text'},
+				url     : {title: 'URL',     width: 220, sorttype: 'text'},
+				preview : {title: 'Preview', width: 150, sorttype: 'text'}
+			},
+			i18n: {
+				'Browsing'             : 'Browsing',
+				'Close'                : 'Close',
+				'in'                   : 'in',
+				'Input search text...' : 'Input search text...',
+				'numerous'             : 'numerous',
+				'of'                   : 'of',
+				'Repository Browser'   : 'Repository Browser',
+				'Search'               : 'Search',
+				'Searching for'        : 'Searching for',
+				'Viewing'              : 'Viewing'
+			}
+		};
+
+		/**
+		 * Unique identifier counter.
+		 *
+		 * @type {number}
+		 */
+		var uid = (new Date()).getTime();
+
+		/**
+		 * Returns a unique ID
+		 *
+		 * @return {number}
+		 */
+		function unique() {
+			return ++uid;
+		}
+
+		/**
+		 * Enables selection on the given element.
+		 *
+		 * @param {jQuery.<Element>} $elem
+		 */
+		function enableSelection($elem) {
+			$elem.removeAttr('unselectable');
+			$elem.css({
+				'-webkit-user-select' : 'text',
+//				'-moz-user-select'    : 'text',  // Because this feature is broken in Firefox
+				'user-select'         : 'text'
+			});
+			$elem.onselectstart = null;
+		}
+
+		/**
+		 * Disables selection on the given element.
+		 *
+		 * @param {jQuery.<Element>} $elem
+		 */
+		function disableSelection($elem) {
+			$elem.attr('unselectable', 'on');
+			$elem.css({
+				'-webkit-user-select' : 'none',
+//				'-moz-user-select'    : 'none', // Because this feature is broken in Firefox
+				'user-select'         : 'none'
+			});
+			$elem.onselectstart = function () {
+				return false;
+			};
+		}
+
+		/**
+		 * Brings the given browser to the top of the z-index.
+		 *
+		 * @param {Browser} browser
+		 */
+		function bringToFront(browser) {
+			$.each(instances, function (index) {
+				this.element.css('z-index', BASE_ZINDEX + index);
+			});
+			browser.element.css('z-index', BASE_ZINDEX + 1 + instances.length);
+		}
+
+		/**
+		 * Creates a modal for a repository browser instance.
+		 *
+		 * @param  {Function}         close
+		 * @return {jQuery.<Element>}
+		 */
+		function modal(close) {
+			var $modal = $('<div class="repository-browser-modal-window" style="z-index: ' + BASE_ZINDEX + ';"></div>');
+			$('body').append($modal);
+			return $modal;
+		}
+
+		/**
+		 * Creates an overlay element which when clicked will closes all opened
+		 * browser instances.
+		 */
+		function createOverlay() {
+			var $overlay = $('<div class="repository-browser-modal-overlay" style="z-index: ' + BASE_ZINDEX + ';"></div>');
+			$('body').append($overlay);
+			$overlay.click(function () {
+				$.each(instances, function (i, browser) {
+					browser.close();
+				});
+			});
+		}
+
+		/**
+		 * Shows the overlay element.
+		 */
+		function showOverlay() {
+			disableSelection($('body'));
+			$('.repository-browser-modal-overlay')
+				.stop().css({top: 0, left: 0}).show();
+		}
+
+		/**
+		 * Hides the overlay element.
+		 */
+		function hideOverlay() {
+			enableSelection($('body'));
+			$('.repository-browser-modal-overlay').hide();
+		}
+
+		/**
+		 * Preloads repository browser images.
+		 *
+		 * @param {string} path
+		 */
+		function preload(path) {
+			$.each([
+				'arrow-000-medium.png',
+				'arrow-180.png',
+				'arrow-315-medium.png',
+				'arrow-stop-180.png',
+				'arrow-stop.png',
+				'arrow.png',
+				'control-stop-square-small.png',
+				'folder-horizontal-open.png',
+				'folder-open.png',
+				'magnifier-left.png',
+				'page.png',
+				'picture.png',
+				'sort-alphabet-descending.png',
+				'sort-alphabet.png'
+			], function () {
+				document.createElement('img').src = path + 'img/' + this;
+			});
+		}
+
+		/**
+		 * Creates the tree list view of a browser instance.
+		 *
+		 * @param  {Browser}          browser
+		 * @param  {jQuery.<Element>} $container
+		 * @param  {number}           height
+		 * @return {jQuery.<Element>}
+		 */
+		function tree(browser, $container, height) {
+			var $header = $('<div class="repository-browser-tree-header repository-browser-grab-handle">'
+			            + browser._i18n('Repository Browser')
+			            + '</div>');
+
+			var $tree = $('<div class="repository-browser-tree"></div>');
+
+			$container.append($header, $tree);
+
+			$tree.css("height",(height - (parseInt($header.css("height"))+parseInt($header.css("padding-top"))+parseInt($header.css("padding-bottom"))+parseInt($header.css("margin-top"))+parseInt($header.css("margin-bottom"))))+"px");
+
+			$tree.on('loaded.jstree', function (event, data) {
+				$(this).find('>ul>li:first').css('padding-top', 5);
+				// Because jstree `open_node' will add substree items to every
+				// item matched by the selector, we need to ensure that
+				// `open_node' is invoked for one item at a time.
+				$(this).find('li[rel="repository"]:first').each(function (i, li) {
+					$tree.jstree('open_node', li);
+				});
+			});
+
+			$tree.on('select_node.jstree', function (event, data) {
+				// Suppresses a bug in jsTree
+				if (data.args[0].context) {
+					return;
+				}
+				browser.treeNodeSelected(data.rslt.obj);
+			});
+
+			$tree.on('open_node.jstree', function ($event, data) {
+				browser.folderOpened(data.rslt.obj);
+			});
+
+			$tree.on('close_node.jstree', function ($event, data) {
+				browser.folderClosed(data.rslt.obj);
+			});
+
+			$tree.jstree({
+				types        : browser.types,
+				rootFolderId : browser.rootFolderId,
+				plugins      : ['themes', 'json_data', 'ui', 'types'],
+				core         : {animation: 250},
+				ui           : {select_limit: 1},
+
+				themes: {
+					theme : 'browser',
+					url   : browser.rootPath + 'css/jstree.css',
+					dots  : true,
+					icons : true
+				},
+
+				json_data: {
+					correct_state: true,
+					data: function (node, callback) {
+						if (browser.manager) {
+							browser.jstree_callback = callback;
+							browser._fetchSubnodes.call(browser, node, callback);
+						} else {
+							callback();
+						}
+					}
+				}
+			});
+
+			return $tree;
+		}
+
+		/**
+		 * Creates the grid view of a browser instance.
+		 *
+		 * @param  {Browser}          browser
+		 * @param  {jQuery.<Element>} $container
+		 * @return {jQuery.<Element>}
+		 */
+		function grid(browser, $container) {
+			var $grid = $('<div class="repository-browser-grid repository-browser-shadow repository-browser-top">'
+			          + '<div class="ui-layout-west ui-layout-pane ui-layout-pane-west"></div>'
+			          + '<div class="ui-layout-center ui-layout-pane ui-layout-pane-center"></div>'
+					  + '<div class="ui-layout-resize ui-layout-resizer ui-layout-resizer-west ui-layout-resizer-open ui-layout-resizer-west-open" title="Resize">'
+					  + '<div class="ui-layout-resize-close ui-layout-toggler ui-layout-toggler-west ui-layout-toggler-open ui-layout-toggler-west-open" title="Close">'
+					  +'</div>'
+			          + '</div>');
+			$container.append($grid);
+			return $grid;
+		}
+
+		/**
+		 * Creates the title bar of a browser instance.
+		 *
+		 * @param  {Browser}          browser
+		 * @param  {jQuery.<Element>} $container
+		 * @return {jQuery.<Element>}
+		 */
+		function titlebar(browser, $container) {
+			var $title  = $container.find('.ui-jqgrid-titlebar');
+
+			var html = '<div class="repository-browser-btns">'
+			         +		'<input type="text" class="repository-browser-search-field" />'
+			         +		'<span class="repository-browser-btn repository-browser-search-btn">'
+			         +			'<span class="repository-browser-search-icon"></span>'
+			         +		'</span>'
+			         +		'<span class="repository-browser-btn repository-browser-close-btn">'
+			         +			browser._i18n('Close')
+			         +		'</span>'
+			         +		'<div class="repository-browser-clear"></div>'
+			         + '</div>';
+
+			$title.addClass('repository-browser-grab-handle').append(html);
+
+			$title.find('.repository-browser-search-btn').click(function () {
+				browser._triggerSearch();
+			});
+
+			var $search = $title.find('.repository-browser-search-field').keypress(function (event) {
+				// ENTER ←┘
+				if (13 === event.keyCode) {
+					event.preventDefault();
+					browser._triggerSearch();
+				}
+			});
+
+			$search.val(browser._i18n('Input search text...'))
+			       .addClass('repository-browser-search-field-empty');
+
+			$search.focus(function () {
+				if ($search.val() === browser._i18n('Input search text...')) {
+					$search.val('').removeClass('repository-browser-search-field-empty');
+				}
+			});
+
+			$search.blur(function () {
+				if ('' === $search.val()) {
+					$search.val(browser._i18n('Input search text...'))
+					       .addClass('repository-browser-search-field-empty');
+				}
+			});
+
+			$title.find('.repository-browser-close-btn').click(function () {
+				browser.close();
+			});
+
+			$title.find('.repository-browser-btn')
+				.mousedown(function () {
+					$(this).addClass('repository-browser-pressed');
+				})
+				.mouseup(function () {
+					$(this).removeClass('repository-browser-pressed');
+				});
+
+			return $title;
+		}
+
+		/**
+		 * Creates the list view of a browser instance.
+		 *
+		 * @param  {Browser}          browser
+		 * @param  {jQuery.<Element>} $container
+		 * @param  {number}           height
+		 * @return {jQuery.<Element>}
+		 */
+		function list(browser, $container, height) {
+			var $list = $('<table id="list-' + unique() + '" class="repository-browser-list"></table>');
+
+			// Because we need a hidden utility column to help us with auto
+			// sorting
+			var names = [''];
+			var model = [{
+				name	       : 'id',
+				sorttype       : 'int',
+				firstsortorder : 'asc',
+				hidden	       : true
+			}];
+
+			var shrinkToFit = browser.listShrinkToFit;
+			// check if the configured schrinkToFit value is a boolean or a number
+			if (typeof shrinkToFit !== 'number' &&  typeof shrinkToFit !== 'boolean') {
+				// if not try to convert it to a number
+				shrinkToFit = parseInt(shrinkToFit, 10);
+				// otherwise check if the original value is 'false' or default to true
+				if (isNaN(shrinkToFit)) {
+					shrinkToFit = browser.listShrinkToFit !== 'false';
+				}
+			}
+
+			$.each(browser.columns, function (key, value) {
+				names.push(value.title || '&nbsp;');
+				model.push({
+					name      : key,
+					width     : value.width,
+					sortable  : value.sortable,
+					sorttype  : value.sorttype,
+					resizable : value.resizable,
+					fixed     : value.fixed
+				});
+			});
+
+			/**
+			 * jqGrid requires that we use an id, despite what the documentation says
+			 * (http://www.trirand.com/jqgridwiki/doku.php?id=wiki:pager&s[]=pager):
+			 * We need a unique id, however, in order to distinguish pager
+			 * elements for each browser instance.
+			 */
+			var pagerId = 'repository-browser-list-page-' + unique();
+			$container.append($list, '<div id="' + pagerId + '" class="repository-browser-grab-handle"></div>');
+
+			$list.jqGrid({
+				datatype      : 'local',
+				width         : parseInt($container.css("width")),
+				shrinkToFit   : shrinkToFit,
+				colNames      : names,
+				colModel      : model,
+				caption       : '&nbsp;',
+				altRows       : true,
+				altclass      : 'repository-browser-list-altrow',
+				resizeclass   : 'repository-browser-list-resizable',
+				pager         : pagerId,
+				viewrecords   : true,
+				onPaging      : function (button) {},
+				loadError     : function (xhr, status, error) {},
+				ondblClickRow : function (rowid, iRow, iCol, e) {},
+				gridComplete  : function () {},
+				loadComplete  : function (data) {}
+			});
+
+			$container.find('.ui-jqgrid-bdiv').css("height", (height - (
+				parseInt($container.find('.ui-jqgrid-titlebar').css("height")) +
+				parseInt($container.find('.ui-jqgrid-hdiv').css("height")) +
+				parseInt($container.find('.ui-jqgrid-pager').css("height"))
+			))+"px");
+
+			$list.click(function () {
+				browser.rowClicked.apply(browser, arguments);
+			});
+
+			// Override jqGrid paging
+			$container
+				.find('.ui-pg-button').unbind()
+				.find('>span.ui-icon').each(function () {
+					var $icons = $(this).parent();
+					var dir = this.className.match(/ui\-icon\-seek\-([a-z]+)/)[1];
+					browser._pagingBtns[dir] = $icons;
+					$icons.addClass('ui-state-disabled').click(function () {
+						if (!$(this).hasClass('ui-state-disabled')) {
+							browser._doPaging(dir);
+						}
+					});
+				});
+
+			$container.find('.ui-pg-input').parent().hide();
+			$container.find('.ui-separator').parent().css('opacity', 0).first().hide();
+
+			// Override jqGrid sorting
+			var listProps = $list[0].p;
+			$container.find('.ui-jqgrid-view tr:first th div').each(function (i) {
+				if (false !== listProps.colModel[i].sortable) {
+					$(this).css('cursor', 'pointer');
+					$(this).unbind().click(function (event) {
+						event.stopPropagation();
+						browser._sortList(listProps.colModel[i], this);
+					});
+				}
+			});
+
+			titlebar(browser, $container);
+
+			return $list;
+		}
+
+		/**
+		 * Builds the UI elements for the given browser instance.
+		 *
+		 * @param  {Browser} browser
+		 * @param  {!Object} opts
+		 * @return {Object.<string, jQuery.<Element>>}
+		 */
+		function ui(browser, opts) {
+			var $elem = browser.element.attr('data-repository-browser', unique());
+			var $grid = grid(browser, $elem);
+
+			$grid.resize();
+			$elem.css('width', opts.maxWidth);
+			$grid.css('width', opts.maxWidth); // Fix for IE7
+
+			var $tree = tree(browser, $grid.find('.ui-layout-west'), $grid.height());
+			var $list = list(browser, $grid.find('.ui-layout-center'), $grid.height());
+			var $layout = $grid.layout({
+				west__size               : opts.treeWidth - 1,
+				west__minSize            : 0,
+				west__maxSize            : opts.maxWidth,
+				west__enableCursorHotkey : false,
+				center__size             : 'auto',
+				paneClass                : 'ui-layout-pane',
+				resizerClass             : 'ui-layout-resizer',
+				togglerClass             : 'ui-layout-toggler',
+				onresize                 : function (name, elem) {
+					if ('center' === name) {
+						$list.setGridWidth(parseInt(elem.css("width")));
+					}
+				}
+			});
+
+			// Because otherwise IE scrolls the page to the right
+			$elem.hide();
+			hideOverlay();
+
+			$layout.sizePane('west', opts.treeWidth); // Fix for a ui-layout bug in chrome
+
+			$elem.resizable({
+				autoHide  : true,
+				minWidth  : opts.minWidth,
+				minHeight : opts.minHeight,
+				maxWidth  : opts.maxWidth,
+				maxHeight : opts.maxHeight,
+				handles   : 'all',
+				resize    : function (e, ui) {
+					browser._resizeHorizontal(opts.maxWidth - ui.size.width);
+					browser._resizeVertical(opts.maxHeight - ui.size.height);
+					browser._resizeInnerComponents();
+				}
+			});
+
+			disableSelection($grid);
+
+			$elem.mousedown(function () {
+				bringToFront(browser);
+			});
+
+			return {
+				$elem: $elem,
+				$grid: $grid,
+				$tree: $tree,
+				$list: $list
+			};
+		}
+
+		/**
+		 * Repository Browser.
+		 *
+		 * Must be initialized with a configured repository manager.
+		 *
+		 * @class   Browser
+		 * @extends Class
+		 */
+		var Browser = Class.extend({
+
+			opened         : false,
+
+			grid           : null,
+			tree           : null,
+			list           : null,
+
+			_searchQuery   : null,
+			_orderBy       : null,
+			_currentFolder : null,
+
+			/**
+			 * A cache of repository objects that were queried through any of
+			 * the repositories.
+			 *
+			 * This objec is shared between all instances of the repository
+			 * browser! (TODO: we should change this)
+			 *
+			 * @type <Object.<string, Object>>
+			 */
+			_objs: {},
+
+			/**
+			 * Resize the components of the repository browser:
+			 * <ul>
+			 *     <li>jsTree</li>
+			 *     <li>jqGrid</li>
+			 *     <li>List of items inside of jqGrid</li>
+			 * </ul>
+			 */
+			_resizeInnerComponents: function () {
+				var $header = this.grid.find('.repository-browser-tree-header');
+				var $container = this.grid.find('.ui-layout-center');
+
+				this.tree.css("height", (parseInt(this.grid.css("height")) - (parseInt($header.css("height"))+parseInt($header.css("padding-top"))+parseInt($header.css("padding-bottom")+parseInt($header.css("margin-top"))+parseInt($header.css("margin-bottom")))))+"px");
+
+				$container.find('.ui-jqgrid-bdiv').css("height", (parseInt(this.grid.css("height")) - (
+					parseInt($container.find('.ui-jqgrid-titlebar').css("height")) +
+					parseInt($container.find('.ui-jqgrid-hdiv').css("height")) +
+					parseInt($container.find('.ui-jqgrid-pager').css("height"))
+				))+"px");
+
+				if (this._adaptPageSize() && this._currentFolder) {
+					this._fetchItems(this._currentFolder);
+				}
+			},
+
+			/**
+			 * Resizes the browser element vertically.
+			 *
+			 * @param {number} overflow Vertical pixel overflow
+			 */
+			_resizeVertical: function (overflow) {
+				var height = (overflow > 0)
+				           ? Math.max(this.minHeight, this.maxHeight - overflow)
+				           : this.maxHeight;
+				this.element.css("height", height + "px");
+				this.grid.css("height", height + "px");
+			},
+
+			/**
+			 * Resizes the browser element horizontally.
+			 *
+			 * @param {number} overflow Horizantal pixel overflow
+			 */
+			_resizeHorizontal: function (overflow) {
+				var width = (overflow > 0)
+						  ? Math.max(this.minWidth, this.maxWidth - overflow)
+						  : this.maxWidth;
+				this.element.css("width", width + "px");
+				this.grid.css("width", width+"px");
+			},
+
+			/**
+			 * Check whether resizing is allowed right now.
+			 * This acts as a guard against endless resize cycles, that might occur in IE7
+			 *
+			 * The function will check, whether resizing was called more than 10 times in the same second and
+			 * will block any further calls by returning false.
+			 *
+			 * @return {boolean} true if resizing is allowed, false if not
+			 */
+			_isResizeAllowed: function () {
+				this.callsThisSecond = this.callsThisSecond || 0;
+				var now = Math.floor(new Date().getTime() / 1000);
+				if (now === this.lastCall) {
+					if (this.callsThisSecond >= 10) {
+						return false;
+					} else {
+						this.callsThisSecond++;
+						return true;
+					}
+				} else {
+					this.lastCall = now;
+					this.callsThisSecond = 1;
+					return true;
+				}
+			},
+
+			/**
+			 * Automatically resizes the browser modal, constraining its
+			 * dimensions between minWidth and maxWidth.
+			 */
+			_onWindowResized: function () {
+				if (!this._isResizeAllowed()) {
+					return;
+				}
+				this._resizeHorizontal(this.maxWidth - $window.width() + this.padding);
+				this._resizeVertical(this.maxHeight - $window.height() + this.padding);
+				this._resizeInnerComponents();
+			},
+
+			/**
+			 * Clears the search field.
+			 */
+			_clearSearch: function () {
+				var $search = this.grid.find('.repository-browser-search-field');
+				$search.val(this._i18n('Input search text...'))
+				       .addClass('repository-browser-search-field-empty');
+				this._searchQuery = null;
+			},
+
+			/**
+			 * Retrieves the corresponding internationalization string for the
+			 * given keyword.
+			 *
+			 * @param  {string} key The key for which a full i18n string is
+			 *                      retrieved
+			 * @return {string} The return value is either the i18n value matched
+			 *                  by the given key, or else the key
+			 */
+			_i18n: function (key) {
+				return this.i18n[key] || key;
+			},
+
+			/**
+			 * Adapt the page size.
+			 *
+			 * @return {boolean} True if the page size was actually changed, false
+			 *                   if not
+			 */
+			_adaptPageSize: function () {
+				// if this is off, don't do anything
+				if (!this.adaptPageSize || !this.list || !this.rowHeight) {
+					return false;
+				}
+				var $container = this.grid.find('.ui-jqgrid-bdiv');
+				// reduce by 20 px to leave place for a scrollbar
+				var height = parseInt($container.css("height"))-parseInt($container.css("padding-top"))-parseInt($container.css("padding-bottom")) - 20;
+				if (height) {
+					var newPageSize = Math.floor(height / this.rowHeight);
+					if (newPageSize <= 0) {
+						newPageSize = 1;
+					}
+					if (newPageSize !== this.pageSize) {
+						this.pageSize = newPageSize;
+						return true;
+					}
+					return false;
+				}
+				return false;
+			},
+
+			_constructor: function () {
+				this.init.apply(this, arguments);
+			},
+
+			/**
+			 * Initializes the browser instance based on the given configuration.
+			 *
+			 * @param {!Object} config
+			 */
+			init: function (config) {
+				if (!config.repositoryManager) {
+					$('body').trigger(
+						'repository-browser-error',
+						'Repository Manager not configured'
+					);
+				}
+
+				var browser = this;
+				var options = $.extend({}, DEFAULTS, config, {i18n: i18n});
+
+				if (!options.element || 0 === options.element.length) {
+					options.isFloating = true;
+					options.element = modal();
+				}
+
+				browser.manager       = options.repositoryManager;
+				browser._objs         = {};
+				browser._searchQuery  = null;
+				browser._orderBy      = null;
+				browser._pagingOffset = 0;
+				browser._pagingCount  = undefined; // Because isNaN(null) == false ! *sigh*
+				browser._pagingBtns   = {
+					first : null,
+					end   : null,
+					next  : null,
+					prev  : null
+				};
+
+				$.extend(browser, options);
+
+				preload(options.rootPath);
+
+				var elements = ui(browser, options);
+
+				browser.grid    = elements.$grid;
+				browser.list    = elements.$list;
+				browser.tree    = elements.$tree;
+				browser.element = elements.$elem;
+
+				// Because of legacy support
+				browser.$_grid = browser.grid;
+				browser.$_list = browser.list;
+				browser._cachedRepositoryObjects = browser._objs;
+
+				browser._adaptPageSize();
+				browser.close();
+
+				$window.resize(function () {
+					browser._onWindowResized();
+				});
+
+				if (browser.manager) {
+					browser._currentFolder = browser.getSelectedFolder();
+					browser._fetchRepoRoot(browser.jstree_callback);
+				}
+
+				instances.push(this);
+
+				PubSub.pub('repository-browser.initialized', {data: this});
+			},
+
+			/**
+			 * Convert a repository object into an object that can be used with
+			 * our tree component. Also add a reference to this object in our
+			 * objs hash. According to the Repository specification, each object
+			 * will at least have the following properties at least: id, name,
+			 * url, and type. Any and all other attributes are optional.
+			 *
+			 * @param  {!Object} obj
+			 * @return {Object}
+			 */
+			harvestRepoObject: function (obj) {
+				var uid = unique();
+				var resource = this._objs[uid] = $.extend(obj, {
+					uid    : uid,
+					loaded : false
+				});
+				return this.processRepoObject(resource);
+			},
+
+			/**
+			 * Returns an object that is usable with your tree component.
+			 *
+			 * @param  {!Object} obj
+			 * @return {Object}
+			 */
+			processRepoObject: function (obj) {
+				var icon = '', attr, state, children, browser = this;
+
+				switch (obj.baseType) {
+				case 'folder':
+					icon = 'folder';
+					break;
+				case 'document':
+					icon = 'document';
+					break;
+				}
+
+				// if the object has a type set, we set it as type to the node
+				if (obj.type) {
+					attr = {rel: obj.type, 'data-rep-oobj': obj.uid};
+				}
+
+				// set the node state
+				state = (obj.hasMoreItems || 'folder' === obj.baseType) ? 'closed' : null;
+				if (false === obj.hasMoreItems) {
+					state = null;
+				}
+
+				// process children (if any)
+				if (obj.children) {
+					children = [];
+					$.each(obj.children, function () {
+						children.push(browser.harvestRepoObject(this));
+						state = 'open';
+					});
+				}
+
+				if (this._currentFolder && this._currentFolder.id === obj.id) {
+					window.setTimeout(function () {
+						browser.tree.jstree('select_node', 'li[data-rep-oobj="' + obj.uid + '"]');
+					}, 0);
+				}
+
+				return {
+					data: {
+						title : obj.name,
+						attr  : {'data-rep-oobj': obj.uid},
+						icon  : icon
+					},
+					attr     : attr,
+					state    : state,
+					resource : obj,
+					children : children
+				};
+			},
+
+			/**
+			 * Processes the repostiory manager response.
+			 *
+			 * @param {Array}    items
+			 * @param {Object}   metainfo
+			 * @param {function} callback
+			 */
+			_processRepoResponse: function (items, metainfo, callback) {
+				var browser = this;
+				var folderId = browser._currentFolder && browser._currentFolder.id;
+				var data = [];
+				var openedResource = null;
+				// if the second parameter is a function, it is the callback
+				if ('function' === typeof metainfo) {
+					callback = metainfo;
+					metainfo = undefined;
+				}
+				$.each(items, function () {
+					data.push(browser.harvestRepoObject(this));
+					if (folderId === this.id) {
+						openedResource = this;
+					}
+				});
+				if ('function' === typeof callback) {
+					callback.call(browser, data, metainfo);
+				}
+				if (openedResource) {
+					window.setTimeout(function () {
+						browser.tree.jstree(
+							'select_node',
+							'li[data-repo-obj="' + openedResource.uid + '"]'
+						);
+					}, 0); // Is this timeout still necessary
+				}
+			},
+
+			/**
+			 * Retrieves a cached repository object that is associated with the
+			 * given node element.
+			 *
+			 * @param  {jQuery.<Element>} $node
+			 * @return {!Object} The cached repository object or null if none is
+			 *                   found in the cache.
+			 */
+			_getObjectFromCache: function ($node) {
+				if ('object' === typeof $node) {
+					var uid = $node.find('a:first').attr('data-rep-oobj');
+					return this._objs[uid];
+				}
+			},
+
+			/**
+			 * Queries repositories for items matching the given parameters.
+			 *
+			 * @param {Object}   params   Parameters for repository manager
+			 * @param {function} callback Receives fetch results
+			 */
+			queryRepository: function (params, callback) {
+				var browser = this;
+				browser.manager.query(params, function (response) {
+					var items = (response.results > 0) ? response.items : [];
+					browser._processRepoResponse(items, {
+						timeout      : response.timeout,
+						numItems     : response.numItems,
+						hasMoreItems : response.hasMoreItems
+					}, callback);
+				});
+			},
+
+			/**
+			 * Lists the given items in the browser list view.
+			 *
+			 * @param {Array} items
+			 */
+			_listItems: function (items) {
+				var browser = this;
+				var $list = this.list.clearGridData();
+				$.each(items, function () {
+					var obj = this.resource;
+					$list.addRowData(
+						obj.uid,
+						$.extend({id: obj.id}, browser.renderRowCols(obj))
+					);
+				});
+			},
+
+			/**
+			 * Processes the items in the given data object.
+			 *
+			 * @param {Object} data
+			 * @param {Object} metainfo
+			 */
+			_processItems: function (data, metainfo) {
+				var $btns = this._pagingBtns;
+				var disabled = 'ui-state-disabled';
+
+				// if the total number of items is known, we can calculate the number of pages
+				if (metainfo && ('number' === typeof metainfo.numItems)) {
+					this._pagingCount = metainfo.numItems;
+				} else {
+					this._pagingCount = undefined;
+				}
+
+				this.grid.find('.loading').hide();
+				this.list.show();
+				this._listItems(data);
+
+				if (this._pagingOffset <= 0) {
+					$btns.first.add($btns.prev).addClass(disabled);
+				} else {
+					$btns.first.add($btns.prev).removeClass(disabled);
+				}
+
+				if (isNaN(this._pagingCount)) {
+					$btns.end.addClass(disabled);
+					if (data.length <= this.pageSize) {
+						$btns.next.addClass(disabled);
+					} else {
+						$btns.next.removeClass(disabled);
+					}
+				} else if (this._pagingOffset + this.pageSize >= this._pagingCount) {
+					$btns.end.add($btns.next).addClass(disabled);
+				} else {
+					$btns.end.add($btns.next).removeClass(disabled);
+				}
+
+				var from, to;
+
+				if (0 === data.length && 0 === this._pagingOffset) {
+					from = 0;
+					to = 0;
+				} else {
+					from = this._pagingOffset + 1;
+					to = from + data.length - 1;
+				}
+
+				var count = ('number' === typeof this._pagingCount)
+				          ? this._pagingCount
+				          : this._i18n('numerous');
+
+				this.grid.find('.ui-paging-info')
+				    .html(this._i18n('Viewing') + ' ' + from + ' - ' + to + ' '
+							+ this._i18n('of') + ' ' + count);
+
+				// when the repository manager reports a timeout, we handle it
+				if (metainfo && metainfo.timeout) {
+					this.handleTimeout();
+				}
+			},
+
+			/**
+			 * Fetches the sub nodes of the given nodes.
+			 *
+			 * @param {jQuery.<Element>} $nodes
+			 * @param {function}         callback
+			 */
+			_fetchSubnodes: function ($nodes, callback) {
+				var browser = this;
+				if (-1 === $nodes) {
+					browser._fetchRepoRoot(callback);
+				} else {
+					$nodes.each(function () {
+						var obj = browser._getObjectFromCache($(this));
+						if ('object' === typeof obj) {
+							browser.fetchChildren(obj, callback);
+						}
+					});
+				}
+			},
+
+			/**
+			 * Fetches the root node.
+			 *
+			 * @param {function} callback
+			 */
+			_fetchRepoRoot: function (callback) {
+				this.getRepoChildren({
+					inFolderId       : this.rootFolderId,
+					repositoryFilter : this.repositoryFilter
+				}, function (data) {
+					if ('function' === typeof callback) {
+						callback(data);
+					}
+				});
+			},
+
+			/**
+			 * Fetches items in the given folder.
+			 *
+			 * @param {Object} folder
+			 */
+			_fetchItems: function (folder) {
+				if (!folder) {
+					return;
+				}
+
+				var browser = this;
+				var isSearching = 'string' === typeof this._searchQuery;
+
+				// Because searching is should always be done recursively
+				var recursive = isSearching;
+
+				browser.list.setCaption(isSearching
+					? browser._i18n('Searching for')
+							+ ' ' + browser._searchQuery
+							+ ' ' + browser._i18n('in')
+							+ ' ' + folder.name
+					: browser._i18n('Browsing') + ': ' + folder.name);
+
+				browser.list.hide();
+				browser.grid.find('.loading').show();
+
+				browser.queryRepository({
+					repositoryId     : folder.repositoryId,
+					inFolderId       : folder.id,
+					queryString      : browser._searchQuery,
+					orderBy          : browser._orderBy,
+					skipCount        : browser._pagingOffset,
+					maxItems         : browser.pageSize,
+					objectTypeFilter : browser.objectTypeFilter,
+					renditionFilter  : browser.renditionFilter,
+					filter           : browser.filter,
+					recursive		 : recursive
+				}, function (data, metainfo) {
+					browser._processItems(data, metainfo);
+				});
+			},
+
+			/**
+			 * Fetches an object's children if we haven't already done so.
+			 *
+			 * @param {Object}   obj      A jsTree list item
+			 * @param {function} callback Receives the fetched children
+			 */
+			fetchChildren: function (obj, callback) {
+				var browser = this;
+				var hasChildren = true === obj.hasMoreItems || 'folder' === obj.baseType;
+				if (hasChildren && false === obj.loaded) {
+					browser.getRepoChildren({
+						inFolderId   : obj.id,
+						repositoryId : obj.repositoryId
+					}, function (data) {
+						browser._objs[obj.uid].loaded = true;
+						if ('function' === typeof callback) {
+							callback(data);
+						}
+					});
+				}
+			},
+
+			/**
+			 * Gets child folders of a specified repository node.
+			 *
+			 * @param {Object}   params   Parameters for repository manager
+			 * @param {function} callback Receives fetch results
+			 */
+			getRepoChildren: function (params, callback) {
+				var browser = this;
+				browser.manager.getChildren(params, function (items) {
+					browser._processRepoResponse(items, callback);
+				});
+			},
+
+			/**
+			 * Pages the list according to the given direction.
+			 *
+			 * @param {string} dir
+			 */
+			_doPaging: function (dir) {
+				switch (dir) {
+				case 'first':
+					this._pagingOffset = 0;
+					break;
+				case 'end':
+					if ((this._pagingCount % this.pageSize) === 0) {
+						// item count is exactly divisible by page size
+						this._pagingOffset = this._pagingCount - this.pageSize;
+					} else {
+						this._pagingOffset = this._pagingCount - (this._pagingCount % this.pageSize);
+					}
+					break;
+				case 'next':
+					this._pagingOffset += this.pageSize;
+					break;
+				case 'prev':
+					this._pagingOffset -= this.pageSize;
+					// avoid "out of bounds" situation
+					if (this._pagingOffset < 0) {
+						this._pagingOffset = 0;
+					}
+					break;
+				}
+				this._fetchItems(this._currentFolder);
+			},
+
+			/**
+			 * Builds a row that an be rendered in the grid layout from the
+			 * given repository item.
+			 *
+			 * @param   {Object} resource Repository resource to render
+			 * @returns {Object} Object representing the rendered row such that
+			 *                   it can be used to populate the grid layout
+			 */
+			renderRowCols: function (resource) {
+				var row = {};
+				$.each(this.columns, function (colName) {
+					switch (colName) {
+					case 'icon':
+						row.icon = '<div class="repository-browser-icon repository-browser-icon-' + resource.type + '"></div>';
+						break;
+					default:
+						row[colName] = resource[colName] || '--';
+					}
+				});
+				return row;
+			},
+
+			/**
+			 * Sorts the browser item list.
+			 *
+			 * TODO: Fix this so that sorting does toggle between desc and asc
+			 *		 when you click on a column on which we were not sorting.
+			 *
+			 * @param {Object}  colModel
+			 * @param {Element} elem
+			 */
+			_sortList: function (colModel, elem) {
+				// reset sort properties in all column headers
+				this.grid.find('span.ui-grid-ico-sort').addClass('ui-state-disabled');
+
+				colModel.sortorder = ('asc' === colModel.sortorder) ? 'desc' : 'asc';
+
+				$(elem).find('span.s-ico').show()
+				       .find('.ui-icon-' + colModel.sortorder)
+				       .removeClass('ui-state-disabled');
+
+				this._setSortOrder(colModel.name, colModel.sortorder)
+				    ._fetchItems(this._currentFolder);
+			},
+
+			/**
+			 * Adds new sort fields into the _orderBy array. If a field already
+			 * exists, it will be spliced from where it is and unshifted to the
+			 * end of the array.
+			 *
+			 * @param {string} by
+			 * @param {string} order
+			 */
+			_setSortOrder: function (by, order) {
+				var orderBy = this._orderBy || [];
+				var field;
+				var orderItem;
+				var found = false;
+				var i, j;
+				var sortItem = {};
+				sortItem[by] = order || 'asc';
+				for (i = 0, j = orderBy.length; i < j; i++) {
+					orderItem = orderBy[i];
+					for (field in orderItem) {
+						if (orderItem.hasOwnProperty(field) && field === by) {
+							orderBy.splice(i, 1);
+							orderBy.unshift(sortItem);
+							found = true;
+							break;
+						}
+					}
+					if (found) {
+						break;
+					}
+				}
+				if (!found) {
+					orderBy.unshift(sortItem);
+				}
+				this._orderBy = orderBy;
+				return this;
+			},
+
+			/**
+			 * Calls `onSelect()` when a list row is clicked.
+			 *
+			 * @param  {jQuery.<Event>}   event
+			 * @return {jQuery.<Element>} Element at clicked row of null
+			 */
+			rowClicked: function (event) {
+				var row = $(event.target).parent('tr');
+				var item = null;
+				if (row.length > 0) {
+					var uid = row.attr('id');
+					item = this._objs[uid];
+					this.onSelect(item);
+				}
+				return item;
+			},
+
+			/**
+			 * Queries the repository manager for items contained in folder that
+			 * was clicked.
+			 *
+			 * @param {jQuery.<Element>} $node List item
+			 */
+			treeNodeSelected: function ($node) {
+				var folder = this._getObjectFromCache($node);
+				if (folder) {
+					this._pagingOffset = 0;
+					this._clearSearch();
+					this._currentFolder = folder;
+					this._fetchItems(folder);
+					this.folderSelected(folder);
+				}
+			},
+
+			/**
+			 * Sends the search query to the server.
+			 */
+			_triggerSearch: function () {
+				var $search = this.grid.find('input.repository-browser-search-field');
+				var value = $search.val();
+				if ('' === value || $search.hasClass('repository-browser-search-field-empty')) {
+					value = null;
+				} else if ('' === value) {
+					value = null;
+				}
+				this._pagingOffset = 0;
+				this._searchQuery = value;
+				this._fetchItems(this._currentFolder);
+			},
+
+			/**
+			 * Updates the object type filter option.
+			 *
+			 * @Obsolete?
+			 * @param {Element} th
+			 */
+			getFieldOfHeader: function (th) {
+				return th.find('div.ui-jqgrid-sortable').attr('id').replace('jqgh_', '');
+			},
+
+			/**
+			 * Updates the object type filter option.
+			 *
+			 * @param {string} otf
+			 */
+			setObjectTypeFilter: function (otf) {
+				this.objectTypeFilter = ('string' === typeof otf) ? [otf] : otf;
+			},
+
+			/**
+			 * Returns the value of the object type filter.
+			 */
+			getObjectTypeFilter: function () {
+				return this.objectTypeFilter;
+			},
+
+			/**
+			 * Shows this repository browwser instance.
+			 */
+			show: function () {
+				if (this.opened) {
+					return;
+				}
+				this.opened = true;
+
+				var browser = this;
+				var $elem = browser.element;
+
+				if (browser.isFloating) {
+					showOverlay();
+
+					$elem.stop().show().css({
+						left : $window.scrollLeft() + (browser.padding / 2),
+						top  : $window.scrollTop()  + (browser.padding / 2)
+					}).draggable({
+						handle : $elem.find('.repository-browser-grab-handle')
+					});
+
+					// Wake-up animation
+					browser.grid.css({
+						marginTop : 0,
+						opacity   : 0
+					}).animate({
+						marginTop : 0,
+						opacity   : 1
+					}, 1500, 'easeOutExpo', function () {
+						// Disable filter to prevent IE<=8 filter bug
+						if ($.browser.msie) {
+							$(this).add($elem).css(
+								'filter',
+								'progid:DXImageTransform.Microsoft.gradient(enabled = false)'
+							);
+						}
+					});
+				} else {
+					$elem.stop().show().css({
+						opacity : 1,
+						filter  : 'progid:DXImageTransform.Microsoft.gradient(enabled = false)'
+					});
+				}
+				browser._onWindowResized();
+				browser.element.resize();
+				numOpenedBrowsers++;
+			},
+
+			open: function () {
+				this.show();
+			},
+
+			/**
+			 * Hides this repository browser instance.
+			 */
+			close: function () {
+				if (!this.opened) {
+					return;
+				}
+				this.opened = false;
+				this.element.fadeOut(250, function () {
+					$(this).css('top', 0).hide();
+					if (0 === numOpenedBrowsers || 0 === --numOpenedBrowsers) {
+						hideOverlay();
+					}
+				});
+			},
+
+			/**
+			 * Refreshes the browser's list by refetching the items of the
+			 * current folder.
+			 */
+			refresh: function () {
+				if (this._currentFolder) {
+					this._fetchItems(this._currentFolder);
+				}
+			},
+
+			/**
+			 * This function gets called when a folder in the tree is opened.
+			 *
+			 * @param {Object} obj Folder data object
+			 */
+			folderOpened: function (obj) {
+				var folder = this._getObjectFromCache(obj);
+				if (folder) {
+					this.manager.folderOpened(folder);
+				}
+			},
+
+			/**
+			 * This function gets called when a folder in the tree is closed.
+			 *
+			 * @param {Object} obj Folder data object
+			 */
+			folderClosed: function (obj) {
+				var folder = this._getObjectFromCache(obj);
+				if (folder) {
+					this.manager.folderClosed(folder);
+				}
+			},
+
+			/**
+			 * This function gets called when a folder in the tree is selected.
+			 *
+			 * @param {object} obj Folder data object
+			 */
+			folderSelected: function (obj) {
+				this.manager.folderSelected(obj);
+			},
+
+			/**
+			 * Gets the selected folder.
+			 *
+			 * @return {object} selected Folder or undefined
+			 */
+			getSelectedFolder: function () {
+				if ('function' === typeof this.manager.getSelectedFolder) {
+					return this.manager.getSelectedFolder();
+				}
+			},
+
+			destroy: function () {},
+
+			/**
+			 * User should implement this according to their needs
+			 *
+			 * @param {Object} item Repository resource for a row
+			 */
+			onSelect: function (item) {},
+
+			/**
+			 * Handle repository timeouts
+			 */
+			handleTimeout: function () {}
+		});
+
+		$(createOverlay);
+
+		return Browser;
+	}
+
+	if ('function' === typeof define) {
+		define('repository-browser-i18n-de', [], function () {
+			return {
+				'Browsing'                       : 'Durchsuchen',
+				'Close'                          : 'Schließen',
+				'in'                             : 'in',
+				'Input search text...'           : 'Suchtext einfügen...',
+				'numerous'                       : 'zahlreiche',
+				'of'                             : 'von',
+				'Repository Browser'             : 'Repository Browser',
+				'Search'                         : 'Suchen',
+				'Searching for'                  : 'Suche nach',
+				'Viewing'                        : 'Anzeige',
+				'button.switch-metaview.tooltip' : 'Zwischen Metaansicht und normaler Ansicht umschalten'
+			};
+		});
+		define('repository-browser-i18n-en', [], function () {
+			return {
+				'Browsing'                       : 'Browsing',
+				'Close'                          : 'Close',
+				'in'                             : 'in',
+				'Input search text...'           : 'Input search text...',
+				'numerous'                       : 'numerous',
+				'of'                             : 'of',
+				'Repository Browser'             : 'Repository Browser',
+				'Search'                         : 'Search',
+				'Searching for'                  : 'Searching for',
+				'Viewing'                        : 'Viewing',
+				'button.switch-metaview.tooltip' : 'Switch between meta and normal view'
+			};
+		});
+		define('RepositoryBrowser', [
+			'jquery',
+			'Class',
+			'PubSub',
+			'repository-browser-i18n-' + (
+				(window && window.__DEPS__ && window.__DEPS__.lang) || 'en'
+			),
+			'jstree',
+			'jqgrid',
+			'jquery-layout'
+		], initialize);
+	} else {
+		window.Browser = initialize(
+			window.jQuery,
+			window.Class,
+			{pub: function () {}} // PubSub noop interface
+		);
+	}
+}());

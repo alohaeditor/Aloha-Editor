@@ -1,5 +1,0 @@
-h2. Flag Icons Plugin
-
-This is Plugin provides country / language icons for other plugins. It is used by the WAI Language Plugin.
-
-endprologue.
