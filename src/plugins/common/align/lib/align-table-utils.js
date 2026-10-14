@@ -25,11 +25,9 @@
  * recipients can access the Corresponding Source.
  */
 define([
-	'util/arrays',
 	'util/dom',
 	'jquery'
 ], function(
-	Arrays,
 	DomLegacy,
 	jQuery
 ) {
@@ -42,7 +40,7 @@ define([
 	 * @return {Array}
 	 */
 	function getCellsInSelection(tableElement) {
-		return Arrays.coerce(jQuery(tableElement).find('.aloha-cell-selected'));
+		return Array.from(jQuery(tableElement).find('.aloha-cell-selected'));
 	}
 
 	/**
