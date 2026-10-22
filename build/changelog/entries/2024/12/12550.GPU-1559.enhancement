@@ -1,0 +1,11 @@
+Utility functions and features which have native browser implementations have been removed:
+* @aloha/ecma5shims@
+* @util/arrays@
+* @util/json2@
+* @util/maps@
+
+Dependencies like that have also been removed:
+* @ierange-m2@
+* @json2@
+* @amplify-store@
+* @sanitize@

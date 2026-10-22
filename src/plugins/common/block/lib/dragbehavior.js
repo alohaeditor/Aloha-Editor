@@ -515,11 +515,12 @@ define([
 	 * element before or after this
 	 */
 	DragBehavior.prototype.onDragStop = function () {
-		// @todo check if the $overElement is a Valid element to drop the block
+		if (typeof this.$overElement === 'undefined' || !this.$overElement) {
+			return;
+		}
 		if (allowDropRegions(this.$overElement, this.$element) && 
 			this.$overElement.parent().length > 0) {
-			if (this.$overElement &&
-				!this._isAllowedOverElement(this.$overElement[0])) {
+			if (!this._isAllowedOverElement(this.$overElement[0])) {
 				this.enableInsertBeforeOrAfter(this.$overElement[0]);
 				// prevent dragging the block into a position, where it should not be
 				// when _isAllowedOverElement() return false, insertBeforeOrAfterMode must not be false
@@ -581,4 +582,6 @@ define([
 		return this.$hElm;
 	};
 
+
+	return DragBehavior;
 });

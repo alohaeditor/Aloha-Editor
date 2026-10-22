@@ -1,7 +1,6 @@
 define({
-	"floatingmenu.tab.abbr": "Abkürzung",
-	"button.addabbr.tooltip": "Abkürzung einfügen",
-	"button.remabbr.tooltip": "Abkürzung entfernen",
-	"button.abbr.tooltip": "Als Abkürzung formatieren",
+	"input.label": "Bedeutung",
+	"panel.label": "Abkürzung",
+	"button.abbr.tooltip": "Abkürzung",
 	"newabbr.defaulttext": "Abb"
 });

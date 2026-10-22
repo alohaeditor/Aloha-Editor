@@ -38,7 +38,6 @@ define([
 	'aloha/console',
 	'PubSub',
 	'aloha/engine',
-	'aloha/ecma5shims',
 	'aloha/rangy-core'
 ], function (
 	Aloha,
@@ -54,7 +53,6 @@ define([
 	console,
 	PubSub,
 	Engine,
-	e5s
 ) {
 	"use strict";
 
@@ -1409,11 +1407,17 @@ define([
 			// update selection
 			if (markupObject.isReplacingElement) {
 				//After the zapping we have to check for wrong offsets
-				if (e5s.Node.ELEMENT_NODE === backupRangeObject.startContainer.nodeType && backupRangeObject.startContainer.childNodes && backupRangeObject.startContainer.childNodes.length < backupRangeObject.startOffset) {
+				if (Node.ELEMENT_NODE === backupRangeObject.startContainer.nodeType
+					&& backupRangeObject.startContainer.childNodes
+					&& backupRangeObject.startContainer.childNodes.length < backupRangeObject.startOffset
+				) {
 					backupRangeObject.startOffset = backupRangeObject.startContainer.childNodes.length;
 					rangeObject.startOffset = backupRangeObject.startContainer.childNodes.length;
 				}
-				if (e5s.Node.ELEMENT_NODE === backupRangeObject.endContainer.nodeType && backupRangeObject.endContainer.childNodes && backupRangeObject.endContainer.childNodes.length < backupRangeObject.endOffset) {
+				if (Node.ELEMENT_NODE === backupRangeObject.endContainer.nodeType
+					&& backupRangeObject.endContainer.childNodes
+					&& backupRangeObject.endContainer.childNodes.length < backupRangeObject.endOffset
+				) {
 					backupRangeObject.endOffset = backupRangeObject.endContainer.childNodes.length;
 					rangeObject.endOffset = backupRangeObject.endContainer.childNodes.length;
 				}

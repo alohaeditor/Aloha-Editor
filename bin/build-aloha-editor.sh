@@ -34,9 +34,9 @@ run_command() {
 	echo
 }
 
-run_command "Installing dependencies..." "npm install -SD --no-fund --no-audit"
+run_command "Installing dependencies..." "npm install --no-fund --no-audit"
 run_command "Performing linting..." "npx eslint src/lib"
-run_command "Building Aloha-Editor $BUILD_PROFILE..." "npx r.js -o 'build/aloha/$BUILD_PROFILE.js'"
+run_command "Building Aloha-Editor $BUILD_PROFILE..." "./node_modules/.bin/r_js -o 'build/aloha/$BUILD_PROFILE.js'"
 
 run_command "Building Aloha-Editor $BUILD_PROFILE (full)..." "cat build/aloha/license-header.frag target/$BUILD_PROFILE/lib/require.js target/$BUILD_PROFILE/lib/vendor/jquery-3.7.0.js target/$BUILD_PROFILE/lib/aloha.js > target/$BUILD_PROFILE/lib/aloha-full.js"
 run_command "Building Aloha-Editor $BUILD_PROFILE (full; minified)..." "npx uglifyjs target/$BUILD_PROFILE/lib/require.js target/$BUILD_PROFILE/lib/vendor/jquery-3.7.0.js target/$BUILD_PROFILE/lib/aloha.js --compress --mangle --source-map --output 'target/$BUILD_PROFILE/lib/aloha-full.min.js'"
