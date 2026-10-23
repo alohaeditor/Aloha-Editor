@@ -252,7 +252,7 @@ define([
 				if (item.is('.aloha-block,.aloha-editable')) {
 					domObjects = [elem.domobj];
 				} else {
-					$.each(item.children('.aloha-block,.aloah-editable'), pushToDomObjects);
+					$.each(item.children('.aloha-block,.aloha-editable'), pushToDomObjects);
 				}
 
 				var objIdx;
