@@ -1,19 +1,24 @@
-define('jqgrid',
-['jquery', 'jqgrid-locale-' + (window && window.__DEPS__ && window.__DEPS__.lang || 'en'), 'jqueryui'],
-function (jQuery) {
-var $ = jQuery;
+define('jqgrid', [
+	'jquery',
+	'jqgrid-locale-' + (window && window.__DEPS__ && window.__DEPS__.lang || 'en'),
+	'jqueryui'
+], function (
+	jQuery
+) {
+	"use strict";
+
+	var $ = jQuery;
+
+	// Note: Can't be updated to 5.0 or higher, since the license has been changed and is only available commercially.
 
 	/*
- * @license jqGrid  4.4.3  - jQuery Grid
- * Copyright (c) 2008, Tony Tomov, tony@trirand.com
- * Dual licensed under the MIT and GPL licenses
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.gnu.org/licenses/gpl-2.0.html
- * Date: 2013-01-21
- */
-//jsHint options
-	/*jshint evil:true, eqeqeq:false, eqnull:true, devel:true */
-	/*global jQuery, DOMParser, ActiveXObject */
+	 * @license jqGrid  4.4.3  - jQuery Grid
+	 * Copyright (c) 2008, Tony Tomov, tony@trirand.com
+	 * Dual licensed under the MIT and GPL licenses
+	 * http://www.opensource.org/licenses/mit-license.php
+	 * http://www.gnu.org/licenses/gpl-2.0.html
+	 * Date: 2013-01-21
+	 */
 
 	(function ($) {
 		"use strict";

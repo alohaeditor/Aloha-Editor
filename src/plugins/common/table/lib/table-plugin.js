@@ -102,33 +102,7 @@ define([
 		selectionArea: 10                             // width/height of the selection rows (in pixel)
 	};
 
-	/**
-	 * @hide
-	 * {name:'green', text:'Green',tooltip:'Green',iconClass:'GENTICS_table GENTICS_button_green',cssClass:'green'}
-	 */
-	TablePlugin.checkConfig = function (c) {
-		if (typeof c == 'object' && c.length) {
-			var newC = [];
-
-			for (var i = 0; i < c.length; i++) {
-				if (c[i]) {
-					newC.push({
-						name: c[i].name,
-						text: c[i].text ? c[i].text : c[i].name,
-						tooltip: c[i].tooltip ? c[i].tooltip : c[i].text,
-						iconClass: c[i].iconClass ? c[i].iconClass : 'aloha-icon-' + c[i].name,
-						cssClass: c[i].cssClass ? c[i].cssClass : c[i].name
-					});
-				}
-			}
-
-			c = newC;
-		} else {
-			c = [];
-		}
-
-		return c;
-	};
+	TablePlugin.captionFocused = false;
 
 	/**
 	 * Checks whether the given DOM element is nested within a table.
@@ -373,14 +347,14 @@ define([
 			return;
 		}
 
-		const hasStyle = tableObj.hasClass(configItem.cssClass);
+		const hasStyle = tableObj.hasClass(configItem.name);
 
 		for (const configItem of config) {
-			tableObj.removeClass(configItem.cssClass);
+			tableObj.removeClass(configItem.name);
 		}
 
 		if (!hasStyle) {
-			tableObj.addClass(configItem.cssClass);
+			tableObj.addClass(configItem.name);
 			TablePlugin._currentStyle = configItem.name;
 		} else {
 			TablePlugin._currentStyle = null;
@@ -480,11 +454,6 @@ define([
 
 		Ephemera.classes(TablePlugin.get('className'), TablePlugin.get('classCellSelected'));
 
-		TablePlugin.tableConfig = TablePlugin.checkConfig(TablePlugin.tableConfig || TablePlugin.settings.tableConfig);
-		TablePlugin.columnConfig = TablePlugin.checkConfig(TablePlugin.columnConfig || TablePlugin.settings.columnConfig);
-		TablePlugin.rowConfig = TablePlugin.checkConfig(TablePlugin.rowConfig || TablePlugin.settings.rowConfig);
-		TablePlugin.cellConfig = TablePlugin.checkConfig(TablePlugin.cellConfig || TablePlugin.settings.cellConfig);
-
 		TablePlugin.tableResize = TablePlugin.settings.tableResize === undefined ? false : TablePlugin.settings.tableResize;
 		TablePlugin.colResize = TablePlugin.settings.colResize === undefined ? false : TablePlugin.settings.colResize;
 		TablePlugin.rowResize = TablePlugin.settings.rowResize === undefined ? false : TablePlugin.settings.rowResize;
@@ -493,13 +462,6 @@ define([
 		TablePlugin.defaultHeaderRowClass = TablePlugin.settings.defaultHeaderRowClass || '';
 		TablePlugin.defaultCellClass = TablePlugin.settings.defaultCellClass || '';
 		TablePlugin.defaultHeaderCellClass = TablePlugin.settings.defaultHeaderCellClass || '';
-
-		// disable table resize settings on browsers below IE8
-		if (jQuery.browser.msie && parseInt(jQuery.browser.version, 10) < 8) {
-			TablePlugin.tableResize = false;
-			TablePlugin.colResize = false;
-			TablePlugin.rowResize = false;
-		}
 
 		// initialize the table buttons
 		TablePlugin.initTableButtons();
@@ -777,6 +739,25 @@ define([
 	}
 
 	TablePlugin.updateButtonStates = function () {
+		if (TablePlugin.captionFocused) {
+			TablePlugin._tableCellsSplitButton.disable();
+			TablePlugin._tableCellsMergeButton.disable();
+			TablePlugin._tableRowAddBeforeButton.disable();
+			TablePlugin._tableRowAddAfterButton.disable();
+			TablePlugin._tableColumnAddLeftButton.disable();
+			TablePlugin._tableColumnAddRightButton.disable();
+
+			TablePlugin.updateCellStyleOptions();
+
+			if (TablePlugin._cellStyleOptions.length === 0) {
+				TablePlugin._tableCellStyleButton.disable();
+			} else {
+				TablePlugin._tableCellStyleButton.enable();
+			}
+
+			return;
+		}
+
 		var selection = TablePlugin
 			&& TablePlugin.activeTable
 			&& TablePlugin.activeTable.selection;
@@ -1075,10 +1056,12 @@ define([
 					const config = [];
 					const configType = `${TablePlugin._styleTypesById[selection.id]}Config`;
 
-					if (configType === 'tableConfig' && TablePlugin.tableConfig) {
-						applyTableStyle(TablePlugin.tableConfig, selection.id);
-					} else if (TablePlugin[configType]) {
-						applyStyle(TablePlugin[configType], selection.id, TablePlugin.selectedOrActiveCells());
+					if (configType === 'tableConfig' && TablePlugin.settings.tableConfig) {
+						console.log(`APPLYING "${configType}" CONFIG: ${selection.id}`)
+						applyTableStyle(TablePlugin.settings.tableConfig, selection.id);
+					} else if (TablePlugin.settings[configType]) {
+						console.log(`APPLYING "${configType}" CONFIG: ${selection.id}`)
+						applyStyle(TablePlugin.settings[configType], selection.id, TablePlugin.selectedOrActiveCells());
 					}
 
 					TablePlugin.setActiveCellStyle();
@@ -1254,6 +1237,28 @@ define([
 		}
 		// make the div editable
 		cSpan.contentEditable(true);
+
+		cSpan.off('.tablecaption');
+		cSpan.on('focus.tablecaption', function () {
+			TablePlugin.captionFocused = true;
+
+			TablePlugin.leaveTableScopes();
+
+			if (!Scopes.isActiveScope(TablePlugin.name)) {
+				UiPlugin.getActiveSurface().focusTab(TablePlugin.tabId);
+			}
+
+			Scopes.enterScope(TablePlugin.name);
+			TablePlugin.updateButtonStates();
+		});
+
+		cSpan.on('blur.tablecaption', function () {
+			TablePlugin.captionFocused = false;
+
+			TablePlugin.leaveTableScopes();
+			Scopes.leaveScope(TablePlugin.name, undefined, true);
+			TablePlugin.updateButtonStates();
+		});
 	};
 
 	/**
@@ -1318,15 +1323,8 @@ define([
 			range.startOffset = range.endOffset = 0;
 			range.select();
 
-			// Because without the 10ms delay, we cannot place the cursor
-			// automatically into the first cell in IE.
-			if ($.browser.msie) {
-				window.setTimeout(function () {
-					tableObj.cells[0].wrapper.get(0).focus();
-				}, 20);
-			} else {
-				tableObj.cells[0].wrapper.get(0).focus();
-			}
+
+			tableObj.cells[0].wrapper.get(0).focus();
 		}
 
 		Aloha.activeEditable.smartContentChange({ type: 'block-change', plugin: 'table-plugin' });
@@ -1505,6 +1503,10 @@ define([
 			null != TablePlugin.activeTable &&
 			null != TablePlugin.activeTable.selection.selectionType
 		) {
+		if (!Scopes.isActiveScope(TablePlugin.name)) {
+				UiPlugin.getActiveSurface().focusTab(TablePlugin.tabId);
+			}
+
 			// get the new scopes
 			scopes = TablePlugin.activeTable.selection.getCurrentSelectionTypes();
 			// leave all scopes except the the current ones
@@ -1529,11 +1531,13 @@ define([
 
 		var selectedCells = TablePlugin.selectedOrActiveCells();
 
-		for (var i = 0; i < TablePlugin.cellConfig.length; i++) {
-			if (jQuery(selectedCells[0]).hasClass(TablePlugin.cellConfig[i].cssClass)) {
-				className = TablePlugin.cellConfig[i].name;
-				allSelected = true;
-				break;
+		if (TablePlugin.settings && TablePlugin.settings.cellConfig) {
+			for (var i = 0; i < TablePlugin.settings.cellConfig.length; i++) {
+				if (jQuery(selectedCells[0]).hasClass(TablePlugin.settings.cellConfig[i].cssClass)) {
+					className = TablePlugin.settings.cellConfig[i].name;
+					allSelected = true;
+					break;
+				}
 			}
 		}
 

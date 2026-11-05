@@ -248,7 +248,10 @@ define([
 		},
 
 		unadopt: function(slot) {
-			delete this._adoptedComponents[slot];
+			if (this._adoptedComponents[slot] != null) {
+				this._adoptedComponents[slot].destroy();
+				delete this._adoptedComponents[slot];
+			}
 			var tab = this._tabBySlot[slot];
 			delete this._tabBySlot[slot];
 			if (tab) {

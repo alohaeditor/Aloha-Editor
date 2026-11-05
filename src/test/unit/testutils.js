@@ -26,7 +26,7 @@
  */
 window.TestUtils = window.TestUtils || {};
 
-define(['../../lib/aloha/ecma5shims'], function($_) {
+define([], function() {
 	'use strict';
 
 	/**
@@ -171,7 +171,7 @@ define(['../../lib/aloha/ecma5shims'], function($_) {
 				offset,
 				rangeObject = new Aloha.Selection.SelectionRange();
 
-			$_( editable.textNodes() ).filter(function() {
+			Array.from( editable.textNodes() ).filter(function() {
 				return this.nodeType == 3 && this.nodeValue.indexOf('[') >= 0;
 			}).each(function() {
 				text = this.nodeValue;
@@ -181,7 +181,7 @@ define(['../../lib/aloha/ecma5shims'], function($_) {
 				rangeObject.startOffset = offset;
 			});
 
-			$_( editable.textNodes() ).filter(function() {
+			Array.from( editable.textNodes() ).filter(function() {
 				return this.nodeType == 3 && this.nodeValue.indexOf(']') >= 0;
 			}).each(function() {
 				text = this.nodeValue;
@@ -307,11 +307,11 @@ define(['../../lib/aloha/ecma5shims'], function($_) {
 
 			var cur = node;
 			while (true) {
-				if (!cur || (cur != node && !($_.compareDocumentPosition(cur, node) & $_.Node.DOCUMENT_POSITION_CONTAINS))) {
+				if (!cur || (cur != node && !(cur.compareDocumentPosition(node) & Node.DOCUMENT_POSITION_CONTAINS))) {
 					break;
 				}
 
-				if (cur.nodeType != $_.Node.TEXT_NODE) {
+				if (cur.nodeType != Node.TEXT_NODE) {
 					cur = nextNode(cur);
 					continue;
 				}
@@ -380,9 +380,10 @@ define(['../../lib/aloha/ecma5shims'], function($_) {
 			var marker;
 			// Handle the collapsed case specially, to avoid confusingly getting the
 			// markers backwards in some cases
-			if (range.endContainer.nodeType == $_.Node.TEXT_NODE
-				|| range.endContainer.nodeType == $_.Node.COMMENT_NODE) {
-					if (range.collapsed) {
+			if (range.endContainer.nodeType == Node.TEXT_NODE
+				|| range.endContainer.nodeType == Node.COMMENT_NODE
+			) {
+				if (range.collapsed) {
 						marker = '[]'
 					} else {
 						marker = ']'
@@ -395,31 +396,38 @@ define(['../../lib/aloha/ecma5shims'], function($_) {
 						marker = '}'
 					}
 					if (range.endOffset != range.endContainer.childNodes.length
-					&& range.endContainer.childNodes[range.endOffset].nodeType == $_.Node.TEXT_NODE) {
+						&& range.endContainer.childNodes[range.endOffset].nodeType == Node.TEXT_NODE
+					) {
 						range.endContainer.childNodes[range.endOffset].insertData(0, marker);
 					} else if (range.endOffset != 0
-					&& range.endContainer.childNodes[range.endOffset - 1].nodeType == $_.Node.TEXT_NODE) {
+						&& range.endContainer.childNodes[range.endOffset - 1].nodeType == Node.TEXT_NODE
+					) {
 						range.endContainer.childNodes[range.endOffset - 1].appendData( marker );
 					} else {
-						range.endContainer.insertBefore(document.createTextNode( marker ),
+						range.endContainer.insertBefore(
+							document.createTextNode( marker ),
 							range.endContainer.childNodes.length == range.endOffset
-							? null
-							: range.endContainer.childNodes[range.endOffset]);
+								? null
+								: range.endContainer.childNodes[range.endOffset]
+						);
 					}
 				}
 				if (range.collapsed) {
 					return;
 				}
-				if (range.startContainer.nodeType == $_.Node.TEXT_NODE
-				|| range.startContainer.nodeType == $_.Node.COMMENT_NODE) {
+				if (range.startContainer.nodeType == Node.TEXT_NODE
+					|| range.startContainer.nodeType == Node.COMMENT_NODE
+				) {
 					range.startContainer.insertData(range.startOffset, "[");
 				} else {
 					marker = '{';
 					if (range.startOffset != range.startContainer.childNodes.length
-					&& range.startContainer.childNodes[range.startOffset].nodeType == $_.Node.TEXT_NODE) {
+						&& range.startContainer.childNodes[range.startOffset].nodeType == Node.TEXT_NODE
+					) {
 						range.startContainer.childNodes[range.startOffset].insertData(0, marker);
 					} else if (range.startOffset != 0
-					&& range.startContainer.childNodes[range.startOffset - 1].nodeType == $_.Node.TEXT_NODE) {
+						&& range.startContainer.childNodes[range.startOffset - 1].nodeType == Node.TEXT_NODE
+					) {
 						range.startContainer.childNodes[range.startOffset - 1].appendData(marker);
 					} else {
 						// Seems to serialize as I'd want even for tables . . . IE doesn't

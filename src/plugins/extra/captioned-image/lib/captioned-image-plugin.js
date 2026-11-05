@@ -20,7 +20,6 @@ define([
 	'ui/ui',
 	'ui/toggleButton',
 	'ui/toolbar',
-	'util/maps',
 	'aloha/contenthandlermanager',
 	'aloha/console',
 	'align/align-plugin', // Needed to ensure that we have "alignLeft", and
@@ -36,7 +35,6 @@ define([
 	Ui,
 	ToggleButton,
 	Toolbar,
-	Maps,
 	ContentHandlerManager,
 	console
 ) {

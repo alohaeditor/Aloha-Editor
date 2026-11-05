@@ -1,3 +1,23 @@
+/**
+ * @typedef {object} ColorConfiguration
+ * @prop {boolean=} enabled If the setting should be enabled.
+ * @prop {Array.<string>=} palette A list of css-compatible color strings the user can choose from.
+ * Empty if it should be disabled.
+ * @prop {boolean=} allowOutsidePalette If the user may select a color outside of the palette.
+ * @prop {boolean=} allowCustomInput If the user may select a color from a provided color-picker.
+ * @prop {boolean=} allowTransparency If the user may change the transparency of a selected (palette or custom input) color.
+ * @prop {boolean=} allowClear If the user should be able to remove the currently selected color (aka reset it to unset).
+ */
+/**
+ * @typedef {object} TextColorPluginConfiguration
+ * @prop {ColorConfiguration} color Configuration for the foreground color
+ * @prop {ColorConfiguration} background-color Configuration for the background color
+ */
+/**
+ * @typedef {object} TextColorPluginSettings
+ * @prop {TextColorPluginConfiguration} config General configuration for the textcolor plugin
+ * @prop {object.<string, TextColorPluginConfiguration>=} editables Configuration for individual editables
+ */
 /* textcolor-plugin.js is part of Aloha Editor project http://aloha-editor.org
  *
  * Aloha Editor is a WYSIWYG HTML5 inline editing library and editor.
@@ -29,13 +49,13 @@ define([
 	'aloha/jquery',
 	'aloha/plugin',
 	'util/dom2',
+	'util/color',
 	'PubSub',
 	'util/range-context',
 	'util/html',
 	'ui/ui',
 	'ui/contextButton',
 	'ui/icons',
-	'ui/utils',
 	'./palette',
 	'i18n!textcolor/nls/i18n',
 ], function (
@@ -43,47 +63,58 @@ define([
 	$,
 	Plugin,
 	Dom,
+	Utils,
 	PubSub,
 	RangeContext,
 	Html,
 	Ui,
 	ContextButton,
 	Icons,
-	Utils,
 	Palette,
 	i18n
 ) {
 	'use strict';
 
-	/**
-	 * @param {Element} node
-	 */
-	function isStyleableNode(node) {
-		return Html.TYPOGRAPHY_ELEMENTS.has(node.nodeName)
-			|| (
-				// If it's a span which has no attributes or only has inline-styles, then we can re-use it
-				node.nodeName === 'SPAN'
-				&& (
-					node.attributes.length === 0
-					|| (node.attributes.length === 1 && node.attributes.item(0).name === 'style')
-				)
-			);
-	}
+	/** @type {ColorConfiguration} */
+	var DEFAULT_COLOR_CONFIG = {
+		enabled: true,
+		palette: Palette,
+		allowClear: true,
+		allowCustomInput: true,
+		allowOutsidePalette: true,
+		allowTransparency: false,
+	};
+	/** @type {ColorConfiguration} */
+	var DEFAULT_BACKGROUND_COLOR_CONFIG = {
+		enabled: true,
+		palette: Palette,
+		allowClear: true,
+		allowCustomInput: true,
+		allowOutsidePalette: true,
+		allowTransparency: true,
+	};
+	/** @type {TextColorPluginConfiguration} */
+	var DEFAULT_CONFIG = {
+		color: { ...DEFAULT_COLOR_CONFIG },
+		'background-color': { ...DEFAULT_BACKGROUND_COLOR_CONFIG },
+	};
 
 	/**
 	 * Removes color at the given range.
 	 *
+	 * @param {String} cssProperty
 	 * @param {Range} range
 	 */
 	function unsetColor(cssProperty, range) {
 		RangeContext.formatStyle(range, cssProperty, null, null, function(a, b) {
 			return false;
-		}, isStyleableNode);
+		});
 	}
 
 	/**
 	 * Gets the text color at the given range.
 	 *
+	 * @param {String} cssProperty
 	 * @param {Range} range
 	 * @return {String} Style color string
 	 */
@@ -95,16 +126,52 @@ define([
 		);
 	}
 
+	function coerceToBoolean(value, defaultValue) {
+		if (value == null) {
+			return defaultValue;
+		} else if (typeof value === 'string') {
+			return value.toLowerCase() === 'true';
+		} else if (typeof value !== 'boolean') {
+			return !!value;
+		}
+
+		return value;
+	}
+
+	/**
+	 * Normalizes the config from potentially misconfigured options.
+	 * Does so on the config object directly.
+	 * @param {ColorConfiguration} configObj The config to normalize
+	 * @param {ColorConfiguration} defaultConf The default/fallback config from which it should take values from if needed
+	 */
+	function normalizeConfiguration(configObj, defaultConf) {
+		if (configObj == null || typeof configObj !== 'object') {
+			return;
+		}
+
+		configObj.enabled = coerceToBoolean(configObj.enabled, defaultConf.enabled);
+		configObj.allowClear = coerceToBoolean(configObj.allowClear, defaultConf.allowClear);
+		configObj.allowCustomInput = coerceToBoolean(configObj.allowCustomInput, defaultConf.allowCustomInput);
+		configObj.allowOutsidePalette = coerceToBoolean(configObj.allowOutsidePalette, defaultConf.allowOutsidePalette);
+		configObj.allowTransparency = coerceToBoolean(configObj.allowTransparency, defaultConf.allowTransparency);
+
+		// Reset it to an empty palette if anything is wrong, just in case
+		if (configObj.palette != null && !Array.isArray(configObj.palette)) {
+			configObj.palette = [];
+		}
+	}
+
 	/**
 	 * Sets the text color at the given range.
 	 *
+	 * @param {String} cssProperty
 	 * @param {Range} range
 	 * @param {String} color
 	 */
 	function setColor(cssProperty, range, color) {
 		RangeContext.formatStyle(range, cssProperty, color, null, function(a, b) {
 			return Utils.colorIsSame(Utils.colorToRGBA(a), Utils.colorToRGBA(b));
-		}, isStyleableNode);
+		});
 	}
 
 	function checkVisibility(editable) {
@@ -122,13 +189,21 @@ define([
 			return;
 		}
 
-		if (config.color === false || !config.color.enabled) {
+		if (
+			config.color === false
+			|| config.color == null
+			|| config.color.enabled === false
+		) {
 			plugin._textColorButton.hide();
 		} else {
 			plugin._textColorButton.show();
 		}
 
-		if (config['background-color'] === false || !config['background-color'].enabled) {
+		if (
+			config['background-color'] === false
+			|| config['background-color'] == null
+			|| config['background-color'].enabled === false
+		) {
 			plugin._backgroundColorButton.hide();
 		} else {
 			plugin._backgroundColorButton.show();
@@ -137,15 +212,18 @@ define([
 
 	var plugin = {
 
-		config: {
-			"color": {
-				palette: Palette,
-				enabled: true,
-			},
-			"background-color": {
-				palette: Palette,
-				allowTransparency: true,
-				enabled: true,
+		/**
+		 * @type {TextColorPluginSettings}
+		 */
+		settings: {},
+		/**
+		 * @type {TextColorPluginConfiguration}
+		 */
+		config: {},
+
+		defaults: {
+			config: {
+				...DEFAULT_CONFIG,
 			},
 		},
 
@@ -153,7 +231,9 @@ define([
 		_backgroundColorButton: null,
 
 		init: function () {
-			var plugin = this;
+			normalizeConfiguration(plugin.settings.config.color, DEFAULT_COLOR_CONFIG);
+			normalizeConfiguration(plugin.settings.config["background-color"], DEFAULT_BACKGROUND_COLOR_CONFIG);
+			plugin.config = plugin.settings.config;
 
 			function applyColorToSelection(cssProperty, color) {
 				var selection = Aloha.getSelection();
@@ -186,14 +266,8 @@ define([
 							}
 						}
 
-						var propertyConfig = Object.assign({}, {
-							// Default settings
-							palette: Palette,
-							allowOutsidePalette: true,
-							allowCustomInput: true,
-							allowTransparency: false,
-							allowClear: true,
-						}, plugin.config[cssProperty] || {});
+						var conf = plugin.getEditableConfig(Aloha.activeEditable.obj);
+						var propertyConfig = Object.assign({}, DEFAULT_CONFIG[cssProperty], conf[cssProperty] || {});
 
 						return {
 							type: 'color-picker',
@@ -240,7 +314,48 @@ define([
 			});
 
 			checkVisibility(Aloha.activeEditable);
-		}
+		},
+
+		getEditableConfig: function(obj) {
+			var config = this._super(obj);
+
+			// Normalize the config we receive
+			if (config['color'] != null) {
+				normalizeConfiguration(config['color'], plugin.config.color);
+			} else {
+				config['color'] = plugin.config.color;
+			}
+			if (config['background-color'] != null) {
+				normalizeConfiguration(config['background-color'], plugin.config["background-color"]);
+			} else {
+				config['background-color'] = plugin.config['background-color'];
+			}
+
+			return config;
+		},
+
+		/*
+		 * Override the config merge handler, because the configuration of this plugin
+		 * is in a bit different format compared to other plugins.
+		 */
+		_mergeConfigurations: function(target, left, right) {
+			var properties = new Set(Object.keys(left || {}));
+			Object.keys(right || {}).forEach(function(key) {
+				properties.add(key);
+			});
+
+			properties.forEach(function(key) {
+				if (Array.isArray(right[key])) {
+					target[key] = right[key];
+				} else if (typeof right[key] === 'object') {
+					target[key] = jQuery.extend({}, left[key], right[key]);
+				} else if (right[key] == null) {
+					target[key] = left[key];
+				} else {
+					target[key] = right[key];
+				}
+			});
+		},
 	};
 
 	plugin = Plugin.create('textcolor', plugin);

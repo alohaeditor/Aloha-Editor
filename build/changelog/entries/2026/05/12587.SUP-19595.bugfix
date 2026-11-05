@@ -1,0 +1,1 @@
+Fixed an issue with blocks being created again, even if an existing block for that element already exists.

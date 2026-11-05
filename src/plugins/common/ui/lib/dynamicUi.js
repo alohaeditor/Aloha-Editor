@@ -74,28 +74,31 @@ define([
     }
 
     /**
+     * @typedef {object} ConfirmDialogOptions
+     * @property {string} title The title of the dialog
+     * @property {string=} text The text value of the dialog body. May only be present if `html` is not provided.
+     * @property {string=} html The HTML value of the dialog body. May only be present if `text` is not provided.
+     * @property {()=>any=} yes Function to call when the dialog was confirmed.
+     * @property {()=>any=} no Function to call when the dialog was denied.
+     * @property {(boolean)=>any=} answer Function to call when the dialog was ansered. The value is a boolean, which indicates if it was confirmed.
+     * @property {()=>any=} close Function to call when the dialog was closed.
+     * @property {string=} cls CSS Class which is applied to the dialog.
+     * @property {object.<string, (boolean?)=>any>=} buttons Object which has the button-label as key and a function to call as value when the button was pressed.
+     */
+
+    /**
      * Shows a confirm dialog.
      *
      * A confirm dialog has a confirm icon and style and yes and no buttons.
      *
-     * @param props is an object with the following properties (all optional):
-     *          title - the title of the dialog
-     *           text - either the text inside the dialog
-     *           html - or the html inside the dialog
-     *            yes - makes a "Yes" button in the dialog and invokes the given callback if it is pressed.
-     *             no - makes a "No" button in the dialog and invokes the given callback if it is pressed.
-     *         answer - makes a "Yes" and "No" button in the dialog and pressing either will invoke the
-     *                  callback with the answer as a boolean argument. Does not interfere with yes and
-     *                  no properties.
-     *            cls - the root element of the dialog will receive this class
-     *        buttons - an object where the properties are button titles and the values are callbacks
+     * @param {ConfirmDialogOptions} options Options for configuring the dialog.
      *        Button callbacks will receive the dialog element as context.
      *        Pressing any buttons in the dialog will automatically close the dialog.
      * @return
      *        A function that can be called to close the dialog.
      */
-    function openConfirmDialog(props) {
-        var buttons = props.buttons || {};
+    function openConfirmDialog(options) {
+        var buttons = options.buttons || {};
 
         var yesLabel = i18n.t('button.yes.label');
         var noLabel = i18n.t('button.no.label');
@@ -111,28 +114,41 @@ define([
             delete buttons.No;
         }
 
-        buttons[yesLabel] = buttons[yesLabel] || props.yes || $.noop;
-        buttons[noLabel] = buttons[noLabel] || props.no || $.noop;
+        buttons[yesLabel] = buttons[yesLabel] || options.yes || $.noop;
+        buttons[noLabel] = buttons[noLabel] || options.no || $.noop;
 
-        if (props.answer) {
+        if (options.answer) {
             var yes = buttons[yesLabel];
             var no = buttons[noLabel];
             buttons[yesLabel] = function () {
                 yes();
-                props.answer(true);
+                if (typeof options.answer === 'function') {
+                    options.answer(true);
+                }
+                if (typeof options.close === 'function') {
+                    options.close();
+                }
             };
             buttons[noLabel] = function () {
                 no();
-                props.answer(false);
+                if (typeof options.answer === 'function') {
+                    options.answer(false);
+                }
+                if (typeof options.close === 'function') {
+                    options.close();
+                }
             };
         }
-        var dialog = makeDialogDiv(props).dialog(
-            $.extend(makeDialogProps(props, 'Confirm'), {
+        var dialog = makeDialogDiv(options).dialog(
+            $.extend(makeDialogProps(options, 'Confirm'), {
                 'buttons': wrapDialogButtons(buttons)
             })
         );
         return function () {
             dialog.dialog('destroy').remove();
+            if (typeof options.close === 'function') {
+                options.close();
+            }
         };
     }
 
