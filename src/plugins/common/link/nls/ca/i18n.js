@@ -5,6 +5,7 @@ define({
 	"floatingmenu.tab.link": "Enllaç",
 	"link.target.self": "Ell mateix",
 	"link.target.blank": "En blanc",
+	"link.target.none": "Per defecte",
 	"link.target.parent": "Pare",
 	"link.target.top": "Superior",
 	"link.target.framename": "Nom del marc",

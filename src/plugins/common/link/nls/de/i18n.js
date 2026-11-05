@@ -8,6 +8,7 @@ define({
 	"link.title.label": "Titel",
 	"href.lang.legend": "Sprache",
 	"link.target.label": "Öffnen in",
+	"link.target.none": "Standard",
 	"link.target._self": "Aktuellen Tab",
 	"link.target._blank": "Neuen Tab",
 	"link.target._parent": "Nächst höheren Kontext (_parent)",

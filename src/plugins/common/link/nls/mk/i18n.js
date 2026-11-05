@@ -3,6 +3,7 @@ define({
 	"button.removelink.tooltip": "Одстрани линк",
 	"newlink.defaulttext": "Нов линк",
 	"floatingmenu.tab.link": "Линк",
+	"link.target.none": "Стандардно",
 	"link.target.self": "Себеси",
 	"link.target.blank": "Празно",
 	"link.target.parent": "Родител",
