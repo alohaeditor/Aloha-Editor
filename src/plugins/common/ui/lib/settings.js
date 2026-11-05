@@ -78,7 +78,7 @@ define([
 				],
 				[ 'quote', 'cite' ],
 				[ 'del', 'ins' ],
-				[ 'removeFormat' ],
+				[ 'removeFormat', 'toggleFormatlessPaste' ],
 				// List settings
 				[
 					'alignMenu', 'vertAlignMenu',
@@ -106,7 +106,6 @@ define([
 			components: [
 				'toggleDragDrop',
 				'toggleMetaView',
-				'toggleFormatlessPaste',
 				'formatNumeratedHeaders',
 			]
 		},
