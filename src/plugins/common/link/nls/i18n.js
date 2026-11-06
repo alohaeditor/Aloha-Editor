@@ -9,7 +9,7 @@ define({
 		"link.title.label": "Title",
 		"href.lang.legend": "Language",
 		"link.target.label": "Open in",
-		"link.target.none": "Not defined",
+		"link.target.none": "Default",
 		"link.target._self": "Current Tab",
 		"link.target._blank": "New Tab",
 		"link.target._parent": "Parent Context (_parent)",
