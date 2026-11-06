@@ -398,7 +398,7 @@ define([
 		createInsertLinkContext: function (existingLink) {
 			var href = LinkPlugin.hrefValue;
 			var anchor = '';
-			var target = null;
+			var target = '';
 			var lang = '';
 			var title = '';
 			var modalTitle = i18n.t('button.addlink.tooltip');

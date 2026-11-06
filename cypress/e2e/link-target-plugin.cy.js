@@ -58,6 +58,16 @@ describe('link plugin - link target', () => {
         })
     })
 
+    it('preselects the empty target option when inserting a new link', () => {
+        loadLinkPlugin().then((LinkPlugin) => {
+            const context = LinkPlugin.createInsertLinkContext()
+            const optionIds = context.controls.target.options.options.map((option) => option.id)
+
+            expect(context.initialValue.target).to.equal('')
+            expect(optionIds).to.include(context.initialValue.target)
+        })
+    })
+
     it('removes the target attribute when an existing link is saved with the empty target', () => {
         loadLinkPlugin().then((LinkPlugin) => {
             cy.window().then((win) => {
