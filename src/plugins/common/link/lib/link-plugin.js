@@ -75,6 +75,10 @@ define([
 	/** @type {Array.<SelectOption>} */
 	var TARGETS = [
 		{
+			id: '',
+			label: i18n.t('link.target.none'),
+		},
+		{
 			id: '_self',
 			label: i18n.t('link.target._self'),
 		},
@@ -394,7 +398,7 @@ define([
 		createInsertLinkContext: function (existingLink) {
 			var href = LinkPlugin.hrefValue;
 			var anchor = '';
-			var target = null;
+			var target = '';
 			var lang = '';
 			var title = '';
 			var modalTitle = i18n.t('button.addlink.tooltip');
@@ -582,7 +586,7 @@ define([
 
 			linkElement.setAttribute(ATTR_HREF, href);
 
-			if (linkData.target) {
+			if (linkData.target && linkData.target !== '') {
 				linkElement.setAttribute(ATTR_TARGET, linkData.target);
 			} else {
 				linkElement.removeAttribute(ATTR_TARGET);
@@ -655,7 +659,9 @@ define([
 			function applyAttributes($linkElement) {
 				$linkElement.attr(ATTR_HREF, href);
 				$linkElement.attr(ATTR_HREF_LANG, linkData.lang);
-				$linkElement.attr(ATTR_TARGET, linkData.target);
+				if (linkData.target && linkData.target !== '') {
+					$linkElement.attr(ATTR_TARGET, linkData.target);
+				}
 				$linkElement.attr(ATTR_TITLE, linkData.title);
 			}
 

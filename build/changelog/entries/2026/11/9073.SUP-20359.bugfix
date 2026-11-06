@@ -1,0 +1,1 @@
+Link plugin: now contains the default option of eliminating setting up the anchor's `target` attribute. Some i18n translations have been corrected.

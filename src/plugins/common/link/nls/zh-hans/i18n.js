@@ -3,6 +3,7 @@ define({
 	"button.removelink.tooltip": "移除链接",
 	"newlink.defaulttext": "新链接",
 	"floatingmenu.tab.link": "链接",
+	"link.target.none": "默认",
 	"link.target.self": "本页面",
 	"link.target.blank": "新页面",
 	"link.target.parent": "父页面",
