@@ -1392,7 +1392,7 @@ define([
 					rangeObject.startContainer = parentElement;
 				}
 				//check if the endContainer is one of the zapped elements
-				if (backupRangeObject && backupRangeObject.startContainer && backupRangeObject.endContainer.className && backupRangeObject.endContainer.className.indexOf('preparedForRemoval') > -1) {
+				if (backupRangeObject && backupRangeObject.endContainer && backupRangeObject.endContainer.className && backupRangeObject.endContainer.className.indexOf('preparedForRemoval') > -1) {
 					//var parentElement = jQuery(backupRangeObject.endContainer).closest(markupObject[0].tagName).get(0);
 					parentElement = jQuery(backupRangeObject.endContainer).parents(markupObject[0].tagName).get(0);
 					backupRangeObject.endContainer = parentElement;
@@ -1406,29 +1406,32 @@ define([
 
 			// update selection
 			if (markupObject.isReplacingElement) {
-				if (backupRangeObject.startContainer) {
-					//After the zapping we have to check for wrong offsets
-					if (Node.ELEMENT_NODE === backupRangeObject.startContainer.nodeType
-						&& backupRangeObject.startContainer.childNodes
-						&& backupRangeObject.startContainer.childNodes.length < backupRangeObject.startOffset
-					) {
-						backupRangeObject.startOffset = backupRangeObject.startContainer.childNodes.length;
-						rangeObject.startOffset = backupRangeObject.startContainer.childNodes.length;
-					}
-					if (Node.ELEMENT_NODE === backupRangeObject.endContainer.nodeType
-						&& backupRangeObject.endContainer.childNodes
-						&& backupRangeObject.endContainer.childNodes.length < backupRangeObject.endOffset
-					) {
-						backupRangeObject.endOffset = backupRangeObject.endContainer.childNodes.length;
-						rangeObject.endOffset = backupRangeObject.endContainer.childNodes.length;
-					}
+				//After the zapping we have to check for wrong offsets
+				if (backupRangeObject.startContainer
+					&& Node.ELEMENT_NODE === backupRangeObject.startContainer.nodeType
+					&& backupRangeObject.startContainer.childNodes
+					&& backupRangeObject.startContainer.childNodes.length < backupRangeObject.startOffset
+				) {
+					backupRangeObject.startOffset = backupRangeObject.startContainer.childNodes.length;
+					rangeObject.startOffset = backupRangeObject.startContainer.childNodes.length;
+				}
+				if (backupRangeObject.endContainer
+					&& Node.ELEMENT_NODE === backupRangeObject.endContainer.nodeType
+					&& backupRangeObject.endContainer.childNodes
+					&& backupRangeObject.endContainer.childNodes.length < backupRangeObject.endOffset
+				) {
+					backupRangeObject.endOffset = backupRangeObject.endContainer.childNodes.length;
+					rangeObject.endOffset = backupRangeObject.endContainer.childNodes.length;
 				}
 				rangeObject.endContainer = backupRangeObject.endContainer;
 				rangeObject.endOffset = backupRangeObject.endOffset;
 				rangeObject.startContainer = backupRangeObject.startContainer;
 				rangeObject.startOffset = backupRangeObject.startOffset;
-				backupRangeObject.update();
-				backupRangeObject.select();
+				// the selection can only be restored, if both containers are known
+				if (backupRangeObject.startContainer && backupRangeObject.endContainer) {
+					backupRangeObject.update();
+					backupRangeObject.select();
+				}
 			} else {
 				rangeObject.update();
 				rangeObject.select();

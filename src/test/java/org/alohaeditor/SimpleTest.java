@@ -54,6 +54,8 @@ public class SimpleTest {
 		suite.addQunitModule("contentruleswhitelist");
 		suite.addQunitModule("contentrulesblacklist");
 		suite.addQunitModule("listcontenthandler");
+		suite.addQunitModule("list-template-dropdown");
+		suite.addQunitModule("selection-changemarkup");
 
 		return suite;
 	}
