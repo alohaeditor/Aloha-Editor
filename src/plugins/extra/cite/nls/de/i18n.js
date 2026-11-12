@@ -1,9 +1,8 @@
 define({
-	"cite.button.add.quote": "Zitat einfügen",
-	"cite.button.edit.quote": "Selektiertes Zitat bearbeiten",
-	"cite.button.add.blockquote": "Auswahl als Zitat formatieren",
-	"button.removeCite.tooltip": "Zitat entfernen",
+	"cite.button.tooltip": "Zitierung",
+	"cite.button.add.quote": "Zitierung einfügen",
+	"cite.button.edit.quote": "Zitierung bearbeiten",
 	"button.blockquote.tooltip": "Blockzitat",
-	"cite.label.cite": "Quelle",
+	"cite.label.source": "Quelle",
 	"cite.label.note": "Notiz"
 });

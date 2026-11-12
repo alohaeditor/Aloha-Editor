@@ -29,7 +29,6 @@ define([
 	'util/class',
 	'util/html',
 	'jquery',
-	'aloha/ecma5shims',
 	'aloha/console',
 	'aloha/block-jump',
 	'aloha/content-rules'
@@ -38,7 +37,6 @@ define([
 	Class,
 	Html,
 	jQuery,
-	shims,
 	console,
 	BlockJump,
 	ContentRules
@@ -189,7 +187,7 @@ define([
 	}
 
 	function nodeContains(node1, node2) {
-		return isOldIE ? (shims.compareDocumentPosition(node1, node2) & 16) : 0 < jQuery(node1).find(node2).length;
+		return isOldIE ? (node1.compareDocumentPosition(node2) & 16) : 0 < jQuery(node1).find(node2).length;
 	}
 
 	function isInsidePlaceholder(range) {
@@ -1314,12 +1312,26 @@ define([
 
 					// remove all objects in the mirrorLevel, which are BEFORE the cursor
 					// OR if the cursor is at the last position of the last Textnode (causing an empty followUpContainer to be appended)
-					if ((el.selection === 'none' && startMoving === false) || (el.domobj && el.domobj.nodeType === 3 && el === selectionTree[(selectionTree.length - 1)] && el.startOffset === el.domobj.data.length)) {
+					if (
+						(el.selection === 'none'
+							&& startMoving === false)
+						|| (
+							el.domobj
+							&& el.domobj.nodeType === 3
+							&& el === selectionTree[(selectionTree.length - 1)]
+							&& el.startOffset === el.domobj.data.length
+						)
+					) {
 						// iteration is before cursor, leave this part inside the splitObject, remove from followUpContainer
 						// however if the object to remove is the last existing textNode within the followUpContainer, insert a BR instead
 						// otherwise the followUpContainer is invalid and takes up no vertical space
 
-						if (followUpContainer.textNodes().length > 1 || (el.domobj.nodeType === 1 && el.children.length === 0)) {
+						if (followUpContainer.textNodes().length > 1
+							|| (
+								el.domobj.nodeType === 1
+								&& el.children.length === 0
+							)
+						) {
 							// note: the second part of the if (el.domobj.nodeType === 1 && el.children.length === 0) covers a very special condition,
 							// where an empty tag is located right before the cursor when pressing enter. In this case the empty tag would not be
 							// removed correctly otherwise

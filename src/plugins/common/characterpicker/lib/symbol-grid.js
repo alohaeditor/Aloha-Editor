@@ -1,9 +1,9 @@
 /**
  * @typedef SymbolGridItem
- * 
- * @property {string} label The label/name of the symbol
- * @property {string} symbol The symbol itself
- * @property {Array.<string>=} keywords Addtitional keywords/strings which are used when searching/filtering
+ * @prop {string} label The human readable name of the symbol to be inserted.
+ * @prop {string} symbol The XML entity code that will be inserted, i.E. "&#8482".
+ * @prop {Array.<string>=} keywords A list of strings that are used for searches to find this symbol.
+ * @prop {string=} icon A icon which will be displayed in the picker instead of the symbol itself. Primarily used for symbols which render invisible characters.
  */
 
 define([
@@ -59,8 +59,9 @@ define([
                 })
                     .attr(ATTR_VALUE, symbolObj.symbol)
                     .append($('<span>', {
-                        class: 'symbol-grid-cell-content',
-                        html: symbolObj.symbol,
+                        class: 'symbol-grid-cell-content' +
+                            (symbolObj.icon ? ' material-symbols-outlined' : ''),
+                        html: symbolObj.icon ? symbolObj.icon : symbolObj.symbol,
                     }))
                     .on('click', function () {
                         _this.touch();

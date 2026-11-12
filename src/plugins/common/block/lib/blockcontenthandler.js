@@ -56,6 +56,9 @@ function (jQuery, ContentHandlerManager, BlockManager) {
 				content = jQuery('<div>' + content + '</div>');
 			} else if (content instanceof jQuery) {
 				content = jQuery('<div>').append(content);
+			} else {
+				console.error("unsupported content type", content)
+				return;
 			}
 
 			if (content.find('.aloha-block[data-aloha-block-copy-only-block="true"]').length > 0) {

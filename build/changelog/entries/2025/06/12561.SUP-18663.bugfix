@@ -1,0 +1,2 @@
+Inserting something into the DOM using the method @insertIntoDOM@ failed to
+find the correct position and inserted the new element at the topmost possible position. This has been fixed.

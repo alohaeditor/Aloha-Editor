@@ -1,0 +1,1 @@
+Textcolor plugin: Fixed creation of unnecessary style-nodes when changing colors. Updated the documentation to reflect the current state of the plugin.

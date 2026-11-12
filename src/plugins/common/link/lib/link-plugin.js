@@ -26,6 +26,7 @@ define([
 	'aloha/keybinds',
 	'util/dom',
 	'util/keys',
+	'ui/ui-plugin',
 	'ui/ui',
 	'ui/scopes',
 	'ui/toggleSplitButton',
@@ -46,6 +47,7 @@ define([
 	Keybinds,
 	Dom,
 	Keys,
+	UiPlugin,
 	Ui,
 	Scopes,
 	ToggleSplitButton,
@@ -208,6 +210,11 @@ define([
 		config: ['a'],
 
 		/**
+		 * Default tab ID to focus when the link scope is entered (this is typically the format plugin tab, since it contains the link button).
+		 */
+		tabId: 'formatting',
+
+		/**
 		 * the defined object types to be used for this instance
 		 */
 		objectTypeFilter: [],
@@ -292,8 +299,7 @@ define([
 					let existingLink = LinkPlugin.findLinkMarkup();
 	
 					if (!existingLink) {
-						LinkPlugin.insertLink(true);
-						return;
+						existingLink = LinkPlugin.insertLink(true);
 					}
 
 					Modal.openDynamicModal(
@@ -342,6 +348,10 @@ define([
 				LinkPlugin._insertLinkButton.setIcon(activeStateOrRange ? Icons.UNLINK : Icons.LINK);
 
 				if (activeStateOrRange) {
+					if (!Scopes.isActiveScope(LinkPlugin.name)) {
+						UiPlugin.getActiveSurface().focusTab(LinkPlugin.tabId);
+					}
+
 					Scopes.enterScope(LinkPlugin.name);
 				} else {
 					Scopes.leaveScope(LinkPlugin.name);
@@ -556,7 +566,7 @@ define([
 			var href;
 
 			try {
-				// Cannot use URL.parse here, as it's not available in Cypress (v13.13+) w/ Electron (v27.x)
+				// Cannot use URL.canParse here, as it's not available in Cypress (v13.13+) w/ Electron (v27.x)
 				// which uses Node v18.17, which in turn doesn't have this feature yet.
 				if (linkData.url != null && linkData.url.target != null) {
 					new URL(linkData.url.target, window.location);
@@ -612,12 +622,9 @@ define([
 
 			// There are occasions where we do not get a valid range, in such
 			// cases we should not try and add a link
-			if (!(range.startContainer && range.endContainer)) {
-				return null;
-			}
-
-			// do not nest a link inside a link
-			if (LinkPlugin.findLinkMarkup(range)) {
+			// also do not nest a link inside a link
+			if (!(range.startContainer && range.endContainer) ||
+				LinkPlugin.findLinkMarkup(range)) {
 				return null;
 			}
 
@@ -628,9 +635,12 @@ define([
 
 			var href;
 
-			if (linkData.url != null && linkData.url.target != null && URL.canParse(linkData.url.target, window.location)) {
+			try {
+				// Cannot use URL.canParse here, as it's not available in Cypress (v13.13+) w/ Electron (v27.x)
+				// which uses Node v18.17, which in turn doesn't have this feature yet.
+				new URL(linkData.url.target, window.location);
 				href = linkData.url.target;
-			} else {
+			} catch (err) {
 				href = '';
 			}
 
@@ -670,21 +680,24 @@ define([
 				Dom.doCleanup(insertLinkPostCleanup, range);
 			}
 
-			var linkElements = $(Array.from(Aloha.activeEditable.obj.find('a.' + CLASS_NEW_LINK)).map(function (newLinkElem) {
+			const linkElements = Array.from(Aloha.activeEditable.obj.find('a.' + CLASS_NEW_LINK))
+			.map(newLinkElem => {
 				LinkPlugin.addLinkEventHandlers(newLinkElem);
 				$(newLinkElem).removeClass(CLASS_NEW_LINK);
 				return newLinkElem;
-			}));
+			});
+			
+			const $linkElements = $(linkElements);
 
 			range.select();
 
-			// because the Aloha Selection is deprecated I need to convert it to a ragne
+			// because the Aloha Selection is deprecated I need to convert it to a range
 			var apiRange = Aloha.createRange();
 			apiRange.setStart(range.startContainer, range.startOffset);
 			apiRange.setEnd(range.endContainer, range.endOffset);
 
-			Aloha.trigger('aloha-link-insert', { range: apiRange, elements: linkElements });
-			PubSub.pub('aloha.link.insert', { range: apiRange, elements: linkElements });
+			Aloha.trigger('aloha-link-insert', { range: apiRange, elements: $linkElements });
+			PubSub.pub('aloha.link.insert', { range: apiRange, elements: $linkElements });
 			LinkPlugin.hrefChange();
 
 			return linkElements[0];

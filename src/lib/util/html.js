@@ -26,14 +26,10 @@
  */
 define([
 	'jquery',
-	'util/dom',
-	'util/maps',
-	'util/arrays'
+	'util/dom'
 ], function (
 	jQuery,
-	Dom,
-	Maps,
-	Arrays
+	Dom
 ) {
 	'use strict';
 
@@ -288,14 +284,10 @@ define([
 	 * @type {object<string, boolean>}
 	 */
 	var blocksTagnameMap = {};
-	Maps.fillKeys(blocksTagnameMap, BLOCKLEVEL_ELEMENTS, true);
-	Maps.fillKeys(
-		blocksTagnameMap,
-		Arrays.map(BLOCKLEVEL_ELEMENTS, function (str) {
-			return str.toUpperCase();
-		}),
-		true
-	);
+	BLOCKLEVEL_ELEMENTS.forEach(function(elem) {
+		blocksTagnameMap[elem] = true;
+		blocksTagnameMap[elem.toUpperCase()] = true;
+	});
 
 	function isBlock(node) {
 		return blocksTagnameMap[node.nodeName];

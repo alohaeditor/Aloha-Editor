@@ -31,9 +31,9 @@ define([
 	'ui/scopes',
 	'aloha/observable',
 	'aloha/registry',
+	'aloha/ephemera',
 	'util/class',
 	'util/strings',
-	'util/maps',
 	'block/block-utils'
 ], function (
 	Aloha,
@@ -41,9 +41,9 @@ define([
 	Scopes,
 	Observable,
 	Registry,
+	Ephemera,
 	Class,
 	Strings,
-	Maps,
     BlockUtils
 ) {
 	'use strict';
@@ -51,6 +51,8 @@ define([
 	var jQuery = $;
 
 	var GENTICS = window.GENTICS;
+
+	var ATTR_BLOCK_ID = 'data-aloha-block-id';
 
 	/**
 	 * Selects the entire `block` for cut/copy.
@@ -179,7 +181,7 @@ define([
 		_registerEventHandlersForDeactivatingAlohaBlock: function () {
 			var that = this;
 			jQuery(document).on('click', function (event) {
-				if (Maps.isEmpty(that._highlightedBlocks)) {
+				if (Object.keys(that._highlightedBlocks).length < 1) {
 					return;
 				}
 				if (jQuery(event.target)
@@ -475,6 +477,7 @@ define([
 		 */
 		_blockify: function (element, instanceDefaults) {
 			var that = this,
+				/** @type {JQuery}  */
 				$element = jQuery(element),
 				BlockPlugin = Aloha.require('block/block-plugin'),
 				tagName = $element[0].tagName.toLowerCase(),
@@ -488,7 +491,10 @@ define([
 				return;
 			}
 
-			// TODO: check if object is already Block-ified
+			// Element has already been blockified
+			if ($element.attr(ATTR_BLOCK_ID)) {
+				return;
+			}
 
 			attributes = this.getConfig($element, instanceDefaults);
 
@@ -499,6 +505,9 @@ define([
 
 			block = new (this.blockTypes.get(attributes['aloha-block-type']))($element, attributes);
 			block.$element.addClass('aloha-block-' + attributes['aloha-block-type']);
+			block.$element.attr(ATTR_BLOCK_ID, block.getId());
+			Ephemera.markAttr($element, ATTR_BLOCK_ID);
+
 //			jQuery.each(attributes, function (k, v) {
 //				// We use the private API here, as we need to be able to set internal properties as well, and we do not want to trigger renering.
 //				block._setAttribute(k, v);
