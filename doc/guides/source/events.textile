@@ -123,6 +123,21 @@ Aloha.trigger( 'aloha-editable-deactivated', {
 </javascript>
 
 
+h4. aloha-editable-delete Event
+
+When a selection-changing browser event (keydown, input, paste, or cut) occurs in an editable, Aloha triggers this event for selected editable and block elements. The callback receives a payload with the selected +element+, the current +range+, and a +preventDefault()+ method. Call +preventDefault()+ when a listener handles the selected element; Aloha then prevents the browser event and stops its propagation.
+
+<javascript>
+Aloha.bind('aloha-editable-delete', function (event, payload) {
+    if (payload.element === protectedEditable) {
+        payload.preventDefault();
+    }
+});
+</javascript>
+
+To manually verify nested editable handling, place an editable directly inside a selected non-editable wrapper, bind a listener that calls +payload.preventDefault()+ for that nested element, select across it, and press Delete. Confirm the listener receives the nested editable and that the browser does not delete the selection.
+
+
 h4. aloha-smart-content-changed Event
 
 A smart content change occurs when a special editing action, or a combination of interactions are performed by the user during the course of editing within an editable.

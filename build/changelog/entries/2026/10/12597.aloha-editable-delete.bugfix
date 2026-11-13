@@ -1,0 +1,1 @@
+Core: Fixed delete-event handling for directly nested editable elements.
