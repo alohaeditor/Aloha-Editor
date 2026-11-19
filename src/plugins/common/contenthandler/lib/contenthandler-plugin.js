@@ -17,6 +17,7 @@ define([
 	'contenthandler/wordcontenthandler',
 	'contenthandler/genericcontenthandler',
 	'contenthandler/sanitizecontenthandler',
+	'contenthandler/styleattributecontenthandler',
 	'contenthandler/blockelementcontenthandler'
 ], function (
 	$,
@@ -25,6 +26,7 @@ define([
 	WordContentHandler,
 	GenericContentHandler,
 	SanitizeContentHandler,
+	StyleAttributeContentHandler,
 	BlockelementContentHandler
 ) {
 	'use strict';
@@ -40,6 +42,7 @@ define([
 		word: WordContentHandler,
 		generic: GenericContentHandler,
 		sanitize: SanitizeContentHandler,
+		styleattribute: StyleAttributeContentHandler,
 		blockelement: BlockelementContentHandler
 	};
 
