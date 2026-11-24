@@ -75,10 +75,6 @@ define([
 	/** @type {Array.<SelectOption>} */
 	var TARGETS = [
 		{
-			id: '',
-			label: i18n.t('link.target.none'),
-		},
-		{
 			id: '_self',
 			label: i18n.t('link.target._self'),
 		},
@@ -398,7 +394,7 @@ define([
 		createInsertLinkContext: function (existingLink) {
 			var href = LinkPlugin.hrefValue;
 			var anchor = '';
-			var target = '';
+			var target = null;
 			var lang = '';
 			var title = '';
 			var modalTitle = i18n.t('button.addlink.tooltip');
@@ -449,6 +445,8 @@ define([
 						options: {
 							label: i18n.t('link.target.label'),
 							options: TARGETS,
+							// No target is a valid value (the browser default), which is selected by clearing the selection.
+							clearable: true,
 						},
 					},
 					lang: {

@@ -3,7 +3,6 @@ define({
 	"button.removelink.tooltip": "Убрать ссылку",
 	"newlink.defaulttext": "Новая ссылка",
 	"floatingmenu.tab.link": "Открыть",
-	"link.target.none": "По умолчанию",
 	"link.target.self": "В текущем окне",
 	"link.target.blank": "В новом окне",
 	"link.target.parent": "В родительском фрейме",

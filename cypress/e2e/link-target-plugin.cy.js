@@ -25,46 +25,54 @@ describe('link plugin - link target', () => {
         return link
     }
 
-    it('offers an empty target as the first option of the target select', () => {
+    it('offers no empty target option, but a clearable target select', () => {
         loadLinkPlugin().then((LinkPlugin) => {
-            const options = LinkPlugin.createInsertLinkContext().controls.target.options.options
+            const targetOptions = LinkPlugin.createInsertLinkContext().controls.target.options
 
-            expect(options.map((option) => option.id)).to.deep.equal(
-                ['', '_self', '_blank', '_parent', '_top', '_unfencedTop']
+            expect(targetOptions.options.map((option) => option.id)).to.deep.equal(
+                ['_self', '_blank', '_parent', '_top', '_unfencedTop']
             )
+            expect(targetOptions.clearable).to.equal(true)
         })
     })
 
-    it('shows a translated label for the empty target option', () => {
-        loadLinkPlugin().then((LinkPlugin) => {
-            const emptyOption = LinkPlugin.createInsertLinkContext().controls.target.options.options
-                .find((option) => option.id === '')
-
-            expect(emptyOption.label).to.be.a('string').and.not.be.empty
-            expect(emptyOption.label).not.to.equal('link.target.none')
-        })
-    })
-
-    it('preselects the empty target option when editing a link without target', () => {
+    it('preselects no target when editing a link without target', () => {
         loadLinkPlugin().then((LinkPlugin) => {
             cy.window().then((win) => {
                 const link = appendLink(win, { href: 'https://example.com' })
                 const context = LinkPlugin.createInsertLinkContext(link)
                 const optionIds = context.controls.target.options.options.map((option) => option.id)
 
-                expect(context.initialValue.target).to.equal('')
-                expect(optionIds).to.include(context.initialValue.target)
+                expect(context.initialValue.target).not.to.be.ok
+                expect(optionIds).not.to.include(context.initialValue.target)
             })
         })
     })
 
-    it('preselects the empty target option when inserting a new link', () => {
+    it('preselects no target when inserting a new link', () => {
         loadLinkPlugin().then((LinkPlugin) => {
             const context = LinkPlugin.createInsertLinkContext()
             const optionIds = context.controls.target.options.options.map((option) => option.id)
 
-            expect(context.initialValue.target).to.equal('')
-            expect(optionIds).to.include(context.initialValue.target)
+            expect(context.initialValue.target).not.to.be.ok
+            expect(optionIds).not.to.include(context.initialValue.target)
+        })
+    })
+
+    it('removes the target attribute when an existing link is saved with a cleared target', () => {
+        loadLinkPlugin().then((LinkPlugin) => {
+            cy.window().then((win) => {
+                const link = appendLink(win, { href: 'https://example.com', target: '_blank' })
+
+                // Clearing the select results in a `null` value
+                LinkPlugin.upsertLink(link, {
+                    url: { target: 'https://example.com', anchor: '' },
+                    target: null,
+                })
+
+                expect(link.getAttribute('href')).to.equal('https://example.com')
+                expect(link.hasAttribute('target')).to.equal(false)
+            })
         })
     })
 
