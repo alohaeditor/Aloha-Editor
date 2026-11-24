@@ -1,0 +1,1 @@
+Link plugin: the target select of the link dialog no longer preselects a target and can be cleared, so that no `target` attribute is set on the link. Some i18n translations have been corrected.

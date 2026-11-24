@@ -445,6 +445,8 @@ define([
 						options: {
 							label: i18n.t('link.target.label'),
 							options: TARGETS,
+							// No target is a valid value (the browser default), which is selected by clearing the selection.
+							clearable: true,
 						},
 					},
 					lang: {
@@ -582,7 +584,7 @@ define([
 
 			linkElement.setAttribute(ATTR_HREF, href);
 
-			if (linkData.target) {
+			if (linkData.target && linkData.target !== '') {
 				linkElement.setAttribute(ATTR_TARGET, linkData.target);
 			} else {
 				linkElement.removeAttribute(ATTR_TARGET);
@@ -655,7 +657,9 @@ define([
 			function applyAttributes($linkElement) {
 				$linkElement.attr(ATTR_HREF, href);
 				$linkElement.attr(ATTR_HREF_LANG, linkData.lang);
-				$linkElement.attr(ATTR_TARGET, linkData.target);
+				if (linkData.target && linkData.target !== '') {
+					$linkElement.attr(ATTR_TARGET, linkData.target);
+				}
 				$linkElement.attr(ATTR_TITLE, linkData.title);
 			}
 
